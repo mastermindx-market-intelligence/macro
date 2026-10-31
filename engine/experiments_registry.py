@@ -594,7 +594,13 @@ def _load_machine_registry_entries() -> list[dict]:
         return []
 
 
-def compute() -> dict:
+def compute(*, trusted_codegen_bindings: tuple = (), commission=None) -> dict:
+    if type(trusted_codegen_bindings) is not tuple:
+        raise ValueError("immutable diagnostic bindings required")
+    diagnostics = []
+    if trusted_codegen_bindings:
+        from engine.research_codegen.bridge import load_diagnostics, public_diagnostic
+        diagnostics = [public_diagnostic(r) for r in load_diagnostics(trusted_codegen_bindings, commission=commission)]
     today = datetime.now(timezone.utc).date()
     seed = _read_json(SEED) or {}
     audited = str(seed.get("audited") or _SEED_AUDITED_FALLBACK)[:10]
@@ -659,6 +665,8 @@ def compute() -> dict:
         "seed_audited": audited,
         "state_live_count": sum(1 for r in out if r.get("state_live")),
         "by_status": by_status, "by_kind": by_kind, "experiments": out,
+        "research_diagnostics": diagnostics,
+        "research_diagnostics_state": "AVAILABLE" if diagnostics else "DISABLED",
         "note": ("Every running experiment & long-horizon data-collection accrual in the "
                  "codebase, with the date to come back for each next step. Track-records grade "
                  "the read's own calls against realized forward returns; nothing here sizes a "
@@ -700,15 +708,20 @@ def _notify_newly_ready(prev_path, payload) -> None:
         log.warning("experiments alert send failed: %s", e)
 
 
-def build(site=None) -> int:
+def build(site=None, *, trusted_codegen_bindings: tuple = (), commission=None) -> int:
     """Emit site/marketdata/experiments.json + push a ping on any newly-ready experiment.
     Additive, never fatal."""
     site = site or (config.ROOT / config.load()["storage"]["site_dir"])
     try:
-        payload = compute()
+        payload = compute(trusted_codegen_bindings=trusted_codegen_bindings, commission=commission)
     except Exception as e:  # noqa: BLE001
         log.error("experiments_registry compute failed: %s", e)
         return 0
+    return _publish(payload, site)
+
+
+def _publish(payload, site) -> int:
+    """Incumbent artifact publisher; diagnostics never enter ready notifications."""
     p = site / OUT
     p.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -718,6 +731,33 @@ def build(site=None) -> int:
     p.write_text(json.dumps(payload, separators=(",", ":"), ensure_ascii=False))
     log.info("experiments_registry: %d experiments (%d ready)", payload["n"], payload["ready_count"])
     return 1
+
+
+def build_published(site=None) -> int:
+    """Nightly caller: retain the exact named projection in the existing queue.
+
+    No candidate artifact lookup, byte-binding reconstruction or execution is
+    enabled. Original measurement timestamps/identities survive republication.
+    """
+    site = site or (config.ROOT / config.load()["storage"]["site_dir"])
+    try:
+        payload = compute()
+    except Exception as exc:  # same incumbent build failure behavior
+        log.error("experiments_registry compute failed: %s", exc)
+        return 0
+    source = _root() / "data/research_factory/review/queue.json"
+    rows, state = (), "DISABLED"
+    try:
+        from engine.research_codegen.bridge import MAX_ARTIFACT_BYTES, decode_published_diagnostics
+        with source.open("rb") as stream:
+            rows, state = decode_published_diagnostics(stream.read(MAX_ARTIFACT_BYTES + 1))
+    except FileNotFoundError:
+        pass
+    except (ImportError, OSError, ValueError):
+        state = "UNAVAILABLE"
+    payload["research_diagnostics"] = list(rows)
+    payload["research_diagnostics_state"] = state
+    return _publish(payload, site)
 
 
 def main() -> dict:

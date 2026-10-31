@@ -422,6 +422,142 @@ class TestBuildVm:
         vm = build_vm(pl, lh)
         assert vm["authority"] == "display_only"
 
+    # ---- SPEC 1 — the producer's real status reaches the badge -------------- #
+
+    def test_status_badge_maps_scoreable_to_its_own_label(self):
+        """SPEC 1: "SCOREABLE" gets its own badge, not the ACCRUING fall-through."""
+        from engine.pick_lab.render import _status_badge
+        badge = _status_badge("SCOREABLE")
+        assert badge["label_en"] == "SCOREABLE"
+        assert badge["css"] == "badge-active"
+        assert badge["label_zh"] and badge["label_zh"] != "累积中"
+
+    def test_status_badge_accruing_unchanged(self):
+        """SPEC 1: the accruing / None paths stay byte-identical."""
+        from engine.pick_lab.render import _status_badge
+        for s in ("ACCRUING", None):
+            badge = _status_badge(s)
+            assert badge["css"] == "badge-accruing"
+            assert badge["label_en"] == "ACCRUING"
+            assert badge["label_zh"] == "累积中"
+
+    def test_scoreable_row_renders_scoreable_badge_on_page(self, tmp_path):
+        """SPEC 1: committed plab_1d_pure shape renders SCOREABLE, not ACCRUING."""
+        from engine.pick_lab.render import build_vm, render_page
+        row = _make_scoreboard_row(
+            "plab_1d_pure", "1D Pure (velocity gate)", "1日纯速 (动能门)", "A",
+            "21d_spy_excess", n_fires=313, n_open=185, n_dates=46,
+            months_span=3.06, wr21_abs=0.4141, status="SCOREABLE",
+        )
+        row.update({"h5_n": 175, "h10_n": 158, "h21_n": 128, "h63_n": 17})
+        pl, lh = _prod_fixture()
+        pl = dict(pl)
+        pl["scoreboard"] = [row]
+        render_page(build_vm(pl, lh), site=tmp_path)
+        html = (tmp_path / "us_stocks_lab.html").read_text()
+        i = html.index('data-ab="plab_1d_pure"')
+        seg = html[i:html.index("sbdet-plab_1d_pure")]
+        assert "SCOREABLE" in seg
+        assert '<span class="badge-accruing">' not in seg
+
+    def test_accruing_row_still_renders_accruing(self, tmp_path):
+        """SPEC 1: committed plab_hi_base (n_fires 233, months_span 2.92) holds its badge."""
+        from engine.pick_lab.render import build_vm, render_page
+        row = _make_scoreboard_row(
+            "plab_hi_base", "High Base / Squeeze", "高位基建/盘整", "B",
+            "21d_spy_excess", n_fires=233, months_span=2.92, status="ACCRUING",
+        )
+        pl, lh = _prod_fixture()
+        pl = dict(pl)
+        pl["scoreboard"] = [row]
+        render_page(build_vm(pl, lh), site=tmp_path)
+        html = (tmp_path / "us_stocks_lab.html").read_text()
+        i = html.index('data-ab="plab_hi_base"')
+        seg = html[i:html.index("sbdet-plab_hi_base")]
+        assert "ACCRUING" in seg
+        assert '<span class="badge-accruing">' in seg
+
+    # ---- SPEC 4 — the inverse book's real avoid-accuracy --------------------- #
+
+    def _avoid_committed_row(self):
+        """Row shaped like the committed plab_topping_avoid scoreboard record."""
+        row = _make_scoreboard_row(
+            "plab_topping_avoid", "Topping Avoid (INVERSE)", "顶部规避 (反向)", "F",
+            "21d_spy_excess_avoid_accuracy", n_fires=129, n_open=53, n_dates=26,
+            months_span=2.86, wr21_abs=0.4342, wr21_excess=0.3816,
+            status="ACCRUING",
+        )
+        row.update({
+            "is_avoid": True, "h5_avoid_accuracy": 0.6047,
+            "h10_avoid_accuracy": 0.6404, "h21_avoid_accuracy": 0.6184,
+            "h63_avoid_accuracy": 0.0, "h21_wr_exc": 0.3816,
+        })
+        return row
+
+    def test_avoid_row_exposes_avoid_accuracy_fmt(self):
+        """SPEC 4: _enrich_scoreboard_row formats the artifact h21 avoid rate."""
+        from engine.pick_lab.render import _enrich_scoreboard_row
+        out = _enrich_scoreboard_row(self._avoid_committed_row())
+        assert out["avoid_accuracy_fmt"] == "61.8%"
+        assert out["wr_exc_css"] == ""
+
+    def test_avoid_accuracy_renders_on_page(self, tmp_path):
+        """SPEC 4: 61.8% appears in the plab_topping_avoid scoreboard row."""
+        from engine.pick_lab.render import build_vm, render_page
+        pl, lh = _prod_fixture()
+        pl = dict(pl)
+        board = []
+        for r in pl["scoreboard"]:
+            board.append(self._avoid_committed_row()
+                         if r["engine_id"] == "plab_topping_avoid" else r)
+        pl["scoreboard"] = board
+        render_page(build_vm(pl, lh), site=tmp_path)
+        html = (tmp_path / "us_stocks_lab.html").read_text()
+        i = html.index('data-ab="plab_topping_avoid"')
+        seg = html[i:html.index("sbdet-plab_topping_avoid")]
+        assert "61.8%" in seg
+
+    def test_non_avoid_row_has_no_avoid_accuracy(self, tmp_path):
+        """SPEC 4: the gate is artifact is_avoid — never the raw h21 field."""
+        from engine.pick_lab.render import _enrich_scoreboard_row
+        from engine.pick_lab.render import build_vm, render_page
+        row = _make_scoreboard_row(
+            "plab_1d_pure", "1D Pure (velocity gate)", "1日纯速 (动能门)", "A",
+            "21d_spy_excess", n_fires=313, months_span=3.06, wr21_abs=0.4141,
+            status="SCOREABLE",
+        )
+        # Defensive shape: a NON-avoid row that nevertheless carries the key —
+        # only the is_avoid gate may let the value reach the page.
+        row.update({"is_avoid": False, "h21_avoid_accuracy": 0.6184})
+        out = _enrich_scoreboard_row(row)
+        assert out["avoid_accuracy_fmt"] == "—"
+        pl, lh = _prod_fixture()
+        pl = dict(pl)
+        pl["scoreboard"] = [row]
+        render_page(build_vm(pl, lh), site=tmp_path)
+        html = (tmp_path / "us_stocks_lab.html").read_text()
+        assert "61.8%" not in html
+        assert "Avoid accuracy" not in html
+
+    def test_avoid_row_win_rate_not_marked_positive(self, tmp_path):
+        """SPEC 4 seat ruling: the avoid row's WR exc cell carries NEITHER pos NOR neg."""
+        from engine.pick_lab.render import build_vm, render_page
+        pl, lh = _prod_fixture()
+        pl = dict(pl)
+        board = []
+        for r in pl["scoreboard"]:
+            board.append(self._avoid_committed_row()
+                         if r["engine_id"] == "plab_topping_avoid" else r)
+        pl["scoreboard"] = board
+        render_page(build_vm(pl, lh), site=tmp_path)
+        html = (tmp_path / "us_stocks_lab.html").read_text()
+        i = html.index('data-ab="plab_topping_avoid"')
+        seg = html[i:html.index("sbdet-plab_topping_avoid")]
+        m = re.search(r'<td class="([^"]*)">[^<]*\+38\.2%', seg)
+        assert m is not None, seg[:400]
+        assert "pos" not in m.group(1)
+        assert "neg" not in m.group(1)
+
 
 # --------------------------------------------------------------------------- #
 #  Template render tests                                                       #
@@ -560,6 +696,148 @@ class TestTemplateRender:
         html = self._render_full()
         assert "data-tab-panel" in html
         assert "classList.remove('on')" in html or "classList.remove" in html
+
+
+# --------------------------------------------------------------------------- #
+#  Board Record tab: committed accountability values                           #
+# --------------------------------------------------------------------------- #
+
+class TestAccountabilityRealValues:
+    """SPEC 3: Board Record tab must print the nested values the producer writes.
+
+    The committed site/factordata/us_audit_scoreboard.json (as_of 2026-08-08)
+    writes strata as OUTER mapping -> group -> cell (raw_n / effective_n /
+    state), e.g. strata.by_lane.buy.raw_n == 34. The template used to read
+    raw_n at the OUTER level only, so every cell rendered as an em-dash, and
+    the Outcome Causes / Process Faults cards and the concordance n column
+    ignored real values. Values below are quoted from that committed artifact.
+    """
+
+    NOTE = ("CIs are cluster-unit (entry-date-collapsed) and descriptive only."
+            " No significance claims. Cells with effective_n<3 print"
+            " state='ACCRUING'.")
+
+    @staticmethod
+    def _cell(raw_n, eff=1):
+        return {"raw_n": raw_n, "effective_n": eff, "state": "ACCRUING"}
+
+    def _scoreboard(self):
+        """Inline dict shaped like the committed us_audit_scoreboard.v1."""
+        return {
+            "schema": "standout_audit.scoreboard.v1",
+            "as_of": "2026-08-08",
+            "note": self.NOTE,
+            "buy_lane_rows": 34,
+            "all_lanes_rows": 70,
+            "strata": {
+                "by_lane": {
+                    "buy": self._cell(34),
+                    "laggards": self._cell(12),
+                    "watch": self._cell(24),
+                },
+                "by_outcome_cause": {
+                    "mixed": self._cell(16),
+                    "idio_alpha": self._cell(10),
+                    "idio_break": self._cell(6),
+                    "beta_tailwind": self._cell(2),
+                },
+                "by_process_fault": {
+                    "clean": self._cell(33),
+                    "premature_stop_noise": self._cell(1),
+                },
+                "upstream_concordance": {
+                    "risk_radar_state": {
+                        "organ": "risk_radar_state",
+                        "n_concordant_cells": 28,
+                        "n_discordant": 6,
+                        "raw_n": 34,
+                        "effective_n": 1,
+                        "discordance_rate": 0.1765,
+                        "state": "ACCRUING",
+                    },
+                },
+            },
+            "coverage_monitor": {
+                "frozen_baseline": None,
+                "trailing_4wk_buy_count": 231,
+                "weekly_history": [
+                    {"week": "2026-06-15/2026-06-21", "unique_tickers": 182},
+                    {"week": "2026-07-27/2026-08-02", "unique_tickers": 5},
+                ],
+                "data_gap": None,
+            },
+            "gate_suppressed": {
+                "state": "data_gap",
+                "reason": "data_gap: near_miss store lacks excess_spy column",
+            },
+        }
+
+    def _html(self, scoreboard):
+        from engine.pick_lab.render import build_vm
+        vm = build_vm(None, None, audit_scoreboard=scoreboard)
+        return _env().get_template("us_stocks_lab.html.j2").render(**vm)
+
+    @staticmethod
+    def _slice(html, start, end):
+        i = html.index(start)
+        return html[i:html.index(end, i)]
+
+    def test_strata_table_prints_real_raw_n(self):
+        html = self._html(self._scoreboard())
+        tbl = self._slice(html, "Stratified Scoreboard", "Two-axis failure-mode mix")
+        assert "34" in tbl and "12" in tbl and "24" in tbl
+        assert "by_lane" in tbl and "laggards" in tbl and "watch" in tbl
+        assert "<td>\u2014</td>" not in tbl, "strata rows still all em-dash"
+        assert "ACCRUING" in tbl
+
+    def test_outcome_cause_card_lists_attributed_rows(self):
+        html = self._html(self._scoreboard())
+        card = self._slice(html, "Outcome Causes", "Process Faults")
+        for n in ("16", "10", "6", "2"):
+            assert n in card, f"raw_n {n} missing from Outcome Causes card"
+        assert "mixed" in card and "idio_alpha" in card
+        assert ("outcome-cause breakdown available once attribution rows"
+                " mature") not in html
+
+    def test_concordance_n_column_uses_raw_n(self):
+        html = self._html(self._scoreboard())
+        uc = self._slice(html, "Upstream Concordance", "Post-mortem digest slot")
+        assert "17.6%" in uc
+        assert "6 / 34" in uc, "n cell must show n_discordant / raw_n"
+        assert "risk_radar_state" in uc
+
+    def test_accountability_note_and_all_lanes_rendered(self):
+        html = self._html(self._scoreboard())
+        sec = self._slice(html, 'data-tab-panel="accountability"', "TAB 5: METHOD")
+        assert "70" in sec, "all_lanes_rows not printed"
+        assert ("CIs are cluster-unit (entry-date-collapsed) and descriptive"
+                " only. No significance claims.") in sec
+        assert ("effective_n&lt;3 print state=&#39;ACCRUING&#39;." in sec
+                ), "acct.note not quoted verbatim"
+
+    def test_accountability_absent_still_renders_empty_state(self):
+        from engine.pick_lab.render import _build_accountability_vm
+        assert _build_accountability_vm(None) == {"present": False}
+        html = self._html(None)
+        sec = self._slice(html, 'data-tab-panel="accountability"', "TAB 5: METHOD")
+        assert "No matured rows yet" in sec
+        assert ("outcome-cause breakdown available once attribution rows"
+                " mature") in sec
+        assert ("process-fault breakdown available once attribution rows"
+                " mature") in sec
+        assert "Concordance data accruing" in sec
+
+    def test_process_fault_card_real_rows_and_empty_state(self):
+        html = self._html(self._scoreboard())
+        card = self._slice(html, "Process Faults", "Loss ledgers")
+        assert "clean" in card and "premature_stop_noise" in card
+        assert "33" in card and "1" in card
+        sb = self._scoreboard()
+        sb["strata"]["by_process_fault"] = {}
+        html2 = self._html(sb)
+        card2 = self._slice(html2, "Process Faults", "Loss ledgers")
+        assert ("process-fault breakdown available once attribution rows"
+                " mature") in card2
 
 
 # --------------------------------------------------------------------------- #
@@ -1184,6 +1462,43 @@ class TestHorizonLadderVm:
         path_en = row["horizon_detail"]["path_en"]
         assert "arriving" in path_en or "—" in path_en
 
+    def test_horizon_ladder_carries_resolved_n(self):
+        """SPEC 2: ladder legs carry h{5,10,21,63}_n formatted via _fmt_int."""
+        from engine.pick_lab.render import _enrich_horizon_ladder
+        row = _make_scoreboard_row_with_ladder(
+            "plab_1d_pure", n_fires=313, n_open=185, n_dates=46,
+            months_span=3.06, wr21_abs=0.4141, status="SCOREABLE",
+            h5_n=175, h10_n=158, h21_n=128, h63_n=17, h63_wr_abs=0.6471,
+        )
+        ladder = _enrich_horizon_ladder(row)["ladder"]
+        assert ladder[0]["n_fmt"] == "175"
+        assert ladder[1]["n_fmt"] == "158"
+        assert ladder[3]["n_fmt"] == "17"
+
+    def test_horizon_ladder_n_dash_when_null(self):
+        """SPEC 2: a null resolved count renders an em-dash, never None/0.0."""
+        from engine.pick_lab.render import _enrich_horizon_ladder
+        row = _make_scoreboard_row_with_ladder(
+            "plab_otr_pullback", n_fires=0,
+            h5_n=0, h10_n=0, h21_n=0, h63_n=None,
+        )
+        ladder = _enrich_horizon_ladder(row)["ladder"]
+        assert ladder[0]["n_fmt"] == "0"
+        assert ladder[3]["n_fmt"] == "—"
+        assert "None" not in ladder[3]["n_fmt"]
+        assert "0.0" not in ladder[3]["n_fmt"]
+
+    def test_ladder_rates_still_render_beside_n(self):
+        """SPEC 2: the new resolved column must not displace existing rate formats."""
+        from engine.pick_lab.render import _enrich_horizon_ladder
+        row = _make_scoreboard_row_with_ladder(
+            "plab_1d_pure", h5_n=175, h10_n=158, h21_n=128, h63_n=17,
+            h63_wr_abs=0.6471,
+        )
+        ladder = _enrich_horizon_ladder(row)["ladder"]
+        assert ladder[3]["wr_abs_fmt"] == "64.7%"
+        assert ladder[3]["n_fmt"] == "17"
+
 
 class TestHorizonLadderTemplate:
     """Task 1 — template: detail row rendered with l-en/l-zh spans."""
@@ -1231,6 +1546,28 @@ class TestHorizonLadderTemplate:
         cjk_range = re.compile(r'[一-鿿㐀-䶿]')
         violations = [v for v in title_attrs if cjk_range.search(v)]
         assert not violations, f"CJK in title= attributes: {violations[:3]}"
+
+    def test_horizon_ladder_renders_resolved_n_on_page(self):
+        """SPEC 2: the sb-ladder prints resolved counts beside its rates."""
+        from engine.pick_lab.render import build_vm
+        pl, lh = _prod_fixture()
+        row = _make_scoreboard_row_with_ladder(
+            "plab_1d_pure", n_fires=313, n_open=185, n_dates=46,
+            months_span=3.06, wr21_abs=0.4141, status="SCOREABLE",
+            h5_n=175, h10_n=158, h21_n=128, h63_n=17, h63_wr_abs=0.6471,
+        )
+        pl = dict(pl)
+        pl["scoreboard"] = [
+            row if r["engine_id"] == "plab_1d_pure" else r
+            for r in pl["scoreboard"]
+        ]
+        html = _env().get_template("us_stocks_lab.html.j2").render(
+            **build_vm(pl, lh))
+        i = html.index('id="sbdet-plab_1d_pure"')
+        seg = html[i:html.index("</table>", i)]
+        assert ">175<" in seg
+        assert ">17<" in seg
+        assert "64.7%" in seg
 
 
 # --------------------------------------------------------------------------- #
@@ -1627,3 +1964,92 @@ class TestStratifiedCutsRender:
         titles = re.findall(r'title="([^"]*)"', html)
         cjk = [t for t in titles if any("一" <= ch <= "鿿" for ch in t)]
         assert cjk == [], f"CJK in title= attrs: {cjk[:3]}"
+
+
+# --------------------------------------------------------------------------- #
+#  SPEC 5 — T0 daily frame + screened universe (t0_indicator.v1)                #
+# --------------------------------------------------------------------------- #
+
+class TestT0DailyFrame:
+    """SPEC 5: Daily cell prints the real d1_k; count line prints the universe."""
+
+    @staticmethod
+    def _t0_artifact(n_extra: int = 0) -> dict:
+        """Inline fixture carrying the committed t0_indicator.json values (F5)."""
+        matches = [
+            {"ticker": "BMY", "d3_k": 5.6742, "d3_d": 4.41846877011157,
+             "d1_k": 22.346565657311373, "d1_d": 14.41431670513898,
+             "close": 59.279998779296875, "sector": "Health Care",
+             "dollar_adv_20d": 859479082.0},
+            {"ticker": "TMUS", "d3_k": 18.8062, "d3_d": None,
+             "d1_k": 34.70138443526514, "d1_d": 30.51441029028594,
+             "close": 157.79, "sector": "Communication Services",
+             "dollar_adv_20d": 811000000.0},
+        ]
+        for i in range(n_extra):  # test-only synthetic filler, never a page value
+            matches.append({
+                "ticker": f"T{i + 1:03d}", "d3_k": 1.0, "d3_d": 1.0,
+                "d1_k": 2.0, "d1_d": 1.0, "close": 10.0,
+                "sector": "Industrials", "dollar_adv_20d": 1000000.0,
+            })
+        return {
+            "as_of": "2026-10-14", "universe_n": 3069, "matches": matches,
+            "disclosure_en": "Beta screen, not a buy signal.",
+            "disclosure_zh": "测试版筛选，不是买入信号。",
+        }
+
+    def _render_t0_page(self, tmp_path, t0_dict):
+        from engine.pick_lab.render import build_vm, render_page
+        pl, lh = _prod_fixture()
+        render_page(build_vm(pl, lh, t0_dict=t0_dict), site=tmp_path)
+        return (tmp_path / "us_stocks_lab.html").read_text()
+
+    def test_t0_vm_exposes_universe_n(self):
+        """SPEC 5: _build_t0_vm carries the artifact's universe_n through."""
+        from engine.pick_lab.render import _build_t0_vm
+        t0 = _build_t0_vm(self._t0_artifact())
+        assert t0["universe_n"] == 3069
+        assert t0["total"] == 2
+
+    def test_t0_row_renders_daily_k(self, tmp_path):
+        """SPEC 5: the Daily cell prints d1_k beside the unchanged slow-frame K."""
+        html = self._render_t0_page(tmp_path, self._t0_artifact())
+        i = html.index("BMY</b>")
+        seg = html[i:html.index("</tr>", i)]
+        assert "(K 22)" in seg   # d1_k = 22.346565657311373
+        assert "(K 6)" in seg    # slow frame unchanged: d3_k = 5.6742
+        j = html.index("TMUS</b>")
+        seg = html[j:html.index("</tr>", j)]
+        assert "(K 35)" in seg   # d1_k = 34.70138443526514
+        assert "(K 19)" in seg   # slow frame unchanged: d3_k = 18.8062
+
+    def test_t0_count_line_shows_universe(self, tmp_path):
+        """SPEC 5: 163 matches (2 committed + 161 synthetic) make the line render."""
+        t0 = self._t0_artifact(n_extra=161)
+        assert len(t0["matches"]) == 163  # committed len(matches) = 163
+        html = self._render_t0_page(tmp_path, t0)
+        i = html.index("Showing top 30 of")
+        line = html[i:html.index("</p>", i)]
+        assert "163" in line
+        assert "3,069" in line  # committed universe_n = 3069
+
+    def test_t0_absent_renders_empty_state(self, tmp_path):
+        """SPEC 5: the absent sentinel keeps universe_n present and None."""
+        from engine.pick_lab.render import _build_t0_vm
+        t0 = _build_t0_vm(None)
+        assert t0["present"] is False
+        assert t0["universe_n"] is None
+        html = self._render_t0_page(tmp_path, None)
+        assert "No data yet" in html
+        assert "🔬" in html
+
+    def test_t0_null_daily_k_renders_dash(self, tmp_path):
+        """SPEC 5: a null d1_k renders an em-dash, never 0 or None."""
+        t0 = self._t0_artifact()
+        t0["matches"][0]["d1_k"] = None
+        html = self._render_t0_page(tmp_path, t0)
+        i = html.index("BMY</b>")
+        seg = html[i:html.index("</tr>", i)]
+        assert "(—)" in seg
+        assert "None" not in seg
+        assert "(K 0)" not in seg

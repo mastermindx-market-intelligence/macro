@@ -64,6 +64,30 @@ def test_member_experience_leads_with_value_and_explains_the_workflow():
     assert "Review now" not in html
 
 
+def test_reported_holding_reader_is_a_separate_private_read_action():
+    html = _render()
+    # A missing financial-statement dataset must not hide this different owner
+    # reader. Only lookup identifiers belong in the publicly rendered shell.
+    start = html.index('id="ff-holding-research"')
+    end = html.index('id="ff-data-notice"')
+    holding = html[start:end]
+    assert start < html.index('id="ff-gate"')
+    assert '<form id="ff-holding-form" method="post"' in holding
+    assert 'action="/api/forensics/v1/institutional/reported-holding"' in holding
+    assert 'name="infotable_sk" value="4611686018427387905"' in holding
+    assert 'id="ff-holding-row" name="infotable_sk"' in holding
+    assert 'type="number"' not in holding
+    assert 'data-holding-example="previous"' in holding
+    assert 'data-holding-example="current"' in holding
+    assert '<div id="ff-holding-result" hidden></div>' in holding
+    assert 'id="ff-holding-status" role="status" aria-live="polite"' in holding
+    assert 'href="institutional_holding_research.css"' in html
+    assert 'src="institutional_holding_research.js"' in html
+    assert html.index('src="theme.js"') < html.index('src="institutional_holding_research.js')
+    assert "1279" not in holding
+    assert "1238" not in holding
+
+
 def test_disclosure_surfaces_make_the_text_comparison_boundary_and_source_path_plain():
     html = _render()
     assert 'id="ff-disclosure-feed"' in html

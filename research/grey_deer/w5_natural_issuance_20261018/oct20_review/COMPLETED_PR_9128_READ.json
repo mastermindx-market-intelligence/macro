@@ -1,0 +1,51 @@
+{
+  "status": "fulfilled",
+  "value": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9128",
+      "number": 9128,
+      "state": "closed",
+      "merged": true,
+      "mergeable": false,
+      "draft": false,
+      "body": "## What\n\nThis PR wires the Grey Deer pullback prospective lane (WS:GREY-DEER-RISK-INTELLIGENCE O7/W5) into the nightly. Each night it issues SPY forward rows with the frozen writer, then grades matured rows with the frozen grader. Both come from W4 stage-1b (#9091), so this PR changes neither.\n\n- `scripts/grey_deer_pullback_nightly.py` (new). It reads the restored Massive SPY store and runs `issue()` then `grade()`. It prints one JSON report and always exits 0.\n  - A store read failure, an exception, or a refusal other than the expected `OBSERVER_NOT_ON_MAIN` / `DUPLICATE_KEY` becomes a `::warning` printed at the start of a line (bare print with `flush=True`).\n  - Store identity is the stable source name `collectors.massive_stock_day:SPY`, not a per-night content hash. Otherwise every graded row would read as revised.\n- `scripts/ci/daily_engine_regional_desk_builders.sh`: `brun grey_deer_pullback` in the `cl_gex` band, after `vol_regime`.\n- `.github/workflows/daily.yml`: the engine builders step pins `GREY_DEER_PULLBACK_WRITER_IDENTITY` / `GREY_DEER_PULLBACK_GRADER_IDENTITY` to `daily.yml:engine`. The writer and grader refuse to run under any other identity, so the nightly is the only process that advances these logs.\n- `config/dag.yml`: the module is added to the nightly `cl_gex` band only (not the render lanes), with its reads/writes declared.\n- `config/synapse.yml`: two `shadow`-tier artifacts, the issue log and the grade sidecar. They carry no weights and no authority.\n- `scripts/audit_grading_closure.py`: an INVENTORY entry, plus a lookup that counts grades from `forward_log_graded.jsonl`.\n- `scripts/check_ledger_advance.py`: a manifest entry.\n\n## Research tier\n\nThis lane does not append to `trial_ledger`. Stage-1b passed 0 of 12 claims (#9122), so these rows are a prospective record only. Nothing ranks, sizes or gates on them.\n\n## Tests\n\n- `tests/test_grey_deer_pullback_nightly.py`: 7 new tests covering issue, grade, a store failure, refusals, the warning shape and exit 0.\n- Integration set: 174 passed.\n- `cl_gex` band and DAG set: 395 passed, 2 skipped, 1 failure that this PR does not cause. `tests/test_options_command_close_scope.py::test_the_admission_precondition_still_holds` already fails on the base, and this PR does not touch options_command.\n\n## First proof\n\nThe first nightly after this merges should create `data/grey_deer_pullback/forward_log.jsonl`. Production proof means that file has its first SPY rows and the run printed no `grey-deer-pullback-*-error` warning.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n",
+      "title": "feat(grey-deer): run the pullback prospective lane in the nightly (O7/W5)",
+      "base": "main",
+      "base_sha": "7f1e4ede020b53b1d86b39642e9c88f334f0d61a",
+      "head": "claude/ssd-grey-deer-w5-integration-43e0ff12920f0469",
+      "head_sha": "3e4fecb7fa24f8233804a95b4fff064dac59b321",
+      "head_repo_id": 1266869026,
+      "head_repo_full_name": "mastermindx-market-intelligence/macro",
+      "merge_commit_sha": "af468522ab6e97b4c15f00c701a5ad6ba6a960b5",
+      "user": {
+        "login": "mastermindxryan",
+        "name": "mastermindxryan",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/333722846?v=4",
+        "id": 333722846
+      },
+      "requested_reviewers": null,
+      "requested_team_reviewers": null,
+      "diff": null,
+      "comments": null,
+      "created_at": "2026-10-13T10:13:14Z",
+      "updated_at": "2026-10-14T02:07:23Z",
+      "closed_at": "2026-10-14T02:07:20Z",
+      "merged_at": "2026-10-14T02:07:20Z",
+      "commits": 11,
+      "changed_files": 18,
+      "additions": 5377,
+      "deletions": 14,
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/pull/9128",
+      "display_title": "feat(grey-deer): run the pullback prospective lane in the nightly (O7/W5)"
+    },
+    "isError": false
+  }
+}
+

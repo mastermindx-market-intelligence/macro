@@ -1,0 +1,12 @@
+# F09 petroleum context — actual controlled browser evidence
+
+The parent used the native CUA Chrome 3 session to render the exact new partial inside the current committed Commodities page. The fixture values are the four existing EIA store observations at the latest shared week, 2026-10-02, evaluated on 2026-10-20. They are labeled stale at 18 days. This fixture proves presentation and disclosure; helper, full-bake and deployed consumer proof remain separate.
+
+The parent viewed all eight EN/ZH × dark/light × 1440×900/390×844 crops. Existing neutral panels provide graphite depth in dark and white surfaces/hairlines in light. The reading hierarchy, unit, common week, stale status and three stages remain visible. No panel horizontal overflow was observed. The pre-existing floating Ask Mastermind launcher crosses part of some mobile crops; it is not changed by this slice.
+
+The source disclosure was opened and closed using the summary's native Enter-key interaction; its focus outline, four EIA links, unknown publication/retrieval/first-known clocks, and non-mass-balance limitation were inspected. A separate unavailable fixture displays unknown coverage without numeric values or a fabricated observation date. Local preferences were restored to EN/dark and the natural 1780×997 viewport after capture. Screenshot bytes are original native captures, not mocked, stitched or re-rendered.
+
+
+Final integration: the corrected helper and consumer pass 88 affected tests. The normal builder was executed with collection disabled and existing native parquet inputs. It also refreshed unrelated commodity scores and a sparkline, so this release inserts only its actual rendered petroleum section at the committed template include boundary. Every other committed page byte, all eight inline scripts and the five incidental machine outputs are preserved. The final section's text and links match the captured fixture; a separate actual full-page browser opening confirmed the four values, common period and stale state. The screenshot matrix remains labeled controlled presentation proof.
+
+CI metadata correction: the native document reports `lang=zh-CN`. The evidence matrix uses the canonical `zh` axis key, so the five Chinese states now retain `browser_document_lang: zh-CN` and declare `locale/applied_locale: zh`. These are the same inspected captures; no image, source hash, or capture state was replaced.

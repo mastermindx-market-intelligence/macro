@@ -1,0 +1,291 @@
+{
+  "observed_at": "2026-10-14T01:52:04.718680+00:00",
+  "head": "55cf7d01e9ae1a306cd7f7b3c1de71f6c741f1ec",
+  "plan": {
+    "schema": "press.external_candidate_plan.v1",
+    "operation": "planning_only",
+    "candidate_id": "press-external-38fd7e103e6f",
+    "source_ref": "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+    "feed_sha256": "16f504bdb14bc85c9efc16dadaa7ee3bb152cc09b3556bfb4d898396a47831e6",
+    "qualification_sha256": "3b0745bc924394750c0e5767c5d36656e9bab5a7ec5f0ca426c74add45e26240",
+    "source_revisions": {
+      "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000": "sha256:16f504bdb14bc85c9efc16dadaa7ee3bb152cc09b3556bfb4d898396a47831e6",
+      "artifact:data/market_state/latest.json": "sha256:fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+      "artifact:site/basketdata/fear_greed.json": "sha256:c2e205b1c5739bca90b5702336f8be64275f7f833cb0538d944c4537b43ecdaa",
+      "artifact:data/risk_radar/forward_log.jsonl": "sha256:86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0"
+    },
+    "event_date": "2026-10-13",
+    "published_at": "2026-10-13T20:15:00+00:00",
+    "blocked_by_existing_coverage": false,
+    "cadence_per_day": 2,
+    "cadence_consumed": false,
+    "validation_context": {
+      "publication": "mastermind_news",
+      "byline": "The Brief \u2014 Mastermind News desk",
+      "min_words": 300,
+      "max_words": 600,
+      "min_anchored_receipts": 5,
+      "desk": "brief",
+      "as_of": "2026-10-14",
+      "facts": [
+        {
+          "text": "$750 million civil money penalty against Bank of America, N.A. (bank), for violations of the Bank Secrecy Act and its implementing regulations",
+          "values": [
+            "750"
+          ],
+          "tier": "third_party",
+          "ref": "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+          "dated": "2026-10-13",
+          "source_name": "Office of the Comptroller of the Currency"
+        },
+        {
+          "id": "market_state_score",
+          "text": "Mastermind's market-state composite reads 50 of 100 (MIXED) as of 2026-10-12.",
+          "ref": "artifact:data/market_state/latest.json",
+          "tier": "first_party",
+          "values": [
+            "50"
+          ],
+          "url": null,
+          "source_name": "Mastermind market-state engine",
+          "dated": "2026-10-12",
+          "receipt": "sha256:fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+          "context_relevance": "Dated pre-enforcement broad-market composite distinguishes the existing backdrop from the newly announced bank-specific action. It cannot explain BAC price changes."
+        },
+        {
+          "id": "market_state_risk",
+          "text": "Market-state component Risk appetite scores 27 (weight 0.18).",
+          "ref": "artifact:data/market_state/latest.json",
+          "tier": "first_party",
+          "values": [
+            "27",
+            "0.18"
+          ],
+          "url": null,
+          "source_name": "Mastermind market-state engine",
+          "dated": "2026-10-12",
+          "receipt": "sha256:fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+          "context_relevance": "Dated broad risk-appetite measurement, used only to describe conditions preceding the agency action, never a bank-specific solvency or credit measure."
+        },
+        {
+          "id": "market_state_vol",
+          "text": "Market-state component volatility backdrop scores 84 (weight 0.16).",
+          "ref": "artifact:data/market_state/latest.json",
+          "tier": "first_party",
+          "values": [
+            "84",
+            "0.16"
+          ],
+          "url": null,
+          "source_name": "Mastermind market-state engine",
+          "dated": "2026-10-12",
+          "receipt": "sha256:fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+          "context_relevance": "Dated normalized volatility component, not a volatility percentage or a prediction of BAC moves; separates broad conditions from the enforcement event."
+        },
+        {
+          "id": "fear_greed",
+          "text": "The Mastermind fear/greed dial reads 52 (Neutral) as of 2026-10-12, built from 11 qualifying legs.",
+          "ref": "artifact:site/basketdata/fear_greed.json",
+          "tier": "first_party",
+          "values": [
+            "52",
+            "11"
+          ],
+          "url": null,
+          "source_name": "Mastermind sentiment engine",
+          "dated": "2026-10-12",
+          "receipt": "sha256:c2e205b1c5739bca90b5702336f8be64275f7f833cb0538d944c4537b43ecdaa",
+          "context_relevance": "Dated broad sentiment measurement provides a separately computed pre-event baseline. It is not investor reaction to this announcement."
+        },
+        {
+          "id": "risk_radar",
+          "text": "The risk radar is in `caution` with rates the dominant scare (score 70.3); modelled 21-session drawdown probability 0.19 as of 2026-10-12.",
+          "ref": "artifact:data/risk_radar/forward_log.jsonl",
+          "tier": "first_party",
+          "values": [
+            "70.3",
+            "0.19",
+            "0.1",
+            "0.042"
+          ],
+          "url": null,
+          "source_name": "Mastermind risk radar",
+          "dated": "2026-10-12",
+          "receipt": "sha256:86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0",
+          "context_relevance": "Dated broad risk model identifies rates as the existing macro pressure. It does not quantify BAC regulatory exposure or attribute any price change to the fine."
+        }
+      ],
+      "raw_documents": [
+        {
+          "ref": "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+          "text": "The Office of the Comptroller of the Currency (OCC) today announced a $750 million civil money penalty against Bank of America, N.A. (bank), for violations of the Bank Secrecy Act and its implementing regulations, including 12 CFR 21.21 and 12 CFR 21.11. This amount is the largest in OCC history."
+        }
+      ],
+      "primary_source": {
+        "kind": "external",
+        "name": "Office of the Comptroller of the Currency",
+        "url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html"
+      },
+      "allowed_links": [
+        "https://www.mastermind-x.com/stocks/BAC.html"
+      ]
+    },
+    "allow_stage": false,
+    "allow_emit": false,
+    "publication_approved": false
+  },
+  "slot": {
+    "publication": "mastermind_news",
+    "byline": "The Brief \u2014 Mastermind News desk",
+    "min_words": 300,
+    "max_words": 600,
+    "min_anchored_receipts": 5,
+    "desk": "brief",
+    "as_of": "2026-10-14",
+    "facts": [
+      {
+        "text": "$750 million civil money penalty against Bank of America, N.A. (bank), for violations of the Bank Secrecy Act and its implementing regulations",
+        "values": [
+          "750"
+        ],
+        "tier": "third_party",
+        "ref": "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+        "dated": "2026-10-13",
+        "source_name": "Office of the Comptroller of the Currency"
+      },
+      {
+        "id": "market_state_score",
+        "text": "Mastermind's market-state composite reads 50 of 100 (MIXED) as of 2026-10-12.",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "50"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-12",
+        "receipt": "sha256:fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+        "context_relevance": "Dated pre-enforcement broad-market composite distinguishes the existing backdrop from the newly announced bank-specific action. It cannot explain BAC price changes."
+      },
+      {
+        "id": "market_state_risk",
+        "text": "Market-state component Risk appetite scores 27 (weight 0.18).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "27",
+          "0.18"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-12",
+        "receipt": "sha256:fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+        "context_relevance": "Dated broad risk-appetite measurement, used only to describe conditions preceding the agency action, never a bank-specific solvency or credit measure."
+      },
+      {
+        "id": "market_state_vol",
+        "text": "Market-state component volatility backdrop scores 84 (weight 0.16).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "84",
+          "0.16"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-12",
+        "receipt": "sha256:fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+        "context_relevance": "Dated normalized volatility component, not a volatility percentage or a prediction of BAC moves; separates broad conditions from the enforcement event."
+      },
+      {
+        "id": "fear_greed",
+        "text": "The Mastermind fear/greed dial reads 52 (Neutral) as of 2026-10-12, built from 11 qualifying legs.",
+        "ref": "artifact:site/basketdata/fear_greed.json",
+        "tier": "first_party",
+        "values": [
+          "52",
+          "11"
+        ],
+        "url": null,
+        "source_name": "Mastermind sentiment engine",
+        "dated": "2026-10-12",
+        "receipt": "sha256:c2e205b1c5739bca90b5702336f8be64275f7f833cb0538d944c4537b43ecdaa",
+        "context_relevance": "Dated broad sentiment measurement provides a separately computed pre-event baseline. It is not investor reaction to this announcement."
+      },
+      {
+        "id": "risk_radar",
+        "text": "The risk radar is in `caution` with rates the dominant scare (score 70.3); modelled 21-session drawdown probability 0.19 as of 2026-10-12.",
+        "ref": "artifact:data/risk_radar/forward_log.jsonl",
+        "tier": "first_party",
+        "values": [
+          "70.3",
+          "0.19",
+          "0.1",
+          "0.042"
+        ],
+        "url": null,
+        "source_name": "Mastermind risk radar",
+        "dated": "2026-10-12",
+        "receipt": "sha256:86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0",
+        "context_relevance": "Dated broad risk model identifies rates as the existing macro pressure. It does not quantify BAC regulatory exposure or attribute any price change to the fine."
+      }
+    ],
+    "raw_documents": [
+      {
+        "ref": "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+        "text": "The Office of the Comptroller of the Currency (OCC) today announced a $750 million civil money penalty against Bank of America, N.A. (bank), for violations of the Bank Secrecy Act and its implementing regulations, including 12 CFR 21.21 and 12 CFR 21.11. This amount is the largest in OCC history."
+      }
+    ],
+    "primary_source": {
+      "kind": "external",
+      "name": "Office of the Comptroller of the Currency",
+      "url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html"
+    },
+    "allowed_links": [
+      "https://www.mastermind-x.com/stocks/BAC.html"
+    ],
+    "id": "press-official-cd2747adeed2",
+    "cluster": "market-brief",
+    "model_key": "press_brief",
+    "story": {
+      "kind": "official_feed",
+      "event_date": "2026-10-13"
+    },
+    "sources": [
+      "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+      "official_feed:url:cd2747adeed2"
+    ],
+    "source_revisions": {
+      "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000": "sha256:16f504bdb14bc85c9efc16dadaa7ee3bb152cc09b3556bfb4d898396a47831e6",
+      "artifact:data/market_state/latest.json": "sha256:fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+      "artifact:site/basketdata/fear_greed.json": "sha256:c2e205b1c5739bca90b5702336f8be64275f7f833cb0538d944c4537b43ecdaa",
+      "artifact:data/risk_radar/forward_log.jsonl": "sha256:86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0"
+    },
+    "seed_refs": [
+      "artifact:data/market_state/latest.json",
+      "artifact:data/risk_radar/forward_log.jsonl",
+      "artifact:site/basketdata/fear_greed.json",
+      "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000"
+    ],
+    "chronicle_context": {
+      "lines": [],
+      "narratives": [],
+      "budget_used": 0,
+      "coverage": {
+        "start": null,
+        "end": null,
+        "note": "official candidate rail: no chronicle context injected"
+      }
+    },
+    "slug_hint": "official-38fd7e103e6f"
+  },
+  "prompt_sha256": "3f8bc4e9d5fcc37b65ab93f1e50f28c2895147443f50cd82f058a7780bd20df1",
+  "estimated_prompt_tokens": 1968,
+  "context_limits_preserved": 5,
+  "utc_brief_cadence": [
+    0,
+    2
+  ],
+  "provider_calls": 0,
+  "publication_approved": false
+}

@@ -13,11 +13,11 @@
   },
   "browser": {
     "engine": "chromium",
-    "version": "153.0.8010.12"
+    "version": "149.0.7827.55"
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-    "sha256": "bba21083cada7b94ef298111325cffaf8bfa3ace308c79caeafae3118f2a4c31"
+    "sha256": "163289d4d9e1a5223d9c3fbc8686be52e816020797a6ab86105a55d8bef5a687"
   },
   "fixture_assets_root": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
   "fixture_market": "ca",
@@ -75,13 +75,13 @@
   "input_html": {
     "path": "canada_stocks.html",
     "route": "/canada_stocks.html",
-    "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+    "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
   },
   "rendered_owner_cases": {
     "normal": {
       "route": "/canada_stocks.html",
       "output": "canada_stocks.html",
-      "output_sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734",
+      "output_sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f",
       "owner_population": {
         "board": 9,
         "intersection": [],
@@ -149,7 +149,7 @@
     "watch-only": {
       "route": "/canada_stocks.html",
       "output": "canada_stocks.watch-only.html",
-      "output_sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1",
+      "output_sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817",
       "owner_population": {
         "board": 0,
         "intersection": [],
@@ -207,7 +207,7 @@
     "null-buy": {
       "route": "/canada_stocks.html",
       "output": "canada_stocks.null-buy.html",
-      "output_sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa",
+      "output_sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291",
       "owner_population": {
         "board": null,
         "intersection": null,
@@ -273,7 +273,7 @@
     "templates/_icons.html.j2": "91e9ed18b6423b41793062ccde2406222b66f646f6f3928f272e71318c9e0dab",
     "templates/_lens.html.j2": "1d6bbb2ff780b60a2fcd0397e7c94305e1a7f996ae76c517c4562385ccdc19ea",
     "templates/_market_state.css.j2": "16f285a8a6857f6627ec756b7fbfc9009c130c8e6e6275b7438855f90d421a6c",
-    "templates/_navlinks.html.j2": "5318e6f11db80e225707cd02b0776f590c3defcaf6aaca81085e9bd956981242",
+    "templates/_navlinks.html.j2": "b775437c3231eb0e6236417f9a6dac4a193460d9fffb8e90cb8e50d180814dc3",
     "templates/_prophet_card.html.j2": "e8d875372e984f8f6b2da7ce5a19e7378b38697ba039c23e051c4d8447fa6e27",
     "templates/_risk_radar_card.css.j2": "203f682068ae42ae254a857cc572e962198623ba84123ba3a6527b373feedaa5",
     "templates/_risk_radar_card.html.j2": "5cf0265f3335234f32a3c4e8901c2a360c9eb86013f2d92d2935b125fff8da68",
@@ -281,15 +281,15 @@
     "templates/_risk_radar_dlg.html.j2": "39bcfc476d735343bb72f582691bfb8e9dc9d085191f0a181d98e23422a19c3e",
     "templates/_risk_radar_pullback_depth.html.j2": "c4d2f15e41a86afaa51d509a98285e19fe49432634c8a3e8c7acc4b47d4f6d08",
     "templates/_seo_head.html.j2": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
-    "templates/_site_nav.html.j2": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482",
-    "templates/canada.html.j2": "878237e4c3d0bef90c2fce108b64cf859d8f67783dede4f77881392c2d1eb7e5"
+    "templates/_site_nav.html.j2": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
+    "templates/canada.html.j2": "b98d20bf1994d32b617493ec86ffbcf984cdcafc513afdf4d523535b054b67c9"
   },
   "loaded_assets": {
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/baskets.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/sector_pulse_canada.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
-    "site/account.js": "2f1dd80e7696ffecd308519877f82421745c14d8ead9b76904190091c194152c",
+    "site/account.js": "c1732806e5acbc4c91ac183fee873772108eb6abce433d6e17e9601d4ed5a260",
     "site/canada-stock-v36.js": "b7ba336ddf9955585eacf0a18d07652249d2d2b9da8393c083bd7a9a416f41c0",
     "site/chart_i18n.js": "23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315",
     "site/charts.js": "84a794395899da373f00ae59374aab93c3a41aee56ac55e973f2f960e95ed47c",
@@ -307,15 +307,15 @@
     "site/live_config.js": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
     "site/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
     "site/mtf.js": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0",
-    "site/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
-    "site/navigation-refresh.css": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+    "site/nav_market.js": "4e9012bb4b463ff19c308263d0229112c345f72c2f4ada4496c55443a92bdb12",
+    "site/navigation-refresh.css": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
     "site/product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
     "site/stock-dashboard.css": "3906781820560cb6b11a3fbc61239babcbf43fa0d6ef61d7ae08b1f9b8eac1a0",
     "site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
-    "site/stocktable.js": "c5387799d9ba5988f4b8859eb34d8fac3f91e36584ba78e567a2384c083eb22c",
-    "site/tablesort.js": "dc424cb1c002a92c4e2e0b38771ef501960040fc372daeaf6777142f0013f8e0",
-    "site/theme.css": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2",
-    "site/theme.js": "80c7061d17e8718283adcd4913ca5becddf43a3a232e5624b6cedd7ff8c09f79"
+    "site/stocktable.js": "94935dc10fad8ab399bdcd419f99e208ea101436c56e1f6026683b5698feb0fb",
+    "site/tablesort.js": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42",
+    "site/theme.css": "29ec9caa2e2b8496a39ae2731eb228805bd28e8ad680bd7b0a549bbe3adc5f4e",
+    "site/theme.js": "2454e0ca4e277ffbde5b07c13f3c1454d2836c3da87f3c111683a1fa6481adef"
   },
   "viewport": {
     "width": 390,
@@ -2475,7 +2475,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": "954b75b0f91a1b8912df9360301694530c9aeff706e211a2001e460bc1af59c2",
@@ -2920,14 +2920,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"en\" data-lang=\"en\" data-theme=\"dark\">",
-          "source_sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734",
-          "output_sha256": "b1a801b2a84fd7485455dd297eeda92a4f1a0e078811031723e1ce4a551e70ba",
-          "output_bytes": 235054
+          "source_sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f",
+          "output_sha256": "30991f19296107c3bfd58f38b800429726131ff6abff43540b8fd894fffb6c4d",
+          "output_bytes": 235846
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -3065,7 +3065,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -3285,14 +3285,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"en\" data-lang=\"en\" data-theme=\"dark\">",
-          "source_sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1",
-          "output_sha256": "bc4c6f39e2ed93cdfd3a55efc03190a29d712165e591a3d83ab3bdae8cbb927a",
-          "output_bytes": 202799
+          "source_sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817",
+          "output_sha256": "734b5485646ac159bb406642894875c2e915ebe338cef1882af2f3672d422e09",
+          "output_bytes": 203591
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -3414,7 +3414,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -3537,14 +3537,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"en\" data-lang=\"en\" data-theme=\"dark\">",
-          "source_sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa",
-          "output_sha256": "074654a90ae79771032adf50d5476f809f26b4925c9b9d7926c5d46adca78817",
-          "output_bytes": 202761
+          "source_sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291",
+          "output_sha256": "57fc40162795bcfff60acb4c65f125341dfa2418f35c78398805e2007a35fad0",
+          "output_bytes": 203553
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -3666,7 +3666,7 @@
         "composer": "failed",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -3789,7 +3789,7 @@
         "composer": "pending",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -3912,7 +3912,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": "954b75b0f91a1b8912df9360301694530c9aeff706e211a2001e460bc1af59c2",
@@ -4357,14 +4357,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"en\" data-lang=\"en\" data-theme=\"dark\">",
-          "source_sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734",
-          "output_sha256": "b1a801b2a84fd7485455dd297eeda92a4f1a0e078811031723e1ce4a551e70ba",
-          "output_bytes": 235054
+          "source_sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f",
+          "output_sha256": "30991f19296107c3bfd58f38b800429726131ff6abff43540b8fd894fffb6c4d",
+          "output_bytes": 235846
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -4502,7 +4502,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -4722,14 +4722,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"en\" data-lang=\"en\" data-theme=\"dark\">",
-          "source_sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1",
-          "output_sha256": "bc4c6f39e2ed93cdfd3a55efc03190a29d712165e591a3d83ab3bdae8cbb927a",
-          "output_bytes": 202799
+          "source_sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817",
+          "output_sha256": "734b5485646ac159bb406642894875c2e915ebe338cef1882af2f3672d422e09",
+          "output_bytes": 203591
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -4851,7 +4851,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -4974,14 +4974,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"en\" data-lang=\"en\" data-theme=\"dark\">",
-          "source_sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa",
-          "output_sha256": "074654a90ae79771032adf50d5476f809f26b4925c9b9d7926c5d46adca78817",
-          "output_bytes": 202761
+          "source_sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291",
+          "output_sha256": "57fc40162795bcfff60acb4c65f125341dfa2418f35c78398805e2007a35fad0",
+          "output_bytes": 203553
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -5103,7 +5103,7 @@
         "composer": "failed",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -5226,7 +5226,7 @@
         "composer": "pending",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -5349,7 +5349,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": "954b75b0f91a1b8912df9360301694530c9aeff706e211a2001e460bc1af59c2",
@@ -5794,14 +5794,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"en\" data-lang=\"en\" data-theme=\"light\">",
-          "source_sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734",
-          "output_sha256": "d4c35a203f7f6268d6cacca41793dab72c1e5ab46cf045d277bf8941b061ccde",
-          "output_bytes": 235055
+          "source_sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f",
+          "output_sha256": "5728f40a3b9619ba66f7551975a91bfc234eb1a67018ec27fbd6d0a3c8d7a7ff",
+          "output_bytes": 235847
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -5939,7 +5939,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -6159,14 +6159,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"en\" data-lang=\"en\" data-theme=\"light\">",
-          "source_sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1",
-          "output_sha256": "4b8a5088888f34a471bfd6545744720e3e381042d9f2df6c87fdb972496172c7",
-          "output_bytes": 202800
+          "source_sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817",
+          "output_sha256": "3be87b8420d056d274ec5ce05c0dd475885c7a2b0d3353304a166ded63d81a5d",
+          "output_bytes": 203592
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -6288,7 +6288,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -6411,14 +6411,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"en\" data-lang=\"en\" data-theme=\"light\">",
-          "source_sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa",
-          "output_sha256": "892dec50b7537a62019db4b24a3fc79d96f25e07b4c41824c9498ca800fbba28",
-          "output_bytes": 202762
+          "source_sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291",
+          "output_sha256": "5f08a032c60a0ce581bf6b1e1031590ccf34d5aca5a27456f9b5a85a80690fe4",
+          "output_bytes": 203554
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -6540,7 +6540,7 @@
         "composer": "failed",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -6663,7 +6663,7 @@
         "composer": "pending",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -6786,7 +6786,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": "954b75b0f91a1b8912df9360301694530c9aeff706e211a2001e460bc1af59c2",
@@ -7231,14 +7231,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"en\" data-lang=\"en\" data-theme=\"light\">",
-          "source_sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734",
-          "output_sha256": "d4c35a203f7f6268d6cacca41793dab72c1e5ab46cf045d277bf8941b061ccde",
-          "output_bytes": 235055
+          "source_sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f",
+          "output_sha256": "5728f40a3b9619ba66f7551975a91bfc234eb1a67018ec27fbd6d0a3c8d7a7ff",
+          "output_bytes": 235847
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -7376,7 +7376,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -7596,14 +7596,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"en\" data-lang=\"en\" data-theme=\"light\">",
-          "source_sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1",
-          "output_sha256": "4b8a5088888f34a471bfd6545744720e3e381042d9f2df6c87fdb972496172c7",
-          "output_bytes": 202800
+          "source_sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817",
+          "output_sha256": "3be87b8420d056d274ec5ce05c0dd475885c7a2b0d3353304a166ded63d81a5d",
+          "output_bytes": 203592
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -7725,7 +7725,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -7848,14 +7848,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"en\" data-lang=\"en\" data-theme=\"light\">",
-          "source_sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa",
-          "output_sha256": "892dec50b7537a62019db4b24a3fc79d96f25e07b4c41824c9498ca800fbba28",
-          "output_bytes": 202762
+          "source_sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291",
+          "output_sha256": "5f08a032c60a0ce581bf6b1e1031590ccf34d5aca5a27456f9b5a85a80690fe4",
+          "output_bytes": 203554
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -7977,7 +7977,7 @@
         "composer": "failed",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -8100,7 +8100,7 @@
         "composer": "pending",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -8223,7 +8223,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": "954b75b0f91a1b8912df9360301694530c9aeff706e211a2001e460bc1af59c2",
@@ -8668,14 +8668,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"zh\" data-lang=\"zh\" data-theme=\"dark\">",
-          "source_sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734",
-          "output_sha256": "13fb1690d1f386692277744a873de256772f076d9a8880d9ddb2615bd02fe4e0",
-          "output_bytes": 235054
+          "source_sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f",
+          "output_sha256": "3d10aa9fbc48bb36cfc2ffcbaf21e6f175bdcb98376712b491ae66aeefb5a0cb",
+          "output_bytes": 235846
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -8813,7 +8813,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -9033,14 +9033,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"zh\" data-lang=\"zh\" data-theme=\"dark\">",
-          "source_sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1",
-          "output_sha256": "668f8d0aec4c3b8199b7923223e6696c8098a846c87e2be00da9f766a40ee179",
-          "output_bytes": 202799
+          "source_sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817",
+          "output_sha256": "7ba0f2fa30aeb7b648444f5b75341ae938697dda655455bb13357d174afd8105",
+          "output_bytes": 203591
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -9162,7 +9162,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -9285,14 +9285,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"zh\" data-lang=\"zh\" data-theme=\"dark\">",
-          "source_sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa",
-          "output_sha256": "824b1ff124d76e3a2f7f678319f1c4407279d4bb3c068a6013b300d19d30b66e",
-          "output_bytes": 202761
+          "source_sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291",
+          "output_sha256": "6a8a15b367a720567453340671385343a87c72066d2cf0a107c7ed9542bf994f",
+          "output_bytes": 203553
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -9414,7 +9414,7 @@
         "composer": "failed",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -9537,7 +9537,7 @@
         "composer": "pending",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -9660,7 +9660,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": "954b75b0f91a1b8912df9360301694530c9aeff706e211a2001e460bc1af59c2",
@@ -10105,14 +10105,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"zh\" data-lang=\"zh\" data-theme=\"dark\">",
-          "source_sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734",
-          "output_sha256": "13fb1690d1f386692277744a873de256772f076d9a8880d9ddb2615bd02fe4e0",
-          "output_bytes": 235054
+          "source_sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f",
+          "output_sha256": "3d10aa9fbc48bb36cfc2ffcbaf21e6f175bdcb98376712b491ae66aeefb5a0cb",
+          "output_bytes": 235846
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -10250,7 +10250,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -10470,14 +10470,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"zh\" data-lang=\"zh\" data-theme=\"dark\">",
-          "source_sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1",
-          "output_sha256": "668f8d0aec4c3b8199b7923223e6696c8098a846c87e2be00da9f766a40ee179",
-          "output_bytes": 202799
+          "source_sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817",
+          "output_sha256": "7ba0f2fa30aeb7b648444f5b75341ae938697dda655455bb13357d174afd8105",
+          "output_bytes": 203591
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -10599,7 +10599,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -10722,14 +10722,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"zh\" data-lang=\"zh\" data-theme=\"dark\">",
-          "source_sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa",
-          "output_sha256": "824b1ff124d76e3a2f7f678319f1c4407279d4bb3c068a6013b300d19d30b66e",
-          "output_bytes": 202761
+          "source_sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291",
+          "output_sha256": "6a8a15b367a720567453340671385343a87c72066d2cf0a107c7ed9542bf994f",
+          "output_bytes": 203553
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -10851,7 +10851,7 @@
         "composer": "failed",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -10974,7 +10974,7 @@
         "composer": "pending",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -11097,7 +11097,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": "954b75b0f91a1b8912df9360301694530c9aeff706e211a2001e460bc1af59c2",
@@ -11542,14 +11542,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"zh\" data-lang=\"zh\" data-theme=\"light\">",
-          "source_sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734",
-          "output_sha256": "f1c63604fbdf6b1f581b5dbf6aa600788623f169687d59071dcf0578bed2daee",
-          "output_bytes": 235055
+          "source_sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f",
+          "output_sha256": "ef137519c92de10f75e9c15ff382735d5b41ad35b61a9a7235bf654ea358278f",
+          "output_bytes": 235847
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -11687,7 +11687,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -11907,14 +11907,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"zh\" data-lang=\"zh\" data-theme=\"light\">",
-          "source_sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1",
-          "output_sha256": "b4cfdc3aa860708951b9d10854524820c62600b58784df775feac103d27d88b0",
-          "output_bytes": 202800
+          "source_sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817",
+          "output_sha256": "0128b0800ac177170eae8e418398738cef0d485a5972a90469df836c3d534976",
+          "output_bytes": 203592
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -12036,7 +12036,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -12159,14 +12159,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"zh\" data-lang=\"zh\" data-theme=\"light\">",
-          "source_sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa",
-          "output_sha256": "f0713dd6afde11091c04a202f3797bb4bf1541f3a36f19b23db815ecc43c2738",
-          "output_bytes": 202762
+          "source_sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291",
+          "output_sha256": "22bc84c37a27d83df508ff92b7b36ab19e856cb828162f645c6cd7e5871c8091",
+          "output_bytes": 203554
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -12288,7 +12288,7 @@
         "composer": "failed",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -12411,7 +12411,7 @@
         "composer": "pending",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -12534,7 +12534,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": "954b75b0f91a1b8912df9360301694530c9aeff706e211a2001e460bc1af59c2",
@@ -12979,14 +12979,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.html",
-          "sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734"
+          "sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"zh\" data-lang=\"zh\" data-theme=\"light\">",
-          "source_sha256": "e327f6233b52a305abff7c23d4ca7fd4cd293adb11464ff308e5ba0711e68734",
-          "output_sha256": "f1c63604fbdf6b1f581b5dbf6aa600788623f169687d59071dcf0578bed2daee",
-          "output_bytes": 235055
+          "source_sha256": "2e188a64c5610d9e365d522d35316182ae671c47742e8d93d112f2bd24f0ae7f",
+          "output_sha256": "ef137519c92de10f75e9c15ff382735d5b41ad35b61a9a7235bf654ea358278f",
+          "output_bytes": 235847
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -13124,7 +13124,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -13344,14 +13344,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"zh\" data-lang=\"zh\" data-theme=\"light\">",
-          "source_sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1",
-          "output_sha256": "b4cfdc3aa860708951b9d10854524820c62600b58784df775feac103d27d88b0",
-          "output_bytes": 202800
+          "source_sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817",
+          "output_sha256": "0128b0800ac177170eae8e418398738cef0d485a5972a90469df836c3d534976",
+          "output_bytes": 203592
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -13473,7 +13473,7 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -13596,14 +13596,14 @@
         "composer": "loaded",
         "source_html": {
           "output": "canada_stocks.null-buy.html",
-          "sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa"
+          "sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291"
         },
         "served_html_transform": {
           "classification": "browser_fixture_static_axis_only",
           "operation": "replace <html lang=\"en\"> with <html lang=\"zh\" data-lang=\"zh\" data-theme=\"light\">",
-          "source_sha256": "e847e4693fa22d9ac0f110d426d9d4dc1c55d3f699ebe34289024e64093032fa",
-          "output_sha256": "f0713dd6afde11091c04a202f3797bb4bf1541f3a36f19b23db815ecc43c2738",
-          "output_bytes": 202762
+          "source_sha256": "dcbd21596de9b7ad6727cf8b529df3052596cd22304f78795f962b36d3893291",
+          "output_sha256": "22bc84c37a27d83df508ff92b7b36ab19e856cb828162f645c6cd7e5871c8091",
+          "output_bytes": 203554
         },
         "membership_overlay_sha256": null,
         "transition": {
@@ -13725,7 +13725,7 @@
         "composer": "failed",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,
@@ -13848,7 +13848,7 @@
         "composer": "pending",
         "source_html": {
           "output": "canada_stocks.watch-only.html",
-          "sha256": "249aef19bbc197c12c7b35f37eeac28a3c29956c77a63be206f2bcfedc98c9b1"
+          "sha256": "67dffdef7dc69073ecd40baf3e5a1cedb7abf2e19cbd0549c1b1a6199926a817"
         },
         "served_html_transform": null,
         "membership_overlay_sha256": null,

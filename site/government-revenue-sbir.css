@@ -1,0 +1,6 @@
+/* Additive evidence geometry only; existing source/dossier materials own themes. */
+.gr-sbir { min-width:0; }
+.gr-sbir summary { min-height:44px; display:flex; align-items:center; font-size:var(--fs-sm); }
+.gr-sbir .limit-copy { overflow-wrap:anywhere; font-size:var(--fs-sm); }
+.gr-sbir .fact-cell b { white-space:normal; overflow-wrap:anywhere; }
+@media(max-width:620px) { .gr-sbir .facts-grid { grid-template-columns:minmax(0,1fr); } }

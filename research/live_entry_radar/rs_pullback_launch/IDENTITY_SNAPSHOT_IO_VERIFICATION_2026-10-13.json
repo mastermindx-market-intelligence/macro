@@ -1,0 +1,77 @@
+{
+  "evidence_class": "native file/Parquet adapter and unchanged identity-owner regression; not financial backtesting",
+  "parent": "WS:LIVE-ENTRY-RADAR / Macro #8649",
+  "base_sha": "7f1e4ede020b53b1d86b39642e9c88f334f0d61a",
+  "verified_at_utc": "2026-10-14T01:15:08.200240+00:00",
+  "new_adapter_tests": 42,
+  "unchanged_identity_tests": 212,
+  "total_passed": 254,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "test_command": "python3 -m pytest tests/test_entry_radar_identity_observation_snapshot.py tests/test_dataos_identity.py -q -p no:cacheprovider",
+  "source_sha256": {
+    "engine/entry_radar/replay/identity_observation_snapshot.py": "cf2c4a3acec875a9ee7fc3cdabcba3198ce3707a1f88a9f1b4b73631f54d87cb",
+    "tests/test_entry_radar_identity_observation_snapshot.py": "f13bdfd23126a972c92f644f8a6cdaaed807b3196d7e054ecf961f1fa6e59c58",
+    ".github/ci/legacy-jobs.yml": "1a9e00cef7185ad9a4a7f83b0715569365e4f37344002f825c78ab1200edb2d4"
+  },
+  "junit_sha256": "b189f2eea56183ac0a437f26117084cd7fab2e19a18b3bb7f7e7b46ee5bc17c4",
+  "mutation_controls": [
+    {
+      "mutation": "backdate_completion",
+      "test": "test_real_parquet_read_returns_existing_types_and_actual_clock",
+      "exit_code": 1,
+      "behavioral_test_detected": true,
+      "log_sha256": "ece20c2b2394df219509b92dd3972844fae23cc3c4cb24a31db3db0300cacd87"
+    },
+    {
+      "mutation": "allow_file_symlink",
+      "test": "test_symlink_boundary_refuses",
+      "exit_code": 1,
+      "behavioral_test_detected": true,
+      "log_sha256": "12dec7705e92e2d2344ec9eb7f7a52134add0c2655bbcbe825ce0784775ab7f3"
+    },
+    {
+      "mutation": "ignore_inflight_change",
+      "test": "test_file_growth_during_read_is_not_accepted",
+      "exit_code": 1,
+      "behavioral_test_detected": true,
+      "log_sha256": "99c8bc127bc39a8cb763f3d169bc3946f9985c1c149ce2f1563a5c15a8fea2d3"
+    },
+    {
+      "mutation": "omit_native_validation",
+      "test": "test_resealed_but_wrong_semantic_records_refuse",
+      "exit_code": 1,
+      "behavioral_test_detected": true,
+      "log_sha256": "b62e96aeeebf8ae6c39411a592a6590daca5d7c771c83634115b078b38fd777c"
+    },
+    {
+      "mutation": "truncate_nanoseconds",
+      "test": "test_nanosecond_timestamp_and_nullable_fields_preserve_meaning",
+      "exit_code": 1,
+      "behavioral_test_detected": true,
+      "log_sha256": "9e39d93e72e899e224d58cff9a7b1129abd16afd9fb43a3dd44eb5fc16b99c9f"
+    }
+  ],
+  "real_reference_observation": {
+    "started_at": "2026-10-14T01:05:01.892059+00:00",
+    "completed_at": "2026-10-14T01:05:02.604843+00:00",
+    "status": "REFUSED",
+    "error": "identity observations: snapshot owner context missing",
+    "source_data_unchanged": true,
+    "read_receipt_created": false,
+    "publisher_receipt_sha256": "a7481353bc7e21f8420772c7223749b971fb23e706ddd9cc244cf31bf2163b2b"
+  },
+  "initial_test_evidence": "four missing-behavior failures; the later duplicate-JSON assertion was corrected to verify the unchanged native outer error and its duplicate-key cause",
+  "ci_registered_job": "entry-radar-identity-snapshot",
+  "concrete_dependency_closure_missing": [],
+  "native_identity_or_publisher_changed": false,
+  "provider_acquisition": false,
+  "canonical_data_mutation": false,
+  "production_execution": false,
+  "historical_availability_claim": false,
+  "source_admitted": false,
+  "trading_authority": false,
+  "independent_review_performed": false,
+  "hosted_ci": "not yet run on this new source candidate"
+}

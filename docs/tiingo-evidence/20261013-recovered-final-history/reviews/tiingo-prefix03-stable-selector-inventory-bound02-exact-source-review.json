@@ -1,0 +1,42 @@
+{
+  "schema": "tiingo.prefix03.stable_selector_inventory_exact_source_review/v1",
+  "recorded_at_utc": "2026-10-13T11:43:21.600197+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "candidate": "tiingo-prefix03-stable-selector-inventory-bound02.py",
+  "candidate_sha256": "74f7320d0a2ccf1cbc13225dfd8345dcb3b85b5ac4c07721b10905fbf41b33c2",
+  "verdict": "PASS_BOUNDED_READONLY_SUPPLEMENT_SOURCE",
+  "superseded_candidate_remains_unexecuted_and_held": "447f226f2515ae7d0573ca4be5848cbd86acfb7dddf2dced72f3fa33e4d43429",
+  "prior_control_review_sha256": "7403ab4aff058d20a2dcb056d01ab9654c1ff8abb382ddd4d6e9ec0ed03d8fd6",
+  "reconciliation_sha256": "77b8699971806bc63f839fec280e2ba41d1d3bda669087acfa3c1f293cce7254",
+  "actual52142_parent_sha256": "86c4b2662826a7df698aea904bed0238259fb346b8b2d3e9af7e349734863c68",
+  "fixture_evidence_sha256": "da2e9728dc3fcca95d2a207654ea5ce1958f7e2e8563dac1a11f838cc589bd34",
+  "repaired_findings": {
+    "H1": "PASS: lstat rejects symlink/nonregular leaves, O_NOFOLLOW descriptor inode binds the hash to observed file, all ancestors must be real directories; absent slots and q03/coverage slots use true leaf absence; both selector passes compare digests and ancestor identities; temporary entries are preserved and inhibit continuation.",
+    "H2": "PASS: frozen map conflict checks merge original reconciliation inputs with self, reconciliation, exact actual52142 parent and launch/preflight/source pins; complete map checked before first and after second inventory; final diagnostic-free no-holder check follows second inventory; method records frozen SELF_SHA."
+  },
+  "review_verification": [
+    "Exact source and supplied fixture receipt hashes verified",
+    "AST parsed and compiled in memory without executing module or producing pyc",
+    "Offline projection of accepted preflight/reconciliation metadata yields 862 receipts, 3448 distinct selector slots:1072 present and2376 absent; present map exactly equals all accepted reconciliation projection hashes",
+    "Retained five fixture cases inspected: regular hash, true absence, live leaf symlink, dangling leaf symlink, symlink ancestor; no duplicate fixture or archive scan performed",
+    "Source contains only scoped read-only archive inventory and lsof observation plus exclusive evidence-file publication; no materializer/provider/credential/process-signal effects"
+  ],
+  "publication_review": "Fsynced temporary proof is atomically linked without replacement and directory synced; occupied final path fails without overwriting it. A later print/cleanup failure must be reconciled against retained exact proof, never converted to an invented native success.",
+  "execution_conditions": [
+    "Parent may execute this exact read-only supplement once through its existing carrier and consume actual return/output; this source PASS is not runtime completion",
+    "Continuation requires actual stable proof with no unexpected temporary entries, unchanged exact source/prerequisite and all 3448 selector states, successful diagnostic-free scoped no-holder observations, and assigning-root acceptance",
+    "Any temporary entry including a >256MiB unclassified item leaves same_prefix_continuation_stable_footprint_qualified false; no deletion or automatic repair is authorized",
+    "Original91287 exit and terminal chunk remain unknown and actual_original_terminal_return_consumed remains false",
+    "Reuse536/materialize326 ruling7403 remains unchanged; a separately reviewed continuation source and exact wrapper02 launch packet plus compatible coverage/closure are still required"
+  ],
+  "accepted_complete_count": 536,
+  "verified_missing_count": 326,
+  "new_continuation_launch_authorized_by_this_review": false,
+  "candidate_executed_by_reviewer": false,
+  "runtime_inventory_result_claimed": false,
+  "archive_writes": 0,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "process_signals": 0,
+  "children_dispatched": 0
+}

@@ -1,0 +1,210 @@
+{
+  "schema": "defense.live_browser_timing_bounds.v1",
+  "observed_at": "2026-10-16T02:34:54.928Z",
+  "source_merge": "1c430d9afaeccd20248e3fc50b57c8bba9571456",
+  "profile": {
+    "viewport": "390x844",
+    "latency_ms": 500,
+    "download_Bps": 200000,
+    "upload_Bps": 200000,
+    "cache": "Network cache disabled; existing signed-in Chrome profile; same tab reloaded",
+    "server": "actual installed production; reader warmth unmeasured"
+  },
+  "measurement": "Upper bound at supported browser metrics after two read-only DOM geometry observations and accessibility snapshot; not an injected first-ready or two-frame rAF timestamp",
+  "target_ms": 3000,
+  "samples": [
+    {
+      "sample": 1,
+      "upper_bound_ms": 3919.003,
+      "dom_content_loaded_ms": 2953.768,
+      "all_exact_values": true,
+      "all_in_viewport": true,
+      "navigation": {
+        "status": 200,
+        "encoding": "gzip",
+        "fromDiskCache": false,
+        "fromServiceWorker": false
+      },
+      "http_errors": [],
+      "network_failures": 0,
+      "event_truncated": false,
+      "event_has_more": false
+    },
+    {
+      "sample": 2,
+      "upper_bound_ms": 3922.308,
+      "dom_content_loaded_ms": 2229.799,
+      "all_exact_values": true,
+      "all_in_viewport": true,
+      "navigation": {
+        "status": 200,
+        "encoding": "gzip",
+        "fromDiskCache": false,
+        "fromServiceWorker": false
+      },
+      "http_errors": [],
+      "network_failures": 0,
+      "event_truncated": false,
+      "event_has_more": false
+    },
+    {
+      "sample": 3,
+      "upper_bound_ms": 4021.744,
+      "dom_content_loaded_ms": 2864.758,
+      "all_exact_values": true,
+      "all_in_viewport": true,
+      "navigation": {
+        "status": 200,
+        "encoding": "gzip",
+        "fromDiskCache": false,
+        "fromServiceWorker": false
+      },
+      "http_errors": [],
+      "network_failures": 0,
+      "event_truncated": false,
+      "event_has_more": false
+    },
+    {
+      "sample": 4,
+      "upper_bound_ms": 3207.675,
+      "dom_content_loaded_ms": 2250.853,
+      "all_exact_values": true,
+      "all_in_viewport": true,
+      "navigation": {
+        "status": 200,
+        "encoding": "gzip",
+        "fromDiskCache": false,
+        "fromServiceWorker": false
+      },
+      "http_errors": [],
+      "network_failures": 0,
+      "event_truncated": false,
+      "event_has_more": false
+    },
+    {
+      "sample": 5,
+      "upper_bound_ms": 3226.181,
+      "dom_content_loaded_ms": 2262.481,
+      "all_exact_values": true,
+      "all_in_viewport": true,
+      "navigation": {
+        "status": 200,
+        "encoding": "gzip",
+        "fromDiskCache": false,
+        "fromServiceWorker": false
+      },
+      "http_errors": [],
+      "network_failures": 0,
+      "event_truncated": false,
+      "event_has_more": false
+    },
+    {
+      "sample": 6,
+      "upper_bound_ms": 3204.882,
+      "dom_content_loaded_ms": 2267.936,
+      "all_exact_values": true,
+      "all_in_viewport": true,
+      "navigation": {
+        "status": 200,
+        "encoding": "gzip",
+        "fromDiskCache": false,
+        "fromServiceWorker": false
+      },
+      "http_errors": [],
+      "network_failures": 0,
+      "event_truncated": false,
+      "event_has_more": false
+    },
+    {
+      "sample": 7,
+      "upper_bound_ms": 3204.083,
+      "dom_content_loaded_ms": 2251.344,
+      "all_exact_values": true,
+      "all_in_viewport": true,
+      "navigation": {
+        "status": 200,
+        "encoding": "gzip",
+        "fromDiskCache": false,
+        "fromServiceWorker": false
+      },
+      "http_errors": [],
+      "network_failures": 0,
+      "event_truncated": false,
+      "event_has_more": false
+    },
+    {
+      "sample": 8,
+      "upper_bound_ms": 3176.491,
+      "dom_content_loaded_ms": 2249.336,
+      "all_exact_values": true,
+      "all_in_viewport": true,
+      "navigation": {
+        "status": 200,
+        "encoding": "gzip",
+        "fromDiskCache": false,
+        "fromServiceWorker": false
+      },
+      "http_errors": [],
+      "network_failures": 0,
+      "event_truncated": false,
+      "event_has_more": false
+    },
+    {
+      "sample": 9,
+      "upper_bound_ms": 3233.315,
+      "dom_content_loaded_ms": 2283.561,
+      "all_exact_values": true,
+      "all_in_viewport": true,
+      "navigation": {
+        "status": 200,
+        "encoding": "gzip",
+        "fromDiskCache": false,
+        "fromServiceWorker": false
+      },
+      "http_errors": [],
+      "network_failures": 0,
+      "event_truncated": false,
+      "event_has_more": false
+    },
+    {
+      "sample": 10,
+      "upper_bound_ms": 3223.91,
+      "dom_content_loaded_ms": 2273.975,
+      "all_exact_values": true,
+      "all_in_viewport": true,
+      "navigation": {
+        "status": 200,
+        "encoding": "gzip",
+        "fromDiskCache": false,
+        "fromServiceWorker": false
+      },
+      "http_errors": [],
+      "network_failures": 0,
+      "event_truncated": false,
+      "event_has_more": false
+    }
+  ],
+  "first_view": {
+    "issuer": "LMT",
+    "value": "4101 USD millions",
+    "period": "Reported segment sales \u00b7 2026Q2",
+    "scroll_top": 0
+  },
+  "limitations": [
+    "Page.addScriptToEvaluateOnNewDocument unsupported; no injected probe installed.",
+    "Read-only evaluation does not expose performance.now; supported Performance.getMetrics used.",
+    "FirstMeaningfulPaint not reported at observation; negative subtraction diagnostics normalized to unavailable, not timings.",
+    "Network windows may include preceding-load trailing responses; no per-navigation request-count or fan-out acceptance.",
+    "Concurrent local proof workload; no production concurrency or billed-cost claim.",
+    "Upper bounds above three seconds neither prove that target nor prove a true first-ready violation."
+  ],
+  "controls_restored": true,
+  "diagnostic_tab_closed": true,
+  "statistics": {
+    "median_ms": 3225.0455,
+    "p95_ms": 4021.744,
+    "max_ms": 4021.744,
+    "n": 10
+  },
+  "acceptance": "TIMING_BOUND_DIAGNOSTIC_ONLY; THREE_SECOND_TARGET_UNVERIFIED"
+}

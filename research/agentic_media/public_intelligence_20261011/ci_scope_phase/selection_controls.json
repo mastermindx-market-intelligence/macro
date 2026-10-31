@@ -1,0 +1,12 @@
+{
+  "leadership-rotation-contract": {
+    "all_dependency_paths_select": 42,
+    "unrelated_probe_paths_do_not_select": 3,
+    "existing_steps_preserved": true
+  },
+  "lr-rotation-evidence-modes": {
+    "all_dependency_paths_select": 68,
+    "unrelated_probe_paths_do_not_select": 3,
+    "existing_steps_preserved": true
+  }
+}

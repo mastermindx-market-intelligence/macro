@@ -1,0 +1,37 @@
+{
+  "merge_commit": "1c1411292d993d76bbe0eaaa38f636e5a170cbde",
+  "parents": [
+    "9bf0844268e290fda56197dc0950ffbaa3376ad9",
+    "00bf61fc699ca340f6000706f57a7c1ade78c479"
+  ],
+  "source_hash_changes": {
+    ".github/ci/legacy-jobs.yml": {
+      "expected": "a5a892abcfe034ea94cd8b4a87760637ec6c54d8b590922d18e52ace2458cb91",
+      "actual": "36373775d4423b766d7214ca3ba40d0e2a181200573b2e5685c121c094d700db"
+    }
+  },
+  "incoming_changed_jobs": [
+    "biocatalyst-history",
+    "biocatalyst-serving",
+    "conviction-profile",
+    "crypto-vector-r2-organs",
+    "fif-kernel-guards",
+    "fif-saved-research-notifications",
+    "flow-surface",
+    "grey-deer-pullback-stage1",
+    "market-memory-contract",
+    "nw-lobe-unfreeze",
+    "prophet-lab",
+    "public-render-fastlane",
+    "ticker-news-qbus",
+    "unrun-government-revenue-candidate-projection",
+    "unrun-government-revenue-grader",
+    "unrun-picks-boards",
+    "washout-turn-organ"
+  ],
+  "jobs_differing_from_main_except_neural_web": [],
+  "neural_web_preserved": true,
+  "conflicts": false,
+  "candidate_bytes_changed": false,
+  "working_tree_clean": true
+}

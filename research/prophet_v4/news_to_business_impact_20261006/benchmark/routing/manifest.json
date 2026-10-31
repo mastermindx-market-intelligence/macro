@@ -1,0 +1,161 @@
+{
+  "cases_sha256": "4c3c0fb3110b719d7c0f6db9e004e3c2fd8c0e780be7d11c2a787c1a7dd19eec",
+  "cells": {
+    "T1": {
+      "ambiguous": {
+        "drawn": 30,
+        "short": 0,
+        "target": 30
+      },
+      "negative": {
+        "drawn": 50,
+        "short": 0,
+        "target": 50
+      },
+      "no_change": {
+        "drawn": 15,
+        "short": 15,
+        "target": 30
+      },
+      "positive": {
+        "drawn": 90,
+        "short": 0,
+        "target": 90
+      }
+    },
+    "T2": {
+      "ambiguous": {
+        "drawn": 30,
+        "short": 0,
+        "target": 30
+      },
+      "negative": {
+        "drawn": 38,
+        "short": 12,
+        "target": 50
+      },
+      "no_change": {
+        "drawn": 13,
+        "short": 17,
+        "target": 30
+      },
+      "positive": {
+        "drawn": 90,
+        "short": 0,
+        "target": 90
+      }
+    },
+    "T3": {
+      "ambiguous": {
+        "drawn": 24,
+        "short": 6,
+        "target": 30
+      },
+      "negative": {
+        "drawn": 11,
+        "short": 39,
+        "target": 50
+      },
+      "no_change": {
+        "drawn": 3,
+        "short": 27,
+        "target": 30
+      },
+      "positive": {
+        "drawn": 90,
+        "short": 0,
+        "target": 90
+      }
+    }
+  },
+  "counters": {
+    "low_value": 4,
+    "outside_window": 7856,
+    "rights_refused": 0,
+    "unresolved_issuer": 1271
+  },
+  "economic_cluster": {
+    "reason": "economic_cluster callable not provided",
+    "status": "unchecked"
+  },
+  "folds": {
+    "f1": 87,
+    "f2": 83,
+    "f3": 112,
+    "f4": 112,
+    "f5": 90,
+    "prospective": 0
+  },
+  "manifest_sha256": "94e80a344c7056a60cb5522efb6a1e358420ef4d498b94e6e3d04fc795c11571",
+  "max_issuer_groups": {
+    "T1": 6,
+    "T2": 6,
+    "T3": 6
+  },
+  "megacap_share": {
+    "T1": 0.0972972972972973,
+    "T2": 0.0935672514619883,
+    "T3": 0.09375
+  },
+  "plan": {
+    "cell_targets": {
+      "ambiguous": 30,
+      "negative": 50,
+      "no_change": 30,
+      "positive": 90
+    },
+    "economic_cluster_cap": 0.25,
+    "folds": 5,
+    "indirect_transfer_min": 10,
+    "issuer_cap": 6,
+    "megacap_share_cap": 0.1,
+    "near_duplicate_min": 20,
+    "per_template": 200,
+    "prospective_from": null
+  },
+  "sampler_version": "ni-sampler-1",
+  "seed": 20261014,
+  "tag_quotas": {
+    "T1": {
+      "indirect_transfer": {
+        "drawn": 120,
+        "short": 0,
+        "target": 10
+      },
+      "near_duplicate": {
+        "drawn": 0,
+        "short": 20,
+        "target": 20
+      }
+    },
+    "T2": {
+      "indirect_transfer": {
+        "drawn": 132,
+        "short": 0,
+        "target": 10
+      },
+      "near_duplicate": {
+        "drawn": 0,
+        "short": 20,
+        "target": 20
+      }
+    },
+    "T3": {
+      "indirect_transfer": {
+        "drawn": 53,
+        "short": 0,
+        "target": 10
+      },
+      "near_duplicate": {
+        "drawn": 0,
+        "short": 20,
+        "target": 20
+      }
+    }
+  },
+  "tape_sha256": "bab574014865532c63977e44f12be0e8a3234ba9faa8253d2717e43d67580e17",
+  "window": {
+    "end": "2026-10-14",
+    "start": "2026-07-17"
+  }
+}

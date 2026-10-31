@@ -1,0 +1,433 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "investor-focus",
+        "spec": "investor-focus:focus([data-investor-evidence=\"interpretation\"] summary)",
+        "value": "[data-investor-evidence=\"interpretation\"] summary"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ],
+      "tablet": [
+        820,
+        1180
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-10-14T06:19:16Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "partial",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:58753/government_revenue.html/government_revenue.html",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:58753/government_revenue.html/government_revenue.html"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": null,
+        "by_viewport": {},
+        "console_error_count": 1,
+        "document_height_px": null,
+        "duplicate_heading_texts": null,
+        "elements_wider_than_viewport": null,
+        "heading_counts": null,
+        "horizontal_overflow": null,
+        "long_paragraph_count": null,
+        "measured_in": null,
+        "panel_count": null,
+        "payload_bytes_total": null,
+        "raw_slug_hit_count": null,
+        "raw_slug_hits": null,
+        "request_count": null,
+        "screenshot_completion": 0.0,
+        "section_count": null,
+        "source_present": null,
+        "todo_placeholder_hit_count": null,
+        "todo_placeholder_hits": null,
+        "visible_word_count": null
+      },
+      "page_id": "macro:government_revenue",
+      "registry_route": "/government_revenue.html",
+      "route": "/government_revenue.html",
+      "route_kind": "page",
+      "states": [
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": null,
+          "locale": "en",
+          "reason": "TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": "investor-focus",
+          "locale": "en",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": null,
+          "locale": "en",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": "investor-focus",
+          "locale": "en",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": null,
+          "locale": "zh",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": "investor-focus",
+          "locale": "zh",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": null,
+          "locale": "zh",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": "investor-focus",
+          "locale": "zh",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": null,
+          "locale": "en",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": "investor-focus",
+          "locale": "en",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": null,
+          "locale": "en",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": "investor-focus",
+          "locale": "en",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": null,
+          "locale": "zh",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": "investor-focus",
+          "locale": "zh",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "dark",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": null,
+          "locale": "zh",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": "investor-focus",
+          "locale": "zh",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "light",
+          "viewport": "tablet",
+          "viewport_height": 1180,
+          "viewport_width": 820
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": null,
+          "locale": "en",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": "investor-focus",
+          "locale": "en",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": null,
+          "locale": "en",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": "investor-focus",
+          "locale": "en",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": null,
+          "locale": "zh",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": "investor-focus",
+          "locale": "zh",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": null,
+          "locale": "zh",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390
+        },
+        {
+          "access": "anonymous",
+          "captured": false,
+          "force_state": "investor-focus",
+          "locale": "zh",
+          "reason": "page load failed on an earlier state, remaining states not attempted: TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/government_revenue.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/data/product_experience/page_registry.json",
+    "registry_rows": 331,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": "http://127.0.0.1:58753/government_revenue.html",
+    "kind": "base_url",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "unavailable: a live origin does not disclose the commit it is serving",
+    "site_dir": null
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 24,
+    "states_captured": 0
+  }
+}

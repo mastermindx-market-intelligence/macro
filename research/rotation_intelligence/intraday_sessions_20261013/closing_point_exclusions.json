@@ -1,0 +1,52 @@
+{
+  "clock_examples_without_prices": {
+    "AAPL": {
+      "basis": "regular",
+      "currency": "USD",
+      "source": "yahoo",
+      "source_utc": "2026-10-14T20:00:01+00:00"
+    },
+    "JNJ": {
+      "basis": "regular",
+      "currency": "USD",
+      "source": "yahoo",
+      "source_utc": "2026-10-14T20:00:02+00:00"
+    },
+    "MSFT": {
+      "basis": "regular",
+      "currency": "USD",
+      "source": "yahoo",
+      "source_utc": "2026-10-14T20:00:01+00:00"
+    },
+    "NVDA": {
+      "basis": "regular",
+      "currency": "USD",
+      "source": "yahoo",
+      "source_utc": "2026-10-14T20:00:00+00:00"
+    },
+    "SPY": {
+      "basis": "regular",
+      "currency": "USD",
+      "source": "yahoo",
+      "source_utc": "2026-10-14T20:00:00+00:00"
+    },
+    "XLK": {
+      "basis": "regular",
+      "currency": "USD",
+      "source": "yahoo",
+      "source_utc": "2026-10-14T20:00:00+00:00"
+    }
+  },
+  "code_commit": "046b3705ec3f042be03bf2333a7131e04acb660a",
+  "reason_counts": {
+    "after_source_regular_session": 610,
+    "before_source_regular_session": 2,
+    "point_qualified": 88,
+    "quote_absent": 2
+  },
+  "reason_total": 702,
+  "source_commit": "99f656615250e527aec8bcc2389a08b2e658ea90",
+  "source_session_date": "2026-10-14",
+  "source_sha256": "ef51fdd92bccd72e721af7452f2379e107cb1131e677b9626319d6d3550b772b",
+  "validation_scope": "point eligibility against regular-session boundaries, not detection or daytime feed coverage"
+}

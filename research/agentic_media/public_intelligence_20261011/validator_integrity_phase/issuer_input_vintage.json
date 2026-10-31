@@ -1,0 +1,59 @@
+[
+  {
+    "symbol": "NVDA",
+    "sha256": "06eca7a14a72cb613c867d6e228f813512d0ba179556ddae55b70b4e99a53058",
+    "shape": [
+      6973,
+      3
+    ],
+    "last_index": "2026-10-12 00:00:00",
+    "columns": [
+      "close_price",
+      "close",
+      "volume"
+    ],
+    "last_row": {
+      "close_price": 226.32000732421875,
+      "close": 226.32000732421875,
+      "volume": 70089000.0
+    }
+  },
+  {
+    "symbol": "BAC",
+    "sha256": "738992b0fd502f15112f9351f28dc126fe35442060b52ddf0eb03ffc606a27b7",
+    "shape": [
+      13524,
+      3
+    ],
+    "last_index": "2026-10-12 00:00:00",
+    "columns": [
+      "close_price",
+      "close",
+      "volume"
+    ],
+    "last_row": {
+      "close_price": 54.58000183105469,
+      "close": 54.58000183105469,
+      "volume": 23958800.0
+    }
+  },
+  {
+    "symbol": "SPY",
+    "sha256": "d98a3efbfbc0096beb9c223508ba4b7a536053521a49ffa57abbfa23da07b2ee",
+    "shape": [
+      8483,
+      3
+    ],
+    "last_index": "2026-10-12 00:00:00",
+    "columns": [
+      "close_price",
+      "close",
+      "volume"
+    ],
+    "last_row": {
+      "close_price": 778.0999755859375,
+      "close": 778.0999755859375,
+      "volume": 18639800.0
+    }
+  }
+]

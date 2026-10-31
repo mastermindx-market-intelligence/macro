@@ -1,0 +1,87 @@
+{# Pure optional IM02 chart markup. The data model MUST be created by
+   lib.intl_chart_publication and lib.intl_chart_geometry, not arbitrary JSON.
+   This component does not change the existing Compare publisher or controller.
+   It is intentionally opt-in pending the incumbent source integration. #}
+{% macro words(en, zh) -%}
+<span class="l-en" lang="en">{{ en|e }}</span><span class="l-zh" lang="zh">{{ zh|e }}</span>
+{%- endmacro %}
+{% macro render_source_charts(geometry, context_id, market_names) -%}
+{% if geometry.schema == 'intl-chart-geometry.v1' and geometry.cohorts %}
+<section class="intl-chart" data-im-chart-model="intl-chart-geometry.v1" data-im-chart-status="{{ geometry.status|e }}">
+  <header>
+    <h3>{{ words('Same starting point. Different paths.', '相同起点，不同走势。') }}</h3>
+    <p>{{ words('Price levels rebased to 100 at each observed start. Only identical calculation windows can share an axis.', '每组从可观测起点基准化至 100。仅相同计算区间的市场共用坐标轴。') }}</p>
+  </header>
+  <p data-im-chart-selection-unavailable hidden>
+    {{ words('Chart unavailable for these selected markets because source evidence or calculation windows do not align.', '由于数据来源依据或计算区间不一致，所选市场的图表暂不可用。') }}
+  </p>
+  {% set palette = ['var(--info)', 'var(--warn)', 'var(--down)', 'var(--up)'] %}
+  {% for cohort in geometry.cohorts %}
+    {% set identity = context_id ~ '-chart-' ~ cohort.id %}
+    <details{% if loop.first %} open{% endif %} data-im-chart-cohort="{{ cohort.id|e }}">
+      <summary>{{ words('Comparable group', '可比市场组') }} {{ loop.index }} · {{ cohort.paths|length }} {{ words('markets', '个市场') }}
+        · <time datetime="{{ cohort.window.start|e }}">{{ cohort.window.start[:10]|e }}</time>–
+        <time datetime="{{ cohort.window.end|e }}">{{ cohort.window.end[:10]|e }}</time>
+      </summary>
+      <figure>
+        <svg role="img" aria-labelledby="{{ identity|e }}-title {{ identity|e }}-desc"
+             width="100%"
+             viewBox="0 0 {{ cohort.width|e }} {{ cohort.height|e }}"
+             preserveAspectRatio="xMidYMid meet">
+          <title id="{{ identity|e }}-title">Rebased market performance / 市场基准化表现</title>
+          <desc id="{{ identity|e }}-desc">100 at the observed start; missing dates interrupt each line. / 可观测起点为 100；缺失数据中断曲线。</desc>
+          <line x1="0" y1="{{ cohort.baseline_y|e }}" x2="{{ cohort.width|e }}"
+                y2="{{ cohort.baseline_y|e }}" stroke="var(--muted)" stroke-width="1"
+                stroke-dasharray="5 5" />
+          <text x="4" y="{{ ([cohort.baseline_y - 8, 14]|max)|e }}" fill="var(--muted)" font-size="11">100</text>
+          {% for line in cohort.paths %}
+            {% set stroke = palette[(loop.index0) % (palette|length)] %}
+            {% for segment in line.segments %}
+              {% if segment.count > 1 %}
+                <path data-im-chart-series="{{ line.market_id|e }}"
+                      d="{{ segment.d|e }}" fill="none" stroke="{{ stroke|e }}"
+                      stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+              {% else %}
+                <circle data-im-chart-series="{{ line.market_id|e }}"
+                        cx="{{ segment.first_x|e }}" cy="{{ segment.first_y|e }}"
+                        r="3" fill="{{ stroke|e }}" />
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        </svg>
+        <figcaption>
+          {{ words('An interrupted path means data was not observed; no missing price or FX value was filled.', '曲线断开表示该日期未观测到数据；未填补缺失的价格或汇率。') }}
+        </figcaption>
+      </figure>
+      <table class="intl-compare__table" data-im-chart-data-table>
+        <caption>{{ words('Observed chart coverage', '图表观测覆盖情况') }}</caption>
+        <thead><tr>
+          <th scope="col">{{ words('Market', '市场') }}</th>
+          <th scope="col">{{ words('Observed', '已观测') }}</th>
+          <th scope="col">{{ words('Missing', '缺失') }}</th>
+        </tr></thead>
+        <tbody>
+          {% for line in cohort.paths %}
+            {% set name = market_names.get(line.market_id, {}) %}
+            <tr data-im-chart-table-market="{{ line.market_id|e }}">
+              <th scope="row">
+                <svg aria-hidden="true" width="18" height="12" viewBox="0 0 18 12">
+                  <line x1="0" y1="6" x2="17" y2="6"
+                        stroke="{{ palette[(loop.index0) % (palette|length)]|e }}" stroke-width="2.5" />
+                </svg>
+                {{ words(name.get('en', line.market_id), name.get('zh', line.market_id)) }}
+              </th>
+              <td>{{ line.observations|e }}</td>
+              <td>{{ line.gaps|e }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </details>
+  {% endfor %}
+  <p data-im-chart-benchmark-unavailable>
+    {{ words('S&P 500 benchmark not available: its source and comparison window have not been qualified.', '标普 500 基准不可用：其来源及比较区间尚未获得核验。') }}
+  </p>
+</section>
+{% endif %}
+{%- endmacro %}

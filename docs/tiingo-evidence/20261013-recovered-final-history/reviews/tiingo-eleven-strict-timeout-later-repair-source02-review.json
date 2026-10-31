@@ -1,0 +1,93 @@
+{
+  "schema": "tiingo.eleven_strict_timeout_later_repair_exact_source_and_plan_review/v1",
+  "recorded_at_utc": "2026-10-13T21:58:39.172843+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "source_file": "tiingo-eleven-strict-timeout-later-repair-prepared02.py",
+  "source_sha256": "ccb8c7f8cc3a0a78398fe6c5558c07538afb0eb7b79759760886a241476b0a72",
+  "plan_file": "eod-eleven-structured-timeout-later-repair01-20261013-01a12ab6-planned01.json",
+  "plan_sha256": "6ba7fe589671b99ed75a294cc204af98526872c8602d4b0c18f8fbe5de70b6ac",
+  "verdict": "PASS_EXACT_SOURCE_FOR_ONE_ATTENDED_VALIDATION_READY_WITH_FUTURE_ADMISSION_GATES",
+  "prior_source_review_sha256": "2797549000ef61d8678e1b4858f8f83d9773badb7bdc0434cfcc1b7ef5509c7f",
+  "eligibility_review_sha256": "abf8df6b21b979c546ec6c8a6fd43992aa4420674a2b684a5f01847c2de122dc",
+  "resolved_findings": {
+    "H1": "PASS: manifests/eod-bars added to shared four-root before/after snapshot and partial checks; post-quota snapshot enumerates the frozen four-root map.",
+    "H2": "PASS: require_true_absence uses lstat; result/scope/execution-log checked before READY and after final source/storage/quota checks immediately before exclusive log/scope publication and key read.",
+    "H3": "PASS: separate_later_repair_scope identifies purpose; prior_failures_retried is true/false from actual admissions when available and null when ledger unavailable; stale docstring corrected."
+  },
+  "verification": [
+    "Exact source01-to02 diff; unchanged plan SHA",
+    "AST parsed/compiled in memory, candidate module not executed",
+    "Six inert exact-helper absence cases: true absence accepted; regular file/live symlink/dangling symlink/directory/permission failure refused",
+    "Three exact settlement-expression cases: unavailable ledger->null, known zero admissions->false, known positive admissions->true",
+    "All other reviewed source/plan controls reused from source01 review; bounded input, exact11 selection, collector54b/TLS30, finite3d first-error drain and budget/rate/storage bounds unchanged"
+  ],
+  "absence_helper_tests": [
+    {
+      "case": "absent",
+      "accepted": true,
+      "pass": true
+    },
+    {
+      "case": "regular",
+      "accepted": false,
+      "pass": true
+    },
+    {
+      "case": "live_symlink",
+      "accepted": false,
+      "pass": true
+    },
+    {
+      "case": "dangling_symlink",
+      "accepted": false,
+      "pass": true
+    },
+    {
+      "case": "directory",
+      "accepted": false,
+      "pass": true
+    },
+    {
+      "case": "permission_error",
+      "accepted": false,
+      "pass": true
+    }
+  ],
+  "retry_fact_tests": [
+    {
+      "ledger_available": false,
+      "admissions": 0,
+      "prior_failures_retried": null,
+      "pass": true
+    },
+    {
+      "ledger_available": true,
+      "admissions": 0,
+      "prior_failures_retried": false,
+      "pass": true
+    },
+    {
+      "ledger_available": true,
+      "admissions": 1,
+      "prior_failures_retried": true,
+      "pass": true
+    }
+  ],
+  "admission_scope": "Parent may start this exact source once on the same foreground carrier solely through its attended validation/READY gate. It may advance to provider admission only after actual READY consumption by original root and the required fresh exact quota/namespace/source/custody/storage/output-slot gates pass in that same process. No blanket provider launch or automatic successor is granted.",
+  "required_future_actual_evidence": [
+    "Retain actual READY PID/run/root/source/plan/snapshot hash and genuine tool output; do not call the waiting process terminal0",
+    "Original root must explicitly accept the revised stage gate and bind that actual READY with its consumption receipt; fresh authenticated visible quota must follow READY and satisfy strict account/URL/age thresholds",
+    "Four namespaces must remain unchanged with no unknown partial; any receipt for selected symbols or occupied output slot requires same-operation reconciliation; source/carrier/archive and80GiB floor must still pass",
+    "One additional attempt maximum per exact window; lost result/unknown effect does not replenish allowance; preserve original10wave15/MYRUF failures and original22925/91287 unknown terminals",
+    "Actual capture result/native return and new raw/reader qualification/coverage/conservation still owed; zero provider admissions is not success for the11 request goal"
+  ],
+  "reviewer_candidate_execution": false,
+  "actual_READY_observed": false,
+  "actual_quota_consumption_observed": false,
+  "provider_admission_observed": false,
+  "archive_reads_or_writes": false,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "source_mutations": false,
+  "children_dispatched": 0
+}

@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-10-14T01:05:06.622294+00:00",
+  "head": "30ce8ed68e64cac645ca6249b83e212cd8315dfc",
+  "integrated_main": "a3f3afa1e1268908a54263043f21048c1b5bc1b4",
+  "affected_tests": "359 passed in 109.10s",
+  "source_bindings": 23,
+  "source_drift": false,
+  "capacity": {
+    "observed_at": "2026-10-14T01:02:13.293505+00:00",
+    "counts": {
+      "queued": 0,
+      "in_progress": 10,
+      "pending": 0,
+      "requested": 0,
+      "waiting": 0
+    },
+    "total": 10,
+    "cap": 8,
+    "leases": [
+      {
+        "headRefOid": "d3d0bef7c00508c3846cfd327303d6cefc768e62",
+        "number": 9077,
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9077"
+      }
+    ]
+  },
+  "release_pr": null,
+  "contract_scan": "running after real protected-main CI manifest change",
+  "active_worker": "mmx-press-official-staging-20261013-001",
+  "publication_approved": false
+}

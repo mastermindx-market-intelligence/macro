@@ -1,6 +1,6 @@
 {
   "schema": "seo_work_orders.v1",
-  "as_of": "2026-10-11T19:22:24Z",
+  "as_of": "2026-10-26T03:20:58Z",
   "orders": [
     {
       "id": "missing_description",
@@ -55,11 +55,11 @@
       "pages": [
         "baskets.html",
         "baskets_china.html",
-        "baskets_china_ths.html",
         "btc_strategy.html",
         "flow_desk.html",
         "flow_leaders.html",
         "gex.html",
+        "movers.html",
         "options_screener.html",
         "subsector_rotation.html",
         "subsector_rotation_china.html"
@@ -123,13 +123,14 @@
       "class": "desc_length",
       "severity": "medium",
       "pages": [
+        "crypto.html",
         "macro_capital_structure.html",
         "macro_consumer_payments.html",
         "macro_monetary.html",
         "sanctions_map.html",
         "stock_seasonality.html"
       ],
-      "pages_count": 5,
+      "pages_count": 6,
       "suggested_fix": "Adjust description length to 50-170 chars",
       "falsifiable_check": "Measure len(desc) for each page; assert 50 <= len <= 170"
     },
@@ -140,10 +141,11 @@
       "class": "title_length",
       "severity": "medium",
       "pages": [
+        "consumer_cyclical_plnt.html",
         "stock_seasonality.html",
         "watchlist.html"
       ],
-      "pages_count": 2,
+      "pages_count": 3,
       "suggested_fix": "Adjust title length to 15-70 chars",
       "falsifiable_check": "Measure len(title) for each page; assert 15 <= len <= 70"
     },
@@ -174,8 +176,21 @@
       "falsifiable_check": "grep '<html' in page — should include lang= attribute"
     },
     {
-      "id": "page_weight",
+      "id": "brand_facts_stale",
       "priority": 11,
+      "title": "Refresh brand-facts.json (>90 days stale)",
+      "class": "brand_facts_stale",
+      "severity": "low",
+      "pages": [
+        "brand-facts.json"
+      ],
+      "pages_count": 1,
+      "suggested_fix": "Refresh brand-facts.json (>90 days stale)",
+      "falsifiable_check": "effective_at in brand-facts.json is within 90 days"
+    },
+    {
+      "id": "page_weight",
+      "priority": 12,
       "title": "Reduce HTML page weight to <2.5 MB",
       "class": "page_weight",
       "severity": "low",

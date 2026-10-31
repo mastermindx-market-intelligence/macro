@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-10-13",
+  "as_of": "2026-10-30",
   "bottleneck": {
     "accounts": [],
     "basis": "raw_counts",
@@ -41,7 +41,7 @@
   ],
   "n_floor": 20,
   "n_rows": 0,
-  "n_rows_all_time": 296,
+  "n_rows_all_time": 416,
   "north_star": {
     "active": false,
     "follower_floor": 250,

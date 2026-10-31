@@ -1,0 +1,20 @@
+{
+  "schema": "defense.v13.parent_visual_review.v1",
+  "candidate": "fc04588278e12b5e693cbea72fea3193986f78d1",
+  "reviewer": "assigned_native_principal",
+  "independent_acceptance": false,
+  "matrix_count": 24,
+  "visual_samples": [
+    {
+      "file": "d0d2058d8b22399f.png",
+      "state": "1440 dark EN",
+      "observation": "Shared navigation and issuer controls readable; segment numeric value, unit, period visible; research insufficiency, stale market context, and zero prospective issuance explicit."
+    },
+    {
+      "file": "405cc038431cee6d.png",
+      "state": "390 light ZH",
+      "observation": "Light research workspace uses readable white panels and separators; issuer controls and all three financial fields readable without body horizontal overflow; qualified coverage and no forecasts visible."
+    }
+  ],
+  "scope": "Local actual-source ASGI with explicit test principal. No installed entitlement or independent acceptance claim. No CSS or HTML mutation."
+}

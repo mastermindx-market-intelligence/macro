@@ -119,10 +119,24 @@ html[data-theme="dark"] .stance{background:var(--grid)}
         <div><span class="m-k">CAGR</span><span class="m-v {{ 'win' if c.cagr >= c.hodl_cagr else 'lose' }}">{{ c.cagr }}%</span><span class="m-sub">{{ t('B&H','买持') }} {{ c.hodl_cagr }}%</span></div>
         <div><span class="m-k">Sharpe</span><span class="m-v {{ 'win' if c.sharpe >= c.hodl_sharpe else 'lose' }}">{{ c.sharpe }}</span><span class="m-sub">{{ t('B&H','买持') }} {{ c.hodl_sharpe }}</span></div>
         <div><span class="m-k">{{ t('Max DD','最大回撤') }}</span><span class="m-v {{ 'win' if c.maxdd >= c.hodl_maxdd else 'lose' }}">{{ c.maxdd }}%</span><span class="m-sub">{{ t('B&H','买持') }} {{ c.hodl_maxdd }}%</span></div>
-        <div><span class="m-k">{{ t('Income','票息') }}</span><span class="m-v">{{ c.income }}%</span><span class="m-sub">{{ c.years }}y</span></div>
+        {%- if c.avg_lev is number %}
+        <div><span class="m-k">{{ t('Avg leverage','平均杠杆') }}</span>{#
+        #}<span class="m-v">{{ '%.2f'|format(c.avg_lev) }}x</span>{#
+        #}<span class="m-sub">{{ c.years }}y</span></div>
+        {%- else %}
+        <div><span class="m-k">{{ t('Income','票息') }}</span>{#
+        #}<span class="m-v">{{ c.income }}%</span>{#
+        #}<span class="m-sub">{{ c.years }}y</span></div>
+        {%- endif %}
       </div>
+      {%- if c.as_of %}
+      <span class="m-sub">{{ t('As of','截至') }} {{ c.as_of }}</span>
+      {%- endif %}
       <div class="scard-foot">
         <span class="stance">{{ t(c.stance_en, c.stance_zh) }}</span>
+        {%- if c.oos_en %}
+        <span class="stance" data-split-half>{{ t(c.oos_en, c.oos_zh) }}</span>
+        {%- endif %}
         <span class="go">{{ t('Open →','打开 →') }}</span>
       </div>
     </a>

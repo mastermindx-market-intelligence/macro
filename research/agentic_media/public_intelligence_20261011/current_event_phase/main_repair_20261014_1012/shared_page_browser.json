@@ -1,0 +1,75 @@
+{
+  "head": "255ccbec8f3f84c1485f17b6ea1150c78da11091",
+  "pages": {
+    "blog/index.html": {
+      "site": "acfaafc944d42a378405a93737e733e666e3f8a6d6ffc261f4b3d0f4363128bd",
+      "site.served": "acfaafc944d42a378405a93737e733e666e3f8a6d6ffc261f4b3d0f4363128bd",
+      "http": 200,
+      "http_sha256": "acfaafc944d42a378405a93737e733e666e3f8a6d6ffc261f4b3d0f4363128bd",
+      "expected_sha256": "acfaafc944d42a378405a93737e733e666e3f8a6d6ffc261f4b3d0f4363128bd",
+      "match": true
+    },
+    "learn/index.html": {
+      "site": "63c94b58d2b1b1ac0a62c0b15d63f841b337a598e3687fbb0881106b36825ae3",
+      "site.served": "63c94b58d2b1b1ac0a62c0b15d63f841b337a598e3687fbb0881106b36825ae3",
+      "http": 200,
+      "http_sha256": "63c94b58d2b1b1ac0a62c0b15d63f841b337a598e3687fbb0881106b36825ae3",
+      "expected_sha256": "63c94b58d2b1b1ac0a62c0b15d63f841b337a598e3687fbb0881106b36825ae3",
+      "match": true
+    },
+    "tools/calculators/position-size.html": {
+      "site": "de2ec9db310eaeb9b147747803b0a307914d24987acf2b4c5b7e2fd25e3408ee",
+      "site.served": "de2ec9db310eaeb9b147747803b0a307914d24987acf2b4c5b7e2fd25e3408ee",
+      "http": 200,
+      "http_sha256": "de2ec9db310eaeb9b147747803b0a307914d24987acf2b4c5b7e2fd25e3408ee",
+      "expected_sha256": "de2ec9db310eaeb9b147747803b0a307914d24987acf2b4c5b7e2fd25e3408ee",
+      "match": true
+    }
+  },
+  "headAfter": "255ccbec8f3f84c1485f17b6ea1150c78da11091",
+  "stable": true,
+  "observed_at": "2026-10-14T10:38:31.410649+00:00",
+  "scope": "Already-landed shared-page browser dependency verification, not9209 installation",
+  "browser": {
+    "provider": "Codex In-app Browser",
+    "pages_desktop_1440_no_overflow": [
+      "blog/index.html",
+      "learn/index.html",
+      "tools/calculators/position-size.html"
+    ],
+    "pages_mobile_390_no_overflow": [
+      "blog/index.html",
+      "learn/index.html",
+      "tools/calculators/position-size.html"
+    ],
+    "actual_click_path": [
+      "Blog",
+      "Learn",
+      "Position Sizing lesson",
+      "Position Size Calculator"
+    ],
+    "mobile_research_menu": [
+      "Glossary",
+      "Morning Edition",
+      "Stock Dossiers",
+      "Earnings Intelligence"
+    ],
+    "glossary_destination": "https://www.mastermind-x.com/glossary.html",
+    "calculator_inputs": {
+      "account": 10000,
+      "risk_pct": 1,
+      "entry": 50,
+      "stop": 48
+    },
+    "calculator_observed": {
+      "shares": 50,
+      "dollar_risk": 100,
+      "position_value": 2500,
+      "position_pct": 25
+    },
+    "signup_follow_writes": 0,
+    "authentication_exchange_tested": false,
+    "design_approval": false,
+    "viewport_reset": true
+  }
+}

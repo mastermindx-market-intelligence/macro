@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-20T18:20:12.026493+00:00",
+  "source_or_config_mutation": false,
+  "previously_unavailable_remote_blob": {
+    "oid": "4034805ee69b3c416899a2cf412b4b796b27146f",
+    "bytes": 144538,
+    "sha256": "43dc58177a02fffffb441b7d3afbbb5e198c6a3e5f1865446c3160397aa36003",
+    "native_now_available_and_object_id_verified": true
+  },
+  "auto_merge_ref": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": ""
+  },
+  "head": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+  "status": ""
+}

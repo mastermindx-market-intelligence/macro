@@ -1,0 +1,35 @@
+{
+  "observed_at": "2026-10-14T16:00:31.246911+00:00",
+  "page": "https://www.mastermind-x.com/research/world-agricultural-supply-and-demand-estimates-october-2026-wasde-676-sde676.html",
+  "http_status": 200,
+  "anonymous_http": true,
+  "http_credentials_sent": false,
+  "http_sha256": "cb0dac22c1bfdc3cdec77c86f2e5872eef2b6335fbe516183417734469d2549b",
+  "http_site_served_equal": true,
+  "browser": "Chrome profile Chris, same original browser binding",
+  "browser_page": "PASS",
+  "desktop": {
+    "width": 1440,
+    "scroll_width": 1440
+  },
+  "mobile": {
+    "width": 390,
+    "scroll_width": 390
+  },
+  "visible_title": "World Agricultural Supply and Demand Estimates, October 2026 (WASDE 676)",
+  "visible_date": "Oct 9, 2026",
+  "visible_author": "U.S. Department of Agriculture",
+  "source_forecast_attribution_preserved": true,
+  "viewer_link_clicked": true,
+  "actual_viewer": "research_vault.html?doc=usda-2026-10-09-wasde-676",
+  "viewer_pages": "1 / 40",
+  "viewer_downloads_remaining": "47 of 50",
+  "download_clicked": false,
+  "signup": false,
+  "follow_write": false,
+  "viewport_reset": true,
+  "earlier_browser_error": "ERR_BLOCKED_BY_CLIENT retained; new same-profile check after actual installed-page absent-to-present transition succeeded. No browser profile, extension/security setting or control carrier changed. Cause of earlier error remains unproved.",
+  "scope": "Functional page/viewer acceptance; not new dark/light or EN/ZH design approval; not a Press article or stock-event admission",
+  "publication": false,
+  "cutover": false
+}

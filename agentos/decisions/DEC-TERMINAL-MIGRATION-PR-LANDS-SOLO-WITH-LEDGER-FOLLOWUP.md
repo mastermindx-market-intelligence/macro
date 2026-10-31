@@ -24,6 +24,15 @@ answer: >
   the SQL "-- Ledger row:" header and the README row, and arm it the same way (precedent
   terminal #946 -> #947). (5) Every landing train pushes its head only after that
   follow-up is on master, so no train merge ref ever carries an open row.
+
+  Scoped MedTech application (2026-10-20): the matching partial amendment in
+  DEC:SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06 applies this
+  sequence only to Terminal #1084 and its exact bound 0037 SQL. It is effective
+  only after independent review and canonical Macro main acceptance. Solo
+  describes separate landing outside a train; it does not require a SQL-only
+  PR or moving reviewed application code to another carrier. Preserve existing
+  holds and the separation between application, merge, deployment and paid-user
+  proof.
 rationale: >
   The ledger checker makes the row's pr field a proof of ownership: a present open-row file
   is legitimate only on the PR the row names, so a train carrying the migration can never
@@ -78,3 +87,59 @@ decided_at: 2026-10-11
 5. Only then push or refresh any landing train head.
 
 Taken by the program CEO session (Fable, Chairman-assigned 2026-10-11, Terminal issue 916).
+
+## Scoped MedTech R14 sequence, 2026-10-20
+
+The accepted MedTech amendment in
+DEC:SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06 binds Terminal
+#1084 and `0037_medtech_watches.sql` from
+`9d080bdca3bcce8ec10c1fce4e1ca30386d6d3c3`, application-file SHA-256
+`c2e4831534fe2af7f835b19210020544b56b01866109a06b965ea656d87b8406`.
+Until independent review and normal acceptance of the amendment into Macro
+main, this section is a proposal, not an effective ordering exception.
+
+The bound SQL may be carried by descendants of the qualification baseline under
+the exact identity and release-head conditions in the matching namespace amendment.
+An updated carrier does not inherit acceptance when its changes invalidate that
+amendment's dependency, ownership, ordering or application assumptions.
+
+Keep #1084 as the existing carrier. The #927 precedent contains application
+code as well as SQL: "solo" means separate from a landing train. Run the
+namespace proof with `GITHUB_EVENT_NAME=pull_request PR_NUMBER=1084`.
+
+After exact source acceptance, concluded required checks, current-base and
+reservation reconciliation, reviewed-applier dry run, compatible current catalog
+preflight, a clean reconciled carrier and existing application admission:
+
+1. Apply only the bound 0037 file with the existing reviewed per-file applier.
+   Retain the exact pre/post catalog receipt and verify all twelve typed catalog
+   objects plus the RLS/privilege rows, as specified in the namespace amendment.
+   A failed or ambiguous response
+   stops this effect for same-carrier reconciliation.
+2. Publish and read back that receipt before updating #1084's truthful
+   application flags and README application row. Keep `pr_state: open`.
+   Retain the originally applied source hash even when ledger comments change.
+3. Complete affected checks, then solo squash when no landing train is mid-CI.
+   Preserve all unrelated ledger rows and carrier holds.
+4. Immediately land the minimal follow-up recording the actual squash SHA and
+   `pr_state: merged`, with the matching SQL ledger header and README metadata.
+   Never predeclare a merge.
+5. Dependent train heads proceed only after that follow-up is accepted.
+   Deploy the accepted Terminal revision through the existing release owner
+   and prove the authenticated consumer workflow.
+
+A compatible deployed Macro MedTech API is required before exposing the
+Terminal workflow. Schema application, source acceptance, ledger completion,
+deployment and live save/reload/exact-revision review are separate results.
+An authentication refusal retains the existing credential-rotation boundary;
+this amendment grants no alternate credential route or replay. Disable the
+MedTech application routes if a production rollback is needed, preserving user
+data. The SQL's destructive down block remains for disposable qualification
+databases only.
+
+The current Chairman-assigned MedTech recovery session authored this bounded
+disposition under protected Mastermind
+`a7553e0a18339c910eef9687c730b06605dd710e`. It changes no general migration
+rule and performs no DDL. Dependency and preserved-carrier evidence reside in
+the matching namespace amendment, with the existing SQL qualification in
+[Terminal #1084](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1084).

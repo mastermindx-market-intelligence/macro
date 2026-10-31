@@ -312,6 +312,7 @@
    returns empty. DOMContentLoaded fires after the body parses. #}
 <script>try{document.addEventListener('DOMContentLoaded',function(){if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches){document.querySelectorAll('body.page-macro .ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});}});}catch(e){}</script>
 <link rel="stylesheet" href="tier_preview.css">
+{% if mode != 'stocks' %}<link rel="stylesheet" href="risk_radar_workspace.css">{% endif %}
 {% if mode != 'stocks' %}
 <link rel="preload" href="/fonts/InterDisplay-600.woff2" as="font" type="font/woff2" crossorigin>
 {% endif %}
@@ -331,6 +332,20 @@
   /* breathing room on wide desktops — content centered, never edge-to-edge */
   @media (min-width: 1100px) { body { padding: 26px max(40px, calc((100vw - 1500px) / 2)); } }
   body.page-macro { padding-top: 26px; }
+  /* On phone-size Macro, continuously repainting the animated Chat Brain rim
+     and orb costs significant idle main-thread time. Preserve the launcher,
+     focus ring, click/touch/keyboard handling, and desktop motion; only stop
+     its decorative infinite CSS animations on this page at mobile widths. */
+  @media (max-width: 768px) {
+    body.page-macro #mmb-boot, body.page-macro #mmb-launch,
+    body.page-macro #mmb-boot *, body.page-macro #mmb-launch *,
+    body.page-macro #mmb-boot::before, body.page-macro #mmb-boot::after,
+    body.page-macro #mmb-launch::before, body.page-macro #mmb-launch::after,
+    body.page-macro #mmb-boot *::before, body.page-macro #mmb-boot *::after,
+    body.page-macro #mmb-launch *::before, body.page-macro #mmb-launch *::after {
+      animation: none !important;
+    }
+  }
   a { text-decoration: none; }
   h1 { font-size: 20px; margin: 0 0 2px; }
   h2 { font-size: 15px; margin: 0 0 10px; color: var(--muted);
@@ -2342,6 +2357,7 @@
 <div class="mx5-aurora{{ ' au-yellow' if (market_state and market_state.color == 'yellow') else (' au-red' if (market_state and market_state.color == 'red') else '') }}" aria-hidden="true"><div class="mx5-a3"></div><div class="mx5-a4"></div></div>
 <div class="mx5-popover-backdrop" id="mx5PopBackdrop" onclick="if(window.mx5CloseAllPopovers)mx5CloseAllPopovers()"></div>
 {% endif %}
+{% set all_tools_enabled = (mode != 'stocks') %}
 {% include "_site_nav.html.j2" %}
 <div class="grid">
 
@@ -4122,8 +4138,8 @@ body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
   body.page-macro.mx4-grid #sx-v5-fed,
   body.page-macro.mx4-grid #sx-v5-sentiment,
   body.page-macro.mx4-grid #sx-v5-sector{grid-column:span 6;}
-  body.page-macro.mx4-grid #sx-news-v2{grid-column:span 6;}
-  body.page-macro.mx4-grid #sx-aibrief-v2{grid-column:span 6;}
+  /* AI Brief and Alerts inherit .sx's tablet span. ID-specific spans here
+     would outrank the full-width .sx rule at <=700px. */
 }
 /* ≤700px — full width stack */
 @media(max-width:700px){
@@ -4131,6 +4147,18 @@ body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
   body.page-macro.mx4-grid #sx-v5-fed,
   body.page-macro.mx4-grid #sx-v5-sentiment,
   body.page-macro.mx4-grid #sx-v5-sector{grid-column:span 12;}
+}
+
+/* Mobile Alerts Centre: reserve the top-right card action slot.
+   The status pill must wrap rather than sit beneath the sparkle at 320px. */
+@media(max-width:700px){
+  body.page-macro.mx4-grid #sx-news-v2 .mx5-card-title-row{
+    padding-right:64px;flex-wrap:wrap;row-gap:8px;
+  }
+  body.page-macro.mx4-grid #sx-news-v2 .mx5-card-title{margin-bottom:0;}
+  body.page-macro.mx4-grid #sx-news-v2 .mx5-card-badge{
+    max-width:100%;white-space:normal;
+  }
 }
 
 /* Expanded card spans full width */
@@ -9337,6 +9365,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   .rr-track-table td{padding:2px 5px;font-variant-numeric:tabular-nums;
     border-bottom:1px solid color-mix(in srgb,var(--line) 40%,transparent)}
   .rr-empty{font-size:11.5px;color:var(--muted);font-style:italic;padding:4px 0}
+  .rr-tr-note{font-size:11.5px;color:var(--muted);line-height:1.45;margin:0 0 8px}
+  .rr-tr-line{font-size:11.5px;color:var(--muted);line-height:1.45}
+  .rr-tr-foot{font-size:11px;color:var(--muted);margin-top:6px}
   /* general */
   .rr-placeholder{color:var(--muted);font-size:12px;font-style:italic;padding:8px 0}
   .rr-asof{font-size:10px;color:var(--muted);margin-top:10px}
@@ -9433,6 +9464,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     letter-spacing:.08em;color:var(--muted);margin-bottom:7px}
   .rr-shadow-warn{font-size:9.5px;color:var(--ink-down, var(--down));font-style:italic;
     border-left:2px solid var(--down);padding-left:6px;margin-top:4px;line-height:1.4}
+  .rr-shadow-retired{font-size:10.5px;color:var(--muted);line-height:1.45}
   /* surprise anatomy mini-table */
   .rr-anatomy-table{width:100%;border-collapse:collapse;font-size:10.5px;margin-top:4px}
   .rr-anatomy-table th{font-size:9.5px;font-weight:700;text-transform:uppercase;
@@ -9759,45 +9791,144 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       return '<div class="rr-policy">'+items.join('')+'</div>';
     }
 
-    /* scoreboard sub-block */
-    function scoreboardBlock(lastScored){
-      if (!lastScored || !Array.isArray(lastScored) || !lastScored.length) {
-        return '<div class="rr-scoreboard">'
-          +'<div class="rr-scoreboard-title"><span class="l-en">Track record</span><span class="l-zh">历史评分</span></div>'
+    function rrTrackMiss(v){
+      if (v == null || !isFinite(Number(v))) return '—';
+      var n = Number(v);
+      return Math.abs(n) >= 10 ? n.toFixed(1) : n.toFixed(2);
+    }
+    function rrTrackMissCi(e){
+      var ci = e && e.mae_ours_ci;
+      if (e == null || e.mae_ours == null || !Array.isArray(ci) || ci.length !== 2) return '—';
+      return rrTrackMiss(e.mae_ours)+' ('+rrTrackMiss(ci[0])+'–'+rrTrackMiss(ci[1])+')';
+    }
+    function rrTrackEarly(e, tr){
+      var n = String(e.clean_n);
+      if (e.early) return {en:'Early, n = '+n, zh:'早期，n = '+n};
+      return {en:'n = '+n+', verdict pending', zh:'n = '+n+'，结论待定'};
+    }
+    function rrTrackRecordBlock(tr){
+      var title = '<div class="rr-scoreboard-title"><span class="l-en">Track record</span><span class="l-zh">历史评分</span></div>';
+      if (!tr || typeof tr !== 'object' || !Array.isArray(tr.releases)) {
+        return '<div class="rr-scoreboard">'+title
           +'<div class="rr-empty">'
-          +'<span class="l-en">Forward accrual began 2026-07 — no scored prints yet.</span>'
-          +'<span class="l-zh">自2026年7月起正向评分积累中，暂无已评分数据。</span>'
-          +'</div>'
+          +'<span class="l-en">Scored history isn\'t in this build yet.</span>'
+          +'<span class="l-zh">本次构建暂无评分记录。</span>'
+          +'</div></div>';
+      }
+      var withheld = (tr.accuracy_claim === 'withheld_until_clean_aligned_forward_evidence');
+      var noteEn = withheld
+        ? 'Accuracy isn\'t claimed yet. Each release shows how many forecasts were scored against the official first print.'
+        : 'Each release shows how many forecasts were scored against the official first print.';
+      var noteZh = withheld
+        ? '暂不声称准确度。每项数据显示按官方首次公布值评分的预测次数。'
+        : '每项数据显示按官方首次公布值评分的预测次数。';
+      var out = '<div class="rr-scoreboard">'+title
+        +'<div class="rr-tr-note">'
+        +'<span class="l-en">'+esc(noteEn)+'</span>'
+        +'<span class="l-zh">'+esc(noteZh)+'</span>'
+        +'</div>';
+      if (!tr.releases.length) {
+        out += '<div class="rr-empty">'
+          +'<span class="l-en">No release has been scored yet.</span>'
+          +'<span class="l-zh">暂无已评分的数据。</span>'
+          +'</div>';
+      } else {
+        var thead = '<tr>'
+          +'<th><span class="l-en">Release</span><span class="l-zh">数据</span></th>'
+          +'<th><span class="l-en">Scored</span><span class="l-zh">已评分</span></th>'
+          +'<th><span class="l-en">Vs first print</span><span class="l-zh">对照首次公布值</span></th>'
+          +'<th><span class="l-en">Avg miss (95% range)</span><span class="l-zh">平均误差（95%区间）</span></th>'
+          +'<th><span class="l-en">No-change miss</span><span class="l-zh">不变假设误差</span></th>'
+          +'<th><span class="l-en">Status</span><span class="l-zh">状态</span></th>'
+          +'</tr>';
+        var statusFor = function(st){
+          if (st === 'no_clean_scores') return {en:'No clean scores', zh:'暂无有效评分'};
+          if (st === 'benchmark_only') return {en:'Benchmark only', zh:'仅基准'};
+          if (st === 'proxy_or_mixed_target') return {en:'Not comparable yet', zh:'尚不可比'};
+          if (st === 'accruing') return {en:'Accruing '+tr.display_min_n, zh:'积累中'};
+          if (st === 'interval_pending') return {en:'Range pending', zh:'误差区间待定'};
+          return {en:'—', zh:'—'};
+        };
+        var rows = tr.releases.map(function(e){
+          var st = statusFor(e.display_state);
+          var statusEn = st.en;
+          var statusZh = st.zh;
+          if (e.display_state === 'accruing') {
+            statusEn = 'Accruing '+e.clean_n+'/'+tr.display_min_n;
+            statusZh = '积累中 '+e.clean_n+'/'+tr.display_min_n;
+          }
+          if (e.display_state === 'display_only') {
+            var lab = rrTrackEarly(e, tr);
+            statusEn = lab.en;
+            statusZh = lab.zh;
+          }
+          return '<tr><td>'+relName(e.release,'')+'</td>'
+            +'<td>'+esc(String(e.clean_n))+'</td>'
+            +'<td>'+esc(String(e.first_print_matched_n))+'</td>'
+            +'<td>'+esc(rrTrackMissCi(e))+'</td>'
+            +'<td>'+esc(rrTrackMiss(e.mae_naive_prior))+'</td>'
+            +'<td><span class="l-en">'+esc(statusEn)+'</span><span class="l-zh">'+esc(statusZh)+'</span></td></tr>';
+        }).join('');
+        out += '<table class="rr-track-table"><thead>'+thead+'</thead><tbody>'+rows+'</tbody></table>';
+      }
+      if (tr.score_receipts && tr.score_receipts.superseded_n > 0) {
+        var sn = tr.score_receipts.superseded_n;
+        out += '<div class="rr-tr-foot">'
+          +'<span class="l-en">'+esc(String(sn))+' earlier scores are kept as superseded, not erased.</span>'
+          +'<span class="l-zh">'+esc(String(sn))+'条早期评分已保留为已取代记录，未删除。</span>'
           +'</div>';
       }
-      var byRel = {};
-      lastScored.forEach(function(row){
-        var k = (row.release||'other').toLowerCase();
-        if (!byRel[k]) byRel[k] = {n:0, mae_ours:0, mae_naive:0, skew_hits:0};
-        byRel[k].n += 1;
-        if (row.our_mae != null) byRel[k].mae_ours += Number(row.our_mae);
-        if (row.naive_mae != null) byRel[k].mae_naive += Number(row.naive_mae);
-        if (row.skew_hit) byRel[k].skew_hits += 1;
-      });
-      var thead = '<tr>'
-        +'<th><span class="l-en">Release</span><span class="l-zh">数据</span></th>'
-        +'<th><span class="l-en">n</span><span class="l-zh">n</span></th>'
-        +'<th><span class="l-en">MAE ours</span><span class="l-zh">本方MAE</span></th>'
-        +'<th><span class="l-en">MAE naive</span><span class="l-zh">朴素MAE</span></th>'
-        +'<th><span class="l-en">Skew hit%</span><span class="l-zh">偏态命中%</span></th>'
-        +'</tr>';
-      var rows = Object.keys(byRel).map(function(k){
-        var g = byRel[k];
-        var maeO = g.n ? (g.mae_ours/g.n).toFixed(3) : '—';
-        var maeN = g.n ? (g.mae_naive/g.n).toFixed(3) : '—';
-        var skhit = g.n ? (g.skew_hits/g.n*100).toFixed(0)+'%' : '—';
-        return '<tr><td>'+relName(k,'')+'</td><td>'+g.n+'</td>'
-          +'<td>'+esc(maeO)+'</td><td>'+esc(maeN)+'</td><td>'+esc(skhit)+'</td></tr>';
-      }).join('');
-      return '<div class="rr-scoreboard">'
-        +'<div class="rr-scoreboard-title"><span class="l-en">Track record</span><span class="l-zh">历史评分</span></div>'
-        +'<table class="rr-track-table"><thead>'+thead+'</thead><tbody>'+rows+'</tbody></table>'
-        +'</div>';
+      return out+'</div>';
+    }
+    function rrTrackRecordLine(tr, releaseType){
+      var rel = releaseType || '';
+      if (!tr || typeof tr !== 'object' || !Array.isArray(tr.releases)) {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">No scored history for this release yet.</span>'
+          +'<span class="l-zh">该数据暂无评分记录。</span></div>';
+      }
+      var entry = null;
+      for (var i = 0; i < tr.releases.length; i++) {
+        if (tr.releases[i].release === rel) { entry = tr.releases[i]; break; }
+      }
+      if (!entry) {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">No scored history for this release yet.</span>'
+          +'<span class="l-zh">该数据暂无评分记录。</span></div>';
+      }
+      var st = entry.display_state;
+      if (st === 'no_clean_scores') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">No clean scores yet. Earlier scores used an inconsistent target and are kept as superseded.</span>'
+          +'<span class="l-zh">暂无有效评分。早期评分口径不一致，已保留为已取代记录。</span></div>';
+      }
+      if (st === 'benchmark_only') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">Benchmark only: '+esc(String(entry.clean_n))+' prints scored, no house forecast to grade.</span>'
+          +'<span class="l-zh">仅基准：已评分'+esc(String(entry.clean_n))+'次，无本方预测可评。</span></div>';
+      }
+      if (st === 'proxy_or_mixed_target') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">'+esc(String(entry.clean_n))+' scored, '+esc(String(entry.first_print_matched_n))+' against the official first print. Not comparable yet.</span>'
+          +'<span class="l-zh">已评分'+esc(String(entry.clean_n))+'次，其中'+esc(String(entry.first_print_matched_n))+'次对照官方首次公布值。尚不可比。</span></div>';
+      }
+      if (st === 'accruing') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">'+esc(String(entry.clean_n))+' of '+esc(String(tr.display_min_n))+' scored against the official first print. The error and its range show from '+esc(String(tr.display_min_n))+'; a verdict needs '+esc(String(tr.verdict_min_n))+'.</span>'
+          +'<span class="l-zh">已按官方首次公布值评分'+esc(String(entry.clean_n))+'/'+esc(String(tr.display_min_n))+'次。满'+esc(String(tr.display_min_n))+'次显示误差及其区间，满'+esc(String(tr.verdict_min_n))+'次方下结论。</span></div>';
+      }
+      if (st === 'interval_pending') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">'+esc(String(entry.clean_n))+' scored against the official first print. The error shows once its range is computed.</span>'
+          +'<span class="l-zh">已按官方首次公布值评分'+esc(String(entry.clean_n))+'次。误差区间计算完成后显示误差。</span></div>';
+      }
+      if (st === 'display_only') {
+        var lab = rrTrackEarly(entry, tr);
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">'+esc(lab.en)+', scored against the official first print. Average miss '+esc(rrTrackMissCi(entry))+' vs '+esc(rrTrackMiss(entry.mae_naive_prior))+' for a no-change guess. Not a verdict.</span>'
+          +'<span class="l-zh">'+esc(lab.zh)+'，对照官方首次公布值评分。平均误差'+esc(rrTrackMissCi(entry))+'，不变假设为'+esc(rrTrackMiss(entry.mae_naive_prior))+'。非结论。</span></div>';
+      }
+      return '<div class="rr-tr-line"><span class="l-en">—</span><span class="l-zh">—</span></div>';
     }
 
     /* component breakdown bar — reads contribution_pp (cpi_bridge schema) or contrib_pp (legacy) */
@@ -10071,6 +10202,19 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     /* MRI-R24: v3_factor challenger shadow row */
     function v3FactorRow(v3, isClaims, isNfp){
       if (!v3) return '';
+      /* RIC-M0: a withdrawn claim shows no number, only a plain note */
+      if (v3.claim_withdrawn){
+        return '<div class="rr-shadow-row">'
+          +'<div class="rr-shadow-label">'
+          +'<span class="l-en">V3 Factor · comparison model</span>'
+          +'<span class="l-zh">V3 因子 · 对比模型</span>'
+          +'</div>'
+          +'<div class="rr-shadow-retired">'
+          +'<span class="l-en">Withdrawn: on the first-print retest it did worse than its simple baseline, so no number is shown.</span>'
+          +'<span class="l-zh">已撤下：首发值复测中不及简单基准，故不显示数值。</span>'
+          +'</div>'
+          +'</div>';
+      }
       var useK = isClaims || isNfp;
       var ptStr = v3.point != null ? (useK ? fmtK(v3.point) : fmtNum(v3.point,2)) : '—';
       var warning = v3.warning || '';
@@ -10703,10 +10847,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         tab3 += '<div class="rr-grp"><div class="rr-grp-label">'
           +'<span class="l-en">Track record</span><span class="l-zh">历史评分</span>'
           +'</div>'
-          +'<div class="rr-empty">'
-          +'<span class="l-en">Accruing — first scored prints land this month.</span>'
-          +'<span class="l-zh">积累中 — 本月首批评分数据到来。</span>'
-          +'</div>'
+          + rrTrackRecordLine(_rrTrackRecord, item.release_type || '')
           +'</div>';
         /* NFP revision context */
         if (isNfp && item.revision_context){
@@ -10893,6 +11034,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     /* ---- modal open / close / tab switching ---- */
     var _rrItems = [];
     var _captureHealth = null;
+    var _rrTrackRecord = null;
 
     /* ---- modal open / close ---- */
     function _rrPeriodLabels(period){
@@ -11277,6 +11419,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       }
       _rrItems = Array.isArray(d.upcoming) ? d.upcoming : [];
       _captureHealth = d.capture_health || null;
+      _rrTrackRecord = (d && d.track_record && typeof d.track_record === 'object') ? d.track_record : null;
       var lastScored = Array.isArray(d.last_scored) ? d.last_scored : [];
       var asof = d.asof || '';
 
@@ -11384,10 +11527,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           smBtn.closest('[data-lang]') || void 0;
         });
       }
-      /* MRI-R39a: populate track-record overlay with scoreboardBlock data */
+      /* MRI-R39a: populate track-record overlay from track_record summary */
       var RR_TR_BODY = document.getElementById('rr-tr-body');
       if (RR_TR_BODY) {
-        RR_TR_BODY.innerHTML = scoreboardBlock(lastScored);
+        RR_TR_BODY.innerHTML = rrTrackRecordBlock(_rrTrackRecord);
       }
       /* wire dlg-events calendar cards as the inline radar selector + auto-select default */
       wireCalendarCards();
@@ -12872,6 +13015,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% import "_risk_radar_pullback_depth.html.j2" as pb_depth %}
         {# The fragment's own qualification decides; one rule, not two. #}
         {% set _us_pb_active = _us_pbv is not none and (pb_depth.lead('us', _us_pbv)|trim) == '1' %}
+        {# The workspace hero shows forward odds, so it stays out during a measured pullback. #}
+        {% if mode != 'stocks' and not _us_pb_active %}{% include "_risk_radar_workspace.html.j2" %}{% endif %}
         {% if _us_pb_active %}
           {# The observed-path chart is the shared illustration format; this page
              links its published stylesheet only when that chart can render. #}
@@ -13262,6 +13407,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% if (_dlgr_iov_n > 0) or (_dlgr_iov_det != 'STEADY') or (_dlgr_iov_spill in ('watching','transmitting')) %}
         <details class="riskdlg-fold" id="riskdlg-overseas-more">
         <summary>{{ t('Tracked overseas markets','追踪中的海外市场') }}</summary>
+        {# Baked overseas evidence stays inert until this native disclosure opens. #}
+        <template data-overseas-fold>
         <div class="mx5-dlg-eyebrow">
           {{ t('Overseas','海外') }}
           {{ help('Context only — does not move the US score. Tiles link to the full International page. Ring = each market\'s pullback-risk score (0-100), coloured by band — the odds a fresh drop is brewing, not a grade of today\'s trend. The hover card carries the trend read, which can point the other way: a market already deep in a selloff can sit beside a mid ring.','仅供参考——不影响美国评分。点击卡片可进入完整国际页面。环形为各市场回撤风险评分（0-100），按等级着色——衡量的是新一轮下跌酝酿的可能，而非当前趋势的评级。悬停卡片显示趋势解读，两者方向可能相反：已深度下跌的市场也可能配上中等的环形。') }}
@@ -13465,7 +13612,25 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </div>
         {% endif %}
         {# Task 8: footer removed — honesty now lives in the eyebrow help() tip above #}
+        </template>
         </details>
+        <script>
+        (function () {
+          var fold = document.getElementById('riskdlg-overseas-more');
+          if (!fold) return;
+          function hydrateOverseas() {
+            if (!fold.open) return;
+            var inert = fold.querySelector(':scope > template[data-overseas-fold]');
+            if (!inert) return;
+            fold.appendChild(inert.content);
+            inert.remove();
+            fold.removeEventListener('toggle', hydrateOverseas);
+          }
+          fold.addEventListener('toggle', hydrateOverseas);
+          if (fold.open) hydrateOverseas();
+        })();
+        </script>
+
         {% endif %}
 
         </section>
@@ -13513,8 +13678,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           </div>
           {% endfor %}
         </div>
-        {% endif %}
         </div>{# /riskdlg-ladder #}
+        {% endif %}
 
         {# Macro UX follow-up 2026-09-23: detailed volatility evidence belongs
            in Risk Detail, not the primary scorecard. Same vm['vol_weather'],
@@ -14032,7 +14197,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% elif _dfp.headline_en is defined and _dfp.headline_en %}
           <span class="l-en">{{ _dfp.headline_en }}</span>
           {% else %}
-          <span class="l-en">Market-implied rate path (ZQ fed-funds futures).</span>
+          <span class="l-en">Market-implied rate path{% if _dfp.implied_source_en is defined and _dfp.implied_source_en %} ({{ _dfp.implied_source_en }}){% else %} (source not recorded){% endif %}.</span>
           {% endif %}
           {# ZH mirrors the EN preference order: read_zh → headline_zh → built line #}
           {% if _dfp.read_zh is defined and _dfp.read_zh %}
@@ -14040,10 +14205,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% elif _dfp.headline_zh is defined and _dfp.headline_zh %}
           <span class="l-zh">{{ _dfp.headline_zh }}</span>
           {% else %}
-          {% set _dfp_cuts = (_dfp.implied_cuts_12m if (_dfp.implied_cuts_12m is defined and _dfp.implied_cuts_12m is not none) else 0) %}
-          {% set _dfp_n_zh = (_dfp_cuts | abs) | round(0) | int %}
-          {% set _dfp_dir_zh = '加息' if _dfp_cuts < 0 else ('降息' if _dfp_cuts > 0 else '不变') %}
-          <span class="l-zh">市场隐含利率路径：未来12个月定价约{{ _dfp_n_zh }}次{{ _dfp_dir_zh }}。</span>
+          {% set _dfp_cuts = (_dfp.implied_cuts_12m if (_dfp.implied_cuts_12m is defined and _dfp.implied_cuts_12m is number) else none) %}
+          {% set _dfp_n_zh = ((_dfp_cuts | abs) | round(0) | int) if _dfp_cuts is not none else none %}
+          {% set _dfp_dir_zh = none if _dfp_cuts is none else ('加息' if _dfp_cuts < 0 else ('降息' if _dfp_cuts > 0 else '不变')) %}
+          <span class="l-zh">市场隐含利率路径{% if _dfp.implied_source_zh is defined and _dfp.implied_source_zh %}（{{ _dfp.implied_source_zh }}）{% else %}（来源未记录）{% endif %}{% if _dfp_cuts is not none %}：未来12个月定价约{{ _dfp_n_zh }}次{{ _dfp_dir_zh }}{% endif %}。</span>
           {% endif %}
           {# Gap chip (Fed vs market divergence) #}
           {% if _ch_gap and _ch_gap.lean_en is defined and _ch_gap.gap_bp is defined %}
@@ -14660,8 +14825,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </div>
         {# ONE plain takeaway sentence #}
         <div class="fbm-chart-take">
-          <span class="l-en">{{ _dlg_rpr.read_en if (_dlg_rpr.read_en is defined and _dlg_rpr.read_en) else (_dlg_rpr.headline_en if _dlg_rpr.headline_en is defined else 'Market-implied fed-funds path.') }}</span>
-          <span class="l-zh">{{ _dlg_rpr.read_zh if (_dlg_rpr.read_zh is defined and _dlg_rpr.read_zh) else (_dlg_rpr.headline_zh if _dlg_rpr.headline_zh is defined else '市场隐含联邦基金利率路径。') }}</span>
+          <span class="l-en">{{ _dlg_rpr.read_en if (_dlg_rpr.read_en is defined and _dlg_rpr.read_en) else (_dlg_rpr.headline_en if (_dlg_rpr.headline_en is defined and _dlg_rpr.headline_en) else 'Market-implied policy-rate path.') }}</span>
+          <span class="l-zh">{{ _dlg_rpr.read_zh if (_dlg_rpr.read_zh is defined and _dlg_rpr.read_zh) else (_dlg_rpr.headline_zh if (_dlg_rpr.headline_zh is defined and _dlg_rpr.headline_zh) else '市场隐含政策利率路径。') }}</span>
+          <span class="fbm-tip" data-tip-en="{% if _dlg_rpr.source_en is defined and _dlg_rpr.source_en %}Path source: {{ _dlg_rpr.source_en }}.{% else %}Path source: not recorded for this read.{% endif %} Futures prices carry a risk premium — a market read, not a forecast." data-tip-zh="{% if _dlg_rpr.source_zh is defined and _dlg_rpr.source_zh %}路径来源：{{ _dlg_rpr.source_zh }}。{% else %}路径来源：本次读数未记录。{% endif %}期货价格含风险溢价——是市场定价，不是预测。">?</span>
         </div>
         {# delta callout chip — market vs Fed at the horizon #}
         {% if _dlg_rpr.gap is defined and _dlg_rpr.gap and _dlg_rpr.gap.gap_bp is not none and _dlg_rpr.gap.market is not none and _dlg_rpr.gap.fed_dot is not none %}
@@ -14723,14 +14889,23 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       </div>
       {% if _dlgrc_inf.nearest_cpi is defined and _dlgrc_inf.nearest_cpi %}
       {% set _ncpi = _dlgrc_inf.nearest_cpi %}
-      {% set _ncpi_sig = _ncpi.surprise_skew_sigma %}
+      {% set _ncpi_sig = _ncpi.surprise_skew_sigma if (_ncpi.surprise_skew_sigma is defined and _ncpi.surprise_skew_sigma is number) else none %}
+      {% set _ncpi_cd = _ncpi.countdown if (_ncpi.countdown is defined and _ncpi.countdown is mapping) else none %}
+      {% set _ncpi_state = _ncpi_cd.state if (_ncpi_cd and _ncpi_cd.state) else 'historical' %}
+      {% set _ncpi_days = _ncpi_cd.days_to if (_ncpi_cd and _ncpi_state == 'current' and _ncpi_cd.days_to is number) else none %}
+      {% set _ncpi_disp = _ncpi_cd.display_cutoff if (_ncpi_cd and _ncpi_cd.display_cutoff is string) else none %}
+      {% set _ncpi_src = _ncpi_cd.source_cutoff[:10] if (_ncpi_cd and _ncpi_cd.source_cutoff is string) else none %}
+      {% set _ncpi_rd = _ncpi.release_date if (_ncpi.release_date is defined and _ncpi.release_date) else none %}
+      {% set _ncpi_lean_en = {'hotter':'hotter than forecast','cooler':'cooler than forecast','neutral':'in line','inline':'in line'}.get(_ncpi.surprise_skew_tag) %}
+      {% set _ncpi_lean_zh = {'hotter':'偏热于预期','cooler':'偏冷于预期','neutral':'大致符合','inline':'大致符合'}.get(_ncpi.surprise_skew_tag) %}
+      {% set _ncpi_exp = (_ncpi.accuracy_claim is defined and _ncpi.accuracy_claim is string and 'withheld' in _ncpi.accuracy_claim) or (_ncpi.forecast_epoch is defined and _ncpi.forecast_epoch is string and 'experimental' in _ncpi.forecast_epoch) %}
       {% set _ncpi_col = 'var(--down,#ef4444)' if _ncpi.surprise_skew_tag == 'hotter' else ('var(--up,#22d97a)' if _ncpi.surprise_skew_tag == 'cooler' else 'var(--warn,#f59e0b)') %}
       <div class="fbm-row">
-        <span class="fbm-row-state" style="color:{{ _ncpi_col }}"><span class="fbm-row-dot" style="background:{{ _ncpi_col }}"></span><span class="l-en">Next CPI · {{ _ncpi.days_to }}d</span><span class="l-zh">下次CPI · {{ _ncpi.days_to }}天</span></span>
-        <span class="fbm-row-line"><span class="l-en">Recent data leans {{ {'hotter':'hotter than forecast','cooler':'cooler than forecast','neutral':'in line'}.get(_ncpi.surprise_skew_tag,'in line') }} — a print either way can reset the read.</span><span class="l-zh">近期数据{{ {'hotter':'偏热于预期','cooler':'偏冷于预期','neutral':'大致符合'}.get(_ncpi.surprise_skew_tag,'大致符合') }} — 任一方向的数据都可能重置解读。</span></span>
+        <span class="fbm-row-state" style="color:{{ _ncpi_col }}"><span class="fbm-row-dot" style="background:{{ _ncpi_col }}"></span><span class="l-en">{% if _ncpi_days is not none %}Next CPI · {{ _ncpi_days }}d{% elif _ncpi_state == 'released' %}CPI released {{ _ncpi_rd }}{% else %}Next CPI · {{ _ncpi_rd if _ncpi_rd else 'date not recorded' }}{% endif %}</span><span class="l-zh">{% if _ncpi_days is not none %}下次CPI · {{ _ncpi_days }}天{% elif _ncpi_state == 'released' %}CPI 已于 {{ _ncpi_rd }} 发布{% else %}下次CPI · {{ _ncpi_rd if _ncpi_rd else '日期未记录' }}{% endif %}</span></span>
+        <span class="fbm-row-line"><span class="l-en">{% if _ncpi_lean_en %}Recent data leans {{ _ncpi_lean_en }}{% else %}Recent-data lean not available{% endif %} — a print either way can reset the read.</span><span class="l-zh">{% if _ncpi_lean_zh %}近期数据{{ _ncpi_lean_zh }}{% else %}近期数据倾向暂不可得{% endif %} — 任一方向的数据都可能重置解读。</span></span>
         <span class="fbm-tip"
-          data-tip-en="Release {{ _ncpi.release_date }} ({{ _ncpi.days_to }} days out). Surprise skew: {{ _ncpi.surprise_skew_tag }}{% if _ncpi_sig is not none %}, {{ '%.2f'|format(_ncpi_sig) }}σ{% endif %}."
-          data-tip-zh="发布 {{ _ncpi.release_date }}（{{ _ncpi.days_to }} 天后）。惊喜偏向：{{ {'hotter':'偏热','cooler':'偏冷','neutral':'中性'}.get(_ncpi.surprise_skew_tag,_ncpi.surprise_skew_tag) }}{% if _ncpi_sig is not none %}，{{ '%.2f'|format(_ncpi_sig) }}σ{% endif %}。">?</span>
+          data-tip-en="Release {{ _ncpi_rd if _ncpi_rd else 'date not recorded' }}. {% if _ncpi_days is not none %}{{ _ncpi_days }} days out, counted as of {{ _ncpi_disp }}.{% elif _ncpi_state == 'released' %}Released as of {{ _ncpi_disp }}.{% elif _ncpi_state == 'source_after_display_cutoff' %}This read is newer than the display date ({{ _ncpi_disp }}); day count withheld.{% elif _ncpi_state == 'unknown' %}Day count unavailable for this read.{% else %}Day count not shown: it was computed when the data was built{% if _ncpi_src %} ({{ _ncpi_src }}){% endif %}, not today.{% endif %}{% if _ncpi_lean_en %} Recent-data lean: {{ _ncpi_lean_en }}{% if _ncpi_sig is not none %}, {{ '%.2f'|format(_ncpi_sig) }}σ{% endif %}.{% endif %}{% if _ncpi_exp %} House estimate from an experimental model; accuracy not yet claimed.{% endif %}"
+          data-tip-zh="发布 {{ _ncpi_rd if _ncpi_rd else '日期未记录' }}。{% if _ncpi_days is not none %}{{ _ncpi_days }} 天后，按 {{ _ncpi_disp }} 计算。{% elif _ncpi_state == 'released' %}截至 {{ _ncpi_disp }} 已发布。{% elif _ncpi_state == 'source_after_display_cutoff' %}本次读数晚于显示日期（{{ _ncpi_disp }}），暂不显示天数。{% elif _ncpi_state == 'unknown' %}本次读数无法计算天数。{% else %}未显示天数：天数在数据生成时{% if _ncpi_src %}（{{ _ncpi_src }}）{% endif %}计算，并非今天。{% endif %}{% if _ncpi_lean_zh %}近期数据倾向：{{ _ncpi_lean_zh }}{% if _ncpi_sig is not none %}，{{ '%.2f'|format(_ncpi_sig) }}σ{% endif %}。{% endif %}{% if _ncpi_exp %}本站估算来自实验性模型，尚未声明准确度。{% endif %}">?</span>
       </div>
       {% endif %}
       <div class="mx5-dlg-sep"></div>
@@ -14958,6 +15133,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
+        {# Native template: the baked metrics remain inert until an authorized open. #}
+        <template data-sentiment-fold>
         {% set _dlg_fg = fear_greed if (fear_greed is defined and fear_greed) else {} %}
         {% set _dlg_fg_dial = (_dlg_fg.get('dial') or 50) | float %}
         {% set _dlg_fg_label_en = _dlg_fg.get('label_en') or 'Neutral' %}
@@ -15090,6 +15267,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% endif %}
         </div>
         {% endif %}
+        </template>
       </div>
     </div>
   </div>
@@ -15314,7 +15492,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          tiers; until it does, fail toward the non-destructive sign-in sheet. */
       if(document.body && document.body.classList.contains('page-macro') &&
          (!window.MMXAccessPreview || window.MMXAccessPreview.isAnon())){
-        if(window.MMXAccessPreview) window.MMXAccessPreview.openSignin();
+        if(window.MMXSharedShell) window.MMXSharedShell.openAuth('signin');
+        else if(window.MMXAccessPreview) window.MMXAccessPreview.openSignin();
         else if(window.MMOnboard && window.MMOnboard.open) window.MMOnboard.open('signin', {});
         else location.href='/?signin=1&ret=/macro.html';
         return;
@@ -15333,6 +15512,17 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       for(var pi = 0; pi < closing.length; pi++){
         _mx5CancelClose(closing[pi], closing[pi] !== dlg);
         if(closing[pi] !== dlg) hidden.push(closing[pi]);
+      }
+      /* One-time hydration happens ONLY after the existing registration gate.
+         This keeps the sentiment panel out of the cold DOM; it preserves
+         server-rendered metrics and delegated [data-rpop] handlers. */
+      if(id === 'dlg-sentiment'){
+        var sentimentBody = dlg.querySelector('.mx5-dlg-body');
+        var sentimentFold = sentimentBody && sentimentBody.querySelector(':scope > template[data-sentiment-fold]');
+        if(sentimentFold){
+          sentimentBody.appendChild(sentimentFold.content);
+          sentimentFold.remove();
+        }
       }
       /* Heatmap adoption: on first open of dlg-markets, move #heatmap-scorecard into the
          dialog placeholder so it renders at 920px dialog scale (idempotent). */
@@ -15469,7 +15659,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       var legacy = false;
       if(_legacyAnchor[h]){
         var tgt = _legacyAnchor[h];
-        if(tgt.indexOf('.html') !== -1){ location.replace(tgt); return; }
+        if(tgt.indexOf('.html') !== -1){ var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(tgt, 'replace'); } else { location.replace(tgt); } return; }
         h = tgt; legacy = true;
       }
       var el = document.getElementById(h);
@@ -15501,6 +15691,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       window.addEventListener('load', function(){ setTimeout(_resolveAlertHashOnce, 500); });
     }
     window.addEventListener('hashchange', _resolveAlertHash);
+    window.addEventListener('mmx:shell-location', _resolveAlertHash);
 
   })();
   </script>
@@ -16315,6 +16506,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% include "_us_act_now_board.html.j2" %}
     {% set _su = us_standouts if (us_standouts and us_standouts.buy) else None %}
     {{ pv.pv_css(setup_detail=true) }}
+    <style>{% include "_prophet_workspace.css.j2" %}</style>
     {# §6.9 R5 — the "passed on tonight" shelf's styles. Emitted ONCE, beside the card
        styles it sits under; the shelf itself renders far below, inside #us-standouts. #}
     {{ pvr.pvr_css() }}
@@ -17642,7 +17834,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         if (!tk) return;
         var T = window.MDXTerminal;
         if (T && T.on && T.on() && T.open && T.open(tk, tr)) return;
-        location.href = 'stock.html#' + encodeURIComponent(tk);
+        var _d = 'stock.html#' + encodeURIComponent(tk); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { location.href = _d; }
       });
     })();
     </script>
@@ -18281,6 +18473,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       <span class="fold-stat">{% if _health_unknown %}{{ t('health unavailable', '健康状态不可用') }}{% elif _bad %}{{ _bad|length }} {{ t('need attention', '需关注') }}{% elif _health_all_ok %}{{ t('all observed sources OK', '已观测数据源全部正常') }}{% else %}{{ t('no active failures', '无活动故障') }}{% endif %} · {{ health|length }} {{ t('sources', '数据源') }}</span>
       <span class="fold-caret">▾</span>
     </summary>
+    {# Closed health detail is the largest inert static table on this page.
+       Keep it outside the active document until expanded to avoid doing layout
+       and table enhancement for 190+ rows during mobile dashboard launch. #}
+    <template data-health-fold>
+      <div class="tbl-scroll">
     <table>
       <tr><th class="l">{{ t('source', '数据源') }}</th><th class="l">{{ t('status', '状态') }}</th><th>{{ t('rows', '行数') }}</th><th>{{ t('last data', '最新数据') }}</th><th class="l">{{ t('note', '备注') }}</th></tr>
       {%- if _health_unknown %}
@@ -18297,12 +18494,34 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       </tr>
       {% endfor %}
     </table>
+      </div>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
        Generated {{ generated_utc }} UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
        生成于 {{ generated_utc }} UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
+    </template>
   </details>
+  <script>
+  // Expand the settled health table exactly once, on first genuine disclosure.
+  // The original theme.js wraps ordinary tables in .tbl-scroll at DOM ready;
+  // a template is inert at that time, so its wrapper is baked above instead.
+  (function () {
+    var panel = document.getElementById('health');
+    var contents = panel && panel.querySelector(':scope > template[data-health-fold]');
+    if (!contents) return;
+    function hydrate() {
+      if (!panel.open) return;
+      panel.appendChild(contents.content);
+      contents.remove();
+      panel.removeEventListener('toggle', hydrate);
+      // tablesort.js uses the same enhancement path as a normal page load.
+      document.dispatchEvent(new CustomEvent('mmx-tables-ready', { detail: { root: panel } }));
+    }
+    panel.addEventListener('toggle', hydrate);
+    if (panel.open) hydrate();
+  })();
+  </script>
   {% endif %}{# /mode != stocks — data health #}
 
 </div>
@@ -18372,6 +18591,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     }
     window.addEventListener('load', fromHash);
     window.addEventListener('hashchange', fromHash);
+    window.addEventListener('mmx:shell-location', fromHash);
     document.addEventListener('click', function (e) {
       var a = e.target.closest('a.alert[href^="#"]');
       if (!a) return;
@@ -18408,6 +18628,7 @@ window.__CHART_SWAP__ = {
 {# GD-3: live-provisional Risk Envelope overlay — same mode gate as the band
    include inside the existing #dlg-risk dialog (_risk_envelope_band.html.j2). #}
 {% if mode != 'stocks' %}<script async src="risk_envelope_live.js"></script>{% endif %}
+{% if mode != 'stocks' %}<script defer src="risk_radar_workspace.js"></script>{% endif %}
 <script async src="release_publications_live.js"></script>
 <script>
 /* Keep .help tooltips on-screen: flip below the icon when it's near the top of
@@ -21448,6 +21669,7 @@ if (document.readyState === 'loading') {
         var a = si.querySelector('[data-act="signin"]');
         if (a) a.addEventListener('click', function(ev){
           ev.preventDefault();
+          if(window.MMXSharedShell){ window.MMXSharedShell.openAuth('signin'); return; }
           try{ window.MDXAuth.open('signin'); }catch(e2){ location.href = 'plans.html'; }
         });
       }

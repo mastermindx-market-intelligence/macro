@@ -213,7 +213,7 @@ def test_actual_nightly_caller_uses_benchmark_cutoff_not_old_event_clock(tmp_pat
         put(root, "options_flow", "summary_XLP",
             {"net_premium_mn": [1.0, 7.0] + ([-999999.0] if future else [])}, dates)
         payloads.append(RE.run_nightly(
-            copy.deepcopy(sectors), root, generated_utc="2026-10-07T01:00:00Z",
+            copy.deepcopy(sectors), root, generated_utc="2026-10-07 01:00 UTC",
             universe=universe, closes=closes,
         ))
     first, shocked = payloads

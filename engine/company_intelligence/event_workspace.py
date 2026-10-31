@@ -238,7 +238,10 @@ def production_registry() -> IssuerRegistry:
     """
     from .issuer_profiles import dhi_issuer, kbh_issuer, phm_issuer, tol_issuer
 
-    return IssuerRegistry([apple_issuer(), dhi_issuer(), phm_issuer(), kbh_issuer(), tol_issuer()])
+    from .defense_profiles import DEFENSE_TICKERS, defense_issuer
+    from .gd_profile import gd_issuer
+    return IssuerRegistry([apple_issuer(), dhi_issuer(), phm_issuer(), kbh_issuer(), tol_issuer(),
+                           *(defense_issuer(ticker) for ticker in DEFENSE_TICKERS), gd_issuer()])
 
 
 def flagship_fiscal_period() -> FiscalPeriod:
@@ -520,6 +523,34 @@ def _lifecycle_clock(
         raise WorkspaceError(f"{event_id}: lifecycle.{field} missing or unparseable (got {repr(value)[:80]})") from None
 
 
+def _issuer_release_acquisition_clock(source: Mapping[str, Any], *, event_id: str) -> datetime | None:
+    """Bound observation for generation cutoffs, never a source-use grant.
+
+    The builder replays the complete acquisition receipt against the body. This
+    writer/reader check only binds its clock to the retained source metadata;
+    downstream authorization must still validate provenance and policy itself.
+    """
+    if source.get("kind") != "issuer_release" or "acquisition_receipt" not in source:
+        return None
+    receipt = source["acquisition_receipt"]
+    if (not isinstance(receipt, Mapping)
+            or receipt.get("schema") != "earnings_release.sec_acquisition.v1"
+            or not source.get("source_sha256")
+            or receipt.get("source_sha256") != source.get("source_sha256")
+            or not source.get("filing_key") or receipt.get("filing_key") != source.get("filing_key")
+            or not source.get("url") or receipt.get("requested_url") != source.get("url")):
+        raise WorkspaceError(f"{event_id}: acquisition clock is not bound to the issuer release")
+    stamp = receipt.get("acquired_at")
+    if not isinstance(stamp, str) or not re.fullmatch(
+        r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,6})?Z", stamp
+    ):
+        raise WorkspaceError(f"{event_id}: acquisition clock is not explicit UTC")
+    try:
+        return datetime.fromisoformat(stamp[:-1] + "+00:00")
+    except ValueError as exc:
+        raise WorkspaceError(f"{event_id}: acquisition clock is invalid") from exc
+
+
 def _generation_clocks(cleaned: Mapping[str, Mapping[str, Any]]) -> tuple[str, str]:
     latest_observed: datetime | None = None
     latest_source: datetime | None = None
@@ -530,6 +561,17 @@ def _generation_clocks(cleaned: Mapping[str, Mapping[str, Any]]) -> tuple[str, s
             raise WorkspaceError(f"{event_id}: observed_at precedes source_available_at")
         latest_observed = observed_dt if latest_observed is None else max(latest_observed, observed_dt)
         latest_source = source_dt if latest_source is None else max(latest_source, source_dt)
+        for source in row.get('sources') or []:
+            if isinstance(source, Mapping):
+                acquisition_observed = _issuer_release_acquisition_clock(source, event_id=event_id)
+                if acquisition_observed is not None:
+                    latest_observed = max(latest_observed, acquisition_observed)
+            if isinstance(source, Mapping) and source.get('kind') == 'issuer_supplement':
+                from .issuer_supplements import validate_supplement_source
+                supplemental_observed, supplemental_available = validate_supplement_source(source, event_id=event_id)
+                latest_observed = max(latest_observed, supplemental_observed)
+                latest_source = max(latest_source, supplemental_available)
+
     if latest_observed is None or latest_source is None:
         raise WorkspaceError("write_workspace_generation requires at least one workspace")
     return _iso(_ceil_second(latest_observed)), _iso(_ceil_second(latest_source))
@@ -619,6 +661,19 @@ def validate_generation_clocks(manifest: Mapping[str, Any], rows: Mapping[str, M
             raise WorkspaceError(
                 f"{event_id}: generated_at must be >= observed_at >= source_available_at"
             )
+        for source in row.get('sources') or []:
+            if isinstance(source, Mapping):
+                acquisition_observed = _issuer_release_acquisition_clock(source, event_id=event_id)
+                if acquisition_observed is not None and generated_dt < acquisition_observed:
+                    raise WorkspaceError(f"{event_id}: generation predates issuer release acquisition")
+            if isinstance(source, Mapping) and source.get('kind') == 'issuer_supplement':
+                from .issuer_supplements import validate_supplement_source
+                supplemental_observed, supplemental_available = validate_supplement_source(source, event_id=event_id)
+                if generated_dt < supplemental_observed:
+                    raise WorkspaceError(f"{event_id}: generation predates supplemental source observation")
+                if _utc(manifest['source_clock'], field_name='source_clock') < supplemental_available:
+                    raise WorkspaceError(f"{event_id}: source_clock predates supplemental source availability")
+
 
 
 def preview_generation_identity(

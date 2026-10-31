@@ -53,7 +53,8 @@ set per block:
   None, NOT absent from the dict.
 - `research_watch.rows[i]` keys:
   condition_en, condition_zh, condition_zh_disclosed_why, since,
-  as_of, source_ref. (Rows carry no per-row state — the block-level
+  as_of, check_by, source_ref. `check_by` is the owner's YYYY-MM-DD
+  check-by date or None. (Rows carry no per-row state — the block-level
   state derives from the worst row's age; R2.)
 - `owner_links.rows[i]` keys:
   plane, label_en, label_zh, href, kind. (Static-link block has no
@@ -158,6 +159,7 @@ def _load_theses_row(obj: dict) -> dict | None:
     logged_raw = obj.get("logged_at")
     since_iso, _ = _norm_clock(since_raw)
     as_of_iso, _ = _norm_clock(logged_raw or since_raw)
+    check_by_iso, _ = _norm_clock(obj.get("check_by"))
     return {
         "id": obj.get("id"),
         "cond_text": cond_text,
@@ -165,6 +167,7 @@ def _load_theses_row(obj: dict) -> dict | None:
         "logged_raw": logged_raw,
         "since_iso": since_iso,
         "as_of_iso": as_of_iso,
+        "check_by": check_by_iso[:10] if check_by_iso else None,
     }
 
 
@@ -1781,6 +1784,7 @@ def _research_watch_block(data_dir: Path, generated_at: str) -> dict:
                     "condition_zh_disclosed_why": cond_zh_why,
                     "since": since_iso,
                     "as_of": as_of_iso,
+                    "check_by": row["check_by"],
                     "source_ref": "data/master_brain/theses.jsonl",
                 })
                 # Track newest as_of AMONG THE ROWS ONLY (R2).

@@ -876,7 +876,7 @@ html[data-lang="zh"] .live-mark{color:var(--ink-act, var(--red));border-color:va
           var a = si.querySelector('[data-act="signin"]');
           if(a) a.addEventListener('click', function(ev){
             ev.preventDefault();
-            try{ window.MDXAuth.open('signin'); }catch(e){ location.href = 'plans.html'; }
+            if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('signin'); return; } try{ window.MDXAuth.open('signin'); }catch(e){ location.href = 'plans.html'; }
           });
         }
       });

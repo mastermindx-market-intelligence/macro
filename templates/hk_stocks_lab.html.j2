@@ -1,6 +1,10 @@
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
+{%- macro co_name(x) -%}
+{% if x.name and x.name != x.ticker %} <span class="pick-rank pick-nm">{{ t(x.name, x.name_zh) -}}
+</span>{% endif %}
+{%- endmacro %}
 {#
   HK Pick Lab — HK candidate pick engine evaluation (display_only, ACCRUING).
   Spec: research/HK_PICK_LAB_MASTERPLAN_BY_FABLE.md §7.
@@ -166,7 +170,16 @@
 
   <!-- ── Page header ── -->
   <div class="pl-hd">
+    {% set sc_books = (scoreboard or [])|rejectattr('is_random')|list %}
+    {% set n_sc = sc_books|selectattr('status_badge.label_en', 'equalto', 'SCOREABLE')
+                          |list|length %}
+    {% set n_bk = sc_books|length %}
+    {% if n_sc %}
+    <p class="pl-eyebrow">{{ t('HK Pick Lab · Display-only', 'HK选股实验室 · 仅展示') }} · {{
+      t(n_sc ~ ' of ' ~ n_bk ~ ' books SCOREABLE', n_bk ~ '本书中' ~ n_sc ~ '本可评分') }}</p>
+    {% else %}
     <p class="pl-eyebrow">{{ t('HK Pick Lab · Display-only · ACCRUING', 'HK选股实验室 · 仅展示 · 累积中') }}</p>
+    {% endif %}
     <h1 class="pl-title">{{ t('HK Candidate Pick Engines', '港股候选选股引擎') }}</h1>
     <p class="pl-sub">{{ t('20 shadow books running on forward ledgers — measured against a random-control yardstick and the Hang Seng Index. Ruler: 21-session ^HSI excess (next HK session fill, close basis). All data is display-only; nothing here drives live selection or gating.', '20个影子书在前向账本上运行 — 与随机控制基准和恒生指数对比衡量。标尺：21节恒生超额（下一港股交易日入场，收盘价基准）。所有数据仅供展示；这里没有任何内容驱动实时选股或门控。') }}</p>
     {% if as_of %}<p class="pl-asof">{{ t('As of', '截至') }} {{ as_of }} · {{ t('Built', '生成时间') }} {{ built }}</p>{% endif %}
@@ -201,7 +214,7 @@
     {% endif %}
     <div class="sb-note">
       <b>{{ t('How to read this table:', '如何阅读此表：') }}</b>
-      {{ t('All 20 HK entry books measured against the Random Control yardstick (pinned at bottom) and ^HSI. ACCRUING = fewer than 25 fires across 3 months — do not act on these numbers yet. STALE = organ data staler than 2 HK sessions; book disabled for that night (HKPL-R7 fail-closed). Knife Avoid and Chase Avoid are INVERSE books — expected negative excess. Do not treat their picks as buy signals.', '所有20本HK入场书均与随机控制基准（固定在底部）和恒生指数对比。ACCRUING = 3个月内少于25次触发 — 暂不据此行动。STALE = 器官数据超过2个港股交易节；该书当夜停用（HKPL-R7故障关闭）。刀口规避和追涨规避是反向书 — 预期负超额。切勿将其选择视为买入信号。') }}
+      {{ t('All 20 HK entry books measured against the Random Control yardstick (pinned at bottom) and ^HSI. SCOREABLE = past the sample floor (at least 25 fires spanning 3+ calendar months and 6+ distinct fire dates): the numbers are descriptive summaries, not a verdict. ACCRUING = below that floor — do not act on these numbers yet. STALE = organ data staler than 2 HK sessions; book disabled for that night (HKPL-R7 fail-closed). Knife Avoid and Chase Avoid are INVERSE books — expected negative excess. Do not treat their picks as buy signals.', '所有20本HK入场书均与随机控制基准（固定在底部）和恒生指数对比。可评分 = 已过样本门槛（至少25次触发，跨越3个以上日历月，且有6个以上不同触发日）：数字仅为描述性汇总，并非结论。累积中 = 未达该门槛 — 暂不据此行动。STALE = 器官数据超过2个港股交易节；该书当夜停用（HKPL-R7故障关闭）。刀口规避和追涨规避是反向书 — 预期负超额。切勿将其选择视为买入信号。') }}
     </div>
     <div class="tbl-scroll">
       <table class="sb-tbl" aria-label="HK Scoreboard">
@@ -319,7 +332,7 @@
         <div class="pick-card">
           <div class="pick-top">
             <span class="pick-rank">#{{ p.rank }}</span>
-            <span class="pick-tk">{{ p.ticker }}</span>
+            <span class="pick-tk">{{ p.ticker }}{{ co_name(p) }}</span>
             <span class="pick-close">{{ p.close_fmt }}</span>
           </div>
           {% if p.sector %}<div class="pick-sector">{{ p.sector }}</div>{% endif %}
@@ -353,7 +366,8 @@
         <tbody>
           {% for f in book.recent_fires %}
           <tr>
-            <td>{{ f.ticker }}{% if f.halt_chip_en %}<span class="halt-chip"><span class="l-en">{{ f.halt_chip_en }}</span><span class="l-zh">{{ f.halt_chip_zh }}</span></span>{% endif %}</td>
+            <td>{{ f.ticker }}{{ co_name(f) }}{% if f.halt_chip_en %}<span class="halt-chip">
+              {{- t(f.halt_chip_en, f.halt_chip_zh) }}</span>{% endif %}</td>
             <td>{{ f.fire_date }}</td>
             <td class="neu">{{ f.fill_basis_label }}</td>
             <td class="{{ 'pos' if f.ret21_excess is not none and f.ret21_excess > 0 else ('neg' if f.ret21_excess is not none and f.ret21_excess < 0 else '') }}">{{ f.ret21_excess_fmt }}</td>
@@ -504,7 +518,7 @@
         <div class="pick-card{{ ' avoid-card' if book.is_inverse else '' }}">
           <div class="pick-top">
             <span class="pick-rank">#{{ p.rank }}</span>
-            <span class="pick-tk">{{ p.ticker }}</span>
+            <span class="pick-tk">{{ p.ticker }}{{ co_name(p) }}</span>
             <span class="pick-close">{{ p.close_fmt }}</span>
           </div>
           {% if p.sector %}<div class="pick-sector">{{ p.sector }}</div>{% endif %}
@@ -540,7 +554,8 @@
         <tbody>
           {% for f in book.recent_fires %}
           <tr>
-            <td>{{ f.ticker }}{% if f.halt_chip_en %}<span class="halt-chip"><span class="l-en">{{ f.halt_chip_en }}</span><span class="l-zh">{{ f.halt_chip_zh }}</span></span>{% endif %}</td>
+            <td>{{ f.ticker }}{{ co_name(f) }}{% if f.halt_chip_en %}<span class="halt-chip">
+              {{- t(f.halt_chip_en, f.halt_chip_zh) }}</span>{% endif %}</td>
             <td>{{ f.fire_date }}</td>
             <td class="neu">{{ f.fill_basis_label }}</td>
             <td class="{{ 'pos' if f.ret21_excess is not none and f.ret21_excess > 0 else ('neg' if f.ret21_excess is not none and f.ret21_excess < 0 else '') }}">{{ f.ret21_excess_fmt }}</td>

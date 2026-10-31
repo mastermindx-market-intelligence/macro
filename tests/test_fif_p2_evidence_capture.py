@@ -1327,6 +1327,11 @@ class _ScriptedPage:
         self.keyboard = _ScriptedKeyboard(self)
         self.moves: list[tuple[int, int]] = []
         self.mouse = types.SimpleNamespace(move=lambda x, y: self.moves.append((x, y)))
+        # A43 Z1 repair: the disabled-controls probe answer (the same list back
+        # every call; each keyboard interaction probes it once per receipt).
+        self.disabled_answers: list[Any] = []
+        self.evaluate_calls = 0
+        self.disabled_probe_at = 0
 
     def locator(self, selector: str) -> _ScriptedLocator:
         return _ScriptedLocator(self, selector)
@@ -1335,9 +1340,13 @@ class _ScriptedPage:
         self.waits.append(ms)
 
     def evaluate(self, script: str, arg: Any = None) -> Any:
+        self.evaluate_calls += 1
         if script == tool._FOCUS_RESET_SCRIPT.strip():
             self.resets += 1
             return None
+        if script == tool._DISABLED_CONTROLS_SCRIPT.strip():
+            self.disabled_probe_at = self.evaluate_calls
+            return list(self.disabled_answers)
         queue = {
             tool._DRAWER_PROBE_SCRIPT.strip(): "drawer",
             tool._ACTIVE_PROBE_SCRIPT.strip(): "active",
@@ -1662,6 +1671,329 @@ def test_run_interaction_unknown_or_raising_is_a_recorded_gap() -> None:
     receipt = tool.run_interaction(page, _interaction_payload("drawer_open"), _cell())
     assert receipt["verified"] is False
     assert receipt["error"].startswith("TimeoutError")
+
+
+# ---------------------------------------------------------------------------
+# A43 Z1 repair: the closed fact, the disabled-controls record, the rest-cell
+# receipt kind, and the gates that keep keyboard interactions.json at 24 rows.
+# ---------------------------------------------------------------------------
+
+
+def test_fold_closed_into_verified_loses_a_lost_focus_restore() -> None:
+    receipt = {"verified": True, "facts": {"wrapped": True, "escaped": 0}}
+    tool.fold_closed_into_verified(
+        receipt,
+        {
+            "open": True,
+            "modal": True,
+            "focus_restored": False,
+            "focus_matches_trigger": False,
+            "focus_on_finding_button": False,
+            "focus_id": None,
+            "focus_tag": "body",
+        },
+    )
+    assert receipt["verified"] is False
+    assert receipt["facts"]["closed"]["focus_restored"] is False
+
+
+def test_fold_closed_into_verified_is_fail_closed_only() -> None:
+    # The measured product behavior: focus lands on the selected finding's
+    # button (openAnalysisDrawer -> selectedEvidenceButton()), not the CTA.
+    restored = {
+        "open": False,
+        "focus_restored": True,
+        "focus_matches_trigger": False,
+        "focus_on_finding_button": True,
+        "focus_id": None,
+        "focus_tag": "button",
+    }
+    kept = {"verified": True, "facts": {}}
+    tool.fold_closed_into_verified(kept, restored)
+    assert kept["verified"] is True
+    # A restored close never un-fails a receipt whose trap already failed.
+    failed = {"verified": False, "facts": {}}
+    tool.fold_closed_into_verified(failed, restored)
+    assert failed["verified"] is False
+
+
+class _CloseProbePage(FakePage):
+    """Answers the closed probe; records key presses, waits, and shots."""
+
+    def __init__(self, answer: Any) -> None:
+        super().__init__()
+        self.answer = answer
+        self.seen_config: Any = None
+        self.pressed: list[str] = []
+        self.waits: list[int] = []
+        self.keyboard = types.SimpleNamespace(press=self.pressed.append)
+
+    def wait_for_timeout(self, ms: int) -> None:
+        self.waits.append(ms)
+
+    def evaluate(self, script: str, arg: Any = None) -> Any:
+        self.evaluated.append((script, arg))
+        if script == tool._DRAWER_CLOSED_PROBE_SCRIPT.strip():
+            self.seen_config = arg
+            return self.answer
+        return None
+
+
+def test_close_drawer_and_probe_restore_presses_escape_then_settles() -> None:
+    page = _CloseProbePage(
+        {"open": False, "modal": False, "focus_restored": True, "focus_matches_trigger": False, "focus_on_finding_button": True, "focus_id": None, "focus_tag": "button"}
+    )
+    closed = tool.close_drawer_and_probe_restore(page)
+    assert closed["focus_restored"] is True and closed["open"] is False
+    assert page.pressed == ["Escape"]
+    assert page.waits == [tool.INTERACTION_SETTLE_MS]
+    assert page.seen_config == {
+        "evidence": tool.EVIDENCE_SELECTOR,
+        "trigger": tool.PRIMARY_FINDING_SELECTOR,
+    }
+
+
+def _disabled_entries(locale: str) -> list[dict[str, Any]]:
+    labels = {
+        "en": ("Export unavailable", "Save this view"),
+        "zh": ("导出不可用", "保存当前视图"),
+    }
+    tips = {
+        "en": "Export is unavailable until this issuer, cutoff and policy can be queried.",
+        "zh": "在可查询该发行人、截止日和策略之前，导出不可用。",
+    }
+    return [
+        {
+            "selector": selector,
+            "present": True,
+            "disabled": True,
+            "visible_text": text,
+            "label_en": "Export unavailable" if selector == "#ff-export-btn" else "Save this view",
+            "label_zh": "导出不可用" if selector == "#ff-export-btn" else "保存当前视图",
+            "tip": tips[locale],
+            "aria_disabled": None,
+        }
+        for selector, text in zip(tool.DISABLED_CONTROL_SELECTORS, labels[locale])
+    ]
+
+
+class _DisabledProbePage(FakePage):
+    def __init__(self, answer: Any) -> None:
+        super().__init__()
+        self.answer = answer
+        self.seen_config: Any = None
+
+    def evaluate(self, script: str, arg: Any = None) -> Any:
+        self.evaluated.append((script, arg))
+        if script == tool._DISABLED_CONTROLS_SCRIPT.strip():
+            self.seen_config = arg
+            return self.answer
+        return None
+
+
+@pytest.mark.parametrize("locale", ["en", "zh"])
+def test_disabled_controls_record_shape_and_locale_selection(locale: str) -> None:
+    page = _DisabledProbePage(_disabled_entries(locale))
+    entries = tool.probe_disabled_controls(page, locale)
+    assert page.seen_config == {
+        "selectors": list(tool.DISABLED_CONTROL_SELECTORS),
+        "locale": locale,
+    }
+    assert [entry["selector"] for entry in entries] == list(tool.DISABLED_CONTROL_SELECTORS)
+    for entry in entries:
+        assert set(entry) == {
+            "selector",
+            "present",
+            "disabled",
+            "visible_text",
+            "label_en",
+            "label_zh",
+            "tip",
+            "aria_disabled",
+        }
+    receipt = tool.record_disabled_controls(page, _cell(locale=locale))
+    assert receipt["interaction"] == "disabled_controls"
+    assert receipt["force_state"] is None
+    assert receipt["verified"] is True
+    assert receipt["input"] is tool.DISABLED_CONTROLS_PROBE_INPUT
+    assert receipt["facts"]["controls"] == entries
+    assert receipt["cell_id"] == _cell(locale=locale).cell_id
+
+
+def test_disabled_controls_receipt_unverified_when_a_control_is_not_disabled() -> None:
+    entries = _disabled_entries("en")
+    entries[0]["disabled"] = False
+    receipt = tool.record_disabled_controls(_DisabledProbePage(entries), _cell())
+    assert receipt["verified"] is False
+
+    gone = [entry for entry in _disabled_entries("en") if entry["selector"] != "#ff-saved-save"]
+    receipt = tool.record_disabled_controls(_DisabledProbePage(gone), _cell())
+    assert receipt["verified"] is False
+
+
+def test_disabled_controls_probe_failure_is_a_recorded_gap() -> None:
+    class _Broken:
+        def evaluate(self, script: str, arg: Any = None) -> Any:
+            raise RuntimeError("page gone")
+
+    receipt = tool.record_disabled_controls(_Broken(), _cell())
+    assert receipt["verified"] is False
+    assert receipt["error"].startswith("RuntimeError")
+    assert receipt["facts"]["controls"] == []
+
+
+def test_rest_disabled_controls_probe_gate() -> None:
+    assert (
+        tool.rest_disabled_controls_probe_wanted(
+            "populated",
+            [
+                "drawer_open:[data-ff-evidence-interaction=drawer_open]",
+                "source_hover:hover(.ff-source-control)",
+            ],
+        )
+        is True
+    )
+    for keyboard_force in (
+        "tab_keys:[data-ff-evidence-interaction=tab_keys]",
+        "drawer_trap:[data-ff-evidence-interaction=drawer_trap]",
+    ):
+        assert tool.rest_disabled_controls_probe_wanted("populated", [keyboard_force]) is False
+    for mode in ("anonymous", "unavailable", "degraded"):
+        assert tool.rest_disabled_controls_probe_wanted(mode, []) is False
+
+
+def test_keyboard_receipts_carry_the_none_state_disabled_controls() -> None:
+    entries = _disabled_entries("en")
+    page = _ScriptedPage(
+        active=[{"matches": True}],
+        tablist=[
+            {"focus_is_tab": True, "focus_tab": "overview", "selected": ["overview"]},
+            {"focus_is_tab": True, "focus_tab": "accounting", "selected": ["accounting"]},
+        ],
+    )
+    page.disabled_answers = entries
+    receipt = tool.run_interaction(page, _interaction_payload("tab_keys"), _cell())
+    assert receipt["verified"] is True
+    assert receipt["facts"]["disabled_controls"] == entries
+    # The probe ran BEFORE the walk moved focus (it was the first evaluate).
+    assert page.disabled_probe_at == 1
+
+
+def test_page_proxy_runs_the_rest_probe_on_rest_cells_only() -> None:
+    probed: list[Any] = []
+    rest_cell = _cell()
+    forced_cell = _cell(force_state=types.SimpleNamespace(name="drawer_open"))
+    current = {"cell": rest_cell}
+    page = tool.PageProxy(
+        FakePage(),
+        fold_recorder=lambda page, cell: None,
+        get_cell=lambda: current["cell"],
+        rest_probe=lambda page_, cell_: probed.append(cell_),
+    )
+    page.screenshot(full_page=True)
+    assert probed == [rest_cell]
+    current["cell"] = forced_cell
+    page.screenshot(full_page=True)
+    assert probed == [rest_cell], "a forced cell never produces a disabled_controls receipt"
+
+
+class _TrapShotPage(_CloseProbePage):
+    """Records the shot/Escape order for the drawer_trap post-shot close."""
+
+    def __init__(self, answer: Any) -> None:
+        super().__init__(answer)
+        self.events: list[str] = []
+
+    def screenshot(self, **kwargs: Any) -> bytes:
+        self.events.append("shot")
+        return super().screenshot(**kwargs)
+
+
+def _trap_proxy(closed_answer: Any) -> tuple[_TrapShotPage, Any]:
+    real = _TrapShotPage(closed_answer)
+    cell = _cell()
+    page = tool.PageProxy(
+        real,
+        fold_recorder=lambda page, cell: None,
+        get_cell=lambda: cell,
+        interaction_runner=lambda *_args, **_kwargs: {
+            "cell_id": cell.cell_id,
+            "interaction": "drawer_trap",
+            "verified": True,
+            "facts": {},
+        },
+    )
+    return real, page
+
+
+def test_page_proxy_closes_the_drawer_after_the_drawer_trap_shot() -> None:
+    real, page = _trap_proxy(
+        {"open": False, "modal": False, "focus_restored": True, "focus_matches_trigger": False, "focus_on_finding_button": True, "focus_id": None, "focus_tag": "button"}
+    )
+    page.evaluate("FORCE", _interaction_payload("drawer_trap"))
+    assert page.screenshot(full_page=True) == b"png-bytes"
+    # The shot happened FIRST — it must still show the open, trapped drawer.
+    assert real.events == ["shot"]
+    assert real.pressed == ["Escape"]
+    receipt = page._last_receipt[1]
+    assert receipt["facts"]["closed"]["focus_restored"] is True
+    assert receipt["verified"] is True
+
+
+def test_page_proxy_a_failed_focus_restore_voids_the_trap_receipt() -> None:
+    real, page = _trap_proxy(
+        {"open": True, "modal": True, "focus_restored": False, "focus_matches_trigger": False, "focus_on_finding_button": False, "focus_id": "ff-evidence-close", "focus_tag": "button"}
+    )
+    page.evaluate("FORCE", _interaction_payload("drawer_trap"))
+    page.screenshot(full_page=True)
+    receipt = page._last_receipt[1]
+    assert receipt["facts"]["closed"]["focus_restored"] is False
+    assert receipt["verified"] is False
+
+
+def test_page_proxy_a_probe_failure_fails_closed_without_killing_the_shot() -> None:
+    class _NoKeyboardPage(FakePage):
+        pass
+
+    real = _NoKeyboardPage()
+    cell = _cell()
+    page = tool.PageProxy(
+        real,
+        fold_recorder=lambda page, cell: None,
+        get_cell=lambda: cell,
+        interaction_runner=lambda *_args, **_kwargs: {
+            "cell_id": cell.cell_id,
+            "interaction": "drawer_trap",
+            "verified": True,
+            "facts": {},
+        },
+    )
+    page.evaluate("FORCE", _interaction_payload("drawer_trap"))
+    assert page.screenshot(full_page=True) == b"png-bytes"
+    receipt = page._last_receipt[1]
+    assert receipt["verified"] is False
+    assert "probe_error" in receipt["facts"]["closed"]
+    assert receipt["facts"]["closed"]["focus_restored"] is False
+
+
+def test_page_proxy_skips_the_close_on_every_other_interaction() -> None:
+    real = _TrapShotPage(None)
+    cell = _cell()
+    page = tool.PageProxy(
+        real,
+        fold_recorder=lambda page, cell: None,
+        get_cell=lambda: cell,
+        interaction_runner=lambda *_args, **_kwargs: {
+            "cell_id": cell.cell_id,
+            "interaction": "drawer_open",
+            "verified": True,
+            "facts": {},
+        },
+    )
+    page.evaluate("FORCE", _interaction_payload("drawer_open"))
+    page.screenshot(full_page=True)
+    assert real.pressed == []
+    assert "closed" not in page._last_receipt[1]["facts"]
 
 
 # ---------------------------------------------------------------------------
@@ -2037,3 +2369,60 @@ def test_briefcase_seed_sidecar_shape_and_manifest_reference() -> None:
         state_receipt=None,
     )
     assert "briefcase_seed" not in without["evidence_source"], "no flag, no reference"
+
+
+# ---------------------------------------------------------------------------
+# A0-SE SAFE-ENV production-capture hook (--dataset-store / --state-store)
+# ---------------------------------------------------------------------------
+
+
+def test_production_capture_flags_parse_and_default_off() -> None:
+    parser = tool.build_parser()
+    plain = parser.parse_args(["--mode", tool.MODE_POPULATED, "--out-dir", "x"])
+    assert plain.dataset_store is None
+    assert plain.state_store is None
+    hooked = parser.parse_args(
+        [
+            "--mode", tool.MODE_POPULATED, "--out-dir", "x",
+            "--dataset-store", "/tmp/ds", "--state-store", "/tmp/ss",
+        ]
+    )
+    assert hooked.dataset_store == "/tmp/ds"
+    assert hooked.state_store == "/tmp/ss"
+
+
+def test_install_state_into_local_store_writes_the_loaders_key(
+    tmp_path: Path
+) -> None:
+    from engine.fundamental_forensics import private_state
+    from engine.research_vault.r2_store import LocalStore
+
+    blob = gzip.compress(b'{"schema": "fundamental_forensics.state/v1"}')
+    served = tool.install_state_into_local_store(tmp_path, blob)
+    assert served == tmp_path / private_state.STATE_KEY
+    # The exact store adapter the loader's RESEARCH_LOCAL_STORE path uses
+    # reads the object back at the same key, byte for byte.
+    assert LocalStore(tmp_path).get_bytes(private_state.STATE_KEY) == blob
+
+
+def test_production_capture_flags_do_not_bypass_the_render_guard(
+    monkeypatch, tmp_path: Path
+) -> None:
+    site_dir = tmp_path / "site"
+    site_dir.mkdir()
+    (site_dir / "fundamental_forensics.html").write_text(
+        "<html><body>stale, no ff ids</body></html>", encoding="utf-8"
+    )
+    _forbid_browser(monkeypatch)
+    rc = tool.main(
+        [
+            "--mode", tool.MODE_POPULATED,
+            "--out-dir", str(tmp_path / "out"),
+            "--generated-at", "2026-10-13T02:05:00Z",
+            "--site-dir", str(site_dir),
+            "--dataset-store", str(tmp_path / "ds"),
+            "--state-store", str(tmp_path / "ss"),
+        ]
+    )
+    assert rc == tool.EXIT_STALE_PAGE
+    assert not (tmp_path / "out").exists()

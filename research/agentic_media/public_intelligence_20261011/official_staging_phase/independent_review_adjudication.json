@@ -1,0 +1,29 @@
+{
+  "review_run": "mmx-press-private-ingress-review-20261014-001",
+  "review_sha256": "a1ba7f8122219be807c1a532c32e38caef1475f7ee21e435923b1fd95aeeb6c7",
+  "review_verdict": "NOT PASS on supplied pre-repair text",
+  "accepted_source": "5d06f81f068aa876743862a1d16b4687adca6422",
+  "parent_verdict": "blocking finding resolved; private source release accepted, publication not approved",
+  "blocking_finding": "Removing mutable provenance and source metadata bypassed official emit and published replay guards.",
+  "resolution": "Commit 5d06 checks stable press-official identity in emit and canonical slot identity in replay. Exact independent counterexample matches parent red tests; two tests failed before repair and 114 affected tests passed afterward.",
+  "evidence": [
+    "identity_metadata_strip_red.txt",
+    "identity_metadata_strip_green.txt",
+    "identity_guard_adjudication.json",
+    "local_installed_ingress_identity_proof.json"
+  ],
+  "review_scope": "Reviewer executed supplied text rather than an exact checked-out repository. Parent bound source and regressions; no claim reviewer reran final commit.",
+  "nonblocking_followon": [
+    "Refuse official staging without usable first-party facts before provider spend.",
+    "Preserve number-scale identity in anchoring; inherited value-only semantics can conflate million and billion.",
+    "Close inherited furniture-class scoring evasion; only genuine boilerplate may be excluded.",
+    "Distinguish absent legacy timestamps from present-but-empty clocks."
+  ],
+  "release_limits": {
+    "official_emit_disabled": true,
+    "publication": false,
+    "cutover": false,
+    "w1_credit": 0,
+    "historical_unknown_replayed": false
+  }
+}

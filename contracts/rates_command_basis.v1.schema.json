@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/rates_command_basis.v1.schema.json",
+  "title": "rates_command_basis.v1 qualified-comparison records",
+  "description": "Wire contract for QualifiedObservation, ComparisonResult and PathIdentification (B0 seat ruling 2026-10-14). Every frozen field is required on the wire.",
+  "type": "object",
+  "$defs": {
+    "Precision": {
+      "type": "string",
+      "enum": ["minute", "day", "month", "unknown"]
+    },
+    "EvidenceClass": {
+      "type": "string",
+      "enum": [
+        "official_measurement",
+        "house_estimate",
+        "market_implied_expectation",
+        "survey_participant_projection",
+        "estimated_decomposition",
+        "hypothetical_scenario"
+      ]
+    },
+    "ValueState": {
+      "type": "string",
+      "enum": ["present", "missing", "withheld", "stale", "refused"]
+    },
+    "ComparisonStatus": {
+      "type": "string",
+      "enum": [
+        "directly_comparable",
+        "comparable_after_transformation",
+        "not_comparable",
+        "not_identified",
+        "unavailable"
+      ]
+    },
+    "PathStatus": {
+      "type": "string",
+      "enum": [
+        "identified_conditional",
+        "feasible_alternatives",
+        "inconsistent",
+        "missing_inputs"
+      ]
+    },
+    "PathSegment": {
+      "type": "array",
+      "prefixItems": [
+        {"type": "string"},
+        {"type": "string"},
+        {"type": "number"}
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "PathRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["segments", "end_rate"],
+      "properties": {
+        "segments": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/PathSegment"}
+        },
+        "end_rate": {"type": "number"}
+      }
+    },
+    "QualifiedObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "obs_id", "subject", "evidence_class", "value", "value_state", "unit",
+        "target", "basket_or_index", "reference_start", "reference_end",
+        "tenor", "observation_time", "observation_precision",
+        "seasonal_treatment", "rate_index", "averaging_law", "curve_convention",
+        "source", "source_version", "content_ref", "first_public_evidence",
+        "first_public_precision", "admitted_at", "cutoff", "model_id",
+        "target_epoch", "vintage", "rights", "quality", "authority",
+        "limitations"
+      ],
+      "properties": {
+        "obs_id": {"type": "string", "pattern": "^[0-9a-f]{16}$"},
+        "subject": {"type": "string"},
+        "evidence_class": {"$ref": "#/$defs/EvidenceClass"},
+        "value": {"type": ["number", "null"]},
+        "value_state": {"$ref": "#/$defs/ValueState"},
+        "unit": {
+          "type": "string",
+          "enum": [
+            "pct_mom", "pct_yoy", "pct_ann_rate", "pct_3m_ann",
+            "index_level", "thousands_persons", "persons", "bp"
+          ]
+        },
+        "target": {"type": "string"},
+        "basket_or_index": {"type": ["string", "null"]},
+        "reference_start": {"type": ["string", "null"]},
+        "reference_end": {"type": ["string", "null"]},
+        "tenor": {"type": ["string", "null"]},
+        "observation_time": {"type": ["string", "null"]},
+        "observation_precision": {"$ref": "#/$defs/Precision"},
+        "seasonal_treatment": {
+          "type": ["string", "null"],
+          "enum": ["sa", "nsa", "n/a", null]
+        },
+        "rate_index": {
+          "type": ["string", "null"],
+          "enum": ["EFFR", "SOFR", "n/a", null]
+        },
+        "averaging_law": {
+          "type": ["string", "null"],
+          "enum": [
+            "arithmetic_calendar_day", "compounded_business_day", "point",
+            "n/a", null
+          ]
+        },
+        "curve_convention": {
+          "type": ["string", "null"],
+          "enum": ["par", "zero", "forward", "real_par", "n/a", null]
+        },
+        "source": {"type": ["string", "null"]},
+        "source_version": {"type": ["string", "null"]},
+        "content_ref": {"type": ["string", "null"]},
+        "first_public_evidence": {"type": ["string", "null"]},
+        "first_public_precision": {"$ref": "#/$defs/Precision"},
+        "admitted_at": {"type": ["string", "null"]},
+        "cutoff": {"type": "string"},
+        "model_id": {"type": ["string", "null"]},
+        "target_epoch": {"type": ["string", "null"]},
+        "vintage": {"type": ["string", "null"]},
+        "rights": {
+          "type": "string",
+          "enum": [
+            "public_official", "redistribution_limited", "display_only",
+            "unknown"
+          ]
+        },
+        "quality": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "stale", "carried", "interpolated", "fallback_strip",
+              "proxy_vintage", "accuracy_withheld", "benchmark_only",
+              "experimental"
+            ]
+          }
+        },
+        "authority": {"type": "string", "enum": ["display_only"]},
+        "limitations": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "ComparisonResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "difference", "range", "unit", "rule_id", "rule_version",
+        "transform", "assumptions", "limitations", "reason", "left_ref",
+        "right_ref", "left_cutoff", "right_cutoff"
+      ],
+      "properties": {
+        "status": {"$ref": "#/$defs/ComparisonStatus"},
+        "difference": {"type": ["number", "null"]},
+        "range": {
+          "anyOf": [
+            {"type": "null"},
+            {"type": "number"},
+            {
+              "type": "array",
+              "items": {"type": "number"},
+              "minItems": 2,
+              "maxItems": 2
+            }
+          ]
+        },
+        "unit": {"type": "string"},
+        "rule_id": {"type": "string"},
+        "rule_version": {"type": "string"},
+        "transform": {"type": ["string", "null"]},
+        "assumptions": {"type": "array", "items": {"type": "string"}},
+        "limitations": {"type": "array", "items": {"type": "string"}},
+        "reason": {"type": "string"},
+        "left_ref": {"type": "string"},
+        "right_ref": {"type": "string"},
+        "left_cutoff": {"type": "string"},
+        "right_cutoff": {"type": "string"}
+      }
+    },
+    "PathIdentification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "identified", "alternatives", "end_rate_range",
+        "assumptions_used", "missing", "residual_bp"
+      ],
+      "properties": {
+        "status": {"$ref": "#/$defs/PathStatus"},
+        "identified": {
+          "anyOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/PathRecord"}
+          ]
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/PathRecord"}
+        },
+        "end_rate_range": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "array",
+              "items": {"type": "number"},
+              "minItems": 2,
+              "maxItems": 2
+            }
+          ]
+        },
+        "assumptions_used": {"type": "array", "items": {"type": "string"}},
+        "missing": {"type": "array", "items": {"type": "string"}},
+        "residual_bp": {"type": ["number", "null"]}
+      }
+    }
+  }
+}

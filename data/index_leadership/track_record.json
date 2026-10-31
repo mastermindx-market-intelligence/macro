@@ -1,104 +1,104 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-10-08",
-  "generated_at": "2026-10-13T07:08:14.126471+00:00",
+  "as_of": "2026-10-16",
+  "generated_at": "2026-10-21T06:55:38.938070+00:00",
   "is_context_only": true,
-  "n_snapshots": 1191,
-  "n_days": 40,
+  "n_snapshots": 1313,
+  "n_days": 44,
   "horizons": {
     "5": {
-      "n_matured": 1084,
+      "n_matured": 1191,
       "by_stage": {
         "running": {
-          "n": 1010,
-          "mean_fwd_rel": -0.006,
-          "hit_rate": 0.415
+          "n": 1114,
+          "mean_fwd_rel": -0.0063,
+          "hit_rate": 0.408
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0013,
+          "mean_fwd_rel": -0.0011,
           "hit_rate": 0.472
         },
         "coiling_primed": {
-          "n": 38,
-          "mean_fwd_rel": 0.0117,
-          "hit_rate": 0.579
+          "n": 41,
+          "mean_fwd_rel": 0.011,
+          "hit_rate": 0.585
         }
       },
-      "running_ic": -0.0029,
-      "running_ic_t_hac": -0.041,
+      "running_ic": -0.0238,
+      "running_ic_t_hac": -0.346,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 976,
+      "n_matured": 1150,
       "by_stage": {
         "running": {
-          "n": 902,
-          "mean_fwd_rel": -0.0105,
-          "hit_rate": 0.379
+          "n": 1075,
+          "mean_fwd_rel": -0.0132,
+          "hit_rate": 0.363
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0067,
+          "mean_fwd_rel": -0.0064,
           "hit_rate": 0.417
         },
         "coiling_primed": {
-          "n": 38,
-          "mean_fwd_rel": 0.0148,
-          "hit_rate": 0.474
+          "n": 39,
+          "mean_fwd_rel": 0.0156,
+          "hit_rate": 0.487
         }
       },
-      "running_ic": -0.0066,
-      "running_ic_t_hac": -0.101,
+      "running_ic": -0.0642,
+      "running_ic_t_hac": -1.004,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 818,
+      "n_matured": 976,
       "by_stage": {
         "running": {
-          "n": 744,
-          "mean_fwd_rel": -0.027,
-          "hit_rate": 0.305
+          "n": 902,
+          "mean_fwd_rel": -0.0298,
+          "hit_rate": 0.295
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0183,
-          "hit_rate": 0.306
+          "mean_fwd_rel": -0.0189,
+          "hit_rate": 0.278
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0197,
+          "mean_fwd_rel": 0.0198,
           "hit_rate": 0.605
         }
       },
-      "running_ic": 0.0195,
-      "running_ic_t_hac": 0.48,
+      "running_ic": -0.0221,
+      "running_ic_t_hac": -0.493,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 177,
+      "n_matured": 270,
       "by_stage": {
         "running": {
-          "n": 165,
-          "mean_fwd_rel": -0.0491,
-          "hit_rate": 0.309
+          "n": 241,
+          "mean_fwd_rel": -0.0485,
+          "hit_rate": 0.295
         },
         "coiling": {
-          "n": 10,
-          "mean_fwd_rel": -0.071,
-          "hit_rate": 0.2
+          "n": 13,
+          "mean_fwd_rel": -0.0683,
+          "hit_rate": 0.154
         },
         "coiling_primed": {
-          "n": 2,
-          "mean_fwd_rel": -0.0446,
-          "hit_rate": 0.0
+          "n": 16,
+          "mean_fwd_rel": 0.037,
+          "hit_rate": 0.688
         }
       },
-      "running_ic": null,
-      "running_ic_t_hac": null,
+      "running_ic": 0.0126,
+      "running_ic_t_hac": 0.433,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     }
@@ -116,67 +116,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-09-17",
-      "id": "baskets:silver-miners",
-      "name": "Silver Miners",
+      "date": "2026-09-25",
+      "id": "russell:semiconductor-equipment-materials",
+      "name": "Semiconductor Equipment & Materials",
       "stage": "running",
-      "fwd_rel": -0.1396,
+      "fwd_rel": -0.2251,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-17",
-      "id": "baskets:gold-miners",
-      "name": "Gold Miners",
+      "date": "2026-09-25",
+      "id": "russell:capital-markets",
+      "name": "Capital Markets",
       "stage": "running",
-      "fwd_rel": -0.1278,
+      "fwd_rel": -0.1686,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-17",
-      "id": "subsectors:agricultural-inputs",
-      "name": "Agricultural Inputs",
+      "date": "2026-09-25",
+      "id": "baskets:quantum-computing",
+      "name": "Quantum Computing",
       "stage": "running",
-      "fwd_rel": -0.1008,
+      "fwd_rel": -0.1622,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-17",
-      "id": "baskets:crypto",
-      "name": "Crypto & Digital Assets",
+      "date": "2026-09-25",
+      "id": "subsectors:electronic-components",
+      "name": "Electronic Components",
       "stage": "running",
-      "fwd_rel": -0.069,
+      "fwd_rel": -0.1206,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-17",
-      "id": "russell:reit-healthcare-facilities",
-      "name": "REIT - Healthcare Facilities",
+      "date": "2026-09-25",
+      "id": "subsectors:airlines",
+      "name": "Airlines",
       "stage": "running",
-      "fwd_rel": -0.0689,
+      "fwd_rel": -0.1034,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-17",
-      "id": "subsectors:auto-manufacturers",
-      "name": "Auto Manufacturers",
+      "date": "2026-09-25",
+      "id": "russell:electronic-components",
+      "name": "Electronic Components",
       "stage": "running",
-      "fwd_rel": -0.0595,
+      "fwd_rel": -0.0897,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-17",
-      "id": "russell:building-products-equipment",
-      "name": "Building Products & Equipment",
+      "date": "2026-09-25",
+      "id": "russell:oil-gas-equipment-services",
+      "name": "Oil & Gas Equipment & Services",
       "stage": "running",
-      "fwd_rel": -0.0557,
+      "fwd_rel": -0.0743,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-17",
-      "id": "subsectors:farm-heavy-construction-machinery",
-      "name": "Farm & Heavy Construction Machinery",
+      "date": "2026-09-25",
+      "id": "nasdaq:biotechnology",
+      "name": "Biotechnology",
       "stage": "running",
-      "fwd_rel": -0.0556,
+      "fwd_rel": -0.0705,
       "horizon_d": 21
     }
   ],

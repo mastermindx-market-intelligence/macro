@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
 
 from tests.test_cn_pullback_dialog_integration import ROOT
+from tests.test_dashboard_template_render import _env as _site_env
 from tests.test_macro_risk_dialog import _dlg, _render, _vm
 from tests.test_risk_radar_dlg_partial import _RD
 from tests.test_risk_radar_pullback_depth_template import native_view
@@ -120,6 +121,26 @@ def test_us_not_leading_keeps_the_legacy_odds_block():
         assert NOTICE_ZH not in html
         assert "riskdlg-odds-h" in html
         assert "riskdlg-odds-rail" in html
+
+
+def test_us_leading_leaves_out_the_risk_workspace():
+    # The workspace hero prints the forward odds, so a measured pullback keeps
+    # its data and template out. Its script then has nothing to mount.
+    html = _us_dialog(native_view("us"))
+    assert 'id="risk-radar-workspace-data"' not in html
+    assert 'id="risk-radar-workspace-template"' not in html
+    assert "rkw-odds" not in html
+    assert NOTICE_EN in html
+
+
+def test_us_not_leading_keeps_the_risk_workspace_unchanged():
+    vm = _vm()
+    workspace = _site_env().get_template("_risk_radar_workspace.html.j2").render(**vm, mode="macro")
+    assert 'id="risk-radar-workspace-data"' in workspace
+    for view in (None, _rejected("us"), _monitoring("us")):
+        html = _us_dialog(view)
+        assert html.count(workspace) == 1
+        assert NOTICE_EN not in html
 
 
 def test_cn_leading_hides_the_card_odds_block():

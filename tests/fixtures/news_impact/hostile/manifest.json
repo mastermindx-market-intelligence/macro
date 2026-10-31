@@ -1,0 +1,299 @@
+[
+  {
+    "file": "fixtures/001_nan_quantity_value.json",
+    "class": "raw_non_finite_number",
+    "base_case_id": "W1",
+    "mutation": "incremental_amount.value set to bare NaN token (strict JSON forbids it; python json parses it and jsonschema number comparisons with NaN never fail).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/002_receipt_span_beyond_segment.json",
+    "class": "span_outside_segment",
+    "base_case_id": "W1",
+    "mutation": "action_span.span.receipt.span_end_byte raised to 400 while receipt.segment_bytes is 72 (span claims bytes beyond the held segment; V_SPAN_REPLAY duty).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/003_locator_span_end_before_start.json",
+    "class": "span_end_before_start",
+    "base_case_id": "W1",
+    "mutation": "action_span.span.locator.span_start_byte set to 200, above span_end_byte 72 (schema bounds each byte field but never orders them).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/004_supersedes_chain_self.json",
+    "class": "supersedes_self_loop",
+    "base_case_id": "R6",
+    "mutation": "supersedes_fact_id set equal to the payload's own fact_id (self-supercession loop; schema only checks the fact_ pattern).",
+    "expected": "reject:supersedes_required",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/005_envelope_time_travel.json",
+    "class": "envelope_time_order",
+    "base_case_id": "W3",
+    "mutation": "observed_at moved to 2026-05-29T19:00:00Z, one hour before source_available_at 2026-05-29T20:00:00Z (source observed before it existed). INFERRED duty.",
+    "expected": "reject:schema_violation",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/006_baseline_impossible_date.json",
+    "class": "impossible_calendar_date",
+    "base_case_id": "W3",
+    "mutation": "baseline.timestamp set to 2026-13-45 (month 13, day 45; the schema pattern checks digit shapes only).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/007_envelope_impossible_datetime.json",
+    "class": "impossible_calendar_datetime",
+    "base_case_id": "W1",
+    "mutation": "observed_at set to 2026-13-45T99:99:99Z (pattern-valid digits, impossible clock; format: date-time is an unenforced annotation without a FormatChecker).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/008_excerpt_data_uri.json",
+    "class": "data_uri_excerpt",
+    "base_case_id": "W1",
+    "mutation": "display_excerpt replaced with a data:text/html payload; the text_safe scheme blocklist covers http/javascript/file families but not data:.",
+    "expected": "reject:injection_pattern",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/009_split_role_marker_two_fields.json",
+    "class": "split_role_marker_disjoint_fields",
+    "base_case_id": "W1",
+    "mutation": "role marker split so neither field alone matches text_safe: action_span.claimed_quote ends '...through the system' and conditions_quote begins ': console only...' (extends battery V27, which split a disregard-phrase, not a role marker); joined field text hits the text_safe role-marker pattern.",
+    "expected": "reject:injection_pattern",
+    "schema_alone": "accepts",
+    "novel_vs_battery": "F_split_two_fields"
+  },
+  {
+    "file": "fixtures/010_forbidden_vocab_price_target_quote.json",
+    "class": "forbidden_vocab_in_text_value",
+    "base_case_id": "W1",
+    "mutation": "claimed_quote replaced with prose carrying a price_target numeral and a probability (frozen grep vocabulary confidence|price_target|score|contagion|probability smuggled through a text field).",
+    "expected": "reject:forbidden_vocabulary",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/011_contagion_tag_in_quote.json",
+    "class": "contagion_tag_in_text",
+    "base_case_id": "W1",
+    "mutation": "conditions_quote set to desk prose applying a contagion tag (KILL-LLM-CONTAGION-TAGS vocabulary via free text; passes text_safe). SEAT RULING R5 (0e739467, 2026-10-12): plain-language vocabulary inside a verbatim quote field is SOURCE text, not origination; the defence against a fabricated quote is span replay against held bytes (V_SPAN_REPLAY), not a word list. Reclassified from reject:forbidden_vocabulary to an accept control.",
+    "expected": "accept",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/012_llm_provenance_rights_profile.json",
+    "class": "llm_originated_provenance",
+    "base_case_id": "W1",
+    "mutation": "rights_profile set to llm_generated_transcript_v1 (LLM-originated provenance under DNR:KILL-LLM-ORIGINATION riding a text_safe-clean string). INFERRED duty.",
+    "expected": "reject:forbidden_vocabulary",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/013_duplicate_json_keys_last_wins.json",
+    "class": "duplicate_json_keys",
+    "base_case_id": "W1",
+    "mutation": "raw file carries fact_id twice with different valid values; python json keeps the last (schema-valid view) while the byte stream is ambiguous and a last-wins swap changes fact identity. INFERRED duty.",
+    "expected": "reject:injection_pattern",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/014_range_low_above_high.json",
+    "class": "range_bounds_inverted",
+    "base_case_id": "W3",
+    "mutation": "stated_amount low and high swapped (46500000000 above 46000000000); schema never orders range bounds (V_RANGE duty).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/015_self_counterparty.json",
+    "class": "self_counterparty",
+    "base_case_id": "W3",
+    "mutation": "counterparty_company_id set to the issuer's own cik:0000320193 (named validator self-counterparty; schema admits any well-formed id).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/016_end_year_before_year.json",
+    "class": "period_end_before_start",
+    "base_case_id": "W3",
+    "mutation": "fiscal_period gains end_year 2025 while year is 2026 (multi-year window ending before it starts). INFERRED duty, V_PERIOD family.",
+    "expected": "reject:schema_violation",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/017_confidence_key_at_depth.json",
+    "class": "forbidden_vocab_key_at_depth",
+    "base_case_id": "W1",
+    "mutation": "confidence: 0.87 planted inside incremental_amount.period (closed object; schema rejects via additionalProperties, validator must still classify it as forbidden vocabulary, not a generic shape error).",
+    "expected": "reject:forbidden_vocabulary",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/018_homoglyph_key_cyrillic.json",
+    "class": "unicode_homoglyph_key",
+    "base_case_id": "W1",
+    "mutation": "second key f\\u0430ct_id (Cyrillic a, U+0430) added beside fact_id (visually identical key; closed object must reject the unknown twin).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/019_case_variant_key.json",
+    "class": "key_case_variant",
+    "base_case_id": "W1",
+    "mutation": "key Fact_ID added beside fact_id (case-variant twin; additionalProperties must reject, never normalize).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/020_zero_width_in_enum_value.json",
+    "class": "zero_width_in_enum",
+    "base_case_id": "W1",
+    "mutation": "U+200B inserted inside the commitment_status enum value (closed enums must match exactly; battery only ever attacked free-text slots).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/021_numeric_string_for_number.json",
+    "class": "numeric_string_type_flip",
+    "base_case_id": "W1",
+    "mutation": "document_version set to the string \"3\" where the schema requires an integer.",
+    "expected": "reject:schema_violation",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/022_number_for_string_id.json",
+    "class": "number_for_string_type_flip",
+    "base_case_id": "W1",
+    "mutation": "document_id set to the number 42 where the schema requires a text_safe string.",
+    "expected": "reject:schema_violation",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/023_infinity_quantity_value.json",
+    "class": "raw_infinity_token",
+    "base_case_id": "W1",
+    "mutation": "incremental_amount.value set to bare Infinity token (raw non-JSON number; schema maximum 1e15 happens to catch this one).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/024_integer_overflow_beyond_2p53.json",
+    "class": "integer_overflow_beyond_2p53",
+    "base_case_id": "W1",
+    "mutation": "incremental_amount.value set to 9007199254740993 (2^53+1; schema maximum 1e15 rejects it, so the corpus pins the bound as the reason).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/025_company_id_nine_digits.json",
+    "class": "company_id_digit_count",
+    "base_case_id": "W1",
+    "mutation": "company_id set to cik:123456789 (nine digits; contract identity is cik: + exactly ten).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/026_company_id_ticker_form.json",
+    "class": "company_id_ticker_form",
+    "base_case_id": "W1",
+    "mutation": "company_id set to ticker:AAPL (ticker scheme in place of the frozen cik: + ten digits identity).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/027_corrected_fact_without_supersedes.json",
+    "class": "corrected_fact_missing_supersedes",
+    "base_case_id": "R6",
+    "mutation": "supersedes_fact_id nulled while novelty stays corrected_fact (schema allOf then-branch requires a non-null supersedes id; validator must emit supersedes_required).",
+    "expected": "reject:supersedes_required",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/028_discriminator_body_mismatch.json",
+    "class": "template_discriminator_mismatch",
+    "base_case_id": "W1",
+    "mutation": "schema discriminator flipped to demand_guidance_contract_event.v1 while the body stays a capital_allocation event (no oneOf branch matches the hybrid).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/029_locator_cross_branch_key.json",
+    "class": "locator_cross_branch_key",
+    "base_case_id": "W1",
+    "mutation": "region (a slide_region-only key) planted inside a locator of kind text_span (extends owner probe C4: not just unknown keys, but keys valid in a sibling locator branch; R4 code).",
+    "expected": "reject:locator_key_not_in_contract",
+    "schema_alone": "rejects",
+    "novel_vs_battery": "C4_open_address_keys"
+  },
+  {
+    "file": "fixtures/030_null_where_typed_absence_required.json",
+    "class": "null_where_typed_absence_required",
+    "base_case_id": "W3",
+    "mutation": "stated_amount set to bare null where the contract requires a quantity or a typed field_absence.v1 payload.",
+    "expected": "reject:schema_violation",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/031_deep_nested_array_in_absence.json",
+    "class": "deep_nesting_array",
+    "base_case_id": "R6",
+    "mutation": "executed_amount.absence.missing_fields replaced with an array nested 200 levels deep (pathological container; items must be text_safe strings).",
+    "expected": "reject:schema_violation",
+    "schema_alone": "rejects",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/032_control_homoglyph_in_value.json",
+    "class": "control_homoglyph_in_text_value",
+    "base_case_id": "W5",
+    "mutation": "object_name carries a Cyrillic i (U+0456) inside the company word; homoglyphs in free-text VALUES are legitimate content, unlike key positions (control for 018).",
+    "expected": "accept",
+    "schema_alone": "accepts",
+    "novel_vs_battery": true
+  },
+  {
+    "file": "fixtures/033_control_accented_text.json",
+    "class": "control_unicode_free_text",
+    "base_case_id": "W1",
+    "mutation": "conditions_quote set to accented prose (caf\u00e9, r\u00e9sum\u00e9); accents must not trip the control-character blocklist (control).",
+    "expected": "accept",
+    "schema_alone": "accepts",
+    "novel_vs_battery": "benign"
+  }
+]

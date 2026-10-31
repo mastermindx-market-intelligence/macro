@@ -1,0 +1,273 @@
+{
+  "observed_at": "2026-10-14T15:41:13.520366+00:00",
+  "head": "9b4bd85aa4f0a5c56bb0f025954aa743a2fe8c68",
+  "stable_head": true,
+  "top_movers": {
+    "gainers": [
+      {
+        "ticker": "ABSI",
+        "name": "ABSI",
+        "pct": 13.646532438478754,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      },
+      {
+        "ticker": "AUGO",
+        "name": "AUGO",
+        "pct": 10.631591708085853,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      },
+      {
+        "ticker": "HIMS",
+        "name": "HIMS",
+        "pct": 10.19244476122596,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      },
+      {
+        "ticker": "PLTU",
+        "name": "PLTU",
+        "pct": 10.170562223626046,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      },
+      {
+        "ticker": "IOVA",
+        "name": "IOVA",
+        "pct": 9.842223891810665,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      },
+      {
+        "ticker": "ORCU",
+        "name": "ORCU",
+        "pct": 9.276729559748432,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      },
+      {
+        "ticker": "SECZ",
+        "name": "SECZ",
+        "pct": 9.162717219589256,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      },
+      {
+        "ticker": "PLNT",
+        "name": "PLNT",
+        "pct": 8.971156029979554,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      }
+    ],
+    "losers": [
+      {
+        "ticker": "ASTX",
+        "name": "ASTX",
+        "pct": -21.49321266968325,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      },
+      {
+        "ticker": "ALHC",
+        "name": "ALHC",
+        "pct": -13.375430539609656,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      },
+      {
+        "ticker": "TIGO",
+        "name": "TIGO",
+        "pct": -9.630471859010804,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      },
+      {
+        "ticker": "COHR",
+        "name": "Coherent Corp.",
+        "pct": -9.63,
+        "sector": "Technology",
+        "asof": "2026-10-08",
+        "source": "sp500_heatmap"
+      },
+      {
+        "ticker": "EOSE",
+        "name": "EOSE",
+        "pct": -8.860759493670889,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      },
+      {
+        "ticker": "AVNT",
+        "name": "AVNT",
+        "pct": -7.784285017081494,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      },
+      {
+        "ticker": "ABR",
+        "name": "ABR",
+        "pct": -7.119741100323617,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      },
+      {
+        "ticker": "BKD",
+        "name": "BKD",
+        "pct": -7.070707070707083,
+        "sector": "",
+        "asof": "2026-10-09",
+        "source": "hot_tape_pack"
+      }
+    ]
+  },
+  "canonical": {
+    "ABSI": {
+      "source": true,
+      "served": true
+    },
+    "AUGO": {
+      "source": false,
+      "served": false
+    },
+    "HIMS": {
+      "source": true,
+      "served": true
+    },
+    "PLTU": {
+      "source": false,
+      "served": false
+    },
+    "IOVA": {
+      "source": true,
+      "served": true
+    },
+    "ORCU": {
+      "source": false,
+      "served": false
+    },
+    "SECZ": {
+      "source": false,
+      "served": false
+    },
+    "PLNT": {
+      "source": true,
+      "served": true
+    },
+    "ASTX": {
+      "source": false,
+      "served": false
+    },
+    "ALHC": {
+      "source": true,
+      "served": true
+    },
+    "TIGO": {
+      "source": false,
+      "served": false
+    },
+    "COHR": {
+      "source": true,
+      "served": true
+    },
+    "EOSE": {
+      "source": true,
+      "served": true
+    },
+    "AVNT": {
+      "source": true,
+      "served": true
+    },
+    "ABR": {
+      "source": true,
+      "served": true
+    },
+    "BKD": {
+      "source": true,
+      "served": true
+    }
+  },
+  "changed_inputs": [],
+  "writes": 0,
+  "provider_calls": 0,
+  "artifact_dates": {
+    "site/marketdata/sp500_heatmap.json": {
+      "asof": "2026-10-08",
+      "generated_utc": "2026-10-14 14:11",
+      "source": "daily-close"
+    },
+    "site/marketdata/themes_heatmap.json": {
+      "asof": "2026-10-09",
+      "generated_utc": "2026-10-14 14:11",
+      "source": "finviz-themes"
+    },
+    "data/marketing/hot_tape_pack.json": {
+      "built_at": "2026-10-14T09:55:09Z",
+      "sources": {
+        "earnings_asof": "2026-09-30T03:23:30.310911+00:00",
+        "heatmap_asof": "2026-10-08",
+        "mcap_asof": "2026-10-09",
+        "store_last_date": "2026-10-09"
+      },
+      "trade_date": "2026-10-09"
+    }
+  },
+  "source_hashes": {
+    "engine/__pycache__/__init__.cpython-312.pyc": "4643d03689926e132d471537c56202ffea335873282b79a5239ffb7ca3fb81d7",
+    "engine/marketing/__pycache__/__init__.cpython-312.pyc": "198a9fa93448010e44419b21ff51d90a81d7552e7930d4dac2f29f0a160e6498",
+    "engine/marketing/__pycache__/state.cpython-312.pyc": "3954d68192478de5f6c88617029d9e323d0473eb93d89fcfab6ca26e5246c666",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/__init__.cpython-312.pyc": "f7a4964baf434fbe8a70147cf6beedd4be5af5591d5dc1e81b84a6dbe07e20dd",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/error.cpython-312.pyc": "64f08d4bca5ba43ec1c6f955d7b12bf077d8d68a91c88315a10c9fe2f7419a9b",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/tokens.cpython-312.pyc": "24daa32c139157ab751d4a15bce7889a9095bfce105da609bca82839b69e480a",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/events.cpython-312.pyc": "ec0541d8d09182f47110455aecb54ece58ceb6b7224585e8a2048e581e8e3303",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/nodes.cpython-312.pyc": "1610efcbca94a13df5e9e6064782d7c88bb94c250333460a2c262bcf395076b2",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/loader.cpython-312.pyc": "933f53689e36a162e0c026e1e836e30aa8328119dbde0aedb20ea2abaa7e5952",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/reader.cpython-312.pyc": "2cc79266360eadb4351a78b6ff1542ef97cc835a96d02eb834a813bb1cd7669c",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/scanner.cpython-312.pyc": "c8e0c4ad01a08a3f4e1b1bb922ef5c6ff1b603b30ad83a02bdad275fd76a5d58",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/parser.cpython-312.pyc": "0d2005db449c97b34ddf6f0d19a4a57659c338dd2332b01d4172a92f7d239da8",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/composer.cpython-312.pyc": "0968959736069d6a07d53d746632e94d15fca245e4f48fcdcbfdcbe1f42ecb7b",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/constructor.cpython-312.pyc": "134a7d5334759789e8cd4ae9ed051a8b39d3075be7783785097eadad05df3dd2",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/resolver.cpython-312.pyc": "7b494465bd8d70f966771bc179d98da7be8fe765ae3f4fbdb0b18b9cef61f219",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/dumper.cpython-312.pyc": "d47b52848a4fac59dbc9609687ca558e7b51cf82767081ad1e8adf2996c11467",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/emitter.cpython-312.pyc": "36da8dafc8de31ee085c3d1b7fee675729f4f229155001035d1f587c8d455997",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/serializer.cpython-312.pyc": "53a3bf39e008f286df7eb92481914e04728b6d3645a5bb60f9f94087b9e1a272",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/representer.cpython-312.pyc": "e3f3de4e6842996512eb5a614f3b6236f15865499af5c6eaeba4ac7110c860d4",
+    ".venv/lib/python3.12/site-packages/yaml/__pycache__/cyaml.cpython-312.pyc": "addbd869bc116c536b04167a1088d231b14c4f4430976f370e73a29006b3c783",
+    "engine/marketing/__pycache__/authority.cpython-312.pyc": "6532870cecea13d5e828268b5018be6e0a9f7cf8c23d884b6d01253a7999dbbf",
+    "engine/marketing/__pycache__/charter.cpython-312.pyc": "c396a233cb5f52e79cd70c629f79293e10c32005fe2d780857f91b1e09a3be8f",
+    "engine/marketing/__pycache__/claims.cpython-312.pyc": "5ea616c17f0c2e264ee3ef0167eb2bdfbbe006b63857176c6f7be29e674d57fc",
+    "engine/marketing/__pycache__/cmo.cpython-312.pyc": "db97fa120df5ccb30943a7ec216aacc9bf9f0717dc1db39351da78e1d9dc4c3b",
+    "engine/marketing/__pycache__/departments.cpython-312.pyc": "d8f421e62b67e5636ae207ca1b1f082ed7bd5a1d65dbb0ef0e0032973a902678",
+    "engine/marketing/__pycache__/economics.cpython-312.pyc": "9891708497fa53e8cc50a20dcd73cf37a26b64d4233f8b7f73a651265b34e507",
+    "engine/marketing/__pycache__/events.cpython-312.pyc": "486962d305edc49a95c9e8b8dbf38b1256ada65ef68d5cf03138e4abc3810ed1",
+    "engine/marketing/__pycache__/ledgers.cpython-312.pyc": "203110c552c94451f8d26fee7ddba8b5b1442e06266182c809e63bcc3aad880e",
+    "engine/marketing/__pycache__/opportunity_bus.cpython-312.pyc": "70ac851cb014cf2ea7b66238a7713c57df6f49a161746ef7dadd5f4f5aea9af6",
+    "engine/marketing/__pycache__/publication.cpython-312.pyc": "1024639b2f375f6aea3e76515ec491747d3249d325e420c28ab7b2dc6a379a6e",
+    "engine/marketing/movers_source.py": "f985ef77133914a260fd050f4b8cad0107ca468c76b3e9384008c7b5d0166e47",
+    "engine/marketing/__pycache__/market_clock.cpython-312.pyc": "e67c0fd25a74b5293fad1144896edd09fb26b2e4128ca43479e8a912e5d9224e",
+    "engine/press/__pycache__/__init__.cpython-312.pyc": "86019209270468a1c4aba9e30dbed3eecd95536ab4c83356a988f8fc62d3a66e",
+    "engine/press/desk_planner.py": "8282028e5b4caae7005ef22582adef9b86d400590290e2a5b132c5052d4ddb7b",
+    "site/marketdata/sp500_heatmap.json": "02d03b2b9963ef43d97baee6e4e0e5999d5f835ba1e47bf0966815d131e1c272",
+    "site/marketdata/themes_heatmap.json": "b63aa08ac12a49b1d9013575ea5a256f8ce41ec7b39543464ad6b51e72be9174",
+    "data/marketing/hot_tape_pack.json": "75a5e773bcfdd7bf014556ccb2356916ca71bd1b648e62f26e3ef52aaeb269db",
+    "engine/marketing/__pycache__/copywriter.cpython-312.pyc": "d557d3821f09af2d73b6ebdbe90a950bbc9acc50883025b18658bb91a65a2b35",
+    "engine/__pycache__/prophet_integrity.cpython-312.pyc": "3964486ada816ff14601cbf9b8606b100e6e641c0e3aec122d2ecad492425c6f"
+  },
+  "raw_private_sha256": "72159fccacb0678822c3f403f3b9ebabf0651b31c1a75469b36139617926168a",
+  "decision": "HOLD_STALE_FOR_BRIEF; no new own event or source admission; regeneration time is not observation freshness"
+}

@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "NVR-BULL-20260818",
-  "asof": "2026-10-09",
+  "asof": "2026-10-30",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 37.4,
-  "raw_confidence": 37.7,
-  "delta_vs_base": -22.6,
-  "recommended_action": "trim",
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "management_confidence": 30.6,
+  "raw_confidence": 29.8,
+  "delta_vs_base": -29.4,
+  "recommended_action": null,
+  "human_state": "Closed",
   "components": {
-    "validity": 49.4,
+    "validity": 45.2,
     "progress": 0.0,
-    "pace": 22.0,
+    "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.593,
+    "dist_to_stop_r": 0.555,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 113.3,
-    "p1": -0.2715,
-    "p2": -0.1358,
+    "horizon_pct_used": 160.0,
+    "p1": -0.2967,
+    "p2": -0.1483,
     "p3": null,
-    "move_r": -0.407,
+    "move_r": -0.445,
     "mfe_r": 0.015,
-    "mae_r": -0.477
+    "mae_r": -0.671
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -36,15 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 14.840234375000364,
-  "_mae": -487.27988281249964,
+  "_mae": -685.7798828124996,
   "_max_p1": 0.009678718812875856,
   "_first_trigger_ts": "2026-08-25",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 51,
-  "tau": 1.1333
+  "days_elapsed": 72,
+  "tau": 1.6,
+  "closed": true,
+  "outcome": "EXPIRED"
 }

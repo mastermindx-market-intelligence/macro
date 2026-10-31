@@ -1,0 +1,7 @@
+{
+  "source_head": "e652575ffd5162c62b4491585ff5ef632a97b064",
+  "source_stage": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/v14-main-conflict-reconciliation/stage",
+  "v14_server_journals_missing": true,
+  "v14_browser_timings_preserved": true,
+  "change": "diagnostic server retains request and loop journals through shutdown event; browser adds protocol events only; product source unchanged"
+}

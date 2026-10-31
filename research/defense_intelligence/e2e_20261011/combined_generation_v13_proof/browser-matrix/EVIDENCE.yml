@@ -1,0 +1,27 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_site_nav.html.j2
+  - templates/_navlinks.html.j2
+  - templates/nav_market.js
+  - templates/account.js
+  - templates/supabase.js
+  - templates/government-revenue-page.js.j2
+  - templates/government-revenue-investor-start.js
+  - templates/theme.js
+  - templates/theme.css
+  - templates/product-nav-icons.css
+  - templates/navigation-refresh.css
+  - scripts/build_government_revenue.py
+  - lib/site_assets.py
+  - templates/government_revenue.html.j2
+  - templates/government-revenue-investor.js
+  - templates/government-revenue-investor.css
+  - templates/government-revenue-theme-context.js
+  - templates/government-revenue-theme-context.css
+  - templates/government-revenue-dossiers.js
+  - templates/government-revenue-sbir.js
+  - templates/government-revenue-sbir.css
+  - templates/government-revenue-briefcase.js
+  - templates/government-revenue-briefcase-ui.js
+  - templates/government-revenue-parity.css
+manifest: mockups/evidence/defense-final-local/manifest.json

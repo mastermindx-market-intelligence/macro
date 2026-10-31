@@ -1,0 +1,38 @@
+[
+  {
+    "file": "research/agentic_media/public_intelligence_20261011/initial_stage.json",
+    "sha256": "8a4c56105b869c20ce7b5928b3bab42417785cd40f70cbacdb2616434e79cfb0",
+    "markup_safety": {
+      "name": "markup_safety",
+      "ok": true,
+      "detail": "static article fragment with allowed tags and attributes",
+      "metrics": {}
+    },
+    "unchanged": true,
+    "acceptance_credit": false
+  },
+  {
+    "file": "research/agentic_media/public_intelligence_20261011/research_stage.json",
+    "sha256": "ae72a0afdce3e0ffc261d38f8de71b330f989597fe3c25abef4191ae55bbff3b",
+    "markup_safety": {
+      "name": "markup_safety",
+      "ok": true,
+      "detail": "static article fragment with allowed tags and attributes",
+      "metrics": {}
+    },
+    "unchanged": true,
+    "acceptance_credit": false
+  },
+  {
+    "file": "research/agentic_media/public_intelligence_20261011/current_event_phase/research_stage_20261013.json",
+    "sha256": "ec140345fab45fa876fceff6884577ebfead9740876d493afed2e477dfb2d971",
+    "markup_safety": {
+      "name": "markup_safety",
+      "ok": true,
+      "detail": "static article fragment with allowed tags and attributes",
+      "metrics": {}
+    },
+    "unchanged": true,
+    "acceptance_credit": false
+  }
+]

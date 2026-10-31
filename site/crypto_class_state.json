@@ -2,9 +2,9 @@
   "schema": "crypto.class_state/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-10-09",
+  "as_of": "2026-10-25",
   "universe_coverage": {
-    "as_of": "2026-10-09",
+    "as_of": "2026-10-25",
     "listed": 50,
     "requested": 50,
     "excluded": [
@@ -37,7 +37,7 @@
         "symbol": "DOT",
         "id": "polkadot",
         "source": "CoinGecko",
-        "as_of": "2026-09-26",
+        "as_of": "2026-10-15",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -61,7 +61,7 @@
         "symbol": "PEPE",
         "id": "pepe",
         "source": "CoinGecko",
-        "as_of": "2026-09-23",
+        "as_of": "2026-10-23",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -141,7 +141,7 @@
         "symbol": "WLD",
         "id": "worldcoin-wld",
         "source": "CoinGecko",
-        "as_of": "2026-10-03",
+        "as_of": "2026-10-23",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -170,11 +170,11 @@
       "pages_declared": false
     },
     "breadth": {
-      "as_of": "2026-10-09",
+      "as_of": "2026-10-25",
       "eligible": 3,
       "required": 10,
       "excluded": 47,
-      "positive": 2,
+      "positive": 0,
       "denominator": 3,
       "basis": "reported_30d_return_positive",
       "available": false,
@@ -185,10 +185,10 @@
     }
   },
   "market": {
-    "stance": "Market cap is higher",
-    "total_state": "Rising",
+    "stance": "Market cap is lower",
+    "total_state": "Falling",
     "dominance_state": "Steady",
-    "fear_state": "Greedy",
+    "fear_state": "Neutral",
     "breadth_state": "Building history",
     "cap_move": "valuation",
     "cap_splices": [
@@ -412,6 +412,58 @@
         "support_after": 5,
         "level_ratio": 1.0039583043488778,
         "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-10-10",
+        "from_basis": "direct",
+        "to_basis": "derived",
+        "from_label_en": "direct total",
+        "from_label_zh": "直接总量",
+        "to_label_en": "derived total",
+        "to_label_zh": "推算总量",
+        "support_before": 5,
+        "support_after": 5,
+        "level_ratio": 1.091698121099373,
+        "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-10-15",
+        "from_basis": "derived",
+        "to_basis": "direct",
+        "from_label_en": "derived total",
+        "from_label_zh": "推算总量",
+        "to_label_en": "direct total",
+        "to_label_zh": "直接总量",
+        "support_before": 5,
+        "support_after": 1,
+        "level_ratio": 0.9963786789102654,
+        "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-10-16",
+        "from_basis": "direct",
+        "to_basis": "derived",
+        "from_label_en": "direct total",
+        "from_label_zh": "直接总量",
+        "to_label_en": "derived total",
+        "to_label_zh": "推算总量",
+        "support_before": 1,
+        "support_after": 4,
+        "level_ratio": 1.092466319949656,
+        "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-10-20",
+        "from_basis": "derived",
+        "to_basis": "direct",
+        "from_label_en": "derived total",
+        "from_label_zh": "推算总量",
+        "to_label_en": "direct total",
+        "to_label_zh": "直接总量",
+        "support_before": 4,
+        "support_after": 6,
+        "level_ratio": 0.9792013096092356,
+        "regime_treatment": "continuity_adjusted"
       }
     ]
   },
@@ -439,22 +491,22 @@
   },
   "heat": {
     "funding": "Unavailable",
-    "open_interest": "Unavailable",
-    "volatility": "Unavailable",
+    "open_interest": "Leverage light",
+    "volatility": "Volatility compressed",
     "altseason": "Mixed relative trend"
   },
   "assets": {
     "ETH": {
-      "trend": "Advancing",
+      "trend": "Range",
       "risk": "Stressed",
-      "relative": "Leading Bitcoin",
-      "coverage": "3,783 daily observations from Coinbase daily OHLCV."
+      "relative": "Tracking Bitcoin",
+      "coverage": "3,799 daily observations from Coinbase daily OHLCV."
     },
     "SOL": {
-      "trend": "Advancing",
+      "trend": "Range",
       "risk": "Stressed",
       "relative": "Leading Bitcoin",
-      "coverage": "1,941 daily observations from Coinbase daily OHLCV."
+      "coverage": "1,957 daily observations from Coinbase daily OHLCV."
     }
   }
 }

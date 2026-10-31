@@ -1,0 +1,18 @@
+{
+  "schema_version": "fif_slo.v1",
+  "status": "proposed",
+  "window": 512,
+  "min_samples": 50,
+  "routes": {
+    "/api/forensics/state": {"p95_ms": 800, "p99_ms": 1500},
+    "/api/forensics/health": {"p95_ms": 300, "p99_ms": 600},
+    "/api/forensics/v1/financial/query": {"p95_ms": 1500, "p99_ms": 3000},
+    "/api/forensics/v1/financial/query.xlsx": {"p95_ms": 3000, "p99_ms": 6000},
+    "/api/forensics/v1/financial/query.csv": {"p95_ms": 2000, "p99_ms": 4000},
+    "/api/forensics/v1/financial/query.parquet": {"p95_ms": 2000, "p99_ms": 4000},
+    "/api/forensics/v1/financial/revisions": {"p95_ms": 1500, "p99_ms": 3000},
+    "/api/forensics/v1/financial/packet": {"p95_ms": 2000, "p99_ms": 4000},
+    "/api/forensics/v1/financial/statements": {"p95_ms": 1500, "p99_ms": 3000},
+    "/api/forensics/v1/attested-history/latest": {"p95_ms": 800, "p99_ms": 1500}
+  }
+}

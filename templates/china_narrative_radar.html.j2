@@ -4,6 +4,9 @@
 {% macro pc(v) -%}
 {% if v is none %}<span class="chg na">·</span>{% else %}<span class="chg {{ 'pos' if v>=0 else 'neg' }}">{{ '%+.2f'|format(v) }}%</span>{% endif %}
 {%- endmacro %}
+{% macro p1(v) -%}
+{% if v is none %}<span class="chg na">·</span>{% else %}{{ '%+.1f'|format(v) }}%{% endif %}
+{%- endmacro %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -155,7 +158,10 @@ html[data-lang="zh"] .member-chip .mr.pos{color:var(--ink-act, var(--red))} html
 <div class="wrap">
 
   <div class="h1">📡 {{ t('China Narrative Basket Radar','中国主题篮子雷达') }}</div>
-  <div class="intro">{{ t('Which THS theme basket is running, is its global driver intact, and which members have clean entries?','哪个同花顺主题篮子正在运行？其全球驱动因素是否完好？哪些成员具有清洁入场点？') }}</div>
+  <div class="intro">{{ t(
+    'Which THS theme basket is running, is its global driver intact, and which members lead '
+    'its 63-day move?',
+    '哪个同花顺主题篮子正在运行？其全球驱动因素是否完好？哪些成员领涨其63日走势？') }}</div>
 
   {# ─── Honesty banner (bilingual) ──────────────────────────────────────── #}
   <div class="honesty-banner">
@@ -168,7 +174,9 @@ html[data-lang="zh"] .member-chip .mr.pos{color:var(--ink-act, var(--red))} html
   {# ─── Headline strip: top-3 baskets by 63d return ─────────────────────── #}
   <div class="sec-h">
     <h2>{{ t('Top Running Baskets','领先运行主题') }}</h2>
-    <span class="sub">{{ t('trailing 63 trading days · as of','近63交易日 · 截至') }} {{ data.as_of }}</span>
+    <span class="sub">{{ t('trailing 63 trading days · as of','近63交易日 · 截至') }} {{ data.as_of }}{#
+    #}{% if data.membership_as_of %} · {{ t('membership snapshot','成分快照') }} {#
+    #}{{ data.membership_as_of }}{% endif %}</span>
   </div>
   <div class="headline-strip">
   {% for b in data.baskets[:3] %}
@@ -194,6 +202,9 @@ html[data-lang="zh"] .member-chip .mr.pos{color:var(--ink-act, var(--red))} html
         {% if b.state.label != '—' %}
           <span class="state-chip">{{ t(b.state.label, b.state.label_zh) }}{% if b.state.score is not none %} · {{ b.state.score|int }}/100{% endif %}</span>
         {% endif %}
+        {# Cycle-position inputs: drawdown from the 1y high, distance from the 200d SMA #}
+        <span class="state-chip">{{ t('1y high','距一年高点') }} {{ p1(b.state.drawdown_pct) }} ·
+          {{ t('vs 200d','偏离200日') }} {{ p1(b.state.dist_200d_pct) }}</span>
         {# Global AI arrow (AI-mapped baskets only) #}
         {% if ai %}
           <span class="ai-arrow" title="Global AI-semis (SMH/SOXX/TSM) 4w-momentum · {{ ai.validated_tag }}">
@@ -238,6 +249,17 @@ html[data-lang="zh"] .member-chip .mr.pos{color:var(--ink-act, var(--red))} html
         <span class="l-en">{{ b.category }}</span><span class="l-zh">{{ b.category_zh if b.category_zh else b.category }}</span>
       </div>
       {% endif %}
+      {%- if b.thesis or b.ths_concept %}
+      <div class="bc-cat">
+        {%- if b.thesis %}<span class="l-en">{{ b.thesis }}</span>{#
+        #}<span class="l-zh">{{ b.thesis_zh if b.thesis_zh else b.thesis }}</span>{% endif %}
+        {%- if b.ths_concept and b.ths_concept != b.name_zh %}
+        <span class="state-chip">{{ t('THS board','同花顺板块') }} {{ b.ths_concept }}</span>
+        {%- elif b.ths_concept %}
+        <span class="l-en state-chip">THS board {{ b.ths_concept }}</span>
+        {%- endif %}
+      </div>
+      {%- endif %}
 
       {# 63d return + 200d shield #}
       <div class="bc-row1">
@@ -255,6 +277,8 @@ html[data-lang="zh"] .member-chip .mr.pos{color:var(--ink-act, var(--red))} html
       {% if st.score is not none %}
       <div class="bc-meta">
         <span class="state-chip">{{ t(st.label, st.label_zh) }} · {{ st.score|int }}/100</span>
+        <span class="state-chip">{{ t('1y high','距一年高点') }} {{ p1(st.drawdown_pct) }}</span>
+        <span class="state-chip">{{ t('vs 200d','偏离200日') }} {{ p1(st.dist_200d_pct) }}</span>
       </div>
       <div class="posbar-wrap">
         <div class="posbar-track">
@@ -308,6 +332,10 @@ html[data-lang="zh"] .member-chip .mr.pos{color:var(--ink-act, var(--red))} html
 
   <div class="foot">
     {{ t('Source: THS (同花顺) concept-board membership + china_search close cache. EW level = cumprod of mean active-member daily returns (≥3 members required). 63d return = trailing 63 trading-day EW-level return. 200d shield = EW level vs its 200d SMA. Cycle position = own-history percentile of distance-from-200DMA + drawdown-from-1y-high (engine.china_sector_pathway._position, leak-free). Global AI-semis = EW 4-week log-momentum of SMH+SOXX+TSM weekly closes → next-week CPO basket return (validated #773, t=3.27, horse-race stable). Member links → china_lookup.html per-stock signal badges.','来源：同花顺概念板块成员 + china_search 收盘价缓存。等权水平 = 每日活跃成员平均收益的累乘（至少需3名成员）。63日收益 = 近63个交易日等权水平收益。200日盾牌 = 等权水平 vs 200日均线。周期位置 = 偏离200日均线 + 距一年高点回撤的自身历史分位（engine.china_sector_pathway._position，无未来信息泄露）。全球AI半导 = SMH+SOXX+TSM 周线等权4周对数动量 → 下周CPO篮子收益（已验证 #773，t=3.27，对照稳健）。成员链接 → china_lookup.html 个股信号徽章。') }}
+    {%- if data.membership_as_of %}
+    <br>{{ t('Basket membership: THS snapshot dated','篮子成分：同花顺快照，日期') }} {#
+    #}{{ data.membership_as_of }}{{ t('; closes run to','；收盘价截至') }} {{ data.as_of }}.
+    {%- endif %}
     <br>{{ t('Built','生成于') }} {{ generated_utc }}.
   </div>
 </div>

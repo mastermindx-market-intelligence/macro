@@ -164,6 +164,54 @@ _FED_FLAT_BAND_PCT = 0.5
 _WALCL_LABELED_BILLIONS_KEYWORD = "billion"
 _WALCL_PLAUSIBLE_MAX_IN_LABELED_UNIT = 50_000.0
 
+# GLT T21: per-leg composition order (S3). The same order is used to publish
+# the source rows in the Sources list and to walk the per-leg loops in
+# _metrics(). A "leg" is one of the six fresh-component legs the producer
+# publishes in ``freshness.component_snapshot.<group>.<leg>``.
+_GLT_LEG_ORDER: tuple[tuple[str, str], ...] = (
+    ("monetary", "fed"),
+    ("monetary", "ecb"),
+    ("monetary", "boj"),
+    ("usd_funding", "broad_dollar"),
+    ("usd_funding", "high_yield_oas"),
+    ("usd_funding", "real_yield_10y"),
+)
+
+# GLT T21 review M1: each leg's source row copies the freshness token of the
+# composed metric row named here (monetary legs and funding legs both publish
+# a glt_<leg>_..._contribution_z row; compose() performs the copy).
+_GLT_LEG_METRIC_ID: dict[str, str] = {
+    "fed": "glt_fed_monetary_contribution_z",
+    "ecb": "glt_ecb_monetary_contribution_z",
+    "boj": "glt_boj_monetary_contribution_z",
+    "broad_dollar": "glt_broad_dollar_contribution_z",
+    "high_yield_oas": "glt_high_yield_oas_contribution_z",
+    "real_yield_10y": "glt_real_yield_10y_contribution_z",
+}
+
+# GLT T21: only the two non-USD monetary legs (ECB/BoJ) can carry a model_spec
+# with an FX translation. The Fed balance sheet is already USD; a per-leg USD
+# translation row is never emitted for it (frozen spec S4).
+_GLT_FX_TRANSLATION_LEGS: dict[str, str] = {
+    "ecb": "yahoo:EURUSD=X",
+    "boj": "yahoo:USDJPY=X",
+}
+
+# GLT T21 (S3): the bilingual label the source row prints for each leg. Order
+# matches _GLT_LEG_ORDER exactly; EN/ZH pairs are reviewed (no refused word).
+_GLT_LEG_LABEL_EN = {
+    "fed": "Fed balance sheet", "ecb": "ECB", "boj": "BoJ",
+    "broad_dollar": "Broad dollar index",
+    "high_yield_oas": "High-yield spread",
+    "real_yield_10y": "10-year real yield",
+}
+_GLT_LEG_LABEL_ZH = {
+    "fed": "美联储资产负债表", "ecb": "欧洲央行", "boj": "日本央行",
+    "broad_dollar": "广义美元指数",
+    "high_yield_oas": "高收益利差",
+    "real_yield_10y": "10年期实际收益率",
+}
+
 _TRACKED_CHANGE_METRICS = (
     "glt_monetary_impulse", "glt_monetary_impulse_z", "glt_usd_funding_impulse",
     "glt_liquidity_breadth", "cb_fed_balance_sheet_impulse_13w",
@@ -328,6 +376,113 @@ def _metric_value(snapshot: Mapping | None, metric_id: str) -> Any:
 
 
 # --------------------------------------------------------------------------- #
+# GLT T21 helpers: per-leg receipts, four-clock mapping, USD translation rows.
+# --------------------------------------------------------------------------- #
+def _build_leg_receipts(built_at: Any, glt_asof: Any, fr: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Walk the six GLT legs in the frozen S3 order; for each leg that carries
+    a release receipt (``freshness.components.<group>.<leg>.reference_date`` +
+    ``available_date``) emit one entry the composer uses to:
+      * set the four economic clocks on the per-leg metric row (S2),
+      * publish the per-leg source row (S3),
+      * publish the USD-translation metric row when the leg is monetary and
+        ``model_spec.fx`` is a dict (S4).
+    Legs without a release receipt are skipped — the per-leg metric row keeps
+    the exact clocks _metric already wrote, and no source row is added."""
+    receipts: list[dict[str, Any]] = []
+    component_snapshot = _get(fr, "component_snapshot") or {}
+    components = _get(fr, "components") or {}
+    group_clocks = _get(fr, "clocks", "evidence_available_at_contributions") or {}
+    collection_clock = _get(fr, "clocks", "first_known_at")
+    for group, leg in _GLT_LEG_ORDER:
+        receipt = _get(components, group, leg)
+        if not isinstance(receipt, Mapping):
+            continue
+        ref_date = receipt.get("reference_date")
+        avail_date = receipt.get("available_date")
+        if ref_date is None or avail_date is None:
+            continue
+        snapshot_node = _get(component_snapshot, group, leg)
+        snapshot_node = snapshot_node if isinstance(snapshot_node, Mapping) else {}
+        leg_freshness = _glt_freshness(
+            built_at, ref_date, ref_date is not None,
+            owner_fresh=(receipt.get("status") == "usable"),
+        )
+        model_spec = _get(snapshot_node, "model_spec") or {}
+        model_spec = model_spec if isinstance(model_spec, Mapping) else {}
+        fx = model_spec.get("fx")
+        fx = fx if isinstance(fx, Mapping) else None
+        receipts.append({
+            "group": group,
+            "leg": leg,
+            "receipt": {
+                "reference_date": ref_date,
+                "available_date": avail_date,
+                "source_id": receipt.get("source_id"),
+                "provider": receipt.get("provider"),
+                "status": receipt.get("status"),
+            },
+            "group_clock": _get(group_clocks, group),
+            "collection_clock": collection_clock,
+            "leg_freshness": leg_freshness,
+            "model_spec_key": model_spec.get("key"),
+            "model_spec_fx": fx,
+            "snapshot_value": _num(_get(snapshot_node, "current_contribution_z")),
+        })
+    return receipts
+
+
+def _apply_leg_clocks(metric_row: dict[str, Any], leg_receipt: dict[str, Any]) -> dict[str, Any]:
+    """S2: stamp the four economic clocks on a per-leg metric row from a leg
+    receipt. ``glt_asof`` is preserved verbatim as ``calculation_as_of`` (its
+    exact format is the ISO date ``state.asof`` already passed to ``_metric``,
+    e.g. ``"2026-10-09"``). When a receipt is absent, this helper is a no-op."""
+    receipt = leg_receipt["receipt"]
+    group_clock = leg_receipt.get("group_clock")
+    collection_clock = leg_receipt.get("collection_clock")
+    metric_row["observed_at"] = receipt["reference_date"]
+    metric_row["released_at"] = receipt["available_date"]
+    metric_row["available_at"] = group_clock
+    metric_row["collected_at"] = collection_clock
+    metric_row["reference_period"] = receipt["reference_date"]
+    # calculation_as_of is already the GLT asof; do not overwrite it.
+    return metric_row
+
+
+def _translation_row(metric_id: str, leg: str, leg_receipt: dict[str, Any],
+                     glt_asof: Any) -> dict[str, Any]:
+    """S4: the USD-translation metric row. The producer publishes no
+    translated number for ECB / BoJ; this composer emits a typed ABSENT
+    reading whose view-row ``fx_translation`` field flags it as NEVER fresh
+    money. No value is computed anywhere in this composer."""
+    receipt = leg_receipt["receipt"]
+    fx = leg_receipt["model_spec_fx"]
+    fx_pair_key = leg_receipt.get("model_spec_key") or receipt.get("source_id") or ""
+    fx_yahoo = (fx or {}).get("key")
+    source_refs = [f"FRED:{fx_pair_key}"]
+    if isinstance(fx_yahoo, str) and fx_yahoo:
+        source_refs.append(f"yahoo:{fx_yahoo}")
+    return _metric(
+        metric_id, None, "currency_bn", "USD billions",
+        "fx_translation_not_fresh_money",
+        # direction is None (a translation is neither expansionary nor
+        # easier; the view-row's bilingual basis label carries the meaning).
+        None, "engine.global_liquidity_transmission",
+        f"freshness.component_snapshot.monetary.{leg}.model_spec",
+        # T21 review M2: no reading exists, so no observed date and no
+        # reference period (S4: observed_at None); calculation_as_of below
+        # stays glt_asof.
+        None, "NOT_COVERED",
+        source_refs=source_refs,
+        status="ABSENT", null_reason="NOT_COVERED",
+        transformation=(
+            f"USD translation of {fx_pair_key} at {fx_yahoo} "
+            f"(invert={bool((fx or {}).get('invert'))}); "
+            "USD translation not published by the producer"),
+        calculation_as_of=glt_asof,
+    )
+
+
+# --------------------------------------------------------------------------- #
 # the composer
 # --------------------------------------------------------------------------- #
 def compose(glt: Mapping[str, Any], cb_desk: Mapping[str, Any],
@@ -367,8 +522,23 @@ def compose(glt: Mapping[str, Any], cb_desk: Mapping[str, Any],
     glt_label = st.get("label")
     contradictions = _detect_contradiction(glt_label, fed_impulse_13w)
 
+    # GLT T21: build the per-leg receipts once; both _metrics and _sources
+    # consume the same list (S1 / S2 / S3 / S4).
+    leg_receipts = _build_leg_receipts(built_at, glt_asof, fr)
+
     metrics = _metrics(built_at, st, er, q, fr, glt_asof, glt_repr_fresh,
-                        fed_bs, ecb_bs, boj_bs, contradictions)
+                        fed_bs, ecb_bs, boj_bs, contradictions,
+                        leg_receipts=leg_receipts)
+    # GLT T21 review M1: each glt_leg_<leg> source row carries the freshness
+    # token of that leg's OWN composed metric row — copied, never recomputed
+    # (the metric row evaluates glt_asof + owner status; the source row must
+    # never disagree with the row it publishes, S3). A leg whose metric row
+    # is somehow absent keeps the receipt-builder fallback token.
+    metrics_fresh_by_id = {m["metric_id"]: m.get("freshness") for m in metrics}
+    for _lr in leg_receipts:
+        _row_fresh = metrics_fresh_by_id.get(_GLT_LEG_METRIC_ID.get(_lr["leg"]))
+        if _row_fresh:
+            _lr["leg_freshness"] = _row_fresh
     metrics_by_id = {m["metric_id"]: m["value"] for m in metrics}
 
     required_avail = _required_availability(built_at, glt_asof, st, fed_bs, glt_owner_fresh)
@@ -455,7 +625,8 @@ def compose(glt: Mapping[str, Any], cb_desk: Mapping[str, Any],
             st, er, q, contradictions, worst, coverage_ratio, walcl_defect_fired)},
         "scenario_contract": _scenario_contract(),
         "alert_contract": _alert_contract(),
-        "sources": {"items": _sources(glt_asof, cbd_asof, hist, glt_repr_fresh, required_avail)},
+        "sources": {"items": _sources(glt_asof, cbd_asof, hist, glt_repr_fresh, required_avail,
+                                     leg_receipts=leg_receipts)},
         "corrections": _corrections(metrics_by_id, effective_date, prior_snapshot),
         "learning": {
             "instrumentation": "first_party",
@@ -649,9 +820,12 @@ def _cb_bs_metrics(cb_id: str, bs: Mapping | None, built_at: str, *,
 
 
 def _metrics(built_at, st, er, q, fr, glt_asof, glt_repr_fresh,
-             fed_bs, ecb_bs, boj_bs, contradictions: list[dict]) -> list[dict]:
+             fed_bs, ecb_bs, boj_bs, contradictions: list[dict],
+             *, leg_receipts: list[dict] | None = None) -> list[dict]:
     items: list[dict] = []
     fired_kinds = {c["kind"] for c in contradictions}
+    leg_receipts = leg_receipts or []
+    leg_receipt_by_leg = {lr["leg"]: lr for lr in leg_receipts}
 
     # -- GLT state aggregates (whole-state W-FRI release-lag freshness) ------ #
     mi_raw = _num(st.get("monetary_impulse"))
@@ -810,12 +984,21 @@ def _metrics(built_at, st, er, q, fr, glt_asof, glt_repr_fresh,
         val = _num(_get(monetary_snap, leg, "current_contribution_z"))
         leg_status = _get(monetary_status, leg, "status")
         leg_fresh = _glt_freshness(built_at, glt_asof, val is not None, owner_fresh=(leg_status == "usable"))
-        items.append(_metric(
+        row = _metric(
             mid, val, "z_score", "stddev", "standardized_monetary_contribution",
             "higher_more_expansionary", "engine.global_liquidity_transmission",
             f"freshness.component_snapshot.monetary.{leg}.current_contribution_z",
             glt_asof, leg_fresh,
-        ))
+        )
+        leg_receipt = leg_receipt_by_leg.get(leg)
+        if leg_receipt is not None:
+            _apply_leg_clocks(row, leg_receipt)
+        items.append(row)
+        # S4: USD translation row for ecb/boj when model_spec.fx is a dict.
+        if leg in _GLT_FX_TRANSLATION_LEGS and leg_receipt is not None \
+                and leg_receipt.get("model_spec_fx") is not None:
+            items.append(_translation_row(
+                f"glt_{leg}_usd_translation", leg, leg_receipt, glt_asof))
 
     funding_snap = _get(fr, "component_snapshot", "usd_funding") or {}
     funding_status = _get(fr, "components", "usd_funding") or {}
@@ -827,12 +1010,16 @@ def _metrics(built_at, st, er, q, fr, glt_asof, glt_repr_fresh,
         val = _num(_get(funding_snap, leg, "current_contribution_z"))
         leg_status = _get(funding_status, leg, "status")
         leg_fresh = _glt_freshness(built_at, glt_asof, val is not None, owner_fresh=(leg_status == "usable"))
-        items.append(_metric(
+        row = _metric(
             mid, val, "z_score", "stddev", "standardized_funding_contribution",
             "higher_easier_funding", "engine.global_liquidity_transmission",
             f"freshness.component_snapshot.usd_funding.{leg}.current_contribution_z",
             glt_asof, leg_fresh,
-        ))
+        )
+        leg_receipt = leg_receipt_by_leg.get(leg)
+        if leg_receipt is not None:
+            _apply_leg_clocks(row, leg_receipt)
+        items.append(row)
 
     # -- cb_desk-sourced balance-sheet level / 13w / 52w impulses ------------- #
     for cb_id, bs in (("FED", fed_bs), ("ECB", ecb_bs), ("BOJ", boj_bs)):
@@ -1084,31 +1271,34 @@ def _alert_contract() -> dict:
     }
 
 
-def _sources(glt_asof, cbd_asof, hist, glt_repr_fresh, required_avail) -> list[dict]:
+def _sources(glt_asof, cbd_asof, hist, glt_repr_fresh, required_avail,
+             *, leg_receipts: list[dict] | None = None) -> list[dict]:
     fed_row = next((r for r in required_avail if r["component_id"] == "cb_fed_balance_sheet_impulse_13w"), None)
     fed_fresh = fed_row["freshness"] if fed_row else "SOURCE_FAILED"
 
-    def _src(source_id, en, zh, owner_ref, provider, ref_period, artifact_ref, fresh):
+    def _src(source_id, en, zh, owner_ref, provider, ref_period, artifact_ref, fresh,
+             *, released_at=None, first_known_at=None, collected_at=None,
+             definition_id=None, definition_version=None):
         return {
             "source_id": source_id,
             "label": _bil(en, zh),
             "owner_ref": owner_ref,
             "provider": provider,
             "reference_period": ref_period,
-            "released_at": None,
-            "first_known_at": None,
-            "collected_at": None,
+            "released_at": released_at,
+            "first_known_at": first_known_at,
+            "collected_at": collected_at,
             "revised_at": None,
             "correction_state": "unknown",
             "transform": None,
             "rights_state": "OPEN",
-            "definition_id": None,
-            "definition_version": None,
+            "definition_id": definition_id,
+            "definition_version": definition_version,
             "artifact_ref": artifact_ref,
             "freshness": fresh,
         }
 
-    return [
+    rows: list[dict] = [
         _src("glt_state", "Global Liquidity Transmission state (monetary + funding impulse)",
              "全球流动性传导状态（货币+融资脉冲）", "engine.global_liquidity_transmission",
              "Macro/Data Producer W-LIQ.1", glt_asof,
@@ -1127,6 +1317,30 @@ def _sources(glt_asof, cbd_asof, hist, glt_repr_fresh, required_avail) -> list[d
              "央行资产负债表（WALCL/ECBASSETSW/JPNASSETS）", "engine.cb_desk", "FRED",
              cbd_asof, "data/intl_risk/latest.json#cb_desk", fed_fresh),
     ]
+
+    # GLT T21 (S3): append one source row per leg in the frozen order, only
+    # when the leg carries a release receipt. The five existing rows above
+    # stay byte-identical; the new rows reuse the same global_liquidity_
+    # transmission.json artifact_ref (one path repeated, never a new id).
+    for lr in (leg_receipts or []):
+        leg = lr["leg"]
+        receipt = lr["receipt"]
+        rows.append(_src(
+            f"glt_leg_{leg}",
+            f"{_GLT_LEG_LABEL_EN[leg]} — release record",
+            f"{_GLT_LEG_LABEL_ZH[leg]}——发布记录",
+            "engine.global_liquidity_transmission",
+            receipt.get("provider"),
+            receipt.get("reference_date"),
+            "site/liquiditydata/global_liquidity_transmission.json#freshness",
+            lr.get("leg_freshness") or "HISTORICAL_AS_KNOWN",
+            released_at=receipt.get("available_date"),
+            first_known_at=lr.get("group_clock"),
+            collected_at=lr.get("collection_clock"),
+            definition_id=receipt.get("source_id"),
+            definition_version=DEFINITION_VERSION,
+        ))
+    return rows
 
 
 def _changes(current_metrics_by_id: dict, prior_snapshot: Mapping | None,

@@ -1,0 +1,85 @@
+{
+  "observed_at": "2026-10-15T17:53:02.007262+00:00",
+  "kind": "LIVE_FILESYSTEM_METADATA_ONLY",
+  "content_reads": 0,
+  "roots": {
+    "/var/lib/macro-market-memory/public/trusted-v1": {
+      "totals": {
+        "files": 568,
+        "logical_bytes": 5479661,
+        "allocated_bytes": 7147520
+      },
+      "categories": {
+        "(root)": {
+          "files": 2,
+          "logical_bytes": 1512,
+          "allocated_bytes": 8192
+        },
+        "contexts": {
+          "files": 113,
+          "logical_bytes": 468849,
+          "allocated_bytes": 925696
+        },
+        "feature_objects": {
+          "files": 113,
+          "logical_bytes": 112326,
+          "allocated_bytes": 462848
+        },
+        "generations": {
+          "files": 114,
+          "logical_bytes": 2274397,
+          "allocated_bytes": 2510848
+        },
+        "objects": {
+          "files": 113,
+          "logical_bytes": 2153728,
+          "allocated_bytes": 2314240
+        },
+        "queries": {
+          "files": 113,
+          "logical_bytes": 468849,
+          "allocated_bytes": 925696
+        }
+      },
+      "symlinks_not_followed": 0,
+      "point_in_time_not_atomic_with_active_writer": true
+    },
+    "/var/lib/macro-market-memory/state/context-projection": {
+      "totals": {
+        "files": 756,
+        "logical_bytes": 101390510,
+        "allocated_bytes": 103194624
+      },
+      "categories": {
+        "calendar_objects": {
+          "files": 113,
+          "logical_bytes": 113113,
+          "allocated_bytes": 462848
+        },
+        "capture_receipts": {
+          "files": 113,
+          "logical_bytes": 468849,
+          "allocated_bytes": 925696
+        },
+        "membership_objects": {
+          "files": 113,
+          "logical_bytes": 136730,
+          "allocated_bytes": 462848
+        },
+        "options-context-receipts": {
+          "files": 304,
+          "logical_bytes": 3151382,
+          "allocated_bytes": 3620864
+        },
+        "raw_objects": {
+          "files": 113,
+          "logical_bytes": 97520436,
+          "allocated_bytes": 97722368
+        }
+      },
+      "symlinks_not_followed": 0,
+      "point_in_time_not_atomic_with_active_writer": true
+    }
+  },
+  "limits": "Logical and allocated filesystem bytes; shared filesystem cache/CPU/billing and fit/model costs are not inferred."
+}

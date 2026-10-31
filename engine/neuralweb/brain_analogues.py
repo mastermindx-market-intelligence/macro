@@ -593,7 +593,9 @@ def get_retained_market_context(selection, evidence, *, policy) -> dict:
              "exclusion_counts": dict(sorted(Counter(row["reason"] for row in original["accounting"]).items())),
              "source_cards": original["source_cards"],
              "neighbors": [{"context_id": row["candidate"]["context_id"],
-                            "distance_q18": row["distance_q18"]}
+                            "distance_q18": row["distance_q18"],
+                            "comparison_id": row["comparison_id"],
+                            "components_exact_decimal": dict(row["components_exact_decimal"])}
                            for row in selected["selected"]],
              "state_differences": original["state_differences"],
              "missing_evidence": original["missing_evidence"],
@@ -612,21 +614,67 @@ def get_retained_market_context(selection, evidence, *, policy) -> dict:
 RETAINED_CONTEXT_TOOL_SCHEMA: dict = {
     "name": "get_retained_market_context",
     "description": (
-        "Read an exact saved Market Memory query and its permitted original house "
-        "macro evidence. Supply the exact query, generation and cutoff from its "
-        "capture reference. Returns five-field cited outputs, deterministic contextual "
-        "neighbors and exclusions. Distinct from recomputed historical analogues; "
-        "never invent identifiers or treat a match as causal or forecast evidence."
+        "Read one exact saved Market Memory query, five-field cited house outputs, "
+        "deterministic eligible neighbors and exclusions. For a catalog-discovered "
+        "query, copy query_id=row.query_id, subject_id=row.subject_id, "
+        "generation_id=catalog.generation.generation_id, "
+        "generation_sha256=catalog.generation.generation_sha256, and method_spec_id "
+        "from catalog.methods matching the intended mode. Set "
+        "query_cutoff=row.earliest_supported_cutoff. Do not substitute event_time, "
+        "as_known_at, captured_at or server_reference_cutoff; original measurement "
+        "and availability clocks differ, including by a fraction of a second. "
+        "For an explicitly requested historical cutoff, keep that exact cutoff; "
+        "if evidence is unavailable, never move it later, never substitute another "
+        "row or generation, never invent a timestamp. For latest plus two earlier "
+        "comparable cases, call once for the latest selected query with limit=2 "
+        "and use its returned eligible neighbors and exclusions. Report fewer "
+        "matches honestly; no chronological substitutes or extra reads to evade "
+        "exclusions. Catalog metadata alone proves neither actual field values nor "
+        "comparability. Do not automatically retry on BUSY or rate-limit responses. "
+        "Contextual evidence is not causal, forecast or trading authority."
     ),
     "input_schema": {
         "type": "object", "additionalProperties": False,
         "properties": {
             "query_id": {"type": "string"}, "subject_id": {"type": "string"},
             "generation_id": {"type": "string"}, "generation_sha256": {"type": "string"},
-            "query_cutoff": {"type": "string"}, "method_spec_id": {"type": "string"},
+            "query_cutoff": {"type": "string", "description": (
+                "Catalog-discovered query: copy selected entries row.earliest_supported_cutoff. "
+                "Explicit historical request: preserve its exact cutoff; never widen on refusal.")},
+            "method_spec_id": {"type": "string"},
             "limit": {"type": "integer", "minimum": 1, "maximum": 8},
         },
         "required": ["query_id", "subject_id", "generation_id", "generation_sha256",
                      "query_cutoff", "method_spec_id"],
     },
+}
+
+
+RETAINED_CATALOG_TOOL_SCHEMA: dict = {
+    "name": "get_retained_market_catalog",
+    "description": (
+        "Discover exact saved macro references and registered methods in one pinned "
+        "generation, not a complete market or opportunity census. Catalog metadata "
+        "does not supply actual five-field values or establish comparable cases. "
+        "Follow up with one get_retained_market_context: query_id=row.query_id, "
+        "subject_id=row.subject_id, generation_id=catalog.generation.generation_id, "
+        "generation_sha256=catalog.generation.generation_sha256, method_spec_id "
+        "from catalog.methods matching the intended mode, and "
+        "query_cutoff=row.earliest_supported_cutoff for a catalog-discovered query. "
+        "Do not use event_time, as_known_at, captured_at or server_reference_cutoff "
+        "as that supported cutoff; the clocks can differ by a fraction of a second. "
+        "Keep an explicitly requested historical cutoff unchanged: never move it "
+        "later, never substitute another row or generation, never invent a timestamp. "
+        "For latest plus two earlier comparable cases, select the latest query and "
+        "request limit=2 once; use returned eligible neighbors, report fewer matches, "
+        "and never substitute nearest dates or make extra reads to evade exclusions. "
+        "Do not automatically retry on BUSY or rate-limit responses."
+    ),
+    "input_schema": {"type": "object", "additionalProperties": False,
+        "properties": {
+            "mode": {"type": "string", "enum": ["historical_hypothetical", "current_contextual_support"]},
+            "limit": {"type": "integer", "minimum": 1, "maximum": 8},
+            "offset": {"type": "integer", "minimum": 0, "maximum": 255},
+            "generation_id": {"type": "string"}, "generation_sha256": {"type": "string"},
+        }, "required": []},
 }

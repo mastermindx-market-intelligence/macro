@@ -1,0 +1,1153 @@
+{
+ "auditor": "seat model (claude-opus-5-5), 2026-10-14",
+ "body_version": "ni-edgar-body-2",
+ "cases": [
+  {
+   "case_id": "037a799ce1623272",
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "commentary",
+   "note": "Backlog preview piece ahead of results; the headline reports no demand or guidance event.",
+   "template": "T2"
+  },
+  {
+   "case_id": "08ed2470ec73e40a",
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "note": "Notes-offering headline; the attached filing reports the closed offering.",
+   "template": "T1"
+  },
+  {
+   "case_id": "0b6682a60216d801",
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "note": "Outlook headline; the attached results release gives updated full-year expectations.",
+   "template": "T2"
+  },
+  {
+   "case_id": "0f9b63978a20a381",
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "note": "Commentary on a raised full-year outlook; the graded results release carries the raised outlook.",
+   "template": "T2"
+  },
+  {
+   "case_id": "163b44a476bb0669",
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "note": "Secondary-offering headline; the attached filing reports the underwriting agreement.",
+   "template": "T1"
+  },
+  {
+   "case_id": "1a1db703e38ddce2",
+   "class": "WRONG_ISSUER",
+   "graded": false,
+   "kind": "other_company_subject",
+   "note": "Guidance-raise headline about another company; the resolved issuer appears only as a merger counterparty.",
+   "template": "T2"
+  },
+  {
+   "case_id": "1f68e2f2536942cc",
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "commentary",
+   "note": "Analysis piece on previously reported backlog ahead of results; the headline reports no new demand or guidance event.",
+   "template": "T2"
+  },
+  {
+   "case_id": "202db9bcfa416a92",
+   "class": "OTHER_EVENT",
+   "graded": false,
+   "kind": "event_filing_absent",
+   "note": "Dividend-declaration headline; the only attached filing reports a director appointment.",
+   "template": "T1"
+  },
+  {
+   "case_id": "2678be07b33de148",
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "note": "Forecast given at the results event; the graded results filing reports the same results event.",
+   "template": "T2"
+  },
+  {
+   "case_id": "28393f6a851b4d96",
+   "class": "OTHER_EVENT",
+   "graded": true,
+   "kind": "graded_body_lacks_report",
+   "note": "Offering headline; the graded filing reports only preliminary revenue, and the offering appears only in a filing the wider band added.",
+   "template": "T1"
+  },
+  {
+   "case_id": "299be09138ffb068",
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "note": "Registered direct offering headline; the graded filing reports the purchase agreement and the offering.",
+   "template": "T1"
+  },
+  {
+   "case_id": "2a25707f5e214065",
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "market_report",
+   "note": "Roundup list; the headline reports no issuer event.",
+   "template": "T2"
+  },
+  {
+   "case_id": "3aa54b6aa03f78f7",
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "note": "Commentary on a cut to the current-year revenue outlook; the attached investor update carries the current-year revenue guidance.",
+   "template": "T2"
+  },
+  {
+   "case_id": "45600a4a3ee9a1f8",
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "note": "Offering-pricing headline; the attached filing reports the underwriting agreement for the offering.",
+   "template": "T1"
+  },
+  {
+   "case_id": "491b9bf212af3bc6",
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "note": "Dividend-streak extension headline; the attached results release reports the year's dividend increase that extends the streak.",
+   "template": "T1"
+  },
+  {
+   "case_id": "6af4f6c42357a394",
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "note": "Offering-pricing headline; the attached filing reports the underwriting agreement.",
+   "template": "T1"
+  },
+  {
+   "case_id": "6cdcfdd0cfbb3ea2",
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "market_report",
+   "note": "Market research report headline; the headline reports no issuer event.",
+   "template": "T2"
+  },
+  {
+   "case_id": "71f2eee538e949e9",
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "note": "Collaboration-amendment headline; the attached filing reports the amendment as a material agreement.",
+   "template": "T3"
+  },
+  {
+   "case_id": "7d8930fd902b3549",
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "note": "Dividend-declaration headline; the graded filing and its exhibit report the declaration.",
+   "template": "T1"
+  },
+  {
+   "case_id": "8d01a00601c76377",
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "commentary",
+   "note": "Dividend-safety question piece; the attached filing is a results release and the headline reports no capital-return event.",
+   "template": "T1"
+  },
+  {
+   "case_id": "93128e618cb6c3ae",
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "commentary",
+   "note": "Commentary on a past quarter's buybacks; the headline reports no new capital-return event and the attached filing is an investor-day presentation.",
+   "template": "T1"
+  },
+  {
+   "case_id": "933e11b4dc2b8cdd",
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "note": "Preferred-offering pricing headline; the graded filings report the offering.",
+   "template": "T1"
+  },
+  {
+   "case_id": "ac46e1ff6b122b6c",
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "note": "Market reaction to results and outlook; the attached results release reports them.",
+   "template": "T2"
+  },
+  {
+   "case_id": "af4ae80d7f1c92b7",
+   "class": "OTHER_EVENT",
+   "graded": false,
+   "kind": "event_filing_absent",
+   "note": "Exchange-offer extension headline; the attached filing reports regulatory clearances and only anticipates a later extension, not the one in the headline.",
+   "template": "T1"
+  },
+  {
+   "case_id": "b5e2d02a26c4b10d",
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "note": "Market reaction to forecasts given at the results event; the graded results release reports them.",
+   "template": "T2"
+  },
+  {
+   "case_id": "bde3b1430611c0f3",
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "commentary",
+   "note": "Explainer on a long dividend record; the headline reports no capital-return event.",
+   "template": "T1"
+  },
+  {
+   "case_id": "c5e3009268a1a9a0",
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "note": "Market reaction to results and raised guidance; the graded results release reports both.",
+   "template": "T2"
+  },
+  {
+   "case_id": "d6635b5a4737894c",
+   "class": "OTHER_EVENT",
+   "graded": false,
+   "kind": "event_filing_absent",
+   "note": "Conversion-rate announcement headline; the attached filing is a results release that does not report it.",
+   "template": "T1"
+  },
+  {
+   "case_id": "df3cd4b9107de180",
+   "class": "OTHER_EVENT",
+   "graded": false,
+   "kind": "event_filing_absent",
+   "note": "Commentary on a multi-year capital spending plan; the attached results release reports only current-year capital expectations and growth targets, not the plan.",
+   "template": "T1"
+  },
+  {
+   "case_id": "ef84ce873e9a3aa0",
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "note": "Full-year outlook and cost-program headline; the attached filing reaffirms guidance and announces the program.",
+   "template": "T2"
+  }
+ ],
+ "census": {
+  "class_counts": {
+   "MATCH": 17,
+   "NO_EVENT": 7,
+   "OTHER_EVENT": 5,
+   "WRONG_ISSUER": 1
+  },
+  "class_rate_wilson95": {
+   "MATCH": {
+    "ci": [
+     0.392,
+     0.726
+    ],
+    "rate": 0.567
+   },
+   "NO_EVENT": {
+    "ci": [
+     0.118,
+     0.409
+    ],
+    "rate": 0.233
+   },
+   "OTHER_EVENT": {
+    "ci": [
+     0.073,
+     0.336
+    ],
+    "rate": 0.167
+   },
+   "WRONG_ISSUER": {
+    "ci": [
+     0.006,
+     0.167
+    ],
+    "rate": 0.033
+   }
+  },
+  "information_only": "MATCH share beside 0.85; gates-2 frozen, no revision",
+  "match": 17,
+  "n": 30,
+  "non_match_kinds": {
+   "NO_EVENT/commentary": 5,
+   "NO_EVENT/market_report": 2,
+   "OTHER_EVENT/event_filing_absent": 4,
+   "OTHER_EVENT/graded_body_lacks_report": 1,
+   "WRONG_ISSUER/other_company_subject": 1
+  }
+ },
+ "census_by_graded": {
+  "False": {
+   "MATCH": 10,
+   "NO_EVENT": 7,
+   "OTHER_EVENT": 4,
+   "WRONG_ISSUER": 1
+  },
+  "True": {
+   "MATCH": 7,
+   "OTHER_EVENT": 1
+  }
+ },
+ "class_definitions": {
+  "MATCH": "The headline reports an event of the routed template family at the resolved issuer, and at least one attached filing reports that event.",
+  "NO_EVENT": "The headline reports no issuer event of the template family (market report, commentary, list, quote page, solicitation).",
+  "OTHER_EVENT": "The headline event is real and the resolved issuer is its subject, but no attached filing reports it.",
+  "WRONG_ISSUER": "The resolved issuer is not the subject of the headline."
+ },
+ "families": {
+  "T1": {
+   "drawn": 49,
+   "label_queue": 6,
+   "non_match": {
+    "NO_EVENT": 6,
+    "OTHER_EVENT": 9
+   },
+   "scorable_graded": 28,
+   "scorable_match": 34,
+   "shortfall_vs_target": 166,
+   "target": 200
+  },
+  "T2": {
+   "drawn": 46,
+   "label_queue": 5,
+   "non_match": {
+    "NO_EVENT": 9,
+    "WRONG_ISSUER": 1
+   },
+   "scorable_graded": 31,
+   "scorable_match": 36,
+   "shortfall_vs_target": 164,
+   "target": 200
+  },
+  "T3": {
+   "drawn": 4,
+   "label_queue": 1,
+   "non_match": {},
+   "scorable_graded": 3,
+   "scorable_match": 4,
+   "shortfall_vs_target": 196,
+   "target": 200
+  }
+ },
+ "gates_freeze_commit": "5baa4b10912d",
+ "label_queue": [
+  "08ed2470ec73e40a",
+  "0b6682a60216d801",
+  "163b44a476bb0669",
+  "3aa54b6aa03f78f7",
+  "45600a4a3ee9a1f8",
+  "491b9bf212af3bc6",
+  "6af4f6c42357a394",
+  "71f2eee538e949e9",
+  "ac46e1ff6b122b6c",
+  "bea9e4ca79450a7a",
+  "ef84ce873e9a3aa0",
+  "eff279aeb30a6267"
+ ],
+ "population": {
+  "n_census": 30,
+  "n_drawn": 99,
+  "n_drawn_graded": 73,
+  "n_prior_verdicts": 69,
+  "prior_by_source": {
+   "gate_verdicts": 24,
+   "gates2_verdicts": 28,
+   "routing_verdicts": 17
+  }
+ },
+ "routing_map": {
+  "037a799ce1623272": {
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "commentary",
+   "source": "v2_routing",
+   "template": "T2"
+  },
+  "04d382c0d79ec6cd": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T2"
+  },
+  "08ed2470ec73e40a": {
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "0a432aa229e38b57": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T1"
+  },
+  "0b6682a60216d801": {
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T2"
+  },
+  "0f9b63978a20a381": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T2"
+  },
+  "13014e6421e183f6": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "163b44a476bb0669": {
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "175cae26bf636e5f": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  },
+  "18e637ed6fa015bc": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T3"
+  },
+  "19b3170d334484c4": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T2"
+  },
+  "1a1db703e38ddce2": {
+   "class": "WRONG_ISSUER",
+   "graded": false,
+   "kind": "other_company_subject",
+   "source": "v2_routing",
+   "template": "T2"
+  },
+  "1f0c34a6a4af2341": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "1f68e2f2536942cc": {
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "commentary",
+   "source": "v2_routing",
+   "template": "T2"
+  },
+  "202db9bcfa416a92": {
+   "class": "OTHER_EVENT",
+   "graded": false,
+   "kind": "event_filing_absent",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "2065aa4557b3e12b": {
+   "class": "NO_EVENT",
+   "graded": true,
+   "kind": "commentary",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "24274c667413e1be": {
+   "class": "OTHER_EVENT",
+   "graded": true,
+   "kind": "event_filing_absent",
+   "source": "routing_verdicts",
+   "template": "T1"
+  },
+  "2678be07b33de148": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T2"
+  },
+  "26a0b5728c9f940d": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T2"
+  },
+  "28393f6a851b4d96": {
+   "class": "OTHER_EVENT",
+   "graded": true,
+   "kind": "graded_body_lacks_report",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "28cb1cec972537a2": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T1"
+  },
+  "299be09138ffb068": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "2a25707f5e214065": {
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "market_report",
+   "source": "v2_routing",
+   "template": "T2"
+  },
+  "2f759e6bba95116c": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T1"
+  },
+  "3494bd998b93cdbe": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  },
+  "389a49089309246c": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T2"
+  },
+  "3aa54b6aa03f78f7": {
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T2"
+  },
+  "3b87bd00aeec4a14": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T1"
+  },
+  "45600a4a3ee9a1f8": {
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "491b9bf212af3bc6": {
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "4ae628affba0f83d": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T2"
+  },
+  "4d19bce6bd210c8f": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T1"
+  },
+  "4f48edf99b0081da": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  },
+  "5126d45f9274513c": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "55b0f7c87d3facba": {
+   "class": "NO_EVENT",
+   "graded": true,
+   "kind": "commentary",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "57a6870e2b0f2f1f": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  },
+  "5b6fcf728fb48e27": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T2"
+  },
+  "5f6f26ed0d48a166": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T2"
+  },
+  "5fa111268385f5a4": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T2"
+  },
+  "6102dc48fd128d00": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T1"
+  },
+  "6594f06e4e1d82ac": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T1"
+  },
+  "660c1cce7aaefd94": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "6af4f6c42357a394": {
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "6cdcfdd0cfbb3ea2": {
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "market_report",
+   "source": "v2_routing",
+   "template": "T2"
+  },
+  "6e93f9d1021b542c": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T2"
+  },
+  "6f830d285cb34597": {
+   "class": "NO_EVENT",
+   "graded": true,
+   "kind": "commentary",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "6fd13d02869ea197": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T2"
+  },
+  "70c3eca15231c1d4": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T2"
+  },
+  "71f2eee538e949e9": {
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T3"
+  },
+  "7bc4e41efcbbc5ce": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T2"
+  },
+  "7d8930fd902b3549": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "80d764ada51548ee": {
+   "class": "NO_EVENT",
+   "graded": true,
+   "kind": "commentary",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  },
+  "8794d6338edc0821": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T1"
+  },
+  "8a14460d21a3356d": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  },
+  "8d01a00601c76377": {
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "commentary",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "913f696c23cbedaa": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T1"
+  },
+  "92a85df5ccb392a9": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "93128e618cb6c3ae": {
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "commentary",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "933e11b4dc2b8cdd": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "947b73a0f2f0baf1": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T1"
+  },
+  "9e42c6d858f58970": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "9f792531cea5c8a8": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T1"
+  },
+  "a6fa29c5d2bc577e": {
+   "class": "OTHER_EVENT",
+   "graded": true,
+   "kind": "event_filing_absent",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  },
+  "aa7ae83ba3d0ec5c": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T2"
+  },
+  "ac30ce21b19aca45": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T1"
+  },
+  "ac46e1ff6b122b6c": {
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T2"
+  },
+  "acbd8a7953df0397": {
+   "class": "OTHER_EVENT",
+   "graded": true,
+   "kind": "event_filing_absent",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  },
+  "add57ab031c0e17b": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T1"
+  },
+  "af4ae80d7f1c92b7": {
+   "class": "OTHER_EVENT",
+   "graded": false,
+   "kind": "event_filing_absent",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "b0673e2868c44e9f": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T1"
+  },
+  "b5e2d02a26c4b10d": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T2"
+  },
+  "b847978d52434323": {
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "commentary",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "ba2654d517ab8024": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T2"
+  },
+  "bce9289ad020a763": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "bde3b1430611c0f3": {
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "commentary",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "bea9e4ca79450a7a": {
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  },
+  "c0d771dbaa34d2e4": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T1"
+  },
+  "c10d748fb16821ae": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T2"
+  },
+  "c4f40755d13a4130": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T2"
+  },
+  "c5e3009268a1a9a0": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T2"
+  },
+  "d00c34e9532199fb": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T3"
+  },
+  "d4b23da036c31dac": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  },
+  "d6635b5a4737894c": {
+   "class": "OTHER_EVENT",
+   "graded": false,
+   "kind": "event_filing_absent",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "d788b0663745816a": {
+   "class": "NO_EVENT",
+   "graded": false,
+   "kind": "commentary",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "d7f5b33520e46491": {
+   "class": "OTHER_EVENT",
+   "graded": true,
+   "kind": "event_filing_absent",
+   "source": "routing_verdicts",
+   "template": "T1"
+  },
+  "ddc18d265856ec3b": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "ded7194dd8a45431": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T1"
+  },
+  "df3cd4b9107de180": {
+   "class": "OTHER_EVENT",
+   "graded": false,
+   "kind": "event_filing_absent",
+   "source": "v2_routing",
+   "template": "T1"
+  },
+  "e50497c035a03dc1": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T2"
+  },
+  "e8ce11c9babbb52c": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T1"
+  },
+  "ebe79d38ec54ba71": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "routing_verdicts",
+   "template": "T2"
+  },
+  "eef253de59c12735": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  },
+  "ef84ce873e9a3aa0": {
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "source": "v2_routing",
+   "template": "T2"
+  },
+  "eff279aeb30a6267": {
+   "class": "MATCH",
+   "graded": false,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T2"
+  },
+  "f074de5943030d42": {
+   "class": "NO_EVENT",
+   "graded": true,
+   "kind": "template_family_mismatch",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  },
+  "f0c2c5b9114d0b31": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T2"
+  },
+  "f49cd7c25b80b915": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  },
+  "f7fe9e7e2db3456d": {
+   "class": "MATCH",
+   "graded": true,
+   "kind": "",
+   "source": "gate_verdicts",
+   "template": "T3"
+  },
+  "f9e357025a18b477": {
+   "class": "NO_EVENT",
+   "graded": true,
+   "kind": "template_family_mismatch",
+   "source": "gates2_verdicts",
+   "template": "T1"
+  }
+ },
+ "routing_map_class_counts": {
+  "MATCH": 74,
+  "NO_EVENT": 15,
+  "OTHER_EVENT": 9,
+  "WRONG_ISSUER": 1
+ },
+ "scorable_match": [
+  "04d382c0d79ec6cd",
+  "08ed2470ec73e40a",
+  "0a432aa229e38b57",
+  "0b6682a60216d801",
+  "0f9b63978a20a381",
+  "13014e6421e183f6",
+  "163b44a476bb0669",
+  "175cae26bf636e5f",
+  "18e637ed6fa015bc",
+  "19b3170d334484c4",
+  "1f0c34a6a4af2341",
+  "2678be07b33de148",
+  "26a0b5728c9f940d",
+  "28cb1cec972537a2",
+  "299be09138ffb068",
+  "2f759e6bba95116c",
+  "3494bd998b93cdbe",
+  "389a49089309246c",
+  "3aa54b6aa03f78f7",
+  "3b87bd00aeec4a14",
+  "45600a4a3ee9a1f8",
+  "491b9bf212af3bc6",
+  "4ae628affba0f83d",
+  "4d19bce6bd210c8f",
+  "4f48edf99b0081da",
+  "5126d45f9274513c",
+  "57a6870e2b0f2f1f",
+  "5b6fcf728fb48e27",
+  "5f6f26ed0d48a166",
+  "5fa111268385f5a4",
+  "6102dc48fd128d00",
+  "6594f06e4e1d82ac",
+  "660c1cce7aaefd94",
+  "6af4f6c42357a394",
+  "6e93f9d1021b542c",
+  "6fd13d02869ea197",
+  "70c3eca15231c1d4",
+  "71f2eee538e949e9",
+  "7bc4e41efcbbc5ce",
+  "7d8930fd902b3549",
+  "8794d6338edc0821",
+  "8a14460d21a3356d",
+  "913f696c23cbedaa",
+  "92a85df5ccb392a9",
+  "933e11b4dc2b8cdd",
+  "947b73a0f2f0baf1",
+  "9e42c6d858f58970",
+  "9f792531cea5c8a8",
+  "aa7ae83ba3d0ec5c",
+  "ac30ce21b19aca45",
+  "ac46e1ff6b122b6c",
+  "add57ab031c0e17b",
+  "b0673e2868c44e9f",
+  "b5e2d02a26c4b10d",
+  "ba2654d517ab8024",
+  "bce9289ad020a763",
+  "bea9e4ca79450a7a",
+  "c0d771dbaa34d2e4",
+  "c10d748fb16821ae",
+  "c4f40755d13a4130",
+  "c5e3009268a1a9a0",
+  "d00c34e9532199fb",
+  "d4b23da036c31dac",
+  "ddc18d265856ec3b",
+  "ded7194dd8a45431",
+  "e50497c035a03dc1",
+  "e8ce11c9babbb52c",
+  "ebe79d38ec54ba71",
+  "eef253de59c12735",
+  "ef84ce873e9a3aa0",
+  "eff279aeb30a6267",
+  "f0c2c5b9114d0b31",
+  "f49cd7c25b80b915",
+  "f7fe9e7e2db3456d"
+ ],
+ "scorable_total": 74,
+ "seed": 20261020,
+ "shortfall_total": 526
+}

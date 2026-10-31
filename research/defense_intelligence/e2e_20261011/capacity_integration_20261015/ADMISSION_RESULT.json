@@ -1,0 +1,28 @@
+{
+  "state": "CURATED_IN_ISOLATED_FOLLOWUP_NOT_RELEASED",
+  "source_tree": "Q isolated followup",
+  "canonical_before": "989e62226a63fbaadee860271a0ed602e1c7b2e37f23a93116e1e40e8d63c5d4",
+  "canonical_after": "596d7e93071c8121c86f1f7f272d01653c4bdd16e833a1ec8c548b1ce9a62abb",
+  "worksheet_sha256": "c6784eb3fefd2441b5a2676d89fefea0a5d079bf511c844051a6cfe1fe7c9219",
+  "native_curator_report": {
+    "graph_id": "program-ontology:reviewed:2026-08-23:virginia-pilot",
+    "admitted_count": 7,
+    "evidence_admitted_count": 3,
+    "rejected_count": 0,
+    "rejected": [],
+    "coverage_rows_minted": 2,
+    "written": true
+  },
+  "all_incumbent_rows_and_graph_identity_preserved": true,
+  "dossier_payload_sha256": "961d3c0833c1cef2917ee3fbe61434752a9e7b4c216eed8d10154276cfe00e4e",
+  "historical_cutoff_2026_10_13_excludes_new_program": true,
+  "installed_capacity_observations": 0,
+  "two_announced_targets_and_one_reported_throughput": true,
+  "new_financial_or_workshare_inference": false,
+  "review_basis": "retained accepted repaired semantic review and Army source-boundary review; parent checked actual integration and380 affected cases; not independent whole-product acceptance",
+  "original_core_review": "original unresolved operation preserved; no retry or fabricated verdict",
+  "network_requests": 0,
+  "upstream_publication": false,
+  "release_candidate_PR9066_unchanged": true,
+  "remaining": "normal full-generation build, generated twin publication, real browser and installed acceptance"
+}

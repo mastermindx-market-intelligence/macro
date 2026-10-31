@@ -1,0 +1,101 @@
+{
+  "authority": "context_only",
+  "baseline": {
+    "age_days": 90,
+    "basis": "total",
+    "contributors": 1,
+    "coverage": "issuer_prior_guidance",
+    "period": {
+      "calendar_end": null,
+      "period_kind": "fiscal_year",
+      "quarter": null,
+      "year": 2026
+    },
+    "timestamp": "2026-05-01T00:00:00Z",
+    "type": "prior_company_guidance_or_contract"
+  },
+  "channel_hint": "revenue_demand",
+  "commitment_status": "announced",
+  "company_id": "cik:0000320193",
+  "counterparty_company_id": {
+    "authority": "context_only",
+    "detail": "",
+    "missing_fields": [],
+    "reason": "not_stated",
+    "schema": "field_absence.v1",
+    "subject": "counterparty_company_id"
+  },
+  "demand_stage": "guidance",
+  "document_id": "doc_fixture_guidance_fy2026",
+  "fact_id": "fact_000000000000000000000003",
+  "fiscal_period": {
+    "calendar_end": null,
+    "period_kind": "fiscal_year",
+    "quarter": null,
+    "year": 2026
+  },
+  "issuer_role": "subject",
+  "metric": "revenue",
+  "negated": false,
+  "news_event_class": "guidance_raise",
+  "novelty": "new_magnitude_timing_commitment_counterparty",
+  "observed_at": "2026-05-29T20:10:00Z",
+  "prior_amount": {
+    "basis": "total",
+    "bound": "exact",
+    "currency": "USD",
+    "evidence": {
+      "claimed_quote": "from prior guidance of $44.0 billion",
+      "span": {
+        "authority": "context_only",
+        "display_excerpt": "from prior guidance of $44.0 billion",
+        "document_id": "doc_fixture_guidance_fy2026",
+        "document_version": 1,
+        "locator": {
+          "kind": "text_span",
+          "segment_index": 0,
+          "span_end_byte": 119,
+          "span_start_byte": 83,
+          "sub_kind": "transcript_segment"
+        },
+        "receipt": {
+          "segment_bytes": 120,
+          "segment_index": 0,
+          "segment_sha256": "4e53a32653cdb1aaa9cddc51c895b7f5a548d3a4abf98e116e4c9192a047d92d",
+          "source_sha256": "4e53a32653cdb1aaa9cddc51c895b7f5a548d3a4abf98e116e4c9192a047d92d",
+          "span_end_byte": 119,
+          "span_start_byte": 83,
+          "text_sha256": "cac4a0670efde5e4a512de7c032f2fa014a0c2c439a089bd887f57d59e869797"
+        },
+        "receipt_state": "byte_replayed",
+        "rights_profile": "rp_unknown_v1",
+        "schema": "source_span.v1",
+        "span_id": "span_643a0e6a0b20fefb0479",
+        "text_sha256": "cac4a0670efde5e4a512de7c032f2fa014a0c2c439a089bd887f57d59e869797",
+        "unreplayable_reason": null
+      }
+    },
+    "form": "point",
+    "negated": false,
+    "period": {
+      "calendar_end": null,
+      "period_kind": "fiscal_year",
+      "quarter": null,
+      "year": 2026
+    },
+    "unit": "USD",
+    "value": 44000000000
+  },
+  "prophet_flags": {
+    "may_gate": false,
+    "may_rank": false,
+    "may_size": false,
+    "prophet_authority": false
+  },
+  "revision_direction": "raised",
+  "schema": "demand_guidance_contract_event.v1",
+  "source_available_at": "2026-05-29T20:00:00Z",
+  "stated_amount": null,
+  "supersedes_fact_id": null,
+  "unsolicited_instruction_detected": false
+}

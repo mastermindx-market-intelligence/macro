@@ -1,0 +1,267 @@
+{
+ "auditor": "fable-meta-ceo-seat-0e739467 (recovered fork 959095da), Opus 5.5",
+ "seed": null,
+ "summary": {
+  "audited": 11,
+  "cause": "fam_a prompt-v1.0 wrote quantity.period as null in 11 of 60 present quantities; 0 of 83 under prompt-v1.1; fam_b wrote no null period. Every malformed_value slot is one of those 11.",
+  "counterfactual_agree_present_correct": "6 of 6",
+  "counterfactual_classes": {
+   "agree_present": 6,
+   "present_value_differs": 3,
+   "present_vs_absent": 2
+  },
+  "disputes": {
+   "fam_a_right": 0,
+   "fam_b_right": 3,
+   "guide_ambiguous": 1,
+   "n": 5,
+   "routing_mismatch": 1
+  },
+  "fam_a_errors_all_t1_nonstandard_actions": [
+   4,
+   5,
+   6
+  ],
+  "guide_gaps": {
+   "capacity_not_authorization": [
+    5
+   ],
+   "existing_facility_amended": [
+    4
+   ],
+   "liquidation_amount_not_proceeds": [
+    6
+   ],
+   "plus_minus_guidance": [
+    1
+   ]
+  },
+  "guide_gaps_ruled_by": "DEC:NEWS-IMPACT-GUIDE-V12-T1-AMOUNT-RULES (annotation guide-v1.2 sections 5.1 and 5.4); the v1 labels are not relabeled",
+  "outcomes": {
+   "agree_correct": 6,
+   "fam_a_wrong": 3,
+   "guide_ambiguous": 1,
+   "routing_mismatch": 1
+  },
+  "period_census": [
+   {
+    "family": "fam_a",
+    "n": 18,
+    "period_shape": "fiscal_period",
+    "prompt_version": "prompt-v1.0"
+   },
+   {
+    "family": "fam_a",
+    "n": 11,
+    "period_shape": "null",
+    "prompt_version": "prompt-v1.0"
+   },
+   {
+    "family": "fam_a",
+    "n": 31,
+    "period_shape": "typed_absence",
+    "prompt_version": "prompt-v1.0"
+   },
+   {
+    "family": "fam_a",
+    "n": 58,
+    "period_shape": "fiscal_period",
+    "prompt_version": "prompt-v1.1"
+   },
+   {
+    "family": "fam_a",
+    "n": 25,
+    "period_shape": "typed_absence",
+    "prompt_version": "prompt-v1.1"
+   },
+   {
+    "family": "fam_b",
+    "n": 18,
+    "period_shape": "fiscal_period",
+    "prompt_version": "prompt-v1.0"
+   },
+   {
+    "family": "fam_b",
+    "n": 34,
+    "period_shape": "typed_absence",
+    "prompt_version": "prompt-v1.0"
+   },
+   {
+    "family": "fam_b",
+    "n": 46,
+    "period_shape": "fiscal_period",
+    "prompt_version": "prompt-v1.1"
+   },
+   {
+    "family": "fam_b",
+    "n": 23,
+    "period_shape": "typed_absence",
+    "prompt_version": "prompt-v1.1"
+   }
+  ],
+  "population": 11,
+  "rescoring": "none; summary.json stands (DEC:NEWS-IMPACT-W2-BENCHMARK-SCORING); the counterfactual is diagnostic only",
+  "routing_oddities": [
+   3,
+   7,
+   9
+  ],
+  "sampling": "none (every malformed_value slot)"
+ },
+ "verdicts": [
+  {
+   "case_id": "389a49089309246c",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "present_value_differs",
+   "conf": "low",
+   "fam_a_correct": null,
+   "fam_b_correct": null,
+   "field": "stated_amount",
+   "n": 1,
+   "outcome": "guide_ambiguous",
+   "reason_note": "plus_minus_guidance",
+   "template": "T2",
+   "why": "Revenue guidance is written as a centre plus or minus a tolerance. fam_a wrote a range, fam_b a point with bound approximately. The guide has no rule for plus-minus notation; Gate 4 (a guidance range is correct only if both bounds match) leans to the range."
+  },
+  {
+   "case_id": "4d19bce6bd210c8f",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "agree_present",
+   "conf": "high",
+   "fam_a_correct": true,
+   "fam_b_correct": true,
+   "field": "incremental_amount",
+   "n": 2,
+   "outcome": "agree_correct",
+   "reason_note": null,
+   "template": "T1",
+   "why": "A notes offering; both families took the offering principal as the new money. Only fam_a's period shape (null) made the slot malformed."
+  },
+  {
+   "case_id": "69cdff734be8096d",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "agree_present",
+   "conf": "medium",
+   "fam_a_correct": true,
+   "fam_b_correct": true,
+   "field": "stated_quantity",
+   "n": 3,
+   "outcome": "agree_correct",
+   "reason_note": "routing_oddity",
+   "template": "T3",
+   "why": "Both families took the same stated quantity and it is the right one. The case is a notes offering routed to the strategic/product template, which is a routing question, not a labeling error."
+  },
+  {
+   "case_id": "7d848e2e29478686",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "present_vs_absent",
+   "conf": "medium",
+   "fam_a_correct": false,
+   "fam_b_correct": true,
+   "field": "incremental_amount",
+   "n": 4,
+   "outcome": "fam_a_wrong",
+   "reason_note": "existing_facility_amended",
+   "template": "T1",
+   "why": "The filing amends existing term loans to conform their terms to a newly closed credit agreement; no new money is raised. fam_a slotted an existing facility size as new money; fam_b's not_stated absence is right."
+  },
+  {
+   "case_id": "7d848e2e29478686",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "present_vs_absent",
+   "conf": "medium",
+   "fam_a_correct": false,
+   "fam_b_correct": true,
+   "field": "remaining_authorization",
+   "n": 5,
+   "outcome": "fam_a_wrong",
+   "reason_note": "capacity_not_authorization",
+   "template": "T1",
+   "why": "fam_a slotted borrowing capacity as an authorization remainder. remaining_authorization is authorization left after a capital action, and the filing states none; fam_b's absence is right."
+  },
+  {
+   "case_id": "933e11b4dc2b8cdd",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "present_value_differs",
+   "conf": "medium",
+   "fam_a_correct": false,
+   "fam_b_correct": true,
+   "field": "incremental_amount",
+   "n": 6,
+   "outcome": "fam_a_wrong",
+   "reason_note": "liquidation_amount_not_proceeds",
+   "template": "T1",
+   "why": "A preferred-stock reopening. fam_b took the aggregate liquidation amount in USD, the preferred analogue of a notes principal, as the new money. fam_a wrote a share count, which is the wrong unit for a money slot. Medium: a liquidation amount is not proceeds."
+  },
+  {
+   "case_id": "942a8b6e282f8f76",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "agree_present",
+   "conf": "high",
+   "fam_a_correct": true,
+   "fam_b_correct": true,
+   "field": "stated_amount",
+   "n": 7,
+   "outcome": "agree_correct",
+   "reason_note": "bound_unscored",
+   "template": "T2",
+   "why": "Values agree and are right. The source raises a program to a new maximum outstanding: fam_a's bound up_to fits, fam_b's bound exact does not, and the grader does not score bound. The case is a commercial paper program routed to the demand/guidance/contract template, a routing oddity."
+  },
+  {
+   "case_id": "b0673e2868c44e9f",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "agree_present",
+   "conf": "high",
+   "fam_a_correct": true,
+   "fam_b_correct": true,
+   "field": "incremental_amount",
+   "n": 8,
+   "outcome": "agree_correct",
+   "reason_note": null,
+   "template": "T1",
+   "why": "An at-the-market program; both families took the program size with bound up_to."
+  },
+  {
+   "case_id": "cda8daa3f5309de6",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "present_value_differs",
+   "conf": "low",
+   "fam_a_correct": null,
+   "fam_b_correct": null,
+   "field": "stated_quantity",
+   "n": 9,
+   "outcome": "routing_mismatch",
+   "reason_note": "earnings_release_in_t3",
+   "template": "T3",
+   "why": "A quarterly earnings release routed to the strategic/product template. fam_a took a buyback figure, fam_b a profit figure; neither is a strategic or product-event quantity, and the guide's 'any quantity the source attaches to the event' does not decide which quantity attaches to an earnings release."
+  },
+  {
+   "case_id": "e77a841a1241ab9f",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "agree_present",
+   "conf": "high",
+   "fam_a_correct": true,
+   "fam_b_correct": true,
+   "field": "executed_amount",
+   "n": 10,
+   "outcome": "agree_correct",
+   "reason_note": null,
+   "template": "T1",
+   "why": "A closed notes offering; both families took the principal as the executed amount."
+  },
+  {
+   "case_id": "e77a841a1241ab9f",
+   "class_as_scored": "malformed_value",
+   "class_counterfactual": "agree_present",
+   "conf": "high",
+   "fam_a_correct": true,
+   "fam_b_correct": true,
+   "field": "incremental_amount",
+   "n": 11,
+   "outcome": "agree_correct",
+   "reason_note": null,
+   "template": "T1",
+   "why": "Same closed notes offering; both took the principal as the new money."
+  }
+ ]
+}

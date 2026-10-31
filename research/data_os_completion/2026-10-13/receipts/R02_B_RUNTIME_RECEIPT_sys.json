@@ -1,0 +1,145 @@
+{
+ "binding_path": "/tmp/dataos_r02_972d2923/binding.json",
+ "binding_roots": [
+  {
+   "alias": "macro_vps_snapshot",
+   "evidence_kind": "unqualified_snapshot"
+  }
+ ],
+ "binding_sha256": "526c118e15c0d606e58da469424bc31196ebf3583fb8a200563aa2f84ea29ca5",
+ "finished_at": "2026-10-17T13:37:39+00:00",
+ "host": "ubuntu-s-mastermindx",
+ "interpreter": "/usr/bin/python3",
+ "receipt": "R02 consumer B runtime execution",
+ "registry_path": "/opt/macro/config/dataset_registry.yml",
+ "repo_root": "/opt/macro",
+ "runs": [
+  {
+   "actions": [
+    "search",
+    "browse",
+    "describe",
+    "read",
+    "lab_signals",
+    "lab_plan",
+    "lab_run",
+    "history_dossier",
+    "history_transcript",
+    "tiingo_compare_statements"
+   ],
+   "envelope": {
+    "action": "capabilities",
+    "implementation_revision": "83daf2b783ba218c4beed3850b2fc34cc5d139e7",
+    "observed_at": "2026-10-17T13:37:38.219527+00:00",
+    "production_qualification": "NOT_ESTABLISHED_BY_THIS_ADAPTER",
+    "schema_version": "mastermind.data_workspace/v1",
+    "source_access": "read_only"
+   },
+   "label": "capabilities",
+   "rc": 0,
+   "request": null,
+   "stderr_bytes": 0,
+   "stdout_bytes": 3048,
+   "stdout_sha256": "090183b97207cfaea4b8e32fc793f9193131442d475113cc282a0b7a429932bc",
+   "top_level_keys": [
+    "access",
+    "action",
+    "actions",
+    "freshness",
+    "history",
+    "implementation_revision",
+    "lab",
+    "max_request_bytes",
+    "max_response_bytes",
+    "max_rows_per_read",
+    "max_scan_rows_per_read",
+    "observed_at",
+    "production_qualification",
+    "read_view",
+    "schema_version",
+    "source_access",
+    "supported_formats",
+    "tiingo_statement_comparison",
+    "unsupported_formats"
+   ]
+  },
+  {
+   "availability": "NOT_ESTABLISHED_BY_DECLARATION",
+   "contract": {
+    "adjustment": "total_return",
+    "dataset_id": "equity.bars.daily.stocks",
+    "format": "parquet",
+    "frequency": "1d",
+    "grain": [
+     "ticker",
+     "date"
+    ],
+    "layer": "L1",
+    "status": "PRODUCED",
+    "storage": "data/stocks/{ticker}.parquet",
+    "temporal_profile": "BARS",
+    "timezone": "America/New_York"
+   },
+   "envelope": {
+    "action": "describe_contract",
+    "implementation_revision": "83daf2b783ba218c4beed3850b2fc34cc5d139e7",
+    "observed_at": "2026-10-17T13:37:38.859886+00:00",
+    "production_qualification": "NOT_ESTABLISHED_BY_THIS_ADAPTER",
+    "schema_version": "mastermind.data_workspace/v1",
+    "source_access": "read_only"
+   },
+   "label": "describe_contract",
+   "rc": 0,
+   "request": {
+    "action": "describe",
+    "ref": "registry:equity.bars.daily.stocks"
+   },
+   "stderr_bytes": 0,
+   "stdout_bytes": 2747,
+   "stdout_sha256": "399a7419a9472152780b545e1ad9622230329778b037d5cdc0fa522558b8c20a",
+   "top_level_keys": [
+    "action",
+    "availability",
+    "contract",
+    "declared_consumers",
+    "declared_inputs",
+    "implementation_revision",
+    "observed_at",
+    "production_qualification",
+    "schema_version",
+    "source_access"
+   ]
+  },
+  {
+   "envelope": {
+    "error": "DEPENDENCY_UNAVAILABLE",
+    "error_type": "WorkspaceError",
+    "schema_version": "mastermind.data_workspace/v1"
+   },
+   "label": "read",
+   "price_basis": null,
+   "query_receipt_sha256": null,
+   "rc": 2,
+   "request": {
+    "action": "read",
+    "limit": 1,
+    "ref": "macro_vps_snapshot:stocks/AAPL.parquet"
+   },
+   "result_columns": null,
+   "result_rows": null,
+   "stderr_bytes": 0,
+   "stdout_bytes": 113,
+   "stdout_sha256": "ddfc2df9e4680a5137b48c8f63d0bb89419cca1ca60f8f5e2492d73b9a3bd140",
+   "temporal_caution": null,
+   "top_level_keys": [
+    "error",
+    "error_type",
+    "schema_version"
+   ]
+  }
+ ],
+ "scratch_removed": true,
+ "started_at": "2026-10-17T13:37:37+00:00"
+}
+ls: cannot access '/tmp/r02_b_remote_972d2923.py': No such file or directory
+ls: cannot access '/tmp/dataos_r02_972d2923': No such file or directory

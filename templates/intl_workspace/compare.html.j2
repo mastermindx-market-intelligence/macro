@@ -39,7 +39,15 @@
     <h2 id="{{ context_id|e }}-compare-title">{{ words('Compare markets', '比较市场') }}</h2>
     <p class="intl-compare__context">{{ context.horizon|e }} · {% if selected_leg == 'local' %}{{ words('Local currency', '本币') }}{% else %}{{ words('USD · Unhedged', '美元 · 未对冲') }}{% endif %} · {{ words('Price return', '价格回报') }}</p>
     <p data-im-compare-status role="status" aria-live="polite">{{ words('Individual market facts. Select two to four markets to compare matching windows.', '单个市场事实。选择两到四个市场，以比较相同的计算区间。') }}</p>
-    {% if context.source_reference is not none %}<p class="intl-compare__source" data-im-compare-source>{{ words('Disclosed source', '已披露的来源') }}: {{ context.source_reference|e }}</p>{% else %}<p>{{ words('Source reference not supplied.', '未提供来源引用。') }}</p>{% endif %}
+    {% if context.source_reference is not none %}
+    <details class="intl-compare__source" data-im-compare-source>
+      <summary>{{ words('Source evidence · exact reference', '数据来源 · 精确引用') }}</summary>
+      {% set source_ref = context.source_reference %}
+      {% if source_ref.startswith('intl-supplied-close:sha256:') and source_ref|length == 91 %}
+      <code>intl-supplied-close:sha256:<wbr>{% for block in source_ref[27:]|batch(16) %}{{ block|join|e }}{% if not loop.last %}<wbr>{% endif %}{% endfor %}</code>
+      {% else %}<code>{{ source_ref|e }}</code>{% endif %}
+    </details>
+    {% else %}<p>{{ words('Source reference not supplied.', '未提供来源引用。') }}</p>{% endif %}
   </header>
   <div class="intl-compare__controls" data-im-compare-controls hidden>
     <label for="{{ context_id|e }}-compare-pin">{{ words('Add market', '添加市场') }}</label>
@@ -100,7 +108,12 @@
       {% endfor %}
     </details>
   {% endif %}
-  <p>{{ words('Chart series and benchmark comparison are unavailable.', '图表序列与基准比较暂不可用。') }}</p>
+  {% if compare_catalogue.chart_geometry is defined %}
+    {% from 'intl_workspace/chart_cohorts.html.j2' import render_source_charts %}
+    {{ render_source_charts(compare_catalogue.chart_geometry, context_id, compare_catalogue.chart_names) }}
+  {% else %}
+    <p>{{ words('Chart series and benchmark comparison are unavailable.', '图表序列与基准比较暂不可用。') }}</p>
+  {% endif %}
   {% set metadata_cohorts = namespace(value=[]) %}
   {% for cohort in cohorts %}{% set metadata_cohorts.value = metadata_cohorts.value + [{'id': cohort.id, 'order_slots': cohort.order_slots}] %}{% endfor %}
   <script type="application/json" data-im-compare-catalogue>{{ {'schema': compare_catalogue.schema, 'slot_order': compare_catalogue.slot_order, 'cohorts': metadata_cohorts.value}|tojson }}</script>

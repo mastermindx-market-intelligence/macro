@@ -1,0 +1,55 @@
+{
+  "schema": "tiingo.prefix03.partial_continuation_exact_coverage_launch_binding_review/v1",
+  "recorded_at_utc": "2026-10-13T21:19:46.697451+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "run_id": "eod-wave15-original-unadmitted-continuation04-20261013-01a12ab6",
+  "verdict": "PASS_SINGLE_EXACT_FOREGROUND_COVERAGE03_LAUNCH_BINDING",
+  "packet_file": "tiingo-prefix03-partial-continuation03-coverage-launch-packet.json",
+  "packet_sha256": "7ee354cfb0028f13b631d30d7dfbe094857c0e26be3d38fa5e11abc3b471d06e",
+  "source_sha256": "4931c2c2b8445e30d6af95b6536e1e6898f41ff22e4088b906229ba2ab715cc3",
+  "source_review_sha256": "6e49abb981566a1293186a56c58684180eebc27040cb348db2bc41fb7e243550",
+  "wrapper_sha256": "c0a6300282f8aee2a55a89f2f4ae20475b5c81fdc1c53d5ebd26815c32a44788",
+  "actual_qualification_sha256": "173a5ed861a23e8effc99239120aab1fc40750c62bb58e43fc39c7d859fedfa7",
+  "actual_qualification_root_acceptance_sha256": "041065f5b19b7b445a7e8d96d3b67bfc7c9d857505ebfbf8f8e40c6d54a3aff5",
+  "actual_qualifier_wait_sha256": "53732a2ec13c67e7205b5251cbccb0b1b102d5694fe2e8f3f23765011b9e59fc",
+  "actual_qualifier_validation_sha256": "fcd5cefc91691a232b83ab25aa347223d25074194e93bd9130bf1e242c556aef",
+  "verified": [
+    "All164 frozen E input hashes match current retained bytes",
+    "Exact q03, child wait0, passed post-wait validation, and assigning-root native15570 exit0 chunkfd4a73 consumption form a consistent bound chain",
+    "q03 metadata conserves862 valid536 reused326 WRITTEN and1752624 bars; no raw/Parquet reader rescan",
+    "All six distinct output/control slots are disjoint from input/source/packet and truly absent by lstat",
+    "Exact reviewed source4931 coverage branch selected, no qualifier/materializer invocation; one new census output only"
+  ],
+  "scope": {
+    "mode": "coverage",
+    "prefix": "03",
+    "output_files": [
+      "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation04-prefix03-delta.json"
+    ],
+    "archive_writes": 0,
+    "provider_requests": 0,
+    "credentials_read": false,
+    "automatic_retry": false
+  },
+  "native_return_provenance": "Read actual assigning-root acceptance0410; reviewer does not manufacture or independently restamp the original native terminal.",
+  "admission": "Parent may invoke this exact packet once on the same foreground wrapper02 carrier; changed binding or occupied slot fails closed for same-operation reconciliation.",
+  "required_after_launch": [
+    "Consume coverage actual native outcome, durable child wait, validation and exact census hash independently",
+    "Require successful child and passed validation, then verify census delta862histories1752624bars with prior4c709, exact q173a membership and candidate conservation before assigning-root acceptance",
+    "Only after actual accepted coverage may recovery-aware phase04 closure and downstream QA use this census; this launch review does not claim completed coverage or programme acceptance"
+  ],
+  "expected_census_if_success": {
+    "accepted_nonempty_ticker_histories": 47418,
+    "accepted_distinct_bars": 100304996,
+    "status": "Expected from accepted q03 arithmetic, not observed census output"
+  },
+  "original91287_exit_code": null,
+  "original91287_terminal_consumed": false,
+  "original22925_terminal_still_unknown": true,
+  "reviewer_executed_candidate_or_wrapper": false,
+  "archive_writes": 0,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "accepted_reader_rows_rescanned": false,
+  "children_dispatched": 0
+}

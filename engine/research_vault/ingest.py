@@ -47,11 +47,14 @@ import sqlite3
 import subprocess
 import tempfile
 import time
+from collections import deque
+from concurrent.futures import Future, ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from engine.research_vault import catalog as catalog_mod
 from engine.research_vault import corpus as corpus_mod
+from engine.research_vault import fulltext
 from engine.research_vault import probe as probe_mod
 from engine.research_vault import sidecar as sidecar_mod
 from engine.research_vault import title as title_mod
@@ -89,6 +92,54 @@ def extract_pdf_text(pdf_bytes: bytes) -> str | None:
                 fh.write(pdf_bytes)
             result = subprocess.run(
                 ["pdftotext", "-layout", tmp_path, "-"],
+                capture_output=True, timeout=30,
+            )
+            if result.returncode != 0:
+                log.warning("research_vault: pdftotext returned %d: %s",
+                            result.returncode, result.stderr[:200])
+                return None
+            return result.stdout.decode("utf-8", errors="replace")
+        finally:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+    except subprocess.TimeoutExpired:
+        log.warning("research_vault: pdftotext timed out")
+        return None
+    except Exception as e:  # noqa: BLE001
+        log.warning("research_vault: pdftotext exception: %s", e)
+        return None
+
+
+# Explicit opt-in CANDIDATE extractor (reading_order.v2). The incumbent v1
+# ``-layout`` extractor above is untouched and remains the ONLY default: no
+# production caller selects v2, and the materializer reaches it solely through
+# an explicit ``extractor_version`` keyword. Same pdftotext idiom (tmpfile,
+# 30s timeout, UTF-8, graceful None) minus the ``-layout`` flag, so pdftotext
+# emits its default reading order. No layout repair, no table/header join
+# repair, no cleanup of any kind: unresolved joins are retained verbatim.
+READING_ORDER_EXTRACTOR_VERSION = fulltext.EXTRACTOR_VERSION_READING_ORDER_V2
+
+
+def extract_pdf_text_reading_order_v2(pdf_bytes: bytes) -> str | None:
+    """Extract text with pdftotext's DEFAULT reading order (no ``-layout``).
+
+    Opt-in candidate only, bound to
+    ``research_vault.ingest.extract_pdf_text.reading_order.v2``. Returns the
+    text, or None on failure (pdftotext missing / crash / timeout). Never
+    raises. Same host-fault semantics as :func:`extract_pdf_text`.
+    """
+    if not _pdftotext_available():
+        log.warning("research_vault: pdftotext not found — body text unavailable")
+        return None
+    try:
+        fd, tmp_path = tempfile.mkstemp(suffix=".pdf")
+        try:
+            with os.fdopen(fd, "wb") as fh:
+                fh.write(pdf_bytes)
+            result = subprocess.run(
+                ["pdftotext", tmp_path, "-"],
                 capture_output=True, timeout=30,
             )
             if result.returncode != 0:
@@ -157,7 +208,69 @@ def _pdf_stem_filename(pdf_key: str) -> str:
     return Path(pdf_key).stem
 
 
-def _processed_index(store) -> tuple[set[str], dict[str, str]]:
+def _absorb_receipt(raw, done: set[str], by_id: dict[str, str]) -> None:
+    """Fold ONE receipt body into ``(done, by_id)`` — the ORIGINAL parse.
+
+    Shared verbatim by the serial and windowed paths so the two can never
+    drift: empty bodies, unreadable JSON and the receipt's unusual
+    ``rec.get`` truthiness/types are handled exactly as before. This is
+    deliberately not a schema cleanup.
+    """
+    if not raw:
+        return
+    try:
+        rec = json.loads(raw)
+        src = rec.get("pdf_key")
+        if src:
+            done.add(src)
+            doc_id = rec.get("id")
+            if doc_id:
+                by_id[doc_id] = src
+    except Exception:  # noqa: BLE001 — unreadable receipt: fall through
+        return
+
+
+def _receipt_read_workers(store, concurrency: int) -> int:
+    """Qualify THIS store for a bounded concurrent receipt-read window.
+
+    Deliberately modest and source-grounded — no new authority/config
+    surface: the only store ever read concurrently is the in-tree
+    ``r2_store.R2Store`` (EXACT type, so an overridden-``get_bytes``
+    subclass or any duck store stays serial). Its ``get_bytes`` is a
+    read-only ``get_object`` plus an independent ``responseBody.read``
+    against the read boto3 client built once in ``R2Store.__init__`` — i.e.
+    before any worker thread starts, which is the AWS Boto3 guide's
+    ("Multithreading or multiprocessing with clients") precondition for
+    sharing a client across same-process threads. The worker calls create
+    no session, never create or mutate client metadata, share nothing
+    across processes, and the source registers no custom event hooks, so
+    the documented conditions hold. Anything else is never assumed
+    thread-safe and keeps the exact original serial pass.
+    """
+    if type(concurrency) is not int or concurrency < 2:
+        return 1
+    try:  # deferred import: call-time only, so no module-load cycle
+        from engine.research_vault.r2_store import R2Store
+        from engine.research_vault.producer_generation_writer import (
+            FencedProducerStore, ProducerGenerationSession,
+        )
+    except Exception:  # noqa: BLE001 — cannot qualify: stay serial
+        return 1
+    if type(store) is FencedProducerStore:
+        # This exact wrapper delegates reads to its one unchanged incumbent
+        # store; only writes are fenced. Do not lose qualified read concurrency
+        # merely by adopting the producer protocol, or qualify unknown wrappers.
+        if (type(store.generation_session) is not ProducerGenerationSession
+                or store.generation_session.store is not store._store):
+            return 1
+        store = store._store
+    return min(concurrency, 4) if (type(store) is R2Store and
+                           store._receipt_reads_thread_safe is True) else 1
+
+
+def _processed_index(
+    store, *, concurrency: int = 4, read_cache=None
+) -> tuple[set[str], dict[str, str]]:
     """Read every receipt once → ``(done_pdf_keys, {doc_id: pdf_key})``.
 
     ``done_pdf_keys`` drives idempotency: a receipt records the source ``pdf_key``
@@ -169,25 +282,69 @@ def _processed_index(store) -> tuple[set[str], dict[str, str]]:
     key — and it is what lets :func:`_refresh_sidecars` re-read a sidecar for a
     document that is already receipted. It costs nothing extra: this pass was
     already reading every receipt.
+
+    The per-receipt GETs run through a FINITE window: at most ``concurrency``
+    (default 4) receipts are submitted-and-unfinished at any moment, and
+    results are absorbed in EXACT ``list_prefix`` order, so duplicate-doc_id
+    last-winner, ``done_pdf_keys`` and every parser quirk are identical to the
+    serial pass — only the waiting overlaps. Only a qualified store is read
+    concurrently (see :func:`_receipt_read_workers`); everything else, and an
+    explicit ``concurrency=1``, takes the original serial path verbatim.
+
+    Failure is observed in list order: a ``store.get_bytes`` exception
+    surfaces from the FIRST receipt in list order (never the first to
+    finish), no receipt beyond the already submitted window is launched, and the at-most-3
+    read-only GETs already in flight are unavoidable extras that are awaited
+    (never abandoned) before the error propagates. A raising ``list_prefix``
+    iterator propagates unchanged, and nothing here ever writes.
     """
     done: set[str] = set()
     by_id: dict[str, str] = {}
-    for rk in store.list_prefix(PROCESSED_PREFIX):
-        if not rk.endswith(".json"):
-            continue
-        raw = store.get_bytes(rk)
-        if not raw:
-            continue
-        try:
-            rec = json.loads(raw)
-            src = rec.get("pdf_key")
-            if src:
-                done.add(src)
-                doc_id = rec.get("id")
-                if doc_id:
-                    by_id[doc_id] = src
-        except Exception:  # noqa: BLE001 — unreadable receipt: fall through
-            continue
+    def read_receipt(key):
+        cached = None if read_cache is None else read_cache.processed_receipt(key)
+        return store.get_bytes(key) if cached is None else cached
+    reader = store.get_bytes if read_cache is None else read_receipt
+    workers = _receipt_read_workers(store, concurrency)
+    if workers < 2:
+        for rk in store.list_prefix(PROCESSED_PREFIX):
+            if not rk.endswith(".json"):
+                continue
+            _absorb_receipt(reader(rk), done, by_id)
+        return done, by_id
+
+    keys = (rk for rk in store.list_prefix(PROCESSED_PREFIX) if rk.endswith(".json"))
+    inflight: deque[tuple[Future, str]] = deque()
+    pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="rv-receipt")
+    first_error: BaseException | None = None
+    try:
+        while True:
+            # Fill the finite window: never more than `workers` receipts
+            # submitted-and-unfinished at once (no submit-all/executor.map).
+            while first_error is None and len(inflight) < workers:
+                try:
+                    rk = next(keys)
+                except StopIteration:
+                    break
+                inflight.append((pool.submit(reader, rk), rk))
+            if not inflight or first_error is not None:
+                break
+            fut, _rk = inflight.popleft()
+            try:
+                raw = fut.result()  # ordered: list order, not completion order
+            except Exception as e:  # noqa: BLE001 — escaped get_bytes' own guard
+                first_error = e
+                break
+            _absorb_receipt(raw, done, by_id)
+    finally:
+        # Nothing past an ordered failure is launched; not-yet-started window
+        # entries are cancelled locally (futures only — no release/lease/
+        # controller), and every launched read is awaited so no worker thread
+        # outlives this call.
+        for f, _rk in inflight:
+            f.cancel()
+        pool.shutdown(wait=True)
+    if first_error is not None:
+        raise first_error
     return done, by_id
 
 
@@ -201,6 +358,13 @@ def _ingest_one(store, conn, pdf_key: str, dry_run: bool = False) -> dict:
     ``status`` ∈ ingested | failed. On any exception the item is marked failed
     (logged) and the batch continues.
     """
+    if not dry_run:
+        try:
+            catalog_mod.ensure_generation_write_allowed(store)
+        except Exception as exc:
+            return {"status": "failed", "reason": "generation_writer_unqualified",
+                    "error": type(exc).__name__ + ": " + str(exc)}
+
     result = {"pdf_key": pdf_key, "status": "failed", "id": None, "needs_metadata": False,
               "title_source": "sidecar", "facts": {}}
     try:
@@ -1038,8 +1202,34 @@ def _corpus_row_count(corpus_path: str | Path) -> int:
         return 0
 
 
+def _stage_generation_body(conn, cat, session, read_cache, pending_receipts, now):
+    from engine.research_vault import fulltext_index, fulltext_store
+    from engine.research_vault.fulltext_publication import _pending
+    from engine.research_vault.producer_generation_writer import record_fulltext_source_cut
+    catalog_mod.prepare_publication(cat, now=now)
+    known = {key: value for key, value in session._confirmed_writes.items()
+             if key.startswith(fulltext_store.RECEIPT_PREFIX)}
+    known.update(_pending(fulltext_index._cohort(cat), pending_receipts))
+    accounting = read_cache.total, dict(read_cache.sizes)
+    conn.execute('SAVEPOINT rv_generation_body')
+    try:
+        staged = read_cache.stage(conn, cat, list(known.items()),
+            max_rows=fulltext_index.MAX_ROWS, max_body_bytes=fulltext_index.MAX_BODY_BYTES)
+        record_fulltext_source_cut(conn, cat, staged['source_digests'],
+            receipt_digests=staged['receipt_digests'], record_digests=staged['record_digests'])
+        conn.execute('RELEASE SAVEPOINT rv_generation_body')
+        return staged['counts']
+    except BaseException:
+        read_cache.total, read_cache.sizes = accounting
+        conn.execute('ROLLBACK TO SAVEPOINT rv_generation_body')
+        conn.execute('RELEASE SAVEPOINT rv_generation_body')
+        raise
+
+
 def run(store, corpus_path: str | Path, now: datetime | None = None,
-        dry_run: bool = False, checkpoint_every: int = CHECKPOINT_EVERY) -> dict:
+        dry_run: bool = False, checkpoint_every: int = CHECKPOINT_EVERY,
+        generation_identity: dict | None = None, generation_clock=None,
+        generation_evidence=None) -> dict:
     """Run one ingestion pass. Idempotent + never-raise-per-item.
 
     Restores the canonical corpus from the store (source of truth), lists new
@@ -1056,7 +1246,13 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
          reextract_pdf_missing, reextract_remaining[, reextract_aborted],
          coverage, catalog_bytes, catalog_state[, corpus_published]
          [, catalog_published][, receipts_unflushed]
-         [, fulltext_* counters][, fulltext_aborted][, error]}
+         [, fulltext_* counters][, fulltext_aborted][, error][, timing_s]}
+
+    ``timing_s``, when the run reaches its end, maps coarse phase name to that
+    phase's elapsed seconds (``time.monotonic`` deltas — the same clock that
+    produced ``run_started``). Phases this run's path never entered are absent,
+    and every early return above carries no timing at all. Additive evidence
+    only: no phase value is consulted by any decision below.
 
     PLANE-level outcomes the caller MUST act on (they are what separates a green
     hourly lane from a silently broken one — Wave 4, Defect 6):
@@ -1094,6 +1290,7 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
     that are ALREADY published, so there is no "would do" for it to report.
     """
     run_started = time.monotonic()
+    timing_s: dict = {}
     now = now or datetime.now(timezone.utc)
     summary = {"ingested": 0, "skipped": 0, "failed": 0, "needs_metadata": 0,
                "duplicate_bytes": 0, "no_text_layer": 0, "text_unavailable": 0,
@@ -1104,7 +1301,9 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
         return summary
 
     # Restore the published corpus before we upsert onto it (see _restore_corpus).
+    _t = time.monotonic()
     restore = _restore_corpus(store, corpus_path)
+    timing_s["restore_s"] = time.monotonic() - _t
     if restore == "error":
         # The corpus could not be authoritatively read and validated — refuse to proceed so we
         # never overwrite the good published corpus with a truncated rebuild. No
@@ -1145,12 +1344,14 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
     # makes no freshness claim and rewrites generated_at on the next publish, so
     # runner clock skew must not be able to refuse a publish (catalog.validate).
     catalog_problem = None
+    _t = time.monotonic()
     try:
         cat = catalog_mod.read_strict(store, check_future_clock=False,
                                       check_items=False)
         summary["catalog_state"] = "valid"
     except catalog_mod.CatalogUnavailable as exc:
         cat, catalog_problem = None, exc
+    timing_s["catalog_read_s"] = time.monotonic() - _t
 
     if catalog_problem is not None or not (cat.get("items") or []):
         reason = (catalog_problem.reason if catalog_problem is not None
@@ -1212,22 +1413,62 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
               flush=True)
         return summary
 
-    conn = corpus_mod.open_db(corpus_path)
+    # Generation adoption is explicit and inert for legacy catalogs. The fence
+    # precedes every remote mutable write; an interrupted BUILDING remains owned
+    # by its original operation. This does not establish all-writer settlement.
+    generation_session = None
+    read_cache = None
+    if generation_evidence is not None and (dry_run or generation_identity is None):
+        summary["error"] = "generation_evidence_requires_explicit_producer"
+        return summary
+    if not dry_run:
+        if generation_identity is None and "producer_generation" in cat:
+            summary["error"] = "generation_writer_unqualified"
+            return summary
+        if generation_identity is not None:
+            try:
+                from engine.research_vault.producer_generation_writer import (
+                    ProducerGenerationSession, FencedProducerStore)
+                from engine.research_vault.producer_read_cache import CorpusReadCache
+                read_cache = CorpusReadCache(corpus_path, cat)
+                generation_session = ProducerGenerationSession.begin(
+                    store, cat, generation_identity, now=now, evidence=generation_evidence,
+                    read_cache=read_cache)
+                store = FencedProducerStore(store, generation_session)
+            except Exception as exc:
+                if read_cache is not None:
+                    read_cache.close()
+                summary["error"] = "generation_start_failed"
+                summary["generation_error"] = type(exc).__name__ + ": " + str(exc)
+                return summary
+
+    try:
+        conn = corpus_mod.open_db(corpus_path)
+    except BaseException:
+        if read_cache is not None:
+            read_cache.close()
+        raise
     pending_receipts: list = []  # (key, body) — flushed only after a publish
     try:
         # Display fields already published can only be healed on load (receipted
         # docs never re-ingest); read_strict does not do it, so run the same
         # repair here (titles, summary markdown/splits, institution spellings).
+        _t = time.monotonic()
         catalog_mod.heal_display(cat)
 
         # Heal filename-shaped titles already in the catalog (receipted docs are
         # never re-ingested, so this is the only path that reaches them).
         rep = _repair_titles(cat, conn)
+        timing_s["catalog_repair_s"] = time.monotonic() - _t
         summary["titles_repaired"] = rep["repaired"]
         summary["titles_recovered"] = rep["recovered"]
         summary["titles_unresolved"] = len(rep["unresolved"])
 
-        done_pdf_keys, id_to_pdf_key = _processed_index(store)
+        _t = time.monotonic()
+        done_pdf_keys, id_to_pdf_key = (_processed_index(store) if read_cache is None
+            else _processed_index(store, read_cache=read_cache))
+        timing_s["processed_index_s"] = time.monotonic() - _t
+        _t = time.monotonic()
 
         # {content_sha256: doc_id} for everything already indexed. Idempotency keys
         # on the SOURCE KEY, so the same report re-dropped under a different
@@ -1317,9 +1558,24 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
             # fails the receipts stay pending so the docs retry next run.
             if (not dry_run and checkpoint_every > 0
                     and summary["ingested"] % checkpoint_every == 0):
+                if generation_session is not None:
+                    _fulltext_t = time.monotonic()
+                    summary['fulltext_discovery'] = _stage_generation_body(
+                        conn, cat, generation_session, read_cache, pending_receipts, now)
+                    timing_s['fulltext_discovery_s'] = timing_s.get('fulltext_discovery_s', 0) + time.monotonic() - _fulltext_t
                 conn.commit()
+                if generation_session is not None:
+                    from engine.research_vault.fulltext_index import compact_for_publication
+                    compact_for_publication(conn)
+                publication_kwargs = {}
+                if generation_session is not None:
+                    catalog_mod.prepare_publication(cat, now=now)
+                    prepared = generation_session.prepare_catalog(cat)
+                    generation_session.record_publication(
+                        corpus_path, pending_receipts, catalog_bytes=prepared)
+                    publication_kwargs["prepared_bytes"] = prepared
                 if publish_corpus(store, corpus_path):
-                    if catalog_mod.publish(store, cat, now=now).published:
+                    if catalog_mod.publish(store, cat, now=now, **publication_kwargs).published:
                         _flush_receipts(store, pending_receipts)
                 log.info("research_vault: checkpoint at %d ingested",
                          summary["ingested"])
@@ -1335,7 +1591,10 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
         # reported summaries_recovered=1, and flapping every hour. Running last
         # means the refresh sees the post-ingest row and heals it from the sidecar
         # the receipt actually points at.
+        timing_s["intake_s"] = time.monotonic() - _t
+        _t = time.monotonic()
         ref = _refresh_sidecars(store, cat, conn, id_to_pdf_key, now)
+        timing_s["sidecar_resync_s"] = time.monotonic() - _t
         summary["sidecars_checked"] = ref["checked"]
         summary["sidecars_refreshed"] = ref["refreshed"]
         summary["summaries_recovered"] = ref["summaries"]
@@ -1347,7 +1606,9 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
         # so a dry run — which publishes nothing — must not perform it at all;
         # reporting a heal that was never written would be simply false.
         if not dry_run:
+            _t = time.monotonic()
             rex = _reextract_bodies(store, conn)
+            timing_s["reextract_s"] = time.monotonic() - _t
             summary["bodies_reextracted"] = rex["bodies"]
             summary["reextract_facts_only"] = rex["facts_only"]
             summary["reextract_checked"] = rex["checked"]
@@ -1359,7 +1620,9 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
             # Catalog items with no corpus row. Same gate as reextract: a dry
             # run publishes nothing, so it must not insert rows it will never
             # publish.
+            _t = time.monotonic()
             bf = _backfill_missing_rows(store, cat, conn)
+            timing_s["backfill_s"] = time.monotonic() - _t
             summary["backfill_candidates"] = bf["candidates"]
             summary["backfill_rows"] = bf["rows"]
             summary["backfill_pdf_missing"] = bf["pdf_missing"]
@@ -1377,6 +1640,16 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
         # not an event.
         summary["coverage"] = catalog_mod.coverage(cat)
 
+        # Identified generation runs compose discovery in the SAME corpus image
+        # after all native upserts and before its final publication journal cut.
+        # Derivatives created by the later bounded materializer join the next
+        # image; they cannot retroactively upgrade this published body snapshot.
+        if generation_session is not None:
+            _fulltext_t = time.monotonic()
+            summary['fulltext_discovery'] = _stage_generation_body(
+                conn, cat, generation_session, read_cache, pending_receipts, now)
+            timing_s['fulltext_discovery_s'] = timing_s.get('fulltext_discovery_s', 0) + time.monotonic() - _fulltext_t
+
         # Catalog: a dry run serializes only (nothing is published anywhere). The
         # real publish happens AFTER the corpus, below, once the connection is
         # closed — see the final-publish block.
@@ -1384,6 +1657,9 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
             summary["catalog_bytes"] = catalog_mod.serialize(cat, now=now)
         else:
             conn.commit()
+            if generation_session is not None:
+                from engine.research_vault.fulltext_index import compact_for_publication
+                compact_for_publication(conn)
 
         # Flag rather than silently ship: these reports are published under a
         # cleaned-up FILENAME because their headline could not be found on page 1
@@ -1398,6 +1674,8 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
                   f"{names}{more}")
     finally:
         conn.close()
+        if read_cache is not None:
+            read_cache.close()
 
     # Final publish (real runs only), after the connection is closed.
     #
@@ -1411,14 +1689,27 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
     # admit rows search cannot answer for; flushing receipts over a failed catalog
     # would permanently strand documents that never became visible (Defect 4).
     if not dry_run:
+        _t = time.monotonic()
+        publication_kwargs = {}
+        if generation_session is not None:
+            catalog_mod.prepare_publication(cat, now=now)
+            prepared = generation_session.prepare_catalog(cat)
+            generation_session.record_publication(
+                corpus_path, pending_receipts, catalog_bytes=prepared)
+            publication_kwargs["prepared_bytes"] = prepared
         summary["corpus_published"] = publish_corpus(store, corpus_path)
+        timing_s["corpus_publish_s"] = time.monotonic() - _t
         summary["catalog_published"] = False
         if summary["corpus_published"]:
-            published = catalog_mod.publish(store, cat, now=now)
+            _catalog_t = time.monotonic()
+            published = catalog_mod.publish(store, cat, now=now, **publication_kwargs)
+            timing_s["catalog_publish_s"] = time.monotonic() - _catalog_t
             summary["catalog_bytes"] = published.data
             summary["catalog_published"] = published.published
             if published.published:
+                _receipt_t = time.monotonic()
                 _flush_receipts(store, pending_receipts)
+                timing_s["receipt_flush_s"] = time.monotonic() - _receipt_t
             else:
                 summary["error"] = "catalog_publish_failed"
         else:
@@ -1436,6 +1727,12 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
                   f"{summary['catalog_published']}) — those documents will "
                   f"re-ingest next run", flush=True)
             summary["receipts_unflushed"] = len(pending_receipts)
+            summary["error"] = summary.get("error") or "receipt_publish_failed"
+        timing_s["publication_s"] = time.monotonic() - _t
+
+    summary["timing_s"] = timing_s
+    log.info("research_vault: run phase timing %s",
+             " ".join(f"{k}={v:.3f}" for k, v in sorted(timing_s.items())))
 
     # F5-M: materialize the stored full-text derivative (fulltext_writer). Bounded by
     # an item cap and a wall budget; metadata-only receipts; never changes the
@@ -1444,7 +1741,8 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
         try:
             from engine.research_vault import fulltext_writer
             ft = fulltext_writer.materialize_pending(store, cat, corpus_path,
-                                                     run_started=run_started)
+                                                     run_started=run_started,
+                                                     clock=time.monotonic)
             for k, v in ft.items():
                 if k != "aborted":
                     summary[f"fulltext_{k}"] = v
@@ -1456,19 +1754,47 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
             log.warning("research_vault: fulltext pass failed: %s", e)
             summary["fulltext_aborted"] = "internal_error"
 
+    if generation_session is not None:
+        if (not summary.get("error") and not pending_receipts
+                and summary.get("corpus_published") and summary.get("catalog_published")
+                and summary.get("fulltext_aborted") in (None, "cap", "budget")):
+            try:
+                # COMPLETE records the exact closed census, including below95.
+                # The consumer independently rejects below95 and defaultsFalse.
+                completion_time = (generation_clock() if generation_clock is not None
+                                   else datetime.now(timezone.utc))
+                summary["catalog_bytes"] = generation_session.complete(cat, now=completion_time)
+                summary["generation_complete"] = True
+            except Exception as exc:
+                summary["error"] = "generation_completion_failed"
+                summary["generation_error"] = type(exc).__name__ + ": " + str(exc)
+        else:
+            summary["error"] = summary.get("error") or "generation_incomplete"
+        summary.setdefault("generation_complete", False)
+
     return summary
 
 
-def _flush_receipts(store, pending: list) -> None:
-    """Write+drain accumulated receipts (called only after a successful publish)."""
+def _flush_receipts(store, pending: list) -> bool:
+    """Drain only confirmed receipts; failed pending writes remain retryable."""
     while pending:
         key, body = pending[0]
-        store.put_bytes(key, body, "application/json")
+        try:
+            if not store.put_bytes(key, body, "application/json"):
+                return False
+        except Exception:
+            return False
         pending.pop(0)
+    return True
 
 
 def publish_corpus(store, corpus_path: str | Path) -> bool:
     """Publish corpus.sqlite bytes to the store at research_vault/corpus.sqlite."""
+    try:
+        catalog_mod.ensure_generation_write_allowed(store)
+    except Exception as exc:
+        log.warning("research_vault: corpus write context unavailable (%s)", exc)
+        return False
     p = Path(corpus_path)
     if not p.is_file():
         log.warning("research_vault: corpus missing at %s — not published", p)

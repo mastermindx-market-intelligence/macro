@@ -1,0 +1,29 @@
+{
+  "imported_from": "f7a767a1bb1f0c312d22894644c1152a8ef7693d",
+  "target_before": "64ce305171fc5abad92882f745aff72f3820c1aa",
+  "exact_source_matches": {
+    "engine/government_revenue/program_ontology.py": "e163f5d7f95bc5b79adce72853d22e73c6ff261e27583ae5be908baed9b6c3e9",
+    "engine/government_revenue/program_dossier.py": "3b4c0215c391d0b3940b92934ffad53fd272abd1a2963117a3c4c29f1ffa1ed1",
+    "engine/government_revenue/program_theme_context.py": "b6a296539df1b8120edb8a8723b765ed48485e298baa102d58567bce2397fa0c",
+    "scripts/curate_government_program_ontology.py": "c90c5c0a33d9f92cdac886c34558a106be9129dfe0a6e593a3b5fb64ad44a7f3",
+    "templates/government-revenue-dossiers.js": "1d375c8dd87bffc888425bc54a33ffada2ccbfb10ff37d6ef8e276d43d6b9dd4",
+    "tests/defense_o2_source_contracts/test_program_dossier_owner_validation.py": "423d2711afdf4b799ec6ae8c10dd1159c906ef01b1eedaed85bcd849811a5a68",
+    "tests/test_government_program_public_capacity.py": "0b2ba20e1a4e02491bd11a727ad2b6ced37708e5400c4c5967ca72764c8931fb",
+    "tests/test_government_program_capacity_ui.py": "4fb02d85ce43dd2ab1ee05cf4df9786d333ce2699948b544ee6e70d46ecee06c",
+    "tests/test_government_program_oversight.py": "2a3dbd3584c8642d42b109a547a9846b2b06937ab414035c404800c9ab651e18",
+    "tests/test_government_program_oversight_ui.py": "cad640ba4e79754b5a14f7fef08926ecac6267b3b2b5dbe4d480a13262bc3eb0",
+    "tests/test_government_program_army_source_boundary.py": "98466873e9ddc836048c979040e267183c5a3307cfcd7f6948b84f174f6b93dd",
+    "tests/test_government_program_curator_clock_advance.py": "d4373d15dabcdcaa40aaf6bcbd78a78f0319998d3688239b8ff0f09d69f7ee56",
+    "contracts/government_revenue/government_program_ontology.v1_2.schema.json": "6267d935796cf28e83892b54afa67a1d0e977dd773ddb94e639e8a63439f9294",
+    "contracts/government_revenue/government_program_ontology.v1_3.schema.json": "7bfe34ee9397008330a0af8bfacec6beb296bb43711cceb3782ff66790e98587",
+    "contracts/government_revenue/government_program_dossier.v1_1.schema.json": "600c7ca8019f1dea78cdc62b520927fd33f9c9e2099fbac9ec8a84113bd92a4a",
+    "contracts/government_revenue/government_program_dossier.v1_2.schema.json": "a7fbc7371e2f0efc7c062a03ad97a7bc976530b907f569c4a27eb9b0b95dabbb"
+  },
+  "parent_affected_checks": {
+    "core": 380,
+    "theme": 164
+  },
+  "source_source_preservation": "all original graph rows and graph identity retained; no source acquisition",
+  "remaining": "full generation and browser qualification, normal protected release, entitled independent acceptance",
+  "original_broader_review": "unsettled original carrier retained, no fabricated acceptance"
+}

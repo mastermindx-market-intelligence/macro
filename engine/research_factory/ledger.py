@@ -156,6 +156,12 @@ def append_row(path: str | Path, row: dict, *, validate_fn=None) -> None:
     """
     p = Path(path)
     frozen, canonical_body = _freeze_exact_json_object(row, label="append_row")
+    if p.name in {"candidates.jsonl", "transitions.jsonl", "paper_monitor.jsonl"}:
+        from engine.research_factory.codegen_boundary import codegen_refusal
+
+        refusal = codegen_refusal(frozen)
+        if refusal:
+            raise ValueError(f"append_row: {refusal}")
     if frozen.get("authority") != "display_only":
         raise ValueError(
             f"append_row: row must carry authority='display_only' (RF-11); "
@@ -257,6 +263,12 @@ def write_jsonl(path: str | Path, rows: list[dict]) -> None:
             row,
             label=f"write_jsonl row[{i}]",
         )
+        if path_validator is not None:
+            from engine.research_factory.codegen_boundary import codegen_refusal
+
+            refusal = codegen_refusal(frozen)
+            if refusal:
+                raise ValueError(f"write_jsonl row[{i}]: {refusal}")
         if frozen.get("authority") != "display_only":
             raise ValueError(
                 f"write_jsonl: row[{i}] must carry authority='display_only' (RF-11); "

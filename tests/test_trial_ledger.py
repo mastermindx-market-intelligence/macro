@@ -382,3 +382,397 @@ def test_log_grid_batches_into_one_append(tmp_path, monkeypatch):
     assert len(p.read_text().splitlines()) == 3
     assert led.log_grid(grid, family="f") == 0
     assert appends["n"] == 1                         # idempotent re-run: no append at all
+
+
+# Concurrent owners must serialize the fresh read, generation and cold readback.
+def _trial_process(path, ready, start, results):
+    led = TrialLedger(path, family="f")
+    ready.set()
+    if not start.wait(10):
+        raise RuntimeError("test start timed out")
+    results.put(led.log_trial({"w": 20}))
+
+
+def test_stale_instances_do_not_duplicate_rows(tmp_path):
+    p = tmp_path / "t.jsonl"
+    first, second = TrialLedger(p, "f"), TrialLedger(p, "f")
+    assert first.log_trial({"w": 20}) is True
+    assert second.log_trial({"w": 20}) is False
+    first.log_declared_budget(40, reason="same")
+    assert second.log_declared_budget(40, reason="same") is False
+    assert len(p.read_text().splitlines()) == 2
+    assert second.effective_n() == 40
+
+
+def test_separate_processes_deduplicate_fresh_reads(tmp_path):
+    import multiprocessing as mp
+    ctx = mp.get_context("spawn")
+    start, results = ctx.Event(), ctx.Queue()
+    ready = [ctx.Event(), ctx.Event()]
+    procs = [ctx.Process(target=_trial_process, args=(str(tmp_path / "t.jsonl"), r, start, results)) for r in ready]
+    try:
+        for proc in procs:
+            proc.start()
+        assert all(r.wait(10) for r in ready)
+        start.set()
+        assert sorted(results.get(timeout=10) for _ in procs) == [False, True]
+        for proc in procs:
+            proc.join(10)
+            assert proc.exitcode == 0
+        assert len((tmp_path / "t.jsonl").read_text().splitlines()) == 1
+    finally:
+        for proc in procs:
+            if proc.is_alive():
+                proc.terminate()
+                proc.join(5)
+        results.close()
+
+
+def test_owner_transaction_serializes_whole_generation_and_readback(tmp_path):
+    import multiprocessing as mp
+    ctx = mp.get_context("spawn")
+    p = tmp_path / "t.jsonl"
+    p.write_bytes(b"")
+    owner = TrialLedger(p, "f")
+    ready, start, results = ctx.Event(), ctx.Event(), ctx.Queue()
+    proc = ctx.Process(target=_trial_process, args=(str(p), ready, start, results))
+    try:
+        proc.start()
+        assert ready.wait(10)
+        with owner.owner_transaction(strict=True) as held:
+            assert held is owner
+            start.set()
+            assert owner.log_grid([{"w": 20}, {"w": 40}]) == 2
+            owner.log_declared_budget(40, reason="all generated first")
+            import queue
+            with __import__("pytest").raises(queue.Empty):
+                results.get(timeout=0.15)
+            assert len(owner.raw_readback().splitlines()) == 3
+        assert results.get(timeout=10) is False
+        proc.join(10)
+        assert proc.exitcode == 0
+    finally:
+        if proc.is_alive():
+            proc.terminate()
+            proc.join(5)
+        results.close()
+
+
+def test_nested_owner_transaction_reuses_only_same_instance(tmp_path):
+    import pytest
+    p = tmp_path / "t.jsonl"
+    p.write_bytes(b"")
+    led, other = TrialLedger(p, "f"), TrialLedger(p, "f")
+    with pytest.raises(RuntimeError):
+        led.raw_readback()
+    with led.owner_transaction(strict=True):
+        with led.owner_transaction(strict=True):
+            assert led.log_trial({"w": 20}) is True
+        with pytest.raises(RuntimeError):
+            with other.owner_transaction():
+                pass
+        with pytest.raises(RuntimeError):
+            with TrialLedger(tmp_path / "other.jsonl", "f").owner_transaction():
+                pass
+        assert led.literal_n() == 1
+
+
+def test_lost_or_replaced_history_is_not_recreated(tmp_path):
+    import pytest
+    p = tmp_path / "t.jsonl"
+    led = TrialLedger(p, "f")
+    led.log_trial({"w": 20})
+    p.unlink()
+    with pytest.raises(OSError):
+        led.log_trial({"w": 40})
+    with pytest.raises(OSError):
+        TrialLedger(p, "f").log_trial({"w": 40})
+    assert not p.exists()
+    p.write_bytes(b"")
+    with pytest.raises(OSError):
+        led.log_trial({"w": 40})
+    assert led.literal_n() == 1
+
+
+def test_strict_transaction_rejects_incomplete_or_invalid_history(tmp_path):
+    import json
+    import pytest
+    p = tmp_path / "t.jsonl"
+    missing = TrialLedger(p, "f")
+    with pytest.raises(OSError):
+        with missing.owner_transaction(strict=True):
+            pass
+    assert not p.exists()
+    p.write_bytes(b"")
+    led = TrialLedger(p, "f")
+    led.log_trial({"w": 20})
+    good = p.read_bytes()
+    row = json.loads(good)
+    for corrupt in (good.rstrip(b"\n"), good + b'[]\n',
+                    good + b'{"family":"f","family":"g"}\n',
+                    json.dumps({**row, "config_hash": "0" * 16}).encode() + b"\n",
+                    json.dumps({**row, "ts": True}).encode() + b"\n",
+                    json.dumps({**row, "config": {"w": float("nan")}}).encode() + b"\n"):
+        p.write_bytes(corrupt)
+        fresh = TrialLedger(p, "f")
+        with pytest.raises((OSError, ValueError)):
+            with fresh.owner_transaction(strict=True):
+                pass
+
+
+def test_failed_fsync_does_not_publish_cache_or_duplicate_charge(tmp_path, monkeypatch):
+    import os
+    import stat
+    import pytest
+    p = tmp_path / "t.jsonl"
+    led = TrialLedger(p, "f")
+    led.log_trial({"w": 20})
+    real = os.fsync
+    def fail_data(fd):
+        if stat.S_ISREG(os.fstat(fd).st_mode):
+            raise OSError("test data durability unknown")
+        return real(fd)
+    with monkeypatch.context() as patch:
+        patch.setattr(os, "fsync", fail_data)
+        with pytest.raises(OSError):
+            led.log_trial({"w": 40})
+    assert led.literal_n() == 1
+    # Conservatively count the retained same-path row; never append a replacement.
+    assert led.log_trial({"w": 40}) is False
+    assert led.literal_n() == 2
+    assert len(p.read_text().splitlines()) == 2
+
+
+def test_unsafe_ledger_aliases_and_fifo_refuse_without_following(tmp_path):
+    import os
+    import pytest
+    target = tmp_path / "target.jsonl"
+    target.write_bytes(b"")
+    for kind in ("symlink", "hardlink", "fifo"):
+        p = tmp_path / (kind + ".jsonl")
+        if kind == "symlink":
+            p.symlink_to(target)
+        elif kind == "hardlink":
+            os.link(target, p)
+        else:
+            os.mkfifo(p)
+        with pytest.raises(OSError):
+            TrialLedger(p, "f").log_trial({"w": 20})
+        p.unlink()
+        assert target.read_bytes() == b""
+
+
+def test_same_bytes_replacement_between_calls_refuses(tmp_path):
+    import os
+    import pytest
+    p = tmp_path / "t.jsonl"
+    led = TrialLedger(p, "f")
+    led.log_trial({"w": 20})
+    original, inode = p.read_bytes(), p.stat().st_ino
+    replacement = tmp_path / "replacement.jsonl"
+    replacement.write_bytes(original)
+    os.replace(replacement, p)
+    assert p.stat().st_ino != inode
+    with pytest.raises(OSError, match="identity changed"):
+        led.log_trial({"w": 40})
+    assert p.read_bytes() == original
+    assert led.literal_n() == 1
+
+
+def test_same_bytes_replacement_inside_transaction_refuses(tmp_path):
+    import os
+    import pytest
+    p = tmp_path / "t.jsonl"
+    led = TrialLedger(p, "f")
+    led.log_trial({"w": 20})
+    original, inode = p.read_bytes(), p.stat().st_ino
+    with pytest.raises(OSError, match="identity changed"):
+        with led.owner_transaction(strict=True):
+            replacement = tmp_path / "replacement.jsonl"
+            replacement.write_bytes(original)
+            os.replace(replacement, p)
+            assert p.stat().st_ino != inode
+            led.log_trial({"w": 40})
+    assert p.read_bytes() == original
+    assert led.literal_n() == 1
+
+
+def test_first_failed_append_retains_observed_file_identity(tmp_path, monkeypatch):
+    import os
+    import pytest
+    import engine.trial_ledger as module
+    p = tmp_path / "t.jsonl"
+    led = TrialLedger(p, "f")
+    with monkeypatch.context() as patch:
+        patch.setattr(module.os, "write", lambda *_: (_ for _ in ()).throw(OSError("partial effect")))
+        with pytest.raises(OSError, match="partial effect"):
+            led.log_trial({"w": 20})
+    assert p.read_bytes() == b""
+    replacement = tmp_path / "replacement.jsonl"
+    replacement.write_bytes(b"")
+    os.replace(replacement, p)
+    with pytest.raises(OSError, match="identity changed"):
+        led.log_trial({"w": 20})
+    assert p.read_bytes() == b""
+    assert led.literal_n() == 0
+
+
+def test_declared_budget_helper_resolves_system_temp_alias(tmp_path, monkeypatch):
+    import tempfile
+    actual = tmp_path / "actual"
+    actual.mkdir()
+    alias = tmp_path / "system-temp"
+    alias.symlink_to(actual, target_is_directory=True)
+    monkeypatch.setattr(tempfile, "gettempdir", lambda: str(alias))
+    first = TrialLedger.with_declared_budget(8, "temp-alias-fixture")
+    second = TrialLedger.with_declared_budget(8, "temp-alias-fixture")
+    assert first.path.parent == actual
+    assert first.path == second.path
+    assert second.effective_n() == 8
+    assert len(first.path.read_text().splitlines()) == 1
+
+
+def _legacy_lines():
+    import json
+    rows = (
+        # a foreign prereg-registry record: no ledger identity key, only its own trial_id
+        {"trial_id": "x", "hypothesis": "h", "fdr_family": "z", "ts": "2026-01-01T00:00:00Z"},
+        # annotations: family + a non-budget kind, never a config_hash or config
+        {"family": "f", "kind": "amendment", "note": "n", "ts": "2026-01-01T00:00:00Z"},
+        {"family": "f", "kind": "filing_budget", "filing_week": "w", "mechanism_id": "m",
+         "ts": "2026-01-01T00:00:00Z"},
+    )
+    return "".join(json.dumps(r) + "\n" for r in rows)
+
+
+def test_legacy_identityless_records_do_not_block_appends(tmp_path):
+    from engine.trial_ledger import register_trials
+    p = tmp_path / "t.jsonl"
+    TrialLedger(p, family="f").log_trial({"w": 20})
+    with p.open("a", encoding="utf-8") as fh:
+        fh.write(_legacy_lines())
+    fresh = TrialLedger(p, family="f")
+    assert fresh.corrupt_lines == 0
+    assert fresh.legacy_rows == 3
+    assert fresh.load_error is None
+    assert fresh.literal_n("f") == 1
+    before = p.read_bytes()
+    assert fresh.log_trial({"w": 40}) is True
+    assert fresh.log_declared_budget(3) is True
+    with register_trials("g", 2, ledger=fresh):
+        pass
+    after = p.read_bytes()
+    assert after.startswith(before)
+    assert len(after.splitlines()) == len(before.splitlines()) + 3
+    assert fresh.literal_n("f") == 2
+    assert fresh.declared_budget("g") == 2
+    reloaded = TrialLedger(p, family="f")
+    assert (reloaded.corrupt_lines, reloaded.legacy_rows) == (0, 3)
+    assert reloaded.literal_n("f") == 2
+
+
+def test_unreadable_lines_still_block_appends_beside_legacy_records(tmp_path):
+    import pytest
+    p = tmp_path / "t.jsonl"
+    TrialLedger(p, family="f").log_trial({"w": 20})
+    with p.open("a", encoding="utf-8") as fh:
+        fh.write(_legacy_lines())
+        fh.write("not json at all\n")
+    fresh = TrialLedger(p, family="f")
+    assert (fresh.corrupt_lines, fresh.legacy_rows) == (1, 3)
+    before = p.read_bytes()
+    with pytest.raises((OSError, ValueError)):
+        fresh.log_trial({"w": 40})
+    assert p.read_bytes() == before
+
+
+def test_identity_bearing_or_shapeless_rows_stay_corrupt(tmp_path):
+    import json
+    import pytest
+    for i, bad in enumerate(({"family": 1, "kind": "amendment"},
+                {"family": "f", "config": {}},
+                {"config_hash": "0" * 16},
+                {"family": "f", "kind": "declared_budget", "n": 2},
+                {"family": "f", "kind": "amendment", "config": {}},
+                {"family": "f", "kind": ""},
+                {"kind": "amendment"},
+                {"trial_id": "x", "family": "f"},
+                {"trial_id": ""},
+                {"trial_id": "x", "whatever": 1},
+                {"family": "f", "kind": 1},
+                {"family": "", "kind": "amendment"},
+                {"family": "f", "kind": "Declared_Budget"},
+                {"family": "f", "kind": "declared-budget"},
+                {"family": "f", "kind": "other"},
+                {"family": "f", "kind": ["amendment"]},
+                {})):
+        p = tmp_path / f"t{i}.jsonl"
+        TrialLedger(p, family="f").log_trial({"w": 20})
+        with p.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(bad) + "\n")
+        fresh = TrialLedger(p, family="f")
+        assert (fresh.corrupt_lines, fresh.legacy_rows) == (1, 0), bad
+        before = p.read_bytes()
+        with pytest.raises((OSError, ValueError)):
+            fresh.log_trial({"w": 40})
+        assert p.read_bytes() == before, bad
+
+
+def test_live_causal_filing_budget_rows_do_not_block_appends(tmp_path, monkeypatch):
+    # scripts/causal_ingest_brainstorm.py used to append a filing_budget row for every card
+    # it filed straight into the ledger; those historical rows stay in the file and must
+    # never wedge it. The live writer (#9585) now targets its own budget file only.
+    import json
+    from scripts import causal_ingest_brainstorm as causal
+    p = tmp_path / "t.jsonl"
+    TrialLedger(p, family="f").log_trial({"w": 20})
+    with p.open("a", encoding="utf-8") as fh:
+        for mech in ("mech-1", "mech-2"):
+            fh.write(json.dumps({"ts": "2026-10-13T00:00:00+00:00", "kind": "filing_budget",
+                                 "family": "causal_scan", "filing_week": "2026-W42",
+                                 "mechanism_id": mech}) + "\n")
+    budget = tmp_path / "budget.jsonl"
+    monkeypatch.setattr(causal, "_TRIAL_LEDGER", p)
+    monkeypatch.setattr(causal, "_FILING_BUDGET", budget)
+    before = p.read_bytes()
+    causal._log_filing_budget("mech-3", "2026-W42")
+    causal._log_filing_budget("mech-4", "2026-W42")
+    assert p.read_bytes() == before
+    assert len(budget.read_text().splitlines()) == 2
+    fresh = TrialLedger(p, family="f")
+    assert (fresh.corrupt_lines, fresh.legacy_rows) == (0, 2)
+    assert fresh.literal_n("f") == 1
+    assert fresh.literal_n("causal_scan") == 0
+    assert fresh.log_trial({"w": 40}) is True
+    assert TrialLedger(p, family="f").literal_n("f") == 2
+
+
+def test_annotation_kind_with_config_hash_counts_as_a_trial(tmp_path):
+    import json
+    p = tmp_path / "t.jsonl"
+    TrialLedger(p, family="f").log_trial({"w": 20})
+    with p.open("a", encoding="utf-8") as fh:
+        fh.write(_legacy_lines())
+        fh.write(json.dumps({"family": "f", "kind": "amendment",
+                             "config_hash": "0123456789abcdef",
+                             "ts": "2026-01-01T00:00:00Z"}) + "\n")
+    fresh = TrialLedger(p, family="f")
+    assert (fresh.corrupt_lines, fresh.legacy_rows) == (0, 3)
+    assert fresh.literal_n("f") == 2
+    assert fresh.log_trial({"w": 40}) is True
+    assert fresh.literal_n("f") == 3
+
+
+def test_strict_transaction_still_refuses_legacy_records(tmp_path):
+    import pytest
+    p = tmp_path / "t.jsonl"
+    TrialLedger(p, family="f").log_trial({"w": 20})
+    clean = p.read_bytes()
+    for line in _legacy_lines().splitlines(keepends=True):
+        p.write_bytes(clean + line.encode())
+        fresh = TrialLedger(p, family="f")
+        assert fresh.legacy_rows == 1
+        with pytest.raises((OSError, ValueError)):
+            with fresh.owner_transaction(strict=True):
+                pass
+        assert p.read_bytes() == clean + line.encode()

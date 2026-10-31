@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MGY-BULL-20260810",
-  "asof": "2026-10-09",
+  "asof": "2026-10-30",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 30.9,
-  "raw_confidence": 32.1,
-  "delta_vs_base": -29.1,
-  "recommended_action": "trim",
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "management_confidence": 37.5,
+  "raw_confidence": 40.0,
+  "delta_vs_base": -22.5,
+  "recommended_action": null,
+  "human_state": "Closed",
   "components": {
-    "validity": 40.1,
-    "progress": 0.0,
-    "pace": 12.7,
-    "retention": 0.0,
+    "validity": 100.0,
+    "progress": 4.0,
+    "pace": 0.0,
+    "retention": 5.9,
     "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.508,
-    "dist_to_t1_r": 1.5,
-    "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 128.9,
-    "p1": -0.3281,
-    "p2": -0.164,
+    "dist_to_stop_r": 1.034,
+    "dist_to_t1_r": 1.466,
+    "dist_to_t2_r": 2.966,
+    "horizon_pct_used": 175.6,
+    "p1": 0.0227,
+    "p2": 0.0113,
     "p3": null,
-    "move_r": -0.492,
+    "move_r": 0.034,
     "mfe_r": 0.573,
     "mae_r": -0.751
   },
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 2.1899992370605474,
@@ -45,6 +45,8 @@
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 58,
-  "tau": 1.2889
+  "days_elapsed": 79,
+  "tau": 1.7556,
+  "closed": true,
+  "outcome": "EXPIRED"
 }

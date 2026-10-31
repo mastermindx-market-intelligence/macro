@@ -1,0 +1,25 @@
+{
+  "utc": "2026-10-20T17:24:35.422231+00:00",
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_press_run.py",
+    "tests/test_press_writer.py",
+    "tests/test_qbus_news_universe.py",
+    "tests/test_qbus_news_receipts.py"
+  ],
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "exit_code": 0,
+  "seconds": 10.04,
+  "source_sha256": {
+    "engine/press/qbus_news.py": "b4e75e83697ec4b629313dfd593830fc41040326c3da2e9b4c168dc684540947",
+    "engine/press/writer.py": "895fea2a5f135562bf8e61d3393eca1cb0e665c77808d44937eafd0ddd648be6",
+    "scripts/run_press.py": "46e7761acbfb0f8cd8fe10c8ac51f18d196a651a0ccc023b8dcf77a1208171d2",
+    "tests/test_press_run.py": "5827148fc6e899c191a5a8dca562103f3df909498eb749e164dba1c1ae367cc3"
+  },
+  "log": "/tmp/news-integration-recovery-20261020/private-draft-pytest-usage-shape.log",
+  "log_sha256": "d8e6f498b354912b97414ceb09a1b786592b7c5713ac95efb380bb1925c6997c",
+  "summary": "252 passed, 1 skipped, 6 warnings in 8.72s"
+}

@@ -1,0 +1,1371 @@
+{
+  "pinned_main": "96649436590c5d25f503eac90a74c2379e4f8a8e",
+  "method": "read-only first-parent committed-file history since 2026-07-20, maximum400 per file; batched immutable Git objects; exact buy/date candidates, not execution or admission proof",
+  "tickers": {
+    "AMZN": {
+      "market_date": "2026-07-31",
+      "commits_scanned": 203,
+      "history_capped": false,
+      "marker_state_changes": [
+        {
+          "commit": "69268b06502cdbfb9cdf9ae24e6e64663b17c8ed",
+          "commit_time": "2026-08-23T22:55:42Z",
+          "subject": "chore(immune): update ci_status + immune journals [skip ci]",
+          "path": "site/signals/AMZN.json",
+          "blob_sha": "56e4aaa767bce33f72b08335e12cb4142f6c7e4a",
+          "asof": "2026-08-21",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "kept_frozen": 58440,
+            "refined": 3,
+            "appended": 3,
+            "drift_lost": 1,
+            "drift_deep_new": 0,
+            "relabel_blocked": 56,
+            "prev_asof": "2026-08-21",
+            "era_cutover": {
+              "from": null,
+              "to": "sq-abs-session-2026-08-06",
+              "at_asof": "2026-08-05",
+              "prev_markers": 187
+            },
+            "date_backfilled": 259,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 176,
+              "refined": 0,
+              "appended": 0,
+              "drift_lost": 0,
+              "drift_deep_new": 0,
+              "relabel_blocked": 0,
+              "date_backfilled": 0,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [
+            {
+              "date": "2026-07-31",
+              "type": "buy",
+              "quality": "block",
+              "reason": "failed next-bar hold",
+              "reasons": [
+                "veto: bearish divergence",
+                "failed next-bar hold"
+              ],
+              "signal_date": "2026-08-04",
+              "confirmed_date": "2026-08-10",
+              "recorded_at": null
+            }
+          ],
+          "contradictory": true
+        }
+      ],
+      "first_bad_candidate": {
+        "commit": "69268b06502cdbfb9cdf9ae24e6e64663b17c8ed",
+        "commit_time": "2026-08-23T22:55:42Z",
+        "subject": "chore(immune): update ci_status + immune journals [skip ci]",
+        "path": "site/signals/AMZN.json",
+        "blob_sha": "56e4aaa767bce33f72b08335e12cb4142f6c7e4a",
+        "asof": "2026-08-21",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "kept_frozen": 58440,
+          "refined": 3,
+          "appended": 3,
+          "drift_lost": 1,
+          "drift_deep_new": 0,
+          "relabel_blocked": 56,
+          "prev_asof": "2026-08-21",
+          "era_cutover": {
+            "from": null,
+            "to": "sq-abs-session-2026-08-06",
+            "at_asof": "2026-08-05",
+            "prev_markers": 187
+          },
+          "date_backfilled": 259,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 176,
+            "refined": 0,
+            "appended": 0,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 0,
+            "date_backfilled": 0,
+            "date_backfill_blocked": 0
+          }
+        },
+        "markers": [
+          {
+            "date": "2026-07-31",
+            "type": "buy",
+            "quality": "block",
+            "reason": "failed next-bar hold",
+            "reasons": [
+              "veto: bearish divergence",
+              "failed next-bar hold"
+            ],
+            "signal_date": "2026-08-04",
+            "confirmed_date": "2026-08-10",
+            "recorded_at": null
+          }
+        ],
+        "contradictory": true
+      },
+      "preceding_committed_candidate": null
+    },
+    "EQIX": {
+      "market_date": "2026-08-13",
+      "commits_scanned": 203,
+      "history_capped": false,
+      "marker_state_changes": [
+        {
+          "commit": "69268b06502cdbfb9cdf9ae24e6e64663b17c8ed",
+          "commit_time": "2026-08-23T22:55:42Z",
+          "subject": "chore(immune): update ci_status + immune journals [skip ci]",
+          "path": "site/signals/EQIX.json",
+          "blob_sha": "59e7b88666c4b2574d10da3a5ff7ce9fc4265d36",
+          "asof": "2026-08-21",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "kept_frozen": 51322,
+            "refined": 1,
+            "appended": 1,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 60,
+            "prev_asof": "2026-08-21",
+            "era_cutover": {
+              "from": null,
+              "to": "sq-abs-session-2026-08-06",
+              "at_asof": "2026-08-05",
+              "prev_markers": 166
+            },
+            "date_backfilled": 220,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 150,
+              "refined": 0,
+              "appended": 0,
+              "drift_lost": 0,
+              "drift_deep_new": 0,
+              "relabel_blocked": 0,
+              "date_backfilled": 0,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [
+            {
+              "date": "2026-08-13",
+              "type": "buy",
+              "quality": "block",
+              "reason": "failed next-bar hold",
+              "reasons": [
+                "veto: bearish divergence",
+                "pending confirmation"
+              ],
+              "signal_date": "2026-08-13",
+              "confirmed_date": "2026-08-21",
+              "recorded_at": "2026-08-14"
+            }
+          ],
+          "contradictory": true
+        }
+      ],
+      "first_bad_candidate": {
+        "commit": "69268b06502cdbfb9cdf9ae24e6e64663b17c8ed",
+        "commit_time": "2026-08-23T22:55:42Z",
+        "subject": "chore(immune): update ci_status + immune journals [skip ci]",
+        "path": "site/signals/EQIX.json",
+        "blob_sha": "59e7b88666c4b2574d10da3a5ff7ce9fc4265d36",
+        "asof": "2026-08-21",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "kept_frozen": 51322,
+          "refined": 1,
+          "appended": 1,
+          "drift_lost": 0,
+          "drift_deep_new": 0,
+          "relabel_blocked": 60,
+          "prev_asof": "2026-08-21",
+          "era_cutover": {
+            "from": null,
+            "to": "sq-abs-session-2026-08-06",
+            "at_asof": "2026-08-05",
+            "prev_markers": 166
+          },
+          "date_backfilled": 220,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 150,
+            "refined": 0,
+            "appended": 0,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 0,
+            "date_backfilled": 0,
+            "date_backfill_blocked": 0
+          }
+        },
+        "markers": [
+          {
+            "date": "2026-08-13",
+            "type": "buy",
+            "quality": "block",
+            "reason": "failed next-bar hold",
+            "reasons": [
+              "veto: bearish divergence",
+              "pending confirmation"
+            ],
+            "signal_date": "2026-08-13",
+            "confirmed_date": "2026-08-21",
+            "recorded_at": "2026-08-14"
+          }
+        ],
+        "contradictory": true
+      },
+      "preceding_committed_candidate": null
+    },
+    "GOOGL": {
+      "market_date": "2026-08-26",
+      "commits_scanned": 203,
+      "history_capped": false,
+      "marker_state_changes": [
+        {
+          "commit": "69268b06502cdbfb9cdf9ae24e6e64663b17c8ed",
+          "commit_time": "2026-08-23T22:55:42Z",
+          "subject": "chore(immune): update ci_status + immune journals [skip ci]",
+          "path": "site/signals/GOOGL.json",
+          "blob_sha": "5edfec288bde9e181750074a83c97ca25b813da9",
+          "asof": "2026-08-21",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "kept_frozen": 44158,
+            "refined": 0,
+            "appended": 1,
+            "drift_lost": 40,
+            "drift_deep_new": 0,
+            "relabel_blocked": 40,
+            "prev_asof": "2026-08-21",
+            "era_cutover": {
+              "from": null,
+              "to": "sq-abs-session-2026-08-06",
+              "at_asof": "2026-08-05",
+              "prev_markers": 141
+            },
+            "date_backfilled": 187,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 132,
+              "refined": 0,
+              "appended": 0,
+              "drift_lost": 1,
+              "drift_deep_new": 0,
+              "relabel_blocked": 0,
+              "date_backfilled": 0,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [],
+          "contradictory": false
+        },
+        {
+          "commit": "79e00ca287b54266901f7b57b9c030c259634a03",
+          "commit_time": "2026-08-30T17:51:59+08:00",
+          "subject": "engine-render: regime recompute + re-render 2026-08-30 (scope=all)",
+          "path": "site/signals/GOOGL.json",
+          "blob_sha": "8edbc42088796156c2e6629729233816805966f5",
+          "asof": "2026-08-26",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "kept_frozen": 47062,
+            "refined": 0,
+            "appended": 2,
+            "drift_lost": 62,
+            "drift_deep_new": 0,
+            "relabel_blocked": 40,
+            "prev_asof": "2026-08-26",
+            "era_cutover": {
+              "from": null,
+              "to": "sq-abs-session-2026-08-06",
+              "at_asof": "2026-08-05",
+              "prev_markers": 141
+            },
+            "date_backfilled": 187,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 132,
+              "refined": 0,
+              "appended": 1,
+              "drift_lost": 1,
+              "drift_deep_new": 0,
+              "relabel_blocked": 0,
+              "date_backfilled": 0,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [
+            {
+              "date": "2026-08-26",
+              "type": "buy",
+              "quality": "block",
+              "reason": "veto: bearish divergence",
+              "reasons": [
+                "veto: bearish divergence",
+                "pending confirmation"
+              ],
+              "signal_date": "2026-08-28",
+              "confirmed_date": null,
+              "recorded_at": "2026-08-30"
+            }
+          ],
+          "contradictory": false
+        },
+        {
+          "commit": "0da39b480dc2ff8799c3a5a489e883de3d35b1c4",
+          "commit_time": "2026-09-02T02:54:10+08:00",
+          "subject": "engine-render: regime recompute + re-render 2026-09-01 (scope=all)",
+          "path": "site/signals/GOOGL.json",
+          "blob_sha": "ca501c1af66d26c197b2abb8e6ed37310008ac93",
+          "asof": "2026-08-31",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "kept_frozen": 47461,
+            "refined": 1,
+            "appended": 3,
+            "drift_lost": 65,
+            "drift_deep_new": 0,
+            "relabel_blocked": 40,
+            "prev_asof": "2026-08-26",
+            "era_cutover": {
+              "from": null,
+              "to": "sq-abs-session-2026-08-06",
+              "at_asof": "2026-08-05",
+              "prev_markers": 141
+            },
+            "date_backfilled": 187,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 133,
+              "refined": 1,
+              "appended": 1,
+              "drift_lost": 1,
+              "drift_deep_new": 0,
+              "relabel_blocked": 0,
+              "date_backfilled": 0,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [
+            {
+              "date": "2026-08-26",
+              "type": "buy",
+              "quality": "block",
+              "reason": "failed next-bar hold",
+              "reasons": [
+                "veto: bearish divergence",
+                "pending confirmation"
+              ],
+              "signal_date": "2026-08-28",
+              "confirmed_date": null,
+              "recorded_at": "2026-08-30"
+            }
+          ],
+          "contradictory": true
+        },
+        {
+          "commit": "39d85b7ffbb9ea264538d122e8aa8f8f57f80fdd",
+          "commit_time": "2026-09-03T19:12:52-07:00",
+          "subject": "closingbell: full close render 2026-09-03 (scope=close)",
+          "path": "site/signals/GOOGL.json",
+          "blob_sha": "d967c063ee494c8b85f5f865e16ec1d8aa56fb91",
+          "asof": "2026-09-03",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "kept_frozen": 48265,
+            "refined": 1,
+            "appended": 3,
+            "drift_lost": 71,
+            "drift_deep_new": 0,
+            "relabel_blocked": 40,
+            "prev_asof": "2026-08-31",
+            "era_cutover": {
+              "from": null,
+              "to": "sq-abs-session-2026-08-06",
+              "at_asof": "2026-08-05",
+              "prev_markers": 141
+            },
+            "date_backfilled": 188,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 134,
+              "refined": 0,
+              "appended": 0,
+              "drift_lost": 1,
+              "drift_deep_new": 0,
+              "relabel_blocked": 0,
+              "date_backfilled": 1,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [
+            {
+              "date": "2026-08-26",
+              "type": "buy",
+              "quality": "block",
+              "reason": "failed next-bar hold",
+              "reasons": [
+                "veto: bearish divergence",
+                "pending confirmation"
+              ],
+              "signal_date": "2026-08-28",
+              "confirmed_date": "2026-09-03",
+              "recorded_at": "2026-08-30"
+            }
+          ],
+          "contradictory": true
+        }
+      ],
+      "first_bad_candidate": {
+        "commit": "0da39b480dc2ff8799c3a5a489e883de3d35b1c4",
+        "commit_time": "2026-09-02T02:54:10+08:00",
+        "subject": "engine-render: regime recompute + re-render 2026-09-01 (scope=all)",
+        "path": "site/signals/GOOGL.json",
+        "blob_sha": "ca501c1af66d26c197b2abb8e6ed37310008ac93",
+        "asof": "2026-08-31",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "kept_frozen": 47461,
+          "refined": 1,
+          "appended": 3,
+          "drift_lost": 65,
+          "drift_deep_new": 0,
+          "relabel_blocked": 40,
+          "prev_asof": "2026-08-26",
+          "era_cutover": {
+            "from": null,
+            "to": "sq-abs-session-2026-08-06",
+            "at_asof": "2026-08-05",
+            "prev_markers": 141
+          },
+          "date_backfilled": 187,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 133,
+            "refined": 1,
+            "appended": 1,
+            "drift_lost": 1,
+            "drift_deep_new": 0,
+            "relabel_blocked": 0,
+            "date_backfilled": 0,
+            "date_backfill_blocked": 0
+          }
+        },
+        "markers": [
+          {
+            "date": "2026-08-26",
+            "type": "buy",
+            "quality": "block",
+            "reason": "failed next-bar hold",
+            "reasons": [
+              "veto: bearish divergence",
+              "pending confirmation"
+            ],
+            "signal_date": "2026-08-28",
+            "confirmed_date": null,
+            "recorded_at": "2026-08-30"
+          }
+        ],
+        "contradictory": true
+      },
+      "preceding_committed_candidate": {
+        "commit": "78198eeb7a583b3fb02eb6a49d1b64f294a81ce6",
+        "commit_time": "2026-08-31T18:01:21-07:00",
+        "subject": "closingbell: full close render 2026-08-31 (scope=close)",
+        "path": "site/signals/GOOGL.json",
+        "blob_sha": "815f000576ee0f88ab2170d27b7df887b3b501eb",
+        "asof": "2026-08-26",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "kept_frozen": 47328,
+          "refined": 0,
+          "appended": 2,
+          "drift_lost": 64,
+          "drift_deep_new": 0,
+          "relabel_blocked": 40,
+          "prev_asof": "2026-08-26",
+          "era_cutover": {
+            "from": null,
+            "to": "sq-abs-session-2026-08-06",
+            "at_asof": "2026-08-05",
+            "prev_markers": 141
+          },
+          "date_backfilled": 187,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 133,
+            "refined": 0,
+            "appended": 0,
+            "drift_lost": 1,
+            "drift_deep_new": 0,
+            "relabel_blocked": 0,
+            "date_backfilled": 0,
+            "date_backfill_blocked": 0
+          }
+        },
+        "markers": [
+          {
+            "date": "2026-08-26",
+            "type": "buy",
+            "quality": "block",
+            "reason": "veto: bearish divergence",
+            "reasons": [
+              "veto: bearish divergence",
+              "pending confirmation"
+            ],
+            "signal_date": "2026-08-28",
+            "confirmed_date": null,
+            "recorded_at": "2026-08-30"
+          }
+        ],
+        "contradictory": false
+      }
+    },
+    "HST": {
+      "market_date": "2026-10-08",
+      "commits_scanned": 151,
+      "history_capped": false,
+      "marker_state_changes": [
+        {
+          "commit": "c4b705de8f29da0faf6676999effde31d9a81931",
+          "commit_time": "2026-09-24T17:45:29-07:00",
+          "subject": "closingbell: full close render 2026-09-24 (scope=close)",
+          "path": "site/signals/HST.json",
+          "blob_sha": "c95a1fa89d09aa83d29e454cdf3e2bbcc463f57c",
+          "asof": "2026-09-17",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "new_file": 1,
+            "appended": 278,
+            "last_night": {
+              "new_file": true,
+              "appended": 278
+            },
+            "prev_asof": null
+          },
+          "markers": [],
+          "contradictory": false
+        },
+        {
+          "commit": "b87f37ca2ae16d2a5fb53da28de558a971468412",
+          "commit_time": "2026-10-09T02:15:26-07:00",
+          "subject": "engine-render: regime recompute + re-render 2026-10-09 (scope=all)",
+          "path": "site/signals/HST.json",
+          "blob_sha": "983c9a57351b134d841ff957464c67e80df85f30",
+          "asof": "2026-10-08",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "new_file": 1,
+            "appended": 279,
+            "prev_asof": "2026-10-05",
+            "kept_frozen": 20850,
+            "refined": 0,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 54,
+            "date_backfilled": 0,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 278,
+              "refined": 0,
+              "appended": 1,
+              "drift_lost": 0,
+              "drift_deep_new": 0,
+              "relabel_blocked": 1,
+              "date_backfilled": 0,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [
+            {
+              "date": "2026-10-08",
+              "type": "buy",
+              "quality": "block",
+              "reason": "veto: bearish divergence",
+              "reasons": [
+                "veto: bearish divergence",
+                "pending confirmation"
+              ],
+              "signal_date": "2026-10-08",
+              "confirmed_date": null,
+              "recorded_at": "2026-10-09"
+            }
+          ],
+          "contradictory": false
+        },
+        {
+          "commit": "2f7f702ed60b32cf7971c0b00609eeb715e62f14",
+          "commit_time": "2026-10-15T00:55:40-07:00",
+          "subject": "engine-render: regime recompute + re-render 2026-10-15 (scope=all)",
+          "path": "site/signals/HST.json",
+          "blob_sha": "60f307c4ee4b53fc5a94e0c5c96d4dd461094495",
+          "asof": "2026-10-13",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "new_file": 1,
+            "appended": 279,
+            "prev_asof": "2026-10-08",
+            "kept_frozen": 33126,
+            "refined": 1,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 98,
+            "date_backfilled": 0,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 279,
+              "refined": 1,
+              "appended": 0,
+              "drift_lost": 0,
+              "drift_deep_new": 0,
+              "relabel_blocked": 1,
+              "date_backfilled": 0,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [
+            {
+              "date": "2026-10-08",
+              "type": "buy",
+              "quality": "take",
+              "reason": "held confirmation",
+              "reasons": [
+                "veto: bearish divergence",
+                "pending confirmation"
+              ],
+              "signal_date": "2026-10-08",
+              "confirmed_date": null,
+              "recorded_at": "2026-10-09"
+            }
+          ],
+          "contradictory": true
+        },
+        {
+          "commit": "6311d646dd05d2ae532c7ad27f52708bdaf9a4a7",
+          "commit_time": "2026-10-20T11:10:29-07:00",
+          "subject": "engine-render: regime recompute + re-render 2026-10-20 (scope=all)",
+          "path": "site/signals/HST.json",
+          "blob_sha": "956d047a3a5d8fc01fffa1d61b58e9af13ca53e2",
+          "asof": "2026-10-16",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "new_file": 1,
+            "appended": 279,
+            "prev_asof": "2026-10-13",
+            "kept_frozen": 41775,
+            "refined": 1,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 129,
+            "date_backfilled": 1,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 279,
+              "refined": 0,
+              "appended": 0,
+              "drift_lost": 0,
+              "drift_deep_new": 0,
+              "relabel_blocked": 1,
+              "date_backfilled": 1,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [
+            {
+              "date": "2026-10-08",
+              "type": "buy",
+              "quality": "take",
+              "reason": "held confirmation",
+              "reasons": [
+                "veto: bearish divergence",
+                "pending confirmation"
+              ],
+              "signal_date": "2026-10-08",
+              "confirmed_date": "2026-10-19",
+              "recorded_at": "2026-10-09"
+            }
+          ],
+          "contradictory": true
+        }
+      ],
+      "first_bad_candidate": {
+        "commit": "2f7f702ed60b32cf7971c0b00609eeb715e62f14",
+        "commit_time": "2026-10-15T00:55:40-07:00",
+        "subject": "engine-render: regime recompute + re-render 2026-10-15 (scope=all)",
+        "path": "site/signals/HST.json",
+        "blob_sha": "60f307c4ee4b53fc5a94e0c5c96d4dd461094495",
+        "asof": "2026-10-13",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "new_file": 1,
+          "appended": 279,
+          "prev_asof": "2026-10-08",
+          "kept_frozen": 33126,
+          "refined": 1,
+          "drift_lost": 0,
+          "drift_deep_new": 0,
+          "relabel_blocked": 98,
+          "date_backfilled": 0,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 279,
+            "refined": 1,
+            "appended": 0,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 1,
+            "date_backfilled": 0,
+            "date_backfill_blocked": 0
+          }
+        },
+        "markers": [
+          {
+            "date": "2026-10-08",
+            "type": "buy",
+            "quality": "take",
+            "reason": "held confirmation",
+            "reasons": [
+              "veto: bearish divergence",
+              "pending confirmation"
+            ],
+            "signal_date": "2026-10-08",
+            "confirmed_date": null,
+            "recorded_at": "2026-10-09"
+          }
+        ],
+        "contradictory": true
+      },
+      "preceding_committed_candidate": {
+        "commit": "f6e47389af8ce3d1e6e0eadb6c289d550e3b82b5",
+        "commit_time": "2026-10-14T21:40:52-07:00",
+        "subject": "engine-render: regime recompute + re-render 2026-10-15 (scope=all)",
+        "path": "site/signals/HST.json",
+        "blob_sha": "a60c1b179da782c9c8fbc483ccfd6f045adb43e9",
+        "asof": "2026-10-08",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "new_file": 1,
+          "appended": 279,
+          "prev_asof": "2026-10-08",
+          "kept_frozen": 32847,
+          "refined": 0,
+          "drift_lost": 0,
+          "drift_deep_new": 0,
+          "relabel_blocked": 97,
+          "date_backfilled": 0,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 279,
+            "refined": 0,
+            "appended": 0,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 1,
+            "date_backfilled": 0,
+            "date_backfill_blocked": 0
+          }
+        },
+        "markers": [
+          {
+            "date": "2026-10-08",
+            "type": "buy",
+            "quality": "block",
+            "reason": "veto: bearish divergence",
+            "reasons": [
+              "veto: bearish divergence",
+              "pending confirmation"
+            ],
+            "signal_date": "2026-10-08",
+            "confirmed_date": null,
+            "recorded_at": "2026-10-09"
+          }
+        ],
+        "contradictory": false
+      }
+    },
+    "KMI": {
+      "market_date": "2026-08-31",
+      "commits_scanned": 203,
+      "history_capped": false,
+      "marker_state_changes": [
+        {
+          "commit": "69268b06502cdbfb9cdf9ae24e6e64663b17c8ed",
+          "commit_time": "2026-08-23T22:55:42Z",
+          "subject": "chore(immune): update ci_status + immune journals [skip ci]",
+          "path": "site/signals/KMI.json",
+          "blob_sha": "3c4be9bb9b58de4c9de68171742df37ee8906dad",
+          "asof": "2026-08-21",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "new_file": 1,
+            "appended": 111,
+            "prev_asof": "2026-08-21",
+            "kept_frozen": 27540,
+            "refined": 5,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 48,
+            "era_cutover": {
+              "from": null,
+              "to": "sq-abs-session-2026-08-06",
+              "at_asof": "2026-08-05",
+              "prev_markers": 109
+            },
+            "date_backfilled": 156,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 106,
+              "refined": 0,
+              "appended": 0,
+              "drift_lost": 0,
+              "drift_deep_new": 0,
+              "relabel_blocked": 0,
+              "date_backfilled": 0,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [],
+          "contradictory": false
+        },
+        {
+          "commit": "0da39b480dc2ff8799c3a5a489e883de3d35b1c4",
+          "commit_time": "2026-09-02T02:54:10+08:00",
+          "subject": "engine-render: regime recompute + re-render 2026-09-01 (scope=all)",
+          "path": "site/signals/KMI.json",
+          "blob_sha": "9dd2f89daa43aee43f65fba0ad06358b12dde928",
+          "asof": "2026-08-31",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "new_file": 1,
+            "appended": 113,
+            "prev_asof": "2026-08-26",
+            "kept_frozen": 30200,
+            "refined": 5,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 48,
+            "era_cutover": {
+              "from": null,
+              "to": "sq-abs-session-2026-08-06",
+              "at_asof": "2026-08-05",
+              "prev_markers": 109
+            },
+            "date_backfilled": 156,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 107,
+              "refined": 0,
+              "appended": 1,
+              "drift_lost": 0,
+              "drift_deep_new": 0,
+              "relabel_blocked": 0,
+              "date_backfilled": 0,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [
+            {
+              "date": "2026-08-31",
+              "type": "buy",
+              "quality": "block",
+              "reason": "veto: bearish divergence",
+              "reasons": [
+                "veto: bearish divergence",
+                "pending confirmation"
+              ],
+              "signal_date": "2026-08-31",
+              "confirmed_date": null,
+              "recorded_at": "2026-09-01"
+            }
+          ],
+          "contradictory": false
+        },
+        {
+          "commit": "5d675b38c3cf0418065c300b76d0377615a06fce",
+          "commit_time": "2026-09-11T13:19:31+08:00",
+          "subject": "engine-render: regime recompute + re-render 2026-09-11 (scope=all)",
+          "path": "site/signals/KMI.json",
+          "blob_sha": "cf0fab0395ef6674dd56c49411e2c64a9126991c",
+          "asof": "2026-09-09",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "new_file": 1,
+            "appended": 113,
+            "prev_asof": "2026-09-03",
+            "kept_frozen": 31928,
+            "refined": 6,
+            "drift_lost": 16,
+            "drift_deep_new": 0,
+            "relabel_blocked": 48,
+            "era_cutover": {
+              "from": null,
+              "to": "sq-abs-session-2026-08-06",
+              "at_asof": "2026-08-05",
+              "prev_markers": 109
+            },
+            "date_backfilled": 157,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 108,
+              "refined": 1,
+              "appended": 0,
+              "drift_lost": 1,
+              "drift_deep_new": 0,
+              "relabel_blocked": 0,
+              "date_backfilled": 1,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [
+            {
+              "date": "2026-08-31",
+              "type": "buy",
+              "quality": "take",
+              "reason": "held confirmation",
+              "reasons": [
+                "veto: bearish divergence",
+                "pending confirmation"
+              ],
+              "signal_date": "2026-08-31",
+              "confirmed_date": "2026-09-09",
+              "recorded_at": "2026-09-01"
+            }
+          ],
+          "contradictory": true
+        }
+      ],
+      "first_bad_candidate": {
+        "commit": "5d675b38c3cf0418065c300b76d0377615a06fce",
+        "commit_time": "2026-09-11T13:19:31+08:00",
+        "subject": "engine-render: regime recompute + re-render 2026-09-11 (scope=all)",
+        "path": "site/signals/KMI.json",
+        "blob_sha": "cf0fab0395ef6674dd56c49411e2c64a9126991c",
+        "asof": "2026-09-09",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "new_file": 1,
+          "appended": 113,
+          "prev_asof": "2026-09-03",
+          "kept_frozen": 31928,
+          "refined": 6,
+          "drift_lost": 16,
+          "drift_deep_new": 0,
+          "relabel_blocked": 48,
+          "era_cutover": {
+            "from": null,
+            "to": "sq-abs-session-2026-08-06",
+            "at_asof": "2026-08-05",
+            "prev_markers": 109
+          },
+          "date_backfilled": 157,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 108,
+            "refined": 1,
+            "appended": 0,
+            "drift_lost": 1,
+            "drift_deep_new": 0,
+            "relabel_blocked": 0,
+            "date_backfilled": 1,
+            "date_backfill_blocked": 0
+          }
+        },
+        "markers": [
+          {
+            "date": "2026-08-31",
+            "type": "buy",
+            "quality": "take",
+            "reason": "held confirmation",
+            "reasons": [
+              "veto: bearish divergence",
+              "pending confirmation"
+            ],
+            "signal_date": "2026-08-31",
+            "confirmed_date": "2026-09-09",
+            "recorded_at": "2026-09-01"
+          }
+        ],
+        "contradictory": true
+      },
+      "preceding_committed_candidate": {
+        "commit": "3119171478a7cd9cd851687cf24e8bf0c271cdc4",
+        "commit_time": "2026-09-10T16:47:26-07:00",
+        "subject": "closingbell: full close render 2026-09-10 (scope=close)",
+        "path": "site/signals/KMI.json",
+        "blob_sha": "3cefdad7144410e998da74db101a2443fe687b1a",
+        "asof": "2026-09-03",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "new_file": 1,
+          "appended": 113,
+          "prev_asof": "2026-09-03",
+          "kept_frozen": 31820,
+          "refined": 5,
+          "drift_lost": 15,
+          "drift_deep_new": 0,
+          "relabel_blocked": 48,
+          "era_cutover": {
+            "from": null,
+            "to": "sq-abs-session-2026-08-06",
+            "at_asof": "2026-08-05",
+            "prev_markers": 109
+          },
+          "date_backfilled": 156,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 108,
+            "refined": 0,
+            "appended": 0,
+            "drift_lost": 1,
+            "drift_deep_new": 0,
+            "relabel_blocked": 0,
+            "date_backfilled": 0,
+            "date_backfill_blocked": 0
+          }
+        },
+        "markers": [
+          {
+            "date": "2026-08-31",
+            "type": "buy",
+            "quality": "block",
+            "reason": "veto: bearish divergence",
+            "reasons": [
+              "veto: bearish divergence",
+              "pending confirmation"
+            ],
+            "signal_date": "2026-08-31",
+            "confirmed_date": null,
+            "recorded_at": "2026-09-01"
+          }
+        ],
+        "contradictory": false
+      }
+    },
+    "MU": {
+      "market_date": "2026-09-17",
+      "commits_scanned": 203,
+      "history_capped": false,
+      "marker_state_changes": [
+        {
+          "commit": "69268b06502cdbfb9cdf9ae24e6e64663b17c8ed",
+          "commit_time": "2026-08-23T22:55:42Z",
+          "subject": "chore(immune): update ci_status + immune journals [skip ci]",
+          "path": "site/signals/MU.json",
+          "blob_sha": "9570ffa0ff98249e5ffa8150922cefd1c2ac33ab",
+          "asof": "2026-08-21",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "kept_frozen": 85754,
+            "refined": 0,
+            "appended": 0,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 104,
+            "prev_asof": "2026-08-21",
+            "era_cutover": {
+              "from": null,
+              "to": "sq-abs-session-2026-08-06",
+              "at_asof": "2026-08-05",
+              "prev_markers": 269
+            },
+            "date_backfilled": 392,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 264,
+              "refined": 0,
+              "appended": 0,
+              "drift_lost": 0,
+              "drift_deep_new": 0,
+              "relabel_blocked": 0,
+              "date_backfilled": 0,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [],
+          "contradictory": false
+        },
+        {
+          "commit": "6778c552b5e7a4c96e2de54bff43da892ee6eaae",
+          "commit_time": "2026-09-21T17:35:50-07:00",
+          "subject": "closingbell: full close render 2026-09-21 (scope=close)",
+          "path": "site/signals/MU.json",
+          "blob_sha": "12f13dce64646472daf1c6c7ea9ead74e0387f1d",
+          "asof": "2026-09-17",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "kept_frozen": 98963,
+            "refined": 0,
+            "appended": 2,
+            "drift_lost": 0,
+            "drift_deep_new": 0,
+            "relabel_blocked": 104,
+            "prev_asof": "2026-09-09",
+            "era_cutover": {
+              "from": null,
+              "to": "sq-abs-session-2026-08-06",
+              "at_asof": "2026-08-05",
+              "prev_markers": 269
+            },
+            "date_backfilled": 392,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 265,
+              "refined": 0,
+              "appended": 1,
+              "drift_lost": 0,
+              "drift_deep_new": 0,
+              "relabel_blocked": 0,
+              "date_backfilled": 0,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [
+            {
+              "date": "2026-09-17",
+              "type": "buy",
+              "quality": "block",
+              "reason": "veto: bearish divergence",
+              "reasons": [
+                "veto: bearish divergence",
+                "pending confirmation"
+              ],
+              "signal_date": "2026-09-18",
+              "confirmed_date": null,
+              "recorded_at": "2026-09-21"
+            }
+          ],
+          "contradictory": false
+        },
+        {
+          "commit": "c4b705de8f29da0faf6676999effde31d9a81931",
+          "commit_time": "2026-09-24T17:45:29-07:00",
+          "subject": "closingbell: full close render 2026-09-24 (scope=close)",
+          "path": "site/signals/MU.json",
+          "blob_sha": "08f2574663872b54929b572679c01881cc18236e",
+          "asof": "2026-09-22",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "kept_frozen": 99495,
+            "refined": 1,
+            "appended": 2,
+            "drift_lost": 2,
+            "drift_deep_new": 0,
+            "relabel_blocked": 104,
+            "prev_asof": "2026-09-17",
+            "era_cutover": {
+              "from": null,
+              "to": "sq-abs-session-2026-08-06",
+              "at_asof": "2026-08-05",
+              "prev_markers": 269
+            },
+            "date_backfilled": 392,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 266,
+              "refined": 1,
+              "appended": 0,
+              "drift_lost": 1,
+              "drift_deep_new": 0,
+              "relabel_blocked": 0,
+              "date_backfilled": 0,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [
+            {
+              "date": "2026-09-17",
+              "type": "buy",
+              "quality": "take",
+              "reason": "held confirmation",
+              "reasons": [
+                "veto: bearish divergence",
+                "pending confirmation"
+              ],
+              "signal_date": "2026-09-18",
+              "confirmed_date": null,
+              "recorded_at": "2026-09-21"
+            }
+          ],
+          "contradictory": true
+        },
+        {
+          "commit": "7d25f9ac85cd20bb8c1a29bace895b51935592ac",
+          "commit_time": "2026-09-26T19:26:43-07:00",
+          "subject": "engine-render: regime recompute + re-render 2026-09-27 (scope=all)",
+          "path": "site/signals/MU.json",
+          "blob_sha": "318b9e5e52387c97b2d3026d5400bfed117177a5",
+          "asof": "2026-09-25",
+          "anchor_era": "sq-abs-session-2026-08-06",
+          "pit": {
+            "kept_frozen": 100027,
+            "refined": 1,
+            "appended": 2,
+            "drift_lost": 4,
+            "drift_deep_new": 0,
+            "relabel_blocked": 104,
+            "prev_asof": "2026-09-22",
+            "era_cutover": {
+              "from": null,
+              "to": "sq-abs-session-2026-08-06",
+              "at_asof": "2026-08-05",
+              "prev_markers": 269
+            },
+            "date_backfilled": 393,
+            "date_backfill_blocked": 0,
+            "last_night": {
+              "kept_frozen": 266,
+              "refined": 0,
+              "appended": 0,
+              "drift_lost": 1,
+              "drift_deep_new": 0,
+              "relabel_blocked": 0,
+              "date_backfilled": 1,
+              "date_backfill_blocked": 0
+            }
+          },
+          "markers": [
+            {
+              "date": "2026-09-17",
+              "type": "buy",
+              "quality": "take",
+              "reason": "held confirmation",
+              "reasons": [
+                "veto: bearish divergence",
+                "pending confirmation"
+              ],
+              "signal_date": "2026-09-18",
+              "confirmed_date": "2026-09-25",
+              "recorded_at": "2026-09-21"
+            }
+          ],
+          "contradictory": true
+        }
+      ],
+      "first_bad_candidate": {
+        "commit": "c4b705de8f29da0faf6676999effde31d9a81931",
+        "commit_time": "2026-09-24T17:45:29-07:00",
+        "subject": "closingbell: full close render 2026-09-24 (scope=close)",
+        "path": "site/signals/MU.json",
+        "blob_sha": "08f2574663872b54929b572679c01881cc18236e",
+        "asof": "2026-09-22",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "kept_frozen": 99495,
+          "refined": 1,
+          "appended": 2,
+          "drift_lost": 2,
+          "drift_deep_new": 0,
+          "relabel_blocked": 104,
+          "prev_asof": "2026-09-17",
+          "era_cutover": {
+            "from": null,
+            "to": "sq-abs-session-2026-08-06",
+            "at_asof": "2026-08-05",
+            "prev_markers": 269
+          },
+          "date_backfilled": 392,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 266,
+            "refined": 1,
+            "appended": 0,
+            "drift_lost": 1,
+            "drift_deep_new": 0,
+            "relabel_blocked": 0,
+            "date_backfilled": 0,
+            "date_backfill_blocked": 0
+          }
+        },
+        "markers": [
+          {
+            "date": "2026-09-17",
+            "type": "buy",
+            "quality": "take",
+            "reason": "held confirmation",
+            "reasons": [
+              "veto: bearish divergence",
+              "pending confirmation"
+            ],
+            "signal_date": "2026-09-18",
+            "confirmed_date": null,
+            "recorded_at": "2026-09-21"
+          }
+        ],
+        "contradictory": true
+      },
+      "preceding_committed_candidate": {
+        "commit": "7f95fd99223eaa0007aa0e737cf0a86bb2b4cd17",
+        "commit_time": "2026-09-21T22:09:18-07:00",
+        "subject": "engine-render: regime recompute + re-render 2026-09-22 (scope=all)",
+        "path": "site/signals/MU.json",
+        "blob_sha": "4694c8f25238e528c9e646e32228d7d912c0bc8e",
+        "asof": "2026-09-17",
+        "anchor_era": "sq-abs-session-2026-08-06",
+        "pit": {
+          "kept_frozen": 99229,
+          "refined": 0,
+          "appended": 2,
+          "drift_lost": 1,
+          "drift_deep_new": 0,
+          "relabel_blocked": 104,
+          "prev_asof": "2026-09-17",
+          "era_cutover": {
+            "from": null,
+            "to": "sq-abs-session-2026-08-06",
+            "at_asof": "2026-08-05",
+            "prev_markers": 269
+          },
+          "date_backfilled": 392,
+          "date_backfill_blocked": 0,
+          "last_night": {
+            "kept_frozen": 266,
+            "refined": 0,
+            "appended": 0,
+            "drift_lost": 1,
+            "drift_deep_new": 0,
+            "relabel_blocked": 0,
+            "date_backfilled": 0,
+            "date_backfill_blocked": 0
+          }
+        },
+        "markers": [
+          {
+            "date": "2026-09-17",
+            "type": "buy",
+            "quality": "block",
+            "reason": "veto: bearish divergence",
+            "reasons": [
+              "veto: bearish divergence",
+              "pending confirmation"
+            ],
+            "signal_date": "2026-09-18",
+            "confirmed_date": null,
+            "recorded_at": "2026-09-21"
+          }
+        ],
+        "contradictory": false
+      }
+    }
+  },
+  "complete": true,
+  "raw_scan_sha256": "fd884c090cb115fe1cc1a0717e24b26656a70a06e33f73a9cdeb3b550366ff51",
+  "complete_scope": "All requested bounded scans over locally available first-parent history completed. This is not complete unbounded repository history.",
+  "unbounded_history_complete": false,
+  "repository_shallow": true,
+  "shallow_boundary": {
+    "commit": "69268b06502cdbfb9cdf9ae24e6e64663b17c8ed",
+    "actual_github_parent": "fab0a94929174b899387df83aafcde5d05325ff4",
+    "warning": "AMZN and EQIX first_bad_candidate equal this local boundary, not first introduction. AMZN was subsequently bound separately in amzn_historical_execution_20261021.json."
+  },
+  "candidate_limitation": "Preceding file-changing commit is not necessarily the final Git parent or actual runtime predecessor. No per-row historical admission is established by this scan."
+}

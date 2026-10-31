@@ -1,0 +1,82 @@
+{
+  "actual_code_change_required_after_return": false,
+  "counterevidence": {
+    "capability_constant_drift_and_vintage_mismatch": {
+      "disposition": "REGRESSION_GUARDED_AND_INTENTIONAL",
+      "reason": "An existing test asserts disclosed limits equal enforced archive constants. Stored older feature versions may be read with an explicit mismatch, not relabelled or promoted to current code/PIT."
+    },
+    "close_error_masks_other_error": {
+      "disposition": "NON_BLOCKING_DOUBLE_FAILURE_DIAGNOSTICS",
+      "reason": "Close failure still fails closed. No wrong data or permission widening; no claim every simultaneous I/O fault preserves the first error."
+    },
+    "dependency_import_error": {
+      "disposition": "INTENTIONAL_TYPED_CONTRACT",
+      "reason": "Dependency unavailable produces bounded stderr JSON instead of import-time traceback; root cause is not silently treated as success. Immutable real-runtime canaries test installation closure."
+    },
+    "empty_partition_list": {
+      "disposition": "REFUTED",
+      "reason": "Canonical reader retains capture references even when the selected economic date window is empty; tests/test_market_memory_history_archive.py::test_empty_source_keeps_declared_denominator_without_inventing_price covers the actual contract."
+    },
+    "legacy_regression": {
+      "actual_retained_v1_reads": [
+        {
+          "archive_schema": "market_memory.history_archive.v1",
+          "date": "2022-09-13",
+          "feature_version": "market_memory.descriptive_observed_bars.v1",
+          "manifest_sha256": "fb9165f7c91b544f94504ebc7d897db86ad4ccda87beacfe5317e617f9a1a92f",
+          "original_archive_unchanged": true,
+          "original_receipt": "history-initial-receipt.json",
+          "rows": 25
+        },
+        {
+          "archive_schema": "market_memory.history_archive.v1",
+          "date": "2022-09-13",
+          "feature_version": "market_memory.descriptive_observed_bars.v1",
+          "manifest_sha256": "ef7a151e588f120f63869cd552b3bba8a4dc5e2c7dc8d3372dd0cbc19ff3f03c",
+          "original_archive_unchanged": true,
+          "original_receipt": "history-1993-receipt.json",
+          "rows": 25
+        }
+      ],
+      "disposition": "REFUTED",
+      "reason": "Both actual legacy versions retain feature/code/state/outcome hashes; allow_legacy only admits the declared v1 schema. Imagined earlier formats are not an existing contract."
+    },
+    "macro_pit_upgrade": {
+      "disposition": "REFUTED_BY_ACTUAL_CALL",
+      "reason": "Shared _flags explicitly rejects PIT/full-revision/intraday upgrades; direct PIT=true compose just refused."
+    },
+    "macro_table_shift": {
+      "disposition": "REFUTED_BY_BROWSER",
+      "reason": "JS maps named columns, not ordinal headings. Eight current real-data Chromium cases rendered all11Sept13macro rows in both languages and themes."
+    },
+    "nonjson_macro_error_precedence": {
+      "disposition": "INTENTIONAL_INPUT_CONTRACT",
+      "reason": "A non-JSON source is refused before opening; uppercase extension/dual-malformed precedence were never an admitted history endpoint contract. Authorized cross-root pairing remains validated by DataWorkspace._file."
+    },
+    "outcome_hash_required": {
+      "disposition": "REFUTED",
+      "reason": "Producer always commits separate outcome metadata. Default read does not open outcome files; existing removal tests still pass. A claimed no-outcome manifest is not produced by this writer."
+    }
+  },
+  "formal_worker_quality_acceptance": false,
+  "parent_finding_disposition": "No confirmed blocking defect in the actual admitted source contract. Several findings explicitly assume missing schemas/helpers despite supplied baseline facts; none is silently ignored.",
+  "parent_release_status": "SOURCE_ADJUDICATED_PENDING_CURRENT_HEAD_HOSTED_CI_AND_INSTALLED_CONSUMER_PROOF",
+  "parent_run_id": "market-time-machine-20261015",
+  "retained_response_bytes": 7650,
+  "retained_response_sha256": "2f1e95217e8247e5d708c1bf008ced6ed241f3ec1346d858833bbc05aadc2ca2",
+  "retained_worker_verdict": "FAIL",
+  "reviewed_source_sha256": {
+    "engine/neuralweb/market_memory_history_archive.py": "4c9580c35557d857cb1a4f7dfcd51d3cd75647b9cf0f9ee54e4b2c98ff2974d2",
+    "engine/neuralweb/market_memory_history_dossier.py": "3062c13a89f43937e85bd091ecc79054947cfbf13dc7557b92eb80b95008dc4b",
+    "engine/neuralweb/market_memory_history_macro.py": "a43179ca6c40e25da2bf14250edf07104f7e5e429d842a3eb43133a6a0ccf5cf",
+    "engine/neuralweb/market_memory_history_view.py": "f54001b180815878253fc79fbf5a762cbe0456f4fe1d05fa09884cb68ee906a7",
+    "lib/dataos/web_api.py": "7bc02c54e93c75b3fe9a6798554b85705b2a7a95ab6296e6343bdbb6014a9157",
+    "lib/dataos/web_history.py": "0b5a0b989283a53aec6186e0c42b2b0a4e6d2978fe53b61f8ec9004ce5aa8ee4",
+    "scripts/market_memory_history.py": "42a952f655e9f3de7da6c77d7c5cb3dc54fd425565b8da248cc614a49b206852"
+  },
+  "root_id": "market-time-machine-20261015",
+  "run_id": "market-time-machine-20261015-final-review-04",
+  "schema": "market_memory.final_review_adjudication.v1",
+  "terminal_exit": 0,
+  "worker": "bailian/qwen3.8-max; canonical route despite soft minimax preference"
+}

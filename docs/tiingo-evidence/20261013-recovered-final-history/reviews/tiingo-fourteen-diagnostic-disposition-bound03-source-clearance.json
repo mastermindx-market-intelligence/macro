@@ -1,0 +1,49 @@
+{
+  "schema": "tiingo.fourteen_diagnostic_disposition_focused_source_clearance/v1",
+  "recorded_at_utc": "2026-10-14T04:58:13.710200+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "verdict": "PASS_SAME_OPERATION_PREFLIGHT_CONTROL_SLOT_CONTINUATION",
+  "source_file": "tiingo-fourteen-diagnostic-disposition-bound03.py",
+  "source_sha256": "fb027fc3bae4fedd5b3b7ff70842a7f66ce4468fd99ca580ce2d063ef19104c3",
+  "prior_source_clearance_file": "tiingo-fourteen-diagnostic-disposition-bound02-source-clearance.json",
+  "prior_source_clearance_sha256": "0f406053da0c05efbee113aa5a5b9d627ab01d2228d459771324fd2733075a0d",
+  "remedy_file": "tiingo-fourteen-preflight01-actual-failure-and-day-directory-remedy01.json",
+  "remedy_sha256": "eacacc40f8d11145cb6c49139cfb8509b2c32b5d9bfc564d702f1137556e9249",
+  "verified": [
+    "Exact source hash and AST parse; only deltas are the pinned remedy evidence and name() routing of three preflight control files to suffix02.",
+    "Retained observed-wait hash9ef45415 and validation hash9630d7 match the remedy. Both record child exit1; post-wait validation true describes frozen evidence integrity and does not promote failed preflight to success.",
+    "Original log hash23b5ec3b matches validation and identifies FileNotFoundError for the manifests/eod-bars/2026-10-14 ancestor during read-only preflight selector_state.",
+    "Original unvalidated snapshot hash812408d0 remains intact. It is not an accepted preflight and is not reused as one.",
+    "Both remedied day-directory lstat identities match the retained remedy and remain directory types. No source filesystem guard is weakened.",
+    "All name() consumers use the consistent remapped materialization-scope02, disposition-preflight02, and preflight-parent-consumption02 slots. Canonical qualified and coverage slots remain unchanged.",
+    "All three new preflight control slots and canonical qualification/coverage output slots were true-lstat absent at review.",
+    "No scalar, materializer, reader-parity, source-freeze, quality, collision or coverage logic changed."
+  ],
+  "conditions": [
+    "Root must bind exact source03 and remedy into the new packet and freeze the retained failed-attempt wait, validation, log and snapshot evidence; preserve those originals.",
+    "One explicit same-operation preflight continuation is admissible after this ordinary missing-directory repair. There is no provider/raw retry, automatic retry or permission-refusal workaround.",
+    "Use fresh exclusive wrapper control/log/output slots. Consume the new actual native return, observed child wait and post-wait validation, then accept the actual preflight contents before any qualification.",
+    "Qualifier and coverage packets must use source03 plus the actual suffix02 preflight/snapshot/parent bindings; do not bind the failed original snapshot as accepted.",
+    "All previously recorded whole-pipeline conditions remain binding; deterministic packet inspection by the root suffices absent material changes or unknown effects.",
+    "Fourteen accepted raw captures do not themselves promote any QA count."
+  ],
+  "whole_pipeline_conditions": [
+    "Root may deterministically prepare/check each stagepacket underacceptedwrapperc0a630 without another reviewer round ifsource,scope andcontract remainexactlyaccepted; materialchanges or failed/unknown effects require focusedreview/reconciliation.",
+    "Everypacket: exactroot/run/mode/prefix01/sourcehash/wrapperhash; max0provider/creds; noauto retry; distincttrue-lstatabsentoutput/log/intent/identity/wait/validation slots thatcannotcollidewithinputs; frozenhashmap rejects duplicatepath conflicts.",
+    "Freeze allsourcecontext dependencies from recursivepreviousmethods/h.PINS/producerfiles/directPINS and exactacceptedpredecessorQ metadata; wrapperpre/postverify allsuppliedinputs and currentstageoutputs. Sourcefreeze handles its ownrecursiveproducer/context controls.",
+    "Preflightpacket allows onlynewsnapshot+pfcontroloutputs, noarchivewrites. Rootconsumesactualnative+durablewait+validation and verifies14selected,valid/qualitypartition, windows/raw/receiptidentity, expected56selectors or justifieddeduplicatedcount, protectedpartials andsource/ancestor stability. Do notassumeall14valid beforeactualpreflight.",
+    "Qualifierpacket additionally freezesactualpf/snapshot/rootparent/wait/validation; rootparentbindsroot/method/prefix/pfhash/nativeactual0. Allowatmost14preflight-selected materializer calls; finalstrictselector/protectedcustody/fullnewreaderparity remainrequired, with40GiBfloor.",
+    "Coveragepacket additionally freezesactualq/qualifierrootsemanticacceptance/wait/validation pluspf,parent,snapshot; noarchivewrites/provider. Rootconsumesactualcoverageexit/wait/validation/censushash and verifiesprior+qualifiedvalidbars/history/empty/qualitypartition and47689catalogueconservation.",
+    "No individualpacket review isneeded for deterministicbinding ofthisacceptedpipeline; source reviewdoesnotitselfclaim anystageexecuted or grantnewproviderrequests.",
+    "Preserveoriginal90730/22925/91287unknownterminalfacts and oldgenericreasonclasses; no newcausalityimputation. KeepHTTP403/404/quality/R2/Fabric/publisherholds unchanged."
+  ],
+  "review_effects": {
+    "candidate_executions": 0,
+    "provider_requests": 0,
+    "credential_reads": 0,
+    "archive_writes": 0,
+    "old_raw_reader_rescans": 0,
+    "source_edits": 0,
+    "delegations": 0
+  }
+}

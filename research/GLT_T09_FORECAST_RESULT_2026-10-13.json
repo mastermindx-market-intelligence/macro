@@ -1,0 +1,3784 @@
+{
+  "authority": "measurement_only",
+  "calendar_indicators": [
+    "tax_jan15",
+    "tax_apr15",
+    "tax_jun15",
+    "tax_sep15",
+    "tax_dec15",
+    "quarter_end",
+    "month_end_non_quarter"
+  ],
+  "cells": [
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "residual_ar_p1",
+      "cell_index": 0,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 205,
+        "n_origins_total": 205,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 110.345034,
+          "rmse": 191.012142
+        },
+        "persistence": {
+          "mae": 110.345034,
+          "rmse": 191.012142
+        },
+        "residual_ar_p1": {
+          "mae": 112.308994,
+          "rmse": 190.699542
+        },
+        "residual_ar_p2": {
+          "mae": 112.153037,
+          "rmse": 190.548341
+        },
+        "ridge_residual_a0.1": {
+          "mae": 108.028898,
+          "rmse": 185.82911
+        },
+        "ridge_residual_a1.0": {
+          "mae": 108.029657,
+          "rmse": 185.831296
+        },
+        "ridge_residual_a10.0": {
+          "mae": 108.036272,
+          "rmse": 185.854067
+        },
+        "seasonal_calendar": {
+          "mae": 109.182685,
+          "rmse": 186.677601
+        },
+        "training_only_ar": {
+          "mae": 112.977823,
+          "rmse": 190.320652
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.00656,
+        "level": 0.9,
+        "low": -0.07035
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 236.484603,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 71.707317
+        },
+        "90": {
+          "mean_width": 317.154605,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 83.414634
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.028634 (min_relative_gain=0.05), gain_ci=(-0.07035, 0.00656) at level 0.9",
+      "relative_gain": -0.028634,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "residual_ar_p2",
+      "cell_index": 1,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 205,
+        "n_origins_total": 205,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 110.345034,
+          "rmse": 191.012142
+        },
+        "persistence": {
+          "mae": 110.345034,
+          "rmse": 191.012142
+        },
+        "residual_ar_p1": {
+          "mae": 112.308994,
+          "rmse": 190.699542
+        },
+        "residual_ar_p2": {
+          "mae": 112.153037,
+          "rmse": 190.548341
+        },
+        "ridge_residual_a0.1": {
+          "mae": 108.028898,
+          "rmse": 185.82911
+        },
+        "ridge_residual_a1.0": {
+          "mae": 108.029657,
+          "rmse": 185.831296
+        },
+        "ridge_residual_a10.0": {
+          "mae": 108.036272,
+          "rmse": 185.854067
+        },
+        "seasonal_calendar": {
+          "mae": 109.182685,
+          "rmse": 186.677601
+        },
+        "training_only_ar": {
+          "mae": 112.977823,
+          "rmse": 190.320652
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.00955,
+        "level": 0.9,
+        "low": -0.064701
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 232.525113,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 70.243902
+        },
+        "90": {
+          "mean_width": 320.953984,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 84.878049
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.027205 (min_relative_gain=0.05), gain_ci=(-0.064701, 0.00955) at level 0.9",
+      "relative_gain": -0.027205,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a0.1",
+      "cell_index": 2,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 205,
+        "n_origins_total": 205,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 110.345034,
+          "rmse": 191.012142
+        },
+        "persistence": {
+          "mae": 110.345034,
+          "rmse": 191.012142
+        },
+        "residual_ar_p1": {
+          "mae": 112.308994,
+          "rmse": 190.699542
+        },
+        "residual_ar_p2": {
+          "mae": 112.153037,
+          "rmse": 190.548341
+        },
+        "ridge_residual_a0.1": {
+          "mae": 108.028898,
+          "rmse": 185.82911
+        },
+        "ridge_residual_a1.0": {
+          "mae": 108.029657,
+          "rmse": 185.831296
+        },
+        "ridge_residual_a10.0": {
+          "mae": 108.036272,
+          "rmse": 185.854067
+        },
+        "seasonal_calendar": {
+          "mae": 109.182685,
+          "rmse": 186.677601
+        },
+        "training_only_ar": {
+          "mae": 112.977823,
+          "rmse": 190.320652
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.043262,
+        "level": 0.9,
+        "low": -0.027195
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 237.25933,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 74.146341
+        },
+        "90": {
+          "mean_width": 317.480454,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 85.365854
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline seasonal_calendar: relative_gain=0.010567 (min_relative_gain=0.05), gain_ci=(-0.027195, 0.043262) at level 0.9",
+      "relative_gain": 0.010567,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a1.0",
+      "cell_index": 3,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 205,
+        "n_origins_total": 205,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 110.345034,
+          "rmse": 191.012142
+        },
+        "persistence": {
+          "mae": 110.345034,
+          "rmse": 191.012142
+        },
+        "residual_ar_p1": {
+          "mae": 112.308994,
+          "rmse": 190.699542
+        },
+        "residual_ar_p2": {
+          "mae": 112.153037,
+          "rmse": 190.548341
+        },
+        "ridge_residual_a0.1": {
+          "mae": 108.028898,
+          "rmse": 185.82911
+        },
+        "ridge_residual_a1.0": {
+          "mae": 108.029657,
+          "rmse": 185.831296
+        },
+        "ridge_residual_a10.0": {
+          "mae": 108.036272,
+          "rmse": 185.854067
+        },
+        "seasonal_calendar": {
+          "mae": 109.182685,
+          "rmse": 186.677601
+        },
+        "training_only_ar": {
+          "mae": 112.977823,
+          "rmse": 190.320652
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.041933,
+        "level": 0.9,
+        "low": -0.02975
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 237.161797,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 74.146341
+        },
+        "90": {
+          "mean_width": 317.437806,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 85.365854
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline seasonal_calendar: relative_gain=0.010561 (min_relative_gain=0.05), gain_ci=(-0.02975, 0.041933) at level 0.9",
+      "relative_gain": 0.010561,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a10.0",
+      "cell_index": 4,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 205,
+        "n_origins_total": 205,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 110.345034,
+          "rmse": 191.012142
+        },
+        "persistence": {
+          "mae": 110.345034,
+          "rmse": 191.012142
+        },
+        "residual_ar_p1": {
+          "mae": 112.308994,
+          "rmse": 190.699542
+        },
+        "residual_ar_p2": {
+          "mae": 112.153037,
+          "rmse": 190.548341
+        },
+        "ridge_residual_a0.1": {
+          "mae": 108.028898,
+          "rmse": 185.82911
+        },
+        "ridge_residual_a1.0": {
+          "mae": 108.029657,
+          "rmse": 185.831296
+        },
+        "ridge_residual_a10.0": {
+          "mae": 108.036272,
+          "rmse": 185.854067
+        },
+        "seasonal_calendar": {
+          "mae": 109.182685,
+          "rmse": 186.677601
+        },
+        "training_only_ar": {
+          "mae": 112.977823,
+          "rmse": 190.320652
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.042744,
+        "level": 0.9,
+        "low": -0.028302
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 235.868569,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 74.146341
+        },
+        "90": {
+          "mean_width": 317.09394,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 85.365854
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline seasonal_calendar: relative_gain=0.0105 (min_relative_gain=0.05), gain_ci=(-0.028302, 0.042744) at level 0.9",
+      "relative_gain": 0.0105,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "residual_ar_p1",
+      "cell_index": 5,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 201,
+        "n_origins_total": 201,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 189.187985,
+          "rmse": 323.677781
+        },
+        "persistence": {
+          "mae": 189.187985,
+          "rmse": 323.677781
+        },
+        "residual_ar_p1": {
+          "mae": 191.127119,
+          "rmse": 320.041816
+        },
+        "residual_ar_p2": {
+          "mae": 191.376838,
+          "rmse": 320.612846
+        },
+        "ridge_residual_a0.1": {
+          "mae": 188.939431,
+          "rmse": 318.450862
+        },
+        "ridge_residual_a1.0": {
+          "mae": 188.93282,
+          "rmse": 318.451141
+        },
+        "ridge_residual_a10.0": {
+          "mae": 188.867768,
+          "rmse": 318.453858
+        },
+        "seasonal_calendar": {
+          "mae": 188.389952,
+          "rmse": 316.045813
+        },
+        "training_only_ar": {
+          "mae": 191.170026,
+          "rmse": 320.044615
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.024071,
+        "level": 0.9,
+        "low": -0.051834
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 317.539907,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 67.661692
+        },
+        "90": {
+          "mean_width": 450.862068,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 80.099502
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.014529 (min_relative_gain=0.05), gain_ci=(-0.051834, 0.024071) at level 0.9",
+      "relative_gain": -0.014529,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "residual_ar_p2",
+      "cell_index": 6,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 201,
+        "n_origins_total": 201,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 189.187985,
+          "rmse": 323.677781
+        },
+        "persistence": {
+          "mae": 189.187985,
+          "rmse": 323.677781
+        },
+        "residual_ar_p1": {
+          "mae": 191.127119,
+          "rmse": 320.041816
+        },
+        "residual_ar_p2": {
+          "mae": 191.376838,
+          "rmse": 320.612846
+        },
+        "ridge_residual_a0.1": {
+          "mae": 188.939431,
+          "rmse": 318.450862
+        },
+        "ridge_residual_a1.0": {
+          "mae": 188.93282,
+          "rmse": 318.451141
+        },
+        "ridge_residual_a10.0": {
+          "mae": 188.867768,
+          "rmse": 318.453858
+        },
+        "seasonal_calendar": {
+          "mae": 188.389952,
+          "rmse": 316.045813
+        },
+        "training_only_ar": {
+          "mae": 191.170026,
+          "rmse": 320.044615
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.020627,
+        "level": 0.9,
+        "low": -0.051869
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 324.11375,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 68.159204
+        },
+        "90": {
+          "mean_width": 459.9314,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 80.597015
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.015855 (min_relative_gain=0.05), gain_ci=(-0.051869, 0.020627) at level 0.9",
+      "relative_gain": -0.015855,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a0.1",
+      "cell_index": 7,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 201,
+        "n_origins_total": 201,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 189.187985,
+          "rmse": 323.677781
+        },
+        "persistence": {
+          "mae": 189.187985,
+          "rmse": 323.677781
+        },
+        "residual_ar_p1": {
+          "mae": 191.127119,
+          "rmse": 320.041816
+        },
+        "residual_ar_p2": {
+          "mae": 191.376838,
+          "rmse": 320.612846
+        },
+        "ridge_residual_a0.1": {
+          "mae": 188.939431,
+          "rmse": 318.450862
+        },
+        "ridge_residual_a1.0": {
+          "mae": 188.93282,
+          "rmse": 318.451141
+        },
+        "ridge_residual_a10.0": {
+          "mae": 188.867768,
+          "rmse": 318.453858
+        },
+        "seasonal_calendar": {
+          "mae": 188.389952,
+          "rmse": 316.045813
+        },
+        "training_only_ar": {
+          "mae": 191.170026,
+          "rmse": 320.044615
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.02359,
+        "level": 0.9,
+        "low": -0.020623
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 364.328678,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 72.636816
+        },
+        "90": {
+          "mean_width": 492.789619,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 83.084577
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.002917 (min_relative_gain=0.05), gain_ci=(-0.020623, 0.02359) at level 0.9",
+      "relative_gain": -0.002917,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a1.0",
+      "cell_index": 8,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 201,
+        "n_origins_total": 201,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 189.187985,
+          "rmse": 323.677781
+        },
+        "persistence": {
+          "mae": 189.187985,
+          "rmse": 323.677781
+        },
+        "residual_ar_p1": {
+          "mae": 191.127119,
+          "rmse": 320.041816
+        },
+        "residual_ar_p2": {
+          "mae": 191.376838,
+          "rmse": 320.612846
+        },
+        "ridge_residual_a0.1": {
+          "mae": 188.939431,
+          "rmse": 318.450862
+        },
+        "ridge_residual_a1.0": {
+          "mae": 188.93282,
+          "rmse": 318.451141
+        },
+        "ridge_residual_a10.0": {
+          "mae": 188.867768,
+          "rmse": 318.453858
+        },
+        "seasonal_calendar": {
+          "mae": 188.389952,
+          "rmse": 316.045813
+        },
+        "training_only_ar": {
+          "mae": 191.170026,
+          "rmse": 320.044615
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.022097,
+        "level": 0.9,
+        "low": -0.021859
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 363.946333,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 72.636816
+        },
+        "90": {
+          "mean_width": 492.632338,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 83.084577
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.002882 (min_relative_gain=0.05), gain_ci=(-0.021859, 0.022097) at level 0.9",
+      "relative_gain": -0.002882,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a10.0",
+      "cell_index": 9,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 201,
+        "n_origins_total": 201,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 189.187985,
+          "rmse": 323.677781
+        },
+        "persistence": {
+          "mae": 189.187985,
+          "rmse": 323.677781
+        },
+        "residual_ar_p1": {
+          "mae": 191.127119,
+          "rmse": 320.041816
+        },
+        "residual_ar_p2": {
+          "mae": 191.376838,
+          "rmse": 320.612846
+        },
+        "ridge_residual_a0.1": {
+          "mae": 188.939431,
+          "rmse": 318.450862
+        },
+        "ridge_residual_a1.0": {
+          "mae": 188.93282,
+          "rmse": 318.451141
+        },
+        "ridge_residual_a10.0": {
+          "mae": 188.867768,
+          "rmse": 318.453858
+        },
+        "seasonal_calendar": {
+          "mae": 188.389952,
+          "rmse": 316.045813
+        },
+        "training_only_ar": {
+          "mae": 191.170026,
+          "rmse": 320.044615
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.023213,
+        "level": 0.9,
+        "low": -0.021516
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 360.457189,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 72.139303
+        },
+        "90": {
+          "mean_width": 490.427731,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 83.084577
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.002536 (min_relative_gain=0.05), gain_ci=(-0.021516, 0.023213) at level 0.9",
+      "relative_gain": -0.002536,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "residual_ar_p1",
+      "cell_index": 10,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 196,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 271.570878,
+          "rmse": 430.758895
+        },
+        "persistence": {
+          "mae": 271.570878,
+          "rmse": 430.758895
+        },
+        "residual_ar_p1": {
+          "mae": 272.87733,
+          "rmse": 419.355479
+        },
+        "residual_ar_p2": {
+          "mae": 272.753097,
+          "rmse": 419.310606
+        },
+        "ridge_residual_a0.1": {
+          "mae": 269.645538,
+          "rmse": 416.804228
+        },
+        "ridge_residual_a1.0": {
+          "mae": 269.660179,
+          "rmse": 416.818192
+        },
+        "ridge_residual_a10.0": {
+          "mae": 269.792316,
+          "rmse": 416.950446
+        },
+        "seasonal_calendar": {
+          "mae": 270.654231,
+          "rmse": 415.284092
+        },
+        "training_only_ar": {
+          "mae": 272.722273,
+          "rmse": 419.572206
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.031516,
+        "level": 0.9,
+        "low": -0.05965
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 434.446,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 62.244898
+        },
+        "90": {
+          "mean_width": 559.92095,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 79.591837
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.008214 (min_relative_gain=0.05), gain_ci=(-0.05965, 0.031516) at level 0.9",
+      "relative_gain": -0.008214,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "residual_ar_p2",
+      "cell_index": 11,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 196,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 271.570878,
+          "rmse": 430.758895
+        },
+        "persistence": {
+          "mae": 271.570878,
+          "rmse": 430.758895
+        },
+        "residual_ar_p1": {
+          "mae": 272.87733,
+          "rmse": 419.355479
+        },
+        "residual_ar_p2": {
+          "mae": 272.753097,
+          "rmse": 419.310606
+        },
+        "ridge_residual_a0.1": {
+          "mae": 269.645538,
+          "rmse": 416.804228
+        },
+        "ridge_residual_a1.0": {
+          "mae": 269.660179,
+          "rmse": 416.818192
+        },
+        "ridge_residual_a10.0": {
+          "mae": 269.792316,
+          "rmse": 416.950446
+        },
+        "seasonal_calendar": {
+          "mae": 270.654231,
+          "rmse": 415.284092
+        },
+        "training_only_ar": {
+          "mae": 272.722273,
+          "rmse": 419.572206
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.030736,
+        "level": 0.9,
+        "low": -0.060539
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 438.00816,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 64.285714
+        },
+        "90": {
+          "mean_width": 560.095715,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 80.102041
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.007755 (min_relative_gain=0.05), gain_ci=(-0.060539, 0.030736) at level 0.9",
+      "relative_gain": -0.007755,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a0.1",
+      "cell_index": 12,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 196,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 271.570878,
+          "rmse": 430.758895
+        },
+        "persistence": {
+          "mae": 271.570878,
+          "rmse": 430.758895
+        },
+        "residual_ar_p1": {
+          "mae": 272.87733,
+          "rmse": 419.355479
+        },
+        "residual_ar_p2": {
+          "mae": 272.753097,
+          "rmse": 419.310606
+        },
+        "ridge_residual_a0.1": {
+          "mae": 269.645538,
+          "rmse": 416.804228
+        },
+        "ridge_residual_a1.0": {
+          "mae": 269.660179,
+          "rmse": 416.818192
+        },
+        "ridge_residual_a10.0": {
+          "mae": 269.792316,
+          "rmse": 416.950446
+        },
+        "seasonal_calendar": {
+          "mae": 270.654231,
+          "rmse": 415.284092
+        },
+        "training_only_ar": {
+          "mae": 272.722273,
+          "rmse": 419.572206
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.019638,
+        "level": 0.9,
+        "low": -0.021365
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 514.901769,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 72.44898
+        },
+        "90": {
+          "mean_width": 673.817482,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 81.632653
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline seasonal_calendar: relative_gain=0.003727 (min_relative_gain=0.05), gain_ci=(-0.021365, 0.019638) at level 0.9",
+      "relative_gain": 0.003727,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a1.0",
+      "cell_index": 13,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 196,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 271.570878,
+          "rmse": 430.758895
+        },
+        "persistence": {
+          "mae": 271.570878,
+          "rmse": 430.758895
+        },
+        "residual_ar_p1": {
+          "mae": 272.87733,
+          "rmse": 419.355479
+        },
+        "residual_ar_p2": {
+          "mae": 272.753097,
+          "rmse": 419.310606
+        },
+        "ridge_residual_a0.1": {
+          "mae": 269.645538,
+          "rmse": 416.804228
+        },
+        "ridge_residual_a1.0": {
+          "mae": 269.660179,
+          "rmse": 416.818192
+        },
+        "ridge_residual_a10.0": {
+          "mae": 269.792316,
+          "rmse": 416.950446
+        },
+        "seasonal_calendar": {
+          "mae": 270.654231,
+          "rmse": 415.284092
+        },
+        "training_only_ar": {
+          "mae": 272.722273,
+          "rmse": 419.572206
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.020737,
+        "level": 0.9,
+        "low": -0.0218
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 514.556989,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 72.44898
+        },
+        "90": {
+          "mean_width": 671.919592,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 81.632653
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline seasonal_calendar: relative_gain=0.003673 (min_relative_gain=0.05), gain_ci=(-0.0218, 0.020737) at level 0.9",
+      "relative_gain": 0.003673,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a10.0",
+      "cell_index": 14,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 196,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 271.570878,
+          "rmse": 430.758895
+        },
+        "persistence": {
+          "mae": 271.570878,
+          "rmse": 430.758895
+        },
+        "residual_ar_p1": {
+          "mae": 272.87733,
+          "rmse": 419.355479
+        },
+        "residual_ar_p2": {
+          "mae": 272.753097,
+          "rmse": 419.310606
+        },
+        "ridge_residual_a0.1": {
+          "mae": 269.645538,
+          "rmse": 416.804228
+        },
+        "ridge_residual_a1.0": {
+          "mae": 269.660179,
+          "rmse": 416.818192
+        },
+        "ridge_residual_a10.0": {
+          "mae": 269.792316,
+          "rmse": 416.950446
+        },
+        "seasonal_calendar": {
+          "mae": 270.654231,
+          "rmse": 415.284092
+        },
+        "training_only_ar": {
+          "mae": 272.722273,
+          "rmse": 419.572206
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.019275,
+        "level": 0.9,
+        "low": -0.023719
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 510.937414,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 72.44898
+        },
+        "90": {
+          "mean_width": 657.130833,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 81.122449
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline seasonal_calendar: relative_gain=0.003185 (min_relative_gain=0.05), gain_ci=(-0.023719, 0.019275) at level 0.9",
+      "relative_gain": 0.003185,
+      "target": "reserves_wresbal_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "residual_ar_p1",
+      "cell_index": 15,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 192,
+        "n_origins_total": 205,
+        "n_outage": 9,
+        "n_outcome_unavailable": 4,
+        "outage_share": 0.043902,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 100.037536,
+          "rmse": 146.373743
+        },
+        "persistence": {
+          "mae": 100.037536,
+          "rmse": 146.373743
+        },
+        "residual_ar_p1": {
+          "mae": 101.838928,
+          "rmse": 149.875466
+        },
+        "residual_ar_p2": {
+          "mae": 101.125906,
+          "rmse": 150.046183
+        },
+        "ridge_residual_a0.1": {
+          "mae": 91.562486,
+          "rmse": 144.813226
+        },
+        "ridge_residual_a1.0": {
+          "mae": 91.570023,
+          "rmse": 144.802886
+        },
+        "ridge_residual_a10.0": {
+          "mae": 91.642915,
+          "rmse": 144.705606
+        },
+        "seasonal_calendar": {
+          "mae": 89.126923,
+          "rmse": 138.580894
+        },
+        "training_only_ar": {
+          "mae": 104.532491,
+          "rmse": 156.459664
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.072705,
+        "level": 0.9,
+        "low": -0.280504
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 162.448335,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 62.5
+        },
+        "90": {
+          "mean_width": 227.962973,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 70.3125
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.142628 (min_relative_gain=0.05), gain_ci=(-0.280504, -0.072705) at level 0.9",
+      "relative_gain": -0.142628,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "residual_ar_p2",
+      "cell_index": 16,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 192,
+        "n_origins_total": 205,
+        "n_outage": 9,
+        "n_outcome_unavailable": 4,
+        "outage_share": 0.043902,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 100.037536,
+          "rmse": 146.373743
+        },
+        "persistence": {
+          "mae": 100.037536,
+          "rmse": 146.373743
+        },
+        "residual_ar_p1": {
+          "mae": 101.838928,
+          "rmse": 149.875466
+        },
+        "residual_ar_p2": {
+          "mae": 101.125906,
+          "rmse": 150.046183
+        },
+        "ridge_residual_a0.1": {
+          "mae": 91.562486,
+          "rmse": 144.813226
+        },
+        "ridge_residual_a1.0": {
+          "mae": 91.570023,
+          "rmse": 144.802886
+        },
+        "ridge_residual_a10.0": {
+          "mae": 91.642915,
+          "rmse": 144.705606
+        },
+        "seasonal_calendar": {
+          "mae": 89.126923,
+          "rmse": 138.580894
+        },
+        "training_only_ar": {
+          "mae": 104.532491,
+          "rmse": 156.459664
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.054308,
+        "level": 0.9,
+        "low": -0.262921
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 159.6862,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 58.854167
+        },
+        "90": {
+          "mean_width": 224.784238,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 69.791667
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.134628 (min_relative_gain=0.05), gain_ci=(-0.262921, -0.054308) at level 0.9",
+      "relative_gain": -0.134628,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a0.1",
+      "cell_index": 17,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 192,
+        "n_origins_total": 205,
+        "n_outage": 9,
+        "n_outcome_unavailable": 4,
+        "outage_share": 0.043902,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 100.037536,
+          "rmse": 146.373743
+        },
+        "persistence": {
+          "mae": 100.037536,
+          "rmse": 146.373743
+        },
+        "residual_ar_p1": {
+          "mae": 101.838928,
+          "rmse": 149.875466
+        },
+        "residual_ar_p2": {
+          "mae": 101.125906,
+          "rmse": 150.046183
+        },
+        "ridge_residual_a0.1": {
+          "mae": 91.562486,
+          "rmse": 144.813226
+        },
+        "ridge_residual_a1.0": {
+          "mae": 91.570023,
+          "rmse": 144.802886
+        },
+        "ridge_residual_a10.0": {
+          "mae": 91.642915,
+          "rmse": 144.705606
+        },
+        "seasonal_calendar": {
+          "mae": 89.126923,
+          "rmse": 138.580894
+        },
+        "training_only_ar": {
+          "mae": 104.532491,
+          "rmse": 156.459664
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.057976,
+        "level": 0.9,
+        "low": -0.126981
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 134.117752,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 61.979167
+        },
+        "90": {
+          "mean_width": 195.444363,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 70.3125
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.027327 (min_relative_gain=0.05), gain_ci=(-0.126981, 0.057976) at level 0.9",
+      "relative_gain": -0.027327,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a1.0",
+      "cell_index": 18,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 192,
+        "n_origins_total": 205,
+        "n_outage": 9,
+        "n_outcome_unavailable": 4,
+        "outage_share": 0.043902,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 100.037536,
+          "rmse": 146.373743
+        },
+        "persistence": {
+          "mae": 100.037536,
+          "rmse": 146.373743
+        },
+        "residual_ar_p1": {
+          "mae": 101.838928,
+          "rmse": 149.875466
+        },
+        "residual_ar_p2": {
+          "mae": 101.125906,
+          "rmse": 150.046183
+        },
+        "ridge_residual_a0.1": {
+          "mae": 91.562486,
+          "rmse": 144.813226
+        },
+        "ridge_residual_a1.0": {
+          "mae": 91.570023,
+          "rmse": 144.802886
+        },
+        "ridge_residual_a10.0": {
+          "mae": 91.642915,
+          "rmse": 144.705606
+        },
+        "seasonal_calendar": {
+          "mae": 89.126923,
+          "rmse": 138.580894
+        },
+        "training_only_ar": {
+          "mae": 104.532491,
+          "rmse": 156.459664
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.057192,
+        "level": 0.9,
+        "low": -0.128513
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 134.174391,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 61.979167
+        },
+        "90": {
+          "mean_width": 195.410445,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 70.3125
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.027411 (min_relative_gain=0.05), gain_ci=(-0.128513, 0.057192) at level 0.9",
+      "relative_gain": -0.027411,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a10.0",
+      "cell_index": 19,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 192,
+        "n_origins_total": 205,
+        "n_outage": 9,
+        "n_outcome_unavailable": 4,
+        "outage_share": 0.043902,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 100.037536,
+          "rmse": 146.373743
+        },
+        "persistence": {
+          "mae": 100.037536,
+          "rmse": 146.373743
+        },
+        "residual_ar_p1": {
+          "mae": 101.838928,
+          "rmse": 149.875466
+        },
+        "residual_ar_p2": {
+          "mae": 101.125906,
+          "rmse": 150.046183
+        },
+        "ridge_residual_a0.1": {
+          "mae": 91.562486,
+          "rmse": 144.813226
+        },
+        "ridge_residual_a1.0": {
+          "mae": 91.570023,
+          "rmse": 144.802886
+        },
+        "ridge_residual_a10.0": {
+          "mae": 91.642915,
+          "rmse": 144.705606
+        },
+        "seasonal_calendar": {
+          "mae": 89.126923,
+          "rmse": 138.580894
+        },
+        "training_only_ar": {
+          "mae": 104.532491,
+          "rmse": 156.459664
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.053258,
+        "level": 0.9,
+        "low": -0.131201
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 134.437318,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 61.458333
+        },
+        "90": {
+          "mean_width": 196.090506,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 70.3125
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.028229 (min_relative_gain=0.05), gain_ci=(-0.131201, 0.053258) at level 0.9",
+      "relative_gain": -0.028229,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "residual_ar_p1",
+      "cell_index": 20,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 188,
+        "n_origins_total": 201,
+        "n_outage": 5,
+        "n_outcome_unavailable": 8,
+        "outage_share": 0.024876,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 161.453319,
+          "rmse": 248.948584
+        },
+        "persistence": {
+          "mae": 161.453319,
+          "rmse": 248.948584
+        },
+        "residual_ar_p1": {
+          "mae": 163.477173,
+          "rmse": 256.717529
+        },
+        "residual_ar_p2": {
+          "mae": 163.484343,
+          "rmse": 257.077702
+        },
+        "ridge_residual_a0.1": {
+          "mae": 157.890954,
+          "rmse": 251.9682
+        },
+        "ridge_residual_a1.0": {
+          "mae": 157.902197,
+          "rmse": 251.986043
+        },
+        "ridge_residual_a10.0": {
+          "mae": 158.00512,
+          "rmse": 252.150517
+        },
+        "seasonal_calendar": {
+          "mae": 157.382351,
+          "rmse": 245.58776
+        },
+        "training_only_ar": {
+          "mae": 170.76163,
+          "rmse": 269.533057
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.015395,
+        "level": 0.9,
+        "low": -0.123619
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 196.089894,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 51.595745
+        },
+        "90": {
+          "mean_width": 258.267852,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 61.170213
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.038726 (min_relative_gain=0.05), gain_ci=(-0.123619, 0.015395) at level 0.9",
+      "relative_gain": -0.038726,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "residual_ar_p2",
+      "cell_index": 21,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 188,
+        "n_origins_total": 201,
+        "n_outage": 5,
+        "n_outcome_unavailable": 8,
+        "outage_share": 0.024876,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 161.453319,
+          "rmse": 248.948584
+        },
+        "persistence": {
+          "mae": 161.453319,
+          "rmse": 248.948584
+        },
+        "residual_ar_p1": {
+          "mae": 163.477173,
+          "rmse": 256.717529
+        },
+        "residual_ar_p2": {
+          "mae": 163.484343,
+          "rmse": 257.077702
+        },
+        "ridge_residual_a0.1": {
+          "mae": 157.890954,
+          "rmse": 251.9682
+        },
+        "ridge_residual_a1.0": {
+          "mae": 157.902197,
+          "rmse": 251.986043
+        },
+        "ridge_residual_a10.0": {
+          "mae": 158.00512,
+          "rmse": 252.150517
+        },
+        "seasonal_calendar": {
+          "mae": 157.382351,
+          "rmse": 245.58776
+        },
+        "training_only_ar": {
+          "mae": 170.76163,
+          "rmse": 269.533057
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.030391,
+        "level": 0.9,
+        "low": -0.135912
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 190.881992,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 52.12766
+        },
+        "90": {
+          "mean_width": 254.618145,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 62.765957
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.038772 (min_relative_gain=0.05), gain_ci=(-0.135912, 0.030391) at level 0.9",
+      "relative_gain": -0.038772,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a0.1",
+      "cell_index": 22,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 188,
+        "n_origins_total": 201,
+        "n_outage": 5,
+        "n_outcome_unavailable": 8,
+        "outage_share": 0.024876,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 161.453319,
+          "rmse": 248.948584
+        },
+        "persistence": {
+          "mae": 161.453319,
+          "rmse": 248.948584
+        },
+        "residual_ar_p1": {
+          "mae": 163.477173,
+          "rmse": 256.717529
+        },
+        "residual_ar_p2": {
+          "mae": 163.484343,
+          "rmse": 257.077702
+        },
+        "ridge_residual_a0.1": {
+          "mae": 157.890954,
+          "rmse": 251.9682
+        },
+        "ridge_residual_a1.0": {
+          "mae": 157.902197,
+          "rmse": 251.986043
+        },
+        "ridge_residual_a10.0": {
+          "mae": 158.00512,
+          "rmse": 252.150517
+        },
+        "seasonal_calendar": {
+          "mae": 157.382351,
+          "rmse": 245.58776
+        },
+        "training_only_ar": {
+          "mae": 170.76163,
+          "rmse": 269.533057
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.075244,
+        "level": 0.9,
+        "low": -0.091911
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 165.353811,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 47.340426
+        },
+        "90": {
+          "mean_width": 234.299997,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 63.297872
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.003232 (min_relative_gain=0.05), gain_ci=(-0.091911, 0.075244) at level 0.9",
+      "relative_gain": -0.003232,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a1.0",
+      "cell_index": 23,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 188,
+        "n_origins_total": 201,
+        "n_outage": 5,
+        "n_outcome_unavailable": 8,
+        "outage_share": 0.024876,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 161.453319,
+          "rmse": 248.948584
+        },
+        "persistence": {
+          "mae": 161.453319,
+          "rmse": 248.948584
+        },
+        "residual_ar_p1": {
+          "mae": 163.477173,
+          "rmse": 256.717529
+        },
+        "residual_ar_p2": {
+          "mae": 163.484343,
+          "rmse": 257.077702
+        },
+        "ridge_residual_a0.1": {
+          "mae": 157.890954,
+          "rmse": 251.9682
+        },
+        "ridge_residual_a1.0": {
+          "mae": 157.902197,
+          "rmse": 251.986043
+        },
+        "ridge_residual_a10.0": {
+          "mae": 158.00512,
+          "rmse": 252.150517
+        },
+        "seasonal_calendar": {
+          "mae": 157.382351,
+          "rmse": 245.58776
+        },
+        "training_only_ar": {
+          "mae": 170.76163,
+          "rmse": 269.533057
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.072523,
+        "level": 0.9,
+        "low": -0.091564
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 165.392769,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 47.340426
+        },
+        "90": {
+          "mean_width": 234.206245,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 63.297872
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.003303 (min_relative_gain=0.05), gain_ci=(-0.091564, 0.072523) at level 0.9",
+      "relative_gain": -0.003303,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "seasonal_calendar",
+      "candidate": "ridge_residual_a10.0",
+      "cell_index": 24,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 188,
+        "n_origins_total": 201,
+        "n_outage": 5,
+        "n_outcome_unavailable": 8,
+        "outage_share": 0.024876,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 161.453319,
+          "rmse": 248.948584
+        },
+        "persistence": {
+          "mae": 161.453319,
+          "rmse": 248.948584
+        },
+        "residual_ar_p1": {
+          "mae": 163.477173,
+          "rmse": 256.717529
+        },
+        "residual_ar_p2": {
+          "mae": 163.484343,
+          "rmse": 257.077702
+        },
+        "ridge_residual_a0.1": {
+          "mae": 157.890954,
+          "rmse": 251.9682
+        },
+        "ridge_residual_a1.0": {
+          "mae": 157.902197,
+          "rmse": 251.986043
+        },
+        "ridge_residual_a10.0": {
+          "mae": 158.00512,
+          "rmse": 252.150517
+        },
+        "seasonal_calendar": {
+          "mae": 157.382351,
+          "rmse": 245.58776
+        },
+        "training_only_ar": {
+          "mae": 170.76163,
+          "rmse": 269.533057
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.073656,
+        "level": 0.9,
+        "low": -0.089482
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 165.961728,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 47.340426
+        },
+        "90": {
+          "mean_width": 233.113124,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 63.297872
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline seasonal_calendar: relative_gain=-0.003957 (min_relative_gain=0.05), gain_ci=(-0.089482, 0.073656) at level 0.9",
+      "relative_gain": -0.003957,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "residual_ar_p1",
+      "cell_index": 25,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 183,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 13,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 223.163803,
+          "rmse": 355.394849
+        },
+        "persistence": {
+          "mae": 223.163803,
+          "rmse": 355.394849
+        },
+        "residual_ar_p1": {
+          "mae": 228.427106,
+          "rmse": 361.448389
+        },
+        "residual_ar_p2": {
+          "mae": 228.891704,
+          "rmse": 361.946928
+        },
+        "ridge_residual_a0.1": {
+          "mae": 227.369209,
+          "rmse": 364.145524
+        },
+        "ridge_residual_a1.0": {
+          "mae": 227.387461,
+          "rmse": 364.160625
+        },
+        "ridge_residual_a10.0": {
+          "mae": 227.545578,
+          "rmse": 364.289369
+        },
+        "seasonal_calendar": {
+          "mae": 231.975262,
+          "rmse": 362.750112
+        },
+        "training_only_ar": {
+          "mae": 230.083917,
+          "rmse": 364.576427
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.004659,
+        "level": 0.9,
+        "low": -0.047003
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 182.185301,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 45.901639
+        },
+        "90": {
+          "mean_width": 264.757362,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 59.016393
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline persistence: relative_gain=-0.023585 (min_relative_gain=0.05), gain_ci=(-0.047003, -0.004659) at level 0.9",
+      "relative_gain": -0.023585,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "residual_ar_p2",
+      "cell_index": 26,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 183,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 13,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 223.163803,
+          "rmse": 355.394849
+        },
+        "persistence": {
+          "mae": 223.163803,
+          "rmse": 355.394849
+        },
+        "residual_ar_p1": {
+          "mae": 228.427106,
+          "rmse": 361.448389
+        },
+        "residual_ar_p2": {
+          "mae": 228.891704,
+          "rmse": 361.946928
+        },
+        "ridge_residual_a0.1": {
+          "mae": 227.369209,
+          "rmse": 364.145524
+        },
+        "ridge_residual_a1.0": {
+          "mae": 227.387461,
+          "rmse": 364.160625
+        },
+        "ridge_residual_a10.0": {
+          "mae": 227.545578,
+          "rmse": 364.289369
+        },
+        "seasonal_calendar": {
+          "mae": 231.975262,
+          "rmse": 362.750112
+        },
+        "training_only_ar": {
+          "mae": 230.083917,
+          "rmse": 364.576427
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.002991,
+        "level": 0.9,
+        "low": -0.056903
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 180.911857,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 45.355191
+        },
+        "90": {
+          "mean_width": 269.96749,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 59.562842
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline persistence: relative_gain=-0.025667 (min_relative_gain=0.05), gain_ci=(-0.056903, -0.002991) at level 0.9",
+      "relative_gain": -0.025667,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "ridge_residual_a0.1",
+      "cell_index": 27,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 183,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 13,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 223.163803,
+          "rmse": 355.394849
+        },
+        "persistence": {
+          "mae": 223.163803,
+          "rmse": 355.394849
+        },
+        "residual_ar_p1": {
+          "mae": 228.427106,
+          "rmse": 361.448389
+        },
+        "residual_ar_p2": {
+          "mae": 228.891704,
+          "rmse": 361.946928
+        },
+        "ridge_residual_a0.1": {
+          "mae": 227.369209,
+          "rmse": 364.145524
+        },
+        "ridge_residual_a1.0": {
+          "mae": 227.387461,
+          "rmse": 364.160625
+        },
+        "ridge_residual_a10.0": {
+          "mae": 227.545578,
+          "rmse": 364.289369
+        },
+        "seasonal_calendar": {
+          "mae": 231.975262,
+          "rmse": 362.750112
+        },
+        "training_only_ar": {
+          "mae": 230.083917,
+          "rmse": 364.576427
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.033744,
+        "level": 0.9,
+        "low": -0.075019
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 162.05249,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 40.437158
+        },
+        "90": {
+          "mean_width": 266.257415,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 56.830601
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline persistence: relative_gain=-0.018844 (min_relative_gain=0.05), gain_ci=(-0.075019, 0.033744) at level 0.9",
+      "relative_gain": -0.018844,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "ridge_residual_a1.0",
+      "cell_index": 28,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 183,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 13,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 223.163803,
+          "rmse": 355.394849
+        },
+        "persistence": {
+          "mae": 223.163803,
+          "rmse": 355.394849
+        },
+        "residual_ar_p1": {
+          "mae": 228.427106,
+          "rmse": 361.448389
+        },
+        "residual_ar_p2": {
+          "mae": 228.891704,
+          "rmse": 361.946928
+        },
+        "ridge_residual_a0.1": {
+          "mae": 227.369209,
+          "rmse": 364.145524
+        },
+        "ridge_residual_a1.0": {
+          "mae": 227.387461,
+          "rmse": 364.160625
+        },
+        "ridge_residual_a10.0": {
+          "mae": 227.545578,
+          "rmse": 364.289369
+        },
+        "seasonal_calendar": {
+          "mae": 231.975262,
+          "rmse": 362.750112
+        },
+        "training_only_ar": {
+          "mae": 230.083917,
+          "rmse": 364.576427
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.03045,
+        "level": 0.9,
+        "low": -0.073991
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 161.972294,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 40.437158
+        },
+        "90": {
+          "mean_width": 266.288834,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 56.830601
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline persistence: relative_gain=-0.018926 (min_relative_gain=0.05), gain_ci=(-0.073991, 0.03045) at level 0.9",
+      "relative_gain": -0.018926,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "ridge_residual_a10.0",
+      "cell_index": 29,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 183,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 13,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 223.163803,
+          "rmse": 355.394849
+        },
+        "persistence": {
+          "mae": 223.163803,
+          "rmse": 355.394849
+        },
+        "residual_ar_p1": {
+          "mae": 228.427106,
+          "rmse": 361.448389
+        },
+        "residual_ar_p2": {
+          "mae": 228.891704,
+          "rmse": 361.946928
+        },
+        "ridge_residual_a0.1": {
+          "mae": 227.369209,
+          "rmse": 364.145524
+        },
+        "ridge_residual_a1.0": {
+          "mae": 227.387461,
+          "rmse": 364.160625
+        },
+        "ridge_residual_a10.0": {
+          "mae": 227.545578,
+          "rmse": 364.289369
+        },
+        "seasonal_calendar": {
+          "mae": 231.975262,
+          "rmse": 362.750112
+        },
+        "training_only_ar": {
+          "mae": 230.083917,
+          "rmse": 364.576427
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.026229,
+        "level": 0.9,
+        "low": -0.073932
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 162.545029,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 39.89071
+        },
+        "90": {
+          "mean_width": 266.081253,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 57.377049
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline persistence: relative_gain=-0.019635 (min_relative_gain=0.05), gain_ci=(-0.073932, 0.026229) at level 0.9",
+      "relative_gain": -0.019635,
+      "target": "tga_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "residual_ar_p1",
+      "cell_index": 30,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 205,
+        "n_origins_total": 205,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 40.531176,
+          "rmse": 96.938848
+        },
+        "persistence": {
+          "mae": 40.531176,
+          "rmse": 96.938848
+        },
+        "residual_ar_p1": {
+          "mae": 42.571313,
+          "rmse": 100.440599
+        },
+        "residual_ar_p2": {
+          "mae": 45.147801,
+          "rmse": 105.74418
+        },
+        "ridge_residual_a0.1": {
+          "mae": 59.43977,
+          "rmse": 118.475449
+        },
+        "ridge_residual_a1.0": {
+          "mae": 59.338171,
+          "rmse": 118.32825
+        },
+        "ridge_residual_a10.0": {
+          "mae": 58.391447,
+          "rmse": 116.960369
+        },
+        "seasonal_calendar": {
+          "mae": 56.442026,
+          "rmse": 99.647783
+        },
+        "training_only_ar": {
+          "mae": 50.582268,
+          "rmse": 118.52485
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.013262,
+        "level": 0.9,
+        "low": -0.087327
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 179.241691,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 82.439024
+        },
+        "90": {
+          "mean_width": 267.090184,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 86.829268
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline persistence: relative_gain=-0.050335 (min_relative_gain=0.05), gain_ci=(-0.087327, 0.013262) at level 0.9",
+      "relative_gain": -0.050335,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "residual_ar_p2",
+      "cell_index": 31,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 205,
+        "n_origins_total": 205,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 40.531176,
+          "rmse": 96.938848
+        },
+        "persistence": {
+          "mae": 40.531176,
+          "rmse": 96.938848
+        },
+        "residual_ar_p1": {
+          "mae": 42.571313,
+          "rmse": 100.440599
+        },
+        "residual_ar_p2": {
+          "mae": 45.147801,
+          "rmse": 105.74418
+        },
+        "ridge_residual_a0.1": {
+          "mae": 59.43977,
+          "rmse": 118.475449
+        },
+        "ridge_residual_a1.0": {
+          "mae": 59.338171,
+          "rmse": 118.32825
+        },
+        "ridge_residual_a10.0": {
+          "mae": 58.391447,
+          "rmse": 116.960369
+        },
+        "seasonal_calendar": {
+          "mae": 56.442026,
+          "rmse": 99.647783
+        },
+        "training_only_ar": {
+          "mae": 50.582268,
+          "rmse": 118.52485
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.004282,
+        "level": 0.9,
+        "low": -0.195046
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 178.942461,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 83.414634
+        },
+        "90": {
+          "mean_width": 255.958678,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 86.341463
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline persistence: relative_gain=-0.113903 (min_relative_gain=0.05), gain_ci=(-0.195046, 0.004282) at level 0.9",
+      "relative_gain": -0.113903,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "ridge_residual_a0.1",
+      "cell_index": 32,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 205,
+        "n_origins_total": 205,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 40.531176,
+          "rmse": 96.938848
+        },
+        "persistence": {
+          "mae": 40.531176,
+          "rmse": 96.938848
+        },
+        "residual_ar_p1": {
+          "mae": 42.571313,
+          "rmse": 100.440599
+        },
+        "residual_ar_p2": {
+          "mae": 45.147801,
+          "rmse": 105.74418
+        },
+        "ridge_residual_a0.1": {
+          "mae": 59.43977,
+          "rmse": 118.475449
+        },
+        "ridge_residual_a1.0": {
+          "mae": 59.338171,
+          "rmse": 118.32825
+        },
+        "ridge_residual_a10.0": {
+          "mae": 58.391447,
+          "rmse": 116.960369
+        },
+        "seasonal_calendar": {
+          "mae": 56.442026,
+          "rmse": 99.647783
+        },
+        "training_only_ar": {
+          "mae": 50.582268,
+          "rmse": 118.52485
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.336198,
+        "level": 0.9,
+        "low": -1.21109
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 159.668942,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 83.902439
+        },
+        "90": {
+          "mean_width": 235.817276,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 84.878049
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline persistence: relative_gain=-0.46652 (min_relative_gain=0.05), gain_ci=(-1.21109, -0.336198) at level 0.9",
+      "relative_gain": -0.46652,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "ridge_residual_a1.0",
+      "cell_index": 33,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 205,
+        "n_origins_total": 205,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 40.531176,
+          "rmse": 96.938848
+        },
+        "persistence": {
+          "mae": 40.531176,
+          "rmse": 96.938848
+        },
+        "residual_ar_p1": {
+          "mae": 42.571313,
+          "rmse": 100.440599
+        },
+        "residual_ar_p2": {
+          "mae": 45.147801,
+          "rmse": 105.74418
+        },
+        "ridge_residual_a0.1": {
+          "mae": 59.43977,
+          "rmse": 118.475449
+        },
+        "ridge_residual_a1.0": {
+          "mae": 59.338171,
+          "rmse": 118.32825
+        },
+        "ridge_residual_a10.0": {
+          "mae": 58.391447,
+          "rmse": 116.960369
+        },
+        "seasonal_calendar": {
+          "mae": 56.442026,
+          "rmse": 99.647783
+        },
+        "training_only_ar": {
+          "mae": 50.582268,
+          "rmse": 118.52485
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.339948,
+        "level": 0.9,
+        "low": -1.147374
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 159.745419,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 83.902439
+        },
+        "90": {
+          "mean_width": 235.081371,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 84.878049
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline persistence: relative_gain=-0.464013 (min_relative_gain=0.05), gain_ci=(-1.14737, -0.339948) at level 0.9",
+      "relative_gain": -0.464013,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "ridge_residual_a10.0",
+      "cell_index": 34,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 205,
+        "n_origins_total": 205,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 40.531176,
+          "rmse": 96.938848
+        },
+        "persistence": {
+          "mae": 40.531176,
+          "rmse": 96.938848
+        },
+        "residual_ar_p1": {
+          "mae": 42.571313,
+          "rmse": 100.440599
+        },
+        "residual_ar_p2": {
+          "mae": 45.147801,
+          "rmse": 105.74418
+        },
+        "ridge_residual_a0.1": {
+          "mae": 59.43977,
+          "rmse": 118.475449
+        },
+        "ridge_residual_a1.0": {
+          "mae": 59.338171,
+          "rmse": 118.32825
+        },
+        "ridge_residual_a10.0": {
+          "mae": 58.391447,
+          "rmse": 116.960369
+        },
+        "seasonal_calendar": {
+          "mae": 56.442026,
+          "rmse": 99.647783
+        },
+        "training_only_ar": {
+          "mae": 50.582268,
+          "rmse": 118.52485
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.322727,
+        "level": 0.9,
+        "low": -1.160099
+      },
+      "horizon_weeks": 4,
+      "intervals": {
+        "80": {
+          "mean_width": 159.986069,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 83.414634
+        },
+        "90": {
+          "mean_width": 232.772674,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 85.365854
+        }
+      },
+      "last_origin": "2021-12-03",
+      "reason": "best baseline persistence: relative_gain=-0.440655 (min_relative_gain=0.05), gain_ci=(-1.1601, -0.322727) at level 0.9",
+      "relative_gain": -0.440655,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "residual_ar_p1",
+      "cell_index": 35,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 201,
+        "n_origins_total": 201,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 70.538498,
+          "rmse": 162.334335
+        },
+        "persistence": {
+          "mae": 70.538498,
+          "rmse": 162.334335
+        },
+        "residual_ar_p1": {
+          "mae": 73.469658,
+          "rmse": 170.28462
+        },
+        "residual_ar_p2": {
+          "mae": 76.347425,
+          "rmse": 178.188203
+        },
+        "ridge_residual_a0.1": {
+          "mae": 90.898411,
+          "rmse": 193.790786
+        },
+        "ridge_residual_a1.0": {
+          "mae": 90.771875,
+          "rmse": 193.601542
+        },
+        "ridge_residual_a10.0": {
+          "mae": 89.587988,
+          "rmse": 191.831899
+        },
+        "seasonal_calendar": {
+          "mae": 84.00371,
+          "rmse": 163.399575
+        },
+        "training_only_ar": {
+          "mae": 83.797511,
+          "rmse": 195.386267
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.015799,
+        "level": 0.9,
+        "low": -0.074025
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 165.682483,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 80.597015
+        },
+        "90": {
+          "mean_width": 248.225264,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 81.59204
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline persistence: relative_gain=-0.041554 (min_relative_gain=0.05), gain_ci=(-0.074025, 0.015799) at level 0.9",
+      "relative_gain": -0.041554,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "residual_ar_p2",
+      "cell_index": 36,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 201,
+        "n_origins_total": 201,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 70.538498,
+          "rmse": 162.334335
+        },
+        "persistence": {
+          "mae": 70.538498,
+          "rmse": 162.334335
+        },
+        "residual_ar_p1": {
+          "mae": 73.469658,
+          "rmse": 170.28462
+        },
+        "residual_ar_p2": {
+          "mae": 76.347425,
+          "rmse": 178.188203
+        },
+        "ridge_residual_a0.1": {
+          "mae": 90.898411,
+          "rmse": 193.790786
+        },
+        "ridge_residual_a1.0": {
+          "mae": 90.771875,
+          "rmse": 193.601542
+        },
+        "ridge_residual_a10.0": {
+          "mae": 89.587988,
+          "rmse": 191.831899
+        },
+        "seasonal_calendar": {
+          "mae": 84.00371,
+          "rmse": 163.399575
+        },
+        "training_only_ar": {
+          "mae": 83.797511,
+          "rmse": 195.386267
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": 0.001066,
+        "level": 0.9,
+        "low": -0.139671
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 158.524017,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 80.099502
+        },
+        "90": {
+          "mean_width": 218.97116,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 82.089552
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline persistence: relative_gain=-0.082351 (min_relative_gain=0.05), gain_ci=(-0.139671, 0.001066) at level 0.9",
+      "relative_gain": -0.082351,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "ridge_residual_a0.1",
+      "cell_index": 37,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 201,
+        "n_origins_total": 201,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 70.538498,
+          "rmse": 162.334335
+        },
+        "persistence": {
+          "mae": 70.538498,
+          "rmse": 162.334335
+        },
+        "residual_ar_p1": {
+          "mae": 73.469658,
+          "rmse": 170.28462
+        },
+        "residual_ar_p2": {
+          "mae": 76.347425,
+          "rmse": 178.188203
+        },
+        "ridge_residual_a0.1": {
+          "mae": 90.898411,
+          "rmse": 193.790786
+        },
+        "ridge_residual_a1.0": {
+          "mae": 90.771875,
+          "rmse": 193.601542
+        },
+        "ridge_residual_a10.0": {
+          "mae": 89.587988,
+          "rmse": 191.831899
+        },
+        "seasonal_calendar": {
+          "mae": 84.00371,
+          "rmse": 163.399575
+        },
+        "training_only_ar": {
+          "mae": 83.797511,
+          "rmse": 195.386267
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.217391,
+        "level": 0.9,
+        "low": -0.691761
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 122.651574,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 79.60199
+        },
+        "90": {
+          "mean_width": 175.334488,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 82.089552
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline persistence: relative_gain=-0.288635 (min_relative_gain=0.05), gain_ci=(-0.691761, -0.217391) at level 0.9",
+      "relative_gain": -0.288635,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "ridge_residual_a1.0",
+      "cell_index": 38,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 201,
+        "n_origins_total": 201,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 70.538498,
+          "rmse": 162.334335
+        },
+        "persistence": {
+          "mae": 70.538498,
+          "rmse": 162.334335
+        },
+        "residual_ar_p1": {
+          "mae": 73.469658,
+          "rmse": 170.28462
+        },
+        "residual_ar_p2": {
+          "mae": 76.347425,
+          "rmse": 178.188203
+        },
+        "ridge_residual_a0.1": {
+          "mae": 90.898411,
+          "rmse": 193.790786
+        },
+        "ridge_residual_a1.0": {
+          "mae": 90.771875,
+          "rmse": 193.601542
+        },
+        "ridge_residual_a10.0": {
+          "mae": 89.587988,
+          "rmse": 191.831899
+        },
+        "seasonal_calendar": {
+          "mae": 84.00371,
+          "rmse": 163.399575
+        },
+        "training_only_ar": {
+          "mae": 83.797511,
+          "rmse": 195.386267
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.221256,
+        "level": 0.9,
+        "low": -0.707645
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 122.93084,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 79.60199
+        },
+        "90": {
+          "mean_width": 175.320884,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 82.089552
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline persistence: relative_gain=-0.286842 (min_relative_gain=0.05), gain_ci=(-0.707645, -0.221256) at level 0.9",
+      "relative_gain": -0.286842,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "ridge_residual_a10.0",
+      "cell_index": 39,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 201,
+        "n_origins_total": 201,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 70.538498,
+          "rmse": 162.334335
+        },
+        "persistence": {
+          "mae": 70.538498,
+          "rmse": 162.334335
+        },
+        "residual_ar_p1": {
+          "mae": 73.469658,
+          "rmse": 170.28462
+        },
+        "residual_ar_p2": {
+          "mae": 76.347425,
+          "rmse": 178.188203
+        },
+        "ridge_residual_a0.1": {
+          "mae": 90.898411,
+          "rmse": 193.790786
+        },
+        "ridge_residual_a1.0": {
+          "mae": 90.771875,
+          "rmse": 193.601542
+        },
+        "ridge_residual_a10.0": {
+          "mae": 89.587988,
+          "rmse": 191.831899
+        },
+        "seasonal_calendar": {
+          "mae": 84.00371,
+          "rmse": 163.399575
+        },
+        "training_only_ar": {
+          "mae": 83.797511,
+          "rmse": 195.386267
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.203201,
+        "level": 0.9,
+        "low": -0.719805
+      },
+      "horizon_weeks": 8,
+      "intervals": {
+        "80": {
+          "mean_width": 126.241315,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 80.597015
+        },
+        "90": {
+          "mean_width": 179.338772,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 82.089552
+        }
+      },
+      "last_origin": "2021-11-05",
+      "reason": "best baseline persistence: relative_gain=-0.270058 (min_relative_gain=0.05), gain_ci=(-0.719805, -0.203201) at level 0.9",
+      "relative_gain": -0.270058,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "residual_ar_p1",
+      "cell_index": 40,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 196,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 106.354837,
+          "rmse": 246.700213
+        },
+        "persistence": {
+          "mae": 106.354837,
+          "rmse": 246.700213
+        },
+        "residual_ar_p1": {
+          "mae": 108.220811,
+          "rmse": 249.274716
+        },
+        "residual_ar_p2": {
+          "mae": 109.767071,
+          "rmse": 252.309694
+        },
+        "ridge_residual_a0.1": {
+          "mae": 117.069912,
+          "rmse": 258.550438
+        },
+        "ridge_residual_a1.0": {
+          "mae": 117.002796,
+          "rmse": 258.483358
+        },
+        "ridge_residual_a10.0": {
+          "mae": 116.414092,
+          "rmse": 257.857993
+        },
+        "seasonal_calendar": {
+          "mae": 117.937041,
+          "rmse": 248.124705
+        },
+        "training_only_ar": {
+          "mae": 112.130132,
+          "rmse": 258.250803
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.004568,
+        "level": 0.9,
+        "low": -0.027631
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 143.72096,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 78.571429
+        },
+        "90": {
+          "mean_width": 197.350535,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 79.081633
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline persistence: relative_gain=-0.017545 (min_relative_gain=0.05), gain_ci=(-0.027631, -0.004568) at level 0.9",
+      "relative_gain": -0.017545,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "residual_ar_p2",
+      "cell_index": 41,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 196,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 106.354837,
+          "rmse": 246.700213
+        },
+        "persistence": {
+          "mae": 106.354837,
+          "rmse": 246.700213
+        },
+        "residual_ar_p1": {
+          "mae": 108.220811,
+          "rmse": 249.274716
+        },
+        "residual_ar_p2": {
+          "mae": 109.767071,
+          "rmse": 252.309694
+        },
+        "ridge_residual_a0.1": {
+          "mae": 117.069912,
+          "rmse": 258.550438
+        },
+        "ridge_residual_a1.0": {
+          "mae": 117.002796,
+          "rmse": 258.483358
+        },
+        "ridge_residual_a10.0": {
+          "mae": 116.414092,
+          "rmse": 257.857993
+        },
+        "seasonal_calendar": {
+          "mae": 117.937041,
+          "rmse": 248.124705
+        },
+        "training_only_ar": {
+          "mae": 112.130132,
+          "rmse": 258.250803
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.006796,
+        "level": 0.9,
+        "low": -0.044279
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 150.835036,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 78.571429
+        },
+        "90": {
+          "mean_width": 202.174328,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 79.081633
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline persistence: relative_gain=-0.032083 (min_relative_gain=0.05), gain_ci=(-0.044279, -0.006796) at level 0.9",
+      "relative_gain": -0.032083,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "ridge_residual_a0.1",
+      "cell_index": 42,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 196,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 106.354837,
+          "rmse": 246.700213
+        },
+        "persistence": {
+          "mae": 106.354837,
+          "rmse": 246.700213
+        },
+        "residual_ar_p1": {
+          "mae": 108.220811,
+          "rmse": 249.274716
+        },
+        "residual_ar_p2": {
+          "mae": 109.767071,
+          "rmse": 252.309694
+        },
+        "ridge_residual_a0.1": {
+          "mae": 117.069912,
+          "rmse": 258.550438
+        },
+        "ridge_residual_a1.0": {
+          "mae": 117.002796,
+          "rmse": 258.483358
+        },
+        "ridge_residual_a10.0": {
+          "mae": 116.414092,
+          "rmse": 257.857993
+        },
+        "seasonal_calendar": {
+          "mae": 117.937041,
+          "rmse": 248.124705
+        },
+        "training_only_ar": {
+          "mae": 112.130132,
+          "rmse": 258.250803
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.059071,
+        "level": 0.9,
+        "low": -0.430244
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 146.157906,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 79.081633
+        },
+        "90": {
+          "mean_width": 198.114532,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 79.081633
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline persistence: relative_gain=-0.100748 (min_relative_gain=0.05), gain_ci=(-0.430244, -0.059071) at level 0.9",
+      "relative_gain": -0.100748,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "ridge_residual_a1.0",
+      "cell_index": 43,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 196,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 106.354837,
+          "rmse": 246.700213
+        },
+        "persistence": {
+          "mae": 106.354837,
+          "rmse": 246.700213
+        },
+        "residual_ar_p1": {
+          "mae": 108.220811,
+          "rmse": 249.274716
+        },
+        "residual_ar_p2": {
+          "mae": 109.767071,
+          "rmse": 252.309694
+        },
+        "ridge_residual_a0.1": {
+          "mae": 117.069912,
+          "rmse": 258.550438
+        },
+        "ridge_residual_a1.0": {
+          "mae": 117.002796,
+          "rmse": 258.483358
+        },
+        "ridge_residual_a10.0": {
+          "mae": 116.414092,
+          "rmse": 257.857993
+        },
+        "seasonal_calendar": {
+          "mae": 117.937041,
+          "rmse": 248.124705
+        },
+        "training_only_ar": {
+          "mae": 112.130132,
+          "rmse": 258.250803
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.059472,
+        "level": 0.9,
+        "low": -0.410958
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 146.109546,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 79.081633
+        },
+        "90": {
+          "mean_width": 197.731402,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 79.081633
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline persistence: relative_gain=-0.100117 (min_relative_gain=0.05), gain_ci=(-0.410958, -0.059472) at level 0.9",
+      "relative_gain": -0.100117,
+      "target": "rrp_bn"
+    },
+    {
+      "abstention_reason": "withheld_no_gain",
+      "best_baseline": "persistence",
+      "candidate": "ridge_residual_a10.0",
+      "cell_index": 44,
+      "denominators": {
+        "n_model_unavailable": 0,
+        "n_origins_scored": 196,
+        "n_origins_total": 196,
+        "n_outage": 0,
+        "n_outcome_unavailable": 0,
+        "outage_share": null,
+        "source_status": "loaded"
+      },
+      "disposition": "withheld_no_gain",
+      "errors": {
+        "announced_only": {
+          "mae": 106.354837,
+          "rmse": 246.700213
+        },
+        "persistence": {
+          "mae": 106.354837,
+          "rmse": 246.700213
+        },
+        "residual_ar_p1": {
+          "mae": 108.220811,
+          "rmse": 249.274716
+        },
+        "residual_ar_p2": {
+          "mae": 109.767071,
+          "rmse": 252.309694
+        },
+        "ridge_residual_a0.1": {
+          "mae": 117.069912,
+          "rmse": 258.550438
+        },
+        "ridge_residual_a1.0": {
+          "mae": 117.002796,
+          "rmse": 258.483358
+        },
+        "ridge_residual_a10.0": {
+          "mae": 116.414092,
+          "rmse": 257.857993
+        },
+        "seasonal_calendar": {
+          "mae": 117.937041,
+          "rmse": 248.124705
+        },
+        "training_only_ar": {
+          "mae": 112.130132,
+          "rmse": 258.250803
+        }
+      },
+      "estimate_type": "unavailable",
+      "first_origin": "2018-01-05",
+      "gain_ci": {
+        "high": -0.056517,
+        "level": 0.9,
+        "low": -0.476542
+      },
+      "horizon_weeks": 13,
+      "intervals": {
+        "80": {
+          "mean_width": 145.820647,
+          "n_missing": 0,
+          "nominal": 80,
+          "observed_coverage": 79.081633
+        },
+        "90": {
+          "mean_width": 195.644465,
+          "n_missing": 0,
+          "nominal": 90,
+          "observed_coverage": 79.081633
+        }
+      },
+      "last_origin": "2021-10-01",
+      "reason": "best baseline persistence: relative_gain=-0.094582 (min_relative_gain=0.05), gain_ci=(-0.476542, -0.056517) at level 0.9",
+      "relative_gain": -0.094582,
+      "target": "rrp_bn"
+    }
+  ],
+  "clocks": {
+    "reserves_wresbal_bn": {
+      "description": "H.4.1 Thursday 16:30 ET for the Wednesday week (rolled forward to the next federal business day)",
+      "rule": "h41_thursday_1630"
+    },
+    "rrp_bn": {
+      "description": "same day 13:15 ET",
+      "rule": "same_day_1315"
+    },
+    "tga_bn": {
+      "description": "DTS following federal business day (S29), 16:00 ET",
+      "rule": "dts_next_business_day_1600"
+    }
+  },
+  "family": {
+    "baseline_labels": {
+      "announced_only": "announced_only(empty)"
+    },
+    "baselines": [
+      "persistence",
+      "announced_only",
+      "seasonal_calendar",
+      "training_only_ar"
+    ],
+    "candidates": [
+      {
+        "alpha": null,
+        "id": "residual_ar_p1",
+        "kind": "residual_ar",
+        "p": 1
+      },
+      {
+        "alpha": null,
+        "id": "residual_ar_p2",
+        "kind": "residual_ar",
+        "p": 2
+      },
+      {
+        "alpha": 0.1,
+        "id": "ridge_residual_a0.1",
+        "kind": "ridge_residual",
+        "p": null
+      },
+      {
+        "alpha": 1.0,
+        "id": "ridge_residual_a1.0",
+        "kind": "ridge_residual",
+        "p": null
+      },
+      {
+        "alpha": 10.0,
+        "id": "ridge_residual_a10.0",
+        "kind": "ridge_residual",
+        "p": null
+      }
+    ],
+    "horizons_weeks": [
+      4,
+      8,
+      13
+    ],
+    "n_trials_total": 45,
+    "name": "glt_t09_component_forecast_v1",
+    "primary_target": "reserves_wresbal_bn",
+    "targets": [
+      "reserves_wresbal_bn",
+      "tga_bn",
+      "rrp_bn"
+    ]
+  },
+  "forecast_identity": {
+    "available": false,
+    "reason": "no_h41_table5_anchor_in_inputs",
+    "residual": null
+  },
+  "information_set_rule": "an observation enters the information set at origin o only if published_at_utc <= cutoff_utc(o, decision_tz); a source row without a publication clock is refused (MissingPublicationClock); every lag order, calendar mean, standardisation and interval quantile is fitted on rows whose outcome matured at or before o minus purge_weeks",
+  "inputs": {
+    "announcements": 0,
+    "announcements_supplied": false,
+    "mode": "real",
+    "sources": [
+      {
+        "first_obs": "2002-12-18",
+        "last_obs": "2021-12-29",
+        "path": "data/fred/WRESBAL.parquet",
+        "rows_loaded": 994,
+        "sha256": "f39c0dc403e534de391b67850c4ba639f427072d099b80046fc89b959dc57ae8",
+        "target": "reserves_wresbal_bn"
+      },
+      {
+        "first_obs": "2005-10-03",
+        "last_obs": "2021-09-30",
+        "path": "data/treasury/tga.parquet",
+        "rows_loaded": 4021,
+        "sha256": "318f6ffb42cb7e04b9cc1705dceed5230c26a74973dba99632abd92e3bd94c30",
+        "target": "tga_bn"
+      },
+      {
+        "first_obs": "2003-02-07",
+        "last_obs": "2021-12-31",
+        "path": "data/fred/RRPONTSYD.parquet",
+        "rows_loaded": 2153,
+        "sha256": "5973b141cfd4a352675303f642af6307a39ac6c7ada3e76a7731952189069e9d",
+        "target": "rrp_bn"
+      }
+    ]
+  },
+  "intervals": {
+    "calibration_scope": "training-only inner rolling residuals",
+    "interval_semantics": "empirical conformal; calibration_scope: training-only inner rolling residuals",
+    "method": "empirical conformal",
+    "min_calibration_residuals": 52,
+    "nominal_levels": [
+      80,
+      90
+    ]
+  },
+  "margins": {
+    "block_weeks": 13,
+    "ci_level": 0.9,
+    "coverage_tolerance_points": 5.0,
+    "min_relative_gain": 0.05,
+    "min_scored_origins": 52,
+    "n_resamples": 2000,
+    "primary_error": "mae",
+    "secondary_error": "rmse",
+    "seed": 20261013
+  },
+  "preregistration_card_ref": {
+    "card_hash": "da060bf47e8eafc7e94d0cadbb4135c9207a069aad9eef3539ea9d62911d6aee",
+    "horizons_note": "The card's 5/20/60-session horizons are asset-response horizons; component horizons are T08's declared 4/8/13 weeks.",
+    "master_sha": "2d7021dd8ea5da27eaf11fc8b7249d53aac9f041",
+    "path": "research/liquidity_transmission/glt_preregistration_card.v1.json",
+    "repo": "mastermind"
+  },
+  "revision_risk": "undocumented; cohort 1",
+  "run": {
+    "as_of": "2026-10-19T11:16:11+00:00"
+  },
+  "schema": "glt_t09_component_forecast_result_v1",
+  "summary": {
+    "dispositions": {
+      "issued": 0,
+      "unavailable": 0,
+      "withheld_insufficient_sample": 0,
+      "withheld_miscalibrated": 0,
+      "withheld_no_gain": 45
+    },
+    "n_cells": 45
+  },
+  "task_id": "GLT-T09",
+  "trial_ledger": {
+    "declared_budget": 45,
+    "family": "glt_t09_component_forecast_v1",
+    "literal_n": 45
+  },
+  "validated": false,
+  "vintage_cohort": 1,
+  "windows": {
+    "calendar": "us_equity_sessions",
+    "dev_end": "2021-12-31",
+    "dev_start": "2018-01-02",
+    "purge_rule": "ceil(purge_sessions/5)",
+    "purge_sessions": 60,
+    "purge_weeks": 12,
+    "reserved_end": "2026-06-30",
+    "reserved_start": "2022-01-03",
+    "train_end": "2017-12-29",
+    "train_start": "2008-01-04"
+  }
+}

@@ -1,5 +1,5 @@
 schema: house_law_checks.v1
-updated: "2026-09-28"
+updated: "2026-10-21"
 
 # Canonical registry of every house law and its enforcement status.
 # Maintained by scripts/check_house_law_registry.py (meta-guard).
@@ -149,6 +149,49 @@ checks:
       guard shipped with each got their own emitter fix, and
       tests/test_check_site_asset_refs.py ratchets the empty state so a re-pin has
       to be argued in review rather than riding in with a fresh 404.
+
+  - law_id: ui.commodity_publication_integrity
+    summary: >
+      Commodities publishers must retain a supported display-only workspace and
+      export-only research contract. Recovery may copy only one qualified pinned
+      accepted page; the exact committed push candidate and its local CSS/JS
+      references must pass independently before publication.
+    source_ref:
+      - scripts/check_commodity_publication.py
+      - tests/test_commodity_publication.py
+      - research/COMMODITIES_PUBLICATION_GUARD_2026-10-20.md
+      - "PRs #9878 #9926"
+    severity: hard
+    check_script: scripts/check_commodity_publication.py
+    ci_wiring:
+      - workflow: .github/workflows/render.yml
+        job: render
+        lane: render
+      - workflow: .github/workflows/engine-render.yml
+        job: engine-render
+        lane: render
+      - workflow: .github/workflows/daily.yml
+        job: engine
+        lane: scheduled
+    selftest: false
+    selftest_exempt_reason: >
+      The existing Commodities PR code job runs tests/test_commodity_publication.py:
+      malformed and duplicate payloads, unsupported versions, unsafe paths,
+      missing assets, exact committed-candidate checks, real stale-render rebase
+      recovery, and canonical-theme publication normalization fixtures.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - Publication structure does not establish economic freshness, builder
+        success, served artifact identity, authentication or browser behavior.
+      - Local CSS/JS existence is checked separately from the full-site reference
+        guard and does not authorize asset restoration or collector execution.
+    owner_program: commodities-dashboard
+    notes: >
+      Normal metadata replay, normal and express porcelain rebases, and the nightly
+      output helper validate their actual push candidate. Worktree healing cannot
+      certify a failed or skipped repair commit. Receipts keep freshness_verified
+      false; covering-render and authenticated live acceptance remain separate.
 
   - law_id: ui.government_revenue_projection_integrity
     summary: >
@@ -1291,6 +1334,39 @@ checks:
     notes: >
       Measured 2026-08-08→08-14: dedicated PutObject AccessDenied froze
       source_manifest at 1,258 while both nightly jobs stayed green.
+
+  - law_id: cs.reference_dossier_traceability
+    summary: >
+      Every expected value in the six Capital Structure reference dossiers
+      (research/capital_structure/e2e_20261013/reference/) must trace to exact
+      permitted evidence: each operand resolves to a served EvidenceRef in the
+      state bundle evidence_index or to a qualified, sha-pinned span of the
+      reference pack. An untraceable expectation exits 1, so the A0 harness can
+      never prove the engine agrees with itself.
+    source_ref:
+      - scripts/check_capital_structure_reference_dossiers.py
+      - tests/test_capital_structure_reference_dossiers.py
+      - tests/test_capital_structure_a0_reference_lineage.py
+      - "PR #9748"
+    severity: manual
+    check_script: scripts/check_capital_structure_reference_dossiers.py
+    ci_wiring: []
+    selftest: false
+    selftest_exempt_reason: >
+      Operand-traceability check over the committed dossiers and the served
+      state bundle; behavioral coverage is tests/test_capital_structure_reference_dossiers.py
+      and tests/test_capital_structure_a0_reference_lineage.py (registered in
+      legacy-jobs.yml), including the untraceable-operand and absent-bundle
+      (exit 3) paths.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - The real state bundle is produced only by the nightly cs_state step;
+        on a tree without it the script exits 3 by design, so the A0-2
+        traceability proof runs after the first natural nightly.
+    owner_program: capital-structure-intelligence
+    notes: >
+      A0-0 (SPEC_A0 §2 + §7). Never fetches and never writes.
 
   - law_id: ops.builder_failstreaks
     summary: >

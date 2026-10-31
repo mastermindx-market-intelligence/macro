@@ -448,6 +448,33 @@
   html[data-lang="zh"] #theme-context-hero.tc-rotating { --tc-blob-a:rgba(69,184,115,.07); }
   /* zh 红涨绿跌 (operator ruling 2026-07-21): heat-pill.heating = bullish momentum → red bg in zh */
   html[data-lang="zh"] .heat-pill.heating { background:rgba(211,11,11,.09); }
+  /* intraday-observation:style-start */
+  .si-intra { margin:12px 0 20px;padding:18px 20px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);color:var(--text); }
+  .si-intra-head { display:flex;align-items:start;justify-content:space-between;gap:14px;margin-bottom:14px; }
+  .si-intra h2 { font-size:18px;line-height:1.3;margin:0 0 4px;letter-spacing:-.02em; }
+  .si-intra-head p,.si-intra-foot,.si-intra-empty { font-size:12px;line-height:1.5;margin:0;color:var(--muted); }
+  .si-intra button { min-height:40px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);color:var(--text);padding:8px 12px;font:inherit;font-size:12px;cursor:pointer; }
+  .si-intra-cols,.si-intra-row summary { display:grid;grid-template-columns:minmax(130px,1fr) repeat(3,minmax(72px,96px));align-items:center;gap:12px; }
+  .si-intra-cols { color:var(--muted);font-size:11px;padding:0 6px 8px; }
+  .si-intra-cols>span:not(:first-child) { text-align:right; }
+  .si-intra-row { border-top:1px solid var(--line); }
+  .si-intra-row summary { min-height:46px;list-style:none;cursor:pointer;padding:9px 6px;font-size:13px; }
+  .si-intra-row summary::-webkit-details-marker { display:none; }
+  .si-intra-name { overflow-wrap:anywhere;line-height:1.35; }
+  .si-intra-value { font-family:var(--font-mono);font-variant-numeric:tabular-nums;text-align:right;font-size:12px; }
+  .si-intra .up { color:var(--up); }.si-intra .dn { color:var(--down); }
+  .si-intra-row summary:hover { background:var(--panel2); }.si-intra summary:focus-visible,.si-intra button:focus-visible { outline:2px solid var(--link);outline-offset:2px; }
+  .si-intra-detail { padding:2px 6px 14px;color:var(--muted);font-size:12px;line-height:1.5;overflow-wrap:anywhere; }
+  .si-intra-detail p { margin:4px 0; }.si-intra-foot { border-top:1px solid var(--line);margin-top:12px;padding-top:12px; }
+  .si-intra-missing { display:flex;justify-content:space-between;gap:12px;padding:11px 6px;border-top:1px solid var(--line);font-size:12px; }.si-intra-missing>span:last-child { color:var(--muted);text-align:right; }
+  html[data-theme="light"] .si-intra { background:var(--panel);box-shadow:var(--card-shadow); }
+  @media(max-width:640px) { .si-intra {padding:14px 12px;}.si-intra h2 {font-size:16px;}.si-intra-cols,.si-intra-row summary {grid-template-columns:minmax(80px,1fr) repeat(3,minmax(52px,64px));gap:6px;}.si-intra-value {font-size:11px;}.si-intra-missing {flex-direction:column;gap:4px;}.si-intra-missing>span:last-child {text-align:left;} }
+  .si-intra-name::before { content:"\203A";display:inline-block;margin-right:7px;color:var(--muted);transition:transform .12s; }
+  .si-intra-row[open] .si-intra-name::before { transform:rotate(90deg); }
+  .si-intra-sr { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
+  @media(prefers-reduced-motion:reduce) { .si-intra-name::before {transition:none;} }
+  /* intraday-observation:style-end */
+
 </style>
 <style>
 /* ══════════════════════════════════════════════════════════════════════════
@@ -618,6 +645,56 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
   .rvx-internals{grid-template-columns:1fr 1fr}
 }
 @media (max-width:560px){ .rvx-lanes{grid-template-columns:1fr} }
+.mr-sec .mr-limit{margin:4px 0 10px;color:var(--muted);font-size:var(--fs-sm)}
+.mr-status{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px} .mr-status:empty{display:none}
+.mr-chip{display:inline-flex;align-items:center;min-height:24px;padding:2px 10px;border-radius:var(--r-ctl,8px);font-size:var(--fs-label);border:1px solid var(--line);color:var(--muted)}
+.mr-chip-partial{background:var(--ff-tint-info-8);color:var(--ink-info);border-color:transparent}
+.mr-chip-stale{background:var(--ff-tint-warn-6);color:var(--ink-warn);border-color:transparent}
+.mr-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:var(--sp-4,16px);align-items:start}
+.mr-listbox,.mr-detail{padding:var(--sp-4,16px)}
+.mr-cov{font-size:var(--fs-sm);color:var(--muted);margin:0 0 10px;line-height:1.5} .mr-cov b{color:var(--text);font-weight:600}
+.mr-head,.mr-row{display:grid;grid-template-columns:minmax(0,1fr) 64px 64px;gap:8px;align-items:center}
+.mr-head{font-size:var(--fs-micro);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:0 10px 6px;border-bottom:1px solid var(--line)}
+.mr-head span+span,.mr-c{text-align:right}
+.mr-list{list-style:none;margin:0;padding:0} .mr-list[hidden]{display:none}
+.mr-unmeasured{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.mr-row{width:100%;min-height:40px;padding:6px 10px;background:none;border:0;border-radius:var(--r-ctl,8px);color:var(--text);font:inherit;font-size:var(--fs-md);text-align:left;cursor:pointer}
+.mr-row-na{grid-template-columns:minmax(0,1fr) auto}
+.mr-row:hover{background:var(--panel2)}
+.mr-row:focus-visible,.mr-segbtn:focus-visible,.mr-link:focus-visible{outline:2px solid var(--ink-info);outline-offset:2px}
+.mr-row[aria-pressed="true"]{background:var(--panel2);box-shadow:inset 3px 0 0 var(--ink-info)}
+.mr-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mr-c{font-family:var(--font-mono);font-size:var(--fs-sm)}
+.mr-up{color:var(--ink-up)} .mr-down{color:var(--ink-down)} .mr-flat,.mr-na{color:var(--muted)}
+.mr-why{font-size:var(--fs-sm);color:var(--muted);text-align:right}
+.mr-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mr-foot{margin:10px 0 0;font-size:var(--fs-label);color:var(--muted)}
+.mr-detail{background:var(--panel2);border:1px solid var(--line);box-shadow:none;backdrop-filter:none}
+.mr-hint{margin:0;color:var(--muted);font-size:var(--fs-sm)}
+.mr-dh{margin:0 0 10px;font-size:var(--fs-md);font-weight:600;color:var(--text)}
+.mr-tk{margin-left:6px;font-family:var(--font-mono);font-size:var(--fs-label);color:var(--muted)}
+.mr-facts{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin:0 0 14px} .mr-facts div{min-width:0}
+.mr-facts dt{font-size:var(--fs-label);color:var(--muted)} .mr-facts dd{margin:2px 0 0;font-size:var(--fs-md);color:var(--text)}
+.mr-seg{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 10px} .mr-seg-l{font-size:var(--fs-label);color:var(--muted);margin-right:4px}
+.mr-segbtn{min-height:40px;padding:6px 12px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:none;color:var(--muted);font:inherit;font-size:var(--fs-sm);cursor:pointer}
+.mr-segbtn[aria-pressed="true"]{color:var(--text);border-color:var(--ink-info);background:var(--ff-tint-info-8)}
+.mr-spark{display:block;width:100%;height:64px}
+.mr-spark-line{fill:none;stroke:var(--ink-info);stroke-width:1.5} .mr-spark-zero{stroke:var(--line);stroke-dasharray:3 3}
+.mr-hist-cap{margin:6px 0 0;font-size:var(--fs-label);color:var(--muted);line-height:1.5}
+.mr-skel-line{height:14px;width:60%} .mr-skel-row{height:32px;margin:6px 0} .mr-skel-spark{height:64px}
+.mr-gen{padding:10px 12px;border-radius:var(--r-ctl,8px);background:var(--ff-tint-warn-6);color:var(--text);font-size:var(--fs-sm)} .mr-gen b{color:var(--ink-warn)}
+.mr-invalid{padding:12px 14px;border:1px dashed var(--line);border-radius:var(--r-card,12px);color:var(--muted);font-size:var(--fs-sm)}
+.mr-obs{margin:0 0 8px;font-size:var(--fs-sm);color:var(--text)}
+.mr-link{display:inline-flex;align-items:center;min-height:40px;color:var(--ink-link);font-size:var(--fs-sm);text-decoration:none} .mr-link:hover{text-decoration:underline}
+.mr-early{margin-top:var(--sp-4,16px);padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--muted);border-radius:var(--r-card,12px);background:var(--panel2)}
+.mr-early-lab{font-size:var(--fs-label);color:var(--muted);margin:0 0 4px} .mr-early-clause{margin:0 0 4px;font-size:var(--fs-md);color:var(--text)} .mr-early-cov{margin:0;font-size:var(--fs-sm);color:var(--muted)}
+.mr-noforecast{margin:8px 0 0;font-size:var(--fs-label);color:var(--muted)}
+/* LIGHT TREATMENT — research workspace: white material, hairline, shadow instead of glow */
+html[data-theme="light"] .mr-row:hover{background:var(--ff-tint-muted-8)}
+html[data-theme="light"] .mr-row[aria-pressed="true"]{background:var(--ff-tint-info-8)}
+html[data-theme="light"] .mr-detail,html[data-theme="light"] .mr-early{background:var(--panel);box-shadow:var(--card-shadow)}
+html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+@media (max-width:760px){ .mr-grid{grid-template-columns:minmax(0,1fr)} .mr-row,.mr-segbtn,.mr-link{min-height:44px} .mr-head,.mr-row{grid-template-columns:minmax(0,1fr) 58px 58px} .mr-name{white-space:normal} .mr-row-na{grid-template-columns:minmax(0,1fr);gap:2px} .mr-row-na .mr-why{text-align:left} }
 </style>
 <style>
   /* ══════════════════════════════════════════════════════════════════════════
@@ -1622,6 +1699,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 </head>
 <body class="macro-desk page-baskets">
 <div class="rvx-aurora" aria-hidden="true"><b class="a1"></b><b class="a2"></b><b class="a3"></b></div>
+{% set all_tools_enabled = true %}
 {% include "_site_nav.html.j2" %}
 
   <!-- ── Shock de-escalation banner (FTR W1 / PS-R3, de-escalation only) ── -->
@@ -2069,30 +2147,131 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 
   // ── Main fetch + render ───────────────────────────────────────────────────
   function renderTapeBand(pulse){
+    // The shared fetch can now return denied/unavailable; clear BOTH views.
+    // Do this before the optional full-band guard, even if only the strip exists.
+    renderSlimStrip(pulse);
     var band = document.getElementById('ftr-tape-band');
     if(!band) return;
     if(!pulse){ band.classList.remove('visible'); return; }
 
     band.classList.add('visible');
-    // Slim strip: state token + top-3 leaders + top-3 laggards + expander
-    renderSlimStrip(pulse);
     // Full band: state token + ONE as-of + ranked two-column body
     renderTapeStrip(pulse);
 
   }
 
   // ── Fetch all three data sources (tolerant, fail-silent per FT-R8) ───────
-  var pulse=null;
-  function tryRender(){ renderTapeBand(pulse); }
-
-  function fetchJson(url, cb){
-    fetch(url,{cache:'no-cache'})
-      .then(function(r){if(!r.ok)throw 0;return r.json();})
-      .then(cb)
-      .catch(function(){/* absent/error → graceful no-op */});
+  /* intraday-observation:start */
+  var intradayExpanded=false, intradayExpiry=null;
+  var intradayDateFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'});
+  function readIntradayView(raw, nowMs){
+    function finite(v){return typeof v==='number'&&Number.isFinite(v);}
+    if(!raw||raw.schema!=='basket_intraday_comparison.v1'||raw.status!=='observed'||raw.benchmark!=='SPY'||raw.method!=='matched_member_equal_weight')return null;
+    var n=raw.matched_members,total=raw.total_members;
+    if(!Number.isSafeInteger(n)||!Number.isSafeInteger(total)||n<=0||n>total)return null;
+    var fields=['relative_change_pct','absolute_change_pct','benchmark_change_pct','coverage_pct','elapsed_minutes','max_clock_skew_seconds'];
+    if(fields.some(function(k){return !finite(raw[k]);}))return null;
+    if(fields.slice(0,3).some(function(k){return Math.abs(raw[k])>40;}))return null;
+    if(raw.coverage_pct<30||Math.abs(raw.coverage_pct-100*n/total)>.001)return null;
+    var zoned=/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?(?:Z|[+-]\d\d:\d\d)$/;
+    if(!zoned.test(raw.reference_asof)||!zoned.test(raw.source_asof))return null;
+    var start=Date.parse(raw.reference_asof),end=Date.parse(raw.source_asof),age=nowMs-end;
+    if(!Number.isFinite(start)||!Number.isFinite(end)||end<=start||age<0||age>45*60000)return null;
+    if(Math.abs(raw.elapsed_minutes-(end-start)/60000)>1e-6||raw.max_clock_skew_seconds<0||raw.max_clock_skew_seconds>Math.min(60,(end-start)/10000))return null;
+    var expected=100*((1+raw.absolute_change_pct/100)/(1+raw.benchmark_change_pct/100)-1);
+    if(Math.abs(expected-raw.relative_change_pct)>3e-6)return null;
+    var kind=raw.observation_kind||'regular';
+    if(kind!=='regular'&&kind!=='settled_regular')return null;
+    if(kind==='settled_regular'&&raw.settlement_tolerance_seconds!==90)return null;
+    var day=intradayDateFormatter.format(new Date(end));
+    if(raw.session_date!==day)return null;
+    return {relative:raw.relative_change_pct,absolute:raw.absolute_change_pct,benchmark:raw.benchmark_change_pct,n:n,total:total,start:start,end:end,seconds:(end-start)/1000,skew:raw.max_clock_skew_seconds,closing:kind==='settled_regular'};
   }
+  function intradayPlainReason(raw, nowMs){
+    var status=raw&&raw.status;
+    if(status==='observed'&&Date.parse(raw.source_asof)>nowMs)return L('Source and device clocks disagree.','\u884c\u60c5\u4e0e\u8bbe\u5907\u65f6\u949f\u4e0d\u4e00\u81f4\u3002');
+    if(status==='observed'&&Date.parse(raw.source_asof)<nowMs-45*60000)return L('Observation is no longer current.','\u89c2\u6d4b\u5df2\u8fc7\u671f\u3002');
+    if(status==='observed')return L('Observation could not be verified.','\u65e0\u6cd5\u786e\u8ba4\u6b64\u89c2\u6d4b\u3002');
+    if(status==='baseline_missing'||status==='baseline_nonadvancing'||status==='benchmark_nonadvancing')return L('Waiting for another observation.','\u7b49\u5f85\u65b0\u7684\u89c2\u6d4b\u3002');
+    if(status==='membership_changed'||status==='session_boundary'||status==='benchmark_basis_changed'||status==='baseline_corrected')return L('Comparison reset after a source change.','\u6570\u636e\u53d8\u66f4\u540e\uff0c\u6b63\u5728\u91cd\u65b0\u5efa\u7acb\u6bd4\u8f83\u3002');
+    if(status==='unsupported_session'||status==='outside_regular_session')return L('No comparable regular-session interval.','\u6682\u65e0\u53ef\u6bd4\u8f83\u7684\u5e38\u89c4\u65f6\u6bb5\u533a\u95f4\u3002');
+    return L('Comparable observations are unavailable.','\u6682\u65e0\u53ef\u6bd4\u8f83\u7684\u89c2\u6d4b\u3002');
+  }
+  function renderIntradayComparisons(pulse,state){
+    var host=document.getElementById('si-intraday-body');if(!host)return;
+    var focused=null,active=document.activeElement;
+    if(active&&active.tagName==='SUMMARY'&&host.contains(active))focused=active.parentElement.getAttribute('data-group');
+    function paint(html){
+      if(host._intradayHTML===html)return;
+      host.innerHTML=html;host._intradayHTML=html;
+      if(focused){
+        var target=null;host.querySelectorAll('details').forEach(function(el){if(el.getAttribute('data-group')===focused)target=el.querySelector('summary');});
+        (target||host).focus({preventScroll:true});
+      }
+    }
+    if(intradayExpiry!==null){clearTimeout(intradayExpiry);intradayExpiry=null;}
+    var labels={loading:L('Loading interval observations...','\u6b63\u5728\u52a0\u8f7d\u533a\u95f4\u89c2\u6d4b\u2026'),denied:L('Sign in with access to view these observations.','\u8bf7\u4f7f\u7528\u6709\u6743\u9650\u7684\u8d26\u6237\u767b\u5f55\u67e5\u770b\u3002'),unavailable:L('Interval observations could not be loaded.','\u6682\u65f6\u65e0\u6cd5\u52a0\u8f7d\u533a\u95f4\u89c2\u6d4b\u3002'),invalid:L('Interval observations could not be verified.','\u6682\u65f6\u65e0\u6cd5\u786e\u8ba4\u533a\u95f4\u89c2\u6d4b\u3002')};
+    var more=document.getElementById('si-intraday-more');
+    if(state!=='ready'||!pulse||!Array.isArray(pulse.baskets)){
+      paint('<p class="si-intra-empty">'+(Object.prototype.hasOwnProperty.call(labels,state)?labels[state]:labels.invalid)+'</p>');if(more)more.hidden=true;return;
+    }
+    var now=Date.now(), seen=Object.create(null), rows=[];
+    pulse.baskets.forEach(function(b){
+      if(!b||typeof b.id!=='string'||!b.id||seen[b.id])return;
+      seen[b.id]=true;rows.push({id:b.id,day:typeof b.live_ew_chg_pct==='number'&&Number.isFinite(b.live_ew_chg_pct)&&Math.abs(b.live_ew_chg_pct)<=40?b.live_ew_chg_pct:null,view:readIntradayView(b.intraday_comparison,now),raw:b.intraday_comparison});
+    });
+    rows.sort(function(a,b){if(!!a.view!==!!b.view)return a.view?-1:1;return a.view?Math.abs(b.view.relative)-Math.abs(a.view.relative):a.id.localeCompare(b.id);});
+    var open=Object.create(null);
+    host.querySelectorAll('details[open]').forEach(function(el){open[el.getAttribute('data-group')]=true;});
+    function pct(value){if(value===null)return '\u2014';return (value>0?'+':value<0?'\u2212':'')+Math.abs(value).toFixed(2)+'%';}
+    function number(value,en,zh){return '<span class="si-intra-value '+(value>0?'up':value<0?'dn':'')+'"><span class="si-intra-sr">'+L(en,zh)+': </span>'+pct(value)+'</span>';}
+    function utc(ms){return new Date(ms).toISOString().replace('T',' ').replace('.000Z','Z');}
+    var shown=intradayExpanded?rows:rows.slice(0,6);
+    var html='<div class="si-intra-cols" aria-hidden="true"><span>'+L('Group','\u7ec4\u522b')+'</span><span>'+L('Day','\u5168\u5929')+'</span><span>'+L('Interval','\u533a\u95f4')+'</span><span>'+L('vs SPY','\u76f8\u5bf9SPY')+'</span></div>';
+    shown.forEach(function(row){
+      var v=row.view,name=L(esc(nameEn(row.id)),esc(nameZh(row.id))),key=esc(row.id);
+      if(!v){html+='<div class="si-intra-missing"><span>'+name+'</span><span>'+intradayPlainReason(row.raw,now)+'</span></div>';return;}
+      var clock=utc(v.start)+' \u2192 '+utc(v.end),count=v.n+'/'+v.total;
+      html+='<details class="si-intra-row" data-group="'+key+'"'+(open[row.id]?' open':'')+'><summary><span class="si-intra-name">'+name+'</span>'+number(row.day,'Day','\u5168\u5929')+number(v.absolute,'Interval','\u533a\u95f4')+number(v.relative,'vs SPY','\u76f8\u5bf9SPY')+'</summary><div class="si-intra-detail">'
+        +'<p>'+L('SPY source interval: ','SPY\u884c\u60c5\u533a\u95f4\uff1a')+esc(clock)+' ('+v.seconds+'s)</p>'
+        +'<p>'+L('Matched members: ','\u53ef\u6bd4\u6210\u5206\uff1a')+count+' \u00b7 '+L('SPY change: ','SPY\u6da8\u8dcc\uff1a')+pct(v.benchmark)+'</p>'
+        +'<p>'+L('Member timestamps may differ by up to ','\u6210\u5206\u884c\u60c5\u65f6\u95f4\u6bcf\u4e2a\u7aef\u70b9\u6700\u591a\u504f\u79bb ')+v.skew+'s'+L(' at each endpoint.','\u3002')+'</p>'
+        +'<p>'+L(v.closing?'Regular-session close, not an after-hours trade.':'Observed price interval, not a forecast.',v.closing?'\u5e38\u89c4\u65f6\u6bb5\u6536\u76d8\u89c2\u6d4b\uff0c\u975e\u76d8\u540e\u4ea4\u6613\u3002':'\u5df2\u89c2\u6d4b\u7684\u4ef7\u683c\u533a\u95f4\uff0c\u975e\u9884\u6d4b\u3002')+'</p></div></details>';
+    });
+    if(!rows.length)html='<p class="si-intra-empty">'+L('No interval observations yet.','\u6682\u65e0\u533a\u95f4\u89c2\u6d4b\u3002')+'</p>';
+    paint(html);
+    if(more){more.hidden=rows.length<=6;more.setAttribute('aria-expanded',intradayExpanded?'true':'false');more.innerHTML=intradayExpanded?L('Show fewer','\u6536\u8d77'):L('Show all groups','\u67e5\u770b\u5168\u90e8\u7ec4\u522b');more.onclick=function(){intradayExpanded=!intradayExpanded;tryRender();};}
+    var next=rows.filter(function(r){return !!r.view;}).map(function(r){return r.view.end+45*60000-now+1;});
+    if(next.length)intradayExpiry=setTimeout(function(){renderIntradayComparisons(pulse,pulseState);},Math.max(1,Math.min.apply(null,next)));
+  }
+  /* intraday-observation:end */
 
-  fetchJson('live/basket_pulse.json', function(d){ pulse=d; tryRender(); });
+  var pulse=null,pulseState='loading',pulseInFlight=false;
+  function tryRender(){ renderIntradayComparisons(pulse,pulseState);renderTapeBand(pulse); }
+  function fetchJson(url, cb){
+    fetch(url,{cache:'no-cache'}).then(function(r){
+      if(!r.ok)return {data:null,state:(r.status===401||r.status===403)?'denied':'unavailable'};
+      return r.json().then(function(d){return {data:d,state:'ready'};},function(){return {data:null,state:'invalid'};});
+    }).catch(function(){return {data:null,state:'unavailable'};}).then(function(value){cb(value.data,value.state);});
+  }
+  function refreshPulse(){
+    if(pulseInFlight)return;pulseInFlight=true;
+    var button=document.getElementById('si-intraday-refresh');if(button)button.disabled=true;
+    var host=document.getElementById('si-intraday-body');if(host)host.setAttribute('aria-busy','true');
+    fetchJson('live/basket_pulse.json',function(d,state){
+      pulseInFlight=false;pulseState=state;
+      if(state==='ready'&&(!d||d.schema!=='basket_pulse.v1'||!Array.isArray(d.baskets)||d.baskets.length>1000||(d.market&&d.market!=='us'))){pulseState='invalid';d=null;}
+      pulse=d;if(button)button.disabled=false;if(host)host.setAttribute('aria-busy','false');tryRender();
+    });
+  }
+  function bindIntradayRefresh(){
+    var button=document.getElementById('si-intraday-refresh');if(button)button.onclick=refreshPulse;tryRender();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindIntradayRefresh);else bindIntradayRefresh();
+  document.addEventListener('langchange',tryRender);
+  window.addEventListener('focus',refreshPulse);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)refreshPulse();});
+  refreshPulse();
 
   /* Display names come from window.BASKETS, which the DEFERRED sector_central_data.js
      assigns via __siInitPage — and a same-origin basket_pulse.json fetch routinely
@@ -2308,6 +2487,29 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
       </div>
     </div>
 
+    {# ── Measured group read (T18) — what is actually changing; display-tier, no forecast ── #}
+    <section class="rvx-sec mr-sec" id="si-measured" aria-labelledby="mr-h">
+      <div class="rvx-sec-h">
+        <h2 id="mr-h">{{ t('What is actually changing', '实际在变什么') }}</h2>
+        <span class="q">{{ t('— measured, not forecast', '— 实测，非预测') }}</span>
+      </div>
+      <p class="rvx-sec-sub" id="mr-sub"></p>
+      <p class="mr-limit">{{ t('Measured performance relative to the S&P 500 — a description, not a forecast or an entry call.', '相对标普500的实测表现 — 只是描述，不是预测，也不是入场信号。') }}</p>
+      <div class="mr-status" id="mr-status" role="status" aria-live="polite"></div>
+      <div class="mr-body" id="mr-body">
+        <div class="mr-grid">
+          <div class="rvx-card mr-listbox">
+            <div class="mr-cov" id="mr-cov"><div class="skel mr-skel-line"></div></div>
+            <div class="mr-head" aria-hidden="true"><span>{{ t('Sector','板块') }}</span><span>{{ t('1 mo','1个月') }}</span><span>{{ t('3 mo','3个月') }}</span></div>
+            <ol class="mr-list" id="mr-list" aria-labelledby="mr-h"><li><div class="skel mr-skel-row"></div></li><li><div class="skel mr-skel-row"></div></li><li><div class="skel mr-skel-row"></div></li></ol>
+            <ul class="mr-list mr-unmeasured" id="mr-unmeasured" hidden></ul>
+            <p class="mr-foot">{{ t('Order = measured 3-month performance, not a recommendation.','排序 = 实测3个月表现，并非推荐。') }}</p>
+          </div>
+          <div class="rvx-card mr-detail" id="mr-detail" aria-live="polite"></div>
+        </div>
+        <div class="mr-early" id="mr-early"></div>
+      </div>
+    </section>
     {# ── Cycle clock — the sector_cycles overlay, embedded (window.SECTOR_CYCLES) ── #}
 <section class="scc-cycle cyc-page sc-page" id="sc-cyclemap">
     <div class="scc-section-h">
@@ -2375,6 +2577,15 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
   </section>{# /si-view map #}
 
   <section class="si-view" data-view="moving">
+  <!-- intraday-observation:markup-start -->
+  <section id="si-intraday" class="si-intra" aria-labelledby="si-intraday-title">
+    <div class="si-intra-head"><div><h2 id="si-intraday-title"><span class="l-en">Intraday relative moves</span><span class="l-zh">&#30424;&#20013;&#30456;&#23545;&#24378;&#24369;&#21464;&#21270;</span></h2><p><span class="l-en">Recent relative moves can differ from today's returns.</span><span class="l-zh">&#36817;&#26399;&#30456;&#23545;&#24378;&#24369;&#65292;&#21487;&#33021;&#19982;&#20840;&#22825;&#28072;&#36300;&#19981;&#21516;&#12290;</span></p></div><button id="si-intraday-refresh" type="button"><span class="l-en">Refresh</span><span class="l-zh">&#21047;&#26032;</span></button></div>
+    <div id="si-intraday-body" tabindex="-1" aria-live="polite"></div>
+    <button id="si-intraday-more" type="button" aria-controls="si-intraday-body" aria-expanded="false" hidden></button>
+    <p class="si-intra-foot"><span class="l-en">Watch, don't chase; measured price changes are not fund flows.</span><span class="l-zh">&#20808;&#35266;&#23519;&#65292;&#21247;&#36861;&#28072;&#65307;&#20215;&#26684;&#21464;&#21270;&#19981;&#31561;&#20110;&#36164;&#37329;&#27969;&#20837;&#12290;</span></p>
+  </section>
+  <!-- intraday-observation:markup-end -->
+
     <p class="si-view-read" id="si-read-moving" hidden></p>
   {# ══ MARKET INTERNALS (revamp) — compact breadth + money-flow strip ══ #}
   <section class="rvx-sec rvx-reveal" id="si-movement" style="animation-delay:.12s">
@@ -2705,7 +2916,7 @@ function renderBTable(){
   tbl.querySelectorAll('th[data-c]').forEach(h=>h.onclick=()=>{ const c=h.dataset.c;
     if(c===btblSort.col) btblSort.dir*=-1; else btblSort={col:c,dir:c==='name'?1:-1};
     localStorage.setItem('fw-btbl-sort',JSON.stringify(btblSort)); renderBTable(); });
-  tbl.querySelectorAll('.bname[data-id]').forEach(n=>n.onclick=()=>{ const id=n.dataset.id||''; if(/^[a-z0-9_-]+$/i.test(id)) location.href='basket/'+id+'.html'; });
+  tbl.querySelectorAll('.bname[data-id]').forEach(n=>n.onclick=()=>{ const id=n.dataset.id||''; if(/^[a-z0-9_-]+$/i.test(id)){ var _d='basket/'+id+'.html'; var _ss=window.MMXSharedShell; if(_ss){_ss.navigate(_d,'push')}else{location.href=_d} } });
 }
 
 // ---- 02 chart -------------------------------------------------------------
@@ -2824,7 +3035,7 @@ function resolveThemeHash(){
   let id=location.hash.slice(7);          // '#theme-'.length
   try{ id=decodeURIComponent(id); }catch(e){}
   if(!id||!themeById(id)) return;         // unknown id → stay put rather than 404
-  location.replace('basket/'+encodeURIComponent(id)+'.html');
+  var _d='basket/'+encodeURIComponent(id)+'.html'; var _ss=window.MMXSharedShell; if(_ss){_ss.navigate(_d,'replace')}else{location.replace(_d)}
 }
 
 // ---- Money flow: ETF style/risk tone + vol pill (Op 2) ----
@@ -3115,7 +3326,7 @@ function __siWireTrace(){
     var open=lanes.querySelector('.si-trace'); var was=row.nextElementSibling===open;
     if(open) open.remove();
     if(was) return;
-    var html=window.__siTrace(id); if(!html){ location.href=row.getAttribute('href'); return; }
+    var html=window.__siTrace(id); if(!html){ var _d=row.getAttribute('href'); var _ss=window.MMXSharedShell; if(_ss){_ss.navigate(_d,'push')}else{location.href=_d} return; }
     var d=document.createElement('div'); d.className='si-trace'; d.innerHTML=html+
       '<div class="si-trace-foot"><a href="basket/'+encodeURIComponent(id)+'.html">'+
       (document.documentElement.getAttribute('data-lang')==='zh'?'打开成分页 →':'members →')+'</a></div>';
@@ -3533,6 +3744,596 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     .catch(function () { return null; })
     .then(leadershipStrip);
 })();
+</script>
+<script>
+/* mr-panel:start */
+/* T18 measured group read — the map → list → detail → history journey. Reads
+   window.SECTOR_CENTRAL.measured_read (display tier; a description, never a forecast),
+   renders every unknown/failure state as a distinct visible state (A44), and confines
+   any history failure to #mr-hist so the ranked list stays usable (A42). Unknown is
+   never zero: an unmeasured sector speaks a plain reason, never a number. */
+(function () {
+  'use strict';
+  var root = document.getElementById('si-measured');
+  if (!root) return;
+  var bodyEl = document.getElementById('mr-body');
+  var subEl = document.getElementById('mr-sub');
+  var statusEl = document.getElementById('mr-status');
+  var covEl = document.getElementById('mr-cov');
+  var listEl = document.getElementById('mr-list');
+  var unEl = document.getElementById('mr-unmeasured');
+  var detailEl = document.getElementById('mr-detail');
+  var earlyEl = document.getElementById('mr-early');
+  var GRID_HTML = bodyEl ? bodyEl.innerHTML : '';
+  var M = null, GEN = {}, COHORT = {}, PAGE_D = null;
+  var SEL = null;
+  var MODE = 'recon';
+  var CYCLES_STATE = window.SECTOR_CYCLES ? 'ready' : 'wait';
+  var SERIES_STATE = 'idle';
+  var PENDING_TIMER = false;
+  var SCROLLED = false;
+  var DEEP_G = null;
+
+  function isZh() { return document.documentElement.getAttribute('data-lang') === 'zh'; }
+  function L(en, zh) { return isZh() ? zh : en; }
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function num(v) { return typeof v === 'number' && isFinite(v); }
+  function pct(v) {
+    if (!num(v)) return '<span class="mr-na">' + esc(L('n/a', '无数据')) + '</span>';
+    var r = Math.round(v * 10) / 10;
+    var cls = r > 0 ? 'mr-up' : (r < 0 ? 'mr-down' : 'mr-flat');
+    var text = (r > 0 ? '+' : (r < 0 ? '−' : '')) + Math.abs(r).toFixed(1) + '%';
+    return '<span class="' + cls + '">' + text + '</span>';
+  }
+  function fmtDate(iso) { return iso; }
+  var REASON_MAP = {
+    missing_input: ['no price data for this sector today', '今日缺少该板块价格数据'],
+    thin_history: ['not enough price history yet', '价格历史不足'],
+    non_finite_input: ['the price data could not be read', '价格数据无法读取']
+  };
+  function reasonT(code) {
+    var m = (code != null && Object.prototype.hasOwnProperty.call(REASON_MAP, code))
+      ? REASON_MAP[code]
+      : ['could not be measured today', '今日无法测量'];
+    return L(m[0], m[1]);
+  }
+  var EARLY_MAP = {
+    BROADENING: ['More sectors are starting to keep up with the S&P 500', '更多板块开始跟上标普500'],
+    DEFENSIVE_RELATIVE_STRENGTH: ['Defensive sectors are holding up better than the market', '防御板块相对更抗跌'],
+    MIXED_ROTATION: ['Early moves point in different directions', '早期迹象方向不一'],
+    NO_EARLY_SHIFT: ['No early shift showing', '暂无早期变化']
+  };
+  function bench(b) { return b === 'SPY' ? esc(L('S&P 500', '标普500')) : esc(b); }
+  function basis(b) {
+    if (b === 'total_return') return esc(L('total return', '含股息总回报'));
+    if (b === 'price_only') return esc(L('price only', '仅价格'));
+    return esc(L('basis not stated', '未注明价格口径'));
+  }
+  function gname(g) { return esc(isZh() ? (g.name_zh || g.name_en) : g.name_en); }
+  function mxError(head, tail) {
+    return '<div class="mx-error"><b>' + esc(head) + '</b><span>' + esc(tail) + '</span></div>';
+  }
+  function mxEmpty(line, why) {
+    return '<div class="mx-empty"><p class="mx-empty-line">' + esc(line) + '</p>' +
+      (why == null ? '' : '<p class="mx-empty-why">' + esc(why) + '</p>') + '</div>';
+  }
+  function mrGen(X, Y) {
+    return '<div class="mr-gen"><b>' + esc(L('History is from a different day', '历史来自不同日期')) + '</b> — ' +
+      esc(L('history ' + X + ', current read ' + Y + '. Not drawn, so the two are never mixed.',
+            '历史 ' + X + '，当前读数 ' + Y + '。不绘制，避免混用。')) + '</div>';
+  }
+  function bindGrid() {
+    covEl = document.getElementById('mr-cov');
+    listEl = document.getElementById('mr-list');
+    unEl = document.getElementById('mr-unmeasured');
+    detailEl = document.getElementById('mr-detail');
+    earlyEl = document.getElementById('mr-early');
+  }
+  function selGroup() {
+    if (SEL == null || !M) return null;
+    for (var i = 0; i < M.groups.length; i++) {
+      if (M.groups[i].group_id === SEL) return M.groups[i];
+    }
+    return null;
+  }
+
+  function render() {
+    var D = window.SECTOR_CENTRAL;
+    var M2 = D && D.measured_read;
+    function groupsOk(arr) {
+      if (!Array.isArray(arr)) return false;
+      for (var k = 0; k < arr.length; k++) {
+        var g = arr[k];
+        if (!g || typeof g !== 'object' || typeof g.group_id !== 'string') return false;
+      }
+      return true;
+    }
+    if (!D) {
+      bodyEl.innerHTML = mxError(L('Data for this page did not load.', '页面数据未能加载。'),
+                                 L('Refresh to try again.', '请刷新重试。'));
+      subEl.innerHTML = '';
+      statusEl.innerHTML = '';
+      return;
+    }
+    if (!('measured_read' in D)) {
+      bodyEl.innerHTML = mxEmpty(L("This read is not in today's data yet.",
+                                   "今日数据尚未包含此项读数。"),
+                                 L('It appears after the next nightly build publishes it.',
+                                   '下次夜间构建发布后将自动出现。'));
+      return;
+    }
+    if (M2 && M2.status === 'unavailable') {
+      bodyEl.innerHTML = mxError(L('This read could not be produced today.', '今日无法生成此项读数。'),
+                                 L('The rest of this page is unaffected.', '本页其余部分不受影响。'));
+      return;
+    }
+    if (!M2 || M2.schema !== 'leadership_rotation_context.measured_group_read/v1' ||
+        (M2.status !== 'available' && M2.status !== 'partial') || !Array.isArray(M2.groups) ||
+        !groupsOk(M2.groups)) {
+      bodyEl.innerHTML = '<div class="mr-invalid">' +
+        esc(L('This read could not be checked, so it is not shown.', '此项数据无法校验，因此不显示。')) + '</div>';
+      return;
+    }
+    M = M2;
+    GEN = M.generation || {};
+    COHORT = M.cohort || {};
+    PAGE_D = D;
+    // Restore the grid only when a state view replaced it, then re-bind: a
+    // reset detaches every cached grid node, so a langchange re-render that
+    // kept the old references wrote into detached nodes (blank list).
+    if (!document.getElementById('mr-list')) bodyEl.innerHTML = GRID_HTML;
+    bindGrid();
+    renderSub();
+    renderStatus();
+    renderCov();
+    renderList();
+    applyPressed();
+    renderDetail();
+    renderHist();
+    renderEarly();
+  }
+
+  function renderSub() {
+    subEl.innerHTML = esc(L('Evidence date ', '证据日期 ')) + esc(fmtDate(GEN.session_end)) +
+      ' · ' + esc(COHORT.expected_n) + esc(L(' US sectors', ' 个美国板块')) +
+      ' · ' + esc(L('vs ', '相对')) + bench(GEN.benchmark) + ' · ' + basis(GEN.price_basis);
+  }
+
+  function renderStatus() {
+    var out = '';
+    if (M.status === 'partial') {
+      out += '<span class="mr-chip mr-chip-partial">' + esc(L('Partial — ', '部分 — ')) +
+        esc(COHORT.measured_n) + esc(L(' of ', ' / ')) + esc(COHORT.expected_n) +
+        esc(L(' measured', ' 已测')) + '</span>';
+    }
+    if (GEN.session_end && PAGE_D.as_of && GEN.session_end < PAGE_D.as_of) {
+      out += '<span class="mr-chip mr-chip-stale">' +
+        esc(L('Older than this page — measured ', '早于本页 — 实测于 ')) + esc(GEN.session_end) +
+        esc(L(', page data ', '，页面数据 ')) + esc(PAGE_D.as_of) + '</span>';
+    }
+    statusEl.innerHTML = out;
+  }
+
+  function renderCov() {
+    var n = COHORT.measured_n, N = COHORT.expected_n, pb = COHORT.positive_breadth || {};
+    var out = '<b>' + esc(L('Measured ', '已测 ')) + esc(n) + esc(L(' of ', ' / ')) + esc(N) + '</b>';
+    if (num(pb.k_over_n) && n > 0) {
+      var k = Math.round(pb.k_over_n * n);
+      out += '<br>' + esc(L(k + ' of ' + n + ' measured sectors are ahead of the S&P 500 over 3 months',
+                            '已测的 ' + n + ' 个板块中有 ' + k + ' 个在3个月内跑赢标普500'));
+    }
+    var b = pb.bounds;
+    var missing = (COHORT.missing && COHORT.missing.length) ? COHORT.missing.length : 0;
+    if (b && b.length === 2 && num(b[0]) && num(b[1]) && missing > 0) {
+      var lo = Math.round(b[0] * N), hi = Math.round(b[1] * N);
+      out += '<br>' + esc(L('Counting the ' + missing + ' unmeasured: between ' + lo + ' and ' + hi +
+                            ' of ' + N + ' — a range, not a confidence interval.',
+                            '计入 ' + missing + ' 个未测板块：介于 ' + lo + ' 到 ' + hi + ' 个（共 ' + N + ' 个）— 这是范围，不是置信区间。'));
+    }
+    covEl.innerHTML = out;
+  }
+
+  function renderList() {
+    var ranked = [], others = [], i, g;
+    for (i = 0; i < M.groups.length; i++) {
+      g = M.groups[i];
+      if (g.current && g.current.status === 'measured' && num(g.current.rank)) ranked.push(g);
+      else others.push(g);
+    }
+    ranked.sort(function (a, b) { return a.current.rank - b.current.rank; });
+    var out = '';
+    for (i = 0; i < ranked.length; i++) {
+      g = ranked[i];
+      out += '<li><button type="button" class="mr-row" data-g="' + esc(g.group_id) +
+        '" aria-pressed="false"><span class="mr-name">' + gname(g) + '</span>' +
+        '<span class="mr-c"><span class="mr-sr">' + esc(L('1 month: ', '1个月：')) + '</span>' + pct(g.current.rs_21d) + '</span>' +
+        '<span class="mr-c"><span class="mr-sr">' + esc(L('3 months: ', '3个月：')) + '</span>' + pct(g.current.rs_63d) + '</span></button></li>';
+    }
+    listEl.innerHTML = out;
+    var uo = '';
+    for (i = 0; i < others.length; i++) {
+      g = others[i];
+      uo += '<li><button type="button" class="mr-row mr-row-na" data-g="' + esc(g.group_id) +
+        '" aria-pressed="false"><span class="mr-name">' + gname(g) + '</span><span class="mr-why">' +
+        esc(L('not measured — ', '未测 — ')) + esc(reasonT(g.current && g.current.reason)) + '</span></button></li>';
+    }
+    unEl.innerHTML = uo;
+    unEl.hidden = others.length === 0;
+  }
+
+  function applyPressed() {
+    var r = root.querySelectorAll('.mr-row');
+    for (var i = 0; i < r.length; i++) {
+      var on = SEL != null && r[i].getAttribute('data-g') === SEL;
+      r[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+  }
+
+  function renderDetail() {
+    var g = selGroup();
+    if (!g) {
+      detailEl.innerHTML = '<p class="mr-hint">' +
+        esc(L('Pick a sector to see its numbers, history and recorded events.',
+              '选择一个板块，查看数据、历史和已记录事件。')) + '</p>';
+      return;
+    }
+    var c = g.current || {};
+    var measured = c.status === 'measured';
+    var why = '<span class="mr-na">' + esc(reasonT(c.reason)) + '</span>';
+    var d1 = measured ? pct(c.rs_21d) : why;
+    var d2 = measured ? pct(c.rs_63d) : why;
+    var d3 = measured
+      ? esc(L(c.rank + ' of ' + COHORT.measured_n + ' measured', '第 ' + c.rank + ' / 共 ' + COHORT.measured_n + ' 个已测'))
+      : why;
+    detailEl.innerHTML =
+      '<h3 class="mr-dh">' + gname(g) + '<span class="mr-tk">' + esc(g.group_id) + '</span></h3>' +
+      '<dl class="mr-facts">' +
+      '<div><dt>' + esc(L('1 month vs S&P 500', '1个月 相对标普500')) + '</dt><dd>' + d1 + '</dd></div>' +
+      '<div><dt>' + esc(L('3 months vs S&P 500', '3个月 相对标普500')) + '</dt><dd>' + d2 + '</dd></div>' +
+      '<div><dt>' + esc(L('Measured order', '实测排序')) + '</dt><dd>' + d3 + '</dd></div>' +
+      '<div><dt>' + esc(L('Evidence date', '证据日期')) + '</dt><dd>' + esc(fmtDate(GEN.session_end)) + '</dd></div>' +
+      '</dl>' +
+      '<div class="mr-seg" role="group" aria-labelledby="mr-seg-l"><span class="mr-seg-l" id="mr-seg-l">' +
+      esc(L('History', '历史')) + '</span>' +
+      '<button type="button" class="mr-segbtn" data-h="recon" aria-pressed="' + (MODE === 'recon' ? 'true' : 'false') + '">' +
+      esc(L('Reconstructed from prices', '按价格重建')) + '</button>' +
+      '<button type="button" class="mr-segbtn" data-h="obs" aria-pressed="' + (MODE === 'obs' ? 'true' : 'false') + '">' +
+      esc(L('Recorded at the time', '当时记录')) + '</button></div>' +
+      '<div id="mr-hist"></div>';
+  }
+
+  function renderHist() {
+    var g = selGroup();
+    if (!g) return;
+    var h = document.getElementById('mr-hist');
+    if (!h) return;
+    h.innerHTML = MODE === 'obs' ? obsHtml(g) : reconHtml(g);
+  }
+
+  function reconHtml(g) {
+    var rc = g.reconstruction || {};
+    if (rc.status === 'unavailable') {
+      return mxEmpty(L('No reconstructed history for this sector.', '该板块暂无重建历史。'),
+                     reasonT(rc.reason));
+    }
+    if (rc.status === 'incompatible_generation') {
+      return mrGen(rc.last || GEN.history_as_of, GEN.session_end);
+    }
+    if (CYCLES_STATE === 'wait') {
+      return '<div class="skel mr-skel-spark"></div><p class="mr-hist-cap">' +
+        esc(L('Loading history…', '历史加载中…')) + '</p>';
+    }
+    if (CYCLES_STATE === 'failed') {
+      return mxError(L('History unavailable right now', '历史暂不可用'),
+                     L('the current read above is unaffected', '上方的当前读数不受影响'));
+    }
+    var SC = window.SECTOR_CYCLES;
+    if (!SC || !SC.meta || !SC.meta.rs_history) {
+      return mxEmpty(L('Reconstructed history is not published yet.', '重建历史尚未发布。'), null);
+    }
+    if (SC.meta.rs_history.as_of !== (GEN.history_as_of || GEN.session_end)) {
+      return mrGen(SC.meta.rs_history.as_of, GEN.session_end);
+    }
+    var series = [], rec = null, sc = SC.sectors, i;
+    if (sc) {
+      for (i = 0; i < sc.length; i++) {
+        if (String(sc[i].ticker) === String(g.group_id)) { rec = sc[i]; series = rec.rs_history || []; break; }
+      }
+    }
+    // Series hydration: the cycles core splits the rs_history payload into a
+    // sibling file (sector_cycles_series_data.js) so a single sector's history
+    // can land asynchronously. If the matched record has no rs_history yet and
+    // the producer told us where the series lives, wait (or fail) like the
+    // CYCLES_STATE branch does.
+    if (rec && rec.rs_history === undefined && typeof window.SC_SERIES_DATA === 'string') {
+      if (SERIES_STATE === 'failed') {
+        return mxError(L('History unavailable right now', '历史暂不可用'),
+                       L('the current read above is unaffected', '上方的当前读数不受影响'));
+      }
+      if (window.SECTOR_CYCLES_SERIES === undefined) {
+        armSeriesTimer();
+        return '<div class="skel mr-skel-spark"></div><p class="mr-hist-cap">' +
+          esc(L('Loading history…', '历史加载中…')) + '</p>';
+      }
+      // Series loaded but this sector still has none → fall through to the
+      // "Not enough history points" path.
+    }
+    var pts = [];
+    for (i = 0; i < series.length; i++) {
+      if (series[i] && num(series[i].rs_63d)) pts.push({ date: series[i].date, v: series[i].rs_63d });
+    }
+    if (pts.length < 2) {
+      return mxEmpty(L('Not enough history points to draw.', '历史数据点不足，无法绘制。'), null);
+    }
+    var lo = 0, hi = 0;
+    for (i = 0; i < pts.length; i++) {
+      if (pts[i].v < lo) lo = pts[i].v;
+      if (pts[i].v > hi) hi = pts[i].v;
+    }
+    if (hi === lo) hi = lo + 1;
+    function yf(v) { return 4 + (hi - v) / (hi - lo) * 56; }
+    var y0 = yf(0).toFixed(1);
+    var str = '';
+    for (i = 0; i < pts.length; i++) {
+      if (i) str += ' ';
+      str += (i / (pts.length - 1) * 300).toFixed(1) + ',' + yf(pts[i].v).toFixed(1);
+    }
+    var svg = '<svg class="mr-spark" viewBox="0 0 300 64" preserveAspectRatio="none" role="img" aria-labelledby="mr-hist-cap">' +
+      '<line class="mr-spark-zero" x1="0" x2="300" y1="' + y0 + '" y2="' + y0 + '" vector-effect="non-scaling-stroke"/>' +
+      '<polyline class="mr-spark-line" points="' + str + '" vector-effect="non-scaling-stroke"/></svg>';
+    return svg + '<p class="mr-hist-cap" id="mr-hist-cap">' +
+      esc(L('Reconstructed from prices — calculated later, not what Mastermind showed at the time.',
+            '按价格重建 — 事后计算，并非 Mastermind 当时显示的内容。')) + '<br>' +
+      esc(L('3 months vs S&P 500 · ', '3个月 相对标普500 · ')) + esc(pts[0].date) + ' → ' +
+      esc(pts[pts.length - 1].date) + ' · ' + pts.length + esc(L(' points', ' 个点')) + '</p>';
+  }
+
+  function obsHtml(g) {
+    var CE = M.confirmed_events;
+    if (!CE || CE.status === 'unavailable') {
+      return mxError(L('Recorded events are unavailable right now', '已记录事件暂不可用'),
+                     L('the current read above is unaffected', '上方的当前读数不受影响'));
+    }
+    if (CE.status === 'incompatible_generation') {
+      return mrGen(CE.as_of, GEN.session_end);
+    }
+    if (CE.status === 'none') {
+      return mxEmpty(L('No recorded events are open.', '目前没有已记录事件。'),
+                     L('Events appear here once Mastermind records one.', 'Mastermind 记录后将自动出现。'));
+    }
+    var rows = [], nameEn = String(g.name_en == null ? '' : g.name_en).toLowerCase(), i;
+    for (i = 0; i < (CE.rows || []).length; i++) {
+      var s = String(CE.rows[i].sector == null ? '' : CE.rows[i].sector);
+      if (s.toUpperCase() === String(g.group_id) || s.toLowerCase() === nameEn) rows.push(CE.rows[i]);
+    }
+    if (!rows.length) {
+      if (CE.truncated) {
+        return mxEmpty(L('Not among the 12 most recent recorded events shown here.', '不在此处显示的最近 12 个已记录事件之列。'), null);
+      }
+      return mxEmpty(L('No recorded events for this sector.', '该板块暂无已记录事件。'), null);
+    }
+    var minStarted = null, maxDay = null;
+    for (i = 0; i < rows.length; i++) {
+      var st = rows[i].started;
+      if (st && (minStarted === null || String(st) < String(minStarted))) minStarted = st;
+      var dn = rows[i].day_n;
+      if (num(dn) && (maxDay === null || dn > maxDay)) maxDay = dn;
+    }
+    var n = rows.length;
+    return '<p class="mr-obs">' +
+      esc(L(n + ' recorded event' + (n > 1 ? 's' : '') + ' filed under this sector',
+            '该板块有 ' + n + ' 个已记录事件')) + '</p>' +
+      '<dl class="mr-facts">' +
+      '<div><dt>' + esc(L('Earliest start', '最早开始')) + '</dt><dd>' + esc(minStarted) + '</dd></div>' +
+      '<div><dt>' + esc(L('Longest running', '持续最久')) + '</dt><dd>' + esc(L('day ' + maxDay, '第 ' + maxDay + ' 天')) + '</dd></div>' +
+      '<div><dt>' + esc(L('Recorded as of', '记录截至')) + '</dt><dd>' + esc(CE.as_of) + '</dd></div>' +
+      '</dl>' +
+      '<p class="mr-hist-cap">' + esc(L('Recorded by Mastermind at the time — not recalculated later.',
+            '由 Mastermind 当时记录 — 事后未重新计算。')) + '</p>' +
+      '<a class="mr-link" href="#moving">' + esc(L("See it in What's moving →", '在「正在轮动」中查看 →')) + '</a>';
+  }
+
+  function renderEarly() {
+    var EC = M.early_context;
+    var out;
+    if (!EC || EC.status === 'unavailable') {
+      out = mxError(L('Early observation unavailable today', '今日早期观察暂不可用'),
+                    L('the measured read above is unaffected', '上方的实测读数不受影响'));
+    } else if (EC.status === 'incompatible_generation') {
+      out = mrGen(EC.as_of, GEN.session_end);
+    } else {
+      out = '<p class="mr-early-lab">' +
+        esc(L('Early observation — context only; it has not become a recorded event · as of ',
+              '早期观察 — 仅作背景，尚未成为已记录事件 · 截至 ')) + esc(EC.as_of) + '</p>';
+      var m = (EC.state != null && Object.prototype.hasOwnProperty.call(EARLY_MAP, EC.state)) ? EARLY_MAP[EC.state] : null;
+      if (m) out += '<p class="mr-early-clause">' + esc(L(m[0], m[1])) + '</p>';
+      else out += '<p class="mr-early-cov">' + esc(L('No early reading to show today.', '今日没有可显示的早期读数。')) + '</p>';
+      var cov = EC.coverage || {};
+      if (num(cov.evaluable_2s) && num(cov.registered_pairs)) {
+        var partial = false, rcs = EC.reason_codes || [], i;
+        for (i = 0; i < rcs.length; i++) { if (String(rcs[i]) === 'PARTIAL_COVERAGE') partial = true; }
+        out += '<p class="mr-early-cov">' +
+          esc(L('Based on ' + cov.evaluable_2s + ' of ' + cov.registered_pairs + ' checks',
+                '基于 ' + cov.registered_pairs + ' 项检查中的 ' + cov.evaluable_2s + ' 项')) +
+          (partial ? esc(L(' — partial coverage', ' — 覆盖不完整')) : '') + '</p>';
+      }
+    }
+    var re_ = M.research_estimate;
+    var reOk = re_ && re_.status === 'estimate' &&
+               typeof re_.probability === 'number' && isFinite(re_.probability) &&
+               re_.probability >= 0 && re_.probability <= 1 &&
+               typeof re_.horizon_sessions === 'number' &&
+               re_.horizon_sessions === Math.floor(re_.horizon_sessions) &&
+               re_.horizon_sessions > 0;
+    if (reOk) {
+      var pct = Math.round(re_.probability * 100);
+      var H = re_.horizon_sessions;
+      out += '<p class="mr-noforecast mr-estimate">' +
+        esc(L('Research estimate — display only: ' + pct + '% over the next ' + H + ' sessions. Not a recommendation.',
+              '研究估计 — 仅供展示：未来 ' + H + ' 个交易日的概率为 ' + pct + '%。不构成建议。')) + '</p>';
+    } else {
+      out += '<p class="mr-noforecast">' +
+        esc(L('Forecast: none — no forecasting model has been approved for this read.',
+              '预测：无 — 此项尚无获批的预测模型。')) + '</p>';
+    }
+    earlyEl.innerHTML = out;
+  }
+
+  function select(g, o) {
+    var found = null, i;
+    if (M) {
+      for (i = 0; i < M.groups.length; i++) {
+        if (M.groups[i].group_id === g) { found = M.groups[i]; break; }
+      }
+    }
+    SEL = found ? found.group_id : null;
+    applyPressed();
+    renderDetail();
+    renderHist();
+    if (o && o.push && SEL != null) {
+      var u = new URL(location.href);
+      u.searchParams.set('g', SEL);
+      history.pushState({ mr: SEL }, '', u.pathname + u.search + u.hash);
+    }
+    if (o && o.user && SEL != null) {
+      try {
+        if (window.matchMedia('(max-width:760px)').matches && detailEl.scrollIntoView) {
+          detailEl.scrollIntoView({ block: 'nearest' });
+        }
+      } catch (e) {}
+    }
+  }
+
+  function clearSelection() {
+    var prev = SEL;
+    SEL = null;
+    applyPressed();
+    renderDetail();
+    renderHist();
+    var u = new URL(location.href);
+    u.searchParams.delete('g');
+    history.replaceState(null, '', u.pathname + u.search + u.hash);
+    if (prev != null) {
+      var r = root.querySelectorAll('.mr-row');
+      for (var i = 0; i < r.length; i++) {
+        if (r[i].getAttribute('data-g') === prev && r[i].focus) { r[i].focus(); break; }
+      }
+    }
+  }
+
+  function armTimer() {
+    if (CYCLES_STATE !== 'wait' || PENDING_TIMER) return;
+    PENDING_TIMER = true;
+    setTimeout(function () {
+      PENDING_TIMER = false;
+      if (CYCLES_STATE === 'wait') {
+        CYCLES_STATE = 'failed';
+        renderHist();
+      }
+    }, 20000);
+  }
+
+  var PENDING_SERIES_TIMER = false;
+  function armSeriesTimer() {
+    if (SERIES_STATE === 'failed' || PENDING_SERIES_TIMER) return;
+    PENDING_SERIES_TIMER = true;
+    setTimeout(function () {
+      PENDING_SERIES_TIMER = false;
+      if (SERIES_STATE !== 'failed' && window.SECTOR_CYCLES_SERIES === undefined) {
+        SERIES_STATE = 'failed';
+        renderHist();
+      }
+    }, 20000);
+  }
+
+  root.addEventListener('click', function (e) {
+    var t = e.target && e.target.closest ? e.target.closest('[data-g],[data-h]') : null;
+    if (!t) return;
+    var dg = t.getAttribute('data-g');
+    if (dg != null) { select(dg, { user: true, push: true }); return; }
+    var dh = t.getAttribute('data-h');
+    if (dh === 'recon' || dh === 'obs') {
+      MODE = dh;
+      var btns = root.querySelectorAll('.mr-segbtn');
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-h') === dh ? 'true' : 'false');
+      }
+      renderHist();
+    }
+  });
+
+  root.addEventListener('keydown', function (e) {
+    var t = e.target;
+    var isRow = t && typeof t.className === 'string' && (' ' + t.className + ' ').indexOf(' mr-row ') >= 0;
+    if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && isRow) {
+      var r = root.querySelectorAll('.mr-row'), i = -1, j;
+      for (j = 0; j < r.length; j++) { if (r[j] === t) { i = j; break; } }
+      var nj = e.key === 'ArrowDown' ? i + 1 : i - 1;
+      if (i >= 0 && nj >= 0 && nj < r.length && r[nj].focus) {
+        r[nj].focus();
+        if (e.preventDefault) e.preventDefault();
+      }
+      return;
+    }
+    if (e.key === 'Escape' && SEL != null) {
+      clearSelection();
+      if (e.preventDefault) e.preventDefault();
+    }
+  });
+
+  document.addEventListener('sc:cycles-data', function () {
+    CYCLES_STATE = window.SECTOR_CYCLES ? 'ready' : 'failed';
+    renderHist();
+  });
+
+  window.addEventListener('error', function (e) {
+    var t = e && e.target;
+    if (t && t.tagName === 'SCRIPT' && /sector_cycles_data\.js/.test(t.src || '')) {
+      CYCLES_STATE = 'failed';
+      renderHist();
+    } else if (t && t.tagName === 'SCRIPT' && /sector_cycles_series_data\.js/.test(t.src || '')) {
+      SERIES_STATE = 'failed';
+      renderHist();
+    }
+  }, true);
+
+  document.addEventListener('si:view', function (e) {
+    if (!e || e.detail !== 'map') return;
+    if (!SCROLLED && DEEP_G != null && SEL === DEEP_G) {
+      SCROLLED = true;
+      try { root.scrollIntoView({ block: 'start' }); } catch (err) {}
+    }
+    armTimer();
+  });
+
+  window.addEventListener('popstate', function () {
+    select(new URLSearchParams(location.search).get('g'), { user: false, push: false });
+  });
+
+  document.addEventListener('langchange', function () { render(); });
+
+  var G0 = new URLSearchParams(location.search).get('g');
+  var valid0 = false;
+  if (window.SECTOR_CENTRAL && window.SECTOR_CENTRAL.measured_read &&
+      Array.isArray(window.SECTOR_CENTRAL.measured_read.groups)) {
+    for (var gi = 0; gi < window.SECTOR_CENTRAL.measured_read.groups.length; gi++) {
+      var g0 = window.SECTOR_CENTRAL.measured_read.groups[gi];
+      if (g0 && typeof g0 === 'object' && g0.group_id === G0) { valid0 = true; break; }
+    }
+  }
+  if (valid0 && location.hash === '') {
+    history.replaceState(null, '', location.pathname + location.search + '#map');
+  }
+  DEEP_G = valid0 ? G0 : null;
+  render();
+  if (valid0) select(G0, { user: false, push: false });
+  if (location.hash === '#map') armTimer();
+})();
+/* mr-panel:end */
 </script>
 {# ── The workspace router / lazy mounter / view-read composer (§1/§1b). External so
    the shell stays inside the page-weight budget (gate 8) and so it caches and hashes

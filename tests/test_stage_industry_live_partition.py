@@ -22,6 +22,7 @@ import json
 from pathlib import Path
 
 from engine import stage_analysis as sa
+from engine import stage_industry as si
 
 
 def _rec(ticker: str, industry_id: str, industry_name: str,
@@ -123,3 +124,60 @@ def test_current_tickers_across_regions_isolated_per_region(tmp_path: Path):
     written = json.loads((tmp_path / "stage_analysis" / "industry_ranks.json").read_text())
     assert "EUROPE" not in written["regions"]  # the only EU row was excluded
     assert "USA" in written["regions"]
+
+
+def test_null_tickers_do_not_share_a_nan_percentile_key(tmp_path: Path):
+    """The ticker mirror of the industry_id belt (engine/stage_industry.py:411-
+    413).  A null ticker reaching `_coerce_frame` survives to
+    `name_industry_percentiles`' `out[str(tk)]` (:569), where both null rows
+    stringify to the SAME 'nan' key — one silently overwrites the other — and
+    the surviving null row dilutes the real group off its documented 0..100
+    scale (ascending rank, pct = 100.0*(rank-1)/(m-1) at :566-568), giving
+    BBB 66.7 instead of the low anchor 0.0.  Read through the public entry the
+    seam composes (engine/stage_analysis.py:541-543); the seam itself cannot
+    reproduce the defect — its `isin(wanted)` filter (engine/stage_analysis.py
+    :539) already drops null-ticker rows, verified GREEN-at-HEAD by scratch.
+    """
+    recs = [
+        _rec("AAA", "10", "Strong", 20.0, 8.0),
+        _rec("BBB", "10", "Strong", 18.0, 7.0),
+        _rec(None, "10", "Strong", 10.0, 3.0),
+        _rec(float("nan"), "10", "Strong", 5.0, 1.0),
+    ]
+    pct = si.name_industry_percentiles(recs, root=tmp_path)
+    assert set(pct) == {"AAA", "BBB"}          # no 'nan' key minted
+    assert pct["AAA"] == 100.0                 # higher RS = higher pct
+    assert pct["BBB"] == 0.0
+
+
+def test_literal_nan_ticker_text_is_dropped(tmp_path: Path):
+    """`"nan"` / `"  NaN "` arrive as real strings, so notna() passes them and
+    they need the post-cast text belt, mirroring the industry_id line at
+    engine/stage_industry.py:413 (plus the empty-text line for the whitespace-
+    only ticker).  Left in, they mint 'nan', '  NaN ' and '   ' keys and dilute
+    the group scale the same way."""
+    recs = [
+        _rec("AAA", "10", "Strong", 20.0, 8.0),
+        _rec("BBB", "10", "Strong", 18.0, 7.0),
+        _rec("nan", "10", "Strong", 10.0, 3.0),
+        _rec("  NaN ", "10", "Strong", 6.0, 1.5),
+        _rec("   ", "10", "Strong", 5.0, 1.0),
+    ]
+    pct = si.name_industry_percentiles(recs, root=tmp_path)
+    assert set(pct) == {"AAA", "BBB"}
+    assert pct["AAA"] == 100.0
+    assert pct["BBB"] == 0.0
+
+
+def test_all_null_tickers_fail_open(tmp_path: Path):
+    """Every ticker null -> the ticker belt empties the frame and `_coerce_
+    frame`'s fail-open `if out.empty: return None` (engine/stage_industry.py
+    :422-423) fires -> `name_industry_percentiles` returns {} (:553-554) —
+    the SAME result an empty frame gets (`if df.empty: return None` at :393
+    -> {})."""
+    recs = [
+        _rec(None, "10", "Strong", 2.0, 1.0),
+        _rec(float("nan"), "10", "Strong", 1.0, 1.0),
+    ]
+    assert si.name_industry_percentiles(recs, root=tmp_path) == {}
+    assert si.name_industry_percentiles([], root=tmp_path) == {}

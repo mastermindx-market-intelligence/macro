@@ -871,11 +871,21 @@ const results = input.cases.map(c => {
 });
 console.log(JSON.stringify(results));
 '''
+    from rjsmin import jsmin
+
+    template = (ROOT / 'templates/theme.js').read_text(encoding='utf-8')
+    marker = '/* Packet2: enhance existing entitled row details;'
+    assert template.count(marker) == 1
+    source_block = marker + template.split(marker, 1)[1]
+    # The published bundle strips comments. Locate its exact emitted block,
+    # then exercise those actual bytes with the same behavioral assertions.
+    emitted_block = jsmin(source_block)
     for relative in ('templates/theme.js', 'site/theme.js'):
         full = (ROOT / relative).read_text(encoding='utf-8')
-        marker = '/* Packet2: enhance existing entitled row details;'
-        assert full.count(marker) == 1
-        source = marker + full.split(marker, 1)[1]
+        expected = source_block if relative.startswith('templates/') else emitted_block
+        assert full.count(expected) == 1, relative
+        start = full.index(expected)
+        source = full[start:start + len(expected)]
         run = subprocess.run(['node', '-e', harness,
                               json.dumps({'source': source, 'cases': cases})],
                              text=True, capture_output=True, timeout=15, check=True)

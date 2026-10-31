@@ -1,0 +1,441 @@
+{
+  "schema": "press.staging_inspection.v1",
+  "config_sha256": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+  "cutover": false,
+  "items": [
+    {
+      "path": "data/press/staging/press-brief-2026-10-11-6cf53bdfd11a.json",
+      "sha256": "340de7c873a807794cb00807753dec7da04842295fe5439ce1462a1b015afbc8",
+      "id": "press-brief-2026-10-11-6cf53bdfd11a",
+      "saved_status": "quarantined",
+      "validation_current": false,
+      "blockers": [
+        "saved_status_not_passed",
+        "current_validation_failed"
+      ],
+      "failed_checks": [
+        "self_similarity"
+      ],
+      "check_results": [
+        {
+          "name": "markup_safety",
+          "ok": true,
+          "detail": "static article fragment with allowed tags and attributes"
+        },
+        {
+          "name": "fact_anchor",
+          "ok": true,
+          "detail": "every number and quote resolves to a source fact"
+        },
+        {
+          "name": "claim_scope",
+          "ok": true,
+          "detail": "not a canonical claim-scoped slot"
+        },
+        {
+          "name": "close_paraphrase",
+          "ok": true,
+          "detail": "max block/source overlap 0.000 <= 0.18"
+        },
+        {
+          "name": "our_value",
+          "ok": true,
+          "detail": "our-value share 50.1% (>= floor 40%) over 22 sentence(s); 17 distinct receipt(s)"
+        },
+        {
+          "name": "receipts",
+          "ok": true,
+          "detail": "17 distinct anchored receipt(s) (>= minimum 5)"
+        },
+        {
+          "name": "quote_lint",
+          "ok": true,
+          "detail": "0 quote(s), longest 0 words"
+        },
+        {
+          "name": "banned_lexicon",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "advice_lexicon",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "cheese_test",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "ai_tells",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "primary_source",
+          "ok": true,
+          "detail": "first-party slot: receipts carried inline (see our_value / receipts); no above-the-fold source link required"
+        },
+        {
+          "name": "link_allowlist",
+          "ok": true,
+          "detail": "0 internal link(s), all public"
+        },
+        {
+          "name": "byline",
+          "ok": true,
+          "detail": "desk byline present"
+        },
+        {
+          "name": "footer",
+          "ok": true,
+          "detail": "standing footer present"
+        },
+        {
+          "name": "frontmatter",
+          "ok": true,
+          "detail": "frontmatter matches the free-estate contract"
+        },
+        {
+          "name": "length",
+          "ok": true,
+          "detail": "349 words (budget 300\u2013600)"
+        },
+        {
+          "name": "self_similarity",
+          "ok": false,
+          "detail": "repeats our own staged:ai-flows-are-strong-but-narrow at 0.381 > 0.18: 'The breadth data makes that tension clearer. On 2026-10-08, 62.3% of the AI cohort was above its 50-day average, compare'"
+        }
+      ]
+    },
+    {
+      "path": "data/press/staging/press-official-cd2747adeed2.json",
+      "sha256": "444946ab02c0537c539e367cf121ee8efd4d6ab8a6c5f27ae880ff2934053931",
+      "id": "press-official-cd2747adeed2",
+      "saved_status": "quarantined",
+      "validation_current": false,
+      "blockers": [
+        "saved_status_not_passed",
+        "current_validation_failed"
+      ],
+      "failed_checks": [
+        "close_paraphrase",
+        "our_value",
+        "banned_lexicon",
+        "self_similarity"
+      ],
+      "check_results": [
+        {
+          "name": "markup_safety",
+          "ok": true,
+          "detail": "static article fragment with allowed tags and attributes"
+        },
+        {
+          "name": "fact_anchor",
+          "ok": true,
+          "detail": "every number and quote resolves to a source fact"
+        },
+        {
+          "name": "claim_scope",
+          "ok": true,
+          "detail": "not a canonical claim-scoped slot"
+        },
+        {
+          "name": "close_paraphrase",
+          "ok": false,
+          "detail": "block overlaps a source at 0.278 > 0.18 (official_feed:99354c7bd7561bf9356a1193875243a72ff1d000): 'On 2026-10-13, the  Office of the Comptroller of the Currency  announced a $750 million civil money penalty against Bank'"
+        },
+        {
+          "name": "our_value",
+          "ok": false,
+          "detail": "our-value share 20.7% (< floor 40%) over 20 sentence(s); 10 distinct receipt(s)"
+        },
+        {
+          "name": "receipts",
+          "ok": true,
+          "detail": "10 distinct anchored receipt(s) (>= minimum 5)"
+        },
+        {
+          "name": "quote_lint",
+          "ok": true,
+          "detail": "0 quote(s), longest 0 words"
+        },
+        {
+          "name": "banned_lexicon",
+          "ok": false,
+          "detail": "banned vocabulary: ['substring:the backdrop']"
+        },
+        {
+          "name": "advice_lexicon",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "cheese_test",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "ai_tells",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "primary_source",
+          "ok": true,
+          "detail": "external source named in full and linked above the fold"
+        },
+        {
+          "name": "link_allowlist",
+          "ok": true,
+          "detail": "1 internal link(s), all public"
+        },
+        {
+          "name": "byline",
+          "ok": true,
+          "detail": "desk byline present"
+        },
+        {
+          "name": "footer",
+          "ok": true,
+          "detail": "standing footer present"
+        },
+        {
+          "name": "frontmatter",
+          "ok": true,
+          "detail": "frontmatter matches the free-estate contract"
+        },
+        {
+          "name": "length",
+          "ok": true,
+          "detail": "376 words (budget 300\u2013600)"
+        },
+        {
+          "name": "self_similarity",
+          "ok": false,
+          "detail": "repeats our own staged:ttwo-hits-first-prophet-target-as-market-stays-mixed at 0.263 > 0.18: 'The risk radar was in caution on 2026-10-09, with rates the dominant scare at a score of 70.2 and a modelled 21-session '"
+        }
+      ]
+    },
+    {
+      "path": "data/press/staging/press-research_desk-2026-10-11-81675c403cda.json",
+      "sha256": "1174c20e6a630dec8cd97369ae91d946caebfa06d30bb3a7d57ed17d58becffe",
+      "id": "press-research_desk-2026-10-11-81675c403cda",
+      "saved_status": "quarantined",
+      "validation_current": false,
+      "blockers": [
+        "saved_status_not_passed",
+        "current_validation_failed"
+      ],
+      "failed_checks": [
+        "self_similarity"
+      ],
+      "check_results": [
+        {
+          "name": "markup_safety",
+          "ok": true,
+          "detail": "static article fragment with allowed tags and attributes"
+        },
+        {
+          "name": "fact_anchor",
+          "ok": true,
+          "detail": "every number and quote resolves to a source fact"
+        },
+        {
+          "name": "claim_scope",
+          "ok": true,
+          "detail": "not a canonical claim-scoped slot"
+        },
+        {
+          "name": "close_paraphrase",
+          "ok": true,
+          "detail": "max block/source overlap 0.028 <= 0.18"
+        },
+        {
+          "name": "our_value",
+          "ok": true,
+          "detail": "our-value share 46.3% (>= floor 40%) over 31 sentence(s); 21 distinct receipt(s)"
+        },
+        {
+          "name": "receipts",
+          "ok": true,
+          "detail": "21 distinct anchored receipt(s) (>= minimum 4)"
+        },
+        {
+          "name": "quote_lint",
+          "ok": true,
+          "detail": "0 quote(s), longest 0 words"
+        },
+        {
+          "name": "banned_lexicon",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "advice_lexicon",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "cheese_test",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "ai_tells",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "primary_source",
+          "ok": true,
+          "detail": "first-party slot: receipts carried inline (see our_value / receipts); no above-the-fold source link required"
+        },
+        {
+          "name": "link_allowlist",
+          "ok": true,
+          "detail": "1 internal link(s), all public"
+        },
+        {
+          "name": "byline",
+          "ok": true,
+          "detail": "desk byline present"
+        },
+        {
+          "name": "footer",
+          "ok": true,
+          "detail": "standing footer present"
+        },
+        {
+          "name": "frontmatter",
+          "ok": true,
+          "detail": "frontmatter matches the free-estate contract"
+        },
+        {
+          "name": "length",
+          "ok": true,
+          "detail": "508 words (budget 500\u2013900)"
+        },
+        {
+          "name": "self_similarity",
+          "ok": false,
+          "detail": "repeats our own staged:european-express-meets-a-mixed-market at 1.000 > 0.18: 'What would change the picture'"
+        }
+      ]
+    },
+    {
+      "path": "data/press/staging/press-research_desk-2026-10-13-6baf3247f154.json",
+      "sha256": "2aef46759c72b4621e772d0da04d2eeee4025b525988f8dd7f1ae1f207206c0a",
+      "id": "press-research_desk-2026-10-13-6baf3247f154",
+      "saved_status": "quarantined",
+      "validation_current": false,
+      "blockers": [
+        "saved_status_not_passed",
+        "current_validation_failed"
+      ],
+      "failed_checks": [
+        "self_similarity"
+      ],
+      "check_results": [
+        {
+          "name": "markup_safety",
+          "ok": true,
+          "detail": "static article fragment with allowed tags and attributes"
+        },
+        {
+          "name": "fact_anchor",
+          "ok": true,
+          "detail": "every number and quote resolves to a source fact"
+        },
+        {
+          "name": "claim_scope",
+          "ok": true,
+          "detail": "not a canonical claim-scoped slot"
+        },
+        {
+          "name": "close_paraphrase",
+          "ok": true,
+          "detail": "max block/source overlap 0.018 <= 0.18"
+        },
+        {
+          "name": "our_value",
+          "ok": true,
+          "detail": "our-value share 45.6% (>= floor 40%) over 33 sentence(s); 18 distinct receipt(s)"
+        },
+        {
+          "name": "receipts",
+          "ok": true,
+          "detail": "19 distinct anchored receipt(s) (>= minimum 4)"
+        },
+        {
+          "name": "quote_lint",
+          "ok": true,
+          "detail": "0 quote(s), longest 0 words"
+        },
+        {
+          "name": "banned_lexicon",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "advice_lexicon",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "cheese_test",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "ai_tells",
+          "ok": true,
+          "detail": "clean"
+        },
+        {
+          "name": "primary_source",
+          "ok": true,
+          "detail": "first-party slot: receipts carried inline (see our_value / receipts); no above-the-fold source link required"
+        },
+        {
+          "name": "link_allowlist",
+          "ok": true,
+          "detail": "1 internal link(s), all public"
+        },
+        {
+          "name": "byline",
+          "ok": true,
+          "detail": "desk byline present"
+        },
+        {
+          "name": "footer",
+          "ok": true,
+          "detail": "standing footer present"
+        },
+        {
+          "name": "frontmatter",
+          "ok": true,
+          "detail": "frontmatter matches the free-estate contract"
+        },
+        {
+          "name": "length",
+          "ok": true,
+          "detail": "564 words (budget 500\u2013900)"
+        },
+        {
+          "name": "self_similarity",
+          "ok": false,
+          "detail": "repeats our own staged:ai-flows-are-strong-but-narrow at 1.000 > 0.18: 'What would change the picture'"
+        }
+      ]
+    }
+  ],
+  "total": 4,
+  "validation_current": 0,
+  "blocked": 4,
+  "publication_approved": false,
+  "source_freshness_verified": false,
+  "scope": "Current deterministic validator replay against staged facts and local peers only; source freshness, source rights, editorial acceptance, release controls and live delivery require their existing owners.",
+  "full_private_inspection_sha256": "c7869efe2d2d2c3b36688cfaf63424c65528a3924d82a246b181cefb8eecf761"
+}

@@ -1,0 +1,23 @@
+{
+  "actual_host_evidence": "M2 APFS treats swap-case workspace name as samefile while Path.resolve preserves spelling. The no-nested-parent string guard was bypassable.",
+  "final_source_sha256": "ebe9d5869f8d7405a2d96e9b1c724696f5ba3382caee648bc615f81a77ed1179",
+  "next_review": "market-time-machine-accrual-20261015-review-03",
+  "platform_regression": {
+    "case_alias_samefile": true,
+    "failed_before": 1,
+    "filesystem": "APFS case insensitive",
+    "focused_tests_passed": 79,
+    "host": "m2studio",
+    "passed_after": 1,
+    "resolve_spellings_differ": true
+  },
+  "repair": "Compare actual ancestor (st_dev,st_ino) identities instead of textual resolved prefixes. Explicit actual case-alias test failed before and passes after;79focusedtests pass. No archive or provider state changed by the repair.",
+  "retained_bytes": 1234,
+  "retained_sha256": "91d8c1c2ab438a14a4a425089af97ccdeedadf8c2f4626146054eff0fae3e09d",
+  "review_quality_accepted": false,
+  "reviewed_source_sha256": "1dfe3df537de0b5ae615c1644b773fd5080652988c35f26c37ce004b1549360d",
+  "run_id": "market-time-machine-accrual-20261015-review-02",
+  "schema": "market_memory.accrual_guard_review.v1",
+  "source_under_final_review": "market-time-machine-accrual-20261015-review-03",
+  "verdict": "PASS_WITH_APFS_LIMITATION_PROMOTED_TO_REAL_DEFECT"
+}

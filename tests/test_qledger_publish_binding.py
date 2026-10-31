@@ -269,13 +269,14 @@ def test_lock_replacement_at_initial_identity_capture_is_never_adopted(tmp_path)
     root, _ = fixture_repo(tmp_path)
     before = snapshot(root)
     trace = root / "unexpected-gate.txt"
-    # Execute the actual helper's stdin source in the real Python interpreter.
+    # Execute the externalized helper's exact source with the same argv/entrypoint.
     # Replace only this synthetic lock at the create/open boundary: after an
     # exclusive create, or before a later reopening of an already-created lock.
     wrapper = r'''
 import os, sys
-source = sys.stdin.read()
-target = sys.argv[1]
+source_path, target = sys.argv[1:3]
+with open(source_path, encoding='utf-8') as actual_helper:
+    source = actual_helper.read()
 real_open = os.open
 fired = False
 def swap():
@@ -294,14 +295,14 @@ def intercepted(path, flags, *args, **kwargs):
     swap()
     return real_open(path, flags, *args, **kwargs)
 os.open = intercepted
-sys.argv = ['-', target]
-exec(compile(source, '<actual-lock-helper>', 'exec'))
+sys.argv = [source_path, 'acquire', target]
+exec(compile(source, source_path, 'exec'), {'__name__': '__main__'})
 '''
     body = f'''set -e
 . {shlex.quote(str(OPTIONS))}
 python3() {{
-  if [ "$#" -eq 2 ] && [ "$1" = - ]; then
-    command python3 -c {shlex.quote(wrapper)} "$2"
+  if [ "$#" -eq 3 ] && [ "$1" = "$REPO_ROOT/scripts/ci/options_index_lock_identity.py" ] && [ "$2" = acquire ]; then
+    command python3 -c {shlex.quote(wrapper)} "$1" "$3"
   else
     command python3 "$@"
   fi

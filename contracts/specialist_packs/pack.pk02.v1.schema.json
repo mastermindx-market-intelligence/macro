@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk02.v1.schema.json",
   "title": "Specialist pack PK02 v1 catalogue",
-  "description": "Stock compensation and dilution. Result instances validate against specialist_pack_result.v1. The field catalogue is unspecified at contract v1; the pack implementation populates fields and checks and sets catalogue_state to specified.",
+  "description": "Stock compensation and dilution. Result instances validate against specialist_pack_result.v1. The field, check and reason-code catalogue is frozen by the FIF K1/K2 seat spec; pack results remain display-only context (attested: false) until a Q1 held-out evaluation under Q0.",
   "pack_schema_id": "pack.pk02/v1",
   "pack_id": "PK02",
   "name": "Stock compensation and dilution",
@@ -15,10 +15,236 @@
     "typed absences",
     "production source trace"
   ],
-  "catalogue_state": "unspecified",
-  "fields": [],
-  "checks": [],
-  "reason_codes": [],
+  "catalogue_state": "specified",
+  "fields": [
+    {
+      "field_id": "sbc_expense_total",
+      "name": "Share-based compensation expense, total",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": true
+    },
+    {
+      "field_id": "sbc_allocated_by_line",
+      "name": "Share-based compensation allocated by income-statement line",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "weighted_average_shares_basic",
+      "name": "Weighted-average shares outstanding, basic (core, consumed)",
+      "type": "shares",
+      "unit": "shares",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": true
+    },
+    {
+      "field_id": "weighted_average_shares_diluted",
+      "name": "Weighted-average shares outstanding, diluted (core, consumed)",
+      "type": "shares",
+      "unit": "shares",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": true
+    },
+    {
+      "field_id": "eps_basic",
+      "name": "Earnings per share, basic (core, consumed)",
+      "type": "decimal",
+      "unit": "USD/shares",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "eps_diluted",
+      "name": "Earnings per share, diluted (core, consumed)",
+      "type": "decimal",
+      "unit": "USD/shares",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "antidilutive_securities_excluded",
+      "name": "Antidilutive securities excluded from diluted EPS",
+      "type": "shares",
+      "unit": "shares",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "shares_outstanding_cover",
+      "name": "Shares outstanding per class (dei cover)",
+      "type": "shares",
+      "unit": "shares",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "shares_issued_parenthetical",
+      "name": "Shares issued (balance-sheet parenthetical)",
+      "type": "shares",
+      "unit": "shares",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "share_repurchase_amount",
+      "name": "Share repurchase amount",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "sbc_capitalized",
+      "name": "Share-based compensation capitalized",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "dilutive_securities_increment",
+      "name": "Incremental dilutive shares (per security class, check operand)",
+      "type": "shares",
+      "unit": "shares",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "net_income_available_to_common",
+      "name": "Net income available to common stockholders (check operand)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "basic_to_diluted_reconciliation",
+      "kind": "sum_identity",
+      "operands": [
+        "weighted_average_shares_basic",
+        "dilutive_securities_increment",
+        "weighted_average_shares_diluted"
+      ]
+    },
+    {
+      "check_id": "antidilutive_table_total_vs_rows",
+      "kind": "sum_identity",
+      "operands": [
+        "antidilutive_securities_excluded"
+      ]
+    },
+    {
+      "check_id": "per_class_shares_vs_cover",
+      "kind": "cross_statement",
+      "operands": [
+        "shares_outstanding_cover",
+        "shares_issued_parenthetical"
+      ]
+    },
+    {
+      "check_id": "eps_identity",
+      "kind": "cross_statement",
+      "operands": [
+        "net_income_available_to_common",
+        "weighted_average_shares_basic",
+        "eps_basic",
+        "weighted_average_shares_diluted",
+        "eps_diluted"
+      ]
+    }
+  ],
+  "reason_codes": [
+    {
+      "code": "applicability_rule_satisfied",
+      "parameter": null,
+      "meaning": "the pack's versioned applicability rule (`applicability.rule_id`) evaluated true"
+    },
+    {
+      "code": "form_outside_pack_forms",
+      "parameter": null,
+      "meaning": "the admitted form is outside the pack's Q0-frozen forms"
+    },
+    {
+      "code": "missing_standard_fact",
+      "parameter": "concept",
+      "meaning": "the standard concept named by the parameter has no admitted fact for the period"
+    },
+    {
+      "code": "extension_concept_unaliased",
+      "parameter": "prefix",
+      "meaning": "the value exists only under an extension prefix with no frozen alias"
+    },
+    {
+      "code": "disallowed_dimension",
+      "parameter": null,
+      "meaning": "the only facts carry a dimension the field does not admit"
+    },
+    {
+      "code": "missing_dependency",
+      "parameter": null,
+      "meaning": "a formula/check operand is not valued (R-K3: never an implied zero)"
+    },
+    {
+      "code": "division_by_zero",
+      "parameter": null,
+      "meaning": "a ratio denominator is zero"
+    },
+    {
+      "code": "unit_mismatch",
+      "parameter": null,
+      "meaning": "operands differ in unit/currency/period basis"
+    },
+    {
+      "code": "numeric_value_in_narrative_only",
+      "parameter": null,
+      "meaning": "the number appears only inside narrative text; R-K4' forbids extracting it"
+    }
+  ],
   "type": "object",
   "additionalProperties": false
 }

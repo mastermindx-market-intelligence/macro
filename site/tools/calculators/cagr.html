@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- mmx-shared-shell:start --><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><link rel="stylesheet" data-mmx-shared-shell-styles="20261018.1" href="../../shared_shell.css?v=b1918cca"><script data-sync data-mmx-shared-shell-bridge="20261018.1" src="../../shared_shell_bridge.js?v=071ef720"></script><!-- mmx-shared-shell:end -->
 <meta charset="utf-8">
 <script data-dbase>(function () {
   window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
@@ -48,7 +48,7 @@
 <meta name="twitter:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../../favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="../../apple-touch-icon.png"><link rel="stylesheet" href="../../theme.css?v=311f121e"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mastermind-x.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://www.mastermind-x.com/tools/index.html"},{"@type":"ListItem","position":3,"name":"CAGR Calculator"}]}</script>
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png"><link rel="stylesheet" href="../../theme.css?v=29ec9caa"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mastermind-x.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://www.mastermind-x.com/tools/index.html"},{"@type":"ListItem","position":3,"name":"CAGR Calculator"}]}</script>
 
 <link rel="stylesheet" href="../../assets/css/f1bd9987.css?v=f1bd9987">
 
@@ -251,6 +251,14 @@
 <div class="calc-actions">
   <button class="gbtn" id="copy-result" type="button"><span class="l-en">Copy result</span><span class="l-zh">复制结果</span></button>
   <span class="copied" id="copied" role="status"><span class="l-en">Copied</span><span class="l-zh">已复制</span></span>
+  <span id="copy-fail" role="status" hidden style="font-family:var(--font-ui); font-size:13.5px;"><span class="l-en">Copy failed — clipboard access was blocked. Select the text below and copy it manually.</span><span class="l-zh">复制失败——剪贴板访问被拒绝。请选中下方文本手动复制。</span></span>
+</div>
+<div id="copy-manual" hidden>
+  <label class="ci ci-wide" for="copy-manual-text" style="flex-direction:row; align-items:center; gap:10px;">
+    <span class="ci-l" style="white-space:nowrap;"><span class="l-en">Result text — select and copy</span><span class="l-zh">结果文本——选中并复制</span></span>
+    <input id="copy-manual-text" readonly>
+  </label>
+  <button class="gbtn" id="copy-manual-select" type="button" style="margin-top:8px;"><span class="l-en">Select all</span><span class="l-zh">全选</span></button>
 </div>
 
     </section>
@@ -431,7 +439,9 @@
     var outMain=$("out-main"), outUnit=$("out-unit"), outPlain=$("out-plain"),
         outGain=$("out-gain"), outYears=$("out-years"),
         rowDtGain=$("row-dt-gain"),
-        seg=$("mode-seg"), copyBtn=$("copy-result"), copied=$("copied");
+        seg=$("mode-seg"), copyBtn=$("copy-result"), copied=$("copied"),
+        failMsg=$("copy-fail"), manualBox=$("copy-manual"),
+        manualField=$("copy-manual-text"), manualSelect=$("copy-manual-select");
     var rowV1=$("row-v1"), rowCagr=$("row-cagr");
 
     function setMode(m){
@@ -504,12 +514,63 @@
           " at " + last.cagrRate.toFixed(2) + "% for " + last.n.toFixed(1) + " years — mastermind-x.com";
       }
     }
+
+    // ── copy-result feedback (truthful) ────────────────────────────────────────
+    // Success ("Copied"/已复制) is shown ONLY when the copy actually succeeded:
+    // either the modern clipboard promise resolved, or execCommand("copy")
+    // explicitly returned true. Any rejection/throw/false shows a persistent
+    // localized failure note plus a readonly field holding the exact copy text.
+    var copiedTimer=null;
+    function resetCopyFeedback(){
+      copied.classList.remove("show");
+      failMsg.hidden = true;
+      manualBox.hidden = true;
+      manualField.value = "";
+      if(copiedTimer){ clearTimeout(copiedTimer); copiedTimer=null; }
+    }
+    function showCopySuccess(){
+      failMsg.hidden = true;
+      manualBox.hidden = true;
+      manualField.value = "";
+      copied.classList.add("show");
+      if(copiedTimer) clearTimeout(copiedTimer);
+      copiedTimer = setTimeout(function(){ copied.classList.remove("show"); }, 1600);
+    }
+    function showCopyFailure(line){
+      copied.classList.remove("show");
+      manualField.value = line;   // exact copyLine output for manual recovery
+      failMsg.hidden = false;     // persistent until the next copy attempt
+      manualBox.hidden = false;
+    }
+    function legacyCopy(line){
+      var ta=document.createElement("textarea");
+      ta.value=line;
+      ta.setAttribute("readonly","");
+      ta.style.position="fixed"; ta.style.left="-9999px";
+      document.body.appendChild(ta); ta.select();
+      var ok=false;
+      try{ ok = document.execCommand("copy") === true; }catch(e){ ok=false; }
+      document.body.removeChild(ta);
+      return ok;
+    }
     copyBtn.addEventListener("click", function(){
       var line=copyLine(); if(!line) return;
-      var done=function(){ copied.classList.add("show"); setTimeout(function(){copied.classList.remove("show");},1600); };
-      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(line).then(done,done); }
-      else { var ta=document.createElement("textarea"); ta.value=line; document.body.appendChild(ta); ta.select();
-        try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); done(); }
+      resetCopyFeedback();  // fresh state for this attempt
+      if(navigator.clipboard && typeof navigator.clipboard.writeText === "function"){
+        var p;
+        try{ p = navigator.clipboard.writeText(line); }
+        catch(e){ showCopyFailure(line); return; } // sync throw: no success, no retry
+        p.then(showCopySuccess, function(){ showCopyFailure(line); });
+        // no hidden retry: a rejected promise never falls through to execCommand
+      } else if(legacyCopy(line)){
+        showCopySuccess();
+      } else {
+        showCopyFailure(line);
+      }
+    });
+    // Manual selection is an explicit user action: focus/select only on click.
+    manualSelect.addEventListener("click", function(){
+      manualField.focus(); manualField.select();
     });
 
     ["v0","v1","years","cagr-rate","date-start","date-end"].forEach(function(id){
@@ -525,8 +586,8 @@
 
 <script>window.MM_API=window.MM_API||'https://app.mastermind-x.com';window.__mmAccountLoading=true;</script>
 <script src="../../supabase.js?v=8596965f" defer></script>
-<script src="../../account.js?v=2f1dd80e" defer></script>
-<script src="../../theme.js?v=80c7061d" defer></script>
+<script src="../../account.js?v=c1732806" defer></script>
+<script src="../../theme.js?v=2454e0ca" defer></script>
 
 <script>
 (function(){
@@ -650,7 +711,6 @@
 })();
 </script>
 
-<script src="../../onboard.js?v=ff5283ff" defer></script>
-<script defer data-whb data-root="../../" src="../../wh_banner.js?v=b1207f44"></script>
+<script src="../../onboard.js?v=258dd123" defer></script>
 </body>
 </html>

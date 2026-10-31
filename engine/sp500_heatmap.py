@@ -189,28 +189,59 @@ def daily_returns(closes: pd.DataFrame, asof: pd.Timestamp | None = None) -> dic
 
 
 def intraday_returns(bars: Mapping[str, pd.DataFrame]) -> dict[str, dict[str, float]]:
-    """Percent change over the last 1H/2H/4H from per-ticker hourly bars.
+    """Exact elapsed-time endpoint returns from timezone-aware source clocks.
 
-    ``bars`` maps ticker -> DataFrame with a ``close`` column ordered ascending
-    (e.g. ``data/intraday/<T>.parquet``). Sub-hourly windows require minute bars
-    and are intentionally not derived here (they stay null until a finer feed
-    exists). Empty / missing input simply yields no keys for that ticker.
+    A row is not a duration: missing hourly bars must not compress two hours (or
+    a weekend) into ``1H``; finer bars must not expand five minutes into an hour.
+    Every window requires an exact observed reference timestamp. No nearest-row,
+    forward-fill, timezone assumption, or rewind past a bad latest close is used.
+    Minute windows already in TIMEFRAMES become populated only when their actual
+    endpoints exist. The current hourly loader supplies no new minute data.
+
+    These are endpoint price changes, not evidence of an uninterrupted path,
+    completed bars, same-session trading, synchronized cross-symbol observations,
+    input freshness, or a point-in-time decision. Those remain source/consumer
+    responsibilities; bar-start timestamps are not recast as trade timestamps.
     """
+    windows = {'5M': 5, '10M': 10, '15M': 15, '30M': 30,
+               '1H': 60, '2H': 120, '4H': 240}
+
+    def positive_price(value) -> float | None:
+        if isinstance(value, (bool, np.bool_)):
+            return None
+        try:
+            result = float(value)
+        except (TypeError, ValueError, OverflowError):
+            return None
+        return result if np.isfinite(result) and result > 0 else None
+
     out: dict[str, dict[str, float]] = {}
-    steps = {"1H": 1, "2H": 2, "4H": 4}
     for tkr, df in (bars or {}).items():
-        if df is None or "close" not in getattr(df, "columns", []):
+        if not isinstance(df, pd.DataFrame) or 'close' not in df.columns:
             continue
-        c = df["close"].dropna()
-        if len(c) < 2:
+        idx = df.index
+        if (not isinstance(idx, pd.DatetimeIndex) or idx.tz is None
+                or idx.hasnans or not idx.is_unique or len(idx) < 2):
             continue
-        now = float(c.iloc[-1])
+        close = df['close']
+        if not isinstance(close, pd.Series):  # duplicate close columns
+            continue
+        close = close.sort_index()
+        current = positive_price(close.iloc[-1])
+        if current is None:
+            continue
+        endpoint = close.index[-1]
         perf: dict[str, float] = {}
-        for key, n in steps.items():
-            if len(c) > n:
-                v = _pct(now, float(c.iloc[-(n + 1)]))
-                if v is not None:
-                    perf[key] = v
+        for key, minutes in windows.items():
+            reference = endpoint - pd.Timedelta(minutes=minutes)
+            if reference not in close.index:
+                continue
+            previous = positive_price(close.loc[reference])
+            if previous is None:
+                continue
+            change = _pct(current, previous)
+            if change is not None and np.isfinite(change):
+                perf[key] = change
         if perf:
             out[tkr] = perf
     return out

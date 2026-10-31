@@ -6,7 +6,9 @@ driven by three planes, so the calendar merges them:
   • HK-native (Census & Statistics Dept / HKMA): HK CPI, GDP, retail sales, external
     trade, unemployment, the S&P Global HK PMI, and the HKMA base rate.
   • US (the peg + global risk): FOMC, US CPI, US payrolls (NFP). HK rates shadow the
-    Fed via the peg and HK trades at ~2x the Mainland's global beta.
+    Fed via the peg and HK trades at ~2x the Mainland's global beta. The US dates
+    are READ from engine.event_calendar (the canonical calendar) — like it, the US
+    rows are authoritative for CY2026 only.
   • China (HSI earnings are ~75% China-driven): the high-impact Mainland prints, re-
     exported from engine.china_event_calendar.
 
@@ -28,6 +30,11 @@ from datetime import date, timedelta
 from engine.china_event_calendar import (last_day_of_month, next_business_day_onward,
                                          nth_business_day, _months_in_window)
 from engine.china_event_calendar import high_impact_strip as _cn_high_impact
+
+# the canonical US calendar — the single owner of the FOMC / NFP / CPI schedules.
+# A MODULE import on purpose: attributes are read at call time so this desk always
+# emits the canonical dates (and a test monkeypatch of the canonical tables is seen).
+from engine import event_calendar as _canonical_calendar
 
 log = logging.getLogger(__name__)
 
@@ -65,21 +72,7 @@ _HK_SCHED_2026: dict[str, dict[int, int]] = {
     # HK unemployment (3-month rolling) — ~17th-19th.
     "HK_UNEMP": {1: 19, 2: 17, 3: 18, 4: 17, 5: 19, 6: 18,
                  7: 17, 8: 18, 9: 17, 10: 19, 11: 18, 12: 17},
-    # US CPI — ~mid-month (10th-13th).
-    "US_CPI": {1: 13, 2: 11, 3: 11, 4: 10, 5: 12, 6: 10,
-               7: 14, 8: 12, 9: 11, 10: 13, 11: 12, 12: 10},
 }
-# US FOMC 2026 decision days (the 2nd day of each two-day meeting).
-_FOMC_2026 = [date(2026, 1, 28), date(2026, 3, 18), date(2026, 4, 29), date(2026, 6, 17),
-              date(2026, 7, 29), date(2026, 9, 16), date(2026, 10, 28), date(2026, 12, 9)]
-
-
-def _first_friday(y: int, m: int) -> date:
-    """1st Friday of the month — the US non-farm payrolls release day."""
-    d = date(y, m, 1)
-    while d.weekday() != 4:    # 4 = Friday
-        d += timedelta(days=1)
-    return d
 
 
 def _regime_asof() -> date | None:
@@ -149,19 +142,23 @@ def hk_macro_events(asof: date | None = None, horizon_days: int = 14) -> list[di
         for d in _tabled(etype, today, end):
             out.append(_event(etype, d, today, source="static"))
 
-    # --- US drivers (peg + global risk) ------------------------------------- #
-    for fomc in _FOMC_2026:
-        if today <= fomc <= end:
-            out.append(_event("FOMC", fomc, today, source="static"))
-            hkma = next_business_day_onward(fomc + timedelta(days=1))   # HKMA adjusts next morning
-            if today <= hkma <= end:
-                out.append(_event("HKMA_RATE", hkma, today, source="static"))
-    for (y, m) in _months_in_window(today, end):
-        d = _first_friday(y, m)                     # US payrolls — 1st Friday
-        if today <= d <= end:
-            out.append(_event("US_NFP", d, today))
-    for d in _tabled("US_CPI", today, end):
-        out.append(_event("US_CPI", d, today, source="static"))
+    # --- US drivers (peg + global risk) — READ from the canonical calendar --- #
+    for fomc in _canonical_calendar.fomc_decision_dates(today, end):
+        out.append(_event("FOMC", fomc, today, source="static"))
+        hkma = next_business_day_onward(fomc + timedelta(days=1))   # HKMA adjusts next morning
+        if today <= hkma <= end:
+            out.append(_event("HKMA_RATE", hkma, today, source="static"))
+    # US payrolls + CPI: the canonical static schedule (never fetched here —
+    # use_fred=False; this module's contract is NO data fetch). Published dates,
+    # not the naive first-Friday rule; authoritative for CY2026 only, like it.
+    nfp_dates, nfp_src = _canonical_calendar._scheduled_release_dates(
+        "NFP", today, end, use_fred=False)
+    for d in nfp_dates:
+        out.append(_event("US_NFP", d, today, source=nfp_src))
+    cpi_dates, cpi_src = _canonical_calendar._scheduled_release_dates(
+        "CPI", today, end, use_fred=False)
+    for d in cpi_dates:
+        out.append(_event("US_CPI", d, today, source=cpi_src))
 
     # --- China high-impact prints that drive HSI (re-exported) -------------- #
     # Pass the RESOLVED HK as-of (not raw `asof`) so the re-exported CN events share

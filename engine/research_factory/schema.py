@@ -303,6 +303,8 @@ _MARKET_MEMORY_SPEC_SCHEMA = "research_factory.market_memory_candidate_spec.v1"
 _MARKET_MEMORY_RESERVED_STRING_PREFIXES = (
     "rf-market-memory-",
     "mmrfspec_",
+    "mmrfevidence_",
+    "mmrfbinding_",
     "mmtrial_",
 )
 _MARKET_MEMORY_RESERVED_STRING_VALUES = frozenset(
@@ -310,6 +312,8 @@ _MARKET_MEMORY_RESERVED_STRING_VALUES = frozenset(
         *_MARKET_MEMORY_TRIPLE,
         _MARKET_MEMORY_CONFORMANCE_SCHEMA,
         _MARKET_MEMORY_SPEC_SCHEMA,
+        "research_factory.market_memory_evidence_attachment.v1",
+        "market_memory.factory_contextual_binding.v1",
         "market_memory_w2a_preregistration",
         "market_memory_context_only",
         "w4_episodic_retrieval_join_deferred",
@@ -325,6 +329,8 @@ _MARKET_MEMORY_RESERVED_STRING_VALUES = frozenset(
 _MARKET_MEMORY_RESERVED_KEYS = frozenset(
     {
         "market_memory_conformance",
+        "contextual_retrieval_join",
+        "real_evidence_join",
         "trial_read_back",
         "w4_retrieval_join",
         "w5_operating_cortex_join",
@@ -807,6 +813,22 @@ def validate_candidate(row: dict) -> list[str]:
     if type(row) is not dict:
         return ["candidate: row must be an exact dict"]
 
+    from engine.research_factory.codegen_boundary import codegen_refusal
+
+    # Retain the existing exact-string diagnostics without invoking object hooks
+    # while checking reserved metadata below.
+    type_errors = [
+        f"candidate: {field} must be an exact string"
+        for field in ("source", "candidate_type", "domain")
+        if row.get(field) is not None and type(row[field]) is not str
+    ]
+    if type_errors:
+        return type_errors
+
+    refusal = codegen_refusal(row)
+    if refusal:
+        return [refusal]
+
     errs: list[str] = []
     label = f"candidate({row.get('candidate_id', '?')})"
 
@@ -1066,3 +1088,42 @@ def validate_health(row: dict) -> list[str]:
     _req(row, "as_of", errs, label)
 
     return errs
+
+
+def validate_market_memory_evidence_attachment(row: dict) -> list[str]:
+    """Structural evidence-only shape; source authentication stays with owner."""
+    fields = {"schema", "authority", "attached_at", "candidate", "trial_binding",
+              "contextual_retrieval_join", "real_evidence_join", "source_use",
+              "limitations", "lifecycle", "attachment_id"}
+    if type(row) is not dict or set(row) != fields:
+        return ["Market Memory evidence fields are not canonical"]
+    body = _market_memory_canonical_bytes(row)
+    if body is None or len(body) > 2 * 1024 * 1024:
+        return ["Market Memory evidence exceeds finite byte bound"]
+    errors = []
+    if row["schema"] != "research_factory.market_memory_evidence_attachment.v1" or row["authority"] != "display_only":
+        errors.append("Market Memory evidence schema/authority is invalid")
+    core = {k: v for k, v in row.items() if k != "attachment_id"}
+    if row["attachment_id"] != "mmrfevidence_" + hashlib.sha256(_market_memory_canonical_bytes(core)).hexdigest():
+        errors.append("Market Memory evidence identity mismatch")
+    if not _market_memory_real_canonical_utc(row["attached_at"]):
+        errors.append("Market Memory evidence attachment clock is invalid")
+    candidate = row["candidate"]
+    if type(candidate) is not dict:
+        errors.append("Market Memory original candidate is required")
+    else:
+        errors.extend(validate_candidate(candidate))
+        if candidate.get("source") != "market_memory" or candidate.get("status") != "proposed":
+            errors.append("Market Memory evidence requires proposed original candidate")
+    expected = {"projected_state": "proposed", "action": "no_action", "trial_accounting": "read_only",
+                "transition_allowed": False, "count_allowed": False, "challenge_completed": False,
+                "emission_enabled": False, "training_eligible": False, "promotion_eligible": False,
+                "action_authority": False, "W2C_timely_admission": False, "effective_n": "not_estimated"}
+    if not _market_memory_exact_json(row["lifecycle"], expected):
+        errors.append("Market Memory evidence cannot grant lifecycle or use authority")
+    for key in ("trial_binding", "contextual_retrieval_join", "real_evidence_join", "source_use"):
+        if type(row[key]) is not dict:
+            errors.append("Market Memory evidence requires exact join objects")
+    if type(row["limitations"]) is not list or not row["limitations"]:
+        errors.append("Market Memory evidence limitations are required")
+    return errors

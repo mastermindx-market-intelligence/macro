@@ -81,9 +81,8 @@ else:
         check=False,
     )
     assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == (
-        "UNKNOWN_RUNTIME_ROUTER_MOUNTED_PARSER_REJECTED"
-    )
+    # Serving startup may also announce that optional observability is disabled.
+    assert "UNKNOWN_RUNTIME_ROUTER_MOUNTED_PARSER_REJECTED" in result.stdout.splitlines()
 
 
 @pytest.fixture()
@@ -311,6 +310,10 @@ def test_routes_declare_always_on_site_full_and_production_mounts_them() -> None
         f"{PREFIX}/issuers/resolve",
         f"{PREFIX}/issuers/{{issuer_id}}",
         f"{PREFIX}/issuers/{{issuer_id}}/events",
+        f"{PREFIX}/issuers/{{issuer_id}}/state",
+        f"{PREFIX}/issuers/{{issuer_id}}/state/registration",
+        f"{PREFIX}/issuers/{{issuer_id}}/scenarios/evaluate",
+        f"{PREFIX}/issuers/{{issuer_id}}/evidence/{{manifest_id}}/{{span_id}}",
     }
     for route in api.router.routes:
         calls = {dependency.call for dependency in route.dependant.dependencies}
@@ -321,3 +324,23 @@ def test_routes_declare_always_on_site_full_and_production_mounts_them() -> None
     mounted = main_mod.app.openapi().get("paths", {})
     assert f"{PREFIX}/coverage" in mounted
     assert f"{PREFIX}/issuers/{{issuer_id}}/events" in mounted
+
+
+def test_u1_router_mount_probe_includes_state_routes() -> None:
+    """Gate 24: each U1a state route is entitled at declaration and mounted in production."""
+    state_paths = (
+        f"{PREFIX}/issuers/{{issuer_id}}/state",
+        f"{PREFIX}/issuers/{{issuer_id}}/state/registration",
+        f"{PREFIX}/issuers/{{issuer_id}}/evidence/{{manifest_id}}/{{span_id}}",
+    )
+    by_path = {route.path: route for route in api.router.routes}
+    assert set(state_paths) <= set(by_path)
+    for state_path in state_paths:
+        calls = {dependency.call for dependency in by_path[state_path].dependant.dependencies}
+        assert api.require_site_full_user in calls, state_path
+
+    import app.main as main_mod
+
+    mounted = main_mod.app.openapi().get("paths", {})
+    for state_path in state_paths:
+        assert state_path in mounted, state_path

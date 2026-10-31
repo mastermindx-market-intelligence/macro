@@ -309,8 +309,8 @@ def rate_path() -> dict | None:
     """Fed rate-path chip: ZQ-implied 12m cuts/hikes in basis points.
 
     Source: rate_futures/zq_path (m12 column) and fred/DFF (policy rate).
-    implied_bp_12m = (zq_m12 − DFF) * 100.  Positive = cuts priced,
-    negative = hikes priced.  State as of 07-10 reads 'hikes_priced';
+    implied_bp_12m = (zq_m12 − DFF) * 100.  Positive = hikes priced,
+    negative = cuts priced.  State as of 07-10 reads 'hikes_priced';
     that honesty is the point.
     """
     try:

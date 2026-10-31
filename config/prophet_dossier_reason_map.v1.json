@@ -1,0 +1,141 @@
+{
+  "schema": "prophet.dossier_reason_map/v1",
+  "display_codes": [
+    "IDENTITY_BINDING_CONFLICT",
+    "IDENTITY_UNRESOLVED",
+    "RIGHTS_NOT_A_SOURCE",
+    "RIGHTS_INTERNAL_ONLY",
+    "RIGHTS_UNDETERMINED",
+    "SOURCE_TEMPORARILY_UNAVAILABLE",
+    "SOURCE_UNAVAILABLE",
+    "CONFLICTING_SOURCE_SPANS",
+    "CONFLICTING_SOURCE_CLOCKS",
+    "NOT_PUBLISHED_AT_DECISION",
+    "NOT_CAPTURED_AT_DECISION",
+    "NOT_AVAILABLE_AT_DECISION",
+    "HISTORICAL_EVENT_SET_UNAVAILABLE",
+    "EXACT_LINEAGE_UNAVAILABLE",
+    "STALE",
+    "NOT_APPLICABLE",
+    "UNKNOWN"
+  ],
+  "annotation_codes": [
+    "CORRECTED_LATER"
+  ],
+  "sentences": {
+    "IDENTITY_BINDING_CONFLICT": {
+      "en": "The evidence does not all point to the same company.",
+      "zh": "这些证据并非全部指向同一家公司。"
+    },
+    "RIGHTS_NOT_A_SOURCE": {
+      "en": "This source cannot be used for this product fact.",
+      "zh": "这个来源不能用于这项产品事实。"
+    },
+    "RIGHTS_INTERNAL_ONLY": {
+      "en": "We can use this source internally, but cannot show this fact.",
+      "zh": "这个来源只能内部使用，不能向你展示这条事实。"
+    },
+    "SOURCE_TEMPORARILY_UNAVAILABLE": {
+      "en": "We could not access this source when this view was built.",
+      "zh": "构建此视图时，我们无法访问该来源。"
+    },
+    "CONFLICTING_SOURCE_SPANS": {
+      "en": "Two copies of this source disagree about which period they cover, so we do not show either.",
+      "zh": "这个来源的两份内容对所覆盖的时间段不一致，因此我们不展示其中任何一份。"
+    },
+    "CONFLICTING_SOURCE_CLOCKS": {
+      "en": "The source versions disagree about which version came first.",
+      "zh": "来源版本对先后顺序存在冲突。"
+    },
+    "NOT_PUBLISHED_AT_DECISION": {
+      "en": "This information was not yet public at the decision time.",
+      "zh": "这条信息在决策时还没有公开。"
+    },
+    "NOT_CAPTURED_AT_DECISION": {
+      "en": "This information was published before the decision, but we did not capture it until later.",
+      "zh": "这条信息在决策前已经发布，但我们直到稍后才取得它。"
+    },
+    "HISTORICAL_EVENT_SET_UNAVAILABLE": {
+      "en": "We cannot reconstruct the full event list that existed at that time.",
+      "zh": "我们无法重建当时存在的完整事件列表。"
+    },
+    "EXACT_LINEAGE_UNAVAILABLE": {
+      "en": "The source exists, but we cannot point to the exact field used.",
+      "zh": "来源存在，但我们无法指出所用的确切字段。"
+    },
+    "UNKNOWN": {
+      "en": "The available evidence does not establish a usable fact for this view.",
+      "zh": "现有证据不足以为此视图确定可用事实。"
+    },
+    "CORRECTED_LATER": {
+      "en": "A later version changed this information after the original decision.",
+      "zh": "在原始决策之后，新版本更改了这条信息。"
+    },
+    "IDENTITY_UNRESOLVED": {
+      "en": "We cannot establish which company this evidence belongs to.",
+      "zh": "我们无法确定这项证据属于哪家公司。"
+    },
+    "RIGHTS_UNDETERMINED": {
+      "en": "Permission to use or show this source has not been established.",
+      "zh": "使用或展示该来源的权限尚未确定。"
+    },
+    "SOURCE_UNAVAILABLE": {
+      "en": "This source is unavailable for this view.",
+      "zh": "此视图没有可用的该来源信息。"
+    },
+    "NOT_AVAILABLE_AT_DECISION": {
+      "en": "This information was not available to this view at the decision time.",
+      "zh": "在决策时，这项信息尚未可供此视图使用。"
+    },
+    "STALE": {
+      "en": "This evidence is too old for this view.",
+      "zh": "这项证据对这个视图而言已过时。"
+    },
+    "NOT_APPLICABLE": {
+      "en": "This evidence does not apply to this view.",
+      "zh": "这项证据不适用于此视图。"
+    }
+  },
+  "map": [
+    {"coverage_basis": "canonical_identity_ambiguous", "reason_id": "CONFLICTED", "lane": null, "code": "IDENTITY_BINDING_CONFLICT"},
+    {"coverage_basis": null, "reason_id": "canonical_identity_ambiguous", "lane": null, "code": "IDENTITY_BINDING_CONFLICT"},
+    {"coverage_basis": null, "reason_id": "canonical_identity_unresolved", "lane": null, "code": "IDENTITY_UNRESOLVED"},
+    {"coverage_basis": null, "reason_id": "current_manifest_integrity_failure", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": "canonical_identity_unresolved", "reason_id": "IDENTITY_UNRESOLVED", "lane": null, "code": "IDENTITY_UNRESOLVED"},
+    {"coverage_basis": null, "reason_id": "current_event_not_published", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": "current_manifest_integrity_failure", "reason_id": "UNESTIMABLE", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": "current_manifest_integrity_failure", "reason_id": "CORRECTION_PENDING", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": null, "reason_id": "correction_chain_integrity", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": "correction_chain_integrity", "reason_id": "UNESTIMABLE", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": "correction_chain_integrity", "reason_id": "CORRECTION_PENDING", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": "source_fetch_failed", "reason_id": "SOURCE_UNAVAILABLE", "lane": null, "code": "SOURCE_TEMPORARILY_UNAVAILABLE"},
+    {"coverage_basis": null, "reason_id": "source_fetch_failed", "lane": null, "code": "SOURCE_TEMPORARILY_UNAVAILABLE"},
+    {"coverage_basis": "no_current_generation_event", "reason_id": "NOT_COVERED", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": "no_verified_revisions", "reason_id": "NOT_COVERED", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": "missing_decision_clock", "reason_id": "UNKNOWN", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": null, "reason_id": "missing_decision_clock", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": "unresolved_clock_tie", "reason_id": "CONFLICTED", "lane": null, "code": "CONFLICTING_SOURCE_CLOCKS"},
+    {"coverage_basis": "conflicting_source_spans", "reason_id": "CONFLICTING_SOURCE_SPANS", "lane": null, "code": "CONFLICTING_SOURCE_SPANS"},
+    {"coverage_basis": "not_evaluated", "reason_id": "UNKNOWN", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": "exact_source_lineage_unavailable", "reason_id": "UNKNOWN", "lane": null, "code": "EXACT_LINEAGE_UNAVAILABLE"},
+    {"coverage_basis": "verified_revision_chain", "reason_id": "NOT_CAPTURED_AT_DECISION", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": "verified_revision_chain", "reason_id": "NOT_PUBLISHED_AT_DECISION", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": null, "reason_id": "not_available", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": null, "reason_id": "consensus_unlicensed", "lane": null, "code": "RIGHTS_NOT_A_SOURCE"},
+    {"coverage_basis": null, "reason_id": "no_span_addressable_evidence", "lane": null, "code": "EXACT_LINEAGE_UNAVAILABLE"},
+    {"coverage_basis": null, "reason_id": "missing_source", "lane": null, "code": "SOURCE_UNAVAILABLE"},
+    {"coverage_basis": null, "reason_id": "no_transcript", "lane": null, "code": "SOURCE_UNAVAILABLE"},
+    {"coverage_basis": null, "reason_id": "not_applicable", "lane": null, "code": "NOT_APPLICABLE"},
+    {"coverage_basis": null, "reason_id": "unknown", "lane": null, "code": "UNKNOWN"},
+    {"coverage_basis": null, "reason_id": "STALE", "lane": null, "code": "STALE"},
+    {"coverage_basis": null, "reason_id": "NOT_APPLICABLE", "lane": null, "code": "NOT_APPLICABLE"},
+    {"coverage_basis": "verified_revision_chain", "reason_id": "NOT_AVAILABLE_AT_DECISION", "lane": null, "code": "UNKNOWN"}
+  ],
+  "wrapper_overrides": [
+    {"condition": "view is original; successful and sufficiently complete existing-owner event-set read establishes no source-dated point-in-time row is available to reconstruct the requested event-set population at the cut; neither current-only event absence, missing revisions, failed/incomplete read, missing clock nor a later-created pre-inception event set suffices", "code": "HISTORICAL_EVENT_SET_UNAVAILABLE"},
+    {"condition": "all required clocks source_available_at, observed_at, generated_at and cut parse and satisfy existing owner clock contracts; source_available_at > cut", "code": "NOT_PUBLISHED_AT_DECISION"},
+    {"condition": "all required clocks source_available_at, observed_at, generated_at and cut parse and satisfy existing owner clock contracts; source_available_at <= cut; observed_at > cut; source owner explicitly attests observed_at as capture", "code": "NOT_CAPTURED_AT_DECISION"},
+    {"condition": "all required clocks source_available_at, observed_at, generated_at and cut parse and satisfy existing owner clock contracts; source_available_at <= cut; observed_at > cut or generated_at > cut; no attested observed_at capture after cut", "code": "NOT_AVAILABLE_AT_DECISION"},
+    {"condition": "present original value with explicit owner correction lineage and versioned comparable-field comparison proving changed meaning/value", "code": null, "annotation": "CORRECTED_LATER"}
+  ]
+}

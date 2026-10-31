@@ -1,0 +1,12 @@
+{
+  "started_at": "2026-10-20T18:19:12.188200+00:00",
+  "remote_source_bytes": 2562,
+  "remote_source_sha256": "555ba4d653a1b88ab7c9e1e64fc7e5a24195ca57eac32b05a69621e6cdb0a5e8",
+  "operation": "Read-only loaded beta unit; no service or installer operation",
+  "state": "COMPLETE_READ",
+  "exit": 0,
+  "stdout_bytes": 5820,
+  "stdout_sha256": "61b01950085e4599b767daf0d3a34f01bef91bd87f0bc417056344a7116a23e8",
+  "stderr_bytes": 0,
+  "finished_at": "2026-10-20T18:19:13.046268+00:00"
+}

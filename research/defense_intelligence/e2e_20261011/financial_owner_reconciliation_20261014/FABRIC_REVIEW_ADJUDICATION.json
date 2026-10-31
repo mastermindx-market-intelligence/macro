@@ -1,0 +1,20 @@
+{
+  "review_scope": "Independent algorithm critique; worker had packet only and made no artifact access claim",
+  "run_id": "defense-financial-reconcile-review-01a13857",
+  "result_sha256": "63155a8ef68e1fd50e8c09904f6e1d01918f7fe0952dc75dcb38a61dc0c987ef",
+  "accepted_findings": [
+    "Compare against original remote payload and original private defense payload, not self",
+    "Pin every fact identity and its source/span/clock, not counts alone",
+    "Validate all receipt lengths/hashes, all aliases and explicit conflict failure",
+    "Keep root sole modifying writer and fresh qualified ETag at publication",
+    "Do not replay already completed operation"
+  ],
+  "implemented": "reconcile_owner.py compares exact remote/private payloads excluding only generation_id/generated_at, alias union conflict assertion, incumbent validates receipt length/hash/schema, all10 additional declared-length gate and enumerated fact/source/clock artifact",
+  "not_adopted": [
+    "Requirement to fresh-read 10 incumbent events before initial CAS is inapplicable: current remote contains 5; preserve all5 and locally reviewed additional5, then require10 after CAS",
+    "Reentrancy does not invent a no-op generation: immutable external output refuses exists and expected5 additions; no rerun",
+    "No new Apple acquisition: preserve authoritative current incumbent payload and existing read/receipt validation; independent acquisition is outside commission",
+    "Generation time is existing assembler max native observation clocks, not arbitrary wall-clock restamping"
+  ],
+  "remaining": "Root source/release qualification; immediately fresh complete5 predecessor read and preserve, same-origin CAS then complete10 readback; no publication by child"
+}

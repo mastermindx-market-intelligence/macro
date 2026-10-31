@@ -1,0 +1,56 @@
+{
+  "schema": "risk_radar.evidence_archive_import_validation.v1",
+  "status": "COMPLETED",
+  "started_at_utc": "2026-10-18T09:28:04.477105+00:00",
+  "source_head": "f11fa0c66273ca1976f37e2f529fe9ff689ee439",
+  "source_status": "WORKTREE_CANDIDATE",
+  "source_sha256": {
+    "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ARCHIVE_PATH_MAP_2026-10-18.json": "5e20da1b8683e87d0e8981b257633345a9e1319f5c620b498a52400476595412",
+    "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/README.md": "50ebfefd6c7feb917b68b85c9b62f14a46adb12018f20e5cc58e46bba119cdee",
+    "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/CI_FAILURE_AND_ARCHIVE_PACKAGING_2026-10-18.md": "4d151f6c468a822d644ceed5298b4b13a16267d01cf662da5ba1e6de60b9d3f1",
+    "tests/test_first_party_import_names.py": "799f2eb683ded3248a7e01f1db7d9308e22aae755dfb539c8d37969175f7105f",
+    "tests/conftest.py": "ad0b342a4303b5dc098d203530e8e8a83d4b5c3cbc38730309448cac14570425"
+  },
+  "archive_count": 25,
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "-rA",
+    "--basetemp=/tmp/rr-evidence-archive-import-20261018-pytest",
+    "--junitxml=/tmp/rr-evidence-archive-import-native-20261018.xml",
+    "tests/test_first_party_import_names.py"
+  ],
+  "fuses": {
+    "CODEX_PROVIDER_ENABLED": "0",
+    "BOT_TEST_LIVE_LLM": "0",
+    "MASTERMIND_RESEARCH_LLM": "0",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "MM_DATA_GUARD": "on",
+    "MM_MODULE_GUARD": "on"
+  },
+  "production_deploy": false,
+  "model_execution": false,
+  "completed_at_utc": "2026-10-18T09:29:10.750767+00:00",
+  "elapsed_seconds": 66.274,
+  "exit_code": 0,
+  "log_path": "/tmp/rr-evidence-archive-import-native-20261018.log",
+  "log_bytes": 1961,
+  "log_sha256": "639dcdcd9b4fdfc0249796d57540ab6dc221422a38e1ada02c78f58d2e0885cb",
+  "post_source_hashes_match": true,
+  "junit_sha256": "11bb505a5984cf7cdfcec14fdbd3cb87fad05d284950b467de11644764aa0eb5",
+  "counts": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "15",
+      "time": "65.203",
+      "timestamp": "2026-10-18T02:28:04.700453-07:00",
+      "hostname": "m2studio"
+    }
+  ],
+  "post_data_site_git_status": ""
+}

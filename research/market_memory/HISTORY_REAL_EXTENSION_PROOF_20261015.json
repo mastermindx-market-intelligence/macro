@@ -1,0 +1,89 @@
+{
+  "actual_installed_consumers": [
+    {
+      "date": "2022-09-13",
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7",
+      "opened_outcomes": false,
+      "response_sha256": "2e98b4eddb6d89d0d43211aab4b059b5056c00952bb16e06094bd425f82f2856",
+      "rows": 25,
+      "seconds": 1.935,
+      "status": "OBSERVED"
+    },
+    {
+      "date": "2026-10-12",
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7",
+      "opened_outcomes": false,
+      "response_sha256": "4104f49dc305a19d8e89bb38f015ef1c718cf146f899917596da99b4ea625785",
+      "rows": 25,
+      "seconds": 0.982,
+      "status": "OBSERVED"
+    },
+    {
+      "date": "2026-10-13",
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7",
+      "opened_outcomes": false,
+      "response_sha256": "e87eda1aea268c1664507ae31786ca9fbe66e54fe8defb1ad308f715d28c898a",
+      "rows": 25,
+      "seconds": 1.005,
+      "status": "OBSERVED"
+    },
+    {
+      "date": "2026-10-14",
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7",
+      "opened_outcomes": false,
+      "response_sha256": "63aa20f70d73d76b92a9f8c9f4e4e53cd4ec6048241a63baada2f2f8f4c15207",
+      "rows": 25,
+      "seconds": 0.983,
+      "status": "OBSERVED"
+    },
+    {
+      "date": "2026-10-15",
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7",
+      "opened_outcomes": false,
+      "response_sha256": "91c0831cfdbe26c06d75275fd1bb964565194a8b96a45a9fc07fa9795bcc3abb",
+      "rows": 0,
+      "seconds": 0.934,
+      "status": "NO_OBSERVATION"
+    }
+  ],
+  "collection": {
+    "attempted": 25,
+    "bytes": 22723,
+    "errors": [],
+    "failed": 0,
+    "new": 25,
+    "ok": 25,
+    "row_hints": 100
+  },
+  "extension": {
+    "added_state_rows": 75,
+    "artifact_id": "mmhist_ab923b168e25b1f2ea3d71c71d5768e2726f98fa1b1592b87eceac5b34678df1",
+    "data_bytes": 22622912,
+    "files": 68,
+    "first_added_observed_date": "2026-10-12",
+    "last_observed_date": "2026-10-14",
+    "manifest_bytes": 55009,
+    "manifest_sha256": "a87654c54470d604640aa3ee3ed66b43fb4df18132c6f01a64d64a6e3c9984b7",
+    "mode": "RETROSPECTIVE_EXPLORATORY",
+    "outcome_rows": 153055,
+    "outcomes_policy": "separate_new_generation; original_outcome_files_not_read_or_changed",
+    "output_created": true,
+    "parent_artifact_id": "mmhist_d5dda673985e622a889896e686e2f216a17d09757fb7ee5556c7a56a427ca966",
+    "parent_last_observed_date": "2026-10-09",
+    "parent_manifest_sha256": "31f61ea6dc152265d3e9ed2d955068e8d914b1f82b990804ad5efb0b68b5ecd0",
+    "parent_states_sha256": "34f9431b3e13edfe55468b57a5dbba86181adc7f43682a718f33eeff458b23fa",
+    "pit_backtest_eligible": false,
+    "preserved_state_rows": 152980,
+    "schema": "market_memory.history_extension.v1",
+    "state_rows": 153055,
+    "status": "EXTENDED"
+  },
+  "macro_refreshed": false,
+  "new_recurring_job_created": false,
+  "new_source_module_sha256": "49c1e5bde4fd6a61b757ded927134bf2395bae537ed55001b45ac76206d4b8fa",
+  "original_parent_manifest_and_all_68_files_unchanged": true,
+  "persistent_scheduling_hold_preserved": true,
+  "schema": "market_memory.history_real_extension_proof.v1",
+  "source_code_release_state": "candidate; output v2 consumed by already accepted installed reader",
+  "stock_cohort_refreshed": false
+}

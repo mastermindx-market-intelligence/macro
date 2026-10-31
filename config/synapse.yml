@@ -10913,6 +10913,34 @@ artifacts:
       Ingest: scripts/causal_ingest_brainstorm.py (default dry-run; --write
       commits). NO scoring, ranking, or alert surfaces at any time.
 
+  causal-filing-budget:
+    path: data/neuralweb/causal_filing_budget.jsonl
+    format: jsonl
+    producer: scripts/causal_ingest_brainstorm.py
+    known_extra_writers: []
+    owner_program: causal-hypothesis-factory
+    cadence: on-demand
+    storage: git
+    asof_field: ts
+    freshness_sla_hours: null
+    schema: implicit
+    tier: infrastructure
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers:
+      - scripts/run_causal_brainstorm.py
+    external_consumers: []
+    notes: >
+      CHF-R8 / M3 durable ISO-week filing budget: one row
+      {ts, kind=filing_budget, family=causal_scan, filing_week, mechanism_id}
+      per card filed by causal_ingest_brainstorm --write, so deleting
+      causal_mechanisms.jsonl cannot reset the <=3 cards/week budget.
+      Moved out of data/trial_ledger.jsonl, which only engine/trial_ledger.py
+      TrialLedger may append to under its owner flock; legacy filing_budget
+      rows already in the trial ledger are still counted read-only.
+      Bookkeeping only; not a signal, never ranks, gates or sizes.
+
   # --- PR-A3: Operator-tape outcome resolution ---
   oracle-operator-tape-outcomes:
     path: data/oracle/operator_tape_outcomes.jsonl
@@ -18248,6 +18276,12 @@ artifacts:
       namespace, while the compact provenance ledger is git-retained. Filing metadata
       records legacy/modern/EFFECT XML file-number provenance and each new bundle
       retains EX-1 underwriting and EX-FILING FEES children when present.
+      Sharded byte-exactly since 2026-10-13 (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY):
+      this path is part 1 and is never rewritten once sealed; continuation parts
+      source_manifest.part-NNNN.jsonl (contiguous from 0002, each under GitHub's
+      100 MiB blob limit) hold later rows, and the logical ledger is the ordered
+      byte concatenation read by engine.capital_structure.source_ledger_io. The
+      daily.yml handoff receipt and the push fence judge that logical stream.
 
   capital-structure-companyfacts-source-manifest:
     path: data/capital_structure/companyfacts/generations/*/source_manifest.parquet

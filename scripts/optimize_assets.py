@@ -49,7 +49,8 @@ from typing import Dict, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from lib.pages import css_imports, optimize_assets_text, preload_css_text, write_page  # noqa: E402
+from lib.pages import css_imports, dbase_prefix, optimize_assets_text, preload_css_text, write_page  # noqa: E402
+from lib.shared_shell import copy_shared_shell_asset, inject_shared_shell_text  # noqa: E402
 
 log = logging.getLogger("optimize_assets")
 
@@ -147,6 +148,11 @@ def optimize(site_dir: Path) -> int:
     if not site_dir.is_dir():
         return 0
     root = site_dir.resolve()
+    try:
+        copy_shared_shell_asset(root)
+    except OSError as error:
+        log.error("Shared Shell asset could not be published: %s", error)
+        return -1
     optimized = make_optimizer(root)
 
     n = 0
@@ -179,7 +185,9 @@ def optimize(site_dir: Path) -> int:
         except Exception:  # noqa: BLE001
             continue
         try:
-            new = optimized(text, root)   # refs resolve from site/, where the page ships
+            new = inject_shared_shell_text(text, dbase_prefix(site_copy), site_dir=root,
+                                           response_kind="coming_soon" if site_copy.name == "coming-soon.html" else "content")
+            new = optimized(new, root)   # refs resolve from site/, where the page ships
         except Exception as e:  # noqa: BLE001
             log.warning("optimize failed for templates/%s (%s)", tpl.name, e)
             continue
@@ -202,7 +210,9 @@ def optimize(site_dir: Path) -> int:
         except Exception:  # noqa: BLE001
             continue
         try:
-            new = optimized(text, html.parent)
+            new = inject_shared_shell_text(text, dbase_prefix(html), site_dir=root,
+                                           response_kind="coming_soon" if html.name == "coming-soon.html" else "content")
+            new = optimized(new, html.parent)
         except Exception as e:  # noqa: BLE001
             log.warning("optimize failed for %s (%s)", html.name, e)
             continue

@@ -2,7 +2,7 @@
   "asset": "BTC-USD",
   "authority": "research_only_no_promotion",
   "caveat": "Single frozen asset/horizon comparison; no multiple-testing claim and no trading authority.",
-  "data_version": "glt_data:361611bc7ba7fb7e",
+  "data_version": "glt_data:a948e779d83d6c92",
   "factors": {
     "monetary_impulse": {
       "folds": [
@@ -71,18 +71,18 @@
         },
         {
           "purge_weeks": 4,
-          "test_end": "2026-08-07",
-          "test_n": 45,
+          "test_end": "2026-09-18",
+          "test_n": 51,
           "test_start": "2025-10-03",
           "train_end": "2025-08-29",
           "train_n": 572,
           "train_start": "2014-09-19"
         }
       ],
-      "oos_correlation": -0.0307,
-      "oos_directional_accuracy": 0.5379,
-      "oos_mse": 0.03381136,
-      "oos_n": 409
+      "oos_correlation": -0.0314,
+      "oos_directional_accuracy": 0.5446,
+      "oos_mse": 0.03337924,
+      "oos_n": 415
     },
     "monetary_stance": {
       "folds": [
@@ -151,18 +151,18 @@
         },
         {
           "purge_weeks": 4,
-          "test_end": "2026-08-07",
-          "test_n": 45,
+          "test_end": "2026-09-18",
+          "test_n": 51,
           "test_start": "2025-10-03",
           "train_end": "2025-08-29",
           "train_n": 572,
           "train_start": "2014-09-19"
         }
       ],
-      "oos_correlation": 0.0629,
-      "oos_directional_accuracy": 0.4939,
-      "oos_mse": 0.03506533,
-      "oos_n": 409
+      "oos_correlation": 0.0606,
+      "oos_directional_accuracy": 0.4867,
+      "oos_mse": 0.0346783,
+      "oos_n": 415
     },
     "orthogonalised_impulse": {
       "folds": [
@@ -231,28 +231,28 @@
         },
         {
           "purge_weeks": 4,
-          "test_end": "2026-08-07",
-          "test_n": 45,
+          "test_end": "2026-09-18",
+          "test_n": 51,
           "test_start": "2025-10-03",
           "train_end": "2025-08-29",
           "train_n": 572,
           "train_start": "2014-09-19"
         }
       ],
-      "oos_correlation": -0.1752,
-      "oos_directional_accuracy": 0.5379,
-      "oos_mse": 0.03404019,
-      "oos_n": 409
+      "oos_correlation": -0.1763,
+      "oos_directional_accuracy": 0.5446,
+      "oos_mse": 0.03360206,
+      "oos_n": 415
     }
   },
   "frequency": "W-FRI",
-  "generated_at": "2026-09-04T11:03:41.497178+00:00",
-  "history_cutoff": "2026-08-28",
+  "generated_at": "2026-10-16T18:16:51.754201+00:00",
+  "history_cutoff": "2026-10-09",
   "initial_train_weeks": 208,
   "model_version": "glt_state.v1",
   "purge_weeks": 4,
   "schema": "global_liquidity_transmission.factor_comparison.v1",
-  "source_snapshot_hash": "361611bc7ba7fb7e46dcdef9aaf13b4ea1b0bd4cefc0949a210c4d9d88bb0002",
+  "source_snapshot_hash": "a948e779d83d6c92a08d11ce1e0391aa619616a17bfe7e72a636992213e4f6c9",
   "target": "forward_4w_log_return",
   "test_weeks": 52
 }

@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-10-14 04:54 UTC",
+  "decision": "Deliver the already-reviewed source and validator/writer scope; defer optional unreviewed historical issuer context.",
+  "reason": "Issuer arithmetic supplies no first-party credit and is not necessary for the accepted DOJ source contract. Its review launch failed before execution. Keep that failure and prototype recoverable without making it a release prerequisite.",
+  "reviewed_source_commit": "70d9b7e08337",
+  "deferred_source_commit": "1989dd890273164b728e462a49121fe74a0bf3c1",
+  "archive_patch": "../issuer_context/deferred_issuer_context.patch",
+  "archive_sha256": "6911268ab053a44178a94a23a92643028cdc147736ddbf72c02d346066533426",
+  "source_and_tests_match_review_exactly": true,
+  "sole_additional_ci_change": "beautifulsoup4 in existing Press job minimal deps; already declared runtime dependency",
+  "tests": "335 passed, 1 existing sparse-site skip in 22.03s",
+  "portable_control_groups": 15,
+  "bad_hash_refusal_passed": true,
+  "source_manifest_files": 24,
+  "reviewed_ui_pages_unchanged": 3,
+  "independent_review_retried": false,
+  "provider_calls": 0,
+  "publication_approved": false,
+  "d14_credit": 0
+}

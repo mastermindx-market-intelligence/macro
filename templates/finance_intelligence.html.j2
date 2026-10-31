@@ -89,7 +89,7 @@
       <span class="l-zh">从盈利到分化的链路已在上方标签中写明。</span>
     </p>
 
-    <ul class="fi-falsifiers" role="list" data-fi-mount="falsifiers" data-aria-en="What we are watching" data-aria-zh="我们正在观察"></ul>
+    <ul class="fi-falsifiers" role="list" data-fi-mount="falsifiers" data-aria-en="What we are watching" data-aria-zh="我们正在观察">{% include "_finance_watching.html.j2" %}</ul>
 
     <div class="fi-conflicts" data-fi-mount="conflicts">
       <h3 id="fi-conflicts-title" class="fi-conflicts-title">
@@ -187,6 +187,27 @@
       </summary>
       <ul class="fi-exposure-cards" data-fi-mount="exposure-cards-list"></ul>
     </details>
+{# ── FINANCE W10-FIN-2 · hint roster with record-id citations ─────────────
+   The eleven R12 preflight witness symbols, shown while the read-model
+   route stays unwired. Rows come from the builder passing
+   hint_rows=shell_hint_rows(); record ids are copied verbatim from
+   hint_binding(symbol)["record_id"] (BNY keeps fin-research-bk-2025; BK
+   is not a symbol). Each row is a RESEARCH_HINT_UNVALIDATED citation:
+   the chip reuses the page's existing identity-chip class and copy
+   (finance_intelligence.js:239) and the same data-state-identity
+   attribute the table painter writes (finance_intelligence.js:1228).
+   No stock route, no href, no IDENTITY_VALIDATED, no fetch — this ul has
+   no data-fi-mount, so the hydration painter never wipes it. Without the
+   bridge context the loop renders nothing, as before this wave.          #}
+    <ul class="fi-hint-roster" role="list" data-aria-en="Research hint, not validated" data-aria-zh="研究线索，尚未确认">
+      {% for row in hint_rows | default([]) %}
+      <li class="fi-hint-row" data-state-identity="{{ row.state }}" data-record-id="{{ row.record_id }}">
+        <span class="fi-hint-symbol">{{ row.symbol }}</span>
+        <span class="fi-chip fi-identity-chip" data-identity="{{ row.state }}" data-state-marker="{{ row.state }}"><span class="l-en">Research hint, not validated</span><span class="l-zh">研究线索，尚未确认</span></span>
+        <span class="fi-hint-record">{{ row.record_id }}</span>
+      </li>
+      {% endfor %}
+    </ul>
   </section>
 
   <section id="macro-matrix" class="fi-section fi-panel fi-macro" aria-labelledby="fi-macro-title" data-fi-mount="macro-matrix">

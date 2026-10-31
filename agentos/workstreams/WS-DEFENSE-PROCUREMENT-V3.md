@@ -2,16 +2,15 @@
 key: DEFENSE-PROCUREMENT-V3
 title: Defense Procurement & Industrial Base Intelligence OS V3
 objective: >
-  Freeze a financial-alpha defense architecture, then implement it as bounded
-  waves D0R through D20 over the existing Government Revenue substrate. Done for
-  D0R = current-state truth, driver taxonomy, historical casebook method,
-  source/rights/PIT registry, graph/contract freeze, golden universe, real-data
-  experience architecture, and exact D1-D4 handoffs exist; no production mutation.
-status: awaiting_review
+  Complete the commissioned Defense Procurement V3 / Government Revenue investor
+  product through source integrity, economics, six themes, research dispositions,
+  saved workflows and independent entitled production acceptance. Follow the
+  2026-10-11 thirty-task / forty-five-case contract and preserve accepted history.
+status: active
 program: government-revenue-foresight
 repos: [macro, terminal, mastermind]
 owner: coo-fable
-class: research
+class: build
 blast_radius: user_facing
 ambiguity: specified
 owns_paths:
@@ -452,24 +451,41 @@ discoveries:
   - DSC:GOVREV-CANDIDATE-RADAR-STAYS-LOCKED-AFTER-SITE-FULL-200
   - DSC:GOVREV-AGENCY-STRINGIFY-IS-COLLECTOR-THEN-ACTION-OMIT
 next_action: >
-  D6-B is SOL ACCEPTED / PROVEN_LIVE (2026-08-26; Macro PR #6480 comment
-  5432443653). WS:DEFENSE-PROCUREMENT-V3 is PARKED at the accepted D6-B
-  authorization boundary. Exact next action: no defense mutation until an
-  explicit Chairman/Sol commission names the next bounded wave; before any
-  such commission is executed, re-pin the protected Sol Skillpack and current
-  repository state and reconcile collisions. D6-C+, D7+, GAO, DOT&E, IG and
-  every later defense rail remain UNAUTHORIZED. D5 remains CLOSED FOR PROGRAM
-  SEQUENCING but capability state BUILT_NOT_PROVEN: the entitled D5P browser
-  journey is deferred/nonblocking, not silently satisfied by D6-B proof.
-  Nonblocking D6-B reliability debt remains visible in the Sol acceptance
-  handoff: 391-byte page-fence headroom, fms-acquire commit-back retry design,
-  staged-State/freshness cadence, the pre-existing premium.enforced_early
-  configuration gap, and validator/dependency maintenance. None authorizes a
-  duplicate retry/publication/event/source plane or a product expansion.
-  Publisher-vintage alarm and fixture-freezing the D2/D3 law suites out of
-  the unrun-government-revenue holding pen remain separate follow-ups — do
-  not fold them into the D5R close.
+  Continue the explicit October 12 Chairman commission through original PR7175
+  and sole implementation carrier PR9066. Integrate accepted source and product
+  changes, seal one coherent publisher generation, qualify protected release,
+  verify installed entitled journeys and adjudicate remaining included cases.
+  Preserve Terminal PR778 custody, unsettled Fabric effects and actual source,
+  review and release gates. The current checkpoint is
+  agentos/handoffs/DEFENSE-PROCUREMENT-V3-2026-10-13-e2e-recovery.md.
+  Do not redo D6-C0 or the existing FMS schedule.
 ---
+
+## Current commissioned continuation — 2026-10-13
+
+
+The Chairman's direct October 12 assignment authorizes recovery and completion of
+only the included scope in commit `e1b0ebee934f1eb445487155983f676d453d6815`,
+`research/defense_intelligence/e2e_20261011/`. This supersedes the old blanket
+PARKED/UNAUTHORIZED next-action text inside that scope; it does not reopen accepted
+work or grant excluded FIF, SNI, risk, OS, Options, Prophet, Market Ontology, GMI,
+Executive OS or Fabric implementation. Historical wave records below remain
+historical acceptance evidence.
+
+The assigned principal operates as Fable Meta-CEO with bounded native Sol
+coordinators and admitted existing M2 Fabric operators/leaves. The original native
+root is `01a13300-c75b-79c3-83f9-79b3b4c01dc7`; a role is not a persistent chat.
+Original #7175 is preserved. The implementation carrier is draft #9066, and its
+current cumulative evidence is recorded in
+`research/defense_intelligence/DEFENSE_E2E_CONTINUATION_2026-10-12.md` and the linked
+October 13 handoff. No checkpoint is final product acceptance.
+
+## Historical August 26 boundary
+
+The former next-action statement is retained as history under the current scoped
+Chairman commission:
+
+> D6-B is SOL ACCEPTED / PROVEN_LIVE (2026-08-26; Macro PR #6480 comment 5432443653). WS:DEFENSE-PROCUREMENT-V3 is PARKED at the accepted D6-B authorization boundary. Exact next action: no defense mutation until an explicit Chairman/Sol commission names the next bounded wave; before any such commission is executed, re-pin the protected Sol Skillpack and current repository state and reconcile collisions. D6-C+, D7+, GAO, DOT&E, IG and every later defense rail remain UNAUTHORIZED. D5 remains CLOSED FOR PROGRAM SEQUENCING but capability state BUILT_NOT_PROVEN: the entitled D5P browser journey is deferred/nonblocking, not silently satisfied by D6-B proof. Nonblocking D6-B reliability debt remains visible in the Sol acceptance handoff: 391-byte page-fence headroom, fms-acquire commit-back retry design, staged-State/freshness cadence, the pre-existing premium.enforced_early configuration gap, and validator/dependency maintenance. None authorizes a duplicate retry/publication/event/source plane or a product expansion. Publisher-vintage alarm and fixture-freezing the D2/D3 law suites out of the unrun-government-revenue holding pen remain separate follow-ups — do not fold them into the D5R close.
 
 ## Context
 

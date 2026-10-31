@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, noarchive">
+<meta name="color-scheme" content="light dark">
+<title>Industry Import Inputs · MastermindX</title>
+<link rel="stylesheet" href="/api/gmi/bea/assets/view.css">
+<script src="/api/gmi/bea/assets/view.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#bea-main">Skip to industry research</a>
+<div id="bea-gvc-root" class="workspace">
+<header class="masthead">
+  <a class="brand" href="/intelligence_hub.html" aria-label="MastermindX Intelligence Hub"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>MASTERMIND<span class="brand-x">X</span></a>
+  <span class="mast-divider" aria-hidden="true"></span><span class="desk-name">Global Market Intelligence</span>
+  <div class="mast-actions"><span class="private-label"><span class="tiny-dot" aria-hidden="true"></span>Private workspace</span><button id="bea-theme" class="icon-button" type="button" aria-label="Switch to dark theme" title="Change theme"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4L19 5"/></svg></button></div>
+</header>
+<main id="bea-main">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/intelligence_hub.html">Intelligence Hub</a><span aria-hidden="true">/</span><span>Industry inputs</span></nav>
+  <div class="hero">
+    <div><div class="eyebrow"><span class="accent-line" aria-hidden="true"></span>ECONOMIC STRUCTURE</div><h1>Industry import inputs<span class="title-period">.</span></h1><p class="hero-copy">Understand where an industry's imports come from—and how the accounting changed.</p></div>
+    <div class="edition-stamp"><span class="stamp-label">SOURCE EDITION</span><strong>May 21, 2026</strong><span>BEA · Annual accounts</span></div>
+  </div>
+  <section class="query-bar" aria-label="Inspect a source industry">
+    <form id="bea-industry-form" autocomplete="off" class="query-form">
+      <div class="input-wrap"><label for="bea-code">Exact BEA industry code</label><div class="input-line"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5"/></svg><input id="bea-code" name="industry" type="text" maxlength="32" required pattern="[A-Za-z0-9][A-Za-z0-9_.-]{0,31}" spellcheck="false" aria-describedby="bea-code-note" placeholder="Publisher code"></div></div>
+      <button class="primary-button" id="bea-inspect" type="submit">Inspect industry <span aria-hidden="true">→</span></button>
+    </form>
+    <div class="query-meta"><span class="micro-label">ACCOUNTING WINDOW</span><strong>2017–2024</strong><span class="query-separator" aria-hidden="true"></span><span class="unit-pill">USD millions</span></div>
+  </section>
+  <p class="input-note" id="bea-code-note">Exact, case-sensitive source codes. No automatic code substitutions.</p>
+
+  <div class="workspace-grid">
+    <div class="main-column">
+      <section id="bea-state-card" class="state-card" data-tone="pending" aria-labelledby="bea-state-title" aria-busy="false">
+        <div class="state-top"><span class="status-tag" id="bea-status-tag"><span class="tiny-dot" aria-hidden="true"></span>Source availability</span><span id="bea-checked-at" class="checked-at"></span></div>
+        <div class="state-body"><div class="source-icon" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M7 5h13l5 5v17H7zM20 5v6h5M11 15h10M11 19h7M11 23h5"/></svg><span></span></div><div class="state-copy" role="status" aria-live="polite" aria-atomic="true"><h2 id="bea-state-title">Source status not checked</h2><p id="bea-state-detail">Verify the current source status before reading industry figures. No data has been loaded.</p></div></div>
+        <div class="state-actions"><button id="bea-retry" class="secondary-button" type="button"><span aria-hidden="true">↻</span> Check availability</button><button id="bea-open-evidence" class="text-button" type="button">View source details <span aria-hidden="true">↗</span></button><a id="bea-account-action" class="text-button" href="/plans.html" hidden>Review access</a></div>
+      </section>
+
+      <section id="bea-empty-context" class="orientation" aria-labelledby="bea-orientation-title">
+        <div class="section-heading"><h2 id="bea-orientation-title">What this view can explain</h2><span>After source admission</span></div>
+        <div class="question-grid">
+          <article><span class="question-number">01</span><h3>Regional exposure</h3><p>Compare seven source regions without hiding negative accounting adjustments.</p></article>
+          <article><span class="question-number">02</span><h3>Change over time</h3><p>Read eight accounting years from one consistent publication vintage.</p></article>
+          <article><span class="question-number">03</span><h3>Evidence quality</h3><p>Inspect provenance, rounding differences and the limits of the source.</p></article>
+        </div>
+        <div class="empty-note"><span aria-hidden="true">○</span> No estimates, placeholder figures or company-supplier links have been substituted.</div>
+      </section>
+
+      <section id="bea-data-deck" hidden aria-label="Unpublished accounting research preview">
+        <div class="preview-notice" id="bea-preview-notice">UNPUBLISHED RESEARCH PREVIEW · Not a production data response</div>
+        <div class="industry-heading"><div><span class="micro-label">EXACT PUBLISHER INDUSTRY</span><h2 id="bea-year-name"></h2></div><span class="code-chip" id="bea-active-code"></span></div>
+        <div class="year-toolbar"><span class="micro-label">ACCOUNTING YEAR</span><div id="bea-years" class="year-select" role="group" aria-label="Choose accounting year"></div><span id="bea-name-variation" class="label-warning" hidden>Publisher labels vary by year</span></div>
+        <div class="metrics">
+          <article class="metric"><span class="metric-label">World imports</span><strong id="bea-world">—</strong><span class="metric-caption">Signed allocation · USD millions</span></article>
+          <article class="metric"><span class="metric-label">Total inputs used</span><strong id="bea-total-use">—</strong><span class="metric-caption">Industry accounting · USD millions</span></article>
+          <article class="metric"><span class="metric-label" id="bea-yoy-label">Change from previous year</span><strong id="bea-yoy">—</strong><span class="metric-caption">Same May 2026 vintage · not a forecast</span></article>
+        </div>
+        <section class="chart-panel" aria-labelledby="bea-region-title"><div class="section-heading"><div><span class="micro-label">WHERE INPUTS COME FROM</span><h2 id="bea-region-title">Regional import allocation</h2></div><span class="chart-unit">USD millions</span></div><div class="region-mode" role="group" aria-label="Regional accounting measure"><button id="bea-region-level" type="button" aria-pressed="true">Amounts</button><button id="bea-region-change" type="button" aria-pressed="false">Annual change</button></div><div class="signed-legend"><span><i class="legend-mark negative" aria-hidden="true"></i><span id="bea-negative-legend">Negative adjustment</span></span><span><i class="legend-mark positive" aria-hidden="true"></i><span id="bea-positive-legend">Positive allocation</span></span></div><div id="bea-region-bars" class="region-bars"></div><p id="bea-region-shift" class="region-shift" aria-live="polite" hidden></p><p class="chart-note" id="bea-region-note">Bars share a zero baseline. Negative values are accounting adjustments—not negative trade volumes. Same May 2026 vintage.</p></section>
+        <section class="chart-panel" aria-labelledby="bea-history-title"><div class="section-heading"><div><span class="micro-label">ONE PUBLICATION VINTAGE</span><h2 id="bea-history-title">World import history</h2></div><span class="chart-unit">2017–2024</span></div><div id="bea-trend" class="history-chart" role="group" aria-label="World imports by accounting year. Each year is a selectable button."></div><p class="chart-note">Earlier accounting years are retrospective observations in the May 2026 release, not what was known at the time.</p><details class="values-details"><summary>Read the chart as a table</summary><div class="table-scroll"><table><caption>World imports and annual change · USD millions</caption><thead><tr><th scope="col">Year</th><th scope="col">World imports</th><th scope="col">Annual change</th><th scope="col">Rounding residual</th></tr></thead><tbody id="bea-values-body"></tbody></table></div></details></section>
+        <section class="quality-panel" aria-labelledby="bea-quality-title"><div class="section-heading"><h2 id="bea-quality-title">Accounting quality</h2><span>Not a confidence score</span></div><div id="bea-quality" class="quality-grid"></div></section>
+      </section>
+    </div>
+    <aside class="source-rail" aria-label="Source context and interpretation">
+      <section class="source-record"><div class="section-heading"><h2>Source record</h2><span class="record-mark" aria-hidden="true">↗</span></div><dl><div><dt>Publisher</dt><dd>U.S. Bureau of<br>Economic Analysis</dd></div><div><dt>Release</dt><dd>May 21, 2026</dd></div><div><dt>Coverage</dt><dd>2017–2024 annual accounts</dd></div><div><dt>Measure</dt><dd>Whole USD millions, signed</dd></div><div><dt>Source state</dt><dd id="bea-source-state">Not confirmed</dd></div></dl><span class="source-caveat">Current means the latest held vintage.<br>It does not mean live market data.</span></section>
+      <section class="reading-guide"><span class="micro-label">READ THIS CORRECTLY</span><h2>Industry-level context.<br> Not company supply chains.</h2><p>BEA allocates imports across industries and source regions. These are estimates—not observed company-to-company supplier links.</p><div class="guide-rule"></div><p class="guide-secondary">Use alongside security research. This view does not rank investments, size trades or establish historical point-in-time knowledge.</p></section>
+    </aside>
+  </div>
+  <details id="bea-evidence" class="evidence-panel"><summary><span><span class="evidence-symbol" aria-hidden="true">≡</span> Source, method &amp; limitations</span><span class="summary-detail">Evidence without the clutter</span></summary><div class="evidence-content"><div><h3>What is being checked</h3><p>Original source identity, the Data OS generation, use permissions and source-quality checks must agree before industry figures can be used.</p><dl class="technical-record"><div><dt>Current reason</dt><dd id="bea-reason-code">NOT_CHECKED</dd></div><div><dt>Publication precision</dt><dd>Day—not an invented time of day</dd></div><div><dt>Source generation</dt><dd id="bea-generation">Not available</dd></div></dl></div><div><h3>Boundaries that remain visible</h3><p>Exact industry codes and labels are retained. Codes are never silently aliased. Earlier years do not create an as-known-then history.</p><p>Signed regional adjustments and rounding differences are preserved. Missing data remains missing.</p><button class="secondary-button" id="bea-copy-source" type="button">Copy source reference</button><span id="bea-copy-status" class="copy-status" role="status"></span></div></div></details>
+  <noscript><p class="noscript-note">JavaScript is required to check source availability. No industry data has been loaded.</p></noscript>
+</main>
+<footer class="footer"><span>MASTERMINDX <span class="footer-dot">·</span> Industry research</span><span>Source: U.S. Bureau of Economic Analysis</span><span>No trading or historical PIT authority</span></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,806 @@
+{
+  "blocks": [],
+  "companies": [
+    {
+      "company_id": "central:IRDM",
+      "evidence_refs": [
+        "evidence:irdm-sec-10k"
+      ],
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "ticker": "IRDM",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "verification_state": "reviewed"
+    },
+    {
+      "company_id": "central:LMT",
+      "evidence_refs": [
+        "evidence:lmt-sec-10k"
+      ],
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "ticker": "LMT",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "verification_state": "reviewed"
+    }
+  ],
+  "conflicts": [],
+  "contract": "government_recipient_entity_graph.v1",
+  "evidence": [
+    {
+      "byte_length": 1905707,
+      "claim_scopes": [
+        "legal_entity",
+        "ownership",
+        "public_company"
+      ],
+      "content_sha256": "b93d1260bf3735e93b590709d87608ee8ff2b605669f471c064939adf50fef38",
+      "evidence_class": "official_filing",
+      "evidence_id": "evidence:irdm-sec-10k",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "SEC",
+      "record_id": "sec:1418819:000141881926000009:irdm-20251231.htm",
+      "retrieved_at": "2026-08-07T09:52:43+00:00",
+      "source_ref": "recipient-evidence:sha256:b93d1260bf3735e93b590709d87608ee8ff2b605669f471c064939adf50fef38",
+      "url": "https://www.sec.gov/Archives/edgar/data/1418819/000141881926000009/irdm-20251231.htm",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 9618,
+      "claim_scopes": [
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "059ff7bf7ec975ea55106858aedb31b1111d45cefdc08797f16259b6e7eab84f",
+      "evidence_class": "official_filing",
+      "evidence_id": "evidence:irdm-sec-ex21",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "SEC",
+      "record_id": "sec:1418819:000141881926000009:ex2111231202510k.htm",
+      "retrieved_at": "2026-08-07T09:52:43+00:00",
+      "source_ref": "recipient-evidence:sha256:059ff7bf7ec975ea55106858aedb31b1111d45cefdc08797f16259b6e7eab84f",
+      "url": "https://www.sec.gov/Archives/edgar/data/1418819/000141881926000009/ex2111231202510k.htm",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6388,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "c8b76c1a0f99ae1784eb7dfd25df70f9e57a6a5fb930fa0627d0a3e9a1f3e2a9",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:irdm-usaspending-hdgmk3rkngc1",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_FA254124CB001_9700_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:54:26+00:00",
+      "source_ref": "recipient-evidence:sha256:c8b76c1a0f99ae1784eb7dfd25df70f9e57a6a5fb930fa0627d0a3e9a1f3e2a9",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_FA254124CB001_9700_-NONE-_-NONE-/",
+      "valid_from": "2024-04-01T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6384,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "e2b68863b6695ee362c32f1171150925d290647d6b3f25f04797acae4e9d1945",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:irdm-usaspending-hlrbbnms1eb8",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_6913G625P800073_6901_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:54:33+00:00",
+      "source_ref": "recipient-evidence:sha256:e2b68863b6695ee362c32f1171150925d290647d6b3f25f04797acae4e9d1945",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_6913G625P800073_6901_-NONE-_-NONE-/",
+      "valid_from": "2025-08-21T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6626,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "ae9fc95e9cd4e6cc470ba11e8839e5202322c53212da409722b0fd5ba7b995df",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:irdm-usaspending-s77sw52lcr57",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_0005_9700_N0017809D3007_9700",
+      "retrieved_at": "2026-08-07T09:56:15+00:00",
+      "source_ref": "recipient-evidence:sha256:ae9fc95e9cd4e6cc470ba11e8839e5202322c53212da409722b0fd5ba7b995df",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_0005_9700_N0017809D3007_9700/",
+      "valid_from": "2016-06-16T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 2909179,
+      "claim_scopes": [
+        "legal_entity",
+        "ownership",
+        "public_company"
+      ],
+      "content_sha256": "252829a67a8ce7821a595295a9a20353f8a05c18a2ff989a9b21983a1ea51b32",
+      "evidence_class": "official_filing",
+      "evidence_id": "evidence:lmt-sec-10k",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "SEC",
+      "record_id": "sec:936468:000162828026004195:lmt-20251231.htm",
+      "retrieved_at": "2026-08-07T09:52:59+00:00",
+      "source_ref": "recipient-evidence:sha256:252829a67a8ce7821a595295a9a20353f8a05c18a2ff989a9b21983a1ea51b32",
+      "url": "https://www.sec.gov/Archives/edgar/data/936468/000162828026004195/lmt-20251231.htm",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6815,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "3ea0db24fd6e7d7c3412da48853f7699b8f62b64dbde5874e1dc10fe02ee634e",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-cqwlw9xrqth5",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_F0470102C0002_9700_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:53:29+00:00",
+      "source_ref": "recipient-evidence:sha256:3ea0db24fd6e7d7c3412da48853f7699b8f62b64dbde5874e1dc10fe02ee634e",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_F0470102C0002_9700_-NONE-_-NONE-/",
+      "valid_from": "2001-11-16T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6360,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "5a0fa16b8fcdd086bd7272a0b2f9ecae90dbd1b5f74dce9624d49ca77576523b",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-cwm4un76zqw8",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_HQ014716C0011_9700_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:53:31+00:00",
+      "source_ref": "recipient-evidence:sha256:5a0fa16b8fcdd086bd7272a0b2f9ecae90dbd1b5f74dce9624d49ca77576523b",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_HQ014716C0011_9700_-NONE-_-NONE-/",
+      "valid_from": "2015-10-21T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6146,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "911c4eb93efc835b3dab0dce541428d45fce587c47100538118ebf8d5d8f77fa",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-fyhna5wc8xd7",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_DEAC0494AL85000_8900_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:54:06+00:00",
+      "source_ref": "recipient-evidence:sha256:911c4eb93efc835b3dab0dce541428d45fce587c47100538118ebf8d5d8f77fa",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_DEAC0494AL85000_8900_-NONE-_-NONE-/",
+      "valid_from": "1993-10-15T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6885,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "e4ab6517bbe6c4f4f7478b337374691685a8d792b085b8259b425c1e466e2000",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-g4kdge4jffk7",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_FA820518F0001_9700_FA820518D0001_9700",
+      "retrieved_at": "2026-08-07T09:54:08+00:00",
+      "source_ref": "recipient-evidence:sha256:e4ab6517bbe6c4f4f7478b337374691685a8d792b085b8259b425c1e466e2000",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_FA820518F0001_9700_FA820518D0001_9700/",
+      "valid_from": "2018-01-01T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6139,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "7db8793e00f8db006a11feca30507d35ab752d4218e223c3a8d7581a124da87b",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-h7pnsvnn5827",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_FA868224CB001_9700_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:54:22+00:00",
+      "source_ref": "recipient-evidence:sha256:7db8793e00f8db006a11feca30507d35ab752d4218e223c3a8d7581a124da87b",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_FA868224CB001_9700_-NONE-_-NONE-/",
+      "valid_from": "2024-09-27T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6225,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "50bbe98985100a19f746d01b37ba7f8d0391c0ae5d5bcb0fd503a0820e414ca0",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-hjp4jzg1ful9",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_N0001911C0020_9700_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:54:31+00:00",
+      "source_ref": "recipient-evidence:sha256:50bbe98985100a19f746d01b37ba7f8d0391c0ae5d5bcb0fd503a0820e414ca0",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_N0001911C0020_9700_-NONE-_-NONE-/",
+      "valid_from": "2011-01-05T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6191,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "6e57b0f1c43b2077815d8dba7c6a0d8ad4e916321c1f20256d71bd789ef059c8",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-kmevrakjvbd3",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_N0003024C0100_9700_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:54:51+00:00",
+      "source_ref": "recipient-evidence:sha256:6e57b0f1c43b2077815d8dba7c6a0d8ad4e916321c1f20256d71bd789ef059c8",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_N0003024C0100_9700_-NONE-_-NONE-/",
+      "valid_from": "2024-09-12T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6260,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "0641becf942429a6ee4dde66880842042d28715c5b705c8138c13aa4af86d21c",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-mjensfhzjp11",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_N0002411C2300_9700_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:55:23+00:00",
+      "source_ref": "recipient-evidence:sha256:0641becf942429a6ee4dde66880842042d28715c5b705c8138c13aa4af86d21c",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_N0002411C2300_9700_-NONE-_-NONE-/",
+      "valid_from": "2010-12-29T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6254,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "2fad0969619de15afd3c5405aa68e26c9c9f35ef79d165a315039007b28a809c",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-nb1alnt2zln6",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_NAS998100_8000_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:55:35+00:00",
+      "source_ref": "recipient-evidence:sha256:2fad0969619de15afd3c5405aa68e26c9c9f35ef79d165a315039007b28a809c",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_NAS998100_8000_-NONE-_-NONE-/",
+      "valid_from": "1998-09-25T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6626,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "a112af364227679b1362db7bdc19893a1e8628b352ca84a2c686579bfde1d240",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-ngbvy5x32xz5",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_HQ085621C0001_9700_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:55:38+00:00",
+      "source_ref": "recipient-evidence:sha256:a112af364227679b1362db7bdc19893a1e8628b352ca84a2c686579bfde1d240",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_HQ085621C0001_9700_-NONE-_-NONE-/",
+      "valid_from": "2021-03-25T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6360,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "73cfa4fc6693897c90c92a5e84415bd864943083aca49ba72772c5fa83baafcf",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-sjdeb3mkjew5",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_F3365702C2000_9700_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:56:17+00:00",
+      "source_ref": "recipient-evidence:sha256:73cfa4fc6693897c90c92a5e84415bd864943083aca49ba72772c5fa83baafcf",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_F3365702C2000_9700_-NONE-_-NONE-/",
+      "valid_from": "2001-12-05T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6149,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "40e8acdadcadbdc5df456ddd14ea7c35c436f179ed372491a5a865ba796c2523",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-vygmkza24sf1",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_MSFC0199911DNAS800016_8000_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:56:44+00:00",
+      "source_ref": "recipient-evidence:sha256:40e8acdadcadbdc5df456ddd14ea7c35c436f179ed372491a5a865ba796c2523",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_MSFC0199911DNAS800016_8000_-NONE-_-NONE-/",
+      "valid_from": "2000-10-27T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6317,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "7a7aa9205b276914b51eadfebdb27959d3ba47eedc41850b8c22fb531eb12e1f",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-xfjmysyfjek4",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_HQ014717C0032_9700_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:56:58+00:00",
+      "source_ref": "recipient-evidence:sha256:7a7aa9205b276914b51eadfebdb27959d3ba47eedc41850b8c22fb531eb12e1f",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_HQ014717C0032_9700_-NONE-_-NONE-/",
+      "valid_from": "2017-03-27T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "byte_length": 6305,
+      "claim_scopes": [
+        "exact_identifier",
+        "legal_entity",
+        "ownership"
+      ],
+      "content_sha256": "e88816e44ee5a977c80aa6f2f3e9f40769165dc55ed0380dbf87b58ed350f2b0",
+      "evidence_class": "official_award",
+      "evidence_id": "evidence:lmt-usaspending-zfn2jjxblzt3",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "publisher": "USAspending.gov",
+      "record_id": "CONT_AWD_N0003904C2009_9700_-NONE-_-NONE-",
+      "retrieved_at": "2026-08-07T09:57:06+00:00",
+      "source_ref": "recipient-evidence:sha256:e88816e44ee5a977c80aa6f2f3e9f40769165dc55ed0380dbf87b58ed350f2b0",
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_N0003904C2009_9700_-NONE-_-NONE-/",
+      "valid_from": "2004-09-24T00:00:00+00:00",
+      "valid_to": null
+    },
+    {
+      "evidence_id": "evidence:lmt-sec-2026q2-ula",
+      "source_ref": "recipient-evidence:sha256:854cf0d3e6815ef851377af550f8830e7ca10368ffeb2ff5417fe2b1a44dbbf2",
+      "publisher": "SEC",
+      "evidence_class": "official_filing",
+      "record_id": "0001628280-26-049411:R19.htm",
+      "url": "https://www.sec.gov/Archives/edgar/data/936468/000162828026049411/R19.htm",
+      "content_sha256": "854cf0d3e6815ef851377af550f8830e7ca10368ffeb2ff5417fe2b1a44dbbf2",
+      "byte_length": 47965,
+      "retrieved_at": "2026-10-13T05:36:47.904824+00:00",
+      "claim_scopes": [
+        "legal_entity",
+        "ownership",
+        "review_action"
+      ],
+      "known_at": "2026-10-13T05:36:47.904824+00:00",
+      "valid_from": "2026-06-28T00:00:00+00:00",
+      "valid_to": null
+    }
+  ],
+  "graph_effective_at": "2026-08-19T05:44:34.128190+00:00",
+  "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+  "graph_known_at": "2026-10-13T05:36:47.904824+00:00",
+  "identifiers": [
+    {
+      "entity_id": "legal:irdm:iridium-satellite-llc",
+      "evidence_refs": [
+        "evidence:irdm-usaspending-hdgmk3rkngc1"
+      ],
+      "identifier_id": "identifier:irdm:hdgmk3rkngc1",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "HDGMK3RKNGC1",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:irdm:iridium-satellite-llc",
+      "evidence_refs": [
+        "evidence:irdm-usaspending-hlrbbnms1eb8"
+      ],
+      "identifier_id": "identifier:irdm:hlrbbnms1eb8",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "HLRBBNMS1EB8",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:irdm:iridium-government-services-llc",
+      "evidence_refs": [
+        "evidence:irdm-usaspending-s77sw52lcr57"
+      ],
+      "identifier_id": "identifier:irdm:s77sw52lcr57",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "S77SW52LCR57",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-cqwlw9xrqth5"
+      ],
+      "identifier_id": "identifier:lmt:cqwlw9xrqth5",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "CQWLW9XRQTH5",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-cwm4un76zqw8"
+      ],
+      "identifier_id": "identifier:lmt:cwm4un76zqw8",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "CWM4UN76ZQW8",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-fyhna5wc8xd7"
+      ],
+      "identifier_id": "identifier:lmt:fyhna5wc8xd7",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "FYHNA5WC8XD7",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-g4kdge4jffk7"
+      ],
+      "identifier_id": "identifier:lmt:g4kdge4jffk7",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "G4KDGE4JFFK7",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-h7pnsvnn5827"
+      ],
+      "identifier_id": "identifier:lmt:h7pnsvnn5827",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "H7PNSVNN5827",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-hjp4jzg1ful9"
+      ],
+      "identifier_id": "identifier:lmt:hjp4jzg1ful9",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "HJP4JZG1FUL9",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-kmevrakjvbd3"
+      ],
+      "identifier_id": "identifier:lmt:kmevrakjvbd3",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "KMEVRAKJVBD3",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-mjensfhzjp11"
+      ],
+      "identifier_id": "identifier:lmt:mjensfhzjp11",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "MJENSFHZJP11",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-nb1alnt2zln6"
+      ],
+      "identifier_id": "identifier:lmt:nb1alnt2zln6",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "NB1ALNT2ZLN6",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-ngbvy5x32xz5"
+      ],
+      "identifier_id": "identifier:lmt:ngbvy5x32xz5",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "NGBVY5X32XZ5",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-sjdeb3mkjew5"
+      ],
+      "identifier_id": "identifier:lmt:sjdeb3mkjew5",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "SJDEB3MKJEW5",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-vygmkza24sf1"
+      ],
+      "identifier_id": "identifier:lmt:vygmkza24sf1",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "VYGMKZA24SF1",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-xfjmysyfjek4"
+      ],
+      "identifier_id": "identifier:lmt:xfjmysyfjek4",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "XFJMYSYFJEK4",
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-usaspending-zfn2jjxblzt3"
+      ],
+      "identifier_id": "identifier:lmt:zfn2jjxblzt3",
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "namespace": "sam_uei",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "value": "ZFN2JJXBLZT3",
+      "verification_state": "reviewed"
+    }
+  ],
+  "legal_entities": [
+    {
+      "canonical_name": "Iridium Communications Inc.",
+      "entity_id": "legal:irdm:iridium-communications-inc",
+      "evidence_refs": [
+        "evidence:irdm-sec-10k"
+      ],
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "verification_state": "reviewed"
+    },
+    {
+      "canonical_name": "Iridium Government Services LLC",
+      "entity_id": "legal:irdm:iridium-government-services-llc",
+      "evidence_refs": [
+        "evidence:irdm-sec-ex21",
+        "evidence:irdm-usaspending-s77sw52lcr57"
+      ],
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "verification_state": "reviewed"
+    },
+    {
+      "canonical_name": "Iridium Satellite LLC",
+      "entity_id": "legal:irdm:iridium-satellite-llc",
+      "evidence_refs": [
+        "evidence:irdm-sec-ex21",
+        "evidence:irdm-usaspending-hdgmk3rkngc1",
+        "evidence:irdm-usaspending-hlrbbnms1eb8"
+      ],
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "verification_state": "reviewed"
+    },
+    {
+      "canonical_name": "LOCKHEED MARTIN CORP",
+      "entity_id": "legal:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-sec-10k",
+        "evidence:lmt-usaspending-cqwlw9xrqth5",
+        "evidence:lmt-usaspending-cwm4un76zqw8",
+        "evidence:lmt-usaspending-fyhna5wc8xd7",
+        "evidence:lmt-usaspending-g4kdge4jffk7",
+        "evidence:lmt-usaspending-h7pnsvnn5827",
+        "evidence:lmt-usaspending-hjp4jzg1ful9",
+        "evidence:lmt-usaspending-kmevrakjvbd3",
+        "evidence:lmt-usaspending-mjensfhzjp11",
+        "evidence:lmt-usaspending-nb1alnt2zln6",
+        "evidence:lmt-usaspending-ngbvy5x32xz5",
+        "evidence:lmt-usaspending-sjdeb3mkjew5",
+        "evidence:lmt-usaspending-vygmkza24sf1",
+        "evidence:lmt-usaspending-xfjmysyfjek4",
+        "evidence:lmt-usaspending-zfn2jjxblzt3"
+      ],
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "verification_state": "reviewed"
+    },
+    {
+      "entity_id": "legal:ula:united-launch-alliance",
+      "canonical_name": "United Launch Alliance",
+      "verification_state": "reviewed",
+      "known_at": "2026-10-13T05:36:47.904824+00:00",
+      "valid_from": "2026-06-28T00:00:00+00:00",
+      "valid_to": null,
+      "evidence_refs": [
+        "evidence:lmt-sec-2026q2-ula"
+      ]
+    }
+  ],
+  "overrides": [],
+  "ownership_edges": [
+    {
+      "child_entity_id": "legal:irdm:iridium-communications-inc",
+      "economic_share": 1.0,
+      "edge_id": "issuer-identity:irdm:iridium-communications-inc",
+      "evidence_refs": [
+        "evidence:irdm-sec-10k"
+      ],
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "parent_company_id": "central:IRDM",
+      "relationship": "issuer_legal_entity",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "verification_state": "reviewed"
+    },
+    {
+      "child_entity_id": "legal:lmt:lockheed-martin-corp",
+      "economic_share": 1.0,
+      "edge_id": "issuer-identity:lmt:lockheed-martin-corp",
+      "evidence_refs": [
+        "evidence:lmt-sec-10k"
+      ],
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "parent_company_id": "central:LMT",
+      "relationship": "issuer_legal_entity",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "verification_state": "reviewed"
+    },
+    {
+      "child_entity_id": "legal:irdm:iridium-government-services-llc",
+      "economic_share": 1.0,
+      "edge_id": "ownership:irdm:iridium-government-services-llc",
+      "evidence_refs": [
+        "evidence:irdm-sec-ex21",
+        "evidence:irdm-usaspending-s77sw52lcr57"
+      ],
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "parent_entity_id": "legal:irdm:iridium-communications-inc",
+      "relationship": "wholly_owned",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "verification_state": "reviewed"
+    },
+    {
+      "child_entity_id": "legal:irdm:iridium-satellite-llc",
+      "economic_share": 1.0,
+      "edge_id": "ownership:irdm:iridium-satellite-llc",
+      "evidence_refs": [
+        "evidence:irdm-sec-ex21",
+        "evidence:irdm-usaspending-hdgmk3rkngc1",
+        "evidence:irdm-usaspending-hlrbbnms1eb8"
+      ],
+      "known_at": "2026-08-07T12:00:00+00:00",
+      "parent_entity_id": "legal:irdm:iridium-communications-inc",
+      "relationship": "wholly_owned",
+      "valid_from": "2025-12-31T00:00:00+00:00",
+      "valid_to": null,
+      "verification_state": "reviewed"
+    },
+    {
+      "edge_id": "ownership:lmt:ula:2026q2",
+      "parent_entity_id": "legal:lmt:lockheed-martin-corp",
+      "child_entity_id": "legal:ula:united-launch-alliance",
+      "relationship": "joint_venture",
+      "economic_share": 0.5,
+      "verification_state": "reviewed",
+      "known_at": "2026-10-13T05:36:47.904824+00:00",
+      "valid_from": "2026-06-28T00:00:00+00:00",
+      "valid_to": null,
+      "evidence_refs": [
+        "evidence:lmt-sec-2026q2-ula"
+      ]
+    }
+  ],
+  "schema_version": "1.1.0"
+}

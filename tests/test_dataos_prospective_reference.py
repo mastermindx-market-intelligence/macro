@@ -402,3 +402,506 @@ def test_native_agreement_uses_owner_listing_fields_not_immutable_id_prefix(evid
     aliases = b._reference_aliases(state, {"MU": stable}, [row], [], [])
     assert [(r.vendor_symbol, r.security_id) for r in aliases] == [("MU", stable)]
     assert state["probes"]["MU"]["status"] == "BOUND"
+
+
+# R24 — native-generation preservation guard for the EXISTING legacy writer.
+# Source-only tests. The old writer must refuse native publication/history
+# until its canonical owner can append genuine observation revisions.
+@pytest.mark.parametrize("native", [
+    {"publication": {"schema": "mastermind.identity_publication.v1", "generation_id": "a" * 64},
+     "identity_observations": {"schema": "mastermind.identity_observations.v1", "attempts": []}},
+    {"publication": {"schema": "mastermind.identity_publication.v1"}},
+    {"identity_observations": {"schema": "mastermind.identity_observations.v1"}},
+    {"publication": None, "identity_observations": None},
+    {"publication": {}, "identity_observations": {"anchor": None}},
+])
+def test_r24_existing_native_generation_refuses_before_any_source_write(
+        tmp_path, monkeypatch, native):
+    out = tmp_path / "canonical-reference"
+    out.mkdir()
+    original = {"prospective_reference": {"schema": "legacy-retain"},
+                "generated_at": "2026-10-15T13:32:43", **native}
+    receipt = out / b.RECEIPT_NAME
+    receipt.write_text(json.dumps(original, sort_keys=True) + "\n")
+    artifacts = {}
+    for name in b._NIGHTLY_ARTIFACT_NAMES:
+        p = out / name
+        p.write_bytes(("preserve original bytes: " + name).encode())
+        artifacts[name] = p.read_bytes()
+    original_receipt = receipt.read_bytes()
+    def forbidden(*_a, **_kw):
+        raise AssertionError("builder touched identity input or output before publication-history refusal")
+    monkeypatch.setattr(b, "_iso_now", forbidden)
+    monkeypatch.setattr(b, "_write_parquet", forbidden)
+    with pytest.raises(IdentityError, match="native identity publication"):
+        b.build(out)
+    assert receipt.read_bytes() == original_receipt
+    assert all((out / name).read_bytes() == data for name, data in artifacts.items())
+
+
+def test_r24_legacy_only_receipt_does_not_trigger_native_guard(tmp_path):
+    out = tmp_path / "reference"
+    out.mkdir()
+    receipt = out / b.RECEIPT_NAME
+    receipt.write_text(json.dumps({"prospective_reference": {"schema": "legacy"},
+                                   "generated_at": "2026-10-15T13:32:43"}) + "\n")
+    before = receipt.read_bytes()
+    b._assert_no_unpreserved_native_generation(out)
+    assert receipt.read_bytes() == before
+
+
+def test_r24_nightly_fails_closed_and_preserves_complete_native_history(
+        tmp_path, monkeypatch, capsys):
+    out = tmp_path / "canonical-reference"
+    out.mkdir()
+    original_receipt = out / b.RECEIPT_NAME
+    original_receipt.write_text(json.dumps({
+        "prospective_reference": {"schema": "legacy"},
+        "publication": {"schema": "mastermind.identity_publication.v1", "generation_id": "b" * 64},
+        "identity_observations": {"schema": "mastermind.identity_observations.v1", "attempts": []},
+        "generated_at": "2026-10-15T13:32:43"}, sort_keys=True) + "\n")
+    prior = {b.RECEIPT_NAME: original_receipt.read_bytes()}
+    for name in b._NIGHTLY_ARTIFACT_NAMES:
+        p = out / name
+        p.write_bytes(("native-generation:" + name).encode())
+        prior[name] = p.read_bytes()
+    monkeypatch.setattr(b, "_identity_rail_unreadable", lambda *_args: False)
+    # Sparse test checkout may omit unrelated breadth and membership inputs.
+    # Bind those preflight existence checks to this deliberately existing file;
+    # no collector, production read, or real identity regeneration is allowed.
+    for key in ("CONSTITUENTS", "MIDCAP_CONSTITUENTS", "SMALLCAP_CONSTITUENTS",
+                "MEMBERSHIP", "DELISTED_LEDGER", "CONFIG_YML", "TICKER_ALIASES_PY"):
+        monkeypatch.setattr(b, key, original_receipt)
+    # Failure must be specifically typed as native-publication refusal,
+    # not just some unrelated missing input, and cannot change prior bytes.
+    assert b.run_nightly_refresh(out) == 0
+    output = capsys.readouterr().out
+    assert "native identity publication" in output
+    assert "refusing stale legacy rollback" in output
+    assert all((out / name).read_bytes() == data for name, data in prior.items())
+
+
+def test_r24_new_native_publication_arriving_during_legacy_rebuild_refuses_before_any_write(
+        evidence, tmp_path, monkeypatch):
+    """A read at function entry alone is insufficient while build computes."""
+    _path, _bundle, listing_rows = evidence
+    setup_builder(monkeypatch, tmp_path, listing_rows)
+    out = tmp_path / "out"
+    b.build(out)  # Establish ordinary legacy artifact baseline on temporary files.
+    originals = {name: (out / name).read_bytes() for name in b._NIGHTLY_ARTIFACT_NAMES}
+    receipt_file = out / b.RECEIPT_NAME
+    baseline = json.loads(receipt_file.read_text())
+    assert "publication" not in baseline and "identity_observations" not in baseline
+    native = dict(
+        publication={"schema": "mastermind.identity_publication.v1", "generation_id": "c" * 64},
+        identity_observations={"schema": "mastermind.identity_observations.v1", "attempts": []},
+    )
+    original_iso = b._iso_now
+    calls = []
+    def concurrent_native_owner_receipt():
+        calls.append(True)
+        if len(calls) == 1:
+            receipt_file.write_text(json.dumps({**baseline, **native}, sort_keys=True) + "\n")
+        return original_iso()
+    monkeypatch.setattr(b, "_iso_now", concurrent_native_owner_receipt)
+    with pytest.raises(IdentityError, match="native identity publication"):
+        b.build(out)
+    assert calls, "test must inject after entry guard and before output writes"
+    assert {name: (out / name).read_bytes() for name in b._NIGHTLY_ARTIFACT_NAMES} == originals
+    retained = json.loads(receipt_file.read_text())
+    assert retained["publication"] == native["publication"]
+    assert retained["identity_observations"] == native["identity_observations"]
+
+
+@pytest.mark.parametrize("mode", ["raised_refusal", "receipt_notes", "unchanged_inputs"])
+def test_r24_nightly_never_restores_over_concurrent_native_generation(
+        tmp_path, monkeypatch, capsys, mode):
+    """A newer native receipt wins even when the old nightly must abort.
+
+    The native write here is a controlled temporary fixture, never an actual
+    publisher; the existing nightly must not remove it by restoring its stale
+    pre-build receipt. All three existing branches historically risked this.
+    """
+    out = tmp_path / "reference"
+    out.mkdir()
+    receipt_file = out / b.RECEIPT_NAME
+    legacy = {"prospective_reference": {"schema": "legacy"},
+              "generated_at": "2026-10-15T13:32:43"}
+    receipt_file.write_text(json.dumps(legacy, sort_keys=True) + "\n")
+    older_bytes = receipt_file.read_bytes()
+    prior_artifacts = {}
+    for name in b._NIGHTLY_ARTIFACT_NAMES:
+        f = out / name
+        f.write_bytes(("old-generation:" + name).encode())
+        prior_artifacts[name] = f.read_bytes()
+
+    # Keep the existing nightly input-preflight untouched in real operation;
+    # these synthetic fixtures bind mandatory existence paths to a known file
+    # so the test actually exercises the later recovery/rollback branches.
+    for key in ("CONSTITUENTS", "MIDCAP_CONSTITUENTS", "SMALLCAP_CONSTITUENTS",
+                "MEMBERSHIP", "DELISTED_LEDGER", "CONFIG_YML", "TICKER_ALIASES_PY"):
+        monkeypatch.setattr(b, key, receipt_file)
+    monkeypatch.setattr(b, "_identity_rail_unreadable", lambda *_: False)
+
+    newer = {**legacy,
+             "publication": {"schema": "mastermind.identity_publication.v1",
+                             "generation_id": "a" * 64},
+             "identity_observations": {
+                 "schema": "mastermind.identity_observations.v1",
+                 "attempts": []}}
+    newer_bytes = (json.dumps(newer, sort_keys=True) + "\n").encode()
+    called = []
+
+    def native_arrives_during_legacy_refresh(_out_dir, **_kwargs):
+        called.append(True)
+        receipt_file.write_bytes(newer_bytes)
+        if mode == "raised_refusal":
+            (out / b._NIGHTLY_ARTIFACT_NAMES[0]).write_bytes(b"native-newer-artifact")
+            raise IdentityError("native identity publication/history arrived after older snapshot")
+        return {"notes": ["legacy owner cannot classify this"]} if mode == "receipt_notes" else {"notes": []}
+
+    monkeypatch.setattr(b, "build", native_arrives_during_legacy_refresh)
+    assert b.run_nightly_refresh(out) == 0
+    logs = capsys.readouterr().out
+    assert len(called) == 1, "The simulated newer publication must actually occur"
+    assert receipt_file.read_bytes() == newer_bytes, (
+        "nightly rolled back a newer source-owned native receipt to legacy"
+    )
+    assert "security-master-native-history-race" in logs
+    if mode == "raised_refusal":
+        assert (out / b._NIGHTLY_ARTIFACT_NAMES[0]).read_bytes() == b"native-newer-artifact"
+    assert receipt_file.read_bytes() != older_bytes
+
+
+def test_r24_original_legacy_error_still_restores_last_good_bytes(
+        tmp_path, monkeypatch, capsys):
+    """Ordinary failed legacy rebuild retains its pre-existing rollback law."""
+    out = tmp_path / "reference"
+    out.mkdir()
+    receipt_file = out / b.RECEIPT_NAME
+    receipt_file.write_text(json.dumps({"prospective_reference": {"schema": "legacy"}}) + "\n")
+    original_receipt = receipt_file.read_bytes()
+    originals = {}
+    for name in b._NIGHTLY_ARTIFACT_NAMES:
+        f = out / name
+        f.write_bytes(("old:" + name).encode())
+        originals[name] = f.read_bytes()
+    for key in ("CONSTITUENTS", "MIDCAP_CONSTITUENTS", "SMALLCAP_CONSTITUENTS",
+                "MEMBERSHIP", "DELISTED_LEDGER", "CONFIG_YML", "TICKER_ALIASES_PY"):
+        monkeypatch.setattr(b, key, receipt_file)
+    monkeypatch.setattr(b, "_identity_rail_unreadable", lambda *_: False)
+
+    def invalid_legacy_write(_out_dir, **_kwargs):
+        (out / b._NIGHTLY_ARTIFACT_NAMES[0]).write_bytes(b"partial-invalid-legacy")
+        raise ValueError("synthetic original legacy failure")
+
+    monkeypatch.setattr(b, "build", invalid_legacy_write)
+    assert b.run_nightly_refresh(out) == 0
+    assert "keeping last-good artifacts" in capsys.readouterr().out
+    assert receipt_file.read_bytes() == original_receipt
+    assert all((out / name).read_bytes() == data for name, data in originals.items())
+
+
+# R25 Pro audit: one cooperative, OS-backed writer boundary for the existing
+# manual build AND its outer nightly snapshot/rollback transaction.
+def test_r25_directory_writer_scope_is_reentrant_and_has_no_lockfile(tmp_path):
+    out = tmp_path / "reference"
+    with b._reference_writer_scope(out):
+        with b._reference_writer_scope(out):
+            assert out.is_dir()
+            assert list(out.iterdir()) == []
+    assert list(out.iterdir()) == []
+
+
+def _r25_probe_other_process(out):
+    import os
+    import subprocess
+    import sys
+    script = '''from pathlib import Path
+from scripts import build_security_master as b
+import sys
+try:
+    with b._reference_writer_scope(Path(sys.argv[1])):
+        print("ACQUIRED")
+except b.IdentityError:
+    print("BUSY")
+'''
+    p = subprocess.run([sys.executable, "-c", script, str(out)], cwd=b.ROOT,
+                       capture_output=True, text=True, timeout=8,
+                       env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
+    assert p.returncode == 0, p.stderr
+    return p.stdout.strip()
+
+
+def test_r25_actual_other_process_cannot_enter_until_release(tmp_path):
+    out = tmp_path / "reference"
+    with b._reference_writer_scope(out):
+        assert _r25_probe_other_process(out) == "BUSY"
+    assert _r25_probe_other_process(out) == "ACQUIRED"
+
+
+def test_r25_exception_releases_writer_scope(tmp_path):
+    out = tmp_path / "reference"
+    with pytest.raises(ValueError, match="test failure"):
+        with b._reference_writer_scope(out):
+            raise ValueError("test failure")
+    assert _r25_probe_other_process(out) == "ACQUIRED"
+
+
+def test_r25_another_thread_cannot_inherit_reentrancy(tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+    out = tmp_path / "reference"
+    def competing():
+        try:
+            with b._reference_writer_scope(out):
+                return "ACQUIRED"
+        except IdentityError:
+            return "BUSY"
+    with b._reference_writer_scope(out):
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            assert pool.submit(competing).result(timeout=5) == "BUSY"
+    assert competing() == "ACQUIRED"
+
+
+def test_r25_manual_entrypoint_holds_the_same_os_lock(tmp_path, monkeypatch):
+    out = tmp_path / "reference"
+    def body(*args, **kwargs):
+        assert _r25_probe_other_process(out) == "BUSY"
+        return {"verified": "manual"}
+    monkeypatch.setattr(b, "_build_reference_unlocked", body)
+    assert b.build(out) == {"verified": "manual"}
+
+
+def test_r25_nightly_holds_lock_across_entire_body(tmp_path, monkeypatch):
+    out = tmp_path / "reference"
+    def body(*args, **kwargs):
+        assert _r25_probe_other_process(out) == "BUSY"
+        # Native nightly invokes public build while already inside its scope.
+        monkeypatch.setattr(b, "_build_reference_unlocked", lambda *a, **k: {"ok": True})
+        assert b.build(out) == {"ok": True}
+        return 0
+    monkeypatch.setattr(b, "_run_nightly_reference_unlocked", body)
+    assert b.run_nightly_refresh(out) == 0
+    assert _r25_probe_other_process(out) == "ACQUIRED"
+
+
+def test_r25_dry_run_stays_read_only_on_nonexistent_output(tmp_path, monkeypatch):
+    out = tmp_path / "not-created"
+    monkeypatch.setattr(b, "_build_reference_unlocked", lambda *a, **k: {"dry_run": k["dry_run"]})
+    assert b.build(out, dry_run=True) == {"dry_run": True}
+    assert not out.exists()
+
+
+def test_r25_symlink_writer_target_refuses(tmp_path):
+    real = tmp_path / "real"
+    real.mkdir()
+    alias = tmp_path / "alias"
+    alias.symlink_to(real, target_is_directory=True)
+    with pytest.raises(IdentityError, match="writer"):
+        with b._reference_writer_scope(alias):
+            pytest.fail("symlink acquired")
+    assert list(real.iterdir()) == []
+
+
+def test_r25_replaced_directory_cannot_receive_legacy_writes(tmp_path):
+    out = tmp_path / "reference"
+    old = tmp_path / "renamed"
+    with b._reference_writer_scope(out):
+        out.rename(old)
+        out.mkdir()
+        with pytest.raises(IdentityError, match="writer.*changed"):
+            b._assert_reference_writer_target(out)
+    assert not list(old.iterdir()) and not list(out.iterdir())
+
+
+def test_r25_nightly_busy_is_fail_closed_not_success(tmp_path, monkeypatch, capsys):
+    from contextlib import contextmanager
+    @contextmanager
+    def busy(_):
+        raise IdentityError("reference writer busy")
+        yield
+    monkeypatch.setattr(b, "_reference_writer_scope", busy)
+    monkeypatch.setattr(b, "_run_nightly_reference_unlocked",
+                        lambda *_: pytest.fail("busy writer reached body"))
+    assert b.run_nightly_refresh(tmp_path / "reference") == 0
+    assert "reference writer busy" in capsys.readouterr().out
+
+
+def test_r25_writer_body_oserror_preserves_legacy_exception_type(tmp_path):
+    error = OSError("fixture I/O failure inside actual builder")
+    with pytest.raises(OSError) as caught:
+        with b._reference_writer_scope(tmp_path / "reference"):
+            raise error
+    assert caught.value is error
+
+
+def test_r25_independent_directories_do_not_share_a_global_lock(tmp_path):
+    with b._reference_writer_scope(tmp_path / "one"):
+        assert _r25_probe_other_process(tmp_path / "two") == "ACQUIRED"
+
+
+def test_r25_fork_cannot_inherit_parent_reentrancy(tmp_path):
+    import os
+    import subprocess
+    import sys
+    import textwrap
+    if not hasattr(os, "fork"):
+        pytest.skip("POSIX-only file-lock contract")
+    # Pytest/pandas can already own native threads. Exec a fresh interpreter
+    # before importing the writer, and make a fork safety warning fail the test.
+    script = textwrap.dedent('''
+        import os
+        import select
+        import signal
+        import subprocess
+        import sys
+        import threading
+        import time
+        import traceback
+        from pathlib import Path
+        from scripts import build_security_master as b
+
+        out = Path(sys.argv[1])
+        probe_script = """from pathlib import Path
+        from scripts import build_security_master as b
+        import sys
+        try:
+            with b._reference_writer_scope(Path(sys.argv[1])):
+                print("ACQUIRED")
+        except b.IdentityError:
+            print("BUSY")
+        """
+        def probe():
+            result = subprocess.run(
+                [sys.executable, "-c", probe_script, str(out)], cwd=b.ROOT,
+                capture_output=True, text=True, timeout=8)
+            assert result.returncode == 0, result.stderr
+            return result.stdout.strip()
+
+        with b._reference_writer_scope(out):
+            assert threading.active_count() == 1, "fork harness must be single-threaded"
+            read_fd, write_fd = os.pipe()
+            pid = os.fork()
+            if pid == 0:
+                os.close(read_fd)
+                exit_code = 1
+                try:
+                    try:
+                        with b._reference_writer_scope(out):
+                            result = b"ACQUIRED"
+                    except b.IdentityError:
+                        result = b"BUSY"
+                    os.write(write_fd, result)
+                    exit_code = 0
+                except BaseException:
+                    traceback.print_exc()
+                finally:
+                    os.close(write_fd)
+                    os._exit(exit_code)
+            os.close(write_fd)
+            reaped = False
+            try:
+                assert select.select([read_fd], [], [], 5)[0], "child deadlocked"
+                assert os.read(read_fd, 64) == b"BUSY"
+                deadline = time.monotonic() + 5
+                while True:
+                    waited, status = os.waitpid(pid, os.WNOHANG)
+                    if waited == pid:
+                        reaped = True
+                        assert os.WIFEXITED(status) and os.WEXITSTATUS(status) == 0
+                        break
+                    assert time.monotonic() < deadline, "child did not exit"
+                    time.sleep(0.01)
+            finally:
+                os.close(read_fd)
+                if not reaped:
+                    try:
+                        os.kill(pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    os.waitpid(pid, 0)
+            assert probe() == "BUSY", "child must not release the parent's lock"
+        assert probe() == "ACQUIRED", "parent must release its lock on exit"
+    ''')
+    # Bound any numerical-library pools inherited through the environment, too.
+    env = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1",
+           "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1",
+           "MKL_NUM_THREADS": "1", "VECLIB_MAXIMUM_THREADS": "1",
+           "NUMEXPR_NUM_THREADS": "1"}
+    result = subprocess.run(
+        [sys.executable, "-W", "error::DeprecationWarning", "-c", script,
+         str(tmp_path / "reference")],
+        cwd=b.ROOT, capture_output=True, text=True, timeout=30, env=env)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def _r25_inject_cleanup_errors(monkeypatch, failures):
+    import errno
+    import fcntl
+    import os
+
+    real_flock, real_close = fcntl.flock, os.close
+    held = {"fd": None}
+    errors = {name: OSError(errno.EIO, "injected " + name + " failure")
+              for name in failures}
+
+    def flock(fd, operation):
+        if operation & fcntl.LOCK_EX and held["fd"] is None:
+            held["fd"] = fd
+        if fd == held["fd"] and operation == fcntl.LOCK_UN and "unlock" in errors:
+            raise errors["unlock"]
+        return real_flock(fd, operation)
+
+    def close(fd):
+        real_close(fd)
+        # Model an error reported after closing. Never retry a possibly reused fd.
+        if fd == held["fd"] and "close" in errors:
+            raise errors["close"]
+
+    monkeypatch.setattr(fcntl, "flock", flock)
+    monkeypatch.setattr(os, "close", close)
+    return errors
+
+
+@pytest.mark.parametrize("failures", [("unlock",), ("close",), ("unlock", "close")])
+def test_r25_cleanup_error_keeps_original_builder_exception(tmp_path, monkeypatch, failures):
+    import errno
+    out = tmp_path / "reference"
+    original = OSError(errno.ENOSPC, "injected builder disk-full failure")
+    with monkeypatch.context() as patch:
+        errors = _r25_inject_cleanup_errors(patch, failures)
+        with pytest.raises(OSError) as caught:
+            with b._reference_writer_scope(out):
+                raise original
+    assert caught.value is original
+    notes = "\n".join(getattr(original, "__notes__", ()))
+    assert all(str(error) in notes for error in errors.values())
+    assert _r25_probe_other_process(out) == "ACQUIRED"
+
+
+@pytest.mark.parametrize("failures", [("unlock",), ("close",), ("unlock", "close")])
+def test_r25_cleanup_error_without_builder_failure_is_reported(tmp_path, monkeypatch, failures):
+    out = tmp_path / "reference"
+    with monkeypatch.context() as patch:
+        errors = _r25_inject_cleanup_errors(patch, failures)
+        with pytest.raises(OSError) as caught:
+            with b._reference_writer_scope(out):
+                pass
+    assert caught.value is errors[failures[0]]
+    if len(failures) > 1:
+        assert str(errors[failures[1]]) in "\n".join(caught.value.__notes__)
+    assert _r25_probe_other_process(out) == "ACQUIRED"
+
+
+def test_r25_unrelated_outer_exception_does_not_hide_cleanup_failure(tmp_path, monkeypatch):
+    # An exception handled by the caller is not a failure of this writer scope.
+    # Looking at sys.exception() in finally would conflate those two cases.
+    try:
+        raise LookupError("already being handled by caller")
+    except LookupError:
+        with monkeypatch.context() as patch:
+            errors = _r25_inject_cleanup_errors(patch, ("unlock",))
+            with pytest.raises(OSError) as caught:
+                with b._reference_writer_scope(tmp_path / "reference"):
+                    pass
+    assert caught.value is errors["unlock"]

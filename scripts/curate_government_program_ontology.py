@@ -55,6 +55,9 @@ _TARGET_KIND_TO_COLLECTION = {
     "platform": "platforms",
     "role_assertion": "role_assertions",
     "milestone": "milestones",
+    "public_capacity_assertion": "public_capacity_assertions",
+    "public_oversight_assertion": "public_oversight_assertions",
+    "public_agreement_assertion": "public_agreement_assertions",
     "program_capability_link": "program_capability_links",
     "program_event_link": "program_event_links",
     "conflict": "conflicts",
@@ -66,10 +69,28 @@ _COLLECTION_ID_KEY = {
     "platforms": "id",
     "role_assertions": "id",
     "milestones": "id",
+    "public_capacity_assertions": "id",
+    "public_oversight_assertions": "id",
+    "public_agreement_assertions": "id",
     "program_capability_links": "link_id",
     "program_event_links": "link_id",
     "conflicts": "conflict_id",
     "overrides": "override_id",
+}
+#: Content-addressed kinds whose byte-identical resubmission is an idempotent
+#: no-op in the batch-apply loop rather than a duplicate append.
+_IDEMPOTENT_CONTENT_KINDS = {"public_capacity_assertion", "public_oversight_assertion", "public_agreement_assertion"}
+#: Coverage scopes whose re-import is idempotent: re-admitting the same
+#: worksheet must not mint a duplicate review_coverage row (the loader refuses
+#: duplicate ids). Other scopes keep their historical append behavior.
+_IDEMPOTENT_COVERAGE_SCOPES = {"public_capacity", "public_oversight", "public_agreement"}
+#: Explicit migration ladder for --schema-version (no downgrade from 1.3).
+_SCHEMA_VERSION_RANK = {
+    "1.0.0": 0,
+    "1.1.0": 1,
+    po.PUBLIC_CAPACITY_VERSION: 2,
+    po.PUBLIC_OVERSIGHT_VERSION: 3,
+    po.PUBLIC_AGREEMENT_VERSION: 4,
 }
 _LOGICAL_TARGET_KINDS = {"program", "capability", "platform"}
 _GRAPH_ID_RE = re.compile(
@@ -141,7 +162,24 @@ def _load_base_graph(
                 "refusing to curate onto an already-uncertified canonical artifact: "
                 + ", ".join(exc.errors)
             ) from exc
-        return deepcopy(raw)
+        loaded = deepcopy(raw)
+        for field, explicit in (("graph_known_at", graph_known_at), ("graph_effective_at", graph_effective_at)):
+            if explicit is None:
+                continue
+            parsed = po.strict_datetime(explicit)
+            if parsed is None or parsed.isoformat() != explicit:
+                raise CurateError(
+                    f"{field} must be strict D5 UTC (YYYY-MM-DDTHH:MM:SS+00:00); got {explicit!r}"
+                )
+            existing_value = loaded.get(field)
+            if existing_value is not None:
+                parsed_existing = po.strict_datetime(existing_value)
+                if parsed_existing is not None and parsed < parsed_existing:
+                    raise CurateError(
+                        f"{field}={explicit!r} would go backwards versus existing header {existing_value!r}"
+                    )
+            loaded[field] = explicit
+        return loaded
     if not (graph_id and graph_known_at and graph_effective_at):
         raise CurateError(
             "no canonical artifact exists yet; --graph-id/--graph-known-at/"
@@ -275,6 +313,9 @@ def _referencing_rows_current(trial: dict[str, Any], kind: str, target_id: str) 
                 referencing.append(row)
         for collection, id_key in (
             ("role_assertions", "id"), ("milestones", "id"),
+            ("public_capacity_assertions", "id"),
+            ("public_oversight_assertions", "id"),
+            ("public_agreement_assertions", "id"),
             ("program_capability_links", "link_id"), ("program_event_links", "link_id"),
         ):
             current_rows = po.current_content_addressed_rows(
@@ -411,6 +452,7 @@ def curate_worksheet(
     events_truncated: int = 0,
     parquet_dir: Path | None = None,
     check_only: bool = False,
+    schema_version: str | None = None,
 ) -> dict[str, Any]:
     """Admit a worksheet pass. Returns a report: admitted / rejected /
     coverage rows minted, and whether the artifact was written."""
@@ -452,6 +494,18 @@ def curate_worksheet(
     working = _load_base_graph(
         target_path, graph_id=graph_id, graph_known_at=graph_known_at, graph_effective_at=graph_effective_at,
     )
+    if schema_version is not None:
+        if schema_version not in _SCHEMA_VERSION_RANK:
+            raise CurateError("unsupported ontology schema migration")
+        if _SCHEMA_VERSION_RANK.get(working.get("schema_version"), 0) > _SCHEMA_VERSION_RANK[schema_version]:
+            raise CurateError("ontology schema downgrade refused")
+        working["schema_version"] = schema_version
+        if _SCHEMA_VERSION_RANK[schema_version] >= _SCHEMA_VERSION_RANK[po.PUBLIC_CAPACITY_VERSION]:
+            working.setdefault(po.PUBLIC_CAPACITY_COLLECTION, [])
+        if _SCHEMA_VERSION_RANK[schema_version] >= _SCHEMA_VERSION_RANK[po.PUBLIC_OVERSIGHT_VERSION]:
+            working.setdefault(po.PUBLIC_OVERSIGHT_COLLECTION, [])
+        if _SCHEMA_VERSION_RANK[schema_version] >= _SCHEMA_VERSION_RANK[po.PUBLIC_AGREEMENT_VERSION]:
+            working.setdefault(po.PUBLIC_AGREEMENT_COLLECTION, [])
     # freeze SS3.0: curate re-mints the graph_id's status segment to
     # `reviewed` on every admission -- a `candidate`-status graph_id must
     # never reach the canonical artifact.
@@ -497,8 +551,20 @@ def curate_worksheet(
         if target_kind not in _TARGET_KIND_TO_COLLECTION or not isinstance(candidate_row, dict):
             rejected.append({"row": row, "reason": "worksheet_inconsistent"})
             continue
+        if target_kind == "public_capacity_assertion" and working.get("schema_version") not in (po.PUBLIC_CAPACITY_VERSION, po.PUBLIC_OVERSIGHT_VERSION, po.PUBLIC_AGREEMENT_VERSION):
+            rejected.append({"row": row, "reason": "public_capacity_schema_migration_required"})
+            continue
+        if target_kind == "public_oversight_assertion" and working.get("schema_version") not in (po.PUBLIC_OVERSIGHT_VERSION, po.PUBLIC_AGREEMENT_VERSION):
+            rejected.append({"row": row, "reason": "public_oversight_schema_migration_required"})
+            continue
         if _forbidden_keys_present(candidate_row):
             rejected.append({"row": row, "reason": "forbidden_provenance_key_present"})
+            continue
+        if target_kind == "public_agreement_assertion" and working.get("schema_version") != po.PUBLIC_AGREEMENT_VERSION:
+            rejected.append({"row": row, "reason": "public_agreement_schema_migration_required"})
+            continue
+        if target_kind == "public_agreement_assertion" and po.strict_datetime(candidate_row.get("known_at")) is not None and po.strict_datetime(candidate_row["known_at"]) > po.strict_datetime(reviewed_at):
+            rejected.append({"row": row, "reason": "public_agreement_review_clock_invalid"})
             continue
         if candidate_row.get("verification_state") not in po.REVIEW_STATES:
             rejected.append({"row": row, "reason": "worksheet_inconsistent"})
@@ -559,7 +625,9 @@ def curate_worksheet(
     for _ in range(len(remaining) + 1):
         trial = deepcopy(working)
         for candidate in remaining:
-            trial[_TARGET_KIND_TO_COLLECTION[candidate["target_kind"]]].append(candidate["candidate_row"])
+            collection = trial[_TARGET_KIND_TO_COLLECTION[candidate["target_kind"]]]
+            if candidate["target_kind"] not in _IDEMPOTENT_CONTENT_KINDS or candidate["candidate_row"] not in collection:
+                collection.append(candidate["candidate_row"])
         try:
             # Curate-only invariants the loader does not (and must not, per
             # freeze SS3.2 -- these are ADMISSION-time laws) enforce: a
@@ -608,7 +676,7 @@ def curate_worksheet(
         scope = entry.get("scope")
         subject_type = entry.get("subject_type")
         subject_id = entry.get("subject_id")
-        if scope not in po.COVERAGE_SCOPE_ENUM or subject_type not in po.COVERAGE_SUBJECT_TYPE_ENUM or not subject_id:
+        if scope not in po.coverage_scopes_for(working) or subject_type not in po.coverage_subject_types_for(working) or not subject_id:
             continue
         admitted_count = sum(
             1 for c in admitted
@@ -627,8 +695,9 @@ def curate_worksheet(
             "worksheet_sha256": worksheet_sha256,
             "admitted_count": admitted_count,
         }
-        coverage_rows.append(coverage_row)
-        working["review_coverage"].append(coverage_row)
+        if scope not in _IDEMPOTENT_COVERAGE_SCOPES or coverage_row not in working["review_coverage"]:
+            coverage_rows.append(coverage_row)
+            working["review_coverage"].append(coverage_row)
 
     try:
         po.load_program_ontology_graph(working)
@@ -660,6 +729,8 @@ def _row_key(candidate: dict[str, Any]) -> str:
 def _covers(candidate: dict[str, Any], *, scope: str, subject_type: str, subject_id: str) -> bool:
     row = candidate["candidate_row"]
     target_kind = candidate["target_kind"]
+    if subject_type == "source_evidence" and scope == "public_agreement":
+        return target_kind == "public_agreement_assertion" and subject_id in row.get("evidence_refs", [])
     if subject_type == "program":
         if scope == "program_identity":
             if target_kind == "program":
@@ -673,6 +744,10 @@ def _covers(candidate: dict[str, Any], *, scope: str, subject_type: str, subject
             return target_kind == "role_assertion" and row.get("program_id") == subject_id
         if scope == "milestones":
             return target_kind == "milestone" and row.get("program_id") == subject_id
+        if scope == "public_capacity":
+            return target_kind == "public_capacity_assertion" and row.get("program_id") == subject_id
+        if scope == "public_oversight":
+            return target_kind == "public_oversight_assertion" and row.get("program_id") == subject_id
         if scope == "program_event_link":
             return target_kind == "program_event_link" and row.get("program_id") == subject_id
     if subject_type == "award_event" and scope == "program_event_link":
@@ -721,6 +796,7 @@ def main() -> int:
     parser.add_argument("--worksheet", type=Path, required=True)
     parser.add_argument("--target", type=Path, default=DEFAULT_TARGET)
     parser.add_argument("--graph-id")
+    parser.add_argument("--schema-version", choices=tuple(_SCHEMA_VERSION_RANK))
     parser.add_argument("--graph-known-at")
     parser.add_argument("--graph-effective-at")
     parser.add_argument("--workspace", type=Path, help="Path to workspace.json for event verification")
@@ -753,6 +829,7 @@ def main() -> int:
         events_truncated=events_truncated,
         parquet_dir=args.parquet_dir or (_ROOT / "data" / "government_revenue"),
         check_only=args.check,
+        schema_version=args.schema_version,
     )
     action = "validated" if args.check else "published"
     print(

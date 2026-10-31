@@ -17,6 +17,7 @@ from engine.fundamental_forensics.query import (
     BitemporalMetricQueryEngine,
     FilingMetadata,
     PeriodRequest,
+    QueryEntity,
     QueryPolicy,
 )
 from engine.fundamental_forensics.query_snapshots import (
@@ -43,6 +44,10 @@ from engine.research_vault.r2_store import LocalStore, VersionedBytes
 
 ROOT = Path(__file__).resolve().parents[1]
 ENTITY = "0000000001"
+# Synthetic industrial SIC for value-intent tests (R1-SIC/R2).  The snapshot
+# manifest declares it, and replay re-reads the declaration (never a live
+# contract) so the receipt stays reproducible.
+_INDUSTRIAL_SIC = "3571"
 PERIOD = PeriodRequest.duration("2025-01-01", "2025-12-31", label="FY2025")
 POLICY = QueryPolicy(
     source_snapshot_at="2026-08-05T00:00:00Z",
@@ -550,7 +555,7 @@ def test_formula_missing_and_not_evaluable_cells_replay_byte_identically(tmp_pat
     matrix = BitemporalMetricQueryEngine(
         ledger,
         load_core_metric_registry(ROOT),
-        entities={"AAA": ENTITY},
+        entities=(QueryEntity("AAA", ENTITY, issuer_sic=_INDUSTRIAL_SIC),),
         filing_metadata=metadata,
     ).query_matrix(
         tickers=["AAA"],

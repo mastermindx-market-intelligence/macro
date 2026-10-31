@@ -1,0 +1,391 @@
+{
+  "contract": "defense_economics.v1",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-10-13T03:00:00Z",
+  "source_bindings": {
+    "identity": {
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "issuer_id": "ISS:US-XNYS-NOC",
+      "security_id": "SEC:US-XNYS-NOC"
+    },
+    "company": {
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "owner_family": "company_intelligence",
+      "issuer_id": "ISS:US-XNYS-NOC",
+      "security_id": "SEC:US-XNYS-NOC",
+      "periods": [
+        "2026Q2"
+      ]
+    },
+    "market": {
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "gov": {
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+  },
+  "profiles": [
+    {
+      "issuer_id": null,
+      "security_id": null,
+      "ticker_display": "LMT",
+      "name": "LMT",
+      "identity_mode": null,
+      "identity_owner_ref": null,
+      "axes": {
+        "participation": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ]
+        },
+        "demand": {
+          "state": "unreviewed",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "issuer_identity_unqualified",
+          "facts": [],
+          "limitations": [
+            "issuer_identity_unqualified"
+          ]
+        },
+        "economics": {
+          "state": "unreviewed",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "issuer_identity_unqualified",
+          "facts": [],
+          "limitations": [
+            "issuer_identity_unqualified"
+          ]
+        },
+        "recognition": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "expectations_kind": "not_observed"
+        }
+      },
+      "program_workshare": null,
+      "program_workshare_state": "not_disclosed",
+      "shareholder_capture": {
+        "state": "not_asserted",
+        "source_refs": []
+      },
+      "contrary_case": null,
+      "next_condition": null,
+      "invalidation": null,
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "authority": {
+        "context_only": true,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_escalate": false
+      }
+    },
+    {
+      "issuer_id": null,
+      "security_id": null,
+      "ticker_display": "RTX",
+      "name": "RTX",
+      "identity_mode": null,
+      "identity_owner_ref": null,
+      "axes": {
+        "participation": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ]
+        },
+        "demand": {
+          "state": "unreviewed",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "issuer_identity_unqualified",
+          "facts": [],
+          "limitations": [
+            "issuer_identity_unqualified"
+          ]
+        },
+        "economics": {
+          "state": "unreviewed",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "issuer_identity_unqualified",
+          "facts": [],
+          "limitations": [
+            "issuer_identity_unqualified"
+          ]
+        },
+        "recognition": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "expectations_kind": "not_observed"
+        }
+      },
+      "program_workshare": null,
+      "program_workshare_state": "not_disclosed",
+      "shareholder_capture": {
+        "state": "not_asserted",
+        "source_refs": []
+      },
+      "contrary_case": null,
+      "next_condition": null,
+      "invalidation": null,
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "authority": {
+        "context_only": true,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_escalate": false
+      }
+    },
+    {
+      "issuer_id": "ISS:US-XNYS-NOC",
+      "security_id": "SEC:US-XNYS-NOC",
+      "ticker_display": "NOC",
+      "name": "NOC",
+      "identity_mode": "current",
+      "identity_owner_ref": "identity",
+      "axes": {
+        "participation": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ]
+        },
+        "demand": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ]
+        },
+        "economics": {
+          "state": "supported",
+          "owner_ref": "company",
+          "observed_at": "2026-07-21T10:00:00Z",
+          "fiscal_period": "2026Q2",
+          "reason_code": null,
+          "summary_en": "Sales rose while profitability fell.",
+          "summary_zh": "\u9500\u552e\u589e\u957f\u800c\u76c8\u5229\u4e0b\u964d\u3002",
+          "evidence_refs": [],
+          "limitations": [],
+          "facts": [
+            {
+              "fact_id": "issuer:segment-sales",
+              "value": 2093,
+              "unit": "USD_million",
+              "period": "2026Q2",
+              "accounting_basis": "issuer_reported_segment",
+              "fact_class": "reported_segment_sales",
+              "owner_ref": "company",
+              "source_span": {
+                "receipt_state": "byte_replayed",
+                "text_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                "document_id": "sec:release:1"
+              }
+            }
+          ]
+        },
+        "recognition": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "expectations_kind": "not_observed"
+        }
+      },
+      "program_workshare": null,
+      "program_workshare_state": "not_disclosed",
+      "shareholder_capture": {
+        "state": "not_asserted",
+        "source_refs": []
+      },
+      "contrary_case": "USD68M unfavorable SiAW EAC; operating income declined38%.",
+      "next_condition": null,
+      "invalidation": null,
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "authority": {
+        "context_only": true,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_escalate": false
+      }
+    },
+    {
+      "issuer_id": null,
+      "security_id": null,
+      "ticker_display": "LHX",
+      "name": "LHX",
+      "identity_mode": null,
+      "identity_owner_ref": null,
+      "axes": {
+        "participation": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ]
+        },
+        "demand": {
+          "state": "unreviewed",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "issuer_identity_unqualified",
+          "facts": [],
+          "limitations": [
+            "issuer_identity_unqualified"
+          ]
+        },
+        "economics": {
+          "state": "unreviewed",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "issuer_identity_unqualified",
+          "facts": [],
+          "limitations": [
+            "issuer_identity_unqualified"
+          ]
+        },
+        "recognition": {
+          "state": "missing_owner",
+          "summary_en": "Required evidence is unavailable.",
+          "summary_zh": "\u6240\u9700\u8bc1\u636e\u6682\u4e0d\u53ef\u7528\u3002",
+          "owner_ref": null,
+          "evidence_refs": [],
+          "observed_at": null,
+          "fiscal_period": null,
+          "reason_code": "owner_not_supplied",
+          "facts": [],
+          "limitations": [
+            "owner_not_supplied"
+          ],
+          "expectations_kind": "not_observed"
+        }
+      },
+      "program_workshare": null,
+      "program_workshare_state": "not_disclosed",
+      "shareholder_capture": {
+        "state": "not_asserted",
+        "source_refs": []
+      },
+      "contrary_case": null,
+      "next_condition": null,
+      "invalidation": null,
+      "research_state": "EVIDENCE_INSUFFICIENT",
+      "authority": {
+        "context_only": true,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_escalate": false
+      }
+    }
+  ],
+  "authority": {
+    "context_only": true,
+    "can_rank": false,
+    "can_size": false,
+    "can_gate": false,
+    "can_originate_signal": false,
+    "can_escalate": false
+  },
+  "content_id": "dfe1-ac8bc2fc01b3f21769255018"
+}

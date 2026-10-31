@@ -1,0 +1,1303 @@
+{
+  "adjustment_reference": {
+    "action_revision_set_id": null,
+    "as_at": null,
+    "basis": "tradj",
+    "executable": false,
+    "readout": "vendor-adjusted \u2014 not a printed price",
+    "vintage": "unattested"
+  },
+  "coverage": {
+    "listings_resolved": 251,
+    "listings_unresolved": 2,
+    "store": "data/stocks",
+    "symbols": 253
+  },
+  "evidence_mode": {
+    "clock": "ingested_at",
+    "code_version": null,
+    "dependency_generation_ids": [],
+    "generation_attested": false,
+    "mode": "CURRENT",
+    "output_registry_row": "terminal.bars.daily.ohlc_json",
+    "registry_row": "equity.bars.daily.stocks"
+  },
+  "field_units": {
+    "close": "USD/share",
+    "currency": "USD",
+    "high": "USD/share",
+    "low": "USD/share",
+    "open": "USD/share",
+    "share_basis": "tradj",
+    "volume": "shares",
+    "volume_convention": "vendor-reported, unattested"
+  },
+  "identity_namespace": "US-<MIC>-<CODE>[.N]",
+  "listings": {
+    "AAPL": {
+      "listing_key": "US-XNAS-AAPL",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-AAPL"
+    },
+    "ABBV": {
+      "listing_key": "US-XNYS-ABBV",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ABBV"
+    },
+    "ABNB": {
+      "listing_key": "US-XNAS-ABNB",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-ABNB"
+    },
+    "ABT": {
+      "listing_key": "US-XNYS-ABT",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ABT"
+    },
+    "ADI": {
+      "listing_key": "US-XNAS-ADI",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-ADI"
+    },
+    "ADM": {
+      "listing_key": "US-XNYS-ADM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ADM"
+    },
+    "ADP": {
+      "listing_key": "US-XNAS-ADP",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-ADP"
+    },
+    "AEE": {
+      "listing_key": "US-XNYS-AEE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-AEE"
+    },
+    "AEP": {
+      "listing_key": "US-XNAS-AEP",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-AEP"
+    },
+    "AMAT": {
+      "listing_key": "US-XNAS-AMAT",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-AMAT"
+    },
+    "AMCR": {
+      "listing_key": "US-XNYS-AMCR",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-AMCR"
+    },
+    "AMD": {
+      "listing_key": "US-XNAS-AMD",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-AMD"
+    },
+    "AMGN": {
+      "listing_key": "US-XNAS-AMGN",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-AMGN"
+    },
+    "AMT": {
+      "listing_key": "US-XNYS-AMT",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-AMT"
+    },
+    "AMZN": {
+      "listing_key": "US-XNAS-AMZN",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-AMZN"
+    },
+    "ANET": {
+      "listing_key": "US-XNYS-ANET",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ANET"
+    },
+    "APD": {
+      "listing_key": "US-XNYS-APD",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-APD"
+    },
+    "APH": {
+      "listing_key": "US-XNYS-APH",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-APH"
+    },
+    "APP": {
+      "listing_key": "US-XNAS-APP",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-APP"
+    },
+    "ATO": {
+      "listing_key": "US-XNYS-ATO",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ATO"
+    },
+    "AVB": {
+      "listing_key": "US-XNYS-AVB",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-AVB"
+    },
+    "AVGO": {
+      "listing_key": "US-XNAS-AVGO",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-AVGO"
+    },
+    "AWK": {
+      "listing_key": "US-XNYS-AWK",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-AWK"
+    },
+    "AXP": {
+      "listing_key": "US-XNYS-AXP",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-AXP"
+    },
+    "AZO": {
+      "listing_key": "US-XNYS-AZO",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-AZO"
+    },
+    "BA": {
+      "listing_key": "US-XNYS-BA",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-BA"
+    },
+    "BAC": {
+      "listing_key": "US-XNYS-BAC",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-BAC"
+    },
+    "BALL": {
+      "listing_key": "US-XNYS-BALL",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-BALL"
+    },
+    "BE": {
+      "listing_key": "US-XNYS-BE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-BE"
+    },
+    "BKNG": {
+      "listing_key": "US-XNAS-BKNG",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-BKNG"
+    },
+    "BKR": {
+      "listing_key": "US-XNAS-BKR",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-BKR"
+    },
+    "BLK": {
+      "listing_key": "US-XNYS-BLK",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-BLK"
+    },
+    "BMY": {
+      "listing_key": "US-XNYS-BMY",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-BMY"
+    },
+    "BNY": {
+      "listing_key": "US-XNYS-BNY",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-BNY"
+    },
+    "BRK-B": {
+      "listing_key": "US-XNYS-BRK.B",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-BRK.B"
+    },
+    "BX": {
+      "listing_key": "US-XNYS-BX",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-BX"
+    },
+    "C": {
+      "listing_key": "US-XNYS-C",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-C"
+    },
+    "CASY": {
+      "listing_key": "US-XNAS-CASY",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-CASY"
+    },
+    "CAT": {
+      "listing_key": "US-XNYS-CAT",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CAT"
+    },
+    "CB": {
+      "listing_key": "US-XNYS-CB",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CB"
+    },
+    "CBRE": {
+      "listing_key": "US-XNYS-CBRE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CBRE"
+    },
+    "CCI": {
+      "listing_key": "US-XNYS-CCI",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CCI"
+    },
+    "CEG": {
+      "listing_key": "US-XNAS-CEG",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-CEG"
+    },
+    "CF": {
+      "listing_key": "US-XNYS-CF",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CF"
+    },
+    "CHTR": {
+      "listing_key": "US-XNAS-CHTR",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-CHTR"
+    },
+    "CI": {
+      "listing_key": "US-XNYS-CI",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CI"
+    },
+    "CL": {
+      "listing_key": "US-XNYS-CL",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CL"
+    },
+    "CMCSA": {
+      "listing_key": "US-XNAS-CMCSA",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-CMCSA"
+    },
+    "CME": {
+      "listing_key": "US-XNAS-CME",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-CME"
+    },
+    "CMG": {
+      "listing_key": "US-XNYS-CMG",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CMG"
+    },
+    "CMI": {
+      "listing_key": "US-XNYS-CMI",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CMI"
+    },
+    "CNP": {
+      "listing_key": "US-XNYS-CNP",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CNP"
+    },
+    "COF": {
+      "listing_key": "US-XNYS-COF",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-COF"
+    },
+    "COP": {
+      "listing_key": "US-XNYS-COP",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-COP"
+    },
+    "COST": {
+      "listing_key": "US-XNAS-COST",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-COST"
+    },
+    "CRH": {
+      "listing_key": "US-XNYS-CRH",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CRH"
+    },
+    "CRM": {
+      "listing_key": "US-XNYS-CRM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CRM"
+    },
+    "CRWD": {
+      "listing_key": "US-XNAS-CRWD",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-CRWD"
+    },
+    "CSCO": {
+      "listing_key": "US-XNAS-CSCO",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-CSCO"
+    },
+    "CSX": {
+      "listing_key": "US-XNAS-CSX",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-CSX"
+    },
+    "CTVA": {
+      "listing_key": "US-XNYS-CTVA",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CTVA"
+    },
+    "CVNA": {
+      "listing_key": "US-XNYS-CVNA",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CVNA"
+    },
+    "CVS": {
+      "listing_key": "US-XNYS-CVS",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CVS"
+    },
+    "CVX": {
+      "listing_key": "US-XNYS-CVX",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CVX"
+    },
+    "D": {
+      "listing_key": "US-XNYS-D",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-D"
+    },
+    "DASH": {
+      "listing_key": "US-XNAS-DASH",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-DASH"
+    },
+    "DD": {
+      "listing_key": "US-XNYS-DD",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-DD"
+    },
+    "DE": {
+      "listing_key": "US-XNYS-DE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-DE"
+    },
+    "DG": {
+      "listing_key": "US-XNYS-DG",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-DG"
+    },
+    "DHR": {
+      "listing_key": "US-XNYS-DHR",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-DHR"
+    },
+    "DIS": {
+      "listing_key": "US-XNYS-DIS",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-DIS"
+    },
+    "DLR": {
+      "listing_key": "US-XNYS-DLR",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-DLR"
+    },
+    "DOW": {
+      "listing_key": "US-XNYS-DOW",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-DOW"
+    },
+    "DTE": {
+      "listing_key": "US-XNYS-DTE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-DTE"
+    },
+    "DUK": {
+      "listing_key": "US-XNYS-DUK",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-DUK"
+    },
+    "DVN": {
+      "listing_key": "US-XNYS-DVN",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-DVN"
+    },
+    "EBAY": {
+      "listing_key": "US-XNAS-EBAY",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-EBAY"
+    },
+    "ECHO": {
+      "listing_key": "US-XNAS-SATS",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-SATS"
+    },
+    "ECL": {
+      "listing_key": "US-XNYS-ECL",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ECL"
+    },
+    "ED": {
+      "listing_key": "US-XNYS-ED",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ED"
+    },
+    "EIX": {
+      "listing_key": "US-XNYS-EIX",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-EIX"
+    },
+    "EL": {
+      "listing_key": "US-XNYS-EL",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-EL"
+    },
+    "ELV": {
+      "listing_key": "US-XNYS-ELV",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ELV"
+    },
+    "EMR": {
+      "listing_key": "US-XNYS-EMR",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-EMR"
+    },
+    "EOG": {
+      "listing_key": "US-XNYS-EOG",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-EOG"
+    },
+    "EQIX": {
+      "listing_key": "US-XNAS-EQIX",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-EQIX"
+    },
+    "EQT": {
+      "listing_key": "US-XNYS-EQT",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-EQT"
+    },
+    "ES": {
+      "listing_key": "US-XNYS-ES",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ES"
+    },
+    "ESS": {
+      "listing_key": "US-XNYS-ESS",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ESS"
+    },
+    "ETN": {
+      "listing_key": "US-XNYS-ETN",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ETN"
+    },
+    "ETR": {
+      "listing_key": "US-XNYS-ETR",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ETR"
+    },
+    "EXC": {
+      "listing_key": "US-XNAS-EXC",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-EXC"
+    },
+    "EXE": {
+      "listing_key": "US-XNAS-EXE",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-EXE"
+    },
+    "EXR": {
+      "listing_key": "US-XNYS-EXR",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-EXR"
+    },
+    "F": {
+      "listing_key": "US-XNYS-F",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-F"
+    },
+    "FANG": {
+      "listing_key": "US-XNAS-FANG",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-FANG"
+    },
+    "FCX": {
+      "listing_key": "US-XNYS-FCX",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-FCX"
+    },
+    "FOX": {
+      "listing_key": "US-XNAS-FOX",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-FOX"
+    },
+    "FOXA": {
+      "listing_key": "US-XNAS-FOXA",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-FOXA"
+    },
+    "GD": {
+      "listing_key": "US-XNYS-GD",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-GD"
+    },
+    "GE": {
+      "listing_key": "US-XNYS-GE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-GE"
+    },
+    "GEV": {
+      "listing_key": "US-XNYS-GEV",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-GEV"
+    },
+    "GILD": {
+      "listing_key": "US-XNAS-GILD",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-GILD"
+    },
+    "GM": {
+      "listing_key": "US-XNYS-GM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-GM"
+    },
+    "GOOG": {
+      "listing_key": "US-XNAS-GOOG",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-GOOG"
+    },
+    "GOOGL": {
+      "listing_key": "US-XNAS-GOOGL",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-GOOGL"
+    },
+    "GRMN": {
+      "listing_key": "US-XNYS-GRMN",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-GRMN"
+    },
+    "GS": {
+      "listing_key": "US-XNYS-GS",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-GS"
+    },
+    "HAL": {
+      "listing_key": "US-XNYS-HAL",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-HAL"
+    },
+    "HD": {
+      "listing_key": "US-XNYS-HD",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-HD"
+    },
+    "HLT": {
+      "listing_key": "US-XNYS-HLT",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-HLT"
+    },
+    "HON": {
+      "listing_key": "US-XNAS-HON",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-HON"
+    },
+    "HOOD": {
+      "listing_key": "US-XNAS-HOOD",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-HOOD"
+    },
+    "HST": {
+      "listing_key": "US-XNAS-HST",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-HST"
+    },
+    "HSY": {
+      "listing_key": "US-XNYS-HSY",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-HSY"
+    },
+    "HWM": {
+      "listing_key": "US-XNYS-HWM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-HWM"
+    },
+    "IBM": {
+      "listing_key": "US-XNYS-IBM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-IBM"
+    },
+    "IFF": {
+      "listing_key": "US-XNYS-IFF",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-IFF"
+    },
+    "INTC": {
+      "listing_key": "US-XNAS-INTC",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-INTC"
+    },
+    "INVH": {
+      "listing_key": "US-XNYS-INVH",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-INVH"
+    },
+    "IP": {
+      "listing_key": "US-XNYS-IP",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-IP"
+    },
+    "IRM": {
+      "listing_key": "US-XNYS-IRM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-IRM"
+    },
+    "ISRG": {
+      "listing_key": "US-XNAS-ISRG",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-ISRG"
+    },
+    "JCI": {
+      "listing_key": "US-XNYS-JCI",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-JCI"
+    },
+    "JNJ": {
+      "listing_key": "US-XNYS-JNJ",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-JNJ"
+    },
+    "JPM": {
+      "listing_key": "US-XNYS-JPM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-JPM"
+    },
+    "KDP": {
+      "listing_key": "US-XNAS-KDP",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-KDP"
+    },
+    "KIM": {
+      "listing_key": "US-XNYS-KIM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-KIM"
+    },
+    "KLAC": {
+      "listing_key": "US-XNAS-KLAC",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-KLAC"
+    },
+    "KMB": {
+      "listing_key": "US-XNAS-KMB",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-KMB"
+    },
+    "KMI": {
+      "listing_key": "US-XNYS-KMI",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-KMI"
+    },
+    "KO": {
+      "listing_key": "US-XNYS-KO",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-KO"
+    },
+    "KR": {
+      "listing_key": "US-XNYS-KR",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-KR"
+    },
+    "KVUE": {
+      "listing_key": "US-XNYS-KVUE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-KVUE"
+    },
+    "LIN": {
+      "listing_key": "US-XNAS-LIN",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-LIN"
+    },
+    "LLY": {
+      "listing_key": "US-XNYS-LLY",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-LLY"
+    },
+    "LMT": {
+      "listing_key": "US-XNYS-LMT",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-LMT"
+    },
+    "LOW": {
+      "listing_key": "US-XNYS-LOW",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-LOW"
+    },
+    "LRCX": {
+      "listing_key": "US-XNAS-LRCX",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-LRCX"
+    },
+    "LYB": {
+      "listing_key": "US-XNYS-LYB",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-LYB"
+    },
+    "LYV": {
+      "listing_key": "US-XNYS-LYV",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-LYV"
+    },
+    "MA": {
+      "listing_key": "US-XNYS-MA",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-MA"
+    },
+    "MAR": {
+      "listing_key": "US-XNAS-MAR",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-MAR"
+    },
+    "MCD": {
+      "listing_key": "US-XNYS-MCD",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-MCD"
+    },
+    "MCK": {
+      "listing_key": "US-XNYS-MCK",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-MCK"
+    },
+    "MDLZ": {
+      "listing_key": "US-XNAS-MDLZ",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-MDLZ"
+    },
+    "MDT": {
+      "listing_key": "US-XNYS-MDT",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-MDT"
+    },
+    "META": {
+      "listing_key": "US-XNAS-META",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-META"
+    },
+    "MLM": {
+      "listing_key": "US-XNYS-MLM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-MLM"
+    },
+    "MMM": {
+      "listing_key": "US-XNYS-MMM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-MMM"
+    },
+    "MNST": {
+      "listing_key": "US-XNAS-MNST",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-MNST"
+    },
+    "MO": {
+      "listing_key": "US-XNYS-MO",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-MO"
+    },
+    "MPC": {
+      "listing_key": "US-XNYS-MPC",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-MPC"
+    },
+    "MRK": {
+      "listing_key": "US-XNYS-MRK",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-MRK"
+    },
+    "MRNA": {
+      "listing_key": "US-XNAS-MRNA",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-MRNA"
+    },
+    "MRVL": {
+      "listing_key": "US-XNAS-MRVL",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-MRVL"
+    },
+    "MS": {
+      "listing_key": "US-XNYS-MS",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-MS"
+    },
+    "MSFT": {
+      "listing_key": "US-XNAS-MSFT",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-MSFT"
+    },
+    "MU": {
+      "listing_key": "US-XNAS-MU",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-MU"
+    },
+    "NEE": {
+      "listing_key": "US-XNYS-NEE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-NEE"
+    },
+    "NEM": {
+      "listing_key": "US-XNYS-NEM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-NEM"
+    },
+    "NFLX": {
+      "listing_key": "US-XNAS-NFLX",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-NFLX"
+    },
+    "NKE": {
+      "listing_key": "US-XNYS-NKE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-NKE"
+    },
+    "NRG": {
+      "listing_key": "US-XNYS-NRG",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-NRG"
+    },
+    "NUE": {
+      "listing_key": "US-XNYS-NUE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-NUE"
+    },
+    "NVDA": {
+      "listing_key": "US-XNAS-NVDA",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-NVDA"
+    },
+    "NWSA": {
+      "listing_key": "US-XNAS-NWSA",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-NWSA"
+    },
+    "O": {
+      "listing_key": "US-XNYS-O",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-O"
+    },
+    "OKE": {
+      "listing_key": "US-XNYS-OKE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-OKE"
+    },
+    "OMC": {
+      "listing_key": "US-XNYS-OMC",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-OMC"
+    },
+    "ORCL": {
+      "listing_key": "US-XNYS-ORCL",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ORCL"
+    },
+    "ORLY": {
+      "listing_key": "US-XNAS-ORLY",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-ORLY"
+    },
+    "OXY": {
+      "listing_key": "US-XNYS-OXY",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-OXY"
+    },
+    "PANW": {
+      "listing_key": "US-XNAS-PANW",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-PANW"
+    },
+    "PCG": {
+      "listing_key": "US-XNYS-PCG",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PCG"
+    },
+    "PEG": {
+      "listing_key": "US-XNYS-PEG",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PEG"
+    },
+    "PEP": {
+      "listing_key": "US-XNAS-PEP",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-PEP"
+    },
+    "PFE": {
+      "listing_key": "US-XNYS-PFE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PFE"
+    },
+    "PG": {
+      "listing_key": "US-XNYS-PG",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PG"
+    },
+    "PGR": {
+      "listing_key": "US-XNYS-PGR",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PGR"
+    },
+    "PH": {
+      "listing_key": "US-XNYS-PH",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PH"
+    },
+    "PKG": {
+      "listing_key": "US-XNYS-PKG",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PKG"
+    },
+    "PLD": {
+      "listing_key": "US-XNYS-PLD",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PLD"
+    },
+    "PLTR": {
+      "listing_key": "US-XNAS-PLTR",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-PLTR"
+    },
+    "PM": {
+      "listing_key": "US-XNYS-PM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PM"
+    },
+    "PNC": {
+      "listing_key": "US-XNYS-PNC",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PNC"
+    },
+    "PPG": {
+      "listing_key": "US-XNYS-PPG",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PPG"
+    },
+    "PPL": {
+      "listing_key": "US-XNYS-PPL",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PPL"
+    },
+    "PSA": {
+      "listing_key": "US-XNYS-PSA",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PSA"
+    },
+    "PSX": {
+      "listing_key": "US-XNYS-PSX",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PSX"
+    },
+    "PWR": {
+      "listing_key": "US-XNYS-PWR",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-PWR"
+    },
+    "QCOM": {
+      "listing_key": "US-XNAS-QCOM",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-QCOM"
+    },
+    "RCL": {
+      "listing_key": "US-XNYS-RCL",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-RCL"
+    },
+    "RDDT": {
+      "listing_key": "US-XNYS-RDDT",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-RDDT"
+    },
+    "REGN": {
+      "listing_key": "US-XNAS-REGN",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-REGN"
+    },
+    "ROST": {
+      "listing_key": "US-XNAS-ROST",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-ROST"
+    },
+    "RTX": {
+      "listing_key": "US-XNYS-RTX",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-RTX"
+    },
+    "SBAC": {
+      "listing_key": "US-XNAS-SBAC",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-SBAC"
+    },
+    "SBUX": {
+      "listing_key": "US-XNAS-SBUX",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-SBUX"
+    },
+    "SCHW": {
+      "listing_key": "US-XNYS-SCHW",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-SCHW"
+    },
+    "SHW": {
+      "listing_key": "US-XNYS-SHW",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-SHW"
+    },
+    "SLB": {
+      "listing_key": "US-XNYS-SLB",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-SLB"
+    },
+    "SNDK": {
+      "listing_key": "US-XNAS-SNDK",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-SNDK"
+    },
+    "SO": {
+      "listing_key": "US-XNYS-SO",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-SO"
+    },
+    "SPG": {
+      "listing_key": "US-XNYS-SPG",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-SPG"
+    },
+    "SPGI": {
+      "listing_key": "US-XNYS-SPGI",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-SPGI"
+    },
+    "SRE": {
+      "listing_key": "US-XNYS-SRE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-SRE"
+    },
+    "STLD": {
+      "listing_key": "US-XNAS-STLD",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-STLD"
+    },
+    "STX": {
+      "listing_key": "US-XNAS-STX",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-STX"
+    },
+    "SW": {
+      "listing_key": "US-XNYS-SW",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-SW"
+    },
+    "SYK": {
+      "listing_key": "US-XNYS-SYK",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-SYK"
+    },
+    "SYY": {
+      "listing_key": "US-XNYS-SYY",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-SYY"
+    },
+    "T": {
+      "listing_key": "US-XNYS-T",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-T"
+    },
+    "TGT": {
+      "listing_key": "US-XNYS-TGT",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-TGT"
+    },
+    "TJX": {
+      "listing_key": "US-XNYS-TJX",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-TJX"
+    },
+    "TKO": {
+      "listing_key": "US-XNYS-TKO",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-TKO"
+    },
+    "TMO": {
+      "listing_key": "US-XNYS-TMO",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-TMO"
+    },
+    "TMUS": {
+      "listing_key": "US-XNAS-TMUS",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-TMUS"
+    },
+    "TPL": {
+      "listing_key": "US-XNYS-TPL",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-TPL"
+    },
+    "TRGP": {
+      "listing_key": "US-XNYS-TRGP",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-TRGP"
+    },
+    "TSLA": {
+      "listing_key": "US-XNAS-TSLA",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-TSLA"
+    },
+    "TT": {
+      "listing_key": "US-XNYS-TT",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-TT"
+    },
+    "TTD": {
+      "listing_key": "US-XNAS-TTD",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-TTD"
+    },
+    "TTWO": {
+      "listing_key": "US-XNAS-TTWO",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-TTWO"
+    },
+    "TXN": {
+      "listing_key": "US-XNAS-TXN",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-TXN"
+    },
+    "UBER": {
+      "listing_key": "US-XNYS-UBER",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-UBER"
+    },
+    "UNH": {
+      "listing_key": "US-XNYS-UNH",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-UNH"
+    },
+    "UNP": {
+      "listing_key": "US-XNYS-UNP",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-UNP"
+    },
+    "USB": {
+      "listing_key": "US-XNYS-USB",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-USB"
+    },
+    "V": {
+      "listing_key": "US-XNYS-V",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-V"
+    },
+    "VICI": {
+      "listing_key": "US-XNYS-VICI",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-VICI"
+    },
+    "VLO": {
+      "listing_key": "US-XNYS-VLO",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-VLO"
+    },
+    "VMC": {
+      "listing_key": "US-XNYS-VMC",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-VMC"
+    },
+    "VMRK": {
+      "listing_key": "US-XNYS-EQR",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-EQR"
+    },
+    "VRT": {
+      "listing_key": "US-XNYS-VRT",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-VRT"
+    },
+    "VRTX": {
+      "listing_key": "US-XNAS-VRTX",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-VRTX"
+    },
+    "VST": {
+      "listing_key": "US-XNYS-VST",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-VST"
+    },
+    "VTR": {
+      "listing_key": "US-XNYS-VTR",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-VTR"
+    },
+    "VYLR": {
+      "listing_key": "US-XNYS-VYLR",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-VYLR"
+    },
+    "VZ": {
+      "listing_key": "US-XNYS-VZ",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-VZ"
+    },
+    "WBD": {
+      "listing_key": "US-XNAS-WBD",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-WBD"
+    },
+    "WDC": {
+      "listing_key": "US-XNAS-WDC",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-WDC"
+    },
+    "WEC": {
+      "listing_key": "US-XNYS-WEC",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-WEC"
+    },
+    "WELL": {
+      "listing_key": "US-XNYS-WELL",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-WELL"
+    },
+    "WFC": {
+      "listing_key": "US-XNYS-WFC",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-WFC"
+    },
+    "WM": {
+      "listing_key": "US-XNYS-WM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-WM"
+    },
+    "WMB": {
+      "listing_key": "US-XNYS-WMB",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-WMB"
+    },
+    "WMT": {
+      "listing_key": "US-XNAS-WMT",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-WMT"
+    },
+    "WY": {
+      "listing_key": "US-XNYS-WY",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-WY"
+    },
+    "XEL": {
+      "listing_key": "US-XNAS-XEL",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-XEL"
+    },
+    "XOM": {
+      "listing_key": "US-XNYS-XOM",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-XOM"
+    }
+  },
+  "purpose": "terminal_daily_ohlc",
+  "refusal_reasons": [],
+  "schema": "dataos.view_contract.v1",
+  "store_vendor": "yahoo",
+  "venues": [
+    "ARCX",
+    "XASE",
+    "XNAS",
+    "XNYS"
+  ]
+}

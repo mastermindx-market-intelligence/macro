@@ -204,14 +204,22 @@ on:
       # SSR page builder + its render test + the page template.
       - "engine/research_vault/**"
       - "scripts/ingest_research.py"
+      - "tests/test_research_vault_generation_cli.py"
       - "scripts/build_research_vault.py"
       - "tests/test_research_vault.py"
       - "tests/test_research_vault_strict_store.py"
+      - "tests/test_research_vault_generation_evidence.py"
+      - "tests/test_research_vault_producer_transport.py"
+      - "tests/test_research_vault_generation_recovery.py"
+      - "tests/test_research_vault_generation_continuation.py"
       # Research Vault (RV W2) serving API + download gate: quota ledger, view
       # rate-limit, watermark, the app/research.py router + its security tests.
       - "app/research.py"
       - "app/main.py"
       - "tests/test_research_api.py"
+      - "tests/test_research_revision_read.py"
+      - "app/macro_command.py"
+      - "tests/test_macro_command_api.py"
       # Research Vault (RV W3) page + viewer: page test + template.
       - "tests/test_research_vault_page.py"
       - "templates/research_vault.html.j2"
@@ -1078,6 +1086,7 @@ on:
       - "tests/test_government_revenue_dossiers.py"
       - "tests/test_government_revenue_subaward_api.py"
       - "tests/test_government_revenue_ui.py"
+      - "tests/test_government_revenue_candidate_sources.py"
       - "tests/test_government_revenue_dossier_ui.py"
       - "tests/test_government_revenue_briefcase_ui.py"
       # D3 temporal contract suite (wired by the same PR that added it).
@@ -1863,6 +1872,7 @@ on:
       - "tests/test_build_portfolio_ctx.py"
       - "tests/test_portfolio_ctx_chains.py"   # TXI W4 per-ticker chains merge
       - "scripts/build_state_of_themes.py"
+      - "scripts/build_theme_tree_page.py"
       - "tests/test_state_of_themes.py"
       - "engine/portfolio_brief.py"
       - "tests/test_portfolio_brief.py"
@@ -2960,6 +2970,7 @@ on:
       - "tests/test_api_paywall.py"
       - "tests/test_auth_cache_outage.py"
       - "tests/test_paywall_pro_gate.py"
+      - "tests/test_bot_session_recovery_browser.py"
       - "tests/test_special_situations_gate.py"
       - "tests/test_china_special_situations_gate.py"
       # etfs.html joined the tier-gate job in SEO Supercharge W2. Its subjects
@@ -3378,6 +3389,7 @@ on:
       - "tests/test_sector_nav_links.py"
       - "tests/test_site_semantics_refs.py"
       - "tests/test_sp500_heatmap_caps.py"
+      - "tests/test_sp500_heatmap_intraday_clock.py"
       - "tests/test_stage_analysis_page.py"
       - "tests/test_stocktable_data.py"
       - "tests/test_template_items_footgun.py"
@@ -3938,6 +3950,12 @@ on:
       - "tests/test_russell_breadth.py"
       # unrun-brain-gateway
       - "tests/test_brain_gateway.py"
+      - "tests/test_brain_research_mode.py"
+      - "tests/test_market_memory_brain_citations.py"
+      - "tests/test_market_memory_brain_citation_validation.py"
+      - "tests/js/market_memory_brain_citations.test.cjs"
+      - "tests/fixtures/market_memory_retained_owner_wire.json"
+      - "engine/neuralweb/market_memory_brain_citations.py"
       - "tests/test_brain_gateway_quota_safety.py"
       # unrun-macro-panels
       # engine/equity_factors.py was STRICTLY DARK (2026-08-06): named by no `run:` step
@@ -4385,11 +4403,14 @@ on:
       - "collectors/tiingo_archive.py"
       - "scripts/tiingo_ingest.py"
       - "scripts/tiingo_materialize.py"
+      - "scripts/tiingo_chart_history.py"
+      - "tests/test_tiingo_chart_history.py"
       - "scripts/tiingo_vendor_cohort.py"
       - "requirements/tiingo.txt"
       - "tests/test_tiingo_archive.py"
       - "tests/test_tiingo_views.py"
       - "tests/test_tiingo_reader.py"
+      - "tests/test_tiingo_forex_source.py"
       - "tests/test_tiingo_history.py"
       - "tests/test_tiingo_research_query.py"
       - "tests/test_tiingo_boats_tape.py"
@@ -4425,6 +4446,8 @@ on:
       # a regenerated artifact that could not START ci.yml would be the darkness the
       # closure guard exists to end. data/** is NOT a catch-all in this filter.
       - "tests/test_dataos_security_master.py"
+      - "tests/test_dataos_options_root.py"
+      - "tests/test_dataos_options_underlying.py"
       - "scripts/build_security_master.py"
       - "data/reference/**"
       # Job: dislocation-p0-a1-blind-harvest (.github/ci/legacy-jobs.yml).

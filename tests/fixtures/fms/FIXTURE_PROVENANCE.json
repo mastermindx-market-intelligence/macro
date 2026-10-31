@@ -99,13 +99,19 @@
    "bytes": 175599,
    "path": "tests/fixtures/fms/state/tunisia-border-security-project-phase-iii.html",
    "sha256": "238e7e9aaec58507375475774ed1e3f37d5c3fd34f24c11cbc3764a0480fa4e3"
+  },
+  {
+   "bytes": 64879,
+   "path": "tests/fixtures/fms/dsca/dsca-4393093.html",
+   "sha256": "6be5c6c6407aaf54457d4d660d25218caeba031d9a33b0abddde786eae3d24f2"
   }
  ],
  "sources": {
   "dsca": "data/government_revenue/fms_staged_objects/ (committed browser-acquired staged bytes, D6-B0 freeze R2/R3 + this session's census cross-check)",
   "fr": "session scratchpad fr_sweep/cache/<doc>.txt (FR API raw-text fetches, receipted in research/defense_intelligence/evidence/fms_d6b1_full_scope_census_2026-08-25.json)",
   "state": "session scratchpad state_corpus/ (State PM-Bureau CLI fetches)",
-  "state_staged_fixture_2026_08_26": "state-sweden-m142.html is a byte copy of the receipted census capture tests/fixtures/fms/state/sweden-m142-high-mobility-artillery-rocket-systems.html; state-listing.html is a minimal one-entry listing derived from the real www.state.gov collection-result markup, used only as staged-replay plumbing (the parse grammar itself stays proven against the real listing_page1.html); state_manifest.json pins both by sha256."
+  "state_staged_fixture_2026_08_26": "state-sweden-m142.html is a byte copy of the receipted census capture tests/fixtures/fms/state/sweden-m142-high-mobility-artillery-rocket-systems.html; state-listing.html is a minimal one-entry listing derived from the real www.state.gov collection-result markup, used only as staged-replay plumbing (the parse grammar itself stays proven against the real listing_page1.html); state_manifest.json pins both by sha256.",
+  "dsca_spain_f100_2026_10_14": "Byte-identical copy of retained data/government_revenue/fms_staged_objects/dsca-4393093.html; original receipt/observation fmsobs:4b439e7cb63c805bcbce99c7b815c789aa061aacf5515cb9bc57177d6c03b013, observed2026-08-26T09:37:21.528793+00:00. Added as a parser regression fixture; no new acquisition."
  },
  "what": "D6-B1 packet-1 FMS test fixtures: real receipted bytes copied from this session's deterministic acquisitions (FR raw texts, State PM-Bureau articles, DSCA staged objects committed on this branch). No fixture bytes are synthesized."
 }

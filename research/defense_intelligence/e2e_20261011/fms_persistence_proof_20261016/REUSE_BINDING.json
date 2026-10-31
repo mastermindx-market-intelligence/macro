@@ -1,0 +1,31 @@
+{
+  "scripts/ci/fms_persist.py": {
+    "identical_to_reviewed_integration": true,
+    "sha256": "6b0decd045e494d1aaf4f77b00eade3d205e17004470b2cb081311bbabbed4d1"
+  },
+  ".github/workflows/fms-acquire.yml": {
+    "identical_to_reviewed_integration": true,
+    "sha256": "91e65a31eb3c38c38dad3aa99e9c4f80c7c31fa44820af1d7a6720aa2e0b904a"
+  },
+  "tests/test_fms_persist.py": {
+    "identical_to_reviewed_integration": true,
+    "sha256": "f06e0e2aa106bc0603b67d1e6ea3eaba94195def98337406f552a6de2b075c3a"
+  },
+  "tests/test_fms_notifications.py": {
+    "identical_to_reviewed_integration": true,
+    "sha256": "a9266b2bd2cefe75caee4f694513681b078e9d3ac7772a034a6238fa1018b914"
+  },
+  "scripts/ci/govrev_publisher_preflight.py": {
+    "identical_to_reviewed_integration": true,
+    "sha256": "f5fb09af2d8bfe34065b3e3c23082021398e6af146ea9e9fe74b5ca393e80878"
+  },
+  "tests/test_govrev_publisher_preflight.py": {
+    "identical_to_reviewed_integration": true,
+    "sha256": "4f04b74cc232b0ba6620c4aa75d7bfec0ab01ecb1ba6ad645a273ce6b3c656a0"
+  },
+  "research/defense_intelligence/e2e_20261011/PUBLISHER_RECOVERY_BASELINE.json": {
+    "identical_to_reviewed_integration": true,
+    "sha256": "ff92466042d156cf5f078b62f89966b4bb817da20d1d55f77c47137a2b76d503"
+  },
+  "head": "e7a554f427bcb41232140c8fa115fa8bfca3987e"
+}

@@ -117,13 +117,47 @@ def _blank(value):
     return text == "" or text.casefold() in {"nan", "none", "nat"}
 
 
+def _omitted(capture, key) -> bool:
+    return key not in capture or capture.get(key) is None
+
+
+def _present_int(capture, key):
+    """A count key that is present and a real int, or None.
+
+    bool is a subclass of int and is not a sweep count. A missing key and a
+    non-int value are both absent, so a one-sided count cannot open a gap.
+    """
+    if key not in capture:
+        return None
+    value = capture[key]
+    if type(value) is not int:
+        return None
+    return value
+
+
 def _capture_is_incomplete(capture) -> bool:
-    """True when this capture itself is an unfinished sweep, not a retained generation."""
+    """True when this capture itself is an unfinished sweep, not a retained generation.
+
+    A direct caller can stamp qualified=True and omit both complete and
+    failure_code. Two present integer counts that differ are that unfinished
+    sweep. Omitting either count (the _capture() fixtures) or naming
+    FIRST_PAGE_OUTAGE with no count keys leaves the retained generation.
+    """
     if not capture:
         return False
     if capture.get("complete") is False:
         return True
-    return capture.get("failure_code") in _INCOMPLETE_SWEEP_FAILURES
+    if capture.get("failure_code") in _INCOMPLETE_SWEEP_FAILURES:
+        return True
+    if capture.get("qualified") is not True:
+        return False
+    if not _omitted(capture, "complete") or not _omitted(capture, "failure_code"):
+        return False
+    raw = _present_int(capture, "raw_count")
+    reported = _present_int(capture, "reported_total")
+    if raw is None or reported is None:
+        return False
+    return raw != reported
 
 
 def _closed_rows(rows):
@@ -349,8 +383,10 @@ def summarize_supply(rows, *, capture, now, max_capture_age: timedelta | None) -
         capture_incomplete = True
     elif qualified is True and _capture_is_incomplete(observation):
         # An unfinished sweep stays incomplete even when the caller passed
-        # qualified=True. complete=False and an incomplete failure_code both
-        # count. FIRST_PAGE_OUTAGE is outside _INCOMPLETE_SWEEP_FAILURES.
+        # qualified=True. complete=False, an incomplete failure_code, and a
+        # qualified capture that omits both while raw_count differs from
+        # reported_total all count. FIRST_PAGE_OUTAGE is outside
+        # _INCOMPLETE_SWEEP_FAILURES.
         capture_incomplete = True
         qualified = False
     counts = {

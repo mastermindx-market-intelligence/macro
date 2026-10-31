@@ -140,7 +140,7 @@ html[data-theme="dark"] .mm-mets>div{background:var(--bg)}
 <div class="wrap">
 
   <div class="h1">🎛️ {{ t('Strategy Scorecards','策略记分卡') }}</div>
-  <div class="intro">{{ t('Tactical strategies with live stance, backtest and rule-book on each card.','战术策略卡片：实时立场、回测与规则手册。') }}</div>
+  <div class="intro">{{ t('Tactical strategies with current stance, backtest and rule-book on each card.','战术策略卡片：当前仓位、回测与规则手册。') }}</div>
   {% if masterminds %}
   <div class="mm-hero">
     <div class="mm-hero-head">
@@ -186,6 +186,9 @@ html[data-theme="dark"] .mm-mets>div{background:var(--bg)}
         <div><span class="m-k">{{ t('Max DD','最大回撤') }}</span><span class="m-v {{ 'win' if c.maxdd >= c.hodl_maxdd else 'lose' }}">{{ c.maxdd }}%</span><span class="m-sub">{{ t('B&H','买持') }} {{ c.hodl_maxdd }}%</span></div>
         <div><span class="m-k">{{ t('Income','票息') }}</span><span class="m-v">{{ c.income }}%</span><span class="m-sub">{{ c.years }}y</span></div>
       </div>
+      {% if c.as_of %}<span class="m-sub">{{ t('As of','截至') }} {{ c.as_of }}
+        {% if c.score is number %} · {{ t('Composite score','综合分数') }} {{ c.score }}{% endif %}
+      </span>{% endif %}
       <div class="scard-foot">
         <span class="stance">{{ t(c.stance_en, c.stance_zh) }}</span>
         <span class="go">{{ t('Open →','打开 →') }}</span>

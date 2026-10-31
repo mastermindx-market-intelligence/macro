@@ -1,0 +1,12 @@
+{
+  "checks_passed": [
+    "first_completed_confirmation_with_original_age",
+    "pre_confirmation_invalidation",
+    "same_bar_invalidation_priority",
+    "tolerated_undercut_does_not_replace_candidate",
+    "post_confirmation_failure",
+    "original_candidate_retest_detection_credit",
+    "single_block_interval_unavailable"
+  ],
+  "count": 7
+}

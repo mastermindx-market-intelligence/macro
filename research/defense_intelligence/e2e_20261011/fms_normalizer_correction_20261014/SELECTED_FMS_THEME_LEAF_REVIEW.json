@@ -1,0 +1,107 @@
+{
+  "schema": "defense.fms_selected_theme_leaf_review.v1",
+  "state": "QUALIFIED_EXPLICIT_FMS_LEAF_REVIEW_CANDIDATE",
+  "review_time": "2026-10-14T02:40:25.285123+00:00",
+  "current_reviewer_native_coordinator": "01a13839-ad49-7001-b84c-288e98477b95",
+  "original_root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "original_review_sha256": "c3e86ca9d85f7ca1c8effb8c1e50bdc92f0ad40806847e74c28dbb6dd7d31b28",
+  "changed_tokens": [
+    {
+      "token": "nato_fms_demand/exposure/0",
+      "rail": "exposure",
+      "row_id": "fms:transmittal:25-104",
+      "selected_pointer_old": "/cases/3/contractors/0",
+      "selected_pointer_current": "/cases/3/contractors/0",
+      "old_fingerprint": "21311281ed649eb6e33f6c7e558d4b3350c2d0cfb13fa504965cdf9ce3c4b823",
+      "new_fingerprint": "9df04e2f2f474eaaff2c0602fb1219c09407ab3bffa2705ba530d7e190a174b2",
+      "row_changed_fields": [
+        "contractors",
+        "observations"
+      ],
+      "selected_node_changed": true,
+      "approval_basis": "only reviewed contractor count/location/grammatical-separator correction plus appended current-known interpretation observation; no stage/amount/identitypromotion"
+    },
+    {
+      "token": "nato_fms_demand/funding_stage/0",
+      "rail": "funding_stage",
+      "row_id": "fms:transmittal:25-104",
+      "selected_pointer_old": "/cases/3",
+      "selected_pointer_current": "/cases/3",
+      "old_fingerprint": "36a1656f1b81f7a44ab07c6b0ca6888c4c81b29f88a2665eb4191fd58fe59c9d",
+      "new_fingerprint": "6db8182652e8a6582205b96cda943525981f8f2383b4b902a7607f7fc597ad2d",
+      "row_changed_fields": [
+        "contractors",
+        "observations"
+      ],
+      "selected_node_changed": true,
+      "approval_basis": "only reviewed contractor count/location/grammatical-separator correction plus appended current-known interpretation observation; no stage/amount/identitypromotion"
+    },
+    {
+      "token": "nato_fms_demand/next_event/0",
+      "rail": "next_event",
+      "row_id": "fms:transmittal:25-104",
+      "selected_pointer_old": "/cases/3/advancement_condition",
+      "selected_pointer_current": "/cases/3/advancement_condition",
+      "old_fingerprint": "4815599ff7f6e6d1cb52696b082e1383e624e995f169b769652c3a86d0666395",
+      "new_fingerprint": "5f6d5dd1bf1322a9481a67e7c1e06a8dea8cb65425db127b5745d529dc2d600c",
+      "row_changed_fields": [
+        "contractors",
+        "observations"
+      ],
+      "selected_node_changed": false,
+      "approval_basis": "only reviewed contractor count/location/grammatical-separator correction plus appended current-known interpretation observation; no stage/amount/identitypromotion"
+    },
+    {
+      "token": "fleet_sustainment_upgrades/exposure/0",
+      "rail": "exposure",
+      "row_id": "fms:transmittal:25-104",
+      "selected_pointer_old": "/cases/3/contractors/0",
+      "selected_pointer_current": "/cases/3/contractors/0",
+      "old_fingerprint": "21311281ed649eb6e33f6c7e558d4b3350c2d0cfb13fa504965cdf9ce3c4b823",
+      "new_fingerprint": "9df04e2f2f474eaaff2c0602fb1219c09407ab3bffa2705ba530d7e190a174b2",
+      "row_changed_fields": [
+        "contractors",
+        "observations"
+      ],
+      "selected_node_changed": true,
+      "approval_basis": "only reviewed contractor count/location/grammatical-separator correction plus appended current-known interpretation observation; no stage/amount/identitypromotion"
+    },
+    {
+      "token": "fleet_sustainment_upgrades/funding_stage/0",
+      "rail": "funding_stage",
+      "row_id": "fms:transmittal:25-104",
+      "selected_pointer_old": "/cases/3",
+      "selected_pointer_current": "/cases/3",
+      "old_fingerprint": "36a1656f1b81f7a44ab07c6b0ca6888c4c81b29f88a2665eb4191fd58fe59c9d",
+      "new_fingerprint": "6db8182652e8a6582205b96cda943525981f8f2383b4b902a7607f7fc597ad2d",
+      "row_changed_fields": [
+        "contractors",
+        "observations"
+      ],
+      "selected_node_changed": true,
+      "approval_basis": "only reviewed contractor count/location/grammatical-separator correction plus appended current-known interpretation observation; no stage/amount/identitypromotion"
+    },
+    {
+      "token": "fleet_sustainment_upgrades/next_event/0",
+      "rail": "next_event",
+      "row_id": "fms:transmittal:25-104",
+      "selected_pointer_old": "/cases/3/advancement_condition",
+      "selected_pointer_current": "/cases/3/advancement_condition",
+      "old_fingerprint": "4815599ff7f6e6d1cb52696b082e1383e624e995f169b769652c3a86d0666395",
+      "new_fingerprint": "5f6d5dd1bf1322a9481a67e7c1e06a8dea8cb65425db127b5745d529dc2d600c",
+      "row_changed_fields": [
+        "contractors",
+        "observations"
+      ],
+      "selected_node_changed": false,
+      "approval_basis": "only reviewed contractor count/location/grammatical-separator correction plus appended current-known interpretation observation; no stage/amount/identitypromotion"
+    }
+  ],
+  "unchanged_FMS_tokens": [],
+  "refusals": [],
+  "unrelated_reference_fingerprints_preserved": true,
+  "bulk_reapproval": false,
+  "root_review_before_promotion": true,
+  "reference_inventory_count": 43,
+  "preserved_reference_fingerprint_count": 37
+}

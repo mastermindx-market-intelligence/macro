@@ -893,3 +893,122 @@ def test_real_corpus_engine_jargon_never_leaks_into_glance_tier():
         print("note: no real falsifier entry currently carries a digit+tilde claim")
     if checked_abbrev == 0:
         print("note: no real falsifier entry currently carries a tracked abbreviation")
+
+
+# Government Revenue declarations use the incumbent monitor and actual published
+# workspace contract. These fixtures are public source data with controlled clocks.
+# No database, network, outbox or delivery call is permitted by this matrix.
+from pathlib import Path
+import copy
+from engine.government_revenue.workspace import is_valid_procurement_workspace
+
+
+@pytest.fixture(scope="module")
+def govrev_actual_workspace_matrix():
+    m = monitor
+    SUBJECT = {
+        "schema": "mastermind.thesis-subject-ref/v1", "kind": "issuer",
+        "owner": "data_os.security_master", "key": "LMT",
+        "identity_state": "resolved", "company_id": None, "display": "Lockheed Martin",
+    }
+    def wire_declaration(**overrides):
+        declaration = {
+            "schema": "government_revenue.monitor_declaration.v1", "enabled": True,
+            "subject": SUBJECT,
+            "selection": {"mode": "awards", "truth": "defense", "q": "hypersonics",
+                          "agency": None, "ticker": None, "issuer": "LMT"},
+            "window": {"start": "2026-01-01T00:00:00.000Z", "end": "2026-12-31T23:59:59.999Z"},
+            "knowledge_cutoff": "2026-10-01T00:00:00.000Z",
+            "input_refs": ["workspace-sha256:" + "a" * 64], "baseline_events": [],
+        }
+        declaration.update(overrides)
+        return declaration
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        base=json.loads((Path(__file__).parent / 'fixtures' / 'government_revenue_monitor_workspace.json').read_text())
+        event=copy.deepcopy(next(e for e in base['events'] if e['kind']=='award_change'))
+        event.update(record_id='award:r1',event_id='govws-base',version=1,title_original='Radar',primary_ticker='LMT',listed_company_impacts=[])
+        event['agency']['department_name']='Department of Defense';event['change'].update(known_at='2026-10-09T00:00:00.000Z',is_correction=False)
+        def ws(*events,**overrides):
+         x=copy.deepcopy(base);x.update(events=list(events),known_at='2026-10-12T00:00:00.000Z',as_of='2026-10-12',next_cursor=None,total=len(events))
+         x['coverage'].update(events_visible=len(events),events_available_before_cap=len(events),events_truncated=0)
+         x['freshness']['status']='ok';x['freshness']['award_events']['status']='ok';x['freshness']['opportunities']['status']='ok';x['freshness']['recompetes']['status']='ok'
+         for rail in ('award_events','opportunities','recompetes'):x['freshness'][rail].update(observed_at='2026-10-12T00:00:00.000Z',failure_state=None)
+         x['freshness']['opportunities']['freshness_sla_minutes']=90
+         x['freshness']['award_events']['freshness_sla_days']=1
+         x['freshness']['recompetes']['freshness_sla_days']=1
+         x.update(overrides);x['bundle_id']=m._govrev_content_ref(x);assert is_valid_procurement_workspace(x), [(list(e.path),e.validator,str(e.validator_value)[:200]) for e in __import__('engine.government_revenue.workspace',fromlist=['_workspace_validator'])._workspace_validator().iter_errors(x)];return x
+        baseline={'record_id':'award:r1','event_id':'govws-base','version':1,'known_at':'2026-10-09T00:00:00.000Z'}
+        decl=wire_declaration(input_refs=[ws(event)['bundle_id']],knowledge_cutoff='2026-10-10T00:00:00.000Z',baseline_events=[baseline],selection={'mode':'awards','truth':'official','q':'radar','agency':'Department of Defense','ticker':'LMT','issuer':'LMT'})
+        def run(d,workspace,owner='a',headsubject=None):
+         v={'thesis_id':'t1','user_id':owner,'version':2,'content':{'government_revenue_monitor':d}}
+         head={'id':'t1','user_id':owner,'current_version':2,'lifecycle_state':'active','subject_ref':headsubject or SUBJECT}
+         return m.evaluate_govrev_monitors(heads=[head],versions={'t1:2':v},workspace=workspace,now_utc='2026-10-12T00:10:00.000Z')[0]
+        checks = {}
+        def check(name, condition):
+         checks[name] = bool(condition)
+        check('owning_workspace_schema_and_identity',m.govrev_workspace_readiness(ws(event))[0])
+        check('unchanged_baseline',run(decl,ws(event))['status']=='no_change')
+        new=copy.deepcopy(event);new.update(record_id='award:new',event_id='govws-new');new['change']['known_at']='2026-10-11T00:00:00.000Z'
+        check('new_after_subscription_cutoff',run(decl,ws(event,new))['status']=='new_event')
+        correct=copy.deepcopy(event);correct.update(event_id='govws-corrected',version=2);correct['change'].update(known_at='2026-10-11T00:00:00.000Z',is_correction=True)
+        check('correction_new_event_identity',run(decl,ws(correct))['status']=='correction')
+        for name,mutate in [('ticker',lambda e:e.update(primary_ticker='RTX')),('query',lambda e:e.update(title_original='Wheat')),('agency',lambda e:e['agency'].update(department_name='Agriculture')),('issuer',lambda e:e.update(primary_ticker='NOC'))]:
+         bad=copy.deepcopy(new);mutate(bad)
+         if name=='query':bad['change']['what_changed_en']='nothing';bad['change']['what_changed_zh']='nothing'
+         check('saved_filter_'+name,run(decl,ws(event,bad))['status']=='no_change')
+        empty=copy.deepcopy(decl);empty['baseline_events']=[]
+        check('empty_at_subscription_can_later_detect',run(empty,ws(new))['status']=='new_event')
+        check('pre_subscription_history_not_alerted',run(empty,ws(event))['planned_intents']==[])
+        malformed=copy.deepcopy(decl);malformed['subject']['privateNotes']='secret'
+        check('nested_private_key_rejected',m.parse_govrev_declaration(malformed)[1] is not None)
+        foreign={**SUBJECT,'key':'RTX'};check('foreign_subject_refused',run(decl,ws(new),headsubject=foreign)['reason']=='subject_mismatch')
+        large=copy.deepcopy(ws(event));large['events']=[event]*501;large['bundle_id']=m._govrev_content_ref(large)
+        check('bounded_actual_events',run(decl,large)['status']=='outage')
+        badid=ws(event);badid['bundle_id']='grw2-'+'a'*24;check('actual_content_identity_required',run(decl,badid)['status']=='outage')
+        down=ws(event);down['freshness']['award_events']['status']='unavailable';down['bundle_id']=m._govrev_content_ref(down)
+        check('outage_then_correction_recovery',run(decl,down)['status']=='outage' and run(decl,ws(correct))['status']=='correction')
+        # Actual default run reads the incumbent artifact only when immutable subscriptions exist.
+        versions={'thesis_id':'t1','user_id':'a','version':2,'content':{'government_revenue_monitor':decl}}
+        head={'id':'t1','user_id':'a','current_version':2,'lifecycle_state':'active','subject_ref':SUBJECT}
+        monkeypatch.setattr(m, 'load_tripwire_view', lambda: ([], {}, None))
+        monkeypatch.setattr(m, 'read_active_theses', lambda limit: m.TypedRead(m.READ_OK, [head]))
+        monkeypatch.setattr(m, 'read_current_versions', lambda pairs: m.TypedRead(m.READ_OK, [versions]))
+        monkeypatch.setattr(m, 'read_existing_fire_ids', lambda ids: m.TypedRead(m.READ_OK_ZERO, []))
+        monkeypatch.setattr(m, 'enqueue', lambda rows, **kw: (0, 0, None))
+        calls = []
+        monkeypatch.setattr(m, '_pg', lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError('network effect')))
+        monkeypatch.setattr(m, 'load_govrev_workspace', lambda: (calls.append('read_published_owner'), ws(new))[1])
+        result=m.run(now_utc='2026-10-12T00:00:00.000Z',dry_run=True)
+        check('default_existing_run_consumes_declarations',calls==['read_published_owner'] and result.govrev['new_event']==1 and result.govrev['enqueued_n']==0)
+        # Mode/truth selection and the current knowledge clock are real filters.
+        for mode in ('opportunities','recompetes'):
+         d=copy.deepcopy(decl);d['selection']['mode']=mode
+         check('saved_mode_'+mode,run(d,ws(new))['status']=='no_change')
+        d=copy.deepcopy(decl);d['selection']['truth']='linked'
+        check('saved_truth_linked',run(d,ws(new))['status']=='no_change')
+        d=copy.deepcopy(decl);d['selection']['truth']='defense';d['selection']['agency']=None
+        bad=copy.deepcopy(new);bad['agency']['department_name']='Agriculture';bad['agency']['name']='Agriculture';bad['agency']['subagency_name']='Agriculture'
+        check('saved_truth_defense',run(d,ws(bad))['status']=='no_change')
+        future=copy.deepcopy(new);future['change']['known_at']='2026-10-13T00:00:00.000Z'
+        check('future_knowledge_refused',run(decl,ws(future))['status']=='outage')
+        duplicate=ws(event,event)
+        check('duplicate_event_identity_refused',run(decl,duplicate)['status']=='outage')
+        badbaseline=copy.deepcopy(decl);badbaseline['baseline_events'][0]['known_at']='2026-10-11T00:00:00.000Z'
+        check('original_baseline_has_no_future_knowledge',m.parse_govrev_declaration(badbaseline)[1] is not None)
+        aged=ws(new);aged['freshness']['award_events']['observed_at']='2026-10-10T00:00:00.000Z';aged['bundle_id']=m._govrev_content_ref(aged)
+        check('declared_source_sla_aged_is_outage',run(decl,aged)['reason']=='required_rail_stale')
+        missingclock=ws(new);missingclock['freshness']['award_events']['observed_at']=None;missingclock['freshness']['award_events']['known_at']=None;missingclock['bundle_id']=m._govrev_content_ref(missingclock)
+        check('declared_sla_missing_observation_is_outage',run(decl,missingclock)['reason']=='required_rail_freshness_unqualified')
+        tiny=copy.deepcopy(new);tiny['change']['known_at']='2026-10-10T00:00:00.000999Z'
+        check('source_microseconds_survive_cutoff_comparison',run(decl,ws(tiny))['status']=='new_event' and run(decl,ws(tiny))['events'][0]['source_known_at'].endswith('.000999Z'))
+        fenced=ws(new);fenced['freshness']['award_events']['failure_state']='source_unavailable';fenced['bundle_id']=m._govrev_content_ref(fenced)
+        check('explicit_failure_fence_wins_healthy_label',run(decl,fenced)['status']=='outage')
+        precise=run(decl,ws(tiny))['events'][0]
+        other=dict(precise);other['source_known_at']='2026-10-10T00:00:00.000001Z'
+        check('intent_identity_preserves_source_clock_precision',m.govrev_intent_identity(thesis_id='t1',thesis_version=2,event=precise)!=m.govrev_intent_identity(thesis_id='t1',thesis_version=2,event=other))
+    return checks
+
+
+@pytest.mark.parametrize("case", ['owning_workspace_schema_and_identity', 'unchanged_baseline', 'new_after_subscription_cutoff', 'correction_new_event_identity', 'saved_filter_ticker', 'saved_filter_query', 'saved_filter_agency', 'saved_filter_issuer', 'empty_at_subscription_can_later_detect', 'pre_subscription_history_not_alerted', 'nested_private_key_rejected', 'foreign_subject_refused', 'bounded_actual_events', 'actual_content_identity_required', 'outage_then_correction_recovery', 'default_existing_run_consumes_declarations', 'saved_mode_opportunities', 'saved_mode_recompetes', 'saved_truth_linked', 'saved_truth_defense', 'future_knowledge_refused', 'duplicate_event_identity_refused', 'original_baseline_has_no_future_knowledge', 'declared_source_sla_aged_is_outage', 'declared_sla_missing_observation_is_outage', 'source_microseconds_survive_cutoff_comparison', 'explicit_failure_fence_wins_healthy_label', 'intent_identity_preserves_source_clock_precision'])
+def test_govrev_actual_workspace_contract(govrev_actual_workspace_matrix, case):
+    assert govrev_actual_workspace_matrix[case], case

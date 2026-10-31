@@ -1,0 +1,15 @@
+{
+  "state": "MEASUREMENT_INTERFERENCE_DIAGNOSIS_NOT_PRODUCT_ACCEPTANCE",
+  "time": "2026-10-14T05:24:59.456602+00:00",
+  "source_unchanged": true,
+  "stage_unchanged": true,
+  "prior_harness_sha256": "e75d30cce4fb2eaa639a26923217c8a0d1f6e6f700d1125e6bf1bf4f430162ab",
+  "revised_harness_sha256": "a90b7c5a18233ba7a3428af97f486a0002f8d75e457226147d66f048e783029e",
+  "prior_timing": "TIMING_V9_COLD10.json",
+  "prior_all_pass": false,
+  "cold_sample_ms": 2802,
+  "anomalous_sample": 3,
+  "anomalous_ms": 4481.800000011921,
+  "hypothesis": "Synchronous per-request receipt rewrite on shared SSD can block the ASGI event loop. Sample3 unrelated resource responses cluster at3594-3653ms; buffer receipts until clean shutdown. Instrumentation only; no source/validators/auth/routing/compression/profile/target changes.",
+  "change": "Replace per-request whole-file JSON rewrite with in-memory append and shutdown flush. Next cold10 batch remains immutable and all samples count."
+}

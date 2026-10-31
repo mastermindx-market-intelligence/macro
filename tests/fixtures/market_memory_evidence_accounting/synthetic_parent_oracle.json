@@ -1,0 +1,70 @@
+{
+  "schema": "market_memory.parent_accounting_oracle.v1",
+  "recorded_at": "2026-10-14T09:19:22.880988+00:00",
+  "worker_return_consumed": false,
+  "input_sha256": "0c931d8ac4587e6f72fa1b674ba66fe434a9283bac30b1603c13da1a87cf17d7",
+  "synthetic_fixture": true,
+  "not_real_annotations": true,
+  "expected": {
+    "registered_tasks": 4,
+    "cells_per_condition": 4,
+    "no_memory_answerable_abstained": 4,
+    "no_memory_empty_return_precision": null,
+    "recency_answerable_answered_correct": 2,
+    "recency_answerable_answered_incorrect": 1,
+    "recency_missing": 1,
+    "fixed_l1_answerable_answered_correct": 1,
+    "fixed_l1_answerable_answered_incorrect": 1,
+    "fixed_l1_answerable_answered_unresolved": 1,
+    "fixed_l1_missing": 1,
+    "fixed_l1_material_denominator": 4,
+    "fixed_l1_supported": 1,
+    "fixed_l1_unresolved_or_attributed": 2,
+    "fixed_l1_support_precision": null,
+    "fixed_l1_identification_lower": [
+      1,
+      4
+    ],
+    "fixed_l1_identification_upper": [
+      3,
+      4
+    ],
+    "global_critical_claim_count": 1,
+    "critical_location": "recency baseline preserved",
+    "paired_total_tasks": 4,
+    "paired_included": [
+      "t1",
+      "t2",
+      "t3"
+    ],
+    "paired_excluded": [
+      "t4"
+    ],
+    "signed_t1_gain": [
+      -1,
+      2
+    ],
+    "signed_t2_gain": [
+      1,
+      4
+    ],
+    "signed_t3_gain": [
+      1,
+      1
+    ],
+    "observed_pair_only_mean": [
+      1,
+      4
+    ],
+    "cluster_equal_weight_descriptive_mean": [
+      7,
+      16
+    ],
+    "cluster_count": 2,
+    "excluded_unknown_cluster_does_not_invalidate_included_clusters": true,
+    "operational_admission": false,
+    "confidence_intervals": null,
+    "effective_n": null
+  },
+  "reasoning": "Three signed differences sum to3/4; task mean1/4. Cluster-a mean(-1/2+1/4)/2=-1/8 and cluster-b mean1; equal cluster mean(-1/8+1)/2=7/16. This is arithmetic, never uncertainty or acceptance."
+}

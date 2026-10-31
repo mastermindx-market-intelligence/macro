@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-10-14T13:28:12.150629+00:00",
+  "source": "6aef75a732cc8fd0085d4f724d2f403ace7470b5",
+  "all314_job_definitions_order_and_path_multisets_preserved": true,
+  "bounded_changed_jobs": [
+    "flow-surface",
+    "fif-kernel-guards",
+    "biocatalyst-serving",
+    "biocatalyst-history",
+    "crypto-assistant-context",
+    "unrun-government-revenue-candidate-projection",
+    "unrun-government-revenue-grader",
+    "research-price-panel",
+    "ticker-news-qbus"
+  ],
+  "manifest_sha256": "24a56c9a188caf18f5675843912f165a631351564d971e7201f685c51e6a275d",
+  "proof_reuse": "Four canonical manifest controls passed at62c077; helper code unchanged. Actual final YAML normalized equal to233/62 and transitively to f573. Therefore e2 dependency closure/strict packing and fa9 runtime119 remain qualified for unchanged source semantics, not a hosted head claim.",
+  "unverified": "Final A1 composed merge and future protected release/adoption remain separate gates."
+}

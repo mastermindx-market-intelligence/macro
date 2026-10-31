@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-10-14T13:21:46.210943+00:00",
+  "old_proof_identity": "991b1aa511ec0e9d4479cc1a3bad4c83507159cc22ed13981df69568d734b80a",
+  "incoming_protected_main": "29e383bc0ded2c3d3dae819fd5b7647ab6fea229",
+  "source_dependency_changes": [
+    "app/market_memory.py",
+    "config/site_access.yml",
+    "engine/company_intelligence/industrials_period_enrollment.py",
+    "scripts/agentos_records_draft.py",
+    "scripts/ci_pack_fragments.py",
+    "site/basketdata/baskets.json",
+    "site/basketdata/pulse.json",
+    "tests/test_agentos_records_draft.py",
+    "tests/test_ci_pack.py",
+    "tests/test_ci_pack_fragments.py",
+    "tests/test_consumer_cyclical_projection.py",
+    "tests/test_finance_page_signal.py",
+    "tests/test_foresight_cascade.py",
+    "tests/test_industrials_period_enrollment.py",
+    "tests/test_site_access_boundary.py"
+  ],
+  "output_paths_changed_in_incoming_main": [],
+  "new_source_proof_required": true,
+  "reason": "Protected main changes proof dependencies; old source proof is preserved, not restamped. Full exact-generation prover must run after the new source commit.",
+  "visual_reuse_boundary": "No source template/asset change is in incoming main; preserve old images and timing, bind any reuse only after output hashes and affected runtime checks are verified. Installed customer proof remains owed."
+}

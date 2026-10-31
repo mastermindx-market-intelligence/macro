@@ -1,0 +1,389 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_ TestPlannerIntake.test_held_research_does_not_consume_the_candidate_pool[True-published] _
+
+self = <tests.test_press_research_triage.TestPlannerIntake object at 0x10c753e90>
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2231/test_held_research_does_not_co0')
+blocked_by = 'published', ranked = True
+
+    @pytest.mark.parametrize("blocked_by", ["published", "staged", "explicit"])
+    @pytest.mark.parametrize("ranked", [True, False])
+    def test_held_research_does_not_consume_the_candidate_pool(self, tmp_path, blocked_by, ranked):
+        """Coverage refusal must happen before the finite candidate work budget.
+    
+        Nine ranked reports with the first eight held must expose the ninth,
+        while retaining the one-per-day cadence and original held records.
+        """
+        root = F.fixture_root(tmp_path)
+        cfg = P.load_config(root)
+        if not ranked:
+            cfg.pop("research_triage")
+            cfg["desks"]["research_desk"].pop("triage_tier")
+        path = root / "data" / "research_vault" / "catalog.json"
+        items = [_item(f"pool-{i:02d}") for i in range(10)]
+        path.write_text(json.dumps({"items": items}), encoding="utf-8")
+        order, _meta = P._triage_order(cfg, date(2026, 7, 26), root, items)
+        ids = order or sorted(it["id"] for it in items)
+        pool = cfg["desks"]["research_desk"]["candidate_pool"]
+        assert pool == 8
+        held = ["research_vault:" + rid for rid in ids[:pool]]
+        extra = []
+        if blocked_by == "published":
+            ledger = root / cfg["paths"]["ledger"]
+            ledger.write_text(json.dumps({"sources": held}) + "\n", encoding="utf-8")
+        elif blocked_by == "staged":
+            stage = root / cfg["paths"]["staging_dir"] / "held-pool.json"
+            stage.write_text(json.dumps({"id": "held-pool", "status": "approval_required",
+                                         "sources": held}), encoding="utf-8")
+        else:
+            extra = held
+        tracked = [p for p in (root / "data" / "press").rglob("*") if p.is_file()]
+        before = {str(p): p.read_bytes() for p in [path, *tracked]}
+        slots = P.plan(["research_desk", "research_note"], as_of="2026-07-26", root=root,
+                       cfg=cfg, extra_blocked_refs=extra)
+>       assert [s["sources"] for s in slots] == [["research_vault:" + ids[pool]]]
+E       AssertionError: assert [] == [['research_vault:pool-08']]
+E         
+E         Right contains one more item: ['research_vault:pool-08']
+E         Use -v to get more diff
+
+tests/test_press_research_triage.py:1140: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::notice title=story-spine-no-datasketch::datasketch unavailable (ModuleNotFoundError) — near-dup pass disabled; story identity falls back to exact/normalized-URL keys only
+------------------------------ Captured log call -------------------------------
+WARNING  engine.press.desk_planner:desk_planner.py:507 press.desk_planner: engine artifacts — 1 fact(s) dropped as of 2026-07-26 (artifact postdates the run date or carries no date): gex_spx@2026-08-05
+_ TestPlannerIntake.test_held_research_does_not_consume_the_candidate_pool[True-staged] _
+
+self = <tests.test_press_research_triage.TestPlannerIntake object at 0x10c6112e0>
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2231/test_held_research_does_not_co1')
+blocked_by = 'staged', ranked = True
+
+    @pytest.mark.parametrize("blocked_by", ["published", "staged", "explicit"])
+    @pytest.mark.parametrize("ranked", [True, False])
+    def test_held_research_does_not_consume_the_candidate_pool(self, tmp_path, blocked_by, ranked):
+        """Coverage refusal must happen before the finite candidate work budget.
+    
+        Nine ranked reports with the first eight held must expose the ninth,
+        while retaining the one-per-day cadence and original held records.
+        """
+        root = F.fixture_root(tmp_path)
+        cfg = P.load_config(root)
+        if not ranked:
+            cfg.pop("research_triage")
+            cfg["desks"]["research_desk"].pop("triage_tier")
+        path = root / "data" / "research_vault" / "catalog.json"
+        items = [_item(f"pool-{i:02d}") for i in range(10)]
+        path.write_text(json.dumps({"items": items}), encoding="utf-8")
+        order, _meta = P._triage_order(cfg, date(2026, 7, 26), root, items)
+        ids = order or sorted(it["id"] for it in items)
+        pool = cfg["desks"]["research_desk"]["candidate_pool"]
+        assert pool == 8
+        held = ["research_vault:" + rid for rid in ids[:pool]]
+        extra = []
+        if blocked_by == "published":
+            ledger = root / cfg["paths"]["ledger"]
+            ledger.write_text(json.dumps({"sources": held}) + "\n", encoding="utf-8")
+        elif blocked_by == "staged":
+            stage = root / cfg["paths"]["staging_dir"] / "held-pool.json"
+            stage.write_text(json.dumps({"id": "held-pool", "status": "approval_required",
+                                         "sources": held}), encoding="utf-8")
+        else:
+            extra = held
+        tracked = [p for p in (root / "data" / "press").rglob("*") if p.is_file()]
+        before = {str(p): p.read_bytes() for p in [path, *tracked]}
+        slots = P.plan(["research_desk", "research_note"], as_of="2026-07-26", root=root,
+                       cfg=cfg, extra_blocked_refs=extra)
+>       assert [s["sources"] for s in slots] == [["research_vault:" + ids[pool]]]
+E       AssertionError: assert [] == [['research_vault:pool-08']]
+E         
+E         Right contains one more item: ['research_vault:pool-08']
+E         Use -v to get more diff
+
+tests/test_press_research_triage.py:1140: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  engine.press.desk_planner:desk_planner.py:507 press.desk_planner: engine artifacts — 1 fact(s) dropped as of 2026-07-26 (artifact postdates the run date or carries no date): gex_spx@2026-08-05
+_ TestPlannerIntake.test_held_research_does_not_consume_the_candidate_pool[True-explicit] _
+
+self = <tests.test_press_research_triage.TestPlannerIntake object at 0x10c611440>
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2231/test_held_research_does_not_co2')
+blocked_by = 'explicit', ranked = True
+
+    @pytest.mark.parametrize("blocked_by", ["published", "staged", "explicit"])
+    @pytest.mark.parametrize("ranked", [True, False])
+    def test_held_research_does_not_consume_the_candidate_pool(self, tmp_path, blocked_by, ranked):
+        """Coverage refusal must happen before the finite candidate work budget.
+    
+        Nine ranked reports with the first eight held must expose the ninth,
+        while retaining the one-per-day cadence and original held records.
+        """
+        root = F.fixture_root(tmp_path)
+        cfg = P.load_config(root)
+        if not ranked:
+            cfg.pop("research_triage")
+            cfg["desks"]["research_desk"].pop("triage_tier")
+        path = root / "data" / "research_vault" / "catalog.json"
+        items = [_item(f"pool-{i:02d}") for i in range(10)]
+        path.write_text(json.dumps({"items": items}), encoding="utf-8")
+        order, _meta = P._triage_order(cfg, date(2026, 7, 26), root, items)
+        ids = order or sorted(it["id"] for it in items)
+        pool = cfg["desks"]["research_desk"]["candidate_pool"]
+        assert pool == 8
+        held = ["research_vault:" + rid for rid in ids[:pool]]
+        extra = []
+        if blocked_by == "published":
+            ledger = root / cfg["paths"]["ledger"]
+            ledger.write_text(json.dumps({"sources": held}) + "\n", encoding="utf-8")
+        elif blocked_by == "staged":
+            stage = root / cfg["paths"]["staging_dir"] / "held-pool.json"
+            stage.write_text(json.dumps({"id": "held-pool", "status": "approval_required",
+                                         "sources": held}), encoding="utf-8")
+        else:
+            extra = held
+        tracked = [p for p in (root / "data" / "press").rglob("*") if p.is_file()]
+        before = {str(p): p.read_bytes() for p in [path, *tracked]}
+        slots = P.plan(["research_desk", "research_note"], as_of="2026-07-26", root=root,
+                       cfg=cfg, extra_blocked_refs=extra)
+>       assert [s["sources"] for s in slots] == [["research_vault:" + ids[pool]]]
+E       AssertionError: assert [] == [['research_vault:pool-08']]
+E         
+E         Right contains one more item: ['research_vault:pool-08']
+E         Use -v to get more diff
+
+tests/test_press_research_triage.py:1140: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  engine.press.desk_planner:desk_planner.py:507 press.desk_planner: engine artifacts — 1 fact(s) dropped as of 2026-07-26 (artifact postdates the run date or carries no date): gex_spx@2026-08-05
+_ TestPlannerIntake.test_held_research_does_not_consume_the_candidate_pool[False-published] _
+
+self = <tests.test_press_research_triage.TestPlannerIntake object at 0x10ae33930>
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2231/test_held_research_does_not_co3')
+blocked_by = 'published', ranked = False
+
+    @pytest.mark.parametrize("blocked_by", ["published", "staged", "explicit"])
+    @pytest.mark.parametrize("ranked", [True, False])
+    def test_held_research_does_not_consume_the_candidate_pool(self, tmp_path, blocked_by, ranked):
+        """Coverage refusal must happen before the finite candidate work budget.
+    
+        Nine ranked reports with the first eight held must expose the ninth,
+        while retaining the one-per-day cadence and original held records.
+        """
+        root = F.fixture_root(tmp_path)
+        cfg = P.load_config(root)
+        if not ranked:
+            cfg.pop("research_triage")
+            cfg["desks"]["research_desk"].pop("triage_tier")
+        path = root / "data" / "research_vault" / "catalog.json"
+        items = [_item(f"pool-{i:02d}") for i in range(10)]
+        path.write_text(json.dumps({"items": items}), encoding="utf-8")
+        order, _meta = P._triage_order(cfg, date(2026, 7, 26), root, items)
+        ids = order or sorted(it["id"] for it in items)
+        pool = cfg["desks"]["research_desk"]["candidate_pool"]
+        assert pool == 8
+        held = ["research_vault:" + rid for rid in ids[:pool]]
+        extra = []
+        if blocked_by == "published":
+            ledger = root / cfg["paths"]["ledger"]
+            ledger.write_text(json.dumps({"sources": held}) + "\n", encoding="utf-8")
+        elif blocked_by == "staged":
+            stage = root / cfg["paths"]["staging_dir"] / "held-pool.json"
+            stage.write_text(json.dumps({"id": "held-pool", "status": "approval_required",
+                                         "sources": held}), encoding="utf-8")
+        else:
+            extra = held
+        tracked = [p for p in (root / "data" / "press").rglob("*") if p.is_file()]
+        before = {str(p): p.read_bytes() for p in [path, *tracked]}
+        slots = P.plan(["research_desk", "research_note"], as_of="2026-07-26", root=root,
+                       cfg=cfg, extra_blocked_refs=extra)
+>       assert [s["sources"] for s in slots] == [["research_vault:" + ids[pool]]]
+E       AssertionError: assert [] == [['research_vault:pool-08']]
+E         
+E         Right contains one more item: ['research_vault:pool-08']
+E         Use -v to get more diff
+
+tests/test_press_research_triage.py:1140: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  engine.press.desk_planner:desk_planner.py:507 press.desk_planner: engine artifacts — 1 fact(s) dropped as of 2026-07-26 (artifact postdates the run date or carries no date): gex_spx@2026-08-05
+WARNING  engine.press.desk_planner:desk_planner.py:1131 press.desk_planner: desk research_note declares triage_tier='desk_note' but config carries no `research_triage` block — capped at 0 (fail-closed: a W2R desk without its governor does not publish)
+_ TestPlannerIntake.test_held_research_does_not_consume_the_candidate_pool[False-staged] _
+
+self = <tests.test_press_research_triage.TestPlannerIntake object at 0x10ae339d0>
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2231/test_held_research_does_not_co4')
+blocked_by = 'staged', ranked = False
+
+    @pytest.mark.parametrize("blocked_by", ["published", "staged", "explicit"])
+    @pytest.mark.parametrize("ranked", [True, False])
+    def test_held_research_does_not_consume_the_candidate_pool(self, tmp_path, blocked_by, ranked):
+        """Coverage refusal must happen before the finite candidate work budget.
+    
+        Nine ranked reports with the first eight held must expose the ninth,
+        while retaining the one-per-day cadence and original held records.
+        """
+        root = F.fixture_root(tmp_path)
+        cfg = P.load_config(root)
+        if not ranked:
+            cfg.pop("research_triage")
+            cfg["desks"]["research_desk"].pop("triage_tier")
+        path = root / "data" / "research_vault" / "catalog.json"
+        items = [_item(f"pool-{i:02d}") for i in range(10)]
+        path.write_text(json.dumps({"items": items}), encoding="utf-8")
+        order, _meta = P._triage_order(cfg, date(2026, 7, 26), root, items)
+        ids = order or sorted(it["id"] for it in items)
+        pool = cfg["desks"]["research_desk"]["candidate_pool"]
+        assert pool == 8
+        held = ["research_vault:" + rid for rid in ids[:pool]]
+        extra = []
+        if blocked_by == "published":
+            ledger = root / cfg["paths"]["ledger"]
+            ledger.write_text(json.dumps({"sources": held}) + "\n", encoding="utf-8")
+        elif blocked_by == "staged":
+            stage = root / cfg["paths"]["staging_dir"] / "held-pool.json"
+            stage.write_text(json.dumps({"id": "held-pool", "status": "approval_required",
+                                         "sources": held}), encoding="utf-8")
+        else:
+            extra = held
+        tracked = [p for p in (root / "data" / "press").rglob("*") if p.is_file()]
+        before = {str(p): p.read_bytes() for p in [path, *tracked]}
+        slots = P.plan(["research_desk", "research_note"], as_of="2026-07-26", root=root,
+                       cfg=cfg, extra_blocked_refs=extra)
+>       assert [s["sources"] for s in slots] == [["research_vault:" + ids[pool]]]
+E       AssertionError: assert [] == [['research_vault:pool-08']]
+E         
+E         Right contains one more item: ['research_vault:pool-08']
+E         Use -v to get more diff
+
+tests/test_press_research_triage.py:1140: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  engine.press.desk_planner:desk_planner.py:507 press.desk_planner: engine artifacts — 1 fact(s) dropped as of 2026-07-26 (artifact postdates the run date or carries no date): gex_spx@2026-08-05
+WARNING  engine.press.desk_planner:desk_planner.py:1131 press.desk_planner: desk research_note declares triage_tier='desk_note' but config carries no `research_triage` block — capped at 0 (fail-closed: a W2R desk without its governor does not publish)
+_ TestPlannerIntake.test_held_research_does_not_consume_the_candidate_pool[False-explicit] _
+
+self = <tests.test_press_research_triage.TestPlannerIntake object at 0x10c75d250>
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2231/test_held_research_does_not_co5')
+blocked_by = 'explicit', ranked = False
+
+    @pytest.mark.parametrize("blocked_by", ["published", "staged", "explicit"])
+    @pytest.mark.parametrize("ranked", [True, False])
+    def test_held_research_does_not_consume_the_candidate_pool(self, tmp_path, blocked_by, ranked):
+        """Coverage refusal must happen before the finite candidate work budget.
+    
+        Nine ranked reports with the first eight held must expose the ninth,
+        while retaining the one-per-day cadence and original held records.
+        """
+        root = F.fixture_root(tmp_path)
+        cfg = P.load_config(root)
+        if not ranked:
+            cfg.pop("research_triage")
+            cfg["desks"]["research_desk"].pop("triage_tier")
+        path = root / "data" / "research_vault" / "catalog.json"
+        items = [_item(f"pool-{i:02d}") for i in range(10)]
+        path.write_text(json.dumps({"items": items}), encoding="utf-8")
+        order, _meta = P._triage_order(cfg, date(2026, 7, 26), root, items)
+        ids = order or sorted(it["id"] for it in items)
+        pool = cfg["desks"]["research_desk"]["candidate_pool"]
+        assert pool == 8
+        held = ["research_vault:" + rid for rid in ids[:pool]]
+        extra = []
+        if blocked_by == "published":
+            ledger = root / cfg["paths"]["ledger"]
+            ledger.write_text(json.dumps({"sources": held}) + "\n", encoding="utf-8")
+        elif blocked_by == "staged":
+            stage = root / cfg["paths"]["staging_dir"] / "held-pool.json"
+            stage.write_text(json.dumps({"id": "held-pool", "status": "approval_required",
+                                         "sources": held}), encoding="utf-8")
+        else:
+            extra = held
+        tracked = [p for p in (root / "data" / "press").rglob("*") if p.is_file()]
+        before = {str(p): p.read_bytes() for p in [path, *tracked]}
+        slots = P.plan(["research_desk", "research_note"], as_of="2026-07-26", root=root,
+                       cfg=cfg, extra_blocked_refs=extra)
+>       assert [s["sources"] for s in slots] == [["research_vault:" + ids[pool]]]
+E       AssertionError: assert [] == [['research_vault:pool-08']]
+E         
+E         Right contains one more item: ['research_vault:pool-08']
+E         Use -v to get more diff
+
+tests/test_press_research_triage.py:1140: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  engine.press.desk_planner:desk_planner.py:507 press.desk_planner: engine artifacts — 1 fact(s) dropped as of 2026-07-26 (artifact postdates the run date or carries no date): gex_spx@2026-08-05
+WARNING  engine.press.desk_planner:desk_planner.py:1131 press.desk_planner: desk research_note declares triage_tier='desk_note' but config carries no `research_triage` block — capped at 0 (fail-closed: a W2R desk without its governor does not publish)
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_idle_critical_mismatch_re0/lanes/support-releases/d2abb19ee19fc72d883f5c45bfbe0de8daee7f8ece744c130d907bf401b529e7
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_idle_critical_mismatch_re0/lanes/support-releases/d2abb19ee19fc72d883f5c45bfbe0de8daee7f8ece744c130d907bf401b529e7'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_idle_critical_mismatch_re0/lanes/support-releases
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_idle_critical_mismatch_re0/lanes/support-releases'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_idle_critical_mismatch_re0/lanes
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_idle_critical_mismatch_re0/lanes'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_idle_critical_mismatch_re0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_idle_critical_mismatch_re0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_advisory_only_active_diff0/lanes/support-releases
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_advisory_only_active_diff0/lanes/support-releases'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_advisory_only_active_diff0/lanes
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_advisory_only_active_diff0/lanes'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_advisory_only_active_diff0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45/test_advisory_only_active_diff0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-64614785-340c-47ce-a033-48e1512b4e45'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-66cc8ae9-36c9-43ef-8572-a769576bae09/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-66cc8ae9-36c9-43ef-8572-a769576bae09/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-66cc8ae9-36c9-43ef-8572-a769576bae09/test_advisory_only_active_diff0/lanes/support-releases
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-66cc8ae9-36c9-43ef-8572-a769576bae09/test_advisory_only_active_diff0/lanes/support-releases'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-66cc8ae9-36c9-43ef-8572-a769576bae09/test_advisory_only_active_diff0/lanes
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-66cc8ae9-36c9-43ef-8572-a769576bae09/test_advisory_only_active_diff0/lanes'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-66cc8ae9-36c9-43ef-8572-a769576bae09/test_advisory_only_active_diff0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-66cc8ae9-36c9-43ef-8572-a769576bae09/test_advisory_only_active_diff0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-66cc8ae9-36c9-43ef-8572-a769576bae09
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-66cc8ae9-36c9-43ef-8572-a769576bae09'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_research_triage.py::TestPlannerIntake::test_held_research_does_not_consume_the_candidate_pool[True-published]
+FAILED tests/test_press_research_triage.py::TestPlannerIntake::test_held_research_does_not_consume_the_candidate_pool[True-staged]
+FAILED tests/test_press_research_triage.py::TestPlannerIntake::test_held_research_does_not_consume_the_candidate_pool[True-explicit]
+FAILED tests/test_press_research_triage.py::TestPlannerIntake::test_held_research_does_not_consume_the_candidate_pool[False-published]
+FAILED tests/test_press_research_triage.py::TestPlannerIntake::test_held_research_does_not_consume_the_candidate_pool[False-staged]
+FAILED tests/test_press_research_triage.py::TestPlannerIntake::test_held_research_does_not_consume_the_candidate_pool[False-explicit]
+6 failed, 181 deselected, 14 warnings in 5.70s

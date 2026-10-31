@@ -1,0 +1,124 @@
+{
+  "observed_at": "2026-10-14T16:58:29.884108+00:00",
+  "source_id": "usda-nass-2026-10-13-crop-progress",
+  "source_pdf_sha256": "ecdbbb595fb63ce179dbf0aad57541c28aec53e988489a376b2a1d002304968c",
+  "sidecar_sha256": "0ab7784c57118c7f6b7c1f92c9de9f2736c271a1d60c0e27583a46cadd4a5e6d",
+  "checks": [
+    {
+      "check": "one_report_rendered",
+      "passed": true
+    },
+    {
+      "check": "canonical_slug_and_link",
+      "passed": true
+    },
+    {
+      "check": "actual_report_date_not_freshened",
+      "passed": true
+    },
+    {
+      "check": "original_agency_attribution",
+      "passed": true
+    },
+    {
+      "check": "report_title_retained",
+      "passed": true
+    },
+    {
+      "check": "no_invented_issuer",
+      "passed": true
+    },
+    {
+      "check": "bounded_original_excerpt",
+      "passed": true
+    },
+    {
+      "check": "excerpt_exactly_from_existing_derivation",
+      "passed": true
+    },
+    {
+      "check": "excerpt_outside_paywall",
+      "passed": true
+    },
+    {
+      "check": "paywall_metadata_matches_gate",
+      "passed": true
+    },
+    {
+      "check": "existing_report_acquisition_route",
+      "passed": true
+    },
+    {
+      "check": "no_direct_pdf_or_private_store_link",
+      "passed": true
+    },
+    {
+      "check": "full_summary_not_exposed_as_points",
+      "passed": true
+    },
+    {
+      "check": "attribution_and_observation_date_retained",
+      "passed": true
+    },
+    {
+      "check": "crawl_hub_links_report",
+      "passed": true
+    },
+    {
+      "check": "sitemap_keeps_existing_stock_and_true_date",
+      "passed": true
+    },
+    {
+      "check": "inline_shim_and_isolated_asset_present",
+      "passed": true
+    },
+    {
+      "check": "network_unused",
+      "passed": true
+    },
+    {
+      "check": "source_and_retained_inputs_unchanged",
+      "passed": true
+    },
+    {
+      "check": "render_dependencies_unchanged",
+      "passed": true
+    }
+  ],
+  "render_dependencies": {
+    "scripts/build_research_pages.py": "7338c4dda666cac90291a4ba41b0d415fdfaa13ecec52513d97d67f3ec1d9930",
+    "lib/pages.py": "2673025c9729d5665936dbe6cafd461e8dff200feacc3e0081f0f378df2fd28b",
+    "lib/config.py": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+    "lib/seo.py": "5e09e9e278ddb914cfcb9fa0085c5d0724ecb03789d65eef94ef155d96c74064",
+    "engine/research_vault/sidecar.py": "ee8201bb38c86235cc2d17d0bfffafe00f559dd511a3426d5f999cb7ed55caa7",
+    "engine/research_vault/slugs.py": "584f6947b4d012bc5f3b7c6a62d046a9f95ab6d0ecd3fb068c54e243cffd7bd7",
+    "engine/research_vault/excerpt.py": "0060b346fc933d22a5a76391198b9477d93b26672730059587797849315f8393",
+    "templates/data_base.js": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+    "templates/research_report.html.j2": "4f17d3eccefb6eaa926375b9a125555aa8f8df8b3ad5317cdb27970ed1a69304",
+    "templates/research_index.html.j2": "9538e4973dfd7e31cb2107a5b1b622d2a95a833e46458ddf73f587d3ac6afc67",
+    "templates/_site_nav.html.j2": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482",
+    "templates/_navlinks.html.j2": "5318e6f11db80e225707cd02b0776f590c3defcaf6aaca81085e9bd956981242"
+  },
+  "html_sha256": "db36ef9a50b88065d35bb00abecf63b134362fd935689ee9705a2fc53a495b33",
+  "canonical_path": "https://www.mastermind-x.com/research/crop-progress-october-13-2026-ogress.html",
+  "input_hashes": {
+    "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/recovery-20261014-1507/crop-progress-20261013/acceptance-final/store/.strict-conditional-write.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/recovery-20261014-1507/crop-progress-20261013/acceptance-final/store/research_vault/corpus.sqlite": "19984b2777b98dfbd65371133baa46b8b9e12b8ea0dcf5055cd19db8905750ff",
+    "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/recovery-20261014-1507/crop-progress-20261013/acceptance-final/store/research_vault/catalog.json": "3622a2890c2cb3cae130912d6c04a7ee617ceb0a1a750110267276a9be837360",
+    "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/recovery-20261014-1507/crop-progress-20261013/acceptance-final/store/research_vault/usda-nass-2026-10-13-crop-progress.pdf": "ecdbbb595fb63ce179dbf0aad57541c28aec53e988489a376b2a1d002304968c",
+    "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/recovery-20261014-1507/crop-progress-20261013/acceptance-final/store/research_inbox/usda-nass-2026-10-13-crop-progress.json": "0ab7784c57118c7f6b7c1f92c9de9f2736c271a1d60c0e27583a46cadd4a5e6d",
+    "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/recovery-20261014-1507/crop-progress-20261013/acceptance-final/store/research_inbox/usda-nass-2026-10-13-crop-progress.pdf": "ecdbbb595fb63ce179dbf0aad57541c28aec53e988489a376b2a1d002304968c",
+    "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/recovery-20261014-1507/crop-progress-20261013/acceptance-final/store/research_inbox/_processed/usda-nass-2026-10-13-crop-progress.json": "3c6e0f5a74846e1607a3c38a4717272665789f5e36201c564950b82cbb41b8d0",
+    "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/recovery-20261014-1507/crop-progress-20261013/acceptance-final/store/research_vault/fulltext/v1/usda-nass-2026-10-13-crop-progress/ecdbbb595fb63ce179dbf0aad57541c28aec53e988489a376b2a1d002304968c/v1-05b88d4d1e4a6efa.json": "ad801f16319a3d9c3ffe92eb29eb4b53c36adddd3b402e18e7d041a569f6b22b",
+    "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-validator-followon-20261014-c1dc27962b7d07c4/research/agentic_media/public_intelligence_20261011/crop_progress_intake_phase/crop_progress_sidecar.json": "0ab7784c57118c7f6b7c1f92c9de9f2736c271a1d60c0e27583a46cadd4a5e6d"
+  },
+  "output": "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/recovery-20261014-1507/crop-progress-20261013/render-v2",
+  "production_writes": 0,
+  "provider_calls": 0,
+  "press_staging_writes": 0,
+  "canonical_source_admission": false,
+  "public_page_verified": false,
+  "publication": false,
+  "cutover": false,
+  "d14_credit": "0/10"
+}

@@ -1,0 +1,74 @@
+{
+  "observed_at": "2026-10-14T16:09:21.503091+00:00",
+  "stage_sha256": "7e3bea845ead2083896e88d641ebb2c43f5d8be8c2824a3680b37f0c803919b3",
+  "saved_status": "quarantined",
+  "saved_failures": [
+    "fact_anchor",
+    "close_paraphrase"
+  ],
+  "provider_calls": 1,
+  "regenerations": 0,
+  "estimated_tokens": 4353,
+  "credit": 0,
+  "publication": false,
+  "cutover": false,
+  "held_peers_before": 4,
+  "held_peers_now": 5,
+  "old_peer_hashes_unchanged": true,
+  "staging_unchanged_by_inspection": true,
+  "cohort_accepted": 0,
+  "accounting": {
+    "data/ai_costs/usage.jsonl": {
+      "before_sha256": "de5168482afc6729dddbff288853c9173dd697b860dda3d26ea9fa5944bdfb86",
+      "prefix_bytes": 13877602,
+      "after_bytes": 13877950,
+      "after_sha256": "4e9c73be2c7d64f0973b29cc2e0be788b6b5c2e39ac57230d314d2ea9ac7f9fa",
+      "prior_history_preserved_as_exact_prefix": true,
+      "appended_records": 1
+    },
+    "data/ai_costs/provider_health.jsonl": {
+      "before_sha256": "a93e2ab47750f6c08409d256216056208ce9872bc2e8109f6233e6f919ac4bc9",
+      "prefix_bytes": 1479292,
+      "after_bytes": 1479691,
+      "after_sha256": "b0211c29d4fe3951bf4f29538f6f0b829b520bddd39fc556bf1e7f09cf5b7872",
+      "prior_history_preserved_as_exact_prefix": true,
+      "appended_records": 2
+    },
+    "data/metabolism/key_ledger.jsonl": {
+      "before_sha256": "702c04bec9e1bb28483eb7b128e4561bf33bd7db41e76129b72340c959fe6c53",
+      "prefix_bytes": 583449,
+      "after_bytes": 583623,
+      "after_sha256": "a4852312772ce04c5823075acdd80250a73b46c263c3a0c92d085e6fe7b4df6e",
+      "prior_history_preserved_as_exact_prefix": true,
+      "appended_records": 1
+    }
+  },
+  "source_overlap_threshold": 0.18,
+  "overlap_blocks": [
+    {
+      "block_index": 3,
+      "tag": "p",
+      "jaccard": 0.18181818181818182,
+      "text": "In its October 9, 2026 release, USDA forecasts U.S. corn production of 16.0 billion bushels for 2026/27, up 234 million bushels from its earlier outlook. The department raised its yield estimate by 2.7 bushels to 181.2 bushels per acre on that date. Those are USDA\u2019s estimates, not independent Mastermind crop measurements, and they matter because the production revision feeds directly into the department\u2019s supply calculation."
+    },
+    {
+      "block_index": 5,
+      "tag": "h2",
+      "jaccard": 0.3333333333333333,
+      "text": "4.56 billion bushels for soybeans"
+    },
+    {
+      "block_index": 7,
+      "tag": "p",
+      "jaccard": 0.19,
+      "text": "Wheat provides a different comparison within the same USDA release. The department projects U.S. wheat ending stocks of 740 million bushels for 2026/27, up 23 million bushels from its previous outlook but still 20% below the prior year, as of October 9, 2026. That distinction matters: a revision higher than the prior projection can coexist with stocks below the preceding year\u2019s level."
+    }
+  ],
+  "date_diagnosis": "Three supported October 13 references were parsed as invented quantity13. Candidate repair resolves dates only to valid fact vintages, without adding day13 to metric pools. Original report unchanged.",
+  "editorial_verdict": "HOLD: source phrasing overlap plus excessive unrelated equity measurements used to explain an evidence gap. Correct attribution is not an original agricultural measurement or enough editorial value. No new ticker, no stock-event admission.",
+  "current_validator_sha256": "d9c3be1c3c46c6a06cd1911daa310591e4a157b887332404f3447232ad45b80a",
+  "current_validator_review": "pending, local-only",
+  "current_candidate_usda_failures": [
+    "close_paraphrase"
+  ]
+}

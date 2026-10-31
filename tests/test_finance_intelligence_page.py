@@ -928,3 +928,93 @@ def test_the_slice_select_shrinks_inside_a_phone_row():
     assert "min-width: 0" in rule.group(1) and "max-width: 100%" in rule.group(1)
     # ...and the field label does not shrink with it ("切片" wrapped per glyph).
     assert re.search(r"^\.fi-slice-picker > label \{[^}]*flex: none", css, re.M)
+
+
+def test_hint_roster_rules_drop_list_bullets_and_wrap_each_row():
+    """#9410 review: nothing pinned the roster's styling — deleting the
+    `.fi-hint-roster` rule left the finance suite green while the browser
+    restored default list bullets and indentation on the roster. Pin the
+    declarations (never their lengths, so a density tweak stays free): the
+    roster drops the bullet box and padding, every hint row is a wrapping
+    flex chip row on the Tier-2 panel, and the light theme keeps that row
+    on the same Tier-2 surface list as its sibling cards."""
+    css = (TEMPLATES / "finance_intelligence.css").read_text(encoding="utf-8")
+
+    def _rule_body(selector: str) -> str:
+        """Declarations of the rule whose selector is exactly `selector`."""
+        rule = re.search(rf"^{re.escape(selector)} \{{([^}}]*)\}}", css, re.M)
+        assert rule is not None, f"missing rule: {selector}"
+        return rule.group(1)
+
+    roster = _rule_body(".fi-hint-roster")
+    assert "list-style: none" in roster
+    assert "padding: 0" in roster
+
+    row = _rule_body(".fi-hint-row")
+    assert "display: flex" in row
+    assert "flex-wrap: wrap" in row
+    assert "background: var(--fi-panel2)" in row
+
+    # Tier-2 light surface: the multi-selector rule whose list closes with
+    # `html[data-theme="light"] .fi-conflict-side` (css:84) must also list
+    # the hint row, else light theme silently drops it off the panel.
+    anchor = 'html[data-theme="light"] .fi-conflict-side'
+    at = css.index(anchor)
+    selector_list = css[css.rfind("}", 0, at) + 1:css.index("{", at)]
+    assert 'html[data-theme="light"] .fi-hint-row' in selector_list
+
+
+def test_hint_chip_copy_matches_the_runtime_label_map():
+    """The roster chip (html.j2:206) is a hand-duplicated copy of the
+    runtime's RESEARCH_HINT_UNVALIDATED label pair (js:239): if either
+    drifts, the server-rendered chip and the painted chip announce
+    different things. Pin the template chip to the JS map, and pin the
+    roster <ul> aria pair to that same copy."""
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    pairs = re.findall(r"RESEARCH_HINT_UNVALIDATED:\s*\['([^']*)',\s*'([^']*)'\]", js)
+    assert len(pairs) == 1, f"label map must define it exactly once: {pairs}"
+    en, zh = pairs[0]
+
+    tpl = (TEMPLATES / "finance_intelligence.html.j2").read_text(encoding="utf-8")
+    chip = f'<span class="l-en">{en}</span><span class="l-zh">{zh}</span>'
+    assert tpl.count(chip) == 1, "chip copy drifted from the JS label map"
+
+    roster_tag = re.search(r'<ul class="fi-hint-roster"[^>]*>', tpl)
+    assert roster_tag is not None, "roster <ul> tag missing"
+    assert f'data-aria-en="{en}"' in roster_tag.group(0)
+    assert f'data-aria-zh="{zh}"' in roster_tag.group(0)
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# W20-A Spec 1 — the not_connected notice keeps the two committed lists shown.
+# ──────────────────────────────────────────────────────────────────────────
+
+def _w20a_render_notice_body() -> str:
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    start = js.index("function renderNotice(")
+    end = js.index("\n  function ", start + 1)
+    return js[start:end]
+
+
+def _w20a_section_slice(html: str, section_id: str) -> str:
+    start = html.index(f'id="{section_id}"')
+    nxt = html.find("<section", start)
+    return html[start:nxt if nxt > -1 else len(html)]
+
+
+def test_w20a_not_connected_notice_keeps_the_committed_lists() -> None:
+    body = _w20a_render_notice_body()
+    for token in ("not_connected", "rerating-map", "company-exposure",
+                  "fi-falsifiers", "fi-hint-roster"):
+        assert token in body, f"renderNotice must mention {token}"
+
+
+def test_w20a_committed_lists_live_in_the_kept_sections() -> None:
+    html = _render()
+    assert 'class="fi-falsifiers"' in _w20a_section_slice(html, "rerating-map")
+    assert 'class="fi-hint-roster"' in _w20a_section_slice(html, "company-exposure")
+    for other in ("what-changed", "system-map", "subtheme-atlas",
+                  "macro-matrix", "constraint-map"):
+        slice_html = _w20a_section_slice(html, other)
+        assert 'class="fi-falsifiers"' not in slice_html
+        assert 'class="fi-hint-roster"' not in slice_html

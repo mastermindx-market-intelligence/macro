@@ -11,6 +11,7 @@ import logging
 from lib.intl_library_view import build_public_intl_library_view
 from lib.intl_inspector_mount import attach_inspectors
 from lib.intl_compare_mount import attach_compares
+from lib.intl_chart_mount import attach_source_bound_charts
 from lib.intl_workspace_binding import binding_version
 
 
@@ -101,7 +102,7 @@ def attach_public_library(workspace, *, catalogue, macro_html, stocks_rendered):
     return result
 
 
-def render_international_pages(template, vm, *, catalogue=None):
+def render_international_pages(template, vm, *, catalogue=None, chart_sources=None):
     """Render the incumbent destinations before advertising any Library link."""
     stocks = template.render(**vm, mode="stocks")
     macro = template.render(**vm, mode="macro")
@@ -137,7 +138,19 @@ def render_international_pages(template, vm, *, catalogue=None):
         except (ValueError, KeyError, TypeError) as exc:
             logging.getLogger(__name__).error("International Inspector unavailable (%s)", type(exc).__name__)
         try:
+            # The existing Compare catalogue is authoritative even when an
+            # optional, source-bound interior chart is unavailable. Never
+            # move numeric qualification or the controller into this module.
             compared = attach_compares(current)
+            if chart_sources is not None:
+                try:
+                    if type(chart_sources) is not tuple or len(chart_sources) != 2:
+                        raise ValueError("invalid_chart_source_input")
+                    compared = attach_source_bound_charts(
+                        current, chart_sources[0], production_inputs=chart_sources[1])
+                except (ValueError, KeyError, TypeError, OverflowError) as chart_error:
+                    logging.getLogger(__name__).warning(
+                        "International Chart withheld (%s)", type(chart_error).__name__)
             macro = template.render(**{**vm, "intl_workspace": compared}, mode="macro")
         except (ValueError, KeyError, TypeError) as exc:
             logging.getLogger(__name__).error("International Compare unavailable (%s)", type(exc).__name__)

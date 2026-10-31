@@ -1,0 +1,303 @@
+{
+  "bounded_action_range": [
+    "2025-10-01",
+    "2026-10-12"
+  ],
+  "current_benchmark_reference_observation": {
+    "ITA": "ETF/USD; vendor primary exchange BATS",
+    "SPY": "ETF/USD; vendor primary exchange ARCX",
+    "historical_security_continuity_admitted": false,
+    "reference_receipt_sha256": "f15f02b0a30be6653af7f83fc4c7fb1223f313cc42fcf33f073419be4cf8a21e"
+  },
+  "current_vintage_projection": {
+    "adapter": "engine/government_revenue/price_panel_adapter.py",
+    "adapter_sha256": "9e85a007621adbcf77200c7621f90ec95b63d239e5fb7b1155308be68c8826eb",
+    "complete_window": [
+      "2025-10-01",
+      "2026-10-09"
+    ],
+    "convention": "backward split-and-dividend-adjusted close ratio; not exact cash reinvestment",
+    "factor_witnesses": 7,
+    "licensed_raw_sources_in_git": false,
+    "not_admitted": [
+      "historical_availability",
+      "identity_continuity",
+      "runtime_rights",
+      "issuer_panel",
+      "prospective_cohort",
+      "grading",
+      "issuance",
+      "scientific_efficacy"
+    ],
+    "price_vintage_id": "grv-price-8e05b86fcdfd65a16e886c20a986b1ea656b04e40d8cc2659ff512282da06292",
+    "qualification_sha256": "7df91acf53f332fbb5dd8e64e42d749c3ab1b08373b3be1a5bf629ed08c2d605",
+    "qualified_at": "2026-10-13T20:48:10.877841+00:00",
+    "review_sha256": "6efd2c09aec9e645c48566ac92262018eead6c21996fca46ce3412a9e17a5e41",
+    "reviewed_packet_sha256": "6b62d7e6ef2c95c766f6089cde9c51994c0b869746546e86732dc4cdddf5285e",
+    "sessions": 258,
+    "source_observed_at": "2026-10-13T11:43:15.183797+00:00",
+    "state": "independently_accepted_unwired_technical_projection",
+    "symbols": [
+      "SPY",
+      "ITA"
+    ],
+    "synthetic_tests_passed": 18,
+    "wired_to_grading_or_issuance": false
+  },
+  "enrollment": {
+    "bound_is_not_empirical_power_or_event_forecast": true,
+    "current20issuer_fixed_universe_optimistic_max_draws": 220,
+    "fifty_admitted_issuers_proven": false,
+    "fixed_registered_ticker_list": false,
+    "gate": 545,
+    "optimistic_min_security_lanes": 50,
+    "owner_resolution": "Existing recipient proposal/curate owner must qualify a viable genuinely independent eligible issuer pool and actual forward action flow; disclose fixed-ITA sector limitation. No aliases, private subsidiary rows or duplicate share classes create independent issuers. No family/threshold/expiry change.",
+    "registered_eligibility_unchanged": true
+  },
+  "evidence_refs": {
+    "CURRENT_EXISTING_OWNER_INPUT_FRONTIER.json": "cedc4ba10526dd84a3186f1f125a68a37e40275be1b941e4389aafc8b603da1b",
+    "EXISTING_BENCHMARK_REFERENCE_QUALIFICATION.json": "f15f02b0a30be6653af7f83fc4c7fb1223f313cc42fcf33f073419be4cf8a21e",
+    "EXISTING_DIVIDEND_OWNER_QUALIFICATION.json": "fed2260b47ee90bdc802cf56781ac7954b48c6f49d7533feec8fdeb5f36da629",
+    "EXISTING_OWNER_CALENDAR_SNAPSHOT.json": "ccee9a42782b8323e6595528a4e9b997b8c8f213a5c64c169cca95f9d1bec086",
+    "EXISTING_SPLIT_OWNER_QUALIFICATION.json": "d5680229bd9158202e80f0436c3e86e442592ac1da1f5f5b1440fce0ee171086",
+    "GRV_UNCHANGED_EXPIRY_CAPACITY_BOUND.json": "6d8b1e202cf1ea9751a9b39c42136c9a85ca00353f4122d399e38983c15b88b8",
+    "ITA_DIVIDEND_OWNER_RESPONSE.json": "436c56f76af1114f93687a835e9157dbc77eab84a5827a882ef7f2d258e41368",
+    "ITA_SPLIT_OWNER_ACQUISITION.json": "db5d00e83fa1aa119caab8fccdce40154164e9ec30adb7e798d502e36ee6661b",
+    "SPY_DIVIDEND_OWNER_RESPONSE.json": "384daade6fcbc1bb7239519930fd0d222d6764cd8f963f9ec0b21d6d17a8b49c",
+    "SPY_SPLIT_OWNER_ACQUISITION.json": "5f88d3cce44606263c75445dbf25a99281f07b9acffe65f36fd86ce8d14011de"
+  },
+  "independent_source_ruling": {
+    "action_packet_sha256": "10c83952aafa4247653c435697db461632337ba4c3f24fa1c7d38a4453daf1fa",
+    "disposition": "ADMIT_CURRENT_PROVIDER_OBSERVATIONS_ONLY_REGISTERED_BASIS_HELD",
+    "input_manifest_sha256": "121b8f357380445a0c324f9c58c2bb1aa2b1d8ca215649b9e8b54f16fe9691ec",
+    "reviewed_at": "2026-10-13T08:10:40.901731+00:00",
+    "sha256": "90b6b079ed6a7784eaa552232474fcea2dca161d51af57b8080d19ff011f97c3",
+    "verified_input_artifacts": 10
+  },
+  "issuer_current_vintage_projection": {
+    "adapter_sha256": "2b7bec706d4d3ddbd7951768e4017751426c8aeb4b799dfccd228f92d09a900f",
+    "benchmark_receipt_and_basis_unchanged": true,
+    "complete_window": [
+      "2025-10-01",
+      "2026-10-09"
+    ],
+    "factor_witnesses": 16,
+    "licensed_raw_sources_in_git": false,
+    "not_admitted": [
+      "historical_availability",
+      "identity_continuity",
+      "runtime_rights",
+      "prospective_cohort",
+      "grading",
+      "issuance",
+      "scientific_efficacy"
+    ],
+    "original37_packet_sha256": "7102c64fbf97f88ae567a6a1facf0835d7dc29f440819f00d70eedce66b46283",
+    "original37_values_preserved": 148,
+    "parent_qualification_sha256": "b4c8d10de6682e80386d45319d8f490aa2e9acc7f5b45ce5c857d55b381bed60",
+    "price_vintage_id": "grv-price-c4f1e937e2d3c26103416f335d8f7c1b867ce8e2f71a1a5a26ccbb522c30c62e",
+    "review_sha256": "74d9b8eca53aaf778c85bd89ade83b84a5d7c81afb676269568db7023c1b782c",
+    "reviewed_packet_sha256": "773077fa8070e1c309b5b35542c34767bedd22c5f8ab27dd694210faf35cae1d",
+    "sessions": 258,
+    "source_observed_at": "2026-10-13T21:34:53.526681+00:00",
+    "state": "independently_reviewed_parent_verified_unwired_technical_projection",
+    "symbols": [
+      "LHX",
+      "LMT",
+      "NOC",
+      "RTX"
+    ],
+    "synthetic_tests_passed": 25,
+    "wider_old_refusal_preserved": true,
+    "wired_to_grading_or_issuance": false
+  },
+  "ita_canonical_repair": {
+    "canonical_manifest_sha256": "f8d87f2642ba14be4357ea035981ad08335be59c805ed1663b9c9f37937cad5d",
+    "changed_market_objects": [
+      "massive_stock_day/ITA.parquet"
+    ],
+    "complete_mirror_objects": 21712,
+    "global_state_preserved": true,
+    "grading_or_issuance_effect": false,
+    "new_ita_sha256": "621da7044552efdadf76b8618984299d85e42b1f57b09010b73ceb9b680e8f04",
+    "new_rows": 1323,
+    "new_technical_vintage_qualified": true,
+    "observed_at": "2026-10-13T11:37:25.120632+00:00",
+    "old_rows_preserved": 1322,
+    "prior_missing_vintage_preserved": true,
+    "published_at": "2026-10-13T11:37:10+00:00",
+    "receipt_sha256": "52bb5e13926219209a77d299a68fc061e9733338c0309977b0edc1be167617c2",
+    "state": "CANONICAL_REPAIR_VERIFIED"
+  },
+  "method": {
+    "bar_reads": 0,
+    "canonical_writes": 0,
+    "issuance": 0,
+    "logical_source_operations": {
+      "benchmark_reference_reads": 2,
+      "dividend_reads": 2,
+      "split_acquisitions": 2
+    },
+    "raw_licensed_provider_rows_in_this_record": 0,
+    "return_calculations": 0,
+    "split_acquisition": "Existing engine.close_pass.massive_split_evidence.acquire_split_history and its strict acquisition validator; no source-store intake",
+    "transport": "Existing engine.close_pass.massive_close._default_fetch; exact existing same-account provisioned credential, no redirects",
+    "transport_attempt_counts_not_instrumented_for_default_fetch": true
+  },
+  "minimum_next_owner_step": "Preserve prior/current benchmark and issuer vintages with their source-pin revisions. The current technical panel covers SPY/ITA and the four issuers for258sessions, but remains unwired to issuance/grading. Qualify actual runtime security continuity, rights/input availability and eligible issuer coverage; reconcile original Q3 on its existing carrier before prospective enrollment.",
+  "missing_ita_session_source_qualification": {
+    "actual_observed_at": "2026-10-13T10:31:05.779230+00:00",
+    "canonical_store_repaired": false,
+    "complete_source_body_bytes": 319805,
+    "complete_source_body_sha256": "7b777cd697b2f0d4eef2da69afe638976aa4e85723337cf09664bb6b8d4f32b0",
+    "http_status": 200,
+    "native_row_sha256": "399cce57e44cdea30204348b011217a1c0d48bedf36f83d688bd4bdddf078ce5",
+    "native_target_rows": 1,
+    "next_action": "Current incumbent canonical-store writer must qualify preservation and publish through its existing guarded owner. Do not force date replay, replace global resume state, or call this source read a canonical repair.",
+    "original_missing_vintage_preserved": true,
+    "read_receipt_sha256": "dd0e05d8140c6b3882e6fe99075fd15ddc6e7bab29c62f06c6e7b579fc8abc30",
+    "source_date": "2026-08-18",
+    "source_date_matches_native_window": true,
+    "source_key": "us_stocks_sip/day_aggs_v1/2026/08/2026-08-18.csv.gz"
+  },
+  "observations": [
+    {
+      "all_retained_rows_have_finite_positive_historical_adjustment_factor": true,
+      "dividend_rows": 4,
+      "observed_at": "2026-10-13T07:57:22.420035Z",
+      "pagination_outstanding": false,
+      "response_artifact_sha256": "384daade6fcbc1bb7239519930fd0d222d6764cd8f963f9ec0b21d6d17a8b49c",
+      "ticker": "SPY"
+    },
+    {
+      "all_retained_rows_have_finite_positive_historical_adjustment_factor": true,
+      "dividend_rows": 3,
+      "observed_at": "2026-10-13T07:57:22.523941Z",
+      "pagination_outstanding": false,
+      "response_artifact_sha256": "436c56f76af1114f93687a835e9157dbc77eab84a5827a882ef7f2d258e41368",
+      "ticker": "ITA"
+    }
+  ],
+  "other_science_dispositions": {
+    "GRV": "Input readiness advanced, 0 issuance; natural future maturity conditional on actual admission and writer recovery",
+    "finance_unseen_target": "No forecast/outcome cohort admitted; exploratory source packet retained, no invented predictions",
+    "stage_FMS_signed_case": "REJECTED_AT_ADMISSION; no complete signed positive/negative denominator",
+    "workflow_human_target": "Not evaluated; completed separate nonblind AI DEV pilot is not human efficacy"
+  },
+  "primary_documentation": {
+    "aggregate_basis": "https://massive.com/knowledge-base/article/is-massives-stock-data-adjusted-for-splits-or-dividends",
+    "dividend_factors": "https://massive.com/docs/rest/stocks/corporate-actions/dividends",
+    "dividend_units": "https://massive.com/knowledge-base/article/does-massive-adjust-historic-dividends-for-splits"
+  },
+  "prior_current_vintage_projections": [
+    {
+      "adapter": "engine/government_revenue/price_panel_adapter.py",
+      "adapter_sha256": "5b29b51bf136c1a00e74a9523191ff88928c19d71f75fe2d5fc053576a3df8a3",
+      "complete_window": [
+        "2026-08-19",
+        "2026-10-09"
+      ],
+      "convention": "backward split-and-dividend-adjusted close ratio; not exact cash reinvestment",
+      "factor_witnesses": 7,
+      "licensed_raw_sources_in_git": false,
+      "not_admitted": [
+        "historical_availability",
+        "identity_continuity",
+        "runtime_rights",
+        "issuer_panel",
+        "prospective_cohort",
+        "grading",
+        "issuance",
+        "scientific_efficacy"
+      ],
+      "price_vintage_id": "grv-price-19fed4ba5f8ade22fe3e4843c68886f416d8f9d4417ed08ce8138541237473c6",
+      "review_sha256": "bef295893f3c64b678e5473bb36cb6929bd1dc0279f27847c5889bb3f8aea5fd",
+      "reviewed_packet_sha256": "35f1c0e2d0ac590b3457240f48984bb3e28100621a0085885552039e2d86989c",
+      "sessions": 37,
+      "state": "independently_accepted_unwired_technical_projection",
+      "symbols": [
+        "SPY",
+        "ITA"
+      ],
+      "synthetic_tests_passed": 18,
+      "wired_to_grading_or_issuance": false
+    }
+  ],
+  "prospective_acceptance": [
+    "Original Q3 operation reconciled on same carrier, no replacement worker or writer",
+    "Actual fresh non-late action meets frozen family before registered entry; old173 and diagnostic407 never re-clocked",
+    "Parent source admission consumes exact owner/projection/calendar/security/rights refs before issuance",
+    "Conservative before-entry proof/push headroom and authoritative server observation of exact published ledger prefix",
+    "Same ledger, one durable issuance effect; phase2 projection then whole-generation reproof; no post-proof mutable state",
+    "Natural h5/h21/h63/h126 accrual only; no alpha/efficacy claim until unchanged registered verdict requirements"
+  ],
+  "readiness": {
+    "canonical_issuance_log_exists_at_packet_time": false,
+    "enterprise_rights_record": "POSITIVE_EXISTING_RECORD",
+    "future_enrollment": "NOT_STARTED",
+    "immutable_calendar_snapshot": "READY_FOR_OWNER_REVIEW_NOT_OBSERVED_FUTURE_SESSIONS",
+    "original_Q3_caller": "ACTIVE_OR_WAITING_WORKER_UNKNOWN_RETRY_UNAUTHORIZED_PER_ROOT20_52; supported metadata observation REFUSED original_run_observation_unconfirmed21_04; no replay",
+    "original_Q3_replayed": false,
+    "registered_price_basis": "NOT_ADMITTED",
+    "source_endpoint_capability": "OBSERVED"
+  },
+  "record_type": "defense.grv_existing_owner_input_readiness.v1",
+  "registration": {
+    "accrual_expiry_date": "2029-08-06",
+    "changed": false,
+    "family_id": "grv-fa1",
+    "planning_n_required": 545,
+    "prereg_document_sha256": "d8dc5d3cf6ced25424906dfb31ee4b8565b74b625080a9664926f2959cc00c41",
+    "version": "4.1.0"
+  },
+  "rtx_noc_canonical_repair": {
+    "completed_at": "2026-10-13T21:32:33.721290+00:00",
+    "global_manifest_bytes_unchanged": true,
+    "independent_review_sha256": "a14c34008453ce1ebda7ad86414ce35ce8c40a7dc97e823a66cb2120bde8ae76",
+    "new_rows_per_issuer": 1323,
+    "objects_changed": [
+      "massive_stock_day/NOC.parquet",
+      "massive_stock_day/RTX.parquet"
+    ],
+    "old_rows_preserved_per_issuer": 1322,
+    "only_added_date": "2026-08-18",
+    "other_objects_preserved": 21710,
+    "publication_receipt_sha256": "800ba7ccc61ee9833762bf3d49debf30c1f9dc08de63990c808ba6f1ec44dae4",
+    "state": "CANONICAL_REPAIR_VERIFIED"
+  },
+  "runtime_consumer_note": "Existing research_state.v1 closes source paths, count reasons and disclosure lists; this documentary receipt is not installed API state. No new runtime validator or schema change.",
+  "scope": "Source-only input qualification; no registered TR basis, cohort, issuance, scientific efficacy or runtime activation",
+  "source_quality_finding": {
+    "code": "CURRENT_ADJUSTED_UNITS_CUTOFF_UNQUALIFIED",
+    "finding": "All three retained ITA past-dividend adjusted-cash fields are approximately one-third their native cash fields while the only retained split is announced for 2026-11-05, after basis cutoff.",
+    "inference": "Later normalization may be represented in current adjusted fields; causal attribution is unproven.",
+    "owner_resolution": "Existing corporate-action/price owner must qualify native units, temporal partition, adjustment convention and matching raw-price/action vintage. Filtering future split rows alone is insufficient. Do not apply that future split early or relabel RAW/SADJ as the registered basis."
+  },
+  "split_temporal_partition": {
+    "ITA": {
+      "basis_date": "2026-10-12",
+      "executed_observed_rows": 0,
+      "future_announced_rows": 1,
+      "future_applied_to_prices": false,
+      "future_execution_dates": [
+        "2026-11-05"
+      ],
+      "intake_or_store_created": false
+    },
+    "SPY": {
+      "basis_date": "2026-10-12",
+      "executed_observed_rows": 0,
+      "future_announced_rows": 0,
+      "future_applied_to_prices": false,
+      "future_execution_dates": [],
+      "intake_or_store_created": false
+    }
+  },
+  "unresolved_scientific_obligations": [
+    "Qualified immutable issuer and SPY/ITA split+dividend-adjusted price projection with matching convention/vintage",
+    "Cutoff-valid security continuity and current recipient/ownership eligibility, including viable enrollment capacity",
+    "Same-carrier original Q3 recovery and authoritative durable before-entry ledger acknowledgement",
+    "Genuinely fresh action collection and natural horizons; unchanged coverage, independence, baseline and kill requirements",
+    "Stage signed-case positive/negative population remains unidentified; no retrospective prospective finance cohort; separate AI DEV pilot does not establish human efficacy"
+  ]
+}

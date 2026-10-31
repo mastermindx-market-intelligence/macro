@@ -42,7 +42,7 @@ from engine.us_board_rank import (  # noqa: E402
 )
 from lib import config, site_assets, store  # noqa: E402
 from lib.chat_allowance import chat_allowance_view_model  # noqa: E402
-from lib.help_directory import help_page_view_model  # noqa: E402
+from lib.help_directory import help_page_view_model, refresh_disclosure  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -3799,7 +3799,7 @@ def build_help_page(env: Environment, site: Path, generated: str) -> None:
     ``changelog``, which this function's except-and-log swallowed silently).
     """
     vm = help_page_view_model(config.ROOT)
-    html = env.get_template("help.html.j2").render(generated_utc=generated, **vm)
+    html = env.get_template("help.html.j2").render(generated_utc=generated, refresh=refresh_disclosure(config.ROOT, generated), **vm)
     write_page(site / "help.html", html)
     log.info("wrote help.html (%d source-validated links)", len(vm["entries"]))
 
@@ -5615,6 +5615,10 @@ def _plan_relations_for(
             "lifecycle_state": plan.get("lifecycle_state"),
             "formation_date": plan.get("formation_date"),
             "signal_date": plan.get("signal_date"),
+            "signal_date_basis": plan.get("signal_date_basis"),
+            "observed_date": plan.get("observed_date"),
+            "price_basis_date": plan.get("price_basis_date"),
+            "recorded_at": plan.get("recorded_at"),
             "plan_asof": plan.get("plan_asof"),
         })
     for grouped in by_ticker.values():
@@ -6241,10 +6245,14 @@ def main() -> int:
     # (theme.js signInWithOAuth redirectTo), not a fixed host — the allowed
     # origins live in the Supabase dashboard (see ACCOUNTS_SETUP.md).
     # copy shared static assets (theme + visual widgets) into the site
-    for asset in ("theme.css", "navigation-refresh.css", "product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
+    for asset in ("government-revenue-parity.css","government-revenue-dossiers.js","government-revenue-candidate-radar.js","government-revenue-briefcase.js","government-revenue-briefcase-ui.js","government-revenue-sbir.js","government-revenue-sbir.css","government-revenue-investor.js","government-revenue-investor.css","government-revenue-theme-context.js","government-revenue-theme-context.css",
+                  "theme.css", "navigation-refresh.css", "product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
                   "theme.js", "terminal_overlay.js", "mtf.js", "chart_i18n.js", "timemachine.js",
                   "illus.css", "illus.js",
+                  "mm_brain.js", "mm_brain_visuals.js", "mm_brain_visuals.css", "mm_brain_presentation.js", "mm_brain_markdown.js", "mm_brain_finance.js", "mm_brain_finance.css", "mm_brain_finance_math_v1.js", "mm_brain_math.js",
                   "account.js",
+                  "market_memory.css", "market_memory.js", "market_memory_intent.js",
+                  "market_memory_retained.css", "market_memory_retained.js",
                   # landing onboarding sheet (paired templates/ -> site/ byte copy)
                   "onboard.js", "onboard.css",
                   "stockdata.js", "logo_config.js", "stock-logos.js", "watchlist.js", "factor_exposure.js", "auth.js",
@@ -6260,6 +6268,7 @@ def main() -> int:
                   "tablesort.js", "charts.js",
                   "aibrief.js", "stockbrief.js", "aidesk_lean.js",
                   "stockview.js",
+                  "ticker_news.js", "ticker_news.css",
                   "lightweight-charts.js",
                   "allocation_scorecard.js", "live.js", "risk_state_live.js",
                   "risk_envelope_live.js",
@@ -7922,7 +7931,7 @@ def main() -> int:
     # a "results ready" flag, so the owner is told exactly when to return for the next step.
     try:
         from engine import experiments_registry
-        experiments_registry.build(site)
+        experiments_registry.build_published(site)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("experiments registry build failed: %s", e)
 
@@ -8425,6 +8434,28 @@ def main() -> int:
     except Exception as _fi_e:  # noqa: BLE001 — additive; never break main build
         log.warning("finance_intelligence.html render failed (%s); page skipped", _fi_e)
 
+    # Expectation Surface — Information→Price wave 1 descriptive consensus page
+    # (schema expectation_surface.page.v1, financial_influence=false everywhere).
+    # Degrade-safe: an import or render fault skips the page, never the build.
+    try:
+        from scripts.build_expectation_surface import build as _build_es
+        _es_summary = _build_es(write=True)
+        log.info("wrote site/expectation_surface.html (%s)", _es_summary.get("state"))
+    except Exception as _es_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("expectation_surface render failed (%s); page skipped", _es_e)
+
+    # Consumer Cyclical PLNT synthetic display card — one static card mounting
+    # display_packet over the committed synthetic fixture. It writes no data,
+    # fetches nothing, and a native-admitted refusal raises before any page
+    # exists; this hook only keeps a full-site rebuild from leaving the card
+    # behind the templates.
+    try:
+        from scripts.build_consumer_cyclical_plnt_page import render as _render_plnt
+        _plnt_page = _render_plnt(config.ROOT)
+        log.info("wrote %s", _plnt_page)
+    except Exception as _plnt_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("consumer_cyclical_plnt.html render failed (%s); page skipped", _plnt_e)
+
     # F01 Macro & Monetary suite — server-rendered workspace pages over the
     # validated mastermind.macro_workspace_snapshot.v1 artifacts. The builder
     # fails CLOSED on its own (a refused snapshot renders the typed refusal page,
@@ -8465,6 +8496,18 @@ def main() -> int:
         log.info("wrote %s", site / "market_structure.html")
     except Exception as _msp_e:  # noqa: BLE001 — additive; never break main build
         log.warning("market_structure.html render failed (%s); page skipped", _msp_e)
+
+    # U1 — Theme Map (house hierarchy, category → theme → sub-theme → micro-theme).
+    # Reads the breadth-display reader; never writes to data/. Render failure
+    # never breaks main build (builder emits `.mx-empty` on store unreadable).
+    try:
+        import scripts.build_theme_tree_page as _ttb
+        _ttb_html = _ttb.render(config.ROOT)
+        write_page(site / "theme_tree.html", _ttb_html)
+        _tmark("theme_tree")
+        log.info("wrote %s", site / "theme_tree.html")
+    except Exception as _ttb_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("theme_tree render failed (%s); page skipped", _ttb_e)
 
     # Market Memory — data-free authenticated shell over existing macro analogue
     # and Signal Episode Atlas APIs.  The page never republishes analytical data.

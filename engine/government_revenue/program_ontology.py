@@ -26,14 +26,63 @@ from __future__ import annotations
 from collections import defaultdict
 from datetime import date, datetime, time, timezone
 from hashlib import sha256
+import json
+import math
 import re
 import unicodedata
 from typing import Any, Iterable, Mapping, Sequence
 from urllib.parse import urlparse
 
+from engine.government_revenue.public_agreement import agreement_assertion_id as public_agreement_assertion_id, agreement_payload_errors
+
 
 CONTRACT = "government_program_ontology.v1"
 SCHEMA_VERSION = "1.0.0"
+PUBLIC_CAPACITY_VERSION = "1.2.0"
+PUBLIC_CAPACITY_COLLECTION = "public_capacity_assertions"
+PUBLIC_CAPACITY_KINDS = frozenset({"announced_target", "installed_capacity", "demonstrated_throughput"})
+PUBLIC_CAPACITY_UNITS = {
+    "announced_target": frozenset({"units", "units_per_year", "relative_multiplier"}),
+    "installed_capacity": frozenset({"units_per_year"}),
+    "demonstrated_throughput": frozenset({"units", "units_per_year"}),
+}
+PUBLIC_CAPACITY_KEYS = frozenset({
+    "id", "revision", "program_id", "product_scope", "product_label", "entity_id",
+    "kind", "quantity", "comparator", "unit", "period_label", "known_at",
+    "valid_from", "valid_to", "verification_state", "evidence_refs",
+    "predecessor_id", "succession_reason",
+})
+#: Ontology 1.3 (additive over 1.2): closed, source-attributed public oversight
+#: findings. Financial/cost/schedule/process observations only -- never a legal
+#: verdict, readiness state, issuer allocation or investment ranking, which is
+#: why an oversight row carries a quoted excerpt and its hash and NO quantity.
+PUBLIC_OVERSIGHT_VERSION = "1.3.0"
+PUBLIC_AGREEMENT_VERSION = "1.4.0"
+PUBLIC_AGREEMENT_COLLECTION = "public_agreement_assertions"
+PUBLIC_OVERSIGHT_COLLECTION = "public_oversight_assertions"
+PUBLIC_OVERSIGHT_FINDING_KINDS = frozenset({
+    "cost", "schedule", "production_constraint", "contract_process", "protest_status",
+})
+PUBLIC_OVERSIGHT_REPORTER_ENUM = frozenset({"oversight_body", "quoted_program_office"})
+#: Oversight findings may only cite an admitted public official acquisition or
+#: congressional source on the existing publisher-host allowlist; issuer IR
+#: disclosures and alliance-policy context rows are not oversight sources.
+PUBLIC_OVERSIGHT_EVIDENCE_CLASSES = frozenset({
+    "official_budget_exhibit", "official_acquisition_report", "official_contract_announcement",
+    "official_program_page", "congressional_research",
+})
+PUBLIC_OVERSIGHT_KEYS = frozenset({
+    "id", "revision", "program_id", "finding_kind", "reported_by", "report_series",
+    "report_document_id", "report_edition", "published_on", "period_label", "summary",
+    "excerpt", "excerpt_sha256", "page", "printed_page_label", "known_at", "valid_from",
+    "valid_to", "verification_state", "evidence_refs", "predecessor_id", "succession_reason",
+})
+#: Bounded free-text fields. The excerpt is the EXACT quoted source text: it is
+#: hashed verbatim (no normalization) so any later edit is detectable.
+PUBLIC_OVERSIGHT_TEXT_LIMITS: dict[str, int] = {
+    "report_series": 256, "report_document_id": 256, "report_edition": 256,
+    "period_label": 256, "summary": 2000, "excerpt": 4000,
+}
 WORKSHEET_CONTRACT = "government_program_ontology_review_worksheet.v1"
 WORKSHEET_SCHEMA_VERSION = "1.0.0"
 EVENT_CONTRACT = "government_procurement_event.v2"
@@ -72,11 +121,11 @@ MILESTONE_KIND_ENUM = frozenset({"budget_event", "contract_event", "delivery_eve
 TEMPORAL_KIND_ENUM = frozenset({"date", "window"})
 EVIDENCE_CLASS_ENUM = frozenset({
     "official_budget_exhibit", "official_acquisition_report", "official_contract_announcement",
-    "official_program_page", "congressional_research", "issuer_disclosure",
+    "official_program_page", "congressional_research", "issuer_disclosure", "official_alliance_policy",
 })
 CLAIM_SCOPE_ENUM = frozenset({
     "program_identity", "capability_need", "role", "milestone",
-    "program_capability_link", "program_event_link", "ownership_context",
+    "program_capability_link", "program_event_link", "ownership_context", "policy_context",
 })
 #: Per-kind required coverage scope (freeze SS3.1a, exhaustive).
 REQUIRED_CLAIM_SCOPES: dict[str, tuple[str, ...]] = {
@@ -88,6 +137,25 @@ REQUIRED_CLAIM_SCOPES: dict[str, tuple[str, ...]] = {
     "program_capability_links": ("program_capability_link",),
     "program_event_links": ("program_event_link",),
 }
+
+
+def allowed_claim_scopes(version: Any) -> frozenset[str]:
+    """Claim scopes an artifact of ``version`` may carry on an evidence row.
+
+    Each bounded extension is version-gated: 1.2 adds ``public_capacity``,
+    1.3 adds ``public_oversight`` and PRESERVES 1.2's ``public_capacity``.
+    Older artifacts keep the exact prior scope surface, so an old version
+    still fail-closes on the newer scope names.
+    """
+    if version == PUBLIC_AGREEMENT_VERSION:
+        return CLAIM_SCOPE_ENUM | {"public_capacity", "public_oversight", "public_agreement"}
+    if version == PUBLIC_OVERSIGHT_VERSION:
+        return CLAIM_SCOPE_ENUM | {"public_capacity", "public_oversight"}
+    if version == PUBLIC_CAPACITY_VERSION:
+        return CLAIM_SCOPE_ENUM | {"public_capacity"}
+    return CLAIM_SCOPE_ENUM
+
+
 SOURCE_IDENTITY_SYSTEM_ENUM = frozenset({
     "p1_line_item", "rdte_pe", "sar_msar", "official_program_page",
     "contract_announcement", "congressional_research",
@@ -254,6 +322,47 @@ def role_assertion_id(
     )
 
 
+def public_capacity_assertion_id(row: Mapping[str, Any]) -> str:
+    """Bind literal semantic content, clocks, review and evidence; never a quantity estimate."""
+    body = {key: row[key] for key in sorted(PUBLIC_CAPACITY_KEYS - {"id"})}
+    body["evidence_refs"] = sorted(body["evidence_refs"])
+    encoded = json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return "prog-capacity:" + sha256(encoded.encode("utf-8")).hexdigest()[:24]
+
+
+def public_oversight_assertion_id(row: Mapping[str, Any]) -> str:
+    """Content-derived oversight row identity (sibling of
+    :func:`public_capacity_assertion_id`): binds the quoted excerpt and its
+    hash, the report/edition metadata, the source clocks and the cited
+    evidence -- so any transcription edit mints a DIFFERENT row that must go
+    through succession, never an in-place mutation."""
+    body = {key: row[key] for key in sorted(PUBLIC_OVERSIGHT_KEYS - {"id"})}
+    body["evidence_refs"] = sorted(body["evidence_refs"])
+    encoded = json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return "prog-oversight:" + sha256(encoded.encode("utf-8")).hexdigest()[:24]
+
+
+def public_oversight_excerpt_sha256(excerpt: Any) -> str:
+    """SHA-256 over the exact quoted excerpt text, UTF-8, NO normalization.
+
+    The excerpt is evidence: a smart-quote substitution or whitespace edit is
+    a content change and must fail the hash, not silently pass."""
+    if not isinstance(excerpt, str):
+        raise ValueError("oversight excerpt must be a string")
+    return sha256(excerpt.encode("utf-8")).hexdigest()
+
+
+def coverage_scopes_for(graph: Mapping[str, Any]) -> frozenset[str]:
+    extra: set[str] = set()
+    if graph.get("schema_version") == PUBLIC_CAPACITY_VERSION:
+        extra.add("public_capacity")
+    if graph.get("schema_version") in (PUBLIC_OVERSIGHT_VERSION, PUBLIC_AGREEMENT_VERSION):
+        extra |= {"public_capacity", "public_oversight"}
+    if graph.get("schema_version") == PUBLIC_AGREEMENT_VERSION:
+        extra |= {"public_agreement"}
+    return COVERAGE_SCOPE_ENUM | extra
+
+
 def milestone_id(
     *, program_id: str, kind: str, title: str, temporal_kind: str,
     date_value: str | None, window: Mapping[str, Any] | None, revision: int,
@@ -375,10 +484,25 @@ def _validate_evidence(raw: Mapping[str, Any], ctx: _Ctx) -> dict[str, dict[str,
         if evidence_class not in EVIDENCE_CLASS_ENUM:
             ctx.err("ontology_row_shape_invalid", row_key)
         scopes = row.get("claim_scopes")
+        # 1.0 remains strict; 1.1 admits alliance policy only as context.
+        if raw.get("schema_version") == "1.0.0" and (
+            evidence_class == "official_alliance_policy"
+            or (isinstance(scopes, list) and "policy_context" in scopes)
+        ):
+            ctx.err("ontology_row_shape_invalid", row_key)
+        if evidence_class == "official_alliance_policy":
+            if scopes != ["policy_context"]:
+                ctx.err("alliance_policy_scope_refused", row_key)
+            source = urlparse(str(row.get("source_url") or ""))
+            if (source.scheme != "https" or source.hostname != "www.nato.int"
+                or source.username or source.password
+                or row.get("retrieved_from_url") != row.get("source_url")):
+                ctx.err("alliance_policy_publisher_refused", row_key)
         if (
             not isinstance(scopes, list) or not scopes
+            or any(not isinstance(scope, str) for scope in scopes)
             or len(scopes) != len(set(scopes))
-            or any(scope not in CLAIM_SCOPE_ENUM for scope in scopes)
+            or any(scope not in allowed_claim_scopes(raw.get("schema_version")) for scope in scopes)
         ):
             ctx.err("ontology_row_shape_invalid", row_key)
         retrieved_at = _strict_datetime(row.get("retrieved_at"))
@@ -400,7 +524,36 @@ def _validate_evidence(raw: Mapping[str, Any], ctx: _Ctx) -> dict[str, dict[str,
         else:
             if pin or basis:
                 ctx.err("ontology_row_shape_invalid", row_key)
-            if source_host is None or source_host not in PUBLISHER_HOST_ALLOWLIST:
+            # Explicit source amendment in the new capacity contract; the
+            # published 1.0/1.1 global allowlist remains unchanged.
+            source_url = row.get("source_url")
+            army_capacity_source = (
+                raw.get("schema_version") in (PUBLIC_CAPACITY_VERSION, PUBLIC_OVERSIGHT_VERSION, PUBLIC_AGREEMENT_VERSION)
+                and evidence_class == "official_contract_announcement"
+                and source_host == "www.army.mil"
+                and isinstance(source_url, str) and source_url == source_url.strip()
+                and not any(ord(char) <= 0x20 or ord(char) == 0x7f for char in source_url)
+                and source_url.startswith("https://")
+                and urlparse(source_url).netloc == "www.army.mil"
+                and source_url == row.get("retrieved_from_url")
+                and isinstance(scopes, list) and bool(scopes)
+                and all(isinstance(scope, str) for scope in scopes)
+                and set(scopes) <= {"program_identity", "public_capacity"}
+            )
+            # 1.4 adds only source-attached agreement observations. The new
+            # publisher cannot supply programme identity, roles or milestones.
+            agreement_source = (
+                raw.get("schema_version") == PUBLIC_AGREEMENT_VERSION
+                and evidence_class == "official_contract_announcement"
+                and source_host == "www.sda.mil"
+                and isinstance(source_url, str) and source_url == source_url.strip()
+                and not any(ord(char) <= 0x20 or ord(char) == 0x7f for char in source_url)
+                and "\\" not in source_url and source_url.startswith("https://")
+                and urlparse(source_url).netloc == "www.sda.mil"
+                and source_url == row.get("retrieved_from_url")
+                and isinstance(scopes, list) and scopes == ["public_agreement"]
+            )
+            if not army_capacity_source and not agreement_source and (source_host is None or (source_host not in PUBLISHER_HOST_ALLOWLIST and not (evidence_class == "official_alliance_policy" and source_host == "www.nato.int"))):
                 ctx.err("publisher_host_refused", row_key)
         if not _text(row.get("retrieved_from_url")):
             ctx.err("publisher_host_refused", row_key)
@@ -591,11 +744,37 @@ def load_program_ontology_graph(
         raise OntologyInputError(["ontology_not_mapping"], ["<top_level>"])
 
     ctx = _Ctx()
-    if set(raw) != _TOP_LEVEL_SET:
+    # Refuse malformed reference types before any cross-reference set operation.
+    malformed_refs: list[str] = []
+    def check_reference_types(value: Any, row_key: str) -> None:
+        if isinstance(value, Mapping):
+            for key, child in value.items():
+                if key == "evidence_ref" and not isinstance(child, str):
+                    malformed_refs.append(row_key)
+                elif key in {"evidence_refs", "claim_scopes"} and (not isinstance(child, list) or any(not isinstance(item, str) for item in child)):
+                    malformed_refs.append(row_key)
+                else:
+                    check_reference_types(child, row_key)
+        elif isinstance(value, list):
+            for child in value:
+                key = str(child.get("id") or child.get("link_id") or row_key) if isinstance(child, Mapping) else row_key
+                check_reference_types(child, key)
+    check_reference_types(raw, "<top_level>")
+    if malformed_refs:
+        raise OntologyInputError(["ontology_row_shape_invalid"], malformed_refs)
+    agreement_enabled = raw.get("schema_version") == PUBLIC_AGREEMENT_VERSION
+    oversight_enabled = raw.get("schema_version") in (PUBLIC_OVERSIGHT_VERSION, PUBLIC_AGREEMENT_VERSION)
+    # 1.3 is strictly additive over 1.2: the capacity collection stays present
+    # AND fully validated below; the oversight collection joins the required
+    # top-level shape. Any older version carrying the newer collection (or the
+    # newer claim scope) still refuses on its own unchanged shape law.
+    capacity_enabled = oversight_enabled or raw.get("schema_version") == PUBLIC_CAPACITY_VERSION
+    top_level_keys = TOP_LEVEL_KEYS + ((PUBLIC_CAPACITY_COLLECTION,) if capacity_enabled else ()) + ((PUBLIC_OVERSIGHT_COLLECTION,) if oversight_enabled else ()) + ((PUBLIC_AGREEMENT_COLLECTION,) if agreement_enabled else ())
+    if set(raw) != set(top_level_keys):
         ctx.err("ontology_shape_invalid", "<top_level>")
     if raw.get("contract") != CONTRACT:
         ctx.err("ontology_contract_invalid", "<top_level>")
-    if raw.get("schema_version") != SCHEMA_VERSION:
+    if raw.get("schema_version") not in {SCHEMA_VERSION, "1.1.0", PUBLIC_CAPACITY_VERSION, PUBLIC_OVERSIGHT_VERSION, PUBLIC_AGREEMENT_VERSION}:
         ctx.err("ontology_schema_version_invalid", "<top_level>")
     graph_id = _text(raw.get("graph_id"))
     if graph_id is None or _GRAPH_ID.fullmatch(graph_id) is None:
@@ -610,6 +789,29 @@ def load_program_ontology_graph(
         ctx.err("invalid_authority_block", "<top_level>")
 
     evidence_index = _validate_evidence(raw, ctx)
+
+    policy_ids = {key for key, row in evidence_index.items()
+                  if row.get("evidence_class") == "official_alliance_policy"}
+    def refuse_policy_attribution(value: Any, row_key: str) -> None:
+        if isinstance(value, Mapping):
+            for key, child in value.items():
+                if key == "evidence_ref" and child in policy_ids:
+                    ctx.err("alliance_policy_noncontext_use", row_key)
+                elif key == "evidence_refs" and isinstance(child, list) and policy_ids.intersection(item for item in child if isinstance(item, str)):
+                    ctx.err("alliance_policy_noncontext_use", row_key)
+                else:
+                    refuse_policy_attribution(child, row_key)
+        elif isinstance(value, list):
+            for child in value:
+                refuse_policy_attribution(child, row_key)
+    for collection in top_level_keys:
+        if collection == "evidence":
+            continue
+        rows = raw.get(collection)
+        if isinstance(rows, list):
+            for row in rows:
+                if isinstance(row, Mapping):
+                    refuse_policy_attribution(row, str(row.get("id") or row.get("link_id") or collection))
 
     programs = _rows(raw, "programs", ctx)
     capabilities = _rows(raw, "capabilities", ctx)
@@ -921,10 +1123,212 @@ def load_program_ontology_graph(
         if event_id_value:
             links_by_event[event_id_value].append(row)
 
+    capacity_ids: set[str] = set()
+    if capacity_enabled:
+        capacity_rows = _rows(raw, PUBLIC_CAPACITY_COLLECTION, ctx)
+        for row in capacity_rows:
+            key = _text(row.get("id")) or "<public-capacity>"
+            text_fields = ("id", "program_id", "product_scope", "product_label", "kind", "comparator", "unit", "period_label", "known_at", "valid_from", "verification_state")
+            nullable_fields = ("entity_id", "valid_to", "predecessor_id", "succession_reason")
+            if (set(row) != PUBLIC_CAPACITY_KEYS
+                    or any(not isinstance(row.get(field), str) for field in text_fields)
+                    or any(row.get(field) is not None and not isinstance(row[field], str) for field in nullable_fields)):
+                ctx.err("public_capacity_shape_invalid", key)
+                continue
+            if re.fullmatch(r"prog-capacity:[a-f0-9]{24}", key) is None:
+                ctx.err("public_capacity_identity_invalid", key)
+            if key in capacity_ids:
+                ctx.err("duplicate_identity_conflict", key)
+            capacity_ids.add(key)
+            quantity = row.get("quantity")
+            if type(quantity) not in (int, float) or (type(quantity) is float and not math.isfinite(quantity)) or quantity <= 0:
+                ctx.err("public_capacity_quantity_invalid", key)
+            if row.get("kind") not in PUBLIC_CAPACITY_KINDS or row.get("unit") not in PUBLIC_CAPACITY_UNITS.get(row.get("kind"), ()):
+                ctx.err("public_capacity_kind_unit_invalid", key)
+            if row.get("comparator") not in {"exact", "approximately", "greater_than"}:
+                ctx.err("public_capacity_comparator_invalid", key)
+            if row.get("product_scope") not in {"whole_program", "component"}:
+                ctx.err("public_capacity_scope_invalid", key)
+            for field in ("product_label", "period_label"):
+                if not isinstance(row.get(field), str) or not 1 <= len(row[field].strip()) <= 256:
+                    ctx.err("public_capacity_shape_invalid", key)
+            if row.get("entity_id") is not None and (not isinstance(row["entity_id"], str) or not row["entity_id"].strip()):
+                ctx.err("public_capacity_shape_invalid", key)
+            if row.get("verification_state") not in REVIEW_STATES:
+                ctx.err("public_capacity_review_required", key)
+            program_ref = row.get("program_id")
+            if program_ref not in program_ids:
+                ctx.err("dangling_reference", key)
+            _succession_pair_ok(row, content_addressed=True, ctx=ctx, row_id=key)
+            _, valid_from, valid_to = _validate_temporal_claim(
+                row, ctx=ctx, row_id=key, evidence_index=evidence_index,
+                graph_known_at=graph_known_at, graph_effective_at=graph_effective_at,
+            )
+            if not {"program_identity", "public_capacity"} <= _row_evidence_scopes(row, evidence_index):
+                ctx.err("claim_scope_coverage_missing", key)
+            if program_ref in program_ids and not _overlaps_any(valid_from, valid_to, [r for r in programs if r.get("id") == program_ref]):
+                ctx.err("temporal_incompatible", key)
+            try:
+                if public_capacity_assertion_id(row) != key:
+                    ctx.err("public_capacity_identity_invalid", key)
+            except (KeyError, TypeError, ValueError):
+                ctx.err("public_capacity_identity_invalid", key)
+        for row in capacity_rows:
+            predecessor = row.get("predecessor_id")
+            if predecessor is not None:
+                key = _text(row.get("id")) or "<public-capacity>"
+                previous = next((item for item in capacity_rows if item.get("id") == predecessor), None)
+                if previous is None:
+                    ctx.err("dangling_reference", key)
+                elif (row.get("revision") != previous.get("revision", 0) + 1
+                      or any(row.get(field) != previous.get(field) for field in ("program_id", "product_scope", "product_label", "entity_id", "kind"))
+                      or (_strict_datetime(row.get("known_at")) is not None and _strict_datetime(previous.get("known_at")) is not None
+                          and _strict_datetime(row["known_at"]) < _strict_datetime(previous["known_at"]))):
+                    ctx.err("public_capacity_succession_invalid", key)
+
+    oversight_ids: set[str] = set()
+    if oversight_enabled:
+        oversight_rows = _rows(raw, PUBLIC_OVERSIGHT_COLLECTION, ctx)
+        for row in oversight_rows:
+            key = _text(row.get("id")) or "<public-oversight>"
+            str_fields = ("id", "program_id", "finding_kind", "reported_by", "report_series",
+                          "report_document_id", "report_edition", "published_on", "period_label",
+                          "summary", "excerpt", "excerpt_sha256", "known_at", "valid_from",
+                          "verification_state")
+            int_fields = ("revision", "page")
+            nullable_fields = ("valid_to", "printed_page_label", "predecessor_id", "succession_reason")
+            if (set(row) != PUBLIC_OVERSIGHT_KEYS
+                    or any(not isinstance(row.get(field), str) for field in str_fields)
+                    or any(type(row.get(field)) is not int for field in int_fields)
+                    or any(row.get(field) is not None and not isinstance(row[field], str) for field in nullable_fields)):
+                ctx.err("public_oversight_shape_invalid", key)
+                continue
+            if re.fullmatch(r"prog-oversight:[a-f0-9]{24}", key) is None:
+                ctx.err("public_oversight_identity_invalid", key)
+            if key in oversight_ids:
+                ctx.err("duplicate_identity_conflict", key)
+            oversight_ids.add(key)
+            if row["page"] < 1:
+                ctx.err("public_oversight_page_invalid", key)
+            if row["finding_kind"] not in PUBLIC_OVERSIGHT_FINDING_KINDS:
+                ctx.err("public_oversight_finding_kind_invalid", key)
+            if row["reported_by"] not in PUBLIC_OVERSIGHT_REPORTER_ENUM:
+                ctx.err("public_oversight_reported_by_invalid", key)
+            publication_date = _full_date(row["published_on"])
+            claim_known_at = _strict_datetime(row["known_at"])
+            if publication_date is None:
+                ctx.err("public_oversight_publication_date_invalid", key)
+            elif claim_known_at is not None and publication_date > claim_known_at.date():
+                # A report date does not set claim currency, but a claim cannot
+                # be publicly known before its cited report's publication day.
+                ctx.err("public_oversight_publication_after_known", key)
+            for field, limit in PUBLIC_OVERSIGHT_TEXT_LIMITS.items():
+                if not 1 <= len(row[field].strip()) <= limit:
+                    ctx.err("public_oversight_shape_invalid", key)
+            if row["printed_page_label"] is not None and not 1 <= len(row["printed_page_label"].strip()) <= 64:
+                ctx.err("public_oversight_shape_invalid", key)
+            if row["excerpt_sha256"] != public_oversight_excerpt_sha256(row["excerpt"]):
+                ctx.err("public_oversight_excerpt_hash_mismatch", key)
+            if row["verification_state"] not in REVIEW_STATES:
+                ctx.err("public_oversight_review_required", key)
+            program_ref = row["program_id"]
+            if program_ref not in program_ids:
+                ctx.err("dangling_reference", key)
+            _succession_pair_ok(row, content_addressed=True, ctx=ctx, row_id=key)
+            _, valid_from, valid_to = _validate_temporal_claim(
+                row, ctx=ctx, row_id=key, evidence_index=evidence_index,
+                graph_known_at=graph_known_at, graph_effective_at=graph_effective_at,
+            )
+            # Source law: every cited ref must be ONE qualified oversight
+            # source -- oversight-scoped, an official acquisition/congressional
+            # class, and (when several refs) all the SAME document. An excerpt
+            # pinned to a mixed or unrelated citation is refused.
+            sources = [evidence_index.get(_text(ref) or "") for ref in row["evidence_refs"]]
+            if any(source is None
+                   or "public_oversight" not in set(source.get("claim_scopes") or [])
+                   or source.get("evidence_class") not in PUBLIC_OVERSIGHT_EVIDENCE_CLASSES
+                   for source in sources):
+                ctx.err("public_oversight_evidence_unrelated", key)
+            source_digests = {source.get("sha256") for source in sources if isinstance(source, Mapping)}
+            source_urls = {source.get("source_url") for source in sources if isinstance(source, Mapping)}
+            if len(source_digests) > 1 or len(source_urls) > 1:
+                ctx.err("public_oversight_evidence_unrelated", key)
+            if not {"program_identity", "public_oversight"} <= _row_evidence_scopes(row, evidence_index):
+                ctx.err("claim_scope_coverage_missing", key)
+            if program_ref in program_ids and not _overlaps_any(valid_from, valid_to, [r for r in programs if r.get("id") == program_ref]):
+                ctx.err("temporal_incompatible", key)
+            try:
+                if public_oversight_assertion_id(row) != key:
+                    ctx.err("public_oversight_identity_invalid", key)
+            except (KeyError, TypeError, ValueError):
+                ctx.err("public_oversight_identity_invalid", key)
+        # Correction-chain law: a successor revises the SAME finding -- same
+        # program, finding kind and reporter, the next revision number, never
+        # an earlier known_at. A change of finding kind or reporter is a NEW
+        # finding (or a retirement), never a correction of the old one.
+        for row in oversight_rows:
+            predecessor = row.get("predecessor_id")
+            if predecessor is None:
+                continue
+            key = _text(row.get("id")) or "<public-oversight>"
+            previous = next((item for item in oversight_rows if item.get("id") == predecessor), None)
+            if previous is None:
+                ctx.err("dangling_reference", key)
+            elif (row.get("revision") != previous.get("revision", 0) + 1
+                  or any(row.get(field) != previous.get(field) for field in ("program_id", "finding_kind", "reported_by"))
+                  or (_strict_datetime(row.get("known_at")) is not None and _strict_datetime(previous.get("known_at")) is not None
+                      and _strict_datetime(row["known_at"]) < _strict_datetime(previous["known_at"]))):
+                ctx.err("public_oversight_succession_invalid", key)
+
+    agreement_ids: set[str] = set()
+    agreement_rows = _rows(raw, PUBLIC_AGREEMENT_COLLECTION, ctx) if agreement_enabled else []
+    for row in agreement_rows:
+        key = _text(row.get("id")) or "<public-agreement>"
+        # D5 graph timestamps retain their canonical +00:00 spelling.
+        if _strict_datetime(row.get("known_at")) is None:
+            ctx.err("public_agreement_invalid_known_at", key)
+        for error in agreement_payload_errors(row, evidence_index, graph_known_at=raw.get("graph_known_at")):
+            ctx.err(error, key)
+        if key in agreement_ids:
+            ctx.err("duplicate_identity_conflict", key)
+        agreement_ids.add(key)
+    for row in agreement_rows:
+        predecessor = row.get("predecessor_id")
+        if not isinstance(predecessor, str):
+            continue
+        key = _text(row.get("id")) or "<public-agreement>"
+        previous = next((item for item in agreement_rows if item.get("id") == predecessor), None)
+        if previous is None:
+            ctx.err("dangling_reference", key)
+        else:
+            revision = row.get("revision"); prior_revision = previous.get("revision")
+            known = _strict_datetime(row.get("known_at")); prior_known = _strict_datetime(previous.get("known_at"))
+            if (not isinstance(revision, int) or isinstance(revision, bool)
+                    or not isinstance(prior_revision, int) or isinstance(prior_revision, bool)
+                    or revision != prior_revision + 1 or row.get("source_url") != previous.get("source_url")
+                    or known is None or prior_known is None or known <= prior_known):
+                ctx.err("public_agreement_succession_invalid", key)
+    # Multiple independent roots from the same document URL are ambiguous.
+    # Corrections must name a predecessor; a retirement is explicit, immutable.
+    # Visibility changes only at known_at. A future retirement must not
+    # conceal an earlier interval with two independent current roots.
+    boundaries = {_strict_datetime(item.get("known_at")) for item in agreement_rows + overrides}
+    boundaries.discard(None)
+    for cutoff in [None, *sorted(boundaries)]:
+        current = current_content_addressed_rows(agreement_rows, id_key="id", analysis_as_of=cutoff,
+            retired_ids=retired_row_ids(overrides, cutoff))
+        urls: set[str] = set()
+        for row in current:
+            url = _text(row.get("source_url"))
+            if url is not None and url in urls:
+                ctx.err("public_agreement_multiplicity_invalid", _text(row.get("id")) or "<public-agreement>")
+            if url is not None:
+                urls.add(url)
+
     all_row_ids = (
         program_ids | capability_ids | platform_ids | role_assertion_ids
         | milestone_ids | {r.get("link_id") for r in program_capability_links if r.get("link_id")}
-        | program_event_link_ids
+        | program_event_link_ids | capacity_ids | oversight_ids | agreement_ids
     )
 
     coverage_ids: set[str] = set()
@@ -935,10 +1339,17 @@ def load_program_ontology_graph(
             ctx.err("ontology_row_shape_invalid", key)
         scope = _text(row.get("scope"))
         subject_type = _text(row.get("subject_type"))
-        if scope not in COVERAGE_SCOPE_ENUM:
+        if scope not in coverage_scopes_for(raw):
             ctx.err("ontology_row_shape_invalid", key)
-        if subject_type not in COVERAGE_SUBJECT_TYPE_ENUM:
+        if subject_type not in coverage_subject_types_for(raw):
             ctx.err("ontology_row_shape_invalid", key)
+        if scope == "public_capacity" and (subject_type != "program" or row.get("subject_id") not in program_ids):
+            ctx.err("public_capacity_coverage_invalid", key)
+        if (scope == "public_agreement" or subject_type == "source_evidence") and (
+            not agreement_enabled or scope != "public_agreement" or subject_type != "source_evidence"
+            or row.get("subject_id") not in evidence_index
+        ):
+            ctx.err("public_agreement_coverage_invalid", key)
         worksheet_sha = _text(row.get("worksheet_sha256"))
         if worksheet_sha is None or _SHA256.fullmatch(worksheet_sha.lower()) is None:
             ctx.err("ontology_row_shape_invalid", key)
@@ -968,10 +1379,15 @@ def load_program_ontology_graph(
         key = row_id
         if row_id is None or _CONF_ID.fullmatch(row_id) is None:
             ctx.err("ontology_row_shape_invalid", key)
-        if _text(row.get("scope")) not in COVERAGE_SCOPE_ENUM:
+        if _text(row.get("scope")) not in coverage_scopes_for(raw):
             ctx.err("ontology_row_shape_invalid", key)
-        if _text(row.get("subject_type")) not in COVERAGE_SUBJECT_TYPE_ENUM:
+        if _text(row.get("subject_type")) not in coverage_subject_types_for(raw):
             ctx.err("ontology_row_shape_invalid", key)
+        if (row.get("scope") == "public_agreement" or row.get("subject_type") == "source_evidence") and (
+            not agreement_enabled or row.get("scope") != "public_agreement"
+            or row.get("subject_type") != "source_evidence" or row.get("subject_id") not in evidence_index
+        ):
+            ctx.err("public_agreement_coverage_invalid", key)
         if _text(row.get("reason_code")) not in CONFLICT_REASON_ENUM:
             ctx.err("ontology_row_shape_invalid", key)
         candidates = row.get("candidate_row_ids")
@@ -981,6 +1397,18 @@ def load_program_ontology_graph(
             for candidate in candidates:
                 if _text(candidate) not in all_row_ids:
                     ctx.err("dangling_reference", key)
+            if row.get("scope") == "public_capacity" and (
+                row.get("subject_type") != "program" or row.get("subject_id") not in program_ids
+                or any(not any(item.get("id") == candidate and item.get("program_id") == row.get("subject_id")
+                               for item in raw.get(PUBLIC_CAPACITY_COLLECTION, [])) for candidate in candidates)
+            ):
+                ctx.err("public_capacity_conflict_invalid", key)
+            if row.get("scope") == "public_oversight" and (
+                row.get("subject_type") != "program" or row.get("subject_id") not in program_ids
+                or any(not any(item.get("id") == candidate and item.get("program_id") == row.get("subject_id")
+                               for item in raw.get(PUBLIC_OVERSIGHT_COLLECTION, [])) for candidate in candidates)
+            ):
+                ctx.err("public_oversight_conflict_invalid", key)
         if row.get("verification_state") not in REVIEW_STATES:
             ctx.err("ontology_row_shape_invalid", key)
         _validate_temporal_claim(
@@ -1020,8 +1448,10 @@ def load_program_ontology_graph(
             ):
                 ctx.err("dangling_reference", key)
         if action == "block":
-            if subject_type not in COVERAGE_SUBJECT_TYPE_ENUM or subject_id is None:
+            if subject_type not in coverage_subject_types_for(raw) or subject_id is None:
                 ctx.err("ontology_row_shape_invalid", key)
+        if subject_type == "source_evidence" and (not agreement_enabled or subject_id not in evidence_index):
+            ctx.err("public_agreement_coverage_invalid", key)
         if row.get("verification_state") not in REVIEW_STATES:
             ctx.err("ontology_row_shape_invalid", key)
         _validate_temporal_claim(
@@ -1069,7 +1499,7 @@ def load_program_ontology_graph(
 
     ctx.raise_if_any()
 
-    normalized = {key: raw[key] for key in TOP_LEVEL_KEYS}
+    normalized = {key: raw[key] for key in top_level_keys}
     return normalized
 
 
@@ -1207,6 +1637,79 @@ def current_content_addressed_rows(
     ]
 
 
+def coverage_subject_types_for(graph: Mapping[str, Any]) -> frozenset[str]:
+    """Documentary coverage refers to an existing evidence ID, not a programme."""
+    if graph.get("schema_version") == PUBLIC_AGREEMENT_VERSION:
+        return COVERAGE_SUBJECT_TYPE_ENUM | {"source_evidence"}
+    return COVERAGE_SUBJECT_TYPE_ENUM
+
+
+def current_public_agreement_rows(
+    graph: Mapping[str, Any], *, analysis_as_of: datetime | None,
+) -> list[dict[str, Any]]:
+    """Cutoff-visible documentary observations, never programme/issuer attribution."""
+    if graph.get("schema_version") != PUBLIC_AGREEMENT_VERSION:
+        return []
+    overrides = visible_rows(graph.get("overrides") or [], analysis_as_of)
+    blocked = {row.get("subject_id") for row in overrides
+               if row.get("action") == "block" and row.get("subject_type") == "source_evidence"}
+    rows = current_content_addressed_rows(graph.get(PUBLIC_AGREEMENT_COLLECTION) or [], id_key="id",
+        analysis_as_of=analysis_as_of, retired_ids=retired_row_ids(overrides, analysis_as_of))
+    return [row for row in rows if row.get("verification_state") == "reviewed"
+            and not blocked.intersection(row.get("evidence_refs") or [])]
+
+
+def current_public_capacity_rows(
+    graph: Mapping[str, Any], program_id: str, *, analysis_as_of: datetime | None,
+) -> list[dict[str, Any]]:
+    """Literal public observations, never totals, utilization or readiness estimates."""
+    if graph.get("schema_version") not in (PUBLIC_CAPACITY_VERSION, PUBLIC_OVERSIGHT_VERSION, PUBLIC_AGREEMENT_VERSION):
+        return []
+    if any(row.get("action") == "block" and row.get("subject_type") == "program"
+           and row.get("subject_id") == program_id
+           for row in visible_rows(graph.get("overrides") or [], analysis_as_of)):
+        return []
+    retired = retired_row_ids(graph.get("overrides") or [], analysis_as_of)
+    if program_id not in current_identities(graph.get("programs") or [], id_key="id",
+                                            analysis_as_of=analysis_as_of, retired_ids=retired):
+        return []
+    cutoff = analysis_as_of or _strict_datetime(graph.get("graph_effective_at"))
+    rows = current_content_addressed_rows(graph.get(PUBLIC_CAPACITY_COLLECTION) or [],
+        id_key="id", analysis_as_of=analysis_as_of, retired_ids=retired)
+    return [row for row in rows if row.get("program_id") == program_id
+            and row.get("verification_state") in REVIEW_STATES
+            and _strict_datetime(row["valid_from"]) <= cutoff
+            and (row.get("valid_to") is None or cutoff < _strict_datetime(row["valid_to"]))]
+
+
+def current_public_oversight_rows(
+    graph: Mapping[str, Any], program_id: str, *, analysis_as_of: datetime | None,
+) -> list[dict[str, Any]]:
+    """Cutoff-visible, current, unretired oversight findings for one program.
+
+    Quoted, source-attributed observations only: the report edition and its
+    publication date travel with the row as source METADATA; currency here is
+    decided solely by the row's own known_at/valid_from/valid_to claim clocks,
+    exactly like every other content-addressed rail."""
+    if graph.get("schema_version") not in (PUBLIC_OVERSIGHT_VERSION, PUBLIC_AGREEMENT_VERSION):
+        return []
+    if any(row.get("action") == "block" and row.get("subject_type") == "program"
+           and row.get("subject_id") == program_id
+           for row in visible_rows(graph.get("overrides") or [], analysis_as_of)):
+        return []
+    retired = retired_row_ids(graph.get("overrides") or [], analysis_as_of)
+    if program_id not in current_identities(graph.get("programs") or [], id_key="id",
+                                            analysis_as_of=analysis_as_of, retired_ids=retired):
+        return []
+    cutoff = analysis_as_of or _strict_datetime(graph.get("graph_effective_at"))
+    rows = current_content_addressed_rows(graph.get(PUBLIC_OVERSIGHT_COLLECTION) or [],
+        id_key="id", analysis_as_of=analysis_as_of, retired_ids=retired)
+    return [row for row in rows if row.get("program_id") == program_id
+            and row.get("verification_state") in REVIEW_STATES
+            and _strict_datetime(row["valid_from"]) <= cutoff
+            and (row.get("valid_to") is None or cutoff < _strict_datetime(row["valid_to"]))]
+
+
 def resolve_revision(
     rows_for_id: Sequence[Mapping[str, Any]], *, at: datetime, fallback_latest_visible: bool = True,
 ) -> dict[str, Any] | None:
@@ -1275,6 +1778,12 @@ def derive_review_coverage(
     prose. `known_at_iso` is populated only for `reviewed_none` (the LATEST
     visible covering coverage row's `known_at`); `None` otherwise.
     """
+    if scope in ("public_capacity", "public_oversight", "public_agreement") and any(
+        row.get("action") == "block" and row.get("subject_type") == subject_type
+        and row.get("subject_id") == subject_id
+        for row in visible_rows(graph.get("overrides") or [], analysis_as_of)
+    ):
+        return "not_reviewed", None
     conflict = current_conflict_for(
         graph, scope=scope, subject_type=subject_type, subject_id=subject_id, analysis_as_of=analysis_as_of,
     )
@@ -1301,6 +1810,12 @@ def _admitted_current_count(
     graph: Mapping[str, Any], *, scope: str, subject_type: str, subject_id: str, analysis_as_of: datetime | None,
 ) -> int:
     retired = retired_row_ids(graph.get("overrides") or [], analysis_as_of)
+    if scope == "public_agreement" and subject_type == "source_evidence":
+        return sum(subject_id in row["evidence_refs"] for row in current_public_agreement_rows(graph, analysis_as_of=analysis_as_of))
+    if scope == "public_capacity" and subject_type == "program":
+        return len(current_public_capacity_rows(graph, subject_id, analysis_as_of=analysis_as_of))
+    if scope == "public_oversight" and subject_type == "program":
+        return len(current_public_oversight_rows(graph, subject_id, analysis_as_of=analysis_as_of))
     if scope == "program_identity" and subject_type == "program":
         current = current_identities(
             graph.get("programs") or [], id_key="id", analysis_as_of=analysis_as_of, retired_ids=retired,
@@ -1437,6 +1952,8 @@ __all__ = [
     "conflict_id",
     "override_id",
     "evidence_id_for_sha256",
+    "public_oversight_assertion_id",
+    "public_oversight_excerpt_sha256",
     "load_program_ontology_graph",
     "load_program_ontology_graph_or_none",
     "visible_rows",
@@ -1445,6 +1962,7 @@ __all__ = [
     "current_content_addressed_rows",
     "resolve_revision",
     "current_program_capability_link",
+    "current_public_oversight_rows",
     "current_conflict_for",
     "derive_review_coverage",
     "derive_workspace_program_link",

@@ -1,0 +1,8 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/watchlist.html.j2
+  - templates/watchlist.js
+  - templates/watchstore.js
+  - site/watchlist.js
+  - site/watchstore.js
+manifest: mockups/evidence/prophet-r7-wave-a/watchlist-watchlists-mode/manifest.json

@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LRN-BULL-20260821",
-  "asof": "2026-10-09",
-  "phase": "pre_trigger",
-  "detection_phase": "pre_trigger",
-  "management_confidence": 35.8,
-  "raw_confidence": 38.6,
-  "delta_vs_base": -24.2,
-  "recommended_action": "wait",
-  "human_state": "Approaching Trigger",
+  "asof": "2026-10-30",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 22.4,
+  "raw_confidence": 21.7,
+  "delta_vs_base": -37.6,
+  "recommended_action": null,
+  "human_state": "Closed",
   "components": {
-    "validity": 37.5,
+    "validity": 17.8,
     "progress": 0.0,
-    "pace": 0.0,
-    "retention": 50.0,
-    "overlay": 53.0
+    "pace": 6.0,
+    "retention": 42.4,
+    "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.484,
+    "dist_to_stop_r": 0.279,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 93.3,
-    "p1": -0.3443,
-    "p2": -0.1722,
+    "horizon_pct_used": 140.0,
+    "p1": -0.4807,
+    "p2": -0.2403,
     "p3": null,
-    "move_r": -0.516,
+    "move_r": -0.721,
     "mfe_r": 0.0,
-    "mae_r": -0.857
+    "mae_r": -0.985
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -36,15 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -9.090000000000003,
+  "_mae": -10.450000610351566,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 42,
-  "tau": 0.9333
+  "days_elapsed": 63,
+  "tau": 1.4,
+  "closed": true,
+  "outcome": "NO_ENTRY"
 }

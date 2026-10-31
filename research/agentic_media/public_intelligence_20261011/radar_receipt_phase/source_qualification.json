@@ -1,0 +1,62 @@
+{
+  "observed_at": "2026-10-14T06:12:46.635843+00:00",
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "public_source_checks": [
+    {
+      "url": "https://www.blackrock.com/corporate/compliance/terms-and-conditions",
+      "method": "web primary-source read, Trademarks/Copyrights and Links sections",
+      "finding": "Corporate terms restrict public/commercial reuse and links absent written permission. Commentary public-distribution wording is not a Press reuse grant.",
+      "scope": "Source remains unqualified for this Press story; no legal interpretation or license grant inferred.",
+      "action": "No writer, new adapter, or source-copy publication."
+    },
+    {
+      "url": "https://home.treasury.gov/news/press-releases/sb0657/",
+      "event_date": "2026-10-13",
+      "method": "web primary-source read",
+      "finding": "Treasury describes the same Bank of America enforcement event as the already-held OCC candidate, including the OCC 750 million dollar penalty. Expanded agency detail does not authorize a replay under a new source URL.",
+      "held_slot": "press-official-cd2747adeed2",
+      "action": "Preserve existing held draft and cadence; do not create a replacement Treasury attempt."
+    },
+    {
+      "url": "https://home.treasury.gov/news/press-releases/sb0656/",
+      "event_date": "2026-10-13",
+      "method": "web primary-source read",
+      "finding": "Cartel sanctions release. No qualified listed-issuer association established for this mission.",
+      "action": "No candidate admission."
+    }
+  ],
+  "own_receipts": {
+    "installed_census": "installed_own_receipts.json",
+    "source_provenance_private_path": "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/source-review-20261014-0552/installed-own-provenance.json",
+    "source_provenance_sha256": "75e764831619f4c099e31e3cccda0b78bdaabfa5360a1e0441c8f31a911fddc9",
+    "fresh_date_context_ids": [
+      "market_state_score",
+      "market_state_trend",
+      "market_state_risk",
+      "market_state_vol",
+      "market_state_breadth",
+      "fear_greed",
+      "risk_radar"
+    ],
+    "stale_for_brief": [
+      "gex_dia",
+      "gex_iwm",
+      "gex_ndx",
+      "gex_qqq",
+      "gex_rut",
+      "gex_spx",
+      "gex_spy",
+      "breadth_split",
+      "all observed Oct9 movers"
+    ],
+    "qualification_limit": "Date eligibility is not event relevance; no CVS context or BlackRock story is approved. Fear/greed is display-only and includes older legs; no forward claim. Radar calibration is reconstructed and not precision-grade."
+  },
+  "local_context_probe": "14 cases passed:6 accepted on date/identity and8 stale refused; bad hash refused before selection. Four local artifacts match installed exact hashes; local fear/greed omitted because its hash differs.",
+  "installed_context_probe": "ImportError before effects; _reviewed_context is not installed while9209 remains unmerged. No injection or production source replacement.",
+  "provider_calls": 0,
+  "producer_writes": 0,
+  "staging_writes": 0,
+  "publication": false,
+  "cutover": false,
+  "d14_credit": "0/10"
+}

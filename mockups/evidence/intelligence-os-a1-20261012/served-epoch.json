@@ -1,0 +1,151 @@
+{
+  "scope": "Actual synthetic local Handler/auth/API/assets and real bounded snapshot/findings readers; not production/account proof",
+  "captured_at": "2026-10-13T07:43:03.271Z",
+  "tool_sha256": "4de39501aa5bbf34710312106ff89c36785a09bfbe7e6c62d47f4fcf7ee1d9e6",
+  "url": "http://127.0.0.1:61519/fixture-session",
+  "pid": 68910,
+  "exec_session": 67314,
+  "fixture_script_sha256": "39eff7ba8ccb457750587e9eb9222e8142d9589304f409c37397797434074cea",
+  "assets": {
+    "/app.js": {
+      "status": 200,
+      "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772",
+      "bytes": 1021692,
+      "cache_control": "public, max-age=31536000, immutable"
+    },
+    "/styles.css": {
+      "status": 200,
+      "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60",
+      "bytes": 231367,
+      "cache_control": "public, max-age=31536000, immutable"
+    },
+    "/preferences.js": {
+      "status": 200,
+      "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f",
+      "bytes": 3173,
+      "cache_control": "public, max-age=31536000, immutable"
+    },
+    "/assets/theme-tokens.css": {
+      "status": 200,
+      "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4",
+      "bytes": 16510,
+      "cache_control": "no-cache"
+    }
+  },
+  "source_sha256": {
+    "admin/intelligence_os.py": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873",
+    "admin/evidence_status.py": "5315e8e95b2a5ee3c5c12b88eac8126c8578db12a773357916aed20bdb459efd",
+    "admin/evidence_findings.py": "d2355370c9c458db54a35e2253903d5b781b5b0193c945b587618706cb3bf909",
+    "admin/server.py": "53e65e1fca02988f7a0838d2b64026b78e3921c7c66a366e4be6c04e1e93a87b",
+    "admin/theme_tokens.py": "1e27b1decad0273a3a495e7151be8ba22a03e131761ceeb93da065af1693cf46",
+    "admin/static/index.html": "27a1a4e55dee999b435dda94c86730987624621ee3868c7fbea086e308645179",
+    "admin/static/preferences.js": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f",
+    "admin/static/app.js": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772",
+    "admin/static/styles.css": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60",
+    "templates/theme.css": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2",
+    "scripts/grade_qledger.py": "56d49a99be7105c29f80795c2c2af8d89605f660f6280042fdb28072731155b2"
+  },
+  "panel_payload_sha256": "79d132e602d5e027dc8aaa7b84bed6cae50b13d59fa35cb40c0772edaec5d024",
+  "detail_payload_sha256": "67fcf0179c80811b02888e92895087010bc85a05446f6ba8c3a7148961764a88",
+  "seven_case_ids": [
+    "engine/synthetic-immature.py::synthetic-fixture",
+    "engine/synthetic-supported-scope-unknown.py::synthetic-fixture",
+    "engine/synthetic-retired.py::synthetic-fixture",
+    "engine/synthetic-partial.py::synthetic-fixture",
+    "engine/synthetic-falsified.py::synthetic-fixture",
+    "engine/synthetic-descriptive.py::synthetic-fixture",
+    "engine/synthetic-unclassified.py::synthetic-fixture"
+  ],
+  "recorded_readiness": {
+    "kind": "recorded_owner_snapshot",
+    "available": true,
+    "owner_artifact": "site/qledger/track_record.json",
+    "recorded_at": "2026-10-11T18:00:00+00:00",
+    "evaluation_date": null,
+    "receipt_status": "unversioned",
+    "named_generation_match": false,
+    "current_source_qualification": "unavailable",
+    "all_inputs_qualification": "unavailable",
+    "excluded_scope": [
+      "quote_prices",
+      "price_cache",
+      "calendar_data",
+      "market_freshness",
+      "task_version_cohort"
+    ],
+    "family_present": true
+  },
+  "typed_findings": {
+    "status": "recorded",
+    "records": [
+      {
+        "pair_id": "SYNTHETIC-cross-horizon-label-lag",
+        "kind": "label-lag",
+        "severity": "note",
+        "as_of": "2026-10-11",
+        "note": "SYNTHETIC recorded context: the short-window label changes before the slower structural label. This is not scientific falsification or current outcome evidence. / 合成记录：短窗口标签先于较慢的结构标签变化；这不是科学证伪，也不是当前结果证据。",
+        "a": {
+          "artifact": "synthetic/synthetic-immature.json",
+          "reading": "SYNTHETIC short-window label changed / 合成短窗口标签已变化",
+          "engine_id": "engine/synthetic-immature.py::synthetic-fixture",
+          "binding": "exact_path"
+        },
+        "b": {
+          "artifact": "synthetic/synthetic-partial.json",
+          "reading": "SYNTHETIC longer-window structural label unchanged / 合成长窗口结构标签未变化",
+          "engine_id": "engine/synthetic-partial.py::synthetic-fixture",
+          "binding": "exact_path"
+        },
+        "display_only": true,
+        "engine_ids": [
+          "engine/synthetic-immature.py::synthetic-fixture",
+          "engine/synthetic-partial.py::synthetic-fixture"
+        ]
+      },
+      {
+        "pair_id": "SYNTHETIC-unbound-label-tension",
+        "kind": "label-tension",
+        "severity": "tension",
+        "as_of": "2026-10-10",
+        "note": "SYNTHETIC recorded context whose paths have no canonical T4 owner. Preserve this gap; do not attach it to an engine by name similarity. / 此合成记录的路径没有登记的 T4 所有者；保留缺口，不按名称相似性归属引擎。",
+        "a": {
+          "artifact": "synthetic/unregistered-short-window.json",
+          "reading": "SYNTHETIC source reading A / 合成来源读数 A",
+          "engine_id": null,
+          "binding": "unbound"
+        },
+        "b": {
+          "artifact": "synthetic/unregistered-long-window.json",
+          "reading": "SYNTHETIC source reading B / 合成来源读数 B",
+          "engine_id": null,
+          "binding": "unbound"
+        },
+        "display_only": true,
+        "engine_ids": []
+      }
+    ],
+    "gaps": [
+      "SYNTHETIC recorded report: current source qualification and request-scoped numerical attribution are unavailable. / 合成记录：当前来源资格与本次请求范围的数值归因不可用。"
+    ],
+    "rejected_records": 0,
+    "unbound_records": 1,
+    "display_only": true,
+    "affects_evidence_status": false,
+    "current_source_qualification": "unavailable",
+    "source": {
+      "path": "data/neuralweb/confluence_graph.json",
+      "schema": "neuralweb.confluence_graph.v1",
+      "as_of": "2026-10-11",
+      "produced_at": "2026-10-11T18:00:00+00:00",
+      "sha256": "c90db9cb1a94d2a51e18de600e40f82b89e2cc8f2bc4e6918ab112ec1c89fad9"
+    },
+    "numeric_attribution": {
+      "status": "unavailable",
+      "reason": "no_request_scoped_subscriber_receipt",
+      "scope": "this_evidence_view",
+      "owner_contract": "brain.native_fact_receipt.v1",
+      "reference_manifest_is_proof": false
+    },
+    "reason": null
+  }
+}

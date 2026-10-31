@@ -1,0 +1,338 @@
+{
+  "schema": "research_codegen.public_calendar_notice_evidence.v1",
+  "captured_on": "2026-10-14",
+  "root": "01a1333c-a475-7052-95a8-72a88eb8c17b",
+  "state": "ROOT_CORRECTED_PRIMARY_NOTICE_FACTS_NOT_INSTALLED",
+  "not_a_runtime_calendar": true,
+  "sources": {
+    "2014_2015": {
+      "url": "https://ir.theice.com/press/news-details/2013/NYSE-Euronext-Announces-2015-Holiday-Calendar-and-Early-Closings/default.aspx",
+      "published_on": "2013-12-20",
+      "read_method": "web tool current public primary page",
+      "raw_bytes_retained": false
+    },
+    "2016": {
+      "url": "https://ir.theice.com/press/news-details/2014/NYSE-Group-2016-Holiday-Calendar-and-Early-Closings/default.aspx",
+      "published_on": "2014-12-08",
+      "read_method": "web tool current public primary page",
+      "raw_bytes_retained": false
+    },
+    "2017": {
+      "url": "https://ir.theice.com/press/news-details/2016/NYSE-Group-Announces-2017-Holiday-and-Early-Closings-Calendar/default.aspx",
+      "published_on": "2016-02-02",
+      "read_method": "web tool current public primary page",
+      "raw_bytes_retained": false
+    },
+    "2018_2020": {
+      "url": "https://ir.theice.com/press/news-details/2017/NYSE-Group-Announces-2018-2019-and-2020-Holiday-and-Early-Closings-Calendar/default.aspx",
+      "published_on": "2017-11-27",
+      "read_method": "web tool current public primary page",
+      "raw_bytes_retained": false
+    },
+    "2021": {
+      "url": "https://ir.theice.com/press/news-details/2020/NYSE-Group-Announces-2021-2022-and-2023-Holiday-and-Early-Closings-Calendar/default.aspx",
+      "published_on": "2020-12-28",
+      "read_method": "web tool current public primary page",
+      "raw_bytes_retained": false
+    },
+    "2022_2023": {
+      "url": "https://ir.theice.com/press/news-details/2021/NYSE-Group-Announces-2022-2023-and-2024-Holiday-and-Early-Closings-Calendar/default.aspx",
+      "published_on": "2021-12-27",
+      "read_method": "web tool current public primary page",
+      "raw_bytes_retained": false
+    },
+    "bush": {
+      "url": "https://ir.theice.com/press/news-details/2018/New-York-Stock-Exchange-to-Honor-President-George-H-W-Bush/default.aspx",
+      "published_on": "2018-12-01",
+      "read_method": "web tool current public primary page",
+      "raw_bytes_retained": false
+    },
+    "sandy_sec": {
+      "read_method": "web tool current public primary PDF, before direct capture refusal",
+      "raw_bytes_retained": false,
+      "direct_capture": "HTTP403; not retried",
+      "source_author": "New York Stock Exchange LLC; notice published by SEC",
+      "url": "https://www.sec.gov/rules/sro/nyse/2012/34-68137.pdf",
+      "published_on": "2012-11-01",
+      "release": "34-68137",
+      "file_number": "SR-NYSE-2012-58",
+      "pages_1_based": [
+        2,
+        3
+      ],
+      "source_knowledge_limit": "Post-event confirmation; not advance knowledge of the closure."
+    },
+    "early_2012_2014_sec": {
+      "read_method": "web tool current public primary PDF, before direct capture refusal",
+      "raw_bytes_retained": false,
+      "direct_capture": "HTTP403; not retried",
+      "source_author": "New York Stock Exchange LLC; notice published by SEC",
+      "url": "https://www.sec.gov/rules/sro/nyse/2012/34-68243.pdf",
+      "published_on": "2012-11-15",
+      "release": "34-68243",
+      "file_number": "SR-NYSE-2012-62",
+      "pages_1_based": [
+        2
+      ],
+      "source_knowledge_limit": "Notice confirms an announced schedule; original announcement time is not established. Published after July 3, 2012."
+    }
+  },
+  "years": {
+    "2014": {
+      "regular_weekday_closures": [
+        "2014-01-01",
+        "2014-01-20",
+        "2014-02-17",
+        "2014-04-18",
+        "2014-05-26",
+        "2014-07-04",
+        "2014-09-01",
+        "2014-11-27",
+        "2014-12-25"
+      ],
+      "early_close_1300_ET": [
+        "2014-07-03",
+        "2014-11-28",
+        "2014-12-24"
+      ],
+      "source": "2014_2015",
+      "annual_notice_read_complete": true,
+      "extraordinary_closures": []
+    },
+    "2015": {
+      "regular_weekday_closures": [
+        "2015-01-01",
+        "2015-01-19",
+        "2015-02-16",
+        "2015-04-03",
+        "2015-05-25",
+        "2015-07-03",
+        "2015-09-07",
+        "2015-11-26",
+        "2015-12-25"
+      ],
+      "early_close_1300_ET": [
+        "2015-11-27",
+        "2015-12-24"
+      ],
+      "source": "2014_2015",
+      "annual_notice_read_complete": true,
+      "extraordinary_closures": []
+    },
+    "2016": {
+      "regular_weekday_closures": [
+        "2016-01-01",
+        "2016-01-18",
+        "2016-02-15",
+        "2016-03-25",
+        "2016-05-30",
+        "2016-07-04",
+        "2016-09-05",
+        "2016-11-24",
+        "2016-12-26"
+      ],
+      "early_close_1300_ET": [
+        "2016-11-25"
+      ],
+      "source": "2016",
+      "annual_notice_read_complete": true,
+      "extraordinary_closures": []
+    },
+    "2017": {
+      "regular_weekday_closures": [
+        "2017-01-02",
+        "2017-01-16",
+        "2017-02-20",
+        "2017-04-14",
+        "2017-05-29",
+        "2017-07-04",
+        "2017-09-04",
+        "2017-11-23",
+        "2017-12-25"
+      ],
+      "early_close_1300_ET": [
+        "2017-07-03",
+        "2017-11-24"
+      ],
+      "source": "2017",
+      "annual_notice_read_complete": true,
+      "extraordinary_closures": []
+    },
+    "2018": {
+      "regular_weekday_closures": [
+        "2018-01-01",
+        "2018-01-15",
+        "2018-02-19",
+        "2018-03-30",
+        "2018-05-28",
+        "2018-07-04",
+        "2018-09-03",
+        "2018-11-22",
+        "2018-12-25"
+      ],
+      "early_close_1300_ET": [
+        "2018-07-03",
+        "2018-11-23",
+        "2018-12-24"
+      ],
+      "source": "2018_2020",
+      "annual_notice_read_complete": true,
+      "extraordinary_closures": [
+        {
+          "date": "2018-12-05",
+          "source": "bush"
+        }
+      ]
+    },
+    "2019": {
+      "regular_weekday_closures": [
+        "2019-01-01",
+        "2019-01-21",
+        "2019-02-18",
+        "2019-04-19",
+        "2019-05-27",
+        "2019-07-04",
+        "2019-09-02",
+        "2019-11-28",
+        "2019-12-25"
+      ],
+      "early_close_1300_ET": [
+        "2019-07-03",
+        "2019-11-29",
+        "2019-12-24"
+      ],
+      "source": "2018_2020",
+      "annual_notice_read_complete": true,
+      "extraordinary_closures": []
+    },
+    "2020": {
+      "regular_weekday_closures": [
+        "2020-01-01",
+        "2020-01-20",
+        "2020-02-17",
+        "2020-04-10",
+        "2020-05-25",
+        "2020-07-03",
+        "2020-09-07",
+        "2020-11-26",
+        "2020-12-25"
+      ],
+      "early_close_1300_ET": [
+        "2020-11-27",
+        "2020-12-24"
+      ],
+      "source": "2018_2020",
+      "annual_notice_read_complete": true,
+      "extraordinary_closures": []
+    },
+    "2021": {
+      "regular_weekday_closures": [
+        "2021-01-01",
+        "2021-01-18",
+        "2021-02-15",
+        "2021-04-02",
+        "2021-05-31",
+        "2021-07-05",
+        "2021-09-06",
+        "2021-11-25",
+        "2021-12-24"
+      ],
+      "early_close_1300_ET": [
+        "2021-11-26"
+      ],
+      "source": "2021",
+      "annual_notice_read_complete": true,
+      "extraordinary_closures": []
+    },
+    "2022": {
+      "regular_weekday_closures": [
+        "2022-01-17",
+        "2022-02-21",
+        "2022-04-15",
+        "2022-05-30",
+        "2022-06-20",
+        "2022-07-04",
+        "2022-09-05",
+        "2022-11-24",
+        "2022-12-26"
+      ],
+      "early_close_1300_ET": [
+        "2022-11-25"
+      ],
+      "source": "2022_2023",
+      "annual_notice_read_complete": true,
+      "extraordinary_closures": []
+    },
+    "2023": {
+      "regular_weekday_closures": [
+        "2023-01-02",
+        "2023-01-16",
+        "2023-02-20",
+        "2023-04-07",
+        "2023-05-29",
+        "2023-06-19",
+        "2023-07-04",
+        "2023-09-04",
+        "2023-11-23",
+        "2023-12-25"
+      ],
+      "early_close_1300_ET": [
+        "2023-07-03",
+        "2023-11-24"
+      ],
+      "source": "2022_2023",
+      "annual_notice_read_complete": true,
+      "extraordinary_closures": []
+    }
+  },
+  "missing_annual_years": [
+    2010,
+    2011,
+    2012,
+    2013
+  ],
+  "limits": [
+    "Current public notice facts do not authenticate original historical receipt times or prices.",
+    "2020 release is superseded for2022/2023 by2021release adding Juneteenth.",
+    "2018scheduledannualnotice supplemented by2018-12-01 Bush notice.",
+    "No holdout labels, prices, collectors, hoststate, sourcecalendar or credentials accessed/mutated.",
+    "Shared lib/exchange_holidays.py has incumbent CN extension inPR8721; sourcechanges not made by this evidence package.",
+    "DirectHTTPcapture403 preserved without retry; no sourceHTMLhash asserted.",
+    "NYSE-authored SEC notice34-68137 confirms2012Sandy closures retrospectively; original operational closure announcement not retained.",
+    "SEC notice34-68243 supports six early closes across2012-2013, not full annual calendars. 2010-2013 remain unqualified annual years.",
+    "Direct SEC PDF captures returned403; no retry or alternate downloader. Current web-tool reads predated capture attempts; no raw PDFhash claimed."
+  ],
+  "partial_year_facts": {
+    "2012": {
+      "annual_notice_read_complete": false,
+      "regular_weekday_closures_qualified": false,
+      "early_close_1300_ET": [
+        "2012-07-03",
+        "2012-11-23",
+        "2012-12-24"
+      ],
+      "early_close_source": "early_2012_2014_sec",
+      "date_derivation": "July 3 and December 24 explicit; day after Thanksgiving expanded using fourth Thursday of November.",
+      "extraordinary_closures": [
+        "2012-10-29",
+        "2012-10-30"
+      ],
+      "extraordinary_closures_source": "sandy_sec",
+      "absence_of_other_extraordinary_closures_proven": false
+    },
+    "2013": {
+      "annual_notice_read_complete": false,
+      "regular_weekday_closures_qualified": false,
+      "early_close_1300_ET": [
+        "2013-07-03",
+        "2013-11-29",
+        "2013-12-24"
+      ],
+      "early_close_source": "early_2012_2014_sec",
+      "date_derivation": "July 3 and December 24 explicit; day after Thanksgiving expanded using fourth Thursday of November.",
+      "extraordinary_closures": [],
+      "extraordinary_closures_source": null,
+      "absence_of_other_extraordinary_closures_proven": false
+    }
+  }
+}

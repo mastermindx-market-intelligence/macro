@@ -1,0 +1,141 @@
+{
+  "schema": "risk_radar.release_runtime_qualification.v1",
+  "source": "Retained output of read-only authorized service/source probe and subsequent read-only cohort namespace probe",
+  "runtime_observation": {
+    "deployment_marker": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+    "forward_start_summary": {
+      "book_keys": [
+        "autonomous",
+        "china",
+        "hk"
+      ],
+      "bytes": 90345,
+      "exists": true,
+      "metadata": {
+        "deployment_sha": "3c4ef7f8b823baa4bb032c76add1960fa6d5a0c7",
+        "health_verified_sha": "3c4ef7f8b823baa4bb032c76add1960fa6d5a0c7",
+        "schema": "mastermind.portfolio_forward_evaluation.start.v1"
+      },
+      "sha256": "75d5182d55ffc7e569f50008d9293682cadf56130d42b00eaba23412e2e8585c"
+    },
+    "health": {
+      "commit": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+      "reasoning_policy_ok": true,
+      "scheduled_runtime_ok": true,
+      "status": "ok"
+    },
+    "installed_source": {
+      "brain/market_view.py": {
+        "bytes": 73104,
+        "sha256": "0dbf3c0dfd6beb0dec09cf7566967e4c0729a75d108bf3041145c76da2789e2b"
+      },
+      "brain/regime_frame.py": {
+        "bytes": 39616,
+        "sha256": "d3105e21265da63574a2076300b3bdaeda56383d2ca5679e081976ac57832abc"
+      },
+      "portfolio/forward_evaluation.py": {
+        "bytes": 75128,
+        "sha256": "19e053bbab9372bfd7c8dd075bfc9a6d3c7ce3450641982086400184a6e07a22"
+      },
+      "scripts/deploy_code_to_vps.sh": {
+        "bytes": 14934,
+        "sha256": "c158fc903121b8c4ad680049ded16000913393039944c6eec3a23d44ca376204"
+      }
+    },
+    "observed_at": "2026-10-18T02:42:26.352972+00:00",
+    "production_mutations": false,
+    "service": {
+      "ActiveState": "active",
+      "BindPaths": "/opt/mastermind-live-data:/opt/mastermind/data:rbind",
+      "BindReadOnlyPaths": "",
+      "DropInPaths": "/etc/systemd/system/mastermind.service.d/authoritative.conf /etc/systemd/system/mastermind.service.d/ollama.conf",
+      "ExecMainStartTimestamp": "Sat 2026-10-17 08:30:13 UTC",
+      "ExecStart": "{ path=/opt/mastermind/.venv/bin/uvicorn ; argv[]=/opt/mastermind/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8001 ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }",
+      "FragmentPath": "/etc/systemd/system/mastermind.service",
+      "MainPID": "4025485",
+      "PrivateMounts": "no",
+      "RootDirectory": "",
+      "SubState": "running",
+      "WorkingDirectory": "/opt/mastermind"
+    }
+  },
+  "cohort_namespace_observation": {
+    "books": {
+      "autonomous": {
+        "input_status": {
+          "account": "available",
+          "decisions": "available",
+          "fills": "available",
+          "latest": "available",
+          "nav": "available",
+          "positions": "available",
+          "post_sell": "missing"
+        },
+        "row_counts": {
+          "closed_positions": 14,
+          "decisions": 37,
+          "fills": 84,
+          "nav": 38,
+          "post_sell_exits": 0
+        }
+      },
+      "china": {
+        "input_status": {
+          "account": "available",
+          "decisions": "available",
+          "fills": "available",
+          "latest": "available",
+          "nav": "available",
+          "positions": "available",
+          "post_sell": "missing"
+        },
+        "row_counts": {
+          "closed_positions": 20,
+          "decisions": 35,
+          "fills": 80,
+          "nav": 37,
+          "post_sell_exits": 0
+        }
+      },
+      "hk": {
+        "input_status": {
+          "account": "available",
+          "decisions": "available",
+          "fills": "available",
+          "latest": "available",
+          "nav": "available",
+          "positions": "available",
+          "post_sell": "missing"
+        },
+        "row_counts": {
+          "closed_positions": 11,
+          "decisions": 36,
+          "fills": 81,
+          "nav": 38,
+          "post_sell_exits": 0
+        }
+      }
+    },
+    "main_pid": 4025485,
+    "marker": {
+      "cohort_policy": "exclude_all_rows_present_at_stopped_service_v2_baseline",
+      "deployment_sha": "3c4ef7f8b823baa4bb032c76add1960fa6d5a0c7",
+      "evaluation_start": "2026-08-11",
+      "health_verified_sha": "3c4ef7f8b823baa4bb032c76add1960fa6d5a0c7",
+      "release_state": "active",
+      "schema": "mastermind.portfolio_forward_evaluation.start.v1"
+    },
+    "marker_bytes": 90345,
+    "marker_sha256": "75d5182d55ffc7e569f50008d9293682cadf56130d42b00eaba23412e2e8585c",
+    "mutation_performed": false,
+    "namespace_matches_canonical": true,
+    "observed_at": "2026-10-18T03:06:55.698400+00:00",
+    "schema": "risk_radar.forward_cohort_namespace_observation.v1",
+    "service_namespace_marker_sha256": "75d5182d55ffc7e569f50008d9293682cadf56130d42b00eaba23412e2e8585c"
+  },
+  "observation_correction": "The earlier generic-key projection asked for nonexistent status/asof/cohort_id/started_at keys and later input_statuses (plural). These nulls are not evidence of missing marker fields or missing baseline inputs. The subsequent projection uses release_state, evaluation_start and input_status from the actual source schema.",
+  "credentials_or_raw_portfolio_rows_exported": false,
+  "service_or_ledger_mutation": false,
+  "future_source_date_fix_installed": false,
+  "whole_programme_accepted": false
+}

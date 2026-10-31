@@ -19,7 +19,7 @@ import re
 import tempfile
 from typing import Mapping
 
-from engine.qbus_news_store import NewsReadRights
+from engine.qbus_news_store import NewsReadRights, SourceReadRights
 
 RIGHTS_SCHEMA = "qbus.news_rights_receipt.v1"
 HEALTH_SCHEMA = "qbus.news_health.v1"
@@ -46,6 +46,7 @@ class QualifiedNewsRights:
     expires_at: datetime
     rights: NewsReadRights
     provider: str | None = None
+    derivative_processing: bool = False
 
 
 def _mapping(value: object, code: str) -> Mapping[str, object]:
@@ -126,12 +127,17 @@ def parse_rights_receipt(
         raise NewsReceiptError("rights_schema")
     if _text(obj.get("status"), "rights_status", maximum=32).lower() != "approved":
         raise NewsReceiptError("rights_not_approved")
-    if _text(obj.get("source"), "rights_source", maximum=64).lower() != _SOURCE:
+    source = _text(obj.get("source"), "rights_source", maximum=260).lower()
+    if source != _SOURCE and re.fullmatch(
+        r"massive:(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}", source
+    ) is None:
         raise NewsReceiptError("rights_source")
     receipt_id = _text(obj.get("receipt_id"), "rights_receipt_id", maximum=256)
     owner_ref = _text(obj.get("owner_ref"), "rights_owner_ref", maximum=1024)
     product_id = _text(obj.get("product_id"), "rights_product_id", maximum=256)
     provider = None if obj.get("provider") is None else _text(obj.get("provider"), "rights_provider", maximum=64)
+    if source.startswith("massive:") and provider != "massive":
+        raise NewsReceiptError("rights_provider_mismatch")
     requested_audience = _text(audience, "rights_audience_requested", maximum=128)
 
     audiences_raw = obj.get("audiences")
@@ -177,18 +183,19 @@ def parse_rights_receipt(
     return QualifiedNewsRights(
         receipt_id=receipt_id,
         owner_ref=owner_ref,
-        source=_SOURCE,
+        source=source,
         product_id=product_id,
         audience=requested_audience,
         effective_at=effective_at,
         expires_at=expires_at,
         rights=NewsReadRights(
-            allowed_sources=frozenset({_SOURCE}),
+            allowed_sources=frozenset({source}),
             allow_title=True,
             allow_url=allow_url,
             allow_teaser=allow_teaser,
         ),
         provider=provider,
+        derivative_processing=_bool(caps, "derivative_processing", default=False),
     )
 
 
@@ -313,7 +320,7 @@ def parse_health_receipt(
     else:
         state, reason = "live", "fresh"
 
-    return {
+    result = {
         "schema": HEALTH_SCHEMA,
         "source": _SOURCE,
         "state": state,
@@ -332,6 +339,53 @@ def parse_health_receipt(
         "last_stream_error": last_stream_error,
         "reason": reason,
     }
+
+
+    additional = obj.get("additional_sources")
+    if isinstance(additional, list):
+        projected = []
+        for item in additional[:8]:
+            if not isinstance(item, Mapping) or item.get("provider") != "massive":
+                continue
+            extra_state = item.get("state")
+            if extra_state not in {"waiting", "available", "catching_up", "degraded", "restricted", "unavailable"}:
+                extra_state = "unavailable"
+            last_poll = None
+            try:
+                if item.get("last_successful_poll") is not None:
+                    last_poll = _aware_utc(item["last_successful_poll"], "health_additional_poll")
+                    if last_poll > observed_at:
+                        raise NewsReceiptError("health_additional_poll_future")
+                if observation_age > max_observation_age_seconds:
+                    extra_state = "unavailable"
+                elif extra_state == "available" and (
+                    last_poll is None or (current-last_poll).total_seconds() > 300
+                ):
+                    extra_state = "degraded"
+            except NewsReceiptError:
+                extra_state, last_poll = "unavailable", None
+            extra = {
+                "provider": "massive", "state": extra_state,
+                "last_successful_poll": last_poll.isoformat() if last_poll else None,
+                "delivery": "polled",
+            }
+            # These describe admission and this writer process, not observed
+            # publisher coverage or an upstream publication schedule.
+            publishers = item.get("publishers")
+            if isinstance(publishers, list) and len(publishers) <= 64 and all(
+                isinstance(domain, str) and len(domain) <= 253 and re.fullmatch(
+                    r"(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}", domain
+                )
+                for domain in publishers
+            ):
+                extra["configured_publishers"] = sorted(set(publishers))
+            accepted = item.get("accepted_reports")
+            if type(accepted) is int and 0 <= accepted <= 9007199254740991:
+                extra["accepted_reports_since_start"] = accepted
+            projected.append(extra)
+        if projected:
+            result["additional_sources"] = projected
+    return result
 
 
 def load_health_receipt(
@@ -395,3 +449,59 @@ def write_health_receipt(path: Path | str, payload: object) -> None:
                 os.unlink(temp_name)
             except FileNotFoundError:
                 pass
+
+
+def combine_news_rights(receipts: tuple[QualifiedNewsRights, ...]) -> NewsReadRights:
+    """Compose independent field grants, denying ambiguous duplicate source policies."""
+    counts: dict[str, int] = {}
+    for receipt in receipts:
+        for source in receipt.rights.allowed_sources:
+            counts[source] = counts.get(source, 0) + 1
+    grants = tuple(
+        SourceReadRights(source, rights.allow_title, rights.allow_url, rights.allow_teaser)
+        for receipt in receipts
+        for rights in (receipt.rights,)
+        for source in sorted(rights.allowed_sources)
+        if counts[source] == 1
+    )
+    return NewsReadRights(
+        allowed_sources=frozenset(grant.source for grant in grants),
+        allow_title=False, allow_url=False, allow_teaser=False,
+        source_fields=grants,
+    )
+
+
+def load_rights_set(
+    paths, *, now: datetime, audience: str = "site_full",
+) -> tuple[QualifiedNewsRights, ...]:
+    """One current receipt per configured carrier; failures stay source-local."""
+    out = []
+    source_counts: dict[str, int] = {}
+    seen_paths = set()
+    for path in paths:
+        key = str(Path(path).resolve())
+        if key in seen_paths:
+            continue
+        seen_paths.add(key)
+        try:
+            raw = json.loads(Path(path).read_text(encoding="utf-8"))
+            # A revoked/expired duplicate must not leave an older grant active.
+            source = raw.get("source") if isinstance(raw, Mapping) else None
+            if isinstance(source, str):
+                source = source.strip().lower()
+                source_counts[source] = source_counts.get(source, 0) + 1
+            out.append(parse_rights_receipt(raw, now=now, audience=audience))
+        except (OSError, ValueError, TypeError, NewsReceiptError):
+            continue
+    return tuple(receipt for receipt in out if source_counts.get(receipt.source) == 1)
+
+def additional_rights_paths() -> tuple[Path, ...]:
+    """Read only explicit owner-configured receipt carriers."""
+    try:
+        values = json.loads(os.environ.get("MM_TICKER_NEWS_ADDITIONAL_RIGHTS", "[]"))
+        if (not isinstance(values, list) or len(values) > 64
+                or any(not isinstance(value, str) or not value.strip() for value in values)):
+            return ()
+        return tuple(Path(value) for value in values)
+    except (ValueError, TypeError):
+        return ()

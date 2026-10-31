@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-10-15T08:35:02.611456+00:00",
+  "installed_head": "db5960020c8ae56a0c50d331b0a398d07eb0c1a4",
+  "stable_installed_head": true,
+  "changed_inputs": [],
+  "source_id": "usitc-2026-10-13-337-ta-1473",
+  "ranked_position": 19,
+  "unheld_position": 1,
+  "candidate_pool": 8,
+  "selected_slots": [],
+  "writer_calls": 0,
+  "runtime_writes": 0,
+  "cutover": false,
+  "held_ref_count": 44,
+  "first_unheld": [
+    {
+      "id": "usitc-2026-10-13-337-ta-1473",
+      "title": "Certain Skid-Steer Loaders and Other Equipment: Notice of Partial Termination of Patent Claims",
+      "published_at": "2026-10-13"
+    },
+    {
+      "id": "marketdesk-hmlv6utzbiy-0241df",
+      "title": "GS Novak GS U.S. Industrials & Materials CPI HVAC changes pickup analysis 14 Oct 2026",
+      "published_at": "2026-10-14T13:44:23Z"
+    }
+  ],
+  "planner_sha256": "8282028e5b4caae7005ef22582adef9b86d400590290e2a5b132c5052d4ddb7b",
+  "source_qualification": "../research_intake_phase/source_exclusions_20261015.json",
+  "new_application_code": false,
+  "publication_approved": false
+}

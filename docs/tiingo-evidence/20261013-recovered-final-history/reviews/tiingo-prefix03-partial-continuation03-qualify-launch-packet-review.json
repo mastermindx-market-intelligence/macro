@@ -1,0 +1,61 @@
+{
+  "schema": "tiingo.prefix03.partial_continuation_exact_qualify_launch_binding_review/v1",
+  "recorded_at_utc": "2026-10-13T21:15:31.561584+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "run_id": "eod-wave15-original-unadmitted-continuation04-20261013-01a12ab6",
+  "verdict": "PASS_SINGLE_EXACT_FOREGROUND_QUALIFY03_LAUNCH_BINDING",
+  "bindings_sha256": {
+    "tiingo-prefix03-partial-continuation03-qualify-launch-packet.json": "dd92ec88c06c395d94163563d4d76293493dc9aa6d719effcc9d06edba57e751",
+    "tiingo-prefix03-partial-continuation03-fresh-scoped-launch-custody.json": "6a485a8423d2f2af32a084d2ce30ab0e24675acb15c9b3de8548c77af31500e9",
+    "tiingo-wave15-continuation04-prefix03-partial-resume-bound03.py": "4931c2c2b8445e30d6af95b6536e1e6898f41ff22e4088b906229ba2ab715cc3",
+    "tiingo-prefix03-partial-resume-bound03-exact-source-review.json": "6e49abb981566a1293186a56c58684180eebc27040cb348db2bc41fb7e243550",
+    "tiingo-finite-foreground-durable-stage-wrapper02.py": "c0a6300282f8aee2a55a89f2f4ae20475b5c81fdc1c53d5ebd26815c32a44788",
+    "tiingo-finite-foreground-durable-stage-wrapper02-source-review.json": "ecd608da9f6ad2e643ba3bccf3439967945f6af28ff9854c6dd5a5408ecbcb7d"
+  },
+  "scope": {
+    "mode": "qualify",
+    "prefix": "03",
+    "new_qualification_outputs": [
+      "eod-wave15-unadmitted-continuation04-prefix03-qualified.json"
+    ],
+    "reused_accepted_projections": 536,
+    "missing_only_materializer_calls": 326,
+    "provider_requests": 0,
+    "credentials_read": false,
+    "automatic_retry": false
+  },
+  "verification": [
+    "All158 exact E input hashes freshly read and matched; no archive rows rescanned",
+    "All six wrapper/output slots are distinct, disjoint from packet/source/inputs, located in E and truly absent by lstat at review",
+    "Exact source4931 and wrapperc0a match their accepted reviews6e49 andecd608",
+    "Packet freezes fresh scoped custody6a485; retained evidence records original log SHA empty, diagnostic-free lsof1, q03/c03 true absence, archive1537450278912bytes versus42949672960floor",
+    "Child source independently revalidates all selector states, its original producer/source bindings and current storage before materialization; wrapper revalidates packet/source/frozen inputs before single Popen"
+  ],
+  "source_review_external_binding": {
+    "accepted": true,
+    "source_review_sha256": "6e49abb981566a1293186a56c58684180eebc27040cb348db2bc41fb7e243550",
+    "reason": "The packet already pins exact reviewed source4931. This exclusive launch review binds the exact packetdd92 to the published exact source verdict6e49; adding the review to the earlier packet would not change execution semantics or strengthen source-byte binding. No packet revision is required."
+  },
+  "custody_limits": "Scoped retained original-launch/FD and exact-log evidence; no universal process/writer absence claim. No intervening same-prefix writer or contradictory custody evidence may be ignored.",
+  "parent_reported_custody_execution": {
+    "session": 5462,
+    "exit_code": 0,
+    "terminal_chunk": "b7d1be",
+    "provenance": "Assigning parent commission; reviewer read custody artifact, did not independently reconstruct native terminal."
+  },
+  "admission": "Parent may invoke this exact packet once with reviewed wrapper02 on the same foreground carrier. An occupied output/control slot, changed hash or new contradictory custody fact requires same-operation reconciliation; no automatic retry, alternate carrier, or replay of original49 qualifier.",
+  "required_after_launch": [
+    "Consume actual native return, durable observed-wait receipt and post-wait validation separately; never infer native success from child success or vice versa",
+    "Require child exit0, post-wait validation pass, exact q03 output hash and semantic536/326/all862 qualification before root acceptance",
+    "Keep original91287 exit/chunk unknown and terminal-consumed false; new continuation provenance remains distinct",
+    "Prepare separately bound coverage packet using actual accepted qualifier result and exact q hash; this review admits no coverage invocation or final closure"
+  ],
+  "reviewer_executed_launch": false,
+  "runtime_success_claimed": false,
+  "original91287_terminal_consumed": false,
+  "archive_writes": 0,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "process_signals": 0,
+  "children_dispatched": 0
+}

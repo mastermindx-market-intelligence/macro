@@ -1,0 +1,1197 @@
+{
+  "observed_at": "2026-10-20T16:20:57.711715+00:00",
+  "scope": "Read-only existing509-file proof verification and scratch-only inventory preview; no W/index write, not a final post-987 source binding.",
+  "existing_manifest_sha256": "eafb91bd7ffb2bf6e8b9cecfe72eae2627ce01175d3ddd13a8f57f32e5031dc6",
+  "existing_indexed_files": 509,
+  "existing_all_raw_and_original_hashes_pass": true,
+  "candidate_files": 147,
+  "candidate_raw_bytes": 7863585,
+  "excluded_live": [
+    {
+      "file": "macro-da4d-987-merge.json",
+      "reason": "Owned merge still active; final bytes must be captured after completion."
+    },
+    {
+      "file": "macro-da4d-987-merge.log",
+      "reason": "Owned merge still active; final bytes must be captured after completion."
+    }
+  ],
+  "files": [
+    {
+      "relative_source": "about-footer-focused/actual.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused/actual.json",
+      "target_base": "about-footer-focused--actual.json",
+      "bytes": 159921,
+      "sha256": "404e6dffdb157d28dfe40236896fe0499178665f335ccb25fcfa787162037b96",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused/footer-1440-en.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused/footer-1440-en.png",
+      "target_base": "about-footer-focused--footer-1440-en.png",
+      "bytes": 34754,
+      "sha256": "b8a99d94cfba44a24744390df0950f335989c77fb3cec7344276c641f9362142",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused/footer-1440-zh.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused/footer-1440-zh.png",
+      "target_base": "about-footer-focused--footer-1440-zh.png",
+      "bytes": 37407,
+      "sha256": "599e63ccceb5b37bf24bbe566ce29d430362202ddcd1f2c6f3836c9c5cd4a4ff",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused/footer-320-en.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused/footer-320-en.png",
+      "target_base": "about-footer-focused--footer-320-en.png",
+      "bytes": 31042,
+      "sha256": "e5d42993147c4ad6b131e47d504deed553051d16a2b3fef3b03690f5e847894c",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused/footer-320-zh.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused/footer-320-zh.png",
+      "target_base": "about-footer-focused--footer-320-zh.png",
+      "bytes": 33996,
+      "sha256": "f204b135b98f525436d181cb92e830425bbc36d0eac886d6430007264d963427",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused/footer-390-en.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused/footer-390-en.png",
+      "target_base": "about-footer-focused--footer-390-en.png",
+      "bytes": 34783,
+      "sha256": "e78175e4493bfd1ab16abcae5ae61d8e59300257c7362b55565d0c1112f5e532",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused/footer-390-zh.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused/footer-390-zh.png",
+      "target_base": "about-footer-focused--footer-390-zh.png",
+      "bytes": 34907,
+      "sha256": "2cdc5f7492b5035ffe00684f0d9157bd35d95d495a2c6a2485699a765b3a7e22",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused/footer-820-en.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused/footer-820-en.png",
+      "target_base": "about-footer-focused--footer-820-en.png",
+      "bytes": 33445,
+      "sha256": "d10a9f6f19ee620de4932d4d761aa538061e4e50012095ec9cd937c655e6fe5a",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused/footer-820-zh.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused/footer-820-zh.png",
+      "target_base": "about-footer-focused--footer-820-zh.png",
+      "bytes": 35076,
+      "sha256": "af1ec78fe2fc3587a0ee7bbc3ab193a18bbd68956c69a0e9a99d5d4cb92587f3",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused-v2/actual.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused-v2/actual.json",
+      "target_base": "about-footer-focused-v2--actual.json",
+      "bytes": 159890,
+      "sha256": "a0b2288f5c89a05a2dac68ab7e4810bf55c297c26714b2d14ece8873cdfd6ca0",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused-v2/footer-1440-en.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused-v2/footer-1440-en.png",
+      "target_base": "about-footer-focused-v2--footer-1440-en.png",
+      "bytes": 34754,
+      "sha256": "b8a99d94cfba44a24744390df0950f335989c77fb3cec7344276c641f9362142",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused-v2/footer-1440-zh.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused-v2/footer-1440-zh.png",
+      "target_base": "about-footer-focused-v2--footer-1440-zh.png",
+      "bytes": 37407,
+      "sha256": "599e63ccceb5b37bf24bbe566ce29d430362202ddcd1f2c6f3836c9c5cd4a4ff",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused-v2/footer-320-en.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused-v2/footer-320-en.png",
+      "target_base": "about-footer-focused-v2--footer-320-en.png",
+      "bytes": 31042,
+      "sha256": "e5d42993147c4ad6b131e47d504deed553051d16a2b3fef3b03690f5e847894c",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused-v2/footer-320-zh.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused-v2/footer-320-zh.png",
+      "target_base": "about-footer-focused-v2--footer-320-zh.png",
+      "bytes": 33996,
+      "sha256": "f204b135b98f525436d181cb92e830425bbc36d0eac886d6430007264d963427",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused-v2/footer-390-en.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused-v2/footer-390-en.png",
+      "target_base": "about-footer-focused-v2--footer-390-en.png",
+      "bytes": 34783,
+      "sha256": "e78175e4493bfd1ab16abcae5ae61d8e59300257c7362b55565d0c1112f5e532",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused-v2/footer-390-zh.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused-v2/footer-390-zh.png",
+      "target_base": "about-footer-focused-v2--footer-390-zh.png",
+      "bytes": 34907,
+      "sha256": "2cdc5f7492b5035ffe00684f0d9157bd35d95d495a2c6a2485699a765b3a7e22",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused-v2/footer-820-en.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused-v2/footer-820-en.png",
+      "target_base": "about-footer-focused-v2--footer-820-en.png",
+      "bytes": 33445,
+      "sha256": "d10a9f6f19ee620de4932d4d761aa538061e4e50012095ec9cd937c655e6fe5a",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused-v2/footer-820-zh.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused-v2/footer-820-zh.png",
+      "target_base": "about-footer-focused-v2--footer-820-zh.png",
+      "bytes": 35076,
+      "sha256": "af1ec78fe2fc3587a0ee7bbc3ab193a18bbd68956c69a0e9a99d5d4cb92587f3",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused-v2.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused-v2.py",
+      "target_base": "about-footer-focused-v2.py",
+      "bytes": 7505,
+      "sha256": "f8cc0eccd7f64cc0eb3f2ae0252746c23e551f5b2f4ce7ff075d1d533a8869b5",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-focused.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-focused.py",
+      "target_base": "about-footer-focused.py",
+      "bytes": 7016,
+      "sha256": "3eae0248ca389076bba86c4099fc9e6716d6bf14af91570b3c4bbe9c0b428297",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-green-manifest.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-green-manifest.json",
+      "target_base": "about-footer-green-manifest.json",
+      "bytes": 11903,
+      "sha256": "5fb8d0b0b416b104166f01e48ef95e33adfe1315168f94459ee66863d6258ff3",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "about-footer-green-server-cleanup.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-green-server-cleanup.json",
+      "target_base": "about-footer-green-server-cleanup.json",
+      "bytes": 535,
+      "sha256": "6ab1c82edff674d9d22b9df51b668073b488dd7856a0bcceb4a84e03149907a6",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "about-footer-red-capture/evidence/c138b165601c7053.png",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-red-capture/evidence/c138b165601c7053.png",
+      "target_base": "about-footer-red-capture--evidence--c138b165601c7053.png",
+      "bytes": 322940,
+      "sha256": "c138b165601c705328db2d24c25e2f0a951a2a4b60a16a3cd4ea76d6abc5611e",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-red-capture/manifest.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-red-capture/manifest.json",
+      "target_base": "about-footer-red-capture--manifest.json",
+      "bytes": 5385,
+      "sha256": "bd43bbb4dfb45b4c7b4035a9adca752a76a69e7981515c51b184f6f850f37504",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "about-footer-red-capture/smells.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-red-capture/smells.json",
+      "target_base": "about-footer-red-capture--smells.json",
+      "bytes": 3314,
+      "sha256": "37ed089ae7ae611915c6e264f34350af6a20bf21c366a94372b7c4776c83aced",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "about-footer-red-manifest.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-red-manifest.json",
+      "target_base": "about-footer-red-manifest.json",
+      "bytes": 11903,
+      "sha256": "79babb377b9600405610b03680436b046bda93758a3b2178c5fc6969fd0bf715",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "about-footer-red-server-cleanup.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-red-server-cleanup.json",
+      "target_base": "about-footer-red-server-cleanup.json",
+      "bytes": 544,
+      "sha256": "28ae80504e889762ad4f1d36907dc9e70bc28127e8b88946b2a1bbe3e02352a6",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "about-footer-source/before/site/about.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source/before/site/about.html",
+      "target_base": "about-footer-source--before--site--about.html",
+      "bytes": 38676,
+      "sha256": "8d510aa15007af23cfe519f6f2c331663c7e8b3d77a4aca52a351295fef78670",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source/before/site/index.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source/before/site/index.html",
+      "target_base": "about-footer-source--before--site--index.html",
+      "bytes": 188017,
+      "sha256": "5d00241de8d5f6532650ddffad668f516e99da8d8c547d25ba389cd6bfea1a8e",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source/before/site/landing.css",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source/before/site/landing.css",
+      "target_base": "about-footer-source--before--site--landing.css",
+      "bytes": 120213,
+      "sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source/before/site/products/market-dashboards.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source/before/site/products/market-dashboards.html",
+      "target_base": "about-footer-source--before--site--products--market-dashboards.html",
+      "bytes": 99188,
+      "sha256": "e470c4d837c8bee5b5ef4733e1e5e9db3ac5e735f05d2a1d39a2f847fca4e520",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source/before/site/products/market-terminal.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source/before/site/products/market-terminal.html",
+      "target_base": "about-footer-source--before--site--products--market-terminal.html",
+      "bytes": 132588,
+      "sha256": "a36e241767a227646c67a6fa8d55ba017598547586c7470865fccf4bc8d98391",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source/before/site/products/mastermind-ai.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source/before/site/products/mastermind-ai.html",
+      "target_base": "about-footer-source--before--site--products--mastermind-ai.html",
+      "bytes": 87078,
+      "sha256": "8144dd73fb27277bcfd3aac2c4bb6069c5bf082e524cb04ae3a384f09fd0a701",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source/before/templates/about.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source/before/templates/about.html",
+      "target_base": "about-footer-source--before--templates--about.html",
+      "bytes": 38676,
+      "sha256": "8d510aa15007af23cfe519f6f2c331663c7e8b3d77a4aca52a351295fef78670",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source/before/templates/index.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source/before/templates/index.html",
+      "target_base": "about-footer-source--before--templates--index.html",
+      "bytes": 188017,
+      "sha256": "5d00241de8d5f6532650ddffad668f516e99da8d8c547d25ba389cd6bfea1a8e",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source/before/templates/landing.css",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source/before/templates/landing.css",
+      "target_base": "about-footer-source--before--templates--landing.css",
+      "bytes": 120213,
+      "sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source-change.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source-change.json",
+      "target_base": "about-footer-source-change.json",
+      "bytes": 3641,
+      "sha256": "8e77612cc22db458d0240464724813521be78f89de5e82e71cc979f7a9316d4e",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "about-footer-source-change.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source-change.py",
+      "target_base": "about-footer-source-change.py",
+      "bytes": 3960,
+      "sha256": "83c1813734ad09ca52fea04fee84c1e4e2f0b1712a5cd73bbaf5c4c5c604efec",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source-commit.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source-commit.json",
+      "target_base": "about-footer-source-commit.json",
+      "bytes": 1907,
+      "sha256": "f249be476620c3329b683caf147a681d37be1d9ec736ee4fd7412d5b253219ff",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "about-footer-source-commit.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source-commit.log",
+      "target_base": "about-footer-source-commit.log",
+      "bytes": 211,
+      "sha256": "8da0d11e54bc81f1258fabde317a9fed4e1a6d86e61e4cdbc230e8a8f365c773",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source-commit.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source-commit.py",
+      "target_base": "about-footer-source-commit.py",
+      "bytes": 2769,
+      "sha256": "8079c114d477433cde0c11ffa50e35b43d9d2624e915def6d2c1d6e91aad5ab0",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source-final.patch",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source-final.patch",
+      "target_base": "about-footer-source-final.patch",
+      "bytes": 8232,
+      "sha256": "b3707d47f574542aab72c1e7abc00b2bd89211b5882816754f37448d65686142",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source-message.txt",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source-message.txt",
+      "target_base": "about-footer-source-message.txt",
+      "bytes": 281,
+      "sha256": "894153853f59480b614977d036dfe8b428a180afe716d03fb8ebd3cb203853d6",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source-narrow-refused.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source-narrow-refused.py",
+      "target_base": "about-footer-source-narrow-refused.py",
+      "bytes": 2313,
+      "sha256": "5b5feea5cbb2da8cf6f58aa7709923a386def6af6079a649a99504a2c5abd971",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source-narrow.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source-narrow.py",
+      "target_base": "about-footer-source-narrow.py",
+      "bytes": 2641,
+      "sha256": "131d7b15d22b583fbb9f0c322014b90d8e6989143a61c13e273e698781a3a00e",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "about-footer-source-reconciliation-clarification.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source-reconciliation-clarification.json",
+      "target_base": "about-footer-source-reconciliation-clarification.json",
+      "bytes": 1596,
+      "sha256": "2ae8d9baf8815fb5676cb967a80526d3b34679c9ff0b9caef0abbee9e73106d3",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "about-footer-source-reconciliation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source-reconciliation.json",
+      "target_base": "about-footer-source-reconciliation.json",
+      "bytes": 2561,
+      "sha256": "2c18617f922f1a24d2e0c411b82032f379c96f7d79a9c0c971bcbac5f4bec7d3",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "about-footer-source.patch",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source.patch",
+      "target_base": "about-footer-source.patch",
+      "bytes": 12376,
+      "sha256": "ee1cc0e81c00dd436d5b922f32d4b1a6ad144dcb50e341a2e779dffd06858acb",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "b312-ci-pack10-fetch.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/b312-ci-pack10-fetch.json",
+      "target_base": "b312-ci-pack10-fetch.json",
+      "bytes": 430,
+      "sha256": "a22d83574ee1f9f67815dc20598c2e1df36bcd37847b14517e409bcae3cb0f36",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "b312-ci-pack10.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/b312-ci-pack10.log",
+      "target_base": "b312-ci-pack10.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "b312-ci-pack10.mcp.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/b312-ci-pack10.mcp.log",
+      "target_base": "b312-ci-pack10.mcp.log",
+      "bytes": 399402,
+      "sha256": "b4324d008f22082d31177a8f06d0276cf337a5c2e26ca1d092f3aa7f6246917b",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-adoption.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-adoption.json",
+      "target_base": "labor-copy-adoption.json",
+      "bytes": 1064,
+      "sha256": "8d70c8230e7e08e1dd85da09f924a426db87c4f22713fa986532229b37f7ea2b",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "labor-copy-final.patch",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-final.patch",
+      "target_base": "labor-copy-final.patch",
+      "bytes": 7987,
+      "sha256": "2e48adc5a04c5a0b06ef09dc49e8a3a3799a6a7d6d45a12aa4c3308988c764e4",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-generated-preview.patch",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-generated-preview.patch",
+      "target_base": "labor-copy-generated-preview.patch",
+      "bytes": 5993,
+      "sha256": "bcae8d0cebf67e17e7a8a3113ed654856745f4bb8837977b8d0cfb03ee25320d",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-green-hub.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-green-hub.log",
+      "target_base": "labor-copy-green-hub.log",
+      "bytes": 4681,
+      "sha256": "7a6d6ed56fc8d8d033ead546aef7b91c45d49a33bf3b127f0e3512fae3e24a23",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-green-packing.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-green-packing.log",
+      "target_base": "labor-copy-green-packing.log",
+      "bytes": 4691,
+      "sha256": "8ae99b86dbf698d9c618053ef4a0d3d94766668f5a987d39dd34fad88ba2faea",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-green-rates.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-green-rates.log",
+      "target_base": "labor-copy-green-rates.log",
+      "bytes": 4681,
+      "sha256": "cae5db984ec506bc6960eb0e0e37439d656ac897ede051bfa5ba3b87a467ff65",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-green-suite.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-green-suite.log",
+      "target_base": "labor-copy-green-suite.log",
+      "bytes": 5252,
+      "sha256": "ee75f658897dc0df2e0dea110e7800fb4223649a191e0c44df3b35ffe5d107df",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-green.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-green.json",
+      "target_base": "labor-copy-green.json",
+      "bytes": 11787,
+      "sha256": "d07abaa26cb498f1283e722cbaadfd437bb34729aa12bbb2fb991e0a4e79a2a0",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "labor-copy-green.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-green.py",
+      "target_base": "labor-copy-green.py",
+      "bytes": 3345,
+      "sha256": "a7ed20639cfbe3d94e4b9b43a0047c874912cb70483530a6efe7eac504815b95",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-labels-before.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-labels-before.py",
+      "target_base": "labor-copy-labels-before.py",
+      "bytes": 109773,
+      "sha256": "ca3e760cd160752bf8262f648ff999476b8ba1187535ae476520e25943ca3ee2",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-proof-lineage.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-proof-lineage.json",
+      "target_base": "labor-copy-proof-lineage.json",
+      "bytes": 31968,
+      "sha256": "a5a4e0f6b52b61752b70e7d3c63d0d613e8174b4fbc46c9675561ead749c1a31",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "labor-copy-proof-lineage.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-proof-lineage.py",
+      "target_base": "labor-copy-proof-lineage.py",
+      "bytes": 3445,
+      "sha256": "4f8d263300d668ed0381c7998fa6a87d2dc80da29fc5ec6f28202c04b257c9c3",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-red.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-red.json",
+      "target_base": "labor-copy-red.json",
+      "bytes": 810,
+      "sha256": "c0e06b62b1ddaad57c298760d5783815f6fb97850066fe1a737f0a976c818e7d",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "labor-copy-red.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-red.log",
+      "target_base": "labor-copy-red.log",
+      "bytes": 9669,
+      "sha256": "d6b6839fdb69cf827d7015c77b10e4c97d9ad4c1423ce2c09f07da8258b64e36",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-red.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-red.py",
+      "target_base": "labor-copy-red.py",
+      "bytes": 1435,
+      "sha256": "24cc09b0b8dd4bc3add96585d7fcac150c53219806032093931e1e3899274d7a",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-regression-red.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-regression-red.json",
+      "target_base": "labor-copy-regression-red.json",
+      "bytes": 679,
+      "sha256": "cc8e76707862e5a1b65623ae53f0d6cb64d5660b286cb541e3356b3ee57ae072",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "labor-copy-regression-red.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-regression-red.log",
+      "target_base": "labor-copy-regression-red.log",
+      "bytes": 6332,
+      "sha256": "57ba5ba2567693a6eaf78e171d81914b848165c651251ee5ceba8a6786d463a2",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-regression-red.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-regression-red.py",
+      "target_base": "labor-copy-regression-red.py",
+      "bytes": 2585,
+      "sha256": "f41380940b59976252a058e0b3350fcfe422c7f65ece0919c62e244964bc0e42",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro/fragments/consumer.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro/fragments/consumer.html",
+      "target_base": "labor-copy-render--site--macro--fragments--consumer.html",
+      "bytes": 722,
+      "sha256": "9d5626221512d2b85b7c9f5c6b2071c37c87332702d3618c048bddc3715be422",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro/fragments/credit.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro/fragments/credit.html",
+      "target_base": "labor-copy-render--site--macro--fragments--credit.html",
+      "bytes": 1734,
+      "sha256": "d7f19633a5919b0c6baa0f77713b396fec4dd743a61077f7792bbc2997e26f21",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro/fragments/debt.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro/fragments/debt.html",
+      "target_base": "labor-copy-render--site--macro--fragments--debt.html",
+      "bytes": 3464,
+      "sha256": "9a27fd73c3bd449be7f7e4e27c6068e55a06ea5c026796d86b067f43c3a606b1",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro/fragments/growth.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro/fragments/growth.html",
+      "target_base": "labor-copy-render--site--macro--fragments--growth.html",
+      "bytes": 4618,
+      "sha256": "4228b3b0aaba961233be770e39a8b73e6b6409b0466d969697c60a76dec97067",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro/fragments/housing.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro/fragments/housing.html",
+      "target_base": "labor-copy-render--site--macro--fragments--housing.html",
+      "bytes": 2579,
+      "sha256": "dd478410b0e3029e54dcc2c9b4fd886603edaa851f4eb9cbaf3d3a1849c740cf",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro/fragments/inflation.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro/fragments/inflation.html",
+      "target_base": "labor-copy-render--site--macro--fragments--inflation.html",
+      "bytes": 1413,
+      "sha256": "d19f19fd285c04019b0c6e056be1e6ee0edd6e734b9c240f06cd800a88153616",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro/fragments/jobs.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro/fragments/jobs.html",
+      "target_base": "labor-copy-render--site--macro--fragments--jobs.html",
+      "bytes": 722,
+      "sha256": "9d5626221512d2b85b7c9f5c6b2071c37c87332702d3618c048bddc3715be422",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro/fragments/money.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro/fragments/money.html",
+      "target_base": "labor-copy-render--site--macro--fragments--money.html",
+      "bytes": 4383,
+      "sha256": "10728b3f0b4947b3fb79616441bf8cc3d89aef0c627120534dc25223021a2617",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro/fragments/policy.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro/fragments/policy.html",
+      "target_base": "labor-copy-render--site--macro--fragments--policy.html",
+      "bytes": 2615,
+      "sha256": "ba70fb545d2868caa0056161939dc50bc103f2699395cbde4fc9b9b3eb17dbed",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro/fragments/rates.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro/fragments/rates.html",
+      "target_base": "labor-copy-render--site--macro--fragments--rates.html",
+      "bytes": 2622,
+      "sha256": "f8b41dcba4e26a6ae58d9789494a24d25092c9ddb9b8e62f9d4d34895c64c7f8",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro/fragments/trade.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro/fragments/trade.html",
+      "target_base": "labor-copy-render--site--macro--fragments--trade.html",
+      "bytes": 2715,
+      "sha256": "e3a80a9249145fd78b37ac04d86f1666a760b8be1590ba2efc05e7b0f5cf65f3",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_business_activity.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_business_activity.html",
+      "target_base": "labor-copy-render--site--macro_business_activity.html",
+      "bytes": 292963,
+      "sha256": "f691ef3dd2c87dd7bd02f13e652bfffe2e9d2d12554e321b22e8b1484193cdb2",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_capital_structure.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_capital_structure.html",
+      "target_base": "labor-copy-render--site--macro_capital_structure.html",
+      "bytes": 293940,
+      "sha256": "0c26a00b53de987df41911ee49a40a6d915b0bd68cef9a26098981d08c056b18",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_command.css",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_command.css",
+      "target_base": "labor-copy-render--site--macro_command.css",
+      "bytes": 41664,
+      "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_command.js",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_command.js",
+      "target_base": "labor-copy-render--site--macro_command.js",
+      "bytes": 13542,
+      "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_consumer_payments.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_consumer_payments.html",
+      "target_base": "labor-copy-render--site--macro_consumer_payments.html",
+      "bytes": 307646,
+      "sha256": "350e131ee1b909182d6093023ba07059cc489ad161839c41df4240a090ca9141",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_financial_conditions.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_financial_conditions.html",
+      "target_base": "labor-copy-render--site--macro_financial_conditions.html",
+      "bytes": 308053,
+      "sha256": "715c188acfc44f2db1d9247733771e84b68c06cc3de8d7039fb946c7d9f05368",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_growth_real_economy.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_growth_real_economy.html",
+      "target_base": "labor-copy-render--site--macro_growth_real_economy.html",
+      "bytes": 264837,
+      "sha256": "34dbc7fc3166f4bd839bd7815cfa8bcfabfc79101f81b8d9631ee9d5e3a7e486",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_housing_real_estate.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_housing_real_estate.html",
+      "target_base": "labor-copy-render--site--macro_housing_real_estate.html",
+      "bytes": 261931,
+      "sha256": "551eebc8fab7a59a848384900a54ce6aa9adae663013527c9ecfbfbafd4c8aed",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_inflation_system.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_inflation_system.html",
+      "target_base": "labor-copy-render--site--macro_inflation_system.html",
+      "bytes": 208588,
+      "sha256": "c1e1242e101df2068b33c865acffd038f7d516053ac5b2d8ce408eeb112174b3",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_labor_markets.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_labor_markets.html",
+      "target_base": "labor-copy-render--site--macro_labor_markets.html",
+      "bytes": 254945,
+      "sha256": "381d82b042929dbfbe4a0db8d16e0f94c1974069df80e7e965cc3a508b590e6c",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_liquidity_central_banks.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_liquidity_central_banks.html",
+      "target_base": "labor-copy-render--site--macro_liquidity_central_banks.html",
+      "bytes": 337861,
+      "sha256": "4e70fa8323317779018659399b27c822f1b82a86680270e7d52b0abc9f668d45",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_liquidity_regime.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_liquidity_regime.html",
+      "target_base": "labor-copy-render--site--macro_liquidity_regime.html",
+      "bytes": 200487,
+      "sha256": "21147e9602a5bdf9f4f72becb085a8f14f10b67e72e83aab1800ce6148e55ee7",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_monetary.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_monetary.html",
+      "target_base": "labor-copy-render--site--macro_monetary.html",
+      "bytes": 148112,
+      "sha256": "111ffabeccc54622d2b35cffe9924799ddd01744c8007a92aae2146185c630e6",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_monetary_policy.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_monetary_policy.html",
+      "target_base": "labor-copy-render--site--macro_monetary_policy.html",
+      "bytes": 267689,
+      "sha256": "9dbf481f3fd654d9b616b1322c290c25ca859ae4db76031098cd79054b6bfcba",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_national_debt_liabilities.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_national_debt_liabilities.html",
+      "target_base": "labor-copy-render--site--macro_national_debt_liabilities.html",
+      "bytes": 348069,
+      "sha256": "0cb36c63646038d58b1e2ce3ea5e11afd48bd4bc05c8fbe1dde6df68972fc27d",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_rates_curves.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_rates_curves.html",
+      "target_base": "labor-copy-render--site--macro_rates_curves.html",
+      "bytes": 422600,
+      "sha256": "85030032b2332f857f0d1c8f6723daee43ce4dc2783428684bb7e88fb7e57a27",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_suite.css",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_suite.css",
+      "target_base": "labor-copy-render--site--macro_suite.css",
+      "bytes": 40091,
+      "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_suite.js",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_suite.js",
+      "target_base": "labor-copy-render--site--macro_suite.js",
+      "bytes": 7573,
+      "sha256": "b50b9eba2bce7c1eaf5dde962c803480cf0aa237403c801b0edd067fa0db70e2",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_suite_boot.js",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_suite_boot.js",
+      "target_base": "labor-copy-render--site--macro_suite_boot.js",
+      "bytes": 903,
+      "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render/site/macro_trade_flows.html",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render/site/macro_trade_flows.html",
+      "target_base": "labor-copy-render--site--macro_trade_flows.html",
+      "bytes": 264892,
+      "sha256": "3da8bd1f49165257d684d630a7763427b5398dece78fc5b48dcff1e2af652357",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-render.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-render.json",
+      "target_base": "labor-copy-render.json",
+      "bytes": 4298,
+      "sha256": "0709f0759647bad94be468abc89e8abed27352c864c8d4e0c6165e3a73fb86b1",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "labor-copy-repair-render.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-repair-render.py",
+      "target_base": "labor-copy-repair-render.py",
+      "bytes": 3071,
+      "sha256": "dcb04fef91b229ff320cac2cb40eff3711e95b5645c1cb005cfe736211472bb0",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-source-commit-refusal-reconciliation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-source-commit-refusal-reconciliation.json",
+      "target_base": "labor-copy-source-commit-refusal-reconciliation.json",
+      "bytes": 660,
+      "sha256": "08aa557c362b3288c64bdb978fad7b8acb8a38892ea9adc2183e250c4b701bf9",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "labor-copy-source-commit-refusal-reconciliation.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-source-commit-refusal-reconciliation.py",
+      "target_base": "labor-copy-source-commit-refusal-reconciliation.py",
+      "bytes": 1479,
+      "sha256": "83c791a37bb3b1aa1cc7aaa05eeeabf010e05d7c6337d7d55e5c54c56ebd47c1",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-source-commit.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-source-commit.json",
+      "target_base": "labor-copy-source-commit.json",
+      "bytes": 934,
+      "sha256": "c824f0bf34b1e1619e5a2719c7508c6b2013e75a64dbdbe8cbef56c922572ae7",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "labor-copy-source-commit.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-source-commit.log",
+      "target_base": "labor-copy-source-commit.log",
+      "bytes": 175,
+      "sha256": "da60c917159c9112981cb2cd789c63d6e39706edaffb1d5f35939ca34609643f",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-source-commit.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-source-commit.py",
+      "target_base": "labor-copy-source-commit.py",
+      "bytes": 3328,
+      "sha256": "a2eb160099590b404e2364a9237864fec0636bf4322a845c9e3efd41730c8edf",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-source-message.txt",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-source-message.txt",
+      "target_base": "labor-copy-source-message.txt",
+      "bytes": 535,
+      "sha256": "3d9742041b9a6611405ec1a5213b2fa14b2209d70d3a6ca4c4f01ebf64ee326e",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "labor-copy-test-before.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/labor-copy-test-before.py",
+      "target_base": "labor-copy-test-before.py",
+      "bytes": 207296,
+      "sha256": "2c4b79ccd4634634dc4a9dd4d1912c23293f61c34622173aa2c8c897742a10c6",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-140bd-3b49-commit-message.txt",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-commit-message.txt",
+      "target_base": "macro-140bd-3b49-commit-message.txt",
+      "bytes": 492,
+      "sha256": "cc28792476c1d99251f9cac03dc18f35936665439ec04ee2750ee0e8e58ed355",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-140bd-3b49-commit.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-commit.json",
+      "target_base": "macro-140bd-3b49-commit.json",
+      "bytes": 1485,
+      "sha256": "f9634ea530fb0d4e5ea6fce8ee3bd5cea2daf4bb01c1c1230fe5dcf736f9cf50",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "macro-140bd-3b49-commit.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-commit.log",
+      "target_base": "macro-140bd-3b49-commit.log",
+      "bytes": 114,
+      "sha256": "084af71a65fd6251edcb16e053833019095e3536c773ab841a34a02a9071085a",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-140bd-3b49-commit.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-commit.py",
+      "target_base": "macro-140bd-3b49-commit.py",
+      "bytes": 2610,
+      "sha256": "d8e2b5f30b2f1b385dfb44981a4d2861817b4192e5d36c2e45056f3f2561b145",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-140bd-3b49-proof-import.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-proof-import.json",
+      "target_base": "macro-140bd-3b49-proof-import.json",
+      "bytes": 3821,
+      "sha256": "1c9da3b8819f51720870205b30058d02369a992613d1357ff3b894548dba2f07",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "macro-140bd-3b49-proof-review.md",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-proof-review.md",
+      "target_base": "macro-140bd-3b49-proof-review.md",
+      "bytes": 1164,
+      "sha256": "30e8e7c80a3f667f53aae163c66594c6bf7846d3b59f91e5d7f9e2a9a8efa6d3",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-b312-first-hosted-provider-observation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b312-first-hosted-provider-observation.json",
+      "target_base": "macro-b312-first-hosted-provider-observation.json",
+      "bytes": 3847,
+      "sha256": "0f8eef77effe3fd3d3bb8aada2569bfcf05c27f0214f65525731799052275d6a",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "macro-b312-original-push.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b312-original-push.json",
+      "target_base": "macro-b312-original-push.json",
+      "bytes": 1797,
+      "sha256": "ca8768a74a045363e599d1c9dacabc11a306b24c458c7542696d50e997db623e",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "macro-b312-original-push.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b312-original-push.log",
+      "target_base": "macro-b312-original-push.log",
+      "bytes": 157,
+      "sha256": "63ef1c1dfdc194379552fdfd0287c89214e0d918bfaecee5fc72449f2285dfd8",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-b312-original-push.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b312-original-push.py",
+      "target_base": "macro-b312-original-push.py",
+      "bytes": 2728,
+      "sha256": "90846339a38da9af4f24bf9005a2cee5f437d4f9c659e790d1c83c57e3eb89de",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-b312-pr-body.md",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b312-pr-body.md",
+      "target_base": "macro-b312-pr-body.md",
+      "bytes": 6385,
+      "sha256": "f981bd02050cab5221d13708ba6c828c19f37826a8e903cc0dd83c42664ba3f5",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-b312-prearm-health-remote-v2.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b312-prearm-health-remote-v2.py",
+      "target_base": "macro-b312-prearm-health-remote-v2.py",
+      "bytes": 15276,
+      "sha256": "b363ce9038b467863014c7d9615214215644613701582e79677a045deca97ba9",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-b312-prearm-health-remote-v3.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b312-prearm-health-remote-v3.py",
+      "target_base": "macro-b312-prearm-health-remote-v3.py",
+      "bytes": 15894,
+      "sha256": "ae53acf844cca7a86559643ba26d2b9a7db29d6d01f59093a6dc1fbd2acda21e",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-b312-prearm-health-remote.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b312-prearm-health-remote.py",
+      "target_base": "macro-b312-prearm-health-remote.py",
+      "bytes": 8265,
+      "sha256": "7954353986d512b6b863c609d4f2c5e3e8f9bb6a51f7bd342e2744e3e79b6f7b",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-b312-prearm-observer-preparation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b312-prearm-observer-preparation.json",
+      "target_base": "macro-b312-prearm-observer-preparation.json",
+      "bytes": 671,
+      "sha256": "61c11a7f62b6ebc24d15a561937177a0de89df4d3d0bd2d7a8683cb008447db2",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "macro-b312-prearm-observer-prepare.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b312-prearm-observer-prepare.py",
+      "target_base": "macro-b312-prearm-observer-prepare.py",
+      "bytes": 6131,
+      "sha256": "48e95de327fa7b69ac032ba8c315582c5c975094aad9abc6d58d1be83866d8a1",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-da4d-987-ci-composition-preview.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-ci-composition-preview.json",
+      "target_base": "macro-da4d-987-ci-composition-preview.json",
+      "bytes": 984,
+      "sha256": "8eee0ae0540c4efa6227eb939f66768604fc237d125cba3991cbbf7fd5ac653c",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "macro-da4d-987-ci-composition-preview.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-ci-composition-preview.py",
+      "target_base": "macro-da4d-987-ci-composition-preview.py",
+      "bytes": 3094,
+      "sha256": "ab413c531a0edf2887b5705920946bbf077e337bf5cb620d3cfd226bec896033",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-da4d-987-merge-process-sample.txt",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-merge-process-sample.txt",
+      "target_base": "macro-da4d-987-merge-process-sample.txt",
+      "bytes": 94975,
+      "sha256": "ec1e3aff8b16909e289c1b9447130faf07c892bc9735cc501b417b5b9d702a97",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-da4d-987-merge-readonly-diagnostic.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-merge-readonly-diagnostic.py",
+      "target_base": "macro-da4d-987-merge-readonly-diagnostic.py",
+      "bytes": 1375,
+      "sha256": "8cb4fb2c9a811af2aba4ff9b5a46ac156536ca74937805443f9c375f7ce16850",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-da4d-987-merge.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-merge.py",
+      "target_base": "macro-da4d-987-merge.py",
+      "bytes": 2087,
+      "sha256": "aa12f76c8f248e5293211c25e6b950bb913a62a4bb5dcb8e561b2aad9b334938",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-da4d-bounded-reviews.md",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-bounded-reviews.md",
+      "target_base": "macro-da4d-bounded-reviews.md",
+      "bytes": 4394,
+      "sha256": "d1af3ee095756e72e6a5fbc21cd4affad650554a442cb9493eacc55a80cd1e55",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-da4d-evidence-inventory-preview.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-evidence-inventory-preview.py",
+      "target_base": "macro-da4d-evidence-inventory-preview.py",
+      "bytes": 2750,
+      "sha256": "1ae07d3f4be4aa7b76059fb4ba3b201892c3c0d53a95f530b2a9b53e3d570560",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-da4d-host-main-ancestry.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-host-main-ancestry.json",
+      "target_base": "macro-da4d-host-main-ancestry.json",
+      "bytes": 2773,
+      "sha256": "32918a46d8129323012822a0cb09cd6385fae0dbf8c180aa2e7a478b8f3751a0",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "macro-da4d-host-observation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-host-observation.json",
+      "target_base": "macro-da4d-host-observation.json",
+      "bytes": 964,
+      "sha256": "201edd743a1a8cf4ccddd0c62bf767fdd6b617cc93da615d14f77c14235b522f",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "macro-da4d-host-observation.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-host-observation.py",
+      "target_base": "macro-da4d-host-observation.py",
+      "bytes": 2155,
+      "sha256": "f3987302c745af8cfc806108ef9f0bdc082627128d1134b574862dee211e411b",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-da4d-host-observation.stderr.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-host-observation.stderr.log",
+      "target_base": "macro-da4d-host-observation.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-da4d-host-observation.stdout.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-host-observation.stdout.json",
+      "target_base": "macro-da4d-host-observation.stdout.json",
+      "bytes": 23466,
+      "sha256": "bf9a09de5361692d9976e4271f95c5ec3f7cbd8898feba5b442d19407412abfa",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "macro-da4d-host-reconciliation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-host-reconciliation.json",
+      "target_base": "macro-da4d-host-reconciliation.json",
+      "bytes": 4711,
+      "sha256": "adc9c9706a216c7b5aea87e3029e17f82a94aa7ca0d3fb9b8c04141570b99aaf",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "macro-da4d-host-reconciliation.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-host-reconciliation.py",
+      "target_base": "macro-da4d-host-reconciliation.py",
+      "bytes": 3708,
+      "sha256": "640035499ba376aa72a86468fe8b304f135da6534176941f33d2646f4226d4fd",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-da4d-main-check.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-main-check.json",
+      "target_base": "macro-da4d-main-check.json",
+      "bytes": 11564,
+      "sha256": "0a47032f56b4c8dbb42298d214f1667ad5d00f0f9fe2c4453a011ab134148d49",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "macro-da4d-main-check.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-main-check.py",
+      "target_base": "macro-da4d-main-check.py",
+      "bytes": 2584,
+      "sha256": "31f1b8d913ad624aa10e35cb648ddf6a48aca1205bc3bc07701c470b75afcb51",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-da4d-main-fetch.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-main-fetch.log",
+      "target_base": "macro-da4d-main-fetch.log",
+      "bytes": 121,
+      "sha256": "91247612b2f9f4c4699ff5cb4bd67908a45de3f805c6ce995d5b47a886a7d497",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-da4d-main-merge-tree.log",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-main-merge-tree.log",
+      "target_base": "macro-da4d-main-merge-tree.log",
+      "bytes": 10674,
+      "sha256": "694f696081561bcfa9ff73eb940d591b9f4e68a9e2b2f154f663de09ee2ff701",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-da4d-proof-config.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-proof-config.json",
+      "target_base": "macro-da4d-proof-config.json",
+      "bytes": 12218,
+      "sha256": "c4c868f6c9b426949eed15b59bccc5ed3b4bd633428349c8637d8e98f34287f9",
+      "encoding_suggestion": "utf-8"
+    },
+    {
+      "relative_source": "macro-full-checkpoint-987-active.md",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-full-checkpoint-987-active.md",
+      "target_base": "macro-full-checkpoint-987-active.md",
+      "bytes": 56882,
+      "sha256": "870cb512f028560d970e78eff32c4041c900c45fafff38a77f1d9ca785132a55",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-full-checkpoint-b312-before-987.md",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-full-checkpoint-b312-before-987.md",
+      "target_base": "macro-full-checkpoint-b312-before-987.md",
+      "bytes": 51341,
+      "sha256": "8184ba26bf9dd46745ee8a3c865266f63804491614444fb2cc9368ea865a9965",
+      "encoding_suggestion": "gzip"
+    },
+    {
+      "relative_source": "macro-full-checkpoint-b312-pushed.md",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-full-checkpoint-b312-pushed.md",
+      "target_base": "macro-full-checkpoint-b312-pushed.md",
+      "bytes": 51340,
+      "sha256": "7365d8eefc25727b78ed5b530e7ef65c62868573880fc934f371b73edcc369f3",
+      "encoding_suggestion": "gzip"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "source": "terminal.held_material_event.v1",
+  "category": "holdings_material_change",
+  "authority": "notification_only",
+  "ticker": "AAPL",
+  "event_id": "evt_cik0000320193_2026q3_results",
+  "source_asof": "2026-10-18T09:00:00.000Z",
+  "event_time": "2026-10-18T10:00:00.000Z",
+  "recorded_at": "2026-10-18T12:00:00.000Z",
+  "fired_at": "2026-10-18T10:00:00.000Z",
+  "subject": "AAPL: company results published",
+  "subject_zh": "AAPL：公司业绩已发布",
+  "summary_plain": "New company results are available. Review the source; no trade action is implied.",
+  "summary_plain_zh": "公司发布了新业绩。请查看来源；这不代表交易指令。",
+  "evidence_url": "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/company_intelligence/event_workspaces/generations/f709a0a6ec514282d5769e7d/workspaces/evt_cik0000320193_2026q3_results.json",
+  "source_generation": "f709a0a6ec514282d5769e7d",
+  "source_revision": "complete:2026-10-18T09:00:00.000Z:2026-10-18T10:00:00.000Z",
+  "requires_tier": "essential",
+  "condition_plain": "New company results are available. Review the source; no trade action is implied.",
+  "condition_plain_zh": "公司发布了新业绩。请查看来源；这不代表交易指令。"
+}

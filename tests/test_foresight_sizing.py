@@ -237,3 +237,31 @@ def test_load_enb_data_unpacks_corr_matrix_3tuple():
     clusters, enb_by_cluster = _load_enb_data(rows)
     if clusters:  # live data present in this checkout
         assert enb_by_cluster, "per-cluster ENB silently empty — unpack drift regressed"
+
+
+# ---------------------------------------------------------------------------
+# Non-finite refusals (W17-B): NaN/inf must read as absent, never as full size
+# ---------------------------------------------------------------------------
+
+def test_earliness_tilt_nan_is_neutral():
+    """NaN earliness must be neutral (tilt=1.0), not the earliest (tilt=1.25)."""
+    assert fz._earliness_tilt(float("nan")) == pytest.approx(1.0)
+
+
+def test_earliness_tilt_inf_is_neutral():
+    """Inf earliness must also be neutral (tilt=1.0)."""
+    assert fz._earliness_tilt(float("inf")) == pytest.approx(1.0)
+
+
+def test_size_mult_nan_score_is_not_full_size():
+    """A NaN score must fall to the score=None base (0.4-path), never size_mult=1.0."""
+    r = _row(stage="PRECIPICE", bottleneck_band="TIGHT", score=float("nan"),
+             revision_breadth=0.05)
+    mult = fz._size_mult(r, fz._posture(r), earliness=None, cluster_dilution=1.0)
+    r_none = _row(stage="PRECIPICE", bottleneck_band="TIGHT", score=None,
+                  revision_breadth=0.05)
+    mult_none = fz._size_mult(r_none, fz._posture(r_none), earliness=None,
+                              cluster_dilution=1.0)
+    assert mult < 1.0                                  # today 1.0
+    assert mult == pytest.approx(mult_none)            # same path as score=None
+    assert mult == mult                                # finite

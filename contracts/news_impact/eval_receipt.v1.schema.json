@@ -1,0 +1,339 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermindx.local/contracts/news_impact/eval_receipt.v1.schema.json",
+  "title": "news_impact eval_receipt.v1",
+  "description": "Pre-registered evaluation receipt for Prophet news-to-business-impact (masterplan §11). Nulls are printed. No confidence, probability, score, target, fair value or rating field exists. Interval coverage is a statistical procedure parameter.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "authority",
+    "prophet_flags",
+    "registration",
+    "accounting",
+    "metrics",
+    "threshold_evaluations",
+    "kills",
+    "leakage_audit",
+    "injection_findings",
+    "baselines_run",
+    "ablations_run",
+    "fold_slices_run"
+  ],
+  "properties": {
+    "schema": { "const": "eval_receipt.v1" },
+    "authority": { "const": "context_only" },
+    "prophet_flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["may_rank", "may_size", "may_gate", "prophet_authority"],
+      "properties": {
+        "may_rank": { "const": false },
+        "may_size": { "const": false },
+        "may_gate": { "const": false },
+        "prophet_authority": { "const": false }
+      }
+    },
+    "registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "endpoints_sha256",
+        "contract_sha256_prefix",
+        "tape_sha256",
+        "sampler_version",
+        "sampling_seed",
+        "bootstrap_seed",
+        "bootstrap_reps",
+        "interval_coverage",
+        "t_prospective",
+        "prompt_corpus_sha256",
+        "owner_status",
+        "mode"
+      ],
+      "properties": {
+        "endpoints_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "contract_sha256_prefix": { "type": "string", "minLength": 8, "maxLength": 16, "pattern": "^[0-9a-f]+$" },
+        "tape_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "sampler_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "sampling_seed": { "type": "integer" },
+        "bootstrap_seed": { "type": "integer", "const": 20261012 },
+        "bootstrap_reps": { "type": "integer", "const": 9999 },
+        "interval_coverage": { "type": "number", "const": 0.95 },
+        "t_prospective": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(Z|[+-][0-9]{2}:[0-9]{2})$"
+        },
+        "prompt_corpus_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "owner_status": { "const": "PROPOSED-OWNER-FREEZES" },
+        "mode": { "type": "string", "enum": ["tune", "select", "confirm", "lock"] }
+      }
+    },
+    "accounting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_n",
+        "discovered",
+        "unique_groups",
+        "extracted_packets",
+        "issuer_impacts",
+        "deferred",
+        "rejected",
+        "quarantined",
+        "auto_published",
+        "reviewed_published",
+        "abstained",
+        "evaluated",
+        "unresolved_identity",
+        "body_unavailable",
+        "short_cells",
+        "rights_blocked"
+      ],
+      "properties": {
+        "manifest_n": { "type": "integer", "minimum": 0 },
+        "discovered": { "type": "integer", "minimum": 0 },
+        "unique_groups": { "type": "integer", "minimum": 0 },
+        "extracted_packets": { "type": "integer", "minimum": 0 },
+        "issuer_impacts": { "type": "integer", "minimum": 0 },
+        "deferred": { "type": "integer", "minimum": 0 },
+        "rejected": { "type": "integer", "minimum": 0 },
+        "quarantined": { "type": "integer", "minimum": 0 },
+        "auto_published": { "type": "integer", "minimum": 0 },
+        "reviewed_published": { "type": "integer", "minimum": 0 },
+        "abstained": { "type": "integer", "minimum": 0 },
+        "evaluated": { "type": "integer", "minimum": 0 },
+        "unresolved_identity": { "type": "integer", "minimum": 0 },
+        "body_unavailable": { "type": "integer", "minimum": 0 },
+        "short_cells": { "type": "integer", "minimum": 0 },
+        "rights_blocked": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/metric_row" }
+    },
+    "threshold_evaluations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/threshold_row" }
+    },
+    "kills": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/kill_row" }
+    },
+    "leakage_audit": { "$ref": "#/$defs/leakage_audit" },
+    "injection_findings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/injection_finding" }
+    },
+    "baselines_run": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": [
+          "current_news_stack",
+          "deterministic_materiality_price_factor",
+          "cheap_extractor_no_frontier",
+          "proposed_cascade",
+          "frontier_only_audit"
+        ]
+      }
+    },
+    "ablations_run": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1, "maxLength": 128 }
+    },
+    "fold_slices_run": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": ["all_historical", "f1", "f2", "f3", "f4", "f5", "prospective"]
+      }
+    },
+    "notes": { "type": ["string", "null"], "maxLength": 2000 }
+  },
+  "$defs": {
+    "metric_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "family",
+        "baseline_id",
+        "ablation_id",
+        "fold_slice",
+        "value",
+        "n",
+        "n_clusters",
+        "n_issuers",
+        "n_missing",
+        "interval",
+        "interval_diagnostic_cp",
+        "interval_diagnostic_wilson",
+        "status",
+        "qa_only",
+        "predictive_weight",
+        "display_text"
+      ],
+      "properties": {
+        "metric_id": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "family": {
+          "type": "string",
+          "enum": [
+            "fact_integrity",
+            "clustering_integrity",
+            "routing_quality",
+            "economic_reasoning",
+            "business_outcomes",
+            "market_outcomes"
+          ]
+        },
+        "baseline_id": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "ablation_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "fold_slice": {
+          "type": "string",
+          "enum": ["all_historical", "f1", "f2", "f3", "f4", "f5", "prospective"]
+        },
+        "value": { "type": ["number", "null"] },
+        "n": { "type": "integer", "minimum": 0 },
+        "n_clusters": { "type": "integer", "minimum": 0 },
+        "n_issuers": { "type": "integer", "minimum": 0 },
+        "n_missing": { "type": "integer", "minimum": 0 },
+        "interval": { "oneOf": [{ "$ref": "#/$defs/interval" }, { "type": "null" }] },
+        "interval_diagnostic_cp": { "oneOf": [{ "$ref": "#/$defs/interval" }, { "type": "null" }] },
+        "interval_diagnostic_wilson": { "oneOf": [{ "$ref": "#/$defs/interval" }, { "type": "null" }] },
+        "status": {
+          "type": "string",
+          "enum": [
+            "measured",
+            "null_printed",
+            "not_estimable",
+            "qa_only",
+            "prospective_only",
+            "proposed_owner_freezes"
+          ]
+        },
+        "qa_only": { "type": "boolean" },
+        "predictive_weight": {
+          "type": "string",
+          "enum": ["qa_only", "prospective_primary", "not_a_rate"]
+        },
+        "display_text": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["low", "high", "method", "coverage"],
+      "properties": {
+        "low": { "type": ["number", "null"] },
+        "high": { "type": ["number", "null"] },
+        "method": {
+          "type": "string",
+          "enum": [
+            "cluster_bootstrap_percentile",
+            "two_way_cluster_cgm",
+            "clopper_pearson_diagnostic",
+            "wilson_diagnostic",
+            "not_estimable"
+          ]
+        },
+        "coverage": { "type": "number", "const": 0.95 }
+      }
+    },
+    "threshold_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "baseline_id",
+        "ablation_id",
+        "fold_slice",
+        "proposed_bar",
+        "owner_status",
+        "observed",
+        "n",
+        "crossing",
+        "dependence_dispute"
+      ],
+      "properties": {
+        "metric_id": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "baseline_id": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "ablation_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "fold_slice": {
+          "type": "string",
+          "enum": ["all_historical", "f1", "f2", "f3", "f4", "f5", "prospective"]
+        },
+        "proposed_bar": { "type": ["number", "boolean", "null"] },
+        "owner_status": { "const": "PROPOSED-OWNER-FREEZES" },
+        "observed": { "type": ["number", "boolean", "null"] },
+        "n": { "type": "integer", "minimum": 0 },
+        "crossing": {
+          "type": "string",
+          "enum": ["below", "meets", "above", "straddles", "not_evaluable"]
+        },
+        "dependence_dispute": { "type": "boolean" }
+      }
+    },
+    "kill_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["construction_id", "metric_id", "reason", "search_space_still_open"],
+      "properties": {
+        "construction_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "metric_id": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "search_space_still_open": { "const": true }
+      }
+    },
+    "leakage_audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "passed",
+        "mode",
+        "t_prospective",
+        "endpoints_sha256",
+        "prompt_corpus_sha256",
+        "prospective_labels_loaded",
+        "prospective_outputs_in_tune",
+        "prompt_corpus_hit",
+        "outcome_conditioned_selection",
+        "findings"
+      ],
+      "properties": {
+        "passed": { "type": "boolean" },
+        "mode": { "type": "string", "enum": ["tune", "select", "confirm", "lock"] },
+        "t_prospective": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(Z|[+-][0-9]{2}:[0-9]{2})$"
+        },
+        "endpoints_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "prompt_corpus_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "prospective_labels_loaded": { "type": "boolean" },
+        "prospective_outputs_in_tune": { "type": "boolean" },
+        "prompt_corpus_hit": { "type": "boolean" },
+        "outcome_conditioned_selection": { "type": "boolean" },
+        "findings": {
+          "type": "array",
+          "items": { "type": "string", "maxLength": 256 }
+        }
+      }
+    },
+    "injection_finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case_id", "quote", "action"],
+      "properties": {
+        "case_id": { "type": "string", "pattern": "^case_[0-9a-f]{24}$" },
+        "quote": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "action": { "const": "recorded_and_ignored" }
+      }
+    }
+  }
+}

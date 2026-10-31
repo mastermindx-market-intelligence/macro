@@ -1,0 +1,21 @@
+{
+  "operation": "restore_reviewed_source_scope_and_rebind",
+  "application_review_commit": "70d9b7e08337",
+  "independent_review": "PASS for exact four source/test hashes in review_binding.json",
+  "unchanged_prior_manifest_sources": 22,
+  "changed_reviewed_sources": {
+    "engine/press/official_feed_candidate.py": {
+      "previous": "f01f28bb20896c59b69ed95339875192d1e724a25078742119d2930e5f0d72f2",
+      "reviewed": "af349f5784bdd0c6484617803e0e221d8fd1d865ceedbe8c9334867b5dcc9e1e"
+    },
+    "scripts/stage_official_feed_press.py": {
+      "previous": "ac576025a0aa060a60eec53a2079cefe648bee9a118e4a817028b5e2bcad18d5",
+      "reviewed": "8c3b19d7186e15efc3eb6205ffed24b322b5ae1215801bf394f3a1c98425990a"
+    }
+  },
+  "review_binding_sha256": "758549720752b23243d6e2905f4285424d5dacabc15d0c6c078047e7fba47145",
+  "deferred_application_commit": "1989dd890273164b728e462a49121fe74a0bf3c1",
+  "deferred_patch_sha256": "6911268ab053a44178a94a23a92643028cdc147736ddbf72c02d346066533426",
+  "publication_approved": false,
+  "installed_acceptance": false
+}

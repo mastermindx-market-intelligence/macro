@@ -1,0 +1,83 @@
+{
+  "observed_at": "2026-10-19 09:33:43 UTC",
+  "repo": "mastermindx-market-intelligence/mastermind-terminal",
+  "pr": 1062,
+  "head": "43bc48091225effdd8193a8ca6de584809b17f97",
+  "run_id": 39224380821,
+  "jobs": [
+    {
+      "id": 117967009704,
+      "name": "Quote Hub tests",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117967010025,
+      "name": "Terminal e2e tablet-2 (shard)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117967010032,
+      "name": "Terminal unit + typecheck (shard)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117967010118,
+      "name": "Terminal e2e tablet-1 (shard)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117967010143,
+      "name": "Ingest + signal-layer tests",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117967010181,
+      "name": "Investigation PostgreSQL invariants",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117967010202,
+      "name": "Terminal e2e mobile-2 (shard)",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 117967010219,
+      "name": "Terminal e2e serial (shard)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117967010247,
+      "name": "Terminal e2e desktop-3 (shard)",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 117967010286,
+      "name": "Terminal e2e desktop-1 (shard)",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 117967010297,
+      "name": "Terminal e2e mobile-1 (shard)",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 117967010699,
+      "name": "Terminal e2e desktop-2 (shard)",
+      "status": "in_progress",
+      "conclusion": null
+    }
+  ],
+  "protected_merge_observed": false,
+  "old_bd158_success_is_historical": true
+}

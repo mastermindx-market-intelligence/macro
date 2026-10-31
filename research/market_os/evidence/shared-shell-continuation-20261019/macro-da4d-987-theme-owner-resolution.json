@@ -1,0 +1,48 @@
+{
+  "started_at": "2026-10-20T18:24:11.781968+00:00",
+  "head": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+  "incoming": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+  "input_tree": "11ad3c513bc73c9f03a06363ea9b810e0308b574",
+  "owner": "lib.site_assets.emit_theme_js/copy_asset",
+  "source_inputs": {
+    "lib/site_assets.py": {
+      "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+      "bytes": 7180,
+      "git_blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3"
+    },
+    "lib/config.py": {
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+      "bytes": 1131,
+      "git_blob": "b6fc888269876242597da354aaa726c20ed95802"
+    },
+    "config.yml": {
+      "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+      "bytes": 496073,
+      "git_blob": "5be75249c98033d7ee0fbe55928713b1f50af627"
+    },
+    "templates/theme.js": {
+      "sha256": "c97a29857f1f008a6d6f155e5e64b1558e2d07264ffda5a196c108f0ac6f07dd",
+      "bytes": 387606,
+      "git_blob": "52751694694a381e717d8be6d4c8609d93bdeca6"
+    },
+    "templates/mm_brain.js": {
+      "sha256": "8bdbdf84b00512dbefb662beae61351a787a12dab530d16f9269483371057d43",
+      "bytes": 279908,
+      "git_blob": "4f467d576fd0b8bb59fca5f2dca177995967f3cf"
+    },
+    "templates/terminal_overlay.js": {
+      "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf",
+      "bytes": 41029,
+      "git_blob": "e0f7c9747f1f9d38eb526f4794f0db0bcf695a7a"
+    }
+  },
+  "mm_brain_source_and_emitted_bytes_equal": true,
+  "mm_brain_version": "8bdbdf84",
+  "rjsmin_version": "1.2.5",
+  "candidate_bytes": 271223,
+  "candidate_sha256": "0dc42187afb63e594a33de9017e0607c32b120ef4d60a364384686994bbbad19",
+  "conflict_before_sha256": "fb591085a6d14a63cb05efe572025ab8e4059769082f87989c7b266df2027a70",
+  "state": "OWNER_EMITTED_STAGED",
+  "staged_blob": "3f4ce81fefe507b49aacc738a376d5e4095c4f15",
+  "finished_at": "2026-10-20T18:24:17.881785+00:00"
+}

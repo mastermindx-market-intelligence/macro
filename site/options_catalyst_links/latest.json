@@ -1,30 +1,30 @@
 {
   "schema": "mastermind.options_catalyst_links/v1",
   "spec_version": "v1",
-  "session_date": "2026-10-12",
-  "asof": "2026-10-13",
-  "generated_utc": "2026-10-13T08:27:00Z",
+  "session_date": "2026-10-20",
+  "asof": "2026-10-21",
+  "generated_utc": "2026-10-21T08:09:06Z",
   "horizon_days": 63,
   "source": {
-    "events": "r2:live_flow/events/2026-10-12.jsonl",
+    "events": "r2:live_flow/events/2026-10-20.jsonl",
     "earnings": "engine.earnings_blackout",
     "macro": "engine.event_calendar",
     "identity": "stock_identity.plane:stocks"
   },
   "counts": {
-    "events": 1815,
+    "events": 1722,
     "dropped_malformed": 0,
-    "known_symbols": 251,
+    "known_symbols": 253,
     "candidates_earnings": 6,
     "candidates_macro": 2,
     "by_state": {
-      "BOUND": 75,
-      "UNBOUND_NO_CATALYST": 702,
-      "AMBIGUOUS_MULTIPLE": 284,
+      "BOUND": 357,
+      "UNBOUND_NO_CATALYST": 731,
+      "AMBIGUOUS_MULTIPLE": 224,
       "STALE_CATALYST": 0,
-      "IDENTITY_UNRESOLVED": 267,
+      "IDENTITY_UNRESOLVED": 410,
       "EXPIRY_MISMATCH": 0,
-      "EXPIRY_BEFORE_ASOF": 487,
+      "EXPIRY_BEFORE_ASOF": 0,
       "SAME_DAY_UNORDERED": 0
     }
   },
@@ -39,10 +39,10 @@
   "states": [
     "ok"
   ],
-  "links_path": "2026-10-12.jsonl",
+  "links_path": "2026-10-20.jsonl",
   "macro_calendar": {
-    "asof": "2026-10-13",
-    "horizon_end": "2026-12-15",
+    "asof": "2026-10-21",
+    "horizon_end": "2026-12-23",
     "source": "engine.event_calendar",
     "fomc": [
       {

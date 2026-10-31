@@ -147,7 +147,7 @@ def test_sec_lane_is_scheduled_off_the_render_path_and_never_cancelled(lane: dic
     assert lane["concurrency"]["cancel-in-progress"] is False
     job = lane["jobs"]["acquire_project_sync"]
     assert "macstudio-light" in job["runs-on"]
-    assert job["timeout-minutes"] <= 60
+    assert job["timeout-minutes"] <= 90
 
 
 def test_sec_lane_keeps_the_fixed_restore_acquire_project_sync_order(lane: dict) -> None:

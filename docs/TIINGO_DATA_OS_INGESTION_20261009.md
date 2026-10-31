@@ -13,7 +13,75 @@ Actual endpoint activation and data receipt now have bounded proof below. Full
 fundamentals scope, complete backfill, canonical admission and production consumer
 acceptance remain open, distinct from the Chairman's purchase/rights attestation.
 
-## Current research registration — 2026-10-12
+## Statement comparison consumer — 2026-10-15
+
+The existing read-only research CLI now compares two exact retained statement
+captures, one `asReported=true` and one `asReported=false`:
+
+```sh
+python -m scripts.tiingo_research_query compare-statements --symbol jpm \
+  --as-reported-capture DAY:FULL_RECEIPT_ID \
+  --restated-capture DAY:FULL_RECEIPT_ID \
+  --start 2023-01-01 --end 2026-10-09 \
+  --observed-before 2026-10-13T00:00:00Z --acknowledge-hindsight
+```
+
+It aligns fiscal year, quarter (annual=0), statement section and metric code.
+Both sides retain their source rows, receipt IDs, capture clocks and vendor
+release labels. Multiple release claims stay unpaired; conflicting permanent
+IDs are reported as identity conflicts. Metrics present on only one side are
+not described as historical additions/removals. Values are compared in the
+retained vendor representation without inferring units or revision materiality.
+The actual retained JPM captures yield 860 equal values, 42 differences and 67
+metrics only in the reported capture. This uses no network, credentials or
+archive writes. Historical identity, known-at, complete depth and PIT eligibility
+remain unproven; the relay's denied-path diagnostic decision remains pending.
+
+## Current verified delivery evidence — 2026-10-13 (local)
+
+The original 4,392-request scope is fully dispositioned across six actual captures:
+4,381 qualified successes, one whole-response quality quarantine, ten historical
+attempt failures and zero never-admitted requests. The final 121 captures and
+full-reader checks passed. Two separately scoped later repairs made eleven and
+fourteen additional requests; every new response passed full reader comparison
+with normalization of its original raw source. The accepted catalogue census now
+has **47,564 nonempty histories / 100,626,945 distinct bars**, 117 empty responses,
+five explicit provider refusals and three whole-response quality quarantines.
+All 47,689 catalogue acquisition candidates have an exact current disposition.
+This is the captured catalogue/window scope; it does not establish complete
+vendor history, dated canonical identity or historical upstream known-at.
+
+Original failures remain immutable. Interrupted qualifier22925/91287 native
+returns and pre-admission validation90730's exit remain unknown. The latter
+never received its quota binding or reached key/provider access. Its reviewed
+same-operation continuation completed the fourteen requests. A failed new-day
+preflight and the explicit two-directory repair are also retained; no source,
+collision, volume-quality or reader-integrity assertion was weakened.
+
+Terminal #955 passed all twelve original CI jobs on c90b1caf and merged at
+140894302f9e50637e1891799463d548c0c46c63. Its 82 reviewed blobs match the merge
+and installed later afae release. The subsequent incumbent5fa856bf release
+also passed the nine consumer files, deployed builder and source/marker/public
+HTML identity checks. No additional deployment was required. The installed
+consumer still owes fresh BOATS trade-to-relay-to-Hub/API-to-browser acceptance.
+
+An original-carrier public relay diagnosis returned explicit HTTP403. That
+access effect remains frozen, and no finite publisher, R2 PUT or new Tiingo
+stream started. A separate read-only Cloudflare configuration diagnosis reached
+Google's passkey/user-presence step for the verified intended account. That
+step is preserved for the human, without alternate authentication or relay
+routes. The signed Tiingo page shows BOATS Active; it neither resolves current
+fundamentals HTTP400 restrictions nor proves live publication. The prior
+persistent scheduling refusal remains held. Exactly four research contracts
+remain PRODUCED and twenty PROPOSED; BOATS registration explicitly awaits live
+integration proof. Full fundamentals depth, dated identity and PIT remain open.
+
+Reviewed methods, original return/effect joins, safe aggregate census and
+control evidence are retained in
+`tiingo-evidence/20261013-recovered-final-history/`. Source, CI, merge,
+installation, actual data and full consumer acceptance are separate facts.
+
+## Earlier research registration — 2026-10-12
 
 The producer repair landed through Macro #8875 at
 2c90e1c01d53516c6920e8cb1edd835f82354e28 with accepted exact-head hosted CI.
@@ -56,7 +124,7 @@ is Macro PR #8698 with accepted BOATS source and protected-base integration at
 and protected landing remain separate requirements. Dated sections below preserve
 historical observations; the prior blocked untracked CEO handoff is not published.
 
-| Capability | Current state | Actual proof and remaining requirement |
+| Capability | Dated state | Actual proof and remaining requirement |
 |---|---|---|
 | Original producer integrity | REPAIRED_SOURCE | Original eleven failures repaired; accepted full/affected tests and hosted CI at bddd8da1, no waiver |
 | BOATS producer/public boundary | ACCEPTED_SOURCE | Existing archive-first observer, qualified trades, separate clocks, gap/B/shutdown invalidation and exact BOATS-only public allowlists; independent PASS, 96 combined source/registry tests; no installed runtime claim |

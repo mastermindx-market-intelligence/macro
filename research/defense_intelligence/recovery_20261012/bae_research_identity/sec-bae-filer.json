@@ -1,0 +1,16 @@
+{
+  "url": "https://www.sec.gov/Archives/edgar/data/895564/0000895564-26-000004-index.htm",
+  "representation": "reviewed_web_extract",
+  "observed_at": "2026-10-13T07:54:08.066798+00:00",
+  "facts": {
+    "filer": "BAE SYSTEMS PLC /FI/",
+    "cik": "0000895564",
+    "accession": "0000895564-26-000004",
+    "filing_date": "2026-04-02",
+    "accepted_clock_as_printed": "2026-04-02 06:43:56"
+  },
+  "limits": {
+    "does_not_prove_listing": true,
+    "intraday_timezone_not_inferred": true
+  }
+}

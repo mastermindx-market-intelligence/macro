@@ -1,0 +1,45 @@
+{
+  "schema": "tiingo.exact_finite_coverage_launch_packet_review/v1",
+  "recorded_at_utc": "2026-10-14T02:49:38.496810+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "verdict": "PASS",
+  "launch_packet_file": "tiingo-eleven-repair-prefix01-coverage01-launch-packet.json",
+  "launch_packet_sha256": "cd0a644cd020a3d8fd88e86adf710165ec82f6849525e9a8df21d037c181cbb8",
+  "source_file": "tiingo-eleven-strict-timeout-later-repair-disposition-bound01.py",
+  "source_sha256": "58b408064550e95966618e8f482761cf8dbae115e0c4a13b46b64dd86e438a61",
+  "wrapper_sha256": "c0a6300282f8aee2a55a89f2f4ae20475b5c81fdc1c53d5ebd26815c32a44788",
+  "actual_qualifier_parent_sha256": "991df3da754c4b643cd322976b2785a3d5cdea90e2e2ac2196f988900a172f8b",
+  "qualification_sha256": "085c4147fc7e24579869398955a01242f5da6e6cdc2c3bb314dea9cbeabdf26e",
+  "scope": "One metadata-only coverage01 operation using the accepted eleven-repair qualification; no materialization or provider operation.",
+  "verification": {
+    "all_frozen_input_hashes_match": 45,
+    "six_distinct_output_slots_lstat_absent": true,
+    "source_and_wrapper_unchanged": true,
+    "actual_native_34588_exit0_chunk_bd7e36_consumed": true,
+    "durable_wait0_validation_true_exact_q_output_hash": true,
+    "eleven_written_zero_quality_18366_bars": true,
+    "qualified_request_set_equals_accepted_preflight": true,
+    "root_full_new_reader_parity_acceptance_bound": true
+  },
+  "control_judgment": [
+    "Packet freezes actual qualified output, root semantic acceptance, wait and validation together with exact preflight, snapshot and predecessor/source proofs.",
+    "Reviewed unchanged coverage verifies settled current capture membership and observation bounds, exact receipt hashes and missing request windows, qualification/preflight partition, distinct histories/bars and catalogue conservation.",
+    "Coverage updates only its exclusive E census output. No writer, provider, credential or retry path is called by this mode.",
+    "Expected census if runtime checks succeed is 47550 nonempty histories and 100592522 distinct bars; these are review-derived expectations, not a claim that coverage executed."
+  ],
+  "findings": [],
+  "remaining_requirements": [
+    "Run this exact packet once on the existing carrier through wrapper02.",
+    "Consume actual native return, durable wait, successful postvalidation, exact census hash and semantic conservation before recording coverage acceptance.",
+    "Retain original failed attempt facts and original lost QA terminal facts; coverage creates no programme, canonical identity or PIT acceptance.",
+    "Any uncertain effect or return must be reconciled on the same carrier without blind replay."
+  ],
+  "review_effects": {
+    "candidate_stage_executed": false,
+    "archive_writes": 0,
+    "provider_requests": 0,
+    "credential_reads": 0,
+    "reader_rescans": 0,
+    "delegations": 0
+  }
+}

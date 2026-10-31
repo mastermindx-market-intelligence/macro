@@ -1,0 +1,66 @@
+{
+  "benchmark_id": "snb_floor_rate_2015-01-15",
+  "frozen": true,
+  "source": "research/SNB_FLOOR_RATE_CASE_2015_01_15.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2015-01-15",
+    "session_label": "date only",
+    "adjudication_date": "2026-10-14",
+    "historical_source_availability": "unverified",
+    "dependence_group": "snb-floor-withdrawal-20150115",
+    "source": {
+      "path": "research/SNB_FLOOR_RATE_CASE_2015_01_15.md",
+      "sha256": "5c2bd6ea27734d480695ddc8018bcfd9693ab228dc6716d7c0c6fa10e521043a"
+    },
+    "input_facts": [
+      {
+        "event_date": "2015-01-15",
+        "source_lines": [
+          7,
+          9
+        ],
+        "text": "The SNB announced on 15 January 2015 that it was ending its minimum of CHF 1.20 per euro.\nIt cut interest on sight-deposit balances above the exemption threshold by 0.5 percentage points to -0.75%.\nThe three-month Libor target interval was [-0.75%, +0.25%] and became [-1.25%, -0.25%]. It retained the possibility of foreign-exchange activity when needed.",
+        "sha256": "fe224d0fd886422e468ff1ffc7063a7bb08063b24013bfedcc495c59797c0502"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        13,
+        13
+      ],
+      "text": "The quotation is CHF per euro. Ending the minimum withdraws that particular floor; it does not specify a new market exchange rate or prohibit future intervention. The deposit-rate cut is 50 basis points, with a prior rate of -0.25%; the stated scope is balances above the exemption threshold. Both Libor intervals are 100 basis points wide and both endpoints fall 50 basis points. No supplied realized exchange-rate move, execution price, profit or causal return follows from the announcement.",
+      "sha256": "e48effe8faea34c06d1e5619a9e2de849e377fb5202e4bd3b67fd9c6b1f04c82"
+    }
+  },
+  "question_en": "Using only the supplied announcement, distinguish the exchange-rate quotation and withdrawn commitment from future intervention and observed market prices. Quantify the deposit-rate and Libor-interval changes in basis points, identify the deposit scope, and state what remains unknown.",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2015-01-15 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2015-01-15] The SNB announced on 15 January 2015 that it was ending its minimum of CHF 1.20 per euro.\nIt cut interest on sight-deposit balances above the exemption threshold by 0.5 percentage points to -0.75%.\nThe three-month Libor target interval was [-0.75%, +0.25%] and became [-1.25%, -0.25%]. It retained the possibility of foreign-exchange activity when needed.",
+  "expected_properties": [
+    {
+      "tag": "quotation",
+      "check": "CHF per euro is the stated quotation; withdrawing the 1.20 floor supplies no new realized exchange rate."
+    },
+    {
+      "tag": "rate_units",
+      "check": "A 0.5 percentage-point reduction is 50 basis points; the prior deposit rate was -0.25%, and the stated scope is balances above the exemption threshold."
+    },
+    {
+      "tag": "band_width",
+      "check": "Both Libor endpoints move down 50 basis points while the interval width stays 100 basis points."
+    },
+    {
+      "tag": "commitment_limits",
+      "check": "Ending the floor does not promise no future FX intervention, nor establish a realized return, execution price or trading authority."
+    }
+  ],
+  "known_failure_modes": [
+    "Invert CHF per euro into euros per franc without reciprocal conversion.",
+    "Call the 0.5 percentage-point cut 0.5 basis points or apply it to every balance regardless of exemption.",
+    "Mistake shifting both interval endpoints for a narrower interval.",
+    "Import the subsequent market reaction or claim all intervention ceased."
+  ],
+  "gold_standard_sentence": "The CHF-per-euro floor is withdrawn without a new observed price. The deposit rate falls 50bp from -0.25% to -0.75% on balances above the exemption; the Libor interval shifts down 50bp but remains 100bp wide. Future intervention remains possible, and no market outcome is supplied.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

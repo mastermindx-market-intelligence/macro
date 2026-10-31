@@ -237,6 +237,99 @@ waves:
       across client behavior, and projects the caller's PR branch identity into
       the detached trusted executor. Repaired exact execution/parity/gate proof
       remains owed.
+  - id: W-THROUGHPUT-20261019
+    title: Measured CI throughput and bounded planner/weight trials
+    status: in_progress
+    note: >
+      Chairman's October 19 commission is assigned to Codex session
+      01a153e8-3c85-7bb2-af63-7f477b570512. The 40-run baseline retains 22
+      noncancelled first attempts, 17 cancellations and one separate rerun.
+      Successful first-attempt run-to-gate p50/p95 is 3196/4074 seconds.
+      Initial trial removes duplicate named-suite closure traversal within one
+      planner command; twelve packs and all semantic/gate contracts remain.
+      Existing PR 8126 is already delivered and PR 8094 remains separate.
+      Research and limitations: research/ci_pack_throughput_20261019/README.md.
+      Current continuation: agentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-10-19-THROUGHPUT.md.
+      PR 9722 merged as 7736fd72895fc24e55bf2d4bbc7b1f4e94203414 with full
+      hosted proof. First broad trial took 78.1 minutes, including 825 seconds
+      of post-pack queueing; packing-contract group 740.414 seconds versus a
+      historical 847.738-second median is descriptive, not a causal gain.
+      Natural cohort has 37 verified first-attempt completions, two selected-set
+      matches but zero execution-proof matches and nine pending; no causal gain.
+      A twelve-pack replay of all 255 measured job costs supports a bounded
+      FIF/earnings weight calibration: modeled maximum command time
+      2085.4 to 1532.3 seconds, excluding install/checkout/queue effects.
+      Trial PR9763 incorporated landed Defense heal PR9758. The next run
+      passed Defense but found a missing schema identifier from PR9765 on
+      both candidate and base. A one-field schema registry repair reproduces
+      three failures before and passes181 affected tests after. PR9763 merged as
+      38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae after all257 jobs and active checks
+      passed in run39298424658. Source landing verified; observer50933 consumed.
+      Weighted full trial48.82min/371.70 summed job minutes, versus78.08/337.38
+      earlier with different work; no causal gain or cost neutrality established.
+      Exact-run command replay2694.53 to2266.33sec supports retaining two weights,
+      not additional expansion. Collect a separate post18:49:48Z natural cohort;
+      Report PR9780 merged576e21dc2e46bea739465c84a33ffbdf2135cd78, source verified.
+      Weighted20:48 cohort32runs/19verified completions/9pending/4cancelled;
+      scoped-success N13 p50/p95 2106/3941sec, summed wall215.68/399.37min.
+      No exact baseline proof matches; nine completions select neither calibrated
+      job. One exploratory adjacent-window exact pair is unexposed and has
+      different failure/success outcomes, so cannot estimate the weights' benefit.
+      Successful tail has3205sec execution wrapper with two exact-ancestry
+      depth8->32 waits691/726sec. Next bounded trial rechecks existing ancestry
+      before fetching, preventing a later consumer from re-shallowing complete
+      history. Real shallow-Git regression fails before, nine recovery tests pass
+      after;199 authority tests plus repaired mock pass, manifest validates.
+      PR9791 merged c3c67487f42e1c54986b2e95dca327946fdc5ed0 at21:52:31Z;
+      run39324251115 passed258 jobs/554proof units and all active checks.
+      All eight source/test/report blobs verified. One real ruling-graph reuse
+      notice, five necessary deepening paths; no cache, proof relaxation or shards.
+      Trial42.12min/362.57 summed wall min; FIF commands2120.20sec critical.
+      Reuse was noncritical; no causal target or cost-neutrality claim.
+      Collect a separate post21:52:31Z cohort under blob
+      f92be10fc37455fd427829f0f964c5ef581b3a80 and exact merge ancestry.
+      At23:56Z29runs:12verified successes,13pending,4cancelled. ScopedN11
+      p50/p951981/2863sec, wall196.25/278.23min. No original/weighted full
+      proof matches; one original selected-set match has two changed definitions.
+      Natural39330880213 confirms reuse in noncritical pack8. Two other runs
+      have potential reuse on critical packs; inspect before attributing savings.
+      Report9801 merged368c4c3a660215a0bf4809c9b8ff5e65098f413a;6blobs verified.
+      Fixed00:55 snapshot45runs/31eligible completions(29success,2failure),
+      7pending/7cancelled. ScopedN27 p50/p951966/2863sec, wall186.47/278.23min;
+      zero original/weighted proof matches. Both targeted critical-pack logs show
+      reuse, without counterfactual saved seconds. FIF alone critical9times and
+      control-plane alone8times; no outer-shard expansion justified.
+      PR9479/9797 failures are candidate-specific with passing isolated bases;
+      preserve their carriers. Hold the cohort fixed. Six slowest scoped successes
+      are FIF-alone critical. Exact-source72tests pass403.73sec; focused profile
+      identifies repeated ASCII and direct-text scans in the SEC parser.
+      Fourth trial replaces the byte loop with isascii and uses the existing
+      event index before the unchanged owner filter; no semantic/proof/shard change.
+      Parser214tests pass, new scan regression fails before, two complete filing
+      outputs match. Alternating local CPU0.8960 to0.6836sec is descriptive only.
+      Same72tests pass335.45sec vs403.73before. PR9813 merged9c7df3786fc3856fbb692da301584b4b443ab66d
+      at2026-10-20T04:57:13Z; seven blobs verified. Final39364786931 passes
+      96jobs/299proof units/zero infrastructure findings and all active checks.
+      Three green trial FIF commands1581.75/2093.14/1573.07sec show variation.
+      Next: separate natural parser cohort with exact parser plus planner blobs
+      and merge ancestry; earlier00:55 cohort remains fixed.
+      Fixed parser05:54 cohort16runs has5qualified completions(3success2failure),
+      11pending/0cancelled/0reruns. Success p50/p951860/2218sec,wall228.50/252.18min;
+      failure first-step-completion950.5/1002sec. Zero original-baseline proof matches.
+      Exact secondary pairs differ in outcome; one artifact-upload failure and one
+      AgentOS candidate/base-signature mismatch, with existing repair carriers retained.
+      No causal fleet30percent or cost-neutrality claim.
+      Report9850 merged6793c010048996193d3d98876b486910c7982e3c;75selected jobs,
+      active gates and6authored blobs verified. Fixed07:54 parser snapshot57runs:
+      36qualified completions(29success7failure),18pending3cancelled. ScopedN24
+      success p50/p951895/2553sec,wall177.675/253.95min;zero baseline proof matches.
+      Three103job successful treatments share ONE old-parser control. Gate times
+      2066/2581/2553sec versus2007control; summed wall lower, no causal claim.
+      Treated FIF commands1594.096/2151.041/2089.544sec versus1329.857control;
+      treated2681passes versus2680control. Primary command dominates; image and
+      Python labels agree among treatments but physical performance is uncontrolled.
+      Retain12packs/two weights/parser source. Next source slice requires qualified
+      residual profiling and current FIF carrier custody; no speculative shards.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.

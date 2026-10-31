@@ -1,0 +1,39 @@
+{
+  "actual_membership_sha256": "76de9522d40c65c33de0dcde59f581a5c493f4be218df3221adb9c3af1495c8f",
+  "actual_task_query_list": null,
+  "annotation_guide_sha256": "4efc664f6c86f5af6a62ac4fd8b98ae37ae130fa18ecfa7bdf0a88b399a71696",
+  "claims": {
+    "actual_labels_read": false,
+    "annotation_performed": false,
+    "operational_registration_admitted": false
+  },
+  "condition_seed": {
+    "allocation_hash": null,
+    "blinding": "Method map withheld from reviewers; actual condition allocation waits for actual task/membership/session/split registrations. Seed existence is not completed blinding.",
+    "encoding": "sha256_hex_as_256bit_integer",
+    "not_a_security_secret": true,
+    "origin": "deterministic_canonical_protocol_and_authentic_metadata_membership_binding; fixed before any outcome labels",
+    "seed": "7c8013e1e8092bdf91d4598a73c01d9690199dfb6c08db632b81f564367a4b03"
+  },
+  "created_at": "2026-10-13T21:53:15.625550+00:00",
+  "prompt_template": "Using the exact saved house reading supplied at this task cutoff, identify comparable earlier saved readings; cite original house statements, explain the requested similarities and differences, disclose contradictory evidence and population/source gaps. Do not use later outcomes or assert causal/forecast/trade authority.",
+  "protocol_design_sha256": "5821074f0ad1564780759a7e5d7ca6595cd8d411f119629f31ee431f2a481ca6",
+  "real_reviewer_assignment": null,
+  "schema": "market_memory.e0_prelabel_design_binding.v1",
+  "split_boundary_proposal": {
+    "admitted": false,
+    "basis": "Known actual metadata capture rangeAug10-Oct13; boundaries chosen before source-value or outcome inspection",
+    "development_end_exclusive": "2026-09-15T00:00:00.000000Z",
+    "membership_hashes": null,
+    "required_before_admission": "Actual measurement sessions/episode clusters and full feature/registered label interval overlaps, support-domain scope and independent review. These proposed UTCcutoff boundaries cannot override source-session clustering or substitute observed feature/label spans.",
+    "test_start_inclusive": "2026-09-28T00:00:00.000000Z",
+    "tuning_end_exclusive": "2026-09-28T00:00:00.000000Z"
+  },
+  "status": "SOURCE_BOUND_PRELABEL_CANDIDATE_INDEPENDENT_REVIEW_AND_COMPLETE_REGISTRATION_PENDING",
+  "trial_budget": {
+    "challenger_admitted": false,
+    "forecast_H3_enabled": false,
+    "registered_method_count": 1,
+    "repeated_test_looks_allowed": false
+  }
+}

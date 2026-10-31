@@ -1,0 +1,27 @@
+{
+  "basis": "canonical infer_job_scopes with exclusive disabled, compared using canonical _matches_any; no fallback or check weakened",
+  "checks": [
+    {
+      "declared_count": 905,
+      "derived_count": 916,
+      "inference": "derived scopes for 1/1 jobs",
+      "job": "research-price-panel",
+      "uncovered_concrete_paths": []
+    },
+    {
+      "declared_count": 78,
+      "derived_count": 78,
+      "inference": "derived scopes for 1/1 jobs",
+      "job": "dataos-web-workspace",
+      "uncovered_concrete_paths": []
+    },
+    {
+      "declared_count": 66,
+      "derived_count": 83,
+      "inference": "derived scopes for 1/1 jobs",
+      "job": "dataos-foundation",
+      "uncovered_concrete_paths": []
+    }
+  ],
+  "schema": "market_memory.history_scope_verification.v1"
+}

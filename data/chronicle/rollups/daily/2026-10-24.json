@@ -1,0 +1,244 @@
+{
+  "as_of": "2026-10-24",
+  "coverage": {
+    "end": "2026-10-23",
+    "note": "daily rollup covers 10 session-date(s) from 2026-10-13 to 2026-10-23; chronicle event store begins 2013-03-14; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-10-13"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-10-23",
+      "events": []
+    },
+    {
+      "date": "2026-10-22",
+      "events": []
+    },
+    {
+      "date": "2026-10-21",
+      "events": []
+    },
+    {
+      "date": "2026-10-20",
+      "events": []
+    },
+    {
+      "date": "2026-10-19",
+      "events": []
+    },
+    {
+      "date": "2026-10-17",
+      "events": []
+    },
+    {
+      "date": "2026-10-16",
+      "events": []
+    },
+    {
+      "date": "2026-10-15",
+      "events": [
+        {
+          "date": "2026-10-15",
+          "id": "cev-regime_flip-cc70334b0cff",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-10-15#regime_canada",
+          "tickers": [],
+          "title": "CANADA regime: Q2 Reflation → Q3 Stagflation",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-15",
+          "id": "cev-research_vault-6dab5f979270",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-zarzrnqfgu6-29437b",
+          "tickers": [],
+          "title": "S&T: GS Novak GS U.S. Industrials & Materials tough EPS start 14 Oct 2026",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-15",
+          "id": "cev-research_vault-c6ef53e30dab",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-2vgkwavht24-a7588c",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Afternoon Briefing Oct 14",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-14",
+      "events": [
+        {
+          "date": "2026-10-14",
+          "id": "cev-regime_flip-01a7fce7e06a",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-10-14#regime_hk",
+          "tickers": [],
+          "title": "HK regime: Q4 Growth-scare → Q2 Reflation",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-14",
+          "id": "cev-research_vault-5c4104d034c2",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-zidfbw2dhyr-90424e",
+          "tickers": [],
+          "title": "S&T: GS Bartlett GS TMT TODAY 10.14.26 14 Oct 2026",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-14",
+          "id": "cev-research_vault-6b5616e57697",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-60kies6hqgh-b50195",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence Afternoon Briefing Oct 13",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-14",
+          "id": "cev-research_vault-9860c1d894e4",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-c0hubv6rxqd-061033",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-13",
+      "events": [
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-14cdff40d738",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-jwvuj75ku1d-91707f",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence Afternoon Briefing Oct 12",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-6267fbceae3c",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-i2kdffan2hz-88e4fd",
+          "tickers": [],
+          "title": "Goldman Sachs: Americas Fintech 3Q26 Preview Weighing key investor debates and near term earnings setups",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-79268d4c2c88",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-uejhgzrho58-2d4f8c",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Afternoon Briefing",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-a016e2b55ce2",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-wwiddhpakjg-5f90c1",
+          "tickers": [],
+          "title": "Goldman Sachs: GS Early Morning Research Recap Ratings and Target Price Changes October 13, 2026 as of 5 30 AM ET",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-e8b1ba93a968",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-mltowfpejrj-13c4c0",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-c56bbf4d46e7",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-oaxnrqnwjao-dd397c",
+          "tickers": [],
+          "title": "Goldman Sachs: Orsted A S (ORSTED.CO) Downgrading to Neutral",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-c63413667f54",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-pxoz8rr2riq-42043b",
+          "tickers": [],
+          "title": "Goldman Sachs: Entain MGM BetMGM 3Q26 Reiterating FY guidance after solid 3Q",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-d8acfde3be52",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-yzhyfari9wt-013b93",
+          "tickers": [],
+          "title": "Goldman Sachs: Americas Payment Technology 3Q26 Preview Expect strong spending trends and more constructive thematics to sustain recent st...",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-e1a79f61cc59",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-vfx9yqvup2d-c6c621",
+          "tickers": [],
+          "title": "Bank Earnings Previews: Americas Capital Markets Round tripped",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-eb4cdb444aa9",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-qgjrwbf6wj6-d7588d",
+          "tickers": [],
+          "title": "Deutsche Bank: Microsoft Oct 13",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-ec4758260739",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-na3aw28nwyx-8f1249",
+          "tickers": [],
+          "title": "Goldman Sachs: GCC Energy Mapping export strength into year end earnings delivery",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-fc0d9ec4297d",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-kgp1ynl3erk-e4be8a",
+          "tickers": [],
+          "title": "Deutsche Bank: AI boom or doom: what will superintelligence feel like and when will we get there?",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}

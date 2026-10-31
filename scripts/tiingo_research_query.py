@@ -32,7 +32,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from collectors.tiingo_archive import DEFAULT_ARCHIVE, require_external_root
 from lib.dataos.tiingo_reader import (
     TiingoViewRefusal, read_research_history,
-    read_research_statement_timeline, read_research_view,
+    read_research_statement_timeline, read_research_statement_comparison,
+    read_research_view,
 )
 from lib.dataos.temporal import utc
 from lib.dataos.tiingo_reader import _unique_raw_context
@@ -268,6 +269,31 @@ def bounded_json(result: dict[str, Any], max_bytes: int = 2_000_000) -> str:
     return serialized
 
 
+def compare_statements(
+    root: Path, *, vendor_symbol: str, as_reported_capture: str,
+    restated_capture: str, start: str, end: str, observed_before: str,
+    acknowledge_hindsight: bool, max_rows: int = 20_000,
+    check_mount: bool = True,
+) -> dict[str, Any]:
+    """Expose the existing research archive's two request dimensions together."""
+    comparison = read_research_statement_comparison(
+        vendor_symbol, capture_ref(as_reported_capture), capture_ref(restated_capture),
+        start, end, observed_before, root=root,
+        acknowledge_hindsight=acknowledge_hindsight, max_rows=max_rows,
+        check_mount=check_mount,
+    )
+    return {
+        "schema": "mastermind.tiingo.research_query.v1",
+        "status": "RETROSPECTIVE_STATEMENT_COMPARISON",
+        "network": False, "writes": False, "key_read": False,
+        "source_authenticity_proven": False,
+        "market_time_availability_proven": False,
+        "pit_backtest_eligible": False, "redistribution_admitted": False,
+        "complete_history_proven": False,
+        "statement_comparison": comparison,
+    }
+
+
 def main(
     argv: list[str] | None = None,
     *,
@@ -297,6 +323,15 @@ def main(
                              help="BOATS-only single-ATS prior-receipt age diagnostic; never NBBO")
             sub.add_argument("--source-silence-threshold-ms", type=int,
                              help="BOATS-only observed Q/T/B arrival silence threshold, NOT packet-loss proof")
+    comparison = cmd.add_parser("compare-statements", help="compare exact as-reported and restated research captures")
+    comparison.add_argument("--symbol", required=True, help="exact Tiingo vendor ID, not canonical identity")
+    comparison.add_argument("--as-reported-capture", required=True, help="DAY:full-64-hex receipt ID or source SHA256")
+    comparison.add_argument("--restated-capture", required=True, help="DAY:full-64-hex receipt ID or source SHA256")
+    comparison.add_argument("--start", required=True, help="inclusive vendor release-date label")
+    comparison.add_argument("--end", required=True, help="inclusive vendor release-date label")
+    comparison.add_argument("--observed-before", required=True, help="source capture cutoff, not historical known-at")
+    comparison.add_argument("--acknowledge-hindsight", action="store_true", required=True)
+    comparison.add_argument("--max-rows", type=int, default=20_000)
     parser.add_argument("--max-output-bytes", type=int, default=2_000_000)
     args = parser.parse_args(argv)
     try:
@@ -305,6 +340,15 @@ def main(
                 root, source=args.source, vendor_symbol=args.symbol,
                 max_scan=args.max_scan, max_results=args.max_results,
                 max_rows_per_partition=args.max_rows, observed_before=args.observed_before,
+                check_mount=check_mount,
+            )
+        elif args.command == "compare-statements":
+            result = compare_statements(
+                root, vendor_symbol=args.symbol,
+                as_reported_capture=args.as_reported_capture,
+                restated_capture=args.restated_capture,
+                start=args.start, end=args.end, observed_before=args.observed_before,
+                acknowledge_hindsight=args.acknowledge_hindsight, max_rows=args.max_rows,
                 check_mount=check_mount,
             )
         else:

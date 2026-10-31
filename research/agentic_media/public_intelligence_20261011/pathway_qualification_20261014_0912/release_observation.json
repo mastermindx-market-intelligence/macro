@@ -1,0 +1,139 @@
+{
+  "observed_at": "2026-10-14T09:12:29.905367+00:00",
+  "pr9288": {
+    "autoMergeRequest": null,
+    "headRefOid": "d85258e89e0a2cd6ef53b31df55a8011549b4479",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokuPQ",
+        "name": "merge-on-green",
+        "description": "Sweeper squash-merges this PR when its checks conclude with no genuine red",
+        "color": "0e8a16"
+      },
+      {
+        "id": "LA_kwDOS4LjIs8AAAACuleh6g",
+        "name": "main-red-repair",
+        "description": "Only PR allowed through merge train while source main baseline is red",
+        "color": "B60205"
+      }
+    ],
+    "mergeCommit": null,
+    "mergedAt": null,
+    "state": "OPEN"
+  },
+  "pr9209": {
+    "autoMergeRequest": null,
+    "headRefOid": "8f705cb32a77987f7e5c025e99194f3b479a6382",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokuPQ",
+        "name": "merge-on-green",
+        "description": "Sweeper squash-merges this PR when its checks conclude with no genuine red",
+        "color": "0e8a16"
+      },
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokucA",
+        "name": "merge-blocked",
+        "description": "Sweeper found a genuine red or merge conflict \u2014 needs a session/operator",
+        "color": "d93f0b"
+      }
+    ],
+    "mergeCommit": null,
+    "mergedAt": null,
+    "state": "OPEN"
+  },
+  "repair_checks": [
+    {
+      "name": "contract-delta",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-14T09:05:39Z"
+    },
+    {
+      "name": "ci-pack-0",
+      "status": "IN_PROGRESS",
+      "conclusion": "",
+      "completedAt": "0001-01-01T00:00:00Z"
+    },
+    {
+      "name": "ci-pack-1",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-14T09:02:47Z"
+    },
+    {
+      "name": "ci-pack-2",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-14T09:05:43Z"
+    },
+    {
+      "name": "ci-pack-3",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-14T09:01:28Z"
+    },
+    {
+      "name": "ci-pack-4",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-14T09:04:41Z"
+    },
+    {
+      "name": "ci-pack-5",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-14T09:07:16Z"
+    },
+    {
+      "name": "ci-pack-6",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-14T09:04:45Z"
+    },
+    {
+      "name": "ci-pack-7",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-14T09:10:52Z"
+    },
+    {
+      "name": "ci-pack-8",
+      "status": "IN_PROGRESS",
+      "conclusion": "",
+      "completedAt": "0001-01-01T00:00:00Z"
+    },
+    {
+      "name": "ci-pack-9",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-14T09:05:15Z"
+    },
+    {
+      "name": "ci-pack-10",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-14T09:06:33Z"
+    },
+    {
+      "name": "ci-pack-11",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-14T09:02:12Z"
+    }
+  ],
+  "controller_run": 38540462509,
+  "controller_log_sha256": "06200911fb705e677acf2b48b66e8fb0aa32c88d1ebd21641c1c567a438c8216",
+  "controller_relevant_lines": [
+    "sweep\tsweep merge-on-green pull requests\t2026-10-14T09:11:23.2111087Z ##[warning]integration-baseline is red (failure at dfe3504b96b8 https://github.com/mastermindx-market-intelligence/macro/actions/runs/38536771795). Ordinary merges with overlapping or unknown proof remain paused; one `main-red-repair` PR may be considered. No semantic exception is available (semantic main evidence unavailable: semantic main artifact predates or diverges from the red integration baseline (dfe3504b96b8 -> cb1c0ebb37d1, behind)). Semantic-main producer: skipped (a semantic-main proof is already in_progress).",
+    "sweep\tsweep merge-on-green pull requests\t2026-10-14T09:11:28.3113567Z PR #9288: 2 check(s) still running (ci-pack-8, ci-pack-0) \u2014 waiting for the next sweep.",
+    "sweep\tsweep merge-on-green pull requests\t2026-10-14T09:11:29.7332726Z PR #9209: source main baseline is red; leaving it armed behind the circuit breaker.",
+    "sweep\tsweep merge-on-green pull requests\t2026-10-14T09:11:32.5203132Z merge-on-green sweep complete: 75 baseline-blocked, 1 pending (0 main commit(s) classified, 0/0 effective refresh slot(s) used across 0/8 bounded update attempt(s) (14 indexed pull-request ci run(s) plus 0 unindexed durable reservation(s), global cap 8, 0 CI workload slot(s) available this sweep), ~15000 API requests left; main proof: 16 clean name(s) at cb1c0ebb37d1, 0.5h old (ci.yml@cb1c0ebb37d1 (12 passed) + fences.yml@dfe3504b96b8 (4 passed)); baseline: covered by semantic-main producer (skipped (a semantic-main proof is already in_progress)); semantic-main: skipped (a semantic-main proof is already in_progress); source-baseline: not needed (breaker is red); self-wake: not needed)"
+  ],
+  "engine_status": "in_progress",
+  "engine_active_steps": [
+    "OIP PIT \u2014 durable episodes + H+60 and declared-session-close proxy accrual"
+  ],
+  "release_mutations": 0,
+  "dispatches": 0
+}

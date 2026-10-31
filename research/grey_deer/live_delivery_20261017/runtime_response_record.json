@@ -1,0 +1,75 @@
+{
+  "schema": "mastermind.response_log.v1",
+  "id": "68d6442e07c446ac96a8fd7fc33eaf7a",
+  "ts": "2026-10-17T12:36:33+00:00",
+  "surface": "macro",
+  "lane": "fast",
+  "mode": "chat",
+  "model": "deepseek-v4-pro",
+  "provider": "deepseek",
+  "thread_id": "e238b26a-ffa2-4d43-865a-540c59d96df7",
+  "question": "Is this just rotation out of technology, or is it becoming a broader risk-off move? What should I protect now, what would confirm spreading danger, and what would justify re-entry? Give the source dates and explain what the 21-day 22% figure means. No portfolio percentages or trades.",
+  "answer": "Evidence caveat — portfolio: not covered (contradiction present).",
+  "latency_ms": 174532,
+  "input_tokens": 222732,
+  "output_tokens": 12000,
+  "flags": {
+    "filtered": false,
+    "degraded": false,
+    "error": false,
+    "screened": false
+  },
+  "tools": [],
+  "citations": [],
+  "lang": null,
+  "latency": {
+    "route": "deep",
+    "ttfv_ms": 173672,
+    "rounds": [
+      {
+        "model_ms": 14114,
+        "tools": [
+          {
+            "name": "read_world_state",
+            "ms": 41
+          },
+          {
+            "name": "read_contradictions",
+            "ms": 34
+          },
+          {
+            "name": "read_factor_state",
+            "ms": 4
+          },
+          {
+            "name": "get_market_events",
+            "ms": 31
+          }
+        ]
+      },
+      {
+        "model_ms": 54095,
+        "tools": []
+      }
+    ],
+    "synthesis_ms": 104921,
+    "total_ms": 173672
+  },
+  "context": {
+    "page": "dashboard"
+  },
+  "source_object_key": "mastermind_response_logs/macro/2026-10-17/68d6442e07c446ac96a8fd7fc33eaf7a.json",
+  "source_body_sha256": "251677488ec8cd9cfedb987bfb6668f71a1986c199b4db88db949c780771b540",
+  "source_bytes": 18291,
+  "qualification": {
+    "purpose": "Bind the user-authorized test request to the backend's final response and timing. Projection excludes user identifiers and provider reasoning.",
+    "backend_to_dom_answer_match": true,
+    "source_identity_at_request": "NOT_RECORDED_IN_THIS_RESPONSE_LOG",
+    "current_runtime_identity_observed_later": {
+      "commit": "6a6261dff4120a690caccbba723e96f445705efe",
+      "gateway_sha256": "78f4d3b320d25ff1b6b86c933fbac725fb0fe1784fe3ec7c4874564a08e926bf"
+    },
+    "specific_family_classification_and_empty_answer_root_cause": "UNDER_INVESTIGATION",
+    "log_tools_field_is_empty_but_latency_rounds_record_four_reads": true
+  }
+}

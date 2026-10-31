@@ -1,0 +1,35 @@
+{
+  "schema": "fundamental_forensics.coverage_thresholds/v1",
+  "thresholds_id": "c2_v1",
+  "freeze_ref": "research/financial_intelligence_fabric/FIF_C2_COVERAGE_FREEZE.md",
+  "census_identity": {
+    "source_generation_id": "census-20261018-2026-10-18T20:47:45Z",
+    "cutoff_at": "2026-10-18T00:00:00Z",
+    "manifest_draft_sha256_prefix": "eb55b7c5286d6fee3600"
+  },
+  "metric_catalog_id": "fundamental_forensics_core_gaap_metrics",
+  "metric_count": 50,
+  "direct_metric_count": 40,
+  "formula_metric_count": 10,
+  "tiers": {
+    "deep": {
+      "target": 250,
+      "periods": ["A1", "A2", "I1", "I2"],
+      "required_package_roles": ["primary", "schema", "presentation", "calculation", "definition", "label"],
+      "required_statements": ["income_statement", "balance_sheet", "cash_flow"],
+      "specialist_packs": ["PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK08", "PK09", "PK10", "PK11", "PK12"],
+      "require_packet": true,
+      "require_journey": true
+    },
+    "core": {
+      "target": 1000,
+      "periods": ["A1", "I1"]
+    }
+  },
+  "field_presence_bands": [
+    {"band": "complete", "min_rate": 1.0},
+    {"band": "high", "min_rate": 0.9},
+    {"band": "partial", "min_rate": 0.5},
+    {"band": "low", "min_rate": 0.0}
+  ]
+}

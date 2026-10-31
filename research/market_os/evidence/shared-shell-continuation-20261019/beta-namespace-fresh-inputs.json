@@ -1,0 +1,53 @@
+{
+  "observed_at": "2026-10-20T02:57:47.327389+00:00",
+  "host_mutated": false,
+  "public_files": [
+    {
+      "path": "/opt/terminal/terminal/public/data/coverage.json",
+      "regular": true,
+      "symlink": false,
+      "dev": 2048,
+      "ino": 81163,
+      "mode": "0o644",
+      "uid": 0,
+      "gid": 0,
+      "bytes": 439132
+    },
+    {
+      "path": "/opt/terminal/beta/terminal/public/data/coverage.json",
+      "error": "FileNotFoundError",
+      "errno": 2
+    }
+  ],
+  "beta_service": {
+    "exit": 0,
+    "out": "MainPID=2427329\nExecMainStartTimestampMonotonic=7560285026653\nUser=terminal-beta\nGroup=terminal-beta\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+    "err": ""
+  },
+  "beta_identity": {
+    "exit": 0,
+    "out": "uid=987(terminal-beta) gid=981(terminal-beta) groups=981(terminal-beta)",
+    "err": ""
+  },
+  "diagnostic_parent_custody": [
+    {
+      "path": "/root",
+      "dir": true,
+      "dev": 64769,
+      "ino": 1738,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o700"
+    },
+    {
+      "path": "/root/mastermind-beta-owner-93e303cc-ucmhwhpm",
+      "dir": true,
+      "dev": 64769,
+      "ino": 340839,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o700"
+    }
+  ],
+  "diagnostic_leaf_absent": true
+}

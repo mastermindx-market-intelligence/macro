@@ -1,0 +1,18 @@
+{
+  "application_revision": "8eb467112b832101385f7256b83036f45ae5d759",
+  "application_changed": false,
+  "actual_pdf_intake_checks": 19,
+  "refusal_controls": 2,
+  "parent_fact_anchors": 12,
+  "consumer_probe_controls": 6,
+  "agentos": "1734 records,0 errors,164 pre-existing warnings",
+  "canonical_inbox_writes": 2,
+  "inbox_hash_readbacks": 2,
+  "canonical_ingested": false,
+  "installed_consumer_state": "PENDING_INCUMBENT_INGEST",
+  "press_writer_calls": 0,
+  "press_staging_writes": 0,
+  "publication": false,
+  "cutover": false,
+  "d14_credit": "0/10"
+}

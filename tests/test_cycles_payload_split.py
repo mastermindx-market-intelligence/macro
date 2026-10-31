@@ -10,6 +10,8 @@ Invariants (per the cycles-perf masterplan §A):
       price is stripped from sectors too (price-mode only);
   (c) non-sectors families (baskets/nasdaq/russell) drop price + osc + turns to series;
   (d) fx + usd_record move from the sectors family into series (country currency card);
+  (d2) rs_history (the 252-point reconstructed RS trail) moves out of the sectors core
+      too — it is hydrated after first paint, exactly like the currency card;
   (e) the input dict is NOT mutated (the full model still feeds the features json);
   (f) entities without heavy arrays pass through untouched (no empty series row);
   (g) meta / phases and non-family top-level keys are preserved verbatim in core.
@@ -17,6 +19,8 @@ Invariants (per the cycles-perf masterplan §A):
 from __future__ import annotations
 
 import copy
+import json
+from datetime import date, timedelta
 
 from scripts._cycles_payload import split_cycles_payload
 
@@ -41,6 +45,34 @@ def _fx():
 
 def _usd_record():
     return {"now": {"pos_v2": 42.0}}
+
+
+def _rs_history(n: int = 252):
+    """A reconstructed RS trail of the exact shape engine.sector_cycles emits."""
+    start = date(2025, 6, 2)
+    return [
+        {
+            "date": (start + timedelta(days=i)).isoformat(),
+            "rs_21d": round(-6.0 + 0.1 * i, 1),
+            "rs_63d": round(-3.0 + 0.05 * i, 1),
+        }
+        for i in range(n)
+    ]
+
+
+def _payload_with_rs_history():
+    """A sectors payload whose entity carries the full 252-point RS trail."""
+    trail = _rs_history()
+    data = {
+        "meta": {"asOf": "2026-07-01", "today": 2026.5, "region": "us"},
+        "phases": {"Peak": {}},
+        "sectors": [
+            {"id": "xlk", "name": "Tech", "now": {"pos": 60},
+             "price": _price(), "osc": _osc(), "turns": _turns(),
+             "rs_history": trail},
+        ],
+    }
+    return data, trail
 
 
 def _full_payload():
@@ -115,6 +147,32 @@ def test_fx_and_usd_record_move_from_sectors_to_series():
     assert "fx" not in xlk_core and "usd_record" not in xlk_core
     assert series["xlk"]["fx"] == _fx()
     assert series["xlk"]["usd_record"] == _usd_record()
+
+
+def test_rs_history_moves_from_sectors_core_to_series():
+    # MUTATION: scripts/_cycles_payload._HEAVY_SECTORS left as ("fx", "usd_record") ->
+    # the 252-point reconstructed RS trail stays in the first-paint core, so
+    # `"rs_history" not in xlk_core` fails (and the size pin fails with it).
+    data, trail = _payload_with_rs_history()
+    assert len(trail) == 252
+    assert all(set(row) == {"date", "rs_21d", "rs_63d"} for row in trail)
+    original = copy.deepcopy(data)
+
+    core, series = split_cycles_payload(data)
+
+    xlk_core = next(e for e in core["sectors"] if e["id"] == "xlk")
+    assert "rs_history" not in xlk_core
+    assert series["xlk"]["rs_history"] == trail
+
+    recombined = dict(xlk_core)
+    recombined.update(series["xlk"])
+    assert recombined == original["sectors"][0], "rs_history recombine is lossy"
+
+    # size pin: peeling the trail must shrink the first-paint core by at least the
+    # trail's own serialised size (small slack for the removed key name).
+    assert len(json.dumps(core)) < (
+        len(json.dumps(data)) - len(json.dumps(trail)) + 64
+    )
 
 
 def test_input_not_mutated():

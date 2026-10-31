@@ -1,0 +1,1887 @@
+{
+  "tiingo-prefix03-readonly52142-completed-actual-parent-acceptance.json": {
+    "schema": "tiingo.interrupted_qualification_readonly_reconciliation_actual_root_consumption/v1",
+    "recorded_at_utc": "2026-10-13T11:30:34.568139+00:00",
+    "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+    "actual_readonly_tool_session": 52142,
+    "actual_readonly_native_exit_code": 0,
+    "actual_readonly_native_terminal_chunk": "cb9525",
+    "actual_readonly_native_terminal_consumed": true,
+    "actual_wrapper_observed_child_exit_code": 0,
+    "readonly_reconciliation_sha256": "77b8699971806bc63f839fec280e2ba41d1d3bda669087acfa3c1f293cce7254",
+    "wrapper_completion_sha256": "f2b771979f65e6f9d47ccdfbf79bd5b06490fef3e6f0324aacb98b689002c496",
+    "exact862_raw_scalar_identity_clock_preflight_inputs_verified": true,
+    "verified_complete_current_projections": 536,
+    "verified_absent_current_projections": 326,
+    "verified_complete_current_projection_bars": 1133723,
+    "all_existing536_reader_rows_equal_immutable_raw_normalization": true,
+    "all862_projection_reader_acceptance_claimed": false,
+    "original91287_exit_code": null,
+    "actual_original91287_terminal_consumed": false,
+    "pending_stable_two_selector_supplement": true,
+    "signal_sent": false,
+    "interruption_guard_stopped_before_intent_or_signal_due_to_completion": true,
+    "interruption_guard_native_exit_code": 1,
+    "interruption_guard_terminal_chunk": "1c697e",
+    "archive_writes": 0,
+    "provider_requests": 0
+  },
+  "tiingo-prefix03-inventory02-actual-root-acceptance.json": {
+    "schema": "tiingo.stable_selector_inventory_actual_assigning_root_consumption/v1",
+    "recorded_at_utc": "2026-10-13T21:11:01.316869+00:00",
+    "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+    "original_inventory_tool_session": 57933,
+    "original_inventory_start_chunk": "17645d",
+    "actual_inventory_native_exit_code": 0,
+    "actual_inventory_native_terminal_chunk": "a6496a",
+    "actual_inventory_native_terminal_consumed": true,
+    "inventory_sha256": "f1b329c4eca28e4fa480cc355d73873879a2c576c8994a2dc219b751b6698c4f",
+    "inventory_method_sha256": "74f7320d0a2ccf1cbc13225dfd8345dcb3b85b5ac4c07721b10905fbf41b33c2",
+    "source_review_sha256": "27b3a774f5bfeef5f17d719981c4db40b80e96d2d6b813c209549dc2655bb44f",
+    "complete_current_projections": 536,
+    "absent_current_projections": 326,
+    "all_identity_and_raw_selectors_stable_including_absent_paths": true,
+    "unexpected_temporary_artifact_count": 0,
+    "same_prefix_continuation_stable_footprint_qualified": true,
+    "original_91287_exit_code": null,
+    "original_91287_actual_terminal_consumed": false,
+    "archive_writes": 0,
+    "provider_requests": 0,
+    "credentials_read": false
+  },
+  "tiingo-wave15-continuation04-prefix03-partial-recovery-actual-parent-consumption.json": {
+    "schema": "tiingo.interrupted_partial_qualification_continuation_and_coverage_actual_parent_consumption/v1",
+    "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+    "recorded_at_utc": "2026-10-13T21:21:16.112003+00:00",
+    "actual_partial_qualifier_native_session": 15570,
+    "actual_partial_qualifier_native_exit_code": 0,
+    "actual_partial_qualifier_native_terminal_chunk": "fd4a73",
+    "actual_partial_qualifier_native_terminal_consumed": true,
+    "qualifier_source_sha256": "4931c2c2b8445e30d6af95b6536e1e6898f41ff22e4088b906229ba2ab715cc3",
+    "actual_partial_qualifier_observed_wait_file": "tiingo-prefix03-partial-continuation03-qualify-observed-wait.json",
+    "actual_partial_qualifier_observed_wait_sha256": "53732a2ec13c67e7205b5251cbccb0b1b102d5694fe2e8f3f23765011b9e59fc",
+    "actual_partial_qualifier_validation_file": "tiingo-prefix03-partial-continuation03-qualify-validation.json",
+    "actual_partial_qualifier_validation_sha256": "fcd5cefc91691a232b83ab25aa347223d25074194e93bd9130bf1e242c556aef",
+    "qualification_sha256": {
+      "eod-wave15-unadmitted-continuation04-prefix03-qualified.json": "173a5ed861a23e8effc99239120aab1fc40750c62bb58e43fc39c7d859fedfa7"
+    },
+    "all_862_qualification_effects_verified_and_accepted": true,
+    "reused_accepted_projections": 536,
+    "new_materializer_calls": 326,
+    "verified_distinct_bars": 1752624,
+    "coverage_consumed": true,
+    "original_tool_session": 91287,
+    "original_exit_code": null,
+    "actual_original_terminal_return_consumed": false,
+    "provider_requests": 0,
+    "credentials_read": false,
+    "programme_acceptance_claimed": false,
+    "actual_coverage_native_session": 88617,
+    "actual_coverage_native_exit_code": 0,
+    "actual_coverage_native_terminal_chunk": "b15e07",
+    "actual_coverage_native_terminal_consumed": true,
+    "actual_coverage_observed_wait_file": "tiingo-prefix03-partial-continuation03-coverage-observed-wait.json",
+    "actual_coverage_observed_wait_sha256": "256cd3a1cd0f30c228be6fbd40ad1255c6822ee13cbfb43df67ce26724ee4dfc",
+    "actual_coverage_validation_file": "tiingo-prefix03-partial-continuation03-coverage-validation.json",
+    "actual_coverage_validation_sha256": "02a51585f8ffc3fdfa58e5a8062f5d784783105e4d0e603ca3f834e5bc0a8d22",
+    "coverage_sha256": {
+      "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation04-prefix03-delta.json": "5daddcfc2e520a04d6660c6326c7d539ae53df29d1d952e7921ba19b64c83c83"
+    },
+    "all_listed_qualification_effects_verified_and_accepted": true,
+    "all_original_qualification_terminal_returns_consumed": false,
+    "previous_original22925_terminal_consumed": false,
+    "all_listed_qualifier_and_coverage_returns_consumed": false,
+    "accepted_nonempty_histories": 47418,
+    "accepted_distinct_bars": 100304996
+  },
+  "tiingo-wave15-continuation05-capture-actual-terminal-parent-consumption.json": {
+    "schema": "tiingo.actual_original_finite_capture_terminal_parent_consumption/v1",
+    "recorded_at_utc": "2026-10-13T07:58:38.595650+00:00",
+    "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+    "original_tool_session": 24428,
+    "original_exit_code": 0,
+    "actual_original_terminal_return_consumed": true,
+    "actual_original_terminal_chunk": "fe1bd6",
+    "actual_result_sha256": "af1e066495b3d920bbfb3f50994e4eed10815e4fafa41a8b4c5c7bb5796b6a37",
+    "actual_scope_sha256": "f5425338e693572900c6bc4263a3f1c9c935d9f9a8c42ab4dc99b9ee8413af65",
+    "capture_method_sha256": "941be9b70f689cef2e14ac0760dd473e9b4dd089f8be06ac57c4ffc26d9767ca",
+    "actual_original_execution_log_sha256": "c6f2bd2a08731621184571d5258200dc8975095c28d3b6c3b087b185086835b1",
+    "successful_requests": 121,
+    "held_attempted_failures": 0,
+    "held_failed_symbols": [],
+    "never_admitted_count": 0,
+    "all_selected_captured": true,
+    "all_qualification_and_accounting_returns_consumed": false,
+    "failed_requests_retried": false,
+    "programme_acceptance_claimed": false
+  },
+  "tiingo-wave15-continuation05-disposition-window01-actual-parent-consumption.json": {
+    "schema": "tiingo.finite_disposition_pipeline_actual_parent_consumption/v1",
+    "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+    "recorded_at_utc": "2026-10-13T21:34:59.917788+00:00",
+    "actual_qualifier_native_session": 15874,
+    "actual_qualifier_native_exit_code": 0,
+    "actual_qualifier_terminal_chunk": "a22cb7",
+    "actual_qualifier_terminal_return_consumed": true,
+    "core_sha256": "7e734c3bfb9c6b4f79468eb1516a8d86d39361e427cb0dfa8227833acb4e93af",
+    "actual_observed_wait_file": "tiingo-qa05-prefix01-qualify03-observed-wait.json",
+    "actual_observed_wait_sha256": "dd85ec50f796be101f6fbada6def873594e2dd880f8152ac08044a6d3c997be9",
+    "actual_validation_file": "tiingo-qa05-prefix01-qualify03-validation.json",
+    "actual_validation_sha256": "b8c1e33bb332065091248034265d7ffb595c90477d580a84a8320fbdb991d934",
+    "qualification_sha256": {
+      "eod-wave15-unadmitted-continuation05-prefix01-qualified.json": "12bd8681461c238af1441177fc4d94e416e180b4260dc02393813789607f5b4f"
+    },
+    "all_121_qualification_effects_verified_and_accepted": true,
+    "written_projections": 121,
+    "verified_bars": 269160,
+    "provider_requests": 0,
+    "credentials_read": false,
+    "coverage_consumed": true,
+    "actual_preflight_tool_session": 30407,
+    "actual_preflight_exit_code": 0,
+    "actual_preflight_terminal_chunk": "189592",
+    "actual_preflight_return_consumed": true,
+    "actual_preflight_parent_sha256": "2f10717faec522e43401dab5dc2f653f2bfa2936ad8a223c84ce97313e89af73",
+    "actual_coverage_native_session": null,
+    "actual_coverage_tool_surface": "exec_command_immediate_completion_no_session_id_allocated",
+    "actual_coverage_native_exit_code": 0,
+    "actual_coverage_terminal_chunk": "10a57b",
+    "actual_coverage_terminal_return_consumed": true,
+    "actual_coverage_observed_wait_file": "tiingo-qa05-prefix01-coverage03-observed-wait.json",
+    "actual_coverage_observed_wait_sha256": "b2883978105ad366551bc9a24cf5da5ca954a030e51b7ceaec475fbdf4b8473f",
+    "actual_coverage_validation_file": "tiingo-qa05-prefix01-coverage03-validation.json",
+    "actual_coverage_validation_sha256": "2f3a957c0f615df008db9ca408b3ad8a1cf132dd7e9b0a63f45972a7db3247e8",
+    "coverage_sha256": {
+      "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation05-prefix01-delta.json": "02daf4542a6e192e2e21f2afdcb9d95c140b0d32bd669599d19c71fdd14f3d74"
+    },
+    "all_listed_qualification_effects_verified_and_accepted": true,
+    "all_listed_qualifier_and_coverage_returns_consumed": true,
+    "all_earlier_original_qualifier_terminals_consumed_claimed": false,
+    "accepted_global_histories": 47539,
+    "accepted_global_distinct_bars": 100574156,
+    "global_candidate_status": {
+      "NONEMPTY_DESIRED_REQUEST_WINDOWS_CAPTURED": 47539,
+      "CAPTURED_EMPTY_RESPONSE": 117,
+      "UNCAPTURED_CATALOGUE_WINDOW": 30,
+      "CAPTURED_SOURCE_QUALITY_QUARANTINED": 3
+    }
+  },
+  "tiingo-wave15-original-six-phase-accounting-actual-parent-consumption.json": {
+    "schema": "tiingo.recovery_aware_six_phase_accounting_actual_root_acceptance/v1",
+    "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+    "recorded_at_utc": "2026-10-13T21:41:21.814349+00:00",
+    "original_accounting_tool_session": 45270,
+    "actual_accounting_native_exit_code": 0,
+    "actual_accounting_native_terminal_chunk": "228264",
+    "actual_accounting_native_terminal_consumed": true,
+    "actual_accounting_child_exit_code": 0,
+    "actual_accounting_file": "eod-wave15-original-six-phase-final-disposition-partition-accounting.json",
+    "actual_accounting_sha256": "78974f63c410f4e39b176a487a1e790f4c78ba6f725ec240b0ab75d7b5b62d69",
+    "accounting_method_sha256": "a1e89a53750d53a461e7def006949918f77ff6c0c7cf6c77b5759cecb162a828",
+    "all_actual_capture_returns_consumed": true,
+    "all_QA_effects_verified_and_accepted": true,
+    "all_original_QA_terminal_returns_consumed": false,
+    "unknown_original_qualifier_sessions": [
+      22925,
+      91287
+    ],
+    "original4392_conservation": {
+      "valid": 4381,
+      "whole_quality": 1,
+      "held_attempted_failures": 10,
+      "never": 0
+    },
+    "accepted_global_census": {
+      "histories": 47539,
+      "bars": 100574156,
+      "empty": 117,
+      "uncaptured": 30,
+      "whole_quality": 3
+    },
+    "later_timeout_repair_not_yet_launched": true,
+    "programme_acceptance_claimed": false
+  },
+  "terminal955-canonical972-actual-index-tree-and-82-preserved-blobs.json": {
+    "schema": "tiingo.terminal955_canonical972_actual_uncommitted_merge_tree/v1",
+    "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+    "recorded_at_utc": "2026-10-13T21:38:00.793646+00:00",
+    "actual_original_native_integration_session": 15207,
+    "actual_native_exit_code": 0,
+    "actual_native_terminal_chunk": "a77dc4",
+    "actual_native_terminal_consumed": true,
+    "actual_ff_exit_code": 0,
+    "actual_no_commit_merge_exit_code": 0,
+    "merge_parent_head": "f72127ba65d5f6a464d12acea2cf657796b01737",
+    "canonical_master_parent": "34e3902571f26f16efb93b17058d1b85f1832199",
+    "actual_index_tree": "fd4f70155161ebb945ae10ff585e1881736b7064",
+    "canonical_changed_paths": [
+      "docs/chart-engine-completion/bench.md",
+      "docs/chart-engine-completion/performance-budget.md",
+      "docs/chart-engine-completion/receipts/README.md",
+      "docs/chart-engine/ACCEPTANCE_COVERAGE_2026-10-12.md",
+      "docs/chart-engine/acceptance_coverage_2026-10-12.json",
+      "ingest/build_universe.py",
+      "ingest/polygon_bars.py",
+      "ingest/refresh_ohlc.py",
+      "ingest/tests/test_ohlc_origin.py",
+      "ops/terminal-build.sh",
+      "terminal/app/dev/chart-bench/page.tsx",
+      "terminal/app/globals.css",
+      "terminal/bench/chart-engine.bench.ts",
+      "terminal/bench/chart-engine.cadence.bench.ts",
+      "terminal/components/ChartFrameBar.tsx",
+      "terminal/components/ChartPane.tsx",
+      "terminal/components/ChartPanel.tsx",
+      "terminal/components/DataOriginChip.tsx",
+      "terminal/docs/pr-crops/b-f11-10-analysis-theses-entry/EVIDENCE.yml",
+      "terminal/docs/pr-crops/b-f11-4-research-views/EVIDENCE.yml",
+      "terminal/docs/pr-crops/b-f12-8-team-roles/EVIDENCE.yml",
+      "terminal/docs/pr-crops/b-f12-9-team-ownership-transfer/EVIDENCE.yml",
+      "terminal/docs/pr-crops/b-f12-b5-3-account-completeness/EVIDENCE.yml",
+      "terminal/docs/pr-crops/b-f13-5-personal-accuracy/EVIDENCE.yml",
+      "terminal/docs/pr-crops/b-pl-6-batch-1/ChartChrome-390-zh.png",
+      "terminal/docs/pr-crops/b-pl-6-batch-1/ChartChrome-390.png",
+      "terminal/docs/pr-crops/b-pl-6-batch-1/EVIDENCE.yml",
+      "terminal/docs/pr-crops/b-pl-6-batch-1/SearchModal-390-zh.png",
+      "terminal/docs/pr-crops/b-pl-6-batch-1/SearchModal-390.png",
+      "terminal/docs/pr-crops/b-pl-6-batch-2/ChartConductor-1440-zh.png",
+      "terminal/docs/pr-crops/b-pl-6-batch-2/ChartConductor-390-zh.png",
+      "terminal/docs/pr-crops/b-pl-6-batch-2/ChartConductor-390.png",
+      "terminal/docs/pr-crops/b-pl-6-batch-2/EVIDENCE.yml",
+      "terminal/docs/pr-crops/b-pl-6-batch-2/GuidePanel-1440-zh.png",
+      "terminal/docs/pr-crops/b-pl-6-batch-2/GuidePanel-1440.png",
+      "terminal/docs/pr-crops/b-pl-6-batch-2/GuidePanel-390.png",
+      "terminal/docs/pr-crops/b-pl-6-batch-2/LevelsView-1440-zh.png",
+      "terminal/docs/pr-crops/b-pl-6-batch-2/LevelsView-1440.png",
+      "terminal/docs/pr-crops/conductor-fit-badge-zh/EVIDENCE.yml",
+      "terminal/docs/pr-crops/dataos-u02-20261013/desktop-origin-known-en.png",
+      "terminal/docs/pr-crops/dataos-u02-20261013/desktop-origin-known-zh.png",
+      "terminal/docs/pr-crops/dataos-u02-20261013/desktop-origin-unknown-en.png",
+      "terminal/docs/pr-crops/dataos-u02-20261013/desktop-origin-unknown-zh.png",
+      "terminal/docs/pr-crops/dataos-u02-20261013/tablet-origin-known-en.png",
+      "terminal/docs/pr-crops/dataos-u02-20261013/tablet-origin-known-zh.png",
+      "terminal/docs/pr-crops/dataos-u02-20261013/tablet-origin-unknown-en.png",
+      "terminal/docs/pr-crops/dataos-u02-20261013/tablet-origin-unknown-zh.png",
+      "terminal/docs/pr-crops/eod-heatmap-flowdesk-load-failure/EVIDENCE.yml",
+      "terminal/docs/pr-crops/gex-levels-heatmap-load-failure/EVIDENCE.yml",
+      "terminal/docs/pr-crops/options-level-axis-labels/desktop-compact.png",
+      "terminal/docs/pr-crops/options-level-axis-labels/desktop-left-percentage.png",
+      "terminal/docs/pr-crops/options-level-axis-labels/desktop.png",
+      "terminal/docs/pr-crops/options-level-axis-labels/manifest.json",
+      "terminal/docs/pr-crops/options-level-axis-labels/mobile.png",
+      "terminal/docs/pr-crops/options-level-axis-labels/tablet.png",
+      "terminal/docs/pr-crops/terminal-visual-intelligence/EVIDENCE.yml",
+      "terminal/docs/pr-crops/terminal-visual-intelligence/desktop-context-zh.png",
+      "terminal/docs/pr-crops/terminal-visual-intelligence/desktop-context.png",
+      "terminal/docs/pr-crops/terminal-visual-intelligence/mobile-context-zh.png",
+      "terminal/docs/pr-crops/terminal-visual-intelligence/mobile-context.png",
+      "terminal/docs/pr-crops/terminal-visual-intelligence/tablet-context-zh.png",
+      "terminal/docs/pr-crops/terminal-visual-intelligence/tablet-context.png",
+      "terminal/docs/pr-crops/w9t-f12-17-invite-link-honesty/EVIDENCE.yml",
+      "terminal/e2e/data-origin-readout.spec.ts",
+      "terminal/e2e/pine-htf-temporal.spec.ts",
+      "terminal/lib/__tests__/ChartFrameBarOrigin.test.tsx",
+      "terminal/lib/__tests__/chartEngineBench.test.ts",
+      "terminal/lib/__tests__/chartEngineBenchPatch3.test.ts",
+      "terminal/lib/__tests__/chartEngineCadence.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasC02.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasKinetic.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasModel.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasModelF02.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasModelF04.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasModelF05.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasModelF07.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasModelF10.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasModelF11.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasModelF15.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasPaint.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasPaintGuard.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasPatch3Kinetic.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasPatch3Model.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasPatch3Paint.test.ts",
+      "terminal/lib/__tests__/chartEngineCanvasScaleTruth.test.ts",
+      "terminal/lib/__tests__/chartEngineConformance.test.ts",
+      "terminal/lib/__tests__/chartEngineDisplayedScaleInput.test.ts",
+      "terminal/lib/__tests__/chartEngineFutureAnchors.test.ts",
+      "terminal/lib/__tests__/chartEngineIdentityMarker.test.ts",
+      "terminal/lib/__tests__/chartEngineInputHitRegions.test.ts",
+      "terminal/lib/__tests__/chartEngineKeyboard.test.ts",
+      "terminal/lib/__tests__/chartEngineLocalization.test.ts",
+      "terminal/lib/__tests__/chartEngineLwcPrimitive.test.ts",
+      "terminal/lib/__tests__/chartEngineMountSelect.test.ts",
+      "terminal/lib/__tests__/chartEngineOptions.test.ts",
+      "terminal/lib/__tests__/chartEnginePatch3Lwc.test.ts",
+      "terminal/lib/__tests__/chartEnginePerfFrame.test.ts",
+      "terminal/lib/__tests__/chartEnginePerfLive.test.ts",
+      "terminal/lib/__tests__/chartEnginePerfLookup.test.ts",
+      "terminal/lib/__tests__/chartEnginePerfTimeScale.test.ts",
+      "terminal/lib/__tests__/chartEnginePerfZoom.test.ts",
+      "terminal/lib/__tests__/chartEnginePrimaryMigration.test.ts",
+      "terminal/lib/__tests__/chartEnginePrimitiveLifecycle.test.ts",
+      "terminal/lib/__tests__/chartEnginePrimitives.test.ts",
+      "terminal/lib/__tests__/chartEngineSelect.test.ts",
+      "terminal/lib/__tests__/chartEngineTime.test.ts",
+      "terminal/lib/__tests__/chartEngineWitness4Followups.test.ts",
+      "terminal/lib/__tests__/chartPanelDataOrigin.test.ts",
+      "terminal/lib/__tests__/chartPanelPineSessionAnchor.test.ts",
+      "terminal/lib/__tests__/crosshairMagnet.test.ts",
+      "terminal/lib/__tests__/dataCacheViewIdentity.test.ts",
+      "terminal/lib/__tests__/dataOrigin.test.ts",
+      "terminal/lib/__tests__/fixtures/chart-engine/cadence-trace.input.sample.json",
+      "terminal/lib/__tests__/fixtures/chart-engine/cadence-trace.raf-only.sample.json",
+      "terminal/lib/__tests__/fixtures/chart-engine/cadence-trace.sample.json",
+      "terminal/lib/__tests__/lwcAdapter.test.ts",
+      "terminal/lib/__tests__/pineChartPanelCloseTime.test.ts",
+      "terminal/lib/__tests__/pineHost.test.ts",
+      "terminal/lib/__tests__/pineRefusedPoison.test.ts",
+      "terminal/lib/__tests__/pineRefusedPropagate.test.ts",
+      "terminal/lib/__tests__/pineSecurityFidelity.test.ts",
+      "terminal/lib/__tests__/pineSecurityRefusal.test.ts",
+      "terminal/lib/__tests__/pineTfFlagsAgree.test.ts",
+      "terminal/lib/__tests__/pineTfGrammar.test.ts",
+      "terminal/lib/__tests__/pineTimeClose.test.ts",
+      "terminal/lib/__tests__/primaryPriceSeriesScale.test.ts",
+      "terminal/lib/chart-engine/bench/cadence.ts",
+      "terminal/lib/chart-engine/bench/corpus.ts",
+      "terminal/lib/chart-engine/bench/mount.ts",
+      "terminal/lib/chart-engine/bench/receipt.ts",
+      "terminal/lib/chart-engine/canvas/axisGestures.ts",
+      "terminal/lib/chart-engine/canvas/decorations.ts",
+      "terminal/lib/chart-engine/canvas/dom.ts",
+      "terminal/lib/chart-engine/canvas/frame.ts",
+      "terminal/lib/chart-engine/canvas/index.ts",
+      "terminal/lib/chart-engine/canvas/input.ts",
+      "terminal/lib/chart-engine/canvas/inputBridge.ts",
+      "terminal/lib/chart-engine/canvas/keyboard.ts",
+      "terminal/lib/chart-engine/canvas/model.ts",
+      "terminal/lib/chart-engine/canvas/modelTime.ts",
+      "terminal/lib/chart-engine/canvas/primitives.ts",
+      "terminal/lib/chart-engine/canvas/refusal.ts",
+      "terminal/lib/chart-engine/canvas/scales.ts",
+      "terminal/lib/chart-engine/canvas/ticks.ts",
+      "terminal/lib/chart-engine/conformance.ts",
+      "terminal/lib/chart-engine/drawingBridge.ts",
+      "terminal/lib/chart-engine/lwc/index.ts",
+      "terminal/lib/chart-engine/options.ts",
+      "terminal/lib/chart-engine/primitive.ts",
+      "terminal/lib/chart-engine/select.ts",
+      "terminal/lib/chart-engine/time.ts",
+      "terminal/lib/crosshairMagnet.ts",
+      "terminal/lib/dataCache.ts",
+      "terminal/lib/dataOrigin.ts",
+      "terminal/lib/i18n.tsx",
+      "terminal/lib/pine-engine/README.md",
+      "terminal/lib/pine-engine/builtins.ts",
+      "terminal/lib/pine-engine/host-shared.ts",
+      "terminal/lib/pine-engine/host.ts",
+      "terminal/lib/pine-engine/index.ts",
+      "terminal/lib/pine-engine/runtime.ts",
+      "terminal/lib/pine-engine/worker.ts",
+      "terminal/playwright.bench.config.ts",
+      "tests/test_terminal_build_admission.py"
+    ],
+    "all82_BOATS_blobs_and_modes_preserved": true,
+    "no_conflicts": true,
+    "integrated_source_dependency": "actualmerged972Pinebootready/boundedgenerationretryandfirstreplyproof",
+    "local_affected_checks_yet": false,
+    "committed_or_pushed_yet": false
+  },
+  "terminal955-canonical972-local-checks-actual-root-acceptance.json": {
+    "schema": "tiingo.terminal955_canonical972_local_checks_actual_assigning_root_acceptance/v1",
+    "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+    "recorded_at_utc": "2026-10-13T21:45:48.650225+00:00",
+    "exact_index_tree": "fd4f70155161ebb945ae10ff585e1881736b7064",
+    "independent_tree_review_sha256": "0bd06f1f016ee846b8ddb9fbcd5675d53632a9350ed5eccce956e0f269a073ff",
+    "Pine_unit": {
+      "actual_native_session": 78998,
+      "actual_native_exit_code": 0,
+      "actual_native_terminal_chunk": "94efad",
+      "actual_native_terminal_consumed": true,
+      "child_wait_sha256": "61370fdb093772ff755941e67a560a8746491b0f714c2482b0d5130875fe273b",
+      "passed": 77
+    },
+    "T01_tablet": {
+      "actual_native_session": 20381,
+      "actual_native_exit_code": 0,
+      "actual_native_terminal_chunk": "fe4820",
+      "actual_native_terminal_consumed": true,
+      "child_wait_sha256": "b693aa4d50b2da34ae14d9a04f53baffb337fba7fcaaac2b88b42f4fe6372489",
+      "passed": 1,
+      "workers": 1,
+      "retries": 0,
+      "assertions_and_budgets_unchanged": true
+    },
+    "local_affected_checks_accepted": true,
+    "hosted_CI_acceptance_claimed": false,
+    "production_acceptance_claimed": false
+  },
+  "terminal955-c90-actual-reviewed-push-and-current-CI-read.json": {
+    "schema": "tiingo.terminal955_canonical972_actual_commit_push_and_current_CI_read/v1",
+    "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+    "recorded_at_utc": "2026-10-13T21:50:03.500917+00:00",
+    "actual_commit_native_exit_code": 0,
+    "actual_commit_chunk": "c30849",
+    "actual_normal_push_native_session": 94340,
+    "actual_normal_push_exit_code": 0,
+    "actual_normal_push_terminal_chunk": "55c4b5",
+    "actual_normal_push_terminal_consumed": true,
+    "new_head": "c90b1caf8d7bc99d58bb1c1f3f3529761d3b44e5",
+    "exact_reviewed_tree": "fd4f70155161ebb945ae10ff585e1881736b7064",
+    "local_checks_actual_root_sha256": "eea732da58355902d83da920980b304a7ef13a7942fd51afaa91dadf94a8f7b9",
+    "pr": {
+      "autoMergeRequest": null,
+      "headRefName": "claude/ssd-tiingo-boats-quotehub-b2b25c10fd296613",
+      "headRefOid": "c90b1caf8d7bc99d58bb1c1f3f3529761d3b44e5",
+      "labels": [
+        {
+          "id": "LA_kwDOTOzwKM8AAAACvf_ZEg",
+          "name": "merge-blocked",
+          "description": "Automatic merge paused by a red check or conflict",
+          "color": "d73a4a"
+        }
+      ],
+      "mergeStateStatus": "BLOCKED",
+      "mergeable": "MERGEABLE",
+      "state": "OPEN",
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-13T21:46:46Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473075650/job/115556853634",
+          "name": "Quote Hub tests",
+          "startedAt": "2026-10-13T21:46:27Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-13T21:47:08Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473068067/job/115556831771",
+          "name": "Analyze (actions)",
+          "startedAt": "2026-10-13T21:46:24Z",
+          "status": "COMPLETED",
+          "workflowName": "CodeQL"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-13T21:48:48Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473068067/job/115556832067",
+          "name": "Analyze (javascript-typescript)",
+          "startedAt": "2026-10-13T21:46:24Z",
+          "status": "COMPLETED",
+          "workflowName": "CodeQL"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-13T21:47:28Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473068067/job/115556832089",
+          "name": "Analyze (python)",
+          "startedAt": "2026-10-13T21:46:24Z",
+          "status": "COMPLETED",
+          "workflowName": "CodeQL"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "0001-01-01T00:00:00Z",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473075650/job/115556853720",
+          "name": "Terminal unit + typecheck (shard)",
+          "startedAt": "2026-10-13T21:46:27Z",
+          "status": "IN_PROGRESS",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "0001-01-01T00:00:00Z",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473075650/job/115556853871",
+          "name": "Terminal e2e desktop-1 (shard)",
+          "startedAt": "2026-10-13T21:46:27Z",
+          "status": "IN_PROGRESS",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "0001-01-01T00:00:00Z",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473075650/job/115556854808",
+          "name": "Terminal e2e desktop-2 (shard)",
+          "startedAt": "2026-10-13T21:46:27Z",
+          "status": "IN_PROGRESS",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "0001-01-01T00:00:00Z",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473075650/job/115556854672",
+          "name": "Terminal e2e tablet-1 (shard)",
+          "startedAt": "2026-10-13T21:46:27Z",
+          "status": "IN_PROGRESS",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "0001-01-01T00:00:00Z",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473075650/job/115556853895",
+          "name": "Terminal e2e tablet-2 (shard)",
+          "startedAt": "2026-10-13T21:46:27Z",
+          "status": "IN_PROGRESS",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "0001-01-01T00:00:00Z",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473075650/job/115556853762",
+          "name": "Terminal e2e mobile-1 (shard)",
+          "startedAt": "2026-10-13T21:46:27Z",
+          "status": "IN_PROGRESS",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "0001-01-01T00:00:00Z",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473075650/job/115556854309",
+          "name": "Terminal e2e mobile-2 (shard)",
+          "startedAt": "2026-10-13T21:46:27Z",
+          "status": "IN_PROGRESS",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "0001-01-01T00:00:00Z",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473075650/job/115556853786",
+          "name": "Terminal e2e serial (shard)",
+          "startedAt": "2026-10-13T21:46:27Z",
+          "status": "IN_PROGRESS",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-13T21:47:29Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473075650/job/115556853821",
+          "name": "Ingest + signal-layer tests",
+          "startedAt": "2026-10-13T21:46:27Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-13T21:46:46Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/38473075650/job/115556853974",
+          "name": "Investigation PostgreSQL invariants",
+          "startedAt": "2026-10-13T21:46:27Z",
+          "status": "COMPLETED",
+          "workflowName": "CI"
+        },
+        {
+          "__typename": "StatusContext",
+          "context": "Vercel \u2013 macro-eiz4",
+          "startedAt": "2026-10-13T21:46:23Z",
+          "state": "FAILURE",
+          "targetUrl": "https://vercel.com/chriswong6031-creator?upgradeToPro=build-rate-limit"
+        },
+        {
+          "__typename": "StatusContext",
+          "context": "Vercel \u2013 mastermind-terminal",
+          "startedAt": "2026-10-13T21:46:23Z",
+          "state": "FAILURE",
+          "targetUrl": "https://vercel.com/chriswong6031-creator?upgradeToPro=build-rate-limit"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-13T21:47:01Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/runs/115557083863",
+          "name": "CodeQL",
+          "startedAt": "2026-10-13T21:46:58Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ]
+    },
+    "current_head_runs": [
+      {
+        "conclusion": "",
+        "createdAt": "2026-10-13T21:46:24Z",
+        "databaseId": 38473075650,
+        "event": "pull_request",
+        "headSha": "c90b1caf8d7bc99d58bb1c1f3f3529761d3b44e5",
+        "status": "in_progress",
+        "workflowName": "CI"
+      },
+      {
+        "conclusion": "success",
+        "createdAt": "2026-10-13T21:46:20Z",
+        "databaseId": 38473068067,
+        "event": "dynamic",
+        "headSha": "c90b1caf8d7bc99d58bb1c1f3f3529761d3b44e5",
+        "status": "completed",
+        "workflowName": "CodeQL"
+      }
+    ],
+    "old_approval_refusal_retained": true,
+    "current_hosted_CI_success_claimed": false,
+    "production_deploy_claimed": false
+  },
+  "terminal955-c90-actual-protected-merge-wait-rearmed.json": {
+    "schema": "tiingo.terminal955_actual_existing_protected_wait_rearmed/v1",
+    "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+    "recorded_at_utc": "2026-10-13T21:56:23.663857+00:00",
+    "actual_label_add": {
+      "native_session": 16961,
+      "exit_code": 0,
+      "terminal_chunk": "f6a5c1",
+      "consumed": true
+    },
+    "actual_auto_rearm": {
+      "native_session": 96496,
+      "exit_code": 0,
+      "terminal_chunk": "edf0ca",
+      "consumed": true
+    },
+    "pr": {
+      "autoMergeRequest": {
+        "authorEmail": null,
+        "commitBody": null,
+        "commitHeadline": null,
+        "mergeMethod": "SQUASH",
+        "enabledAt": "2026-10-13T21:54:23Z",
+        "enabledBy": {
+          "id": "U_kgDOE-Q03g",
+          "is_bot": false,
+          "login": "mastermindxryan",
+          "name": ""
+        }
+      },
+      "headRefOid": "c90b1caf8d7bc99d58bb1c1f3f3529761d3b44e5",
+      "labels": [
+        {
+          "id": "LA_kwDOTOzwKM8AAAACvf_Y4A",
+          "name": "merge-on-green",
+          "description": "Ready for the fail-closed green-check merge controller",
+          "color": "1f883d"
+        },
+        {
+          "id": "LA_kwDOTOzwKM8AAAACvf_ZEg",
+          "name": "merge-blocked",
+          "description": "Automatic merge paused by a red check or conflict",
+          "color": "d73a4a"
+        }
+      ],
+      "mergeStateStatus": "BLOCKED",
+      "state": "OPEN"
+    },
+    "original_CI_run": 38473075650,
+    "current_CI_success_claimed": false,
+    "no_new_observer_scheduler_or_dispatch": true,
+    "old_approval_refusal_retained": true,
+    "source_push_parent_sha256": "690632ff8fccee3aa7d0274552d4a5f14e1471c550ab3bee9423bfe4b4f4e9f2",
+    "production_release_claimed": false
+  },
+  "later_repair_and_terminal_delivery": {
+    "tiingo-eleven-strict-timeout-later-repair-capture-actual-parent-consumption.json": {
+      "sha256": "43ed640cca4aab2f4745b032ffc48d22cd28f83b952dd94fec990c7cd5021cf9",
+      "proof": {
+        "schema": "tiingo.actual_separate_finite_technical_repair_capture_terminal_parent_consumption/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "recorded_at_utc": "2026-10-13T22:06:15.096263+00:00",
+        "run_id": "eod-eleven-structured-timeout-later-repair01-20261013-01a12ab6",
+        "original_tool_session": 54071,
+        "original_exit_code": 0,
+        "actual_original_terminal_chunk": "26e039",
+        "actual_original_terminal_return_consumed": true,
+        "actual_result_sha256": "f2340622f80e4edc1a998943699d749c6e2c5953b7c340cb61b12de9a2bafd7d",
+        "actual_scope_sha256": "150af01f25e223049dc44d2ded73e3239bdf8e6734a6630816f4c0fea1e4e58e",
+        "capture_method_sha256": "ccb8c7f8cc3a0a78398fe6c5558c07538afb0eb7b79759760886a241476b0a72",
+        "actual_ready_parent_sha256": "f15536a3ced0515c233c75a0114d4486a5513ba23fa1086e5da3afc8733381bd",
+        "actual_fresh_quota_sha256": "a7c9f2a8def604578159b0303be7dec0bc1cd374468966ad2fbaacfdd09de54a",
+        "attempted": 11,
+        "successful": 11,
+        "failed": 0,
+        "never_in_new_repair_scope": 0,
+        "new_row_hints": 18366,
+        "new_raw_bytes": 4043113,
+        "original_failed_attempts_and_original_six_phase_conservation_unchanged": true,
+        "maximum_additional_attempts_per_request": 1,
+        "normalization_and_QA_yet": false,
+        "automatic_successor_repair": false,
+        "programme_acceptance_claimed": false
+      }
+    },
+    "tiingo-eleven-repair-prefix01-qualify01-actual-root-acceptance.json": {
+      "sha256": "991df3da754c4b643cd322976b2785a3d5cdea90e2e2ac2196f988900a172f8b",
+      "proof": {
+        "schema": "tiingo.finite_qualifier_actual_parent_acceptance/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "recorded_at_utc": "2026-10-14T02:48:38.528372+00:00",
+        "source_sha256": "58b408064550e95966618e8f482761cf8dbae115e0c4a13b46b64dd86e438a61",
+        "original_tool_session": 34588,
+        "original_exit_code": 0,
+        "original_terminal_chunk": "bd7e36",
+        "actual_original_terminal_return_consumed": true,
+        "qualification_file": "eod-eleven-strict-timeout-later-repair-prefix01-qualified.json",
+        "qualification_sha256": "085c4147fc7e24579869398955a01242f5da6e6cdc2c3bb314dea9cbeabdf26e",
+        "wait_file": "tiingo-eleven-repair-prefix01-qualify01-observed-wait.json",
+        "wait_sha256": "04c98ee8455a13d8066ff415f2c876039697aa02a1f4bc6b43b969860ffca19e",
+        "validation_file": "tiingo-eleven-repair-prefix01-qualify01-validation.json",
+        "validation_sha256": "0cd2acde7e51edb962c81b79fbaffce812e91e75bc53676827c7f3518ca12d5b",
+        "valid": 11,
+        "quality": 0,
+        "new_nonempty_histories": 11,
+        "new_bars": 18366,
+        "all_new_full_reader_results_equal_normalized_raw": true,
+        "original_failed_attempt_facts_retained": true,
+        "provider_requests": 0,
+        "programme_acceptance": false
+      }
+    },
+    "tiingo-eleven-later-repair-actual-final-parent-consumption.json": {
+      "sha256": "d9e6b93445b5ade0fb8295e47ef6c2d2a878ff7f5e979184aec5122685411561",
+      "proof": {
+        "schema": "tiingo.later_repair_actual_parent_consumption_and_conservation/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "method_sha256": "f07c4cec963a5841ce98deac219e6cbcdbfe7fd749f192d5e68a8a57f372f0e9",
+        "input_sha256": {
+          "eod-qualified-catalogue-coverage-eleven-strict-timeout-later-repair-prefix01-delta.json": "1d7d8bb7762cde131f785a04f7490dc307d076d78a1607a2d73de408305e2b80",
+          "eod-eleven-strict-timeout-later-repair-prefix01-qualified.json": "085c4147fc7e24579869398955a01242f5da6e6cdc2c3bb314dea9cbeabdf26e",
+          "eod-eleven-structured-timeout-later-repair01-20261013-01a12ab6-result.json": "f2340622f80e4edc1a998943699d749c6e2c5953b7c340cb61b12de9a2bafd7d",
+          "tiingo-eleven-strict-timeout-later-repair-capture-actual-parent-consumption.json": "43ed640cca4aab2f4745b032ffc48d22cd28f83b952dd94fec990c7cd5021cf9",
+          "tiingo-eleven-repair-prefix01-qualify01-actual-root-acceptance.json": "991df3da754c4b643cd322976b2785a3d5cdea90e2e2ac2196f988900a172f8b",
+          "eod-wave15-original-six-phase-final-disposition-partition-accounting.json": "78974f63c410f4e39b176a487a1e790f4c78ba6f725ec240b0ab75d7b5b62d69",
+          "tiingo-eleven-repair-prefix01-coverage01-launch-packet.json": "cd0a644cd020a3d8fd88e86adf710165ec82f6849525e9a8df21d037c181cbb8",
+          "tiingo-eleven-repair-prefix01-coverage01-observed-wait.json": "ebc9291782fc8127f7e673f9dc81aedb0381e693e9386b8fd72b347184425030",
+          "tiingo-eleven-repair-prefix01-coverage01-validation.json": "6e56ddedd6fc08b25083af2d29cde5ee8ed33afba9c8d8745639ec1b939b9086"
+        },
+        "actual_coverage_tool_session": null,
+        "actual_coverage_exit_code": 0,
+        "actual_coverage_terminal_chunk": "00e490",
+        "actual_coverage_terminal_consumed": true,
+        "immediate_terminal_no_session_id_allocated": true,
+        "all_this_repair_pipeline_returns_consumed": true,
+        "qualified_successes": 11,
+        "failed_requests": 0,
+        "never_admitted": 0,
+        "new_disjoint_bars": 18366,
+        "original4392_historical_accounting_sha256": "78974f63c410f4e39b176a487a1e790f4c78ba6f725ec240b0ab75d7b5b62d69",
+        "original4392_failure_facts_unchanged": true,
+        "original_22925_91287_terminal_returns_not_reconstructed": true,
+        "provider_requests": 0,
+        "archive_writes": 0,
+        "programme_acceptance": false,
+        "current_census_sha256": "c54a2c3c070d14c2a98ad5bd874de919e1704d177bcf0723ed203af67d03ea96"
+      }
+    },
+    "terminal955-actual-protected-merge-and-canonical82-blob-join.json": {
+      "sha256": "5b56b8f1529064236b0cae2618ed38723438e15e92ac70cce0f6b012db6dbf49",
+      "proof": {
+        "schema": "tiingo.terminal955_actual_protected_merge_and_canonical_blob_join/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "observed_at_utc": "2026-10-14T02:40:46.266986+00:00",
+        "PR": 955,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/955",
+        "head": "c90b1caf8d7bc99d58bb1c1f3f3529761d3b44e5",
+        "merge": "140894302f9e50637e1891799463d548c0c46c63",
+        "merged_at": "2026-10-13T22:25:17Z",
+        "actual_PR_state_read_session": 87689,
+        "actual_PR_read_exit": 0,
+        "actual_PR_read_chunk": "3c8b86",
+        "actual_PR_read_consumed": true,
+        "original_CI_run": 38473075650,
+        "original_CI_actual_terminal_session": 60080,
+        "original_CI_actual_exit": 0,
+        "original_CI_actual_chunk": "02f6c3",
+        "original_CI_actual_terminal_consumed": true,
+        "source_join": [
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/README.md",
+            "reviewed_tree_entry": "100644 blob 52a30363848be5e4c87a3b712eb62d6aa0bbd5dc\tdocs/tiingo-evidence/20261011-boats-consumer/README.md",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 52a30363848be5e4c87a3b712eb62d6aa0bbd5dc\tdocs/tiingo-evidence/20261011-boats-consumer/README.md",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/boats-desktop-en.png",
+            "reviewed_tree_entry": "100644 blob 23a2f1b176c64b75f38b52b817d025133b95833a\tdocs/tiingo-evidence/20261011-boats-consumer/boats-desktop-en.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 23a2f1b176c64b75f38b52b817d025133b95833a\tdocs/tiingo-evidence/20261011-boats-consumer/boats-desktop-en.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/boats-desktop-zh.png",
+            "reviewed_tree_entry": "100644 blob 802301978ade4567108c9a96f657be5f7356b342\tdocs/tiingo-evidence/20261011-boats-consumer/boats-desktop-zh.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 802301978ade4567108c9a96f657be5f7356b342\tdocs/tiingo-evidence/20261011-boats-consumer/boats-desktop-zh.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/boats-feature-copy-architecture-review.txt",
+            "reviewed_tree_entry": "100644 blob cbf5c230721c802c668c556b455c6d513514b501\tdocs/tiingo-evidence/20261011-boats-consumer/boats-feature-copy-architecture-review.txt",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob cbf5c230721c802c668c556b455c6d513514b501\tdocs/tiingo-evidence/20261011-boats-consumer/boats-feature-copy-architecture-review.txt",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/boats-feature-copy-independent-acceptance.txt",
+            "reviewed_tree_entry": "100644 blob b1decc6672be6643646d4328ae73adc206221aab\tdocs/tiingo-evidence/20261011-boats-consumer/boats-feature-copy-independent-acceptance.txt",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob b1decc6672be6643646d4328ae73adc206221aab\tdocs/tiingo-evidence/20261011-boats-consumer/boats-feature-copy-independent-acceptance.txt",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/boats-mobile-en.png",
+            "reviewed_tree_entry": "100644 blob d43e2e0ed23b7cad5cff9fe55d972276f4bd27b2\tdocs/tiingo-evidence/20261011-boats-consumer/boats-mobile-en.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob d43e2e0ed23b7cad5cff9fe55d972276f4bd27b2\tdocs/tiingo-evidence/20261011-boats-consumer/boats-mobile-en.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/boats-mobile-zh.png",
+            "reviewed_tree_entry": "100644 blob e3ba662a23cbde11c71d3e69575679b5ab865cc9\tdocs/tiingo-evidence/20261011-boats-consumer/boats-mobile-zh.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob e3ba662a23cbde11c71d3e69575679b5ab865cc9\tdocs/tiingo-evidence/20261011-boats-consumer/boats-mobile-zh.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/boats-public-independent-review-current-hash-addendum.txt",
+            "reviewed_tree_entry": "100644 blob 43a11151ee0a6a25cda8db54955307aaed491fae\tdocs/tiingo-evidence/20261011-boats-consumer/boats-public-independent-review-current-hash-addendum.txt",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 43a11151ee0a6a25cda8db54955307aaed491fae\tdocs/tiingo-evidence/20261011-boats-consumer/boats-public-independent-review-current-hash-addendum.txt",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/boats-public-independent-review-repaired.txt",
+            "reviewed_tree_entry": "100644 blob 6e0b71e35f208177cfb92c8cb1ccd17d33be169c\tdocs/tiingo-evidence/20261011-boats-consumer/boats-public-independent-review-repaired.txt",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 6e0b71e35f208177cfb92c8cb1ccd17d33be169c\tdocs/tiingo-evidence/20261011-boats-consumer/boats-public-independent-review-repaired.txt",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/boats-public-independent-review.txt",
+            "reviewed_tree_entry": "100644 blob 97e91a117b537603123d0371ce2e4ad68c57a5d2\tdocs/tiingo-evidence/20261011-boats-consumer/boats-public-independent-review.txt",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 97e91a117b537603123d0371ce2e4ad68c57a5d2\tdocs/tiingo-evidence/20261011-boats-consumer/boats-public-independent-review.txt",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/boats-tablet-en.png",
+            "reviewed_tree_entry": "100644 blob a767e68034522be15dc777dd9f63efb38445b405\tdocs/tiingo-evidence/20261011-boats-consumer/boats-tablet-en.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob a767e68034522be15dc777dd9f63efb38445b405\tdocs/tiingo-evidence/20261011-boats-consumer/boats-tablet-en.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/boats-tablet-zh.png",
+            "reviewed_tree_entry": "100644 blob eaf2c8d0da3f8275a9c31d7465a816e41028d51b\tdocs/tiingo-evidence/20261011-boats-consumer/boats-tablet-zh.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob eaf2c8d0da3f8275a9c31d7465a816e41028d51b\tdocs/tiingo-evidence/20261011-boats-consumer/boats-tablet-zh.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/evidence-manifest.json",
+            "reviewed_tree_entry": "100644 blob a2cf472e22b25c515304161825adae6fc74f8377\tdocs/tiingo-evidence/20261011-boats-consumer/evidence-manifest.json",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob a2cf472e22b25c515304161825adae6fc74f8377\tdocs/tiingo-evidence/20261011-boats-consumer/evidence-manifest.json",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-desktop-en.png",
+            "reviewed_tree_entry": "100644 blob a5fff34c438852485d2eee65376feceb82c84e42\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-desktop-en.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob a5fff34c438852485d2eee65376feceb82c84e42\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-desktop-en.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-desktop-zh.png",
+            "reviewed_tree_entry": "100644 blob 85df139073910f0226d507bc2571e05ab4173f26\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-desktop-zh.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 85df139073910f0226d507bc2571e05ab4173f26\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-desktop-zh.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-mobile-en.png",
+            "reviewed_tree_entry": "100644 blob 8e27006f06dc31f2e5291b249e14ff8d970f2ec4\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-mobile-en.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 8e27006f06dc31f2e5291b249e14ff8d970f2ec4\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-mobile-en.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-mobile-zh.png",
+            "reviewed_tree_entry": "100644 blob 8d245e349437b6f5d31b0aed631c02f8db415235\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-mobile-zh.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 8d245e349437b6f5d31b0aed631c02f8db415235\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-mobile-zh.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-tablet-en.png",
+            "reviewed_tree_entry": "100644 blob 02f830be0fdb1792035dc34526d55e891708ea6a\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-tablet-en.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 02f830be0fdb1792035dc34526d55e891708ea6a\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-tablet-en.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-tablet-zh.png",
+            "reviewed_tree_entry": "100644 blob a812412b2704b92c105a57b8ad689358830d7d30\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-tablet-zh.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob a812412b2704b92c105a57b8ad689358830d7d30\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-boats-tablet-zh.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/feature-copy-repair.md",
+            "reviewed_tree_entry": "100644 blob f0394388a7112e1ffd4df6f4837a93c63f9ea5f0\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-repair.md",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob f0394388a7112e1ffd4df6f4837a93c63f9ea5f0\tdocs/tiingo-evidence/20261011-boats-consumer/feature-copy-repair.md",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/i18n-boats-desktop-en.png",
+            "reviewed_tree_entry": "100644 blob f30ee5ac17c0389351261c83671373c2c00b4924\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-boats-desktop-en.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob f30ee5ac17c0389351261c83671373c2c00b4924\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-boats-desktop-en.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/i18n-boats-desktop-zh.png",
+            "reviewed_tree_entry": "100644 blob 0510d3a6c90d7f766da727d95e30af1c4bea7b58\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-boats-desktop-zh.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 0510d3a6c90d7f766da727d95e30af1c4bea7b58\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-boats-desktop-zh.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/i18n-boats-mobile-en.png",
+            "reviewed_tree_entry": "100644 blob fe3063cc682067fd6397f66163cfcbb1b6e60d7f\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-boats-mobile-en.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob fe3063cc682067fd6397f66163cfcbb1b6e60d7f\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-boats-mobile-en.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/i18n-boats-mobile-zh.png",
+            "reviewed_tree_entry": "100644 blob cff6bfd566f362a78a2d7f3aae20db226962088c\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-boats-mobile-zh.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob cff6bfd566f362a78a2d7f3aae20db226962088c\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-boats-mobile-zh.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/i18n-boats-tablet-en.png",
+            "reviewed_tree_entry": "100644 blob 735ec149040383606a0827e1ce695e700d9f49a4\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-boats-tablet-en.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 735ec149040383606a0827e1ce695e700d9f49a4\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-boats-tablet-en.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/i18n-boats-tablet-zh.png",
+            "reviewed_tree_entry": "100644 blob 2653c5dedce5a56c2ee942e4047ccf4c8f6719ff\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-boats-tablet-zh.png",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 2653c5dedce5a56c2ee942e4047ccf4c8f6719ff\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-boats-tablet-zh.png",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/i18n-repair-manifest.json",
+            "reviewed_tree_entry": "100644 blob cab00836ee7a1301181ceec6b2797f2742199412\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-repair-manifest.json",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob cab00836ee7a1301181ceec6b2797f2742199412\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-repair-manifest.json",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/i18n-repair.md",
+            "reviewed_tree_entry": "100644 blob 6fddc2261e0f804f47c7126e80ab55319c3a4d5b\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-repair.md",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 6fddc2261e0f804f47c7126e80ab55319c3a4d5b\tdocs/tiingo-evidence/20261011-boats-consumer/i18n-repair.md",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-955-c0bf-hosted-red.log",
+            "reviewed_tree_entry": "100644 blob bbbe4edeed188ca008cc69c9ca5dc98390e30318\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-955-c0bf-hosted-red.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob bbbe4edeed188ca008cc69c9ca5dc98390e30318\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-955-c0bf-hosted-red.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-955-unit-hosted-red.log",
+            "reviewed_tree_entry": "100644 blob 6f8901fcf41747f79cccaf80daf87bac0024feaf\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-955-unit-hosted-red.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 6f8901fcf41747f79cccaf80daf87bac0024feaf\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-955-unit-hosted-red.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-browser.log",
+            "reviewed_tree_entry": "100644 blob 2f7655cfa89a8ffdf4b55cf666deeb4a942abe8b\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-browser.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 2f7655cfa89a8ffdf4b55cf666deeb4a942abe8b\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-browser.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-full-vitest.log",
+            "reviewed_tree_entry": "100644 blob e7d15f0407adb3f6c2283dd867be99b2ee3f0097\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-full-vitest.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob e7d15f0407adb3f6c2283dd867be99b2ee3f0097\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-full-vitest.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-manifest.json",
+            "reviewed_tree_entry": "100644 blob 96d74daed5296c9e0bb46a717d132f5b913c927f\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-manifest.json",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 96d74daed5296c9e0bb46a717d132f5b913c927f\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-manifest.json",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-plain-language.log",
+            "reviewed_tree_entry": "100644 blob 030b6bdd59b71415469e85961a36ef85194049d3\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-plain-language.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 030b6bdd59b71415469e85961a36ef85194049d3\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-plain-language.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-typecheck.log",
+            "reviewed_tree_entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-typecheck.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-feature-copy-typecheck.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-final-route-tests.log",
+            "reviewed_tree_entry": "100644 blob 1a03afbd862815669e3cb6e6642cb85e0c1f0980\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-final-route-tests.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 1a03afbd862815669e3cb6e6642cb85e0c1f0980\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-final-route-tests.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-i18n-browser.log",
+            "reviewed_tree_entry": "100644 blob a63f85168fe85fb230eb3aa4ba432f45245d5118\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-i18n-browser.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob a63f85168fe85fb230eb3aa4ba432f45245d5118\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-i18n-browser.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-i18n-typecheck.log",
+            "reviewed_tree_entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-i18n-typecheck.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-i18n-typecheck.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-ordering-hub-tests.log",
+            "reviewed_tree_entry": "100644 blob c09d92fa0e813c31a02f5dbc10f5f3efd7c7d7ae\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-ordering-hub-tests.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob c09d92fa0e813c31a02f5dbc10f5f3efd7c7d7ae\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-ordering-hub-tests.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-ordering-responsive.log",
+            "reviewed_tree_entry": "100644 blob 3468d31ab2efec09ceabb2b37c3452464cc3e400\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-ordering-responsive.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 3468d31ab2efec09ceabb2b37c3452464cc3e400\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-ordering-responsive.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-ordering-typecheck.log",
+            "reviewed_tree_entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-ordering-typecheck.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-ordering-typecheck.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-plain-language-green.log",
+            "reviewed_tree_entry": "100644 blob f833df20be2faf4c45ec07da587b179b22cf070a\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-plain-language-green.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob f833df20be2faf4c45ec07da587b179b22cf070a\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-plain-language-green.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-responsive-regular.log",
+            "reviewed_tree_entry": "100644 blob c5589137f7158fce7254d2dea19834473556823a\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-responsive-regular.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob c5589137f7158fce7254d2dea19834473556823a\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-responsive-regular.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-unchanged-chart-evidence-tests.log",
+            "reviewed_tree_entry": "100644 blob 2efa09ba3009060feb076eddcf64869e9fe63d60\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-unchanged-chart-evidence-tests.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 2efa09ba3009060feb076eddcf64869e9fe63d60\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-unchanged-chart-evidence-tests.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261011-boats-consumer/terminal-boats-visual-captures.log",
+            "reviewed_tree_entry": "100644 blob cf2820502d500d0ddb370b0b772bf6a07e0a4d56\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-visual-captures.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob cf2820502d500d0ddb370b0b772bf6a07e0a4d56\tdocs/tiingo-evidence/20261011-boats-consumer/terminal-boats-visual-captures.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-ci-capacity-and-base/README.md",
+            "reviewed_tree_entry": "100644 blob 06bec1fafa3c7c09ad0ece821caba39f8f4dd218\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/README.md",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 06bec1fafa3c7c09ad0ece821caba39f8f4dd218\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/README.md",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-ci-capacity-and-base/evidence-manifest.json",
+            "reviewed_tree_entry": "100644 blob 3a21586840c0e0952760160f55e6b0af27b05cb9\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/evidence-manifest.json",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 3a21586840c0e0952760160f55e6b0af27b05cb9\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/evidence-manifest.json",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-ci-capacity-and-base/local-and-coverage-test-results.json",
+            "reviewed_tree_entry": "100644 blob c81eeef11a2e76e688985a97adbbd4eee4a61394\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/local-and-coverage-test-results.json",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob c81eeef11a2e76e688985a97adbbd4eee4a61394\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/local-and-coverage-test-results.json",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-ci-capacity-and-base/mobile-exact-hosted-red-excerpt.json",
+            "reviewed_tree_entry": "100644 blob c74d7b24a2e9cee5f07a33f32ba43431a0c8821c\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/mobile-exact-hosted-red-excerpt.json",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob c74d7b24a2e9cee5f07a33f32ba43431a0c8821c\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/mobile-exact-hosted-red-excerpt.json",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-ci-capacity-and-base/tablet-exact-hosted-red-excerpt.json",
+            "reviewed_tree_entry": "100644 blob dddc0c9dfb3fca84dc7fae46899ad56985bbbeaf\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/tablet-exact-hosted-red-excerpt.json",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob dddc0c9dfb3fca84dc7fae46899ad56985bbbeaf\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/tablet-exact-hosted-red-excerpt.json",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-ci-capacity-and-base/terminal-955-base8520-complete-shard-list-proof.json",
+            "reviewed_tree_entry": "100644 blob 49cb2e619a50cefe52c66ac9c864ba6e391957ed\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/terminal-955-base8520-complete-shard-list-proof.json",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 49cb2e619a50cefe52c66ac9c864ba6e391957ed\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/terminal-955-base8520-complete-shard-list-proof.json",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-ci-capacity-and-base/terminal-955-base8520-ledger-tests.log",
+            "reviewed_tree_entry": "100644 blob 8f8e63916f69e6e547443e5d91a63f5ed58fdc6e\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/terminal-955-base8520-ledger-tests.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 8f8e63916f69e6e547443e5d91a63f5ed58fdc6e\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/terminal-955-base8520-ledger-tests.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-ci-capacity-and-base/terminal-955-base8520-source-integration.json",
+            "reviewed_tree_entry": "100644 blob 38a9b30ae906e715aa49ca5a7f6f40d2ca729b8f\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/terminal-955-base8520-source-integration.json",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 38a9b30ae906e715aa49ca5a7f6f40d2ca729b8f\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/terminal-955-base8520-source-integration.json",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-ci-capacity-and-base/terminal-955-base8520-tablet-repro.log",
+            "reviewed_tree_entry": "100644 blob 69aacca664126e62a5c7f123476ac265f56f53ea\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/terminal-955-base8520-tablet-repro.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 69aacca664126e62a5c7f123476ac265f56f53ea\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/terminal-955-base8520-tablet-repro.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-ci-capacity-and-base/verify-complete-shard-list.py",
+            "reviewed_tree_entry": "100644 blob 26f07cc0413ea019c2f5681546b11badf0b07f6b\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/verify-complete-shard-list.py",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 26f07cc0413ea019c2f5681546b11badf0b07f6b\tdocs/tiingo-evidence/20261012-ci-capacity-and-base/verify-complete-shard-list.py",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-peer-base-integration/README.md",
+            "reviewed_tree_entry": "100644 blob 30ee7012bfcefb728815d4afab935982014d715b\tdocs/tiingo-evidence/20261012-peer-base-integration/README.md",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 30ee7012bfcefb728815d4afab935982014d715b\tdocs/tiingo-evidence/20261012-peer-base-integration/README.md",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-peer-base-integration/evidence-manifest.json",
+            "reviewed_tree_entry": "100644 blob 6458b58c118f8e0beb52c036f31a5b0e1acb4375\tdocs/tiingo-evidence/20261012-peer-base-integration/evidence-manifest.json",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 6458b58c118f8e0beb52c036f31a5b0e1acb4375\tdocs/tiingo-evidence/20261012-peer-base-integration/evidence-manifest.json",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-peer-base-integration/terminal-955-head9a-ingest-red.log",
+            "reviewed_tree_entry": "100644 blob 22a8846dca5c3825b1f4d5acc58aaef04aa06ae0\tdocs/tiingo-evidence/20261012-peer-base-integration/terminal-955-head9a-ingest-red.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 22a8846dca5c3825b1f4d5acc58aaef04aa06ae0\tdocs/tiingo-evidence/20261012-peer-base-integration/terminal-955-head9a-ingest-red.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-peer-base-integration/terminal-955-peer957-consumption.json",
+            "reviewed_tree_entry": "100644 blob f856aaea097c8cd7811694d52158f9ef7f0d596c\tdocs/tiingo-evidence/20261012-peer-base-integration/terminal-955-peer957-consumption.json",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob f856aaea097c8cd7811694d52158f9ef7f0d596c\tdocs/tiingo-evidence/20261012-peer-base-integration/terminal-955-peer957-consumption.json",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-peer-base-integration/terminal-955-peer957-ledger-tests.log",
+            "reviewed_tree_entry": "100644 blob c2f2d1565b6584ef16d62062a377bd420000c521\tdocs/tiingo-evidence/20261012-peer-base-integration/terminal-955-peer957-ledger-tests.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob c2f2d1565b6584ef16d62062a377bd420000c521\tdocs/tiingo-evidence/20261012-peer-base-integration/terminal-955-peer957-ledger-tests.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-peer-base-integration/terminal-boats-base857-affected-tests.log",
+            "reviewed_tree_entry": "100644 blob 6f382f565354fe77d5c2f8df8f89515c94dd6b5c\tdocs/tiingo-evidence/20261012-peer-base-integration/terminal-boats-base857-affected-tests.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 6f382f565354fe77d5c2f8df8f89515c94dd6b5c\tdocs/tiingo-evidence/20261012-peer-base-integration/terminal-boats-base857-affected-tests.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-peer-base-integration/terminal-boats-base857-responsive.log",
+            "reviewed_tree_entry": "100644 blob a722c3174dc1140eabc189d7f58e5e566c03a696\tdocs/tiingo-evidence/20261012-peer-base-integration/terminal-boats-base857-responsive.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob a722c3174dc1140eabc189d7f58e5e566c03a696\tdocs/tiingo-evidence/20261012-peer-base-integration/terminal-boats-base857-responsive.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "docs/tiingo-evidence/20261012-peer-base-integration/terminal-boats-base857-typecheck.log",
+            "reviewed_tree_entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/tiingo-evidence/20261012-peer-base-integration/terminal-boats-base857-typecheck.log",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/tiingo-evidence/20261012-peer-base-integration/terminal-boats-base857-typecheck.log",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "hub/lib/extfeed.js",
+            "reviewed_tree_entry": "100644 blob fb4f63efc679572d231f732988e07ca3a107c7b3\thub/lib/extfeed.js",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob fb4f63efc679572d231f732988e07ca3a107c7b3\thub/lib/extfeed.js",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "hub/lib/quotes.js",
+            "reviewed_tree_entry": "100644 blob b626fa84b4dbd6a40bb66ba27bea2a168d1c862a\thub/lib/quotes.js",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob b626fa84b4dbd6a40bb66ba27bea2a168d1c862a\thub/lib/quotes.js",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "hub/lib/store.js",
+            "reviewed_tree_entry": "100644 blob ea6007a54e97c41e0f6f378ef6f811704a134196\thub/lib/store.js",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob ea6007a54e97c41e0f6f378ef6f811704a134196\thub/lib/store.js",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "hub/tests/boatsrelay.test.js",
+            "reviewed_tree_entry": "100644 blob d8b4f5343d69d1f2ac08cf8f0cae2daacdcf8e97\thub/tests/boatsrelay.test.js",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob d8b4f5343d69d1f2ac08cf8f0cae2daacdcf8e97\thub/tests/boatsrelay.test.js",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "supabase/migrations/0033_watchlist_annotations.sql",
+            "reviewed_tree_entry": "100644 blob d2e7ba2cd8c3091da6d51af04c952e7d5571c037\tsupabase/migrations/0033_watchlist_annotations.sql",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob d2e7ba2cd8c3091da6d51af04c952e7d5571c037\tsupabase/migrations/0033_watchlist_annotations.sql",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "supabase/migrations/README.md",
+            "reviewed_tree_entry": "100644 blob d9da325d04f323e8066ec5b939bbe54dd32ebb38\tsupabase/migrations/README.md",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob d9da325d04f323e8066ec5b939bbe54dd32ebb38\tsupabase/migrations/README.md",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "terminal/app/api/ext-quote/route.ts",
+            "reviewed_tree_entry": "100644 blob 20a950808f6f0a19bcc483b4c5f197ae2068445f\tterminal/app/api/ext-quote/route.ts",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 20a950808f6f0a19bcc483b4c5f197ae2068445f\tterminal/app/api/ext-quote/route.ts",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "terminal/app/api/quote/route.ts",
+            "reviewed_tree_entry": "100644 blob 529bf4bf550548ecea71336ceae44c092001e29d\tterminal/app/api/quote/route.ts",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 529bf4bf550548ecea71336ceae44c092001e29d\tterminal/app/api/quote/route.ts",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "terminal/components/TerminalShell.tsx",
+            "reviewed_tree_entry": "100644 blob dcb2d41f69e0f3c839ca54eda30d1ffe6218ac19\tterminal/components/TerminalShell.tsx",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob dcb2d41f69e0f3c839ca54eda30d1ffe6218ac19\tterminal/components/TerminalShell.tsx",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "terminal/e2e/boats-display.spec.ts",
+            "reviewed_tree_entry": "100644 blob de0eff06939051bcb3b690a3d57da0bbf044ca2f\tterminal/e2e/boats-display.spec.ts",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob de0eff06939051bcb3b690a3d57da0bbf044ca2f\tterminal/e2e/boats-display.spec.ts",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "terminal/e2e/fixtures/boatsQuote.ts",
+            "reviewed_tree_entry": "100644 blob 32416ec133ee34ea206d7030e3f70f5434632e8f\tterminal/e2e/fixtures/boatsQuote.ts",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 32416ec133ee34ea206d7030e3f70f5434632e8f\tterminal/e2e/fixtures/boatsQuote.ts",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "terminal/e2e/responsive.spec.ts",
+            "reviewed_tree_entry": "100644 blob e16ff72adeba1b9e1764e6996c7afa04d6361ccf\tterminal/e2e/responsive.spec.ts",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob e16ff72adeba1b9e1764e6996c7afa04d6361ccf\tterminal/e2e/responsive.spec.ts",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "terminal/e2e/watchlist-ext-percent.spec.ts",
+            "reviewed_tree_entry": "100644 blob 95b958b0bbc50655c0a6a9e65938175ac005a191\tterminal/e2e/watchlist-ext-percent.spec.ts",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 95b958b0bbc50655c0a6a9e65938175ac005a191\tterminal/e2e/watchlist-ext-percent.spec.ts",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "terminal/lib/__tests__/extQuoteFreshness.test.ts",
+            "reviewed_tree_entry": "100644 blob edf51f4b8e9f65e5358080081563f23f46d00e94\tterminal/lib/__tests__/extQuoteFreshness.test.ts",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob edf51f4b8e9f65e5358080081563f23f46d00e94\tterminal/lib/__tests__/extQuoteFreshness.test.ts",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "terminal/lib/__tests__/extQuoteRoute.test.ts",
+            "reviewed_tree_entry": "100644 blob 4935d00ea0abe2c6d50ce95fdbe7c51407850828\tterminal/lib/__tests__/extQuoteRoute.test.ts",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 4935d00ea0abe2c6d50ce95fdbe7c51407850828\tterminal/lib/__tests__/extQuoteRoute.test.ts",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "terminal/lib/__tests__/quoteRouteView.test.ts",
+            "reviewed_tree_entry": "100644 blob 47804c677d2a804040f0e7c4f759de163f034195\tterminal/lib/__tests__/quoteRouteView.test.ts",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 47804c677d2a804040f0e7c4f759de163f034195\tterminal/lib/__tests__/quoteRouteView.test.ts",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "terminal/lib/extQuoteCopy.ts",
+            "reviewed_tree_entry": "100644 blob 920c6b89b4bf3dae943cc5e3852afddc73bf0cd3\tterminal/lib/extQuoteCopy.ts",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 920c6b89b4bf3dae943cc5e3852afddc73bf0cd3\tterminal/lib/extQuoteCopy.ts",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "terminal/lib/extQuoteFreshness.ts",
+            "reviewed_tree_entry": "100644 blob 81f14bfc7bcac07b4e613113f7e3ab17c4085fe3\tterminal/lib/extQuoteFreshness.ts",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 81f14bfc7bcac07b4e613113f7e3ab17c4085fe3\tterminal/lib/extQuoteFreshness.ts",
+            "later_live_commit_preserves_blob": true
+          },
+          {
+            "path": "terminal/lib/liveCandle.ts",
+            "reviewed_tree_entry": "100644 blob 3bf7c88af86680a6abeed6d0f3d6f8f6f0c9a209\tterminal/lib/liveCandle.ts",
+            "merged_exact": true,
+            "later_live_commit_tree_entry": "100644 blob 3bf7c88af86680a6abeed6d0f3d6f8f6f0c9a209\tterminal/lib/liveCandle.ts",
+            "later_live_commit_preserves_blob": true
+          }
+        ],
+        "all82_merged_exact": true,
+        "live_marker_candidate": "afae60208ffbf2f285515da47a41eafeb3531bcf",
+        "merged_source_ancestor_of_live_marker_commit": true,
+        "production_marker_bytes_not_yet_joined": true
+      }
+    },
+    "terminal955-actual-installed-later-release-three-identities-and-source.json": {
+      "sha256": "30ea4a224e16df2ca242c18cca3c6d98cc2a48ee5ceb1b81f30edb28c7c5e41b",
+      "proof": {
+        "observed_at_utc": "2026-10-14T02:41:55.289569+00:00",
+        "read_only": true,
+        "canonical_source_head": "afae60208ffbf2f285515da47a41eafeb3531bcf",
+        "deployed_marker": "afae60208ffbf2f285515da47a41eafeb3531bcf",
+        "builder_sha256": "5cb27b816d5360e795eb5852dac910a9fdcfa883f2496fca24e838891c501021",
+        "installed_files": {
+          "hub/lib/extfeed.js": {
+            "sha256": "d1d37df326828e3040ce82ab577fc6e904587ab3caacbdc90ba1d43a8b243277",
+            "canonical_sha256": "d1d37df326828e3040ce82ab577fc6e904587ab3caacbdc90ba1d43a8b243277",
+            "exact": true
+          },
+          "hub/lib/quotes.js": {
+            "sha256": "744f60814053481bc20839fe868fdfb7efce1d6ee3c69377d277ef266a6b8ecd",
+            "canonical_sha256": "744f60814053481bc20839fe868fdfb7efce1d6ee3c69377d277ef266a6b8ecd",
+            "exact": true
+          },
+          "hub/lib/store.js": {
+            "sha256": "0be314c0c5dec623144205058fa2e8b23252fe772b01e8540909e8f691011498",
+            "canonical_sha256": "0be314c0c5dec623144205058fa2e8b23252fe772b01e8540909e8f691011498",
+            "exact": true
+          },
+          "terminal/app/api/ext-quote/route.ts": {
+            "sha256": "bd4e2ad9509d1006775c83c22b051ed1376204b337ad77a71220536b30b64ebc",
+            "canonical_sha256": "bd4e2ad9509d1006775c83c22b051ed1376204b337ad77a71220536b30b64ebc",
+            "exact": true
+          },
+          "terminal/app/api/quote/route.ts": {
+            "sha256": "289c3ac0d0d1932d8d3e565fd8da9a6be7fd8a6d9b42cbcb2ea37075efd42bd0",
+            "canonical_sha256": "289c3ac0d0d1932d8d3e565fd8da9a6be7fd8a6d9b42cbcb2ea37075efd42bd0",
+            "exact": true
+          },
+          "terminal/components/TerminalShell.tsx": {
+            "sha256": "d08af23dc9aec0a63e94446f5a189ee05b5e60e2cb7f28218aed0d62d59fd48f",
+            "canonical_sha256": "d08af23dc9aec0a63e94446f5a189ee05b5e60e2cb7f28218aed0d62d59fd48f",
+            "exact": true
+          },
+          "terminal/lib/extQuoteCopy.ts": {
+            "sha256": "dd9af6864d0c521b33f66658c79daf7581d77d7c70a2eca48e2cacbf007cad6e",
+            "canonical_sha256": "dd9af6864d0c521b33f66658c79daf7581d77d7c70a2eca48e2cacbf007cad6e",
+            "exact": true
+          },
+          "terminal/lib/extQuoteFreshness.ts": {
+            "sha256": "f860c445bdb9c9a42629c9f44a9fc3908ee4d31b9cd0ae810ff5a9c032595d76",
+            "canonical_sha256": "f860c445bdb9c9a42629c9f44a9fc3908ee4d31b9cd0ae810ff5a9c032595d76",
+            "exact": true
+          },
+          "terminal/lib/liveCandle.ts": {
+            "sha256": "7e8cd7df90b520ad369bb1a315033a042787b45426b7e90ab7b4d6d1151f191d",
+            "canonical_sha256": "7e8cd7df90b520ad369bb1a315033a042787b45426b7e90ab7b4d6d1151f191d",
+            "exact": true
+          },
+          "ops/terminal-build.sh": {
+            "sha256": "5cb27b816d5360e795eb5852dac910a9fdcfa883f2496fca24e838891c501021",
+            "canonical_sha256": "5cb27b816d5360e795eb5852dac910a9fdcfa883f2496fca24e838891c501021",
+            "exact": true
+          }
+        },
+        "local_html": {
+          "status": 200,
+          "sha256": "cc2cdca6fdfc317c8d7b69671f13c78a3988295a8e6fc81a45d46db6bd031b00",
+          "deployed_ids": [
+            "afae60208ffbf2f285515da47a41eafeb3531bcf"
+          ]
+        },
+        "public_html": {
+          "status": 200,
+          "sha256": "c4188fa3672387f28e7ed547694e66a7cc461536fcd2fd1f9ea2802bd56c0712",
+          "deployed_ids": [
+            "afae60208ffbf2f285515da47a41eafeb3531bcf"
+          ]
+        },
+        "build_processes": {
+          "returncode": 1,
+          "stdout": ""
+        },
+        "services": {
+          "returncode": 0,
+          "metadata": [
+            "MainPID=1415615",
+            "ExecMainStartTimestamp=Wed 2026-10-14 01:52:51 UTC",
+            "ActiveState=active",
+            "SubState=running",
+            "",
+            "MainPID=1415690",
+            "ExecMainStartTimestamp=Wed 2026-10-14 01:52:59 UTC",
+            "ActiveState=active",
+            "SubState=running"
+          ]
+        },
+        "schema": "tiingo.terminal955_actual_already_installed_later_release/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "merged_source_ancestor_of_installed_release": true,
+        "source_join_file": "terminal955-actual-protected-merge-and-canonical82-blob-join.json",
+        "source_join_sha256": "5b56b8f1529064236b0cae2618ed38723438e15e92ac70cce0f6b012db6dbf49",
+        "deployment_writes": 0,
+        "fresh_BOATS_trade_consumer_acceptance": false
+      }
+    }
+  },
+  "current_later_repair_join_actual_native_consumption": {
+    "tool_session": null,
+    "immediate_terminal_no_session_id_allocated": true,
+    "exit_code": 0,
+    "terminal_chunk": "60ffc6",
+    "actual_terminal_return_consumed": true,
+    "current_census_sha256": "c54a2c3c070d14c2a98ad5bd874de919e1704d177bcf0723ed203af67d03ea96",
+    "final_parent_sha256": "d9e6b93445b5ade0fb8295e47ef6c2d2a878ff7f5e979184aec5122685411561"
+  },
+  "finite_publication_preparation_actual_attempts": {
+    "file_sha256": "b60c721e5c4ec792afe92249c2fcffc930106020b2b5abca4c7d736198947d89",
+    "proof": {
+      "schema": "tiingo.original_finite_publication_preflight_actual_attempts/v1",
+      "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+      "recorded_at_utc": "2026-10-14T03:26:28.523066+00:00",
+      "original_finite_run": "tiingo-boats-publish-20261012-01a12ab6",
+      "finite_publisher_started": false,
+      "R2_PUT_requests": 0,
+      "Tiingo_requests": 0,
+      "attempts": [
+        {
+          "native_session": 16730,
+          "exit_code": 1,
+          "terminal_chunk": "c17b7a",
+          "actual_terminal_consumed": true,
+          "effect": "read-only VPS consumer preflight",
+          "cause": "source/marker mismatch during actual incumbent release; preserved source and builder"
+        },
+        {
+          "native_session": 27791,
+          "exit_code": 1,
+          "terminal_chunk": "f4d639",
+          "actual_terminal_consumed": true,
+          "effect": "read-only publisher preflight",
+          "error_class": "FileNotFoundError",
+          "cause": "dependent consumer receipt was absent; no R2 GET or publisher invocation"
+        },
+        {
+          "native_session": 38149,
+          "exit_code": 0,
+          "terminal_chunk": "ddcf35",
+          "actual_terminal_consumed": true,
+          "effect": "read-only current installed consumer preflight",
+          "proof_file": "terminal955-current-finite-publication-consumer-preflight01.json",
+          "proof_sha256": "712ee22d4b8c7169cc1f580be0f31022fea2846c86740c8859a469b28c1be782",
+          "installed_release": "5fa856bfad4819f5befc7af66488965abdc01c75",
+          "all10_consumer_and_builder_files_preserved": true
+        },
+        {
+          "native_session": 29700,
+          "exit_code": 1,
+          "terminal_chunk": "800473",
+          "actual_terminal_consumed": true,
+          "effect": "read-only publisher preflight",
+          "error_class": "HTTPError",
+          "exact_HTTP_status_retained": false,
+          "successful_public_relay_body_not_qualified": true,
+          "no_preflight_receipt_published": true
+        }
+      ],
+      "provider_refusal_status_not_inferred": true,
+      "no_alternate_URL_UserAgent_account_tool_or_TLS_used": true,
+      "status_diagnosis_pending": true,
+      "persistent_publication_refusal_remains_held": true
+    }
+  },
+  "current_consumer_after_incumbent_release": {
+    "sha256": "712ee22d4b8c7169cc1f580be0f31022fea2846c86740c8859a469b28c1be782",
+    "proof": {
+      "observed_at_utc": "2026-10-14T03:19:47.095834+00:00",
+      "read_only": true,
+      "canonical_source_head": "5fa856bfad4819f5befc7af66488965abdc01c75",
+      "deployed_marker": "5fa856bfad4819f5befc7af66488965abdc01c75",
+      "merged_source_ancestor_of_installed_release": true,
+      "installed_files": {
+        "hub/lib/extfeed.js": {
+          "sha256": "d1d37df326828e3040ce82ab577fc6e904587ab3caacbdc90ba1d43a8b243277",
+          "canonical_sha256": "d1d37df326828e3040ce82ab577fc6e904587ab3caacbdc90ba1d43a8b243277",
+          "exact": true
+        },
+        "hub/lib/quotes.js": {
+          "sha256": "744f60814053481bc20839fe868fdfb7efce1d6ee3c69377d277ef266a6b8ecd",
+          "canonical_sha256": "744f60814053481bc20839fe868fdfb7efce1d6ee3c69377d277ef266a6b8ecd",
+          "exact": true
+        },
+        "hub/lib/store.js": {
+          "sha256": "0be314c0c5dec623144205058fa2e8b23252fe772b01e8540909e8f691011498",
+          "canonical_sha256": "0be314c0c5dec623144205058fa2e8b23252fe772b01e8540909e8f691011498",
+          "exact": true
+        },
+        "terminal/app/api/ext-quote/route.ts": {
+          "sha256": "bd4e2ad9509d1006775c83c22b051ed1376204b337ad77a71220536b30b64ebc",
+          "canonical_sha256": "bd4e2ad9509d1006775c83c22b051ed1376204b337ad77a71220536b30b64ebc",
+          "exact": true
+        },
+        "terminal/app/api/quote/route.ts": {
+          "sha256": "289c3ac0d0d1932d8d3e565fd8da9a6be7fd8a6d9b42cbcb2ea37075efd42bd0",
+          "canonical_sha256": "289c3ac0d0d1932d8d3e565fd8da9a6be7fd8a6d9b42cbcb2ea37075efd42bd0",
+          "exact": true
+        },
+        "terminal/components/TerminalShell.tsx": {
+          "sha256": "d08af23dc9aec0a63e94446f5a189ee05b5e60e2cb7f28218aed0d62d59fd48f",
+          "canonical_sha256": "d08af23dc9aec0a63e94446f5a189ee05b5e60e2cb7f28218aed0d62d59fd48f",
+          "exact": true
+        },
+        "terminal/lib/extQuoteCopy.ts": {
+          "sha256": "dd9af6864d0c521b33f66658c79daf7581d77d7c70a2eca48e2cacbf007cad6e",
+          "canonical_sha256": "dd9af6864d0c521b33f66658c79daf7581d77d7c70a2eca48e2cacbf007cad6e",
+          "exact": true
+        },
+        "terminal/lib/extQuoteFreshness.ts": {
+          "sha256": "f860c445bdb9c9a42629c9f44a9fc3908ee4d31b9cd0ae810ff5a9c032595d76",
+          "canonical_sha256": "f860c445bdb9c9a42629c9f44a9fc3908ee4d31b9cd0ae810ff5a9c032595d76",
+          "exact": true
+        },
+        "terminal/lib/liveCandle.ts": {
+          "sha256": "7e8cd7df90b520ad369bb1a315033a042787b45426b7e90ab7b4d6d1151f191d",
+          "canonical_sha256": "7e8cd7df90b520ad369bb1a315033a042787b45426b7e90ab7b4d6d1151f191d",
+          "exact": true
+        },
+        "ops/terminal-build.sh": {
+          "sha256": "5cb27b816d5360e795eb5852dac910a9fdcfa883f2496fca24e838891c501021",
+          "canonical_sha256": "5cb27b816d5360e795eb5852dac910a9fdcfa883f2496fca24e838891c501021",
+          "exact": true
+        }
+      },
+      "local_html": {
+        "status": 200,
+        "deployed_ids": [
+          "5fa856bfad4819f5befc7af66488965abdc01c75"
+        ],
+        "sha256": "7310095a47ced3709826727babf92bdd9cff9bdb22a21566e59b5b64f120ecc9"
+      },
+      "public_html": {
+        "status": 200,
+        "deployed_ids": [
+          "5fa856bfad4819f5befc7af66488965abdc01c75"
+        ],
+        "sha256": "99ce64ac4d22fa9f850f8361e808fbb98651e1cc4239c85ca4e2b17a855a76bc"
+      },
+      "services": {
+        "terminal.service": {
+          "MainPID": "1482670",
+          "ExecMainStartTimestamp": "Wed 2026-10-14 03:17:28 UTC",
+          "ActiveState": "active",
+          "SubState": "running"
+        },
+        "quote-hub.service": {
+          "MainPID": "1415690",
+          "ExecMainStartTimestamp": "Wed 2026-10-14 01:52:59 UTC",
+          "ActiveState": "active",
+          "SubState": "running"
+        }
+      },
+      "build_processes": {
+        "returncode": 1,
+        "stdout": ""
+      },
+      "schema": "tiingo.current_finite_publisher_installed_consumer_preflight/v1",
+      "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+      "deployment_writes": 0
+    }
+  },
+  "fourteen_later_diagnostic_and_QA": {
+    "tiingo-fourteen-diagnostic-capture-actual-parent-consumption.json": {
+      "sha256": "f30f3579d44dec5a97fc710d528a02f9766c51e9174d783c42bfe6091809c0b3",
+      "actual_record": {
+        "schema": "tiingo.actual_separate_finite_technical_repair_capture_terminal_parent_consumption/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "recorded_at_utc": "2026-10-14T04:46:16.697806+00:00",
+        "run_id": "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6",
+        "original_tool_session": 83517,
+        "original_exit_code": 0,
+        "actual_original_terminal_chunk": "c27e64",
+        "actual_original_terminal_return_consumed": true,
+        "actual_result_sha256": "6a58cb292c0e70108eb52b5020ce9608e7b6e913cb28b5593fe30d515bc25a60",
+        "actual_scope_sha256": "37eba6b7326041799ef306f377eaa9d027c9ed7b4474d0055039cbae51e8c30f",
+        "capture_method_sha256": "da26100f39e78fd35f842ab62032444b9c490f662b83a94b7f6525e622bf4c7f",
+        "actual_ready_parent_sha256": "c30f9b75da1f045a23d2f0293d98706a0a324afd0e271a0596fd8dc2843eb692",
+        "actual_fresh_quota_sha256": "e6de92a23b7887412b98ad8d4d2f45f1c25b126cfdacb2516cd7e2316d5c5eba",
+        "attempted": 14,
+        "successful": 14,
+        "failed": 0,
+        "never_in_new_repair_scope": 0,
+        "new_row_hints": 34423,
+        "new_raw_bytes": 7647396,
+        "original_fourteen_failed_attempts_and_old_unknown_causes_unchanged": true,
+        "original_six_phase_conservation_unchanged": true,
+        "original_preadmission90730_terminal_unknown_not_reconstructed": true,
+        "actual_admission_ledger_and_exact_window_partition_verified": true,
+        "maximum_additional_attempts_per_request": 1,
+        "normalization_and_QA_yet": false,
+        "automatic_successor_repair": false,
+        "programme_acceptance_claimed": false
+      }
+    },
+    "eod-fourteen-settled-transport-later-diagnostic-prefix01-preflight-parent-consumption02.json": {
+      "sha256": "f5cc1380320b5b7814083d76fc2ec45c06dff9809ab3a015104b15a3ad8b8138",
+      "actual_record": {
+        "schema": "tiingo.preflight_actual_root_acceptance/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "recorded_at_utc": "2026-10-14T05:01:27.292126+00:00",
+        "original_tool_session": 44723,
+        "original_preflight_exit_code": 0,
+        "actual_terminal_chunk": "7ae296",
+        "actual_preflight_return_consumed": true,
+        "preflight_sha256": "8af4cb0372c70962a67e09c93636c4021c6f6229ad0595230532fb33a98511cc",
+        "method_sha256": "fb027fc3bae4fedd5b3b7ff70842a7f66ce4468fd99ca580ce2d063ef19104c3",
+        "observed_wait_sha256": "b94b371e9e1422aa5dc07ca560e97e354cd3b0d7678cfdcedcad9eb42b347bb5",
+        "validation_sha256": "05e32be9b1886919076eb103f33b62a16b3f85881123037e4771e3fcd62d5d06",
+        "valid": 14,
+        "quality": 0,
+        "rows": 34423,
+        "raw_bytes": 7647396,
+        "normalization_slots_verified_absent": 56,
+        "original_failed_preflight01_preserved": true,
+        "normalization_or_programme_acceptance": false
+      }
+    },
+    "tiingo-fourteen-diagnostic-prefix01-qualify01-actual-root-acceptance.json": {
+      "sha256": "c1b6cf26273129c94a7e219f0dd9951615a8b9ca45cacecf099e9ca9272aa6be",
+      "actual_record": {
+        "schema": "tiingo.finite_qualification_actual_root_acceptance/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "recorded_at_utc": "2026-10-14T05:03:21.342567+00:00",
+        "original_tool_session": 29316,
+        "original_exit_code": 0,
+        "actual_original_terminal_chunk": "f97a7d",
+        "actual_original_terminal_return_consumed": true,
+        "method_sha256": "fb027fc3bae4fedd5b3b7ff70842a7f66ce4468fd99ca580ce2d063ef19104c3",
+        "observed_wait_sha256": "091973ed408273ea75713439b1663df7f6c10d14421e5ec09be7de9b89aead46",
+        "validation_sha256": "e6da1ced438b09b6647e150b82f4f3367427997d5a25d73ef87e4616ff2eab4e",
+        "qualification_file": "eod-fourteen-settled-transport-later-diagnostic-prefix01-qualified.json",
+        "qualification_sha256": "f9f108d427ad62b574e7da123e1be40366b0ecca673b22822f367393ad0f36c1",
+        "valid": 14,
+        "quality": 0,
+        "new_bars": 34423,
+        "all_new_full_reader_results_equal_normalized_raw": true,
+        "original_failed_attempts_and_QA01_failure_retained": true,
+        "programme_acceptance_claimed": false
+      }
+    },
+    "tiingo-fourteen-later-diagnostic-actual-final-parent-consumption.json": {
+      "sha256": "470dc7fabd1d8eed9ef054f3f9aa9695b4da4fab0328e9f025295829dfc30a4d",
+      "actual_record": {
+        "schema": "tiingo.fourteen_later_diagnostic_actual_pipeline_parent_consumption/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "recorded_at_utc": "2026-10-14T05:04:40.471051+00:00",
+        "run_id": "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6",
+        "method_sha256": "fb027fc3bae4fedd5b3b7ff70842a7f66ce4468fd99ca580ce2d063ef19104c3",
+        "input_sha256": {
+          "tiingo-fourteen-diagnostic-capture-actual-parent-consumption.json": "f30f3579d44dec5a97fc710d528a02f9766c51e9174d783c42bfe6091809c0b3",
+          "eod-fourteen-settled-transport-later-diagnostic-prefix01-preflight-parent-consumption02.json": "f5cc1380320b5b7814083d76fc2ec45c06dff9809ab3a015104b15a3ad8b8138",
+          "tiingo-fourteen-diagnostic-prefix01-qualify01-actual-root-acceptance.json": "c1b6cf26273129c94a7e219f0dd9951615a8b9ca45cacecf099e9ca9272aa6be",
+          "tiingo-fourteen-diagnostic-prefix01-coverage01-launch-packet.json": "00cc881b9e1269223ade7d41183ea490c36feeace07f1e3e27b980876f25142c",
+          "tiingo-fourteen-diagnostic-prefix01-coverage01-observed-wait.json": "b66744b64c15db2cb316929930256fe437d10d286e5c47d6033edb4d7e1af78d",
+          "tiingo-fourteen-diagnostic-prefix01-coverage01-validation.json": "a03fc8b8f2b7ae8c998b35d854329190f9b0b53e7d8ae940a4903425865246c5",
+          "eod-qualified-catalogue-coverage-fourteen-settled-transport-later-diagnostic-prefix01-delta.json": "e28d1918ed3d0ed2446c3bdb2849bcb60890243415257f7193e843139798fd2b",
+          "eod-fourteen-settled-transport-later-diagnostic-prefix01-qualified.json": "f9f108d427ad62b574e7da123e1be40366b0ecca673b22822f367393ad0f36c1",
+          "tiingo-fourteen-preflight01-actual-failure-and-day-directory-remedy01.json": "eacacc40f8d11145cb6c49139cfb8509b2c32b5d9bfc564d702f1137556e9249",
+          "tiingo-fourteen-original-validation-expiry-same-operation-reconciliation01.json": "ef53c54aeba4d2134bac51b27b841d3a1a8f2c76ef6e3153e8d113897842df74",
+          "eod-wave15-original-six-phase-final-disposition-partition-accounting.json": "78974f63c410f4e39b176a487a1e790f4c78ba6f725ec240b0ab75d7b5b62d69"
+        },
+        "actual_capture_session": 83517,
+        "actual_capture_exit_code": 0,
+        "actual_capture_return_consumed": true,
+        "actual_failed_preflight01_session": 2419,
+        "actual_failed_preflight01_exit_code": 1,
+        "actual_failed_preflight01_return_consumed_and_effect_reconciled": true,
+        "actual_preflight02_session": 44723,
+        "actual_preflight02_exit_code": 0,
+        "actual_preflight02_return_consumed": true,
+        "actual_qualifier_session": 29316,
+        "actual_qualifier_exit_code": 0,
+        "actual_qualifier_return_consumed": true,
+        "actual_coverage_tool_session": null,
+        "actual_coverage_exit_code": 0,
+        "actual_coverage_terminal_chunk": "d9e393",
+        "immediate_coverage_terminal_no_session_allocated": true,
+        "actual_coverage_terminal_return_consumed": true,
+        "qualified_successes": 14,
+        "new_bars": 34423,
+        "new_raw_bytes": 7647396,
+        "failed_new_provider_requests": 0,
+        "never_admitted_new_requests": 0,
+        "new_quality_quarantines": 0,
+        "current_histories": 47564,
+        "current_distinct_bars": 100626945,
+        "current_candidate_status": {
+          "NONEMPTY_DESIRED_REQUEST_WINDOWS_CAPTURED": 47564,
+          "CAPTURED_EMPTY_RESPONSE": 117,
+          "UNCAPTURED_CATALOGUE_WINDOW": 5,
+          "CAPTURED_SOURCE_QUALITY_QUARANTINED": 3
+        },
+        "remaining_explicit_provider_and_quality_holds": [
+          "DTV_1",
+          "DVVDF",
+          "DVXB",
+          "DVYA",
+          "EA",
+          "RBGPF",
+          "SCNG",
+          "WTFNF"
+        ],
+        "all_current_repair_QA_effects_verified_and_accepted": true,
+        "all_current_repair_capture_and_QA_returns_consumed": true,
+        "original4392_six_phase_accounting_unchanged": true,
+        "original14_failures_and11_unknown_causes_preserved": true,
+        "original_validation90730_terminal_unknown_and_not_reconstructed": true,
+        "original_QA22925_91287_terminals_unknown_and_not_reconstructed": true,
+        "provider_retries_after_this_success_authorized": false,
+        "PIT_or_canonical_identity_admitted": false,
+        "full_programme_acceptance": false,
+        "current_census_sha256": "e28d1918ed3d0ed2446c3bdb2849bcb60890243415257f7193e843139798fd2b"
+      }
+    },
+    "tiingo-fourteen-preflight01-actual-failure-and-day-directory-remedy01.json": {
+      "sha256": "eacacc40f8d11145cb6c49139cfb8509b2c32b5d9bfc564d702f1137556e9249",
+      "actual_record": {
+        "schema": "tiingo.actual_preflight_failure_and_owned_missing_directory_remedy/v1",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "recorded_at_utc": "2026-10-14T04:56:45.406998+00:00",
+        "run_id": "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6",
+        "original_preflight_native_session": 2419,
+        "original_exit_code": 1,
+        "actual_terminal_chunk": "1e6929",
+        "actual_terminal_consumed": true,
+        "original_wait_sha256": "9ef45415b60d4ee5395fe4b6f13c98dcb16db9da3fbed8e7a3e7e261c22369f9",
+        "original_validation_sha256": "9630d7bd765e45634126f1ef2a5c94e38653d392d419033d40d1713ea3169b74",
+        "original_unvalidated_snapshot_sha256": "812408d0ffdee48037bc52f85a200b85919392ffdcf24076bcee0bc29d9a74aa",
+        "missing_archive_day": "2026-10-14",
+        "failed_stage_archive_projection_writes": 0,
+        "created_empty_directories": [
+          {
+            "path": "/Volumes/Mastermind/market-data/tiingo/manifests/eod-bars/2026-10-14",
+            "identity": [
+              16777252,
+              222673201,
+              16832
+            ]
+          },
+          {
+            "path": "/Volumes/Mastermind/market-data/tiingo/normalized/eod-bars/2026-10-14",
+            "identity": [
+              16777252,
+              222673202,
+              16832
+            ]
+          }
+        ],
+        "existing_ancestor_identities_preserved": true,
+        "raw_and_original_control_files_preserved": true,
+        "no_source_integrity_assertion_weakened": true,
+        "provider_requests": 0,
+        "credentials_read": false,
+        "automatic_retry": false,
+        "same_operation_continuation_review_owed": true
+      }
+    },
+    "tiingo-fourteen-original-validation-expiry-same-operation-reconciliation01.json": {
+      "sha256": "ef53c54aeba4d2134bac51b27b841d3a1a8f2c76ef6e3153e8d113897842df74",
+      "actual_record": {
+        "schema": "tiingo.same_operation_pre_admission_terminal_unavailable_reconciliation/v1",
+        "recorded_at_utc": "2026-10-14T04:33:30.714538+00:00",
+        "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+        "run_id": "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6",
+        "original_native_tool_session": 90730,
+        "original_process_id": 33370,
+        "actual_READY_consumed_chunk": "9606fb",
+        "original_ready_sha256": "873d5c748ca315e20fbb819ef6e680b9ef0a97d2799f28ea8175dd6821cf9d47",
+        "original_ready_validated_at_utc": "2026-10-14T04:08:19.420490+00:00",
+        "original_quota_wait_seconds": 300,
+        "binding_prepared_at_utc": "2026-10-14T04:12:22Z",
+        "first_binding_write_attempt_at_utc": "2026-10-14T04:32:05.749Z",
+        "first_binding_tool_response": "Unknown process id 90730",
+        "binding_delivery": false,
+        "scoped_original_pid_read_exit_code": 1,
+        "original_source_scoped_lsof_exit_code": 1,
+        "scoped_stdout_stderr_empty": true,
+        "effect_slots_lstat_absent": [
+          "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-scope.json",
+          "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-result.json",
+          "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-execution.log"
+        ],
+        "loaded_method_sha256": "4f81f872366953974eb2b73f9661b405dc4583fba27a2d8701d37b54b0677489",
+        "source_effect_ordering": "Complete binding and its hashchecks, freshnamespace/source/account checks -> exclusive execution log -> exclusive capture scope -> read_key -> finiteadmission. No provider or key access is reachable before these exclusive scope/log publications. No binding accepted and both slots absent.",
+        "provider_attempts_reachable": 0,
+        "original_terminal_exit_code": null,
+        "original_terminal_return_consumed": false,
+        "missing_terminal_not_reconstructed": true,
+        "old_ready_and_bindings_preserved": true,
+        "permission_or_safety_refusal_observed": false,
+        "universal_process_absence_claimed": false,
+        "provider_retry_started": false,
+        "rearm_review_still_owed": true
+      }
+    }
+  }
+}

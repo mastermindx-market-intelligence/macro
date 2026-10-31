@@ -1,0 +1,538 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermindx.local/contracts/news_impact/cost_counters.v1.schema.json",
+  "title": "news_impact.cost_counters.v1",
+  "description": "Per-stage and run-level counters for the 600-case cost-cascade measurement. No confidence, score, probability, price target, or fair value fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "authority",
+    "run_id",
+    "sampling_seed",
+    "tape_sha",
+    "n_labeled",
+    "stages",
+    "run",
+    "scale_gates"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "news_impact.cost_counters.v1"
+    },
+    "authority": {
+      "type": "string",
+      "const": "context_only"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "sampling_seed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tape_sha": {
+      "type": "string",
+      "minLength": 7,
+      "maxLength": 64
+    },
+    "n_labeled": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "ceiling_authority": {
+      "type": "string",
+      "enum": [
+        "proposed_not_authorized",
+        "authorized",
+        "exhausted"
+      ]
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": {
+        "$ref": "#/$defs/stage_counters"
+      }
+    },
+    "run": {
+      "$ref": "#/$defs/run_counters"
+    },
+    "scale_gates": {
+      "$ref": "#/$defs/scale_gates"
+    },
+    "cases": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "$ref": "#/$defs/case_row"
+      }
+    }
+  },
+  "$defs": {
+    "nonneg_int": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "usd": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "stage_id": {
+      "type": "string",
+      "enum": [
+        "ingestion",
+        "deterministic_screen_dedup",
+        "compact_extraction",
+        "validation",
+        "issuer_exposure_lookup",
+        "deterministic_mechanism",
+        "stronger_adjudication",
+        "frontier_thesis_review",
+        "consumers"
+      ]
+    },
+    "model_tier_class": {
+      "type": "string",
+      "enum": [
+        "deterministic",
+        "cheap",
+        "stronger",
+        "frontier"
+      ]
+    },
+    "routing_disposition": {
+      "type": "string",
+      "enum": [
+        "process",
+        "cache_hit",
+        "stop_duplicate",
+        "stop_low_value",
+        "stop_not_material_delta",
+        "stop_unresolved_issuer",
+        "extract_complete",
+        "validate_complete",
+        "validate_reject",
+        "lookup_complete",
+        "lookup_absence",
+        "mechanism_complete",
+        "mechanism_absence",
+        "adjudicate_complete",
+        "frontier_complete",
+        "consume_complete",
+        "defer_budget",
+        "defer_capacity",
+        "defer_body_unavailable",
+        "defer_rights",
+        "reject",
+        "audit_sample"
+      ]
+    },
+    "escalation_reason": {
+      "type": "string",
+      "enum": [
+        "none",
+        "material_issuer_relative_change",
+        "disputed_high_consequence_fact",
+        "unfamiliar_mechanism",
+        "contradiction_to_active_thesis",
+        "time_sensitive_adverse_information",
+        "audit_reserve_draw"
+      ]
+    },
+    "inference_state": {
+      "type": "string",
+      "enum": [
+        "not_required",
+        "completed",
+        "deferred",
+        "rejected"
+      ]
+    },
+    "stage_counters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage_id",
+        "model_tier_class",
+        "n_offered",
+        "n_complete",
+        "n_cache_hit",
+        "n_defer_budget",
+        "n_defer_capacity",
+        "n_defer_body_unavailable",
+        "n_reject",
+        "n_envelope_exceeded",
+        "sum_input_tokens",
+        "sum_output_tokens",
+        "sum_est_cost_usd"
+      ],
+      "properties": {
+        "stage_id": {
+          "$ref": "#/$defs/stage_id"
+        },
+        "model_tier_class": {
+          "$ref": "#/$defs/model_tier_class"
+        },
+        "n_offered": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_complete": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_cache_hit": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_defer_budget": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_defer_capacity": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_defer_body_unavailable": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_reject": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_envelope_exceeded": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "sum_input_tokens": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "sum_output_tokens": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "sum_est_cost_usd": {
+          "$ref": "#/$defs/usd"
+        }
+      }
+    },
+    "run_counters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "n_raw",
+        "n_low_value",
+        "n_identity_dup",
+        "n_cluster_dup",
+        "n_eligible",
+        "n_first",
+        "n_cluster_rep",
+        "n_body_unavail",
+        "n_material_delta",
+        "n_extract",
+        "n_extract_complete",
+        "n_escalate",
+        "n_audit",
+        "n_audit_starved",
+        "n_frontier",
+        "n_terminal",
+        "n_deferred_budget",
+        "n_stage_order_violation",
+        "reduction_ratio",
+        "sum_est_cost_usd",
+        "usd_day_max",
+        "day_would_bind",
+        "month_would_bind",
+        "reject_audit_miss_rate",
+        "n_audit_rejects",
+        "n_audit_rejects_labeled_material",
+        "accounting_identity_ok"
+      ],
+      "properties": {
+        "n_raw": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_low_value": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_identity_dup": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_cluster_dup": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_eligible": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_first": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_cluster_rep": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_body_unavail": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_material_delta": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_extract": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_extract_complete": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_escalate": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_audit": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_audit_starved": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_frontier": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_terminal": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_deferred_budget": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_stage_order_violation": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "reduction_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "sum_est_cost_usd": {
+          "$ref": "#/$defs/usd"
+        },
+        "usd_day_max": {
+          "$ref": "#/$defs/usd"
+        },
+        "day_would_bind": {
+          "type": "boolean"
+        },
+        "month_would_bind": {
+          "type": "boolean"
+        },
+        "reject_audit_miss_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "n_audit_rejects": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "n_audit_rejects_labeled_material": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "accounting_identity_ok": {
+          "type": "boolean"
+        }
+      }
+    },
+    "scale_gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accounting_identity",
+        "stage_order_violation_ok",
+        "material_event_recall",
+        "critical_numeric_correctness",
+        "unsupported_ticker_to_supplier",
+        "reject_audit_miss_rate",
+        "reduction_ratio",
+        "scale_permitted"
+      ],
+      "properties": {
+        "accounting_identity": {
+          "type": "boolean"
+        },
+        "stage_order_violation_ok": {
+          "type": "boolean"
+        },
+        "material_event_recall": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "critical_numeric_correctness": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "unsupported_ticker_to_supplier": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "reject_audit_miss_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reduction_ratio": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "scale_permitted": {
+          "type": "boolean"
+        }
+      }
+    },
+    "case_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "item_id",
+        "stage_terminal",
+        "routing_disposition",
+        "escalation_reason",
+        "inference_state",
+        "cache_hit",
+        "input_tokens",
+        "output_tokens",
+        "est_cost_usd",
+        "model_tier_class"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "group_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        },
+        "fold": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 32
+        },
+        "template_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        },
+        "item_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "company_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^cik:[0-9]{10}$"
+        },
+        "stage_terminal": {
+          "$ref": "#/$defs/stage_id"
+        },
+        "routing_disposition": {
+          "$ref": "#/$defs/routing_disposition"
+        },
+        "escalation_reason": {
+          "$ref": "#/$defs/escalation_reason"
+        },
+        "inference_state": {
+          "$ref": "#/$defs/inference_state"
+        },
+        "cache_hit": {
+          "type": "boolean"
+        },
+        "n_rungs_attempted": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "input_tokens": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "output_tokens": {
+          "$ref": "#/$defs/nonneg_int"
+        },
+        "est_cost_usd": {
+          "$ref": "#/$defs/usd"
+        },
+        "model_tier_class": {
+          "$ref": "#/$defs/model_tier_class"
+        },
+        "prompt_version": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        },
+        "schema_version": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        },
+        "rights_profile": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        },
+        "supersedes_fact_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^fact_[0-9a-f]{24}$"
+        },
+        "body_available": {
+          "type": "boolean"
+        },
+        "audit_stratum": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "rejected_low_value",
+            "stop_duplicate",
+            "stop_not_material_delta",
+            "extracted_not_escalated",
+            "validate_reject",
+            "deferred_any"
+          ]
+        },
+        "audit_drawn": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

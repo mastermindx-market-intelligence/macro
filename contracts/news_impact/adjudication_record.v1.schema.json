@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermindx.market-intelligence/schemas/prophet_ni/adjudication_record.v1.json",
+  "title": "Adjudication record v1 — residual disagreement after the third labeler",
+  "description": "Written by the seat or a human when, after the third labeler (third model family) has labeled the case, at least one critical field still has no majority (freeze PHASE0_FREEZE_2026-10-11.md section 7). One record per disagreeing field. No confidence, probability or score field exists anywhere in this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "case_id",
+    "template",
+    "field",
+    "values",
+    "ruling",
+    "resolved_value",
+    "reason",
+    "adjudicator"
+  ],
+  "properties": {
+    "schema": { "const": "adjudication_record.v1" },
+    "case_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "template": {
+      "enum": [
+        "capital_allocation_event.v1",
+        "demand_guidance_contract_event.v1",
+        "strategic_product_partnership_event.v1"
+      ]
+    },
+    "field": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "values": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "description": "The three labelers' values for this field, in draft order (family one, family two, third family). Each keeps its own span or typed absence.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["labeler_family", "value", "source_span", "typed_absence"],
+        "properties": {
+          "labeler_family": { "type": "string", "minLength": 1, "maxLength": 64 },
+          "value": {},
+          "source_span": { "anyOf": [{ "type": "object" }, { "type": "null" }] },
+          "typed_absence": { "anyOf": [{ "type": "object" }, { "type": "null" }] }
+        }
+      }
+    },
+    "ruling": {
+      "enum": ["first", "second", "third", "none_of_the_above", "unresolvable_defer"],
+      "description": "first/second/third = the adjudicator adopts that labeler's value; none_of_the_above = the adjudicator rules a different value (recorded in resolved_value); unresolvable_defer = the source cannot decide the field (the case is deferred, never relabeled silently)."
+    },
+    "resolved_value": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "source_span", "typed_absence"],
+      "properties": {
+        "value": {},
+        "source_span": { "anyOf": [{ "type": "object" }, { "type": "null" }] },
+        "typed_absence": { "anyOf": [{ "type": "object" }, { "type": "null" }] }
+      },
+      "description": "The adopted value with its span or typed absence. For ruling first/second/third this repeats that labeler's entry verbatim."
+    },
+    "reason": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "adjudicator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Seat id or human adjudicator id. Never a model confidence proxy; the adjudicator owns the ruling."
+    }
+  }
+}

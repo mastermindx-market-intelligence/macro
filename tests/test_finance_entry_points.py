@@ -186,6 +186,48 @@ def test_sector_partial_names_follow_the_page_language():
         )
 
 
+# The watching statement is pinned directly from
+# tests/fixtures/finance_case_signal/synthesis_v0.json:15 (the alpha case's
+# `primary_limit`). FIN-1's engine/sector_intelligence/finance_watching.py is
+# NOT on this seed, so this lane pins the fixture string instead of importing
+# shell_watching_items; follow-up once FIN-1 lands: cross-check
+# shell_watching_items()[0]["statement"] == ALPHA_PRIMARY_LIMIT here.
+ALPHA_PRIMARY_LIMIT = "Synthetic limit: a measured description is not a measured cause."
+
+
+def test_sector_card_names_the_admitted_watching_statement():
+    """W10-FIN-3: the Theme Tracker sector deep-dive card shows the admitted
+    alpha synthetic statement as a bilingual "What we are watching" line
+    tagged data-state-falsifier="NOT_YET_EVALUABLE". The WATCHING token must
+    not appear, names stay aria-labelledby/-describedby over l-en/l-zh, and
+    the existing aria id set must remain a subset of the aria refs."""
+    import json as _json
+    fixture = _json.loads(
+        (REPO_ROOT / "tests" / "fixtures" / "finance_case_signal" / "synthesis_v0.json")
+        .read_text(encoding="utf-8")
+    )
+    alpha = next(c for c in fixture["cases"] if c["case_id"] == "syn-case-alpha")
+    assert alpha["primary_limit"] == ALPHA_PRIMARY_LIMIT, (
+        "the pinned watching statement drifted from the alpha fixture"
+    )
+    html = _render_partial(SECTOR_PARTIAL)
+    assert ALPHA_PRIMARY_LIMIT in html, (
+        "the card must name the alpha fixture primary_limit verbatim"
+    )
+    assert 'data-state-falsifier="NOT_YET_EVALUABLE"' in html, (
+        "the watching line must carry the admitted falsifier state"
+    )
+    assert "WATCHING" not in html, "the WATCHING token must not appear"
+    assert "aria-label=" not in html, (
+        "accessible names stay aria-labelledby/-describedby, never aria-label"
+    )
+    refs = re.findall(r'aria-(?:labelledby|describedby)="([^"]+)"', html)
+    ids = [i for ref in refs for i in ref.split()]
+    assert {"fi-sdd-head", "fi-sdd-name", "fi-sdd-cta", "fi-sdd-story"} <= set(ids), (
+        "the existing aria-referenced id set must remain a subset of aria refs"
+    )
+
+
 # ---------------------------------------------------------------------------
 # (3) Tracker render — canonical theme count unchanged, Finance link in region
 # ---------------------------------------------------------------------------

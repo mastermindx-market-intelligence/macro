@@ -1,0 +1,28 @@
+{
+  "candidate_git_head": "c174507305bdb8170665fd535263805e59e6e4ce",
+  "default_opened_outcomes": false,
+  "elapsed_seconds": 6.649,
+  "implementation_kind": "SOURCE_CANDIDATE_NOT_INSTALLED",
+  "macro_events": 11,
+  "market_rows": 25,
+  "matches_retained_dossier": true,
+  "opened_refs": [
+    "web_test_runs:market-time-machine-20261015-v2/manifest.json",
+    "web_test_runs:market-time-machine-20261015-v2/states-2022.parquet",
+    "web_test_runs:market-time-machine-20261015-macro/initial-prints.json"
+  ],
+  "query_receipt_sha256": "7a999b1ea881c51bb093bff37e4e7e14c10a7598bbcf80c08e286789850bdfab",
+  "request": {
+    "action": "history_dossier",
+    "date": "2022-09-13",
+    "macro_ref": "web_test_runs:market-time-machine-20261015-macro/initial-prints.json",
+    "macro_sha256": "21d432846cf6d7d2c41d39cf4df75b8faa39e0afe7bb6c629b14066819b5f5f1",
+    "manifest_sha256": "31f61ea6dc152265d3e9ed2d955068e8d914b1f82b990804ad5efb0b68b5ecd0",
+    "ref": "web_test_runs:market-time-machine-20261015-v2/manifest.json"
+  },
+  "response_bytes": 40660,
+  "schema": "market_memory.history_transport_canary.v1",
+  "source_access": "read_only",
+  "subprocess_exit": 0,
+  "working_tree_changes": true
+}

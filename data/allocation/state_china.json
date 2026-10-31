@@ -6,10 +6,10 @@
     "cn_coal"
   ],
   "held": [
-    "cn_banks",
-    "cn_coal"
+    "cn_coal",
+    "cn_banks"
   ],
-  "leader": "cn_banks",
+  "leader": "cn_coal",
   "names": {
     "cn_ai_compute": "AI Compute & Optics",
     "cn_appliances": "Home Appliances",

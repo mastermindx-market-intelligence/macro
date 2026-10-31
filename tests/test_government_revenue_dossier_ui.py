@@ -13,13 +13,14 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = (ROOT / "templates" / "government_revenue.html.j2").read_text(encoding="utf-8")
+PAGE_JS = (ROOT / "templates" / "government-revenue-page.js.j2").read_text(encoding="utf-8")
+STARTUP_JS = (ROOT / "templates" / "government-revenue-investor-start.js").read_text(encoding="utf-8")
 DOSSIER_JS = (ROOT / "templates" / "government-revenue-dossiers.js").read_text(encoding="utf-8")
 needs_node = pytest.mark.skipif(shutil.which("node") is None, reason="node not on PATH")
 
 
 def test_dossier_ui_is_progressive_and_semantically_precise() -> None:
     for marker in (
-        'data-sync src="government-revenue-dossiers.js"',
         'id="dossierBook"',
         "Official award book",
         "Stable award identity",
@@ -40,12 +41,14 @@ def test_dossier_ui_is_progressive_and_semantically_precise() -> None:
         "schema_version!=='1.0.0'",
         "generation_mismatch",
     ):
-        assert marker in TEMPLATE or marker in DOSSIER_JS
+        assert marker in TEMPLATE or marker in PAGE_JS or marker in DOSSIER_JS
 
     assert "win probability" not in DOSSIER_JS.lower()
     assert "bidder score" not in DOSSIER_JS.lower()
     assert "curated_fuzzy_name" not in DOSSIER_JS
-    assert TEMPLATE.count('id="dossierBook"') == 1
+    assert PAGE_JS.count('id="dossierBook"') == 1
+    assert "asset_url('government-revenue-investor-start.js')" in TEMPLATE
+    assert "'government-revenue-dossiers.js'" in STARTUP_JS
 
 
 @needs_node
@@ -705,21 +708,27 @@ OK_RESPONDER = "Promise.resolve({ok:true,status:200,json:function(){return Promi
 
 
 def test_identity_atlas_mounts_on_both_company_inspector_paths_only() -> None:
-    """One host, both company paths, no new page / nav / header family."""
-    assert TEMPLATE.count('id="identityAtlas"') == 1
-    assert TEMPLATE.count("identityAtlasSection()") == 3  # definition + 2 call sites
-    assert "createGovernmentRevenueIdentityAtlas" in TEMPLATE
+    """One host, both company paths and identity context, no new navigation."""
+    assert PAGE_JS.count('id="identityAtlas"') == 1
+    assert PAGE_JS.count("identityAtlasSection()") == 4  # definition + two company paths + source identity context
+    assert "createGovernmentRevenueIdentityAtlas" in PAGE_JS
     assert "global.createGovernmentRevenueIdentityAtlas=function(api)" in DOSSIER_JS
 
     # Both company inspector paths mount it, and both hand it the same ticker they hand
     # the award book — an Atlas that loads on one path only is the D2 acceptance gap.
-    assert "atlasUI.loadCompany(atlasTicker)" in TEMPLATE
-    assert "dossierUI.loadCompany(ticker);atlasUI.loadCompany(ticker);" in TEMPLATE
-    assert TEMPLATE.count("identityAtlasSection()+dossierBookSection()") == 2
+    assert "atlasUI.loadCompany(atlasTicker)" in PAGE_JS
+    assert "dossierUI.loadCompany(ticker);atlasUI.loadCompany(ticker);" in PAGE_JS
+    assert PAGE_JS.count("identityAtlasSection()+dossierBookSection()") == 2
     # Identity is read before the award tape, never after it.
-    assert "dossierBookSection()+identityAtlasSection()" not in TEMPLATE
+    assert "dossierBookSection()+identityAtlasSection()" not in PAGE_JS
     # Leaving a company inspector must not leave a stale path behind.
-    assert TEMPLATE.count("atlasUI.invalidate()") == 3
+    assert PAGE_JS.count("atlasUI.invalidate()") == 4
+
+    identity_context = PAGE_JS.split("function renderIdentityContextInspector(")[1].split("function ", 1)[0]
+    assert "identityAtlasSection()" in identity_context
+    assert "atlasUI.loadCompany(ticker)" in identity_context
+    assert "dossierBookSection()" not in identity_context
+    assert "dossierUI.loadCompany" not in identity_context
 
     # Cookie plane, not the bearer plane: no Authorization header is ever attached.
     assert "government-revenue-data/identity_atlas.json" in DOSSIER_JS
@@ -734,7 +743,7 @@ def test_identity_atlas_mounts_on_both_company_inspector_paths_only() -> None:
     assert TEMPLATE.count('{% include "_site_nav.html.j2" %}') == 1
     assert "_public_nav" not in TEMPLATE
     for banned in ("scrollIntoView", "identity_atlas.html", "identityAtlas.html"):
-        assert banned not in TEMPLATE + DOSSIER_JS, banned
+        assert banned not in TEMPLATE + PAGE_JS + DOSSIER_JS, banned
 
 
 def test_identity_atlas_state_inks_and_broken_rail_are_declared() -> None:
@@ -1013,7 +1022,7 @@ def test_identity_atlas_copy_is_bilingual_and_never_speaks_of_refutation() -> No
     atlas_source = DOSSIER_JS.split("createGovernmentRevenueIdentityAtlas")[1].split(
         "global.createGovernmentRevenueBudget"
     )[0]
-    implementation = TEMPLATE + atlas_source
+    implementation = TEMPLATE + PAGE_JS + atlas_source
     for english, chinese in (
         ("Identity Atlas", "身份图谱"),
         ("Tracing the identity path", "正在追踪身份路径"),

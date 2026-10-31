@@ -176,6 +176,49 @@ def test_forming_narratives_mounted_at_end_of_explore() -> None:
     assert "_forming_narratives" not in movement, "forming panel still in MOVEMENT too"
 
 
+def test_shared_forming_narratives_fails_closed_when_asset_requires_sign_in() -> None:
+    """An anonymous asset 401 must not throw ReferenceError on the public page.
+
+    Observed on the real US Sector Intelligence page 2026-10-17: the optional
+    forming_narratives.js request returned HTTP 401, but the shared include
+    invoked its missing global unconditionally.  Keep the existing asset URL
+    and authorized render path unchanged; make missing-script init fail soft.
+    """
+    src = _read(TPL / "_forming_narratives.html.j2")
+    assert '<script src="forming_narratives.js"></script>' in src
+    assert 'typeof window.renderFormingNarratives === "function"' in src
+    assert 'window.renderFormingNarratives({ base:' in src
+    assert 'renderFormingNarratives({ base:' in src
+
+
+def test_forming_narratives_initializer_waits_for_deferred_asset() -> None:
+    """The site optimizer marks the shared script defer: the caller must wait.
+
+    A same-document inline typeof check runs before a deferred 200 response is
+    executed and silently drops authenticated rendering.  The 401 path must
+    remain error-free, without changing the protected asset URL.
+    """
+    src = _read(TPL / "_forming_narratives.html.j2")
+    assert '<script src="forming_narratives.js"></script>' in src
+    assert 'document.addEventListener("DOMContentLoaded"' in src
+    assert 'typeof window.renderFormingNarratives === "function"' in src
+
+
+def test_generated_forming_narratives_matches_deferred_init_contract() -> None:
+    """The checked-in generated page must carry the source fix before a new
+    sector build can pass the independent market-vintage publication gate.
+    """
+    html = _read(ROOT / "site" / "sector_central.html")
+    assert html.count('<section id="forming-narratives"></section>') == 1
+    part = html.split('<section id="forming-narratives"></section>', 1)[1]
+    part = part.split('<!-- W2a:', 1)[0]
+    assert 'forming_narratives.js?v=' in part
+    assert ' defer></script>' in part
+    assert 'document.addEventListener("DOMContentLoaded"' in part
+    assert 'typeof window.renderFormingNarratives === "function"' in part
+    assert 'window.renderFormingNarratives({ base: "basketdata/" });' in part
+
+
 def test_forming_narratives_asset_copied_by_builder() -> None:
     """The panel loads forming_narratives.js relative to the page, so the US builder
     must copy it into site/ like its sibling MOVEMENT donors."""
@@ -761,3 +804,103 @@ def test_focused_basket_mode_stops_before_unrelated_tail() -> None:
     tail = src.index("from scripts.build_anticipation import main as _build_anticipation")
     assert guard < tail
     assert "return 0" in src[guard:tail]
+
+
+def test_truncated_as_of_is_not_usable(tmp_path: Path) -> None:
+    # scripts/check_sector_intelligence_freshness.py:86 emits "no usable as_of".
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof="2026-09-140", action_asof="2026-09-14"
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is False, report
+    assert any(
+        "no usable as_of" in error and "2026-09-140" in error
+        for error in report["errors"]
+    ), report
+
+
+def test_trailing_garbage_as_of_is_not_usable(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof="2026-09-14X", action_asof="2026-09-14"
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is False, report
+    assert any(
+        "no usable as_of" in error and "2026-09-14X" in error
+        for error in report["errors"]
+    ), report
+
+
+def test_html_comment_does_not_supply_data_si_attrs(tmp_path: Path) -> None:
+    # tests/test_sector_intelligence_page.py:358-style helper; the real facts key
+    # is "site/sector_central.html:data-si-as-of" (product line 156).
+    _write_sector_intelligence_generation(
+        tmp_path, action_asof="2026-09-14", html_asof="2026-09-14"
+    )
+    html_path = tmp_path / "site" / "sector_central.html"
+    body = html_path.read_text(encoding="utf-8")
+    html_path.write_text(
+        '<!-- data-si-as-of="2020-01-01" -->\n' + body, encoding="utf-8"
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is True, report
+    facts_key = "site/sector_central.html:data-si-as-of"
+    assert report["facts"]["dates"][facts_key] == "2026-09-14", report
+
+
+def test_full_timestamp_as_of_still_parses(tmp_path: Path) -> None:
+    stamp = "2026-09-14T21:05:00Z"
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof=stamp, action_asof=stamp
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is True, report
+    assert report["facts"]["as_of"] == "2026-09-14", report
+
+
+def test_non_datetime_separator_as_of_is_not_usable(tmp_path: Path) -> None:
+    # Discriminates the T/space guard (scripts/check_sector_intelligence_freshness.py
+    # :43). "2026-09-14Z" is a valid fromisoformat timestamp once "Z" is rewritten,
+    # but its 11th char is not "T"/space, so the gate must still reject it.
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof="2026-09-14Z", action_asof="2026-09-14"
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is False, report
+    assert any(
+        "no usable as_of" in error and "2026-09-14Z" in error
+        for error in report["errors"]
+    ), report
+
+
+def test_text_between_two_html_comments_is_still_read(tmp_path: Path) -> None:
+    # A greedy strip would run from the first opener to the last closer and
+    # take the real attributes with it.
+    _write_sector_intelligence_generation(
+        tmp_path, action_asof="2026-09-14", html_asof="2026-09-14"
+    )
+    html_path = tmp_path / "site" / "sector_central.html"
+    body = html_path.read_text(encoding="utf-8")
+    html_path.write_text(
+        "<!-- note one -->\n" + body + "\n<!-- note two -->", encoding="utf-8"
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is True, report
+    facts_key = "site/sector_central.html:data-si-as-of"
+    assert report["facts"]["dates"][facts_key] == "2026-09-14", report
+
+
+def test_unclosed_html_comment_hides_data_si_attrs(tmp_path: Path) -> None:
+    # A browser treats an unclosed comment as running to end of document, so
+    # attributes after it are not on the rendered page.
+    _write_sector_intelligence_generation(
+        tmp_path, action_asof="2026-09-14", html_asof="2026-09-14"
+    )
+    html_path = tmp_path / "site" / "sector_central.html"
+    body = html_path.read_text(encoding="utf-8")
+    html_path.write_text("<!-- draft\n" + body, encoding="utf-8")
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is False, report
+    assert any(
+        "missing data-si-as-of" in error for error in report["errors"]
+    ), report

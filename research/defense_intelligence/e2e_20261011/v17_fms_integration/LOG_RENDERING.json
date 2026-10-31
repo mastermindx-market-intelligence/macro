@@ -1,0 +1,7 @@
+{
+  "inherited-ci.diff.gz": {
+    "raw_bytes": 30776,
+    "raw_sha256": "4b3947e0ddb27ea771b6ff7f3af2de9f248f1ced8701ea967b001726f8cd1f15",
+    "reason": "Lossless retained diff contains whitespace-only context lines; preserve exact bytes as gzip, no presentation edits."
+  }
+}

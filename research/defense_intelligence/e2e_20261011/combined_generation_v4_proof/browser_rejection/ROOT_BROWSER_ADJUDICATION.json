@@ -1,0 +1,33 @@
+{
+  "state": "LOCAL_CANDIDATE_REJECTED_FOR_PERFORMANCE_AND_MOBILE_DENSITY",
+  "candidate_head": "d9af0853114c32ef4e8d1cd8959eb228641ef61a",
+  "generation": "2026-10-14T03:12:45.197758+00:00",
+  "root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "accepted_proof_preserved": "178898fa2f23ada7cf39b1389913ec18b6d823b48a7585454421dc626060cb31",
+  "proof_scope": "104 passed, 1 conditional skip; immutable candidate semantic proof, not browser performance or product acceptance",
+  "reasons": [
+    "All ten defined cold browser samples exceed the unchanged 3000 ms target; median 3438.55 ms and p95/max 3482.30 ms.",
+    "Settled 500-row mobile feed is unbounded: EN dark queue 52889 px and page 68529 px; six expanded themes 11312 px. No-overflow and ready checks did not establish readable density."
+  ],
+  "retained_functional_scope": "24 matrix cells and two RTX source/deep-link cases passed; these narrower results do not override the two rejections.",
+  "next_action": "Repair queue bounds and semantic theme disclosure, and measure final-bundle minification. Re-render through the existing site-only owner without refreshing source clocks. Require actual browser remeasurement and new full immutable proof after source changes.",
+  "release_authorized_by_this_receipt": false,
+  "source_evidence": {
+    "V4_LOCAL_ACCEPTANCE_RESULT.json": {
+      "sha256": "dd91251323dfdf6cc189a2f5f17dad26cbe90c12cb415dfd2050782fbe05e7ea",
+      "bytes": 10250
+    },
+    "TIMING_V4_COLD10.json": {
+      "sha256": "5734172170b67e5f75f62a3d53a37a00e7ad20d4d5327a30b2f202b7b027f764",
+      "bytes": 59364
+    },
+    "TIMING_V4_CRITICAL_PATH.json": {
+      "sha256": "b3284a3cc42186855b75df103fb588d9b7ff7de8a35267af3c3cb71a2be7dc10",
+      "bytes": 8364
+    },
+    "V4_MOBILE_DENSITY_DIAGNOSIS.json": {
+      "sha256": "46e9954ed673b8e5875005a121f4c390402af15c2be41c819ab527ae83095c74",
+      "bytes": 12915
+    }
+  }
+}

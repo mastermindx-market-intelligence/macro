@@ -1,0 +1,54 @@
+WARNING run_press: press: slot press-official-cd2747adeed2 quarantined — validators: close_paraphrase, our_value, banned_lexicon
+::notice title=press_staging::press staging: 0 passed, 1 quarantined of 1 planned (tokens 2739/24000)
+::warning title=press_staging_empty::press staging produced NO passing draft — every planned slot was quarantined or dropped. A thin day is legal; a permanently thin lane is a defect. Check data/press/staging/ for reasons.
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-38fd7e103e6f status quarantined (public article approval: false — no emit path)
+{
+  "staged": true,
+  "rail": "private_official_feed",
+  "run_date": "2026-10-14",
+  "status": "quarantined",
+  "staging_path": "data/press/staging/press-official-cd2747adeed2.json",
+  "public_article_approved": false,
+  "allow_emit": false,
+  "cadence": {
+    "consumed_before": 0,
+    "ceiling": 2
+  },
+  "writer_state": {
+    "calls": 1,
+    "failures": 0,
+    "consecutive_failures": 0,
+    "circuit_open": false,
+    "tokens_used": 2739,
+    "token_budget": 24000
+  },
+  "summary": {
+    "run_at": "2026-10-14T02:10:30Z",
+    "as_of": "2026-10-14",
+    "planned": 1,
+    "passed": 0,
+    "quarantined": 1,
+    "items": [
+      {
+        "id": "press-official-cd2747adeed2",
+        "desk": "brief",
+        "status": "quarantined",
+        "reason": "validators: close_paraphrase, our_value, banned_lexicon"
+      }
+    ],
+    "writer_state": {
+      "calls": 1,
+      "failures": 0,
+      "consecutive_failures": 0,
+      "circuit_open": false,
+      "tokens_used": 2739,
+      "token_budget": 24000
+    }
+  },
+  "candidate_id": "press-external-38fd7e103e6f",
+  "staged_slot_id": "press-official-cd2747adeed2",
+  "source_ref": "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+  "feed_sha256": "16f504bdb14bc85c9efc16dadaa7ee3bb152cc09b3556bfb4d898396a47831e6",
+  "qualification_sha256": "3b0745bc924394750c0e5767c5d36656e9bab5a7ec5f0ca426c74add45e26240",
+  "event_date": "2026-10-13"
+}

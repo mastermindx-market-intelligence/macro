@@ -1,0 +1,111 @@
+{
+  "schema": "defense.combined_generation_v13_adjudication.v1",
+  "candidate_source": "fc04588278e12b5e693cbea72fea3193986f78d1",
+  "integrated_main": "04028b3030205b6f7508d7f0d16e2a2ecaa6f4c6",
+  "proof": {
+    "receipt_sha256": "ad6a18ed8197285157df8ef57cad512d15175ee9a19ce73bc5f7d6be758caed4",
+    "identity": "01f5e8b87ec5e313a1d0ba3991e348b6fa21279a51153739a0fb22c36236ec10",
+    "passed": 104,
+    "skipped": 1,
+    "collected": 105,
+    "source_dependencies": 7600,
+    "outputs": 109,
+    "committed_verification": "passed"
+  },
+  "affected_checks": "316 passed; earlier concurrent-render data guard failure retained in v13_main_integration and fixed by serialized rerun",
+  "canonical_ci_scope_checks": "4 passed; no ceiling changes",
+  "browser": {
+    "states": 24,
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "widths": [
+      1440,
+      820,
+      390
+    ],
+    "finance_and_six_themes_ready": true,
+    "response_errors": 0,
+    "console_errors": 0,
+    "horizontal_overflow": false,
+    "parent_visual_samples": 2,
+    "independent_acceptance": false,
+    "access": "explicit local test principal; manifest capture access label anonymous is not installed entitlement"
+  },
+  "performance": {
+    "target_ms": 3000,
+    "first_batch": {
+      "within_target": 9,
+      "n": 10,
+      "median_ms": 2790.0,
+      "max_ms": 3217.1000000089407,
+      "all_pass": false
+    },
+    "instrumented_complete_batch": {
+      "within_target": 10,
+      "n": 10,
+      "median_ms": 2791.9500000029802,
+      "max_ms": 2816.300000011921,
+      "all_pass": true
+    },
+    "combined_complete_batches": {
+      "n": 20,
+      "within_target": 19,
+      "median_ms": 2791.9500000029802,
+      "p95_ms": 2828.2000000029802,
+      "max_ms": 3217.1000000089407
+    },
+    "interrupted_diagnostic": "Excluded incomplete batch6/10 due principal early server stop; preserved as invalid, not application failure.",
+    "instrumentation_limits": "Second diagnostic server exit did not retain final loop journal. Browser long-task evidence retained; exact cause of first-batch outlier not established. First batch server journal shows concurrent local font/finance delays. No target amendment, source or payload rewrite.",
+    "installed_proof": false,
+    "cached_reader_local": {
+      "all_pass": true,
+      "concurrent_readers": 10,
+      "requests_per_route": 100,
+      "routes": {
+        "/api/government-revenue/dossier/company/LMT": {
+          "p95_ms": 187.9098750068806,
+          "max_ms": 193.77758300106507,
+          "same_bytes": true,
+          "pass": true
+        },
+        "/api/government-revenue/defense-economics": {
+          "p95_ms": 509.0729169896804,
+          "max_ms": 543.8005830073962,
+          "same_bytes": true,
+          "pass": true
+        },
+        "/government-revenue-data/program-dossier.json": {
+          "p95_ms": 33.59554200142156,
+          "max_ms": 37.65524999471381,
+          "same_bytes": true,
+          "pass": true
+        }
+      },
+      "request_journal_retained": true,
+      "installed_claim": false
+    }
+  },
+  "hosted_ci": {
+    "run_id": 38544633791,
+    "head": "fc04588278e12b5e693cbea72fea3193986f78d1",
+    "last_observed": "in_progress",
+    "required_failures_observed": [
+      "ci-pack-3:stock-dashboard-first-frame receipt binding",
+      "ci-pack-10:p0b-receipt-closure same-diff receipt binding"
+    ],
+    "watcher_started": false,
+    "local_repair": "v13_main_integration/p0b_receipt_repair/ADJUDICATION.json"
+  },
+  "original_carrier": 7175,
+  "delivery_carrier": 9066,
+  "release": "NOT_MERGED_NOT_PUBLISHED_NOT_INSTALLED",
+  "financial_owner_CAS": "NOT_INVOKED",
+  "full_product_acceptance": false,
+  "next": "Conclude exact-head protected CI, source review and release gates; observe first natural publisher before financial-owner CAS; preserve outstanding capacity, oversight, research, saved workflow and entitled acceptance obligations."
+}

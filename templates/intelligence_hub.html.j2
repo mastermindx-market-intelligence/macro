@@ -659,7 +659,24 @@
       {% if d.catalyst and d.catalyst.live %}<div class="foot">{{ ic('cal') }} {{ d.catalyst.category|e }}{% if d.catalyst.days_since is not none %} · {{ d.catalyst.days_since }}{{ t('d ago','天前') }}{% endif %}</div>{% endif %}
     </div>{% endfor %}
   </div>
-  {% else %}<div class="empty">{{ t('Nothing emerging today — the tape is led by names that have already moved.', '今日无萌芽机会 —— 盘面由已经发动的标的主导。') }}</div>{% endif %}
+  {% else %}
+  {% set CNT = hub.counts or {} %}
+  {% set N = (CNT.get('early') or 0) + (CNT.get('emerging') or 0) %}
+  <div class="empty">
+    {% if N > 0 %}
+    {{ t('Nothing on this strip today — ' ~ N
+         ~ ' early name(s) on the board did not pass its checks.',
+         '今日本栏为空 —— 盘面有 ' ~ N ~ ' 个早期标的未通过本栏检查。') }}
+    {%- for d in (hub.command or []) if d.get('stage') in ('early', 'emerging') %}
+    {%- set tr = d.get('trajectory') or {} %}
+    <span class="tk">{{ d.ticker }}</span> ·
+      {%- if tr.get('rolling_over') %}{{ t('price rolling over', '价格转弱') }}
+      {%- elif not d.get('entry_gate') %}{{ t('no entry check yet', '尚无入场检查') }}
+      {%- else %}{{ t('entry checks did not agree', '入场条件不一致') }}{% endif %}
+    {%- endfor %}
+    {% else %}{{ t('Nothing emerging today.', '今日无萌芽机会。') }}{% endif %}
+  </div>
+  {% endif %}
 
   {# ── DISCOVERY — leading signals the desks dropped or never read ── #}
   {% if hub.discovery %}
@@ -779,10 +796,25 @@
         <div class="trcell" data-tip-en="Does a higher rank from this page actually go with a better return {{ h }} trading days later, measured against SPY? Above zero = yes.{% if ic_pooled %} Thin sample here, so the value is pooled across horizons (~).{% endif %}" data-tip-zh="本页排名越高，{{ h }} 个交易日后相对标普的收益是否真的越好？大于零 = 是。{% if ic_pooled %}该周期样本较少，取跨周期合并值（~）。{% endif %}">
           <span class="trlab">{{ t('rank skill', '排名预测力') }}</span>
           <b class="trval {{ 'pos' if ic_v is not none and ic_v > 0 else 'neg' if ic_v is not none and ic_v < 0 else '' }}">{% if ic_v is not none %}{{ '%+.3f'|format(ic_v) }}{{ '~' if ic_pooled else '' }}{% else %}—{% endif %}</b>
+          {% set q = MC.get('quad') %}
+          {% set reg = (e.get('by_regime') or {}).get(q) if q else none %}
+          {% if reg is not none and reg.get('opportunity_ic') is not none and reg.get('n') %}
+          {% set reg_ic = '%+.3f'|format(reg.opportunity_ic) %}
+          {% set reg_n = '{:,}'.format(reg.n) %}
+          <span class="trlab">{{ t('this regime (' ~ q ~ ') ' ~ reg_ic ~ ' · n ' ~ reg_n,
+            '本格局 ' ~ q ~ ' ' ~ reg_ic ~ ' · n ' ~ reg_n) }}</span>
+          {% endif %}
         </div>
         <div class="trcell" data-tip-en="Calls that have reached this horizon and been scored" data-tip-zh="已到期并完成评分的判断数">
           <span class="trlab">{{ t('scored', '已评分') }}</span>
           <b class="trval">{{ '{:,}'.format(e.n_matured) }}</b>
+          {% set cov = (TR.coverage_pct or {}).get(h) %}
+          {% if cov and cov.get('coverage_pct') is not none and cov.get('n_eligible') %}
+          {% set cov_pct = '%.0f'|format(cov.coverage_pct) %}
+          {% set cov_el = '{:,}'.format(cov.n_eligible) %}
+          <span class="trlab">{{ t('%s%% of %s eligible'|format(cov_pct, cov_el),
+            '占可评分 %s 条的 %s%%'|format(cov_el, cov_pct)) }}</span>
+          {% endif %}
         </div>
         {% if stg.get('emerging') %}{% set em = stg.emerging.mean_fwd_rel*100 %}
         <div class="trcell" data-tip-en="Average return against SPY for names this page tagged 'emerging'. A real edge shows up positive." data-tip-zh="被标记「萌芽」的标的相对标普的平均收益。真实优势应为正。">
@@ -797,7 +829,88 @@
       </div>
     </div>{% endif %}{% endfor %}
   </div>
+  {# Discovery leads (W20-L2): how each feed's past leads did against SPY. Context only. #}
+  {% set fd_src = ((TR.horizons or {}).get('21') or {}).get('by_source') or {} %}
+  {% if fd_src %}
+  {% set fd_tip_en = "How each feed's Discovery leads did against SPY afterwards. "
+    ~ 'Every day a name sits on the list is scored once, so long-listed names count '
+    ~ 'many times. Context only: it does not reorder the Discovery list.' %}
+  {% set fd_tip_zh = '各来源的发掘线索之后相对标普的表现。标的每在列表上一天即计分一次，'
+    ~ '因此长期在列的标的会被多次计入。仅作参考，不改变发掘列表的排序。' %}
+  {% set fd_cell_en = 'Average return against SPY 21 trading days after this feed listed '
+    ~ 'a name. Above zero = its leads beat SPY on average.' %}
+  {% set fd_cell_zh = '该来源列出标的后 21 个交易日相对标普的平均收益。大于零 = 其线索平均跑赢标普。' %}
+  <div class="card trc trsrc">
+    <div class="th"><span class="h">{{ t('Discovery leads · 21d', '发掘线索 · 21天') }}</span>
+      <span class="chip" data-tip-en="{{ fd_tip_en }}" data-tip-zh="{{ fd_tip_zh }}">
+        {{- t('context', '参考') -}}</span></div>
+    <div class="trg">
+      {% for fd_name, s in fd_src|dictsort %}
+      {% if s.get('n') and s.get('mean_fwd_rel') is not none %}
+      {% set fd_v = s.mean_fwd_rel * 100 %}
+      <div class="trcell" data-tip-en="{{ fd_cell_en }}" data-tip-zh="{{ fd_cell_zh }}">
+        <span class="trlab">{{ fd_name|replace('_', ' ')|e }}</span>
+        <b class="trval {{ 'pos' if fd_v > 0 else 'neg' if fd_v < 0 else '' }}">
+          {{- '%+.1f'|format(fd_v) }}%</b>
+        <span class="trans {{ 'ok' if fd_v > 0 else 'bad' if fd_v < 0 else '' }}">
+          {{- t('beat SPY', '跑赢标普') if fd_v > 0 else t('lagged SPY', '跑输标普')
+            if fd_v < 0 else t('matched SPY', '持平标普') -}}</span>
+        {% set fd_hit = s.get('hit_rate') %}
+        <span class="trlab">n {{ '{:,}'.format(s.n) }}
+          {%- if fd_hit is not none %} · {{ t('%.0f%% of leads beat SPY'|format(fd_hit * 100),
+            '%.0f%% 的线索跑赢标普'|format(fd_hit * 100)) }}{% endif %}</span>
+        {% set fd_ns = namespace(en=[], zh=[]) %}
+        {% for h2, e2 in TR.horizons.items() %}{% if h2 != '21' %}
+        {% set fd_o = (e2.get('by_source') or {}).get(fd_name) or {} %}
+        {% if fd_o.get('n') and fd_o.get('mean_fwd_rel') is not none %}
+        {% set fd_ov = '%+.1f'|format(fd_o.mean_fwd_rel * 100) ~ '%' %}
+        {% set fd_ns.en = fd_ns.en + [h2 ~ 'd ' ~ fd_ov] %}
+        {% set fd_ns.zh = fd_ns.zh + [h2 ~ '天 ' ~ fd_ov] %}
+        {% endif %}{% endif %}{% endfor %}
+        {% if fd_ns.en %}
+        <span class="trlab">{{ t(fd_ns.en|join(' · '), fd_ns.zh|join(' · ')) }}</span>
+        {% endif %}
+      </div>
+      {% endif %}{% endfor %}
+    </div>
+  </div>
   {% endif %}
+  {% set ag = TR.accrual_gaps or {} %}
+  {% if ag.get('n_missing', 0) >= 1 and ag.get('n_expected') %}
+  <div class="card note">
+    <b>{{ t('Snapshot gaps', '快照缺口') }}</b> —
+    {{ t('%d of %d expected snapshot dates in the last %d days have no snapshot.'|format(
+      ag.n_missing, ag.n_expected, ag.window_days),
+      '近 %d 天预期的 %d 个快照日中，有 %d 个没有快照。'|format(
+      ag.window_days, ag.n_expected, ag.n_missing)) }}
+    {% if ag.get('approximate') %}{{ t(
+      'Approximate: market holidays count as missing, so this over-reports.',
+      '为近似值：市场假日也计为缺失，因此偏高。') }}{% endif %}
+  </div>
+  {% endif %}
+  {% endif %}
+  {% endif %}
+
+  {# Signal governor strip — desk history is measuring; counts only. #}
+  {% set SG = hub.signal_governor or {} %}
+  {% set SG_SIGNALS = SG.signals if SG.signals is mapping else none %}
+  {% if SG_SIGNALS %}
+  <div class="card note">
+    <b>{{ t('Desk-history check', '信号台历史检查') }}</b> —
+    {% set ND = SG.n_demoted or 0 %}
+    {% if ND >= 1 %}
+    {{ ND }} {{ t('signal(s) currently weighted down by their own scored history.',
+    '个信号因自身评分记录而被降权。') }}
+    {% else %}
+    {{ t('measuring; not currently pulling any names down.', '测量中；目前未下调任何标的。') }}
+    {% endif %}
+    {% for sk, sv in SG_SIGNALS.items() %}
+    {% set SEN = {'hub': 'this page', 'radar': 'radar'}.get(sk) %}
+    {% set SZH = {'hub': '本页', 'radar': '雷达'}.get(sk) %}
+    <span class="chip">{% if SEN %}{{ t(SEN, SZH) }}{% else %}{{ sk }}{% endif %}
+    {{ '{:,}'.format(sv.n_matured or 0) }} {{ t('scored', '已评分') }}</span>
+    {% endfor %}
+  </div>
   {% endif %}
 
   {# UNIFIED FORWARD DESK GRADER — Tier-3 mechanics, shipped folded #}
@@ -826,6 +939,13 @@
   <footer class="hf">
     {{ t('Built', '生成于') }} <time datetime="{{ built }}">{{ built[:16].replace('T',' ') }}</time> UTC ·
     {% if hub.n_universe %}{{ t('scanned', '扫描') }} <span class="f">{{ '{:,}'.format(hub.n_universe) }}</span> {{ t('names', '标的') }} · {% endif %}
+    {% set US = hub.universe_scope or {} %}
+    {% if US.applied and US.n_excluded is not none %}
+    <span class="f">{{ '{:,}'.format(US.n_excluded) }}</span>
+    {{ t('non-US names excluded', '只非美股标的未纳入') }}
+    {% if US.roster_date %}{{ t('(roster ' ~ US.roster_date ~ ')',
+      '（名册 ' ~ US.roster_date ~ '）') }}{% endif %} ·
+    {% endif %}
     {{ hub.disclaimer|e }}
   </footer>
 </div>

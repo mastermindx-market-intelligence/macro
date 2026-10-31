@@ -22,7 +22,7 @@
       "additionalProperties": false,
       "required": ["kind", "scope"],
       "properties": {
-        "kind": {"type": "string", "enum": ["common_shares_outstanding", "public_float"]},
+        "kind": {"type": "string", "enum": ["common_shares_outstanding", "public_float", "common_shares_authorized", "common_shares_issued", "common_shares_reserved_for_future_issuance"]},
         "scope": {"const": "direct_sec_companyfacts_fact"}
       }
     },
@@ -32,7 +32,7 @@
       "required": ["namespace", "name", "unit", "scale", "source_value_encoding"],
       "properties": {
         "namespace": {"type": "string", "enum": ["us-gaap", "dei"]},
-        "name": {"type": "string", "enum": ["CommonStockSharesOutstanding", "EntityCommonStockSharesOutstanding", "EntityPublicFloat"]},
+        "name": {"type": "string", "enum": ["CommonStockSharesOutstanding", "EntityCommonStockSharesOutstanding", "EntityPublicFloat", "CommonStockSharesAuthorized", "CommonStockSharesIssued", "CommonStockCapitalSharesReservedForFutureIssuance"]},
         "unit": {"type": "string", "minLength": 1},
         "scale": {"const": "1"},
         "source_value_encoding": {"const": "companyfacts_actual_units"}
@@ -242,12 +242,36 @@
       "then": {"properties": {"security_class": {"properties": {"state": {"const": "not_security_specific"}, "classification": {"const": "not_security_specific"}, "basis": {"const": "companyfacts_fact_has_no_security_class"}}}}}
     },
     {
+      "if": {"properties": {"metric": {"properties": {"kind": {"const": "common_shares_authorized"}}, "required": ["kind"]}}, "required": ["metric"]},
+      "then": {"properties": {"security_class": {"properties": {"state": {"const": "concept_semantic"}, "classification": {"const": "common_stock"}, "basis": {"const": "xbrl_concept_semantics"}}}}}
+    },
+    {
+      "if": {"properties": {"metric": {"properties": {"kind": {"const": "common_shares_issued"}}, "required": ["kind"]}}, "required": ["metric"]},
+      "then": {"properties": {"security_class": {"properties": {"state": {"const": "concept_semantic"}, "classification": {"const": "common_stock"}, "basis": {"const": "xbrl_concept_semantics"}}}}}
+    },
+    {
+      "if": {"properties": {"metric": {"properties": {"kind": {"const": "common_shares_reserved_for_future_issuance"}}, "required": ["kind"]}}, "required": ["metric"]},
+      "then": {"properties": {"security_class": {"properties": {"state": {"const": "concept_semantic"}, "classification": {"const": "common_stock"}, "basis": {"const": "xbrl_concept_semantics"}}}}}
+    },
+    {
       "if": {"properties": {"metric": {"properties": {"kind": {"const": "common_shares_outstanding"}}, "required": ["kind"]}, "state": {"properties": {"disposition": {"const": "observed"}}, "required": ["disposition"]}}, "required": ["metric", "state"]},
       "then": {"properties": {"fact": {"properties": {"unit": {"const": "shares"}}}, "reported": {"properties": {"unit": {"const": "shares"}}}, "normalized": {"properties": {"unit": {"const": "shares"}}}}}
     },
     {
       "if": {"properties": {"metric": {"properties": {"kind": {"const": "public_float"}}, "required": ["kind"]}, "state": {"properties": {"disposition": {"const": "observed"}}, "required": ["disposition"]}}, "required": ["metric", "state"]},
       "then": {"properties": {"fact": {"properties": {"unit": {"const": "USD"}}}, "reported": {"properties": {"unit": {"const": "USD"}}}, "normalized": {"properties": {"unit": {"const": "USD"}}}}}
+    },
+    {
+      "if": {"properties": {"metric": {"properties": {"kind": {"const": "common_shares_authorized"}}, "required": ["kind"]}, "state": {"properties": {"disposition": {"const": "observed"}}, "required": ["disposition"]}}, "required": ["metric", "state"]},
+      "then": {"properties": {"fact": {"properties": {"unit": {"const": "shares"}}}, "reported": {"properties": {"unit": {"const": "shares"}}}, "normalized": {"properties": {"unit": {"const": "shares"}}}}}
+    },
+    {
+      "if": {"properties": {"metric": {"properties": {"kind": {"const": "common_shares_issued"}}, "required": ["kind"]}, "state": {"properties": {"disposition": {"const": "observed"}}, "required": ["disposition"]}}, "required": ["metric", "state"]},
+      "then": {"properties": {"fact": {"properties": {"unit": {"const": "shares"}}}, "reported": {"properties": {"unit": {"const": "shares"}}}, "normalized": {"properties": {"unit": {"const": "shares"}}}}}
+    },
+    {
+      "if": {"properties": {"metric": {"properties": {"kind": {"const": "common_shares_reserved_for_future_issuance"}}, "required": ["kind"]}, "state": {"properties": {"disposition": {"const": "observed"}}, "required": ["disposition"]}}, "required": ["metric", "state"]},
+      "then": {"properties": {"fact": {"properties": {"unit": {"const": "shares"}}}, "reported": {"properties": {"unit": {"const": "shares"}}}, "normalized": {"properties": {"unit": {"const": "shares"}}}}}
     },
     {
       "if": {"properties": {"version": {"properties": {"correction_version": {"const": 1}}, "required": ["correction_version"]}}, "required": ["version"]},

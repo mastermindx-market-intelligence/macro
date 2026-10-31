@@ -1,0 +1,45 @@
+{
+  "operation": "private-installed-1905",
+  "recorded_at": "2026-10-20T19:03:18.807013+00:00",
+  "script_sha256": "33351fba89ededc211cbf2af53b1cacb08cb80c77151ced2757ea32db3e2930b",
+  "remote_exit": 0,
+  "remote_stderr_present": false,
+  "remote_stderr_bytes": 0,
+  "scope": "read-only metadata; no provider, stage, queue, configuration, receipt or service writes",
+  "result": {
+    "observed_at": "2026-10-20T19:03:18.835973+00:00",
+    "head": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+    "private_merge_ancestor": true,
+    "source_sha256": {
+      "engine/press/qbus_news.py": "b4e75e83697ec4b629313dfd593830fc41040326c3da2e9b4c168dc684540947",
+      "engine/press/writer.py": "895fea2a5f135562bf8e61d3393eca1cb0e665c77808d44937eafd0ddd648be6",
+      "scripts/run_press.py": "46e7761acbfb0f8cd8fe10c8ac51f18d196a651a0ccc023b8dcf77a1208171d2",
+      "tests/test_press_run.py": "5827148fc6e899c191a5a8dca562103f3df909498eb749e164dba1c1ae367cc3"
+    },
+    "all_private_sources_match": true,
+    "cli_flag_source_present": true,
+    "services": {
+      "macro-api.service": {
+        "MainPID": "3265686",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Tue 2026-10-20 18:06:28 UTC",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "macro-ticker-news.service": {
+        "MainPID": "3227108",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Tue 2026-10-20 17:23:57 UTC",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "terminal.service": {
+        "MainPID": "3255147",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Tue 2026-10-20 17:56:50 UTC",
+        "ActiveState": "active",
+        "SubState": "running"
+      }
+    }
+  }
+}

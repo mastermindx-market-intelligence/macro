@@ -1,0 +1,29 @@
+{
+  "fixture_kind": "SYNTHETIC_NOT_LIVE_ACQUISITION_NOT_A_RIGHTS_GRANT",
+  "entity_bytes_hex": "3c68746d6c3e3c626f64793e53796e74686574696320636166e92072656c656173652e3c2f626f64793e3c2f68746d6c3e",
+  "decoded_text": "<html><body>Synthetic caf\u00e9 release.</body></html>",
+  "acquisition_receipt": {
+    "schema": "earnings_release.sec_acquisition.v1",
+    "filing_key": {
+      "cik": "0000320193",
+      "accession": "0000320193-26-000001"
+    },
+    "requested_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/ex991.htm",
+    "final_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/ex991.htm",
+    "redirect_policy": "sec_https_same_filing_max5.v1",
+    "redirects": [],
+    "http_status": 200,
+    "body_representation": "requests.content_after_content_decoding",
+    "content_type": "text/html; charset=iso-8859-1",
+    "content_encoding": null,
+    "declared_charset": "iso-8859-1",
+    "entity_sha256": "22d7f80de53c409996a343fd5915246bc2607daee62c0f8cb74a9354966890a6",
+    "entity_length": 49,
+    "decoder": "latin-1",
+    "decode_errors": "strict",
+    "decode_policy": "utf8_strict_then_latin1_strict",
+    "source_sha256": "1e122c0a743a092e315d30b85300163ee755cba4b90d54902b62d1deaf8fe4fb",
+    "source_utf8_length": 50,
+    "acquired_at": "2026-01-01T00:00:00Z"
+  }
+}

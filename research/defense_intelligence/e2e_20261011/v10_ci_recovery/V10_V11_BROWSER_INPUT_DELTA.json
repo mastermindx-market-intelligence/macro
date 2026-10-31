@@ -1,0 +1,55 @@
+{
+  "html_identical": true,
+  "asset_hashes": {
+    "government-revenue-dossiers.js": {
+      "v10": "bed6e6782fa6398523d884bd2c233daf78526c1c3aaf15f135a9826afa8cb212",
+      "v11": "f9595530460433319e977b97e415ca61e734948aaa069f43115d734fa3411e14"
+    }
+  },
+  "source_hashes": {
+    ".github/workflows/government-revenue-live.yml": {
+      "v10": null,
+      "v11": "e6f2941f9efaf638d8bc82592a6f5cf38d9b0323db2e8c2dd087b08052aa1376"
+    },
+    "config/dag.yml": {
+      "v10": null,
+      "v11": "d8f153cb24f66ee601e04c2d716e7ba3cc94f0e7919785eaae5e47921b7ac731"
+    },
+    "tests/test_ci_pack.py": {
+      "v10": null,
+      "v11": "0223a50ac5ba9c850dbf27bcfd8efa09031888c55bb9327d75b70c80aa38540b"
+    },
+    ".github/ci/legacy-jobs.yml": {
+      "v10": null,
+      "v11": "85cef6c932bb9200b9b195928cc8b4686c71027310159cc543c3aa9ca0ff3508"
+    },
+    "tests/test_prophet_card_shared.py": {
+      "v10": null,
+      "v11": "353e1d42d9f530b112de6ed3ab656be12f77cc9783ec4e80d26c13d0ec06554d"
+    },
+    "tests/test_government_revenue_priority.cjs": {
+      "v10": "721b0c6a087ca6349fed1a28ff2da46248e05bb6ac319d32b3a725d69959fc30",
+      "v11": "2bf8614308e7386ef9592a3e8a726e1dc1248635170115891ca840ce6173720d"
+    },
+    "tests/test_government_revenue_company_bridge.py": {
+      "v10": null,
+      "v11": "fa3a7cd1b3be76d4ade37b90cbb30abbc1b6ce5caa782c246ba16b54b003dbec"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": {
+      "v10": null,
+      "v11": "e0b0c3f8644b99548b723252f951791e1cb142efb7e2a5fdd9362c3fa912b7f2"
+    },
+    "tests/test_dag_conformance.py": {
+      "v10": null,
+      "v11": "ce224860f1ea1d7504b75146df3a98fa7dd1327808016625d664772fd3cb266b"
+    },
+    "templates/government-revenue-dossiers.js": {
+      "v10": "bed6e6782fa6398523d884bd2c233daf78526c1c3aaf15f135a9826afa8cb212",
+      "v11": "f9595530460433319e977b97e415ca61e734948aaa069f43115d734fa3411e14"
+    }
+  },
+  "static_inputs_identical": true,
+  "api_data_inputs_identical": true,
+  "api_source_modules_identical": true,
+  "canonical_input_inventory_identical": true
+}

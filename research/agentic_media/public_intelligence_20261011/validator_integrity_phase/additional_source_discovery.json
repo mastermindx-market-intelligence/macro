@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-10-14T03:06:22.858937+00:00",
+  "operation": "read_only_discovery_no_admission",
+  "sources": [
+    {
+      "url": "https://blogs.nvidia.com/blog/local-ai-rtx-spark-laptops-software-updates/",
+      "result": "October13 issuer announcement of software readiness before planned October16 hardware availability. No new revenue, shipment, stock reaction or observed launch proof."
+    },
+    {
+      "url": "https://www.nvidia.com/en-eu/about-nvidia/terms-of-service/",
+      "result": "General materials license is personal noncommercial internal use unless separately licensed; rights for this commercial Press adaptation are not qualified by this page. No materials copied into writer context and no inferred public grant."
+    },
+    {
+      "url": "https://www.sec.gov/newsroom/press-releases",
+      "result": "Latest listed October9; outside current three-day Brief window. No candidate admitted."
+    },
+    {
+      "url": "https://www.ftc.gov/news-events/news/press-releases",
+      "result": "October13 items concern private Digital Forensics and Shkreli contempt allegations; no qualified canonical public-stock association. Listed Gildan item October8 is outside Brief window."
+    },
+    {
+      "url": "https://home.treasury.gov/news/press-releases",
+      "result": "Navigation-dominant page requires bounded continuation if relevant; no fact or source claim admitted."
+    }
+  ],
+  "provider_calls": 0,
+  "stage_writes": 0,
+  "publication": false,
+  "w1_credit": 0,
+  "next_action": "Continue existing first-party input qualification and protected source delivery; use only distinct current events with exact rights, clocks and relevant receipts."
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "tiingo.same_operation_pre_admission_gate_revalidation_control_ruling/v1",
+  "recorded_at_utc": "2026-10-14T04:34:32.388860+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "run_id": "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6",
+  "verdict": "CONDITIONAL_PASS_SAME_OPERATION_REVALIDATION_AND_BOUNDED_GATE_REPAIR",
+  "evidence_sha256": {
+    "tiingo-fourteen-original-validation-expiry-same-operation-reconciliation01.json": "ef53c54aeba4d2134bac51b27b841d3a1a8f2c76ef6e3153e8d113897842df74",
+    "tiingo-fourteen-settled-transport-later-diagnostic-prepared02.py": "4f81f872366953974eb2b73f9661b405dc4583fba27a2d8701d37b54b0677489",
+    "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-validation-ready.json": "873d5c748ca315e20fbb819ef6e680b9ef0a97d2799f28ea8175dd6821cf9d47",
+    "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-validation-namespace.json": "b9e6b6a0fe168422f91e8fbb93f67638c4ff1bfb2c4f93c52ee25cb75cc81ca8",
+    "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-ready-actual-parent01.json": "e80d875481c7cd1148a53b3506975a526a0148c5039c4ba9baac8153c370356e",
+    "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-fresh-quota-parent01.json": "fbbdae8adcc0d7f4e2c0e16e83435e767ea8ebac847ddc72327ce224c90186e8",
+    "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-quota-binding01.json": "d35a60bd9ff914769bbcf4308e7996579b9ef616ed3a5709fe669f6413cc3794",
+    "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-planned01.json": "0ff1630cf6497d3ef2114509e0b6d4f06d93f94e27a9da258b1d55acd9b99ebb"
+  },
+  "verified_facts": [
+    "RetainedREADY873d5c binds source4f81, plan0ff163, PID33370, validated2026-10-14T04:08:19.420490Z,300second absolute monotonic deadline and238300-entry snapshotb9e6.",
+    "Original root retained actualREADY consumption9606fb with native90730 terminalexitnull, and separate prepared parent/quota/binding files; preparing files is not delivering stdin.",
+    "Reconciliationef53 retains first binding attempt04:32:05.749Z returningUnknownprocessid90730, binding_deliveryfalse, scoped originalPID/source-holder checks and absent effect slots. Its own actual19845exit0chunk2a1555 is reported by the assigning root, distinct from original90730.",
+    "Reviewer independently verified retained hashes and current lstatabsence of original scope/result/executionlog; no process probe or archive scan was performed.",
+    "Exact source4f81 blocks at bounded_gate_line before final checks, exclusive executionlog and scope, then read_key and finiteadmission. Neither timeout nor malformed/EOF input has a fall-through route to provider."
+  ],
+  "judgment": {
+    "original_native_exit_code": null,
+    "original_native_terminal_consumed": false,
+    "exact_exit_reason_proven": false,
+    "elapsed_deadline_consistent_with_expiry": true,
+    "no_provider_or_credential_reachability_reconciled": true,
+    "basis": "No binding previously delivered plus first delivery rejected, exact source control-flow barrier and absent mandatory exclusive pre-key/provider publications under preserved same-owner evidence. Absence of native terminal alone does not override this narrower reconciled no-effect proof.",
+    "permission_refusal_in_this_gate_failure": false,
+    "same_operation_revalidation_permissible": true,
+    "provider_retry_claimed": false,
+    "rearm_source_review_required": true
+  },
+  "required_gate03_design": [
+    "Keep sameRUN/root/originalE/sourcecarrier/plan/providerorigin/account/credentialfile/archiveUUID/collector/TLS30/finite3d/requestselection andmaxoneactualproviderattempt perwindow; methodhash necessarily changes and must be freshly bound.",
+    "Preserve oldREADY/namespace/parent/quota/binding/reconciliation immutable. Use distinct exclusivevalidation-ready02/namespace02/control-abort slots; retain identical original capture scope/result/execution slots and require true lstatabsence before revalidation and again immediatelybeforepublication/key.",
+    "Run full current validation/collision checks to a new namespace snapshot and newREADY. Do not restamp old238300-entry snapshot as current. Preserve current scoped writer/lease reconciliation and peer intraday ownership; do not infer universal processabsence.",
+    "A3600second absolute monotonic attended-input deadline is permissible. Record the exact wait and deadline inREADY, enforce the same absolute deadline with bounded nonblocking newline input and reject EOF/oversize/multiline/malformed/lateinput. No automatic extension, background retry, daemon or successor.",
+    "Require new actualroot consumption of the new processPID/nativeREADYchunk/method/plan/run/READYhash with terminalexitnull. Old parent90730 cannot release the newprocess.",
+    "Obtain a newly reloaded visible intended signed-account quota after newREADY. Preserve sameaccount/source URL and budget bounds, timezone-aware chronology and quotaage<=900seconds checked after final namespace/source/storage/custody checks immediatelybefore admission. Increasing stdinwait must not increase quotaage or reuse oldfbb quota.",
+    "Durable preadmission abort evidence must be exclusive, fsynced and tied to method/run/PID/READY when available; retain only safe errorclass/reasoncode and gatephase, no raw input/exceptionstrings/secrets. It records a process-observed gate failure, not actualnative toolreturn consumption.",
+    "Limit any no-key/no-provider abort claim to a provable pre-key phase. Do not catch downstream provider/archive errors under a generic preadmission-abort label. If scope/log alreadyexists or publication partiallyfails, preserve all paths and require same-operation reconciliation; never cleanup to permitreplay.",
+    "If abort publication itself fails, failclosed and retain the failure; absence of an abort receipt is not no-effect proof. Unexpected processdeath cannot be guaranteed to emit an abortreceipt.",
+    "Before invocation, review exactgate03/sourcehash and any binding changes; this ruling approves the repair architecture, not an unseen candidate or currentprovideradmission."
+  ],
+  "freshness_and_authority_limits": [
+    "Unknown native90730 terminal remainsunknown even if future durable abort logging is added. No reconstructedexit1, no actualterminalconsumedtrue.",
+    "Once any actual provideradmission occurs, scopeexclusivity/maxone rule blocks rearm under this preadmission ruling; incomplete/errorreturns require their own same-operation accounting.",
+    "SDK/R2/public403/fundamentals/persistentpublisher/Fabric refusals and Cloudflare passkey human-presence boundary remain unchanged and unrelated to this technicalgate repair."
+  ],
+  "review_effects": {
+    "provider_requests": 0,
+    "credential_reads": 0,
+    "candidate_executions": 0,
+    "process_probes_or_signals": 0,
+    "archive_writes": 0,
+    "rawdata_scans": 0,
+    "source_edits": 0,
+    "delegations": 0
+  }
+}

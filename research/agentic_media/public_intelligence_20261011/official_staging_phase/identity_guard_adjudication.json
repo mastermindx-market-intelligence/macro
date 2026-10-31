@@ -1,0 +1,39 @@
+{
+  "observed_at": "2026-10-14T02:08:03.095841+00:00",
+  "pr": 9209,
+  "initial_pr_head": "81e258a9b263800a4237664f4b178c5aa5c4bf32",
+  "initial_ci": 38498766587,
+  "pr_draft": true,
+  "merge_on_green": false,
+  "reproduction": "A synthetic valid private record emitted in a temporary fixture after provenance and source metadata were removed, while its press-official slot id remained. No production provider or public write occurred. A published stable slot id with stripped source refs also allowed replay.",
+  "red": "2 failed, 36 deselected in 29.99s",
+  "green": "114 passed in 31.79s",
+  "fix": "Treat stable press-official identity as an independent emit and publication replay fence.",
+  "source_hashes": {
+    "scripts/run_press.py": "9a7417be2bd39e2e8c244e791bb99824e89573e68ef8be5916b81865bd2a45e5",
+    "scripts/stage_official_feed_press.py": "6409126cf87e338d7c22f470acfffa8d0ac349ada405ef483c7395456765b7d1",
+    "tests/test_press_official_staging.py": "47b4b6a817bbe4a40c2f8327b626eb159c7317650ef5f33d677dafcbac23e8c8"
+  },
+  "contract_scan": {
+    "base": "1e9364f5ab8c4452820731e87da2c138e53b0571",
+    "application_start_head": "55cf7d01e9ae1a306cd7f7b3c1de71f6c741f1ec",
+    "introduced": 0,
+    "inherited": 0,
+    "wall_seconds": 936.7,
+    "head_weights": [
+      5654,
+      5455,
+      5417
+    ],
+    "ceilings_from_protected_main": [
+      5803,
+      5600,
+      5600
+    ],
+    "limit": "The scan began before the final four-line identity guard and two regression cases were added in existing files; treat it as structural local evidence, not the final binding exact-head CI. No manifest/path/gate/ceiling changed during the scan."
+  },
+  "independent_review": "mmx-press-private-ingress-review-20261014-001 remains pending on its exact original source packet; parent identity repair is separately adjudicated here.",
+  "provider_calls": 0,
+  "real_public_writes": 0,
+  "article_generated": false
+}

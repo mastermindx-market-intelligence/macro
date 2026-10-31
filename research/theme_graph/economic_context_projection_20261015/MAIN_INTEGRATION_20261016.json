@@ -1,0 +1,41 @@
+{
+  "schema": "gmi.economic_context_main_integration/v1",
+  "operation_id": "gmi-economic-context-projection-20261015-sol-001",
+  "source_before": "481d55b3fcdcbbb3c7f6225e31e2e9052c88f8ae",
+  "integrated_main": "3fb66dba9cfab778066e75652e8989b296ee2a02",
+  "reason": "GitHub reported mergeable=false / dirty and started no ci workflow for the repair head. Local merge-tree confirmed exactly two conflicting files; current-main integration is necessary for ordinary pull-request proof.",
+  "conflicts_resolved": {
+    ".github/ci/legacy-jobs.yml": "Five additive path-list conflicts. Retained every current-main path and appended the existing GMI module/test paths.",
+    "app/deploy/update.sh": "Retained current-main deployment script including newer government-revenue restart triggers; added only the two economic-context import-cached modules to its theme_graph group."
+  },
+  "ci_preservation": {
+    "main_jobs": 319,
+    "candidate_jobs": 319,
+    "removed_jobs": 0,
+    "removed_paths": 0,
+    "changed_jobs": [
+      "fif-kernel-guards",
+      "prelaunch-hardening",
+      "crypto-assistant-context",
+      "research-price-panel",
+      "ticker-news-qbus",
+      "company-relationship-candidates"
+    ],
+    "other_changes": "Only the already accepted GMI test additions in prelaunch-hardening and company-relationship-candidates; no timeout, capacity, gate or command removed."
+  },
+  "validation": {
+    "passed": 435,
+    "failed": 0,
+    "warnings": 5,
+    "seconds": 147.67,
+    "python": "3.14",
+    "command": "python3 -m pytest -q --basetemp=/tmp/gmi-9423-restart-current-main-481d55 tests/test_deploy_update_self_heal.py tests/test_gmi_native_economic_context.py tests/test_gmi_issuer_economic_context.py tests/test_gmi_issuer_economic_context_api.py tests/test_ci_pack.py::test_all_legacy_jobs_are_disabled_and_packable tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure"
+  },
+  "review": {
+    "semantic_source": "c292d8bc5c3ca839806e5ba61344094baf577d62",
+    "native_architecture_review": "PASS for planned-integration semantics only; not deployment or Terminal proof.",
+    "current_integrated_head_hosted_ci": "PENDING"
+  },
+  "production_proof": false,
+  "mission_complete": false
+}

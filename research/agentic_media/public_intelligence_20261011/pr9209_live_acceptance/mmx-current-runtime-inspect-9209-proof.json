@@ -1,0 +1,30 @@
+{
+  "observed_at": "2026-10-15T14:11:50.634931+00:00",
+  "release_commit": "663dbf1ff7f5fb322213c2211fce8e9bf892ac1d",
+  "head": "bffaa41479a9b3f87b1c31a39f870b27f3976402",
+  "head_after": "bffaa41479a9b3f87b1c31a39f870b27f3976402",
+  "stable_head": true,
+  "unchanged_validation_inputs": true,
+  "observed_input_sha256": {
+    "config/press.yml": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+    "content/seo/blog/compound-growth-for-traders.md": "c27a71742ea509fc14d507f3b7f9b11c4d5ea5b96e49c9a8f4c693cd19a6838b",
+    "content/seo/blog/congress-trades-are-not-realtime-signals.md": "bab1e086a1e742631e876d4f361bd0fd1d4ed28e57ed09a130be777f5efd399b",
+    "content/seo/blog/how-to-keep-a-trading-journal.md": "65b61e95906c1ab65cf7ec86dd9370318a3f56dfb30537be94f362c23763130c",
+    "content/seo/blog/the-math-of-losing-streaks.md": "c68ef9c223936620501353238aeb0184c51f4ac8b631b1df60db69acaf615341",
+    "content/seo/blog/why-a-50-percent-loss-needs-a-100-percent-gain.md": "974a49fbf433c2232bf95fecd1d39ec6cf03841a21ceeb3703e4927de886101d",
+    "content/seo/blog/win-rate-is-overrated.md": "61740c5851ae06055c6c1d30acc5cb6f76491896347e248c5bd4e15b6e2c1f3e",
+    "scripts/inspect_press_staging.py": "ad3415d99a7da810ed9f7f87bdcb729956f130a270820381c304709461112262",
+    "scripts/run_press.py": "9a7417be2bd39e2e8c244e791bb99824e89573e68ef8be5916b81865bd2a45e5",
+    "engine/press/validators.py": "fdbae60b9bec3635db2a7732e9a2519a4a600d4f0e9e83ee65e962d11786cc46",
+    "engine/press/desk_planner.py": "8282028e5b4caae7005ef22582adef9b86d400590290e2a5b132c5052d4ddb7b"
+  },
+  "schema": "press.staging_inspection.v1",
+  "config_sha256": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+  "cutover": false,
+  "total": 0,
+  "validation_current": 0,
+  "blocked": 0,
+  "publication_approved": false,
+  "source_freshness_verified": false,
+  "items": []
+}

@@ -1385,14 +1385,27 @@ def compose_alert(payload: dict, *, lang: str = "en") -> dict:
     """
     payload = payload or {}
     ticker = _alert_plain(payload.get("ticker"), "this name", "该标的")
+    held_event = (
+        payload.get("source") == "terminal.held_material_event.v1"
+        and payload.get("category") == "holdings_material_change"
+        and payload.get("authority") == "notification_only"
+    )
     raw_condition = str(payload.get("condition_plain") or "")
-    # The frozen outbox payload carries ONE source string with no zh field (F08 freeze
+    # Ordinary alert payloads carry ONE source string with no zh field (F08 freeze
     # section 6) -- there is nothing to genuinely select between, and fabricating a
     # translation is out of scope (no LLM-originated text, section 8). Detect which
     # language the source actually is and keep the OTHER slot on its neutral fallback,
     # rather than showing the untranslated source in both slots under a language label
     # it does not match -- that was the parity bug (title_zh == English condition_plain).
-    if any("\u4e00" <= ch <= "\u9fff" for ch in raw_condition):
+    if held_event:
+        # The implicit producer supplies both languages; preserve the source copy
+        # without claiming the user created a condition. The ordinary alert path
+        # below retains its original one-language/fallback behavior.
+        condition_plain = _alert_plain(payload.get("condition_plain"),
+                                       "Company results were published.", "公司业绩已发布。")
+        condition_plain_zh = _alert_plain(payload.get("condition_plain_zh"),
+                                          "Company results were published.", "公司业绩已发布。", zh=True)
+    elif any("\u4e00" <= ch <= "\u9fff" for ch in raw_condition):
         condition_plain = _alert_plain(None, "a condition you set was met", "你设置的条件已触发")
         condition_plain_zh = _alert_plain(raw_condition, "a condition you set was met",
                                           "你设置的条件已触发", zh=True)
@@ -1406,7 +1419,9 @@ def compose_alert(payload: dict, *, lang: str = "en") -> dict:
         evidence_url = ""
     fired_at_en = _alert_fired_at_display(payload.get("fired_at"))
     fired_at_zh = _alert_fired_at_display(payload.get("fired_at"), zh=True)
-    one_liner = _alert_plain(payload.get("subject"), condition_plain, condition_plain_zh)
+    one_liner = _alert_plain(
+        payload.get("subject_zh") if held_event and lang == "zh" else payload.get("subject"),
+        condition_plain, condition_plain_zh, zh=held_event and lang == "zh")
 
     if lang == "zh":
         subject = f"{ticker} 提醒 · {ticker} alert"
@@ -1419,6 +1434,12 @@ def compose_alert(payload: dict, *, lang: str = "en") -> dict:
         {"en": f"This is one of the names you are watching: {ticker}.",
          "zh": f"这是你正在关注的标的之一：{ticker}。"},
     ]
+    if held_event:
+        blocks[:2] = [
+            {"en": f"{ticker}: {condition_plain}", "zh": f"{ticker}：{condition_plain_zh}"},
+            {"en": f"Matched to your recorded open holding: {ticker}.",
+             "zh": f"匹配到你当时记录的未平仓持仓：{ticker}。"},
+        ]
     if evidence_url:
         blocks.append({"kind": "button", "en": "Open the evidence", "zh": "查看依据", "url": evidence_url})
     else:
@@ -1438,8 +1459,10 @@ def compose_alert(payload: dict, *, lang: str = "en") -> dict:
         "title_zh": condition_plain_zh,
         "eyebrow": "提醒" if lang == "zh" else "ALERT",
         "preheader": one_liner,
-        "why_en": f"You set an alert on {ticker}.",
-        "why_zh": f"你为 {ticker} 设置了提醒。",
+        "why_en": (f"This event matched your recorded holding in {ticker}." if held_event
+                   else f"You set an alert on {ticker}."),
+        "why_zh": (f"这条事件匹配了你当时记录的 {ticker} 持仓。" if held_event
+                   else f"你为 {ticker} 设置了提醒。"),
         "blocks": blocks,
     }
 

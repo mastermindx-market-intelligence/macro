@@ -1,0 +1,891 @@
+{
+  "schema": "grey_deer.source_merge_queue_observer.v1",
+  "started_at": "2026-10-20T03:31:38.274961+00:00",
+  "pid": 80374,
+  "repository": "mastermindx-market-intelligence/Mastermind",
+  "pr": 1610,
+  "head": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+  "initial_queue_entry": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+  "interval_seconds": 120,
+  "max_duration_seconds": 10800,
+  "status": "MERGED_NEEDS_LANDING_READBACK",
+  "pre_start_quota_observed_at": "2026-10-20T03:27:11.157396+00:00",
+  "pre_start_quota": {
+    "core": {
+      "limit": 5000,
+      "used": 714,
+      "remaining": 4286,
+      "reset": 1792466949
+    },
+    "graphql": {
+      "limit": 5000,
+      "used": 64,
+      "remaining": 4936,
+      "reset": 1792468642
+    }
+  },
+  "observations": [
+    {
+      "at": "2026-10-20T03:31:39.653955+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 3
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:53Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T03:33:41.124923+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 3
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:53Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T03:35:42.591319+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 3
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:53Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T03:37:44.047869+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 3
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T03:39:45.637707+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 3
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T03:41:47.094170+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 3
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T03:43:48.565903+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 3
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T03:45:49.819859+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 3
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T03:47:51.340316+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 3
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T03:49:52.665662+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 3
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T03:51:54.027515+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 1
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T03:53:55.418337+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 1
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T03:56:07.026611+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 1
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T03:58:08.663743+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 1
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T04:00:10.227165+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 1
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T04:02:12.587689+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 1
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T04:04:14.004459+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "OPEN",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "mergeQueueEntry": {
+          "id": "MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA",
+          "state": "AWAITING_CHECKS",
+          "position": 1
+        }
+      },
+      "matching_runs": [
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:29:46Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        }
+      ]
+    },
+    {
+      "at": "2026-10-20T04:06:15.611839+00:00",
+      "pr": {
+        "number": 1610,
+        "state": "MERGED",
+        "isDraft": false,
+        "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+        "mergedAt": "2026-10-20T04:05:39Z",
+        "mergeCommit": {
+          "oid": "a7553e0a18339c910eef9687c730b06605dd710e"
+        },
+        "mergeQueueEntry": null
+      },
+      "matching_runs": [
+        {
+          "id": 39364578810,
+          "name": "Mastermind OS",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T03:36:19Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+          "run_attempt": 1
+        },
+        {
+          "id": 39364578755,
+          "name": "CI",
+          "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+          "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+          "event": "merge_group",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-20T03:29:43Z",
+          "updated_at": "2026-10-20T04:05:18Z",
+          "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+          "run_attempt": 1
+        }
+      ]
+    }
+  ],
+  "queue_runs": {
+    "39364578755": {
+      "id": 39364578755,
+      "name": "CI",
+      "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+      "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+      "event": "merge_group",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-20T03:29:43Z",
+      "updated_at": "2026-10-20T04:05:18Z",
+      "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+      "run_attempt": 1
+    },
+    "39364578810": {
+      "id": 39364578810,
+      "name": "Mastermind OS",
+      "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+      "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+      "event": "merge_group",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-20T03:29:43Z",
+      "updated_at": "2026-10-20T03:36:19Z",
+      "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+      "run_attempt": 1
+    }
+  },
+  "mutations": false,
+  "last": {
+    "at": "2026-10-20T04:06:15.611839+00:00",
+    "pr": {
+      "number": 1610,
+      "state": "MERGED",
+      "isDraft": false,
+      "headRefOid": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+      "mergedAt": "2026-10-20T04:05:39Z",
+      "mergeCommit": {
+        "oid": "a7553e0a18339c910eef9687c730b06605dd710e"
+      },
+      "mergeQueueEntry": null
+    },
+    "matching_runs": [
+      {
+        "id": 39364578810,
+        "name": "Mastermind OS",
+        "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+        "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+        "event": "merge_group",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-20T03:29:43Z",
+        "updated_at": "2026-10-20T03:36:19Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578810",
+        "run_attempt": 1
+      },
+      {
+        "id": 39364578755,
+        "name": "CI",
+        "head_sha": "a7553e0a18339c910eef9687c730b06605dd710e",
+        "head_branch": "gh-readonly-queue/master/pr-1610-1fc9d0e44418930e4a185fe33c2b8c06ad3bdb7e",
+        "event": "merge_group",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-20T03:29:43Z",
+        "updated_at": "2026-10-20T04:05:18Z",
+        "html_url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/39364578755",
+        "run_attempt": 1
+      }
+    ]
+  },
+  "completed_at": "2026-10-20T04:06:15.612037+00:00"
+}

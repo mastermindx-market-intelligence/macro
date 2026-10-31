@@ -1,0 +1,11 @@
+{
+  "started_at": "2026-10-20T16:02:49.818334+00:00",
+  "head": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+  "incoming": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+  "merge_base": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "branch": "sol/market-os-shared-shell-design-20260924",
+  "remote_branch_before": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f\trefs/heads/sol/market-os-shared-shell-design-20260924",
+  "free_bytes_before": 277591900160,
+  "worktree_clean_before": true,
+  "state": "PRECHECKS_COMPLETE_ORDINARY_MERGE_BEGIN"
+}

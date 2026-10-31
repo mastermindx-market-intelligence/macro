@@ -470,6 +470,10 @@ html[data-theme="dark"][data-lang="zh"] .dir-down { color:#45b873; }
                   <span class="l-en">30D</span>
                   <span class="l-zh">30日</span>
                 </th>
+                <th class="tl-num sortable" data-sort="perf12m"
+                  onclick="tlSortScreener('perf12m',this)">
+                  <span class="l-en">12M</span><span class="l-zh">12个月</span>
+                </th>
                 <th>
                   <span class="l-en">Active signals</span>
                   <span class="l-zh">活跃信号</span>
@@ -777,6 +781,7 @@ html[data-theme="dark"][data-lang="zh"] .dir-down { color:#45b873; }
 
           <!-- 8-cell stat grid -->
           <div class="stat-grid" id="det-stat-grid"></div>
+          <div class="sig-profile-sub" id="det-top-days"></div>
 
           <!-- Era-split 3-row table (v1 graft) -->
           <div class="era-table-wrap" id="det-era-wrap">
@@ -866,6 +871,10 @@ html[data-theme="dark"][data-lang="zh"] .dir-down { color:#45b873; }
         <div class="perf-cell">
           <div class="pk">30D</div>
           <div class="pv r-neu" id="prof-30d">—</div>
+        </div>
+        <div class="perf-cell">
+          <div class="pk"><span class="l-en">12M</span><span class="l-zh">12个月</span></div>
+          <div class="pv r-neu" id="prof-12m">—</div>
         </div>
         <div class="perf-cell">
           <div class="pk">
@@ -1191,10 +1200,12 @@ function tlInitTab() {
   var tab = TABS.indexOf(hash) >= 0 ? hash : (TABS.indexOf(stored) >= 0 ? stored : 'screener');
   tlSwitchTab(tab);
 }
-window.addEventListener('hashchange', function() {
+function tlApplyHash() {
   var h = (location.hash||'').replace('#','');
   if (TABS.indexOf(h) >= 0) tlSwitchTab(h);
-});
+}
+window.addEventListener('hashchange', tlApplyHash);
+window.addEventListener('mmx:shell-location', tlApplyHash);
 
 /* Tab buttons */
 document.querySelectorAll('.tab-btn').forEach(function(btn) {
@@ -1208,6 +1219,17 @@ document.querySelectorAll('.tab-btn').forEach(function(btn) {
 function _pct(v) { return v != null ? (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + '%' : '—'; }
 function _wr(v)  { return v != null ? (v * 100).toFixed(1) + '%' : '—'; }
 function _edge(v){ return v != null ? (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + 'pp' : '—'; }
+function _fireSpan(sig, zh) {
+  var f = (sig && sig.first_fire != null) ? esc(sig.first_fire) : '—';
+  var l = (sig && sig.last_fire != null) ? esc(sig.last_fire) : '—';
+  return (zh ? '首次 ' + f + ' → 最近 ' : 'first ' + f + ' → last ') + l;
+}
+function _topFireDaysHtml(sig) {
+  var d = sig && sig.top_fire_days;
+  if (!d || !d.length) return '';
+  var t = d.map(function(x) { return esc(x.date) + ' (' + x.n_fires + ')'; });
+  return L('Busiest fire days', '集中触发日') + ': ' + t.join(' · ');
+}
 function _gaugeClass(score) {
   if (score == null) return 'g-lo';
   if (score >= 0.7) return 'g-hi';
@@ -1271,7 +1293,7 @@ function tlBuildScreenerRows() {
     var s = STKS[tk];
     return { tk: tk, name: s.name, price: s.price, score: s.score, band: s.band,
       buy: s.active_buy, total: s.active_total,
-      perf7d: s.perf_7d, perf30d: s.perf_30d };
+      perf7d: s.perf_7d, perf30d: s.perf_30d, perf12m: s.perf_12m };
   });
 }
 
@@ -1323,6 +1345,9 @@ function tlRenderScreener() {
       '<td><span class="band-chip '+_bandClass(r.band)+'">' + esc(r.band||'—') + '</span></td>' +
       '<td class="tl-num">' + (r.perf7d != null ? '<span class="'+(r.perf7d>=0?'r-pos':'r-neg')+'">' + _pct(r.perf7d) + '</span>' : '<span class="r-neu">—</span>') + '</td>' +
       '<td class="tl-num">' + (r.perf30d != null ? '<span class="'+(r.perf30d>=0?'r-pos':'r-neg')+'">' + _pct(r.perf30d) + '</span>' : '<span class="r-neu">—</span>') + '</td>' +
+      '<td class="tl-num">' + (r.perf12m != null
+        ? '<span class="'+(r.perf12m>=0?'r-pos':'r-neg')+'">' + _pct(r.perf12m) + '</span>'
+        : '<span class="r-neu">—</span>') + '</td>' +
       '<td><div class="sig-dots">' + dots + '</div></td>' +
       '</tr>';
   }).join('');
@@ -1853,8 +1878,10 @@ window.tlSelectSignal = function(sid) {
   // Name + subtitle
   document.getElementById('det-name').textContent = sig.display_en || sid;
   document.getElementById('det-sub').innerHTML = L(
-    'Family: ' + _familyLabel(sig.family) + ' · Kind: ' + (sig.kind||'event') + ' · ' + (sig.n_fires||0) + ' fires · ' + (sig.n_months||0) + ' months',
-    '族群：' + _familyLabel(sig.family) + ' · 类型：' + (sig.kind||'event') + ' · ' + (sig.n_fires||0) + '次触发 · ' + (sig.n_months||0) + '个月'
+    'Family: ' + _familyLabel(sig.family) + ' · Kind: ' + (sig.kind||'event') + ' · '
+      + (sig.n_fires||0) + ' fires · ' + (sig.n_months||0) + ' months · ' + _fireSpan(sig, false),
+    '族群：' + _familyLabel(sig.family) + ' · 类型：' + (sig.kind||'event') + ' · '
+      + (sig.n_fires||0) + '次触发 · ' + (sig.n_months||0) + '个月 · ' + _fireSpan(sig, true)
   );
 
   // Stat grid (8 cells)
@@ -1871,11 +1898,12 @@ window.tlSelectSignal = function(sid) {
     { k:L('Days Since Low','距低点天数'), v:sig.days_since_low_med!=null?Math.round(sig.days_since_low_med)+'d':'—', cls:'sv-neu', b:L('median','中位数') },
     { k:L('Up Tape %','上涨市占%'), v:_wr(sig.up_tape_pct), cls:'sv-neu', b:L('fired in uptrend','上涨行情中触发') },
     { k:L('Fires / Months','触发/月数'), v:(sig.n_fires!=null?sig.n_fires.toLocaleString():'—')+' / '+(sig.n_months||'—'),
-      cls:(sig.n_fires>=2000)?'sv-neg':'sv-neu', b:sig.n_fires>=2000?L('capped at 2000','上限2000次'):'' }
+      cls:'sv-neu', b:'' }
   ];
   document.getElementById('det-stat-grid').innerHTML = cells.map(function(c){
     return '<div class="stat-cell"><div class="sk">'+c.k+'</div><div class="sv '+c.cls+'">'+c.v+'</div><div class="sb">'+c.b+'</div></div>';
   }).join('');
+  document.getElementById('det-top-days').innerHTML = _topFireDaysHtml(sig);
 
   // Era-split 3-row table
   var pre = sig.wr_pre2010;
@@ -2134,6 +2162,9 @@ window.tlOpenProfile = function(tk) {
   p7el.textContent = _pct(p7); p7el.className = 'pv '+(p7!=null?(p7>=0?'r-pos':'r-neg'):'r-neu');
   var p30el = document.getElementById('prof-30d');
   p30el.textContent = _pct(p30); p30el.className = 'pv '+(p30!=null?(p30>=0?'r-pos':'r-neg'):'r-neu');
+  var p12 = s.perf_12m, p12el = document.getElementById('prof-12m');
+  p12el.textContent = _pct(p12);
+  p12el.className = 'pv '+(p12!=null?(p12>=0?'r-pos':'r-neg'):'r-neu');
 
   var actEl = document.getElementById('prof-active');
   actEl.textContent = (s.active_buy||0) + ' / ' + (s.active_total||0);
@@ -2406,7 +2437,8 @@ Promise.all([
   console.error('tech_lab data load failed:', err);
   // Show error in screener
   var tbody = document.getElementById('screener-tbody');
-  if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="tl-empty">' + L('Data unavailable — ' + err.message,'数据不可用 — ' + err.message) + '</td></tr>';
+  if (tbody) tbody.innerHTML = '<tr><td colspan="8" class="tl-empty">'
+    + L('Data unavailable — ' + err.message,'数据不可用 — ' + err.message) + '</td></tr>';
   tlInitTab();
 });
 

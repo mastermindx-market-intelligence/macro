@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-10-13",
+  "as_of": "2026-10-21",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -28,7 +28,7 @@
       "family": "equity-leadership",
       "driver": "ai_semis",
       "pathway_role": "primary",
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-21",
       "direction_en": "AI/semis unwind — tech-led de-rating",
       "direction_zh": "AI/半导体回吐 — 科技主导的回调",
       "confidence_ceiling": "context_only",
@@ -38,7 +38,7 @@
       "nodes": [
         {
           "node_id": "driver_ai_semis",
-          "as_of": "2026-10-13",
+          "as_of": "2026-10-21",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "ai_semis",
@@ -47,8 +47,8 @@
             "zh": "AI/半导体回吐 — 科技主导的回调"
           },
           "direction": -1,
-          "value": 1.6,
-          "z_or_percentile": 2.3,
+          "value": 1.73,
+          "z_or_percentile": 1.47,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "trigger",
@@ -58,17 +58,17 @@
         },
         {
           "node_id": "leg_ai_semis_0",
-          "as_of": "2026-10-13",
+          "as_of": "2026-10-21",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "semis RS",
           "observation": {
-            "en": "semis RS (-2.1σ)",
-            "zh": "半导体相对强度 (-2.1σ)"
+            "en": "semis RS (-1.6σ)",
+            "zh": "半导体相对强度 (-1.6σ)"
           },
           "direction": "negative",
-          "value": -2.1,
-          "z_or_percentile": -2.1,
+          "value": -1.6,
+          "z_or_percentile": -1.6,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -78,17 +78,17 @@
         },
         {
           "node_id": "leg_ai_semis_1",
-          "as_of": "2026-10-13",
+          "as_of": "2026-10-21",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "tech vs utilities",
+          "entity": "growth vs value",
           "observation": {
-            "en": "tech vs utilities (-1.6σ)",
-            "zh": "科技对公用事业 (-1.6σ)"
+            "en": "growth vs value (-2.1σ)",
+            "zh": "成长对价值 (-2.1σ)"
           },
           "direction": "negative",
-          "value": -1.6,
-          "z_or_percentile": -1.6,
+          "value": -2.1,
+          "z_or_percentile": -2.1,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -98,17 +98,17 @@
         },
         {
           "node_id": "leg_ai_semis_2",
-          "as_of": "2026-10-13",
+          "as_of": "2026-10-21",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "growth vs value",
+          "entity": "cap-weight vs equal-weight",
           "observation": {
-            "en": "growth vs value (-1.1σ)",
-            "zh": "成长对价值 (-1.1σ)"
+            "en": "cap-weight vs equal-weight (-2.0σ)",
+            "zh": "市值加权对等权重 (-2.0σ)"
           },
           "direction": "negative",
-          "value": -1.1,
-          "z_or_percentile": -1.1,
+          "value": -2.0,
+          "z_or_percentile": -2.0,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -157,11 +157,11 @@
       ]
     },
     {
-      "family": "liquidity",
-      "driver": "liquidity_impulse",
+      "family": "credit",
+      "driver": "credit_stress",
       "pathway_role": "alternate",
-      "as_of": "2026-10-13",
-      "direction_en": "net liquidity draining — risk headwind",
+      "as_of": "2026-10-21",
+      "direction_en": "credit spreads widening — stress",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -169,17 +169,17 @@
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_liquidity_impulse",
-          "as_of": "2026-10-13",
+          "node_id": "driver_credit_stress",
+          "as_of": "2026-10-21",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "liquidity_impulse",
+          "entity": "credit_stress",
           "observation": {
-            "en": "net liquidity draining — risk headwind",
+            "en": "credit spreads widening — stress",
             "zh": ""
           },
           "direction": "",
-          "value": 0.7,
+          "value": 1.18,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -193,11 +193,11 @@
       "coverage_basis": "scare_trigger"
     },
     {
-      "family": "crypto",
-      "driver": "crypto_liquidity",
+      "family": "china",
+      "driver": "china_stimulus",
       "pathway_role": "alternate",
-      "as_of": "2026-10-13",
-      "direction_en": "crypto liquidity draining — BTC/ETH lead down",
+      "as_of": "2026-10-21",
+      "direction_en": "China risk-off — A-shares/HK & copper lead down",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -205,17 +205,17 @@
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_crypto_liquidity",
-          "as_of": "2026-10-13",
+          "node_id": "driver_china_stimulus",
+          "as_of": "2026-10-21",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "crypto_liquidity",
+          "entity": "china_stimulus",
           "observation": {
-            "en": "crypto liquidity draining — BTC/ETH lead down",
+            "en": "China risk-off — A-shares/HK & copper lead down",
             "zh": ""
           },
           "direction": "",
-          "value": 0.59,
+          "value": 0.72,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",

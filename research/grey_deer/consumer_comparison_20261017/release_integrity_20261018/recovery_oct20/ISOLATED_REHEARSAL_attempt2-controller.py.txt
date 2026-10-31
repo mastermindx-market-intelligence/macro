@@ -1,0 +1,38 @@
+
+import pathlib,json,subprocess,shlex,hashlib,datetime,sys
+stage=pathlib.Path(sys.argv[1]);prior=json.loads((stage/'REHEARSAL_RESULT.json').read_text())
+assert prior['startup']['exception_type']=='TypeError' and not prior['startup']['registered_startup_called']
+assert prior['restoration_verification']['exit_code']==0 and not prior['restoration_verification']['changes']
+attempt=stage/'attempt2';attempt.mkdir()
+s=(stage/'startup.py').read_text()
+old="def allowwrite(p,event):\n if not inside(p):"
+new="def allowwrite(p,event):\n if isinstance(p,int):\n  if p in (0,1,2):return\n  p=os.readlink('/proc/self/fd/'+str(p))\n if not inside(p):"
+assert s.count(old)==1;s=s.replace(old,new)
+s=s.replace("(stage/'startup-result.json')","(stage/'attempt2/startup-result.json')")
+(attempt/'startup.py').write_text(s)
+source=stage/'source';receiver=stage/'receiver';backup=stage/'backup'
+helper=(source/'scripts/deploy_code_to_vps.sh').read_text();exc=shlex.split(helper.split('EXC=(',1)[1].split('\n)',1)[0])
+def sync(src,dst,dry=False):
+ p=subprocess.run(['rsync','-acn' if dry else '-ac','--delete','--itemize-changes',*exc,str(src)+'/',str(dst)+'/'],capture_output=True,text=True,timeout=60)
+ return {'exit_code':p.returncode,'changes':p.stdout.splitlines(),'stderr':p.stderr}
+report={'schema':'grey_deer.isolated_startup_fd_correction.v1','candidate':prior['candidate'],'stage':str(stage),'prior_receipt_sha256':hashlib.sha256((stage/'REHEARSAL_RESULT.json').read_bytes()).hexdigest(),'correction':'The audit fixture mishandled an integer file descriptor passed by CPython bytecode writing. Resolve non-stdio descriptors through /proc/self/fd and apply the same path fence. No product code or source assertion is changed. The original failed experiment is retained.','started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+report['candidate_copy']=sync(source,receiver);assert report['candidate_copy']['exit_code']==0
+report['candidate_verification']=sync(source,receiver,True);assert not report['candidate_verification']['changes']
+(receiver/'.deployed_git_sha').write_text(prior['candidate']+'\n')
+inner="set -e\nmount --make-rprivate /\nmount --bind /opt/mastermind /opt/mastermind\nmount -o remount,bind,ro /opt/mastermind\nmount --bind /opt/mastermind-live-data /opt/mastermind-live-data\nmount -o remount,bind,ro /opt/mastermind-live-data\nexec /opt/mastermind/.venv/bin/python "+shlex.quote(str(attempt/'startup.py'))+" "+shlex.quote(str(stage))
+env={'PATH':'/usr/bin:/bin','MASTERMIND_VPS_AUTHORITATIVE':'1','MASTERMIND_SERVE_ONLY':'0','MASTERMIND_JOBSTORE':'memory','MASTERMIND_AUTH_TOKEN':'isolated-rehearsal-fixture-token'}
+p=subprocess.run(['unshare','--mount','--net','--pid','--fork','--mount-proc','/bin/bash','-c',inner],env=env,capture_output=True,text=True,timeout=40)
+(attempt/'startup.stdout.txt').write_text(p.stdout);(attempt/'startup.stderr.txt').write_text(p.stderr)
+report['startup_process']={'exit_code':p.returncode,'stdout_bytes':len(p.stdout),'stderr_bytes':len(p.stderr),'stderr_tail':p.stderr[-4000:]}
+report['startup']=json.loads((attempt/'startup-result.json').read_text()) if (attempt/'startup-result.json').exists() else {'result_missing':True}
+report['cohort_unchanged']=hashlib.sha256((receiver/'data/portfolio_forward_evaluation/start.json').read_bytes()).hexdigest()==prior['data_snapshot']['hashes']['portfolio_forward_evaluation/start.json']
+report['restoration']=sync(backup,receiver);report['restoration_verification']=sync(backup,receiver,True)
+(receiver/'.deployed_git_sha').write_text(prior['baseline']+'\n')
+report['production_marker_after']=pathlib.Path('/opt/mastermind/.deployed_git_sha').read_text().strip()
+report['production_pid_after']=subprocess.check_output(['systemctl','show','mastermind.service','-p','MainPID','--value'],text=True).strip()
+report['completed_at']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+(attempt/'REHEARSAL_RESULT.json').write_text(json.dumps(report,indent=2)+'\n')
+small={k:v for k,v in report.items() if k not in ('candidate_copy','candidate_verification','restoration')}
+if 'write_paths' in small['startup']:
+ small['startup']['write_path_count']=len(small['startup']['write_paths']);small['startup']['write_paths']=[x for x in small['startup']['write_paths'] if '/__pycache__/' not in x]
+print(json.dumps(small))

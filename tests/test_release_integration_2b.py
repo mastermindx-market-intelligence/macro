@@ -337,8 +337,8 @@ class TestArtifactShadows:
         assert "v3_factor" in shadows, "cpi_core shadows must include v3_factor"
         assert "cpi_bridge" not in shadows, "cpi_core shadows must NOT include cpi_bridge"
 
-    def test_nfp_shadow_carries_warning(self, tmp_path: Path, monkeypatch):
-        """nfp item.shadows.v3_factor carries the NFP warning text."""
+    def test_nfp_shadow_claim_withdrawn(self, tmp_path: Path, monkeypatch):
+        """RIC-M0: nfp v3_factor carries only its withdrawal block — no point, no interval."""
         import scripts.build_release_forecast as producer
 
         monkeypatch.setattr(producer, "_run_shadow_v3", lambda *a, **k: _mock_v3_projection("nfp"))
@@ -347,15 +347,33 @@ class TestArtifactShadows:
         items = [_minimal_upcoming_item("nfp")]
         producer._attach_shadows_to_items(items, tmp_path, date(2026, 7, 8))
 
-        item = items[0]
-        shadows = item.get("shadows", {})
-        assert "v3_factor" in shadows, "nfp must have v3_factor shadow"
-        v3_entry = shadows["v3_factor"]
-        assert "warning" in v3_entry, "nfp v3_factor shadow must carry 'warning'"
-        assert "catastrophic" in v3_entry["warning"].lower(), \
-            f"nfp warning must mention 'catastrophic': {v3_entry['warning']}"
-        assert "sub-naive" in v3_entry["warning"].lower(), \
-            f"nfp warning must mention 'sub-naive': {v3_entry['warning']}"
+        v3_entry = items[0].get("shadows", {}).get("v3_factor")
+        assert v3_entry is not None, "nfp must carry the v3_factor withdrawal block"
+        withdrawn = v3_entry["claim_withdrawn"]
+        assert withdrawn["verdict"] == "FALSIFIED_UNDER_COHERENT_TARGET"
+        assert withdrawn["receipt"].endswith("m0_results/m0_requal_2026-10-14.json")
+        assert v3_entry["display_only"] is True
+        for key in ("point", "p10", "p25", "p50", "p75", "p90", "confidence", "inputs_hash", "warning"):
+            assert key not in v3_entry, f"withdrawn nfp v3_factor must not carry {key}"
+
+    def test_withdrawal_receipt_matches_the_committed_m0_receipt(self):
+        """The withdrawal names the committed M0 receipt by path and sha256."""
+        import hashlib
+
+        import scripts.build_release_forecast as producer
+
+        root = Path(__file__).resolve().parents[1]
+        withdrawn = producer._WITHDRAWN_SHADOW_CLAIMS[("nfp", "v3_factor")]
+        receipt = root / withdrawn["receipt"]
+        assert hashlib.sha256(receipt.read_bytes()).hexdigest() == withdrawn["receipt_sha256"]
+        evaluations = json.loads(receipt.read_text(encoding="utf-8"))["evaluations"]
+        verdicts = {e["eval_id"]: e["verdict"] for e in evaluations}
+        assert verdicts["nfp.v3_factor"] == withdrawn["verdict"]
+        # every other falsified model must also be withdrawn (none today)
+        for eval_id, verdict in verdicts.items():
+            if verdict == "FALSIFIED_UNDER_COHERENT_TARGET":
+                release, model = eval_id.split(".", 1)
+                assert (release, model) in producer._WITHDRAWN_SHADOW_CLAIMS, eval_id
 
     def test_cpi_headline_shadow_nfp_warning_absent(self, tmp_path: Path, monkeypatch):
         """cpi_headline v3_factor shadow does NOT carry the NFP warning."""

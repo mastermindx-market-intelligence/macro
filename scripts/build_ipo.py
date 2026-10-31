@@ -18,6 +18,7 @@ for the landing-hub card. Run: python -m scripts.build_ipo
 from __future__ import annotations
 
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -29,6 +30,7 @@ from engine import credit_window as cwn  # noqa: E402
 from engine import ipo_hk  # noqa: E402
 from engine import ipo_lockup as il  # noqa: E402
 from engine import ipo_radar as ir  # noqa: E402
+from engine.ipo_prospectus_terms import native_deals  # noqa: E402
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from scripts.build_vector import C  # noqa: E402
@@ -783,6 +785,77 @@ def _lockup_when_zh(date_iso: str | None, days: int | None) -> str:
     return "今天" if days == 0 else (f"{days}天后" if days > 0 else f"{-days}天前")
 
 
+# F1 (W20-L6): display-only zh map for the committed phase-0 event-study verdict.
+_PHASE0_VERDICT_ZH = {"DISPLAY-ONLY · no measurable edge on our sample":
+                      "仅供展示 · 在我们的样本上无可测量的优势"}
+
+
+def _phase0_receipt_vm(phase0) -> dict | None:
+    """Item F1 view-model: render the committed lock-up phase-0 event study as a
+    display-only receipt line under the cliff note. _lockup_vm already reads the
+    file; nothing here re-runs the study. None unless phase0 is a dict whose stat
+    is a dict with finite numeric mean_pct and pct_negative, and n_names and
+    as_of are present — no honest receipt, no line."""
+    if not isinstance(phase0, dict):
+        return None
+    stat = phase0.get("stat")
+    if not isinstance(stat, dict):
+        return None
+    mean = _finite(stat.get("mean_pct"))
+    pct_neg = _finite(stat.get("pct_negative"))
+    n_names, as_of = phase0.get("n_names"), phase0.get("as_of")
+    if (not isinstance(mean, (int, float)) or not isinstance(pct_neg, (int, float))
+            or n_names is None or not as_of):
+        return None
+    mean_disp = f"{mean:+.2f}%"
+    if mean_disp.startswith("-"):
+        mean_disp = "\u2212" + mean_disp[1:]      # U+2212 minus, never the hyphen
+    focus = phase0.get("focus")
+    m = re.fullmatch(r"event\[([+-]?\d+),([+-]?\d+)\]", focus if isinstance(focus, str) else "")
+    if m and int(m.group(1)) < 0:
+        a, b = -int(m.group(1)), int(m.group(2))
+        window_en = (f"from {a} day{'s' if a != 1 else ''} before to "
+                     f"{b} day{'s' if b != 1 else ''} after the un-lock")
+        window_zh = f"解禁前{a}日至后{b}日"
+    else:
+        window_en, window_zh = "around the un-lock", "解禁前后"
+    verdict_en = phase0.get("verdict")
+    verdict_en = verdict_en if isinstance(verdict_en, str) else ""
+    return {"as_of": as_of, "n_names": n_names, "mean_disp": mean_disp,
+            "pct_negative": f"{pct_neg:.1f}", "window_en": window_en,
+            "window_zh": window_zh, "verdict_en": verdict_en,
+            "verdict_zh": _PHASE0_VERDICT_ZH.get(verdict_en, verdict_en)}
+
+
+def _prospectus_deals_vm() -> list[dict]:
+    """File terms and a native, unadjusted price path, independent of ETF context."""
+    result = []
+    for deal in native_deals():
+        item = dict(deal)
+        for key in ("primary_shares", "secondary_shares", "base_shares", "option_max_shares"):
+            item[key + "_disp"] = f"{deal[key]:,}"
+        prices = deal["prices"]
+        item["path_points"] = ""
+        if prices:
+            values = [p["close"] for p in prices] + [float(deal["offer_price"])]
+            lo, hi = min(values), max(values)
+            span = max(hi - lo, 1)
+            scale_y = lambda value: 165 - (value - lo) / span * 145
+            first = datetime.fromisoformat(prices[0]["date"])
+            duration = max((datetime.fromisoformat(prices[-1]["date"]) - first).days, 1)
+            item["path_points"] = " ".join(
+                f"{20 + (datetime.fromisoformat(p['date']) - first).days / duration * 840:.2f},{scale_y(p['close']):.2f}"
+                for p in prices)
+            item["offer_y"] = f"{scale_y(float(deal['offer_price'])):.2f}"
+            item["first_close"] = f"{prices[0]['close']:.2f}"
+            item["first_close_date"] = prices[0]["date"]
+            item["latest_close"] = f"{prices[-1]['close']:.2f}"
+            item["latest_date"] = prices[-1]["date"]
+            item["high_close"] = f"{hi:.2f}"
+        result.append(item)
+    return result
+
+
 def build() -> str:
     # read the PRIOR snapshot BEFORE anything overwrites it (for the 'what changed' strip)
     prior_snap = _read_prior_snapshot()
@@ -916,11 +989,13 @@ def build() -> str:
         "rev_total": rev_gate["total"],
         "lockups": lockvm["rows"], "lockup_summary": lk_summary,
         "lockup_phase0": lockvm.get("phase0"),
+        "lockup_p0": _phase0_receipt_vm(lockvm.get("phase0")),
         "lockup_timeline": lockup_timeline,
         "hero": hero,
         "avoid": avoid, "changed": changed,
         "hk": _hk_vm(),
         "chart_aftermarket": _chart_aftermarket(),
+        "prospectus_deals": _prospectus_deals_vm(),
         "credit_window": _credit_window_vm(cwn.window_state()),
     }
 

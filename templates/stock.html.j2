@@ -12,6 +12,8 @@
 <title>Stock analyzer — cycle & momentum</title>
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="ticker_news.css">
+<script defer src="ticker_news.js"></script>
 <style>
   * { box-sizing:border-box; }
   body { background:var(--bg); color:var(--text); font:14px/1.5 -apple-system,
@@ -826,6 +828,7 @@
       <div id="r_smartmoney"></div>
     </div>
     </details>
+    {% include "ticker_news_panel.html.j2" %}
     <!-- ===== W4 stock-personality panel — display-only trading character context ===== -->
     {# FAIL-OPEN: entire section absent when personality missing/null (R-SP13 display-only tier). #}
     {# Jinja missing-key law: NEVER use `if d.personality is not none` — use .get() on the JS side. #}
@@ -1939,6 +1942,7 @@
     if (t) load(t);
   }
   window.addEventListener('hashchange', fromHash);
+  window.addEventListener('mmx:shell-location', fromHash);
 
   function tf(label, m) {
     if (!m || m.rsi14 == null) return '';
@@ -2120,6 +2124,7 @@
         [].forEach.call(sd.querySelectorAll('.lock-cta'), function (b) {
           b.addEventListener('click', function () {
             var mode = b.getAttribute('data-auth');
+            if (window.MMXSharedShell) { window.MMXSharedShell.openAuth(mode === 'signup' ? 'signup' : 'signin'); return; }
             if (window.MMOnboard && typeof window.MMOnboard.open === 'function') window.MMOnboard.open(mode, {});
             else if (window.MDXAuth && typeof window.MDXAuth.open === 'function') window.MDXAuth.open(mode);
             else location.href = mode === 'signup' ? '/?signup=1' : '/?signin=1';
@@ -3219,6 +3224,7 @@
   function render(d) {
     document.getElementById('result').style.display = 'block';
     document.getElementById('r_name').textContent = d.name + ' (' + d.ticker + ')';
+    window.dispatchEvent(new CustomEvent("mmx-ticker-news", {detail:{ticker:d.ticker}}));
     liveHeaderPx(d);
     if (d.limited) { renderLimited(d); return; }
     // a full record may follow a limited one — re-show the panels it hid
@@ -3621,7 +3627,7 @@
       if(j&&j.anticipation){ show(j.anticipation); return; }
       return fetch('anticipationdata/'+safeT(t)+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(show);
     }).catch(function(){panel.style.display='none';});}
-  window.addEventListener('hashchange',load); load();
+  window.addEventListener('hashchange',load); window.addEventListener('mmx:shell-location',load); load();
 })();
 </script>
 <p class="muted" style="font-size:12px">Generated {{ generated_utc }} UTC · charts rendered in-house with

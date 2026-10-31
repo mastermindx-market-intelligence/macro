@@ -1,0 +1,81 @@
+{# Risk Radar workspace: presentation of the existing US radar contract only.
+   No forecast, state, policy, polling, or calibration is computed here.
+   The template stays inert until the progressive enhancement can mount.
+   All original evidence and live-hook nodes remain in the same dialog. #}
+{% set _rkw_rd = market_state.get('radar') if market_state is mapping else {} %}
+{% if _rkw_rd is not mapping %}{% set _rkw_rd = {} %}{% endif %}
+{% set _rkw_base = _rkw_rd.get('dd_base') %}
+{% if _rkw_base is not mapping %}{% set _rkw_base = {} %}{% endif %}
+{% set _rkw_meta = _rkw_rd.get('dd_evidence') %}
+{% if _rkw_meta is not mapping %}{% set _rkw_meta = {} %}{% endif %}
+{% set _rkw_evidence = _rkw_meta.get('horizons') %}
+{% if _rkw_evidence is not mapping %}{% set _rkw_evidence = {} %}{% endif %}
+<script type="application/json" id="risk-radar-workspace-data">{{ {
+  'schema': 'mastermind.risk_radar_workspace/v1',
+  'scope': 'US',
+  'benchmark': 'SPY',
+  'horizons': {
+    '5': {'probability': _rkw_rd.get('dd5'), 'baseline': _rkw_base.get('h5'), 'history': _rkw_evidence.get('h5') or {}},
+    '10': {'probability': _rkw_rd.get('dd10'), 'baseline': _rkw_base.get('h10'), 'history': _rkw_evidence.get('h10') or {}},
+    '21': {'probability': _rkw_rd.get('dd21'), 'baseline': _rkw_base.get('h21'), 'history': _rkw_evidence.get('h21') or {}}
+  }
+}|tojson }}</script>
+<template id="risk-radar-workspace-template">
+  <div class="rkw-layout">
+    <div class="rkw-overview">
+      <div class="rkw-owner-updates"></div>
+      <div class="rkw-hero">
+        <section class="rkw-read" aria-labelledby="rkw-state-label">
+          <div class="rkw-eyebrow" id="rkw-state-label"><span class="l-en">Risk reading</span><span class="l-zh">风险读数</span></div>
+          <div class="rkw-state-slot"></div>
+          <div class="rkw-reason-slot"></div>
+          <div class="rkw-stance">
+            <span class="rkw-stance-icon" aria-hidden="true">↳</span>
+            <div><span class="rkw-label"><span class="l-en">Current stance</span><span class="l-zh">当前立场</span></span><div class="rkw-stance-slot"></div></div>
+          </div>
+          <div class="rkw-authority-slot"></div>
+          <button type="button" class="rkw-index" data-rkw-view="signals">
+            <span class="rkw-index-label"><span class="l-en">Signal index</span><span class="l-zh">信号指数</span></span>
+            <span class="rkw-score-slot"></span><span class="rkw-arrow" aria-hidden="true">↗</span>
+          </button>
+        </section>
+        <section class="rkw-odds" aria-labelledby="rkw-odds-title">
+          <div class="rkw-odds-heading">
+            <h3 id="rkw-odds-title"><span class="l-en">SPY · ≥5% pullback</span><span class="l-zh">SPY · ≥5% 回撤</span></h3>
+            <button type="button" class="rkw-info" data-rkw-view="odds"><span class="l-en">About these odds</span><span class="l-zh">概率说明</span><span aria-hidden="true">↗</span></button>
+          </div>
+          <div class="rkw-horizons" role="group" aria-label="Probability horizon">
+            {% for day in [5, 10, 21] %}
+            <button type="button" class="rkw-horizon" data-rkw-horizon="{{ day }}" aria-pressed="{{ 'true' if day == 21 else 'false' }}"><span class="l-en">{{ day }}d</span><span class="l-zh">{{ day }}日</span></button>
+            {% endfor %}
+          </div>
+          <div class="rkw-odds-reading" aria-live="polite" aria-atomic="true">
+            <strong class="rkw-probability">—</strong>
+            <span class="rkw-probability-caption"><span class="l-en">Estimate unavailable</span><span class="l-zh">暂无估计</span></span>
+          </div>
+          <div class="rkw-probability-track" aria-hidden="true"><span class="rkw-probability-fill"></span><i class="rkw-baseline-marker" hidden></i></div>
+          <div class="rkw-probability-scale" aria-hidden="true"><span>0%</span><span>100%</span></div>
+          <div class="rkw-odds-footer"><span class="rkw-baseline"></span><button type="button" class="rkw-quality" data-rkw-view="odds"></button></div>
+        </section>
+      </div>
+      <div class="rkw-internals-slot"></div>
+      <section class="rkw-drivers" aria-labelledby="rkw-drivers-title">
+        <div class="rkw-section-heading"><h3 id="rkw-drivers-title"><span class="l-en">What matters now</span><span class="l-zh">当前重点</span></h3><span class="rkw-section-hint"><span class="l-en">Select a signal to explore</span><span class="l-zh">点击信号深入了解</span></span></div>
+        <div class="rkw-driver-grid"></div>
+      </section>
+      <nav class="rkw-explore" aria-label="Risk Radar evidence">
+        <button type="button" data-rkw-view="signals"><span class="rkw-explore-icon" aria-hidden="true">≋</span><span class="l-en">All risk signals</span><span class="l-zh">全部风险信号</span><span class="rkw-count"></span><span class="rkw-arrow" aria-hidden="true">↗</span></button>
+        <button type="button" data-rkw-view="sentiment"><span class="rkw-explore-icon" aria-hidden="true">◒</span><span class="l-en">Market context</span><span class="l-zh">市场背景</span><span class="rkw-arrow" aria-hidden="true">↗</span></button>
+        <button type="button" data-rkw-view="sources"><span class="rkw-explore-icon" aria-hidden="true">⊙</span><span class="l-en">Sources &amp; method</span><span class="l-zh">来源与方法</span><span class="rkw-arrow" aria-hidden="true">↗</span></button>
+      </nav>
+    </div>
+    <section class="rkw-inspector" id="rkw-inspector" aria-labelledby="rkw-inspector-title" hidden>
+      <div class="rkw-inspector-toolbar"><button type="button" class="rkw-back"><span aria-hidden="true">←</span><span class="l-en">Overview</span><span class="l-zh">概览</span></button><div class="rkw-step"></div></div>
+      <div class="rkw-inspector-heading"><div class="rkw-eyebrow"><span class="l-en">Risk Radar / Evidence</span><span class="l-zh">风险雷达 / 依据</span></div><h2 id="rkw-inspector-title" tabindex="-1"></h2><div class="rkw-inspector-summary"></div></div>
+      <nav class="rkw-context-nav" aria-label="Evidence sections" hidden></nav>
+      <div class="rkw-inspector-content"></div>
+      <div class="rkw-inspector-next" hidden><button type="button" class="rkw-previous"><span aria-hidden="true">←</span><span class="l-en">Previous signal</span><span class="l-zh">上一个信号</span></button><button type="button" class="rkw-next"><span class="l-en">Next signal</span><span class="l-zh">下一个信号</span><span aria-hidden="true">→</span></button></div>
+    </section>
+    <div class="rkw-vault" hidden></div>
+  </div>
+</template>

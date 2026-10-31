@@ -1,0 +1,62 @@
+{
+  "observed_at": "2026-10-16T01:17:38.125189+00:00",
+  "scope": "Native Chrome UI observed, live site, existing signed-in administrator; not two-tenant or independent acceptance",
+  "origin": "https://www.mastermind-x.com",
+  "browser_recovery": "Old extension binding remained stale. Native Chrome revealed the saved Defense live acceptance group closed; reopening the existing group in Chris profile loaded the page. No credential entered or login replayed.",
+  "live_observations": {
+    "account_menu": "Existing administrator signed in; sign-out control visible",
+    "candidate_radar_count": 420,
+    "candidate_id": "grc1-021cfe0d00790f938fca9831",
+    "candidate_issuer": "central:GD",
+    "candidate_award": "N0002418C2305",
+    "candidate_evidence": "Exact issuer graph, source receipt identities, missing denominator and research-only limitations visible. Drawer Escape returns focus to View evidence.",
+    "fms_count": 68,
+    "fms_case": "24-121",
+    "fms_value": "USD110m estimated notification value; not award/backlog/revenue; later stage not observed",
+    "source_clock": "2026-10-15T17:39:04.412276+00:00",
+    "program_dossier": {
+      "program": "acq-program:virginia-class-ssn",
+      "phase": "production",
+      "roles": [
+        "GD prime",
+        "HII teaming partner",
+        "BWXT supplier shared across programs"
+      ],
+      "no_issuer_revenue_allocation": true,
+      "budget_unavailable": true,
+      "oversight_not_on_file": true,
+      "forward_window": "FY2032 Virginia-class sale to Australia, 2031-10-01 through2032-09-30; windows not certainties"
+    },
+    "history_limit": "Mode changes replace the current URL; Chrome Back was disabled after Candidate\u2192FMS\u2192Program on a newly reopened tab. No back restoration pass is claimed.",
+    "official_source_navigation": {
+      "url": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_N0002418C2305_9700_-NONE-_-NONE-/",
+      "observed_http": "HTTP200OK; Allow GET HEAD OPTIONS shown by official site",
+      "piid": "N0002418C2305",
+      "description": "FY18-FY22 DDG51 class ship construction",
+      "closed_own_source_tab": true,
+      "return": "Original Changes mode and ws:govws-22d50d4091f7d85a89e44ec2 remained selected; focus returned to the award-detail source link",
+      "scope": "Current public read is navigation proof, not new ingestion/ledger evidence"
+    },
+    "export_verification": "live-export/VERIFICATION.json;12matchingCSV/JSONrecords"
+  },
+  "defect": {
+    "state": "DEMONSTRATED_ON_LIVE_UI",
+    "description": "Ref objects with no URL link to page itself; govws ID becomes nonexistent relative page. Internal IDs must remain nonclickable; explicit HTTPS references only.",
+    "worker": "defense-candidate-source-links-01a13300-a",
+    "additional_source_link_requirement": "Generic https://api.usaspending.gov/api/v2/transactions/ returns405 on browser GET; retain its reference but do not label it a navigable source. Prefer the literal bound award-detail receipt for a working source action."
+  },
+  "limits": [
+    "Space/PAC3 follow-up9496 is not yet released.",
+    "No separate non-admin entitlement or cross-tenant acceptance established.",
+    "No production performance timing or independent taste acceptance claimed."
+  ],
+  "fms_direct_url_defect": {
+    "observed_at": "2026-10-16T01:56:28.930156+00:00",
+    "method": "Actual signed-in Chrome DOM; product Copy link action then fresh own tab",
+    "selected_original": "Norway / 26-82 / 155mm High Explosive M795 Projectile",
+    "copied_url": "https://www.mastermind-x.com/government_revenue.html?mode=fms&item=fms%3Afms%3Atransmittal%3A26-82",
+    "fresh_tab_result": "Iraq / 24-121 / Very Small Aperture Terminals selected; Norway26-82 present but not selected",
+    "diagnostic_tab_closed": true,
+    "state": "DEMONSTRATED_PRODUCTION_DEFECT; local async selection repair prepared"
+  }
+}
