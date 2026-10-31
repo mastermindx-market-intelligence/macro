@@ -123,11 +123,44 @@ verified:
     result: >
       run document as above (outcome-blind, writes nothing); 4 passed. Written up in
       research/prophet_v4/ENTRY_TIMING_W1_INTAKE_WATERFALL_2026-10-31.md.
+  - claim: Entry Timing W1 (PR #10277) survives independent non-author review; the turn_watch clock defect found in round 1 is repaired.
+    command: >
+      three read-only Opus review rounds on heads 942a4ed8 -> 4e53d95a -> d03acfd0;
+      python3 -m pytest tests/test_report_us_candidate_episode_waterfall.py -q (7 passed);
+      python3 scripts/report_us_candidate_episode_waterfall.py --json --git-history origin/main.
+    result: >
+      r1 REVISE (mapped turn_watch rows were binned by trigger date) -> receipt->document
+      data_session recovery over 54 distinct turn_watch blobs (full history), 1,694/1,694
+      events and 13,649/13,649 suppressions recovered; r2 REVISE text-only -> r3
+      APPROVE-READY at d03acfd0 (reviewer rebuilt every _source_id; reconciliation
+      88,325 = 88,325). Armed merge-on-green at d03acfd0; not merged at this write.
+  - claim: PR #10255's contract-delta red is a CI-manifest gap, not a code defect, and is repaired.
+    command: >
+      gh api repos/.../actions/jobs/<contract-delta job>/logs (one read);
+      python3 scripts/check_contract_delta.py --base origin/main after the edit.
+    result: >
+      "tests/test_qledger_carve.py is a new pytest suite named by no run: step in any
+      workflow" (1 introduced, 0 inherited); wired into the push-retry-policy job of
+      .github/ci/legacy-jobs.yml (owner of push_retry.sh and the append-only fence)
+      at 6454a74a; local gate: 0 introduced, 0 inherited (base 51404df7).
+  - claim: The Entry Timing W2 design registration's round-1 incumbent proxy was degenerate and revision 2 replaces it with a real admission event.
+    command: >
+      python3 research/prophet_v4/entry_timing_w2_t1_census.py (dates, tickers and lane
+      flags only; no price, grade, outcome or paired-race column read).
+    result: >
+      curated tier: 916/1,087 OPENED episodes already curated before discovery, 77.3%
+      zero lag (a universe, median 2,932 rows per stamp). BUY lane (lane == "buy",
+      engine/us_candidate_lanes.py): 365 admissions stamped >= discovery, 6.0% zero lag,
+      median lag 14 grid sessions (IQR 5-23), 722 never; lane/tier/featured populated on
+      35 of 54 stamp dates (last 2026-10-19), buyable/eligible on all 54. Registration
+      r2 at 549d416f on Draft PR #10283 (DRAFT - UNFROZEN; round-2 review running).
 unverified:
   - claim: PR #10267 (head 750dd2c2) hosted CI green and merged by the merge-on-green sweeper against that exact head.
     what_would_verify: the sweeper's merge commit on origin/main; mergeStateStatus read once via the bound PR status, not by polling.
-  - claim: The W1 waterfall claim survives independent non-author review (PR #10277).
-    what_would_verify: the reviewer's returned verdict recorded on the PR; any FIX-BEFORE-MERGE repaired before arming.
+  - claim: PR #10277 (head d03acfd0) and PR #10255 (head 6454a74a) merge through the sweeper against those exact heads.
+    what_would_verify: the sweeper's merge commits on origin/main; #10255 additionally needs the fresh bounded round-2 non-author review (the first round-2 reviewer stalled 70 min without a verdict and was stopped) and green hosted CI at 6454a74a before arming.
+  - claim: W2 registration revision 2 is READY TO FREEZE.
+    what_would_verify: the round-2 independent review verdict on 549d416f; then the census re-run with the W1 r2 session + VendorAliasTable join, k*, the T3 gate, the price-panel commit SHA, the Data OS exclusion list, and a machine freeze mirroring §2-§7. No outcome may be read before that.
   - claim: >
       The next scheduled nightly lands the "engine: regime update <date>" commit,
       the curated tier rows (~2,900) for that session, and the collect_tail and
@@ -162,18 +195,18 @@ unresolved:
     files) is an unmade design decision — binding the seam does not wire the nightly.
 next_actions:
   - >
-    1. Consume the second read-only review of #10255 (changed behavior only); on
-    green hosted CI and a non-author approval, release through the normal ship
-    path (merge --match-head-commit fd23dfbfa8e3); never self-approve or self-merge.
+    1. Consume the fresh bounded round-2 review of #10255 at 6454a74a (the stalled
+    reviewer was stopped, no verdict); on APPROVE-READY and green hosted CI arm
+    merge-on-green; release through the normal ship path (merge --match-head-commit
+    6454a74a); never self-approve or self-merge.
   - >
     2. Production proof on the next scheduled nightly (see unverified); record it
     here and in the W3 ledger; do not dispatch daily.yml manually.
   - >
-    3. #10267 (B4 seam) is reviewed APPROVE-READY and armed merge-on-green at
-    750dd2c2: consume the sweeper's outcome once at a real boundary; if hosted CI
-    reds, repair on the branch (never relabel silently, #5291). #10277 (W1
-    waterfall): consume the independent review, repair any FIX-BEFORE-MERGE, then
-    the same release path. Never self-approve or self-merge.
+    3. #10267 (B4 seam, 750dd2c2) and #10277 (W1, d03acfd0) are both reviewed
+    APPROVE-READY and armed merge-on-green: consume each sweeper outcome once at a
+    real boundary; if hosted CI reds, repair on the branch (never relabel silently,
+    #5291). Never self-approve or self-merge.
   - >
     4. Decide the B4 capture's durable home (unresolved above) with the Data OS /
     live-plane owners before any nightly wiring; preserve the amended B4
@@ -185,13 +218,14 @@ next_actions:
     through its existing carrier before any overlapping issuer work; do not
     re-run it.
   - >
-    6. Entry Timing W2: register the design on the W1 denominator facts
-    (research/prophet_v4/ENTRY_TIMING_W1_INTAKE_WATERFALL_2026-10-31.md — alternating
-    curated stamp sizes, GH001-lost sessions, anchor classes, the cohort falsifier)
-    with pre-declared population, first decision instant, maturity, invalidation,
-    cost floor and tolerable false-positive cost; a separate registration, never a
-    change to #7751 A1. B-17 34-session window census (7,918 C0 episodes, none
-    complete) stays null — no favorable subset.
+    6. Entry Timing W2 (Draft PR #10283, registration r2 at 549d416f, DRAFT -
+    UNFROZEN): consume the round-2 review; apply any FIX-BEFORE-FREEZE on the
+    branch; only on APPROVE-READY-TO-FREEZE run the freeze inputs (census with the
+    W1 r2 session and the identity join, k*, T3 gate, panel commit SHA, Data OS
+    exclusion list) and mirror a machine freeze; R can never promote; no outcome
+    read before freeze; a separate registration, never a change to #7751 A1. B-17
+    34-session window census (7,918 C0 episodes, none complete) stays null — no
+    favorable subset.
   - >
     7. Reference coverage (the whole W1 loss): route to the Data OS owner of
     scripts/build_security_master.py / the membership ingest with the W1 numbers;
@@ -240,6 +274,20 @@ resolvable only after later ingests (lawful as-known refusals) and 51,347 are ti
 current reference knows. The seam itself is bound in PR #10267 (two independent review
 rounds; REVISE → APPROVE-READY; armed merge-on-green at 750dd2c2). The capture's durable
 home is still an unmade design decision (unresolved above), so no nightly is wired.
+
+Second segment (same session, after context compaction): W1 went through three
+independent review rounds — the round-1 finding that mapped turn_watch rows were
+binned by their trigger date, not by the session the document was read, was repaired
+by recovering each row's document session from its source receipt over the full git
+history of the turn_watch documents (54 blobs, 100% recovery) — and is armed at
+d03acfd0. The #10255 contract-delta red was a manifest gap (a new suite no job ran)
+and is wired into push-retry-policy at 6454a74a. The W2 design registration's first
+review showed its incumbent proxy (first curated-tier stamp) was a universe, not an
+admission; revision 2 (549d416f, PR #10283) uses the BUY-lane placement, an
+intention-to-treat primary, the existing grade producer's next-close fill on the
+pinned yahoo close panel, declared identity join and knowability rules, and W2's own
+futility rule. Everything here is DELIVERED at most; nothing is merged, frozen or
+production-proven.
 
 Canonical sources: completion brief and census at e757498822a2 (Draft #10242),
 recovery carrier #10174 (29cfb98b), program issue #6805 (comment 6539985230), shared
