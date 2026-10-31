@@ -9753,7 +9753,14 @@ jobs:
       - "scripts/thematic_rotation_phase0.py"
       - "scripts/validate_regime_fwd.py"
       - "site/factordata/basket_washout_state.json"
-    timeout-minutes: 8
+    # Budget 8 -> 15 (2026-10-31, macro #10257 ci run 41216684968 attempts 1+2):
+    # on a PULL REQUEST the fail-closed "canonical base" step fetches origin/main
+    # in ~4 min on a hosted runner (16:11->16:15Z, 17:23->17:27Z), pytest takes
+    # 146-179 s and the Chromium suite 2-3 min, so the job was cut at exactly 8:00
+    # with every executed test green; on main the base fetch is trivial, so the
+    # 8-minute figure was only ever proven there. 15 keeps the fail-closed fetch
+    # and the suites unchanged and covers the measured PR-side infrastructure time.
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
