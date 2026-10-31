@@ -11214,6 +11214,7 @@ jobs:
       - "scripts/fif_pack_quality_report.py"
       - "scripts/fif_recovery_drill.py"
       - "scripts/fif_specialist_packs.py"
+      - "scripts/fif_held_out_evaluate.py"
       - "engine/theme_graph/economic_context.py"
       - "engine/theme_graph/issuer_economic_context.py"
       - "engine/rates_command_basis.py"
@@ -11258,6 +11259,12 @@ jobs:
       - "tests/test_fif_coverage_writer.py"
       - "tests/test_fif_coverage_manifest.py"
       - "tests/test_fif_z0_closure_matrix.py"
+      # FIF Z0 A34 (2026-10-20): per-pack proof ledger generator, guard test and seat inputs.
+      - "scripts/fif_a34_pack_proof_ledger.py"
+      - "tests/test_fif_a34_pack_proof_ledger.py"
+      - "research/financial_intelligence_fabric/FIF_A34_PACK_PROOF_LEDGER.json"
+      - "research/financial_intelligence_fabric/FIF_A34_PACK_REVIEWS.json"
+      - "research/financial_intelligence_fabric/FIF_A34_PACK_LIVE_PROOFS.json"
       - "tests/test_fif_a21_publish_observation.py"
       - "tests/test_fif_x2_ownership_guards.py"
       - "tests/test_fif_specialist_packs.py"
@@ -12195,6 +12202,7 @@ jobs:
           tests/test_fif_z0_closure_matrix.py
           tests/test_fif_z0_gap_a23_a38.py
           tests/test_fif_a33_gold_replay_receipt.py
+          tests/test_fif_a34_pack_proof_ledger.py
           tests/test_fif_a47_recovery_drill_receipts.py
           tests/test_fif_a21_publish_observation.py
           tests/test_fif_a43_responsive_keyboard_corpus.py
@@ -12921,6 +12929,7 @@ jobs:
     # d5d0be27, 26 files, no probe file in it); the probe ceilings stay fixed.
     paths:
       - "config/site_access.yml"
+      - "engine/__init__.py"
       - "engine/research_vault/__init__.py"
       - "engine/research_vault/catalog.py"
       - "engine/research_vault/sidecar.py"
