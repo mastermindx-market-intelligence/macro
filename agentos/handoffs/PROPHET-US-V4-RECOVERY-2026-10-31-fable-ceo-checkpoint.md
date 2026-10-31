@@ -48,7 +48,7 @@ changed:
       concurrent-writer rebase, and after main added/changed qledger files), a
       hard-kill + always()-step restore, the park-failure withhold, a carved new
       file, trap chaining (one-line, multi-line, quoted), and the wiring pins.
-prs: [10255]
+prs: [10255, 10267, 10277]
 verified:
   - claim: The nightly outage root cause is GitHub's GH001 blob limit on data/qledger/claims.jsonl, not the builders.
     command: >
@@ -95,7 +95,39 @@ verified:
       1,938 store aliases cover 2026-10-30; vendor_symbol_for("store","SEC:US-XNYS-A")
       -> "A"; receipt sha256:ff8a32df8e47d88149d8ac8d8ae54b9b117a3c44cd34cfcd57eebcf0de816306.
       The seam can be bound without inventing identity (next action 3).
+  - claim: >
+      B4 alias seam bound (PR #10267): resolve_alias_table(root, required=…) reads
+      data/reference/vendor_aliases.parquet through the intake's _records_snapshot
+      into lib.dataos.identity.VendorAliasTable; durable --nightly refuses an absent
+      reference (ALIAS_REFERENCE_MISSING, exit 3, nothing written); report/dry-run
+      keep the adapter's typed IDENTITY_ALIAS_UNRESOLVED; unlawful table =
+      ALIAS_TABLE_MALFORMED. Independent read-only review r1 REVISE (F1 silent
+      degrade of uncorrectable rows; F2 sparse-tree test; F3 docstring) repaired at
+      12ffc06a; r2 APPROVE-READY; r2 nit fixed at 750dd2c2 (test only).
+    command: >
+      python3 -m pytest tests/test_capture_prophet_b4_same_read.py -q; plus
+      tests/test_prophet_b4_same_read.py test_prophet_strategy_definition.py
+      test_us_candidate_episode_intake.py test_us_candidate_episode_reconciler.py
+    result: 25 passed; 280 passed across the neighbouring suites (local, head 750dd2c2).
+  - claim: >
+      Entry Timing W1 denominator (PR #10277, head 942a4ed8): for the selected B1
+      generation peg:23be3409… on main 91b936c4, 88,325 inputs / 15,511 mapped /
+      62,500 IDENTITY_UNRESOLVED; replaying every refused (ticker, session) pair
+      through the ONE Data OS reader (membership vendor, same `on` as the intake):
+      51,347 rows no current reference knows, 11,153 rows whose alias was ingested
+      after the session (lawful as-known refusal), 0 rows resolvable at their session.
+      The identity join has no intake defect; the loss is reference coverage.
+    command: >
+      python3 scripts/report_us_candidate_episode_waterfall.py --json;
+      python3 -m pytest tests/test_report_us_candidate_episode_waterfall.py -q
+    result: >
+      run document as above (outcome-blind, writes nothing); 4 passed. Written up in
+      research/prophet_v4/ENTRY_TIMING_W1_INTAKE_WATERFALL_2026-10-31.md.
 unverified:
+  - claim: PR #10267 (head 750dd2c2) hosted CI green and merged by the merge-on-green sweeper against that exact head.
+    what_would_verify: the sweeper's merge commit on origin/main; mergeStateStatus read once via the bound PR status, not by polling.
+  - claim: The W1 waterfall claim survives independent non-author review (PR #10277).
+    what_would_verify: the reviewer's returned verdict recorded on the PR; any FIX-BEFORE-MERGE repaired before arming.
   - claim: >
       The next scheduled nightly lands the "engine: regime update <date>" commit,
       the curated tier rows (~2,900) for that session, and the collect_tail and
@@ -137,12 +169,11 @@ next_actions:
     2. Production proof on the next scheduled nightly (see unverified); record it
     here and in the W3 ledger; do not dispatch daily.yml manually.
   - >
-    3. Bind the B4 alias seam: resolve_alias_table(root) -> lib.dataos.identity
-    VendorAliasTable over data/reference/vendor_aliases.parquet via the intake's
-    _records_snapshot (sha256 receipt in the run document; absent reference stays
-    typed IDENTITY_ALIAS_UNRESOLVED; unlawful reference = typed whole-run refusal);
-    tests + hosted CI + independent review in its own PR (patch prepared this
-    session).
+    3. #10267 (B4 seam) is reviewed APPROVE-READY and armed merge-on-green at
+    750dd2c2: consume the sweeper's outcome once at a real boundary; if hosted CI
+    reds, repair on the branch (never relabel silently, #5291). #10277 (W1
+    waterfall): consume the independent review, repair any FIX-BEFORE-MERGE, then
+    the same release path. Never self-approve or self-merge.
   - >
     4. Decide the B4 capture's durable home (unresolved above) with the Data OS /
     live-plane owners before any nightly wiring; preserve the amended B4
@@ -154,12 +185,21 @@ next_actions:
     through its existing carrier before any overlapping issuer work; do not
     re-run it.
   - >
-    6. Entry Timing W1/W2 scientific denominator and the B-17 34-session window
-    census (7,918 C0 episodes, none complete) — no favorable subset.
+    6. Entry Timing W2: register the design on the W1 denominator facts
+    (research/prophet_v4/ENTRY_TIMING_W1_INTAKE_WATERFALL_2026-10-31.md — alternating
+    curated stamp sizes, GH001-lost sessions, anchor classes, the cohort falsifier)
+    with pre-declared population, first decision instant, maturity, invalidation,
+    cost floor and tolerable false-positive cost; a separate registration, never a
+    change to #7751 A1. B-17 34-session window census (7,918 C0 episodes, none
+    complete) stays null — no favorable subset.
+  - >
+    7. Reference coverage (the whole W1 loss): route to the Data OS owner of
+    scripts/build_security_master.py / the membership ingest with the W1 numbers;
+    never force ticker matches or accept a later snapshot for historical sessions.
 do_not_redo:
   - V4 waves 0A, 0B, A1, B1, D1 and Entry Timing W0 are DONE (do not reopen).
   - "PR #9556's inline carve in the `collect` job is accepted; #10255 does not touch it."
-  - The B1 identity-join investigation above (suppressions = reference coverage).
+  - The B1 identity-join investigation (suppressions = reference coverage), now measured in PR #10277 (0 rows resolvable at their session).
   - The refused whole-plan review prophet-us-entry-timing-plan-independent-review-20261031-01 (exit 75, no verdict) is not a review and is not retried on an unchanged path.
   - The Fabric preflight operation prophet-v4-a2-source-issuer-preflight-20261031-01 is reconciled TERMINAL; do not replace or re-dispatch it.
 danger_areas:
@@ -193,10 +233,13 @@ findings (per-path delta restore; always() restore step; trap chaining; render-s
 re-add). Merge, production proof and acceptance are distinct rungs; this record
 reaches DELIVERED + hosted CI, no higher.
 
-The B4 seam investigation found no lost legitimate opportunity in the identity join:
-the Data OS alias reader resolves the canonical ids the B1 generation binds, and the
-suppressions are reference-coverage (membership universe) by construction. Binding
-the seam is next action 3, prepared and reviewable on its own.
+The B4 seam investigation found no lost legitimate opportunity in the identity join,
+and the Entry Timing W1 waterfall (PR #10277) measured it: of 62,500 IDENTITY_UNRESOLVED
+rows, none was resolvable by a reference already ingested on its session; 11,153 became
+resolvable only after later ingests (lawful as-known refusals) and 51,347 are tickers no
+current reference knows. The seam itself is bound in PR #10267 (two independent review
+rounds; REVISE → APPROVE-READY; armed merge-on-green at 750dd2c2). The capture's durable
+home is still an unmade design decision (unresolved above), so no nightly is wired.
 
 Canonical sources: completion brief and census at e757498822a2 (Draft #10242),
 recovery carrier #10174 (29cfb98b), program issue #6805 (comment 6539985230), shared
