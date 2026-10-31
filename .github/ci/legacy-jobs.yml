@@ -31229,6 +31229,7 @@ jobs:
     # test paths on a shared job (+2 packing weight each on every probe that selects
     # it); the ceilings stay fixed.
     paths:
+      - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
