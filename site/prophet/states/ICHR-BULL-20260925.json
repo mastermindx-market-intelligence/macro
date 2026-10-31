@@ -1,14 +1,14 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ICHR-BULL-20260925",
-  "asof": "2026-10-20",
+  "asof": "2026-10-30",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 14.2,
   "raw_confidence": 8.0,
   "delta_vs_base": -45.8,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "recommended_action": null,
+  "human_state": "Closed",
   "components": {
     "validity": 0.0,
     "progress": 0.0,
@@ -17,16 +17,16 @@
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.488,
+    "dist_to_stop_r": -0.764,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 32.1,
-    "p1": -0.992,
-    "p2": -0.496,
+    "horizon_pct_used": 50.0,
+    "p1": -1.1759,
+    "p2": -0.5879,
     "p3": null,
-    "move_r": -1.488,
+    "move_r": -1.764,
     "mfe_r": 0.031,
-    "mae_r": -1.488
+    "mae_r": -1.879
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -36,15 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.4100018310546858,
-  "_mae": -19.879999084472658,
+  "_mae": -25.109998626708986,
   "_max_p1": 0.020459173206321655,
   "_first_trigger_ts": "2026-10-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 18,
-  "tau": 0.3214
+  "days_elapsed": 28,
+  "tau": 0.5,
+  "closed": true,
+  "outcome": "INVALIDATED"
 }

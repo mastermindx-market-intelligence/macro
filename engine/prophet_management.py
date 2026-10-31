@@ -201,8 +201,11 @@ def compute_management_state(
     if trigger_price is not None:
         trigger_price = float(trigger_price)
 
-    # Base confidence: stored plan confidence or 60 if absent
-    base_conf = float(plan.get("confidence") or 60.0)
+    # Management reference is a separate display estimand. The ordinal board
+    # conviction score must never be implicitly promoted into this input.
+    # Explicit zero is distinct from missing/None (legacy 60 reference).
+    _plan_confidence = plan.get("confidence")
+    base_conf = float(60.0 if _plan_confidence is None else _plan_confidence)
 
     # ── 0c. Unpack prev_state accumulator fields ──────────────────────────────
     prev: dict[str, Any] = prev_state or {}
@@ -486,6 +489,20 @@ def compute_management_state(
         "days_elapsed":       days_elapsed,
         "tau":                round(tau, 4),
     }
+
+    if base_conf < 25.0:
+        # A very low independent reference sits below fixed display bounds
+        # across management phases. A positive displayed-vs-base delta can be
+        # a floor/normalization artifact, NOT evidence of improvement.
+        # Suppress this comparison in EVERY phase; retain display and action.
+        out["delta_vs_base"] = None
+        out["reliability"] = {
+            **out["reliability"],
+            "delta_vs_base": (
+                "withheld — low reference is floor/normalization-dominated; "
+                "not evidence of improvement"
+            ),
+        }
 
     if price_frame.get("state") != "current":
         # Conditional stamp (house precedent: a degraded row discloses, a fresh

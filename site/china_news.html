@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- mmx-shared-shell:start --><meta name="mmx-shell-document" content="20261018.1"><meta name="mmx-shell-response" content="content"><link rel="stylesheet" data-mmx-shared-shell-styles="20261018.1" href="shared_shell.css?v=b1918cca"><script data-sync data-mmx-shared-shell-bridge="20261018.1" src="shared_shell_bridge.js?v=071ef720"></script><!-- mmx-shared-shell:end -->
 <meta charset="utf-8">
 <script data-dbase>(function () {
   window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
@@ -33,10 +33,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>China Tape — Macro Dashboard</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=2e861147">
+<link rel="stylesheet" href="theme.css?v=29ec9caa">
 <link rel="stylesheet" href="assets/css/72a34204.css?v=72a34204">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
+<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
 
 
 
@@ -63,7 +63,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=ef068fe1">
+    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -307,24 +307,712 @@
 </nav>
 
 
+
+
 <main class="cn">
 
   <!-- ===================== HERO ===================== -->
   <header class="cn-hero">
     <p class="cn-eyebrow"><span class="cn-live"></span><span class="cn-brand">📡 <span class="gn"><span class="l-en">China Tape</span><span class="l-zh">中国快讯</span></span></span></p>
     
-      <p class="cn-lead"><span class="l-en">The China macro tape is quiet right now.</span><span class="l-zh">当前中国宏观新闻流较安静。</span></p>
+      
+      
+      
+      
+      <p class="cn-lead">
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone steady. <b>14</b> rated high-impact, led by <b>equity market</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调平稳。其中 <b>14</b> 条高影响，主导<b>股票市场</b>。</span>
+      </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
+      <div class="cn-glance">
+        
+        
+        <span class="cn-gchip st-steady"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">steady</span><span class="l-zh">平稳</span></b></span>
+        
+        <span class="cn-gchip hot"><span class="dot"></span><b>14</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-markets"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
+        <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
+      </div>
     
   </header>
 
   
-  <!-- ===================== EMPTY STATE ===================== -->
-  <div class="cn-empty">
-    <h2><span class="l-en">No filtered China headlines on this pull.</span><span class="l-zh">本次抓取暂无筛选中国头条。</span></h2>
-    <p><span class="l-en">This can happen when official pages are quiet, the flash-wire fetch is unavailable, or no macro-relevant item cleared the gate. Policy tone and scheduled catalysts remain live.</span><span class="l-zh">当官方页面安静、快讯抓取不可用，或没有宏观相关条目通过筛选时会出现这种情况。政策基调与排定催化仍保持更新。</span></p>
-  </div>
-  <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+  <!-- ===================== OVERVIEW 3-UP ===================== -->
+  <section class="cn-rail3">
+
+    <!-- policy tone -->
+    <article class="ov-card ov-tone st-steady" style="--ac:var(--muted)">
+      <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
+      
+      
+      <div class="tg-top">
+        <div class="tg-state"><span class="l-en">steady</span><span class="l-zh">平稳</span></div>
+        <div class="tg-z">+0.3</div>
+      </div>
+      
+      
+      <div class="tg-track"><span class="mid"></span>
+        <span class="tg-fill" style="left:50%;width:7.0%"></span>
+      </div>
+      <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 140<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-10-30</p>
+      
+    </article>
+
+    <!-- what's on the tape -->
+    <article class="ov-card ov-mix">
+      <p class="ov-h"><span class="ic">🌡️</span><span class="l-en">What's on the tape</span><span class="l-zh">快讯结构</span></p>
+      
+        
+        
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">7</span>
+        </div>
+        
+        
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:71%"></i></span>
+          <span class="mx-n">5</span>
+        </div>
+        
+        
+        <div class="mx-row th-growth">
+          <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+          <span class="mx-bar"><i style="width:71%"></i></span>
+          <span class="mx-n">5</span>
+        </div>
+        
+        
+        <div class="mx-row th-policy">
+          <span class="mx-name"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+          <span class="mx-bar"><i style="width:57%"></i></span>
+          <span class="mx-n">4</span>
+        </div>
+        
+        
+        <div class="mx-row th-fiscal">
+          <span class="mx-name"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+          <span class="mx-bar"><i style="width:29%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+      
+      
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 21 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 2 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 1</p>
+      
+    </article>
+
+    <!-- next catalyst -->
+    <article class="ov-card ov-next">
+      <p class="ov-h"><span class="ic">📅</span><span class="l-en">Next catalyst</span><span class="l-zh">下一催化</span></p>
+      
+      
+      <div class="nx-when">
+        
+          <span class="nx-days">1</span><span class="nx-unit"><span class="l-en">days out</span><span class="l-zh">天后</span></span>
+        
+      </div>
+      <p class="nx-name"><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></p>
+      <p class="nx-date"><span class="l-en">Oct 31</span><span class="l-zh">10月31日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      
+    </article>
+  </section>
+
+  <!-- ===================== THE TAPE + RAIL ===================== -->
+  <section class="cn-main">
+    <div class="cn-feed-col">
+      <div class="cn-toolbar">
+        <div class="cn-search"><span class="mag">⌕</span><input id="q" type="search" autocomplete="off" placeholder="Search headlines, channels or tickers…" data-ph-en="Search headlines, channels or tickers…" data-ph-zh="搜索头条、通道或标的…"></div>
+        <div class="cn-filters" id="filters">
+          <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+          <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+        </div>
+        <span class="cn-count" id="count"></span>
+      </div>
+
+      <div class="tp-feed" id="feed">
+        
+        
+        <a class="tp-item th-monetary lead" href="https://wallstreetcn.com/livenews/3191599" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="中国央行：继续实施适度宽松的货币政策，综合运用多种货币政策工具，保持流动性充裕 pboc: continue to implement a moderately loose monetary policy, comprehensively use various monetary policy tools, and maintain ample liquidity 中国央行：继续实施适度宽松的货币政策，综合运用多种货币政策工具，保持流动性充裕 2026年10月30日，中国人民银行党委书记、行长潘功胜主持召开党委会议。会议强调，继续实施适度宽松的货币政策，综合运用多种货币政策工具，保持流动性充裕。做好金融“五篇大文章”，加快建设多层次现代化金融市场体系，提升金融服务实体经济适配性，更好支持经济转型升级和增长动能转换。有力有效防范化解重点领域金融风险。扩大金融高水平开放，推进人民币国际化，加快建设和发展多渠道、广覆盖的人民币跨境支付体系。坚定维护国家金融安全。 on october 30, 2026, pan gongsheng, party secretary and governor of the people's bank of china, chaired a party committee meeting. the meeting emphasized the need to continue implementing a moderately loose monetary policy, comprehensively use various monetary policy tools, and maintain ample liquidity. it called for advancing the "five major articles" of finance, accelerating the development of a multi-tiered modern financial market system, enhancing the adaptability of financial services to the real economy, and better supporting economic transformation and upgrading and the shift in growth drivers. it also urged vigorous and effective efforts to prevent and defuse financial risks in key areas, expand high-level financial opening, advance rmb internationalization, accelerate the development of a multi-channel, broad-coverage cross-border rmb payment system, and resolutely safeguard national financial security. 2026年10月30日，中国人民银行党委书记、行长潘功胜主持召开党委会议。会议强调，继续实施适度宽松的货币政策，综合运用多种货币政策工具，保持流动性充裕。做好金融“五篇大文章”，加快建设多层次现代化金融市场体系，提升金融服务实体经济适配性，更好支持经济转型升级和增长动能转换。有力有效防范化解重点领域金融风险。扩大金融高水平开放，推进人民币国际化，加快建设和发展多渠道、广覆盖的人民币跨境支付体系。坚定维护国家金融安全。 华尔街见闻 pboc_liquidity yuan pboc & liquidity 央行与流动性 yuan & fx 人民币与汇率 cny 512800.ss">
+          <time class="tp-when" data-t="2026-10-30T11:10:59+00:00" datetime="2026-10-30T11:10:59+00:00">10-30<br>11:10</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T11:10:59+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC: Continue to implement a moderately loose monetary policy, comprehensively use various monetary policy tools, and maintain ample liquidity</span><span class="l-zh">中国央行：继续实施适度宽松的货币政策，综合运用多种货币政策工具，保持流动性充裕</span></h2>
+            <p class="tp-sum"><span class="l-en">On October 30, 2026, Pan Gongsheng, Party Secretary and Governor of the People's Bank of China, chaired a Party Committee meeting. The meeting emphasized the need to continue implementing a moderately loose monetary policy, comprehensively use various monetary policy tools, and maintain ample liquidity. It called for advancing the "five major articles" of finance, accelerating the development of a multi-tiered modern financial market system, enhancing the adaptability of financial services to the real economy, and better supporting economic transformation and upgrading and the shift in growth drivers. It also urged vigorous and effective efforts to prevent and defuse financial risks in key areas, expand high-level financial opening, advance RMB internationalization, accelerate the development of a multi-channel, broad-coverage cross-border RMB payment system, and resolutely safeguard national financial security.</span><span class="l-zh">2026年10月30日，中国人民银行党委书记、行长潘功胜主持召开党委会议。会议强调，继续实施适度宽松的货币政策，综合运用多种货币政策工具，保持流动性充裕。做好金融“五篇大文章”，加快建设多层次现代化金融市场体系，提升金融服务实体经济适配性，更好支持经济转型升级和增长动能转换。有力有效防范化解重点领域金融风险。扩大金融高水平开放，推进人民币国际化，加快建设和发展多渠道、广覆盖的人民币跨境支付体系。坚定维护国家金融安全。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://news.10jqka.com.cn/20261030/c681313311.shtml" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="欧元区第三季度经济环比增长放缓 eurozone q3 economic growth slows on a quarterly basis 欧元区第三季度经济环比增长放缓 欧盟统计局30日公布的初步数据显示，经季节调整后，今年第三季度欧元区国内生产总值（gdp）环比增长0.4%，欧盟gdp环比增长0.5%，增速均较第二季度放缓0.2个百分点。 preliminary data released by eurostat on the 30th showed that, after seasonal adjustment, euro area gdp grew 0.4% quarter on quarter in the third quarter of this year, while eu gdp grew 0.5%, with both growth rates slowing by 0.2 percentage points from the second quarter. 欧盟统计局30日公布的初步数据显示，经季节调整后，今年第三季度欧元区国内生产总值（gdp）环比增长0.4%，欧盟gdp环比增长0.5%，增速均较第二季度放缓0.2个百分点。 同花顺 growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-30T12:47:23+00:00" datetime="2026-10-30T12:47:23+00:00">10-30<br>12:47</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T12:47:23+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Eurozone Q3 economic growth slows on a quarterly basis</span><span class="l-zh">欧元区第三季度经济环比增长放缓</span></h2>
+            <p class="tp-sum"><span class="l-en">Preliminary data released by Eurostat on the 30th showed that, after seasonal adjustment, euro area GDP grew 0.4% quarter on quarter in the third quarter of this year, while EU GDP grew 0.5%, with both growth rates slowing by 0.2 percentage points from the second quarter.</span><span class="l-zh">欧盟统计局30日公布的初步数据显示，经季节调整后，今年第三季度欧元区国内生产总值（GDP）环比增长0.4%，欧盟GDP环比增长0.5%，增速均较第二季度放缓0.2个百分点。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3191702" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="周五美股盘前你需要了解的全球要闻 global key news to know before friday's us stock market open 周五美股盘前你需要了解的全球要闻 全球科技股“惨遭血洗”！纳指期货跌2%，英特尔美股盘前暴跌23%，现货白银跌破50美元/盎司。 布油触及半年新高，市场严阵以待，中选后海湾局势或将升温。 日本央行维持基准利率在1.25%不变，警告通胀超调风险上升，维持渐进加息立场。 日本央行行长：通胀取得阶段性胜利，暗示年内仍可能加息。 铠侠第二财季营业利润环比飙升57%，资本开支大幅不及预期，第三财季利润指引也低于预期。 63亿美元！币安遭“史上最大”黑客洗劫，暂停全部存储和提取功能，承诺将承担所有损失。 日经225指数收跌2.1%，沪指收跌1.44%，恒指收涨1.46%。 global tech stocks were "savagely sold off"! nasdaq futures fell 2%, intel plunged 23% in us premarket trading, and spot silver fell below $50/oz. brent crude hit a six-month high as markets braced for a possible escalation in the gulf situation after the midterm elections. the bank of japan kept its benchmark interest rate unchanged at 1.25%, warned of rising risks of inflation overshooting, and maintained its stance of gradual rate hikes. boj governor: inflation has achieved a phased victory, hinting that a rate hike is still possible within the year. kioxia's second-quarter operating profit surged 57% quarter on quarter, capital expenditure fell far short of expectations, and third-quarter profit guidance was also below expectations. $6.3 billion! binance hit by the "largest ever" hacker heist, suspends all deposit and withdrawal functions, and promises to bear all losses. the nikkei 225 closed down 2.1%, the shanghai composite closed down 1.44%, and the hang seng index closed up 1.46%. 全球科技股“惨遭血洗”！纳指期货跌2%，英特尔美股盘前暴跌23%，现货白银跌破50美元/盎司。 布油触及半年新高，市场严阵以待，中选后海湾局势或将升温。 日本央行维持基准利率在1.25%不变，警告通胀超调风险上升，维持渐进加息立场。 日本央行行长：通胀取得阶段性胜利，暗示年内仍可能加息。 铠侠第二财季营业利润环比飙升57%，资本开支大幅不及预期，第三财季利润指引也低于预期。 63亿美元！币安遭“史上最大”黑客洗劫，暂停全部存储和提取功能，承诺将承担所有损失。 日经225指数收跌2.1%，沪指收跌1.44%，恒指收涨1.46%。 华尔街见闻 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-10-30T13:04:41+00:00" datetime="2026-10-30T13:04:41+00:00">10-30<br>13:04</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T13:04:41+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Global Key News to Know Before Friday's US Stock Market Open</span><span class="l-zh">周五美股盘前你需要了解的全球要闻</span></h2>
+            <p class="tp-sum"><span class="l-en">Global tech stocks were "savagely sold off"! Nasdaq futures fell 2%, Intel plunged 23% in US premarket trading, and spot silver fell below $50/oz. Brent crude hit a six-month high as markets braced for a possible escalation in the Gulf situation after the midterm elections. The Bank of Japan kept its benchmark interest rate unchanged at 1.25%, warned of rising risks of inflation overshooting, and maintained its stance of gradual rate hikes. BOJ Governor: Inflation has achieved a phased victory, hinting that a rate hike is still possible within the year. Kioxia's second-quarter operating profit surged 57% quarter on quarter, capital expenditure fell far short of expectations, and third-quarter profit guidance was also below expectations. $6.3 billion! Binance hit by the "largest ever" hacker heist, suspends all deposit and withdrawal functions, and promises to bear all losses. The Nikkei 225 closed down 2.1%, the Shanghai Composite closed down 1.44%, and the Hang Seng Index closed up 1.46%.</span><span class="l-zh">全球科技股“惨遭血洗”！纳指期货跌2%，英特尔美股盘前暴跌23%，现货白银跌破50美元/盎司。 布油触及半年新高，市场严阵以待，中选后海湾局势或将升温。 日本央行维持基准利率在1.25%不变，警告通胀超调风险上升，维持渐进加息立场。 日本央行行长：通胀取得阶段性胜利，暗示年内仍可能加息。 铠侠第二财季营业利润环比飙升57%，资本开支大幅不及预期，第三财季利润指引也低于预期。 63亿美元！币安遭“史上最大”黑客洗劫，暂停全部存储和提取功能，承诺将承担所有损失。 日经225指数收跌2.1%，沪指收跌1.44%，恒指收涨1.46%。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.gelonghui.com/live/2739079" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="华安基金苏圻涵：估值压力经过本轮调整已得到较大程度释放 hua'an fund's su qihan: valuation pressure has been largely released after this round of adjustment 华安基金苏圻涵：估值压力经过本轮调整已得到较大程度释放 华安基金基金经理苏圻涵近日表示，虽然外部扰动与内部结构分化叠加，a股市场的情绪面修复需要一个过程；但从中长期看，目前市场估值、盈利和流动性等因素都支持对中长期方向保持信心。具体来看，估值压力经过本轮调整已得到较大程度释放，10年期国债收益率约1.6%、理财约1%，而沪深300股息率接近3%、roe接近6%，无论自身估值（含peg）还是资产间横向比较，均处于较合理的位置。从企业盈利角度看，随着ppi转正，全a非金融企业盈利增速近三年来首次回到双位数增长，按目前三季报披露情况，预计全年增速10%—15%。 su qihan, a fund manager at huaan fund, said recently that although external disturbances and internal structural divergence have combined, sentiment recovery in the a-share market will take time; but from a medium- to long-term perspective, current market valuation, earnings and liquidity factors all support confidence in the medium- to long-term direction. specifically, valuation pressure has been largely released after this round of adjustment. the 10-year government bond yield is about 1.6%, wealth management products about 1%, while the csi 300 dividend yield is nearly 3% and roe nearly 6%. whether judged by its own valuation (including peg) or by cross-asset comparison, it is at a relatively reasonable level. from the perspective of corporate earnings, as ppi turns positive, earnings growth of all a-share non-financial companies has returned to double-digit growth for the first time in nearly three years. based on third-quarter report disclosures so far, full-year growth is expected to be 10%-15%. 华安基金基金经理苏圻涵近日表示，虽然外部扰动与内部结构分化叠加，a股市场的情绪面修复需要一个过程；但从中长期看，目前市场估值、盈利和流动性等因素都支持对中长期方向保持信心。具体来看，估值压力经过本轮调整已得到较大程度释放，10年期国债收益率约1.6%、理财约1%，而沪深300股息率接近3%、roe接近6%，无论自身估值（含peg）还是资产间横向比较，均处于较合理的位置。从企业盈利角度看，随着ppi转正，全a非金融企业盈利增速近三年来首次回到双位数增长，按目前三季报披露情况，预计全年增速10%—15%。 格隆汇 markets equity market 股票市场 510300.ss ashr cbon">
+          <time class="tp-when" data-t="2026-10-30T12:56:16+00:00" datetime="2026-10-30T12:56:16+00:00">10-30<br>12:56</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T12:56:16+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">格隆汇</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Hua'an Fund's Su Qihan: Valuation pressure has been largely released after this round of adjustment</span><span class="l-zh">华安基金苏圻涵：估值压力经过本轮调整已得到较大程度释放</span></h2>
+            <p class="tp-sum"><span class="l-en">Su Qihan, a fund manager at HuaAn Fund, said recently that although external disturbances and internal structural divergence have combined, sentiment recovery in the A-share market will take time; but from a medium- to long-term perspective, current market valuation, earnings and liquidity factors all support confidence in the medium- to long-term direction. Specifically, valuation pressure has been largely released after this round of adjustment. The 10-year government bond yield is about 1.6%, wealth management products about 1%, while the CSI 300 dividend yield is nearly 3% and ROE nearly 6%. Whether judged by its own valuation (including PEG) or by cross-asset comparison, it is at a relatively reasonable level. From the perspective of corporate earnings, as PPI turns positive, earnings growth of all A-share non-financial companies has returned to double-digit growth for the first time in nearly three years. Based on third-quarter report disclosures so far, full-year growth is expected to be 10%-15%.</span><span class="l-zh">华安基金基金经理苏圻涵近日表示，虽然外部扰动与内部结构分化叠加，A股市场的情绪面修复需要一个过程；但从中长期看，目前市场估值、盈利和流动性等因素都支持对中长期方向保持信心。具体来看，估值压力经过本轮调整已得到较大程度释放，10年期国债收益率约1.6%、理财约1%，而沪深300股息率接近3%、ROE接近6%，无论自身估值（含PEG）还是资产间横向比较，均处于较合理的位置。从企业盈利角度看，随着PPI转正，全A非金融企业盈利增速近三年来首次回到双位数增长，按目前三季报披露情况，预计全年增速10%—15%。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">ASHR</span><span class="cn-tk">CBON</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3191646" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="金融监管总局：稳妥推进中小金融机构改革化险、减量提质，积极支持配合化解房地产和地方政府债务风险 national financial regulatory administration: steadily advance the reform, risk resolution, reduction in number and quality improvement of small and medium-sized financial institutions, and actively support and cooperate in resolving risks in real estate and local government debt 金融监管总局：稳妥推进中小金融机构改革化险、减量提质，积极支持配合化解房地产和地方政府债务风险 金融监管总局召开党委（扩大）会议，传达学习党的二十届五中全会精神，结合金融监管工作实际，研究部署贯彻落实措施。会议强调，要以高质量党建引领金融监管高质量发展。稳妥推进中小金融机构改革化险、减量提质，积极支持配合化解房地产和地方政府债务风险。坚持严监管强监管，坚守监管姓监定位，做到严格监管、专注监管，不断提升监管有效性。持续推动行业改革转型，督促机构树牢正确的经营观、业绩观、风险观，引导行业围绕“十五五”规划纲要重点任务，优化金融资源配置，持续提升金融服务适配性。 the national financial regulatory administration held an enlarged party committee meeting to convey and study the spirit of the fifth plenary session of the 20th cpc central committee and, in light of the reality of financial regulatory work, study and deploy measures for implementation. the meeting emphasized the need to lead high-quality development of financial regulation with high-quality party building. it called for steadily advancing the reform, risk resolution, reduction in number and improvement in quality of small and medium-sized financial institutions, and actively supporting and cooperating in defusing risks in real estate and local government debt. it stressed adherence to strict and strong regulation,坚守 the positioning that regulation is regulation, achieving strict regulation and focused regulation, and continuously improving regulatory effectiveness. it also urged continued efforts to promote industry reform and transformation, urge institutions to firmly establish correct views on operation, performance and risk, and guide the industry to focus on the key tasks of the 15th five-year plan outline, optimize the allocation of financial resources, and continuously improve the adaptability of financial services. 金融监管总局召开党委（扩大）会议，传达学习党的二十届五中全会精神，结合金融监管工作实际，研究部署贯彻落实措施。会议强调，要以高质量党建引领金融监管高质量发展。稳妥推进中小金融机构改革化险、减量提质，积极支持配合化解房地产和地方政府债务风险。坚持严监管强监管，坚守监管姓监定位，做到严格监管、专注监管，不断提升监管有效性。持续推动行业改革转型，督促机构树牢正确的经营观、业绩观、风险观，引导行业围绕“十五五”规划纲要重点任务，优化金融资源配置，持续提升金融服务适配性。 华尔街见闻 property property 房地产 512200.ss">
+          <time class="tp-when" data-t="2026-10-30T11:45:57+00:00" datetime="2026-10-30T11:45:57+00:00">10-30<br>11:45</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T11:45:57+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">National Financial Regulatory Administration: Steadily advance the reform, risk resolution, reduction in number and quality improvement of small and medium-sized financial institutions, and actively support and cooperate in resolving risks in real estate and local government debt</span><span class="l-zh">金融监管总局：稳妥推进中小金融机构改革化险、减量提质，积极支持配合化解房地产和地方政府债务风险</span></h2>
+            <p class="tp-sum"><span class="l-en">The National Financial Regulatory Administration held an enlarged Party Committee meeting to convey and study the spirit of the Fifth Plenary Session of the 20th CPC Central Committee and, in light of the reality of financial regulatory work, study and deploy measures for implementation. The meeting emphasized the need to lead high-quality development of financial regulation with high-quality Party building. It called for steadily advancing the reform, risk resolution, reduction in number and improvement in quality of small and medium-sized financial institutions, and actively supporting and cooperating in defusing risks in real estate and local government debt. It stressed adherence to strict and strong regulation,坚守 the positioning that regulation is regulation, achieving strict regulation and focused regulation, and continuously improving regulatory effectiveness. It also urged continued efforts to promote industry reform and transformation, urge institutions to firmly establish correct views on operation, performance and risk, and guide the industry to focus on the key tasks of the 15th Five-Year Plan outline, optimize the allocation of financial resources, and continuously improve the adaptability of financial services.</span><span class="l-zh">金融监管总局召开党委（扩大）会议，传达学习党的二十届五中全会精神，结合金融监管工作实际，研究部署贯彻落实措施。会议强调，要以高质量党建引领金融监管高质量发展。稳妥推进中小金融机构改革化险、减量提质，积极支持配合化解房地产和地方政府债务风险。坚持严监管强监管，坚守监管姓监定位，做到严格监管、专注监管，不断提升监管有效性。持续推动行业改革转型，督促机构树牢正确的经营观、业绩观、风险观，引导行业围绕“十五五”规划纲要重点任务，优化金融资源配置，持续提升金融服务适配性。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3191644" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="上交所：10月26日至2026年10月30日，上交所对108起拉抬打压、虚假申报等证券异常交易行为采取了自律监管措施，对31起上市公司重大事项等进行专项核查，向证监会上报涉嫌违法违 sse: from october 26 to october 30, 2026, the sse took self-regulatory measures against 108 instances of abnormal securities trading such as ramping up prices, suppressing prices and false declarations, conducted special verifications on 31 major matters of listed companies, and reported suspected illegal and non-compliant 上交所：10月26日至2026年10月30日，上交所对108起拉抬打压、虚假申报等证券异常交易行为采取了自律监管措施，对31起上市公司重大事项等进行专项核查，向证监会上报涉嫌违法违 上交所：10月26日至2026年10月30日，上交所对108起拉抬打压、虚假申报等证券异常交易行为采取了自律监管措施，对31起上市公司重大事项等进行专项核查，向证监会上报涉嫌违法违规案件线索2起。 sse: from october 26 to october 30, 2026, the sse took self-regulatory measures against 108 cases of abnormal securities trading such as ramping up and suppressing prices and false declarations, conducted special verifications of 31 major matters of listed companies, and reported 2 leads on suspected violations of laws and regulations to the csrc. 上交所：10月26日至2026年10月30日，上交所对108起拉抬打压、虚假申报等证券异常交易行为采取了自律监管措施，对31起上市公司重大事项等进行专项核查，向证监会上报涉嫌违法违规案件线索2起。 华尔街见闻 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-30T11:40:57+00:00" datetime="2026-10-30T11:40:57+00:00">10-30<br>11:40</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T11:40:57+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">SSE: From October 26 to October 30, 2026, the SSE took self-regulatory measures against 108 instances of abnormal securities trading such as ramping up prices, suppressing prices and false declarations, conducted special verifications on 31 major matters of listed companies, and reported suspected illegal and non-compliant</span><span class="l-zh">上交所：10月26日至2026年10月30日，上交所对108起拉抬打压、虚假申报等证券异常交易行为采取了自律监管措施，对31起上市公司重大事项等进行专项核查，向证监会上报涉嫌违法违</span></h2>
+            <p class="tp-sum"><span class="l-en">SSE: From October 26 to October 30, 2026, the SSE took self-regulatory measures against 108 cases of abnormal securities trading such as ramping up and suppressing prices and false declarations, conducted special verifications of 31 major matters of listed companies, and reported 2 leads on suspected violations of laws and regulations to the CSRC.</span><span class="l-zh">上交所：10月26日至2026年10月30日，上交所对108起拉抬打压、虚假申报等证券异常交易行为采取了自律监管措施，对31起上市公司重大事项等进行专项核查，向证监会上报涉嫌违法违规案件线索2起。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3191622" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="中国铁建：前三季度归母净利润93.48亿元，同比下降36.88% china railway construction: net profit attributable to shareholders in the first three quarters was 9.348 billion yuan, down 36.88% year on year 中国铁建：前三季度归母净利润93.48亿元，同比下降36.88% 中国铁建公告，2026年前三季度营业收入6394.47亿元，同比下降12.21%；归母净利润93.48亿元，同比下降36.88%；扣非净利润87.12亿元，同比下降37.19%。第三季度单季营业收入2110.09亿元，同比下降11.79%；归母净利润6.58亿元，同比下降83.98%；扣非净利润6.35亿元，同比下降84.08%。利润下降主要因全国固定资产投资下降、房地产市场持续调整，工程承包业务和房地产业务利润下降。 china railway construction announced that in the first three quarters of 2026, operating revenue was 639.447 billion yuan, down 12.21% year on year; net profit attributable to shareholders was 9.348 billion yuan, down 36.88% year on year; net profit after deducting non-recurring gains and losses was 8.712 billion yuan, down 37.19% year on year. in the third quarter alone, operating revenue was 211.009 billion yuan, down 11.79% year on year; net profit attributable to shareholders was 658 million yuan, down 83.98% year on year; net profit after deducting non-recurring gains and losses was 635 million yuan, down 84.08% year on year. the decline in profit was mainly due to the drop in fixed asset investment nationwide and the continued adjustment of the real estate market, which led to lower profits in the engineering contracting business and the real estate business. 中国铁建公告，2026年前三季度营业收入6394.47亿元，同比下降12.21%；归母净利润93.48亿元，同比下降36.88%；扣非净利润87.12亿元，同比下降37.19%。第三季度单季营业收入2110.09亿元，同比下降11.79%；归母净利润6.58亿元，同比下降83.98%；扣非净利润6.35亿元，同比下降84.08%。利润下降主要因全国固定资产投资下降、房地产市场持续调整，工程承包业务和房地产业务利润下降。 华尔街见闻 property property 房地产 512200.ss">
+          <time class="tp-when" data-t="2026-10-30T11:23:26+00:00" datetime="2026-10-30T11:23:26+00:00">10-30<br>11:23</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T11:23:26+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China Railway Construction: Net profit attributable to shareholders in the first three quarters was 9.348 billion yuan, down 36.88% year on year</span><span class="l-zh">中国铁建：前三季度归母净利润93.48亿元，同比下降36.88%</span></h2>
+            <p class="tp-sum"><span class="l-en">China Railway Construction announced that in the first three quarters of 2026, operating revenue was 639.447 billion yuan, down 12.21% year on year; net profit attributable to shareholders was 9.348 billion yuan, down 36.88% year on year; net profit after deducting non-recurring gains and losses was 8.712 billion yuan, down 37.19% year on year. In the third quarter alone, operating revenue was 211.009 billion yuan, down 11.79% year on year; net profit attributable to shareholders was 658 million yuan, down 83.98% year on year; net profit after deducting non-recurring gains and losses was 635 million yuan, down 84.08% year on year. The decline in profit was mainly due to the drop in fixed asset investment nationwide and the continued adjustment of the real estate market, which led to lower profits in the engineering contracting business and the real estate business.</span><span class="l-zh">中国铁建公告，2026年前三季度营业收入6394.47亿元，同比下降12.21%；归母净利润93.48亿元，同比下降36.88%；扣非净利润87.12亿元，同比下降37.19%。第三季度单季营业收入2110.09亿元，同比下降11.79%；归母净利润6.58亿元，同比下降83.98%；扣非净利润6.35亿元，同比下降84.08%。利润下降主要因全国固定资产投资下降、房地产市场持续调整，工程承包业务和房地产业务利润下降。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3191619" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="high"
+           data-search="财政部：1-9月，全国国有及国有控股企业营业总收入同比下降3.2%，利润总额同比增长3.0% ministry of finance: from january to september, total operating revenue of state-owned and state-controlled enterprises nationwide fell 3.2% year on year, while total profit rose 3.0% year on year 财政部：1-9月，全国国有及国有控股企业营业总收入同比下降3.2%，利润总额同比增长3.0% 财政部：一、营业总收入。1-9月，国有企业营业总收入600060.9亿元，同比下降3.2%。 二、利润总额。1-9月，国有企业利润总额33103.5亿元，同比增长3.0%。 三、应交税费。1-9月，国有企业应交税费46589.8亿元，同比增长4.7%。 四、资产负债率。9月末，国有企业资产负债率65.5%，同比上升0.4个百分点。 ministry of finance: i. total operating revenue. from january to september, total operating revenue of state-owned enterprises was 60,006.09 billion yuan, down 3.2% year on year. ii. total profit. from january to september, total profit of state-owned enterprises was 3,310.35 billion yuan, up 3.0% year on year. iii. taxes payable. from january to september, taxes payable by state-owned enterprises were 4,658.98 billion yuan, up 4.7% year on year. iv. asset-liability ratio. at the end of september, the asset-liability ratio of state-owned enterprises was 65.5%, up 0.4 percentage points year on year. 财政部：一、营业总收入。1-9月，国有企业营业总收入600060.9亿元，同比下降3.2%。 二、利润总额。1-9月，国有企业利润总额33103.5亿元，同比增长3.0%。 三、应交税费。1-9月，国有企业应交税费46589.8亿元，同比增长4.7%。 四、资产负债率。9月末，国有企业资产负债率65.5%，同比上升0.4个百分点。 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-10-30T11:22:34+00:00" datetime="2026-10-30T11:22:34+00:00">10-30<br>11:22</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T11:22:34+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Ministry of Finance: From January to September, total operating revenue of state-owned and state-controlled enterprises nationwide fell 3.2% year on year, while total profit rose 3.0% year on year</span><span class="l-zh">财政部：1-9月，全国国有及国有控股企业营业总收入同比下降3.2%，利润总额同比增长3.0%</span></h2>
+            <p class="tp-sum"><span class="l-en">Ministry of Finance: I. Total operating revenue. From January to September, total operating revenue of state-owned enterprises was 60,006.09 billion yuan, down 3.2% year on year. II. Total profit. From January to September, total profit of state-owned enterprises was 3,310.35 billion yuan, up 3.0% year on year. III. Taxes payable. From January to September, taxes payable by state-owned enterprises were 4,658.98 billion yuan, up 4.7% year on year. IV. Asset-liability ratio. At the end of September, the asset-liability ratio of state-owned enterprises was 65.5%, up 0.4 percentage points year on year.</span><span class="l-zh">财政部：一、营业总收入。1-9月，国有企业营业总收入600060.9亿元，同比下降3.2%。 二、利润总额。1-9月，国有企业利润总额33103.5亿元，同比增长3.0%。 三、应交税费。1-9月，国有企业应交税费46589.8亿元，同比增长4.7%。 四、资产负债率。9月末，国有企业资产负债率65.5%，同比上升0.4个百分点。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3191703" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="medium"
+           data-search="香港证监会主席敦促机构高管承担人工智能的问责责任 hong kong sfc chairman urges institutional executives to bear accountability for artificial intelligence 香港证监会主席敦促机构高管承担人工智能的问责责任 香港证监会主席黄天祐出席香港证券业协会47周年金融创新论坛，并发表主题演说，指出金融业真正需要的，不只是“人工智能”artificial intelligence，而是accountable intelligence，也就是“问责智能”。 huang tianyou, chairman of the hong kong securities and futures commission, attended the 47th anniversary financial innovation forum of the hong kong securities association and delivered a keynote speech, pointing out that what the financial industry really needs is not just "artificial intelligence," but accountable intelligence. 香港证监会主席黄天祐出席香港证券业协会47周年金融创新论坛，并发表主题演说，指出金融业真正需要的，不只是“人工智能”artificial intelligence，而是accountable intelligence，也就是“问责智能”。 华尔街见闻 markets tech_policy equity market 股票市场 tech policy 科技政策 512880.ss">
+          <time class="tp-when" data-t="2026-10-30T13:04:43+00:00" datetime="2026-10-30T13:04:43+00:00">10-30<br>13:04</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T13:04:43+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Hong Kong SFC chairman urges institutional executives to bear accountability for artificial intelligence</span><span class="l-zh">香港证监会主席敦促机构高管承担人工智能的问责责任</span></h2>
+            <p class="tp-sum"><span class="l-en">Huang Tianyou, Chairman of the Hong Kong Securities and Futures Commission, attended the 47th anniversary Financial Innovation Forum of the Hong Kong Securities Association and delivered a keynote speech, pointing out that what the financial industry really needs is not just "Artificial Intelligence," but Accountable Intelligence.</span><span class="l-zh">香港证监会主席黄天祐出席香港证券业协会47周年金融创新论坛，并发表主题演说，指出金融业真正需要的，不只是“人工智能”Artificial Intelligence，而是Accountable Intelligence，也就是“问责智能”。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3191689" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="日本鸡蛋价格再创新高 japanese egg prices hit a new record high 日本鸡蛋价格再创新高 日本国内市场鸡蛋价格近日再创新高，且由于禽流感季来临和新年前后消费旺季将至，蛋价预计可能继续高企。日本农林水产省本月19日至21日的全国范围调查结果显示，每盒10个装鸡蛋平均价格为312日元（约合13.2元人民币），比9月上涨3日元，为2003年开始这项调查以来新高。另外，鸡腿肉和进口牛肉的价格也与最高纪录持平。（新华社） egg prices in japan's domestic market recently hit a new record high, and due to the arrival of the avian influenza season and the upcoming peak consumption period around the new year, egg prices are expected to remain high. a nationwide survey by japan's ministry of agriculture, forestry and fisheries from the 19th to the 21st of this month showed that the average price of a pack of 10 eggs was 312 yen (about 13.2 yuan), up 3 yen from september and a record high since the survey began in 2003. in addition, prices of chicken thigh meat and imported beef were also tied with record highs. (xinhua news agency) 日本国内市场鸡蛋价格近日再创新高，且由于禽流感季来临和新年前后消费旺季将至，蛋价预计可能继续高企。日本农林水产省本月19日至21日的全国范围调查结果显示，每盒10个装鸡蛋平均价格为312日元（约合13.2元人民币），比9月上涨3日元，为2003年开始这项调查以来新高。另外，鸡腿肉和进口牛肉的价格也与最高纪录持平。（新华社） 华尔街见闻 consumer fiscal_trade yuan consumer 消费 fiscal & trade 财政与贸易 yuan & fx 人民币与汇率 cny">
+          <time class="tp-when" data-t="2026-10-30T12:39:57+00:00" datetime="2026-10-30T12:39:57+00:00">10-30<br>12:39</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T12:39:57+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>58</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Japanese egg prices hit a new record high</span><span class="l-zh">日本鸡蛋价格再创新高</span></h2>
+            <p class="tp-sum"><span class="l-en">Egg prices in Japan's domestic market recently hit a new record high, and due to the arrival of the avian influenza season and the upcoming peak consumption period around the New Year, egg prices are expected to remain high. A nationwide survey by Japan's Ministry of Agriculture, Forestry and Fisheries from the 19th to the 21st of this month showed that the average price of a pack of 10 eggs was 312 yen (about 13.2 yuan), up 3 yen from September and a record high since the survey began in 2003. In addition, prices of chicken thigh meat and imported beef were also tied with record highs. (Xinhua News Agency)</span><span class="l-zh">日本国内市场鸡蛋价格近日再创新高，且由于禽流感季来临和新年前后消费旺季将至，蛋价预计可能继续高企。日本农林水产省本月19日至21日的全国范围调查结果显示，每盒10个装鸡蛋平均价格为312日元（约合13.2元人民币），比9月上涨3日元，为2003年开始这项调查以来新高。另外，鸡腿肉和进口牛肉的价格也与最高纪录持平。（新华社）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/820573" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会：全力稳市场稳预期 csrc: go all out to stabilize the market and expectations 证监会：全力稳市场稳预期    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC: Go all out to stabilize the market and expectations</span><span class="l-zh">证监会：全力稳市场稳预期</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.cnstock.com/commonDetail/820631" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="中国人民银行：每个工作日开展隔夜逆回购操作招标 目前操作利率为1.25% pboc: conduct overnight reverse repo operation tenders every working day, with the current operation rate at 1.25% 中国人民银行：每个工作日开展隔夜逆回购操作招标 目前操作利率为1.25%    上海证券报 pboc_liquidity pboc & liquidity 央行与流动性 512800.ss 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC: Conduct overnight reverse repo operation tenders every working day, with the current operation rate at 1.25%</span><span class="l-zh">中国人民银行：每个工作日开展隔夜逆回购操作招标 目前操作利率为1.25%</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512800.SS</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.scmp.com/economy/china-economy/article/3372727/strong-stronger-chinas-powerhouse-provinces-propel-economy-towards-gdp-target" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="from strong to stronger: china’s powerhouse provinces propel economy towards gdp target  从强劲到更强：中国强省推动经济迈向gdp目标 china’s top 10 provincial economies by gross domestic product had a major part in propping up national growth for the first three quarters of 2026, analysts say, putting the regions in a crucial role to help the country meet the economic targets reaffirmed by political leaders at the just-concluded fifth plenum.
+the top 10 provinces were likely to continue their lead for the rest of the year and going into 2027, analysts said, giving beijing economic confidence and offsetting sluggish...  分析师表示，中国国内生产总值排名前十的省级经济体在2026年前三季度对支撑全国增长发挥了重要作用，使这些地区在帮助国家实现政治领导人在刚刚结束的五中全会上重申的经济目标方面扮演关键角色。
+排名前十的省份可能会继续 scmp - china economy growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-30T11:00:07+00:00" datetime="2026-10-30T11:00:07+00:00">10-30<br>11:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T11:00:07+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">From strong to stronger: China’s powerhouse provinces propel economy towards GDP target</span><span class="l-zh">从强劲到更强：中国强省推动经济迈向GDP目标</span></h2>
+            <p class="tp-sum"><span class="l-en">China’s top 10 provincial economies by gross domestic product had a major part in propping up national growth for the first three quarters of 2026, analysts say, putting the regions in a crucial role to help the country meet the economic targets reaffirmed by political leaders at the just-concluded fifth plenum.
+The top 10 provinces were likely to continue their lead for the rest of the year and going into 2027, analysts said, giving Beijing economic confidence and offsetting sluggish...</span><span class="l-zh">分析师表示，中国国内生产总值排名前十的省级经济体在2026年前三季度对支撑全国增长发挥了重要作用，使这些地区在帮助国家实现政治领导人在刚刚结束的五中全会上重申的经济目标方面扮演关键角色。
+排名前十的省份可能会继续</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3191658" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="中国黄金：2026年第三季度净利润5574.99万元，同比增长246.52% china gold: net profit in q3 2026 was 55.7499 million yuan, up 246.52% year on year 中国黄金：2026年第三季度净利润5574.99万元，同比增长246.52% 中国黄金公告，2026年第三季度营业收入55.4亿元，同比下降62.23%；归属于上市公司股东的净利润5574.99万元，同比增长246.52%；归属于上市公司股东的扣除非经常性损益的净利润5074.19万元。2026年前三季度营业收入304.39亿元，同比下降33.49%；归属于上市公司股东的净利润3.35亿元，同比增长0.08%；归属于上市公司股东的扣除非经常性损益的净利润3.36亿元，同比增长13.58%。第三季度营业收入同比下降，主要原因为公司回购渠道销量同比下降。 china gold announced that in the third quarter of 2026, operating revenue was 5.54 billion yuan, down 62.23% year on year; net profit attributable to shareholders of the listed company was 55.7499 million yuan, up 246.52% year on year; net profit attributable to shareholders of the listed company after deducting non-recurring gains and losses was 50.7419 million yuan. in the first three quarters of 2026, operating revenue was 30.439 billion yuan, down 33.49% year on year; net profit attributable to shareholders of the listed company was 335 million yuan, up 0.08% year on year; net profit attributable to shareholders of the listed company after deducting non-recurring gains and losses was 336 million yuan, up 13.58% year on year. the year-on-year decline in third-quarter operating revenue was mainly due to a year-on-year decline in sales volume through the company's repurchase channel. 中国黄金公告，2026年第三季度营业收入55.4亿元，同比下降62.23%；归属于上市公司股东的净利润5574.99万元，同比增长246.52%；归属于上市公司股东的扣除非经常性损益的净利润5074.19万元。2026年前三季度营业收入304.39亿元，同比下降33.49%；归属于上市公司股东的净利润3.35亿元，同比增长0.08%；归属于上市公司股东的扣除非经常性损益的净利润3.36亿元，同比增长13.58%。第三季度营业收入同比下降，主要原因为公司回购渠道销量同比下降。 华尔街见闻 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-30T11:56:24+00:00" datetime="2026-10-30T11:56:24+00:00">10-30<br>11:56</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T11:56:24+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China Gold: Net profit in Q3 2026 was 55.7499 million yuan, up 246.52% year on year</span><span class="l-zh">中国黄金：2026年第三季度净利润5574.99万元，同比增长246.52%</span></h2>
+            <p class="tp-sum"><span class="l-en">China Gold announced that in the third quarter of 2026, operating revenue was 5.54 billion yuan, down 62.23% year on year; net profit attributable to shareholders of the listed company was 55.7499 million yuan, up 246.52% year on year; net profit attributable to shareholders of the listed company after deducting non-recurring gains and losses was 50.7419 million yuan. In the first three quarters of 2026, operating revenue was 30.439 billion yuan, down 33.49% year on year; net profit attributable to shareholders of the listed company was 335 million yuan, up 0.08% year on year; net profit attributable to shareholders of the listed company after deducting non-recurring gains and losses was 336 million yuan, up 13.58% year on year. The year-on-year decline in third-quarter operating revenue was mainly due to a year-on-year decline in sales volume through the company's repurchase channel.</span><span class="l-zh">中国黄金公告，2026年第三季度营业收入55.4亿元，同比下降62.23%；归属于上市公司股东的净利润5574.99万元，同比增长246.52%；归属于上市公司股东的扣除非经常性损益的净利润5074.19万元。2026年前三季度营业收入304.39亿元，同比下降33.49%；归属于上市公司股东的净利润3.35亿元，同比增长0.08%；归属于上市公司股东的扣除非经常性损益的净利润3.36亿元，同比增长13.58%。第三季度营业收入同比下降，主要原因为公司回购渠道销量同比下降。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.stats.gov.cn/english/PressRelease/202610/t20261021_1965671.html" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="preliminary accounting results of gdp for the third quarter of 2026  2026年第三季度gdp初步核算结果    nbs growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-21" datetime="2026-10-21">10-21</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">NBS</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Preliminary Accounting Results of GDP for the Third Quarter of 2026</span><span class="l-zh">2026年第三季度GDP初步核算结果</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.yicai.com/news/103418799.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="三季度单季亏损450.59亿元！资本市场回调冲击中国人寿利润表 多份研报预计，受权益市场回调影响，上市险企第三季度单季业绩承压。 a single-quarter loss of 45.059 billion yuan in q3! capital market pullback hits china life's income statement. multiple research reports expect that, affected by the equity market pullback, listed insurers' single-quarter performance in q3 will come under pressure. 三季度单季亏损450.59亿元！资本市场回调冲击中国人寿利润表 多份研报预计，受权益市场回调影响，上市险企第三季度单季业绩承压。    第一财经 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">A single-quarter loss of 45.059 billion yuan in Q3! Capital market pullback hits China Life's income statement. Multiple research reports expect that, affected by the equity market pullback, listed insurers' single-quarter performance in Q3 will come under pressure.</span><span class="l-zh">三季度单季亏损450.59亿元！资本市场回调冲击中国人寿利润表 多份研报预计，受权益市场回调影响，上市险企第三季度单季业绩承压。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3191639" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="360自研ai安全攻防系统以99.4%漏洞挖掘成功率登顶cybergym 360's self-developed ai security attack and defense system tops cybergym with a 99.4% vulnerability discovery success rate 360自研ai安全攻防系统以99.4%漏洞挖掘成功率登顶cybergym 从360集团获悉，近日，在被誉为ai安全“世界杯”的国际权威基准测试cybergym中，360集团自研的ai安全攻防系统图龙锋以99.4%的漏洞复现成功率登顶榜单并刷新世界纪录。此次同榜竞技的包括openai、anthropic、google等全球头部ai厂商的模型与智能体。（上证报） according to 360 group, recently, in cybergym, an internationally authoritative benchmark test known as the "world cup" of ai security, 360 group's self-developed ai security attack and defense system tulongfeng topped the list with a 99.4% vulnerability reproduction success rate and set a new world record. competing on the same list were models and agents from global leading ai vendors including openai, anthropic and google. (shanghai securities news) 从360集团获悉，近日，在被誉为ai安全“世界杯”的国际权威基准测试cybergym中，360集团自研的ai安全攻防系统图龙锋以99.4%的漏洞复现成功率登顶榜单并刷新世界纪录。此次同榜竞技的包括openai、anthropic、google等全球头部ai厂商的模型与智能体。（上证报） 华尔街见闻 markets tech_policy equity market 股票市场 tech policy 科技政策 510300.ss">
+          <time class="tp-when" data-t="2026-10-30T11:38:41+00:00" datetime="2026-10-30T11:38:41+00:00">10-30<br>11:38</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T11:38:41+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">360's self-developed AI security attack and defense system tops CyberGym with a 99.4% vulnerability discovery success rate</span><span class="l-zh">360自研AI安全攻防系统以99.4%漏洞挖掘成功率登顶CyberGym</span></h2>
+            <p class="tp-sum"><span class="l-en">According to 360 Group, recently, in CyberGym, an internationally authoritative benchmark test known as the "World Cup" of AI security, 360 Group's self-developed AI security attack and defense system Tulongfeng topped the list with a 99.4% vulnerability reproduction success rate and set a new world record. Competing on the same list were models and agents from global leading AI vendors including OpenAI, Anthropic and Google. (Shanghai Securities News)</span><span class="l-zh">从360集团获悉，近日，在被誉为AI安全“世界杯”的国际权威基准测试CyberGym中，360集团自研的AI安全攻防系统图龙锋以99.4%的漏洞复现成功率登顶榜单并刷新世界纪录。此次同榜竞技的包括OpenAI、Anthropic、Google等全球头部AI厂商的模型与智能体。（上证报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">510300.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3191638" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="零一万物获杭州国资投资 计划2027年冲刺ipo 01.ai receives investment from hangzhou state-owned capital, plans to sprint toward ipo in 2027 零一万物获杭州国资投资 计划2027年冲刺ipo 零一万物宣布，杭州市、临平区两级国资联动投资，合计向公司投资数亿元。同时，零一万物总部将落地杭州市临平区，并以此为依托，打造产业ai转型基地。目前，零一万物正在筹备2027年上市，目标做“中国首家实现盈利的ai2.0公司”。（上证报） 01.ai announced that state-owned capital from hangzhou city and linping district jointly invested several hundred million yuan in the company. at the same time, 01.ai's headquarters will be located in linping district, hangzhou, and it will use this as a base to build an industrial ai transformation base. currently, 01.ai is preparing for an ipo in 2027, with the goal of becoming "china's first profitable ai 2.0 company." (shanghai securities news) 零一万物宣布，杭州市、临平区两级国资联动投资，合计向公司投资数亿元。同时，零一万物总部将落地杭州市临平区，并以此为依托，打造产业ai转型基地。目前，零一万物正在筹备2027年上市，目标做“中国首家实现盈利的ai2.0公司”。（上证报） 华尔街见闻 markets tech_policy equity market 股票市场 tech policy 科技政策 510300.ss">
+          <time class="tp-when" data-t="2026-10-30T11:37:47+00:00" datetime="2026-10-30T11:37:47+00:00">10-30<br>11:37</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T11:37:47+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">01.AI receives investment from Hangzhou state-owned capital, plans to sprint toward IPO in 2027</span><span class="l-zh">零一万物获杭州国资投资 计划2027年冲刺IPO</span></h2>
+            <p class="tp-sum"><span class="l-en">01.AI announced that state-owned capital from Hangzhou city and Linping district jointly invested several hundred million yuan in the company. At the same time, 01.AI's headquarters will be located in Linping District, Hangzhou, and it will use this as a base to build an industrial AI transformation base. Currently, 01.AI is preparing for an IPO in 2027, with the goal of becoming "China's first profitable AI 2.0 company." (Shanghai Securities News)</span><span class="l-zh">零一万物宣布，杭州市、临平区两级国资联动投资，合计向公司投资数亿元。同时，零一万物总部将落地杭州市临平区，并以此为依托，打造产业AI转型基地。目前，零一万物正在筹备2027年上市，目标做“中国首家实现盈利的AI2.0公司”。（上证报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">510300.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://flash.jin10.com/detail/20261030205947538800" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="2026年中越边境地区地面无线电业务频率协调会谈在昆明举行 the 2026 china-vietnam border area terrestrial radio service frequency coordination meeting was held in kunming 2026年中越边境地区地面无线电业务频率协调会谈在昆明举行 金十数据10月30日讯，2026年10月27日至29日，中越边境地区地面无线电业务频率协调会谈在云南省昆明市举行。会谈期间，双方本着友好协商、互利共赢的原则，就中越边境地区4g/5g公众移动通信系统相关频段的频率协调达成了一系列共识，并就无线电频率管理政策和2027年世界无线电通信大会议题观点进行了深入交流，为维护中越双方边境地区电波秩序、保障各类无线电业务正常运行奠定基础。本次会谈，中方代表团由工业和信息化部无线电管理局、广西壮族自治区工业和信息化厅、云南省工业和信息化厅、国家无线电监测中心、四家基础电信运营企业等单位组成。越南代表团由越南科学技术部无 jinshi data, october 30 - from october 27 to 29, 2026, a meeting on coordination of terrestrial radio service frequencies in the china-vietnam border area was held in kunming, yunnan province. during the meeting, the two sides, in the spirit of friendly consultation and mutual benefit, reached a series of consensus on frequency coordination for relevant frequency bands of 4g/5g public mobile communication systems in the china-vietnam border area, and held in-depth exchanges on radio frequency management policies and views on topics for the 2027 world radiocommunication conference, laying the foundation for maintaining radio wave order in the border areas of both sides and ensuring the normal operation of various radio services. the chinese delegation consisted of units including the radio administration bureau of the ministry of industry and information technology, the department of industry and information technology of guangxi zhuang autonomous region, the department of industry and information technology of yunnan province, the national radio monitoring center, and four basic telecom operators. the vietnamese delegation was led by the ministry of science and technology of vietnam's radio 金十数据10月30日讯，2026年10月27日至29日，中越边境地区地面无线电业务频率协调会谈在云南省昆明市举行。会谈期间，双方本着友好协商、互利共赢的原则，就中越边境地区4g/5g公众移动通信系统相关频段的频率协调达成了一系列共识，并就无线电频率管理政策和2027年世界无线电通信大会议题观点进行了深入交流，为维护中越双方边境地区电波秩序、保障各类无线电业务正常运行奠定基础。本次会谈，中方代表团由工业和信息化部无线电管理局、广西壮族自治区工业和信息化厅、云南省工业和信息化厅、国家无线电监测中心、四家基础电信运营企业等单位组成。越南代表团由越南科学技术部无 金十数据 industrial industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-10-30T20:59:47+08:00" datetime="2026-10-30T20:59:47+08:00">10-30<br>20:59</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T20:59:47+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The 2026 China-Vietnam border area terrestrial radio service frequency coordination meeting was held in Kunming</span><span class="l-zh">2026年中越边境地区地面无线电业务频率协调会谈在昆明举行</span></h2>
+            <p class="tp-sum"><span class="l-en">Jinshi Data, October 30 - From October 27 to 29, 2026, a meeting on coordination of terrestrial radio service frequencies in the China-Vietnam border area was held in Kunming, Yunnan Province. During the meeting, the two sides, in the spirit of friendly consultation and mutual benefit, reached a series of consensus on frequency coordination for relevant frequency bands of 4G/5G public mobile communication systems in the China-Vietnam border area, and held in-depth exchanges on radio frequency management policies and views on topics for the 2027 World Radiocommunication Conference, laying the foundation for maintaining radio wave order in the border areas of both sides and ensuring the normal operation of various radio services. The Chinese delegation consisted of units including the Radio Administration Bureau of the Ministry of Industry and Information Technology, the Department of Industry and Information Technology of Guangxi Zhuang Autonomous Region, the Department of Industry and Information Technology of Yunnan Province, the National Radio Monitoring Center, and four basic telecom operators. The Vietnamese delegation was led by the Ministry of Science and Technology of Vietnam's radio</span><span class="l-zh">金十数据10月30日讯，2026年10月27日至29日，中越边境地区地面无线电业务频率协调会谈在云南省昆明市举行。会谈期间，双方本着友好协商、互利共赢的原则，就中越边境地区4G/5G公众移动通信系统相关频段的频率协调达成了一系列共识，并就无线电频率管理政策和2027年世界无线电通信大会议题观点进行了深入交流，为维护中越双方边境地区电波秩序、保障各类无线电业务正常运行奠定基础。本次会谈，中方代表团由工业和信息化部无线电管理局、广西壮族自治区工业和信息化厅、云南省工业和信息化厅、国家无线电监测中心、四家基础电信运营企业等单位组成。越南代表团由越南科学技术部无</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://news.futunn.com/flash/1002935374/canada-s-economy-stagnated-again-in-august-with-a-contraction" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="加拿大经济8月再度停滞，9月料出现萎缩 canada's economy stagnates again in august, september expected to contract 加拿大经济8月再度停滞，9月料出现萎缩 周五公布的数据显示，继上月零增长之后，加拿大8月经济陷入停滞。零售、制造业和建筑业的增长，在很大程度上被批发贸易和公共管理部门活动的下滑所抵消。分析师此前预计，加拿大8月gdp将增长0.2%，高于7月的零增长。加拿大统计局的初步估算显示，9月gdp可能萎缩0.1%，使第三季度按年率计算的实际行业产出增速降至1.3%。制造业、采矿和采石业以及石油和天然气开采业活动下降，是经济表现疲软的主要原因。这一增速将显著低于加拿大央行最新预测。该行此前预计，第三季度经济按年率计算将增长2%。加拿大统计局表示，8月服务业产出下降，但商品生产部门活动增加，在很大程度上抵消 data released on friday showed that canada's economy stalled in august after zero growth the previous month. growth in retail, manufacturing and construction was largely offset by declines in wholesale trade and public administration activities. analysts had expected canada's august gdp to grow 0.2%, up from zero growth in july. preliminary estimates from statistics canada showed that gdp may have contracted 0.1% in september, bringing annualized real industry output growth in the third quarter down to 1.3%. declines in manufacturing, mining and quarrying, and oil and gas extraction activities were the main reasons for the weak economic performance. this growth rate would be significantly lower than the bank of canada's latest forecast. the central bank had previously expected the economy to grow 2% annualized in the third quarter. statistics canada said services output fell in august, but activity in the goods-producing sector increased, largely offsetting 周五公布的数据显示，继上月零增长之后，加拿大8月经济陷入停滞。零售、制造业和建筑业的增长，在很大程度上被批发贸易和公共管理部门活动的下滑所抵消。分析师此前预计，加拿大8月gdp将增长0.2%，高于7月的零增长。加拿大统计局的初步估算显示，9月gdp可能萎缩0.1%，使第三季度按年率计算的实际行业产出增速降至1.3%。制造业、采矿和采石业以及石油和天然气开采业活动下降，是经济表现疲软的主要原因。这一增速将显著低于加拿大央行最新预测。该行此前预计，第三季度经济按年率计算将增长2%。加拿大统计局表示，8月服务业产出下降，但商品生产部门活动增加，在很大程度上抵消 富途牛牛 pboc_liquidity consumer industrial pboc & liquidity 央行与流动性 consumer 消费 industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-10-30T12:33:40+00:00" datetime="2026-10-30T12:33:40+00:00">10-30<br>12:33</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T12:33:40+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-medium"><b>56</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Canada's economy stagnates again in August, September expected to contract</span><span class="l-zh">加拿大经济8月再度停滞，9月料出现萎缩</span></h2>
+            <p class="tp-sum"><span class="l-en">Data released on Friday showed that Canada's economy stalled in August after zero growth the previous month. Growth in retail, manufacturing and construction was largely offset by declines in wholesale trade and public administration activities. Analysts had expected Canada's August GDP to grow 0.2%, up from zero growth in July. Preliminary estimates from Statistics Canada showed that GDP may have contracted 0.1% in September, bringing annualized real industry output growth in the third quarter down to 1.3%. Declines in manufacturing, mining and quarrying, and oil and gas extraction activities were the main reasons for the weak economic performance. This growth rate would be significantly lower than the Bank of Canada's latest forecast. The central bank had previously expected the economy to grow 2% annualized in the third quarter. Statistics Canada said services output fell in August, but activity in the goods-producing sector increased, largely offsetting</span><span class="l-zh">周五公布的数据显示，继上月零增长之后，加拿大8月经济陷入停滞。零售、制造业和建筑业的增长，在很大程度上被批发贸易和公共管理部门活动的下滑所抵消。分析师此前预计，加拿大8月GDP将增长0.2%，高于7月的零增长。加拿大统计局的初步估算显示，9月GDP可能萎缩0.1%，使第三季度按年率计算的实际行业产出增速降至1.3%。制造业、采矿和采石业以及石油和天然气开采业活动下降，是经济表现疲软的主要原因。这一增速将显著低于加拿大央行最新预测。该行此前预计，第三季度经济按年率计算将增长2%。加拿大统计局表示，8月服务业产出下降，但商品生产部门活动增加，在很大程度上抵消</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.scmp.com/economy/china-economy/article/3372451/how-chinas-yangtze-river-delta-helping-keep-beijings-gdp-target-track" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="how china’s yangtze river delta is helping keep beijing’s gdp target on track  中国长三角如何助力北京实现gdp目标 china’s yangtze river delta grew faster than the national economy in the first three quarters of the year, accounting for about a quarter of national output – a performance analysts said would help lay the foundation for beijing to meet its annual national growth target.
+but they also cautioned that exports and hi-tech manufacturing alone could not sustain longer-term growth without a recovery in sluggish domestic demand.
+the combined gross domestic product of shanghai, jiangsu, zhejiang and...  今年前三季度，中国长三角地区经济增长快于全国经济，占全国产出的约四分之一——分析人士表示，这一表现将有助于为北京实现年度全国增长目标奠定基础。
+但他们也警告称，仅靠出口和高科技制造业无法支撑…… scmp - china economy industrial industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-10-28T10:30:08+00:00" datetime="2026-10-28T10:30:08+00:00">10-28<br>10:30</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-28T10:30:08+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">How China’s Yangtze River Delta is helping keep Beijing’s GDP target on track</span><span class="l-zh">中国长三角如何助力北京实现GDP目标</span></h2>
+            <p class="tp-sum"><span class="l-en">China’s Yangtze River Delta grew faster than the national economy in the first three quarters of the year, accounting for about a quarter of national output – a performance analysts said would help lay the foundation for Beijing to meet its annual national growth target.
+But they also cautioned that exports and hi-tech manufacturing alone could not sustain longer-term growth without a recovery in sluggish domestic demand.
+The combined gross domestic product of Shanghai, Jiangsu, Zhejiang and...</span><span class="l-zh">今年前三季度，中国长三角地区经济增长快于全国经济，占全国产出的约四分之一——分析人士表示，这一表现将有助于为北京实现年度全国增长目标奠定基础。
+但他们也警告称，仅靠出口和高科技制造业无法支撑……</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/jjxw/2026-10-30/doc-iniwxqyp5016071.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="“易中天”前三季度盈利齐增 公募、险资、外资集体加仓 "yi zhongtian" trio all post profit growth in first three quarters as public funds, insurers and foreign investors collectively add positions “易中天”前三季度盈利齐增 公募、险资、外资集体加仓    新浪财经股票 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-10-30" datetime="2026-10-30">10-30</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">"Yi Zhongtian" trio all post profit growth in first three quarters as public funds, insurers and foreign investors collectively add positions</span><span class="l-zh">“易中天”前三季度盈利齐增 公募、险资、外资集体加仓</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://news.10jqka.com.cn/20261030/c681313179.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="北交所终止固力发ipo审核 beijing stock exchange terminates review of guli power's ipo 北交所终止固力发ipo审核 据北交所网站披露，因固力发集团股份有限公司撤回向不特定合格投资者公开发行股票并在北京证券交易所上市申请文件，北交所决定终止其首次公开发行股票并在北交所上市的审核。 according to disclosure on the beijing stock exchange website, because gulifeng group co., ltd. withdrew its application documents for public issuance of shares to unspecified qualified investors and listing on the beijing stock exchange, the bse decided to terminate the review of its initial public offering and listing on the bse. 据北交所网站披露，因固力发集团股份有限公司撤回向不特定合格投资者公开发行股票并在北京证券交易所上市申请文件，北交所决定终止其首次公开发行股票并在北交所上市的审核。 同花顺 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-30T12:41:24+00:00" datetime="2026-10-30T12:41:24+00:00">10-30<br>12:41</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-30T12:41:24+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Beijing Stock Exchange terminates review of Guli Power's IPO</span><span class="l-zh">北交所终止固力发IPO审核</span></h2>
+            <p class="tp-sum"><span class="l-en">According to disclosure on the Beijing Stock Exchange website, because Gulifeng Group Co., Ltd. withdrew its application documents for public issuance of shares to unspecified qualified investors and listing on the Beijing Stock Exchange, the BSE decided to terminate the review of its initial public offering and listing on the BSE.</span><span class="l-zh">据北交所网站披露，因固力发集团股份有限公司撤回向不特定合格投资者公开发行股票并在北京证券交易所上市申请文件，北交所决定终止其首次公开发行股票并在北交所上市的审核。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.cnstock.com/topicDetail/126474" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="medium"
+           data-search="看清手里有什么，回答市场要什么——制造业企业转型升级一线调研 see clearly what is in hand, answer what the market wants—frontline research on the transformation and upgrading of manufacturing enterprises 看清手里有什么，回答市场要什么——制造业企业转型升级一线调研    上海证券报 industrial industry & manufacturing 工业与制造业 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">See clearly what is in hand, answer what the market wants—frontline research on the transformation and upgrading of manufacturing enterprises</span><span class="l-zh">看清手里有什么，回答市场要什么——制造业企业转型升级一线调研</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+      </div>
+      <div class="cn-none hidden" id="none"><h3><span class="l-en">No stories match that view.</span><span class="l-zh">没有符合当前视图的新闻。</span></h3><p><span class="l-en">Clear the search or switch back to All.</span><span class="l-zh">清空搜索或切回全部。</span></p></div>
+
+      <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+    </div>
+
+    <aside class="cn-side">
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Scheduled catalysts</span><span class="l-zh">排定催化</span></h2>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">1</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">PMI</span><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">3</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN M</span><span class="l-en">Caixin Manufacturing PMI</span><span class="l-zh">财新制造业 PMI</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">5</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN S</span><span class="l-en">Caixin Services PMI</span><span class="l-zh">财新服务业 PMI</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">10</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">TRADE</span><span class="l-en">Customs trade (exports/imports)</span><span class="l-zh">海关进出口数据</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">10</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">FXRES</span><span class="l-en">FX reserves (SAFE)</span><span class="l-zh">外汇储备（外管局）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">11</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">CPI</span><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">11</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">CREDIT</span><span class="l-en">Money supply, RMB loans & TSF</span><span class="l-zh">货币供应、人民币贷款与社融</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">11</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">PPI</span><span class="l-en">PPI (producer prices)</span><span class="l-zh">PPI（工业生产者价格）</span></div>
+        </div>
+        
+      </section>
+
+      
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Exposures on the tape</span><span class="l-zh">相关标的</span></h2>
+        <div class="exp-pills">
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×6</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">510300.SS</span><span class="nm"><span class="l-en">CSI 300</span><span class="l-zh">沪深300</span></span><span class="ct">×3</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span><span class="ct">×2</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span><span class="ct">×2</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="ct">×2</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">ASHR</span><span class="nm"><span class="l-en">A-shares</span><span class="l-zh">A股</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CBON</span><span class="nm"><span class="l-en">China bonds</span><span class="l-zh">中国债券</span></span></span>
+          
+        </div>
+      </section>
+      
+    </aside>
+  </section>
+
   
 </main>
 
@@ -413,6 +1101,6 @@
 })();
 </script>
 
-<script src="theme.js?v=1c9d7ad5" defer></script>
+<script src="theme.js?v=2454e0ca" defer></script>
 </body>
 </html>

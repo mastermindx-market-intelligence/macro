@@ -22,9 +22,11 @@ answer: >
   previous squash in with `git merge --no-ff origin/master` before its proofs and again
   before its push, so each train carries everything master landed. A pull request that
   carries a Supabase migration never rides a train
-  (DEC:TERMINAL-MIGRATION-PR-LANDS-SOLO-WITH-LEDGER-FOLLOWUP). Trains so far: #930 squashed
-  as 0e8de334d (E04 E06 E09 E11 E12; live), #936 (E10 E13 E15 E17; armed), train 3
-  (E14 E18 E01 E03 E02 E08 E19 E16; assembling), train 4 (E07 E20; staged).
+  (DEC:TERMINAL-MIGRATION-PR-LANDS-SOLO-WITH-LEDGER-FOLLOWUP). Trains: #930 squashed as
+  0e8de334d (E04 E06 E09 E11 E12), #936 as 85ad93866 (E10 E13 E15 E17), #960 as 98b9e664a
+  (E14 E18 E01 E03 E02 E08 E19 E16 E20 plus 957, 963, 959), #1069 as e8a25a202 (1052, 1060,
+  989) and train 6 #1074 as d943b0c12 (1071, 1067, 1073). E07 landed solo (#954,
+  3816d3926) and E05 solo (#927, 857a5076f); no PR was opened as train 4.
 rationale: >
   The cost that dominates is CI wall-clock under strict up-to-date protection, not review
   or build time: with N armed PRs, serial landing costs on the order of N squared CI runs
@@ -83,3 +85,26 @@ decided_at: 2026-10-11
 - Deploy only the squash on origin/master with `--target-sha`; an ancestor of the live
   marker is a rollback (see the Terminal memory `deploy-topology`).
 - Taken by the program CEO session (Fable, Chairman-assigned 2026-10-11, Terminal issue 916).
+
+## Addendum 2026-10-13: a fix for a train constituent rides the train
+
+- A repair PR whose target is code that is still only on an unlanded train (Terminal #959,
+  the chart-pane mobile close fix for E19/#952 and the #953 Escape ordering) is merged
+  `--no-ff` INTO that train, not squashed solo: solo it would land against a master that
+  does not yet contain the code it fixes, and its own CI would prove nothing. The train's
+  squash sha is then the single sha quoted for the repair's live proof. The train's
+  `after_land` close list gains the repair PR with the same "Landed via landing train" text.
+- When a train is CONFLICTING against master (train 3 at `f810a5ca9` vs master after #929's
+  ChartPanel capture change), the controller marks it `merge-blocked` and never refreshes
+  it; the train operator re-folds `origin/master` by hand, resolves every hunk keeping both
+  sides, recaptures the evidence packets that pin the touched files, reruns the gates and
+  pushes. The controller clears `merge-blocked` once the new head is green.
+- Landing order when a dependent feature PR and a controller PR are also queued: the train
+  first (one CI, biggest payload), then the feature PR that depends on train code (#954
+  E07, refreshed by merge onto the squash and carrying the E20xE07 seam patch), and the
+  merge-on-green controller change (#971) LAST, so no armed PR is refreshed by a controller
+  whose approve path is itself still under test.
+- Cross-feature seams found after acceptance (E20 palette reading E07's removed shell
+  state; E20 palette `review: null` where E16's session now exists) are fixed as bounded
+  follow-up patches produced on a detached predictive-merge worktree and applied to the
+  real refresh, never by re-reviewing or rebuilding either feature.

@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-10-15T06:48:01.868606+00:00",
+  "followon_source": "ad03f6267ed27f53aa73ba05b7307cfce119feee",
+  "a1_candidate": "ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17",
+  "returncode": 0,
+  "output": "e37514e9839f984b55674a92b811ed8d1379f212\n",
+  "error": "",
+  "effect": "read-only preview, no integration or release effect"
+}

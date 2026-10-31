@@ -1,0 +1,13 @@
+{
+  "sourceHead": "d1ba7ae61a9f014add80c84adb359c56a3aaba42",
+  "sourceAndGeneratedSha256": "909d731196206d37491dbb1f5111b14ee92725dbef5f8c332a249158a255bb02",
+  "restCells": 8,
+  "positiveFindings": [],
+  "missingRequiredPngNegativeFindings": [
+    "/Volumes/Mastermind/agent-workspaces/codex/6e18/shared-shell-handoff/shared-shell-astra-handoff/acceptance/movers-notice-visual/export/mockups/evidence/movers-fixed-notice-20261022/EVIDENCE.yml: macro:movers mobile/zh/light references screenshot 'evidence/d75df2f5742f7182.png' which does not exist at /Volumes/Mastermind/agent-workspaces/codex/6e18/shared-shell-handoff/shared-shell-astra-handoff/acceptance/movers-notice-visual/export/mockups/evidence/movers-fixed-notice-20261022/evidence/d75df2f5742f7182.png"
+  ],
+  "restoredFindings": [],
+  "canonicalGuardSha256": "c1604698d38e6f6bb8079f468e11caa581d8efacc9ed53413c6c34a96f1dcf1a",
+  "manifestSha256": "1991aa629e4abd2a5a2183f2412194436886c546d53b5327e3f38ac6bcae734e",
+  "scope": "Unchanged actual guard evaluate against full11808->5a materialdiff and genuine stagedbundle; owner must run ordinary fullrepo guard after import"
+}
