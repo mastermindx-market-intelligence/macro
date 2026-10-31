@@ -20645,6 +20645,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -20910,6 +20911,7 @@ jobs:
       - "scripts/build_international_macro.py"
       - "scripts/build_intl.py"
       - "scripts/build_intl_library.py"
+      - "scripts/publish_ohlc.py"
       - "scripts/thematic_rotation_phase0.py"
       - "scripts/validate_regime_fwd.py"
       - "site/factordata/basket_washout_state.json"
