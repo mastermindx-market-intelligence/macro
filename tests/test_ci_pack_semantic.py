@@ -3672,6 +3672,7 @@ def test_bea_original_installer_proof_cannot_satisfy_new_blocking_setup_plan(tmp
 
 
 import ast as _cm_ast
+import hashlib as _cm_hashlib
 import json as _cm_json
 from pathlib import Path as _CMPath
 import re as _cm_re
@@ -3812,19 +3813,30 @@ def _cm_python_environment(parent, executable):
 
 
 def _cm_frozen_namespace(checkout):
-    """Compile the two ORIGINAL guard bodies, dropping only pytest decoration."""
+    """Compile the ACTUAL frozen-file guard and its exact theme exception.
+
+    Do not restore the obsolete pre-theme guard or provide replacement helpers:
+    the semantic CI fixture must execute the source guard shipped by this PR.
+    """
     source = ROOT / 'tests' / 'test_intl_gs_foundation.py'
     parsed = _cm_ast.parse(source.read_text(encoding='utf-8'), filename=str(source))
-    names = {'_frozen_base', 'test_frozen_files_unchanged_vs_origin_main'}
+    names = {'_frozen_base', '_frozen_source_matches', '_git_frozen_bytes',
+             'test_frozen_files_match_origin_main_or_exact_accepted_country_theme'}
     functions = [node for node in parsed.body
                  if isinstance(node, _cm_ast.FunctionDef) and node.name in names]
-    if {node.name for node in functions} != names:
-        raise AssertionError('original frozen-file functions are missing')
+    pairs = [node for node in parsed.body
+             if isinstance(node, _cm_ast.Assign)
+             and len(node.targets) == 1
+             and isinstance(node.targets[0], _cm_ast.Name)
+             and node.targets[0].id == '_ACCEPTED_COUNTRY_THEME_PAIR']
+    if {node.name for node in functions} != names or len(functions) != len(names) or len(pairs) != 1:
+        raise AssertionError('current frozen-file guard or reviewed theme pin missing')
     for node in functions:
         node.decorator_list = []
     namespace = {'REPO': checkout, 'subprocess': _cm_subprocess,
-                 're': _cm_re, 'pytest': pytest}
-    exec(compile(_cm_ast.Module(body=functions, type_ignores=[]),
+                 're': _cm_re, 'hashlib': _cm_hashlib, 'pytest': pytest}
+    # The assignment is copied from the REAL guard, not fabricated by this test.
+    exec(compile(_cm_ast.Module(body=pairs + functions, type_ignores=[]),
                  str(source), 'exec'), namespace)
     return namespace
 
@@ -3964,7 +3976,7 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
         self.assertEqual(before, (f['checkout'] / '.git' / 'config').read_bytes())
         guards = _cm_frozen_namespace(f['checkout'])
         for path in _CM_FROZEN_PATHS:
-            guards['test_frozen_files_unchanged_vs_origin_main'](path)
+            guards['test_frozen_files_match_origin_main_or_exact_accepted_country_theme'](path)
 
     def test_missing_required_blob_refuses_after_fetch_without_lazy_fallback(self):
         f = self.fixture(full_checkout=True)
@@ -4146,10 +4158,10 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
                 self.assertEqual(_cm_prepare(f), f['canonical'])
                 guards = _cm_frozen_namespace(f['checkout'])
                 self.assertEqual(guards['_frozen_base'](), f['parents'][0])
-                guard = guards['test_frozen_files_unchanged_vs_origin_main']
+                guard = guards['test_frozen_files_match_origin_main_or_exact_accepted_country_theme']
                 for path in _CM_FROZEN_PATHS:
                     if changed and path == _CM_FROZEN_PATHS[0]:
-                        with self.assertRaisesRegex(AssertionError, 'changed vs merge-base'):
+                        with self.assertRaisesRegex(AssertionError, 'changed outside the exact accepted country-theme composition'):
                             guard(path)
                     else:
                         guard(path)
