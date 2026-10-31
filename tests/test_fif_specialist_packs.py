@@ -4532,7 +4532,371 @@ def test_pk10_deafa14a_only_is_still_not_supplied() -> None:
     )
     assert result["applicability"]["state"] == "not_evaluable"
     assert result["applicability"]["reason"] == "proxy_package_not_supplied"
-    assert "proxy_forms_seen=DEFA14A" in result["receipts"]
+    assert "proxy_forms_seen=none" in result["receipts"]
+    assert contract.validate_pack_result(result) == []
+
+
+def _pk10_package(
+    form: str, body: str, accession: str, por: str
+) -> GoldenFilingPackage:
+    """A synthetic proxy package with an explicit accession and period, so a
+    DEF 14A / DEFA14A pair can differ on both (the shared builder is fixed)."""
+    package = _synthetic_package(form, body)
+    return replace(
+        package,
+        manifest={**package.manifest, "accession": accession, "period_of_report": por},
+    )
+
+
+def test_pk10_def14a_governs_over_a_later_defa14a() -> None:
+    # Review F1: only DEF 14A is an admitted form, so a later one-line
+    # DEFA14A soliciting letter never becomes the governing document and no
+    # absence is asserted over it.
+    def14a = _pk10_package(
+        "DEF 14A", _PK10_PROXY_BODY, "0000000099-26-000001", "2026-03-01"
+    )
+    defa14a = _pk10_package(
+        "DEFA14A",
+        "<div>Test Co filed additional soliciting material. Please vote.</div>",
+        "0000000099-26-000002",
+        "2026-04-10",
+    )
+    result = produce_pack(
+        "PK10",
+        _pk10_input(packages=(def14a, defa14a), entity=SYNTHETIC_ENTITY),
+    )
+    assert result["applicability"]["state"] == "applicable"
+    assert "form=DEF 14A" in result["receipts"]
+    assert "form=DEFA14A" not in result["receipts"]
+    for field_id in PK10_TEXT_SPAN_FIELDS:
+        assert _row(result, field_id)["source_span"]["accession"] == (
+            "0000000099-26-000001"
+        )
+    assert _row(result, "say_on_pay_frequency")["text_value"] == "annual"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_defa14a_alone_is_not_a_governing_proxy() -> None:
+    # Review F1: a DEFA14A-only package list keeps the frozen not-supplied
+    # path — never applicable with not_disclosed rows over a soliciting
+    # letter.
+    result = produce_pack(
+        "PK10",
+        _pk10_input(
+            packages=(
+                _pk10_package(
+                    "DEFA14A",
+                    "<div>Test Co filed additional soliciting material."
+                    " Please vote.</div>",
+                    "0000000099-26-000002",
+                    "2026-04-10",
+                ),
+            ),
+            entity=SYNTHETIC_ENTITY,
+        ),
+    )
+    assert result["applicability"]["state"] == "not_evaluable"
+    assert result["applicability"]["reason"] == "proxy_package_not_supplied"
+    assert result["coverage"]["disclosure_coverage_state"] == "not_supplied"
+    for row in result["fields"]:
+        assert row["quality_state"] == "not_evaluable"
+        assert row["reason"] == "proxy_package_not_supplied"
+        assert row["text_value"] is None and row["source_span"] is None
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_say_on_pay_triennial_beats_leftmost_annual_meeting() -> None:
+    # Review F2, the reviewer's text: the annual-meeting preamble must not
+    # satisfy the annual arm; the vote-frequency sentence governs.
+    body = (
+        "<div>Proxy statement for the 2026 annual meeting of stockholders."
+        "</div>"
+        "<div>The Board recommends that the say-on-pay vote is held every"
+        " three years.</div>"
+    )
+    result = _pk10_supplied_result(body)
+    row = _row(result, "say_on_pay_frequency")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_say_on_pay_biennial() -> None:
+    body = (
+        "<div>Our advisory vote on executive compensation is held every two"
+        " years.</div>"
+    )
+    result = _pk10_supplied_result(body)
+    row = _row(result, "say_on_pay_frequency")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "biennial"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_annual_meeting_alone_is_not_a_frequency() -> None:
+    # Review F2: "annual meeting"/"annual report" alone never satisfies the
+    # annual arm; with no frequency sentence the row stays the valued
+    # absence not_disclosed (the existing absent path).
+    body = (
+        "<div>Proxy statement for the 2026 annual meeting of stockholders."
+        "</div>"
+        "<div>The annual report is incorporated by reference.</div>"
+    )
+    result = _pk10_supplied_result(body)
+    row = _row(result, "say_on_pay_frequency")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def _pk10_frequency_row(body: str) -> tuple[dict, GoldenFilingPackage, dict]:
+    """Produce the supplied PK10 result for one synthetic DEF 14A body and
+    return its say_on_pay_frequency row, the package (the row's source_span
+    cites raw byte offsets into the package's primary member) and the full
+    result for the contract check."""
+    package = _synthetic_package("DEF 14A", body)
+    result = produce_pack(
+        "PK10",
+        _pk10_input(packages=(package,), entity=SYNTHETIC_ENTITY),
+    )
+    return _row(result, "say_on_pay_frequency"), package, result
+
+
+def _pk10_matched_span(package: GoldenFilingPackage, row: dict) -> str:
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    return package.members["doc.htm"][
+        span["start_offset"] : span["end_offset"]
+    ].decode("utf-8")
+
+
+def test_pk10_triennial_rather_than_annually() -> None:
+    # Review F1 (second repair), S1: the sentence states a triennial
+    # frequency; the contrastive "rather than annually" must not let the
+    # annual arm's gap skip past the stated frequency.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held every three years rather"
+        " than annually.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held every three years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_triennial_rather_than_every_year() -> None:
+    # Review F1 (second repair), S2: same sentence shape with "every year"
+    # as the contrasted annual phrase.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held every three years rather"
+        " than every year.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held every three years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_board_recommended_triennial_frequency() -> None:
+    # Review F1 (second repair), S3: the "frequency of" anchor with both a
+    # stated triennial frequency and a contrasted "every year" in the same
+    # sentence.
+    row, package, result = _pk10_frequency_row(
+        "<div>The Board recommended a frequency of every three years"
+        " rather than every year, and shareholders agreed.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert _pk10_matched_span(package, row) == (
+        "frequency of every three years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_annual_rather_than_triennial_stays_annual() -> None:
+    # Review F1 (second repair), control: the asymmetric sentence keeps
+    # resolving annual — the stated "every year" governs, and the arm
+    # reorder plus the tempered gaps never let triennial steal it.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held every year rather than"
+        " every three years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held every year"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_rejected_alternative_is_not_evidence() -> None:
+    # Review F1-A (third repair), (ii): the stated frequency is annual; the
+    # rejected "every three years" alternative is not evidence, and the
+    # rejection verb never appears in the matched span.
+    row, package, result = _pk10_frequency_row(
+        "<div>Shareholders approved annual say-on-pay votes, rejecting the"
+        " every three years alternative.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert _pk10_matched_span(package, row) == "annual say-on-pay"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_annual_incentive_collocation_is_not_a_frequency() -> None:
+    # Review F1-B (third repair), (O1): "annual" heading the "annual
+    # incentive plan" collocation is not a frequency; the stated "every
+    # three years" on the far side of the anchor governs.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote on our annual incentive plan will be held"
+        " every three years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote on our annual incentive plan will be held every"
+        " three years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_frequency_before_anchor_resolves() -> None:
+    # Review F2 (third repair), (iii): the frequency may precede the anchor
+    # in the same sentence; the hyphenated "every-three-years" is matched
+    # but discarded — it modifies the peer-group "review", not the vote.
+    row, package, result = _pk10_frequency_row(
+        "<div>We hold an annual say-on-pay vote, consistent with the"
+        " every-three-years review of our peer group.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert _pk10_matched_span(package, row) == "annual say-on-pay"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_biennial_rather_than_annually() -> None:
+    # Third repair NOTE: the biennial transcript — the contrasted
+    # "annually" is discarded, the stated "every two years" governs.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held every two years rather"
+        " than annually.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "biennial"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held every two years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_annually_rather_than_biennial() -> None:
+    # Third repair NOTE: the mirrored transcript — the contrasted "every
+    # two years" is discarded, the stated "annually" governs.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held annually rather than every"
+        " two years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held annually"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_two_surviving_frequencies_is_not_disclosed() -> None:
+    # Third repair: two distinct frequencies survive one anchored sentence
+    # with no contrast marker separating them — the pack's existing
+    # anchor-present-no-resolvable-frequency emission, the valued
+    # not_disclosed asserted over the whole document.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote is held annually and every three"
+        " years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    # The valued absence is asserted over the whole document, exactly as the
+    # no-anchor absence: the span runs from the first byte through the last
+    # narrative character (the trailing close tags collapse to one space).
+    assert span["start_offset"] == 0
+    assert span["end_offset"] > span["start_offset"]
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert "The say-on-pay vote is held annually and every three years." in covered
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_bare_duration_after_review_is_not_a_cadence() -> None:
+    # Fourth repair, review F1 (x1): "covering three years" states the
+    # duration of the peer-group review, not the vote's cadence — the
+    # non-vote-noun discard only looks after the phrase, so a preceding
+    # "review" never saves the bare duration. With the bare form gone from
+    # the phrase table the anchored sentence keeps no frequency.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote follows a peer-group review covering three"
+        " years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    # The valued absence is asserted over the whole document, exactly as the
+    # no-anchor absence and the two-frequency tie-break.
+    assert span["start_offset"] == 0
+    assert span["end_offset"] > span["start_offset"]
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert (
+        "The say-on-pay vote follows a peer-group review covering three"
+        " years." in covered
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_deadline_within_three_years_is_not_a_cadence() -> None:
+    # Fourth repair, review F1 (x2): "within three years of the prior vote"
+    # is a deadline, not a cadence — no discard window can rescue a bare
+    # duration, so the phrase table must not offer it.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote must be held within three years of the"
+        " prior vote.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    assert span["start_offset"] == 0
+    assert span["end_offset"] > span["start_offset"]
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert (
+        "The say-on-pay vote must be held within three years of the prior"
+        " vote." in covered
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_tenure_duration_does_not_mask_annual() -> None:
+    # Fourth repair, review F2 (x3): the director-tenure duration shares the
+    # ";"-joined sentence with the anchor; read as a second frequency it
+    # tripped the two-distinct-frequencies tie-break into a false absence.
+    # Bare durations are no longer frequencies, so the stated annual cadence
+    # resolves and the span never reaches the tenure clause.
+    row, package, result = _pk10_frequency_row(
+        "<div>Directors are elected for three years; the say-on-pay vote is"
+        " held annually.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    matched = _pk10_matched_span(package, row)
+    assert "say-on-pay vote is held annually" in matched
+    assert "elected for three years" not in matched
     assert contract.validate_pack_result(result) == []
 
 
@@ -7984,11 +8348,12 @@ PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",
 }
 # This producer's own byte-determinism pin, captured at the lane's fork point;
-# re-pinned by the second repair (review F3 seat ruling): the range row's
-# mapping_rule_digest now pins the live RANGE_DISCLOSED_PATTERN bytes (masked-
-# envelope diff vs the previous pin: empty).
+# re-pinned by the second repair (review F3 seat ruling) and by the third
+# repair (review F3-1): the range row's mapping_rule_digest pins the live
+# RANGE_DISCLOSED_PATTERN bytes, whose determine alternant is now object-
+# bound (masked-envelope diff vs the previous pin: empty).
 PK08_AAPL_ENVELOPE_SHA256 = (
-    "9200ce0e91e7867e1186e5b96f0ecbdc01d3f56fddfb5d81ff07f13e905260b3"
+    "b57a48def3723b47b7d47c2a59052fed0a4181e34e21d6867360f9568844bd2c"
 )
 # §TESTS 1: the fixture's two nil balance-sheet occurrences (ledger scan).
 PK08_AAPL_NIL_IDS = {
@@ -8102,6 +8467,18 @@ _PK08_CONTING_NOT_ESTIMABLE_NOT_POSSIBLE = (
     "Contingencies The Company is a party to certain pending legal matters. "
     "For those matters, it is not possible to estimate the amount or range "
     "of loss."
+)
+# Third repair (review F3-1): the object-bound determine form, and the
+# object-blind sentence it must no longer value.
+_PK08_CONTING_DETERMINE_OUTCOME = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "Management believes it is not possible to determine the outcome of this "
+    "matter at this time."
+)
+_PK08_CONTING_DETERMINE_AMOUNT_OR_RANGE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to determine the amount or range "
+    "of loss that may result."
 )
 _PK08_CONTING_NOT_ESTIMABLE_CANNOT_BE_MADE = (
     "Contingencies The Company is a party to certain pending legal matters. "
@@ -8752,6 +9129,55 @@ def test_pk08_not_estimable_not_possible_form() -> None:
     assert span["document_id"] == PK08_TESTCO_DOC
     assert span["end_offset"] > span["start_offset"]
     assert _pk08_span_text(pack_input, span) == "is not possible to estimate"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_possible_to_determine_outcome_is_not_estimable_language() -> None:
+    # F3-1: "not possible to determine the outcome" is a statement about the
+    # matter's resolution, not about estimability of a loss amount or range —
+    # the object-bound determine arm must leave the row typed-absent, never
+    # value not_estimable from it.
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_DETERMINE_OUTCOME
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["text_value"] is None
+    assert disclosed["value"] is None
+    assert disclosed["quality_state"] == "missing"
+    assert disclosed["non_value_state"] == "missing"
+    assert disclosed["coverage_state"] == "unmapped"
+    assert disclosed["reason"] == "missing_dependency"
+    assert disclosed["evidence_kind"] == "text_span"
+    assert disclosed["source_span"] is None
+    assert any(
+        "pk08.loss_contingency_range_disclosed: narrative_span_not_located"
+        in line
+        for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_possible_to_determine_amount_or_range_form() -> None:
+    # F3-1: "not possible to determine the amount or range of loss" IS
+    # legitimate not-estimable language — the object-bound determine arm
+    # values it with the span ending at the amount object.
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_DETERMINE_AMOUNT_OR_RANGE
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["coverage_state"] == "source_trace_complete"
+    assert disclosed["reason"] is None
+    span = disclosed["source_span"]
+    assert span["document_id"] == PK08_TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    assert (
+        _pk08_span_text(pack_input, span)
+        == "is not possible to determine the amount"
+    )
     assert contract.validate_pack_result(result) == []
 
 
