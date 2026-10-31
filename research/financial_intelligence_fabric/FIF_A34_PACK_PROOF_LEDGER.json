@@ -1,0 +1,519 @@
+{
+  "schema": "fif.a34_pack_proof_ledger.v1",
+  "matrix_row": "A34",
+  "base_commit": "e60eadeedf796a78b13cc7ff33efbb6f012fce13",
+  "generated_at": "2026-10-31T14:49:09.837097+00:00",
+  "protocol_id": "fif-q0-quality-protocol/v1",
+  "packs": [
+    {
+      "pack_id": "PK01",
+      "name": "Debt, liquidity, covenants and maturities",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk01.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 21,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "present",
+          "sealed": true,
+          "quality_label": null
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK02",
+      "name": "Stock compensation and dilution",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk02.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 32,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "present",
+          "sealed": true,
+          "quality_label": null
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK03",
+      "name": "Segments and geographic/product dimensions",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk03.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 36,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "present",
+          "sealed": true,
+          "quality_label": null
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK04",
+      "name": "Revenue recognition and contract balances",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk04.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 25,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "present",
+          "sealed": true,
+          "quality_label": null
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK05",
+      "name": "Tax and uncertain tax positions",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk05.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 15,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "present",
+          "sealed": true,
+          "quality_label": null
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK06",
+      "name": "Leases and off-balance commitments",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk06.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 2,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "present",
+          "sealed": true,
+          "quality_label": null
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK07",
+      "name": "M&A, goodwill, intangibles and impairments",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk07.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 17,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "present",
+          "sealed": true,
+          "quality_label": null
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK08",
+      "name": "Legal contingencies",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk08.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 31,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "present",
+          "sealed": true,
+          "quality_label": null
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK09",
+      "name": "Controls, auditor and going concern",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk09.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 45,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "present",
+          "sealed": true,
+          "quality_label": null
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK10",
+      "name": "Proxy compensation and governance",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk10.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 26,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "missing",
+          "sealed": false,
+          "quality_label": null
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "held_out",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK11",
+      "name": "Financial-institution credit/capital/liquidity",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk11.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 9,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "present",
+          "sealed": true,
+          "quality_label": null
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "review",
+        "live"
+      ]
+    },
+    {
+      "pack_id": "PK12",
+      "name": "Biotech cash/R&D/financing disclosures",
+      "proofs": {
+        "schema": {
+          "state": "present",
+          "evidence": [
+            "contracts/specialist_packs/pack.pk12.v1.schema.json"
+          ],
+          "catalogue_state": "specified"
+        },
+        "gold": {
+          "state": "missing",
+          "evidence": [],
+          "calibration_tests": 12,
+          "calibration_labels": 0
+        },
+        "held_out": {
+          "state": "present",
+          "sealed": true,
+          "quality_label": null
+        },
+        "review": {
+          "state": "missing",
+          "evidence": []
+        },
+        "live": {
+          "state": "missing",
+          "evidence": []
+        }
+      },
+      "gaps": [
+        "gold",
+        "review",
+        "live"
+      ]
+    }
+  ],
+  "gaps_by_pack": {
+    "PK01": [
+      "gold",
+      "review",
+      "live"
+    ],
+    "PK02": [
+      "gold",
+      "review",
+      "live"
+    ],
+    "PK03": [
+      "gold",
+      "review",
+      "live"
+    ],
+    "PK04": [
+      "gold",
+      "review",
+      "live"
+    ],
+    "PK05": [
+      "gold",
+      "review",
+      "live"
+    ],
+    "PK06": [
+      "gold",
+      "review",
+      "live"
+    ],
+    "PK07": [
+      "gold",
+      "review",
+      "live"
+    ],
+    "PK08": [
+      "gold",
+      "review",
+      "live"
+    ],
+    "PK09": [
+      "gold",
+      "review",
+      "live"
+    ],
+    "PK10": [
+      "gold",
+      "held_out",
+      "review",
+      "live"
+    ],
+    "PK11": [
+      "gold",
+      "review",
+      "live"
+    ],
+    "PK12": [
+      "gold",
+      "review",
+      "live"
+    ]
+  },
+  "packs_with_gaps": 12,
+  "packs_complete": 0
+}

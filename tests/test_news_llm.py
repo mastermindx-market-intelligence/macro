@@ -188,3 +188,61 @@ if __name__ == "__main__":
         fn()
         print(f"ok  {fn.__name__}")
     print(f"\n{len(fns)} passed")
+
+
+# --------------------------------------------------------------------------- #
+# fail-closed gating (news-estate P1-D): the annotator is OFF unless config.yml
+# explicitly sets news_llm.enabled: true AND a provider credential is present.
+# --------------------------------------------------------------------------- #
+_PROVIDER_STUB = ("anthropic", "test-not-a-key", "claude-haiku-4-5")
+
+
+def test_enabled_false_when_key_missing_even_with_provider(monkeypatch):
+    """T1 — `enabled` key ABSENT from config -> enabled() is False even with a
+    provider credential present (fail closed; was default-on before P1-D)."""
+    monkeypatch.setattr(news_llm, "_cfg", lambda: {})
+    monkeypatch.setattr(news_llm, "_provider", lambda: _PROVIDER_STUB)
+    assert news_llm.enabled() is False
+
+
+def test_enabled_false_when_explicitly_false(monkeypatch):
+    """T2 — explicit `enabled: false` -> False."""
+    monkeypatch.setattr(news_llm, "_cfg", lambda: {"enabled": False})
+    monkeypatch.setattr(news_llm, "_provider", lambda: _PROVIDER_STUB)
+    assert news_llm.enabled() is False
+
+
+def test_enabled_true_when_explicitly_true_and_provider_present(monkeypatch):
+    """T3 — explicit `enabled: true` AND a provider credential -> True."""
+    monkeypatch.setattr(news_llm, "_cfg", lambda: {"enabled": True})
+    monkeypatch.setattr(news_llm, "_provider", lambda: _PROVIDER_STUB)
+    assert news_llm.enabled() is True
+
+
+def test_enabled_false_when_explicitly_true_but_no_provider(monkeypatch):
+    """T4 — explicit `enabled: true` but NO provider credential -> False."""
+    monkeypatch.setattr(news_llm, "_cfg", lambda: {"enabled": True})
+    monkeypatch.setattr(news_llm, "_provider", lambda: None)
+    assert news_llm.enabled() is False
+
+
+def test_annotate_passthrough_and_no_provider_build_when_key_missing(monkeypatch):
+    """T5 — `enabled` key absent -> annotate() is a pass-through returning its
+    input unchanged, and never builds LLM providers (fail closed)."""
+    calls: list = []
+    monkeypatch.setattr(news_llm, "_cfg", lambda: {})
+    monkeypatch.setattr(news_llm, "_provider", lambda: _PROVIDER_STUB)
+
+    import engine.llm_auth as llm_auth
+
+    def _stub_build_providers(*args, **kwargs):
+        calls.append((args, kwargs))
+        return []
+
+    monkeypatch.setattr(llm_auth, "build_providers", _stub_build_providers)
+
+    headlines = [{"title": "Nvidia launches accelerator"}]
+    result = news_llm.annotate(headlines)
+    assert result is headlines
+    assert result == [{"title": "Nvidia launches accelerator"}]
+    assert calls == []

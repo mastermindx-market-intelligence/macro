@@ -213,6 +213,28 @@ def test_candidate_basis_is_sorted_by_edge_id_and_carries_only_two_keys():
         assert item["model_status"] == "statistical_estimate_frozen"
 
 
+def test_candidate_basis_two_channel_fixture_pins_ascending_edge_id_order():
+    # Two statistical edges on TWO channels (portfolio_fund_ownership and
+    # dollar_funding), offered deliberately in DESCENDING edge_id order: the
+    # basis must come back ascending by edge_id whatever the input order or
+    # channel mix (kills survivor M1 — a stable sort on the shared
+    # model_status would preserve the descending input order here).
+    portfolio = dy_edge(origin="BR", receiver="us_broad_equity")
+    funding = dy_edge(origin="BR", receiver="us_broad_equity",
+                      channel="dollar_funding")
+    assert portfolio["channel"] == "portfolio_fund_ownership"
+    assert funding["channel"] == "dollar_funding"
+    ascending = sorted((portfolio["edge_id"], funding["edge_id"]))
+    assert len(set(ascending)) == 2
+    by_id = {edge["edge_id"]: edge for edge in (portfolio, funding)}
+    offered = [by_id[ascending[1]], by_id[ascending[0]]]  # descending order
+    assert [edge["edge_id"] for edge in offered] == ascending[::-1]
+    out = graph_boundary_label(summary("BR", edges=offered))
+    assert [item["edge_id"] for item in out["candidate_basis"]] == ascending
+    assert {item["model_status"] for item in out["candidate_basis"]} == \
+        {"statistical_estimate_frozen"}
+
+
 def test_out_of_graph_market_with_only_documented_edges_is_structural_research():
     ms = summary("BR", edges=[doc_edge(origin="BR")])
     out = graph_boundary_label(ms)
@@ -321,3 +343,14 @@ def test_missing_structural_graph_or_market_id_is_summary_shape_error():
         graph_boundary_label({"structural_graph": {"member": True}})
     with pytest.raises(GraphBoundaryError, match="summary_shape"):
         graph_boundary_label(None)
+
+
+@pytest.mark.parametrize("structural_graph", [None, [], "frozen-v1", 7])
+def test_non_dict_structural_graph_is_summary_shape_error(structural_graph):
+    # Kills survivor M5: a gate that only rejects a None/absent
+    # structural_graph would let a non-dict value reach the label rule and
+    # invent a label instead of raising summary_shape. The None case carries
+    # the key explicitly, which the absent-key cases above never exercise.
+    with pytest.raises(GraphBoundaryError, match="summary_shape"):
+        graph_boundary_label({"market_id": "JP",
+                              "structural_graph": structural_graph})

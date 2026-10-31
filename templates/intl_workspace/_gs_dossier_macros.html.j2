@@ -1,0 +1,51 @@
+{% import "intl_workspace/_gs_macros.html.j2" as gs with context %}
+{# INTL-GS-W2B dossier-only primitives (IM14, spec R14 §10.5/§1.3).
+   Supplements the foundation macros — never copies one. Every user-visible
+   string goes through t('EN','中文') with plain-string arguments; no t() ever
+   enters an attribute (FX2), no style element or style attribute exists (L9 vii), and no colour
+   enters markup: the surveillance stylesheet stays the single authority.
+   Abstain copy pairs arrive from the builder payload (abstain_copy), composed
+   through lib.intl_gs_display.reason_copy — the template never re-types a
+   foundation copy string. #}
+{% macro ds_abstain_note(token, pair) -%}
+<p class="intl-gs__abstainnote" data-abstain-token="{{ token|e }}">{{ gs.gs_chip(t('Abstain', '弃权'), 'muted-dashed') }} <span class="intl-gs__abstainnote__copy">{{ t(pair[0], pair[1]) }}</span></p>
+{%- endmacro %}
+
+{# §1.3 composite hero: label + 38/700 numeral + unit + basis + clock + tier
+   chip in ONE block. An abstaining or absent observation renders the §7
+   state with its reason copy and NO numeral (L10). #}
+{% macro ds_hero(market, basis) -%}
+{% set basis_copy = {'local': ('Local', '本币'), 'usd_unhedged': ('USD · Unhedged', '美元 · 未对冲')}.get(basis, (basis, basis)) %}
+{% set hero = market.hero %}
+<div class="intl-gs__hero" data-hero-state="{{ hero.state|e }}">
+  <p class="intl-gs__eyebrow">{{ t('Q1 · What moved', 'Q1 · 发生了什么变动') }}</p>
+  {% if hero.qualified and hero.value_pct is not none and hero.clock %}
+  <div class="intl-gs__hero__row">
+    <span class="intl-gs__hero__num intl-gs__num intl-gs__num--{{ 'up' if hero.value_pct > 0 else 'down' }}">{{ '+' if hero.value_pct > 0 else ('−' if hero.value_pct < 0 else '') }}{{ '%.2f'|format(hero.value_pct|abs) }}%</span>
+    <span class="intl-gs__hero__basis">{{ t(basis_copy[0], basis_copy[1]) }}</span>
+    <time class="intl-gs__hero__clock intl-gs__num" datetime="{{ hero.clock.datetime|e }}">{{ t(hero.clock.en, hero.clock.zh) }}</time>
+    {% if market.rights %}
+    <span class="intl-gs__chip intl-gs__chip--tier">{{ t(market.rights.label_en, market.rights.label_zh) }}</span>
+    {% else %}
+    {{ gs.gs_chip(t('Restricted', '受限'), 'warn-dashed') }}
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="intl-gs__hero__row intl-gs__hero__row--state">
+    {{ gs.gs_state_chip('abstain' if hero.state == 'abstain' else 'empty') }}
+    <span class="intl-gs__hero__reason">{% for pair in hero.reason_pairs %}{{ t(pair[0], pair[1]) }}{% if not loop.last %} · {% endif %}{% endfor %}</span>
+  </div>
+  {% endif %}
+</div>
+{%- endmacro %}
+
+{# A labelled four-clock row: the FX1 <time> form plus the precision word, or
+   the honest "—" + Clock-missing copy (never a raw ISO string). #}
+{% macro ds_clock_row(clock) -%}
+<div class="intl-gs__clockrow" data-clock="{{ clock.key|e }}">
+  <span class="intl-gs__clockrow__label">{{ t(clock.label_en, clock.label_zh) }}</span>
+  {% if clock.display and not clock.missing %}<time class="intl-gs__clockrow__value intl-gs__num" datetime="{{ clock.display.datetime|e }}">{{ t(clock.display.en, clock.display.zh) }}</time> <span class="intl-gs__clockrow__precision">{{ t(clock.precision_en, clock.precision_zh) }}</span>
+  {%- else %}<span class="intl-gs__clockrow__value intl-gs__num intl-gs__num--muted">—</span> <span class="intl-gs__clockrow__missing">{{ t('Clock missing', '时钟缺失') }}</span>
+  {%- endif %}
+</div>
+{%- endmacro %}
