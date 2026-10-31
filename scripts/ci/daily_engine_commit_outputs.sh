@@ -143,8 +143,8 @@ bash scripts/ci/options_signal_nightly.sh exclude-broad
 # and correctly excluded here on a fallback run (no double-commit hazard since
 # asia-close won't push a commit for those paths on a fallback day).
 git reset -q -- data/hk data/hk_* data/hkma data/china data/china_* 2>/dev/null || true
-# EW-P1 (2026-10-31): carve oversize QLedger blobs out of the engine commit, as the
-# collect job has since #9556. Run 40803269874 / engine job 123688873047 was rejected with GH001
+# EW-P1 (2026-10-31): carve oversize QLedger blobs out of the engine commit, as the collect
+# job has since #9556. Run 40803269874 / engine job 123688873047 was rejected with GH001
 # (a QLedger blob over GitHub's 100 MB file limit) and the durable mirror
 # data/risk_envelope/ has not advanced since 2026-10-21. Helper: scripts/ci/qledger_oversize_carve.sh.
 . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_oversize_carve.sh"

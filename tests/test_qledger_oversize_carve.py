@@ -42,8 +42,8 @@ PRE_EXTRACTION_SHA256 = (
 # EW-P1 insertion pinned byte-exact in both call sites (spec (b) and (c)).
 ENGINE_INSERTION = "\n".join(
     [
-        "# EW-P1 (2026-10-31): carve oversize QLedger blobs out of the engine commit, as the",
-        "# collect job has since #9556. Run 40803269874 / engine job 123688873047 was rejected with GH001",
+        "# EW-P1 (2026-10-31): carve oversize QLedger blobs out of the engine commit, as the collect",
+        "# job has since #9556. Run 40803269874 / engine job 123688873047 was rejected with GH001",
         "# (a QLedger blob over GitHub's 100 MB file limit) and the durable mirror",
         "# data/risk_envelope/ has not advanced since 2026-10-21. Helper: scripts/ci/qledger_oversize_carve.sh.",
         '. "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_oversize_carve.sh"',
@@ -54,8 +54,8 @@ ENGINE_INSERTION = "\n".join(
 )
 TAIL_INSERTION = "\n".join(
     [
-        "# EW-P1 (2026-10-31): carve oversize QLedger blobs out of the collect-tail commit, as the",
-        "# collect job has since #9556. Run 40803269874 / collect_tail job 123688869633 was rejected for a 146.50 MB",
+        "# EW-P1 (2026-10-31): carve oversize QLedger blobs out of the collect-tail commit, as the collect",
+        "# job has since #9556. Run 40803269874 / collect_tail job 123688869633 was rejected for a 146.50 MB",
         "# QLedger blob. Helper: scripts/ci/qledger_oversize_carve.sh.",
         '. "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_oversize_carve.sh"',
         "qledger_carve_staged collect-tail",

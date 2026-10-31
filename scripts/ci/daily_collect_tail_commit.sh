@@ -22,8 +22,8 @@ git config user.email "actions@users.noreply.github.com"
 # circuit_breaker are written solely by collect-core's adapter sweep,
 # present in every job's base) — accepted at the 07-14 split review.
 git add data/ site/basketdata/
-# EW-P1 (2026-10-31): carve oversize QLedger blobs out of the collect-tail commit, as the
-# collect job has since #9556. Run 40803269874 / collect_tail job 123688869633 was rejected for a 146.50 MB
+# EW-P1 (2026-10-31): carve oversize QLedger blobs out of the collect-tail commit, as the collect
+# job has since #9556. Run 40803269874 / collect_tail job 123688869633 was rejected for a 146.50 MB
 # QLedger blob. Helper: scripts/ci/qledger_oversize_carve.sh.
 . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_oversize_carve.sh"
 qledger_carve_staged collect-tail
