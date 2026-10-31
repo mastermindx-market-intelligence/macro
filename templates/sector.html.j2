@@ -367,7 +367,14 @@
   {% endif %}
 
   <div class="panel">
-    <h2>{{ t('Top 10 holdings — each analyzed on its own cycle', '前 10 大持仓 — 各自按其周期分析') }}
+    {% set n = s.holdings|length %}
+    {% set weights = s.holdings|map(attribute='weight_pct')|list %}
+    {% set counted = weights|select('number')|list %}
+    {% set have_share = counted|length == n %}
+    {% set share = (counted|sum|round|int) if have_share else none %}
+    {% set holdings_en = ('Top ' ~ n ~ ' holdings, ' ~ share ~ '% of the fund — each analyzed on its own cycle') if have_share else ('Top ' ~ n ~ ' holdings — each analyzed on its own cycle') %}
+    {% set holdings_zh = ('前 ' ~ n ~ ' 大持仓，合计占基金 ' ~ share ~ '% — 各自按其周期分析') if have_share else ('前 ' ~ n ~ ' 大持仓 — 各自按其周期分析') %}
+    <h2>{{ t(holdings_en, holdings_zh) }}
       {{ help("Every holding gets the same treatment as the ETF: daily-cycle position, multi-timeframe momentum, and a ladder state. The states carry measured base rates (table at the bottom). Weight = % of the ETF this stock represents — the top names drive the fund.", "每只持仓都与 ETF 同样处理：日线周期位置、跨周期动量及阶梯状态。各状态附有实测基准胜率（见底部表格）。权重=该股票占 ETF 的百分比 — 前几大成分股主导基金走势。") }}
     </h2>
     {% for h in s.holdings %}
