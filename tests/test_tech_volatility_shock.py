@@ -129,3 +129,36 @@ def test_reader_handles_unrestored_r2_without_network_or_fake_values(monkeypatch
     snap = build_snapshot(now=NOW)
     assert snap["status"] == "unavailable"
     assert snap["relative_pp"] is None
+
+
+def test_volume_reference_refuses_a_missing_trading_day_inside_prior_twenty():
+    spy, qqq = _frames()
+    # Keep >20 older records; dropping a session in the 20-session window
+    # previously moved a 21st-oldest row into the window without warning.
+    missing = spy.index[-8]
+    assert missing < spy.index[-1]
+    damaged = spy.drop(index=missing)
+    snap = snapshot_from_bars(damaged, qqq, now=NOW)
+    assert snap["status"] == "partial"
+    assert snap["reason_code"] == "HISTORY_INCOMPLETE"
+    assert snap["indices"][0]["volume_multiple"] is None
+    assert snap["indices"][1]["volume_multiple"] == 2.32
+
+
+def test_volume_reference_accepts_valid_weekend_holiday_gaps():
+    spy, qqq = _frames()
+    snap = snapshot_from_bars(spy, qqq, now=NOW)
+    assert [x["volume_multiple"] for x in snap["indices"]] == [2.07, 2.32]
+    assert snap["reason_code"] is None
+
+
+def test_missing_and_session_reason_codes_are_specific_and_stable():
+    spy, qqq = _frames()
+    assert snapshot_from_bars(None, qqq, now=NOW)["reason_code"] == "RAW_OHLC_MISSING"
+    assert snapshot_from_bars(spy, qqq.iloc[:-1], now=NOW)["reason_code"] == "ASOF_MISMATCH"
+    assert snapshot_from_bars(spy.drop(spy.index[-2]), qqq, now=NOW)["reason_code"] == "PREVIOUS_CLOSE_MISSING"
+    assert snapshot_from_bars(spy, qqq.assign(open=0), now=NOW)["reason_code"] == "INVALID_PRICE_QQQ"
+    early = datetime(2026, 10, 30, 19, 30, tzinfo=timezone.utc)
+    assert snapshot_from_bars(spy, qqq, now=early)["reason_code"] == "SESSION_UNSETTLED"
+    lag = datetime(2026, 11, 3, 2, 0, tzinfo=timezone.utc)
+    assert snapshot_from_bars(spy, qqq, now=lag)["reason_code"] == "SESSION_STALE"

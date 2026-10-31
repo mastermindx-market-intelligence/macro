@@ -26,6 +26,30 @@ log = logging.getLogger(__name__)
 SCHEMA = "macro.tech_volatility_shock.v1"
 RELATIVE_PATH = Path("marketdata/tech_volatility_shock.json")
 
+# Stable source-owned reason codes: the Chinese UI must distinguish a market
+# date mismatch from a missing prior close, stale data and an unreadable store.
+REASON_ZH = {
+    "RAW_OHLC_MISSING": "SPY 和 QQQ 的原始常规时段开盘价或收盘价不可用。",
+    "ASOF_MISMATCH": "SPY 和 QQQ 最新日线对应的交易日不一致。",
+    "NON_SESSION_DATE": "最新价格日期不是纽交所交易日。",
+    "SESSION_UNSETTLED": "最新交易日尚未经过收盘数据确认截止时间。",
+    "PREVIOUS_CLOSE_MISSING": "SPY 或 QQQ 缺少前一常规交易日的收盘价。",
+    "INVALID_PRICE_SPY": "SPY 当日或前一交易日的必要价格无效。",
+    "INVALID_PRICE_QQQ": "QQQ 当日或前一交易日的必要价格无效。",
+    "DECOMPOSITION_FAILED_SPY": "SPY 隔夜和日间收益拆分计算未能通过一致性检查。",
+    "DECOMPOSITION_FAILED_QQQ": "QQQ 隔夜和日间收益拆分计算未能通过一致性检查。",
+    "DAILY_STORE_UNREADABLE": "原始日线行情存储无法读取。",
+    "SESSION_STALE": "日线行情落后于最近已完成的交易日。",
+    "HISTORY_INCOMPLETE": "部分历史统计值或成交量基准不可用。",
+    "PUBLISHED_SESSION_STALE": "已发布的收盘观察值落后于最新已完成的交易日。",
+    "NO_SOURCE_ASSEMBLED": "本次页面渲染尚未组装原始收盘行情。",
+}
+
+def _zh_reason(snapshot: dict) -> str | None:
+    """Preserve original specific evidence on unknown/older source-code versions."""
+    return REASON_ZH.get(snapshot.get("reason_code")) or snapshot.get("reason")
+
+
 
 def _published_snapshot(path: Path, now: datetime) -> dict | None:
     """Strict, bounded read of our own committed, derived snapshot."""
@@ -89,6 +113,7 @@ def _published_snapshot(path: Path, now: datetime) -> dict | None:
                        if lag > 0 else
                        "Some historical statistics or volume baselines unavailable."
                        if partial else None),
+            "reason_code": "PUBLISHED_SESSION_STALE" if lag > 0 else "HISTORY_INCOMPLETE" if partial else None,
             "lag_sessions": lag,
             "source_state": "published_projection",
         }
@@ -160,6 +185,24 @@ def render_macro_with_shock(env: Environment, vm: dict) -> str:
         raise ValueError("Macro body anchor missing or ambiguous")
     snap = vm.get("tech_shock")
     if not isinstance(snap, dict):
-        snap = tech_volatility_shock._missing("Raw EOD source has not been assembled for this render.")
-    panel = env.get_template("_tech_volatility_shock.html.j2").render(tech_shock=snap)
+        snap = tech_volatility_shock._missing(
+            "Raw EOD source has not been assembled for this render.",
+            code="NO_SOURCE_ASSEMBLED",
+        )
+    panel = env.get_template("_tech_volatility_shock.html.j2").render(
+        tech_shock={**snap, "reason_zh": _zh_reason(snap)}
+    )
     return page.replace("</body>", panel + "\n</body>")
+
+
+def write_macro_page(site: Path, env: Environment, vm: dict) -> Path:
+    """Single canonical Macro page writer, used by first AND final builds.
+
+    The fresh stock-board pass must never call dashboard.html.j2 directly for
+    mode='macro': that would remove the shock panel from the final artifact.
+    """
+    from lib.pages import write_page
+
+    out = Path(site) / "macro.html"
+    write_page(out, render_macro_with_shock(env, vm))
+    return out

@@ -20,9 +20,9 @@ Z_WINDOW = 60
 VOLUME_WINDOW = 20
 
 
-def _missing(reason: str, *, asof: str | None = None) -> dict:
+def _missing(reason: str, *, code: str = "SOURCE_UNAVAILABLE", asof: str | None = None) -> dict:
     return {
-        "status": "unavailable", "reason": reason, "asof": asof,
+        "status": "unavailable", "reason": reason, "reason_code": code, "asof": asof,
         "lag_sessions": None, "indices": [], "relative_pp": None,
         "relative_z60": None, "session_read": None,
         "volume_scope": "full_market_day", "price_scope": "xnys_regular_session",
@@ -95,6 +95,13 @@ def _volume_multiple(bars: pd.DataFrame, date: pd.Timestamp) -> float | None:
     prior = bars.loc[bars.index < date, "volume"].tail(VOLUME_WINDOW)
     if today is None or today <= 0 or len(prior) != VOLUME_WINDOW or prior.isna().any():
         return None
+    # A tail of available rows is NOT necessarily the preceding 20 exchange
+    # sessions. An omitted vendor bar would substitute an older observation
+    # and silently mislabel an off-window average as a 20-session baseline.
+    dates = list(prior.index) + [date]
+    if any(nyse_calendar.sessions_strictly_between(a.date(), b.date())
+           for a, b in zip(dates, dates[1:])):
+        return None
     mean = float(prior.mean())
     return round(today / mean, 2) if mean > 0 and math.isfinite(mean) else None
 
@@ -122,22 +129,22 @@ def snapshot_from_bars(
     """Pure presentation model. No network, no writes, and no futures."""
     spy, qqq = _clean(spy_raw), _clean(qqq_raw)
     if spy is None or qqq is None:
-        return _missing("Regular-session raw OHLC not available for both ETFs.")
+        return _missing("Regular-session raw OHLC not available for both ETFs.", code="RAW_OHLC_MISSING")
     date = spy.index[-1]
     if qqq.index[-1] != date:
-        return _missing("SPY and QQQ daily bars have different as-of sessions.")
+        return _missing("SPY and QQQ daily bars have different as-of sessions.", code="ASOF_MISMATCH")
     asof = date.date().isoformat()
     if not nyse_calendar.is_session(date.date()):
-        return _missing("Latest price date is not an exchange session.", asof=asof)
+        return _missing("Latest price date is not an exchange session.", code="NON_SESSION_DATE", asof=asof)
     now = now or datetime.now(timezone.utc)
     expected = nyse_calendar.expected_last_session(now)
     if date.date() > expected:
-        return _missing("The latest bar has not passed the session-completion cutoff.", asof=asof)
+        return _missing("The latest bar has not passed the session-completion cutoff.", code="SESSION_UNSETTLED", asof=asof)
     lag = nyse_calendar.sessions_behind(date.date(), now=now)
     prev_date = nyse_calendar.last_session_on_or_before(date.date() - timedelta(days=1))
     prev = pd.Timestamp(prev_date)
     if prev not in spy.index or prev not in qqq.index:
-        return _missing("Previous regular-session close missing for one or both ETFs.", asof=asof)
+        return _missing("Previous regular-session close missing for one or both ETFs.", code="PREVIOUS_CLOSE_MISSING", asof=asof)
     spy_r, qqq_r = _returns(spy), _returns(qqq)
     idx_rows = []
     raw_current = {}
@@ -147,13 +154,13 @@ def snapshot_from_bars(
         cl = _number(bars.at[date, "close"])
         pc = _number(bars.at[prev, "close"])
         if not op or not cl or not pc:
-            return _missing(f"{symbol} current/previous regular-session price invalid.", asof=asof)
+            return _missing(f"{symbol} current/previous regular-session price invalid.", code=f"INVALID_PRICE_{symbol}", asof=asof)
         net = cl / pc - 1.0
         overnight = op / pc - 1.0
         intraday = cl / op - 1.0
         # Invariant: legs compound to the exact price return, not simply sum.
         if not math.isclose((1 + overnight) * (1 + intraday) - 1, net, abs_tol=1e-10):
-            return _missing(f"{symbol} price decomposition failed.", asof=asof)
+            return _missing(f"{symbol} price decomposition failed.", code=f"DECOMPOSITION_FAILED_{symbol}", asof=asof)
         raw_current[symbol] = net
         legs[symbol] = (overnight, intraday)
         rank, n_ytd = _rank(returns, date)
@@ -188,6 +195,7 @@ def snapshot_from_bars(
         "status": "stale" if lag > 0 else "partial" if incomplete else "ok",
         "reason": ("Daily OHLC is behind the exchange calendar." if lag > 0 else
                    "Some historical statistics or volume baselines unavailable." if incomplete else None),
+        "reason_code": "SESSION_STALE" if lag > 0 else "HISTORY_INCOMPLETE" if incomplete else None,
         "asof": asof, "lag_sessions": lag, "indices": idx_rows,
         "relative_pp": _pct(relative), "relative_z60": relative_z,
         "session_read": read,
@@ -205,4 +213,4 @@ def build_snapshot(*, now: datetime | None = None) -> dict:
         )
     except Exception as exc:  # noqa: BLE001 — a broken optional data lane is a null
         log.warning("tech volatility shock source unavailable: %s", exc)
-        return _missing("Raw daily market-data store could not be read.")
+        return _missing("Raw daily market-data store could not be read.", code="DAILY_STORE_UNREADABLE")

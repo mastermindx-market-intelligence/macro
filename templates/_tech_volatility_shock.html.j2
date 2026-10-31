@@ -35,8 +35,7 @@
 .tvs-session{margin:14px 0}
 .tvs-session-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline;font-weight:760;margin-bottom:7px}
 .tvs-bars{display:flex;height:40px;overflow:hidden;background:var(--panel2);border-radius:var(--r-ctl,8px)}
-.tvs-bar{display:flex;align-items:center;justify-content:center;min-width:0;font-size:11px;font-weight:750;white-space:nowrap}
-.tvs-bar span{overflow:hidden;text-overflow:ellipsis;padding:0 8px}
+.tvs-bar{height:100%;min-width:0}
 .tvs-overnight{background:var(--down)}.tvs-intraday{background:var(--q3)}
 .tvs-mixed{padding:11px 13px;background:var(--panel2);border-radius:var(--r-ctl,8px);font-size:12px;color:var(--text)}
 .tvs-bottom{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;font-weight:810;text-align:center}
@@ -66,7 +65,7 @@ html[data-lang="zh"] .tvs:not([open]) .tvs-toggle::after{content:" 详情 \25BC"
     {% if tech_shock.status != 'ok' %}
       <div class="tvs-notice" role="status">
         <span class="l-en">{{ 'Stale observation' if tech_shock.status == 'stale' else 'Partial observation' if tech_shock.status == 'partial' else 'Unverified source coverage' }}:</span><span class="l-zh">{{ '数据已延迟：' if tech_shock.status == 'stale' else '部分数据缺失：' if tech_shock.status == 'partial' else '来源数据不可用：' }}</span>
-        <span class="l-en">{{ tech_shock.reason or 'Some observations are unavailable.' }}</span><span class="l-zh">请检查原始数据可用性和截止时间。</span>
+        <span class="l-en">{{ tech_shock.reason or 'Some observations are unavailable.' }}</span><span class="l-zh">{{ tech_shock.reason_zh or tech_shock.reason or '数据状态不可用。' }}</span>
         {% if tech_shock.lag_sessions is not none and tech_shock.lag_sessions > 0 %} {{ tech_shock.lag_sessions }} <span class="l-en">completed exchange session(s) behind.</span><span class="l-zh">个已完成交易日未更新。</span>{% endif %}
       </div>
     {% endif %}
@@ -98,8 +97,8 @@ html[data-lang="zh"] .tvs:not([open]) .tvs-toggle::after{content:" 详情 \25BC"
           <div class="tvs-session-head"><span>{{ row.symbol }}</span><span class="tvs-muted" style="font-size:11px"><span class="l-en">Overnight {{ '%+.2f'|format(row.overnight_pct) }}% · Intraday {{ '%+.2f'|format(row.intraday_pct) }}%</span><span class="l-zh">隔夜 {{ '%+.2f'|format(row.overnight_pct) }}% · 日间 {{ '%+.2f'|format(row.intraday_pct) }}%</span></span></div>
           {% if row.overnight_share is not none %}
             <div class="tvs-bars" aria-hidden="true">
-              <div class="tvs-bar tvs-overnight" style="width:{{ row.overnight_share }}%"><span><span class="l-en">Overnight</span><span class="l-zh">隔夜</span></span></div>
-              <div class="tvs-bar tvs-intraday" style="width:{{ 100 - row.overnight_share }}%"><span><span class="l-en">Intraday</span><span class="l-zh">日间</span></span></div>
+              <div class="tvs-bar tvs-overnight" style="width:{{ row.overnight_share }}%"></div>
+              <div class="tvs-bar tvs-intraday" style="width:{{ 100 - row.overnight_share }}%"></div>
             </div>
           {% else %}
             <div class="tvs-mixed"><span class="l-en">Mixed or positive leg: a loss-contribution bar would be misleading.</span><span class="l-zh">有正收益或方向混合的时段，不适合使用跌幅贡献条。</span></div>

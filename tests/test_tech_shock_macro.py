@@ -9,7 +9,8 @@ import pytest
 from jinja2 import ChoiceLoader, DictLoader, Environment, FileSystemLoader
 
 from engine.tech_volatility_shock import _missing
-from scripts.tech_shock_macro import render_macro_with_shock, snapshot_for_macro
+from scripts.tech_shock_macro import render_macro_with_shock, snapshot_for_macro, write_macro_page
+from scripts.render_macro_fast import new_fast_environment
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -18,7 +19,7 @@ def _env(dashboard: str) -> Environment:
     return Environment(loader=ChoiceLoader([
         DictLoader({"dashboard.html.j2": dashboard}),
         FileSystemLoader(ROOT / "templates"),
-    ]))
+    ]), autoescape=True)
 
 
 def test_mounted_once_after_dashboard_and_before_body_close():
@@ -111,6 +112,7 @@ def test_published_view_ages_one_completed_session_and_isnt_clobbered(tmp_path, 
     aged = snapshot_for_macro(tmp_path, now=later)
     assert aged["status"] == "stale"
     assert aged["lag_sessions"] == 1
+    assert aged["reason_code"] == "PUBLISHED_SESSION_STALE"
     assert "behind" in aged["reason"]
 
 
@@ -157,3 +159,69 @@ def test_panel_uses_bilingual_labels_and_nonduplicated_accessible_session_text()
     assert 'summary aria-label=' not in html
     assert 'class="tvs-bars" aria-hidden="true"' in html
     assert 'role="img"' not in html
+
+
+def test_final_fresh_board_rerender_uses_the_same_macro_writer(tmp_path):
+    # First and final writes must share the exact mount. The late fresh-board
+    # path previously called dashboard.html.j2 directly, deleting the panel.
+    build_source = (ROOT / "scripts" / "build_site.py").read_text()
+    assert build_source.count("write_macro_page(site, env, vm)") == 2
+    assert 'write_page(site / "macro.html", _dash.render' not in build_source
+    env = _env(
+        '<html><body><div id="regime-radar">REGIME</div>'
+        '<div class="board">{{ us_standouts["as_of"] }}</div></body></html>'
+    )
+    vm = {"tech_shock": _synthetic_readout(), "us_standouts": {"as_of": "old"}}
+    page = write_macro_page(tmp_path, env, vm)
+    first = page.read_text()
+    assert first.count('id="tech-volatility-shock"') == 1
+    assert "old" in first
+    vm["us_standouts"] = {"as_of": "fresh"}
+    final = write_macro_page(tmp_path, env, vm).read_text()
+    assert '<div class="board">fresh</div>' in final
+    assert '<div class="board">old</div>' not in final
+    assert final.count('id="tech-volatility-shock"') == 1
+    assert "QQQ vs SPY" in final
+    assert final.index('id="regime-radar"') < final.index('id="tech-volatility-shock"')
+
+
+def test_localized_status_codes_preserve_distinct_reasons():
+    env = _env('<html><body><div id="regime-radar"></div></body></html>')
+    cases = (
+        ("ASOF_MISMATCH", "SPY and QQQ daily bars have different as-of sessions.",
+         "SPY 和 QQQ 最新日线对应的交易日不一致。"),
+        ("PREVIOUS_CLOSE_MISSING", "Previous regular-session close missing for one or both ETFs.",
+         "SPY 或 QQQ 缺少前一常规交易日的收盘价。"),
+        ("SESSION_UNSETTLED", "The latest bar has not passed the session-completion cutoff.",
+         "最新交易日尚未经过收盘数据确认截止时间。"),
+        ("HISTORY_INCOMPLETE", "Some historical statistics or volume baselines unavailable.",
+         "部分历史统计值或成交量基准不可用。"),
+    )
+    for code, english, chinese in cases:
+        snap = _missing(english, code=code)
+        html = render_macro_with_shock(env, {"tech_shock": snap})
+        assert english in html
+        assert chinese in html
+        assert "请检查原始数据可用性和截止时间。" not in html
+
+
+def test_dev_fast_environment_escapes_hostile_status_reason():
+    env = new_fast_environment()
+    assert env.autoescape is True
+    env.loader = ChoiceLoader([
+        DictLoader({"dashboard.html.j2": "<html><body>base</body></html>"}),
+        FileSystemLoader(ROOT / "templates"),
+    ])
+    hostile = '<img src=x onerror=alert(1)>'
+    snap = _missing(hostile, code="SOURCE_UNAVAILABLE")
+    html = render_macro_with_shock(env, {"tech_shock": snap})
+    assert hostile not in html
+    assert "&lt;img src=x onerror=alert(1)&gt;" in html
+    assert html.count('id="tech-volatility-shock"') == 1
+
+
+def test_overnight_bars_have_no_low_contrast_text():
+    tpl = (ROOT / "templates" / "_tech_volatility_shock.html.j2").read_text()
+    assert '<div class="tvs-bar tvs-overnight" style="width:{{ row.overnight_share }}%"></div>' in tpl
+    assert '<div class="tvs-bar tvs-intraday" style="width:{{ 100 - row.overnight_share }}%"></div>' in tpl
+    assert 'class="tvs-bars" aria-hidden="true"' in tpl

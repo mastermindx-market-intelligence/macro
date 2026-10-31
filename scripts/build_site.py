@@ -29,7 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from collectors.sponsors import flows_table  # noqa: E402
 from engine.i18n import prettify as _prettify, t as T  # noqa: E402
 from engine.inputs import build_features  # noqa: E402
-from scripts.tech_shock_macro import render_macro_with_shock, snapshot_for_macro  # noqa: E402
+from scripts.tech_shock_macro import write_macro_page, snapshot_for_macro  # noqa: E402
 from engine.market_gamma import view as market_gamma_view  # noqa: E402 — SHARED deriver: FE banner + contract (engine/run.py) call the SAME function so they can't drift
 # P-MP1-SHELL §8a (MP-1-prophet-board.md, b1 ruling): the SAME Q7 bucket table
 # engine/us_board_rank.py already ships for the entry/actionability axis — imported
@@ -7386,8 +7386,7 @@ def main() -> int:
     # solely by build_vector.build_landing() (the landing hub) — keeping the raw
     # dashboard out of index.html is what stops Home (-> index.html) from
     # regressing to the dashboard when build_vector doesn't run after this.
-    out = site / "macro.html"
-    write_page(out, render_macro_with_shock(env, vm))
+    out = write_macro_page(site, env, vm)
 
     # The cross-market component belongs to intl.html, not the primary US route.
     # Publish the same rendered view, preserving all per-market evidence/clocks.
@@ -8150,7 +8149,7 @@ def main() -> int:
                                    episode_map=_us_life_episodes2,
                                    plan_relations=(_us_plan_state2, _us_plan_by_ticker2))
                 _dash = env.get_template("dashboard.html.j2")
-                write_page(site / "macro.html", _dash.render(**vm, mode="macro"))
+                write_macro_page(site, env, vm)
                 write_page(site / "us_stocks.html", _dash.render(
                     **{**vm, **_us_pov2, "us_standouts": _us_shell_su2,
                        "gate": _us_gate2, "pgate": _us_pgate2,

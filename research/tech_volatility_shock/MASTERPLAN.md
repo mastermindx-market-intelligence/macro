@@ -103,3 +103,43 @@ normal protected merge path (no self-approval), then prove the actual nightly
 R2→projected snapshot→Macro page and later express render, responsive bilingual
 browser layout, and the absence of a Stocks-mode duplicate. Do not mark
 `PROVEN_LIVE` before those receipts.
+
+## 2026-10-31 independent review — repair candidate (not accepted)
+
+Independent non-author `MastermindX1` submitted formal **REQUEST_CHANGES** on
+immutable head `95ce26e18c9ac4fc101216dd0417f779ab65d547`:
+https://github.com/mastermindx-market-intelligence/macro/pull/10229#pullrequestreview-5721625307 .
+The reviewer confirmed the previous 17 focused tests and fences were green,
+but identified five **release-blocking source defects**. The current repair
+candidate addresses each without waiving a CI gate:
+
+1. `build_site.py` had two Macro outputs: initial source-mounted render and a
+   conditional fresh-board re-render that overwrote the panel. Both now call
+   one `write_macro_page` owner; the test rewrites actual final HTML using
+   a newer board value, requires exactly one panel, and checks both source calls.
+2. `_volume_multiple` previously used 20 last *present* bar rows even if a
+   trading session was missing. It now rejects a calendar gap between any of
+   those rows and the as-of date, preserving a null instead of inventing a
+   20-session denominator; regression tests remove a prior-window session
+   while preserving older available bars, and keep normal holiday/weekend
+   gaps valid.
+3. White/house text on red/green loss-bar fills failed 4.5:1 in EN/ZH dark/light.
+   The visible colored bars are now **decorative only** (no foreground glyphs).
+   Adjacent per-segment percentages and labels remain readable outside
+   colored fills. Browser contrast acceptance must measure those adjacent
+   labels, not the bar fill as a text surface.
+4. Stable `reason_code` for all emitted data status causes and a keyed,
+   deterministic ZH translation preserve the same cause-specific detail as EN:
+   e.g. an as-of session mismatch is distinct from a missing prior close.
+   Unknown older source reasons remain specific rather than generic.
+5. Dev-fast Jinja environment now enables production-parity
+   `autoescape=True`, with explicit injection test covering untrusted
+   `reason` and native source markup.
+
+This new source revision needs **new exact-head** feature suite, CI/fences
+proof, and fresh *independent non-author* review. Old head review remains a
+record of real defects, not approval of this repair. The reviewer and Grok
+Secretary closed the original review request with STOP; any next review must
+have a fresh scoped request/identity, not silently reuse the old worker.
+Real production R2→snapshot→page, express render preservation, bilingual
+browser paths and protected merge/deployment remain separate gates.

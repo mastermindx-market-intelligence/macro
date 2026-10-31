@@ -30,6 +30,14 @@ from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 
+def new_fast_environment() -> Environment:
+    """Match the production HTML escape contract in scripts.build_site."""
+    return Environment(
+        loader=FileSystemLoader(config.ROOT / "templates"),
+        autoescape=True,
+    )
+
+
 def main() -> int:
     site = config.ROOT / config.load()["storage"]["site_dir"]
     cache = config.data_dir() / "_dev_macro_vm.pkl"
@@ -41,7 +49,7 @@ def main() -> int:
         blob = pickle.load(fh)
     vm = blob["vm"]
 
-    env = Environment(loader=FileSystemLoader(config.ROOT / "templates"))
+    env = new_fast_environment()
     env.filters["min"] = lambda seq: min(seq)
     # Mirror the production build_site.py filter: templates use
     # `|regex_replace(...)` for the one-integer-law strip.
