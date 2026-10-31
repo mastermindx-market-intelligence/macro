@@ -57,10 +57,21 @@ with the seat; labor runs on Mastermind Subagent Fabric lanes administrated by O
 | Wave | Task | Owner | State 2026-10-31 |
 | --- | --- | --- | --- |
 | EW-P0 | T1 records / adoption | seat | MERGED #10249 → 1d937d7e2b36 (2026-10-31T16:09Z) |
-| EW-P1 | T1 diagnosis · T2 carve parity · acceptance = 2 natural sessions | seat · ORCH-P1 · watcher | T1 done; T2 in flight |
-| EW-P2 | T1 #10104 successor (dormant) | ORCH-P2 | draft #10325 (head f2532edbaa2d) awaiting CI; review lane APPROVE |
-| EW-P3 | T1 prereg lane (B) | ORCH-P3 | census done; contract draft in flight (seat freezes before registration) |
-| EW-P4 | T1 descriptive early-warning UI (A) | next orchestrator wave | todo (after EW-P2 merge) |
+| EW-P1 | T1 diagnosis · T2 carve parity · acceptance = 2 natural sessions | seat · watcher | T1 done (`research/grey_deer/evidence/EW_P1_ENGINE_TAIL_GH001_DIAGNOSIS_2026-10-31.md`); T2 PR #10333 CLOSED 2026-10-31T20:14Z as superseded by incumbent #10255 (see Reconciliation below); acceptance watcher armed on `main` |
+| EW-P2 | T1 #10104 successor (dormant) | ORCH-P2 | MERGED #10325 → b38935afc1a5 (2026-10-31T18:3xZ; exact head 697b90ab; fabric review APPROVE) |
+| EW-P3 | T1 prereg lane (B) | ORCH-P3 · seat | MERGED #10340 → 11e6c98eb8c3 (2026-10-31; contract v1 frozen blob 5270e309; prereg registered blob `f6d411e379c3` after dating; budgets 3 + 3 appended; zero outcome rows read) |
+| EW-P4 | T1 descriptive early-warning UI (A) | ORCH-P4 | in flight (spawned 2026-10-31 18:4xZ after the EW-P2 merge) |
 | EW-P5 | acceptance packs S/Q/O/C/U/R | seat | todo |
 
 No forecast, hazard narrative, sizing or activation is claimed by this record.
+
+## Reconciliation 2026-10-31T20:14Z — EW-P1.T2 yields to the incumbent #10255
+
+A source-custody collision note on #10333 (2026-10-31T17:02Z) identified that #10333 and #10255 both carve the oversize
+QLedger ledger out of the engine and collect-tail nightly commits. Verified: #10255 (head `d9f655b5`) is the incumbent,
+carries two independent Opus review rounds with `reviewDecision: APPROVED`, is armed `merge-on-green`, and covers a superset
+(stock_briefs, render-sync re-add, always-run custody restoration). The seat selected one implementation rather than composing
+two: #10333 was closed with one ruling comment; one source-linked note was posted on #10255; nothing was requested of its owner
+and no ownership transferred. D1's truth model is unchanged — acceptance remains two natural nightly `engine: regime update`
+landings on `main`, observed by the seat's durable git-only watcher. Also landed: CI budget repair #10341 → dbaf1e07bccc
+(`international-dislocation-explorer` 8 → 15 min; independent fabric review GD-EW-CIB-R1 APPROVE).
