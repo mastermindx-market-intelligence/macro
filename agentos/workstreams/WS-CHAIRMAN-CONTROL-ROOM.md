@@ -150,6 +150,7 @@ artifacts:
   - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-08-24-x1-accepted.md
   - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-08-25-p0a-close-p0b-start.md
   - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-03-realm1-source-protected-profile-b-placement.md
+  - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-10-30-meta-ceo-secretary-runtime-convergence.md
   - mastermind:research/MASTERMIND_ACTIVE_SESSION_EXECUTIVE_DIALOGUE_F0_ARCHITECTURE_AND_FABLE01_COMMISSION_2026-08-22.md
   - mastermind:research/MASTERMIND_ACTIVE_SESSION_EXECUTIVE_DIALOGUE_F0_CURRENT_STATE_AMENDMENT_2026-08-22.md
   - mastermind:research/MASTERMIND_ACTIVE_SESSION_EXECUTIVE_DIALOGUE_A0_TOKEN_ISOLATION_FALSIFIER_2026-08-23.md
