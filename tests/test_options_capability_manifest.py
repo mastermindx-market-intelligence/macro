@@ -160,6 +160,27 @@ def _naive_adapter():
     return _NaiveAdapter()
 
 
+def _null_adapter():
+    """Second negative control: every value null except the capability_id lookup key."""
+    names = ("census_observed_state", "source_family", "source_owner", "cohort", "session",
+             "claim_class", "source_asof", "clock_provenance", "read_state", "entitlement",
+             "accepted_use", "reasons")
+    pops = ("requested", "configured", "captured", "qualified", "displayed")
+
+    def adapter(receipts, now):  # noqa: ARG001 - inputs ignored on purpose
+        rows = [
+            {"capability_id": cid, **dict.fromkeys(names), "populations": dict.fromkeys(pops)}
+            for cid in (TAPE, EOD)
+        ]
+        return {"rows": rows}
+
+    return adapter
+
+
+def _reasons(row) -> list:
+    return list(row.get("reasons") or [])
+
+
 # --------------------------------------------------------------------------- falsifiers
 
 def _check_a(adapter) -> bool:
@@ -182,8 +203,13 @@ def _check_c(adapter) -> bool:
 
 
 def _check_d(adapter) -> bool:
-    pops = _tape_row(adapter, live_flow_meta=CASES["v2_counts_absent"])["populations"]
-    return all(pops[f] is None for f in ("requested", "configured", "captured", "qualified"))
+    row = _tape_row(adapter, live_flow_meta=CASES["v2_counts_absent"])
+    pops, reasons = row["populations"], _reasons(row)
+    return (
+        row["read_state"] == "data"
+        and all(pops[f] is None for f in ("requested", "configured", "captured", "qualified"))
+        and all("count_absent:" + f in reasons for f in ("requested", "configured", "captured"))
+    )
 
 
 def _check_e(adapter) -> bool:
@@ -199,6 +225,8 @@ def _check_f(adapter) -> bool:
         and ooo["source_asof"] is None
         and fut["read_state"] == "unknown"
         and fut["source_asof"] is None
+        and "clock_out_of_order" in _reasons(ooo)
+        and "future_dated_clock" in _reasons(fut)
     )
 
 
@@ -210,7 +238,12 @@ def _check_g(adapter) -> bool:
 
 def _check_h(adapter) -> bool:
     row = _tape_row(adapter, live_flow_meta=CASES["built_at_only"])
-    return row["source_asof"] is None
+    return (
+        row["read_state"] == "unknown"
+        and row["source_asof"] is None
+        and row.get("clock_provenance") is None
+        and "no_accepted_clock" in _reasons(row)
+    )
 
 
 def test_falsifier_a_mtime_source_clock_wins():
@@ -514,3 +547,126 @@ def test_deterministic_and_no_mutation():
     second = build_manifest(receipts, NOW)
     assert first == second
     assert receipts == frozen
+
+
+# --------------------------------------------------------------------------- r2 hardening
+
+_CHECKS = (_check_a, _check_b, _check_c, _check_d, _check_e, _check_f, _check_g, _check_h)
+_V2_CLOCKS = ("cycle_started_at", "source_response_at_first", "source_response_at_last", "asof")
+_AWARE = "2026-10-21T18:30:00+00:00"
+_LOW = "0001-01-01T00:00:00+05:00"
+_UNKNOWN = ("unknown", None, None)
+
+
+def _clock(row):
+    return row["read_state"], row["source_asof"], row["clock_provenance"]
+
+
+def test_negative_controls_fail_every_falsifier():
+    green = [check(build_manifest) for check in _CHECKS]
+    naive = [check(_naive_adapter()) for check in _CHECKS]
+    null = [check(_null_adapter()) for check in _CHECKS]
+    print("CHECKS build_manifest", green, "naive", naive, "null", null)
+    assert green == [True] * 8
+    assert naive == [False] * 8
+    assert null == [False] * 8
+
+
+def test_producer_form_z_microseconds_is_data():
+    case = CASES["v2_producer_form"]
+    assert all(case[f].endswith("Z") for f in _V2_CLOCKS + ("built_at",))
+    row = _tape_row(build_manifest, live_flow_meta=case)
+    assert _clock(row) == ("data", "2026-10-21T18:54:50.123456+00:00", "live_flow.meta/v2:asof")
+    assert "no_threshold_source" in row["reasons"]
+    assert not [r for r in row["reasons"] if r.startswith("clock_")]
+
+
+def test_z_suffix_parses_without_native_z_support(monkeypatch):
+    class _NoZDatetime(datetime):
+        @classmethod
+        def fromisoformat(cls, value):
+            if value.endswith("Z"):
+                raise ValueError("fromisoformat without Z support")
+            return datetime.fromisoformat(value)
+
+    monkeypatch.setattr(manifest_module, "datetime", _NoZDatetime)
+    stamp = manifest_module._parse_aware("2026-10-21T18:54:50.123456Z")
+    assert stamp is not None
+    assert (stamp.utcoffset(), stamp.microsecond) == (timedelta(0), 123456)
+    assert manifest_module._parse_aware("2026-10-21T18:54:50.123456") is None
+    assert manifest_module._parse_aware("Z") is None
+
+
+def test_counts_absent_keeps_data_with_reasons():
+    row = _tape_row(build_manifest, live_flow_meta=CASES["v2_counts_absent"])
+    assert _clock(row) == ("data", "2026-10-21T18:54:50+00:00", "live_flow.meta/v2:asof")
+    for field in ("requested", "configured", "captured"):
+        assert row["populations"][field] is None
+        assert "count_absent:" + field in row["reasons"]
+
+
+@pytest.mark.parametrize(
+    ("source_asof", "expected", "reason"),
+    [
+        (_AWARE, ("data", _AWARE, "live_flow_meta:source_asof"), "no_threshold_source"),
+        ("2026-10-21T18:30:00", _UNKNOWN, "no_accepted_clock"),
+        ("2026-10-21T19:30:00+00:00", _UNKNOWN, "future_dated_clock"),
+    ],
+)
+def test_schemaless_source_asof(source_asof, expected, reason):
+    row = _tape_row(build_manifest, live_flow_meta={"source_asof": source_asof})
+    assert _clock(row) == expected
+    assert reason in row["reasons"]
+
+
+def test_unrecognized_schema_binds_no_clock():
+    for schema, reason in (
+        ("live_flow.feed/v1", "unrecognized_schema:live_flow.feed/v1"),
+        ("live_flow.heat/v1", "unrecognized_schema:live_flow.heat/v1"),
+        (None, "unrecognized_schema:None"),
+        ("x" * 100, "unrecognized_schema:" + "x" * 64),
+    ):
+        row = _tape_row(build_manifest, live_flow_meta={"schema": schema, "source_asof": _AWARE})
+        assert _clock(row) == _UNKNOWN, schema
+        assert reason in row["reasons"]
+    v1 = _tape_row(build_manifest, live_flow_meta=CASES["v1_meta_http200"])
+    assert "unrecognized_schema:live_flow.meta/v1" in v1["reasons"]
+    huge = _tape_row(build_manifest, live_flow_meta={"schema": 10**5000, "source_asof": _AWARE})
+    labels = [r for r in huge["reasons"] if r.startswith("unrecognized_schema:")]
+    assert _clock(huge) == _UNKNOWN
+    assert len(labels) == 1 and len(labels[0]) <= len("unrecognized_schema:") + 64
+
+
+def test_unrepresentable_utc_clock_is_unknown_not_raised():
+    meta = dict.fromkeys(_V2_CLOCKS, _LOW)
+    meta.update(schema="live_flow.meta/v2", observed_start_to_start_sec=60.0)
+    eod_ok = {"source_asof": "2026-10-21T18:00:00+00:00"}
+    manifest = build_manifest(_receipts(live_flow_meta=meta, eod=eod_ok), NOW)
+    tape = _row_of(manifest, TAPE)
+    assert _clock(tape) == _UNKNOWN
+    assert "clock_unparseable:OverflowError" in tape["reasons"]
+    assert "no_threshold_source" not in tape["reasons"]
+    eod = _row_of(manifest, EOD)
+    assert _clock(eod) == ("unknown", "2026-10-21T18:00:00+00:00", "eod252_baselines:source_asof")
+    low = _row_of(build_manifest(_receipts(eod={"source_asof": _LOW}), NOW), EOD)
+    assert _clock(low) == _UNKNOWN
+    assert "clock_unparseable:OverflowError" in low["reasons"]
+
+
+def test_huge_interval_is_unknown_not_raised():
+    for bad in (10**400, float("inf"), float("nan")):
+        meta = dict(CASES["valid_v2_fresh"])
+        meta["observed_start_to_start_sec"] = bad
+        row = _tape_row(build_manifest, live_flow_meta=meta)
+        assert _clock(row) == _UNKNOWN
+        assert "clock_unparseable:observed_start_to_start_sec" in row["reasons"]
+
+
+def test_session_requires_calendar_date_form():
+    assert build_manifest(_receipts(session="2026-10-21"), NOW)["session"] == "2026-10-21"
+    for label in ("2026-W43-3", "20261021", 20261021):
+        manifest = build_manifest(_receipts(session=label), NOW)
+        assert manifest["session"] is None, label
+        for row in manifest["rows"]:
+            assert row["session"] is None
+            assert "session_not_supplied" in row["reasons"]

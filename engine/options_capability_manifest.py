@@ -15,6 +15,13 @@ source-age threshold for the options live tape exists at BASE, so an accepted
 clock is reported with reason ``no_threshold_source`` and the consumer applies
 its own threshold to ``source_asof``.  ``stale`` stays in the read-state enum
 for schema stability but is unreachable in v0.
+
+A single trailing ``Z`` is rewritten to ``+00:00`` before parsing, as the
+producer's own reader does, so parsing does not depend on Python >= 3.11 ``Z``
+support; fractional seconds are accepted.  An accepted clock that cannot be
+expressed in UTC makes its row ``unknown`` with a ``clock_unparseable`` reason:
+no receipt content raises out of ``build_manifest``.  ``session`` and
+``cohort`` are caller- or constant-asserted labels, not observed facts.
 """
 
 from __future__ import annotations
@@ -73,11 +80,13 @@ def build_manifest(receipts: Mapping[str, Any], now: datetime) -> dict[str, Any]
 
 def _session_of(receipts: Mapping[str, Any]) -> str | None:
     value = receipts.get("session")
-    if not isinstance(value, str) or len(value) != 10:
+    if not isinstance(value, str):
         return None
     try:
-        date.fromisoformat(value)
+        parsed = date.fromisoformat(value)
     except ValueError:
+        return None
+    if parsed.isoformat() != value:
         return None
     return value
 
@@ -85,8 +94,9 @@ def _session_of(receipts: Mapping[str, Any]) -> str | None:
 def _parse_aware(value: Any) -> datetime | None:
     if not isinstance(value, str):
         return None
+    raw = value[:-1] + "+00:00" if value.endswith("Z") else value
     try:
-        parsed = datetime.fromisoformat(value)
+        parsed = datetime.fromisoformat(raw)
     except ValueError:
         return None
     if parsed.utcoffset() is None:
@@ -94,8 +104,26 @@ def _parse_aware(value: Any) -> datetime | None:
     return parsed
 
 
-def _utc_iso(stamp: datetime) -> str:
-    return stamp.astimezone(timezone.utc).isoformat()
+def _utc_iso(stamp: datetime, reasons: list[str]) -> str | None:
+    try:
+        return stamp.astimezone(timezone.utc).isoformat()
+    except (OverflowError, ValueError) as exc:
+        _note(reasons, "clock_unparseable:" + type(exc).__name__)
+        return None
+
+
+def _is_finite(value: int | float) -> bool:
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
+
+
+def _schema_label(value: Any) -> str:
+    try:
+        return str(value)[:64]
+    except (ValueError, RecursionError):
+        return "<" + type(value).__name__ + ">"
 
 
 def _note(reasons: list[str], reason: str) -> None:
@@ -155,6 +183,9 @@ def _live_tape_clock(
 ) -> tuple[str, datetime | None, str | None]:
     if meta.get("schema") == _V2_SCHEMA:
         return _v2_clock(meta, reasons)
+    if "schema" in meta:
+        _note(reasons, "unrecognized_schema:" + _schema_label(meta["schema"]))
+        return "unknown", None, None
     stamp = _parse_aware(meta.get(_FALLBACK_CLOCK_FIELD))
     if stamp is None:
         _note(reasons, "no_accepted_clock")
@@ -183,7 +214,7 @@ def _v2_clock(
     if interval is not None and (
         isinstance(interval, bool)
         or not isinstance(interval, (int, float))
-        or not math.isfinite(interval)
+        or not _is_finite(interval)
         or interval <= 0
     ):
         _note(reasons, "clock_unparseable:" + _OBS_INTERVAL_FIELD)
@@ -260,9 +291,13 @@ def _live_tape_row(
         _note(reasons, "future_dated_clock")
         candidates.append("unknown")
     else:
-        row["source_asof"] = _utc_iso(accepted)
-        row["clock_provenance"] = provenance
-        _note(reasons, "no_threshold_source")
+        iso = _utc_iso(accepted, reasons)
+        if iso is None:
+            candidates.append("unknown")
+        else:
+            row["source_asof"] = iso
+            row["clock_provenance"] = provenance
+            _note(reasons, "no_threshold_source")
     pop_state = _live_tape_populations(meta, row, reasons)
     if pop_state is not None:
         candidates.append(pop_state)
@@ -298,7 +333,11 @@ def _eod_baselines_row(
         _note(reasons, "future_dated_clock")
         row["read_state"] = "unknown"
         return row
-    row["source_asof"] = _utc_iso(stamp)
+    iso = _utc_iso(stamp, reasons)
+    if iso is None:
+        row["read_state"] = "unknown"
+        return row
+    row["source_asof"] = iso
     row["clock_provenance"] = _EOD_CLOCK_PROVENANCE
     row["read_state"] = "unknown"
     return row
