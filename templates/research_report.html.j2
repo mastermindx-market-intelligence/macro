@@ -197,9 +197,9 @@ html[data-theme="light"] .rr-rel .r-inst{ color:var(--rv); }
         <span class="l-en">The full summary{% if n.n_points > 1 %} ({{ n.n_points }} key points){% endif %} and the original {{ n.inst }} PDF are for MastermindX Pro members.</span>
         <span class="l-zh">完整摘要{% if n.n_points > 1 %}（{{ n.n_points }} 个要点）{% endif %}与 {{ n.inst }} 原始 PDF 为 MastermindX Pro 会员专享。</span>
         {% else %}
-        <span class="l-en">The summary for this report is still being prepared; the original
+        <span class="l-en">No summary is available for this report. The original
           {{ n.inst }} PDF is for MastermindX Pro members.</span>
-        <span class="l-zh">本篇摘要仍在整理中；{{ n.inst }} 原始 PDF 为 MastermindX Pro 会员专享。</span>
+        <span class="l-zh">本篇暂无摘要。{{ n.inst }} 原始 PDF 为 MastermindX Pro 会员专享。</span>
         {% endif %}
       </p>
       <a class="rr-cta" href="../research_vault.html?doc={{ n.id }}">

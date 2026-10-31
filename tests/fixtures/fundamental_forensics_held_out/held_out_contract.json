@@ -1,4 +1,5 @@
 {
+  "admission_rule": "predeclared_split_rows",
   "attested": false,
   "capture_basis": "2026-10-20T23:34:58Z",
   "contract_id": "fif-held-out-v1",
@@ -76,7 +77,8 @@
           "filing_date": "2024-11-01",
           "form": "10-K",
           "period_of_report": "2024-09-28",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0000320193-24-000081",
@@ -84,7 +86,8 @@
           "filing_date": "2024-08-02",
           "form": "10-Q",
           "period_of_report": "2024-06-29",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0000320193-24-000069",
@@ -92,7 +95,8 @@
           "filing_date": "2024-05-03",
           "form": "10-Q",
           "period_of_report": "2024-03-30",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0001308179-24-000010",
@@ -100,7 +104,89 @@
           "filing_date": "2024-01-11",
           "form": "DEF 14A",
           "period_of_report": "2024-02-28",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
+        },
+        {
+          "accession": "0000320193-22-000108",
+          "census_ref": "held_out_contract.json#AAPL",
+          "filing_date": "2022-10-28",
+          "form": "10-K",
+          "period_of_report": "2022-09-24",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000320193-23-000106",
+          "census_ref": "held_out_contract.json#AAPL",
+          "filing_date": "2023-11-03",
+          "form": "10-K",
+          "period_of_report": "2023-09-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000320193-22-000007",
+          "census_ref": "held_out_contract.json#AAPL",
+          "filing_date": "2022-01-28",
+          "form": "10-Q",
+          "period_of_report": "2021-12-25",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000320193-22-000059",
+          "census_ref": "held_out_contract.json#AAPL",
+          "filing_date": "2022-04-29",
+          "form": "10-Q",
+          "period_of_report": "2022-03-26",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000320193-22-000070",
+          "census_ref": "held_out_contract.json#AAPL",
+          "filing_date": "2022-07-29",
+          "form": "10-Q",
+          "period_of_report": "2022-06-25",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000320193-23-000006",
+          "census_ref": "held_out_contract.json#AAPL",
+          "filing_date": "2023-02-03",
+          "form": "10-Q",
+          "period_of_report": "2022-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000320193-23-000064",
+          "census_ref": "held_out_contract.json#AAPL",
+          "filing_date": "2023-05-05",
+          "form": "10-Q",
+          "period_of_report": "2023-04-01",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000320193-23-000077",
+          "census_ref": "held_out_contract.json#AAPL",
+          "filing_date": "2023-08-04",
+          "form": "10-Q",
+          "period_of_report": "2023-07-01",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000320193-24-000006",
+          "census_ref": "held_out_contract.json#AAPL",
+          "filing_date": "2024-02-02",
+          "form": "10-Q",
+          "period_of_report": "2023-12-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
         }
       ],
       "cik": "0000320193",
@@ -136,7 +222,8 @@
           "filing_date": "2023-03-29",
           "form": "10-K",
           "period_of_report": "2023-01-31",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0001640147-23-000260",
@@ -144,7 +231,8 @@
           "filing_date": "2023-12-01",
           "form": "10-Q",
           "period_of_report": "2023-10-31",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0001640147-23-000199",
@@ -152,7 +240,8 @@
           "filing_date": "2023-08-31",
           "form": "10-Q",
           "period_of_report": "2023-07-31",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0001640147-24-000123",
@@ -160,7 +249,89 @@
           "filing_date": "2024-05-22",
           "form": "DEF 14A",
           "period_of_report": "2024-01-31",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
+        },
+        {
+          "accession": "0001640147-21-000073",
+          "census_ref": "held_out_contract.json#SNOW",
+          "filing_date": "2021-03-31",
+          "form": "10-K",
+          "period_of_report": "2021-01-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001640147-22-000023",
+          "census_ref": "held_out_contract.json#SNOW",
+          "filing_date": "2022-03-30",
+          "form": "10-K",
+          "period_of_report": "2022-01-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001640147-21-000122",
+          "census_ref": "held_out_contract.json#SNOW",
+          "filing_date": "2021-06-04",
+          "form": "10-Q",
+          "period_of_report": "2021-04-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001640147-21-000212",
+          "census_ref": "held_out_contract.json#SNOW",
+          "filing_date": "2021-09-02",
+          "form": "10-Q",
+          "period_of_report": "2021-07-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001640147-21-000271",
+          "census_ref": "held_out_contract.json#SNOW",
+          "filing_date": "2021-12-03",
+          "form": "10-Q",
+          "period_of_report": "2021-10-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001640147-22-000044",
+          "census_ref": "held_out_contract.json#SNOW",
+          "filing_date": "2022-06-03",
+          "form": "10-Q",
+          "period_of_report": "2022-04-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001640147-22-000084",
+          "census_ref": "held_out_contract.json#SNOW",
+          "filing_date": "2022-09-01",
+          "form": "10-Q",
+          "period_of_report": "2022-07-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001640147-22-000100",
+          "census_ref": "held_out_contract.json#SNOW",
+          "filing_date": "2022-12-02",
+          "form": "10-Q",
+          "period_of_report": "2022-10-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001640147-23-000102",
+          "census_ref": "held_out_contract.json#SNOW",
+          "filing_date": "2023-06-02",
+          "form": "10-Q",
+          "period_of_report": "2023-04-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
         }
       ],
       "cik": "0001640147",
@@ -196,7 +367,8 @@
           "filing_date": "2023-02-15",
           "form": "10-K",
           "period_of_report": "2022-12-31",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0000018230-23-000056",
@@ -204,7 +376,8 @@
           "filing_date": "2023-11-01",
           "form": "10-Q",
           "period_of_report": "2023-09-30",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0000018230-23-000047",
@@ -212,7 +385,8 @@
           "filing_date": "2023-08-02",
           "form": "10-Q",
           "period_of_report": "2023-06-30",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0001308179-24-000623",
@@ -220,7 +394,8 @@
           "filing_date": "2024-04-29",
           "form": "DEF 14A",
           "period_of_report": "2024-06-12",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0000018230-18-000042",
@@ -228,7 +403,89 @@
           "filing_date": "2018-02-15",
           "form": "10-K",
           "period_of_report": "2017-12-31",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
+        },
+        {
+          "accession": "0000018230-21-000063",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2021-02-17",
+          "form": "10-K",
+          "period_of_report": "2020-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000018230-22-000050",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2022-02-16",
+          "form": "10-K",
+          "period_of_report": "2021-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000018230-21-000151",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2021-05-05",
+          "form": "10-Q",
+          "period_of_report": "2021-03-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000018230-21-000221",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2021-08-04",
+          "form": "10-Q",
+          "period_of_report": "2021-06-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000018230-21-000260",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2021-11-03",
+          "form": "10-Q",
+          "period_of_report": "2021-09-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000018230-22-000112",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2022-05-04",
+          "form": "10-Q",
+          "period_of_report": "2022-03-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000018230-22-000183",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2022-08-03",
+          "form": "10-Q",
+          "period_of_report": "2022-06-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000018230-22-000223",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2022-11-02",
+          "form": "10-Q",
+          "period_of_report": "2022-09-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000018230-23-000022",
+          "census_ref": "held_out_contract.json#CAT",
+          "filing_date": "2023-05-03",
+          "form": "10-Q",
+          "period_of_report": "2023-03-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
         }
       ],
       "cik": "0000018230",
@@ -264,7 +521,8 @@
           "filing_date": "2023-02-22",
           "form": "10-K",
           "period_of_report": "2022-12-31",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0000070858-23-000272",
@@ -272,7 +530,8 @@
           "filing_date": "2023-10-31",
           "form": "10-Q",
           "period_of_report": "2023-09-30",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0000070858-23-000176",
@@ -280,7 +539,8 @@
           "filing_date": "2023-07-31",
           "form": "10-Q",
           "period_of_report": "2023-06-30",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0001193125-24-064529",
@@ -288,7 +548,8 @@
           "filing_date": "2024-03-11",
           "form": "DEF 14A",
           "period_of_report": "2024-04-24",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0000070858-18-000009",
@@ -296,7 +557,89 @@
           "filing_date": "2018-02-22",
           "form": "10-K",
           "period_of_report": "2017-12-31",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
+        },
+        {
+          "accession": "0000070858-21-000023",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2021-02-24",
+          "form": "10-K",
+          "period_of_report": "2020-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000070858-22-000062",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2022-02-22",
+          "form": "10-K",
+          "period_of_report": "2021-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000070858-21-000063",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2021-04-29",
+          "form": "10-Q",
+          "period_of_report": "2021-03-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000070858-21-000084",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2021-07-30",
+          "form": "10-Q",
+          "period_of_report": "2021-06-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000070858-21-000107",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2021-10-29",
+          "form": "10-Q",
+          "period_of_report": "2021-09-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000070858-22-000088",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2022-04-29",
+          "form": "10-Q",
+          "period_of_report": "2022-03-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000070858-22-000112",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2022-07-29",
+          "form": "10-Q",
+          "period_of_report": "2022-06-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000070858-22-000131",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2022-10-28",
+          "form": "10-Q",
+          "period_of_report": "2022-09-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0000070858-23-000142",
+          "census_ref": "held_out_contract.json#BAC",
+          "filing_date": "2023-05-01",
+          "form": "10-Q",
+          "period_of_report": "2023-03-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
         }
       ],
       "cik": "0000070858",
@@ -332,7 +675,8 @@
           "filing_date": "2023-02-03",
           "form": "10-K",
           "period_of_report": "2022-12-31",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0001652044-23-000094",
@@ -340,7 +684,8 @@
           "filing_date": "2023-10-25",
           "form": "10-Q",
           "period_of_report": "2023-09-30",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0001652044-23-000070",
@@ -348,7 +693,8 @@
           "filing_date": "2023-07-26",
           "form": "10-Q",
           "period_of_report": "2023-06-30",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
         },
         {
           "accession": "0001308179-24-000612",
@@ -356,7 +702,89 @@
           "filing_date": "2024-04-26",
           "form": "DEF 14A",
           "period_of_report": "2024-06-07",
-          "retention_state": "not_retained"
+          "retention_state": "not_retained",
+          "split_decision": 1
+        },
+        {
+          "accession": "0001652044-21-000010",
+          "census_ref": "held_out_contract.json#GOOGL",
+          "filing_date": "2021-02-03",
+          "form": "10-K",
+          "period_of_report": "2020-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001652044-22-000019",
+          "census_ref": "held_out_contract.json#GOOGL",
+          "filing_date": "2022-02-02",
+          "form": "10-K",
+          "period_of_report": "2021-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001652044-21-000020",
+          "census_ref": "held_out_contract.json#GOOGL",
+          "filing_date": "2021-04-28",
+          "form": "10-Q",
+          "period_of_report": "2021-03-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001652044-21-000047",
+          "census_ref": "held_out_contract.json#GOOGL",
+          "filing_date": "2021-07-28",
+          "form": "10-Q",
+          "period_of_report": "2021-06-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001652044-21-000057",
+          "census_ref": "held_out_contract.json#GOOGL",
+          "filing_date": "2021-10-27",
+          "form": "10-Q",
+          "period_of_report": "2021-09-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001652044-22-000029",
+          "census_ref": "held_out_contract.json#GOOGL",
+          "filing_date": "2022-04-27",
+          "form": "10-Q",
+          "period_of_report": "2022-03-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001652044-22-000071",
+          "census_ref": "held_out_contract.json#GOOGL",
+          "filing_date": "2022-07-27",
+          "form": "10-Q",
+          "period_of_report": "2022-06-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001652044-22-000090",
+          "census_ref": "held_out_contract.json#GOOGL",
+          "filing_date": "2022-10-26",
+          "form": "10-Q",
+          "period_of_report": "2022-09-30",
+          "retention_state": "not_retained",
+          "split_decision": 2
+        },
+        {
+          "accession": "0001652044-23-000045",
+          "census_ref": "held_out_contract.json#GOOGL",
+          "filing_date": "2023-04-26",
+          "form": "10-Q",
+          "period_of_report": "2023-03-31",
+          "retention_state": "not_retained",
+          "split_decision": 2
         }
       ],
       "cik": "0001652044",
@@ -469,5 +897,19 @@
     "licences_accepted": [],
     "provider": "sec_edgar_public_filings",
     "purchases": []
-  }
+  },
+  "split_decisions": [
+    {
+      "id": 1,
+      "decision": "DEC:FIF-HELD-OUT-BYTES-ARE-STAGED-NOT-COMMITTED",
+      "declared_at": "2026-10-20T23:34:58Z",
+      "rule": "R5 two latest 10-K and two latest 10-Q per issuer at capture_basis"
+    },
+    {
+      "id": 2,
+      "decision": "DEC:FIF-Q0-SPLIT-DECISION-2-SECOND-LABELING-WAVE-20261031",
+      "declared_at": "2026-10-31T13:00:00Z",
+      "rule": "nine predeclared older-fiscal-year 10-K/10-Q filings per issuer, disjoint from gold, wave one, D0 and g_src"
+    }
+  ]
 }

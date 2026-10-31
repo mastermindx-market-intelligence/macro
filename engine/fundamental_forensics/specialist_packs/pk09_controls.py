@@ -17,6 +17,7 @@ import re
 from typing import Any, Mapping
 
 from .. import specialist_pack_contract as contract
+from ..financial_intelligence_packet import PACKET_MAX_LIMITATIONS
 from . import narrative
 from .base import (
     CrossStatement,
@@ -214,6 +215,14 @@ _ANNUAL_ONLY = (
     "going_concern_substantial_doubt",
     "going_concern_management_plan",
 )
+# F6-3 (review follow-up, 2026-10-31): the deactivate path appends a
+# limitation only below the framework's production cap — base.py's R-F10
+# gate refuses an envelope over 32 limitations at mint time and the result
+# schema's ``limitations.maxItems`` matches it, so a finalize-time append
+# must not be the line that breaks that ceiling. base.py spells its cap as
+# an inline literal, so the framework's same-valued named constant is
+# imported rather than a second hard-coded 32.
+_LIMITATION_CAP = PACKET_MAX_LIMITATIONS
 
 _FIELD_MAPPINGS = {
     "icfr_management_conclusion": TextSpanMapping(
@@ -921,10 +930,12 @@ class Pk09Producer(PackProducer):
             self._deactivate_remediation_span(rows)
             section = _effective_section("remediation_span", primary_form)
             section_text = "whole document" if section is None else section.heading
-            result["limitations"].append(
-                "pk09.remediation_span: non-valued (missing_dependency); "
-                f"section searched: {section_text}"
-            )
+            # F6-3: never the line that breaks the framework's R-F10 cap.
+            if len(result["limitations"]) < _LIMITATION_CAP:
+                result["limitations"].append(
+                    "pk09.remediation_span: non-valued (missing_dependency); "
+                    f"section searched: {section_text}"
+                )
         _recompute_coverage(result)
         result["pack_content_sha256"] = contract.pack_content_digest(result)
         errors = contract.validate_pack_result(result)
@@ -941,7 +952,19 @@ class Pk09Producer(PackProducer):
         primary_form: str | None,
         primary: Any,
     ) -> None:
-        """Mint the valued remediation_span row the stock resolver would."""
+        """Mint the valued remediation_span row on a false→true flip.
+
+        ``finalize_result`` calls this only when its v7 re-read flips
+        ``material_weakness_present`` to ``true`` while the framework's
+        conditional gate had left ``remediation_span`` un-valued. The
+        row re-runs the stock resolver's own search over the effective
+        section (the frozen ``REMEDIATION`` pattern, the same sentence
+        span and ``max_chars`` truncation) and carries the mapping
+        identity that resolver stamps: ``mapping_rule_id`` is
+        ``f"{SPEC.pack_id}.remediation_span.text_span/v1"`` — equal to
+        the stock row's ``PK09.remediation_span.text_span/v1`` — and
+        ``mapping_rule_digest`` is the field's ``_text_span_digest``.
+        """
         row = rows.get("remediation_span")
         if row is None:
             return
@@ -966,7 +989,7 @@ class Pk09Producer(PackProducer):
         row["text_value"] = text_value
         row["evidence_kind"] = "text_span"
         row["required_evidence_kind"] = "text_span"
-        row["mapping_rule_id"] = "pk09.remediation_span.text_span/v1"
+        row["mapping_rule_id"] = f"{SPEC.pack_id}.remediation_span.text_span/v1"
         row["mapping_rule_digest"] = _text_span_digest(mapping)
         row["source_span"] = _raw_span(nt, span[0], span[1], accession)
         row["dependency_field_ids"] = []
