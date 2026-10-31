@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BWA-BULL-20260813",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 21.0,
@@ -10,23 +10,23 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 5.1,
+    "validity": 0.5,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.151,
+    "dist_to_stop_r": 0.054,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 173.3,
-    "p1": -0.5657,
-    "p2": -0.2829,
+    "horizon_pct_used": 175.6,
+    "p1": -0.6306,
+    "p2": -0.3153,
     "p3": null,
-    "move_r": -0.849,
+    "move_r": -0.946,
     "mfe_r": 0.118,
-    "mae_r": -0.849
+    "mae_r": -0.946
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 2.0300015258789017,
-  "_mae": -14.570000762939458,
+  "_mae": -16.23999893188477,
   "_max_p1": 0.07881970591647844,
   "_first_trigger_ts": "2026-08-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 78,
-  "tau": 1.7333,
+  "days_elapsed": 79,
+  "tau": 1.7556,
   "closed": true,
   "outcome": "EXPIRED"
 }
