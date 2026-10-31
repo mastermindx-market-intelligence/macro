@@ -9,9 +9,13 @@ Item 2.02 "Results of Operations and Financial Condition" — the press-release 
 PIT NOTE: filing_date (the date SEC accepted the filing) is the PIT-visible proxy.
 The earnings press release is typically issued the same calendar day or one calendar
 day before. Use filing_date conservatively: a trade entered T+1 after filing_date is
-strictly-after-announcement. acceptance_datetime (UTC, from acceptanceDateTime field)
-is stored when available for sub-day precision but is NOT required for the historical
-backtest (which only needs calendar-day PIT accuracy).
+strictly-after-announcement. acceptance_datetime (the RAW submissions-JSON
+acceptanceDateTime; its "...Z" suffix is NOT true UTC: the value reads 4 h (EDT) / 5 h
+(EST) later than the true instant, prereg §10 A2 in
+research/C19_WP31_INCREMENTAL_INFORMATION_PREREG.md; readers resolve it with
+lib.edgar_clock.submissions_acceptance_utc) is stored unconverted when available for
+sub-day precision but is NOT required for the historical backtest (which only needs
+calendar-day PIT accuracy).
 
 EXACT-TOKEN MATCHING: items in the submissions JSON are comma-separated tokens such as
 "2.02,9.01" or "2.02". Matching is done by splitting on commas and checking membership
@@ -24,8 +28,10 @@ same company_tickers.json CIK map used by collectors/edgar_eps.py and edgar_8k.p
 
 OUTPUT STORE: data/edgar/earnings_8k_dates.parquet
   Columns: ticker (str), cik (int), accession (str, canonical dashed), form (str),
-           filing_date (date str yyyy-mm-dd), acceptance_datetime (str, ISO-UTC or
-           empty), report_date (str, period of report), items (str, raw comma-sep).
+           filing_date (date str yyyy-mm-dd), acceptance_datetime (str, the raw
+           submissions-JSON acceptanceDateTime, NOT true UTC, see PIT NOTE; formerly
+           labeled "ISO-UTC"; or empty), report_date (str, period of report),
+           items (str, raw comma-sep).
   Append-deduped per the canonical filing key (cik, accession) — see
   append_and_dedup. The "older-files" pagination in the submissions JSON is
   followed for full history.

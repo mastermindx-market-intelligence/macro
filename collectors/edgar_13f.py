@@ -67,9 +67,15 @@ def acceptance_available_date(accepted_at: str | None,
             stamp = datetime.strptime(raw[:14], "%Y%m%d%H%M%S")
         else:
             parsed = pd.Timestamp(raw)
-            # The submissions API currently emits ISO timestamps in UTC (Z),
-            # while older/numeric EDGAR values are wall-clock Eastern.  Convert
-            # aware values before applying the 4pm US cash-close boundary.
+            # Aware values are converted to Eastern before the 4pm US cash-close
+            # boundary; numeric EDGAR values (above) are already Eastern wall time.
+            # KNOWN DEFECT: the submissions-API "...Z" value is not true UTC.  On
+            # the filings checked in prereg §10 A2
+            # (research/C19_WP31_INCREMENTAL_INFORMATION_PREREG.md) it reads 4 h
+            # (EDT) / 5 h (EST) later than the true instant; the same check on
+            # 13F-HR filing headers is still pending.  Until it lands this boundary
+            # may be applied to a late clock.  The fix belongs to the A2 reader
+            # migration onto lib.edgar_clock, never to the frozen WP31 evaluator.
             if parsed.tzinfo is not None:
                 parsed = parsed.tz_convert("America/New_York")
             stamp = parsed.to_pydatetime()
