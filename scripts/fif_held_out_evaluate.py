@@ -26,6 +26,15 @@ accession whose retained members are missing from the stage is reported as
 every one of its trials with ``package_admission_refused:<code>``. The
 manifest and members are never patched to make an accession admit.
 
+Issuer SIC binds from the held-out contract first and the staged
+sec_submissions witness second (seat ruling
+DEC:FIF-Q1-EVALUATOR-BINDS-SIC-FROM-HELD-OUT-CONTRACT-20261031); the
+per-report trials file records the binding order and contract id. A duplicate
+label target_id inside one accession refuses that accession's rows
+(``duplicate_label_target``), and a duplicate target_id among the adapter's
+records excludes just that target visibly
+(``duplicate_prediction_target``) — duplicates are never silently collapsed.
+
 No network, no environment reads, no wall clock: determinism follows from the
 command-line arguments alone.
 """
@@ -37,7 +46,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Mapping, Sequence
+from typing import Iterable, Mapping, Sequence
 
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
@@ -219,6 +228,33 @@ def _witness_sic(witness: Mapping) -> tuple[str | None, str]:
     return None, "unbound"
 
 
+def _contract_sic(
+    contract_rows: Mapping[str, Mapping], cik10: str
+) -> tuple[str | None, str]:
+    """(issuer_sic, sic_source) from the held-out contract issuer row.
+
+    Seat ruling ``DEC:FIF-Q1-EVALUATOR-BINDS-SIC-FROM-HELD-OUT-CONTRACT-
+    20261031``: the committed held-out contract is the authoritative SIC
+    witness for the held-out corpus; the staged sec_submissions witness is
+    the fallback.
+    """
+    row = contract_rows.get(cik10)
+    sic = row.get("sic") if isinstance(row, Mapping) else None
+    if isinstance(sic, str) and sic.isdigit():
+        return sic, "held_out_contract"
+    return None, "unbound"
+
+
+def _bind_issuer_sic(
+    contract_rows: Mapping[str, Mapping], cik10: str, witness: Mapping
+) -> tuple[str | None, str]:
+    """Binding order for one accession: contract first, witness fallback."""
+    issuer_sic, sic_source = _contract_sic(contract_rows, cik10)
+    if issuer_sic is None:
+        issuer_sic, sic_source = _witness_sic(witness)
+    return issuer_sic, sic_source
+
+
 # ---------------------------------------------------------------------------
 # packet inputs
 
@@ -321,6 +357,7 @@ def evaluate_pack_held_out(
             "issuer_sic": None,
             "sic_source": "unbound",
             "labels": len(rows),
+            "duplicate_prediction_targets": 0,
             "predictions": 0,
             "prediction_states": {},
             "unmapped_pack_fields": [],
@@ -349,7 +386,7 @@ def evaluate_pack_held_out(
                 encoding="utf-8"
             )
         )
-        issuer_sic, sic_source = _witness_sic(witness)
+        issuer_sic, sic_source = _bind_issuer_sic(contract_rows, cik10, witness)
         note["issuer_sic"] = issuer_sic
         note["sic_source"] = sic_source
         try:
@@ -372,22 +409,16 @@ def evaluate_pack_held_out(
         if isinstance(applicability, dict):
             note["applicability_state"] = applicability.get("state")
             note["applicability_reason"] = applicability.get("reason")
+        if _refuse_duplicate_label_targets(rows, note, exclusions):
+            continue
         trial_ids = {row["target_id"]: row["trial_id"] for row in rows}
         records, unmapped = predictions_from_pack_result(
             result, accession=accession, trial_ids=trial_ids
         )
-        adapted = {record.target_id: record for record in records}
-        for field_id in sorted(trial_ids):
-            if field_id in adapted:
-                continue
-            adapted[field_id] = PredictionRecord(
-                trial_id=trial_ids[field_id],
-                target_kind="extract",
-                target_id=field_id,
-                state="not_evaluable",
-                exclusion_reason="field_not_in_envelope",
-            )
-        held = [adapted[field_id] for field_id in sorted(adapted)]
+        held, duplicated_predictions = _select_scoreable_records(
+            records, trial_ids, exclusions
+        )
+        note["duplicate_prediction_targets"] = len(duplicated_predictions)
         predictions.extend(held)
         states: dict[str, int] = {}
         for record in held:
@@ -410,6 +441,13 @@ def evaluate_pack_held_out(
         "pack_id": pack_id,
         "labels_status": labels_status,
         "label_count": len(label_rows),
+        # Run-level SIC provenance, once per report. The report JSON schema
+        # (fundamental_forensics.pack_quality_report/v1) is a closed object,
+        # so the evaluator records it here, in its own open trials mapping.
+        "sic_binding": {
+            "order": ["held_out_contract", "sec_submissions_witness"],
+            "contract_id": contract_id,
+        },
         "trial_field_map": dict(sorted(trial_field_map.items())),
         "exclusions": sorted(exclusions, key=lambda item: item["trial_id"]),
         "accessions": accessions_note,
@@ -478,6 +516,74 @@ def evaluate_pack_held_out(
 def _exclude_all(rows: Sequence[Mapping], reason: str, exclusions: list[dict]) -> None:
     for row in rows:
         exclusions.append({"trial_id": row["trial_id"], "exclusion_reason": reason})
+
+
+def _duplicate_ids(ids: Iterable[str]) -> list[str]:
+    """Sorted ids that appear more than once (deterministic order)."""
+    counts: dict[str, int] = {}
+    for identifier in ids:
+        counts[identifier] = counts.get(identifier, 0) + 1
+    return sorted(key for key, count in counts.items() if count > 1)
+
+
+def _refuse_duplicate_label_targets(
+    rows: Sequence[Mapping], note: dict, exclusions: list[dict]
+) -> bool:
+    """Refuse the accession when its label rows share a ``target_id`` (E1-3).
+
+    A duplicate target_id inside one accession's label rows is a label-set
+    defect, not a scoring input: every row of the accession is excluded
+    visibly with the duplicated target(s) named in the reason — never
+    dropped silently. Returns True when the accession was refused.
+    """
+    duplicated = _duplicate_ids(row["target_id"] for row in rows)
+    if not duplicated:
+        return False
+    reason = "duplicate_label_target:" + "+".join(duplicated)
+    note["outcome"] = "duplicate_label_target"
+    note["detail"] = "+".join(duplicated)
+    _exclude_all(rows, reason, exclusions)
+    return True
+
+
+def _select_scoreable_records(
+    records: Sequence[PredictionRecord],
+    trial_ids: Mapping[str, str],
+    exclusions: list[dict],
+) -> tuple[list[PredictionRecord], list[str]]:
+    """(scoreable records, duplicated target ids) for one accession (E1-3).
+
+    Duplicate target_ids among the adapter's returned records are never
+    silently collapsed: each duplicated target's label trial is excluded
+    with ``duplicate_prediction_target:<target_id>`` while every other
+    target is scored normally. Label targets the adapter returned no record
+    for keep their ``field_not_in_envelope`` fallback record.
+    """
+    duplicated = _duplicate_ids(record.target_id for record in records)
+    duplicated_set = set(duplicated)
+    adapted = {
+        record.target_id: record
+        for record in records
+        if record.target_id not in duplicated_set
+    }
+    for field_id in duplicated:
+        exclusions.append(
+            {
+                "trial_id": trial_ids[field_id],
+                "exclusion_reason": f"duplicate_prediction_target:{field_id}",
+            }
+        )
+    for field_id in sorted(trial_ids):
+        if field_id in adapted or field_id in duplicated_set:
+            continue
+        adapted[field_id] = PredictionRecord(
+            trial_id=trial_ids[field_id],
+            target_kind="extract",
+            target_id=field_id,
+            state="not_evaluable",
+            exclusion_reason="field_not_in_envelope",
+        )
+    return [adapted[field_id] for field_id in sorted(adapted)], duplicated
 
 
 # ---------------------------------------------------------------------------
