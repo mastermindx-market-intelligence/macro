@@ -218,6 +218,23 @@ def test_loops_live_vs_cold_count():
     assert s["loops"]["cold"] == len(s["desks"]) - 1   # radar + the 4 absent desks
 
 
+def test_copy_says_running_loops_not_live():
+    """Copy law: the desk loops are running batch jobs on a display-only page — the old
+    'live loops' / 'desk loops live' wording read like a realtime surface. Only the
+    rendered words change; the JSON data key stays `live`."""
+    root = _new_root()
+    _write_track(root, "ai_desk", {"scored_total": 20, "overall": _bucket(20, 13),
+                                   "by_conviction": {"high": _bucket(10, 8),
+                                                     "low": _bucket(10, 5)}})
+    s = ch.build(root)
+    assert s["loops"]["live"] == 1                     # JSON data key unchanged
+    assert "desk loops running" in s["summary_note"]
+    assert "desk loops live" not in s["summary_note"]
+    html = ch.render_html(s)
+    assert "running loops" in html
+    assert "live loops" not in html
+
+
 # --------------------------------------------------------------------------- #
 # desk family — a desk absent from _DESKS is ungoverned: no null, no verdict, no row
 # --------------------------------------------------------------------------- #
