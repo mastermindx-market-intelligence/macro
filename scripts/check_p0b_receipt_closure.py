@@ -9,9 +9,9 @@ tests/test_stock_dashboard_first_frame.py, and every fresh merge-ref inherits
 it. This guard is the GATE for that class.
 
 The pinned set is derived at runtime FROM the committed receipts: each
-mobile-layout*.json file's construction_inputs keys, loaded_assets keys, and
-verifier.path, plus rendered-fixture.json's recipe input paths and the
-fixture path the receipts bind. Template names are never hardcoded as the
+mobile-layout*.json file's construction_inputs keys, loaded_assets keys,
+verifier.path and font_pin.manifest.path, plus rendered-fixture.json's recipe
+input paths and the fixture path the receipts bind. Template names are never hardcoded as the
 live pin set.
 
 Given a diff file-list: if any pinned path changed without a same-diff change
@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -44,6 +45,9 @@ RECEIPT_GLOB = "mobile-layout*.json"
 FIXTURE_NAME = "rendered-fixture.json"
 RECEIPT_SCHEMA = "mastermind.stock_dashboard_mobile_layout.v1"
 FIXTURE_SCHEMA = "mastermind.stock_dashboard_rendered_fixture.v1"
+DEFAULT_VERIFIER = "scripts/verify_stock_dashboard_mobile_layout.cjs"
+# The verifier refuses to measure on any other Chromium build.
+CHROMIUM_PIN_RE = re.compile(r'^const CHROMIUM_PIN = "([^"]+)";$', re.MULTILINE)
 
 # Events whose plan legitimately publishes the planner's `null` token: the
 # main-role events in run_ci_pack.SUPPORTED_PLAN_ROLE_EVENTS (a main proof is a
@@ -175,6 +179,59 @@ def fixture_recipe_inputs(fixture: dict | None) -> set[str]:
     return paths
 
 
+def font_pin_manifest(payload: dict) -> str | None:
+    font_pin = payload.get("font_pin")
+    if not isinstance(font_pin, dict):
+        return None
+    manifest = font_pin.get("manifest")
+    if isinstance(manifest, dict) and isinstance(manifest.get("path"), str):
+        return manifest["path"] or None
+    return None
+
+
+def verifier_chromium_pin(root: Path, verifier: str) -> str | None:
+    try:
+        text = (root / verifier).read_text(encoding="utf-8")
+    except OSError:
+        return None
+    match = CHROMIUM_PIN_RE.search(text)
+    return match.group(1) if match else None
+
+
+def environment_hint(root: Path) -> str:
+    """Name the browser build and fonts a re-mint must reproduce."""
+    receipts = load_browser_receipts(root)
+    versions = sorted(
+        {
+            f"{browser.get('engine', '?')} {browser.get('version', '?')}"
+            for _rel, payload in receipts
+            if isinstance(browser := payload.get("browser"), dict)
+        }
+    )
+    verifier = DEFAULT_VERIFIER
+    for _rel, payload in receipts:
+        v = payload.get("verifier")
+        if isinstance(v, dict) and isinstance(v.get("path"), str):
+            verifier = v["path"]
+    manifests = sorted({m for _rel, payload in receipts if (m := font_pin_manifest(payload))})
+    built = ", ".join(versions) or "the build the receipts record"
+    parts = [f"re-mint environment: the committed receipts were measured on {built}"]
+    pin = verifier_chromium_pin(root, verifier)
+    if pin:
+        parts.append(
+            f"{verifier} pins Chromium {pin} and refuses any other build "
+            "(pass --browser with that build's executable if Playwright "
+            "resolves a different one)"
+        )
+    if manifests:
+        parts.append(
+            f"it serves only the fonts committed in {', '.join(manifests)} and "
+            "refuses a receipt if any glyph falls back to a platform font "
+            "(regenerate the subsets with scripts/build_p0b_font_pin.py)"
+        )
+    return "; ".join(parts)
+
+
 def derive_pin_sets(root: Path) -> tuple[dict[str, set[str]], str | None]:
     """Map each receipt path to the paths it pins. Second value is a refuse reason."""
     receipts = load_browser_receipts(root)
@@ -198,6 +255,9 @@ def derive_pin_sets(root: Path) -> tuple[dict[str, set[str]], str | None]:
         verifier = payload.get("verifier")
         if isinstance(verifier, dict) and isinstance(verifier.get("path"), str):
             pins.add(verifier["path"])
+        manifest = font_pin_manifest(payload)
+        if manifest:
+            pins.add(manifest)
         fixture_row = payload.get("fixture_receipt")
         fixture_path = None
         if isinstance(fixture_row, dict) and isinstance(fixture_row.get("path"), str):
@@ -219,7 +279,7 @@ def derive_pin_sets(root: Path) -> tuple[dict[str, set[str]], str | None]:
 def remint_command(root: Path) -> str:
     """Name the remint recipe from the receipts themselves when possible."""
     receipts = load_browser_receipts(root)
-    verifier = "scripts/verify_stock_dashboard_mobile_layout.cjs"
+    verifier = DEFAULT_VERIFIER
     fixture = f"{EVIDENCE_DIR_REL}/{FIXTURE_NAME}"
     recipe = "scripts/render_stock_dashboard_fixture.py"
     historical_head = None
@@ -287,6 +347,11 @@ def run_selftest() -> int:
     ca_receipt = evidence / "mobile-layout-canada.json"
     fixture = evidence / FIXTURE_NAME
     pinned = "templates/zz-selftest.html.j2"
+    font_manifest = f"{EVIDENCE_DIR_REL}/inputs/browser-data/p0b-font-pin/font-pin.json"
+    (tmp / "scripts").mkdir()
+    (tmp / DEFAULT_VERIFIER).write_text(
+        'const CHROMIUM_PIN = "1.2.3.4";\n', encoding="utf-8"
+    )
     fixture.write_text(
         json.dumps(
             {
@@ -318,6 +383,8 @@ def run_selftest() -> int:
                     "path": "scripts/verify_stock_dashboard_mobile_layout.cjs",
                     "sha256": "d" * 64,
                 },
+                "browser": {"engine": "chromium", "version": "1.2.3.4"},
+                "font_pin": {"manifest": {"path": font_manifest, "sha256": "9" * 64}},
                 "fixture_receipt": {
                     "path": f"{EVIDENCE_DIR_REL}/{FIXTURE_NAME}",
                     "sha256": "e" * 64,
@@ -360,6 +427,17 @@ def run_selftest() -> int:
     if not red:
         print("selftest FAIL: pinned-path-only diff unexpectedly passed")
         return 1
+
+    # RED: a font-pin manifest edit moves glyph metrics, so it remints too.
+    if not evaluate({font_manifest}, pin_sets):
+        print("selftest FAIL: font-pin manifest change unexpectedly passed")
+        return 1
+
+    hint = environment_hint(tmp)
+    for needle in ("chromium 1.2.3.4", "pins Chromium 1.2.3.4", font_manifest):
+        if needle not in hint:
+            print(f"selftest FAIL: environment hint lacks {needle!r}: {hint}")
+            return 1
 
     # GREEN: pinned path plus every receipt that pins it (recipe inputs bind both).
     green = evaluate(
@@ -481,6 +559,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"::error title=p0b-receipt-closure::{finding}", flush=True)
     print(
         f"::error title=p0b-receipt-closure::re-mint with: {hint}",
+        flush=True,
+    )
+    print(
+        f"::error title=p0b-receipt-closure::{environment_hint(root)}",
         flush=True,
     )
     return 1

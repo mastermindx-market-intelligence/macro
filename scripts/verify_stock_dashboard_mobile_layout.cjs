@@ -16,6 +16,13 @@ const fs = require("fs");
 const crypto = require("crypto");
 const path = require("path");
 
+// The one Chromium build every committed P0B receipt is measured on: Playwright
+// 1.61.1's chromium-1228. Layout numbers and screenshot digests move with the
+// build (#8763 149->153, #8827 153->151), so any other build is refused.
+const CHROMIUM_PIN = "149.0.7827.55";
+const FONT_PIN_SCHEMA = "mastermind.p0b_font_pin.v1";
+const FONT_PIN_MANIFEST = "p0b-font-pin/font-pin.json";
+
 function usage(message) {
   if (message) process.stderr.write(`error: ${message}\n`);
   process.stderr.write(
@@ -382,6 +389,105 @@ const LAYOUT_SCRIPT = `() => {
   };
 }`;
 
+// System fonts are the other host-dependent input. Every served owner page
+// gets the committed p0b-font-pin stylesheet as its first stylesheet. It
+// shadows each named family the pages request with pinned faces, and
+// auditPlatformFonts refuses the receipt if a glyph still renders from a
+// platform font.
+function loadFontPin(fixtureAssetsDir, siteDir, repoRoot) {
+  const manifestFile = path.join(fixtureAssetsDir, FONT_PIN_MANIFEST);
+  if (!fs.existsSync(manifestFile)) usage(`font pin manifest is missing: ${manifestFile}`);
+  const manifest = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
+  const stylesheet = `/${path.posix.dirname(FONT_PIN_MANIFEST)}/pin.css`;
+  if (manifest.schema !== FONT_PIN_SCHEMA) usage(`font pin manifest schema is not ${FONT_PIN_SCHEMA}`);
+  if (manifest.stylesheet !== stylesheet) usage(`font pin stylesheet is not ${stylesheet}`);
+  const files = manifest.files || {};
+  if (!files["pin.css"]) usage("font pin manifest does not bind pin.css");
+  const pinDir = path.dirname(manifestFile);
+  const bound = [
+    ...Object.entries(files).map(([name, digest]) => {
+      if (path.basename(name) !== name) usage(`font pin file is not a bare filename: ${name}`);
+      return [path.join(pinDir, name), digest];
+    }),
+    ...Object.entries(manifest.site_faces || {}).map(([name, digest]) => [path.resolve(siteDir, name), digest]),
+  ];
+  for (const [filename, digest] of bound) {
+    if (!filename.startsWith(pinDir + path.sep) && !filename.startsWith(siteDir + path.sep)) {
+      usage(`font pin file is outside the pin and site directories: ${filename}`);
+    }
+    if (!fs.existsSync(filename) || sha256File(filename) !== digest) {
+      usage(`font pin file does not match its manifest digest: ${relativeRepoPath(repoRoot, filename)}`);
+    }
+  }
+  return {
+    manifest: {path: relativeRepoPath(repoRoot, manifestFile), sha256: sha256File(manifestFile)},
+    stylesheet,
+  };
+}
+
+function injectFontPin(bytes, stylesheet) {
+  const html = bytes.toString("utf8");
+  const heads = html.match(/<head(?:\s[^>]*)?>/gi) || [];
+  if (heads.length !== 1) throw new Error(`font pin: served owner page has ${heads.length} <head> start tags`);
+  const at = html.search(/<head(?:\s[^>]*)?>/i) + heads[0].length;
+  return Buffer.from(`${html.slice(0, at)}<link rel="stylesheet" href="${stylesheet}">${html.slice(at)}`, "utf8");
+}
+
+// Load every declared face before measuring, so layout never depends on how
+// far a webfont download got by snapshot time. FontFace.load() does not wait
+// for the document load event, which composer-pending pages hold open.
+async function settleFonts(page) {
+  const failed = await page.evaluate(async () => {
+    const faces = Array.from(document.fonts);
+    await Promise.all(faces.map((face) => face.load().catch(() => null)));
+    void document.documentElement.offsetHeight;
+    return faces.filter((face) => face.status !== "loaded").map((face) => `${face.family} ${face.weight}`);
+  });
+  if (failed.length) throw new Error(`font pin: faces did not load: ${failed.join(", ")}`);
+}
+
+const FONT_AUDIT = {pages: 0, platform: new Map(), custom: new Set()};
+
+// CSS.getPlatformFontsForNode names the font that rendered each element's own
+// text, including generated content. A non-custom font is a host font leaking
+// into the receipt; main() refuses to write one.
+async function auditPlatformFonts(page, label) {
+  const cdp = await page.context().newCDPSession(page);
+  try {
+    await cdp.send("DOM.enable");
+    await cdp.send("CSS.enable");
+    const {root} = await cdp.send("DOM.getDocument", {depth: -1, pierce: true});
+    const nodeIds = [];
+    (function walk(node) {
+      if (node.nodeType === 1 && (node.children || []).some((child) =>
+        child.nodeType === 3 && child.nodeValue.trim())) nodeIds.push(node.nodeId);
+      for (const pseudo of node.pseudoElements || []) {
+        nodeIds.push(pseudo.nodeId);
+        walk(pseudo);
+      }
+      for (const child of node.children || []) walk(child);
+      for (const shadow of node.shadowRoots || []) walk(shadow);
+      if (node.contentDocument) walk(node.contentDocument);
+    })(root);
+    const results = await Promise.all(nodeIds.map((nodeId) =>
+      cdp.send("CSS.getPlatformFontsForNode", {nodeId}).catch(() => ({fonts: []}))
+    ));
+    for (const {fonts} of results) {
+      for (const font of fonts || []) {
+        if (font.isCustomFont) {
+          FONT_AUDIT.custom.add(font.familyName);
+        } else {
+          const name = font.postScriptName || font.familyName;
+          if (!FONT_AUDIT.platform.has(name)) FONT_AUDIT.platform.set(name, label);
+        }
+      }
+    }
+    FONT_AUDIT.pages += 1;
+  } finally {
+    await cdp.detach().catch(() => null);
+  }
+}
+
 async function installPageInit(context, market, locale, theme) {
   const prefix = market === "hk" ? "hk" : "ca";
   const version = market === "hk" ? "hk-v37" : "ca-v36";
@@ -625,6 +731,7 @@ async function expansionReachabilityProof(browser, market, route, installRoutes)
         });
         await page.locator(`[data-${prefix}-an-lane-body="buy"]`).waitFor();
         await page.waitForTimeout(mode.composerMode === "pending" ? 500 : 750);
+        await settleFonts(page);
 
         const snapshot = () => page.evaluate(({prefix, version}) => {
           const visible = (el) => !!el && getComputedStyle(el).display !== "none" &&
@@ -1242,6 +1349,7 @@ async function fragmentNavigationProof(browser, market, route, installRoutes) {
     validUrl.hash = "anv2-pull";
     await validPage.goto(validUrl.href, {waitUntil: "load", timeout: 30000});
     await waitForComposer(validPage);
+    await settleFonts(validPage);
     const cases = [await inspect(validPage, "direct-valid", "near", "#anv2-pull", false)];
 
     await validPage.locator(`[data-${prefix}-an-lane="wait"]`).click();
@@ -1262,6 +1370,7 @@ async function fragmentNavigationProof(browser, market, route, installRoutes) {
     invalidUrl.hash = "anv2-unknown";
     await invalidPage.goto(invalidUrl.href, {waitUntil: "load", timeout: 30000});
     await waitForComposer(invalidPage);
+    await settleFonts(invalidPage);
     const invalid = await inspect(invalidPage, "direct-invalid", "buy", "#anv2-buy", false);
     const invalidIdentity = await nodeIdentityProof(invalidPage, market);
     return {
@@ -1384,6 +1493,7 @@ async function desktopBehavior(page, market) {
   sequence.push(await manifest("initial-table"));
   await page.reload({waitUntil: "load", timeout: 30000});
   await page.waitForTimeout(1500);
+  await settleFonts(page);
   const persistedTable = await manifest("persisted-table-startup");
   persistedTable.persisted_view = await page.evaluate(({prefix}) => localStorage.getItem(`mdx_stocktable_${prefix}_view`), {prefix});
   persistedTable.pass = persistedTable.pass && persistedTable.view === "table" && persistedTable.persisted_view === "table";
@@ -1728,6 +1838,8 @@ async function ownerProjectionMatrix(
           return !!(probe && (probe.restored || probe.error));
         }, null, {timeout: 5000});
       }
+      await settleFonts(page);
+      await auditPlatformFonts(page, `owner ${ownerCase} ${mode} ${locale}-${theme} ${width}`);
 
       row.initial = await ownerProjectionSnapshot(
         page, market, overlayBinding && overlayBinding.payload
@@ -2011,6 +2123,7 @@ async function main() {
   const screenshotDir = args["screenshot-dir"]
     ? realDir(args["screenshot-dir"], "--screenshot-dir")
     : null;
+  const fontPin = loadFontPin(fixtureAssetsDir, siteDir, repoRoot);
   const loadedAssets = new Map();
   let chromium;
   try {
@@ -2037,6 +2150,14 @@ async function main() {
   if (args.browser) launch.executablePath = realFile(args.browser, "--browser");
   const browser = await chromium.launch(launch);
   const browserVersion = browser.version();
+  if (browserVersion !== CHROMIUM_PIN) {
+    await browser.close();
+    process.stderr.write(
+      `REFUSED: chromium ${browserVersion} is not the pinned build ${CHROMIUM_PIN}. ` +
+      "Run under Playwright 1.61.1 (chromium-1228), or pass --browser with that build's executable.\n"
+    );
+    process.exit(2);
+  }
   const states = [
     {name: "en-dark", locale: "en", theme: "dark"},
     {name: "en-light", locale: "en", theme: "light"},
@@ -2079,9 +2200,10 @@ async function main() {
         await route.fulfill({status: 404, body: ""});
         return;
       }
-      const bytes = candidate === ownerBinding.filename && staticAxes
-        ? staticAxisHtml(candidate, staticAxes.locale, staticAxes.theme).bytes
-        : fs.readFileSync(candidate);
+      const bytes = candidate !== ownerBinding.filename ? fs.readFileSync(candidate)
+        : injectFontPin(staticAxes
+          ? staticAxisHtml(candidate, staticAxes.locale, staticAxes.theme).bytes
+          : fs.readFileSync(candidate), fontPin.stylesheet);
       if (candidate !== ownerBinding.filename) loadedAssets.set(relativeRepoPath(repoRoot, candidate), sha256Bytes(bytes));
       await route.fulfill({
         status: 200,
@@ -2121,6 +2243,7 @@ async function main() {
         // Measure and persist the settled state, never the transition frame.
         await page.waitForTimeout(1400);
       }
+      await settleFonts(page);
       const layout = await page.evaluate(`(${LAYOUT_SCRIPT})()`);
       layout.duplicate_ids = await page.evaluate(() => {
         const counts = new Map();
@@ -2129,6 +2252,7 @@ async function main() {
       });
       layout.console_exceptions = consoleExceptions;
       const screenshot = await page.screenshot({fullPage: true});
+      await auditPlatformFonts(page, `state ${state.name}`);
       layout.screenshot_width = pngWidth(screenshot);
       layout.pass = !layout.horizontal_overflow &&
         layout.elements_wider_than_viewport === 0 && layout.screenshot_width === 390 &&
@@ -2175,6 +2299,8 @@ async function main() {
     const desktopPage = await desktopContext.newPage();
     await desktopPage.goto(new URL(fixtureBinding.route, "http://stock-dashboard.invalid").href, {waitUntil: "load", timeout: 30000});
     await desktopPage.waitForTimeout(1500);
+    await settleFonts(desktopPage);
+    await auditPlatformFonts(desktopPage, "desktop 1440");
     var desktop = await desktopBehavior(desktopPage, fixtureBinding.market);
     await desktopContext.close();
 
@@ -2205,6 +2331,14 @@ async function main() {
     browser: {
       engine: "chromium",
       version: browserVersion,
+    },
+    font_pin: {
+      manifest: fontPin.manifest,
+      stylesheet: fontPin.stylesheet,
+      served_html_transform: `<link rel="stylesheet" href="${fontPin.stylesheet}"> inserted after the <head> start tag of every served owner page`,
+      audited_pages: FONT_AUDIT.pages,
+      platform_fonts: Array.from(FONT_AUDIT.platform.keys()).sort(),
+      custom_fonts: Array.from(FONT_AUDIT.custom).sort(),
     },
     fixture_receipt: fixtureBinding.receipt,
     fixture_assets_root: fixtureAssetsRoot,
@@ -2240,6 +2374,14 @@ async function main() {
       fragmentNavigation.pass && desktop.pass && ownerProjection.pass,
     states: rows,
   };
+  if (FONT_AUDIT.platform.size || FONT_AUDIT.pages === 0) {
+    for (const [name, label] of FONT_AUDIT.platform) {
+      process.stderr.write(`REFUSED: platform font ${name} rendered text (first seen: ${label})\n`);
+    }
+    if (FONT_AUDIT.pages === 0) process.stderr.write("REFUSED: no page was font-audited\n");
+    process.stderr.write("Add the missing codepoints with scripts/build_p0b_font_pin.py; no receipt was written.\n");
+    process.exit(2);
+  }
   const encoded = JSON.stringify(payload, null, 2) + "\n";
   if (args.out) fs.writeFileSync(path.resolve(args.out), encoded);
   process.stdout.write(encoded);

@@ -26,6 +26,11 @@ BROWSER_RECEIPT = ROOT / "scripts" / "verify_stock_dashboard_mobile_layout.cjs"
 FIXTURE_RECIPE = ROOT / "scripts" / "render_stock_dashboard_fixture.py"
 EVIDENCE_DIR = ROOT / "mockups" / "evidence" / "prophet-p0b-zero-fouc"
 FIXTURE_ASSETS = EVIDENCE_DIR / "inputs" / "browser-data"
+FONT_PIN = FIXTURE_ASSETS / "p0b-font-pin"
+BROWSER_RECEIPTS = {
+    "hk": EVIDENCE_DIR / "mobile-layout.json",
+    "ca": EVIDENCE_DIR / "mobile-layout-canada.json",
+}
 
 MARKETS = {
     "hk": {
@@ -1646,7 +1651,11 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
             "live/quotes.json",
         },
     }
-    assert loaded_fixture_assets == expected_frozen_assets[market]
+    pinned_fonts = {
+        str((FONT_PIN / name).relative_to(FIXTURE_ASSETS))
+        for name in json.loads(_read(FONT_PIN / "font-pin.json"))["files"]
+    }
+    assert loaded_fixture_assets == expected_frozen_assets[market] | pinned_fonts
     assert {row["state"] for row in browser["states"]} >= {
         "en-dark",
         "en-light",
@@ -2172,6 +2181,57 @@ def test_hk_mobile_owner_surfaces_cannot_widen_the_document() -> None:
     assert "content: attr(data-label-zh);" in css
     assert 'data-label-en="' in template
     assert 'data-label-zh="' in template
+
+
+def test_both_receipts_were_measured_by_one_browser_build() -> None:
+    """Layout numbers and screenshot bytes move with the Chromium build, so
+    both receipts name one build and the closure check tells a re-minter it.
+    """
+    from scripts import check_p0b_receipt_closure as receipt_closure
+
+    browsers = [json.loads(_read(path))["browser"] for path in BROWSER_RECEIPTS.values()]
+    assert browsers[0] == browsers[1]
+    assert {"engine", "version"} <= set(browsers[0])
+    assert browsers[0]["version"] in receipt_closure.environment_hint(ROOT)
+
+
+def test_verifier_refuses_any_chromium_but_the_receipts_build() -> None:
+    source = _read(BROWSER_RECEIPT)
+    pin = re.search(r'^const CHROMIUM_PIN = "([^"]+)";$', source, re.M)
+    assert pin
+    assert "browserVersion !== CHROMIUM_PIN" in source
+    for path in BROWSER_RECEIPTS.values():
+        assert json.loads(_read(path))["browser"] == {
+            "engine": "chromium",
+            "version": pin.group(1),
+        }
+
+
+@pytest.mark.parametrize("market", BROWSER_RECEIPTS)
+def test_browser_receipts_were_measured_with_only_committed_fonts(market: str) -> None:
+    """System fonts differ between hosts; every glyph comes from a pinned file."""
+    receipt = json.loads(_read(BROWSER_RECEIPTS[market]))
+    manifest_path = FONT_PIN / "font-pin.json"
+    manifest = json.loads(_read(manifest_path))
+    pin = receipt["font_pin"]
+    assert pin["manifest"] == {
+        "path": str(manifest_path.relative_to(ROOT)),
+        "sha256": _sha256(manifest_path),
+    }
+    assert pin["stylesheet"] == manifest["stylesheet"] == "/p0b-font-pin/pin.css"
+    assert pin["platform_fonts"] == []
+    assert pin["audited_pages"] > 0
+    for name, digest in manifest["files"].items():
+        assert _sha256(FONT_PIN / name) == digest
+        assert receipt["loaded_assets"][str((FONT_PIN / name).relative_to(ROOT))] == digest
+    for name, digest in manifest["site_faces"].items():
+        assert _sha256(ROOT / "site" / name) == digest
+    stylesheet = _read(FONT_PIN / "pin.css")
+    assert "local(" not in stylesheet
+    served = set(re.findall(r'url\("/([^"]+)"\)', stylesheet))
+    assert served == {f"p0b-font-pin/{name}" for name in manifest["files"] if name != "pin.css"} | set(
+        manifest["site_faces"]
+    )
 
 
 def test_mobile_layout_receipt_has_valid_javascript() -> None:

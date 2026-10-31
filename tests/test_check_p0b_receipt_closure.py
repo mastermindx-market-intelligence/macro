@@ -233,6 +233,48 @@ def test_a_main_role_event_relaxes_only_the_null_token(tmp_path: Path) -> None:
         guard.parse_changed_paths("[oops", null_is_no_diff=True)
 
 
+FONT_MANIFEST = f"{EVIDENCE}/inputs/browser-data/p0b-font-pin/font-pin.json"
+
+
+def _pin_fonts_and_browser(root: Path, version: str) -> None:
+    for receipt in (HK_RECEIPT, CA_RECEIPT):
+        path = root / receipt
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload["browser"] = {"engine": "chromium", "version": version}
+        payload["font_pin"] = {"manifest": {"path": FONT_MANIFEST, "sha256": "9" * 64}}
+        _write_json(path, payload)
+
+
+def test_font_pin_manifest_alone_fails(tmp_path: Path) -> None:
+    """Changing the pinned fonts moves glyph metrics, so both receipts re-mint."""
+    _plant_receipts(tmp_path)
+    _pin_fonts_and_browser(tmp_path, "1.2.3.4")
+    findings = _eval(tmp_path, {FONT_MANIFEST})
+    assert findings
+    assert any(HK_RECEIPT in row for row in findings)
+    assert any(CA_RECEIPT in row for row in findings)
+    assert _eval(tmp_path, {FONT_MANIFEST, HK_RECEIPT, CA_RECEIPT}) == []
+
+
+def test_environment_hint_names_the_receipt_browser_pin_and_fonts(tmp_path: Path) -> None:
+    _plant_receipts(tmp_path)
+    _pin_fonts_and_browser(tmp_path, "1.2.3.4")
+    verifier = tmp_path / guard.DEFAULT_VERIFIER
+    verifier.parent.mkdir(parents=True, exist_ok=True)
+    verifier.write_text('const CHROMIUM_PIN = "1.2.3.4";\n', encoding="utf-8")
+    hint = guard.environment_hint(tmp_path)
+    assert "measured on chromium 1.2.3.4" in hint
+    assert "pins Chromium 1.2.3.4" in hint
+    assert FONT_MANIFEST in hint
+
+
+def test_environment_hint_survives_receipts_without_a_browser(tmp_path: Path) -> None:
+    """Receipts minted before the pin carry no browser block; the hint still prints."""
+    _plant_receipts(tmp_path)
+    hint = guard.environment_hint(tmp_path)
+    assert hint.startswith("re-mint environment:")
+
+
 def test_cli_red_then_green(tmp_path: Path) -> None:
     _plant_receipts(tmp_path)
     red_list = tmp_path / "red.txt"
