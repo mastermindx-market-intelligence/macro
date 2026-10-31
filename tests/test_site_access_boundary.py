@@ -220,11 +220,15 @@ def test_retired_movers_route_redirects_to_the_consolidated_hub_section():
     redirect_lines = [
         line.strip()
         for line in CADDY.splitlines()
-        if line.strip().startswith("redir /movers.html ")
+        if line.strip().startswith("redir @movers_seo_redirect ")
     ]
     assert redirect_lines == [
-        'redir /movers.html "/stocks/index.html#today-movers" 301'
+        'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301'
     ]
+    # Only the trusted shell tuple is exempt; the separate matcher test and
+    # real Caddy boundary cases retain every standalone/negative SEO redirect.
+    assert 'path /movers.html' in CADDY
+    assert not re.search(r"^\s*redir /movers\.html ", CADDY, re.M)
 
 
 def test_html_documents_are_never_registration_gated():
@@ -611,6 +615,32 @@ def test_no_source_maps_secrets_or_server_source_in_site_tree():
     assert bad == []
 
 
+def test_baskets_seo_redirect_preserves_exact_trusted_shell_admission():
+    # The moved stub must run its bridge.navigate before the parent commits a
+    # successor generation. Query-preserving HTTP redirects still fail READY.
+    match = re.search(r"@baskets_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert match
+    assert " ".join(match.group(1).split()) == " ".join(r"""path /baskets_china.html
+        not {
+            query mmx_shell=1
+            header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/
+        }""".split())
+    assert "redir @baskets_seo_redirect /sector_central_china.html 301" in CADDY
+    assert "redir /baskets_china.html " not in CADDY
+
+
+def test_movers_seo_redirect_preserves_exact_trusted_shell_admission():
+    match = re.search(r"@movers_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert match
+    assert " ".join(match.group(1).split()) == " ".join(r"""path /movers.html
+        not {
+            query mmx_shell=1
+            header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/
+        }""".split())
+    assert 'redir @movers_seo_redirect "/stocks/index.html#today-movers" 301' in CADDY
+    assert "redir /movers.html " not in CADDY
+
+
 def test_fail_closed_and_browser_hardening_are_present():
     assert 'rewrite /api/regwall/check' in CADDY
     assert 'rewrite /api/paywall/check' in CADDY
@@ -804,3 +834,40 @@ def test_macro_suite_shell_assets_are_public_but_the_snapshot_payload_is_not():
     assert not any(p.startswith("/macrodata") for p in POLICY["public"]["exact"])
     assert not any(p.startswith("/macro_suite") and p.endswith("*")
                    for p in _caddy_public_exclusions()), "no wildcard may ride along"
+
+
+def test_internal_document_denials_match_the_canonical_policy():
+    """A Caddy-only denial must never be advertised by the route registry."""
+    matcher = re.search(r"@never_site\s*\{\s*path ([^\n]+)", CADDY)
+    assert matcher, "internal-document serving denial missing"
+    declared = set(POLICY["deny"]["exact"])
+    declared.update(prefix + "*" for prefix in POLICY["deny"].get("prefixes", []))
+    assert set(shlex.split(matcher.group(1))) == declared
+
+
+def test_portfolio_state_cache_migration_covers_every_served_consumer():
+    """A path-wide immutable cache requires hash stamps on every consumer."""
+    from lib.pages import optimize_assets_text
+
+    asset = SITE / "portfolio_state.js"
+    digest = hashlib.sha256(asset.read_bytes()).hexdigest()[:8]
+    template = (ROOT / "templates/watchlist.html.j2").read_text()
+    tag = '<script src="portfolio_state.js" data-sync></script>'
+    assert tag in template  # Bare source joins the canonical re-stamping path.
+    stamped = optimize_assets_text(tag, lambda path: digest if path == "portfolio_state.js" else None)
+    served = (SITE / "watchlist.html").read_text()
+    assert stamped in served and "defer" not in stamped
+    for text, loading_tag in [(template, tag), (served, stamped)]:
+        assert text.index(loading_tag) < text.index('<script src="watchlist.js?')
+    refs = re.compile(r'<script\b[^>]*\bsrc="([^"]*portfolio_state\.js[^"]*)"[^>]*>')
+    consumers = set()
+    for page in SITE.rglob("*.html"):
+        for url in refs.findall(page.read_text(encoding="utf-8", errors="replace")):
+            if url.startswith(("http://", "https://", "//")):
+                continue
+            bare = url.split("?", 1)[0]
+            if (page.parent / bare).resolve() != asset.resolve():
+                continue
+            assert url == bare + "?v=" + digest, (page.relative_to(SITE), url)
+            consumers.add(str(page.relative_to(SITE)))
+    assert {"watchlist.html", "ontology.html"} <= consumers

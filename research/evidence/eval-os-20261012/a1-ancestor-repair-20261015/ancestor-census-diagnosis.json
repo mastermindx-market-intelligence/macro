@@ -1,0 +1,151 @@
+{
+  "observed_at": "2026-10-15T06:34:19.366703+00:00",
+  "revisions": {
+    "head": "fea04c414282a29f8f757430c7e1e1b3c52998fe",
+    "base": "1865cac77212150ea674688eb1dbea1b848fda20",
+    "main": "ccbd7d874b0b4233299edab2b413b037adc6c5d1"
+  },
+  "counts": {
+    "head": {
+      "all": 357,
+      "substantive": 147,
+      "jobs": 319
+    },
+    "base": {
+      "all": 344,
+      "substantive": 138,
+      "jobs": 318
+    },
+    "main": {
+      "all": 343,
+      "substantive": 138,
+      "jobs": 319
+    }
+  },
+  "a1_rows": {
+    "head": [
+      [
+        "eval-os-a1",
+        "collectors/biocatalyst/drugs_at_fda.py",
+        "collectors/biocatalyst/__init__.py"
+      ],
+      [
+        "eval-os-a1",
+        "engine/biocatalyst/activation.py",
+        "engine/biocatalyst/__init__.py"
+      ],
+      [
+        "eval-os-a1",
+        "engine/capital_structure/event_spine.py",
+        "engine/capital_structure/__init__.py"
+      ],
+      [
+        "eval-os-a1",
+        "engine/codex_lane/runner.py",
+        "engine/codex_lane/__init__.py"
+      ],
+      [
+        "eval-os-a1",
+        "engine/context_index/fusion.py",
+        "engine/context_index/__init__.py"
+      ],
+      [
+        "eval-os-a1",
+        "engine/earnings_narrative/biocatalyst_transcript_adapter.py",
+        "engine/earnings_narrative/__init__.py"
+      ],
+      [
+        "eval-os-a1",
+        "engine/earnings_release/binding.py",
+        "engine/earnings_release/__init__.py"
+      ],
+      [
+        "eval-os-a1",
+        "engine/fundamental_forensics/attested_history_credentials.py",
+        "engine/fundamental_forensics/__init__.py"
+      ],
+      [
+        "eval-os-a1",
+        "engine/intelligence_workspace/adapters/base.py",
+        "engine/intelligence_workspace/adapters/__init__.py"
+      ],
+      [
+        "eval-os-a1",
+        "engine/market_os/macro_workspaces/__init__.py",
+        "engine/market_os/__init__.py"
+      ],
+      [
+        "eval-os-a1",
+        "engine/seasonality/contracts.py",
+        "engine/seasonality/__init__.py"
+      ],
+      [
+        "eval-os-a1",
+        "engine/signal_foundry/results.py",
+        "engine/signal_foundry/__init__.py"
+      ],
+      [
+        "eval-os-a1",
+        "tests/test_admin_intelligence_os.py",
+        "tests/__init__.py"
+      ]
+    ],
+    "base": [],
+    "main": []
+  },
+  "head_minus_base_pairs": [
+    [
+      "eval-os-a1",
+      "collectors/biocatalyst/__init__.py"
+    ],
+    [
+      "eval-os-a1",
+      "engine/biocatalyst/__init__.py"
+    ],
+    [
+      "eval-os-a1",
+      "engine/capital_structure/__init__.py"
+    ],
+    [
+      "eval-os-a1",
+      "engine/codex_lane/__init__.py"
+    ],
+    [
+      "eval-os-a1",
+      "engine/context_index/__init__.py"
+    ],
+    [
+      "eval-os-a1",
+      "engine/earnings_narrative/__init__.py"
+    ],
+    [
+      "eval-os-a1",
+      "engine/earnings_release/__init__.py"
+    ],
+    [
+      "eval-os-a1",
+      "engine/fundamental_forensics/__init__.py"
+    ],
+    [
+      "eval-os-a1",
+      "engine/intelligence_workspace/adapters/__init__.py"
+    ],
+    [
+      "eval-os-a1",
+      "engine/market_os/__init__.py"
+    ],
+    [
+      "eval-os-a1",
+      "engine/seasonality/__init__.py"
+    ],
+    [
+      "eval-os-a1",
+      "engine/signal_foundry/__init__.py"
+    ],
+    [
+      "eval-os-a1",
+      "tests/__init__.py"
+    ]
+  ],
+  "base_minus_head_pairs": []
+}

@@ -217,6 +217,9 @@ on:
       - "app/research.py"
       - "app/main.py"
       - "tests/test_research_api.py"
+      - "tests/test_research_revision_read.py"
+      - "app/macro_command.py"
+      - "tests/test_macro_command_api.py"
       # Research Vault (RV W3) page + viewer: page test + template.
       - "tests/test_research_vault_page.py"
       - "templates/research_vault.html.j2"
@@ -2967,6 +2970,7 @@ on:
       - "tests/test_api_paywall.py"
       - "tests/test_auth_cache_outage.py"
       - "tests/test_paywall_pro_gate.py"
+      - "tests/test_bot_session_recovery_browser.py"
       - "tests/test_special_situations_gate.py"
       - "tests/test_china_special_situations_gate.py"
       # etfs.html joined the tier-gate job in SEO Supercharge W2. Its subjects
@@ -4406,6 +4410,7 @@ on:
       - "tests/test_tiingo_archive.py"
       - "tests/test_tiingo_views.py"
       - "tests/test_tiingo_reader.py"
+      - "tests/test_tiingo_forex_source.py"
       - "tests/test_tiingo_history.py"
       - "tests/test_tiingo_research_query.py"
       - "tests/test_tiingo_boats_tape.py"

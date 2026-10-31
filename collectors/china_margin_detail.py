@@ -129,8 +129,12 @@ def _stored_sessions() -> set[str]:
 
 def refresh() -> int:
     """Latest financing balance per name + its value ~20 trading days earlier, APPENDED to the
-    point-in-time history (keep-last per session `date`). Best-effort; returns names in the latest
-    session (0 on failure / already-stored). Idempotent within a UTC day."""
+    point-in-time history (keep-last per session `date`). The prior is drawn ONLY from the
+    ci-22/ci-21/ci-20 window strictly before the current observation; when that window is
+    unavailable (too little history, no populated candidate, or a candidate not strictly
+    earlier) the session's rows still append with fin_balance_prior/prior_date = None.
+    Best-effort; returns names in the latest session (0 on failure / already-stored).
+    Idempotent within a UTC day."""
     out_path = config.data_dir() / "china_margin_detail" / "detail.parquet"
     asof_today = pd.Timestamp.utcnow().strftime("%Y-%m-%d")
     if out_path.exists():
@@ -148,14 +152,26 @@ def refresh() -> int:
     if not cur:
         log.warning("china margin detail: no recent date populated")
         return 0
-    # prior target = LOOKBACK_TD trading days before the populated current date
+    # prior target = LOOKBACK_TD trading days before the populated current date.
+    # Candidates are the ci-22/ci-21/ci-20 positions (clamped at 0), searched
+    # newest-first. With target < 0 there is NO prior — never a wrong-offset
+    # fallback — and a candidate not strictly earlier than the current
+    # observation is rejected, so the window alone decides the prior.
     try:
         ci = dates.index(cur_date)
     except ValueError:
         ci = len(dates) - 1
-    prior_slice = dates[max(0, ci - LOOKBACK_TD - 2): ci - LOOKBACK_TD + 1] or dates[:1]
-    prior_date, prior = _first_populated(prior_slice)
+    target = ci - LOOKBACK_TD
+    prior_candidates = dates[max(0, target - 2):target + 1] if target >= 0 else []
+    prior_date, prior = _first_populated(prior_candidates) if prior_candidates else (None, None)
     prior = prior or {}
+    if prior_date is not None and pd.to_datetime(prior_date) >= pd.to_datetime(cur_date):
+        log.warning("china margin detail: prior candidate %s not strictly earlier than "
+                    "current %s — treating prior as unavailable", prior_date, cur_date)
+        prior_date, prior = None, {}
+    if prior_date is None:
+        log.info("china margin detail: prior window unavailable for %s (%d index trading "
+                 "dates) — appending rows with fin_balance_prior=None", cur_date, len(dates))
     cur_iso = pd.to_datetime(cur_date).strftime("%Y-%m-%d")
     if cur_iso in _stored_sessions():                     # append-only idempotency = per SESSION
         log.info("china margin detail: session %s already stored", cur_iso)

@@ -33,7 +33,7 @@ const tab=name=>click('#cw-tab-'+name);
 const pause=()=>new Promise(resolve=>setTimeout(resolve,35));
 let passed=0;
 function check(name,fn){fn();passed++;console.log("PASS",name);}
-function checkCompanyReturn(selector='[data-cw-chain-asset="oil"] [data-cw-company-href]') {
+function checkCompanyReturn(selector='[data-cw-company-href]') {
   const link=q(selector), original=new URL(link.dataset.cwCompanyHref), current=new URL(link.href);
   for (const [key,value] of original.searchParams) assert.equal(current.searchParams.get(key),value,key);
   assert.deepEqual(Array.from(current.searchParams.keys()).sort(),Array.from(original.searchParams.keys()).concat("from","ret").sort());
@@ -51,7 +51,10 @@ function checkCompanyReturn(selector='[data-cw-chain-asset="oil"] [data-cw-compa
     assert.equal(q('#cw-panel-overview').hidden,false);
     assert.equal(q('#cw-panel-explore').hidden,true);
     assert.ok(api.validDate(data.as_of));assert.equal(data.assets.length,17);
-    assert.ok(q('#cw-panel-overview').textContent.includes("Inflation link unconfirmed"));
+    for (const id of data.attention) {
+      const asset = data.assets.find(a => a.id === id);
+      assert.ok(q('#cw-panel-overview .cw-focus[data-cw-open="'+id+'"]').textContent.includes(asset.read.headline.en));
+    }
   });
   click('#cw-panel-overview [data-cw-open="oil"]');
   check("commodity selection hides overview hero and keeps URL context",()=>{
@@ -112,8 +115,7 @@ function checkCompanyReturn(selector='[data-cw-chain-asset="oil"] [data-cw-compa
   });
   check("Gold export retains its regional proxy and excludes petroleum context",()=>{
     const evidence=api.conditionSemantics(data,"gold",20,"rates").as_saved_evidence;
-    assert.equal(evidence.gold_physical.method,"close_proxy");
-    assert.equal(evidence.gold_physical.clock,"2026-10-14 07:30 UTC");
+    assert.deepEqual(evidence.gold_physical,data.gold_physical);
     assert.equal(evidence.gold_physical.hypothesis_confirmation_eligible,false);
     assert.equal(evidence.physical,null);
   });
@@ -252,3 +254,4 @@ function checkCompanyReturn(selector='[data-cw-chain-asset="oil"] [data-cw-compa
   console.log('RESULT',passed,'rendered-DOM journeys passed; this is not a visual-layout proof.');
   dom.window.close();
 })().catch(error=>{console.error(error);dom.window.close();process.exitCode=1;});
+

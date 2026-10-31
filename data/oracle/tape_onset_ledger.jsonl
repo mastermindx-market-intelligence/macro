@@ -58,3 +58,5 @@
 {"key":"XLP::2026-10-16","node":"XLP","asof":"2026-10-16","tape_onset_unconfirmed":true,"registered_at":"2026-10-17T18:53:53.350036+00:00","fwd_smoothed_onset_5d":null,"fwd_confirmed_10d":null,"outcome_mature":false}
 {"key":"XLU::2026-10-16","node":"XLU","asof":"2026-10-16","tape_onset_unconfirmed":true,"registered_at":"2026-10-17T18:53:53.350036+00:00","fwd_smoothed_onset_5d":null,"fwd_confirmed_10d":null,"outcome_mature":false}
 {"key":"XLV::2026-10-16","node":"XLV","asof":"2026-10-16","tape_onset_unconfirmed":true,"registered_at":"2026-10-17T18:53:53.350036+00:00","fwd_smoothed_onset_5d":null,"fwd_confirmed_10d":null,"outcome_mature":false}
+{"key":"XLB::2026-10-19","node":"XLB","asof":"2026-10-19","tape_onset_unconfirmed":true,"registered_at":"2026-10-21T08:12:16.531110+00:00","fwd_smoothed_onset_5d":null,"fwd_confirmed_10d":null,"outcome_mature":false}
+{"key":"XLP::2026-10-19","node":"XLP","asof":"2026-10-19","tape_onset_unconfirmed":true,"registered_at":"2026-10-21T08:12:16.531110+00:00","fwd_smoothed_onset_5d":null,"fwd_confirmed_10d":null,"outcome_mature":false}

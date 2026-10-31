@@ -3,6 +3,9 @@
 {% macro change(value) -%}
 {% if value is not none %}<span class="cw-number {{ 'cw-up' if value > 0 else ('cw-down' if value < 0 else '') }}">{{ '%+.1f'|format(value) }}%</span>{% else %}<span class="cw-muted">{{ t('Unavailable','暂不可用') }}</span>{% endif %}
 {%- endmacro %}
+{% macro return_bar(value, scale) -%}
+<span class="cw-bar" aria-hidden="true"><span class="cw-bar-zero"></span>{% if value is not none %}<span class="cw-bar-mark {{ 'cw-bar-positive' if value > 0 else ('cw-bar-negative' if value < 0 else 'cw-bar-flat') }}" style="width:{{ '%.4f'|format((value|abs) / scale * 50 if scale > 0 else 0) }}%"></span>{% endif %}</span>
+{%- endmacro %}
 {% macro source_state(source) -%}
 {% if source.state == 'available' %}{{ t('Research dated','研究日期') }} {{ source.as_of }}
 {% elif source.state == 'earlier_context' %}{{ t('Earlier context','较早背景') }} · {{ source.as_of }}
@@ -11,16 +14,19 @@
 {% else %}{{ t('Context unavailable','背景数据不可用') }}{% endif %}
 {%- endmacro %}
 {% set ws = commodity_workspace %}
+{% set map = namespace(scale=0, rising=0, falling=0, unchanged=0, available=0) %}
+{% for asset in ws.assets %}{% if asset.change_1m_pct is not none %}{% set map.available = map.available + 1 %}{% set map.scale = [map.scale, asset.change_1m_pct|abs]|max %}{% if asset.change_1m_pct > 0 %}{% set map.rising = map.rising + 1 %}{% elif asset.change_1m_pct < 0 %}{% set map.falling = map.falling + 1 %}{% else %}{% set map.unchanged = map.unchanged + 1 %}{% endif %}{% endif %}{% endfor %}
 <section id="commodity-workspace" class="cw" aria-labelledby="cw-title">
   <header class="cw-head">
     <div class="cw-head-copy"><p class="cw-eyebrow">{{ t('Market intelligence','市场情报') }}</p><h1 id="cw-title">{{ t('Commodities','大宗商品') }}</h1></div>
     <div class="cw-head-actions"><span class="dtp-asof cw-stamp">{{ t('Research','研究') }} · {{ ws.as_of or t('Date unavailable','日期不可用') }}</span><button type="button" id="cw-brain-entry" class="gbtn gbtn-quiet cw-brain-entry" hidden>{{ t('Ask Mastermind','问操盘大脑') }}</button><span id="cw-brain-status" class="cw-brain-status" role="status" aria-live="polite"></span><a class="gbtn gbtn-quiet" href="#commodity-advanced" data-cw-advanced>{{ t('Advanced analytics','高级分析') }} ↗</a></div>
   </header>
   <div class="mx-vh cw-hero" data-cw-overview-only>
-    <div class="cw-hero-copy"><span class="cw-chip cw-chip-watch">{{ t('Test the cause','检验原因') }}</span><h2>{{ ct(ws.headline) }}</h2><p>{{ t('Read the move, test its explanation, then follow the consequences.','读懂变化，检验解释，再追踪影响。') }}</p></div>
+    <div class="cw-hero-copy"><span class="cw-eyebrow">{{ t('The commodity brief','商品市场简报') }}</span><h2>{{ ct(ws.headline) }}</h2><p>{{ t('Read the move. Test the cause. Follow the evidence.','读懂变化，检验原因，沿证据深入。') }}</p><div class="cw-hero-actions"><button type="button" class="gbtn gbtn-cta" data-cw-go="explore">{{ t('Explore the evidence','深入研究证据') }} <span aria-hidden="true">↗</span></button><span class="cw-stamp">{{ t('Research snapshot · not live quotes','研究快照 · 非实时报价') }}</span></div></div>
     <div class="cw-hero-metrics">
       <div class="cw-hero-metric"><strong>{{ change(ws.index_change_1m_pct) }}</strong><span>{{ t('Equal-weight index · 1 month','等权指数 · 一个月') }}</span></div>
-      <div class="cw-hero-metric"><strong class="cw-number">{% if ws.breadth.n is not none %}{{ ws.breadth.up }} / {{ ws.breadth.n }}{% else %}{{ t('Unconfirmed','尚未确认') }}{% endif %}</strong><span>{{ t('Members in a long-term uptrend','长期趋势向上的品种') }}</span></div>
+      <div class="cw-hero-metric"><div class="cw-metric-line"><span>{{ t('Long-term trend up','长期趋势向上') }}</span><strong class="cw-number">{% if ws.breadth.n is not none %}{{ ws.breadth.up }} <small>/ {{ ws.breadth.n }}</small>{% else %}{{ t('Unconfirmed','尚未确认') }}{% endif %}</strong></div>{% if ws.breadth.n %}<span class="cw-breadth-track" aria-hidden="true"><span style="width:{{ '%.4f'|format(ws.breadth.up / ws.breadth.n * 100) }}%"></span></span>{% endif %}</div>
+      <div class="cw-hero-metric"><div class="cw-metric-line"><span>{{ t('One-month breadth','一个月涨跌分布') }}</span><strong class="cw-number">{% if map.available %}{{ map.rising }} <small>{{ t('up','上涨') }}</small> / {{ map.falling }} <small>{{ t('down','下跌') }}</small>{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</strong></div>{% if map.available %}<span class="cw-breadth-track cw-direction-track" aria-hidden="true"><span class="cw-breadth-up" style="width:{{ '%.4f'|format(map.rising / map.available * 100) }}%"></span><span class="cw-breadth-flat" style="width:{{ '%.4f'|format(map.unchanged / map.available * 100) }}%"></span><span class="cw-breadth-down" style="width:{{ '%.4f'|format(map.falling / map.available * 100) }}%"></span></span>{% endif %}{% if map.available != ws.assets|length %}<span class="cw-stamp">{{ ws.assets|length - map.available }} {{ t('without a comparable return','个品种缺少可比变化值') }}</span>{% endif %}</div>
     </div>
   </div>
   {% if not ws.as_of %}<div class="mx-empty cw-note cw-note-warn">{{ t('The research date is unavailable. Treat these observations as undated.','研究日期不可用，请将这些观察视为无日期记录。') }}</div>{% endif %}
@@ -33,11 +39,11 @@
 
   <div id="cw-panel-overview" role="tabpanel" aria-labelledby="cw-tab-overview" data-cw-panel="overview">
     <section class="cw-section">
-      <div class="cw-section-head"><h2>{{ t('Three market readings','三个市场判断') }}</h2><p>{{ t('Fixed research lenses · no opportunity ranking','固定研究视角 · 非机会排名') }}</p></div>
+      <div class="cw-section-head"><div><p class="cw-eyebrow">{{ t('Start an investigation','开始一项研究') }}</p><h2>{{ t('Three market readings','三个市场判断') }}</h2></div><p>{{ t('Fixed research lenses · no opportunity ranking','固定研究视角 · 非机会排名') }}</p></div>
       <div class="cw-focus-grid">
       {% for key in ws.attention %}{% set a = (ws.assets|selectattr('id','equalto',key)|list)[0] %}
         <button type="button" class="panel cw-focus" data-cw-open="{{ a.id }}">
-          <div class="cw-focus-top"><div class="cw-focus-name"><h3>{{ ct(a.label) }}</h3><span class="cw-eyebrow">{{ t('One-month change','一个月变化') }}</span></div><strong class="cw-focus-value">{{ change(a.change_1m_pct) }}</strong></div>
+          <div class="cw-focus-top"><div class="cw-focus-name"><span class="cw-eyebrow">{{ '%02d'|format(loop.index) }} / {{ t('Research lens','研究视角') }}</span><h3>{{ ct(a.label) }}</h3></div><span class="cw-focus-arrow" aria-hidden="true">↗</span></div><div class="cw-focus-move"><strong class="cw-focus-value">{{ change(a.change_1m_pct) }}</strong><span class="cw-stamp">{{ t('one month','一个月') }}</span></div>
           <p>{{ ct(a.read.headline) }}</p>
           <div class="cw-focus-bottom"><span>{{ t('Open the evidence','查看证据') }}</span><span aria-hidden="true">↗</span></div>
         </button>
@@ -45,12 +51,13 @@
       </div>
     </section>
     <section class="cw-section">
-      <div class="cw-section-head"><h2>{{ t('Across the complex','商品全景') }}</h2><p>{{ t('One-month price changes · select a commodity','一个月价格变化 · 选择品种') }}</p></div>
+      <div class="cw-section-head"><div><p class="cw-eyebrow">{{ t('Read the whole market','纵览商品市场') }}</p><h2>{{ t('Across the complex','商品全景') }}</h2></div><p>{{ t('One-month price changes · select a commodity','一个月价格变化 · 选择品种') }}</p></div>
       <div class="cw-family-grid">
       {% for family in ws.families %}<div class="cw-family"><h3>{{ ct(family.label) }}</h3>
-        {% for a in family.assets %}<button type="button" class="cw-market" data-cw-open="{{ a.id }}"><span>{{ ct(a.label) }}</span><strong>{{ change(a.change_1m_pct) }}</strong></button>{% endfor %}
+        {% for a in family.assets %}<button type="button" class="cw-market" data-cw-open="{{ a.id }}"><span class="cw-market-name">{{ ct(a.label) }}</span>{{ return_bar(a.change_1m_pct,map.scale) }}<strong>{{ change(a.change_1m_pct) }}</strong><span class="cw-market-arrow" aria-hidden="true">↗</span></button>{% endfor %}
       </div>{% endfor %}
       </div>
+      <div class="cw-map-caption"><span>{{ t('Same scale across every family','各类别使用同一刻度') }}</span><span class="cw-number">{% if map.scale %}−{{ '%.1f'|format(map.scale) }}% <span aria-hidden="true"> / </span> 0 <span aria-hidden="true"> / </span> +{{ '%.1f'|format(map.scale) }}%{% else %}{{ t('No nonzero comparable returns','暂无非零可比变化值') }}{% endif %}</span></div>
       <p class="cw-note">{{ t('Price coverage is broader than physical coverage. An index reading is not an instruction for every commodity.','价格覆盖范围大于实物证据覆盖范围；指数读数不等于每个品种的操作指令。') }}</p>
     </section>
   </div>
@@ -63,6 +70,24 @@
     <div data-cw-asset="{{ a.id }}" {% if a.id != 'oil' %}hidden{% endif %}>
       <div class="cw-detail-head"><div class="cw-detail-title"><p class="cw-eyebrow">{{ t('Commodity research','商品研究') }}</p><h2>{{ ct(a.label) }}</h2><span class="cw-muted">{{ t('Separate the observation from its explanation.','将市场观察与原因解释分开。') }}</span></div><div class="cw-detail-price"><strong>{{ change(a.change_1m_pct) }}</strong><span>{{ t('one month','一个月') }}</span></div></div>
       <div class="cw-reading cw-section"><h3>{{ ct(a.read.headline) }}</h3><p>{{ ct(a.read.detail) }}</p><span class="cw-stamp">{{ t('Research dated','研究日期') }} · {{ a.as_of or t('Unavailable','暂不可用') }}</span></div>
+      <div class="cw-section cw-two-col cw-price-workspace">
+        <div class="panel cw-panel">
+          <h3>{{ t('The price evidence','价格证据') }}</h3>
+          {% set periods = namespace(scale=0) %}{% for value in a.returns.values() %}{% if value is not none %}{% set periods.scale = [periods.scale, value|abs]|max %}{% endif %}{% endfor %}
+          <p class="cw-chart-caption">{{ t('How the move changes with the window','观察窗口如何影响涨跌读数') }}</p>
+          <div class="cw-returns">{% for window in ['5','20','60','252'] %}{% set value = a.returns.get(window) %}<div class="cw-return"><span>{{ window }} {{ t('sessions','个交易日') }}</span>{{ return_bar(value,periods.scale) }}<strong>{{ change(value) }}</strong></div>{% endfor %}</div>
+          <p class="cw-chart-foot">{{ t('Overlapping lookbacks · shared scale · not a price path','重叠回看窗口 · 统一刻度 · 非价格轨迹') }}</p>
+          <div class="cw-read-rows"><div class="cw-read-row"><span>{{ t('Long-term trend','长期趋势') }}</span><strong>{% if a.trend == 'up' %}{{ t('Up','向上') }}{% elif a.trend == 'down' %}{{ t('Down','向下') }}{% elif a.trend == 'flat' %}{{ t('Flat','平稳') }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</strong></div><div class="cw-read-row"><span>{{ t('Published momentum','已发布的动量判断') }}</span><strong>{% if a.momentum == 'bull' %}{{ t('Positive','偏强') }}{% elif a.momentum == 'bear' %}{{ t('Negative','偏弱') }}{% elif a.momentum == 'neutral' %}{{ t('Neutral','中性') }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</strong></div></div>
+          <details class="mx-disc cw-disclosure"><summary>{{ t('Series and comparison basis','序列与比较口径') }}</summary><p>{{ t('These returns come from the existing published price series. The one-month change and trading-session windows are distinct comparisons. No dated futures contract, delivery point or executable quote is inferred.','收益率来自现有已发布价格序列。一个月变化与交易日窗口属于不同的比较口径。本页不据此推定具体期货合约、交割地点或可成交报价。') }}</p></details>
+        </div>
+        <aside class="panel cw-panel cw-explore-question">
+        {% if a.id in ws.hypotheses %}
+        <fieldset class="cw-hypothesis" data-cw-hypothesis="{{ a.id }}"><legend>{{ t('Test an explanation','检验一种解释') }}</legend>{% for h in ws.hypotheses[a.id] %}<label><input type="radio" name="cw-hypothesis-{{ a.id }}" value="{{ h.id }}" {% if loop.first %}checked{% endif %}>{{ ct(h.label) }}</label>{% endfor %}</fieldset>
+        {% for h in ws.hypotheses[a.id] %}<div class="cw-explanation" data-cw-explanation="{{ a.id }}:{{ h.id }}" {% if not loop.first %}hidden{% endif %}><span class="cw-chip">{{ t('Conditional explanation · unassessed','条件性解释 · 尚未评估') }}</span><p>{{ ct(h.mechanism) }}</p><div><h4>{{ t('What would support it','哪些证据支持它') }}</h4><p>{{ ct(h.confirm) }}</p></div><div><h4>{{ t('What would weaken it','哪些证据削弱它') }}</h4><p>{{ ct(h.invalidate) }}</p></div></div>{% endfor %}
+        {% else %}<h3>{{ t('Where to go deeper','进一步研究') }}</h3><p class="cw-muted">{{ t('Price and trend observations are available. A qualified physical and transmission analysis is not yet attached to this commodity.','当前可查看价格及趋势观察；本品种尚未接入合格的实物市场与传导分析。') }}</p>{% endif %}
+        <div class="cw-links">{% if a.deep_coverage %}<button type="button" class="gbtn" data-cw-go="relationships">{{ t('Trace relationships','追踪关联') }} ↗</button>{% endif %}<button type="button" class="gbtn gbtn-quiet" data-cw-go="research">{{ t('Draft a research condition','拟定研究条件') }}</button></div>
+        </aside>
+      </div>
       {% if a.id == 'oil' %}{% set ph = ws.physical %}
       <section id="cw-physical-oil" class="panel cw-panel cw-section cw-physical" aria-labelledby="cw-physical-title" data-cw-physical>
         <div class="cw-section-head"><div><p class="cw-eyebrow">{{ t('US petroleum balance','美国石油供需') }}</p><h3 id="cw-physical-title">{{ ct(ph.headline) }}</h3></div><span class="cw-chip">{{ t('Physical context','实物背景') }}</span></div>
@@ -126,28 +151,15 @@
         <div class="cw-links"><button type="button" class="gbtn gbtn-quiet" data-cw-evidence="physical">{{ t('Open the published Gold methodology and history','打开已发布的黄金方法与历史') }} ↗</button></div>
       </section>
       {% endif %}
-      <div class="cw-section cw-two-col">
-        <div class="panel cw-panel">
-          <h3>{{ t('The price evidence','价格证据') }}</h3>
-          <div class="cw-returns">{% for window,value in a.returns.items() %}<div class="cw-return"><span>{{ window }} {{ t('sessions','个交易日') }}</span><strong>{{ change(value) }}</strong></div>{% endfor %}</div>
-          <div class="cw-read-rows"><div class="cw-read-row"><span>{{ t('Long-term trend','长期趋势') }}</span><strong>{% if a.trend == 'up' %}{{ t('Up','向上') }}{% elif a.trend == 'down' %}{{ t('Down','向下') }}{% elif a.trend == 'flat' %}{{ t('Flat','平稳') }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</strong></div><div class="cw-read-row"><span>{{ t('Published momentum','已发布的动量判断') }}</span><strong>{% if a.momentum == 'bull' %}{{ t('Positive','偏强') }}{% elif a.momentum == 'bear' %}{{ t('Negative','偏弱') }}{% elif a.momentum == 'neutral' %}{{ t('Neutral','中性') }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</strong></div></div>
-          <details class="mx-disc cw-disclosure"><summary>{{ t('Series and comparison basis','序列与比较口径') }}</summary><p>{{ t('These returns come from the existing published price series. The one-month change and trading-session windows are distinct comparisons. No dated futures contract, delivery point or executable quote is inferred.','收益率来自现有已发布价格序列。一个月变化与交易日窗口属于不同的比较口径。本页不据此推定具体期货合约、交割地点或可成交报价。') }}</p></details>
-        </div>
-        <div class="panel cw-panel"><h3>{{ t('Where to go deeper','进一步研究') }}</h3><p class="cw-muted">{% if a.deep_coverage %}{{ t('Compare competing explanations, inspect connected markets, and define your next review condition.','比较不同解释，检查关联市场，并定义下次复核条件。') }}{% else %}{{ t('Price and trend observations are available. A qualified physical and transmission analysis is not yet attached to this commodity.','当前可查看价格及趋势观察；本品种尚未接入合格的实物市场与传导分析。') }}{% endif %}</p><div class="cw-links">{% if a.deep_coverage %}<button type="button" class="gbtn" data-cw-go="relationships">{{ t('Trace relationships','追踪关联') }} ↗</button>{% endif %}<button type="button" class="gbtn gbtn-quiet" data-cw-go="research">{{ t('Draft a research condition','拟定研究条件') }}</button><a href="#commodity-advanced" data-cw-advanced>{{ t('Open full analytics','打开完整分析') }} ↗</a></div></div>
-      </div>
       <section class="cw-section"><div class="cw-section-head"><h3>{{ t('Go straight to the evidence','直达证据') }}</h3><span class="cw-stamp">{{ t('Continue with this commodity selected','保留当前品种继续研究') }}</span></div><div class="cw-evidence-nav"><button type="button" data-cw-evidence="detail" class="cw-evidence-link"><strong>{{ t('Price, cycle & signals','价格、周期与信号') }} ↗</strong><span>{{ t('Published multi-timeframe readings','已发布的多周期判断') }}</span></button><button type="button" data-cw-evidence="physical" class="cw-evidence-link"><strong>{{ t('Physical evidence & coverage','实物证据与覆盖') }} ↗</strong><span>{% if a.id == 'gold' %}{{ t('China physical premium and source coverage','中国实物升水与来源覆盖') }}{% else %}{{ t('Where supply evidence is available','供应证据覆盖到哪里') }}{% endif %}</span></button><button type="button" data-cw-go="relationships" class="cw-evidence-link"><strong>{{ t('Connected markets & companies','关联市场与公司') }} ↗</strong><span>{{ t('Rates, FX, relative prices and equity channels','利率、外汇、相对价格与股票渠道') }}</span></button><button type="button" data-cw-evidence="catalysts" class="cw-evidence-link"><strong>{{ t('Events & published alerts','事件与已发布提醒') }} ↗</strong><span>{{ t('Check the release calendar and event history','检查发布日历及事件历史') }}</span></button></div></section>
-      {% if a.id in ws.hypotheses %}
-      <section class="panel cw-panel cw-section">
-        <fieldset class="cw-hypothesis" data-cw-hypothesis="{{ a.id }}"><legend>{{ t('Test an explanation','检验一种解释') }}</legend>{% for h in ws.hypotheses[a.id] %}<label><input type="radio" name="cw-hypothesis-{{ a.id }}" value="{{ h.id }}" {% if loop.first %}checked{% endif %}>{{ ct(h.label) }}</label>{% endfor %}</fieldset>
-        {% for h in ws.hypotheses[a.id] %}<div class="cw-explanation" data-cw-explanation="{{ a.id }}:{{ h.id }}" {% if not loop.first %}hidden{% endif %}><span class="cw-chip">{{ t('Conditional explanation · unassessed','条件性解释 · 尚未评估') }}</span><p>{{ ct(h.mechanism) }}</p><div><h4>{{ t('What would support it','哪些证据支持它') }}</h4><p>{{ ct(h.confirm) }}</p></div><div><h4>{{ t('What would weaken it','哪些证据削弱它') }}</h4><p>{{ ct(h.invalidate) }}</p></div></div>{% endfor %}
-      </section>
-      {% endif %}
+
     </div>
     {% endfor %}
   </div>
 
   <div id="cw-panel-relationships" role="tabpanel" aria-labelledby="cw-tab-relationships" data-cw-panel="relationships" hidden>
     <div class="cw-toolbar"><h2>{{ t('Follow the consequences','追踪市场影响') }}</h2><label class="cw-field"><span>{{ t('Research lens','研究视角') }}</span><select data-cw-relationship-asset>{% for a in ws.assets %}<option value="{{ a.id }}" {% if a.id == 'oil' %}selected{% endif %} data-cw-en="{{ a.label.en }}" data-cw-zh="{{ a.label.zh }}">{{ a.label.en }}</option>{% endfor %}</select></label></div>
+    <div class="cw-investigation-grid">
     <section class="panel cw-panel cw-section cw-investigation" aria-labelledby="cw-investigation-title">
       <div class="cw-chain-head"><div><p class="cw-eyebrow">{{ t('Explanation to test','待检验的解释') }}</p><h3 id="cw-investigation-title">{{ t('Cause unresolved','原因未明') }}</h3></div><span class="cw-chip">{{ t('Not established','尚未建立') }}</span></div>
       <p class="cw-muted" id="cw-investigation-state"></p>
@@ -168,6 +180,7 @@
       <p>{{ ct(ws.gold_physical.implication) }}</p>
       <div class="cw-links"><button type="button" class="gbtn gbtn-quiet" data-cw-go="explore">{{ t('Review the Gold evidence','复核黄金证据') }} ↗</button></div>
     </section>
+    </div>
     <section class="cw-section cw-context-grid">
       <div class="panel cw-panel cw-context"><h3>{{ t('Real yields','实际收益率') }}</h3>
         {% if ws.sources.rates.state in ['available','earlier_context'] and ws.rates.real_10y is not none %}<strong class="cw-number">{{ '%.2f'|format(ws.rates.real_10y) }}%</strong><p>{% if ws.rates.real_10y_chg_22d_bp is not none %}<span class="cw-number">{{ '%+g'|format(ws.rates.real_10y_chg_22d_bp) }} bp</span> · {{ t('22 trading sessions','22个交易日') }}{% else %}{{ t('Change unavailable','变化数据不可用') }}{% endif %}</p>{% else %}<p>{{ t('A matching dated rate observation is unavailable.','缺少日期匹配的利率观察。') }}</p>{% endif %}
@@ -205,14 +218,33 @@
   </div>
 
   <div id="cw-panel-compare" role="tabpanel" aria-labelledby="cw-tab-compare" data-cw-panel="compare" hidden>
-    <section class="cw-section"><div class="cw-section-head"><h2>{{ t('Compare on one basis','用统一口径比较') }}</h2><p>{{ t('Choose up to four commodities','最多选择四个品种') }}</p></div><div class="cw-compare-picks">{% for a in ws.assets %}<label><input type="checkbox" value="{{ a.id }}" data-cw-compare {% if a.id in ['oil','gold','copper','silver'] %}checked{% endif %}>{{ ct(a.label) }}</label>{% endfor %}</div><div class="cw-toolbar"><label class="cw-field"><span>{{ t('Comparison window','比较窗口') }}</span><select data-cw-window><option value="1m" data-cw-en="One month · publisher comparison" data-cw-zh="一个月 · 发布方口径">One month · publisher comparison</option>{% for w in [5,20,60,252] %}<option value="{{ w }}" data-cw-en="{{ w }} trading sessions" data-cw-zh="{{ w }}个交易日">{{ w }} trading sessions</option>{% endfor %}</select></label><p class="cw-muted" id="cw-compare-status" role="status" aria-live="polite"></p></div><div class="panel cw-panel cw-evidence-table"><table class="mx-tbl" id="cw-comparison-table"><thead><tr><th>{{ t('Commodity','品种') }}</th><th>{{ t('Price change','价格变化') }}</th><th>{{ t('Long-term trend','长期趋势') }}</th><th>{{ t('Coverage','覆盖范围') }}</th></tr></thead><tbody>{% for a in ws.assets %}<tr data-cw-compare-row="{{ a.id }}" {% if a.id not in ['oil','gold','copper','silver'] %}hidden{% endif %}><td><button type="button" class="gbtn gbtn-quiet" data-cw-open="{{ a.id }}">{{ ct(a.label) }}</button></td><td data-cw-return-cell="{{ a.id }}">{{ change(a.change_1m_pct) }}</td><td>{% if a.trend == 'up' %}{{ t('Up','向上') }}{% elif a.trend == 'down' %}{{ t('Down','向下') }}{% else %}{{ t('Unconfirmed','尚未确认') }}{% endif %}</td><td>{% if a.deep_coverage %}{{ t('Price + explanation tests','价格与解释检验') }}{% else %}{{ t('Price observations','价格观察') }}{% endif %}</td></tr>{% endfor %}</tbody></table></div><p class="cw-note">{{ t('These are price-series comparisons, not total-return rankings. Futures rolls, currencies and contract selection can change an investor’s result.','这是价格序列比较，并非总回报排名。期货展期、汇率与合约选择可能改变投资者的实际结果。') }}</p></section>
+    <section class="cw-section">
+      <div class="cw-section-head cw-route-head"><div><p class="cw-eyebrow">{{ t('A shared perspective','统一的观察视角') }}</p><h2>{{ t('Compare on one basis','用统一口径比较') }}</h2></div><p>{{ t('Choose up to four commodities','最多选择四个品种') }}</p></div>
+      <div class="panel cw-panel cw-compare-controls">
+        <div class="cw-compare-picks">{% for a in ws.assets %}<label><input type="checkbox" value="{{ a.id }}" data-cw-compare {% if a.id in ['oil','gold','copper','silver'] %}checked{% endif %}>{{ ct(a.label) }}</label>{% endfor %}</div>
+        <div class="cw-toolbar"><label class="cw-field"><span>{{ t('Comparison window','比较窗口') }}</span><select data-cw-window><option value="1m" data-cw-en="One month · publisher comparison" data-cw-zh="一个月 · 发布方口径">One month · publisher comparison</option>{% for w in [5,20,60,252] %}<option value="{{ w }}" data-cw-en="{{ w }} trading sessions" data-cw-zh="{{ w }}个交易日">{{ w }} trading sessions</option>{% endfor %}</select></label><p class="cw-muted" id="cw-compare-status" role="status" aria-live="polite"></p></div>
+      </div>
+      <div class="panel cw-panel cw-compare-visual" aria-labelledby="cw-compare-chart-title">
+        <div class="cw-section-head"><h3 id="cw-compare-chart-title">{{ t('Price moves, side by side','并排观察价格变化') }}</h3><span class="cw-stamp" data-cw-plot-window></span></div>
+        <div class="cw-plot-axis" aria-hidden="true"><span data-cw-plot-min></span><span>0</span><span data-cw-plot-max></span></div>
+        <div class="cw-plot-rows">
+        {% for a in ws.assets %}<div class="cw-plot-row" data-cw-compare-plot="{{ a.id }}" {% if a.id not in ['oil','gold','copper','silver'] %}hidden{% endif %}><button type="button" data-cw-open="{{ a.id }}">{{ ct(a.label) }} <span aria-hidden="true">↗</span></button><span class="cw-bar" aria-hidden="true"><span class="cw-bar-zero"></span><span class="cw-bar-mark" data-cw-plot-mark></span></span><strong data-cw-plot-value></strong></div>{% endfor %}
+        </div>
+        <div class="mx-empty cw-empty" data-cw-compare-empty hidden><h3>{{ t('Choose your comparison','选择比较品种') }}</h3><p class="mx-empty-why">{{ t('Select up to four commodities above to compare the same observation window.','请在上方选择最多四个品种，比较同一观察窗口。') }}</p></div>
+        <p class="cw-chart-foot">{{ t('One zero baseline. One scale. Missing observations remain unavailable.','共用零基线与刻度；缺失观察仍显示为不可用。') }}</p>
+      </div>
+      <details class="mx-disc cw-disclosure cw-comparison-detail"><summary>{{ t('Trend and coverage detail','趋势与覆盖详情') }}</summary><div class="panel cw-panel cw-evidence-table"><table class="mx-tbl" id="cw-comparison-table"><thead><tr><th>{{ t('Commodity','品种') }}</th><th>{{ t('Price change','价格变化') }}</th><th>{{ t('Long-term trend','长期趋势') }}</th><th>{{ t('Coverage','覆盖范围') }}</th></tr></thead><tbody>{% for a in ws.assets %}<tr data-cw-compare-row="{{ a.id }}" {% if a.id not in ['oil','gold','copper','silver'] %}hidden{% endif %}><td><button type="button" class="gbtn gbtn-quiet" data-cw-open="{{ a.id }}">{{ ct(a.label) }}</button></td><td data-cw-return-cell="{{ a.id }}">{{ change(a.change_1m_pct) }}</td><td>{% if a.trend == 'up' %}{{ t('Up','向上') }}{% elif a.trend == 'down' %}{{ t('Down','向下') }}{% else %}{{ t('Unconfirmed','尚未确认') }}{% endif %}</td><td>{% if a.deep_coverage %}{{ t('Price + explanation tests','价格与解释检验') }}{% else %}{{ t('Price observations','价格观察') }}{% endif %}</td></tr>{% endfor %}</tbody></table></div></details>
+      <p class="cw-note">{{ t('These are price-series comparisons, not total-return rankings. Futures rolls, currencies and contract selection can change an investor’s result.','这是价格序列比较，并非总回报排名。期货展期、汇率与合约选择可能改变投资者的实际结果。') }}</p>
+    </section>
   </div>
 
   <div id="cw-panel-research" role="tabpanel" aria-labelledby="cw-tab-research" data-cw-panel="research" hidden>
-    <div class="cw-section-head cw-section"><h2>{{ t('Make the next check precise','明确下一次复核条件') }}</h2><p>{{ t('Portable draft · monitoring is not active','可导出的草稿 · 未启用监测') }}</p></div>
+    <div class="cw-section-head cw-section cw-route-head"><div><p class="cw-eyebrow">{{ t('Your research worksheet','您的研究工作页') }}</p><h2>{{ t('Make the next check precise','明确下一次复核条件') }}</h2></div><p>{{ t('Portable draft · monitoring is not active','可导出的草稿 · 未启用监测') }}</p></div>
     <div class="cw-two-col">
-      <form id="cw-research-form" class="panel cw-panel">
+      <form id="cw-research-form" class="panel cw-panel cw-worksheet">
+        <h3 class="cw-step-title"><span class="cw-step-index" aria-hidden="true">01</span>{{ t('Frame the question','明确研究问题') }}</h3>
         <div class="cw-research-context"><span class="cw-eyebrow">{{ t('Selected explanation','所选解释') }}</span><strong id="cw-research-hypothesis"></strong><button type="button" class="gbtn gbtn-quiet" data-cw-go="explore">{{ t('Review explanation','复核解释') }} ↗</button></div><p class="cw-note">{{ t('A publisher one-month comparison is distinct from 20 trading sessions. Choose the exact window below.','发布方的一个月比较不同于20个交易日，请在下方明确选择窗口。') }}</p>
+        <h3 class="cw-step-title"><span class="cw-step-index" aria-hidden="true">02</span>{{ t('Define the condition','定义复核条件') }}</h3>
         <div class="cw-form-grid">
           <label class="cw-field"><span>{{ t('Commodity','品种') }}</span><select name="asset">{% for a in ws.assets %}<option value="{{ a.id }}" {% if a.id == 'oil' %}selected{% endif %} data-cw-en="{{ a.label.en }}" data-cw-zh="{{ a.label.zh }}">{{ a.label.en }}</option>{% endfor %}</select></label>
           <label class="cw-field"><span>{{ t('Metric','指标') }}</span><select name="metric"><option value="return_pct" data-cw-en="Price-series change (%)" data-cw-zh="价格序列变化 (%)">Price-series change (%)</option></select></label>
@@ -221,13 +253,15 @@
           <label class="cw-field"><span>{{ t('Your threshold (%)','自定阈值 (%)') }}</span><input name="threshold" type="number" step="any" required placeholder="0.0"></label>
           <label class="cw-field"><span>{{ t('Expires after this date (UTC)','此日期结束后过期 (UTC)') }}</span><input name="expires_on" type="date" min="{{ ws.as_of or '' }}" required></label>
         </div>
+        <h3 class="cw-step-title cw-export-title"><span class="cw-step-index" aria-hidden="true">03</span>{{ t('Keep the evidence','保留研究证据') }}</h3>
         <div class="cw-form-actions"><button class="gbtn gbtn-cta" type="submit">{{ t('Export research condition','导出研究条件') }} ↓</button><button type="button" class="gbtn gbtn-quiet" id="cw-import-trigger">{{ t('Reopen a draft','重新打开草稿') }}</button><input id="cw-import-file" type="file" accept=".json,application/json" hidden></div>
         <p class="cw-export-status" id="cw-export-status" role="status" aria-live="polite"></p>
       </form>
-      <aside class="panel cw-panel"><h3>{{ t('What this preserves','导出内容') }}</h3><div class="cw-explanation"><p>{{ t('The file includes your condition, exact publisher field, selected explanation and an as-saved evidence appendix. Contract and monitoring qualification remain explicit.','文件保留研究条件、精确的发布方字段、所选解释及保存时的证据附录，并明确合约与监测资格状态。') }}</p><div><h4>{{ t('Current capability','当前功能') }}</h4><p>{{ t('This downloads a research-condition file. It does not save to your account, evaluate a condition or send an alert.','此操作下载研究条件文件，不会保存到账户、计算条件是否触发或发送提醒。') }}</p></div><div><h4>{{ t('Why the threshold is yours','为何由您设定阈值') }}</h4><p>{{ t('The workspace does not invent a trading threshold from a narrative or a confidence score.','本工作台不会根据叙事或置信分数虚构交易阈值。') }}</p></div></div></aside>
+      <aside class="panel cw-panel cw-note-aside"><p class="cw-eyebrow">{{ t('Research context','研究背景') }}</p><h3 data-cw-note-asset></h3><dl class="cw-note-facts"><div><dt>{{ t('Evidence date','证据日期') }}</dt><dd>{{ ws.as_of or t('Unavailable','暂不可用') }}</dd></div><div><dt>{{ t('Draft lookback','草稿回看窗口') }}</dt><dd data-cw-note-window></dd></div><div><dt>{{ t('Status','状态') }}</dt><dd>{{ t('Draft · not monitored','草稿 · 未启用监测') }}</dd></div></dl><h3>{{ t('What this preserves','导出内容') }}</h3><div class="cw-explanation"><p>{{ t('The file includes your condition, exact publisher field, selected explanation and an as-saved evidence appendix. Contract and monitoring qualification remain explicit.','文件保留研究条件、精确的发布方字段、所选解释及保存时的证据附录，并明确合约与监测资格状态。') }}</p><div><h4>{{ t('Current capability','当前功能') }}</h4><p>{{ t('This downloads a research-condition file. It does not save to your account, evaluate a condition or send an alert.','此操作下载研究条件文件，不会保存到账户、计算条件是否触发或发送提醒。') }}</p></div><div><h4>{{ t('Why the threshold is yours','为何由您设定阈值') }}</h4><p>{{ t('The workspace does not invent a trading threshold from a narrative or a confidence score.','本工作台不会根据叙事或置信分数虚构交易阈值。') }}</p></div></div></aside>
     </div>
   </div>
 
   <details class="mx-disc cw-disclosure"><summary>{{ t('Evidence dates and methodology','证据日期与方法') }}</summary><div class="cw-evidence-table"><table class="mx-tbl"><thead><tr><th>{{ t('Publisher','发布来源') }}</th><th>{{ t('Research date','研究日期') }}</th><th>{{ t('Use in this snapshot','在本快照中的使用') }}</th></tr></thead><tbody>{% for key,source in ws.sources.items() %}<tr><td>{{ source.path }}</td><td>{{ source.as_of or t('Unavailable','暂不可用') }}</td><td>{{ source_state(source) }}</td></tr>{% endfor %}</tbody></table></div><p>{{ t('Research snapshots are not live quotes. Publisher dates do not establish point-in-time publication availability. Conditional explanations are not causal identification or investment signals.','研究快照不是实时报价。发布方研究日期不构成信息首次可用时间的证明；条件性解释也不等于因果识别或投资信号。') }}</p><p>{{ t('Oil explanations distinguish supply and demand mechanisms; weekly product-demand evidence should be read with seasonal and multi-week context.','原油解释区分供给与需求机制；每周产品需求证据应结合季节性及多周背景理解。') }} <a href="https://www.aeaweb.org/articles?id=10.1257/aer.99.3.1053" target="_blank" rel="noopener">{{ t('Kilian · oil shock research','Kilian · 原油冲击研究') }}</a> · <a href="https://www.eia.gov/TodayinEnergy/detail.php?id=63184" target="_blank" rel="noopener">EIA</a></p><p class="cw-number">{{ ws.schema }} · {{ ws.fingerprint }}</p></details>
   <script type="application/json" id="cw-data">{{ ws|tojson }}</script>
 </section>
+

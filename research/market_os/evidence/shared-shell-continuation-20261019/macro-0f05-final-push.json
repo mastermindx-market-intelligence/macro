@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-10-20T04:51:51.930399+00:00",
+  "finished_at": "2026-10-20T04:52:21.432842+00:00",
+  "command": [
+    "git",
+    "-C",
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+    "push",
+    "origin",
+    "HEAD:refs/heads/sol/market-os-shared-shell-design-20260924"
+  ],
+  "exit": 0,
+  "head": "8ccfa5ddba6770cef48f2f162c08474d023e094e",
+  "remote": "8ccfa5ddba6770cef48f2f162c08474d023e094e\trefs/heads/sol/market-os-shared-shell-design-20260924",
+  "status": "",
+  "log_sha256": "7d6cd2ae9cf788a009c55dae5e11beafac7ab6d8a706c5453fc0ff00f5f66262"
+}

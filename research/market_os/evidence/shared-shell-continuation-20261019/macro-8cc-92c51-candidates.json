@@ -1,0 +1,171 @@
+{
+  "schema": "mastermind.attended.threeway_candidate.v1",
+  "observed_at": "2026-10-20T05:08:34.587909+00:00",
+  "head": "8ccfa5ddba6770cef48f2f162c08474d023e094e",
+  "incoming": "92c51f1ff800b36fc63e7869243945996ac7315c",
+  "base": "0f058428717ac7c96c11e5a3ebc960db6a61edab",
+  "preview_tree": "b750bc4f1a9fec2d48e2e9eb66e09f8e669263d8",
+  "prior_index": "12f10c410682befb243f26add961b975137bea75",
+  "files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "candidate": "/tmp/shared-shell-css-visual-20261019T1107/macro-8cc-92c51-candidate-.github_ci_legacy-jobs.yml",
+      "bytes": 1923514,
+      "sha256": "58cd230ecc26635f128e84eeb357401ec936800ef96c6974e43c3e171181ae29",
+      "base_blob": "3051fc7a41a412e1e767066bcb029a4a38b1aa18",
+      "ours_blob": "0efcd1f4f97960dfad23c012f06bceb0a98263bc",
+      "incoming_blob": "dae75dc48404431d3434e04624741dcd65970299",
+      "jobs": 329,
+      "all_fields_order_and_multiplicities_verified": true,
+      "simultaneous_path_changes": [
+        {
+          "path": "jobs.intelligence-registry.paths",
+          "ours_added": [
+            "lib/shared_shell.py"
+          ],
+          "incoming_added": [
+            "lib/dataos/sec_filing_identity.py"
+          ]
+        },
+        {
+          "path": "jobs.nw-lobe-unfreeze.paths",
+          "ours_added": [
+            "lib/shared_shell.py"
+          ],
+          "incoming_added": [
+            "engine/bond_issue_parser.py",
+            "engine/bond_issue_terms.py",
+            "lib/dataos/sec_filing_identity.py"
+          ]
+        },
+        {
+          "path": "jobs.washout-turn-organ.paths",
+          "ours_added": [
+            "lib/shared_shell.py"
+          ],
+          "incoming_added": [
+            "engine/bond_issue_parser.py",
+            "engine/bond_issue_terms.py",
+            "lib/dataos/sec_filing_identity.py"
+          ]
+        }
+      ],
+      "checked_nodes": 350,
+      "resolved_hunks": 3
+    },
+    {
+      "path": "tests/test_ci_pack.py",
+      "candidate": "/tmp/shared-shell-css-visual-20261019T1107/macro-8cc-92c51-candidate-tests_test_ci_pack.py",
+      "bytes": 367011,
+      "sha256": "e754060d1106f6c4c6403338660b6229b560fd2f475205fcc39437762fa12b4b",
+      "base_blob": "8db015e1e4becae09553db24477a09d4d460fec6",
+      "ours_blob": "6993399b0d31c5c68f01e439752e8ced296c9107",
+      "incoming_blob": "ac293e803d1254e0efdf0358a7e6ef5970bba4e0",
+      "incoming_executable_AST_exact": true,
+      "incoming_ceiling": 5664,
+      "both_historical_notes_retained": true,
+      "resolved_hunks": 2
+    }
+  ],
+  "carry_forward_source_bindings": [
+    {
+      "path": "app/deploy/Caddyfile",
+      "sha256": "8b155501adaf1fee04f703645655c6c97f4b205b6bfac12011ef74386173436a",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "app/deploy/update.sh",
+      "sha256": "eae12bef34a5dbba1a986846fb3c59992ba228ca472a0316c042ced6e0e48d88",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "config/site_access.yml",
+      "sha256": "c6ae0c581eb822aa96cfbc45e412b35672703ef5a0f6c5e25cae0f4b869168ed",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "sha256": "75313a6b544bce04b19a8d0ad563c9847c8665bcf83ce55e990416f2065d491a",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "lib/shared_shell.py",
+      "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "templates/shared_shell_bridge.js",
+      "sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "templates/shared_shell.css",
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "site/shared_shell_bridge.js",
+      "sha256": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "site/shared_shell.css",
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "templates/sector_central.html.j2",
+      "sha256": "2c1728c368f99ad5dd75bd2638f1ffeb54006ef5c85671912eb599e5df09779b",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "templates/sector_central_china.html.j2",
+      "sha256": "2f0284874e4d75e703f3a4456c9d35dd9d9249b71c42afd7c8cf5052f2222dd8",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "scripts/inject_shared_shell.py",
+      "sha256": "265b339b85b715711de48bf1fedaea8d4c1ee6f3854825b5d09e28fe7be36fbb",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "lib/pages.py",
+      "sha256": "ee50b30dc5cd990e6c07ec433422f1032379d6857e4cd0586ee4de65f3b6c1a5",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "scripts/optimize_assets.py",
+      "sha256": "1c6ada51deb3be91f7b621bb6c1d3c52f373c6424c346ec6563ffb7b97cf26be",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "lib/config.py",
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    },
+    {
+      "path": "scripts/check_template_site_sync.py",
+      "sha256": "e9ee358c759080169735741df2d0144582841a3e63647da8af488545b4503aef",
+      "incoming_delta_none": true,
+      "preview_equals_ours": true
+    }
+  ],
+  "existing_ceiling": 5664,
+  "final_weight_not_yet_measured": true,
+  "source_effect": false
+}

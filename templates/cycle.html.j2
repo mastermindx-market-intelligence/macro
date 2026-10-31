@@ -10,7 +10,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <title>Cycle Intelligence — Mastermind</title>
-{% set seo_title = 'Cycle Intelligence — 15 Boom-Bust Cycles on One Clock | Mastermind' %}{% set seo_desc = 'Fifteen boom-bust cycles on one clock — observed history and regime-conditioned projections, so you can see exactly where each asset sits in its lifespan.' %}{% set seo_path = 'cycle.html' %}
+{% set _c = cycle_census | default({}, true) %}{% set _n = _c.get('cards') %}
+{% set _m = _c.get('measured_cards') %}{% set _f = _c.get('frame_cards') %}
+{% set _tt = ' Boom-Bust Cycles on One Clock | Mastermind' %}
+{% if _n %}{% set seo_title = 'Cycle Intelligence — ' ~ _n ~ _tt %}
+{% set seo_desc = _n ~ ' boom-bust cycles on one clock — observed history and projections.' %}
+{% else %}{% set seo_title = 'Cycle Intelligence — Boom-Bust Cycles on One Clock | Mastermind' %}
+{% set seo_desc = 'Boom-bust cycles on one clock — observed history and projections.' %}
+{% endif %}{% set seo_path = 'cycle.html' %}
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="cycle.css?v=4">
@@ -23,11 +30,17 @@
     <div class="ht">
       <div class="cyc-kicker"><span class="hb"></span> <span class="l-en">Cycle Intelligence</span><span class="l-zh">周期情报</span></div>
       <h1 class="cyc-title"><span class="l-en">Where every cycle stands</span><span class="l-zh">每个周期所处的位置</span></h1>
-      <p class="cyc-sub"><span class="l-en">Two dozen boom-bust cycles on one clock. <b>MEASURED</b> cards plot the engine's own
+      <p class="cyc-sub"><span class="l-en">{% if _n %}{{ _n }} boom-bust cycles on one clock —
+        {{ _m }} measured from their own backing tape, {{ _f }} curated frames.{%- else -%}
+        Boom-bust cycles on one clock. {% endif %}<b>MEASURED</b> cards plot the engine's own
         oscillator, turns and projection from the live backing tape; <b>FRAME</b> cards show only the curated turning-point
         history — structural clocks, never a hand-typed position. So you can see exactly where each measurable asset sits,
         and how the long clocks line up beside them. Projections here are windows, not certainties — re-drawn nightly as new
-        data lands.</span><span class="l-zh">二十多个繁荣—萧条周期同处一张时钟之上。<b>已测量</b>卡片由底层数据实时计算引擎自身的振荡指标、拐点与投影；<b>框架</b>卡片仅展示人工整理的拐点历史——结构性时钟，绝无人工录入的位置。让你清楚看到每类可测量资产的位置，以及长周期时钟如何在旁排布。这里的预测是时间窗口，而非确定性结论——每晚随新数据重新计算。</span></p>
+        data lands.</span><span class="l-zh">{% if _n %}{{ _n }} 个繁荣—萧条周期同处一张时钟之上{#
+        #}——其中 {{ _m }} 个由自身底层数据带测量，{{ _f }} 个为人工整理的框架。{%- else -%}{#
+        #}繁荣—萧条周期同处一张时钟之上。{% endif %}<b>已测量</b>卡片由底层数据计算引擎自身的振{#
+        #}荡指标、拐点与投影；<b>框架</b>卡片仅展示人工整理的拐点历史——结构性时钟，绝无人工录入的位置。让你清楚看到每类可测量资产的位置，以及长周期时钟如何在旁排布。这里的预测是{#
+        #}时间窗口，而非确定性结论——每晚随新数据重新计算。</span></p>
     </div>
     <div class="cyc-ctrls">
       <span class="cyc-asof"><span class="l-en">As of</span><span class="l-zh">截至</span> <span id="cyc-asof">…</span></span>
@@ -51,6 +64,18 @@
          age, the curated-vs-live regime reconciliation and the regime-data status into
          a single line, detail in its plain-EN hover. #}
       <div id="cyc-stale-banner"></div>
+      {% if regime_flip and regime_flip.margin is not none and not regime_flip.label_unsupported
+         and regime_flip.displayed_quad == regime_flip.raw_quad %}{% set _rf = regime_flip %}
+      {% set _axz = {'growth': '增长', 'inflation': '通胀'} %}
+      <div class="cyc-howline" id="cyc-regime-flip">
+        <span class="l-en">The engine's regime read ({{ _rf.displayed_quad }}) rests thinly on
+          its {{ _rf.axis }} axis: the closest supporting input,
+          {{ _rf.component | replace('_', ' ') }}, sits {{ _rf.margin }} past its
+          ±{{ _rf.threshold }} cutoff.</span>
+        <span class="l-zh">引擎的状态象限读数（{{ _rf.displayed_quad }}）在{{ _axz.get(_rf.axis, _rf.axis) }}{#
+        #}轴上支撑单薄：最接近门槛的支撑项 {{ _rf.component | replace('_', ' ') }}{#
+        #} 仅超出 ±{{ _rf.threshold }} 门槛 {{ _rf.margin }}。</span>
+      </div>{% endif %}
       <div class="cyc-groups" id="cyc-groups" aria-label="Group filter"></div>
       <div class="cyc-chips" id="cyc-chips" aria-label="Cycle toggles"></div>
       <div id="cyc-chart" data-h="452" role="img" aria-label="Cross-cycle overlay chart"></div>
@@ -68,8 +93,42 @@
   <div class="cyc-cards-hd">
     <h2><span class="l-en">Cycle scorecards</span><span class="l-zh">周期记分卡</span></h2>
     <span class="sub"><span class="l-en">Tap any card — or its line on the chart — to focus it</span><span class="l-zh">点按任意卡片（或图中其曲线）以聚焦</span></span>
+    {% if watch_census %}{% set _w = watch_census %}
+    <div class="cyc-howline" id="cyc-watch-evidence" title="{{ _w.title_en | e }}">
+      <span class="l-en">Watch conditions on these cards: {{ _w.evaluated }} evaluated
+        against a tape · {{ _w.crossed }} already crossed · {{ _w.by_hand }} tracked by
+        hand{% if _w.overdue_n %}, {{ _w.overdue_n }} past {% if _w.ttl_days %}their
+        {{ _w.ttl_days }}-day{% else %}their{% endif %} review window
+        <span class="sc-narr-badge sc-narr-badge-amber">up to {{ _w.overdue_days }} days over</span>
+        {% endif %} · {{ _w.not_evaluable }} not evaluable right now.</span>
+      <span class="l-zh">这些卡片的关注条件：{{ _w.evaluated }} 项依数据带评估 · {#
+        #}{{ _w.crossed }} 项已越过 · {{ _w.by_hand }} 项人工跟踪{% if _w.overdue_n %}{#
+        #}，其中 {{ _w.overdue_n }} 项已超出{% if _w.ttl_days %} {{ _w.ttl_days }} 天{% endif %}{#
+        #}复核窗口 <span class="sc-narr-badge sc-narr-badge-amber">最多逾期 {#
+        #}{{ _w.overdue_days }} 天</span>{% endif %} · {#
+        #}{{ _w.not_evaluable }} 项暂时无法评估。</span>
+    </div>{% endif %}
   </div>
   <div class="cyc-cards" id="cyc-cards"></div>
+  {% if proxy_evidence %}{% set _pe = proxy_evidence %}
+  <div class="cyc-howline" id="cyc-proxy-evidence">
+    <span class="l-en">Timing grades resting on a stand-in tape, beside the gate they passed:
+      {%- for r in _pe %}{% set _g = (r.gate or {}).get('match_rate_min') %}
+      {%- if r.match_rate_wilson_lo is not none %} {{ r.cycle }}
+      ({{ (r.ref or '').split(':')[-1] }}) — {{ r.matched }}
+      of {{ r.n_hand }} hand turns matched{% if _g is not none %}, 95% lower bound
+      {{ r.match_rate_wilson_lo }} against a {{ _g }} gate, median offset
+      {{ r.median_offset_months }} months{% endif %}{% if r.low_confidence %},
+      flagged low-confidence{% endif %}.{% endif %}
+      {%- endfor %}</span>
+    <span class="l-zh">以下定时评级依赖替代数据带，并列出其所通过的门槛：{% for r in _pe %}{#
+    #}{% set _gz = (r.gate or {}).get('match_rate_min') %}{#
+    #}{% if r.match_rate_wilson_lo is not none %}{{ r.cycle }}{#
+    #}（{{ (r.ref or '').split(':')[-1] }}）——{{ r.n_hand }} {#
+    #}个人工拐点中匹配 {{ r.matched }} 个{% if _gz is not none %}，该匹配率的 95% 下限为 {#
+    #}{{ r.match_rate_wilson_lo }}，门槛 {{ _gz }}，中位偏移 {{ r.median_offset_months }} {#
+    #}个月{% endif %}{% if r.low_confidence %}，标记为低置信度{% endif %}。{% endif %}{% endfor %}</span>
+  </div>{% endif %}
 </div>
 
 <!-- Load order matters: optimize_assets.py adds ?v=<hash>+defer to every unqueried

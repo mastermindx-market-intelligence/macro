@@ -14,6 +14,51 @@ from lib.options_source_receipts import (ACQUISITION_COLUMN, THETA_ENDPOINTS,
 from engine.options_exposure_projection import (compose_native_exposure_context,
     exposure_input_digest, build_exposure_projection)
 
+
+@pytest.mark.parametrize('root', ['SPY', 'QQQ'])
+def test_opted_in_writer_receipt_survives_backfill_and_daily_year_merge(tmp_path, monkeypatch, root):
+    from datetime import date
+    from collectors import thetadata as td
+    from scripts import backfill_thetadata_eod as backfill, topup_thetadata_day as daily
+
+    monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS', 'SPY,QQQ')
+    day = date(2026, 10, 22)
+    captured = '2026-10-23T10:00:00Z'
+    raw = b'synthetic complete Greek CSV response'
+    receipt = theta_acquisition(THETA_ENDPOINTS['greeks'], dict(symbol=root,
+        expiration='*', start_date=20261022, end_date=20261022, right='both',
+        format='csv', version='1'), raw, origin='http://theta-test:25503', received_at=captured)
+    fresh = pd.DataFrame([dict(root=root, expiration=pd.Timestamp('2026-10-30'),
+        strike=100.0, right='C', date=pd.Timestamp(day), gamma=0.1,
+        **{ACQUISITION_COLUMN: receipt})])
+    monkeypatch.setattr(td, 'bulk_eod', lambda *a, **kw: pd.DataFrame())
+    monkeypatch.setattr(td, 'bulk_open_interest', lambda *a, **kw: pd.DataFrame())
+    def greeks(r, exp, start, end, **kwargs):
+        assert r == root and (exp, start, end) == (0, day, day)
+        assert kwargs == {'order': 3, 'version': '1'}
+        return fresh.copy()
+    monkeypatch.setattr(td, 'bulk_greeks', greeks)
+    monkeypatch.setattr(backfill, '_store_dir', lambda: tmp_path / 'backfill')
+    assert backfill._pull_root_year(root, 2026, day, day)
+    written = pd.read_parquet(backfill._parquet_path('greeks', root, 2026))
+    assert written[ACQUISITION_COLUMN].tolist() == [receipt]
+    assert native_acquisitions(written, root, str(day), 'greeks', now=captured)[0]['response_sha256'] == hashlib.sha256(raw).hexdigest()
+
+    # Existing unversioned days remain unversioned; only the actually captured
+    # new day receives a receipt when daily maintenance appends to the year.
+    store = tmp_path / 'daily'
+    old = fresh.drop(columns=[ACQUISITION_COLUMN]).copy()
+    old['date'] = pd.Timestamp('2026-10-21')
+    daily._merge_day(store, 'greeks', root, date(2026, 10, 21), old)
+    assert daily._ensure_one_cell(store, 'greeks', root, day, lambda: written) == 'complete'
+    year = pd.read_parquet(store / 'greeks' / root / '2026.parquet')
+    previous = year[year.date.eq(pd.Timestamp('2026-10-21'))]
+    current = year[year.date.eq(pd.Timestamp(day))]
+    assert previous[ACQUISITION_COLUMN].isna().all()
+    assert native_acquisitions(previous, root, '2026-10-21', 'greeks', now=captured) is None
+    assert current[ACQUISITION_COLUMN].tolist() == [receipt]
+    assert native_acquisitions(current, root, str(day), 'greeks', now=captured)
+
 ASOF = "2026-10-15"
 EXPIRY = "2026-10-23"
 RECEIVED = "2026-10-15T20:01:00+00:00"

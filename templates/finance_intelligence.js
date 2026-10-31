@@ -1583,7 +1583,7 @@
     if (!first) return;
     var target = '#evidence=' + encodeURIComponent(first);
     if (location.hash === target) { handleHash(); return; }
-    location.hash = target;
+    var _ss = window.MMXSharedShell; if (_ss) { if (_ss.navigate(target, 'push') && location.hash === target) handleHash(); } else { location.hash = target; }
   }
 
   function hashPart(raw) {
@@ -1748,6 +1748,7 @@
     if (state.ui.scrim) state.ui.scrim.addEventListener('click', function () { setDrawer(false); });
     document.addEventListener('keydown', handleDrawerKeydown);
     window.addEventListener('hashchange', handleHash);
+    window.addEventListener('mmx:shell-location', handleHash);
     document.addEventListener('langchange', function () {
       // Item 8: capture which system tab held focus before the re-render.
       // renderSystem() below rebuilds the tab DOM from scratch, so the

@@ -77,6 +77,11 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import os
+import errno
+import stat
+import threading
+from contextlib import contextmanager
 import hashlib
 import json
 import subprocess
@@ -87,6 +92,11 @@ import re
 from dataclasses import dataclass
 from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from engine.entry_radar.replay.identity_observation_snapshot import IdentitySnapshotRead
+    from engine.neuralweb.market_memory_identity_candidate import ParquetBoundInitialCandidate
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -3416,6 +3426,401 @@ def _reference_json(path: Path) -> tuple[dict, str]:
     return value, hashlib.sha256(raw).hexdigest()
 
 
+# Scoped reentrancy bookkeeping only; fcntl/OS owns exclusion. This is not
+# source authority, a durable lock registry, lease, retry queue or daemon.
+_reference_writer_local = threading.local()
+
+
+def _writer_path(out_dir: Path) -> str:
+    return os.path.abspath(os.fspath(out_dir))
+
+
+def _assert_reference_writer_target(out_dir: Path) -> None:
+    """Detect directory substitution inside our currently held writer scope."""
+    token = getattr(_reference_writer_local, "active", {}).get(_writer_path(out_dir))
+    if token is None or token[0] != os.getpid():
+        return  # Pure read-only legacy guard calls are allowed outside writers.
+    _pid, fd, device, inode = token
+    try:
+        now = os.stat(out_dir, follow_symlinks=False)
+        held = os.fstat(fd)
+    except OSError as exc:
+        raise IdentityError("reference writer target changed or unavailable") from exc
+    if (not stat.S_ISDIR(now.st_mode) or
+            (now.st_dev, now.st_ino) != (device, inode) or
+            (held.st_dev, held.st_ino) != (device, inode)):
+        raise IdentityError("reference writer target changed during transaction")
+
+
+@contextmanager
+def _reference_writer_scope(out_dir: Path):
+    """One nonblocking, cooperative POSIX directory lock for all local writers.
+
+    Manual build and the ENTIRE nightly snapshot/build/rollback hold this same
+    scope. Nested calls in the same process/thread reuse its descriptor; other
+    processes/threads refuse immediately. No lockfile or new data schema.
+    This requires a local filesystem with working flock semantics. It does not
+    coordinate Git pushes, unrelated hosts, old code, or non-cooperating actors.
+    Creating an initial empty output directory is not generation publication.
+    """
+    try:
+        import fcntl
+    except ImportError as exc:
+        raise IdentityError("reference writer locking unsupported on this host") from exc
+    out_dir = Path(out_dir)
+    key = _writer_path(out_dir)
+    active = getattr(_reference_writer_local, "active", None)
+    if active is None:
+        active = {}
+        _reference_writer_local.active = active
+    previous = active.get(key)
+    owner_pid = os.getpid()
+    if previous is not None and previous[0] == owner_pid:
+        _assert_reference_writer_target(out_dir)
+        yield
+        return
+    fd = None
+    acquired = False
+    primary_error: BaseException | None = None
+    try:
+        if out_dir.is_symlink():
+            raise IdentityError("reference writer target is a symlink")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        fd = os.open(out_dir, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+                     | getattr(os, "O_NOFOLLOW", 0))
+        held = os.fstat(fd)
+        if not stat.S_ISDIR(held.st_mode):
+            raise IdentityError("reference writer target is not a directory")
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as exc:
+            if exc.errno in (errno.EACCES, errno.EAGAIN):
+                raise IdentityError("reference writer busy; no files changed") from exc
+            raise IdentityError("reference writer locking unavailable") from exc
+        acquired = True
+        active[key] = (owner_pid, fd, held.st_dev, held.st_ino)
+        _assert_reference_writer_target(out_dir)
+        yield
+    except OSError as exc:
+        if acquired:
+            primary_error = exc
+            raise  # Preserve the original builder/rollback exception contract.
+        primary_error = IdentityError("reference writer target unavailable")
+        raise primary_error from exc
+    except BaseException as exc:
+        primary_error = exc
+        raise
+    finally:
+        cleanup_errors: list[OSError] = []
+        try:
+            if acquired:
+                if previous is None:
+                    active.pop(key, None)
+                else:
+                    active[key] = previous
+                # A forked child must never unlock the parent's open description.
+                if os.getpid() == owner_pid:
+                    try:
+                        fcntl.flock(fd, fcntl.LOCK_UN)
+                    except OSError as exc:
+                        cleanup_errors.append(exc)
+        finally:
+            if fd is not None:
+                try:
+                    os.close(fd)
+                except OSError as exc:
+                    # Do not retry close: the descriptor may already be released.
+                    cleanup_errors.append(exc)
+        if cleanup_errors:
+            # Preserve this scope's original failure, including its errno and
+            # identity. An exception already handled by our caller is unrelated.
+            if primary_error is not None:
+                for error in cleanup_errors:
+                    primary_error.add_note(f"reference writer cleanup: {error}")
+            else:
+                first, *additional = cleanup_errors
+                for error in additional:
+                    first.add_note(f"additional reference writer cleanup: {error}")
+                raise first
+
+
+@dataclass(frozen=True, slots=True)
+class InitialReferencePromotion:
+    """A receipt replacement, directory flush, and actual native read completed.
+
+    The retained preparation's conservative admission/authenticity markers are
+    unchanged. This result is not source qualification or a trading admission.
+    """
+    prepared: "ParquetBoundInitialCandidate"
+    read: "IdentitySnapshotRead"
+    directory_synced: bool
+
+
+class InitialReferencePromotionError(IdentityError):
+    """An attempted rename needs observation, never an automatic second write."""
+
+    def __init__(self, *, prepared, effect_state: str, directory_synced: bool):
+        self.prepared = prepared
+        self.effect_state = effect_state
+        self.directory_synced = directory_synced
+        super().__init__(
+            f"initial reference promotion interrupted: effect_state={effect_state}; "
+            f"directory_synced={directory_synced}; reconcile exact receipt/artifact bytes"
+        )
+
+
+def _initial_reference_path(directory: str | Path) -> Path:
+    if not isinstance(directory, (str, Path)):
+        raise IdentityError("initial reference requires an absolute existing directory")
+    root = Path(directory)
+    if not root.is_absolute() or ".." in root.parts:
+        raise IdentityError("initial reference requires an absolute existing directory")
+    return root
+
+
+def _initial_reference_expected(receipt_sha256: str, artifact_sha256: dict) -> tuple:
+    from engine.entry_radar.replay.identity_observation_snapshot import REFERENCE_ARTIFACTS
+
+    if (type(receipt_sha256) is not str
+            or re.fullmatch(r"[0-9a-f]{64}", receipt_sha256) is None
+            or type(artifact_sha256) is not dict
+            or set(artifact_sha256) != set(REFERENCE_ARTIFACTS)
+            or any(type(value) is not str or re.fullmatch(r"[0-9a-f]{64}", value) is None
+                   for value in artifact_sha256.values())):
+        raise IdentityError("initial reference requires exact six SHA-256 preimages")
+    return tuple((name, artifact_sha256[name]) for name in REFERENCE_ARTIFACTS)
+
+
+def _initial_reference_files(directory_fd: int) -> tuple[bytes, dict[str, bytes]]:
+    # Reuse the actual bounded, no-follow reader. This is not another decoder.
+    from engine.entry_radar.replay.identity_observation_snapshot import (
+        REFERENCE_ARTIFACTS, _read_file,
+    )
+
+    before = _read_file(directory_fd, RECEIPT_NAME, 9 * 1024 * 1024)
+    artifacts = {name: _read_file(directory_fd, name, 64 * 1024 * 1024)
+                 for name in REFERENCE_ARTIFACTS}
+    after = _read_file(directory_fd, RECEIPT_NAME, 9 * 1024 * 1024)
+    if before != after:
+        raise IdentityError("initial reference receipt preimage changed during read")
+    return before, artifacts
+
+
+def _initial_reference_vector(artifacts: dict[str, bytes]) -> tuple:
+    return tuple((name, hashlib.sha256(raw).hexdigest()) for name, raw in artifacts.items())
+
+
+def _inspect_initial_reference_publication(
+    root: Path, original_sha: str, candidate_sha: str, artifacts: tuple,
+    *, expected_directory_identity: tuple | None = None,
+) -> str:
+    """Observe one stable path/byte vector; no locks, writes, retries or repairs."""
+    fd = None
+    state = "EFFECT_UNKNOWN"
+    try:
+        fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+                     | getattr(os, "O_CLOEXEC", 0))
+        held = os.fstat(fd)
+        identity = (held.st_dev, held.st_ino)
+        if (not stat.S_ISDIR(held.st_mode)
+                or (expected_directory_identity is not None
+                    and identity != expected_directory_identity)):
+            return state
+        raw, observed_artifacts = _initial_reference_files(fd)
+        now = os.stat(root, follow_symlinks=False)
+        if (stat.S_ISDIR(now.st_mode) and (now.st_dev, now.st_ino) == identity
+                and _initial_reference_vector(observed_artifacts) == artifacts):
+            digest = hashlib.sha256(raw).hexdigest()
+            if digest == candidate_sha:
+                state = "APPLIED"
+            elif digest == original_sha:
+                state = "NOT_APPLIED"
+    except (OSError, IdentityError):
+        state = "EFFECT_UNKNOWN"
+    finally:
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError:
+                state = "EFFECT_UNKNOWN"  # A close failure is not retried.
+    return state
+
+
+def inspect_initial_reference_publication(
+    out_dir: str | Path, *, original_receipt_sha256: str,
+    candidate_receipt_sha256: str, artifact_sha256: dict[str, str],
+) -> str:
+    """Read-only reconciliation of a possibly interrupted initial promotion.
+
+    APPLIED/NOT_APPLIED mean that the exact candidate/original receipt and all
+    five expected artifact bytes were observed at this path. They do not prove
+    the cause of those bytes, crash durability, source authenticity, or admission.
+    Missing files, a directory change during inspection, torn reads, or
+    unexpected bytes remain EFFECT_UNKNOWN.
+    """
+    root = _initial_reference_path(out_dir)
+    vector = _initial_reference_expected(original_receipt_sha256, artifact_sha256)
+    _initial_reference_expected(candidate_receipt_sha256, artifact_sha256)
+    if candidate_receipt_sha256 == original_receipt_sha256:
+        raise IdentityError("initial reference reconciliation requires distinct receipts")
+    return _inspect_initial_reference_publication(
+        root, original_receipt_sha256, candidate_receipt_sha256, vector)
+
+
+@contextmanager
+def _staged_initial_receipt(directory_fd: int, raw: bytes, mode: int):
+    """Own only a new temporary receipt on the held directory descriptor."""
+    import uuid
+
+    name = f".initial-reference-{uuid.uuid4().hex}.tmp"
+    fd = None
+    created = False
+    primary_error = None
+    try:
+        fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+                     | getattr(os, "O_CLOEXEC", 0), 0o600, dir_fd=directory_fd)
+        created = True
+        offset = 0
+        while offset < len(raw):
+            written = os.write(fd, raw[offset:])
+            if written <= 0:
+                raise OSError(errno.EIO, "initial reference staged write made no progress")
+            offset += written
+        os.fchmod(fd, mode & 0o777)
+        os.fsync(fd)
+        closing, fd = fd, None  # Never retry a failed close on a possibly reused fd.
+        os.close(closing)
+        yield name
+    except BaseException as exc:
+        primary_error = exc
+        raise
+    finally:
+        cleanup_errors = []
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError as exc:
+                cleanup_errors.append(exc)
+        if created:
+            try:
+                os.unlink(name, dir_fd=directory_fd)
+            except FileNotFoundError:
+                pass  # The successful rename consumed our temporary name.
+            except OSError as exc:
+                cleanup_errors.append(exc)
+        if cleanup_errors:
+            if primary_error is not None:
+                for error in cleanup_errors:
+                    primary_error.add_note(f"initial reference stage cleanup: {error}")
+            else:
+                first, *additional = cleanup_errors
+                for error in additional:
+                    first.add_note(f"additional initial reference stage cleanup: {error}")
+                raise first
+
+
+def promote_initial_reference_generation(
+    out_dir: str | Path, *, expected_receipt_sha256: str,
+    expected_artifact_sha256: dict[str, str],
+) -> InitialReferencePromotion:
+    """Explicit initial-only receipt promotion inside the existing Data OS owner.
+
+    The caller must qualify the actual source set and installed writer before
+    canonical invocation. Hashes and the normal code identity do not authenticate
+    its market evidence. There is no caller clock, attestation flag, CLI or nightly
+    activation. All five Parquets remain byte-identical; the accepted R23 decoder
+    and native validator determine the candidate from those physical bytes.
+
+    Hold R25's cooperative local writer lock through preparation, exact preimage
+    recheck, same-directory receipt rename, directory fsync and actual readback.
+    This does not coordinate other hosts or noncooperating filesystem writers.
+    After the native receipt exists, legacy refresh deliberately refuses; this
+    is not a history-preserving successor-generation or rollback publisher.
+    """
+    from engine.entry_radar.replay.identity_observation_snapshot import (
+        _read_file, read_identity_snapshot,
+    )
+    from engine.neuralweb.market_memory_identity_candidate import (
+        build_parquet_bound_initial_candidate,
+    )
+
+    root = _initial_reference_path(out_dir)
+    vector = _initial_reference_expected(expected_receipt_sha256, expected_artifact_sha256)
+    try:
+        existing = os.stat(root, follow_symlinks=False)
+    except OSError as exc:
+        raise IdentityError("initial reference requires an existing directory") from exc
+    if not stat.S_ISDIR(existing.st_mode):
+        raise IdentityError("initial reference target must be an existing directory")
+    directory_identity = (existing.st_dev, existing.st_ino)
+    replace_attempted = False
+    directory_synced = False
+    prepared = None
+    try:
+        with _reference_writer_scope(root):
+            _pid, directory_fd, device, inode = _reference_writer_local.active[_writer_path(root)]
+            if (device, inode) != directory_identity:
+                raise IdentityError("initial reference target changed before writer acquisition")
+            before, artifacts = _initial_reference_files(directory_fd)
+            if (hashlib.sha256(before).hexdigest() != expected_receipt_sha256
+                    or _initial_reference_vector(artifacts) != vector):
+                raise IdentityError("initial reference preimage mismatch")
+            code_version = _git_sha()
+            prepared = build_parquet_bound_initial_candidate(
+                before, artifacts, code_version=code_version)
+            del artifacts
+            _assert_reference_writer_target(root)
+            receipt_stat = os.stat(RECEIPT_NAME, dir_fd=directory_fd, follow_symlinks=False)
+            if not stat.S_ISREG(receipt_stat.st_mode):
+                raise IdentityError("initial reference receipt preimage is no longer regular")
+            raw = prepared.candidate.candidate_receipt_bytes
+            with _staged_initial_receipt(directory_fd, raw, receipt_stat.st_mode) as staged:
+                _assert_reference_writer_target(root)
+                current, current_artifacts = _initial_reference_files(directory_fd)
+                if (current != before or _initial_reference_vector(current_artifacts) != vector):
+                    raise IdentityError("initial reference preimage changed before commit")
+                del current_artifacts
+                if _git_sha() != code_version:
+                    raise IdentityError("initial reference code identity changed before commit")
+                if _read_file(directory_fd, staged, 9 * 1024 * 1024) != raw:
+                    raise IdentityError("initial reference staged receipt changed before commit")
+                _assert_reference_writer_target(root)
+                replace_attempted = True
+                os.replace(staged, RECEIPT_NAME, src_dir_fd=directory_fd, dst_dir_fd=directory_fd)
+                os.fsync(directory_fd)
+                directory_synced = True
+                observed = read_identity_snapshot(root)
+                _assert_reference_writer_target(root)
+                if (observed.snapshot.receipt_bytes != raw
+                        or observed.receipt.receipt_sha256 != prepared.candidate.candidate_receipt_sha256
+                        or observed.receipt.generation_id != prepared.candidate.generation_id
+                        or observed.receipt.artifact_sha256 != vector):
+                    raise IdentityError("initial reference actual readback does not match candidate")
+                result = InitialReferencePromotion(prepared, observed, directory_synced=True)
+        return result
+    except BaseException as exc:
+        if not replace_attempted:
+            raise
+        try:
+            effect = _inspect_initial_reference_publication(
+                root, expected_receipt_sha256, prepared.candidate.candidate_receipt_sha256,
+                vector, expected_directory_identity=directory_identity)
+        except Exception as reconciliation_error:
+            effect = "EFFECT_UNKNOWN"
+            exc.add_note(f"initial reference reconciliation failed: {reconciliation_error}")
+        if isinstance(exc, Exception):
+            raise InitialReferencePromotionError(
+                prepared=prepared, effect_state=effect, directory_synced=directory_synced) from exc
+        # Preserve KeyboardInterrupt/SystemExit, with exact recovery identities.
+        exc.add_note(
+            f"initial reference promotion: effect_state={effect}; directory_synced={directory_synced}; "
+            f"original_receipt_sha256={expected_receipt_sha256}; "
+            f"candidate_receipt_sha256={prepared.candidate.candidate_receipt_sha256}; "
+            f"artifact_sha256={dict(vector)}"
+        )
+        raise
+
+
 def _assert_no_unpreserved_native_generation(out_dir: Path) -> None:
     """Fail closed before legacy builder rewrites any native identity history.
 
@@ -3426,6 +3831,7 @@ def _assert_no_unpreserved_native_generation(out_dir: Path) -> None:
     rebuild. The only lawful remedy is a separate source-owner writer that
     retains and validates the complete native context. This is not that writer.
     """
+    _assert_reference_writer_target(out_dir)
     receipt_path = out_dir / RECEIPT_NAME
     if not receipt_path.exists():
         return
@@ -4335,6 +4741,22 @@ def _validate_spy_option_root_retention(evidence: dict | None, alias_rows: list[
 
 
 def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = False,
+          reference_evidence_path: Path | None = None,
+          direct_registrant_inputs: tuple[dict, ...] | list[dict] = (),
+          spy_option_root_input: dict | None = None) -> dict:
+    """Preserve the existing API; serialize all actual local writer effects."""
+    kwargs = dict(dry_run=dry_run, allow_missing_evidence=allow_missing_evidence,
+                  reference_evidence_path=reference_evidence_path,
+                  direct_registrant_inputs=direct_registrant_inputs,
+                  spy_option_root_input=spy_option_root_input)
+    if dry_run:
+        return _build_reference_unlocked(out_dir, **kwargs)
+    with _reference_writer_scope(out_dir):
+        return _build_reference_unlocked(out_dir, **kwargs)
+
+
+def _build_reference_unlocked(out_dir: Path, dry_run: bool = False,
+          allow_missing_evidence: bool = False,
           reference_evidence_path: Path | None = None,
           direct_registrant_inputs: tuple[dict, ...] | list[dict] = (),
           spy_option_root_input: dict | None = None) -> dict:
@@ -5261,6 +5683,17 @@ def _restore_artifacts(out_dir: Path, before: dict[str, bytes | None],
 
 
 def run_nightly_refresh(out_dir: Path) -> int:
+    """Keep one writer lock across old snapshot, build, rollback and cleanup."""
+    try:
+        with _reference_writer_scope(out_dir):
+            return _run_nightly_reference_unlocked(out_dir)
+    except IdentityError as exc:
+        print("::error title=security-master-writer-refusal::"
+              f"{exc} — nightly did not acquire a valid writer transaction", flush=True)
+        return 0
+
+
+def _run_nightly_reference_unlocked(out_dir: Path) -> int:
     """The ``daily.yml`` collect-job seam (spec §7).  Fail-closed refresh laws:
 
       (a) a missing/unreadable identity input -> REFUSE, keep last-good artifacts,

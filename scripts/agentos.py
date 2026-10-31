@@ -110,6 +110,7 @@ import os
 import re
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
@@ -657,6 +658,36 @@ def _git(*args: str, cwd: Path | None = None, timeout: int = 60,
     return result.stdout
 
 
+def git_updated(path: Path) -> str | None:
+    """Latest commit date for the current path, using the incumbent per-path query.
+
+    Context compilation consumes only updated dates. Do not walk the complete
+    addition history to compute an unused created date, and do not combine paths:
+    Git's history simplification and merge diffs are path-dependent.
+    """
+    try:
+        rel = path.resolve().relative_to(_ROOT)
+    except ValueError:
+        return None
+    updated = _git("log", "-1", "--format=%as", "--", str(rel))
+    last = (updated or "").strip().splitlines()
+    return last[0] if last else None
+
+
+def git_updated_batch(paths: Iterable[Path]) -> dict[Path, str | None]:
+    """Read each distinct path once, with at most four concurrent history queries.
+
+    Keep the exact per-path reader: combined-path Git history changes merge
+    semantics. Results and the executor belong only to this invocation; joining
+    in input order preserves deterministic callers without a persistent cache.
+    """
+    unique = list(dict.fromkeys(paths))
+    if not unique:
+        return {}
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        return dict(zip(unique, executor.map(git_updated, unique)))
+
+
 def git_dates(path: Path) -> tuple[str | None, str | None]:
     """``(created, updated)`` as ISO dates, derived from git history.
 
@@ -1174,6 +1205,44 @@ def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
     return out
 
 
+def _evaluation_finding_error(value: Any) -> str | None:
+    """Validate data shape only; this does not verify evidence or assess a tier.
+
+    Missing observations/requirements are explicit nulls. A present numeric
+    comparison contains authored baseline/current/unit; qualitative text is copied
+    literally. No delta or temporal comparison is inferred.
+    The closed shape cannot carry scheduling, ranking or grant metadata.
+    """
+    fields = {"engine", "metric", "observed_change", "segment", "evidence_link", "suggested_tier"}
+    if not isinstance(value, dict) or set(value) != fields:
+        return "evaluation_finding must contain exactly the six documented fields"
+    def text_ok(item: Any) -> bool:
+        if not isinstance(item, str) or not item.strip():
+            return False
+        try:
+            return len(item.encode("utf-8")) <= 2048
+        except UnicodeEncodeError:
+            return False
+    for field in ("engine", "metric", "segment", "evidence_link"):
+        if not text_ok(value[field]):
+            return f"evaluation_finding.{field} must be non-empty text of at most 2048 UTF-8 bytes"
+    tier = value["suggested_tier"]
+    if tier is not None and (not isinstance(tier, str) or tier not in {"T0", "T1", "T2", "T3", "T4"}):
+        return "evaluation_finding.suggested_tier must be T0..T4 or explicit null"
+    change = value["observed_change"]
+    if change is None:
+        return None
+    if isinstance(change, str):
+        return None if text_ok(change) else "evaluation_finding.observed_change text must be non-empty UTF-8 of at most 2048 bytes"
+    if not isinstance(change, dict) or set(change) != {"baseline", "current", "unit"} or not text_ok(change["unit"]):
+        return "evaluation_finding.observed_change must be null, qualitative text, or baseline/current/unit"
+    for field in ("baseline", "current"):
+        number = change[field]
+        if number is not None and (type(number) not in (int, float) or not -1.7976931348623157e308 <= number <= 1.7976931348623157e308):
+            return f"evaluation_finding.observed_change.{field} must be a finite number or null"
+    return None
+
+
 def check_discovery(rec: dict[str, Any], path: Path) -> list[Problem]:
     out: list[Problem] = []
     for field in ("key", "claim", "falsifier", "so_what", "kind",
@@ -1187,6 +1256,11 @@ def check_discovery(rec: dict[str, Any], path: Path) -> list[Problem]:
         if path.stem != f"DSC-{key}":
             out.append(Problem(path, "filename-mismatch",
                                f"filename must be 'DSC-{key}.md'", hard=True))
+
+    if "evaluation_finding" in rec:
+        finding_error = _evaluation_finding_error(rec["evaluation_finding"])
+        if finding_error:
+            out.append(Problem(path, "bad-evaluation-finding", finding_error, hard=True))
 
     _enum(rec, "kind", DISCOVERY_KIND, path, out)
     _enum(rec, "confidence", CONFIDENCE_DSC, path, out)
@@ -2027,6 +2101,11 @@ def draft_discovery(payload: dict[str, Any]) -> str:
         "key", "claim", "falsifier", "so_what", "kind", "verified_at",
         "verified_by", "scope", "confidence",
     )}
+    if "evaluation_finding" in payload:
+        finding_error = _evaluation_finding_error(payload["evaluation_finding"])
+        if finding_error:
+            _die(finding_error)
+        rec["evaluation_finding"] = payload["evaluation_finding"]
     path = f"agentos/discoveries/DSC-{key}.md"
     return (
         _yaml_frontmatter(rec)
@@ -5259,6 +5338,12 @@ def compile_bundle(
     excluded: list[dict[str, Any]] = []
     groups: dict[str, list[dict[str, Any]]] = {name: [] for name in PACK_ORDER}
     order = [0]
+    dated_items: list[tuple[dict[str, Any], Path]] = []
+
+    def dated_item(date_path: Path, **fields: Any) -> dict[str, Any]:
+        item = _bundle_item(updated=None, **fields)
+        dated_items.append((item, date_path))
+        return item
 
     def emit(pack: str, item: dict[str, Any]) -> None:
         item["_seq"] = order[0]
@@ -5286,15 +5371,13 @@ def compile_bundle(
         emit("higher_law", item)
 
     # ---- workstream state (never dropped by budget) ------------------------
-    _, ws_updated = git_dates(ws_path)
-    emit("workstream_block", _bundle_item(
+    emit("workstream_block", dated_item(ws_path,
         kind="workstream",
         key=f"WS:{key}",
         path=_rel(ws_path),
         locator=f"{_rel(ws_path)}#frontmatter",
         authority_class="A4",
         status=str(rec.get("status") or "unknown"),
-        updated=ws_updated,
         excerpt=_workstream_excerpt(rec, prs),
         why="the compilation target",
     ))
@@ -5302,14 +5385,13 @@ def compile_bundle(
         for entry in rec.get(field) or []:
             if not isinstance(entry, str) or not entry.strip():
                 continue
-            emit("workstream_block", _bundle_item(
+            emit("workstream_block", dated_item(ws_path,
                 kind="constraint",
                 key=f"WS:{key}",
                 path=_rel(ws_path),
                 locator=f"{_rel(ws_path)}#{field}",
                 authority_class="A4",
                 status=label,
-                updated=ws_updated,
                 excerpt=f"[{label.upper()}] {_clip(_flat(entry), EXCERPT_CONSTRAINT)}",
                 why=f"{field} declared on WS:{key}",
             ))
@@ -5323,15 +5405,13 @@ def compile_bundle(
         dep_path = source(f"WS/{dep}")
         if malformed("dependency", f"WS:{dep}", dep_path):
             continue
-        _, dep_updated = git_dates(dep_path)
-        emit("dependency", _bundle_item(
+        emit("dependency", dated_item(dep_path,
             kind="dependency",
             key=f"WS:{dep}",
             path=_rel(dep_path),
             locator=f"{_rel(dep_path)}#frontmatter",
             authority_class="A4",
             status=str(dep_rec.get("status") or "unknown"),
-            updated=dep_updated,
             excerpt=(
                 f"{_flat(dep_rec.get('title'))}\n"
                 f"status: {dep_rec.get('status')}\n"
@@ -5391,17 +5471,15 @@ def compile_bundle(
                 if supersedes else "")
         body = _fields(dec_rec, (("question", "question"), ("answer", "answer"),
                                  ("rationale", "rationale")))
-        _, dec_updated = git_dates(dec_path)
         rows.append({
             "_date": str(_as_date(dec_rec.get("decided_at")) or ""),
-            "item": _bundle_item(
+            "item": dated_item(dec_path,
                 kind="decision",
                 key=f"DEC:{dec_key}",
                 path=_rel(dec_path),
                 locator=f"{_rel(dec_path)}#frontmatter",
                 authority_class="A3",
                 status=str(dec_rec.get("confidence") or "unknown"),
-                updated=dec_updated,
                 excerpt=_clip(body, EXCERPT_DECISION - len(note)) + note,
                 why="; ".join(reasons[dec_key]),
             ),
@@ -5475,17 +5553,15 @@ def compile_bundle(
         if not citations.get(dsc_key, 0) and age is not None and age > STALE_DISCOVERY_DAYS:
             drop("discovery", f"DSC:{dsc_key}", dsc_path, f"uncited and {age}d old")
             continue
-        _, dsc_updated = git_dates(dsc_path)
         rows.append({
             "_date": str(verified or ""),
-            "item": _bundle_item(
+            "item": dated_item(dsc_path,
                 kind="discovery",
                 key=f"DSC:{dsc_key}",
                 path=_rel(dsc_path),
                 locator=f"{_rel(dsc_path)}#frontmatter",
                 authority_class="A3",
                 status=str(dsc_rec.get("confidence") or "unknown"),
-                updated=dsc_updated,
                 excerpt=_clip(_fields(dsc_rec, (("claim", "claim"), ("so what", "so_what"),
                                                 ("falsifier", "falsifier"))),
                               EXCERPT_DISCOVERY),
@@ -5537,15 +5613,13 @@ def compile_bundle(
                 continue
             if malformed("handoff", stem, hnd_path):
                 continue
-            _, hnd_updated = git_dates(hnd_path)
-            emit("handoff", _bundle_item(
+            emit("handoff", dated_item(hnd_path,
                 kind="handoff",
                 key=f"WS:{key}",
                 path=_rel(hnd_path),
                 locator=f"{_rel(hnd_path)}#frontmatter",
                 authority_class="A4",
                 status=str(hnd_all[stem].get("ended_because") or "unknown"),
-                updated=hnd_updated,
                 excerpt=_clip(
                     _fields(hnd_all[stem], (
                         ("mission", "mission"), ("state before", "state_before"),
@@ -5590,6 +5664,13 @@ def compile_bundle(
                     f"quote it.",
             why=f"listed in WS:{key} artifacts",
         ))
+
+    # Date membership follows the original eligible item sites, not the broader
+    # source digest (which also binds excluded/superseding records). Fill every
+    # candidate before costing: dates affect both packing and omission accounting.
+    dates = git_updated_batch(path for _item, path in dated_items)
+    for item, path in dated_items:
+        item["updated"] = dates[path]
 
     # ---- budget ------------------------------------------------------------
     # Selection happens BEFORE rendering, over the already-filtered items, so JSON and

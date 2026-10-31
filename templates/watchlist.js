@@ -895,6 +895,100 @@
     host.innerHTML = '<i></i>' + te(esc(c[1]), esc(c[2]));
   }
 
+  /* ═════════════════════════════════════════════════════════════════════════
+     R7 WAVE A — SAVE TRUTH (§6.4 / §10 / §13)
+     One save says what the account actually answered. watchstore.js's
+     saveChecked() dispatches `ws-save-outcome`; this painter puts the R7-21
+     copy into the two live regions the template carries beside the chip:
+     waiting/saved/uncertain are polite (`role="status"`), rejected is the one
+     assertive region (`role="alert"`). None of the four is called a failure,
+     and none of them ever re-issues the save.
+     Copy is the frozen R7-19/20/21 rows verbatim (curly ’), substituted with
+     the list name, the requested names, and the read-back / asked time in ET. */
+  function fmtET(iso) {
+    var d = new Date(iso || '');
+    if (isNaN(d.getTime())) return '';
+    try {
+      return new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', hour12: false
+      }).format(d);
+    } catch (e) { return ''; }
+  }
+  function soNamesEN(a) {
+    if (a.length === 1) return a[0];
+    if (a.length === 2) return a[0] + ' and ' + a[1];
+    return a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+  }
+  function soNamesZH(a) {
+    if (a.length === 1) return a[0];
+    return a.slice(0, -1).join('、') + ' 和 ' + a[a.length - 1];
+  }
+  function soP(en, zh) { return '<p>' + te(esc(en), esc(zh)) + '</p>'; }
+  function paintSaveOutcome(d) {
+    if (!d || !d.state) return;
+    var live = el('ws_save_live'), alertBox = el('ws_save_alert');
+    var names = (Array.isArray(d.names) ? d.names : []).map(String);
+    var list = String(d.listName || '');
+    if (d.state === 'waiting') {
+      if (alertBox) alertBox.innerHTML = '';   // a new attempt retires the last verdict
+      if (!live) return;
+      live.innerHTML =
+        '<p class="so-t">' + te(esc('Saving to ' + list), esc('正在保存到' + list)) + '</p>' +
+        soP('Waiting for your account to confirm. You can close this; the save carries on, and nothing is saved twice.',
+            '正在等待您的账户确认。您可以关闭此面板；保存会继续进行，不会重复保存。');
+      return;
+    }
+    if (d.state === 'saved') {
+      if (alertBox) alertBox.innerHTML = '';
+      if (!live) return;
+      var hm = fmtET(d.readBackAt);
+      var verb = names.length === 1 ? 'is' : 'are';
+      // The decisions-kept clause is stated only when decisions were actually
+      // supplied to the save; without them the sentence ends after the list.
+      var en = (hm ? 'Read back from your account at ' + hm + ' ET. ' : 'Read back from your account. ') +
+        soNamesEN(names) + ' ' + verb + ' in the list' +
+        (d.decisionsKept ? ' with tonight’s decisions kept as they stand.' : '.');
+      var zh = (hm ? hm + '（美东）从您的账户读回。' : '已从您的账户读回。') +
+        soNamesZH(names) + ' 已在列表中' + (d.decisionsKept ? '，今晚的决策按原样保留。' : '。');
+      var html = '<p class="so-t">' + te(esc('Saved to ' + list), esc('已保存到' + list)) + '</p>' +
+        soP(en, zh);
+      // already-in-it lines (R7-20 row): one per ticker that was never written
+      var n = (typeof d.listCount === 'number' && d.listCount > 0) ? d.listCount : names.length;
+      (d.already || []).forEach(function (tk) {
+        html += soP(n + ' names, ' + tk + ' is already in it', n + ' 只，' + tk + ' 已在其中');
+      });
+      live.innerHTML = html;
+    } else if (d.state === 'uncertain') {
+      if (alertBox) alertBox.innerHTML = '';
+      if (!live) return;
+      var ah = fmtET(d.askedAt);
+      live.innerHTML =
+        '<p class="so-t">' + te(esc('Save not confirmed yet'), esc('保存尚未确认')) + '</p>' +
+        soP('Your account didn’t answer in time. Before saving again we check the list, so nothing is saved twice.',
+            '您的账户未及时应答。再次保存前我们会先检查列表，因此不会重复保存。') +
+        (ah ? soP('Asked at ' + ah + ' ET', '请求于 ' + ah + '（美东）') : '');
+    } else if (d.state === 'rejected') {
+      if (live) live.innerHTML = '';            // no longer saving — retire the waiting line
+      if (!alertBox) return;
+      var body = '';
+      // the deleted-list sentence is the R7-21 row's own scene: it is rendered
+      // only when that is what the account actually said, never as filler
+      if (d.reason === 'no-list') {
+        body = soP('Your account says ' + list + ' was deleted on another device. Choose another list for ' + soNamesEN(names) + '.',
+                   '您的账户显示“' + list + '”已在另一台设备上删除。请为 ' + soNamesZH(names) + ' 选择其他列表。');
+      }
+      alertBox.innerHTML =
+        '<p class="so-t">' + te(esc('Not saved'), esc('未保存')) + '</p>' +
+        body + soP('Nothing was added anywhere.', '没有添加到任何列表。');
+    } else {
+      return;
+    }
+    // focus goes back to the invoking control once the account has answered
+    if (d.returnFocus && d.returnFocus.focus) {
+      try { d.returnFocus.focus(); } catch (e) {}
+    }
+  }
+
   // ===========================================================================
   //  THE DENSE TABLE — one renderer, two column sets
   // ===========================================================================
@@ -989,9 +1083,53 @@
       th('flags', te('Risk flags', '风险提示'), false, false) +
       th('evt', te('Next event', '下一个事件'), false, false) +
       th('sector', te('Sector / theme', '行业 / 主题'), false, true) +
+      /* R7 Wave A (§6.4/§13): the saved decision beside tonight's — the two-column
+         history law. Watchlists mode only; the Portfolio table has its own head. */
+      th('wsv', te('When you saved', '保存时'), false, false) +
+      th('ton', te('Tonight', '今晚'), false, false) +
       th('chg', te('Since your last visit', '自上次访问'), false, false) +
       '<th></th>' +
     '</tr></thead>';
+  /* …and the footnote that states the pair's contract: tonight is redrawn
+     nightly, what you saved is not (R7-19 row, verbatim). */
+  var WL_FOOT =
+    '<tfoot><tr><td colspan="10" class="wl-night-foot">' + te(
+      'Tonight’s decisions are redrawn nightly. What you saved stays as it was when you saved it.',
+      '今晚的决策每晚重绘。您保存的内容保持保存时的样子。') + '</td></tr></tfoot>';
+
+  /* The saved-decision snapshot watchstore.js freezes at save time
+     (`mdash.watchlist.saved_snap.v1`). Read-only here; every access guarded. */
+  var SAVE_SNAP_KEY = 'mdash.watchlist.saved_snap.v1';
+  function saveSnapOf(t) {
+    if (!listId) return null;              // the anonymous store has no snapshots
+    var snap = null;
+    try {
+      var raw = localStorage.getItem(SAVE_SNAP_KEY);
+      snap = raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+    if (!snap || typeof snap !== 'object') return null;
+    var perList = snap[listId];
+    var s = perList && perList[t];
+    return (s && typeof s === 'object' && (s.en || s.zh)) ? s : null;
+  }
+  function savedCell(t) {
+    var s = saveSnapOf(t);
+    if (!s) return '<span class="mut">' + te('Not supplied', '未提供') + '</span>';
+    var ms = parseISO(s.d);
+    return '<span class="wsv-dec">' + te(esc(s.en || ''), esc(s.zh || s.en || '')) + '</span>' +
+      (ms == null ? '' : '<span class="wsv-d">' +
+        te('Saved ' + fmtDate(ms, false), fmtDate(ms, true) + '保存') + '</span>');
+  }
+  /* Tonight's own read: the row's EXISTING state label — stageCell(stageOf())
+     draws the whole existing vocabulary, so nothing new is minted here. A row
+     with no current state renders Unavailable, which is an ABSENCE: plain
+     muted text with no stage class and no glyph, so it can never read as a
+     buy-type stage. (A per-row quote-staleness flag does not exist in this
+     renderer's data — recorded as a gap with the commissioning packet.) */
+  function tonightCell(r) {
+    if (!r.st) return '<span class="mut ton-na">' + te('Unavailable', '暂不可用') + '</span>';
+    return stageCell(stageOf(r.st));
+  }
 
   function wlRowHTML(r) {
     var signedIn = !!window.SD;
@@ -1016,11 +1154,13 @@
       '<td class="c-att">' + flag + '</td>' +
       '<td class="c-evt">' + evt + '</td>' +
       '<td class="c-sect">' + sect + '</td>' +
+      '<td class="c-wsv">' + savedCell(r.t) + '</td>' +
+      '<td class="c-ton">' + tonightCell(r) + '</td>' +
       '<td class="c-chg">' + (d ? '<span class="delta ' + d[0] + '"><i></i>' + te(esc(d[1]), esc(d[2])) + '</span>' : '') + '</td>' +
       '<td class="c-exp"><button class="exp" type="button" data-exp="' + esc(r.t) +
         '" aria-expanded="' + (openRows[r.t] ? 'true' : 'false') + '" aria-label="' +
         (isZh() ? '详情' : 'Details') + '"><span class="car">⌄</span></button></td>' +
-    '</tr>' + (openRows[r.t] ? drawerHTML(r, 8) : '');
+    '</tr>' + (openRows[r.t] ? drawerHTML(r, 10) : '');
   }
 
   function fmtPx(v, t) {
@@ -1129,7 +1269,7 @@
       host.innerHTML = '<tbody><tr><td><div class="tbl-empty">' + te(
         'No names match here yet.', '这里暂时没有匹配的名称。') + '</div></td></tr></tbody>';
     } else {
-      host.innerHTML = WL_HEAD + '<tbody>' + rows.map(wlRowHTML).join('') + '</tbody>';
+      host.innerHTML = WL_HEAD + '<tbody>' + rows.map(wlRowHTML).join('') + '</tbody>' + WL_FOOT;
     }
 
     // scope disclosure — ALWAYS rendered, so a persisted book filter can never
@@ -2356,6 +2496,11 @@
     document.addEventListener('ws-save', function (e) {
       if (e && e.detail && e.detail.state) setChip(e.detail.state, 'watchlists');
     });
+    // R7 Wave A: the checked save's answer, painted into the two live regions
+    // beside the chip. The `ws-save` event and chip above are unchanged.
+    document.addEventListener('ws-save-outcome', function (e) {
+      paintSaveOutcome(e && e.detail);
+    });
     document.addEventListener('pf-save', function (e) {
       if (e && e.detail && e.detail.state) setChip(e.detail.state, 'portfolio');
     });
@@ -2583,7 +2728,10 @@
       // removal is pinned behaviorally too, not just in the W2 table renderer.
       lgViewItems: lgViewItems,
       // A1A test seam (S4, review): the anonymous-save-never-signs-in-the-shell law.
-      wsState: wsState
+      wsState: wsState,
+      // R7 Wave A test seam: the save-outcome painter, so the live-region copy
+      // can be pinned behaviourally against the real renderer.
+      paintSaveOutcome: paintSaveOutcome
     };
   }
 })();

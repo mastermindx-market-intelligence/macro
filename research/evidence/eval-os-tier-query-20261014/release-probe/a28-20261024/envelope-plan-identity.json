@@ -1,0 +1,41 @@
+{
+  "run": 40081206102,
+  "attempt": 1,
+  "subject": "8d1c97a91579ecf0bbc0800f10dd23a13421503c",
+  "tested": "a69e97ea70a231c25ab9a3bc6ff356799bc8d060",
+  "base": "ebe0667595b749b4579439249da0cc3f258d8971",
+  "tree": "1b452762debd7a71991f3a0b1a1510a6416ef2a3",
+  "canonical_plan_hash_verified": true,
+  "eligible_jobs": 135,
+  "critical_packs": [
+    {
+      "index": 0,
+      "jobs": [
+        "fif-kernel-guards"
+      ]
+    },
+    {
+      "index": 1,
+      "jobs": [
+        "ci-control-plane-contracts"
+      ]
+    },
+    {
+      "index": 3,
+      "jobs": [
+        "company-intelligence-private-runtime",
+        "am-edition-producer",
+        "uk-policy-desk",
+        "grader-manifest",
+        "hk-robustness-w5",
+        "ird-substrate-engines",
+        "ccw-w3-credit-momentum",
+        "biocatalyst-serving",
+        "crypto-assistant-context",
+        "unrun-marketing-desk",
+        "dataos-verification",
+        "eval-os-a1"
+      ]
+    }
+  ]
+}

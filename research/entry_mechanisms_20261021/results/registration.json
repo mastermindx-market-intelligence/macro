@@ -1,0 +1,38 @@
+{
+  "registered_before_outcomes_utc": "2026-10-21T11:26:22.860006+00:00",
+  "protocol_sha256": "d0fb96e2a35fbc997853e4a3eff977addb6eb073970415b72a5f28f4a61cc405",
+  "code_sha256": "7d22d43547f83c091747b767fb27692399ebc6243d89dd797eefcd5585a4fb6c",
+  "baseline_code_sha256": "278792fb1c40ea2dd916c9959a458dc95453f2808d88e15f79e3c0f7c647fd75",
+  "selection_sha256": "6744d7b85f78dac077bfddfe75537f263d80ee5c070f6d81b23dc7eb89d3b075",
+  "manifest_sha256": "c0c579a2190a92cad21ef8bc6ad0f7eb364f5ff46ae9578a869130e8656d1c68",
+  "sector_map": {
+    "AAPL": "XLK",
+    "MSFT": "XLK",
+    "NVDA": "SOXX",
+    "AMD": "SOXX",
+    "INTC": "SOXX",
+    "MU": "SOXX",
+    "AMZN": "XLY",
+    "GOOGL": "XLC",
+    "META": "XLC",
+    "TSLA": "XLY",
+    "JPM": "XLF",
+    "XOM": "XLE",
+    "CVX": "XLE",
+    "CAT": "XLI",
+    "FCX": "XLB",
+    "NEM": "XLB",
+    "KO": "XLP",
+    "PEP": "XLP",
+    "WMT": "XLP",
+    "WM": "XLI",
+    "JNJ": "XLV",
+    "PFE": "XLV"
+  },
+  "seed": 20261021,
+  "horizons": [
+    21,
+    63
+  ],
+  "sample_status": "already exposed; exploratory; no new independent holdout"
+}

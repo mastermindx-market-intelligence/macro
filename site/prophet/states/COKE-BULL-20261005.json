@@ -1,31 +1,31 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "COKE-BULL-20261005",
-  "asof": "2026-10-20",
+  "asof": "2026-10-30",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 64.9,
-  "raw_confidence": 68.6,
-  "delta_vs_base": 4.9,
+  "management_confidence": 55.8,
+  "raw_confidence": 58.1,
+  "delta_vs_base": -4.2,
   "recommended_action": "hold",
   "human_state": "On Track",
   "components": {
     "validity": 100.0,
-    "progress": 30.7,
-    "pace": 84.1,
+    "progress": 29.9,
+    "pace": 38.3,
     "retention": 50.0,
-    "overlay": 56.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.52,
-    "dist_to_t1_r": 0.98,
-    "dist_to_t2_r": 2.48,
-    "horizon_pct_used": 31.1,
-    "p1": 0.3469,
-    "p2": 0.1735,
+    "dist_to_stop_r": 1.501,
+    "dist_to_t1_r": 0.999,
+    "dist_to_t2_r": 2.499,
+    "horizon_pct_used": 53.3,
+    "p1": 0.3342,
+    "p2": 0.1671,
     "p3": null,
-    "move_r": 0.52,
-    "mfe_r": 0.52,
+    "move_r": 0.501,
+    "mfe_r": 0.691,
     "mae_r": -0.222
   },
   "rr_ratio": 1.5,
@@ -39,12 +39,12 @@
     "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 15.319998168945318,
+  "_mfe": 20.329992675781256,
   "_mae": -6.549996948242182,
-  "_max_p1": 0.3469202483909719,
+  "_max_p1": 0.4603712109551915,
   "_first_trigger_ts": "2026-10-07",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 14,
-  "tau": 0.3111
+  "days_elapsed": 24,
+  "tau": 0.5333
 }

@@ -1,0 +1,29 @@
+{
+  "schema": "mastermind.attended.macro_minimal_ci_repair.v1",
+  "observed_at": "2026-10-20T02:21:41.777315+00:00",
+  "head": "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0",
+  "merge_head": "d52827f26b062f67d594350a65becf406710d4d1",
+  "index_tree_before": "212504aa01513491886e7f85f97e251b69de35fe",
+  "index_tree_after": "6d1ff5356914f5b854120b9db1045882c110fe1b",
+  "reproducer_receipt_sha256": "54d12d9fff33a99d2224974b1cbed58bc687a5dccad8ca27bfc417bd198e32ec",
+  "patch_sha256": "b0daebe5c60a125bc8c2a89afddef9bdb68e143f1602ab450762cd8e3f79a224",
+  "changed_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "tests/test_ci_pack.py"
+  ],
+  "source_after": {
+    ".github/ci/legacy-jobs.yml": "5dae3b249635ffad612bf7861529f7b0baa130c39891feb44a1a7c789d3bc659",
+    "tests/test_ci_pack.py": "2fb04148ba994aaebacead07f16b6dd6ca3818ff77ddb952f9d86ec48c6b1ca2"
+  },
+  "only_manifest_semantic_change": "research-vault.paths adds exact lib/shared_shell.py",
+  "only_test_ast_changes": [
+    "build_free_content weight ceiling 5642 to measured5649",
+    "attribution history docstring"
+  ],
+  "all_329_jobs_preserved": true,
+  "incoming_W23_coverage_and_history_preserved": true,
+  "all_commands_suites_selectors_other_ceilings_preserved": true,
+  "renderer_invoked": false,
+  "committed": false,
+  "pushed": false
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "5210085a670d51baf7dab09f6d344906336c540e",
+  "observed_main": "92d06f6ab25ed06f29f8cd3573d2f56e033b9a02",
+  "change": "Restore common-ancestor long API regex; move the same three exact paths into a separate OR condition in the existing API restart block. Preserve all prior trigger semantics.",
+  "algebraic_three_path_equivalence": true,
+  "updater_tests_passed": 376,
+  "bash_syntax_passed": true,
+  "focused_positive_negative_checks": 6,
+  "no_manual_base_integration": true,
+  "production_effects": false,
+  "prior_521_merge_conflict_unresolved": true,
+  "pytest_cleanup_warnings": "113 warnings removing old pytest garbage directories; tests all passed; no manual cleanup or retry."
+}

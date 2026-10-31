@@ -1,0 +1,11 @@
+{
+  "synthetic": true,
+  "network": "CSP denies connect-src; in-memory fetch only",
+  "clock": "frozen synthetic observation, not real market time",
+  "inputs": {
+    "templates/ticker.html.j2": "1f392e3a23a15b05cea32cfde8087706e015bd1b3c99c3acbfd414f14b906c88",
+    "templates/theme.css": "29ec9caa2e2b8496a39ae2731eb228805bd28e8ad680bd7b0a549bbe3adc5f4e",
+    "site/assets/js/dossier-live-quote.js": "ea0faa60b6a2b6a8a34225f543cbd19082da485c9bc417a7fa18c7f4504bbccd"
+  },
+  "html_sha256": "1ab43404555a5b840cf27ff5b3b494b9d7780efee200c715cf2a67d38d9f80ba"
+}

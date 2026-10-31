@@ -1,0 +1,14 @@
+{
+  "schema": "mastermind.attended.proof_import_refusal.v1",
+  "recorded_at": "2026-10-20T03:31:18.652072+00:00",
+  "pid": 76073,
+  "exit": 1,
+  "exception": "KeyError: 'encoding'",
+  "source_sha256": "20c706855920cfc170caf333252b518e2074ed0117db956b25dbab7dbb5883fb",
+  "phase": "Existing manifest preflight, before payload or source writes",
+  "reconciled_index": "1996dbf7a6b9f754c67ed5726bcd4d505482b80b",
+  "reconciled_manifest_sha256": "d791be003212ae2334c3fb6181e4a1398a37ca2d2063c8159cd3c9a5d682d7a2",
+  "cause": "Fourteen historical uncompressed JSON rows omit optional encoding. All gzip entries explicitly carry encoding and original byte hashes. No historical row or data should be rewritten to satisfy the importer.",
+  "source_effect": false,
+  "repair": "Interpret absent encoding as ordinary uncompressed content; preserve raw hash/length and all declared gzip original-byte checks."
+}

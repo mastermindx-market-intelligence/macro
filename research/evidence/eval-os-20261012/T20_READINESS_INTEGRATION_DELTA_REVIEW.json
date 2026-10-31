@@ -1,0 +1,42 @@
+{
+  "schema": "eval_os.science_semantic_review.v1",
+  "status": "SOURCE_SEMANTICS_ACCEPTED_FINAL_UI_TEST_RECEIPT_PENDING",
+  "source_sha256": {
+    "admin/evidence_status.py": "5315e8e95b2a5ee3c5c12b88eac8126c8578db12a773357916aed20bdb459efd",
+    "admin/intelligence_os.py": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873",
+    "admin/static/app.js": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772",
+    "scripts/grade_qledger.py": "56d49a99be7105c29f80795c2c2af8d89605f660f6280042fdb28072731155b2",
+    "admin/evidence_findings.py": "d2355370c9c458db54a35e2253903d5b781b5b0193c945b587618706cb3bf909"
+  },
+  "accepted_delta": [
+    "Readiness ready=None remains unknown rather than False; no insufficient_maturity inferred from explicit null.",
+    "Owner-required n_dates/needed/ready fields and fraction range checks preserve null and numerical zero.",
+    "One findings artifact is loaded into same derive generation; dependency cache key includes artifact identity and postderive drift refuses mixed result.",
+    "Only current canonical T1 outputs supply exact T4 path bindings.",
+    "Panel/detail use same report, preserve owner cross-horizon readings, no grade/status mutation.",
+    "UI explicitly labels context-only recorded-asof/current-unqualified and numerical proof unavailable in both languages."
+  ],
+  "findings": [
+    {
+      "id": "T20-PARTIAL-EMPTY-ABSENCE",
+      "path": "admin/static/app.js",
+      "line": 4495,
+      "severity": "narrow_scientific_presentation",
+      "witness": {
+        "status": "partial",
+        "records": [],
+        "rejected_records": 1,
+        "source": "valid envelope with unsupported owner row"
+      },
+      "observed": "No findings in this recorded report. Detail: No recorded findings match this engine.",
+      "expected": "A partial empty report says supported findings could not be displayed, without asserting absence; retain rejected count. A valid complete empty report may say no findings.",
+      "repair": "Branch on partial/rejected records before zero-findings sentence; bilingual replacement only.",
+      "status": "CLOSED_SOURCE_SEMANTICS",
+      "closure": "emptyMessage first separates unavailable, then partial or rejected records, then valid empty/detail no match. English and Chinese partial messages avoid absence assertion; rejected count preserved."
+    }
+  ],
+  "test_execution": "Parent reports pre-repair actual EN/ZH renderer RED2; final UI 69163 active22cases. No final test success claimed by this source review.",
+  "source_edits": false,
+  "previous_app_sha256": "f3ccfd436cb9c744174cdf72ab3f819676cee014ffa73ec31ff6f53bf5d9459c",
+  "closure_review_scope": "Only repaired bilingual emptyMessage branch read; prior scientific delta review retained. No API/source-owner math changes or broad rerun."
+}

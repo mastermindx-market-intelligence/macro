@@ -1,0 +1,21 @@
+{
+  "recorded_at": "2026-10-20T20:08:01.916677+00:00",
+  "run_id": 39486571065,
+  "job_id": 118849237624,
+  "job_conclusion": "success",
+  "source": "actual complete hosted ci-plan log",
+  "raw_file": "macro-bd890-ci-plan-118849237624.log",
+  "raw_bytes": 366416,
+  "raw_sha256": "4c220fb145776150035216f3c676631c16235c4770581a0848385c6368200d46",
+  "head": "bd89047e4e403a93183c6a4763274e09acfdd044",
+  "tested_base": "9f7f61e2f82e967abb38d98a05b15c797811484e",
+  "tested_merge": "08fcd6ffa61d9503d3e779a326545af7c0b08644",
+  "provenance_lines": [
+    "2026-10-20T19:51:02.1655129Z HEAD is now at 08fcd6ffa6 Merge bd89047e4e403a93183c6a4763274e09acfdd044 into 9f7f61e2f82e967abb38d98a05b15c797811484e",
+    "2026-10-20T19:51:10.9218795Z   EVENT_HEAD_SHA: bd89047e4e403a93183c6a4763274e09acfdd044",
+    "2026-10-20T19:51:13.5409757Z TRACKED_PATH_INVENTORY={\"path_count\":130551,\"paths_sha256\":\"d8896ac5c17ba7de1c7692d5f7ad53cd2ef0018a5ba7261b8658e4878b661c96\",\"schema\":\"ci.tracked_paths.v1\",\"tested_tree_sha\":\"08fcd6ffa61d9503d3e779a326545af7c0b08644\"}",
+    "2026-10-20T19:51:13.5718579Z   TESTED_TREE_SHA: 08fcd6ffa61d9503d3e779a326545af7c0b08644",
+    "2026-10-20T19:51:13.5718977Z   TESTED_BASE_SHA: 9f7f61e2f82e967abb38d98a05b15c797811484e"
+  ],
+  "scope": "Checkout/plan provenance only; no claim that all hosted CI has concluded."
+}

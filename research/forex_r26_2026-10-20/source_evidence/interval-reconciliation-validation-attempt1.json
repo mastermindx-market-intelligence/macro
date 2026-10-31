@@ -1,0 +1,25 @@
+{
+  "schema": "forex_r26.focused_source_validation.v1",
+  "started_at": "2026-10-22T03:10:11.719580+00:00",
+  "completed_at": "2026-10-22T03:10:16.122881+00:00",
+  "exit_code": 0,
+  "duration_seconds": 4.403,
+  "command": [
+    "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+    "-m",
+    "pytest",
+    "tests/test_tiingo_forex_source.py",
+    "tests/test_tiingo_reader.py",
+    "tests/test_tiingo_additional_history.py",
+    "-q"
+  ],
+  "before_sha256": {
+    "lib/dataos/tiingo_forex.py": "6c5838376d8ec0a6eff7686d83ed63aee9b915babee70fe828088fc395f504f0",
+    "tests/test_tiingo_forex_source.py": "7cb583a4636e31672c94bba36849662c4bb290f619395212349091af8dcd7f4b"
+  },
+  "after_sha256": {
+    "lib/dataos/tiingo_forex.py": "6c5838376d8ec0a6eff7686d83ed63aee9b915babee70fe828088fc395f504f0",
+    "tests/test_tiingo_forex_source.py": "7cb583a4636e31672c94bba36849662c4bb290f619395212349091af8dcd7f4b"
+  },
+  "log": "interval-reconciliation-tests-attempt1.log"
+}

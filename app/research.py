@@ -8,6 +8,7 @@ Routes
 ------
 GET  /api/research/catalog            public  — latest 3 summaries; full catalog for Pro
 GET  /api/research/search?q=&…        public  — preview-only results; full search for Pro
+GET  /api/research/read/{doc_id}      PRO     — bounded current-revision text; pinned reopen
 GET  /api/research/view/{doc_id}      PRO     — stream PDF inline (rate-limited, no quota)
 POST /api/research/download/{doc_id}  PRO     — watermark + attachment (daily quota
                                                 10/day; 50/day on a lifetime grant)
@@ -48,7 +49,9 @@ from fastapi.responses import JSONResponse, Response
 
 from engine.research_vault import catalog as catalog_mod
 from engine.research_vault import corpus as corpus_mod
+from engine.research_vault import fulltext, fulltext_store
 from engine.research_vault import download_quota, view_ratelimit, watermark
+from engine.research_vault.read_service import FETCH_MAX_SEGMENTS, SEGMENT_MAX_BYTES
 
 log = logging.getLogger("research_vault.api")
 
@@ -600,6 +603,108 @@ def research_search(
 # ---------------------------------------------------------------------------
 # PAID routes (require_user + paid tier)
 # ---------------------------------------------------------------------------
+
+@router.get("/api/research/read/{doc_id}")
+def research_read(
+    doc_id: str,
+    request: Request,
+    source_pdf_sha256: str | None = Query(default=None, max_length=64),
+    extracted_text_sha256: str | None = Query(default=None, max_length=64),
+    segment_start: int = Query(default=0, ge=0),
+    max_segments: int = Query(default=2, ge=1, le=FETCH_MAX_SEGMENTS),
+    user: dict = Depends(require_user),
+) -> Response:
+    """Read bounded stored text without replacing a caller's selected revision.
+
+    Initial selection omits both hashes. Every subsequent read (including the next
+    segment window) sends BOTH hashes returned in selection. Opening a newer revision
+    is a deliberate new initial selection. The incumbent current-source guard remains:
+    corrected historical bodies are unavailable here, even if an old derivative exists.
+    No extraction, PDF read, store write, download quota debit or latest fallback occurs.
+    """
+    headers = {"Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, noimageindex"}
+
+    def reply(body: dict, status: int = 200) -> JSONResponse:
+        return JSONResponse(body, status_code=status, headers=headers)
+
+    user_id = _user_id_of(user)
+    tier = _resolve_tier(user_id)
+    if not _can_view(tier):
+        return reply({"error": "paid_required", "tier": tier, "upgrade": _UPGRADE_URL}, 402)
+
+    # Shape and catalog admission precede any private derivative/receipt key construction.
+    doc_id = _validate_doc_id(doc_id)
+    selected = source_pdf_sha256 is not None or extracted_text_sha256 is not None
+    if selected and not all(
+        isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value)
+        for value in (source_pdf_sha256, extracted_text_sha256)
+    ):
+        return reply({"error": "invalid revision selection"}, 400)
+    if segment_start > 0 and not selected:
+        return reply({"error": "revision selection required for continuation"}, 400)
+
+    allowed, info = view_ratelimit.allow(user_id, _client_ip(request))
+    if not allowed:
+        return JSONResponse(
+            {"error": "rate_limited", "limit": info.get("limit"), "remaining": 0},
+            status_code=429, headers={**headers, "Retry-After": "3600"},
+        )
+
+    def changed() -> JSONResponse:
+        if not selected:
+            # No selection exists yet. A correction race is temporarily unavailable,
+            # not an instruction to discard or silently replace a selected revision.
+            return reply({"error": "research text unavailable"}, 503)
+        return reply({"error": "selected_revision_unavailable", "report_id": doc_id}, 409)
+
+    try:
+        store = _build_store()
+        current_digest = fulltext_store.source_digest(store, doc_id)
+        if current_digest is None:
+            return reply({"error": "research text unavailable"}, 503)
+        if selected and current_digest != source_pdf_sha256:
+            return changed()
+        # Default V1 only: this browser surface does not activate candidate extractors.
+        record = fulltext_store.load_extracted_text(store, doc_id, {})
+        if record is None:
+            return reply({"error": "research text unavailable"}, 503)
+        # Receipt can advance between the first read, the loader, and final composition.
+        # Follow the existing ResearchReadService SOURCE_REVISION_CHANGED guard.
+        if (record["source_pdf_sha256"] != current_digest
+                or fulltext_store.source_digest(store, doc_id) != current_digest):
+            return changed()
+        if selected and record["extracted_text_sha256"] != extracted_text_sha256:
+            return changed()
+        segments = fulltext.build_segments(
+            dict(record), segmenter_version=fulltext.SEGMENTER_VERSION,
+            max_bytes=SEGMENT_MAX_BYTES,
+        )
+        catalog = _load_catalog()
+        if not any(item.get("id") == doc_id for item in catalog.get("items", [])):
+            return reply({"error": "document not found"}, 404)
+    except Exception:
+        # No raw store errors, internal keys or configuration escape the read boundary.
+        return reply({"error": "research text unavailable"}, 503)
+
+    return reply({
+        "schema": "research_vault.browser_read.v1",
+        "report_id": doc_id,
+        "selection": {
+            "source_pdf_sha256": record["source_pdf_sha256"],
+            "extracted_text_sha256": record["extracted_text_sha256"],
+            "extractor_version": record["extractor_version"],
+            "segmenter_version": fulltext.SEGMENTER_VERSION,
+            "segment_max_bytes": SEGMENT_MAX_BYTES,
+        },
+        "source": {
+            "catalog_generated_at": catalog.get("generated_at"),
+            "catalog_health": catalog.get("catalog_health"),
+        },
+        "text_layer_state": record["text_layer_state"],
+        "segment_count_total": len(segments),
+        "segments": segments[segment_start:segment_start + max_segments],
+    })
+
 
 @router.get("/api/research/view/{doc_id}")
 def research_view(doc_id: str, request: Request,

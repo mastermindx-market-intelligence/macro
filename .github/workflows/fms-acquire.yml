@@ -47,6 +47,7 @@ jobs:
       cancel-in-progress: false
     outputs:
       publish_default: ${{ steps.persist.outputs.publish_default }}
+      source_sha: ${{ steps.persist.outputs.source_sha }}
     runs-on: [self-hosted, macstudio-light]
     timeout-minutes: 30
     steps:
@@ -113,6 +114,8 @@ jobs:
           # Only released main code committing main may request the main publisher.
           # GITHUB_TOKEN pushes do not trigger its on:push subscription.
           if [ "${FMS_DEFAULT_BRANCH:-}" = "main" ] && [ "$FMS_TARGET_REF" = "main" ] && [ "${GITHUB_REF:-}" = "refs/heads/main" ]; then
+            python3 scripts/ci/govrev_source_binding.py \
+              --fms-receipt "$RUNNER_TEMP/fms-persist-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
             echo "publish_default=true" >> "$GITHUB_OUTPUT"
           else
             echo "publish_default=false" >> "$GITHUB_OUTPUT"
@@ -161,6 +164,7 @@ jobs:
       actions: read
     uses: ./.github/workflows/government-revenue-live.yml
     with:
+      source_sha: ${{ needs.acquire.outputs.source_sha }}
       projection_only: true
 
   # The reusable publisher historically returned success after exhausting its

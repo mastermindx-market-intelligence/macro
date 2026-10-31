@@ -208,7 +208,13 @@
         {#- Stance follows the INTERVAL. While the average-trade range still spans a
             loss, no win rate — however high — earns a following verdict. -#}
         {% if hero_ci and hero_ci[0] is not none and hero_ci[0] < 50 %}
+        {% if win_rate_pct is not none and win_rate_pct < 50 %}
+        {{ t('Fewer than half of finished trades made money so far — and on a record '
+             'this short the honest range still reaches below a coin flip.',
+             '目前已完成交易中盈利不足一半——且记录尚短，诚实的区间仍低于五五开。') }}
+        {% else %}
         {{ t('More often right than wrong so far — but on a record this short the honest range still reaches below a coin flip.', '目前胜多于负——但记录尚短，诚实的区间仍低于五五开。') }}
+        {% endif %}
         {% elif hero_exp_lo is defined and hero_exp_lo is not none and hero_exp_lo <= 0 %}
         {#- The interval governs, not the point estimate: while the honest range for what a
             trade returns still spans a loss, no win rate earns a following verdict. Same
@@ -324,7 +330,11 @@
   <!-- ── Section 3: Horizon ladder ── -->
   <div class="tr-section">
     <div class="tr-section-hd">{{ t('Results by holding period', '按持有周期的结果') }}</div>
-    <div class="tr-section-sub">{{ t('How buy board names have done vs. the S&amp;P 500 over different holding windows. Range shown is a confidence interval — the true long-run rate is likely between these numbers.', '买入榜标的在不同持有窗口内相对标普500的表现。区间为置信区间——长期真实胜率大概率在此范围内。') }}</div>
+    <div class="tr-section-sub">{{ t('How buy board names have done vs. the S&P 500 '
+      'over different holding windows. The range is a 95% interval on raw '
+      'observations, so the true uncertainty is wider.',
+      '买入榜标的在不同持有窗口内相对标普500的表现。'
+      '区间为基于原始样本的95%区间，真实的不确定性更大。') }}</div>
     <div class="tbl-scroll">
     <table class="tr-tbl">
       <thead><tr>
@@ -332,6 +342,7 @@
         <th>{{ t('Win rate', '胜率') }}</th>
         <th>{{ t('Likely range', '可能区间') }}</th>
         <th>{{ t('Avg excess', '平均超额') }}</th>
+        <th>{{ t('Win rate vs. sector', '相对行业胜率') }}</th>
         <th>{{ t('Observations', '样本数') }}</th>
         <th>{{ t('Status', '状态') }}</th>
       </tr></thead>
@@ -344,17 +355,35 @@
           <td class="neu">—</td>
           <td class="neu">—</td>
           <td class="neu">—</td>
+          <td class="neu">—</td>
           <td class="n-col">{{ t('n=', 'n=') }}{{ row.raw_n }}</td>
           <td><span class="accruing-chip">{{ t('ACCRUING', '积累中') }}</span></td>
           {% else %}
           <td class="{{ 'pos' if row.hit_rate is not none and row.hit_rate > 0.5 else ('neg' if row.hit_rate is not none and row.hit_rate < 0.5 else 'neu') }}" data-tip-en="{{ row.horizon }}-day hit rate: {{ (row.hit_rate * 100)|round(1) }}% (raw n={{ row.raw_n }}, independent windows={{ row.effective_n }})" data-tip-zh="{{ row.horizon }}日胜率：{{ (row.hit_rate * 100)|round(1) }}%（原始样本数={{ row.raw_n }}，独立窗口={{ row.effective_n }}）">
             {{ (row.hit_rate * 100)|round|int }}%
           </td>
-          <td class="ci-range" data-tip-en="90% confidence interval based on independent entry-date windows. True long-run rate likely between these bounds. Small n = wide interval." data-tip-zh="基于独立入场日窗口的90%置信区间。长期真实胜率大概率在此区间内。样本量小=区间宽。">
+          <td class="ci-range" data-tip-en="{{ '95% interval computed on the raw '
+            'observation count. Holding windows overlap, so the true uncertainty is '
+            'wider: read this as the narrowest honest range. The independent-window '
+            'count is the second number under Observations.' }}" data-tip-zh="{{
+            '基于原始样本数计算的95%区间。持有窗口相互重叠，真实的不确定性更大：请将其视为'
+            '最窄的诚实区间。独立窗口数为样本数一栏的第二个数字。' }}">
             {{ (row.wilson_lo * 100)|round|int }}–{{ (row.wilson_hi * 100)|round|int }}%
           </td>
           <td class="{{ 'pos' if row.mean_excess is not none and row.mean_excess > 0 else ('neg' if row.mean_excess is not none and row.mean_excess < 0 else 'neu') }}" data-tip-en="Average excess return vs SPY over {{ row.horizon }} days (buy-lane names, next-close entry realism)" data-tip-zh="买入榜标的相对SPY的{{ row.horizon }}日平均超额收益（次收盘入场）">
             {% if row.mean_excess is not none %}{{ '%+.2f'|format(row.mean_excess * 100) }}%{% else %}—{% endif %}
+          </td>
+          {% set _shr = row.sector_hit_rate if row.sector_hit_rate is number else none %}
+          {% set _stip = row.horizon ~ '-day hit rate vs. the sector ETF of each name '
+             ~ '(n=' ~ row.sector_n ~ ', ' ~ ('buy-board names' if
+             row.sector_lane == 'buy' else 'all board lanes') ~ ')' %}
+          {% set _stzh = row.horizon ~ '日相对所属行业ETF的胜率（样本数=' ~ row.sector_n
+             ~ '，' ~ ('买入榜标的' if row.sector_lane == 'buy' else '全部榜单') ~ '）' %}
+          <td class="{{ 'pos' if _shr is not none and _shr > 0.5 else
+            ('neg' if _shr is not none and _shr < 0.5 else 'neu') }}"
+            {%- if _shr is not none %} data-tip-en="{{ _stip }}"
+            data-tip-zh="{{ _stzh }}"{% endif %}>
+            {% if _shr is not none %}{{ (_shr * 100)|round|int }}%{% else %}—{% endif %}
           </td>
           <td class="n-col" data-tip-en="Raw observations = {{ row.raw_n }} rows; independent entry-date windows = {{ row.effective_n }} (used for interval estimation)" data-tip-zh="原始样本={{ row.raw_n }}行；独立入场日窗口={{ row.effective_n }}（用于区间估计）">
             {{ row.raw_n }} / {{ row.effective_n }}
@@ -364,12 +393,20 @@
         </tr>
         {% endfor %}
       {% else %}
-      <tr><td colspan="6" class="neu" style="text-align:center;padding:20px;font-style:italic">{{ t('Horizon data accruing — check back after the first few weeks of results.', '持有周期数据积累中——请在最初几周结果出炉后再查看。') }}</td></tr>
+      <tr><td colspan="7" class="neu"
+        style="text-align:center;padding:20px;font-style:italic">{{
+        t('Horizon data accruing — check back after the first few weeks of results.',
+          '持有周期数据积累中——请在最初几周结果出炉后再查看。') }}</td></tr>
       {% endif %}
       </tbody>
     </table>
     </div>
-    <p style="font-size:11px;color:var(--muted);margin:6px 0 0">{{ t('Observations = raw count / independent entry-date windows. Interval uses cluster-unit estimation to account for overlapping windows.', '样本数 = 原始计数 / 独立入场日窗口数。区间采用集群单元估计以修正重叠窗口影响。') }}</p>
+    <p style="font-size:11px;color:var(--muted);margin:6px 0 0">{{
+      t('Observations = raw count / independent entry-date windows. The range is a '
+        '95% interval on the raw count; overlapping windows make it a lower bound on '
+        'the true uncertainty.',
+        '样本数 = 原始计数 / 独立入场日窗口数。区间为基于原始计数的95%区间；'
+        '窗口重叠使其仅为真实不确定性的下限。') }}</p>
     {% if horizon_ladder | selectattr('lane', 'equalto', 'buy') | list %}
     <p style="font-size:11px;color:var(--muted);margin:6px 0 0">
       {{ t('Win rate, range and excess count buy-board names only. All board lanes '
@@ -458,6 +495,35 @@
       {{ t('Attribution data accruing — this section fills in as more exits are graded.', '归因数据积累中——随着更多标的被评级，本节将逐步填充。') }}
     </div>
     {% else %}
+    {% if failure_mix_scope and failure_mix_scope.raw_n %}
+    {% set _fs = failure_mix_scope %}
+    {% set _fse = 'Covers ' ~ _fs.raw_n ~ ' attributed exits' %}
+    {% set _fsz = '涵盖' ~ _fs.raw_n ~ '个已归因离榜标的' %}
+    {% if _fs.as_of_min %}
+    {% if _fs.as_of_max and _fs.as_of_max != _fs.as_of_min %}
+    {% set _fse = _fse ~ ' from the boards of ' ~ _fs.as_of_min ~ ' to ' ~ _fs.as_of_max %}
+    {% set _fsz = _fsz ~ '（榜单日期' ~ _fs.as_of_min ~ '至' ~ _fs.as_of_max ~ '）' %}
+    {% else %}
+    {% set _fse = _fse ~ ' from the board of ' ~ _fs.as_of_min %}
+    {% set _fsz = _fsz ~ '（榜单日期' ~ _fs.as_of_min ~ '）' %}
+    {% endif %}
+    {% endif %}
+    {% if _fs.lanes %}
+    {% set _ln = namespace(e=' · lanes:', z=' · 榜单：') %}
+    {% for k, v in _fs.lanes|dictsort %}
+    {% set _ln.e = _ln.e ~ (' ·' if not loop.first else '') ~ ' ' ~ k ~ ' ' ~ v %}
+    {% set _ln.z = _ln.z ~ (' ·' if not loop.first else '') ~ ' ' ~ k ~ ' ' ~ v %}
+    {% endfor %}
+    {% set _fse = _fse ~ _ln.e %}
+    {% set _fsz = _fsz ~ _ln.z %}
+    {% endif %}
+    {% if _fs.horizons and _fs.horizons|length == 1 %}
+    {% set _fse = _fse ~ ' · ' ~ _fs.horizons[0] ~ '-day horizon' %}
+    {% set _fsz = _fsz ~ ' · ' ~ _fs.horizons[0] ~ '日持有期' %}
+    {% endif %}
+    <div class="tr-card-sub">{{ t(_fse ~ '. Not the whole record.',
+      _fsz ~ '。并非全部记录。') }}</div>
+    {% endif %}
     {% set _fms = {
       'idio_break': ['Company-specific weakness', '个股自身走弱'],
       'idio_alpha': ['Company-specific strength', '个股自身走强'],
@@ -536,6 +602,24 @@
   <div class="tr-footnote">
     <b>{{ t('Notes', '说明') }}</b> ·
     {{ t('Entry prices are the next session\'s close after the name first appeared on the board (next-bar realism). Returns are total-return (dividend-adjusted).', '入场价为标的首次上榜后下一交易日的收盘价（次日收盘入场）。收益为全收益（含股息调整）。') }}
+    {%- if price_basis_mix -%}
+    {%- set _pbc = price_basis_mix.counts -%}
+    {%- set _pbe = ('Price basis of the ' ~ price_basis_mix.total ~ ' graded rows since '
+      ~ price_basis_mix.era_from ~ ': ' ~ _pbc.get('adjusted', 0) ~ ' dividend-adjusted, '
+      ~ _pbc.get('unverified_pre_20260806', 0) ~ ' from before the 2026-08-06 basis '
+      ~ 'check (not re-verified), ' ~ _pbc.get('unadjusted', 0) ~ ' priced from '
+      ~ 'unadjusted prices against an adjusted benchmark (their dividends count as '
+      ~ 'losses)') -%}
+    {%- set _pbz = (price_basis_mix.era_from ~ '以来' ~ price_basis_mix.total
+      ~ '条已评级记录的价格基准：' ~ _pbc.get('adjusted', 0) ~ '条含股息调整，'
+      ~ _pbc.get('unverified_pre_20260806', 0) ~ '条早于2026-08-06基准核对（未重新核实），'
+      ~ _pbc.get('unadjusted', 0) ~ '条以未调整价格对比已调整基准计价（其股息计为亏损）') -%}
+    {%- if _pbc.get('unstamped') -%}
+    {%- set _pbe = _pbe ~ ', ' ~ _pbc.get('unstamped') ~ ' unstamped' -%}
+    {%- set _pbz = _pbz ~ '，' ~ _pbc.get('unstamped') ~ '条无标记' -%}
+    {%- endif %}
+    · {{ t(_pbe ~ '.', _pbz ~ '。') }}
+    {%- endif %}
     {% if n_skipped %} · {{ n_skipped }} {{ t('names excluded for missing prices (likely delisted).', '个标的因缺少价格被排除（可能已退市）。') }}{% endif %}
     {% set _fe = 'Trend verdicts unlock once at least 3 independent entry windows have ' %}
     {% set _fe = _fe ~ 'graded results for a holding period. Display-only throughout.' %}

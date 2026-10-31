@@ -802,12 +802,174 @@ def _dossier_validator() -> Any:
     )
 
 
+_DOSSIER_REF_FORBIDDEN = {
+    "$dynamicRef", "$recursiveRef", "$anchor", "$dynamicAnchor",
+    "unevaluatedProperties", "unevaluatedItems",
+}
+
+
+def _dossier_has_closed_refs(schema: Any) -> bool:
+    def walk(value, root=False):
+        if isinstance(value, dict):
+            if (not root and ({"$id", "$schema"} & value.keys())) or _DOSSIER_REF_FORBIDDEN & value.keys():
+                return False
+            if "$ref" in value and (not isinstance(value["$ref"], str) or not value["$ref"].startswith("#/$defs/")):
+                return False
+            return all(walk(item) for item in value.values())
+        if isinstance(value, list):
+            return all(walk(item) for item in value)
+        return True
+
+    return isinstance(schema, dict) and walk(schema, True)
+
+
+def _dossier_memo_value_key(value: Any) -> tuple[Any, ...] | None:
+    def atom(item):
+        if item is None:
+            return ("null", None)
+        if type(item) is bool:
+            return ("bool", item)
+        if type(item) is int:
+            # Bound conversion work before rendering unusually large integers.
+            if item.bit_length() > 1697:
+                return None
+            return ("int", item) if len(str(item)) <= 512 else None
+        if type(item) is float:
+            return ("float", item.hex()) if math.isfinite(item) else None
+        if type(item) is str and len(item) <= 512:
+            return ("str", item)
+        return None
+
+    if type(value) is dict:
+        if len(value) > 12:
+            return None
+        items, chars = [], 0
+        for name, item in value.items():
+            if type(name) is not str:
+                return None
+            token = atom(item)
+            if token is None:
+                return None
+            chars += len(name) + (len(item) if type(item) is str else len(str(item)))
+            if chars > 1024:
+                return None
+            items.append((name, token))
+        return ("object", tuple(sorted(items)))
+    token = atom(value)
+    return None if token is None else ("atom", token)
+
+
+def _dossier_ref_memo_key(ref: Any, value: Any) -> tuple[Any, ...] | None:
+    if not isinstance(ref, str) or not ref.startswith("#/$defs/"):
+        return None
+    token = _dossier_memo_value_key(value)
+    return None if token is None else (ref, *token)
+
+
+def _dossier_validation_validator() -> Any:
+    """Fresh, bounded memo for one call only; native authoring validator remains intact."""
+    from collections import OrderedDict
+    from copy import deepcopy
+
+    from jsonschema import Draft202012Validator, validators
+
+    original = _dossier_validator()
+    schema = original.schema
+    # This fingerprint binds the optimized path to the qualified source schema.
+    # Schema changes keep native resolution until separately requalified.
+    expected_schema_sha256 = "dec80063dfed132b8121b3b893e33187b6203ddd3dd0a05b509bbe92b0f43d13"
+    # Do not retain the caller's mutable schema or native root across calls.
+    frozen = deepcopy(schema)
+    native = Draft202012Validator(frozen, format_checker=original.format_checker)
+    canonical = json.dumps(frozen, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    if digest != expected_schema_sha256 or not _dossier_has_closed_refs(frozen):
+        return original
+    memo, resolved_refs = OrderedDict(), {}
+    memo_property_nodes = set()
+    cheap_property_keywords = {"type", "minLength", "maxLength"}
+    cheap_refs = {
+        f"#/$defs/{name}"
+        for name, subschema in frozen["$defs"].items()
+        if isinstance(subschema, dict) and not (subschema.keys() - cheap_property_keywords)
+    }
+
+    def collect_property_nodes(node):
+        if isinstance(node, dict):
+            for subschema in node.get("properties", {}).values():
+                # Cheap primitive checks do not justify constructing keys or
+                # displacing reusable reference checks with one-use identifiers.
+                if isinstance(subschema, dict) and subschema.keys() - cheap_property_keywords:
+                    memo_property_nodes.add(id(subschema))
+            for child in node.values():
+                collect_property_nodes(child)
+        elif isinstance(node, list):
+            for child in node:
+                collect_property_nodes(child)
+
+    collect_property_nodes(frozen)
+
+    def hit(key):
+        if key is not None and key in memo:
+            memo.move_to_end(key)
+            return True
+        return False
+
+    def remember(key):
+        if key is not None:
+            memo[key] = True
+            memo.move_to_end(key)
+            if len(memo) > 4096:
+                memo.popitem(last=False)
+
+    def cached(validator, ref, value, source_schema):
+        # Keep cheap reference checks native without displacing reusable checks.
+        key = None if ref in cheap_refs else _dossier_ref_memo_key(ref, value)
+        if hit(key):
+            return
+        if ref not in resolved_refs:
+            resolved_refs[ref] = native._resolver.lookup(ref)
+        resolved = resolved_refs[ref]
+        good = True
+        for error in validator.descend(value, resolved.contents, resolver=resolved.resolver):
+            good = False
+            yield error
+        if good:
+            remember(key)
+
+    def properties(validator, properties, value, source_schema):
+        if not validator.is_type(value, "object"):
+            return
+        for name, subschema in properties.items():
+            if name not in value:
+                continue
+            item = value[name]
+            if id(subschema) not in memo_property_nodes:
+                yield from validator.descend(item, subschema, path=name, schema_path=name)
+                continue
+            token = _dossier_memo_value_key(item)
+            # Every node stays alive in this call's qualified schema snapshot.
+            # A successful value under a different node proves nothing here.
+            key = None if token is None else ("property", id(subschema), *token)
+            if hit(key):
+                continue
+            good = True
+            for error in validator.descend(item, subschema, path=name, schema_path=name):
+                good = False
+                yield error
+            if good:
+                remember(key)
+
+    cls = validators.extend(Draft202012Validator, {"$ref": cached, "properties": properties})
+    return cls(frozen, format_checker=original.format_checker)
+
+
 def is_valid_dossier_payload(value: Any) -> bool:
     """Validate the full artifact plus relational invariants at the public boundary."""
     if not isinstance(value, dict):
         return False
     try:
-        if any(_dossier_validator().iter_errors(value)):
+        if any(_dossier_validation_validator().iter_errors(value)):
             return False
         if dossier_content_id(value) != value.get("content_id"):
             return False

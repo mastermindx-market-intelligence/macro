@@ -1,0 +1,10 @@
+side,split,pool,pivots,assets
+bottom,development,primary,691,44
+bottom,test,crypto,17,2
+bottom,test,primary,382,48
+bottom,validation,primary,358,46
+top,development,primary,650,44
+top,test,crypto,20,2
+top,test,primary,395,48
+top,validation,crypto,1,1
+top,validation,primary,288,46

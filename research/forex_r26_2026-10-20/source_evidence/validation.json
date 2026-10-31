@@ -1,0 +1,86 @@
+{
+  "schema": "mastermind.forex.source_validation.v1",
+  "recorded_at_utc": "2026-10-21T13:49:12.001232+00:00",
+  "implementation_parent_head": "642dbedeb5deb1bbb156bda4c1dbaeb518c558df",
+  "source_sha256": {
+    "lib/dataos/tiingo_forex.py": "97df09accb4b866984fb56163b0d9b22d5e3bbfecac1d39e35363a4f0ec93de4",
+    "tests/test_tiingo_forex_source.py": "504cdf8f47e2eb2334e2e3a53b127c890c836a439f378f341efc03ac4186e92d",
+    ".github/ci/legacy-jobs.yml": "b6a5fed882c616a241123618d1be2e44405479e1f74a18361e0ec0e061cd1401",
+    ".github/workflows/ci.yml": "db4c9a209c303be628e8f28e65f6406029e915094aaa3256a88b5527753b27c5"
+  },
+  "tests": [
+    {
+      "scope": "New source diagnostics, incumbent reader and additional history",
+      "log": "source_evidence/diagnostics-tests-final.log",
+      "passed": 84,
+      "seconds": 3.85,
+      "exit_code": 0
+    },
+    {
+      "scope": "Existing CI exclusive-set declaration, import closure, ordinary-PR narrowing",
+      "log": "source_evidence/ci-curation.log",
+      "passed": 3,
+      "seconds": 162.79,
+      "exit_code": 0
+    }
+  ],
+  "actual_capture": {
+    "historical_requests": 9,
+    "verified_nonempty_pairs": 8,
+    "empty_pairs": [
+      "USDBRL"
+    ],
+    "diagnostic_rows": 17011,
+    "eligible_final_4h_observations": 0,
+    "separate_usdbrl_top_requests": 1,
+    "separate_usdbrl_top_status": "EMPTY_CAPTURED"
+  },
+  "independent_review": "PASS_SCOPED_TO_DIAGNOSTICS_AT_509583b08e689a159fb8079bb6f27e26a9d2d958",
+  "hosted_ci": "NOT_OBSERVED_FOR_THIS_DELTA",
+  "existing_parent_hosted_ci": {
+    "head": "642dbedeb5deb1bbb156bda4c1dbaeb518c558df",
+    "ci_run": 39599988053,
+    "ci": "SUCCESS",
+    "fences_run": 39599987785,
+    "fences": "SUCCESS"
+  },
+  "evidence_sha256": {
+    "research/forex_r26_2026-10-20/source_evidence/ci-curation.log": "9c3079e880f7d5340a4df74373d9a4148549478deb91970b0c574afa4d1bd6a3",
+    "research/forex_r26_2026-10-20/source_evidence/diagnostics-tests-final.log": "3df900037232906bd8c72af380afb57e27faf026d3ed77a792760e374dfa1896",
+    "research/forex_r26_2026-10-20/source_evidence/diagnostics-tests.log": "22d0c6969abae49e95f6defe136215bcfbcb53688408013e4a6268337e580863",
+    "research/forex_r26_2026-10-20/source_evidence/tiingo-archive-preflight.json": "d1f285480180dfa610c59b84797868444e2a7c08c4766598d3e5c316ecb310b9",
+    "research/forex_r26_2026-10-20/source_evidence/tiingo-forex-source-diagnostics.json": "906621e7c94b0765df3f83ae15551ba9c0260b7ae28e7ae437203719c88c13a0",
+    "research/forex_r26_2026-10-20/source_evidence/tiingo-nine-pair-collect.log": "77e77737160a23432df4f564cb607d1fd73209b92f5b882350231c601142a27c",
+    "research/forex_r26_2026-10-20/source_evidence/tiingo-nine-pair-plan.json": "07ad4d696794629cbd65e45c1d621659f65a853e2740fd7a617a17b4d359000f",
+    "research/forex_r26_2026-10-20/source_evidence/tiingo-nine-pair-receipts.json": "e21dffac3fafb0b74e756d51d3f4810776aa6f4e72e020df9560c0aa4fe0ed9f",
+    "research/forex_r26_2026-10-20/source_evidence/tiingo-usdbrl-top-collect.log": "98133298047864264b78e82e725c70b0e672d47ac7edcceba074b66ea8194e0c",
+    "research/forex_r26_2026-10-20/source_evidence/tiingo-usdbrl-top-plan.json": "85501cd1c546426bad1d15dd8a2d2c00e64bfcb76825c21fb6fd61f448643a7b",
+    "research/forex_r26_2026-10-20/source_evidence/tiingo-usdbrl-top-preflight.json": "b286b79893cfec6dd99a726c3f4202fd8d3a3e95b6c3036d40200558572286fe",
+    "research/forex_r26_2026-10-20/source_evidence/tiingo-usdbrl-top-receipt.json": "d9779213558f475e771053951332b184f14c05b098c98b14ce4792576067a491"
+  },
+  "boundaries": {
+    "collector_added": false,
+    "source_admission": false,
+    "final_4h_feed": false,
+    "evaluation_wired": false,
+    "production_ddl": false,
+    "deployment": false,
+    "activation": false,
+    "delivery": false
+  },
+  "independent_review_receipt": "source_evidence/independent-review-509583b0.json",
+  "independent_review_limitations": [
+    "8 independent unittest methods; no independent84-test or PyArrow integration rerun",
+    "External raw archive not independently reread"
+  ],
+  "metadata_updated_at_utc": "2026-10-21T14:02:47.959764+00:00",
+  "implementation_hosted_ci_observed": {
+    "head": "509583b08e689a159fb8079bb6f27e26a9d2d958",
+    "at_utc": "2026-10-21T14:03:40Z",
+    "ci_run": 39611628516,
+    "ci": "IN_PROGRESS",
+    "fences_run": 39611628353,
+    "fences": "SUCCESS",
+    "all_checks_complete": false
+  }
+}

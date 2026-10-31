@@ -1,0 +1,25 @@
+{
+  "schema": "eval_os.t5_source_findings_qualification.v1",
+  "scope": "Source/data observation classifier through existing output-health CLI",
+  "tests": {
+    "passed": 125,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 7.46
+  },
+  "review_sha256": "ee9c78a1a74e0c9d199b75454607da655a5a692c609f2a981f9366b6605aaf6e",
+  "source": {
+    "engine/postmortem.py": "305922800d483572ec709224edb30c2685404b1da543cdf81257701a4ccfdcc5",
+    "scripts/build_output_health.py": "b97bf7e909e4d7744d29033e1f054a6b851ad26dbbed3411fc21988dc4f1e21b",
+    "tests/test_output_health.py": "cb14d6ddb7aa28f4d625d3e45351356d5101a2eeec47d40d38b94fe9539851d2",
+    ".github/ci/legacy-jobs.yml": "67cefad4a1920c699831890fac5d8023ca4e467b37373d9ceb5fd736009365d5"
+  },
+  "prior_module_preserved": true,
+  "ci_owner": "intelligence-registry",
+  "unmet": [
+    "Containing-head CI and protected delivery",
+    "Consumer adoption/production proof",
+    "Outcome taxonomy and empirical clustering remain with outcome owners"
+  ]
+}

@@ -105,6 +105,38 @@ def test_the_three_keys_and_their_value_sets():
     assert user_prefs.PREF_VALUES["brain_depth"] == ("concise", "standard", "deep")
 
 
+def test_exposure_node_category_is_explicit_and_preserves_existing_categories(monkeypatch):
+    categories = ["holdings_material_change", "thesis_window", "fif_saved_issuer",
+                  "options_exposure_node"]
+    assert user_prefs.normalize_value("alert_categories", categories) == sorted(categories)
+    assert "alert_categories" not in user_prefs.read_user_prefs({"user_metadata": {}})
+    stored = {"alert_categories": categories[:-1], "other": "keep"}
+    api = _install(monkeypatch, _Api(metadata=stored))
+    assert user_prefs.write_user_prefs(UID, {"alert_categories": categories}, supabase=SB)
+    assert api.payload_of("PUT")["user_metadata"] == {
+        "alert_categories": sorted(categories), "other": "keep"}
+
+
+@pytest.mark.parametrize("stored", [["thesis_window", "future_category"],
+                                    ["thesis_window", 7], "thesis_window", None])
+def test_category_save_cannot_replace_uninterpretable_stored_consent(monkeypatch, stored):
+    metadata = {"alert_categories": stored, "theme": "dark"}
+    # The existing read contract omits invalid sets. A later category save must
+    # not interpret that omission as permission to erase the stored value.
+    assert "alert_categories" not in user_prefs.read_user_prefs({"user_metadata": metadata})
+    api = _install(monkeypatch, _Api(metadata=metadata))
+    assert not user_prefs.write_user_prefs(
+        UID, {"alert_categories": ["options_exposure_node"]}, supabase=SB)
+    assert api.methods == ["GET"]
+
+
+def test_unrelated_preference_preserves_unknown_category_without_reinterpreting_it(monkeypatch):
+    retained = ["thesis_window", "future_category"]
+    api = _install(monkeypatch, _Api(metadata={"alert_categories": retained}))
+    assert user_prefs.write_user_prefs(UID, {"theme": "dark"}, supabase=SB)
+    assert api.payload_of("PUT")["user_metadata"]["alert_categories"] == retained
+
+
 @pytest.mark.parametrize("key, raw, expect", [
     ("lang", "zh", "zh"),
     ("lang", "ZH", "zh"),          # normalised, not rejected

@@ -1,0 +1,66 @@
+{
+  "base": "2fed30a5a14f6bdd5e69d42c5bfcbac5814b3915",
+  "head": "57bb2f29a4bb341ef32eaa04d5cd058e1045b53d",
+  "merge_tree": "007ce5d3f7fe7ebaac0fb6c0fb6a7082a372fd97",
+  "base_job_count": 347,
+  "integrated_job_count": 348,
+  "added_jobs": [
+    "forex-r26-consumer"
+  ],
+  "removed_jobs": [],
+  "modified_incumbent_jobs": [
+    "data-base-shim",
+    "dataos-prospective-reference"
+  ],
+  "forex_job_equal_to_reviewed_candidate": true,
+  "base_changes_in_forex_trigger_closure_non_generated": [],
+  "preserved_options_jobs": {
+    "options-r1-sector-holdings-coverage": true,
+    "options-r1-rotation-relative-trend": true
+  },
+  "ci_workflow_diff": "diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml\nindex 4b0aca036a67f..d7356c939e6a1 100644\n--- a/.github/workflows/ci.yml\n+++ b/.github/workflows/ci.yml\n@@ -4409,6 +4409,7 @@ on:\n       - \"tests/test_tiingo_archive.py\"\n       - \"tests/test_tiingo_views.py\"\n       - \"tests/test_tiingo_reader.py\"\n+      - \"tests/test_tiingo_forex_source.py\"\n       - \"tests/test_tiingo_history.py\"\n       - \"tests/test_tiingo_research_query.py\"\n       - \"tests/test_tiingo_boats_tape.py\"",
+  "ci_pack_diff": "diff --git a/tests/test_ci_pack.py b/tests/test_ci_pack.py\nindex 8d17de6c121ce..cbf62cffcfe8b 100644\n--- a/tests/test_ci_pack.py\n+++ b/tests/test_ci_pack.py\n@@ -4363,6 +4363,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N\n # ---------------------------------------------------------------------------\n \n CURATED_EXCLUSIVE = {\n+    \"forex-r26-consumer\",  # R26 consumer suites retain their declared import/read closure.\n     # OA3 retained reader and contract terms: exact closure, no unrelated code probes.\n     \"options-nbbo-cohort\",\n     \"commodities-research-workspace\",  # R3 fixture contracts retain their complete named import/read closure.",
+  "modified_job_fields": {
+    "data-base-shim": [
+      "steps"
+    ],
+    "dataos-prospective-reference": [
+      "paths",
+      "steps"
+    ]
+  },
+  "modified_step_delta": {
+    "data-base-shim": {
+      "base_count": 6,
+      "integrated_count": 6,
+      "changes": [
+        [
+          {
+            "name": "Forex context bus and movement evidence (synthetic inputs, temporary output)",
+            "run": "python -m pytest tests/test_forex_context_bus.py -q"
+          },
+          {
+            "name": "Forex context bus (synthetic inputs, temporary output)",
+            "run": "python -m pytest tests/test_forex_context_bus.py -q"
+          }
+        ]
+      ]
+    },
+    "dataos-prospective-reference": {
+      "base_count": 4,
+      "integrated_count": 4,
+      "changes": [
+        [
+          {
+            "name": "prospective reference clocks, refusals and consumer compatibility",
+            "run": "python -m pytest tests/test_dataos_prospective_reference.py tests/test_dataos_direct_registrant.py tests/test_tiingo_archive.py tests/test_tiingo_views.py tests/test_tiingo_reader.py tests/test_tiingo_history.py tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py tests/test_boats_session_runner.py tests/test_boats_delivery_regressions.py tests/test_boats_history_refresh.py tests/test_boats_history_window.py tests/test_boats_history_delivery.py tests/test_boats_history_publish.py tests/test_boats_history_cycle.py tests/test_tiingo_boats_coverage_cli.py tests/test_boats_live_history_refresh.py tests/test_tiingo_ingestion_integrity.py tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py tests/test_tiingo_chart_history.py tests/test_tiingo_capture_admission.py -q"
+          },
+          {
+            "name": "prospective reference clocks, refusals and consumer compatibility",
+            "run": "python -m pytest tests/test_dataos_prospective_reference.py tests/test_dataos_direct_registrant.py tests/test_tiingo_archive.py tests/test_tiingo_views.py tests/test_tiingo_reader.py tests/test_tiingo_forex_source.py tests/test_tiingo_history.py tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py tests/test_boats_session_runner.py tests/test_boats_delivery_regressions.py tests/test_boats_history_refresh.py tests/test_boats_history_window.py tests/test_boats_history_delivery.py tests/test_boats_history_publish.py tests/test_boats_history_cycle.py tests/test_tiingo_boats_coverage_cli.py tests/test_boats_live_history_refresh.py tests/test_tiingo_ingestion_integrity.py tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py tests/test_tiingo_chart_history.py tests/test_tiingo_capture_admission.py -q"
+          }
+        ]
+      ]
+    }
+  }
+}

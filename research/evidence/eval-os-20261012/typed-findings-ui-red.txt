@@ -1,0 +1,248 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_ test_valid_empty_record_is_visible_with_numeric_unavailability[en-Recorded disagreements-Numeric source verification-No findings in this recorded report.] _
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_valid_empty_record_is_vis0')
+language = 'en', title = 'Recorded disagreements'
+numeric = 'Numeric source verification'
+empty = 'No findings in this recorded report.'
+
+    @pytest.mark.parametrize("language,title,numeric,empty", [
+        ("en", "Recorded disagreements", "Numeric source verification", "No findings in this recorded report."),
+        ("zh", "记录的观点分歧", "数值来源核验", "此记录中没有分歧条目。"),
+    ])
+    def test_valid_empty_record_is_visible_with_numeric_unavailability(tmp_path, language, title, numeric, empty):
+>       html = render(tmp_path, {"status": "recorded", "records": [], "gaps": [],
+                                "source": {"as_of": "2026-10-12"}, "unbound_records": 0}, language)
+
+tests/test_evidence_findings_ui.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_valid_empty_record_is_vis0')
+findings = {'status': 'recorded', 'records': [], 'gaps': [], 'source': {'as_of': '2026-10-12'}, ...}
+language = 'en'
+
+    def render(tmp_path, findings, language="en"):
+        node = shutil.which("node")
+        assert node, "Node is required for the actual client contract"
+        script = tmp_path / "recorded-context.mjs"
+        script.write_text('''
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const document = {documentElement:{dataset:{lang:process.argv[2]}},addEventListener(){}};
+    const $ = () => null;
+    const fmtNum = n => n == null ? "—" : String(n);
+    ''' + _contract() + '''
+    if (typeof iosTypedFindings !== "function") throw new Error("Missing actual recorded findings renderer");
+    console.log(iosTypedFindings(JSON.parse(process.argv[3])));
+    ''', encoding="utf-8")
+        result = subprocess.run([node, str(script), language, json.dumps(findings)],
+                                capture_output=True, text=True, timeout=15)
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: file:///private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_valid_empty_record_is_vis0/recorded-context.mjs:202
+E         if (typeof iosTypedFindings !== "function") throw new Error("Missing actual recorded findings renderer");
+E                                                           ^
+E         
+E         Error: Missing actual recorded findings renderer
+E             at file:///private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_valid_empty_record_is_vis0/recorded-context.m
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/homebrew/bin/node', '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-c...sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_valid_empty_record_is_vis0/recorded-context.m').returncode
+
+tests/test_evidence_findings_ui.py:30: AssertionError
+_ test_valid_empty_record_is_visible_with_numeric_unavailability[zh-\u8bb0\u5f55\u7684\u89c2\u70b9\u5206\u6b67-\u6570\u503c\u6765\u6e90\u6838\u9a8c-\u6b64\u8bb0\u5f55\u4e2d\u6ca1\u6709\u5206\u6b67\u6761\u76ee\u3002] _
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_valid_empty_record_is_vis1')
+language = 'zh', title = '记录的观点分歧', numeric = '数值来源核验', empty = '此记录中没有分歧条目。'
+
+    @pytest.mark.parametrize("language,title,numeric,empty", [
+        ("en", "Recorded disagreements", "Numeric source verification", "No findings in this recorded report."),
+        ("zh", "记录的观点分歧", "数值来源核验", "此记录中没有分歧条目。"),
+    ])
+    def test_valid_empty_record_is_visible_with_numeric_unavailability(tmp_path, language, title, numeric, empty):
+>       html = render(tmp_path, {"status": "recorded", "records": [], "gaps": [],
+                                "source": {"as_of": "2026-10-12"}, "unbound_records": 0}, language)
+
+tests/test_evidence_findings_ui.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_valid_empty_record_is_vis1')
+findings = {'status': 'recorded', 'records': [], 'gaps': [], 'source': {'as_of': '2026-10-12'}, ...}
+language = 'zh'
+
+    def render(tmp_path, findings, language="en"):
+        node = shutil.which("node")
+        assert node, "Node is required for the actual client contract"
+        script = tmp_path / "recorded-context.mjs"
+        script.write_text('''
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const document = {documentElement:{dataset:{lang:process.argv[2]}},addEventListener(){}};
+    const $ = () => null;
+    const fmtNum = n => n == null ? "—" : String(n);
+    ''' + _contract() + '''
+    if (typeof iosTypedFindings !== "function") throw new Error("Missing actual recorded findings renderer");
+    console.log(iosTypedFindings(JSON.parse(process.argv[3])));
+    ''', encoding="utf-8")
+        result = subprocess.run([node, str(script), language, json.dumps(findings)],
+                                capture_output=True, text=True, timeout=15)
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: file:///private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_valid_empty_record_is_vis1/recorded-context.mjs:202
+E         if (typeof iosTypedFindings !== "function") throw new Error("Missing actual recorded findings renderer");
+E                                                           ^
+E         
+E         Error: Missing actual recorded findings renderer
+E             at file:///private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_valid_empty_record_is_vis1/recorded-context.mjs:202:51
+E             at ModuleJob.run (node:internal/modules/esm/module_job:569:25)
+E             at async node:internal/modules/esm/loader:650:26
+E             at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+E         
+E         Node.js v26.5.0
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/homebrew/bin/node', '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-c...ader:650:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v26.5.0\n').returncode
+
+tests/test_evidence_findings_ui.py:30: AssertionError
+____________ test_unreadable_is_unknown_instead_of_an_empty_report _____________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_unreadable_is_unknown_ins0')
+
+    def test_unreadable_is_unknown_instead_of_an_empty_report(tmp_path):
+>       html = render(tmp_path, {"status": "unavailable", "records": None, "gaps": None,
+                                "source": {"as_of": None}, "unbound_records": None})
+
+tests/test_evidence_findings_ui.py:46: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_unreadable_is_unknown_ins0')
+findings = {'status': 'unavailable', 'records': None, 'gaps': None, 'source': {'as_of': None}, ...}
+language = 'en'
+
+    def render(tmp_path, findings, language="en"):
+        node = shutil.which("node")
+        assert node, "Node is required for the actual client contract"
+        script = tmp_path / "recorded-context.mjs"
+        script.write_text('''
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const document = {documentElement:{dataset:{lang:process.argv[2]}},addEventListener(){}};
+    const $ = () => null;
+    const fmtNum = n => n == null ? "—" : String(n);
+    ''' + _contract() + '''
+    if (typeof iosTypedFindings !== "function") throw new Error("Missing actual recorded findings renderer");
+    console.log(iosTypedFindings(JSON.parse(process.argv[3])));
+    ''', encoding="utf-8")
+        result = subprocess.run([node, str(script), language, json.dumps(findings)],
+                                capture_output=True, text=True, timeout=15)
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: file:///private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_unreadable_is_unknown_ins0/recorded-context.mjs:202
+E         if (typeof iosTypedFindings !== "function") throw new Error("Missing actual recorded findings renderer");
+E                                                           ^
+E         
+E         Error: Missing actual recorded findings renderer
+E             at file:///private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_unreadable_is_unknown_ins0/recorded-context.m
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/homebrew/bin/node', '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-c...sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_unreadable_is_unknown_ins0/recorded-context.m').returncode
+
+tests/test_evidence_findings_ui.py:30: AssertionError
+____ test_owner_text_is_escaped_and_binding_and_partial_limits_are_visible _____
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_owner_text_is_escaped_and0')
+
+    def test_owner_text_is_escaped_and_binding_and_partial_limits_are_visible(tmp_path):
+        finding = {"pair_id": "a<b", "kind": "label-lag", "severity": "note", "as_of": "unknown",
+                   "note": "<img src=x onerror=bad()>",
+                   "a": {"artifact": "data/a.json", "reading": "63-day", "binding": "ambiguous"},
+                   "b": {"artifact": "data/b.json", "reading": "5-day", "binding": "unbound"},
+                   "engine_ids": []}
+>       html = render(tmp_path, {"status": "partial", "records": [finding], "gaps": ["source <unknown>"],
+                                "source": {"as_of": "unknown", "sha256": "a"*64},
+                                "unbound_records": 1, "rejected_records": 2})
+
+tests/test_evidence_findings_ui.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_owner_text_is_escaped_and0')
+findings = {'status': 'partial', 'records': [{'pair_id': 'a<b', 'kind': 'label-lag', 'severity': 'note', 'as_of': 'unknown', ...}...>'], 'source': {'as_of': 'unknown', 'sha256': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'}, ...}
+language = 'en'
+
+    def render(tmp_path, findings, language="en"):
+        node = shutil.which("node")
+        assert node, "Node is required for the actual client contract"
+        script = tmp_path / "recorded-context.mjs"
+        script.write_text('''
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const document = {documentElement:{dataset:{lang:process.argv[2]}},addEventListener(){}};
+    const $ = () => null;
+    const fmtNum = n => n == null ? "—" : String(n);
+    ''' + _contract() + '''
+    if (typeof iosTypedFindings !== "function") throw new Error("Missing actual recorded findings renderer");
+    console.log(iosTypedFindings(JSON.parse(process.argv[3])));
+    ''', encoding="utf-8")
+        result = subprocess.run([node, str(script), language, json.dumps(findings)],
+                                capture_output=True, text=True, timeout=15)
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: file:///private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_owner_text_is_escaped_and0/recorded-context.mjs:202
+E         if (typeof iosTypedFindings !== "function") throw new Error("Missing actual recorded findings renderer");
+E                                                           ^
+E         
+E         Error: Missing actual recorded findings renderer
+E             at file:///private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_owner_text_is_escaped_and0/recorded-context.mjs:202:51
+E             at ModuleJob.run (node:internal/modules/esm/module_job:569:25)
+E             at async node:internal/modules/esm/loader:650:26
+E             at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+E         
+E         Node.js v26.5.0
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/homebrew/bin/node', '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-c...ader:650:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v26.5.0\n').returncode
+
+tests/test_evidence_findings_ui.py:30: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, plugins, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+__________ test_engine_empty_scope_discloses_unbound_global_findings ___________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_engine_empty_scope_disclo0')
+
+    def test_engine_empty_scope_discloses_unbound_global_findings(tmp_path):
+>       html = render(tmp_path, {"status": "recorded", "records": [], "gaps": [],
+                                "source": {"as_of": "unknown"}, "global_unbound_records": 3})
+
+tests/test_evidence_findings_ui.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_engine_empty_scope_disclo0')
+findings = {'status': 'recorded', 'records': [], 'gaps': [], 'source': {'as_of': 'unknown'}, ...}
+language = 'en'
+
+    def render(tmp_path, findings, language="en"):
+        node = shutil.which("node")
+        assert node, "Node is required for the actual client contract"
+        script = tmp_path / "recorded-context.mjs"
+        script.write_text('''
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const document = {documentElement:{dataset:{lang:process.argv[2]}},addEventListener(){}};
+    const $ = () => null;
+    const fmtNum = n => n == null ? "—" : String(n);
+    ''' + _contract() + '''
+    if (typeof iosTypedFindings !== "function") throw new Error("Missing actual recorded findings renderer");
+    console.log(iosTypedFindings(JSON.parse(process.argv[3])));
+    ''', encoding="utf-8")
+        result = subprocess.run([node, str(script), language, json.dumps(findings)],
+                                capture_output=True, text=True, timeout=15)
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: file:///private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_engine_empty_scope_disclo0/recorded-context.mjs:202
+E         if (typeof iosTypedFindings !== "function") throw new Error("Missing actual recorded findings renderer");
+E                                                           ^
+E         
+E         Error: Missing actual recorded findings renderer
+E             at file:///private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_engine_empty_scope_disclo0/recorded-context.m
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/homebrew/bin/node', '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-c...sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-303/test_engine_empty_scope_disclo0/recorded-context.m').returncode
+
+tests/test_evidence_findings_ui.py:30: AssertionError
+
+NOTE: sparse worktree — data, mockups, plugins, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_evidence_findings_ui.py::test_valid_empty_record_is_visible_with_numeric_unavailability[en-Recorded disagreements-Numeric source verification-No findings in this recorded report.]
+FAILED tests/test_evidence_findings_ui.py::test_valid_empty_record_is_visible_with_numeric_unavailability[zh-\u8bb0\u5f55\u7684\u89c2\u70b9\u5206\u6b67-\u6570\u503c\u6765\u6e90\u6838\u9a8c-\u6b64\u8bb0\u5f55\u4e2d\u6ca1\u6709\u5206\u6b67\u6761\u76ee\u3002]
+FAILED tests/test_evidence_findings_ui.py::test_unreadable_is_unknown_instead_of_an_empty_report
+FAILED tests/test_evidence_findings_ui.py::test_owner_text_is_escaped_and_binding_and_partial_limits_are_visible
+FAILED tests/test_evidence_findings_ui.py::test_engine_empty_scope_discloses_unbound_global_findings
+5 failed in 11.30s

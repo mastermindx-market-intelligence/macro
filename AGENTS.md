@@ -1,5 +1,9 @@
 # Macro Dashboard — shared agent operating rules
 
+## Standing commercial data rights
+
+Chris has directly confirmed approved existing commercial licensing with full commercial rights for the Research Factory Yahoo/yfinance route (including the fixed nine sector ETFs), Massive/Polygon, Tiingo and ThetaData options. Apply [DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023](agentos/decisions/DEC-COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023.md) and the [shared source law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/COMMERCIAL_DATA_RIGHTS.md). The commercial gate is `APPROVED_BY_CHAIRMAN_ATTESTATION`; no repeated approval, contract upload or public-terms re-proof. Preserve separately evidenced historical/PIT, access, quality, budget, scientific and unresolved-effect facts.
+
 This repository is operated by multiple Claude accounts and Codex sessions. Repository files are the durable, shared source of instructions; promises or “memory” recorded only inside one chat do not carry to another session.
 
 
