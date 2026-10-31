@@ -56,6 +56,17 @@ def _published_snapshot(path: Path, now: datetime) -> dict | None:
             if not all(numeric(row.get(k), optional=True) for k in
                        ("z60", "volume_multiple", "overnight_share")):
                 return None
+            volume_multiple, share = row.get("volume_multiple"), row.get("overnight_share")
+            if volume_multiple is not None and volume_multiple <= 0:
+                return None
+            if share is not None and (
+                not 0 <= share <= 100 or row["overnight_pct"] >= 0 or row["intraday_pct"] >= 0
+            ):
+                return None
+            compounded_pct = 100 * ((1 + row["overnight_pct"] / 100) *
+                                    (1 + row["intraday_pct"] / 100) - 1)
+            if abs(compounded_pct - row["return_pct"]) > 0.03:
+                return None
             if not (row.get("year") == session.year and type(row.get("n_ytd")) is int
                     and 1 <= row["n_ytd"] <= 300):
                 return None
@@ -81,7 +92,7 @@ def _published_snapshot(path: Path, now: datetime) -> dict | None:
             "lag_sessions": lag,
             "source_state": "published_projection",
         }
-    except (OSError, UnicodeError, ValueError, KeyError, TypeError, AttributeError, json.JSONDecodeError) as exc:
+    except (OSError, UnicodeError, ValueError, KeyError, TypeError, AttributeError, OverflowError) as exc:
         log.warning("tech shock published view rejected: %s", exc)
         return None
 
