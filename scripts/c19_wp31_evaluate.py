@@ -4,7 +4,7 @@ Governing documents
 -------------------
 - Preregistration: ``research/C19_WP31_INCREMENTAL_INFORMATION_PREREG.md``
   at PREREG_COMMIT ``8e1950932b29f89a89da94c50ccef4ef5f2d8d1c``
-  (amendments A1-A4 in its §10).  §9 binds this module: "owners" are
+  (amendments A1-A5 in its §10).  §9 binds this module: "owners" are
   the incumbent producers, the "natural clock" is the next scheduled
   quarterly release, and the read is a MANUAL seat run (no workflow,
   no cron, no schedule).  §6 binds the exposure ledger.  The prereg
