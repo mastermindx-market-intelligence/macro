@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-10-15T06:47:09.352692+00:00",
+  "parent": "f60f5b54c33566e6820e9e527400c1d1a41d241c",
+  "a1_source": "2d0e6e334986eb73496c102a939ee4e24a688c63",
+  "added_paths": [
+    "collectors/biocatalyst/__init__.py",
+    "engine/biocatalyst/__init__.py",
+    "engine/capital_structure/__init__.py",
+    "engine/codex_lane/__init__.py",
+    "engine/context_index/__init__.py",
+    "engine/earnings_narrative/__init__.py",
+    "engine/earnings_release/__init__.py",
+    "engine/fundamental_forensics/__init__.py",
+    "engine/intelligence_workspace/adapters/__init__.py",
+    "engine/market_os/__init__.py",
+    "engine/seasonality/__init__.py",
+    "engine/signal_foundry/__init__.py",
+    "tests/__init__.py"
+  ],
+  "all_prior_job_definitions_order_paths_limits_preserved": true,
+  "jobs": 314,
+  "runtime_unchanged": true,
+  "manifest_sha256": "52820be1b9bab26bb9e7c4adae979ae81b4e032f3c389aec9cff9f74abae833a",
+  "scope": "Same follow-on source preparation: mirror independently reviewed13A1ancestor declarations to avoid observed single CI-list conflict. No main integration or PR/CI producer."
+}

@@ -6364,6 +6364,11 @@ def run(
             )
             write_page(out / "index.html", index_html)
             index_written = True
+            if out == site / "stocks" and only_tickers is None:
+                # Retired /movers.html: emit the fixed moved-notice stub only
+                # alongside successful canonical stock-index generation — never
+                # in --only subset or context-only modes.
+                _write_movers_stub(site)
             sitemap_entries.insert(0, {
                 "loc": f"{CANONICAL_BASE}/stocks/index.html",
                 "lastmod": date.today().isoformat(),
@@ -6444,6 +6449,32 @@ def run(
     return 0
 
 
+def _write_movers_stub(site: Path) -> bool:
+    """Write the retired /movers.html fixed moved-notice stub into ``site``.
+
+    Zero-data by contract: renders templates/movers.html — a constant
+    bilingual notice pointing at /stocks/index.html#today-movers — through the
+    same Jinja Environment/FileSystemLoader(TEMPLATES_DIR) +
+    lib.pages.write_page pair used by every other page in this module.
+    Fail-soft: warns and returns False instead of raising when the template is
+    unavailable, matching run()'s template-loading behaviour.
+    """
+    try:
+        from jinja2 import Environment, FileSystemLoader
+
+        env = Environment(
+            loader=FileSystemLoader(str(TEMPLATES_DIR)),
+            autoescape=True,
+        )
+        tmpl = env.get_template("movers.html")
+        write_page(site / "movers.html", tmpl.render())
+        return True
+    except Exception as e:  # noqa: BLE001
+        print(f"::warning title=movers::movers stub page not written: {e}",
+              flush=True)
+        return False
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build static per-ticker stock dossier pages (v2).")
     parser.add_argument("--out", default=None, help="Output directory (default: site/stocks)")
@@ -6456,7 +6487,16 @@ def main(argv: list[str] | None = None) -> int:
                         help="Comma-separated list of tickers to render (skips sitemap merge when used)")
     parser.add_argument("--manifest-out", default=None,
                         help="Optional JSON receipt listing ticker pages rendered in this invocation")
+    parser.add_argument("--movers-page-only", action="store_true",
+                        help="Write only the fixed /movers.html moved-notice stub "
+                             "into the site root and exit (no run, data, membership, "
+                             "stock, logo or sitemap work)")
     args = parser.parse_args(argv)
+
+    if args.movers_page_only:
+        # Early return BEFORE any run/data/membership/stock/logo/sitemap work:
+        # page-only mode performs only the fixed stub emission.
+        return 0 if _write_movers_stub(SITE) else 1
 
     out = Path(args.out) if args.out else (SITE / "stocks")
     sitemap_out = Path(args.sitemap_out) if args.sitemap_out else None

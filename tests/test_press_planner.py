@@ -721,11 +721,20 @@ def _prophet_plan_fixture(tmp_path):
     return root, row, plan, path
 
 
-def test_prophet_plan_parameters_reach_writer_as_historical_thresholds(tmp_path):
+@pytest.mark.parametrize('signal_tier,signal_provisional', [('T1', True), ('T2', False), (None, None)])
+def test_prophet_plan_parameters_reach_writer_as_historical_thresholds(tmp_path, signal_tier, signal_provisional):
     import hashlib
     from engine.press import writer
     root, row, plan, path = _prophet_plan_fixture(tmp_path)
+    row.update(signal_tier=signal_tier, signal_provisional=signal_provisional)
+    plan.update(signal_tier=signal_tier, signal_provisional=signal_provisional)
+    (root / 'data/prophet/ledger.jsonl').write_text(json.dumps(row) + '\n')
+    path.write_text(json.dumps(plan))
     original = path.read_bytes()
+    # Prompt construction now validates the same dossier admission as write().
+    dossier = root / 'site/stocks' / (row['asset'] + '.html')
+    dossier.parent.mkdir(parents=True, exist_ok=True)
+    dossier.write_text('<h1>Fictional dossier</h1>')
     slot, = P.plan(['brief'], as_of='2026-10-15', root=root)
     fact, = [f for f in slot['facts'] if f['id'].startswith('prophet_plan_')]
     assert fact['values'] == ['51.8', '46.22', '60.17', '68.54']
@@ -735,6 +744,15 @@ def test_prophet_plan_parameters_reach_writer_as_historical_thresholds(tmp_path)
     assert 'display' in fact['context_relevance']
     assert 'not executed prices or achieved returns' in fact['context_relevance']
     assert 'not an instruction to trade' in fact['context_relevance']
+    assert slot['native_plan_scope'] == fact['native_plan_scope']
+    assert slot['native_plan_scope']['recorded_at'] == '2026-10-01'
+    assert slot['native_plan_scope']['price_basis_date'] == '2026-09-30'
+    assert slot['native_plan_scope']['close_date'] == row['close_date']
+    assert slot['native_plan_scope']['entry_status'] == 'bounce_wait'
+    assert slot['native_plan_scope']['authority_tier'] == 'display'
+    assert slot['native_plan_scope']['confirmed_date'] is None
+    assert slot['native_plan_scope']['signal_tier'] == row.get('signal_tier')
+    assert slot['native_plan_scope']['signal_provisional'] == row.get('signal_provisional')
     assert slot['source_revisions']['artifact:site/prophet/plans/' + path.name] == (
         'sha256:' + hashlib.sha256(original).hexdigest())
     _, prompt = writer.build_prompt(slot, P.load_config(root))
@@ -744,7 +762,7 @@ def test_prophet_plan_parameters_reach_writer_as_historical_thresholds(tmp_path)
 
 @pytest.mark.parametrize('field,value', [
     ('asset', 'VNO'), ('entry_date', '2026-10-01'),
-    ('price_basis_date', None), ('signal_provisional', False),
+    ('price_basis_date', None), ('signal_provisional', False), ('signal_tier', 'T2'),
     ('recorded_at', '2026-10-16'), ('asof', '2026-10-16'),
     ('confirmed_date', '2026-10-01'), ('integrity_status', 'quarantined'),
     ('entry', True), ('invalidation', float('nan')), ('targets', [60.17, None]),

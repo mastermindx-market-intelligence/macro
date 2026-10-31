@@ -132,3 +132,179 @@ def test_native_zero_filled_volume_does_not_become_qualified_activity(tmp_path):
     assert result["status"] == "READ_NO_COVERAGE"
     assert result["reason"] == "ZERO_VOLUME_SOURCE_AMBIGUOUS"
     assert result["metrics"] is None and result["thinly_traded"] is None
+
+
+def test_source_availability_window_is_not_completed_market_cutoff(tmp_path):
+    from engine.liquidity_profile import _expected_sessions
+    from datetime import date
+    days = _expected_sessions(date(2026, 10, 16), 20)
+    root = tmp_path / "massive_stock_day"
+    root.mkdir()
+    pd.DataFrame({"close": [100.0]*20, "volume": [1000000]*20},
+                 index=pd.DatetimeIndex(days)).to_parquet(root / "MU.parquet")
+    early = read_profile("MU", data_root=tmp_path, recorded_at=NOW)
+    assert early["reason"] == "CURRENCY_NOT_QUALIFIED"
+    assert early["expected_session"] == "2026-10-16"
+    assert early["availability"]["market_completed_session"] == "2026-10-19"
+    assert early["availability"]["source_expected_session"] == "2026-10-16"
+    late = read_profile("MU", data_root=tmp_path,
+                        recorded_at=datetime(2026,10,20,15,tzinfo=timezone.utc))
+    assert late["reason"] == "STALE_NO_EXPECTED_SESSION"
+    assert late["metrics"] is None
+
+
+def test_observed_newer_completed_file_is_usable_before_scheduled_floor(tmp_path):
+    from engine.liquidity_profile import _expected_sessions
+    from datetime import date
+    days = _expected_sessions(date(2026,10,19),20)
+    root = tmp_path / "massive_stock_day"; root.mkdir()
+    pd.DataFrame({"close":[100.0]*20,"volume":[1000000]*20},index=pd.DatetimeIndex(days)).to_parquet(root / "MU.parquet")
+    result=read_profile("MU",data_root=tmp_path,recorded_at=NOW)
+    assert result["reason"] == "CURRENCY_NOT_QUALIFIED"
+    assert result["expected_session"] == "2026-10-19"
+    assert result["availability"]["source_expected_session"] == "2026-10-16"
+
+
+@pytest.mark.parametrize("clock", [None, datetime(2026,10,20)])
+def test_reader_clock_refusal_does_not_guess_timezone_or_raise(tmp_path, clock):
+    result=read_profile("MU", data_root=tmp_path, recorded_at=clock)
+    assert result["status"] == "READ_UNAVAILABLE"
+    assert result["metrics"] is None and result["recorded_at"] is None
+
+
+@pytest.fixture
+def native_adoption(tmp_path, monkeypatch):
+    from scripts import stock_liquidity_profile as module
+    site, served = tmp_path / "site", tmp_path / "site.served"
+    for directory, generation in [(site, "native"), (served, "served")]:
+        (directory / "stockdata").mkdir(parents=True)
+        path = directory / "stockdata" / "MU.json"
+        path.write_text(json.dumps({"ticker": "MU", "asof": "2026-10-14",
+                                   "ladder": generation, "sector_pulse": {"generation": generation}}))
+        path.chmod(0o644)
+        (directory / "stockdata" / "OTHER.json").write_text('{"untouched":true}')
+    lock = tmp_path / "macro-update.lock"
+    lock.touch()
+    monkeypatch.setattr(module, "read_profile", lambda *a, **k: {
+        "schema": "liquidity_profile.v1", "ticker": "MU", "status": "READ_OK",
+        "sample_n": 20, "thinly_traded": False})
+    args = dict(data_root=tmp_path / "data", site_root=site, served_root=served,
+                lock_path=lock, recorded_at=NOW)
+    return module, args
+
+
+def test_native_adoption_uses_real_atomic_publisher_preserving_both_generations(native_adoption):
+    module, args = native_adoption
+    before = {name: (args[key] / "stockdata" / "MU.json").read_bytes()
+              for name, key in [("native", "site_root"), ("served", "served_root")]}
+    result = module.adopt_native_profile("MU", **args)
+    assert result["status"] == "NATIVE_PROFILE_PUBLISHED"
+    assert result["published"] == ["native", "served"]
+    for name, key in [("native", "site_root"), ("served", "served_root")]:
+        path = args[key] / "stockdata" / "MU.json"
+        output = json.loads(path.read_bytes())
+        profile = output.pop("liquidity_profile")
+        assert output == json.loads(before[name])
+        assert profile == result["profile"]
+        assert path.stat().st_mode & 0o777 == 0o644
+        assert result["records"][name]["unrelated_fields_preserved"] == 4
+        assert (path.parent / "OTHER.json").read_text() == '{"untouched":true}'
+
+
+def test_native_adoption_respects_the_existing_release_lock(native_adoption):
+    import fcntl
+    module, args = native_adoption
+    before = (args["site_root"] / "stockdata/MU.json").read_bytes()
+    with args["lock_path"].open("a+") as incumbent:
+        fcntl.flock(incumbent, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        assert module.adopt_native_profile("MU", **args)["reason"] == "RELEASE_BUSY"
+    assert (args["site_root"] / "stockdata/MU.json").read_bytes() == before
+
+
+@pytest.mark.parametrize("fault", ["missing", "symlink", "identity", "malformed"])
+def test_native_adoption_qualifies_both_records_before_effects(native_adoption, fault):
+    module, args = native_adoption
+    source = args["site_root"] / "stockdata/MU.json"
+    before = source.read_bytes()
+    target = args["served_root"] / "stockdata/MU.json"
+    if fault == "missing":
+        target.unlink()
+    elif fault == "symlink":
+        target.unlink(); target.symlink_to(source)
+    elif fault == "identity":
+        target.write_text('{"ticker":"OTHER"}')
+    else:
+        target.write_text("not json")
+    result = module.adopt_native_profile("MU", **args)
+    assert result["status"] == "REFUSED" and result["published"] == []
+    assert source.read_bytes() == before
+
+
+def test_native_adoption_does_not_publish_unknown(native_adoption, monkeypatch):
+    module, args = native_adoption
+    monkeypatch.setattr(module, "read_profile", lambda *a, **k: {
+        "ticker": "MU", "status": "READ_NO_COVERAGE", "thinly_traded": None})
+    before = (args["site_root"] / "stockdata/MU.json").read_bytes()
+    assert module.adopt_native_profile("MU", **args)["reason"] == "NATIVE_PROFILE_NOT_QUALIFIED"
+    assert (args["site_root"] / "stockdata/MU.json").read_bytes() == before
+
+
+def test_native_adoption_preserves_an_advancing_native_writer(native_adoption, monkeypatch):
+    module, args = native_adoption
+    original = module.write_record
+    source = args["site_root"] / "stockdata/MU.json"
+    def advance(*a, **k):
+        original(*a, **k)
+        source.write_text('{"ticker":"MU","newer_generation":true}')
+    monkeypatch.setattr(module, "write_record", advance)
+    result = module.adopt_native_profile("MU", **args)
+    assert result["reason"] == "NATIVE_RECORD_ADVANCED" and result["published"] == []
+    assert json.loads(source.read_text())["newer_generation"] is True
+
+
+def test_native_adoption_retains_unknown_atomic_effect_without_retry(native_adoption, monkeypatch):
+    import subprocess
+    module, args = native_adoption
+    calls = []
+    def timeout(command, **kwargs):
+        calls.append(command)
+        raise subprocess.TimeoutExpired(command, kwargs["timeout"])
+    monkeypatch.setattr(subprocess, "run", timeout)
+    result = module.adopt_native_profile("MU", **args)
+    assert result["status"] == "EFFECT_UNKNOWN" and result["reason"] == "ATOMIC_PUBLISH_TIMEOUT"
+    assert result["published"] == [] and result["active_target"] == "native"
+    assert len(result["planned_records"]["native"]["candidate_sha256"]) == 64
+    assert len(calls) == 1
+
+
+def test_native_adoption_reports_partial_instead_of_retrying_the_other_record(native_adoption, monkeypatch):
+    import subprocess
+    module, args = native_adoption
+    original_run = subprocess.run
+    calls = []
+    def fail_second(command, **kwargs):
+        calls.append(command)
+        return original_run(command, **kwargs) if len(calls) == 1 else subprocess.CompletedProcess(command, 1)
+    monkeypatch.setattr(subprocess, "run", fail_second)
+    result = module.adopt_native_profile("MU", **args)
+    assert result["status"] == "EFFECT_UNKNOWN" and result["reason"] == "ATOMIC_PUBLISH_FAILED"
+    assert result["published"] == ["native"] and result["active_target"] == "served"
+    assert len(result["planned_records"]["served"]["before_sha256"]) == 64
+    assert len(calls) == 2
+    assert "liquidity_profile" in json.loads((args["site_root"] / "stockdata/MU.json").read_text())
+    assert "liquidity_profile" not in json.loads((args["served_root"] / "stockdata/MU.json").read_text())
+
+
+def test_native_adoption_preserves_unverified_write_as_unknown(native_adoption, monkeypatch):
+    import subprocess
+    module, args = native_adoption
+    calls = []
+    def pretend_success(command, **kwargs):
+        calls.append(command)
+        return subprocess.CompletedProcess(command, 0)
+    monkeypatch.setattr(subprocess, "run", pretend_success)
+    result = module.adopt_native_profile("MU", **args)
+    assert result["status"] == "EFFECT_UNKNOWN"
+    assert result["reason"] == "ATOMIC_PUBLISH_NOT_VERIFIED"
+    assert result["active_target"] == "native" and result["published"] == []
+    assert len(calls) == 1 and result["planned_records"]["native"]["candidate_sha256"]

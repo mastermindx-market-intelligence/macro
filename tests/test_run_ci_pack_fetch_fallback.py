@@ -12,6 +12,8 @@ silently depend on the removed full-remote side effect.
 """
 from __future__ import annotations
 
+import ast
+import copy
 import subprocess
 from pathlib import Path
 
@@ -30,6 +32,9 @@ EXPECTED_FETCH_DEPTH_ZERO_CONSUMERS = {
     "design-governance",
     "p0b-receipt-closure",
     "self-mod-fence",
+    # W2F #9949 (2026-10-22): the frozen-file guard in tests/test_intl_gs_foundation.py
+    # compares against origin/<base_ref>, which this job fetches in its own fail-closed step.
+    "international-workspace-browser",
 }
 
 
@@ -251,6 +256,49 @@ def test_deepen_raises_when_every_recovery_rung_fails(
     assert len(calls) == 4
 
 
+_INTERNATIONAL_CANONICAL_STEP = 'canonical base for the frozen-file guard (fail closed)'
+_INTERNATIONAL_CANONICAL_PYTHON = '''\
+import os
+from pathlib import Path
+from scripts.run_ci_pack import prepare_canonical_main
+
+prepare_canonical_main(
+    Path.cwd(),
+    tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],
+    base_ref="${{ github.base_ref || 'main' }}",
+)
+'''
+
+
+def _assert_international_canonical_fetch(definition: dict[str, object]) -> None:
+    """Pin the required gate, its uncaught helper call, and its shell envelope."""
+    gates = [step for step in definition.get('steps', [])
+             if isinstance(step, dict) and step.get('name') == _INTERNATIONAL_CANONICAL_STEP]
+    assert len(gates) == 1, 'International must have exactly one named canonical gate'
+    gate = gates[0]
+    steps = definition['steps']
+    frozen_steps = [index for index, step in enumerate(steps)
+                    if isinstance(step, dict) and
+                    'test_intl_gs_foundation.py' in str(step.get('run', ''))]
+    assert len(frozen_steps) == 1 and steps.index(gate) < frozen_steps[0], (
+        'International canonical gate must precede its frozen-file test'
+    )
+    assert set(gate) == {'name', 'run'}, 'International canonical gate must run unconditionally'
+    assert isinstance(gate['run'], str), 'International canonical gate must be a script'
+    lines = gate['run'].splitlines()
+    assert len(lines) >= 3, 'International canonical fetch must be a Python heredoc'
+    assert lines[0] == "python - <<'PY'", 'International helper must run directly'
+    assert lines[-1] == 'PY', 'International helper must have no trailing shell commands'
+    try:
+        actual = ast.parse('\n'.join(lines[1:-1]))
+    except SyntaxError as error:
+        raise AssertionError('International canonical gate must be valid Python') from error
+    expected = ast.parse(_INTERNATIONAL_CANONICAL_PYTHON)
+    assert ast.dump(actual, include_attributes=False) == ast.dump(
+        expected, include_attributes=False,
+    ), 'International must invoke the exact canonical-main helper without swallowing failure'
+
+
 def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
     payload = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
     consumers: dict[str, dict[str, object]] = {}
@@ -272,9 +320,12 @@ def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
             for step in definition.get("steps", [])
             if isinstance(step, dict) and "run" in step
         ]
-        assert any(
-            "git fetch origin " in run and "github.base_ref" in run for run in runs
-        ), f"{job_id} must fetch its canonical base explicitly"
+        if job_id == "international-workspace-browser":
+            _assert_international_canonical_fetch(definition)
+        else:
+            assert any(
+                "git fetch origin " in run and "github.base_ref" in run for run in runs
+            ), f"{job_id} must fetch its canonical base explicitly"
 
         command_surface = "\n".join(runs)
         for forbidden in (
@@ -288,6 +339,80 @@ def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
             assert forbidden not in command_surface, (
                 f"{job_id} depends on unrelated remote namespace via {forbidden!r}"
             )
+
+
+@pytest.fixture(scope="module")
+def international_canonical_definition() -> dict[str, object]:
+    payload = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
+    return payload["jobs"]["international-workspace-browser"]
+
+
+def _international_contract_mutation(definition: dict[str, object], case: str) -> dict[str, object]:
+    """Mutate actual manifest data; do not manufacture a successful gate."""
+    changed = copy.deepcopy(definition)
+    gate = next(step for step in changed['steps']
+                if isinstance(step, dict) and step.get('name') == _INTERNATIONAL_CANONICAL_STEP)
+    if case == 'missing-gate':
+        changed['steps'].remove(gate)
+    elif case == 'renamed-gate':
+        gate['name'] += ' renamed'
+    elif case == 'duplicate-gate':
+        changed['steps'].append(copy.deepcopy(gate))
+    elif case == 'gate-after-tests':
+        changed['steps'].remove(gate)
+        changed['steps'].append(gate)
+    elif case == 'conditional-gate':
+        gate['if'] = '${{ false }}'
+    elif case == 'continue-on-error':
+        gate['continue-on-error'] = True
+    else:
+        run = gate['run']
+        if case == 'missing-import':
+            run = run.replace('from scripts.run_ci_pack import prepare_canonical_main\n', '')
+        elif case == 'missing-call':
+            body = run.splitlines()[1:-1]
+            prefix = '\n'.join(body).split('\nprepare_canonical_main(', 1)[0]
+            run = "python - <<'PY'\n" + prefix + '\nPY\n'
+        elif case == 'wrong-import':
+            run = run.replace('from scripts.run_ci_pack import', 'from scripts.ci_semantic_proof import')
+        elif case == 'wrong-helper':
+            run = run.replace('prepare_canonical_main', '_prepare_provided_actions')
+        elif case == 'wrong-tested-identity':
+            run = run.replace('"CI_TESTED_TREE_SHA"', '"GITHUB_SHA"')
+        elif case == 'wrong-fallback-identity':
+            run = run.replace('"TESTED_TREE_SHA"', '"GITHUB_SHA"')
+        elif case == 'wrong-base':
+            run = run.replace("github.base_ref || 'main'", "github.head_ref || 'main'")
+        elif case == 'swallowed-exception':
+            body = '\n'.join(run.splitlines()[1:-1])
+            imports, call = body.split('\nprepare_canonical_main(', 1)
+            call = 'prepare_canonical_main(' + call
+            run = "python - <<'PY'\n" + imports + '\ntry:\n' + ''.join(
+                '    ' + line + '\n' for line in call.splitlines()
+            ) + 'except Exception:\n    pass\nPY\n'
+        elif case == 'shell-or-true':
+            run = run.replace("python - <<'PY'", "python - <<'PY' || true", 1)
+        elif case == 'trailing-shell':
+            run += 'true\n'
+        else:
+            raise AssertionError(f'unknown contract mutation: {case}')
+        assert run != gate['run'], f'mutation {case} did not change actual manifest script'
+        gate['run'] = run
+    return changed
+
+
+@pytest.mark.parametrize('case', [
+    'missing-gate', 'renamed-gate', 'duplicate-gate', 'conditional-gate',
+    'gate-after-tests', 'continue-on-error', 'missing-import', 'missing-call', 'wrong-import',
+    'wrong-helper', 'wrong-tested-identity', 'wrong-fallback-identity',
+    'wrong-base', 'swallowed-exception', 'shell-or-true', 'trailing-shell',
+])
+def test_international_canonical_fetch_rejects_contract_mutation(
+    case: str, international_canonical_definition: dict[str, object],
+) -> None:
+    definition = _international_contract_mutation(international_canonical_definition, case)
+    with pytest.raises(AssertionError):
+        _assert_international_canonical_fetch(definition)
 
 
 def test_complete_history_survives_multiple_consumers_without_refetching(

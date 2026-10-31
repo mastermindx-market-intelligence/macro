@@ -1,0 +1,115 @@
+{
+  "schema": "eval_os.science_scope_ruling.v1",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "source_head": "aacc81a73277eb6c6d1ae5445b404ddda90200f9",
+  "status": "ACCEPTED_SCOPE_RULING_IMPLEMENTATION_PENDING",
+  "no_protected_outcomes_read": true,
+  "source_files": {
+    "engine/neuralweb/contradictions.py": {
+      "sha256": "119d73bb82ab5b3279cfaed0b9c01599712162e453c00b873e845120a87163ea",
+      "size_bytes": 51093
+    },
+    "engine/neuralweb/confluence.py": {
+      "sha256": "d38da3b1ddd4fd679bbb248e1febcf95ec8caf983e241a35b5984f850fe01c83",
+      "size_bytes": 56306
+    },
+    "engine/intelligence_workspace/contracts.py": {
+      "sha256": "97545611e55ada4ff695016231ec7793bf50f155d681fa5ff49d29ec6db90558",
+      "size_bytes": 16037
+    },
+    "engine/intelligence_workspace/consumers.py": {
+      "sha256": "4c974d3230fe1204d79579cee6d873b58e4aca0a1401d24607ec10fef57102cc",
+      "size_bytes": 4447
+    },
+    "engine/neuralweb/native_facts.py": {
+      "sha256": "511fae9dfc545a717ba4abb0431bc3e0c3afda263e19e480b96ff857c1268307",
+      "size_bytes": 37828
+    },
+    "engine/neuralweb/brain_native_inputs.py": {
+      "sha256": "864c05075279f3025213d667ed189a27e93824920f7e0211f53c624389e3aa7b",
+      "size_bytes": 5570
+    },
+    "engine/neuralweb/brain_gateway.py": {
+      "sha256": "3e5186314b461e0633c59e1aeca6604b1ef3f5b5066a3f4a9fdf9fbb1c51cfdb",
+      "size_bytes": 508485
+    },
+    "engine/postmortem.py": {
+      "sha256": "4121f8305afcb3c949b94eb90c830c36c85cb3855708bb81695fe83ffd6d3805",
+      "size_bytes": 61796
+    },
+    "engine/output_health.py": {
+      "sha256": "8a2d8395a99c5900489949ec4d683e7e5e66356dd23398c5028ac1b6bc766a06",
+      "size_bytes": 75220
+    },
+    "admin/intelligence_os.py": {
+      "sha256": "742d8a233a3e124d170e25254510c91147cf3a1c641a1583cb178d6f3a39cd2c",
+      "size_bytes": 45556
+    },
+    "admin/evidence_status.py": {
+      "sha256": "15992ce464e0a719a3e7a00f4b7a58ba2d301d74130fe5bf3b74f2a1e219ec21",
+      "size_bytes": 17132
+    }
+  },
+  "t20": {
+    "current_product_gap": "A1 has no typed numeric-source or contradiction finding input; internal measurement QA is not an exportable product finding.",
+    "recorded_disagreements": {
+      "schema": "neuralweb.confluence_graph.v1",
+      "publisher": "engine/neuralweb/confluence.py:1307",
+      "owner": "engine/neuralweb/contradictions.py:943 detect_contradictions returns (records,gaps)",
+      "record_contract": "engine/neuralweb/contradictions.py:164 _record: pair_id; a/b artifact+reading; kind; severity note/tension; as_of; note; display_only true",
+      "existing_consumer": "admin/neural_web.py:492 _section_bus_graph",
+      "meaning": "recorded display-only context; no generic impossible-same-contract verdict or promotion authority",
+      "binding": "exact normalized repo-relative a/b.artifact == engine/output_health.py:1583 T4 path with unique engine_id; ambiguous/missing binding remains global/unclassified"
+    },
+    "numeric_proof": {
+      "status": "unavailable",
+      "reason": "no_request_scoped_subscriber_receipt",
+      "accepted_owner_interface": "engine/intelligence_workspace/consumers.py:88 build_brain_fact_packet requires subscriber-projected datapoint_value.v1 envelopes; engine/neuralweb/native_facts.py:648 NativeFactExecution.receipt facts",
+      "fact_keys": [
+        "registry_digest",
+        "field_id",
+        "entity",
+        "value",
+        "status",
+        "unit",
+        "observed_at",
+        "effective_at",
+        "as_of",
+        "fact_fingerprint",
+        "source",
+        "provenance",
+        "freshness",
+        "quality_state"
+      ],
+      "identity": "engine/intelligence_workspace/contracts.py:212 semantic_fingerprint binds entity/value/unit/clock/source",
+      "retained_reference_boundary": "engine/neuralweb/brain_native_inputs.py retains references_only, no values; brain_gateway.py:5704 history readers do not expose meta and future artifact reader must recheck current rights",
+      "existing_reference_limits": {
+        "receipt_bytes": 262144,
+        "manifest_bytes": 65536,
+        "facts": 32
+      },
+      "prohibited_shortcuts": [
+        "response_eval QA scores/tags/results",
+        "history sweep",
+        "manifest-to-value reconstruction",
+        "rights bypass"
+      ]
+    },
+    "authorized_next_slice": "Root-owned admin/evidence_findings.py recorded confluence adapter, complete source digest/asof/gaps, strict schema/display/context and typed rows; actual read cap 2MiB with typed inability; no silent successful truncation; separately unavailable numerical proof."
+  },
+  "original_obligations": {
+    "T5": "engine/postmortem.py:594 classify returns labels,labels_null from explicit outcome/context/path/prior; aggregate:881 retains evaluated populations. A1 source/data reasons do not establish empirical taxonomy. Prophet producer/outcome obligation remains external.",
+    "T10": "Recorded contradiction adapter remains in scope and required; generic impossible contradiction owner contract unavailable; no detector replacement.",
+    "T11": "Accepted W1-A/subscriber native receipt is compatible numerical-source seam, but no admitted full receipt enters A1; references-only manifest insufficient. Internal QA validates finite meaning without product export.",
+    "T12": "Original evidence-tier AgentOS interface is distinct from current TASK_GRAPH finite-protocol T12. Pinned Mastermind brain/improvement_agenda.py:57 agentos.readiness.v1 is workflow/dependency readiness after ranking; chairman_control_room.py:382 reads records with workstream/wave/state/reason/source/dependencies. No scientific-tier adapter proved; do not map financial display bands into workflow state."
+  },
+  "metadata_only": {
+    "canonical_confluence_graph_bytes": 739954,
+    "canonical_factor_contradictions_present": false,
+    "candidate_confluence_graph_present": false,
+    "candidate_factor_contradictions_present": false,
+    "artifact_contents_read": false
+  },
+  "qualification": "Accepted 136 tests prove finite synthetic INTERNAL QA only; no empirical study completion, current native receipt availability, or shipped T20 capability inferred.",
+  "snapshot_review_scope": "Named ledger metadata/config/clock/owner-code generation; always recordedpartial; all-input/quote/cache/calendar/freshness/task-cohort unavailable; preserve null-zero/populations/baseline/basis and fail mutation during publication."
+}

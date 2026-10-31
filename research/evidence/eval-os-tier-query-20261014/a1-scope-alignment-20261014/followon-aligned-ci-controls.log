@@ -1,0 +1,74 @@
+...                                                                      [100%]
+=============================== warnings summary ===============================
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_idle_critical_mismatch_re0/lanes/support-releases/d2abb19ee19fc72d883f5c45bfbe0de8daee7f8ece744c130d907bf401b529e7
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_idle_critical_mismatch_re0/lanes/support-releases/d2abb19ee19fc72d883f5c45bfbe0de8daee7f8ece744c130d907bf401b529e7'
+    warnings.warn(
+
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_idle_critical_mismatch_re0/lanes/support-releases
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_idle_critical_mismatch_re0/lanes/support-releases'
+    warnings.warn(
+
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_idle_critical_mismatch_re0/lanes
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_idle_critical_mismatch_re0/lanes'
+    warnings.warn(
+
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_idle_critical_mismatch_re0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_idle_critical_mismatch_re0'
+    warnings.warn(
+
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0'
+    warnings.warn(
+
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_advisory_only_active_diff0/lanes/support-releases
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_advisory_only_active_diff0/lanes/support-releases'
+    warnings.warn(
+
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_advisory_only_active_diff0/lanes
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_advisory_only_active_diff0/lanes'
+    warnings.warn(
+
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_advisory_only_active_diff0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd/test_advisory_only_active_diff0'
+    warnings.warn(
+
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-2622ecb8-3362-4f9e-81d8-e6dda12430bd'
+    warnings.warn(
+
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-01dcfd87-5b75-4e91-bd5e-455e5b95be17/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-01dcfd87-5b75-4e91-bd5e-455e5b95be17/test_advisory_only_active_diff0/lanes/support-releases/c671ffee96a39c591bb38795204da43aa1337cbb3c9045baee6eca763040fbf0'
+    warnings.warn(
+
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-01dcfd87-5b75-4e91-bd5e-455e5b95be17/test_advisory_only_active_diff0/lanes/support-releases
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-01dcfd87-5b75-4e91-bd5e-455e5b95be17/test_advisory_only_active_diff0/lanes/support-releases'
+    warnings.warn(
+
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-01dcfd87-5b75-4e91-bd5e-455e5b95be17/test_advisory_only_active_diff0/lanes
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-01dcfd87-5b75-4e91-bd5e-455e5b95be17/test_advisory_only_active_diff0/lanes'
+    warnings.warn(
+
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-01dcfd87-5b75-4e91-bd5e-455e5b95be17/test_advisory_only_active_diff0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-01dcfd87-5b75-4e91-bd5e-455e5b95be17/test_advisory_only_active_diff0'
+    warnings.warn(
+
+../../../../../Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isolated-env/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-01dcfd87-5b75-4e91-bd5e-455e5b95be17
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/garbage-01dcfd87-5b75-4e91-bd5e-455e5b95be17'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+3 passed, 14 warnings in 16.87s

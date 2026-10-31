@@ -1,0 +1,175 @@
+{
+  "schema": "eval_os_independent_recorded_readiness_review.v1",
+  "adjudication": "ACCEPTED_BOUNDED_SNAPSHOT_T20_SOURCE_API_CACHE_RENDERER",
+  "reviewed_at": "2026-10-13T07:07:46.718767+00:00",
+  "source_sha256_at_read": {
+    "scripts/grade_qledger.py": "56d49a99be7105c29f80795c2c2af8d89605f660f6280042fdb28072731155b2",
+    "admin/intelligence_os.py": "26f6f82198cd165220c14be5504e5a0a7f68f4c9b6c641ab7b2734892c40aa31",
+    "admin/evidence_status.py": "15992ce464e0a719a3e7a00f4b7a58ba2d301d74130fe5bf3b74f2a1e219ec21",
+    "engine/qledger.py": "6473c710806b26bc5ee3da3ad781d07b3ca02f208f9789a723186216819c1e00"
+  },
+  "science_semantic_review_sha256": "8d6be6002617bccae7fbb1bb4c56ba8d49ceb06dfb145a78d8ebf7590065c14b",
+  "supported": [
+    "HTTP always consumes existing track_record readiness; no compute_promotion_readiness fallback",
+    "Per-read actual16MiB plus1 bounded regular-file/no-follow/nonblocking/descriptor-generation source check; clocks65,536 plus1 and owner-code/config1MiB plus1 checks",
+    "Native current-comparison deferred; legacy current comparison uses host/root/stat identity, no HTTP raw corpus hashes",
+    "All-input/current qualification always unavailable even matching named source identity; provider read_status partial prevents current promotion",
+    "Publisher captures before/after source generation and baseline artifact identity, refuses drift before writes/new alerts",
+    "Consumed duel baseline subtrees bound without including newly added readiness/receipt self-invalidation",
+    "Missing/malformed/oversized/moving artifacts do not compute or fill zeros; old unversioned recorded values remain labelled",
+    "Code/config/clock/family/receipt identity is named partial provenance, not portable market freshness or task/cohort proof",
+    "T20 joins only canonical current T4 outputs and stores findings inside same derived generation; no band derivation input",
+    "Panel forwards same findings object; detail applies exact-engine scope while preserving global unbound count/source gaps",
+    "Both owner artifact and confluence artifact generation now key existing response/derive caches; final dependency check refuses source movement",
+    "Renderer escapes owner values and preserves EN/ZH binding/source/numeric-unavailable disclosures"
+  ],
+  "findings": [
+    {
+      "id": "SNAPSHOT-MINIMAL-OWNER-ROW-SHAPE",
+      "state": "CLOSED_AT_REVIEWED_DELTA",
+      "witness": {
+        "stock_desk": {
+          "21": {
+            "unknown": 1
+          }
+        }
+      },
+      "source_reason": "Known fields all absent/None pass valid_row; downstream bool(row.get(ready)) may yield insufficient_maturity despite missing readiness contract.",
+      "closure": "n_dates/needed/ready key presence required; explicit null support allowed and selected_ready None preserves unknown rather than insufficient_maturity. Focused10 controls consumed.",
+      "reviewer_execution": "Source branch adjudication only; no test41366 duplication or corpus request."
+    }
+  ],
+  "parent_owned_findings": [
+    "Fraction ranges hit_rate/wilson/control_coverage handled by product; no duplicate fix by assurance"
+  ],
+  "limits": [
+    "Per-artifact/source bounds accepted; no whole-composed A1 peak-memory or production latency proof asserted",
+    "Observed generation guard is not a cross-process transaction guarantee",
+    "All-input/current market/task qualification remains unavailable even matching named metadata",
+    "Typed context is not an impossible verdict, native numeric subscriber proof, internalQA export, evidence-tier or financial authority",
+    "Final hosted proof requires canonical receipt retention and exact source commit"
+  ],
+  "source_writes": false,
+  "ci_queries": false,
+  "new_fabric_operations": false,
+  "delta_reviewed_at": "2026-10-13T07:23:35.736960+00:00",
+  "reviewed_delta_sha256": {
+    "admin/intelligence_os.py": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873",
+    "admin/static/app.js": "f3ccfd436cb9c744174cdf72ab3f819676cee014ffa73ec31ff6f53bf5d9459c",
+    "admin/evidence_status.py": "5315e8e95b2a5ee3c5c12b88eac8126c8578db12a773357916aed20bdb459efd"
+  },
+  "minimal_row_tests_consumed": {
+    "path": "../product/recorded-minimal-row-controls.txt",
+    "sha256": "7172b4e21a99b3f9dcb67522794b5cc7d2a03ec0791953259115c1ee6744a2c0",
+    "result": "10 passed,136 deselected,9.68s",
+    "limits": "Prior186 tests preceded guards; no final27/API/UI success inferred."
+  },
+  "remaining_findings": [
+    {
+      "id": "T20-PARTIAL-EMPTY-PRESENTATION",
+      "owner": "Root; science first finding",
+      "state": "CLOSED_AT_FINAL_HASH",
+      "witness": "status partial,records [],rejected_records >0 renders no-findings/no-match sentence despite unsupported owner rows",
+      "closure": "Unavailable checked first; partial/rejected empty records render explicit unsupported/unknown message in EN/ZH; complete empty and detail-no-match remain distinct. Root RED2 then final22UI controls consumed."
+    }
+  ],
+  "closed_at": "2026-10-13T07:31:19.314821+00:00",
+  "final_source_sha256": {
+    "scripts/grade_qledger.py": "56d49a99be7105c29f80795c2c2af8d89605f660f6280042fdb28072731155b2",
+    "engine/qledger.py": "6473c710806b26bc5ee3da3ad781d07b3ca02f208f9789a723186216819c1e00",
+    "admin/intelligence_os.py": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873",
+    "admin/evidence_status.py": "5315e8e95b2a5ee3c5c12b88eac8126c8578db12a773357916aed20bdb459efd",
+    "admin/evidence_findings.py": "d2355370c9c458db54a35e2253903d5b781b5b0193c945b587618706cb3bf909",
+    "admin/static/app.js": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772",
+    "admin/server.py": "53e65e1fca02988f7a0838d2b64026b78e3921c7c66a366e4be6c04e1e93a87b",
+    "tests/test_evidence_findings.py": "e1f5fbcdebb3dd694c0eeeba682e6812f544d387ad8bc6856da57a243f47e9a7",
+    "tests/test_evidence_findings_ui.py": "22362ea16ca073fc9d091499431077039013ced2301b77e7e77abadb0507df06",
+    "tests/test_admin_intelligence_os.py": "273aa17f27b3877f0e1d4c54142f9244338e6f9aff204aa165c5c0efd43d01bb",
+    "tests/test_admin_intelligence_os_ui.py": "3b46980645abc39f10c7db7f8b93676c7cc6829c3e952e87aaf8dd2048dc06a3"
+  },
+  "final_tests_consumed": {
+    "product/recorded-snapshot-final-affected-tests.txt": {
+      "sha256": "5f14c715b50756db0328451c0c01090f84d5972e630ae6e46e27e7326b437457"
+    },
+    "product/recorded-snapshot-http-controls.txt": {
+      "sha256": "2df0766b691b6002468aecb829b29fa4dbf8f64831ed5438527e5015f97e5645"
+    },
+    "product/recorded-minimal-row-controls.txt": {
+      "sha256": "7172b4e21a99b3f9dcb67522794b5cc7d2a03ec0791953259115c1ee6744a2c0"
+    },
+    "integration/typed-findings-integrated-tests.txt": {
+      "sha256": "425f76c8d9434ce450f30f137ca8fc12b8788f375049c1dab2492cfdacbde491"
+    },
+    "integration/typed-findings-integrated-tests.xml": {
+      "sha256": "fe130b59d9928a10c2b22532666c3ef97391301e49b77b29f9e95edb11e4a1f9"
+    },
+    "integration/combined-ui-final-tests.txt": {
+      "sha256": "33698b25d6fa0f840fceee138c1ba0082b2f1837d12ff23010f066713442504f"
+    },
+    "integration/combined-ui-final-tests.xml": {
+      "sha256": "5946827c925fda0f0421df7f23a3c47f973ec3caadd33d72c5442feb558f7bd2"
+    },
+    "integration/typed-findings-partial-empty-repair.json": {
+      "sha256": "d409aa68d09aeb9c7821d7d3db3d761fc4f4d458d8030f5cd139156ab06e08f6"
+    },
+    "integration/combined-api-ui-regressions.txt": {
+      "sha256": "096d3a90a4bc570a51bc571c78c04a54622b44000e07f53ebb8c03b7c558a404"
+    }
+  },
+  "test_scope_ruling": [
+    "186 affected tests passed50.77s before later minimal/null/fraction guards",
+    "10 focused minimal/null/fraction controls passed9.68s;2HTTP controls passed7.65s before T20 connection",
+    "27 integrated module/API/UI controls passed11.06s; API correction changes existing cache key/source digest and preserves bands",
+    "Broader API/UI160passed+1missing renderer-stub harness failure; actual failure bytes consumed, repaired harness confirmed in final22UI receipt",
+    "Final22UI controls passed9.78s/JUnit errors0failures0skips0, including actual EN/ZH partial-empty and repaired refresh harness",
+    "No new test, CI query or browser run by assurance"
+  ],
+  "integration_gate": "Source/API/cache/actual renderer controls accepted. Final semantic commit/check identity, actual source-bound eight-cell browser/API fixture, normalrun, explicit hold/release, installed bytes/authenticated production and operator acceptance remain open.",
+  "final_base_integration": {
+    "merge_commit": "1c1411292d993d76bbe0eaaa38f636e5a170cbde",
+    "parents": [
+      "9bf0844268e290fda56197dc0950ffbaa3376ad9",
+      "00bf61fc699ca340f6000706f57a7c1ade78c479"
+    ],
+    "source_hash_changes": {
+      ".github/ci/legacy-jobs.yml": {
+        "expected": "a5a892abcfe034ea94cd8b4a87760637ec6c54d8b590922d18e52ace2458cb91",
+        "actual": "36373775d4423b766d7214ca3ba40d0e2a181200573b2e5685c121c094d700db"
+      }
+    },
+    "incoming_changed_jobs": [
+      "biocatalyst-history",
+      "biocatalyst-serving",
+      "conviction-profile",
+      "crypto-vector-r2-organs",
+      "fif-kernel-guards",
+      "fif-saved-research-notifications",
+      "flow-surface",
+      "grey-deer-pullback-stage1",
+      "market-memory-contract",
+      "nw-lobe-unfreeze",
+      "prophet-lab",
+      "public-render-fastlane",
+      "ticker-news-qbus",
+      "unrun-government-revenue-candidate-projection",
+      "unrun-government-revenue-grader",
+      "unrun-picks-boards",
+      "washout-turn-organ"
+    ],
+    "jobs_differing_from_main_except_neural_web": [],
+    "neural_web_preserved": true,
+    "conflicts": false,
+    "candidate_bytes_changed": false,
+    "working_tree_clean": true,
+    "receipt_sha256": "d388c2e69320761a5ce129206ec342ec157632e574ed1febbe5eb06b89ded0ee",
+    "parent_remote_frontier": "aacc81 (not yet pushed1c141)",
+    "source_review_repeated": false
+  },
+  "later_visual_delta": {
+    "path": "admin/static/styles.css",
+    "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60",
+    "change": "T20 value-cell min-width0 and overflow-wrap:anywhere for observed mobile digest clipping",
+    "state": "ACTUAL_MOBILE_CLOSURE_AND_FINAL_MATRIX_PENDING",
+    "api_app_producer_tests_changed": false
+  }
+}

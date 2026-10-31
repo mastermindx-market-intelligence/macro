@@ -1,0 +1,88 @@
+--- a/.github/ci/legacy-jobs.yml
++++ b/.github/ci/legacy-jobs.yml
+@@ -5837,10 +5837,6 @@
+     # every concrete static import-closure path (curated_exclusive_closure_findings
+     # gates it) plus the measured runtime in-tree reads of every class-A suite.
+     paths:
+-      # Recorded-readiness import closure required by the Intelligence OS consumer.
+-      - "engine/k3e_eval1_forward.py"
+-      - "engine/pick_forward_dist.py"
+-      - "engine/seasonality/multiplicity.py"
+       - config/market_memory_factory_bindings.v1.json
+       - config/market_memory_retained_use.v1.json
+       - engine/neuralweb/market_memory_episode_comparison.py
+@@ -6618,6 +6614,10 @@
+       - "site/prophet/index.json"
+       - "site/turn_watch/turn_watch.json"
+       - "site/vol/regime.json"
++      # Recorded-readiness import closure required by the Intelligence OS consumer.
++      - "engine/k3e_eval1_forward.py"
++      - "engine/pick_forward_dist.py"
++      - "engine/seasonality/multiplicity.py"
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+@@ -18211,9 +18211,6 @@
+     gate: code
+     scope: exclusive
+     paths:
+-      - engine/k3e_eval1_forward.py
+-      - engine/pick_forward_dist.py
+-      - engine/seasonality/multiplicity.py
+       - config/market_memory_factory_bindings.v1.json
+       - config/market_memory_retained_use.v1.json
+       - engine/neuralweb/market_memory_episode_comparison.py
+@@ -18939,6 +18936,10 @@
+       - templates/methodology.html.j2
+       - templates/support.html.j2
+       - tests/test_crypto_assistant_context.py
++      # Recorded-readiness import closure required by the Intelligence OS consumer.
++      - engine/k3e_eval1_forward.py
++      - engine/pick_forward_dist.py
++      - engine/seasonality/multiplicity.py
+     timeout-minutes: 8
+     runs-on: ubuntu-latest
+     steps:
+@@ -25615,9 +25616,6 @@
+     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
+     scope: exclusive
+     paths:
+-      - engine/k3e_eval1_forward.py
+-      - engine/pick_forward_dist.py
+-      - engine/seasonality/multiplicity.py
+       - config/market_memory_factory_bindings.v1.json
+       - config/market_memory_retained_use.v1.json
+       - engine/neuralweb/market_memory_forward.py
+@@ -26484,6 +26482,10 @@
+       - "tests/test_ptse_shadow_outcome.py"
+       - "tests/test_ptse_w3_publication.py"
+       - "tests/test_research_price_panel.py"
++      # Recorded-readiness import closure required by the Intelligence OS consumer.
++      - engine/k3e_eval1_forward.py
++      - engine/pick_forward_dist.py
++      - engine/seasonality/multiplicity.py
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+@@ -27697,10 +27699,6 @@
+     gate: code
+     scope: exclusive
+     paths:
+-      # Recorded-readiness import closure required by the Intelligence OS consumer.
+-      - "engine/k3e_eval1_forward.py"
+-      - "engine/pick_forward_dist.py"
+-      - "engine/seasonality/multiplicity.py"
+       - config/market_memory_factory_bindings.v1.json
+       - config/market_memory_retained_use.v1.json
+       - engine/neuralweb/market_memory_episode_comparison.py
+@@ -28500,6 +28498,10 @@
+       - engine/company_intelligence/issuer_disclosure_publication.py
+       - scripts/publish_company_disclosure.py
+       - engine/company_intelligence/issuer_disclosure_preflight.py
++      # Recorded-readiness import closure required by the Intelligence OS consumer.
++      - "engine/k3e_eval1_forward.py"
++      - "engine/pick_forward_dist.py"
++      - "engine/seasonality/multiplicity.py"
+     timeout-minutes: 12
+     runs-on: ubuntu-latest
+     steps:

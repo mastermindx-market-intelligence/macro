@@ -15,11 +15,13 @@ from __future__ import annotations
 
 import io
 import logging
+import time
 
 import pandas as pd
+from requests.exceptions import JSONDecodeError, RequestException
 from requests.utils import default_user_agent
 
-from collectors.base import Adapter
+from collectors.base import Adapter, safe_exc_text
 from lib import config
 
 log = logging.getLogger(__name__)
@@ -82,15 +84,18 @@ class FredAdapter(Adapter):
         consecutive_fails = 0
         for sid, col in self._all_series().items():
             if consecutive_fails >= 3 and not frames:
-                # endpoint is down, not one bad series — stop burning retries
-                errors.append("aborted remaining series: endpoint down")
+                # Bound a wholly unsuccessful run without guessing its cause.
+                errors.append(
+                    "aborted remaining series: 3 consecutive series failures "
+                    "with no successful frame"
+                )
                 break
             try:
                 frames[sid] = self._fetch_one(sid, col)
                 consecutive_fails = 0
             except Exception as e:  # noqa: BLE001 — partial success allowed
                 consecutive_fails += 1
-                errors.append(f"{sid}: {e}")
+                errors.append(f"{sid}: {safe_exc_text(e)}")
         if not frames:
             raise RuntimeError(f"all FRED series failed: {errors}")
         if errors:
@@ -105,14 +110,60 @@ class FredAdapter(Adapter):
         return self._fetch_csv(sid, col)
 
     def _fetch_api(self, sid: str, col: str) -> pd.DataFrame:
-        r = self.http_get(
-            self.cfg["api_url"],
-            retries=self.cfg["retries"],
-            backoff_base=self.cfg["backoff_base_s"],
-            params={"series_id": sid, "api_key": self.api_key,
-                    "file_type": "json", "limit": 100000},
-        )
-        obs = r.json()["observations"]
+        attempts = self.cfg["retries"]
+        if attempts < 1:
+            raise ValueError("FRED API retries must be positive")
+        for attempt in range(1, attempts + 1):
+            # One budget covers transport and decoding; the shared helper must
+            # not multiply each outer attempt into another retry sequence.
+            try:
+                r = self.http_get(
+                    self.cfg["api_url"],
+                    retries=1,
+                    backoff_base=self.cfg["backoff_base_s"],
+                    params={"series_id": sid, "api_key": self.api_key,
+                            "file_type": "json", "limit": 100000},
+                )
+            except RequestException as exc:
+                failure = exc
+            else:
+                try:
+                    payload = r.json()
+                except JSONDecodeError:
+                    # Do not echo response text, URLs, params or raw headers.
+                    media = r.headers.get("Content-Type", "").partition(";")[0].strip().lower()
+                    if not media:
+                        media_type = "missing"
+                    elif media == "application/json" or media.endswith("+json"):
+                        media_type = "json"
+                    elif media == "text/html":
+                        media_type = "html"
+                    elif media.startswith("text/"):
+                        media_type = "text"
+                    else:
+                        media_type = "other"
+                    status = (
+                        r.status_code
+                        if isinstance(r.status_code, int) and 100 <= r.status_code <= 599
+                        else "unknown"
+                    )
+                    failure = ValueError(
+                        f"FRED API invalid_json status={status} media_type={media_type} "
+                        f"body_bytes={len(r.content)} attempt={attempt}/{attempts}"
+                    )
+                else:
+                    break
+            if attempt == attempts:
+                raise failure from None
+            wait = self.cfg["backoff_base_s"] * (2 ** (attempt - 1))
+            log.warning(
+                "FRED API series=%s attempt=%d/%d failed (%s); retry in %.0fs",
+                sid, attempt, attempts, safe_exc_text(failure), wait,
+            )
+            time.sleep(wait)
+        # Schema and conversion errors are not transport failures. Preserve the
+        # existing failure rather than retrying or manufacturing an empty frame.
+        obs = payload["observations"]
         df = pd.DataFrame(obs)[["date", "value"]]
         df["value"] = pd.to_numeric(df["value"], errors="coerce")
         df = df.set_index("date").rename(columns={"value": col})

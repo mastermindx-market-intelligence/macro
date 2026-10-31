@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-10-22T05:59:30.288873+00:00",
+  "operation_id": "commodities-paper-revamp-20261022",
+  "source_base": "2148a98367be4239baac6af5bad103b2fb6f78e9",
+  "branch": "sol/web-commodities-paper-revamp-20261022",
+  "source_sha256": {
+    "templates/_commodity_decision_workspace.html.j2": "fa3c5ce237a76e8ccb8c11be9ec64d9d57ae1086ce62eaef55ee1604bde1bae0",
+    "templates/commodity-workspace.css": "0708353d6e831ca8f05891ebe37831ddaa0a763a47cf21ec3ed955f65d04b4b1",
+    "templates/commodity-workspace.js": "86374e6d1b60a223196c5464e95e35e22f9ba56d61cecab0b0ca67fd3d21fbb2",
+    "scripts/render_commodity_workspace_review.py": "52414f34739757226eaac0f1d953c16fad1edffafb638cbe62edb12f4f20d07f",
+    "scripts/verify_commodity_workspace_browser.py": "b234892eb6bb985bb8b1bc1a8b664ae0410f1afcbc947581e03407c204bfc72a",
+    "tests/test_commodity_workspace_ui.js": "69c8336fec11094dfdc0e81b5a0ec816ff0d975dc8ecca1911767176f886d8cc",
+    "tests/test_commodity_workspace_presentation.js": "259f5a47acab488d5b5d3e5a87d1b9d9baf85f5369fe093d063af6b753953db0",
+    "tests/test_commodity_presentation_render.py": "661dc49ebe9503bf7c273966b569b09e0e7eee8e4b56abeb877128afd7c604cd",
+    "site/commodities.html": "62c7bc9d71b5501491637121f9e994d06386def4c7ff50e669b53d4a0e360818"
+  },
+  "published_payload_sha256": "da906458497e14100dbe6fcb036028164955cafe031e3ff00b4d59d963ada008",
+  "payload_bytes_unchanged": true,
+  "source_review": "PASS within assigned source-delta scope; see reviews.md",
+  "visual_review": "PASS within five personally inspected representative states before payload integration; see reviews.md",
+  "production_verified": false,
+  "paper_applied": false,
+  "paper_gate": "Vendor warning: Your file is too large. Further changes will result in data loss. Please start a new file.",
+  "paper_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "paper_page_id": "p-L-0",
+  "prior_publication": "https://github.com/mastermindx-market-intelligence/macro/pull/9878#issuecomment-6332067001",
+  "fabric_builder_run": "commodities-revamp-build-20261022-01",
+  "fabric_builder_result": "terminal host_temperature_at_or_above_limit; no retry",
+  "direct_source_exception": "NO_ELIGIBLE_PRE_EFFECT_WORKER / PRINCIPAL_JUDGMENT; Studio source hashes checked for drift before modifications; separate source and visual judgment reviewers",
+  "initial_candidate_commit": "10cba9b29c9b240a4b8e92a2b2c172fffa05f1c6",
+  "integration_base": "64ef5131a5f50fb65f0ad25a049a457e18258495",
+  "integrated_at": "2026-10-22T07:34:48.976013+00:00",
+  "initial_payload_sha256": "a0363b8ea32e1eda0878d9b2ff8cc9cbdd9cd561c47e8593f47867e16c0bb56d",
+  "owner_integrated_visual_check": [
+    "desktop dark EN Overview",
+    "desktop dark EN Explore",
+    "mobile light ZH Compare"
+  ],
+  "current_capture_manifests": [
+    "integration-overview/manifest.json",
+    "integration-views/manifest.json"
+  ],
+  "integration_checks": "integration-checks.json",
+  "integration_browser_receipt": "integration-browser-journey.json",
+  "review_report": "reviews.md",
+  "publication_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/10038"
+}

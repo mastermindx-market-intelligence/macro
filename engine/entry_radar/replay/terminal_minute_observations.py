@@ -37,6 +37,7 @@ RESPONSE_ADJUSTED_STATES = frozenset({
 })
 READ_RECEIPT_SCHEMA = "mastermind.entry_radar.terminal_minute_read.v1"
 DECODE_SCHEMA = "mastermind.entry_radar.terminal_minute_observations.v1"
+DECODE_SCHEMA_V2 = "mastermind.entry_radar.terminal_minute_observations.v2"
 OBSERVER_ID = "terminal.backfill_intraday"
 MAX_FILE_BYTES = 32 * 1024 * 1024
 MAX_CAPTURES = 4096
@@ -411,6 +412,7 @@ def decode_terminal_minute_observations(
     stream: str,
     stream_metadata: Mapping[str, Any] | None = None,
     cutoff: str,
+    output_schema: str = DECODE_SCHEMA,
 ) -> dict[str, Any]:
     """Emit decision-scoped inputs; the existing RS selector resolves revisions.
 
@@ -426,7 +428,13 @@ def decode_terminal_minute_observations(
 
     Every capture read for the first time together has the same known_at. A late
     first read of A/B/A therefore remains a same-clock conflict downstream.
+
+    Output v2 includes the validated payload provider/symbol in each sealed row.
+    Default v1 serialization stays unchanged. This output choice neither changes
+    capture/revision identities or availability nor authenticates caller custody.
     """
+    if not isinstance(output_schema, str) or output_schema not in (DECODE_SCHEMA, DECODE_SCHEMA_V2):
+        raise InputContractError("unsupported minute observation output schema")
     reader_identity = _identifier(reader_identity, "reader_identity")
     symbol, stream = _identifier(symbol, "symbol"), _identifier(stream, "stream")
     cutoff_ns = _cutoff_ns(cutoff)
@@ -535,10 +543,16 @@ def decode_terminal_minute_observations(
                     "acquisition_role": payload["acquisition_role"],
                     "capture_payload_schema": PAYLOAD_SCHEMA_V3,
                 })
+            if output_schema == DECODE_SCHEMA_V2:
+                row["source_observation"].update({
+                    "decode_schema": DECODE_SCHEMA_V2,
+                    "source_vendor": payload["source"],
+                    "source_symbol": payload["symbol"],
+                })
             row["receipt_sha256"] = _digest(row)
             minutes.append(row)
     return {
-        "schema": DECODE_SCHEMA,
+        "schema": output_schema,
         "status": "REVISION_INPUTS_BUILT_NOT_ADMITTED" if minutes else "UNAVAILABLE",
         "minutes": minutes, "diagnostics": diagnostics,
         "unproven_owner_requirements": [

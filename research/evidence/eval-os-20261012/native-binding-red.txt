@@ -1,0 +1,87 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_actual_provider_refuses_noncanonical_native_ledger[data/decoy/stock_desk/theses.jsonl] _
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-118/test_actual_provider_refuses_n0')
+ledger = 'data/decoy/stock_desk/theses.jsonl'
+
+    @pytest.mark.parametrize('ledger', ['data/decoy/stock_desk/theses.jsonl','data/stock_desk/other.jsonl','backup/stock_desk/theses.jsonl'])
+    def test_actual_provider_refuses_noncanonical_native_ledger(tmp_path,ledger):
+        base=tmp_path/'data/qledger';base.mkdir(parents=True)
+        (base/'claims.jsonl').write_text('');(base/'grades.jsonl').write_text('')
+        cell=evidence_cell(ledger=ledger)
+        # Actual adapter lookup and readiness provider, no mocked family resolver.
+>       assert IOS._load_evidence_providers(tmp_path,{'engines':[cell]}) == {}
+E       AssertionError: assert {'engine/a.py...': 'ok', ...}} == {}
+E         
+E         Left contains 1 more item:
+E         {'engine/a.py::prog-one': {'binding': 'adapter:stock_desk',
+E                                    'clock_start': None,
+E                                    'family': 'stock_desk',
+E                                    'kind': 'qledger',
+E                                    'read_status': 'ok',...
+E         
+E         ...Full output truncated (144 lines hidden), use '-vv' to show
+
+tests/test_admin_intelligence_os.py:1654: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, plugins, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_actual_provider_refuses_noncanonical_native_ledger[data/stock_desk/other.jsonl] _
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-118/test_actual_provider_refuses_n1')
+ledger = 'data/stock_desk/other.jsonl'
+
+    @pytest.mark.parametrize('ledger', ['data/decoy/stock_desk/theses.jsonl','data/stock_desk/other.jsonl','backup/stock_desk/theses.jsonl'])
+    def test_actual_provider_refuses_noncanonical_native_ledger(tmp_path,ledger):
+        base=tmp_path/'data/qledger';base.mkdir(parents=True)
+        (base/'claims.jsonl').write_text('');(base/'grades.jsonl').write_text('')
+        cell=evidence_cell(ledger=ledger)
+        # Actual adapter lookup and readiness provider, no mocked family resolver.
+>       assert IOS._load_evidence_providers(tmp_path,{'engines':[cell]}) == {}
+E       AssertionError: assert {'engine/a.py...': 'ok', ...}} == {}
+E         
+E         Left contains 1 more item:
+E         {'engine/a.py::prog-one': {'binding': 'adapter:stock_desk',
+E                                    'clock_start': None,
+E                                    'family': 'stock_desk',
+E                                    'kind': 'qledger',
+E                                    'read_status': 'ok',...
+E         
+E         ...Full output truncated (144 lines hidden), use '-vv' to show
+
+tests/test_admin_intelligence_os.py:1654: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, plugins, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_actual_provider_refuses_noncanonical_native_ledger[backup/stock_desk/theses.jsonl] _
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-118/test_actual_provider_refuses_n2')
+ledger = 'backup/stock_desk/theses.jsonl'
+
+    @pytest.mark.parametrize('ledger', ['data/decoy/stock_desk/theses.jsonl','data/stock_desk/other.jsonl','backup/stock_desk/theses.jsonl'])
+    def test_actual_provider_refuses_noncanonical_native_ledger(tmp_path,ledger):
+        base=tmp_path/'data/qledger';base.mkdir(parents=True)
+        (base/'claims.jsonl').write_text('');(base/'grades.jsonl').write_text('')
+        cell=evidence_cell(ledger=ledger)
+        # Actual adapter lookup and readiness provider, no mocked family resolver.
+>       assert IOS._load_evidence_providers(tmp_path,{'engines':[cell]}) == {}
+E       AssertionError: assert {'engine/a.py...': 'ok', ...}} == {}
+E         
+E         Left contains 1 more item:
+E         {'engine/a.py::prog-one': {'binding': 'adapter:stock_desk',
+E                                    'clock_start': None,
+E                                    'family': 'stock_desk',
+E                                    'kind': 'qledger',
+E                                    'read_status': 'ok',...
+E         
+E         ...Full output truncated (144 lines hidden), use '-vv' to show
+
+tests/test_admin_intelligence_os.py:1654: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, plugins, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+
+NOTE: sparse worktree — data, mockups, plugins, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_admin_intelligence_os.py::test_actual_provider_refuses_noncanonical_native_ledger[data/decoy/stock_desk/theses.jsonl]
+FAILED tests/test_admin_intelligence_os.py::test_actual_provider_refuses_noncanonical_native_ledger[data/stock_desk/other.jsonl]
+FAILED tests/test_admin_intelligence_os.py::test_actual_provider_refuses_noncanonical_native_ledger[backup/stock_desk/theses.jsonl]
+3 failed, 94 deselected in 2.07s

@@ -1,0 +1,535 @@
+/* ==========================================================================
+   gmi_explorer.css — GMI Explorer reference stylesheet (design reference, 2026-10-21)
+   --------------------------------------------------------------------------
+   Status: REFERENCE ONLY. Lives under mockups/refs/gmi_explorer/. Loaded AFTER
+   templates/theme.css + templates/navigation-refresh.css by the specimen pages.
+   Rule: this file EXTENDS theme.css; it never re-declares a shipped token and
+   introduces no new hue. Every --gmi-* token is a color-mix of a shipped token.
+   Section A copies the specimen-only primitives (mockups/design_system/specimen.html
+   lines 20-134) that are not yet in theme.css, so the implementation PR can
+   promote them verbatim (DESIGN-SYSTEM-GAP G-DS1 in DESIGN_RECORD.md).
+   Layout is flex-only on purpose (portable to Paper and to the Jinja page).
+   ========================================================================== */
+
+/* ---------- A. specimen primitives not shipped in theme.css (copied verbatim) --- */
+:root{
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px; --sp-8:44px;
+  --r-ctl:8px; --r-btn:10px; --r-card:12px; --r-panel:14px; --r-pill:999px;
+  --t-fast:.16s; --t-med:.2s; --t-slow:.55s;
+  --ease-std:cubic-bezier(.2,0,0,1); --ease-lift:cubic-bezier(.2,.7,.3,1);
+}
+html[data-lang="zh"] :is(h1,h2,h3,.eyebrow){ letter-spacing:0; text-transform:none; }
+.mx-sec{ display:flex; align-items:baseline; gap:8px; margin:0 0 10px; }
+.mx-sec h3, .mx-sec h2{ font-size:var(--fs-h2); font-weight:700; letter-spacing:-.01em; margin:0; }
+.mx-sec .mx-asof{ margin-left:auto; color:var(--muted); font-size:var(--fs-micro); font-variant-numeric:tabular-nums; }
+.mx-tabset{ display:flex; gap:2px; border-bottom:1px solid var(--line); margin-bottom:10px; }
+.mx-tabset button{ appearance:none; background:none; border:none; border-bottom:2px solid transparent;
+  color:var(--muted); font:600 var(--fs-sm)/1 var(--font-ui); padding:8px 12px; cursor:pointer; min-height:40px;
+  transition:color var(--t-fast) var(--ease-std), border-color var(--t-fast) var(--ease-std); }
+.mx-tabset button[aria-selected="true"]{ color:var(--text); border-bottom-color:var(--link); }
+.mx-empty{ padding:var(--sp-6) var(--sp-4); text-align:center; }
+.mx-empty-line{ font-size:var(--fs-md); font-weight:600; }
+.mx-empty-why{ color:var(--muted); font-size:var(--fs-sm); margin-top:4px; }
+.skel{ border-radius:var(--r-ctl); background:linear-gradient(90deg, var(--panel2) 25%, color-mix(in srgb, var(--text) 7%, var(--panel2)) 45%, var(--panel2) 65%); background-size:200% 100%; animation:skel 1.2s linear infinite; }
+@keyframes skel{ to{ background-position:-200% 0; } }
+.mx-disc{ border:1px solid var(--line); border-radius:var(--r-card); background:var(--panel); }
+.mx-disc summary{ cursor:pointer; padding:10px 14px; font-size:var(--fs-sm); font-weight:600; color:var(--text); min-height:20px; }
+.mx-disc summary small{ color:var(--muted); font-weight:400; margin-left:6px; }
+.mx-disc .mx-disc-body{ padding:0 14px 12px; color:var(--muted); font-size:var(--fs-sm); }
+@media (prefers-reduced-motion:reduce){ .skel{ animation:none; } }
+
+/* ---------- B. GMI extension tokens (derived only) ------------------------------ */
+:root{
+  --gmi-mark:       color-mix(in srgb, var(--text) 78%, transparent);  /* admitted: solid ink   */
+  --gmi-mark-faint: color-mix(in srgb, var(--text) 44%, transparent);  /* outlines              */
+  --gmi-hatch:      color-mix(in srgb, var(--text) 40%, transparent);  /* acceptance-set hatch  */
+  --gmi-held:       var(--info);                                       /* held ring (redundant to shape) */
+  --gmi-hair:       color-mix(in srgb, var(--text) 9%, transparent);   /* dark hairline         */
+  --gmi-step:       color-mix(in srgb, var(--text) 2.5%, transparent); /* dark luminance step   */
+  --gmi-elev:       inset 0 1px 0 rgba(255,255,255,.035), 0 1px 0 rgba(0,0,0,.35);
+  --gmi-select:     0 0 0 1px var(--link), 0 0 22px -8px color-mix(in srgb, var(--link) 70%, transparent);
+  --gmi-hero-wash:  radial-gradient(120% 160% at 0% 0%, color-mix(in srgb, var(--info) 9%, transparent), transparent 62%);
+  --gmi-glow-held:  0 0 0 3px color-mix(in srgb, var(--info) 16%, transparent), 0 0 14px 0 color-mix(in srgb, var(--info) 55%, transparent);
+  --gmi-tray:       none;                                              /* side sheet: dark = luminance only */
+  --gmi-cell:14px; --gmi-cell-gap:5px;
+}
+html[data-theme="light"]{
+  --gmi-mark:       color-mix(in srgb, var(--text) 86%, transparent);
+  --gmi-mark-faint: color-mix(in srgb, var(--text) 40%, transparent);
+  --gmi-hatch:      color-mix(in srgb, var(--text) 30%, transparent);
+  --gmi-held:       var(--ink-info);
+  --gmi-hair:       var(--line);
+  --gmi-step:       transparent;
+  --gmi-elev:       0 1px 2px rgba(20,30,50,.06), 0 8px 24px -16px rgba(20,32,64,.22);
+  --gmi-select:     0 0 0 2px var(--link);
+  --gmi-hero-wash:  none;
+  --gmi-glow-held:  0 0 0 3px color-mix(in srgb, var(--ink-info) 14%, transparent);
+  --gmi-tray:       inset 0 1px 2px rgba(20,30,50,.05);                 /* light: a recessed tray */
+}
+@media (max-width:640px){ :root{ --gmi-cell:10px; --gmi-cell-gap:3px; } }
+
+/* ---------- C. page shell ------------------------------------------------------ */
+body.gmi-page{ margin:0; background:var(--bg); color:var(--text); font-family:var(--font-ui);
+  font-size:var(--fs-body); line-height:1.5; -webkit-font-smoothing:antialiased; }
+.gmi-page *{ box-sizing:border-box; }
+.gmi-page a{ color:var(--link); text-decoration:none; }
+.gmi-page :focus-visible{ outline:2px solid var(--link); outline-offset:2px; border-radius:4px; }
+.gmi-wrap{ max-width:1180px; margin:0 auto; padding:0 32px 64px; display:flex; flex-direction:column; gap:var(--sp-6); }
+.tnum{ font-variant-numeric:tabular-nums; }
+.gmi-mono{ font-family:var(--font-mono); font-size:.92em; }
+
+/* Tier-1 head: crumb, one h1 (<=4 words), one sentence (<=14 words), one as-of */
+.gmi-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:var(--sp-6);
+  padding:var(--sp-7) 0 var(--sp-5); border-bottom:1px solid var(--gmi-hair); }
+.gmi-head-main{ min-width:0; }
+.gmi-crumb{ margin:0 0 var(--sp-2); font-size:var(--fs-label); font-weight:600; color:var(--muted);
+  letter-spacing:.07em; text-transform:uppercase; display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+html[data-lang="zh"] .gmi-crumb{ letter-spacing:0; text-transform:none; }
+.gmi-crumb i{ font-style:normal; opacity:.5; }
+.gmi-h1{ margin:0; font-size:var(--fs-h1); font-weight:700; letter-spacing:-.015em; line-height:1.15; }
+.gmi-sub{ margin:var(--sp-2) 0 0; font-size:var(--fs-md); color:var(--muted); max-width:62ch; }
+.gmi-head-side{ display:flex; flex-direction:column; align-items:flex-end; gap:var(--sp-2); flex:none; }
+.gmi-asof{ font-size:var(--fs-sm); color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums; }
+
+/* ---------- D. survey marks: shape carries meaning, hue only reinforces --------- */
+.gmi-sm{ display:inline-block; flex:none; width:var(--gmi-cell); height:var(--gmi-cell);
+  border-radius:2px; position:relative; vertical-align:-2px; }
+.gmi-sm--adm { background:var(--gmi-mark); }
+.gmi-sm--held{ border:2px solid var(--gmi-held);
+  background:radial-gradient(circle, var(--gmi-held) 0 22%, transparent 27%); box-shadow:var(--gmi-glow-held); }
+.gmi-sm--acc { border:1px solid var(--gmi-mark-faint);
+  background:repeating-linear-gradient(135deg, var(--gmi-hatch) 0 1.4px, transparent 1.4px 3.6px); }
+.gmi-sm--disp{ border:1px dashed var(--gmi-mark-faint); }
+.gmi-sm--none{ border:1px solid var(--gmi-hair); }
+.gmi-key .gmi-sm, .gmi-tally .gmi-sm, .gmi-inline .gmi-sm{ --gmi-cell:12px; }
+.gmi-sm--xl{ --gmi-cell:20px; border-radius:3px; }
+.gmi-key{ display:flex; flex-wrap:wrap; gap:var(--sp-2) var(--sp-5); font-size:var(--fs-sm); color:var(--muted); }
+.gmi-key span{ display:inline-flex; align-items:center; gap:7px; }
+
+/* ---------- E. hero band: dark = luminance wash + glow; light = white card, hairline, shadow - */
+.gmi-band{ border-radius:var(--r-panel); background:var(--gmi-hero-wash), var(--panel);
+  border:1px solid var(--gmi-hair); box-shadow:var(--gmi-elev); padding:var(--sp-5); }
+.gmi-band-card{ display:flex; flex-direction:column; gap:var(--sp-5); }
+html[data-theme="light"] .gmi-band{ background:var(--panel); border:1px solid var(--line); box-shadow:var(--gmi-elev); }
+
+/* generic module panel */
+.gmi-panel{ background:var(--panel); border:1px solid var(--gmi-hair); border-radius:var(--r-card);
+  box-shadow:var(--gmi-elev); padding:var(--sp-5); display:flex; flex-direction:column; gap:var(--sp-3); min-width:0; }
+.gmi-panel--flush{ padding:0; gap:0; }
+.gmi-cols{ display:flex; gap:18px; align-items:flex-start; }
+.gmi-col-main{ flex:1 1 0; min-width:0; display:flex; flex-direction:column; gap:18px; }
+.gmi-col-side{ flex:0 0 360px; min-width:0; display:flex; flex-direction:column; gap:18px; }
+.gmi-row{ display:flex; gap:18px; align-items:stretch; }
+.gmi-row > *{ flex:1 1 0; }
+@media (max-width:900px){ .gmi-cols, .gmi-row{ flex-direction:column; align-items:stretch; } .gmi-col-main, .gmi-col-side{ flex:none; width:100%; } }
+
+/* label/value lines */
+.gmi-dl{ display:flex; flex-direction:column; margin:0; }
+.gmi-dl > div{ display:flex; gap:var(--sp-4); padding:9px 0; border-top:1px solid var(--gmi-hair); align-items:baseline; }
+.gmi-dl > div:first-child{ border-top:0; }
+.gmi-dl dt{ flex:0 0 132px; color:var(--muted); font-size:var(--fs-sm); }
+.gmi-dl dd{ margin:0; flex:1; min-width:0; font-size:var(--fs-sm); overflow-wrap:anywhere; }
+.gmi-ink-warn{ color:var(--ink-warn); } .gmi-ink-act{ color:var(--ink-act); }
+.gmi-ink-info{ color:var(--ink-info); } .gmi-ink-ok{ color:var(--ink-ok); }
+.gmi-muted{ color:var(--muted); }
+.gmi-note{ font-size:var(--fs-sm); color:var(--muted); margin:0; }
+.gmi-foot{ font-size:var(--fs-label); color:var(--muted); margin:0; }
+
+/* tip trigger (Tier-2 lens); text lives in data-tip-en / data-tip-zh, never title= */
+.gmi-tip{ appearance:none; border:1px solid var(--gmi-hair); background:transparent; color:var(--muted);
+  width:20px; height:20px; border-radius:50%; font:600 11px/1 var(--font-ui); cursor:help; padding:0;
+  display:inline-flex; align-items:center; justify-content:center; vertical-align:1px; position:relative; }
+.gmi-tip::after{ content:""; position:absolute; inset:-10px; }  /* 40px hit target */
+
+/* chips */
+.gmi-chip{ display:inline-flex; align-items:center; gap:6px; min-height:28px; padding:0 10px;
+  border-radius:var(--r-pill); font-size:var(--fs-sm); font-weight:600; white-space:nowrap;
+  background:var(--panel2); color:var(--text); border:1px solid transparent; }
+html[data-theme="light"] .gmi-chip{ background:var(--panel); border-color:var(--line); }
+.gmi-chip svg{ width:14px; height:14px; flex:none; }
+.gmi-chip small{ font-weight:400; color:var(--muted); font-size:var(--fs-label); }
+.gmi-chip--upd{ color:var(--ink-info); }
+.gmi-chip--ghost{ background:transparent; border-color:var(--gmi-hair); color:var(--muted); font-weight:500; }
+
+/* buttons */
+.gmi-btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:40px; padding:0 16px;
+  border-radius:var(--r-btn); border:1px solid var(--gmi-hair); background:var(--panel2); color:var(--text);
+  font:600 var(--fs-sm)/1 var(--font-ui); cursor:pointer; white-space:nowrap; }
+html[data-theme="light"] .gmi-btn{ background:var(--panel); border-color:var(--line); box-shadow:0 1px 2px rgba(20,30,50,.06); }
+.gmi-btn--quiet{ background:transparent; border-color:transparent; color:var(--link); padding:0 6px; }
+html[data-theme="light"] .gmi-btn--quiet{ background:transparent; border-color:transparent; box-shadow:none; }
+.gmi-btn svg{ width:16px; height:16px; }
+
+/* ---------- F. census tally — a ledger line, not a KPI row ------------------------
+   lead population | what it is made of | where the core set stands. No boxes: hairline
+   rules separate the three thoughts; the lead integer is the only large number. */
+.gmi-tally{ display:flex; align-items:stretch; gap:0; padding:2px 0 var(--sp-5);
+  border-bottom:1px solid var(--gmi-hair); }
+.gmi-tally-lead{ flex:0 0 auto; display:flex; flex-direction:column; justify-content:flex-end; gap:6px; padding-right:var(--sp-6); }
+.gmi-tally-group{ flex:0 1 auto; min-width:0; display:flex; flex-direction:column; gap:8px;
+  padding:0 var(--sp-8) 0 var(--sp-6); border-left:1px solid var(--gmi-hair); }
+.gmi-tally-cap{ font-size:var(--fs-label); color:var(--muted); font-weight:600; letter-spacing:.06em; text-transform:uppercase; }
+html[data-lang="zh"] .gmi-tally-cap{ letter-spacing:0; text-transform:none; font-size:var(--fs-sm); }
+.gmi-tally-figs{ display:flex; gap:var(--sp-6); align-items:flex-end; flex-wrap:wrap; }
+.gmi-tally-fig{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+.gmi-tally-num{ font-size:var(--fs-num-lg); font-weight:700; line-height:1; font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
+.gmi-tally-num--lead{ font-size:var(--fs-num-xl); letter-spacing:-.02em; }
+.gmi-tally-lab{ font-size:var(--fs-sm); color:var(--muted); display:flex; align-items:center; gap:7px; white-space:nowrap; }
+.gmi-tally-lab--wrap{ white-space:normal; }
+.gmi-tally-txt{ white-space:nowrap; }
+@media (max-width:900px){
+  .gmi-tally{ flex-wrap:wrap; row-gap:var(--sp-4); }
+  .gmi-tally-lead{ flex:1 1 100%; flex-direction:row; align-items:baseline; justify-content:flex-start; gap:10px; padding-right:0; }
+  .gmi-tally-group{ flex:1 1 0; padding:0 var(--sp-4) 0 0; border-left:0; }
+  .gmi-tally-group + .gmi-tally-group{ padding:0 0 0 var(--sp-4); border-left:1px solid var(--gmi-hair); }
+}
+@media (max-width:640px){
+  .gmi-tally-group, .gmi-tally-group + .gmi-tally-group{ flex:1 1 100%; padding:0; border-left:0; }
+  .gmi-tally-group + .gmi-tally-group{ padding-top:var(--sp-4); border-top:1px solid var(--gmi-hair); }
+  .gmi-tally-figs{ gap:var(--sp-5); }
+  .gmi-tally-num--lead{ font-size:var(--fs-h1); }
+}
+
+/* ---------- G. census survey sheet (S2 hero; the one bold move) ---------------- */
+.gmi-census{ display:flex; flex-direction:column; border-radius:var(--r-card); }
+.gmi-cband{ display:flex; gap:var(--sp-5); align-items:flex-start; padding:10px 12px; border-radius:8px; }
+html:not([data-theme="light"]) .gmi-cband:nth-child(even){ background:var(--gmi-step); }
+html[data-theme="light"] .gmi-cband{ border-radius:0; }
+html[data-theme="light"] .gmi-cband + .gmi-cband{ border-top:1px solid var(--line); }
+.gmi-cband-label{ flex:0 0 228px; display:flex; flex-direction:column; gap:1px; min-width:0; }
+.gmi-cband-name{ font-size:var(--fs-sm); font-weight:600; }
+.gmi-cband-meta{ font-size:var(--fs-label); color:var(--muted); font-variant-numeric:tabular-nums; }
+.gmi-cells{ flex:1 1 0; min-width:0; display:flex; flex-wrap:wrap; gap:var(--gmi-cell-gap); padding-top:2px; }
+.gmi-cells-sep{ flex:none; width:1px; height:var(--gmi-cell); margin:0 calc(var(--gmi-cell-gap) + 1px); background:var(--gmi-mark-faint); }
+.gmi-cband--empty .gmi-cells{ font-size:var(--fs-sm); color:var(--muted); align-items:center; gap:10px; }
+.gmi-cband--empty .gmi-cells::before{ content:""; flex:0 0 48px; height:0; border-top:1px dashed var(--gmi-mark-faint); }
+.gmi-cband--focus .gmi-cband-name{ color:var(--ink-info); }
+html[data-gmi-lens="chain"] .gmi-census--coverage, html:not([data-gmi-lens="chain"]) .gmi-census--chain{ display:none; }
+@media (max-width:640px){
+  .gmi-cband{ flex-direction:column; gap:6px; padding:8px 4px; }
+  .gmi-cband-label{ flex:none; width:100%; flex-direction:row; justify-content:space-between; align-items:baseline; gap:8px; }
+}
+
+/* value-chain rail (5 lanes; 'not set' is hatched, never a hidden zero) */
+.gmi-rail{ display:flex; gap:4px; }
+.gmi-rail-seg{ flex:1 1 0; min-width:0; display:flex; flex-direction:column; gap:6px; }
+.gmi-rail-bar{ height:8px; border-radius:3px; background:color-mix(in srgb, var(--text) 10%, transparent); }
+html[data-theme="light"] .gmi-rail-bar{ background:var(--panel2); box-shadow:inset 0 0 0 1px var(--line); }
+.gmi-rail-seg--unset .gmi-rail-bar{ background:repeating-linear-gradient(135deg, var(--gmi-hatch) 0 1.5px, transparent 1.5px 5px);
+  box-shadow:inset 0 0 0 1px var(--gmi-mark-faint); }
+.gmi-rail-seg--on .gmi-rail-bar{ box-shadow:var(--gmi-select); }
+.gmi-rail-lab{ font-size:var(--fs-label); color:var(--muted); display:flex; justify-content:space-between; gap:6px; }
+.gmi-rail-seg--on .gmi-rail-lab{ color:var(--text); font-weight:600; }
+
+/* ---------- H. tree accordion + search + full index ----------------------------- */
+.gmi-search{ display:flex; align-items:center; gap:10px; min-height:44px; padding:0 14px; border-radius:var(--r-btn);
+  border:1px solid var(--gmi-hair); background:var(--panel2); color:var(--muted); font-size:var(--fs-body); }
+html[data-theme="light"] .gmi-search{ background:var(--panel); border-color:var(--line); box-shadow:inset 0 1px 2px rgba(20,30,50,.05); }
+.gmi-search svg{ width:18px; height:18px; flex:none; }
+.gmi-search kbd{ margin-left:auto; font:500 var(--fs-label)/1 var(--font-mono); padding:4px 6px; border-radius:5px; border:1px solid var(--gmi-hair); color:var(--muted); }
+.gmi-tree{ display:flex; flex-direction:column; }
+.gmi-trow{ display:flex; align-items:center; gap:12px; min-height:44px; padding:6px 14px; border-top:1px solid var(--gmi-hair); }
+.gmi-tree > .gmi-trow:first-child{ border-top:0; }
+.gmi-trow-caret{ width:16px; height:16px; flex:none; color:var(--muted); transition:transform var(--t-fast) var(--ease-std); }
+.gmi-trow--open > .gmi-trow-caret{ transform:rotate(90deg); }
+.gmi-trow-name{ flex:1 1 auto; min-width:0; font-size:var(--fs-body); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gmi-trow-meta{ flex:none; font-size:var(--fs-sm); color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.gmi-trow-strip{ flex:0 0 132px; display:flex; flex-wrap:wrap; gap:2px; --gmi-cell:6px; }
+.gmi-trow-strip .gmi-sm{ border-radius:1px; }
+.gmi-trow--l2{ padding-left:42px; background:var(--gmi-step); }
+.gmi-trow--l2 .gmi-trow-name{ font-weight:500; }
+.gmi-trow--l3{ padding-left:70px; min-height:40px; }
+.gmi-trow--l3 .gmi-trow-name{ font-weight:400; font-size:var(--fs-sm); }
+.gmi-trow--more .gmi-trow-name{ color:var(--link); font-weight:600; font-size:var(--fs-sm); }
+.gmi-trow--empty .gmi-trow-name{ color:var(--muted); font-weight:500; white-space:normal; }
+@media (max-width:640px){ .gmi-trow-name{ white-space:normal; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-height:1.3; } }
+@media (max-width:640px){
+  .gmi-trow{ padding:6px 10px; gap:10px; }
+  .gmi-trow-strip{ display:none; }
+  .gmi-trow--l2{ padding-left:30px; } .gmi-trow--l3{ padding-left:46px; }
+}
+/* S2 index: one disclosure per category. Desktop opens all (a board); <=640 opens the first (a list of 10). */
+.gmi-index-group{ display:block; }
+.gmi-index-h{ position:sticky; top:0; z-index:2; display:flex; align-items:center; gap:10px; min-height:48px; padding:6px 12px;
+  background:var(--panel); border-bottom:1px solid var(--gmi-hair); cursor:pointer; list-style:none; }
+.gmi-index-h::-webkit-details-marker{ display:none; }
+.gmi-index-hn{ flex:1 1 auto; min-width:0; font-size:var(--fs-body); font-weight:700; }
+.gmi-index-hc{ flex:none; font-size:var(--fs-label); color:var(--muted); font-variant-numeric:tabular-nums; }
+.gmi-index-h > b{ flex:none; min-width:2.2em; text-align:right; font-size:var(--fs-sm); font-variant-numeric:tabular-nums; }
+.gmi-index-h > svg{ flex:none; color:var(--muted); transition:transform .16s ease; }
+.gmi-index-group[open] > .gmi-index-h > svg{ transform:rotate(90deg); }
+.gmi-index-group:not([open]) > .gmi-index-h{ border-bottom:0; }
+.gmi-index-h:focus-visible{ outline:2px solid var(--link); outline-offset:-2px; }
+.gmi-index-t{ display:flex; justify-content:space-between; gap:8px; padding:12px 12px 4px; font-size:var(--fs-label); font-weight:600;
+  color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
+.gmi-index-t small{ font-variant-numeric:tabular-nums; letter-spacing:0; }
+html[data-lang="zh"] .gmi-index-t{ letter-spacing:0; text-transform:none; font-size:var(--fs-sm); }
+@media (prefers-reduced-motion:reduce){ .gmi-index-h > svg{ transition:none; } }
+.gmi-irow{ display:flex; align-items:center; gap:10px; min-height:40px; padding:4px 12px; border-top:1px solid var(--gmi-hair); }
+.gmi-irow-name{ flex:1 1 auto; min-width:0; font-size:var(--fs-sm); line-height:1.35; overflow-wrap:anywhere; } /* index = full names, wraps; tree rows truncate */
+.gmi-irow-tag{ flex:none; font-size:var(--fs-label); color:var(--muted); }
+.gmi-irow--held .gmi-irow-tag{ color:var(--ink-info); font-weight:600; }
+
+/* ---------- I. S1 issuer: identity + lineage ladder ----------------------------- */
+.gmi-ident{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.gmi-ticker{ font:600 var(--fs-sm)/1 var(--font-mono); padding:5px 8px; border-radius:6px; border:1px solid var(--gmi-hair); color:var(--muted); }
+.gmi-answer{ font-size:var(--fs-md); line-height:1.45; margin:0; max-width:64ch; }
+.gmi-answer b{ font-weight:700; }
+/* round 2: the lineage ladder moved to section O (.gmi-chain) */
+.gmi-status{ display:flex; align-items:flex-start; gap:12px; }
+.gmi-status-t{ font-size:var(--fs-md); font-weight:700; color:var(--ink-info); }
+.gmi-status-s{ font-size:var(--fs-sm); color:var(--muted); }
+
+/* ---------- J. S3 relationship card, magnitude history, ledger thread, paths ---- */
+.gmi-rel-head{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.gmi-party{ font-size:var(--fs-md); font-weight:700; }
+.gmi-arrow{ display:inline-flex; align-items:center; gap:6px; color:var(--muted); font-size:var(--fs-label); }
+.gmi-arrow svg{ width:28px; height:12px; }
+.gmi-kind{ font-size:var(--fs-sm); color:var(--muted); }
+.gmi-mag{ display:flex; align-items:flex-end; gap:var(--sp-6); flex-wrap:wrap; }
+.gmi-mag-num{ font-size:var(--fs-num-xl); font-weight:700; line-height:1; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+.gmi-mag-num small{ font-size:var(--fs-num-lg); font-weight:600; }
+.gmi-mag-cap{ font-size:var(--fs-sm); color:var(--muted); max-width:28ch; padding-bottom:3px; }
+.gmi-hist{ display:flex; align-items:flex-end; gap:10px; height:96px; margin-left:auto; }
+.gmi-hist-col{ display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px; width:44px; height:100%; }
+.gmi-hist-bar{ width:100%; border-radius:3px 3px 0 0; background:color-mix(in srgb, var(--text) 26%, transparent); }
+.gmi-hist-col--now .gmi-hist-bar{ background:var(--gmi-mark); }
+html:not([data-theme="light"]) .gmi-hist-col--now .gmi-hist-bar{ box-shadow:0 0 18px -6px color-mix(in srgb, var(--text) 60%, transparent); }
+html[data-theme="light"] .gmi-hist-bar{ background:color-mix(in srgb, var(--text) 18%, var(--panel)); }
+html[data-theme="light"] .gmi-hist-col--now .gmi-hist-bar{ background:var(--text); }
+.gmi-hist-v{ font-size:var(--fs-label); font-weight:600; font-variant-numeric:tabular-nums; }
+.gmi-hist-p{ font-size:var(--fs-micro); color:var(--muted); font-variant-numeric:tabular-nums; }
+@media (max-width:640px){ .gmi-hist{ margin-left:0; width:100%; justify-content:space-between; } .gmi-hist-col{ width:auto; flex:1; } }
+.gmi-quote{ margin:0; padding:12px 14px; border-radius:var(--r-ctl); background:var(--panel2); font-size:var(--fs-sm); line-height:1.55; }
+html[data-theme="light"] .gmi-quote{ background:var(--panel2); }
+.gmi-quote-lead{ display:block; font-size:var(--fs-label); color:var(--muted); margin-bottom:4px; }
+.gmi-thread{ display:flex; flex-direction:column; gap:0; margin:0; padding:0; list-style:none; }
+.gmi-thread li{ display:flex; gap:12px; position:relative; padding:0 0 14px; font-size:var(--fs-sm); line-height:1.5; }
+.gmi-thread li::before{ content:""; position:absolute; left:4.5px; top:14px; bottom:0; width:1px; background:var(--gmi-hair); }
+html[data-theme="light"] .gmi-thread li::before{ background:var(--line); }
+.gmi-thread li:last-child{ padding-bottom:0; } .gmi-thread li:last-child::before{ display:none; }
+.gmi-node{ flex:none; width:10px; height:10px; border-radius:50%; margin-top:5px; background:var(--gmi-mark); }
+.gmi-node--re{ background:transparent; box-shadow:inset 0 0 0 1.5px var(--gmi-mark); }
+.gmi-node--am{ background:transparent; box-shadow:inset 0 0 0 1.5px var(--ink-info); }
+.gmi-thread time{ display:block; font-size:var(--fs-label); color:var(--muted); font-variant-numeric:tabular-nums; }
+/* round 2: documented paths moved to section O (.gmi-chain) */
+.gmi-species{ display:flex; flex-wrap:wrap; gap:8px; }
+.gmi-spec{ display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:0 14px; border-radius:var(--r-pill);
+  border:1px solid var(--gmi-hair); font-size:var(--fs-sm); color:var(--muted); background:transparent; }
+.gmi-spec b{ color:var(--text); font-variant-numeric:tabular-nums; }
+.gmi-spec--on{ box-shadow:var(--gmi-select); border-color:transparent; color:var(--text); background:var(--panel2); }
+html[data-theme="light"] .gmi-spec--on{ background:var(--panel); }
+.gmi-spec--zero b{ color:var(--muted); font-weight:500; }
+
+/* ---------- K. S4 coverage receipts -------------------------------------------- */
+.gmi-cov{ display:flex; flex-direction:column; gap:var(--sp-5); }
+.gmi-cov-row{ display:flex; flex-direction:column; gap:8px; }
+.gmi-cov-top{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+.gmi-cov-mkt{ font-size:var(--fs-md); font-weight:700; min-width:96px; }
+.gmi-cov-num{ font-size:var(--fs-num-lg); font-weight:700; font-variant-numeric:tabular-nums; line-height:1; }
+.gmi-cov-den{ font-size:var(--fs-sm); color:var(--muted); font-variant-numeric:tabular-nums; }
+.gmi-track{ position:relative; height:10px; border-radius:3px; background:color-mix(in srgb, var(--text) 7%, transparent); overflow:visible; }
+html[data-theme="light"] .gmi-track{ background:var(--panel2); box-shadow:inset 0 0 0 1px var(--line); }
+.gmi-track-zero{ position:absolute; left:0; top:-4px; bottom:-4px; width:2px; border-radius:1px; background:var(--gmi-mark); }
+.gmi-stack{ display:flex; height:10px; border-radius:3px; overflow:hidden; gap:2px; }
+.gmi-stack > i{ display:block; height:100%; min-width:3px; }
+.gmi-stack .s1, .gmi-legend .s1{ background:repeating-linear-gradient(135deg, var(--gmi-hatch) 0 1.5px, transparent 1.5px 4.5px); box-shadow:inset 0 0 0 1px var(--gmi-mark-faint); }
+.gmi-stack .s2, .gmi-legend .s2{ background:color-mix(in srgb, var(--text) 22%, transparent); }
+.gmi-stack .s3, .gmi-legend .s3{ background:var(--gmi-mark-faint); }
+.gmi-legend{ display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:8px; font-size:var(--fs-sm); color:var(--muted); }
+.gmi-legend span{ display:inline-flex; align-items:center; gap:7px; }
+.gmi-legend i{ width:12px; height:8px; border-radius:2px; display:inline-block; }
+.gmi-legend b{ color:var(--text); font-variant-numeric:tabular-nums; font-weight:600; }
+.gmi-strip68{ display:flex; flex-wrap:wrap; gap:4px; }
+.gmi-big0{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+.gmi-big0 .gmi-mag-num{ font-size:var(--fs-display); }
+
+/* ---------- L. states: what failed + what still works + one action -------------- */
+.gmi-states{ display:flex; flex-wrap:wrap; gap:18px; }
+.gmi-state{ flex:1 1 340px; min-width:0; display:flex; flex-direction:column; gap:12px; padding:var(--sp-5); border-radius:var(--r-card);
+  background:var(--panel); border:1px solid var(--gmi-hair); box-shadow:var(--gmi-elev); }
+.gmi-state-h{ display:flex; align-items:center; gap:10px; }
+.gmi-state-h svg{ width:24px; height:24px; flex:none; }
+.gmi-state-t{ font-size:var(--fs-md); font-weight:700; }
+.gmi-state-k{ margin-left:auto; font-size:var(--fs-label); color:var(--muted); font-family:var(--font-mono); }
+.gmi-state p{ margin:0; font-size:var(--fs-sm); }
+.gmi-state-ok{ color:var(--muted); }
+.gmi-state-a{ display:flex; gap:8px; flex-wrap:wrap; margin-top:auto; }
+/* degraded content: dark dims luminance under a veil; light prints grey under a hatched band */
+.gmi-degraded{ position:relative; border-radius:var(--r-ctl); overflow:hidden; }
+html:not([data-theme="light"]) .gmi-degraded > .gmi-degraded-body{ opacity:.45; filter:saturate(.4); }
+html[data-theme="light"] .gmi-degraded > .gmi-degraded-body{ color:var(--muted); }
+html[data-theme="light"] .gmi-degraded::after{ content:""; position:absolute; left:0; right:0; top:0; height:6px;
+  background:repeating-linear-gradient(135deg, var(--gmi-hatch) 0 1.5px, transparent 1.5px 5px); }
+.gmi-mini{ display:flex; flex-direction:column; gap:6px; padding:12px; border-radius:var(--r-ctl); background:var(--panel2); font-size:var(--fs-sm); }
+html[data-theme="light"] .gmi-mini{ background:var(--panel2); }
+.gmi-skel-line{ height:10px; } .gmi-skel-line--s{ width:40%; } .gmi-skel-line--m{ width:70%; }
+
+/* ---------- M. responsive floor ------------------------------------------------ */
+@media (max-width:760px){
+  .gmi-head{ flex-direction:column; align-items:flex-start; gap:var(--sp-3); }
+  .gmi-head-side{ align-items:flex-start; flex-direction:row; flex-wrap:wrap; }
+}
+@media (max-width:640px){
+  .gmi-wrap{ padding:0 16px 48px; gap:var(--sp-5); }
+  .gmi-head{ padding:var(--sp-5) 0 var(--sp-4); }
+  .gmi-h1{ font-size:24px; }
+  .gmi-band, .gmi-panel, .gmi-state{ padding:var(--sp-4); }
+  .gmi-dl dt{ flex-basis:104px; }
+  .gmi-mag-num{ font-size:var(--fs-num-lg); }
+  .gmi-big0 .gmi-mag-num{ font-size:var(--fs-num-xl); }
+  .gmi-relgrid .gmi-mag-num{ font-size:var(--fs-num-xl); } .gmi-relgrid .gmi-mag-cap{ max-width:none; }
+}
+/* reference-only: specimen shows the nav without its dropdown menus */
+.gmi-page .nav-dd-menu{ display:none !important; }
+
+/* ---------- N. utilities + index layout (added round 1) -------------------------- */
+/* theme.css ships no visually-hidden utility; bilingual a11y text uses this + .l-en/.l-zh */
+.gmi-vh{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+.gmi-search-ph{ flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gmi-list{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; }
+.gmi-list li{ display:flex; gap:10px; align-items:baseline; padding:8px 0; border-top:1px solid var(--gmi-hair); font-size:var(--fs-sm); }
+.gmi-list li:first-child{ border-top:0; }
+.gmi-list li > span:last-child{ margin-left:auto; color:var(--muted); white-space:nowrap; font-size:var(--fs-label); }
+.gmi-jump{ position:relative; }
+.gmi-jump-track{ display:flex; flex-wrap:wrap; gap:8px; }
+.gmi-jump a{ display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:0 14px; border-radius:var(--r-pill);
+  border:1px solid var(--gmi-hair); font-size:var(--fs-sm); color:var(--text); }
+.gmi-jump a small{ color:var(--muted); font-variant-numeric:tabular-nums; font-size:var(--fs-label); }
+html[data-theme="light"] .gmi-jump a{ background:var(--panel); border-color:var(--line); }
+.gmi-index{ display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start; }
+.gmi-index > .gmi-index-group{ flex:1 1 340px; min-width:0; background:var(--panel); border:1px solid var(--gmi-hair);
+  border-radius:var(--r-card); box-shadow:var(--gmi-elev); overflow:clip; }
+.gmi-index-group > .gmi-index-h{ margin:0; }
+.gmi-index-group .gmi-irow:first-of-type{ border-top:0; }
+.gmi-jump a[aria-current="true"]{ box-shadow:var(--gmi-select); border-color:transparent; }
+.gmi-indexwrap{ display:flex; flex-direction:column; gap:var(--sp-4); }
+@media (max-width:640px){ .gmi-index{ gap:10px; } .gmi-index-hc{ display:none; } }
+
+/* prose list variant: the last span is a sentence, not a trailing value */
+.gmi-list--prose li > span:last-child{ margin-left:0; white-space:normal; color:var(--text); font-size:var(--fs-sm); }
+.gmi-list--prose li > .gmi-sm{ flex:none; transform:translateY(1px); }
+
+/* S1 facet: a labelled fact inside a panel (label · value · why). Unset values are ink, not a box. */
+.gmi-facet{ display:flex; flex-direction:column; gap:8px; padding:12px 0; border-top:1px solid var(--gmi-hair); }
+.gmi-facet:first-of-type{ border-top:0; padding-top:2px; }
+.gmi-facet-h{ font-size:var(--fs-label); font-weight:600; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
+html[data-lang="zh"] .gmi-facet-h{ letter-spacing:0; text-transform:none; font-size:var(--fs-sm); }
+.gmi-facet-v{ font-size:var(--fs-md); font-weight:600; }
+.gmi-facet-v--unset{ color:var(--muted); }
+.gmi-facet .gmi-note{ margin:0; }
+
+/* S3 hero: claim + figure (left) beside the facts that bound it (right); verbatim words one tap below. */
+.gmi-relgrid{ display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:var(--sp-6) var(--sp-8); align-items:start; }
+.gmi-relgrid-a{ display:flex; flex-direction:column; gap:var(--sp-4); min-width:0; }
+.gmi-relgrid-b{ min-width:0; }
+.gmi-relgrid-b .gmi-dl{ margin-top:-6px; }
+.gmi-scope{ margin:0; font-size:var(--fs-sm); line-height:1.55; color:var(--muted); max-width:60ch; }
+@media (max-width:900px){ .gmi-relgrid{ grid-template-columns:minmax(0,1fr); } .gmi-relgrid-b .gmi-dl{ margin-top:0; } }
+
+/* ---------- O. round 2: one node grammar, S1 composition, phone jump strip ------- */
+/* .gmi-chain is the ONE node idiom of the explorer: S1's taxonomy ladder and S3/S5's
+   documented paths. A step = pip + words; a connector joins pip to pip with a 5px air gap.
+   Pip shape carries the state: solid = on file, ring+dot = held for review, hollow = nothing on
+   file. Circles on purpose: squares are census cells (section D), circles are chain nodes.
+   Horizontal >760px; a vertical rail at <=760px. No arrowheads: order is reading order. */
+.gmi-chain{ --slot-h:24px; --edge-h:0px; --rail:22px; --conn:var(--gmi-mark-faint);
+  list-style:none; margin:0; padding:0; display:flex; align-items:flex-start; min-width:0; }
+.gmi-chain-step{ --pip:12px; flex:1 1 0; min-width:0; position:relative; display:flex; flex-direction:column;
+  gap:10px; padding:var(--edge-h) var(--sp-5) 0 0; }
+.gmi-chain-step:last-child{ padding-right:0; }
+.gmi-chain-step:not(:last-child)::after{ content:""; position:absolute; left:calc(var(--pip) + 5px); right:5px;
+  top:calc(var(--edge-h) + var(--slot-h) / 2 - .75px); border-top:1.5px solid var(--conn-step, var(--conn)); }
+.gmi-chain-step--to-none:not(:last-child)::after{ border-top-style:dashed; }
+.gmi-chain-slot{ display:flex; align-items:center; height:var(--slot-h); }
+.gmi-pip{ flex:none; width:var(--pip, 12px); height:var(--pip, 12px); border-radius:50%; position:relative; }
+.gmi-pip--doc{ background:var(--gmi-mark); }
+.gmi-pip--none{ border:1.5px solid var(--gmi-mark-faint); }
+.gmi-pip--held{ border:2px solid var(--gmi-held); box-shadow:var(--gmi-glow-held); }
+.gmi-pip--held::after{ content:""; position:absolute; inset:0; margin:auto; width:34%; height:34%; border-radius:50%;
+  background:var(--gmi-held); }
+.gmi-chain-body{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+.gmi-chain-lvl{ font-size:var(--fs-label); font-weight:600; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
+html[data-lang="zh"] .gmi-chain-lvl{ letter-spacing:0; text-transform:none; font-size:var(--fs-sm); }
+.gmi-chain-name{ font-size:var(--fs-md); font-weight:700; line-height:1.25; overflow-wrap:anywhere; }
+.gmi-chain-note{ font-size:var(--fs-sm); color:var(--muted); line-height:1.4; }
+.gmi-chain-step--none .gmi-chain-name{ color:var(--muted); font-weight:500; font-size:var(--fs-sm); }
+/* edge labels ride above the connector they name (S3/S5) */
+.gmi-chain--edges{ --edge-h:40px; }
+.gmi-chain-step--wide{ flex-grow:2.2; }
+.gmi-chain-edge{ position:absolute; top:0; height:var(--edge-h); left:calc(var(--pip) + 12px); right:12px;
+  display:flex; align-items:flex-end; justify-content:center; padding-bottom:7px; text-align:center;
+  font-size:var(--fs-label); color:var(--muted); line-height:1.3; }
+
+/* S1 ladder: the micro-theme is the anchor; every ancestor recedes in scale, weight and ink. */
+.gmi-chain--ladder .gmi-chain-step--anchor{ --pip:22px; flex-grow:1.5; }
+.gmi-chain--ladder .gmi-chain-step--void{ --pip:10px; flex-grow:.8; }
+.gmi-chain--ladder .gmi-chain-step--theme{ flex-grow:1.2; }
+.gmi-chain--ladder .gmi-chain-step--cat{ --pip:9px; flex-grow:1.1; }
+.gmi-chain--ladder .gmi-chain-step:nth-child(1){ --conn-step:color-mix(in srgb, var(--text) 48%, transparent); }
+.gmi-chain--ladder .gmi-chain-step:nth-child(2){ --conn-step:color-mix(in srgb, var(--text) 34%, transparent); }
+.gmi-chain--ladder .gmi-chain-step:nth-child(3){ --conn-step:color-mix(in srgb, var(--text) 22%, transparent); }
+.gmi-chain-step--anchor .gmi-chain-name{ font-size:var(--fs-h1); line-height:1.12; letter-spacing:-.015em; }
+.gmi-chain-step--anchor .gmi-chain-note{ color:var(--ink-info); font-weight:600; }
+.gmi-chain-step--theme .gmi-chain-name{ font-size:var(--fs-h2); font-weight:650; color:color-mix(in srgb, var(--text) 82%, transparent); }
+.gmi-chain-step--cat .gmi-chain-name{ font-size:var(--fs-md); font-weight:600; color:color-mix(in srgb, var(--text) 62%, transparent); }
+.gmi-chain-step--cat .gmi-chain-note, .gmi-chain-step--theme .gmi-chain-note{ font-size:var(--fs-label); }
+
+@media (max-width:760px){
+  .gmi-chain{ flex-direction:column; align-items:stretch; --edge-h:0px; }
+  .gmi-chain-step{ flex:none; display:grid; grid-template-columns:var(--rail) minmax(0,1fr); column-gap:12px; row-gap:6px;
+    padding:0 0 var(--sp-5); }
+  .gmi-chain-step:last-child{ padding-bottom:0; }
+  .gmi-chain-step:not(:last-child)::after{ left:calc(var(--rail) / 2 - .75px); right:auto;
+    top:calc(var(--slot-h) / 2 + var(--pip) / 2 + 5px); bottom:-1px; border-top:0;
+    border-left:1.5px solid var(--conn-step, var(--conn)); }
+  .gmi-chain-step--to-none:not(:last-child)::after{ border-left-style:dashed; }
+  .gmi-chain-slot{ grid-column:1; grid-row:1 / span 2; align-self:start; justify-content:center; }
+  .gmi-chain-body{ grid-column:2; grid-row:1; }
+  .gmi-chain-edge{ position:static; grid-column:2; grid-row:2; height:auto; display:block; padding:0; text-align:left; }
+  .gmi-chain--edges .gmi-chain-step:not(:last-child){ padding-bottom:var(--sp-4); }
+}
+@media (max-width:640px){ .gmi-chain-step--anchor .gmi-chain-name{ font-size:22px; } }
+
+/* S1 hero: the only raised surface besides the head; holds the ladder, its status and the answer. */
+.gmi-hero1{ display:flex; flex-direction:column; gap:var(--sp-6); padding:var(--sp-6) var(--sp-7) var(--sp-6); }
+.gmi-hero1-top{ display:flex; align-items:baseline; justify-content:space-between; gap:var(--sp-3) var(--sp-5); flex-wrap:wrap; }
+.gmi-hero1-top h2{ margin:0; font-size:var(--fs-h2); font-weight:700; letter-spacing:-.01em; }
+.gmi-hero1-st{ display:inline-flex; align-items:center; gap:8px; font-size:var(--fs-md); font-weight:700; color:var(--ink-info); }
+.gmi-hero1-ans{ border-top:1px solid var(--gmi-hair); padding-top:var(--sp-5); max-width:none; }
+@media (max-width:640px){ .gmi-hero1{ padding:var(--sp-5) var(--sp-4); gap:var(--sp-5); } }
+
+/* S1 below the hero: flat sections (no fill, no edge, no shadow) under a rule.
+   dark = luminance hairline; light = a heavy ink rule, the research-workspace section head. */
+.gmi-flat{ display:flex; flex-direction:column; gap:var(--sp-3); padding-top:var(--sp-4); border-top:1px solid var(--gmi-hair); min-width:0; }
+html[data-theme="light"] .gmi-flat{ border-top:1.5px solid var(--text); }
+.gmi-flat > .mx-sec{ margin:0; }
+.gmi-col-main--flat{ gap:var(--sp-7); }
+.gmi-cols--wide{ gap:var(--sp-7); }
+/* light: the field table becomes a ruled ledger sheet (tinted label column, vertical rule) */
+html[data-theme="light"] .gmi-dl--ledger{ border:1px solid var(--line); border-radius:var(--r-ctl); background:var(--panel); overflow:hidden; }
+html[data-theme="light"] .gmi-dl--ledger > div{ padding:0; gap:0; align-items:stretch; border-top:1px solid var(--line); }
+html[data-theme="light"] .gmi-dl--ledger > div:first-child{ border-top:0; }
+html[data-theme="light"] .gmi-dl--ledger dt{ padding:9px 12px; background:var(--panel2); border-right:1px solid var(--line); }
+html[data-theme="light"] .gmi-dl--ledger dd{ padding:9px 12px; }
+/* the one quiet side sheet: dark = a luminance step, light = a recessed tray */
+.gmi-sheet{ display:flex; flex-direction:column; gap:var(--sp-3); padding:var(--sp-5); border-radius:var(--r-card);
+  background:var(--gmi-step); border:1px solid var(--gmi-hair); box-shadow:var(--gmi-tray); min-width:0; }
+html[data-theme="light"] .gmi-sheet{ background:var(--panel2); }
+.gmi-sheet .mx-sec{ margin:0; }
+.gmi-sheet .mx-sec h2, .gmi-sheet .mx-sec h3{ font-size:var(--fs-h3); }
+.gmi-sheet-div{ border-top:1px solid var(--gmi-hair); padding-top:var(--sp-4); margin-top:var(--sp-2); display:flex; flex-direction:column; gap:var(--sp-2); align-items:flex-start; }
+
+/* S2 phone: the category jump stays, as a sticky strip that scrolls sideways; group headers stick under it */
+@media (max-width:640px){
+  .gmi-indexwrap{ gap:10px; }
+  .gmi-jump{ position:sticky; top:0; z-index:4; margin:0 -16px; padding:8px 0; background:var(--bg);
+    border-bottom:1px solid var(--gmi-hair); }
+  .gmi-jump-track{ flex-wrap:nowrap; overflow-x:auto; scroll-snap-type:x proximity; scrollbar-width:none; padding:0 16px; scroll-padding:0 16px; }
+  .gmi-jump-track::-webkit-scrollbar{ display:none; }
+  .gmi-jump a{ flex:none; scroll-snap-align:start; }
+  .gmi-jump::after{ content:""; position:absolute; top:0; right:0; bottom:0; width:32px; pointer-events:none;
+    background:linear-gradient(to right, transparent, var(--bg)); }
+  .gmi-index-h{ top:57px; }
+  .gmi-index-group{ scroll-margin-top:57px; }
+}

@@ -1,0 +1,65 @@
+{
+  "benchmark_id": "healthcare_coherence_2026-07-13",
+  "frozen": true,
+  "source": "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2026-07-13",
+    "session_label": "date only",
+    "adjudication_date": "2026-07-14",
+    "historical_source_availability": "unverified",
+    "dependence_group": "us-rotation-july-2026",
+    "source": {
+      "path": "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+      "sha256": "cd7aca18bf338cd6df688e020487e6d43cb8fc8a8c69d6e462fd87559dca7fd6"
+    },
+    "input_facts": [
+      {
+        "event_date": "2026-07-13",
+        "source_lines": [
+          42,
+          48
+        ],
+        "text": "| Organ | Verdict as of 07-13 |\n|---|---|\n| `sector_central` | XLV **Reduce, 24/100** — the lowest tier band (XLRE at 16 scored lower) — driven by cycle position (Peak, pos 81.6); its momentum confirmer was actually *positive* (RS #3, \"leading\") |\n| baskets ACT-NOW | **buy list = [insurance, big_pharma, us_sector_utilities]** — clean BUY on big_pharma and insurance; us_sector_health ACCUMULATE (add-on-pullback); managed_care HOLD/DOMINANT |\n| allocation | managed_care held at 25% weight (rank 6, 12m ret +60.7%, gate wide open) |\n| standouts | 3 healthcare names in the Bottoming lane (PAHC 87, ZTS 71, AHCO 61) with honest \"Sector: Reduce\" chips |\n| `basket_confluence` | managed-care \"flat: sell\", us-sector-health \"flat: cut\" |",
+        "sha256": "e4e1b4427a909c7851109ff3b423a31b3fcf9e4f7ef0bb45ca592c831212f6fb"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        102,
+        104
+      ],
+      "text": "- It does not conclude the cycle engines are worthless — sector_central's Reduce on XLV was the single best call in the building. The indictment is the *absence of reconciliation* and the *ruler choice on actionable surfaces*.\n- It does not conclude we should chase momentum with authority-tier signals tomorrow. House epistemics stand: display/context first, gauntlet at promotion. The remediation program (see masterplan) ships display-tier immediately and pre-registers the promotion studies.\n- It does not re-open killed constructions: rotation×cycle-position entry confluence (DON'T-TEST), RS-dispersion gates (zero-sum kill), timing-into-rank blending (Phase-0 cosmetic) all stay dead. The fix is coherence + megacap tracking + faster de-escalation, none of which touch those graves.",
+      "sha256": "d49e49b3f6282563b280a8ec26df1728fec0a5f211863a3be2487951a23b64b5"
+    }
+  },
+  "question_en": "Using only the supplied July 13 surface readings, what disagreement should the reader see, and which authority conclusions remain unsupported?",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2026-07-13 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2026-07-13] | Organ | Verdict as of 07-13 |\n|---|---|\n| `sector_central` | XLV **Reduce, 24/100** — the lowest tier band (XLRE at 16 scored lower) — driven by cycle position (Peak, pos 81.6); its momentum confirmer was actually *positive* (RS #3, \"leading\") |\n| baskets ACT-NOW | **buy list = [insurance, big_pharma, us_sector_utilities]** — clean BUY on big_pharma and insurance; us_sector_health ACCUMULATE (add-on-pullback); managed_care HOLD/DOMINANT |\n| allocation | managed_care held at 25% weight (rank 6, 12m ret +60.7%, gate wide open) |\n| standouts | 3 healthcare names in the Bottoming lane (PAHC 87, ZTS 71, AHCO 61) with honest \"Sector: Reduce\" chips |\n| `basket_confluence` | managed-care \"flat: sell\", us-sector-health \"flat: cut\" |",
+  "expected_properties": [
+    {
+      "tag": "coherence",
+      "check": "Identify the simultaneous Reduce, buy-list, held-allocation and confluence readings without inventing a unanimous house stance."
+    },
+    {
+      "tag": "ruler_and_population",
+      "check": "Distinguish sector, basket and constituent populations and cycle position versus momentum; do not treat different rulers as automatically equivalent."
+    },
+    {
+      "tag": "no_outcome_peek",
+      "check": "Do not use July 14 returns or claim a future winner from the July 13 input."
+    },
+    {
+      "tag": "authority_boundary",
+      "check": "Disclose and reconcile at display tier; no automatic trading action, promotion, reopening of killed constructions or blanket rejection of all cycle engines."
+    }
+  ],
+  "known_failure_modes": [
+    "Collapse distinct populations and clocks into one house verdict.",
+    "Treat historical diagnostic or charter text as present execution authority.",
+    "Use later outcomes or count related July episodes as independent evidence."
+  ],
+  "gold_standard_sentence": "The surfaces disagree: a sector Reduce coexists with actionable buy language and a held allocation. Preserve the different populations and rulers, disclose the disagreement, and separate display reconciliation from an unearned promotion or a claim that every organ was wrong.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}
