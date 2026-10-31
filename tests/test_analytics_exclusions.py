@@ -470,3 +470,74 @@ def test_terminal_bot_focus_includes_current_search_visitors(monkeypatch):
     assert "focus_visitors as (" in joined
     assert "select distinct anon_id as visitor_id from public.search_events" in joined
     assert "created_at > now() - interval '1440 minutes'" in joined
+
+
+def test_candidate_key_projections_bound_shared_ip_and_device_fanout():
+    """Identity matching works on sets of cookie-keys and user-keys, not events.
+
+    Repeated pageviews from a cookie or a user sharing an IP must not multiply
+    the input to the expensive candidate joins. The distinct-user ambiguity
+    rule and stronger-device precedence are non-negotiable.
+    """
+    cte = a._candidate_cte(1440)
+    assert "uanchor_fp as (select distinct uid, fp from uanchor" in cte
+    assert "uanchor_ip as (select distinct uid, ip from uanchor" in cte
+    assert "cookie_fp as (select distinct e.visitor_id, e.fp from public.analytics_events e" in cte
+    assert "cookie_ip as (select distinct e.visitor_id, e.ip from public.analytics_events e" in cte
+    assert "from cookie_fp e join uanchor_fp a on a.fp = e.fp" in cte
+    assert "from cookie_ip e join uanchor_ip a on a.ip = e.ip" in cte
+    assert "from public.analytics_events e join uanchor a" not in cte
+    assert cte.count("having count(distinct a.uid) = 1") == 2
+    assert "coalesce(f.uid, p.uid)" in cte
+    assert "case when f.uid is not null then 'device' else 'ip' end" in cte
+
+
+def test_candidate_dedup_preserves_window_and_routable_ip_exclusion():
+    cte = a._candidate_cte(1440)
+    # One bounded read for the anchor and one for each cookie-key projection.
+    assert cte.count("created_at > now() - interval '1440 minutes'") == 3
+    assert "a.ip is not null" in cte
+    assert "e.ip is not null" in cte
+    assert "'unknown'" in cte and "'127.0.0.1'" in cte
+    # History-wide callers keep their existing all-history semantics.
+    assert "created_at > now()" not in a._candidate_cte()
+
+
+def test_candidate_dedup_keeps_exact_identity_set_under_repeated_events():
+    """The identity result depends on unique matched users, not event fanout.
+
+    Validate the mathematical invariant independently of the SQL shape using
+    duplicate-heavy, shared-VPN and multi-user fixtures. This is a contract
+    check, not a live Postgres EXPLAIN or timing measurement.
+    """
+    anchors = [
+        ("u1", "fpA", "1.1.1.1"),
+        ("u1", "fpA", "2.2.2.2"),
+        ("u1", "fpB", "1.1.1.1"),
+        ("u2", "fpC", "1.1.1.1"),
+        ("u2", "fpD", "3.3.3.3"),
+    ]
+    events = [("v1", "fpA", "1.1.1.1")] * 250 + [
+        ("v2", "fpZ", "2.2.2.2"),
+        ("v3", "fpZ", "1.1.1.1"),
+        ("v4", "fpC", "3.3.3.3"),
+        ("v5", None, "127.0.0.1"),
+    ] * 40
+    def candidate(keys, anchor_pairs):
+        result = {}
+        for cookie, key in keys:
+            matches = {uid for uid, akey in anchor_pairs if key is not None and key == akey}
+            if matches:
+                result.setdefault(cookie, set()).update(matches)
+        return {cookie: next(iter(users)) for cookie, users in result.items() if len(users) == 1}
+    for key_index in (1, 2):
+        raw = candidate(((e[0], e[key_index]) for e in events),
+                        ((x[0], x[key_index]) for x in anchors))
+        unique = candidate({(e[0], e[key_index]) for e in events},
+                           {(x[0], x[key_index]) for x in anchors})
+        assert raw == unique
+    # v1's shared IP cannot be attributed; its unique fingerprint can.
+    fps = candidate({(e[0], e[1]) for e in events}, {(x[0], x[1]) for x in anchors})
+    ips = candidate({(e[0], e[2]) for e in events}, {(x[0], x[2]) for x in anchors})
+    assert fps["v1"] == "u1"
+    assert "v1" not in ips
