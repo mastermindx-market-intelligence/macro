@@ -45,6 +45,7 @@ artifacts:
   - research/ROTATION_COMMAND_MASTERPLAN_BY_FABLE.md
   - research/ROTATION_EVENTS_V2_MASTERPLAN_BY_FABLE.md
   - research/SECTOR_ROTATION_CONTINUATION.md
+  - research/sector_theme_factor_intelligence/MASTERPLAN.md
 waves:
   - id: LR-W1
     title: T01 frontier + T02 source qualification + T03–T05/T08 contract projection + T06 evidence modes + T16 replay isolation

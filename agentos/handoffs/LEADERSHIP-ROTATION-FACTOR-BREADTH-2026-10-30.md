@@ -3,137 +3,91 @@ workstream: WS:LEADERSHIP-ROTATION-INTELLIGENCE
 session: chatgpt-sol-design-theme-recovery-20261030
 model: sol
 ended_because: ci_handoff
-mission: >-
-  Continue the existing sector/theme/constituent analytics programme after its
-  session timeout, preserving the full P0-P8 product outcome and existing owners.
-state_before: >-
-  Draft PR 10213 at a469f858a8bda9dc3168abb151835ae9c5c7e60d contained P1-P3c
-  source-only consumers. Hosted CI was unresolved in the prior handoff;
-  independent review, real source admission, Paper and user-path proof were open.
+mission: 'Recover Design Theme Analytics on Draft #10213; qualify existing P1-P3c. Full P0-P8 product
+  outcome remains open.'
+state_before: 'Recovered a469: hosted CI/fences green, owning job 268 passed. Repair defd824: 259 focused
+  passes; exact-head CI/review and live-product acceptance still required.'
 changed:
-  - path: engine/sector_theme_owner_bridge.py
-    what: >-
-      Reject UTC-normalization overflow and malformed fingerprint member IDs
-      as held inputs, with no clock clamping or authority promotion.
-  - path: tests/test_sector_theme_owner_bridge.py
-    what: >-
-      Add 58 parameterized counterexamples covering string/datetime UTC range
-      overflow at ingress and optional flow boundaries, malformed member IDs,
-      unchanged inputs, and preserved no-publication/no-trade authority.
-  - path: research/sector_theme_factor_intelligence/MASTERPLAN.md
-    what: >-
-      Reconcile the stale P1-only instruction with the already implemented
-      source-only P1-P3c task tree; retain all later dependencies and gates.
-  - path: agentos/handoffs/LEADERSHIP-ROTATION-FACTOR-BREADTH-2026-10-30.md
-    what: >-
-      Record current leadership, compact the cumulative source frontier,
-      preserve historical evidence by immutable reference and retain child IDs.
+- path: engine/sector_theme_owner_bridge.py
+  what: Reject UTC-normalization overflow and malformed fingerprint member IDs as held inputs, with no
+    clock clamping or authority promotion.
+- path: tests/test_sector_theme_owner_bridge.py
+  what: Add 58 parameterized counterexamples covering string/datetime UTC range overflow at ingress and
+    optional flow boundaries, malformed member IDs, unchanged inputs, and preserved no-publication/no-trade
+    authority.
+- path: research/sector_theme_factor_intelligence/MASTERPLAN.md
+  what: Reconcile the stale P1-only instruction with the already implemented source-only P1-P3c task tree;
+    retain all later dependencies and gates.
+- path: agentos/handoffs/LEADERSHIP-ROTATION-FACTOR-BREADTH-2026-10-30.md
+  what: Record current leadership, compact the cumulative source frontier, preserve historical evidence
+    by immutable reference and retain child IDs.
+- path: agentos/workstreams/WS-LEADERSHIP-ROTATION-INTELLIGENCE.md
+  what: Propose one artifact pointer to the existing analytics task tree; preserve all incumbent owner,
+    status, waves, decisions and next_action fields.
 verified:
-  - claim: The recovered a469 head passed full hosted CI and fences.
-    command: >-
-      gh api repos/mastermindx-market-intelligence/macro/actions/runs/41141643577;
-      exact-head fences 41141643321; semantic-plan artifact 13019960128;
-      pack5 job 124358219887 logs
-    result: >-
-      Full CI completed success at 2026-10-30T23:40:57Z; all 12 packs,
-      contract-delta and ci-gate succeeded. Owning leadership-rotation-contract
-      ran 268 passing cases in 9.92s. This is only the recovered a469 source.
-  - claim: Original focused source matched the recovered GitHub head.
-    command: >-
-      Compare Git blob hashes for 15 engine/test files against the exact a469
-      root and engine/tests trees before copying to isolated recovery scratch.
-    result: >-
-      15 matches, zero mismatches; real leadership_rotation_context dependency,
-      no substitute formulas, market data, network collectors or repository edit.
-  - claim: The new recovery regressions discriminate the prior defect.
-    command: >-
-      PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
-      python3 -m pytest -q tests/test_sector_theme_owner_bridge.py
-      -k p2_recovery --tb=short -p no:cacheprovider
-    result: >-
-      Before source repair: 57 failed, 1 passed, 60 deselected in 0.94s.
-      Failures were UTC date-range overflow or malformed member sort inputs.
-  - claim: All seven focused source suites pass with the recovery repair.
-    command: >-
-      In /tmp/stfi-recovery-20261030/source:
-      PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.
-      PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest -q tests -p no:cacheprovider
-    result: >-
-      259 passed in 0.27s. This is isolated focused module/test execution,
-      not native full-repository CI, independent review or product acceptance.
+- claim: The recovered a469 head passed full hosted CI and fences.
+  command: gh api repos/mastermindx-market-intelligence/macro/actions/runs/41141643577; exact-head fences
+    41141643321; semantic-plan artifact 13019960128; pack5 job 124358219887 logs
+  result: Full CI completed success at 2026-10-30T23:40:57Z; all 12 packs, contract-delta and ci-gate
+    succeeded. Owning leadership-rotation-contract ran 268 passing cases in 9.92s. This is only the recovered
+    a469 source.
+- claim: Original focused source matched the recovered GitHub head.
+  command: Compare Git blob hashes for 15 engine/test files against the exact a469 root and engine/tests
+    trees before copying to isolated recovery scratch.
+  result: 15 matches, zero mismatches; real leadership_rotation_context dependency, no substitute formulas,
+    market data, network collectors or repository edit.
+- claim: The new recovery regressions discriminate the prior defect.
+  command: PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest -q
+    tests/test_sector_theme_owner_bridge.py -k p2_recovery --tb=short -p no:cacheprovider
+  result: 'Before source repair: 57 failed, 1 passed, 60 deselected in 0.94s. Failures were UTC date-range
+    overflow or malformed member sort inputs.'
+- claim: All seven focused source suites pass with the recovery repair.
+  command: 'In /tmp/stfi-recovery-20261030/source: PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
+    python3 -m pytest -q tests -p no:cacheprovider'
+  result: 259 passed in 0.27s. This is isolated focused module/test execution, not native full-repository
+    CI, independent review or product acceptance.
+- claim: Native recovery schema and context reader select a complete bounded continuation.
+  command: python3 /tmp/stfi-recovery-20261030/continuity-read/scripts/agentos.py compile-context --workstream
+    LEADERSHIP-ROTATION-INTELLIGENCE --root /tmp/stfi-recovery-20261030/continuity-read/agentos --json
+    --now 2026-10-30T23:59:00Z; same script parse_record/check_handoff
+  result: Exact defd scripts/agentos.py validates this handoff with zero findings. Minimal real-record
+    slice selects this Oct 30 handoff over Oct 14. After the proposed artifact pointer, the task-tree
+    path is emitted; compiled frontier retains exact child/root and all holds without excerpt clipping.
+    This is not a whole-store or production acceptance run.
 unverified:
-  - claim: Exact repair-head hosted CI and independent non-author acceptance
-    what_would_verify: >-
-      Read current PR head and its own concluded CI/fences; inspect the actual
-      owning logical job. Consume the original retained P3 audit and obtain
-      source review covering remaining unrevised and repaired code. No self-review.
-  - claim: Genuine qualified source-to-user analytics
-    what_would_verify: >-
-      Authentic GMI membership, security/issuer identity, purpose-specific rights,
-      original known-at/vintage and market-source evidence through incumbent
-      owners, then signed-in producer/artifact/API/browser proof.
-  - claim: Paper design and predictive capability
-    what_would_verify: >-
-      Restore the original direct Paper carrier and bind an exact admitted
-      target before canvas work. Predictive research separately requires frozen
-      preregistration, chronological validation and prospective shadow evidence.
+- claim: Exact repair-head hosted CI and independent non-author acceptance
+  what_would_verify: Read current PR head and its own concluded CI/fences; inspect the actual owning logical
+    job. Consume the original retained P3 audit and obtain source review covering remaining unrevised
+    and repaired code. No self-review.
+- claim: Genuine qualified source-to-user analytics
+  what_would_verify: Authentic GMI membership, security/issuer identity, purpose-specific rights, original
+    known-at/vintage and market-source evidence through incumbent owners, then signed-in producer/artifact/API/browser
+    proof.
+- claim: Paper design and predictive capability
+  what_would_verify: Restore the original direct Paper carrier and bind an exact admitted target before
+    canvas work. Predictive research separately requires frozen preregistration, chronological validation
+    and prospective shadow evidence.
 unresolved:
-  - >-
-    P3 audit stfi-p3-consumer-audit-a469-20261030-r1 on root stfi-20261030,
-    parent metadata stfi-recovery-20261030, controller PID 18932:
-    CONTROLLER_CREATED and retained launch/lease evidence, but authoritative
-    worker START and return not yet proven. Last result read returned
-    CONTROLLER_RETURN_UNCONFIRMED; no duplicate/replay/failover permitted.
-  - >-
-    Historical stfi-source-audit-20261030-c1 returned unrecognized_model;
-    stfi-pr10213-review-20261030-r1 rejected max_turns; the prior manual
-    Grok/P1 review returned MANUAL_ROUTE_UNAVAILABLE with retry_allowed=false.
-    Those original actions are not retried by the new P3-only audit.
-  - >-
-    GMI W3B current-generation identities/membership/rights remain unsealed;
-    W3C SOURCE_UNAVAILABLE:CAPTURE_RIGHTS_UNAVAILABLE persists. Terminal 868's
-    specific rejected integration effect remains held, with no cross-carrier retry.
-  - >-
-    Current Mastermind Paper inspect returned MCP transport 404. No exact file,
-    board, snapshot, edit, screenshot or JSX was obtained. No alternate carrier used.
-  - >-
-    PLAN_NOT_ORG_LINKED: this draft's source checkpoint/task tree is not an
-    accepted Agent OS wave transition. Parent workstream artifacts and W6
-    remain untouched; no Executive Job, lease or runtime ownership is invented.
+- P3 controller return unconfirmed; do not infer worker success or absence. Review excludes P1/P2 and
+  repair delta.
+- GMI identity/membership/rights unsealed; W3C capture unavailable. Paper direct transport 404, no target/edit.
+- Task-tree link proposed on this draft only; no accepted Agent OS wave/runtime transition. P4-P8 remain
+  open.
 next_actions:
-  - >-
-    Consume only the original P3 audit handle/root, verify retained bytes and
-    findings against a469, and repair evidenced defects on this same source
-    carrier. Its review scope excludes P1/P2 and the subsequent recovery delta.
-  - >-
-    Read this PR's current head and new CI/fences after publication. The old
-    a469 green run cannot qualify the changed head. Preserve Draft/Hold and
-    obtain independent source review before any release consideration.
-  - >-
-    Advance one authentic currently qualified US-theme cohort through existing
-    GMI/price owners and this P2 reader, then the incumbent consumer. If those
-    rights/source gates remain unavailable, do not fabricate a live preview.
+- 'Read research/sector_theme_factor_intelligence/MASTERPLAN.md; inspect current PR #10213 head, CI/fences
+  and actual owning-job result.'
+- Consume only stfi-p3-consumer-audit-a469-20261030-r1 / root stfi-20261030 / controller 18932; no proven
+  START/return, no duplicate or replay.
+- Obtain independent source review and authentic GMI/market receipts, then prove the existing signed-in
+  consumer. Keep Draft/Hold.
 do_not_redo:
-  - >-
-    Preserve leadership rotation W1-W5, original scientific negatives and the
-    separate W6 prereg V3 obligations. No daily dispatch or legacy builder run.
-  - >-
-    Preserve GMI D2C/D2D and source W3B/W3C owners, existing regime engines,
-    current theme scoring, live breadth poller, publishers and alert/trade owners.
-  - >-
-    Preserve held 7060/8713, source-restricted 8299/7976/9035/7455 and
-    Terminal 868's specific integration refusal. No force push or new PR clone.
+- Preserve W1-W5, separate W6 prereg V3 and scientific negatives; no daily dispatch or real rotation builder.
+- No new graph/scoring/feed/alert plane. Preserve GMI owners, held 7060/8713 and Terminal 868 rejection;
+  old review refusals remain held.
 danger_areas:
-  - >-
-    Ancestor proxies are not true subtheme/member breadth. Endpoint changes
-    and sliding-window RS changes are not acceleration. Identification bounds
-    are not confidence intervals; overlapping issuers are not independent votes.
-  - >-
-    Research packets cannot authenticate source rights or original vintage.
-    Customer publication, predictive, rank, score, entry, sizing and alerts
-    remain false/unqualified. Green CI is not product acceptance.
+- 'Research-only: no customer/rank/forecast/trade/alert rights. Proxy is not breadth; rolling-window RS
+  change is not acceleration; bounds are not CIs.'
 ---
-
 # Design Theme Analytics System - recovered leadership and source frontier
 
 RECORDED_UTC: 2026-10-30T23:56:45.550934+00:00
@@ -211,3 +165,30 @@ they are not added together or promoted into review/product proof.
 
 Current mission is incomplete. Persisted source progress is not accepted
 organizational state or a promise of background execution. Keep Draft/Hold.
+
+
+## Native recovery-consumer qualification
+
+The exact native compiler `scripts/agentos.py` blob
+`24ead782bde838d4c6af31a2a9f82f668db4a323` selects handoffs by their
+authored workstream association and date; this existing filename is valid and
+was NOT renamed. The source handoff passed its real `check_handoff` validator.
+The initial compiled record selected this frontier but omitted the task-tree
+pointer and clipped its long frontmatter. The proposed change adds exactly one
+existing task-tree artifact to the parent record and shortens only the compiled
+frontier fields; detailed evidence and original holds remain below. No parent
+wave, status, decision, accountability or W6 next action was changed.
+
+Read-only qualification used a minimal exact-source record slice containing the
+real parent, this handoff, its Oct 14 predecessor and task tree. Missing decision
+records/program registry/index/runtime joins are explicitly degraded in that
+slice, not fabricated. This proves local selection, pointer discovery and
+unclipped continuation, not whole-store truth or accepted organizational state.
+The pointer remains a draft proposal until normal independent review/merge.
+
+Historical unresolved records preserved from the recovery input:
+- P3 audit stfi-p3-consumer-audit-a469-20261030-r1 on root stfi-20261030, parent metadata stfi-recovery-20261030, controller PID 18932: CONTROLLER_CREATED and retained launch/lease evidence, but authoritative worker START and return not yet proven. Last result read returned CONTROLLER_RETURN_UNCONFIRMED; no duplicate/replay/failover permitted.
+- Historical stfi-source-audit-20261030-c1 returned unrecognized_model; stfi-pr10213-review-20261030-r1 rejected max_turns; the prior manual Grok/P1 review returned MANUAL_ROUTE_UNAVAILABLE with retry_allowed=false. Those original actions are not retried by the new P3-only audit.
+- GMI W3B current-generation identities/membership/rights remain unsealed; W3C SOURCE_UNAVAILABLE:CAPTURE_RIGHTS_UNAVAILABLE persists. Terminal 868's specific rejected integration effect remains held, with no cross-carrier retry.
+- Current Mastermind Paper inspect returned MCP transport 404. No exact file, board, snapshot, edit, screenshot or JSX was obtained. No alternate carrier used.
+- PLAN_NOT_ORG_LINKED: this draft's source checkpoint/task tree is not an accepted Agent OS wave transition. Parent workstream artifacts and W6 remain untouched; no Executive Job, lease or runtime ownership is invented.
