@@ -28,7 +28,7 @@ owns_paths:
   - tests/test_qbus_news_propagation_estate.py
   - agentos/handoffs/NEWS-INTELLIGENCE-ESTATE-*.md
 landmines:
-  - "Masterplan §10 custody is stale: macro #9963 and Mastermind #1661 are MERGED; Sol CEO writes live on macro #8697 (Tiingo DRAFT/HOLD), #9612 (HOLD-FOR-SOL) and #9639 — all READ-ONLY for this workstream. Terminal #1081 shares TickerNewsPanel with seat fd47d431's R2 L2 (#1111): no terminal news-UI writes until that seat says R2 ON MASTER."
+  - "Custody 2026-10-31: Sol CEO writes live on macro #9612 and #10136 and on sol/* branches — READ-ONLY here. Sol's completed census/masterplan lives on macro #10244 (head e16dbdda392f, not on main): accepted input, never re-censused, never pushed to. Terminal R2 is MERGED (#1081/#1129/#1130 reconciliation is E1 work for ORCH-4), so the 10-22 terminal news-UI fence is lifted. Leadership passed from seat e3d62d36 (returns lost) to seat 602cd180 under the Chairman's leadership-continuity ruling; no owner wait."
   - "Program law (masterplan §11): do not build another news/event/identity/graph/thesis/outcome store, answer warehouse, scheduler, model router, publication system, runtime registry or retry plane. Converge existing owners; a gap is a wiring task against an incumbent, never a new system."
   - "P0-D corpus honesty: the news_impact benchmark is 600 frozen cases of which 74 are scorable; shortfalls stay printed, the system under test never generates gold, and gated_v3 is drawn exactly as registered (seeds, strata, thresholds unchanged). WS:PROPHET-NEWS-IMPACT owns engine/news_impact/ and the benchmark; this workstream consumes, never redraws."
   - "P1-D: engine/news_llm.py must fail closed when news_llm.enabled is absent; config.yml stays untouched; the rights basis for every delivered source is DEC:TICKER-NEWS-ALPACA-BENZINGA-RIGHTS-BASIS plus the A1 matrix, and Tiingo commercial permission is Chairman-confirmed (technical admission only remains)."
@@ -38,18 +38,18 @@ do_not_redo:
 waves:
   - id: W0
     title: Wave 0 — seat context, custody verification, program records
-    status: in_progress
-    next_action: "Land this workstream and the WAVE1-COMMISSIONED handoff on the seat branch; record DEC:NEWS-ESTATE-B1-JOINS once the B1 inventory returns."
+    status: done
+    next_action: "Done 2026-10-31: takeover handoff, DEC:NEWS-ESTATE-B1-JOINS recorded."
   - id: W1
     title: Wave 1 — Sections A+E (delivery, rights, propagation, custody) and B+D (schema inventory, engine trace, corpus frontier) on fabric lanes under two Opus orchestrators
     status: in_progress
     depends_on: [W0]
-    next_action: "Consume $S/records/ORCH-DELIVERY_RETURN.md and ORCH-FACTS_RETURN.md by diff; ready and merge green [news-estate <PKG>] DRAFT PRs with --match-head-commit after reviewDecision and HOLD checks; rule B1 joins."
+    next_action: "2026-10-31: ORCH-1 FACTUAL-LANDING repairs/reviews #10043 #10044 #10046 #10048 #10049 #10056 in place on fabric lanes; seat consumes its return by artifact, then gh pr ready + merge --squash --match-head-commit after reviewDecision and HOLD checks. #10063 B4 moves to W2 ORCH-3 QUANT."
   - id: W2
     title: Wave 2 — E3 convergence, B2 numeric fact adapter, D2 consumer wiring (get_intelligence, portfolio lens, engine/intelligence.py), A5 observability build, first corrected-event vertical
-    status: todo
+    status: in_progress
     depends_on: [W1]
-    next_action: "Commission from the wave-1 returns; the first vertical proof must include a correction propagating end to end."
+    next_action: "2026-10-31: ORCH-2 CONSUMER-D2 RUNNING (Mastermind get_news/get_intelligence + lenses freshness fields, macro build_news source_asof/retained flag, adapter PROPOSAL); ORCH-3 QUANT (B4 #10063, sampler _share_ok, 40 pending cases without redraw) and ORCH-4 PRODUCT (Journey 6 corrected-event proof on the Terminal authenticated rail, E1 reconcile) spawn as native slots free (cap 2)."
   - id: W3
     title: Wave 3 — Section C (dated exposure mapping, F05 per-family proof) and Section F (claim/evidence matrices, independent READ_ONLY reviews)
     status: todo
@@ -60,7 +60,7 @@ waves:
     status: todo
     depends_on: [W2, W3]
     next_action: "Not before W2/W3 land."
-next_action: "W1 — consume the two orchestrator returns by artifact, merge green lane PRs, rule B1 joins; then commission W2 and spawn the Section C/F orchestrators as slots free."
+next_action: "2026-10-31 — consume ORCH-1 and ORCH-2 returns by artifact; ready/merge with --match-head-commit after independent review verdict + reviewDecision; then ORCH-3 QUANT and ORCH-4 PRODUCT; Section C/F orchestrators after W2 lands."
 ---
 
 # News Intelligence Estate convergence
