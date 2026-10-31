@@ -12450,6 +12450,7 @@ jobs:
     # d5d0be27, 26 files, no probe file in it); the probe ceilings stay fixed.
     paths:
       - "config/site_access.yml"
+      - "engine/__init__.py"
       - "engine/research_vault/__init__.py"
       - "engine/research_vault/catalog.py"
       - "engine/research_vault/sidecar.py"
