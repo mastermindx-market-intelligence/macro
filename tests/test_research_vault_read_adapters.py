@@ -280,6 +280,12 @@ def test_t15_brain_result_equals_mcp_structured_content_fresh_and_stale(tmp_path
     )
     ctx = _ctx("pro")
     for root, items, generated_at, expected_state in cases:
+        # A MarketDesk row is present so the provider clock is gradable; without
+        # one the guard fails closed as MARKETDESK_CLOCK_MISSING.
+        newest = max(item["published_at"] for item in items)
+        items = list(items) + [
+            _item("marketdesk-zarzrnqfgu6-29437b", "MarketDesk Note", newest)
+        ]
         svc = _service(
             root,
             items=items,
@@ -287,7 +293,7 @@ def test_t15_brain_result_equals_mcp_structured_content_fresh_and_stale(tmp_path
             extracted={"alpha-report": record},
             digest=PDF_SHA,
             rio=rio,
-            preview=["alpha-report", "beta-report"],
+            preview=["alpha-report", "beta-report", "marketdesk-zarzrnqfgu6-29437b"],
         )
         brain, mcp = _adapters(svc)
         _assert_adapter_parity(brain, mcp, ctx)

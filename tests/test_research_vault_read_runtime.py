@@ -262,7 +262,14 @@ def test_zero_arg_build_uses_the_real_classifier(tmp_path, monkeypatch):
     ))
     expected = evaluate(parsed, now=datetime.now(timezone.utc), source="catalog")
     assert status["ok"] is True
-    assert status["source"]["state"] == expected["status"]
+    # The source classifier returns the precise MarketDesk defect, while the
+    # shared read port intentionally keeps its public SOURCE_STATES vocabulary
+    # closed and carries that provider verdict as a typed degradation.
+    if expected["status"] in {"MARKETDESK_STALE", "MARKETDESK_CLOCK_MISSING"}:
+        assert status["source"]["state"] == "PRODUCER_STALE"
+        assert expected["status"] in status["source"]["known_degradation"]
+    else:
+        assert status["source"]["state"] == expected["status"]
     assert status["source"]["state"] in {"SOURCE_FRESH", "PRODUCER_STALE"}
 
 

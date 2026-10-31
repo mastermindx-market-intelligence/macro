@@ -327,7 +327,11 @@ def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
                 "git fetch origin " in run and "github.base_ref" in run for run in runs
             ), f"{job_id} must fetch its canonical base explicitly"
 
-        command_surface = "\n".join(runs)
+        # The exact single-base destination is permitted; arbitrary remote
+        # namespace enumeration remains forbidden.
+        command_surface = "\n".join(runs).replace(
+            "refs/remotes/origin/$base_ref", "<exact-base-destination>"
+        ).replace("--no-tags", "<tags-disabled>")
         for forbidden in (
             "--tags",
             "refs/tags/",

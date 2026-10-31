@@ -132,6 +132,43 @@ def test_feed_surfaces_auth_required_even_when_trickle_process_can_exist(
     assert "marketdesk auth" in log
 
 
+def test_feed_reports_failed_browse_even_with_authenticated_feed(
+    tmp_path: Path,
+) -> None:
+    home, dest, app = _base_layout(tmp_path)
+    fake_bin = tmp_path / "bin"
+    fake_db = tmp_path / "storage" / "marketdesk.sqlite"
+    _write_executable(
+        app / ".venv" / "bin" / "python",
+        """#!/bin/sh
+printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\\n' "$FAKE_DB" '' '0' 'AUTHENTICATED' '2026-10-22T10:30:32Z' '' '' 'FAILED' '2026-10-22T10:30:35Z' 'DISCOVER_ERROR:MarketDeskError'
+""",
+    )
+    result = _run_feed(home, fake_bin, FAKE_DB=str(fake_db))
+    assert result.returncode == 0, result.stderr
+    log = (dest / "feed.log").read_text()
+    assert "ERROR producer discovery FAILED" in log
+    assert "DISCOVER_ERROR:MarketDeskError" in log
+    assert "AUTH_REQUIRED" not in log
+    assert "feed: nothing new" in log
+    assert not (dest / ".feed.lock").exists()
+
+
+def test_feed_unknown_discovery_never_becomes_healthy(tmp_path: Path) -> None:
+    home, dest, app = _base_layout(tmp_path)
+    fake_bin = tmp_path / "bin"
+    _write_executable(
+        app / ".venv" / "bin" / "python",
+        """#!/bin/sh
+printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\\n' '/tmp/no-real-db' '' '0' 'AUTHENTICATED' '2026-10-22T10:30:32Z' '' '' 'UNKNOWN' '' ''
+""",
+    )
+    assert _run_feed(home, fake_bin).returncode == 0
+    log = (dest / "feed.log").read_text()
+    assert "discovery state UNKNOWN" in log
+    assert "discovery FAILED" not in log
+
+
 def test_feed_releases_lock_when_launchd_terminates_it(tmp_path: Path) -> None:
     home, dest, app = _base_layout(tmp_path)
     fake_bin = tmp_path / "bin"
@@ -197,6 +234,26 @@ printf '%s|%s|%s|%s|%s|%s|%s\\n' "$FAKE_DB" "$FAKE_NEWEST" '1' 'AUTHENTICATED' '
         "-R mastermindx-market-intelligence/macro"
     )
     assert (dest / ".feed_vault_watermark").read_text().strip() == newest
+
+
+def test_feed_dispatch_failure_keeps_watermark_and_never_promises_hourly_ingest(
+    tmp_path: Path,
+) -> None:
+    home, dest, app = _base_layout(tmp_path)
+    fake_bin = tmp_path / "bin"
+    _write_executable(
+        app / ".venv" / "bin" / "python",
+        """#!/bin/sh
+printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\\n' '/tmp/simulated-db' '2026-10-22T12:00:00Z' '1' 'AUTHENTICATED' '2026-10-22T12:01:00Z' '' '' 'HEALTHY' '2026-10-22T12:01:00Z' ''
+""",
+    )
+    _write_executable(fake_bin / "gh", "#!/bin/sh\nexit 1\n")
+    result = _run_feed(home, fake_bin)
+    assert result.returncode == 0, result.stderr
+    log = (dest / "feed.log").read_text()
+    assert "publication NOT confirmed" in log
+    assert "hourly cron will ingest" not in log
+    assert not (dest / ".feed_vault_watermark").exists()
 
 
 def test_feed_launchd_template_uses_standard_qos() -> None:

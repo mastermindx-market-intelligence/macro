@@ -250,7 +250,13 @@ def test_t1_producer_stale_matches_real_evaluate(tmp_path):
 
 def test_t2_fresh_reports_stale_catalog_publication(tmp_path):
     published = (NOW - timedelta(hours=1)).isoformat()
-    items = [_item("alpha-report", "Alpha Note", published)]
+    # A MarketDesk row is present so the provider clock is gradable: a vault with
+    # no provider row is now MARKETDESK_CLOCK_MISSING and fails closed, which is
+    # covered in tests/test_research_vault_source_clock_providers.py.
+    items = [
+        _item("alpha-report", "Alpha Note", published),
+        _item("marketdesk-zarzrnqfgu6-29437b", "MarketDesk Note", published),
+    ]
     generated = NOW - timedelta(hours=3)
     record = _extracted("alpha-report")
     svc, *_ = _service(

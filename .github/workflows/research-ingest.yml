@@ -26,13 +26,15 @@ name: research-ingest
 # bad PDF/sidecar never aborts the batch (engine/research_vault/ingest.py).
 #
 # Source-content freshness (check_research_vault_source_freshness) fails the
-# lane when the newest admitted report is outside its fixed weekday deadline.
-# While MarketDesk is a known outage, set repo variable
-# RESEARCH_VAULT_SOURCE_OUTAGE_ACK=true to let the typed guard soften only a
-# PRODUCER_STALE verdict to a warning (avoids ~24 red runs/day of alarm fatigue).
-# Integrity, configuration, clock, and transport failures remain red. Optionally set
-# RESEARCH_VAULT_SOURCE_MAX_AGE_HOURS to temporarily widen the window instead.
-# Clear both when the producer resumes.
+# lane when the latest eligible report or the MarketDesk-specific source clock
+# exceeds its qualifying deadline. RESEARCH_VAULT_SOURCE_OUTAGE_ACK=true softens
+# ONLY the generic PRODUCER_STALE verdict; it CANNOT soften MARKETDESK_STALE
+# or MARKETDESK_CLOCK_MISSING. A known MarketDesk-specific outage therefore
+# remains red even with that acknowledgment. RESEARCH_VAULT_SOURCE_MAX_AGE_HOURS
+# may alter an age deadline; it cannot invent missing MarketDesk source reports.
+# Do not quiet producer signals to claim recovery. This workflow is separately
+# disabled under the existing historical R2 write-uncertainty hold and must not
+# be re-enabled without the original Research Vault publisher-owner release.
 on:
   workflow_dispatch:
     inputs:

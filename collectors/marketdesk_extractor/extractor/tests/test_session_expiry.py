@@ -536,7 +536,9 @@ def test_discovery_rejection_parks_only_after_negative_control(
         raise AssertionError("rejected discovery must not return a success summary")
 
     monkeypatch.setattr(discover, "discover", rejected_discovery)
-    trickle._refresh_queue(cfg, None, [state])
+    conn = db.connect(cfg.database_url)
+    db.init_db(conn)
+    trickle._refresh_queue(cfg, conn, [state])
 
     assert state.authed is authenticated
     if authenticated:
@@ -545,6 +547,8 @@ def test_discovery_rejection_parks_only_after_negative_control(
     else:
         assert request.consent_calls == 0
         assert request._non_consent == 2
+    assert db.discovery_health(conn)["state"] == db.DISCOVERY_FAILED
+    conn.close()
 
 
 def test_browse_terms_consent_heals_and_returns_ids(tmp_path, monkeypatch):
@@ -643,3 +647,54 @@ def test_auth_parser_exposes_force_flag():
     args = build_parser().parse_args(["auth", "--force", "--timeout", "12"])
     assert args.force is True
     assert args.timeout == 12
+
+
+@pytest.mark.parametrize("restored,retry_expired", [(True, False), (False, False), (True, True)])
+def test_silent_relogin_discovery_records_health(tmp_path, monkeypatch, restored, retry_expired):
+    from types import SimpleNamespace
+    from marketdesk_extractor import auth
+
+    cfg = _cfg(tmp_path, monkeypatch)
+    context = object()
+    state = trickle.AccountState(
+        profile=cfg.profiles[0], authed=True, client=object(),
+        session=SimpleNamespace(context=context),
+    )
+    calls = []
+    restores = []
+
+    def discovery(*args, **kwargs):
+        calls.append(kwargs)
+        if len(calls) == 1 or retry_expired:
+            raise SessionExpired("synthetic expired session")
+        return SimpleNamespace(discovered_new=7, summary=lambda: "seven new reports")
+
+    def restore(actual_context, actual_cfg):
+        assert actual_context is context and actual_cfg is cfg
+        restores.append(True)
+        return restored
+
+    monkeypatch.setattr(discover, "discover", discovery)
+    monkeypatch.setattr(auth, "try_silent_relogin", restore)
+    monkeypatch.setattr(trickle, "utc_now", lambda: NOW)
+    conn = db.connect(cfg.database_url)
+    db.init_db(conn)
+    db.set_discovery_health(conn, state=db.DISCOVERY_FAILED,
+                            observed_at=(NOW - timedelta(minutes=1)).isoformat(),
+                            reason="PREVIOUS_FAILURE")
+    try:
+        trickle._refresh_queue(cfg, conn, [state])
+        health = db.discovery_health(conn)
+        assert restores == [True]
+        assert state.silent_relogin_attempted is True
+        assert len(calls) == (2 if restored else 1)
+        if restored and not retry_expired:
+            assert state.authed is True
+            assert health["state"] == db.DISCOVERY_HEALTHY
+            assert health["found_new"] == "7"
+        else:
+            assert state.authed is False
+            assert health["state"] == db.DISCOVERY_FAILED
+            assert health["reason"] == "SESSION_EXPIRED"
+    finally:
+        conn.close()

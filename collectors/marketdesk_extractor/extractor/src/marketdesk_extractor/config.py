@@ -35,6 +35,16 @@ def _int(name: str, default: int) -> int:
         return default
 
 
+def _float(name: str, default: float) -> float:
+    raw = os.getenv(name)
+    if raw is None or raw.strip() == "":
+        return default
+    try:
+        return float(raw)
+    except ValueError:
+        return default
+
+
 def _path(name: str, default: str) -> Path:
     return Path(os.getenv(name, default)).expanduser().resolve()
 
@@ -254,6 +264,21 @@ class Config:
     trickle_interval_sec: int
     discover_every_sec: int
     backfill_reserve_hours: int
+    # Largest SHARE of the daily cap that may be withheld as the fresh-arrival
+    # reserve. A share of the EXISTING cap, never an addition to it, so this can
+    # never raise the provider allowance. Without it a reserve forecast above the
+    # whole allowance is unreachable by construction (measured 2026-10-22:
+    # forecast 206.5 vs cap 70 -> permanent backfill stall).
+    backfill_reserve_feasible_ratio: float
+    # Operator-set ceiling on BACKFILL pulls per account per trailing 24h. 0 (the
+    # default) is exactly the pre-existing behaviour, so this knob is the only
+    # thing that can enable a backfill pull and the repair cannot invent an
+    # allowance by itself. Backfill draws from the SAME 70/24h pool as fresh.
+    backfill_budget_per_account_24h: int
+    # How recently discovery must have reported HEALTHY before backfill may run.
+    # "No known fresh candidates" is only evidence when the discovery pass that
+    # would have found them actually succeeded.
+    backfill_discovery_max_age_hours: float
     trickle_burst: int
     # periodic WIDE discovery pass (late-arriving AI summaries + truncated titles
     # only heal inside the discovery window, so the narrow 72h refresh can never
@@ -327,6 +352,23 @@ class Config:
             trickle_interval_sec=_int("TRICKLE_INTERVAL_SEC", 60),
             discover_every_sec=_int("DISCOVER_EVERY_SEC", 900),
             backfill_reserve_hours=_int("BACKFILL_RESERVE_HOURS", 4),
+            # 0.5 keeps the reserve feasible without letting it eat the account:
+            # with cap=70 the most that can ever be withheld is 35 slots, so the
+            # reserve stops being a phantom reservation it can never satisfy.
+            backfill_reserve_feasible_ratio=_float(
+                "BACKFILL_RESERVE_FEASIBLE_RATIO", 0.5
+            ),
+            # 0 = backfill disabled, i.e. exactly the pre-existing behaviour. An
+            # operator opts IN to a bounded catch-up trickle; nothing else in the
+            # policy can spend a slot on stale backlog.
+            backfill_budget_per_account_24h=_int(
+                "BACKFILL_BUDGET_PER_ACCOUNT_24H", 0
+            ),
+            # Discovery runs on DISCOVER_EVERY_SEC (900s) cadence, so 6h tolerates
+            # several skipped passes before the evidence is treated as stale.
+            backfill_discovery_max_age_hours=_float(
+                "BACKFILL_DISCOVERY_MAX_AGE_HOURS", 6.0
+            ),
             trickle_burst=_int("TRICKLE_BURST", 10),
             trickle_wide_discover_every_sec=_int(
                 "TRICKLE_WIDE_DISCOVER_EVERY_SEC", 86400

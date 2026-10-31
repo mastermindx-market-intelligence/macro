@@ -13,10 +13,18 @@ _HERE = Path(__file__).resolve().parent
 _REPO_ROOT = _HERE.parent
 sys.path.insert(0, str(_REPO_ROOT))
 
-from engine.research_vault.catalog import source_clock_summary  # noqa: E402
+from engine.research_vault.catalog import (  # noqa: E402
+    MARKETDESK_ID_PREFIX,
+    source_clock_summary,
+)
 
 SCHEMA="research_vault.source_freshness.v1"
 CLOCK_SCHEMA="research_vault.source_clock.v1"
+# Provider-specific verdicts. Both are hard reds: a stale or ungraded provider
+# must never be reported as SOURCE_FRESH, because the vault-wide max clock can
+# be kept young by an internal desk while MarketDesk has stopped publishing.
+MARKETDESK_STALE="MARKETDESK_STALE"
+MARKETDESK_CLOCK_MISSING="MARKETDESK_CLOCK_MISSING"
 # No limit/offset — app/research.research_catalog ignores them; preview size is
 # chosen by tier via _catalog_preview. The whole-catalog source_clock lives on
 # summary regardless of the truncated items list.
@@ -65,14 +73,79 @@ def source_limit_hours(published_at,override=None):
 
 def _report(status,*,ok,now,source,reason,generated_at=None,latest_report_at=None,
             source_deadline_at=None,age_hours=None,limit_hours=None,count=None,
-            observed_items=None,invalid_published_at=0,served_stale=False):
+            observed_items=None,invalid_published_at=0,served_stale=False,
+            marketdesk_report_count=None,marketdesk_latest_at=None,
+            marketdesk_deadline_at=None,marketdesk_age_hours=None,
+            marketdesk_limit_hours=None,marketdesk_invalid_published_at=None):
     return {"schema":SCHEMA,"status":status,"ok":ok,"reason":reason,"source":source,
             "now":_iso(now),"generated_at":_iso(generated_at),"latest_report_at":_iso(latest_report_at),
             "source_deadline_at":_iso(source_deadline_at),
             "age_hours":round(age_hours,3) if age_hours is not None else None,
             "limit_hours":float(limit_hours) if limit_hours is not None else None,
             "count":count,"observed_items":observed_items,"invalid_published_at":invalid_published_at,
-            "served_stale":bool(served_stale)}
+            "served_stale":bool(served_stale),
+            # Provider-specific clock. Present on every path that reached a
+            # source-clock verdict, and null when the provider was never graded,
+            # so a reader can always tell "graded fresh" from "not graded".
+            "marketdesk_report_count":marketdesk_report_count,
+            "marketdesk_latest_at":_iso(marketdesk_latest_at),
+            "marketdesk_deadline_at":_iso(marketdesk_deadline_at),
+            "marketdesk_age_hours":(round(marketdesk_age_hours,3)
+                                    if marketdesk_age_hours is not None else None),
+            "marketdesk_limit_hours":(float(marketdesk_limit_hours)
+                                      if marketdesk_limit_hours is not None else None),
+            "marketdesk_invalid_published_at":marketdesk_invalid_published_at}
+
+
+def _marketdesk_verdict(clock,*,common,current,tolerance,total,max_age_hours):
+    """Grade the MarketDesk provider clock. None means SOURCE_FRESH still holds.
+
+    Runs ONLY after the vault-wide clock has already graded SOURCE_FRESH. Global
+    staleness implies provider staleness (the global max dominates every subset),
+    so the existing PRODUCER_STALE verdict keeps its precedence and its exact
+    meaning, and this adds no new way to reach a different producer verdict.
+
+    An absent, malformed or empty provider clock FAILS CLOSED as
+    MARKETDESK_CLOCK_MISSING rather than deferring to the vault-wide clock: an
+    ungraded provider is not evidence of a healthy one.
+    """
+    providers=clock.get("providers")
+    provider=providers.get("marketdesk") if isinstance(providers,Mapping) else None
+    def refuse(status,reason): return _report(status,ok=False,reason=reason,**common)
+    if not isinstance(provider,Mapping):
+        return refuse(MARKETDESK_CLOCK_MISSING,
+                      "MarketDesk provider clock is absent from the whole-catalog source-clock aggregate")
+    if provider.get("id_prefix")!=MARKETDESK_ID_PREFIX:
+        return refuse(MARKETDESK_CLOCK_MISSING,"MarketDesk provider clock declares an unsupported id namespace")
+    counts=[provider.get(k) for k in ("report_count","valid_clock_count","invalid_clock_count")]
+    if any(type(v) is not int or v<0 for v in counts):
+        return refuse(MARKETDESK_CLOCK_MISSING,"MarketDesk provider clock counts are invalid or unsupported")
+    provider_total,provider_valid,provider_invalid=counts
+    if provider_valid+provider_invalid!=provider_total or provider_total>total:
+        return refuse(MARKETDESK_CLOCK_MISSING,"MarketDesk provider clock counts are inconsistent")
+    raw=provider.get("latest_report_published_at"); latest=_parse_time(raw)
+    if (provider_valid>0 and latest is None) or (provider_valid==0 and raw is not None):
+        return refuse(MARKETDESK_CLOCK_MISSING,"MarketDesk provider clock latest timestamp is inconsistent")
+    common["marketdesk_report_count"]=provider_total
+    common["marketdesk_invalid_published_at"]=provider_invalid
+    if provider_total==0:
+        return refuse(MARKETDESK_CLOCK_MISSING,
+                      "no report carries the canonical MarketDesk id namespace in the complete catalog")
+    if latest is None:
+        return refuse(MARKETDESK_STALE,
+                      "every admitted MarketDesk report has an unusable published_at clock")
+    common["marketdesk_latest_at"]=latest
+    if latest-current>tolerance:
+        return refuse(MARKETDESK_STALE,"newest MarketDesk report exceeds the accepted future-clock tolerance")
+    deadline=source_deadline(latest,max_age_hours)
+    limit=(deadline-latest).total_seconds()/3600
+    age=(current-latest).total_seconds()/3600
+    common.update(marketdesk_deadline_at=deadline,marketdesk_limit_hours=limit,
+                  marketdesk_age_hours=max(0.0,age))
+    if current>deadline:
+        return refuse(MARKETDESK_STALE,
+                      f"newest admitted MarketDesk report is {age:.1f}h old (source-anchored limit {limit:.1f}h)")
+    return None
 
 def evaluate(payload:Mapping[str,Any],*,now=None,source="catalog",max_age_hours=None,
              future_tolerance_minutes=DEFAULT_FUTURE_TOLERANCE_MINUTES):
@@ -128,6 +201,11 @@ def evaluate(payload:Mapping[str,Any],*,now=None,source="catalog",max_age_hours=
         common.update(source_deadline_at=deadline,limit_hours=limit,age_hours=max(0.0,age))
         if current>deadline:
             return refuse("PRODUCER_STALE",f"newest admitted report is {age:.1f}h old (source-anchored limit {limit:.1f}h)")
+        # The vault-wide clock is fresh; grade the MarketDesk provider before it
+        # can be called SOURCE_FRESH. Provider verdict precedence is unchanged.
+        provider=_marketdesk_verdict(clock,common=common,current=current,tolerance=tolerance,
+                                     total=total,max_age_hours=max_age_hours)
+        if provider is not None: return provider
         return _report("SOURCE_FRESH",ok=True,reason="newest admitted report is inside its fixed source-content deadline",**common)
     except (TypeError,ValueError,OverflowError,RecursionError):
         return refuse("CATALOG_UNAVAILABLE","source-clock input or configuration is invalid or outside supported bounds")
@@ -162,7 +240,14 @@ def _load_url(url,timeout_seconds):
 def _annotation_text(v): return str(v).replace("%","%25").replace("\r","%0D").replace("\n","%0A")
 
 def _acknowledges_producer_stale(report,requested):
-    """True only for an explicit acknowledgement of the typed stale verdict."""
+    """True only for an explicit acknowledgement of the typed stale verdict.
+
+    Deliberately keyed to the single literal "PRODUCER_STALE", so a generic
+    producer acknowledgement can never soften a provider-specific verdict
+    (MARKETDESK_STALE / MARKETDESK_CLOCK_MISSING). Those stay a hard red: the
+    ack flag exists for a known whole-vault producer outage, not to mask one
+    provider's clock while the vault-wide max still reads fresh.
+    """
     return requested is True and report.get("ok") is not True and report.get("status")=="PRODUCER_STALE"
 
 def _emit(report,*,acknowledged=False):
@@ -179,7 +264,7 @@ def _emit(report,*,acknowledged=False):
             f"{report.get('status')}: {report.get('reason')}{suffix}"),flush=True)
 
 def _selftest():
-    """Run 45 hermetic contract checks."""
+    """Run 52 hermetic contract checks."""
     import contextlib, copy, io, tempfile
     from unittest.mock import patch
     from engine.research_vault import catalog as catalog_mod
@@ -194,24 +279,32 @@ def _selftest():
         n=count if type(count) is int and count>=0 else 1
         return {"schema":"research_vault.catalog.v1","generated_at":now.isoformat(),"count":count,
                 "items":[{"id":f"report-{i}","published_at":stamp} for i in range(n)]}
+    def md(stamp="2026-09-04T18:00:00Z",id="marketdesk-zarzrnqfgu6-29437b"):
+        return {"id":id,"published_at":stamp}
+    def with_md(payload,stamp="2026-09-04T18:00:00Z",id="marketdesk-zarzrnqfgu6-29437b"):
+        """Append a canonical MarketDesk row and keep the declared count honest."""
+        p=dict(payload); p["items"]=list(p["items"])+[md(stamp,id)]; p["count"]=len(p["items"]); return p
     def expect(payload,wanted,at=now,**kw):
         r=evaluate(payload,now=at,**kw); req(r["status"]==wanted,r); json.dumps(r,allow_nan=False)
     basic=[
-      (cat("2026-08-25T16:47:24Z",1843),"PRODUCER_STALE",now,{}),(cat(),"SOURCE_FRESH",now,{}),
-      (cat("2026-09-04T17:00:00Z"),"SOURCE_FRESH",datetime(2026,9,7,12,tzinfo=timezone.utc),{}),
+      (cat("2026-08-25T16:47:24Z",1843),"PRODUCER_STALE",now,{}),(with_md(cat()),"SOURCE_FRESH",now,{}),
+      (with_md(cat("2026-09-04T17:00:00Z")),"SOURCE_FRESH",datetime(2026,9,7,12,tzinfo=timezone.utc),{}),
       (cat("2026-09-04T17:00:00Z"),"PRODUCER_STALE",datetime(2026,9,9,12,tzinfo=timezone.utc),{}),
       (cat(count=0),"NO_REPORTS",now,{}),(cat("bad"),"LATEST_REPORT_INVALID",now,{}),
       (cat("2026-09-05T04:10:01Z"),"FUTURE_REPORT_CLOCK",now,{}),({"items":"bad"},"CATALOG_UNAVAILABLE",now,{}),
-      (dict(cat(),stale=True),"SOURCE_FRESH",now,{}),
+      (dict(with_md(cat()),stale=True),"SOURCE_FRESH",now,{}),
       (dict(cat("2026-08-25T16:47:24Z",1843),stale=True),"PRODUCER_STALE",now,{}),
-      (cat("2026-09-04T00:00:00Z"),"PRODUCER_STALE",now,{"max_age_hours":24})]
+      (cat("2026-09-04T00:00:00Z"),"PRODUCER_STALE",now,{"max_age_hours":24}),
+      # No MarketDesk row at all fails closed rather than inheriting the global
+      # clock: an absent provider is not a healthy provider.
+      (cat(),"MARKETDESK_CLOCK_MISSING",now,{})]
     for i,(p,w,t,k) in enumerate(basic): check(f"basic-{i}",lambda p=p,w=w,t=t,k=k: expect(p,w,t,**k))
     for v in (float("nan"),float("inf"),-float("inf"),0,-1): check(f"age-{v}",lambda v=v: expect(cat(),"CATALOG_UNAVAILABLE",max_age_hours=v))
     for v in (float("nan"),float("inf"),-1): check(f"tol-{v}",lambda v=v: expect(cat(),"CATALOG_UNAVAILABLE",future_tolerance_minutes=v))
     for v in (float("inf"),float("nan"),True,1.5,"1",-1): check(f"count-{v!r}",lambda v=v: expect(dict(cat(),count=v),"CATALOG_UNAVAILABLE"))
     for v in ("0001-01-01T00:00:00+01:00","9999-12-31T23:59:59-01:00","bad",None): check(f"stamp-{v}",lambda v=v: expect(cat(v),"LATEST_REPORT_INVALID"))
     extras=[lambda:(lambda r: (req(r["status"]=="SOURCE_FRESH",r), req(r["invalid_published_at"]==1,r)))(
-                evaluate(dict(cat(),count=2,items=cat()["items"]+[{"id":"bad","published_at":"bad"}]),now=now)),
+                evaluate(with_md(dict(cat(),count=2,items=cat()["items"]+[{"id":"bad","published_at":"bad"}])),now=now)),
             lambda:expect(dict(cat(),count=100),"CATALOG_UNAVAILABLE"),lambda:expect(dict(cat(),preview=True),"CATALOG_UNAVAILABLE"),
             lambda:expect(dict(cat(),preview="yes"),"CATALOG_UNAVAILABLE"),lambda:req(evaluate(cat(),now="bad")["status"]=="CATALOG_UNAVAILABLE")]
     for i,fn in enumerate(extras): check(f"extra-{i}",fn)
@@ -227,18 +320,91 @@ def _selftest():
             raise AssertionError(bad)
     check("schemes",schemes)
     def aggregate():
-        p=cat(); p["items"][0].update(title="PRIVATE",pdf_key="PRIVATE"); before=copy.deepcopy(p); c=catalog_mod.public_summary(p,now=now)["source_clock"]
-        req(set(c)=={"schema","complete","report_count","valid_clock_count","invalid_clock_count","latest_report_published_at"},c); req("PRIVATE" not in json.dumps(c) and p==before,c)
+        p=with_md(cat())
+        for it in p["items"]: it.update(title="PRIVATE",pdf_key="PRIVATE")
+        before=copy.deepcopy(p); c=catalog_mod.public_summary(p,now=now)["source_clock"]
+        req(set(c)=={"schema","complete","report_count","valid_clock_count","invalid_clock_count","latest_report_published_at","providers"},c)
+        pc=c["providers"]["marketdesk"]
+        req(set(pc)=={"id_prefix","report_count","valid_clock_count","invalid_clock_count","latest_report_published_at"},pc)
+        req(pc["report_count"]==1 and pc["valid_clock_count"]==1 and c["report_count"]==2,pc)
+        # The provider clock is counts + a max timestamp only: no report id and
+        # no report text, exactly like the global clock it sits beside.
+        req("PRIVATE" not in json.dumps(c) and "zarzrnqfgu6" not in json.dumps(c) and p==before,c)
     check("aggregate",aggregate)
     def parity():
-        p=cat(); p["items"] += [{"id":str(i),"published_at":"2026-08-25T12:00:00Z","summary_points":["ready"]} for i in range(3)]; p["count"]=4
+        p=with_md(cat("2026-09-04T18:00:00Z"))
+        p["items"] += [{"id":str(i),"published_at":"2026-08-25T12:00:00Z","summary_points":["ready"]} for i in range(3)]
+        p["count"]=len(p["items"])
         s=catalog_mod.public_summary(p,now=now); q=dict(p,items=p["items"][1:],summary=s,preview=True); a,b=evaluate(p,now=now),evaluate(q,now=now)
-        req(all(a.get(k)==b.get(k) for k in ("status","latest_report_at","source_deadline_at","count","invalid_published_at")),(a,b))
+        req(a["status"]=="SOURCE_FRESH",(a,b))
+        req(all(a.get(k)==b.get(k) for k in ("status","latest_report_at","source_deadline_at","count","invalid_published_at","marketdesk_latest_at","marketdesk_deadline_at","marketdesk_report_count")),(a,b))
     check("parity",parity)
     def badagg():
         p=cat(); c=catalog_mod.public_summary(p,now=now)["source_clock"]
         for u in ({"complete":False},{"report_count":True},{"valid_clock_count":2},{"invalid_clock_count":-1},{"schema":"bad"},{"latest_report_published_at":None}): expect(dict(p,preview=True,summary={"source_clock":dict(c,**u)}),"CATALOG_UNAVAILABLE")
     check("badagg",badagg)
+    def vault(items,count=None):
+        return {"schema":"research_vault.catalog.v1","generated_at":now.isoformat(),
+                "count":len(items) if count is None else count,"items":items}
+    def provider_stale_behind_fresh_global():
+        # The exact masking case: an internal desk keeps the vault-wide max young
+        # while MarketDesk has stopped publishing. Global SOURCE_FRESH here is the
+        # defect the provider clock exists to close.
+        p=vault([{"id":"mastermind-research-2026-09-04-cndt-settlement","published_at":"2026-09-04T18:00:00Z"},
+                 {"id":"marketdesk-zarzrnqfgu6-29437b","published_at":"2026-08-25T16:47:24Z"}])
+        r=evaluate(p,now=now)
+        req(r["status"]==MARKETDESK_STALE,r)
+        req(r["ok"] is not True and r["marketdesk_report_count"]==1,r)
+        req(_acknowledges_producer_stale(r,True) is False,r)
+        json.dumps(r,allow_nan=False)
+    check("provider-stale-behind-fresh-global",provider_stale_behind_fresh_global)
+    def provider_fresh_behind_old_internal():
+        p=vault([{"id":"mastermind-research-2026-08-25-cndt-settlement","published_at":"2026-08-25T16:47:24Z"},
+                 {"id":"marketdesk-zarzrnqfgu6-29437b","published_at":"2026-09-04T18:00:00Z"}])
+        r=evaluate(p,now=now)
+        req(r["status"]=="SOURCE_FRESH",r)
+        req(r["marketdesk_latest_at"]=="2026-09-04T18:00:00+00:00",r)
+    check("provider-fresh-behind-old-internal",provider_fresh_behind_old_internal)
+    def provider_absent_fails_closed():
+        p=vault([{"id":"mastermind-research-2026-09-04-cndt-settlement","published_at":"2026-09-04T18:00:00Z"}])
+        req(evaluate(p,now=now)["status"]==MARKETDESK_CLOCK_MISSING,p)
+        # An OLD service (pre-slice) emits no "providers" key at all. That must
+        # stay readable and fail closed with a typed verdict, never a crash and
+        # never a SOURCE_FRESH borrowed from the vault-wide clock.
+        full=with_md(cat())
+        clock=catalog_mod.public_summary(full,now=now)["source_clock"]
+        legacy={k:v for k,v in clock.items() if k!="providers"}
+        r=evaluate(dict(full,preview=True,summary={"source_clock":legacy}),now=now)
+        req(r["status"]==MARKETDESK_CLOCK_MISSING,r)
+        req(legacy["latest_report_published_at"]=="2026-09-04T18:00:00+00:00",legacy)
+    check("provider-absent-fails-closed",provider_absent_fails_closed)
+    def provider_malformed_clock():
+        p=vault([{"id":"mastermind-research-2026-09-04-cndt-settlement","published_at":"2026-09-04T18:00:00Z"},
+                 {"id":"marketdesk-aaaaaaaa11-111111","published_at":"bad"},
+                 {"id":"marketdesk-bbbbbbbb22-222222","published_at":"2026-09-04T18:00:00Z"}])
+        r=evaluate(p,now=now)
+        # One dirty provider row must not replace the verdict: grade the newest valid.
+        req(r["status"]=="SOURCE_FRESH",r)
+        req(r["marketdesk_report_count"]==2 and r["marketdesk_invalid_published_at"]==1,r)
+        allbad=vault([{"id":"mastermind-research-2026-09-04-cndt-settlement","published_at":"2026-09-04T18:00:00Z"},
+                      {"id":"marketdesk-cccccccccc33-333333","published_at":"bad"}])
+        r2=evaluate(allbad,now=now)
+        req(r2["status"]==MARKETDESK_STALE and r2["marketdesk_invalid_published_at"]==1,r2)
+    check("provider-malformed-clock",provider_malformed_clock)
+    def provider_aggregate_tamper():
+        p=with_md(cat()); c=catalog_mod.public_summary(p,now=now)["source_clock"]
+        for u in ({"report_count":-1},{"report_count":True},{"valid_clock_count":99},
+                  {"invalid_clock_count":-1},{"id_prefix":"other-"},{"latest_report_published_at":"bad"}):
+            bad=dict(c,providers=dict(c["providers"],
+                  marketdesk=dict(c["providers"]["marketdesk"],**u)))
+            expect(dict(p,preview=True,summary={"source_clock":bad}),MARKETDESK_CLOCK_MISSING)
+    check("provider-aggregate-tamper",provider_aggregate_tamper)
+    def bounded_provider_json():
+        p=with_md(cat("2026-09-04T18:00:00Z"))
+        for at in (now,datetime(2026,9,9,12,tzinfo=timezone.utc)):
+            text=json.dumps(evaluate(p,now=at),sort_keys=True,allow_nan=False)
+            req("NaN" not in text and "Infinity" not in text,text)
+    check("bounded-provider-json",bounded_provider_json)
     def annotation():
         o=io.StringIO()
         with contextlib.redirect_stdout(o): _emit({"ok":False,"status":"BAD","reason":"x%\r\n::error::forged","invalid_published_at":2})
@@ -248,7 +414,7 @@ def _selftest():
     check("annotation",annotation)
     def acknowledgement():
         statuses=("PRODUCER_STALE","FUTURE_REPORT_CLOCK","LATEST_REPORT_INVALID",
-                  "NO_REPORTS","CATALOG_UNAVAILABLE")
+                  "NO_REPORTS","CATALOG_UNAVAILABLE",MARKETDESK_STALE,MARKETDESK_CLOCK_MISSING)
         for status in statuses:
             report={"ok":False,"status":status,"reason":"test","invalid_published_at":0}
             ack=_acknowledges_producer_stale(report,True)
@@ -292,11 +458,11 @@ def _selftest():
                 r=evaluate(cat(start.isoformat()),now=start+timedelta(minutes=30*step)); req(not(stale and r["ok"]),(start,step,r)); stale=stale or r["status"]=="PRODUCER_STALE"
             req(stale,start)
     check("monotonic",monotonic)
-    if passed!=45: failures.append(f"accounting {passed}/45")
+    if passed!=52: failures.append(f"accounting {passed}/52")
     if failures:
         for f in failures: print(f"SELFTEST FAILURE: {f}",file=sys.stderr)
         return 1
-    print("research-vault source-freshness selftest: 45 passed"); return 0
+    print("research-vault source-freshness selftest: 52 passed"); return 0
 
 def build_parser():
     p=argparse.ArgumentParser(description="Grade source-content freshness separately from publication freshness.")

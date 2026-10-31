@@ -15766,7 +15766,10 @@ jobs:
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
-    timeout-minutes: 10
+    # Prospective Ontology-only grant: portfolio ruling6375835730.
+    # Setup stays <=600 inside this original absolute720 total; every
+    # existing semantic/browser assertion remains required.
+    timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

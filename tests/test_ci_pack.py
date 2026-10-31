@@ -5398,6 +5398,16 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Preserve canonical job/pack ceilings, selectors and all measurement history;
     fund only its previously qualified two estimator units per probe.
 
+    Historical e276 predecessor only (superseded by ruling6375835730):
+    Research Desk #10088 used the following smoke/fetch composition on main
+    f564c087, including main's newer ontology native-acquisition closure.
+    The canonical combined-tree packing probe passes under main's existing
+    136/136/130 job and 5,884/5,856/5,634 weight limits, ten packs each;
+    no extra weight grant, missing consumer, renamed test, or selector waiver.
+    The earlier Research Desk +1/+1/+1 measurement below belongs to the
+    preceding 2026-10-22 candidate; it is retained as historical evidence,
+    not an instruction to raise the current merged-tree ceilings.
+
     2026-10-23 Catalyst PR #9552 current-main integration: separate exact-tree
     canonical planner runs on main9732eb9f and merge9c1262d6 preserve
     index136/5884 and free-content135/5856. Plan-book128/5628 becomes
@@ -5405,6 +5415,19 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Every existing selected job and weight remains unchanged; all probes
     retain ten packs. Fund only this measured six-unit excess, preserving
     current-main job limits, other weight limits, timeouts and selectors.
+    Historical 2026-10-22 predecessor measurement, not the current native
+    branch or a current budget grant: its no-apt Chromium installer added one
+    real smoke command inside its existing 10-minute, digest-bound browser
+    setup phase. This is not a new job, retry, test bypass or higher runtime
+    grant. The canonical planner raised precisely one weight unit in each
+    selected probe and the guard originally failed on the actual candidate:
+    index 136/5,885 against 5,884; free 135/5,857 against 5,856; Prophet
+    128/5,629 against 5,628. Fund only +1/+1/+1. Preserve all three job
+    ceilings 136/136/130, their selectors, every test step, the ten-pack
+    limit and all logical-job/phase deadlines. The International improvement
+    replaces a slow canonical-base fetch with bounded blobless history and
+    still requires the actual merge base; it adds no job or proof exemption.
+    These are deterministic planner estimates, not timed runner results.
 
     2026-10-22 recovered final composition joins featurece4664f6 and
     protected main7a8f690d. Canonical measurements on this actual merged
