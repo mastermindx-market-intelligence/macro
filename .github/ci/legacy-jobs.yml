@@ -36728,6 +36728,7 @@ jobs:
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/contracts.py"
       - "engine/entry_radar/replay/rs_pullback_launch_data.py"
+      - "engine/entry_radar/replay/oscillator_mtf_research.py"
       - "engine/entry_radar/replay/rs_pullback_launch_labels.py"
       - "engine/entry_radar/spool.py"
       - "engine/entry_signal.py"
@@ -37239,6 +37240,8 @@ jobs:
       - "templates/support.html.j2"
       - "tests/__init__.py"
       - "tests/test_entry_radar_rs_pullback_phase1.py"
+      - "tests/test_entry_radar_oscillator_mtf_research.py"
+      - "tests/test_entry_radar_oscillator_owner_integration.py"
       - "tests/test_entry_radar_rs_pullback_launch_labels.py"
       - "tests/test_market_memory.py"
       - "tests/test_market_memory_episode_comparison.py"
@@ -37469,6 +37472,8 @@ jobs:
           python -m pytest
           tests/test_research_price_panel.py
           tests/test_entry_radar_rs_pullback_phase1.py
+          tests/test_entry_radar_oscillator_mtf_research.py
+          tests/test_entry_radar_oscillator_owner_integration.py
           tests/test_entry_radar_rs_pullback_launch_labels.py
           tests/test_ptse_action_context.py
           tests/test_ptse_baseline.py
