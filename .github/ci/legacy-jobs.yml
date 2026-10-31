@@ -8922,6 +8922,47 @@ jobs:
   # closure of such a suite needs it, or when `git log -L` shows it was added to the
   # old line for a suite this lane inherited.
 
+  aibrief-countdown-pr:
+    # The W4 render-guards lane remains gate:data for its nightly generated-data
+    # consumers. This focused forecast countdown suite is a hermetic, frozen-date
+    # source regression and MUST run in the premerge code gate. Explicit scope
+    # covers its tested builder, calendar imports, template and forecast input.
+    # False is the legacy-runner carrier: ci-pack executes this job from YAML.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "scripts/build_aibrief.py"
+      - "scripts/__init__.py"
+      - "tests/__init__.py"
+      - "tests/test_aibrief_countdown_qual.py"
+      - "templates/aibrief.html.j2"
+      - "data/release_forecast/latest.json"
+      - "data/release_forecast/scoreboard.json"
+      - "engine/event_calendar.py"
+      - "engine/rebalance_calendar.py"
+      - "engine/__init__.py"
+      - "engine/i18n.py"
+      - "engine/opex.py"
+      - "engine/validation.py"
+      - "lib/nyse_calendar.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
+      - "lib/site_assets.py"
+      - "lib/shared_shell.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install focused countdown test dependencies
+        run: pip install pytest jinja2 pyyaml
+      - name: AI Brief render-date countdown regression (five cases)
+        run: python -m pytest tests/test_aibrief_countdown_qual.py -q
+
   engine-render-guards:
     if: ${{ false }}
     gate: data
@@ -9065,6 +9106,10 @@ jobs:
       # new suites render templates/impulse.html.j2 through
       # scripts/build_impulse._render_html with inline payloads (jinja2/pandas, both
       # already on this install line). No new job.
+      # AI Brief server-rendered countdown: tests/test_aibrief_countdown_qual.py
+      # exercises scripts/build_aibrief.py alongside test_aibrief_w4_panels.py;
+      # the same render-guard job already installs its required dependencies.
+      # Keep the new suite explicit in this run step for contract-delta coverage.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -9201,6 +9246,7 @@ jobs:
           tests/test_stock_technicals.py
           tests/test_aibrief_page.py
           tests/test_aibrief_w4_panels.py
+          tests/test_aibrief_countdown_qual.py
           tests/test_market_reference.py
           tests/test_validated_claims_thirdparty.py
           tests/test_validated_claims_engine.py
@@ -10582,6 +10628,15 @@ jobs:
       - "mockups/evidence/prophet-p0b-zero-fouc/hk-composer-failed-light-390.png"
       - "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png"
       - "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png"
+      # The pinned font subsets, stylesheet and manifest the suite checks
+      # against each receipt's `font_pin`.
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/**"
+      # The suite imports the P0B receipt closure gate for its re-mint
+      # environment hint. These are that import's closure.
+      - "scripts/__init__.py"
+      - "scripts/check_p0b_receipt_closure.py"
+      - "scripts/worktree_sparse.py"
+      - "config/sparse_worktree.json"
       - "tests/test_stock_dashboard_first_frame.py"
     runs-on: ubuntu-latest
     steps:
@@ -41232,6 +41287,7 @@ jobs:
       - "tests/test_qbus_news_contract.py"
       - "tests/test_qbus_news_flow_store.py"
       - "tests/test_qbus_news_migration.py"
+      - "tests/test_qbus_news_propagation_estate.py"
       - "tests/test_qbus_news_receipts.py"
       - "tests/test_qbus_news_reducer.py"
       - "tests/test_qbus_news_store.py"
@@ -41521,6 +41577,7 @@ jobs:
           tests/test_qbus_news_contract.py
           tests/test_qbus_news_flow_store.py
           tests/test_qbus_news_migration.py
+          tests/test_qbus_news_propagation_estate.py
           tests/test_qbus_news_receipts.py
           tests/test_qbus_news_reducer.py
           tests/test_qbus_news_store.py
