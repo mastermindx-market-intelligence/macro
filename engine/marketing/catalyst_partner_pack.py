@@ -120,6 +120,12 @@ def _safe_https(
         pass
     else:
         raise PackRejected(code)
+    # Numeric-shaped final labels exist under no real public suffix, yet
+    # browsers still resolve hosts like 127.1 / 0x7f.1 / 0177.0.0.1 to
+    # loopback or private ranges ip_address() cannot parse.
+    last_label = host.rsplit(".", 1)[-1]
+    _require(not (re.fullmatch(r"[0-9]+", last_label)
+                  or re.fullmatch(r"0x[0-9a-f]*", last_label)), code)
     return value  # Source link/path casing and allowed query are unchanged.
 
 
@@ -984,8 +990,14 @@ def build_partner_pack_from_native_event(
         pack["correction_notice"] = None
         return pack
     new_claim_texts = {claim["text"] for claim in pack["claims"]}
-    superseded_claims = [claim["text"] for claim in predecessor["claims"]
-                         if claim["text"] not in new_claim_texts]
+    # Predecessor prose is spliced into partner-facing copy, so it must clear
+    # the same atom bounds native claim texts already meet; a manifest alone
+    # grants its claim texts no notice privilege.
+    superseded_claims = [
+        _atom(claim["text"], "CORRECTION_NOTICE_REJECTED", 600)
+        for claim in predecessor["claims"]
+        if claim["text"] not in new_claim_texts
+    ]
     pack["supersedes"] = {
         "pack_id": predecessor["pack_id"],
         "generation": prior_generation,
@@ -996,6 +1008,16 @@ def build_partner_pack_from_native_event(
         f"Correction: replaces draft {predecessor['pack_id']} "
         f"(generation {prior_generation})."
         + "".join(f' Superseded statement: "{text}".'
+                  for text in superseded_claims)
+    )
+    # The newsletter is partner Markdown: predecessor prose must enter it
+    # inert, like every other newsletter insertion, so a manifest's claim
+    # text can never render as an advertiser-authored link. The plain notice
+    # stays unescaped for the HTML template, which autoescapes it.
+    notice_inert = (
+        f"Correction: replaces draft {predecessor['pack_id']} "
+        f"(generation {prior_generation})."
+        + "".join(f' Superseded statement: "{_markdown_text(text)}".'
                   for text in superseded_claims)
     )
     # The notice is partner-facing copy, so it must clear the same public
@@ -1012,7 +1034,7 @@ def build_partner_pack_from_native_event(
               "correction trail before distribution.")
     _require(marker in pack["newsletter"], "CORRECTION_NOTICE_REJECTED")
     pack["newsletter"] = pack["newsletter"].replace(
-        marker, marker + "\n\n" + notice, 1)
+        marker, marker + "\n\n" + notice_inert, 1)
     pack["correction_notice"] = notice
     return pack
 

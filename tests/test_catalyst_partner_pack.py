@@ -811,6 +811,62 @@ class CatalystNativePackTests(unittest.TestCase):
                           page)
             self.assertIn("Superseded statement:", page)
 
+    def _correction_pair(self, hostile_text):
+        """gen0 pack plus a corrected gen1 event, predecessor hostile prose."""
+        gen0_packet, gen0_scan = self._native()
+        gen0 = self._pack(gen0_packet, gen0_scan)
+        self.assertTrue(gen0["claims"])
+        tampered = copy.deepcopy(gen0)
+        tampered["claims"][0]["text"] = hostile_text
+        gen1_packet, gen1_scan = self._native(
+            correction_generation=1, revision_status="corrected",
+            supersedes_generation=0, correction_reason="official_amendment",
+            eps_actual=2.1,
+        )
+        return tampered, gen1_packet, gen1_scan
+
+    def test_native_correction_notice_is_markdown_inert(self):
+        from engine.marketing.catalyst_partner_pack import _markdown_text
+        hostile = "[a](https://evil.invalid) *b* _c_"
+        predecessor, gen1_packet, gen1_scan = self._correction_pair(hostile)
+        gen1 = self._pack(gen1_packet, gen1_scan, predecessor_pack=predecessor)
+        # The notice is present in both surfaces; the data field keeps the
+        # raw predecessor text, only the newsletter insertion must be inert.
+        self.assertIn("Superseded statement:", gen1["correction_notice"])
+        self.assertIn("Correction: replaces draft", gen1["newsletter"])
+        self.assertNotIn(hostile, gen1["newsletter"])
+        self.assertIn(_markdown_text(hostile), gen1["newsletter"])
+        self.assertIn(hostile, gen1["supersedes"]["superseded_claims"])
+
+    def test_native_correction_notice_bounds_predecessor_text(self):
+        for hostile in ("a" * 601, "bell\x07stop",
+                        "reach x" + "@" + "y.invalid"):
+            predecessor, gen1_packet, gen1_scan = self._correction_pair(hostile)
+            with self.subTest(hostile=hostile[-12:]):
+                self.refused("CORRECTION_NOTICE_REJECTED", gen1_packet,
+                             gen1_scan, predecessor_pack=predecessor)
+        predecessor, gen1_packet, gen1_scan = self._correction_pair("a" * 600)
+        bounded = self._pack(gen1_packet, gen1_scan,
+                             predecessor_pack=predecessor)
+        self.assertIn("a" * 600, bounded["supersedes"]["superseded_claims"])
+        self.assertIn("a" * 600, bounded["newsletter"])
+
+    def test_safe_https_rejects_numeric_looking_hosts(self):
+        from engine.marketing.catalyst_partner_pack import _safe_https
+        # Signature used: _safe_https(value) with keyword defaults
+        # code="UNSAFE_URL", allow_fixture_hosts=False.
+        for url in ("https://127.1/x", "https://0x7f.1/x",
+                    "https://0177.0.0.1/x", "https://1.0x1/x",
+                    "https://2130706433.1/x"):
+            with self.subTest(url=url):
+                with self.assertRaises(PackRejected) as caught:
+                    _safe_https(url)
+                self.assertEqual(caught.exception.code, "UNSAFE_URL")
+        # Control: a URL the native positive test already proves accepted.
+        accepted = ("https://www.sec.gov/Archives/edgar/data/1/"
+                    "x1-20261030.htm")
+        self.assertEqual(_safe_https(accepted), accepted)
+
     def test_native_orphan_amendment_rejected(self):
         gen1_packet, gen1_scan = self._native(
             correction_generation=1, revision_status="corrected",
