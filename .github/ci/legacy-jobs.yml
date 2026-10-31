@@ -41257,6 +41257,7 @@ jobs:
       - "engine/marketing/copywriter.py"
       - "engine/marketing/departments.py"
       - "engine/marketing/economics.py"
+      - "engine/marketing/edgar_earnings_wire.py"
       - "engine/marketing/events.py"
       - "engine/marketing/exemplar_store.py"
       - "engine/marketing/expression_dial.py"
