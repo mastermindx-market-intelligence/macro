@@ -26,3 +26,37 @@ Users can tell whether tech is experiencing an unusually severe selloff relative
 **Negative acceptance:** no public screenshot numbers hard-coded as current market quotes; no silently adjusted/unadjusted mix; no claim of intraday live data; no standalone "tech shock" trading decision engine; no user-position sizing or signals; no overwriting concurrent Macro source work. Current modified surface restricted to the additive engine, focused tests, a self-contained presentation partial, source-bound build hooks and this plan.
 
 **Next action:** implement P1.T1 and T2 on isolated `sol/tech-volatility-shock-20261030` branch, then wire the compact component to `scripts/build_site.py` and `scripts/render_macro_fast.py`. Publish one reviewable PR. Do not mark production live from CI alone.
+
+## Integration discovery — 2026-10-30
+
+The nightly `.github/workflows/daily.yml` engine job explicitly restores
+`massive_stock_day` R2 before its `scripts.build_site` render. The
+`.github/workflows/render.yml` and `engine-render.yml` express render spines
+**do not** restore that ~617 MB store. Binding raw `store.read` in the page
+renderer alone would therefore produce a good nightly panel but erase its
+metrics on later lightweight re-renders.
+
+**Repair implemented:** the existing nightly `build_site` produces a **derived
+EOD presentation view**, `site/marketdata/tech_volatility_shock.json`, only
+when both source-backed raw bars pass the calculator's pair/date/price checks.
+This is under the already-authoritative site/ git publication flow; no additional
+collector or market-state decision plane. The view is small, schema/scopes
+validated and atomically written, and carries the observed trading date and
+generation timestamp. Express renders with no raw R2 read the last committed
+view, recalculate its age against the independent exchange calendar, visibly
+disclose stale/partial status and never overwrite the qualified observation with
+a fabricated zero/unknown. A newer direct raw observation supersedes an older
+projection; stale raw inputs never move the readout's as-of date backwards.
+
+Focused synthetic test suites now cover nightly-to-express handoff, one-completed-
+session staleness, monotonic as-of selection, corrupted projections and failed
+view publication. The dedicated, path-scoped
+`.github/workflows/tech-volatility-shock.yml` runs these named suites: the
+repository's broad CI pack does NOT automatically run newly added `tests/*`
+suites (see `.github/workflows/ci.yml` unrun-suite census), and claiming tests
+without a real executable runner would be false.
+
+**Status remains BUILT_NOT_PROVEN** until exact-head CI, a non-author review,
+natural nightly data generation, express-route retention and responsive/browser
+real-page qualification. PR #10229 is an open Draft at the writing of this
+checkpoint; no self-merge or production acceptance is asserted.
