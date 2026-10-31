@@ -610,6 +610,168 @@ def test_b14_templates_never_call_t_in_attributes():
         assert '="{{ t(' not in (ROOT / name).read_text(encoding="utf-8"), name
 
 
+# --------------------------------------------- GB1 §14 graph-boundary chip
+# Seat ruling DEC:INTL-GS-GB1-GRAPH-BOUNDARY-CHIP (frozen): the chip label is
+# the engine's closed LABELS over one market_summary receipt; production
+# wiring passes NO edges (no admitted producer) and the builder stamps
+# edge_basis=no_admitted_edge_set. Fixtures inject edges only through
+# tests/intl_gs_dossier_fixture.py, never production.
+def _edges_card(fragment):
+    card = re.search(
+        r'<div class="intl-gs__card intl-gs__edges">.*?(?=<div class="intl-gs__dossier-rail")',
+        fragment, re.S)
+    assert card, "typed-edges card present"
+    return card.group(0)
+
+
+def _boundary_chip(card):
+    # the wrapping span closes right before the edge table (the chip's own
+    # inner spans close earlier), so anchor the capture on that lookahead
+    return re.search(
+        r'<span data-graph-boundary="([^"]+)">(.*?)</span>(?=\s*<table)', card, re.S)
+
+
+def _legs(html):
+    """(EN, ZH) visible text of the l-en/l-zh twin legs inside a fragment."""
+    def _text(markup):
+        return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", markup)).strip()
+    english = _text(" ".join(re.findall(r'<span class="l-en">(.*?)</span>', html, re.S)))
+    chinese = _text(" ".join(re.findall(r'<span class="l-zh">(.*?)</span>', html, re.S)))
+    return english, chinese
+
+
+def _boundary_footnote(card):
+    footnotes = re.findall(r'<p class="intl-gs__footnote">(.*?)</p>', card, re.S)
+    assert len(footnotes) == 1, "exactly ONE graph-boundary footnote"
+    return footnotes[0]
+
+
+def test_gb1_t1_structural_graph_member_renders_member_label(page):
+    from engine.intl_global_graph_boundary import LABELS as GB_LABELS
+    channels = json.loads(
+        (ROOT / "config/intl_transmission_channels_v1.json").read_text(encoding="utf-8"))
+    members = {market.lower()
+               for market in channels["structural_graph"]["markets"]}
+    assert "gb" in members, "GB is a frozen structural-graph member (T1 pick)"
+    card = _edges_card(_article(_panel(page), "GB"))
+    chip = _boundary_chip(card)
+    assert chip, "member chip rendered"
+    assert chip.group(1) == "structural_graph_member"
+    english, chinese = _legs(chip.group(2))
+    assert GB_LABELS["structural_graph_member"][0] in english
+    assert GB_LABELS["structural_graph_member"][1] in chinese
+    # neutral kind: neither dashed variant
+    assert "intl-gs__chip--warn-dashed" not in chip.group(2)
+    assert "intl-gs__chip--muted-dashed" not in chip.group(2)
+
+
+def test_gb1_t2_out_of_graph_structural_research_reasons_and_edge_basis(page):
+    card = _edges_card(_article(_panel(page), "DE"))
+    chip = _boundary_chip(card)
+    assert chip and chip.group(1) == "structural_research"
+    assert "intl-gs__chip--muted-dashed" in chip.group(2)
+    english, chinese = _legs(chip.group(2))
+    assert "Structural research only" in english
+    assert "仅结构研究" in chinese
+    footnote = _boundary_footnote(card)
+    text = _visible_text(footnote)
+    # honest edge basis (production wiring passes edges=[])
+    assert "No admitted statistical edge set" in text
+    assert "无已准入的统计边集" in text
+    # engine reasons composed through reason_copy
+    assert "No admitted candidate evidence" in text
+    assert "No admitted structural research" in text
+    # exactly the FIRST engine interpretation limit
+    from engine.intl_global_graph_boundary import INTERPRETATION_LIMITS
+    assert INTERPRETATION_LIMITS[0] in text
+    assert "仅研究标注" in text
+
+
+def test_gb1_t3_fixture_statistical_edge_qualified_candidate_warn_dashed():
+    from tests.intl_gs_dossier_fixture import render_graph_boundary_page
+    edge = {"edge_id": "fixture-de-dollar-funding-1", "origin_market": "DE",
+            "receiver": "US", "channel": "dollar_funding",
+            "pathway": "statistical_association", "model_status": "frozen"}
+    card = _edges_card(_article(_panel(render_graph_boundary_page("DE", [edge])), "DE"))
+    chip = _boundary_chip(card)
+    assert chip and chip.group(1) == "qualified_candidate"
+    assert "intl-gs__chip--warn-dashed" in chip.group(2)
+    english, chinese = _legs(chip.group(2))
+    assert "Qualified candidate, outside structural graph" in english
+    assert "合格候选（结构图外）" in chinese
+
+
+def test_gb1_t4_shape_error_chip_omitted_abstain_note_no_exception():
+    import lib.intl_gs_dossier_view as dossier
+    from tests.intl_gs_dossier_fixture import _render_panel, graph_boundary_panel
+    # a malformed summary (no structural_graph) is refused, never defaulted
+    assert dossier.graph_boundary_payload({"market_id": "DE"}) is None
+    panel = graph_boundary_panel("DE", [])
+    market = next(m for m in panel["payload"]["markets"] if m["id"] == "DE")
+    market["graph_boundary"] = None
+    market["graph_boundary_footnote"] = None
+    # rendering the refused row must not raise
+    card = _edges_card(_article(_panel(_render_panel(panel)), "DE"))
+    assert _boundary_chip(card) is None
+    assert 'data-abstain-token="graph_boundary_unavailable"' in card
+    assert "Graph boundary label unavailable" in _visible_text(card)
+    assert "图边界标签不可用" in _visible_text(card)
+
+
+def test_gb1_t5_chip_and_footnote_bilingual(page):
+    for market_id, zh_label in (("GB", "结构图成员"), ("DE", "仅结构研究")):
+        card = _edges_card(_article(_panel(page), market_id))
+        chip = _boundary_chip(card)
+        assert chip, market_id
+        assert zh_label in chip.group(2)
+        english, chinese = _legs(_boundary_footnote(card))
+        assert english and chinese, market_id
+        assert "No admitted statistical edge set" in english
+        assert "Research labeling only" in english
+        assert "无已准入的统计边集" in chinese
+        assert "仅研究标注" in chinese
+
+
+def test_gb1_t6_no_numerals_no_causal_language_in_chip_or_footnote(page):
+    from engine.intl_transmission_evidence import scan_causal_language
+    for market_id in ("GB", "DE"):
+        card = _edges_card(_article(_panel(page), market_id))
+        chip = _boundary_chip(card)
+        assert chip, market_id
+        chip_en, chip_zh = _legs(chip.group(2))
+        note_en, note_zh = _legs(_boundary_footnote(card))
+        scanned = f"{chip_en}{chip_zh}{note_en}{note_zh}"
+        assert not re.search(r"\d", scanned), market_id
+        assert scan_causal_language({"chip_en": chip_en, "chip_zh": chip_zh,
+                                     "footnote_en": note_en,
+                                     "footnote_zh": note_zh}) == [], market_id
+
+
+def test_gb1_t7_every_rendered_market_carries_the_closed_contract():
+    import lib.intl_gs_dossier_view as dossier
+    from engine.intl_global_graph_boundary import CONTRACT_VERSION, LABELS
+    from engine.intl_workspace_overview import build_workspace_overviews
+    from lib.intl_macro_mount import _contexts
+    from lib.intl_workspace_binding import binding_version
+    workspace = build_workspace_overviews(None)
+    version, generation = binding_version(workspace)
+    contexts = _contexts(workspace["panels"], workspace["config"], version, generation)
+    panels = dossier.build_view(universe=UNIVERSE, rights=RIGHTS, contexts=contexts,
+                                workspace=workspace, observations=None)
+    seen = 0
+    for panel in panels:
+        for market in panel["payload"]["markets"]:
+            boundary = market["graph_boundary"]
+            assert boundary is not None, market["id"]
+            assert boundary["contract_version"] == CONTRACT_VERSION
+            assert CONTRACT_VERSION == "intl-global-graph-boundary-v1"
+            assert boundary["label"] in LABELS, market["id"]
+            assert (boundary["label_en"], boundary["label_zh"]) == LABELS[boundary["label"]]
+            assert boundary["edge_basis"] == "no_admitted_edge_set"
+            seen += 1
+    assert seen >= 64, "every jurisdiction plus the EZ aggregate is labelled"
+
+
 # ---------------------------------------------------------------- B15 horizon labels
 def test_b15_horizon_labels_never_raw(page):
     panels = _panels(page)
