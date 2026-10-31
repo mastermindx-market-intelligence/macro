@@ -4397,6 +4397,8 @@ CURATED_EXCLUSIVE = {
     "market-ontology-f09-petroleum-flow",
     # F04 exact import/read closure; all suites retained, no homepage fallback.
     "ontology-explorer",
+    # DR3: exact closure isolates the observation consumer; no packing ceiling change.
+    "rotation-observation-delivery",
 
     "catalyst-opportunity",  # Attention/API job owns its measured import/read closure.
     "forex-r26-consumer",  # R26 consumer suites retain their declared import/read closure.
