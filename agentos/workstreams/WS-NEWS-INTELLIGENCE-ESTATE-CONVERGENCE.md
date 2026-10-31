@@ -28,9 +28,9 @@ owns_paths:
   - tests/test_qbus_news_propagation_estate.py
   - agentos/handoffs/NEWS-INTELLIGENCE-ESTATE-*.md
 landmines:
-  - "Masterplan §10 custody is stale: macro #9963 and Mastermind #1661 are MERGED; Sol CEO writes live on macro #8697 (Tiingo DRAFT/HOLD), #9612 (HOLD-FOR-SOL) and #9639 — all READ-ONLY for this workstream. Terminal #1081 shares TickerNewsPanel with seat fd47d431's R2 L2 (#1111): no terminal news-UI writes until that seat says R2 ON MASTER."
+  - "2026-10-31 custody delta: macro #9963/#9639/#9732 and terminal R2 #1110/#1111/#1128 are merged; Tiingo #10136 supersedes #8697. #9612 stays on its recovered original carrier; #1081/#1129/#1130 remain separate candidates. Source merge does not release holds, prove installation or establish current writer absence; refresh exact next-carrier custody before mutation."
   - "Program law (masterplan §11): do not build another news/event/identity/graph/thesis/outcome store, answer warehouse, scheduler, model router, publication system, runtime registry or retry plane. Converge existing owners; a gap is a wiring task against an incumbent, never a new system."
-  - "P0-D corpus honesty: the news_impact benchmark is 600 frozen cases of which 74 are scorable; shortfalls stay printed, the system under test never generates gold, and gated_v3 is drawn exactly as registered (seeds, strata, thresholds unchanged). WS:PROPHET-NEWS-IMPACT owns engine/news_impact/ and the benchmark; this workstream consumes, never redraws."
+  - "P0-D corpus honesty: preserve the original 600-case registration, v2 draw/routing (74 MATCH scorable), and #10063 v3 draw (135 cases, 40 new routing-pending, zero prospective) separately. The benchmark owner adjudicates calendar reconstruction/classifier pin and any new version; never silently redraw or let the system under test create gold. WS:PROPHET-NEWS-IMPACT remains the engine/news_impact and benchmark owner."
   - "P1-D: engine/news_llm.py must fail closed when news_llm.enabled is absent; config.yml stays untouched; the rights basis for every delivered source is DEC:TICKER-NEWS-ALPACA-BENZINGA-RIGHTS-BASIS plus the A1 matrix, and Tiingo commercial permission is Chairman-confirmed (technical admission only remains)."
   - "Labor runs on the Mastermind fabric (glm-5.3-flash leaf, MiniMax-M3 medium, glm-5.3 only with an escalation reason) under Opus orchestrators; no native builder/reviewer children; seat-only acts are ready/merge --match-head-commit, labels and carrier posts."
 do_not_redo:
@@ -60,7 +60,12 @@ waves:
     status: todo
     depends_on: [W2, W3]
     next_action: "Not before W2/W3 land."
-next_action: "W1 — consume the two orchestrator returns by artifact, merge green lane PRs, rule B1 joins; then commission W2 and spawn the Section C/F orchestrators as slots free."
+artifacts:
+  - research/news_intelligence_estate_20261021/READ_FIRST_2026-10-31.md
+  - research/news_intelligence_estate_20261021/COMPLETION_MASTERPLAN_2026-10-31.md
+  - research/news_intelligence_estate_20261021/CENSUS_2026-10-31.json
+  - agentos/handoffs/NEWS-INTELLIGENCE-ESTATE-CONVERGENCE-2026-10-31.md
+next_action: "Read the 2026-10-31 entry guide; consume and adjudicate the seven existing Wave 1 candidates, recover missing owner returns if material, and refresh only the next carrier's custody/checks/admission. Resolve dependent B1 semantics, then select a valuable user proof and adapt staffing/sequence through current law. No wave or product completion is advanced by this research closeout."
 ---
 
 # News Intelligence Estate convergence
@@ -75,3 +80,23 @@ no store, scheduler, router or registry.
 Three outcomes are accepted independently (masterplan §Executive decision): factual
 delivery, contextual research, qualified quantitative influence. One global gate is never
 used.
+
+
+## 2026-10-31 research/design continuation
+
+The entry guide and completion masterplan listed in artifacts supply the current delta:
+18 inherited estate segments, 11 plan families, A1–F5, seven journeys, 36 grouped source
+rows and 48 named PRs. The parent checked consequential source findings and records
+the paid consumer-audit acceptance-record limitation. This is research/design evidence,
+not implementation, release, hold removal, installed acceptance or a new commission.
+
+The W0–W4 statuses remain unchanged. Their wording records the prior commissioning
+sequence; the continuation does not prescribe that staffing or order as a new mandate.
+Fable may revise methods, team, carriers, scope divisions and sequencing with rationale
+under current protected execution law. Retired packages must retain their outcome
+disposition. Candidate source is not authority to merge, activate or claim completion.
+
+Three outcomes remain independently assessable: factual delivery, contextual research
+and qualified quantitative influence. Required positive user paths and relevant
+degraded behavior need attributable evidence. Shared evidence may be reused where its
+applicability is established. Local acceptance does not close the programme.
