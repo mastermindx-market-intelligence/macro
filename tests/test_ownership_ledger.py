@@ -20,6 +20,40 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import engine.ownership_ledger as ol
 
 
+@pytest.mark.parametrize("filer,expected_state", [
+    (None, "activist"), ("", "activist"), (pd.NA, "activist"),
+    ("Synthetic Capital", "flip"),
+])
+def test_l3_persists_qualified_filer_state_without_grading(
+        tmp_path, monkeypatch, filer, expected_state):
+    import engine.beneficial_ownership as bo
+
+    events = pd.DataFrame([
+        {"ticker": "SYNTH", "form_type": "SC 13G", "date_filed": "2025-01-01",
+         "filer": filer, "filer_type": "other"},
+        {"ticker": "SYNTH", "form_type": "SC 13D", "date_filed": "2026-01-01",
+         "filer": filer, "filer_type": "other"},
+    ])
+    monkeypatch.setattr(bo, "_load_enrichment", lambda: events)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Synthetic composition must not load a source or price panel")
+
+    monkeypatch.setattr(bo, "_load_events_with_tickers", forbidden)
+    monkeypatch.setattr(ol, "_grade_entry", lambda *args: {})
+    monkeypatch.setattr(ol, "_spy_grade", lambda *args: {})
+    rows = ol._l3_entries(panel=None)
+    assert len(rows) == 1 and rows[0]["state"] == expected_state
+    assert rows[0]["entry_price"] is None
+    assert all(value is None for key, value in rows[0].items()
+               if key.startswith(("fwd_", "excess_")))
+    assert ol._append_rows("L3", rows, root=tmp_path) == 1
+    assert ol._append_rows("L3", rows, root=tmp_path) == 0
+    persisted = pd.read_parquet(ol._ledger_path("L3", tmp_path))
+    assert persisted["state"].tolist() == [expected_state]
+    assert persisted["ticker"].tolist() == ["SYNTH"]
+
+
 @pytest.mark.parametrize("existing", [False, True])
 def test_failed_ledger_write_never_reports_added_rows(tmp_path, monkeypatch, existing):
     row = {"ticker": "OLD", "anchor_date": "2026-10-30", "filer": "synthetic"}
