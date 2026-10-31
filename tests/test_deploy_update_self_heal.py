@@ -883,6 +883,8 @@ MUST_RESTART = [
     "config/site_access.yml",
     # app.billing holds the issuer's plan/features catalog for the process life.
     "config/plans.yml",
+    "engine/prophet_early_observations.py",
+    "engine/turn_watch_capture.py",
     "engine/neuralweb/market_memory_playback.py",
     "engine/neuralweb/market_memory_retained_catalog.py",
     "engine/neuralweb/market_memory_retained_saved.py",
