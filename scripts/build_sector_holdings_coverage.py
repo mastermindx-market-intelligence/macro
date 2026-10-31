@@ -20,6 +20,10 @@ the same fields turn numeric.
 The build_sector_central hook calls emit_holdings_coverage_additive(), which
 is additive and never fatal: any failure logs at warning and returns None.
 
+The feed is published atomically: the bytes are staged in a same-directory
+temporary sibling and moved onto the destination with one replace, so a failed
+or interrupted write leaves the previously published feed exactly as it was.
+
 Run: python -m scripts.build_sector_holdings_coverage --out <path>
 (In the sparse session worktree the dry run MUST pass --out; the default
 writes under site/, which this checkout never writes.)
@@ -27,11 +31,15 @@ writes under site/, which this checkout never writes.)
 from __future__ import annotations
 
 import argparse
+import errno
 import json
 import logging
 import math
+import os
 import re
+import stat
 import sys
+import tempfile
 from collections.abc import Mapping, Sequence
 from datetime import date
 from pathlib import Path
@@ -165,6 +173,67 @@ def build_holdings_coverage(snapshots: Mapping[str, pd.DataFrame | None], *,
             "funds": out_funds}
 
 
+def _publish_mode(destination: Path) -> int:
+    """The mode the published file must carry.
+
+    An existing destination keeps its own mode: a served artifact must not
+    silently change permissions because it was rewritten. A destination that
+    does not exist yet gets the mode a normal create would give (0666 minus this
+    process's umask), because tempfile.mkstemp's 0600 would leave the feed
+    unreadable to the static site. Neither branch ever widens the permissions
+    the destination already had.
+
+    ONLY a genuinely absent destination may take that default mode. Any other
+    metadata failure (EIO, ESTALE, EACCES) leaves the destination's real mode
+    UNKNOWN, so it propagates instead of being read as "absent": guessing the
+    default there would replace a restricted 0600 file with a 0644 one and
+    silently widen its permissions.
+    """
+    try:
+        return stat.S_IMODE(destination.stat().st_mode)
+    except FileNotFoundError:
+        pass
+    umask = os.umask(0)  # read it once; this builder is single-threaded
+    os.umask(umask)
+    return 0o666 & ~umask
+
+
+def _reject_symlink_destination(destination: Path) -> None:
+    """Refuse to publish onto a symlink.
+
+    os.replace onto a symlink path REPLACES the link itself with a regular
+    file: the file the link pointed at keeps its old bytes while the served
+    feed quietly stops being the one that was written. A dangling link would
+    be replaced just the same. Neither is a publication the caller asked for,
+    so both are refused loudly and the link is left exactly as it was.
+    """
+    if os.path.islink(destination):
+        raise FileExistsError(errno.EEXIST,
+                              "destination is a symlink; refusing to replace it",
+                              str(destination))
+
+
+def _fsync_parent_dir(directory: Path) -> None:
+    """Best-effort durability for the rename itself.
+
+    This runs AFTER os.replace already published the feed: there is nothing to
+    roll back, so a failure here is logged, not raised — raising here would
+    misreport a successful publication as a failure and invite a duplicate
+    write over an already-good file.
+    """
+    try:
+        fd = os.open(directory, os.O_RDONLY)
+    except OSError as exc:
+        log.warning("holdings coverage: parent dir fsync open failed: %s", exc)
+        return
+    try:
+        os.fsync(fd)
+    except OSError as exc:
+        log.warning("holdings coverage: parent dir fsync failed: %s", exc)
+    finally:
+        os.close(fd)
+
+
 def _validate_weight_contract(feed: Mapping) -> None:
     """Reject weights the Terminal's strict reader would reject, before touching output."""
     for fund in feed["funds"]:
@@ -189,12 +258,41 @@ def _validate_weight_contract(feed: Mapping) -> None:
 
 
 def write_holdings_coverage(path: Path, feed: dict) -> None:
-    """Persist only consumer-valid weights, leaving existing output on rejection."""
+    """Publish the feed atomically: the destination is replaced in one step or
+    not at all, so an interrupted write can never leave the last good feed
+    truncated or half-written. The bytes are exactly the ones the Terminal
+    reader expects — compact JSON, no trailing newline.
+
+    The weight-contract gate (#10193) runs first and exactly once, before any
+    output mutation: a feed the Terminal's strict reader would reject never
+    reaches the filesystem, so the previously published feed, its mode and its
+    directory are all left exactly as they were.
+    """
     _validate_weight_contract(feed)
     path = Path(path)
+    # Serialize before the parent exists: a serialization error must not create
+    # a directory or leave an output behind.
+    payload = json.dumps(feed, separators=(",", ":"), ensure_ascii=False)
+    # Both destination checks come BEFORE anything is created or staged: a
+    # refusal must leave the previously published feed, its mode and its
+    # directory exactly as they were.
+    _reject_symlink_destination(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(feed, separators=(",", ":"), ensure_ascii=False),
-                    encoding="utf-8")
+    mode = _publish_mode(path)
+    fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(payload.encode("utf-8"))
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.chmod(tmp_name, mode)
+        os.replace(tmp_name, path)
+    finally:
+        try:
+            os.unlink(tmp_name)
+        except FileNotFoundError:
+            pass
+    _fsync_parent_dir(path.parent)
 
 
 def emit_holdings_coverage_additive(fdir: Path, *, snapshots_loader=None,
