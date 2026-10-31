@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000018230-23-000022",
+    "expected_period_end": "2023-03-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "1790000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "cat-20230331.htm | us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments @ i78eda0dc8b98458e80482505e6255ddf_D20230101-20230331 (StatementBusinessSegmentsAxis=cat:ConstructionIndustriesMember; SubsegmentsConsolidationItemsAxis=us-gaap:ReportableSubsegmentsMember; ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember) | 'Construction Industries $ 1,790 $ 1,057' | Segment profit for the largest segment, Construction Industries, for the Q1 2023 (three months ended March 31, 2023); segment information note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_profit_or_loss",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000018230-23-000022|extract|segment_profit_or_loss"
+  },
+  {
+    "accession": "0000018230-23-000022",
+    "expected_period_end": "2023-03-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "6746000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "cat-20230331.htm | us-gaap:Revenues @ i168d5b0e7d68416e842b029c0ef35c88_D20230101-20230331 (StatementBusinessSegmentsAxis=cat:ConstructionIndustriesMember; SubsegmentsConsolidationItemsAxis=us-gaap:ReportableSubsegmentsMember) | 'Construction Industries $ 3,608 $ 599 $ 1,336 $ 1,161 $ 6,704 $ 42 $ 6,746' | Largest reportable segment by total sales and revenues for the Q1 2023 (three months ended March 31, 2023): Construction Industries (vs Energy & Transportation 6,254; Resource Industries 3,427; Financial Products 902); segment information note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_revenue",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000018230-23-000022|extract|segment_revenue"
+  }
+]
