@@ -4767,6 +4767,10 @@ CURATED_EXCLUSIVE = {
     # Pure International browser helpers have a closed source/test dependency
     # set; unrelated page changes must not select their Node-only PR check.
     "international-workspace-pure-js",
+    # IM12 E3 correction receipts: superseding revision receipt, dependent-result
+    # invalidation and saved-evidence preservation. scope: exclusive pins the
+    # measured import closure of the correction contract suite (no config read).
+    "international-global-correction",
     # Numerical records reuse the performance owner's measured import closure.
     "international-workspace-foundation",
     # IM18 watch-condition lifecycle contract: the pure evaluator consumes
