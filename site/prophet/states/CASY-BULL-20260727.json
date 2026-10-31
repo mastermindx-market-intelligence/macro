@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CASY-BULL-20260727",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 20.4,
@@ -10,21 +10,21 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 7.9,
+    "validity": 7.1,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.185,
+    "dist_to_stop_r": 0.176,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 202.2,
-    "p1": -0.5432,
-    "p2": -0.2716,
+    "horizon_pct_used": 204.4,
+    "p1": -0.5493,
+    "p2": -0.2746,
     "p3": null,
-    "move_r": -0.815,
+    "move_r": -0.824,
     "mfe_r": 0.0,
     "mae_r": -1.255
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 91,
-  "tau": 2.0222,
+  "days_elapsed": 92,
+  "tau": 2.0444,
   "closed": true,
   "outcome": "NO_ENTRY"
 }
