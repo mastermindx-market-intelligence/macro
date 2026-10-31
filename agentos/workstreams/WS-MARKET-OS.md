@@ -154,6 +154,91 @@ waves:
     status: todo
     depends_on: [B1B-B6, D1-D9]
     next_action: No live forward claim before point-in-time replay, calibration, forward shadow, and explicit authority promotion.
+  - id: masterplan-adoption
+    title: MarketOntology — masterplan and local-wave adoption
+    status: in_progress
+    depends_on: []
+    next_action: 'P1.T1 authoring is implementation_complete and same-workstream qualification passed. Consume
+      Draft #10165''s current CI, independent review and normal source landing. After exact protected readback,
+      use a fresh locked snapshot and ordinary MARKET-OS merge-import, preserving every task and component
+      identity. No rebind.'
+  - id: b-delivery-continuation
+    title: MarketOntology B — original delivery continuations
+    status: in_progress
+    depends_on: []
+    next_action: 'B retains P2.T2 on Terminal #1173, published at 80f12e7e, and P2.T3 on the original natural
+      weekly-brief result. Consume each original return, successor CI 40118684655 and independent normal
+      release before its own consumer acceptance. Preserve accepted P2.T1/P2.T2.S1 and all held effects.'
+  - id: codex-session-plan
+    title: MarketOntology A — rates, WTI and native-ledger continuation
+    status: in_progress
+    depends_on: []
+    next_action: A retains T002 accepted and T004 active, with T005-T007 intact. Consume original rates
+      and ordinary WTI publications and the existing native-ledger repair. Preserve source/PIT/calendar/cutoff
+      proof and all unknown effects; no duplicate dispatch, replay or observer.
+  - id: a-f04-completion
+    title: MarketOntology A — all nine F04 obligations
+    status: in_progress
+    depends_on: []
+    next_action: Close each of the nine explicit F04 rows through its own qualified producer, identity,
+      PIT, calibration and consumer gates. Relevant rates/native inputs constrain their own rows only; retain
+      the accepted P024 and DELTA005 bounded actions.
+  - id: b-p052-continuity
+    title: MarketOntology B — exact saved research and recipient continuity
+    status: in_progress
+    depends_on: []
+    next_action: 'Reuse Macro #10115 and Terminal #1144 source/install results. Resolve exact native input,
+      purpose, retention, 0042 and current consent requirements, then prove Save A -> inspect B -> reopen
+      A and authorized pinned sharing with negative cases.'
+  - id: a-family-residuals
+    title: MarketOntology A — F01, F02, F03 and F05 residuals
+    status: in_progress
+    depends_on: []
+    next_action: Reconcile the 42 non-F04 A IDs against later accepted evidence. Advance existing policy,
+      Options, event and Brain owners without reviving stale NOT_BUILT cells, replacing active carriers
+      or clearing retained uncertainty.
+  - id: b-family-residuals
+    title: MarketOntology B — remaining F06-F13 outcomes
+    status: in_progress
+    depends_on: []
+    next_action: 'Reconcile all 79 B IDs, including F10 #9867, F09 ownership/material semantics, second-user
+      thesis/team/API paths, natural alert delivery and F13 learning. Role-label and P052 work retain their
+      dedicated original carriers.'
+  - id: f00-coverage-reconciliation
+    title: MarketOntology F00 — current evidence across the full denominator
+    status: in_progress
+    depends_on: []
+    next_action: A remains sole F00C CSV consolidation writer; B independently verifies. Reconcile all 130
+      IDs and separate public-family obligations with current accepted, partial, rejected and unknown dispositions.
+      Coverage is distinct from parity and scientific acceptance.
+  - id: joined-journey
+    title: MarketOntology J1 — qualified joined Macro-to-Terminal journey
+    status: todo
+    depends_on: []
+    next_action: A/B prepare one qualified discover -> explain -> company -> scenario -> save -> revisit
+      -> authorized share journey. Gate only on its actual inputs, identity and consent; preserve degraded
+      and negative cases. J1 remains one milestone within the full program.
+  - id: parity-acceptance
+    title: MarketOntology — complete capability parity acceptance
+    status: todo
+    depends_on:
+    - b-delivery-continuation
+    - codex-session-plan
+    - a-f04-completion
+    - b-p052-continuity
+    - a-family-residuals
+    - b-family-residuals
+    - f00-coverage-reconciliation
+    - joined-journey
+    next_action: Independently adjudicate every original obligation and real consumer result. Reject stale,
+      partial or single-gesture evidence for a larger contract; publish coverage and parity acceptance separately.
+  - id: beyond-parity-ratchet
+    title: MarketOntology — measured improvement after accepted parity
+    status: todo
+    depends_on:
+    - parity-acceptance
+    next_action: Use existing evaluation and learning owners to improve accepted jobs. Unvalidated research,
+      sentiment and context remain non-authoritative for ranking, gating, sizing or trade decisions.
 decisions:
   - "DEC:MARKET-OS-B1A-IDENTITY-GATE-OWNER-BACKED-CHAIN"
   - "DEC:MARKET-OS-WATCHLIST-PORTFOLIO-SEPARATE-TRUTH-UNIFIED-EXPERIENCE"
@@ -162,10 +247,17 @@ decisions:
   - "DEC:MARKET-OS-A1A-MERGED-PRODUCTION-ACCEPTANCE-REQUIRED"
   - "DEC:MARKET-OS-A1A-ACCEPTED-IN-PRODUCTION"
   - "DEC:MARKET-OS-A1B-ACCEPTED-IN-PRODUCTION"
+  - "DEC:MARKET-INTEL-PRODUCTIZATION-NO-NEW-WORKSTREAM"
+  - "DEC:MARKET-ONTOLOGY-COMPLETE-CAPABILITY-PARITY-FABLE-COO-FANOUT"
+  - "DEC:MARKET-ONTOLOGY-GRANULAR-FULL-PARITY-BEYOND-PARITY-RATCHET"
+  - "DEC:MARKET-ONTOLOGY-CURRENT-PUBLIC-DELTA-CENSUS-IS-CLOSURE-INPUT"
+  - "DEC:MARKET-OS-STALE-GLOBAL-NEXT-ACTION-SUPERSEDED-BY-PARITY-FANOUT"
+  - "DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023"
 discoveries:
   - "DSC:MARKET-OS-PASTE-FLOW-WRITES-WATCHLIST-NOT-PORTFOLIO"
   - "DSC:MARKET-OS-AUTHENTICATED-PORTFOLIO-FAILS-OPEN-TO-LOCAL"
   - "DSC:MARKET-OS-MUTATION-SUCCESS-REQUIRES-AFFECTED-ROW"
+  - "DSC:MARKET-ONTOLOGY-USER-STATE-STORE-IS-TERMINAL-WATCHLISTS"
 landmines:
   - >-
     FIXED by A1A (#6098): `templates/market_books.js::buildModel` no longer unions
@@ -200,6 +292,10 @@ landmines:
     count until a fresh reread. This is NONBLOCKING issue #6510, not a persistence or
     authority failure. Repair only the existing render/update seam; never create a
     second count/state store or Watchlist-derived fallback.
+  - "MarketOntology belongs to this existing MARKET-OS record. Its original ten component waves and their acceptance boundaries remain intact; the project-local wave IDs are appended. Local P aliases are durable buffer identities, not an instruction to renumber tasks from canonical list position."
+  - "The full denominator remains 130 = 88 paid + 42 delta, currently A 51 / B 79. Historical CSV labels and bounded source/install/gesture results do not establish complete family acceptance."
+  - "Meta-CEO A remains sole F00C CSV consolidation writer. Meta-CEO B retains its original F06-F13/J1 carriers. This census does not acquire their product branches or clear QLedger/TXI, Macro #10100, F08 MU403, F09 rc78 or spent EVAL1 effects."
+  - "Operations already rebound the charter to MARKET-OS. Ordinary merge-import is the relevant adoption path; the earlier test of rebinding to a second workstream is withdrawn as a project dependency."
 do_not_redo:
   - Do not create another Portfolio, Watchlist, event, identity, risk, or brief store.
   - Do not merge Watchlist attention membership into Portfolio ownership semantics.
@@ -216,6 +312,10 @@ do_not_redo:
   - Do not reopen Scene 9 as hidden A1A debt; it was prohibited by the later specific matrix authorities and Sol accepted A1A without it.
   - Do not repeat either passed A1B production acceptance vertical absent contradictory production evidence or explicit recommission.
   - Do not treat merged PR #6125's pre-production-proof BUILT_NOT_PROVEN state as the current gate; preserve it as historical reconciliation evidence.
+  - "Preserve MarketOntology A T002 accepted/T004 in_progress and B P2.T1 accepted/P2.T2 in_progress, every task ID/history/evidence, and the retained T003/T008 supersession links."
+  - "Do not repeat accepted MarketOntology restored-root recovery, P024 submit, DELTA005 bounded action, layout, F11/F12 bounded reads, P052 source/install, 0041 or petroleum closure without a material invalidator."
+  - "Do not replace A/B source carriers, edit A's F00C CSV from this census, shrink the denominator or re-open generic commercial rights already approved by the October 23 attestation."
+  - "Do not rebind this charter or import an unmerged Draft as protected source. Use the existing locked merge path after normal source landing, preserving P1-P13 aliases and all existing component identities."
 artifacts:
   - research/market_os/MASTERMIND_MARKET_OS_ARCHITECTURE_FREEZE_AND_A1A_COMMISSIONING_2026-08-20.md
   - agentos/handoffs/MARKET-OS-2026-08-20.md
@@ -232,6 +332,17 @@ artifacts:
   - agentos/handoffs/MARKET-OS-2026-08-20-a1a-merge-reconciliation.md
   - agentos/decisions/DEC-MARKET-OS-A1A-MERGED-PRODUCTION-ACCEPTANCE-REQUIRED.md
   - agentos/decisions/DEC-MARKET-OS-A1B-ACCEPTED-IN-PRODUCTION.md
+  - "research/market_intelligence_productization/MASTERMIND_MARKET_INTELLIGENCE_PRODUCTIZATION_MASTERPLAN_2026-08-23.md"
+  - "research/market_intelligence_productization/MARKET_ONTOLOGY_COMPLETE_PARITY_ADOPTION_ADDENDUM_2026-08-26.md"
+  - "docs/superpowers/plans/2026-08-29-market-ontology-codex-work-program-command.md"
+  - "research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md"
+  - "research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv"
+  - "research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_F06_F13_CENSUS_RECONCILIATION_2026-10-02.md"
+  - "agentos/handoffs/MARKET-ONTOLOGY-META-CEO-A-2026-09-07.md"
+  - "agentos/handoffs/WS-MARKET-OS-2026-10-10-ceo-a-f01-f05-wave15-seat-transfer.md"
+  - "agentos/handoffs/MARKET-ONTOLOGY-META-CEO-B-2026-10-19.md"
+  - "agentos/handoffs/WS-MARKET-OS-2026-10-24-marketontology-census.md"
+  - "research/market_intelligence_productization/MARKETONTOLOGY_MARKET_OS_ADOPTION_QUALIFICATION_2026-10-24.json"
 next_action: >
   PRIMARY PRODUCT: A1B is PROVEN_LIVE / DONE. Before any A2-A6 implementation,
   Sol refreshes current Macro/Terminal truth and commissions one independently useful
@@ -240,6 +351,7 @@ next_action: >
   census remains clean. PARALLEL ORGANIZATIONAL WORK: the separate Market Ontology
   parity/fanout carrier remains independent and must preserve its own current authority,
   claim, and proof gates; do not infer that this workstream sync lands or dispatches it.
+  MARKETONTOLOGY CONTINUATION (October 24): P1.T1 authoring and same-workstream qualification are implementation-complete in Draft #10165. Consume its current CI, independent review and normal source landing, then use the existing locked merge-import after exact protected readback. A T004 and B P2.T2/P2.T3 continue independently; preserve accepted evidence and all component identities. No rebind is required.
 ---
 
 ## Current state
@@ -518,3 +630,327 @@ The same proof pack preserves all 1,219 prior indexed entries except the append-
 Terminal #859 and R93 installer recovery remain COMPLETE / DO_NOT_REDO. The earlier strict beta stop proof remains false; its separately verified same-A normal-start recovery remains true. No new installer, service, production or DNS mutation occurred in this repair. The 19:52 DNS read still observed the beta EdgeOne CNAME, and the read-only publication preflight was preparatory, not delivery evidence.
 
 Next: normal-push this repair and proof on the original branch, attend the exact new-head hosted checks and incumbent MOG, then bind protected landing to a covering existing render and stable served bytes. Canonical beta DNS/TLS/auth/public-browser acceptance remains separate and needs authenticated DNSPod domain-owner access when that operation is reached. Preserve Sector's six views and basket behavior, Paper REVISE, and C4 SPEC_ONLY/UNAPPLIED/UNRUN. No duplicate PR, renderer, source carrier or watcher.
+
+## MarketOntology census and local-wave proposal — October 24, 2026
+
+**Canonical home: WS:MARKET-OS.** The Chairman's current correction requires the
+MarketOntology census and local waves to extend this existing record through the
+same Draft Macro PR #10165. The earlier proposed second record and its exception
+decision are withdrawn from the candidate. The original no-new-workstream decisions
+remain unchanged.
+
+This is an append-only MarketOntology extension. The existing ten component wave
+objects, their order, titles, dependencies, next actions and acceptance limits are
+preserved, as are the pre-existing document body, identity, objective, program,
+owner and component responsibilities. This section does not recommission any old
+Market OS or Shared Shell delivery.
+
+| Field | Current binding |
+|---|---|
+| Workstream | WS:MARKET-OS; macro/agentos/workstreams/WS-MARKET-OS.md |
+| Existing source carrier | [Draft Macro #10165](https://github.com/mastermindx-market-intelligence/macro/pull/10165); sol/web-marketontology-census-20261024-c2 |
+| Existing parent operation | marketontology-complete-parity-fanout-20260826-sol-001; [Macro issue #6819](https://github.com/mastermindx-market-intelligence/macro/issues/6819) |
+| A continuity | Codex 01a128b5-e26b-7b12-94b5-231bfe0b8036; F01-F05/F00C; sole CSV consolidation writer |
+| B continuity | Codex 01a128b7-bd2b-7a91-891d-39d38f74ad55; F06-F13/J1; original product carriers |
+| Existing A handoff lineage | [September 7 A handoff](../handoffs/MARKET-ONTOLOGY-META-CEO-A-2026-09-07.md) and [October 10 F01-F05 handoff](../handoffs/WS-MARKET-OS-2026-10-10-ceo-a-f01-f05-wave15-seat-transfer.md), both under MARKET-OS |
+| Protected procedure | Mastermind master@f608f52f35384dcfa8e4305dc594f1fbe823d5ec; compatible skillpack 1.0.1 / bootstrap-major 1, rechecked for this correction |
+| Requested planning template | [PR #1700 template at 39602a93](https://github.com/mastermindx-market-intelligence/Mastermind/blob/39602a939b5a56e74dfd97afc9ad0bdbf2734dec/docs/templates/CEO_PROJECT_MASTER_PLAN.md); format only |
+| Census base | Macro 11f88c730c2d5f25569d5c5508ff46ce71e14eb8; the canonical MARKET-OS blob is also unchanged at locally observed origin/main 916a16e28941f9f68000bb3dc3c2f3380dd9e0d2 |
+| Current charter | ~/gwcap/project-charters/marketontology; already bound to MARKET-OS |
+| Census source author | Existing marketontology-census-20261024-c2 operation; no A/B product-custody transfer |
+
+The assessment below retains the original dated census evidence. The current
+binding and task-state checks were refreshed at 1:27-1:30 p.m. CDT (18:27-18:30Z).
+B's successor has since been published at 80f12e7e; its newer checkpoint is
+distinguished below from the earlier failed-head evidence. Other PR rows are
+dated census observations, not a promise that those carriers stop changing.
+
+### North star and completion ruler
+
+**User's job:** discover a material change, understand why it matters to a company,
+theme or portfolio, inspect the underlying evidence and uncertainty, evaluate a
+qualified scenario, preserve the exact research state, and return or share within
+the recipient's actual authority.
+
+**Machine's job:** provide useful intelligence from truthful, purpose-qualified
+inputs and stable identities; preserve source/PIT/correction clocks; expose missing
+or degraded evidence; retain authorized research state through existing owners.
+
+**DONE_WHEN:** all 130 admitted IDs retain an explicit current disposition and
+accountable component owner; every included job has its required real consumer
+proof; the joined journey works; scientific/calibration claims pass their own
+contracts; the separate public-family/learning obligations are reconciled; and a
+fresh session can recover the exact frontier without replaying effects.
+
+`COVERAGE_COMPLETE`, `PARITY_COMPLETE`, and
+`BEYOND_PARITY_RATCHET_ACTIVE` are separate milestones. None is newly established
+by this census. J1 is an early joined milestone, not the 130-row completion claim.
+
+Product acceptance includes coherent desktop/mobile behavior, keyboard/accessibility,
+dark/light and EN/ZH where applicable, truthful degradation, latency/cost limits
+and independent critique. An old screenshot, fixture, refusal-only endpoint,
+installed module or successful single gesture cannot prove the larger contract.
+
+**Falsifiers:** lost/renumbered task history; missing source identity; silent
+latest-version substitution; unknown data shown as zero exposure; whole-capability
+completion inferred from a bounded action; duplicated state or execution owners;
+unqualified research promoted into rank/gate/size/trade authority.
+
+### Census method and recovery evidence
+
+The M2 Studio was verified through the current C2 Personal connection. Both restored
+roots exist, are clean detached checkouts, and resolve to Macro 11f88c73:
+
+- `/Volumes/Mastermind/agent-workspaces/codex/5eb2/macro-main`
+- `/Volumes/Mastermind/agent-workspaces/codex/d28a/macro-main`
+
+A/B self-evaluations were read at
+`~/gwcap/estate-census/self-evals/meta-ceo-a-marketontology.md` and
+`meta-ceo-b-marketontology.md`. Their original Codex rollout metadata binds the
+given thread IDs to those exact paths. Only bounded user-facing messages and
+metadata were recovered; the initial rollout observations were A at 17:13:38Z and B
+at 17:16:12Z; later task-buffer and PR observations are dated separately. Unknown uncommitted work from the pruned roots remains unknown.
+
+A bounded filename/content search of
+`~/.local/share/mastermind-runtime/handoffs` found no MarketOntology-specific
+handoff there. The relevant surviving continuity is the Agent OS handoffs,
+Macro #6819 checkpoint, two self-evaluations, the existing
+`~/gwcap/project-charters/marketontology/` buffer, and retained A/B evidence.
+
+Retained implementation locations include A's
+`/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b5/resume-20261018`,
+B's `/Volumes/Mastermind/evidence/marketontology-fabric-repair-01a128b7/CONTINUATION_RECEIPT.json`,
+and B's surviving role-label workspace
+`/Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/b-delta003-portfolio-role-20261024-dc18e996b48571ac`.
+These are recovery pointers, not lease-transfer or retry grants.
+
+#### Prior-plan assessment
+
+All repository paths in this table are pinned to the census base above unless an
+immutable URL says otherwise. Existing artifacts remain the detailed source;
+this record does not replace their data or acceptance contracts.
+
+| Prior plan / handoff | Still valid | Actual progress and correction |
+|---|---|---|
+| August 23 productization masterplan | Evidence/identity → security state → Opportunity → research/portfolio architecture; canonical-owner reuse. | Useful source and several consumer slices exist. Its narrow immediate shortlist is no longer the scope ceiling. |
+| August 26 complete-parity addendum and adoption ledger | All 88 paid IDs, lawful independent implementation and one disposition/owner per row. | Coverage is broader than the original shortlist, but source/install does not establish full parity. |
+| August 28 granular full-parity/beyond-parity plan | Full original obligations and ratchet after acceptance. | Preserve public-family, exact-byte and learning duties separately;130 admitted rows do not erase the broader 1,556-row inventory. |
+| August 29 Codex command plan and orchestration addendum | Retail, desk, machine and learning outcomes; three distinct completion milestones. | Old seat/delegation topology is historical. Current A/B roots and existing admitted carriers control actual continuation. |
+| September 6 A/B charter |130 IDs; surface custody; no second intelligence/state plane. | Its F10-to-A allocation 56 / 74 is superseded by October 2's A 51 / B 79 assignment. |
+| October 2 full-program mandate and 79-row reconciliation | A F01–F05/F00C; B F06–F13/J1; J1 is not program completion. | Existing producers and prior correction packets prevent re-launching stale NOT_BUILT cells. 17 sampled PRs never proved all 130 consumer outcomes. |
+| October 19 B Agent OS handoff | Accepted F11 and bounded webhook/account-read delivery; exact holds. | Its pending #9771 source claim is stale: #9771 merged later that day. 0041 closure is distinct from 0042 / 0044. |
+| October 24 self-evaluations/current checkpoint | Restored roots, surviving commits, current product obligations and uncertainty. | Recovery is done. Full F04 and all 79 B outcomes remain incomplete; exact owned repairs continue. |
+
+Principal current anchors:
+[A checkpoint 6112033805](https://github.com/mastermindx-market-intelligence/macro/issues/6819#issuecomment-6112033805),
+[full mandate 5946068837](https://github.com/mastermindx-market-intelligence/macro/issues/6819#issuecomment-5946068837),
+[A scope 5946048717](https://github.com/mastermindx-market-intelligence/macro/issues/6819#issuecomment-5946048717),
+[B scope 5946057251](https://github.com/mastermindx-market-intelligence/macro/issues/6819#issuecomment-5946057251).
+
+#### Full family denominator and real status
+
+Canonical row source:
+`research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv`.
+A remains its sole consolidation writer. This table is a dated census assessment,
+not a replacement row ledger or new acceptance writer.
+
+| Family | Rows / owner | Current capability | Evidence and remaining acceptance |
+|---|---:|---|---|
+| F01 Macro/Markets |12 / A|PARTIAL|Regime/orientation delivery exists; currentness, dedicated credit and remaining producer/consumer contracts require individual proof.|
+| F02 Policy/Geo |10 / A|PARTIAL|Several policy/geography surfaces delivered; reconcile remaining coverage and held carriers. Old sanctions #6834 does not negate later #6899/page delivery.|
+| F03 Options/Expression |16 / A|PARTIAL|Existing Options/source surfaces remain valuable; full PIT, scenario and scientific contracts are not established by their presence.|
+| F04 Ontology/Transmission |9 / A|PARTIAL|#9639 landed; installed and selected authenticated actions evidenced. All nine complete obligations below remain explicit.|
+| F05 Event/Impact |4 / A|PARTIAL|Event/Brain changes and fixes exist; #7273/#7285 remain distinct held source/consumer lanes.|
+| F06 Security Research |3 / B|PARTIAL at joined-program level|Ledger labels the three proven and later screener exposure integrity has scoped live evidence. Complete joined acceptance remains separate.|
+| F07 Valuation/Scenario |5 / B|PARTIAL|P052 source and installation advanced; exact saved scenario and authorized recipient journey remain owed.|
+| F08 Portfolio/Alerts |7 / B|PARTIAL|#1173 actively owns role-label repair; natural delivery and actual recipient proof are separate.|
+| F09 Capital/Materials |29 / B|PARTIAL|#9771 holdings and #9862 petroleum source progressed; economic ownership, causal/source semantics and other families remain individually qualified.|
+| F10 Quant/Analogs |5 / B|PARTIAL|Existing methods and scoped reads exist; #9867 remains a Draft estimator carrier.|
+| F11 Research Workspace |6 / B|PARTIAL|Broad research/entry behavior accepted within scope; complete thesis/second-user requirements remain, including #761.|
+| F12 Team/API |18 / B|PARTIAL|No-team/account-read and webhook installation accepted; populated teams, keys, recipient writes and natural delivery remain separate.|
+| F13 Ops/Learning |6 / B|PARTIAL|Some health/reliability/learning slices accepted; real claim/currentness and natural-time evidence remain owed.|
+| **Total** |**130 = A 51 + B 79**|**PARTIAL**|**88 paid + 42 delta; zero denominator reduction.**|
+
+The CSV currently contains 32 PROVEN_LIVE, 33 PARTIAL, 29 BUILT_NOT_PROVEN,
+31 NOT_BUILT and 5 SPEC_ONLY labels. These are **historical stored labels**, not
+fresh acceptance totals or a completion percentage. In particular DELTA005's
+SPEC_ONLY label is overtaken by an accepted bounded action; DELTA006's PROVEN_LIVE
+label does not prove calibrated Opportunity. Old BLOCKED_RIGHTS labels must be
+reconciled with the approved October 23 commercial-rights attestation, while exact
+data/PIT/access/scientific requirements remain real.
+
+#### Nine F04 obligations — no substituted denominator
+
+| ID | Accepted or built slice | Residual proof / exact next action |
+|---|---|---|
+| MO-DELTA-004 |Core source and company-related surfaces exist.|Resolve exact-PIT Company/ThemeMap identity and remaining company follow-on 502 cause; qualify the actual consumer.|
+| MO-DELTA-005 |Bounded evidence-to-next-action behavior accepted.|Complete decision/evidence/invalidator contract beyond that single consumed action.|
+| MO-DELTA-006 |Opportunity surface/source exists.|Qualify calibrated Opportunity and honest missing/degraded behavior.|
+| MO-DELTA-009 |ETF-related source exists.|Prove ETF identity, holdings vintage, observation/publication clocks and downstream use.|
+| MO-PAID-016 |WTI/source installation and propagation work progressed.|Consume real rates/WTI producer publications; establish native calendar/bar date/cutoff and portfolio/economic propagation.|
+| MO-PAID-024 |One explicit authenticated P024 submit reached a ready retrospective CZR case.|Preserve consumed gesture; qualify scanner calibration, cost, latency, correction and PIT as separate obligations.|
+| MO-PAID-042 |Radar/K5 source exists.|Resolve actual Radar 503 cause and prove the real K5/Radar drillback.|
+| MO-PAID-043 |Prospective byte-capture source #10149 landed.|Consume original QLedger future-publication repair; prove actual native transitions/history/purpose and complete causal reads. Byte matching is not execution authentication.|
+| MO-PAID-044 |Supplier-related implementation remains partial.|Qualify actual supplier selection and complete the supplier-to-second-order journey.|
+
+#### PRs, branches and CI at the census boundary
+
+| Carrier | Exact observed source fact | Acceptance boundary |
+|---|---|---|
+| Macro #9639 |MERGED `1c6814d1622cc1545531fcdef419c6c55c7a4960`|Core source; later checkpoint carries installation/consumer proof.|
+| Macro #10139 |MERGED `d376b6013dcd6bb56dd68916b0e5ed57618dfa4e`|WTI retention source; next natural capture/export/calendar still owed.|
+| Macro #10149 |MERGED `d7928c024f34c23aeccaec0d9e21a3f2c9fa7778`|Native observation source; not full causal/execution proof.|
+| Macro #10118 |MERGED `607d0419dd85cf7dbe4a393b77f4508cee52e834`|EVAL1 remains refusal-only; trial SPENT 1/1.|
+| Macro #10122 |MERGED `083f0f7af77987a43c8f68e4d67460a96ad0a227`|Scoped light/English desktop layout result accepted; no broader matrix inferred.|
+| Terminal #1173 |OPEN DRAFT at published 80f12e7ec006004d9d89fc075b532c6e4ffc99dc|Original failed c1b4327a run is consumed. B's 12:16 p.m. CDT checkpoint records successor CI40118684655 in progress, repaired unit/language and required PostgreSQL jobs successful, and CodeQL closed. No whole-CI, release or consumer claim.|
+| Macro #10115 |MERGED `8d23797062f3bb2f6c1ad5aa8d0418ee6c268177`|P052 native capture/resolution source; runtime closure does not activate future use.|
+| Terminal #1144 |MERGED `a32f264d8ac2b02744fb8928a3fc35ae8e774893`|Installed SHELL-OFF;0042 and real save/reopen/recipient proof remain separate.|
+| Macro #10152 |MERGED `669794ab77216b63304e0348e59d2a8dd419d57e`|Publisher-path documentation only.|
+| Macro #9771 |MERGED `b099a7d976c76036d6f2af0e7e3f660cd838c21b`|Supersedes October 19 pending-source prose; not all economic ownership proof.|
+| Macro #9862 |MERGED `5829625aeae287bde5234a2b6cb43d029ff5916a`|Preserve accepted bounded petroleum closure.|
+| Macro #9867 |OPEN DRAFT `bda3ae6bc9d984db0a2ea2622a5e4e86378cc44c`|Common-adoption panel DiD source; method and consumer acceptance remain.|
+| Terminal #582 |MERGED `d20dc37e287d03cf4eaa394e0c38ee4a861c6346`|0026/install/no-team read proof retained; natural delivery is distinct.|
+| Terminal #761 |OPEN DRAFT `aacecaf476a23b259f21aa52af4dff1fa0c19eae`|Second-user thesis proof remains distinct.|
+| Macro #10100 |OPEN `6dd13f8fec2474a7f37bcf32743e03e4527b0597`|Held original carrier, uncertainty preserved; no recovery/replay granted.|
+
+B published successor 80f12e7ec006004d9d89fc075b532c6e4ffc99dc nonforce on
+the same Terminal #1173 after the original failed CI settled. The correction
+readback confirms that published head and a clean synchronized original workspace.
+B's 12:16 p.m. CDT (18:16Z) task checkpoint reports the repaired unit/language job
+and required PostgreSQL job successful, with successor CI40118684655 still running
+and CodeQL closure already consumed. B owns the remaining original CI and
+independent normal release; this census does not reread closed checks or republish.
+
+P2.T2.S1 remains accepted local registration proof: the role SQL suite was added
+to the existing required PostgreSQL job, with 43 local cases passing after a
+short Darwin socket path. Earlier startup errors, inherited skips and a transient
+prior race failure remain in its evidence. That bounded result does not complete
+the parent P2.T2 or prove a live consumer.
+
+Other still-open historical carriers remain visible without automatic revival:
+Macro #6514 `5623fe34098f50b0b6dd36cf3c190f2acffeb7e3`;
+#8406 `4f4e80ca9ba9309ccb8bb211ff4d0a1ecff00272`;
+#7907 `0f4100def045fcfbc31761c3dae453464b89c8aa`;
+#7084 `4fab84d2bdad0a56b063f6da98a2c41585456ecd`;
+#6834 `1f083c36e57a19a27d9dbf6e59543a961ebc61c5`;
+#7273 `0644fccc4d6f35367337b9520a6e66ff7699fcec`;
+#7285 `0d064fb67a0f12314d8d0cd67146f4942a23caa3`;
+#6861 `6f3b75657f342949b9e0e04b837565cdb71a38a2`;
+Terminal #821 `0e6c64bd6ca8965aab524a2bb4b8c8dd5ec4a1df`;
+#496 `f664ba3d604934572ea50a98a8560abfac0631f8`.
+Their titles and open state do not prove a missing current product.
+Original issues #6821,#6822,#6823,#6824,#6785 and#6782 are lineage pointers;
+issue #6819 remains the program parent. No unrelated repo/CI repair is commissioned.
+
+
+### Project-local waves and execution order
+
+The eleven project-local wave IDs in frontmatter are appended **after** the
+original ten component waves. The existing local P1/P2/P3 aliases continue to mean
+masterplan-adoption, b-delivery-continuation and codex-session-plan. Canonical
+list position does not renumber an existing local task or wave alias.
+
+| Priority | Wave / responsibility | Required evidence |
+|---|---|---|
+| Now | masterplan-adoption; current census principal | Correct same-record PR, schema-valid handoff, preserved component objects/body, lossless ordinary merge-import/export qualification |
+| Concurrent | b-delivery-continuation; B / P2.T2 and P2.T3 | Original successor checks and independent normal release; original natural weekly-brief result; each keeps its own consumer acceptance |
+| Concurrent | codex-session-plan; A / T004-T007 | Original producer return code, clocks, bytes, PIT/native calendar and real consumer evidence |
+| Concurrent | a-f04-completion and b-p052-continuity | All nine F04 contracts; exact Save A -> inspect B -> reopen A and authorized pinned sharing |
+| Continuing | A/B family residuals and f00-coverage-reconciliation | All 130 stable IDs, current owner/disposition and original acceptance obligations; A sole rollup writer |
+| Prepared next | joined-journey | One real qualified joined customer journey, without waiting for unrelated families |
+| Final gates | parity-acceptance, then beyond-parity-ratchet | Independent complete-contract acceptance, then measured learning without unearned rank/gate/size/trade authority |
+
+Independent lanes remain independent under
+[the existing stale-global-next-action decision](../decisions/DEC-MARKET-OS-STALE-GLOBAL-NEXT-ACTION-SUPERSEDED-BY-PARITY-FANOUT.md).
+No new blanket dependency is added to the old component todo bundles.
+
+### Exact task-preservation contract
+
+At the 1:30 p.m. CDT snapshot the charter had 13 tasks and 13 existing waves.
+Only the census principal's existing P1.T1 was started through mmtask; the other
+twelve task objects were unchanged at that immediate readback.
+
+| Existing task | Required preserved state and meaning |
+|---|---|
+| A T002 | accepted; restored-root recovery evidence retained |
+| A T004 | in_progress (active); original producer/consumer continuation |
+| A T005/T006/T007 | ready; identities, histories, evidence and dependencies retained |
+| B P2.T1 | accepted; original recovery evidence retained |
+| B P2.T2 | in_progress (active); original Terminal #1173 delivery |
+| B P2.T2.S1 | accepted; local PostgreSQL-suite registration, not parent completion |
+| B P2.T3 | in_progress at the snapshot; consume the original natural weekly-brief result |
+| T003 -> P2.T1 | superseded record and link retained; no deletion |
+| T008 -> P2.T2 | superseded record and link retained; no deletion |
+| T001 | existing ready planning task; no implicit deletion or reassignment |
+| P1.T1 | current census/adoption authoring task, started under the existing source operation |
+
+The corrected path is ordinary merge-import against MARKET-OS. No rebind or
+cross-workstream migration is needed. A disposable qualification must preserve
+the complete task payloads, existing P1-P13 mappings, every history/evidence
+entry, all ten component wave identities and their canonical objects. Repeated
+import must be stable, repeated export must retain accepted evidence, and a
+failed validation must leave the successful-export watermark unchanged.
+
+The earlier generic-rebind failure was a test of the withdrawn second-record
+proposal. It remains historical evidence in the earlier PR commits and creates
+**no dependency on a rebind repair for this corrected plan**. No general platform
+repair, replacement importer or alternate task store is commissioned.
+
+### Decisions carried forward
+
+- MARKET-OS remains the existing canonical record; no second workstream or
+  exception to the historical no-new-workstream decision is required.
+- A retains F01-F05/F00C and B F06-F13/J1: 51 / 79 replaces the historical 56 / 74
+  allocation. A remains the sole F00C CSV writer.
+- All 130 IDs and separate public-family obligations survive. The full-family
+  assessment remains partial; no completion percentage is inferred from old labels.
+- Accepted bounded work remains accepted within its actual scope. Unknown old
+  effects and explicit holds are not cleared by a document, restored checkout or test.
+- Named commercial rights are already approved by the October 23 attestation.
+  Exact provenance, access, purpose, PIT, calibration and consent requirements remain.
+- This workstream and its existing handoff system are the organizational source.
+  The estate-census file is a requested copy; the current mmtask buffer remains
+  the local write-ahead working view.
+
+### Top-wave checkpoint and recovery
+
+Canonical handoff:
+[WS-MARKET-OS-2026-10-24-marketontology-census.md](../handoffs/WS-MARKET-OS-2026-10-24-marketontology-census.md).
+
+Qualification receipt:
+[MARKETONTOLOGY_MARKET_OS_ADOPTION_QUALIFICATION_2026-10-24.json](../../research/market_intelligence_productization/MARKETONTOLOGY_MARKET_OS_ADOPTION_QUALIFICATION_2026-10-24.json).
+
+The first-wave correction uses the existing admitted source workspace and the
+same PR #10165. The previous second-record files and no-new-workstream exceptions
+are removed from the candidate; the older decisions are restored byte-for-byte.
+The qualification returned **PASS** against the locked 13-task snapshot:
+ordinary import retained every task payload, P1-P13 alias and all ten original
+component wave objects, adopted the three existing local waves, and produced
+21 unique canonical waves. Repeated import was stable. Both exports validated,
+retained all three accepted evidence IDs and proposed no wave changes. A deliberate
+failed-validation fixture preserved the last successful export timestamp.
+The receipt SHA-256 is
+017581f95463fa89ce412ca4850f8489e825190c5179c9cb1aa82e5947b8d0fb.
+
+Full Agent OS validation returned **1,963 records, zero errors and 187 warnings**;
+the two changed Agent OS records passed scoped validation with **zero errors and
+zero warnings**, and whitespace checks passed. Concurrent A/B updates to the live
+charter were observed separately; all qualification commands used disposable dirs.
+An unmerged Draft is not imported into the live charter as protected truth.
+
+At **1:43 p.m. CDT (18:43Z)**, P1.T1 became implementation_complete after
+publication of corrected source 2d88e7f1 and the passing qualification. Every
+other task object and task ID was unchanged at that completion readback, including
+T002 accepted, T004 active, P2.T1 accepted and P2.T2 active. No task was self-accepted.
+The qualification receipt binds the candidate published at 2d88e7f1; this later
+checkpoint changes only progress/next-action text and the cumulative handoff.
+
+Normal source review/landing and exact protected readback precede live source
+adoption through the existing locked merge path. The new handoff retains the
+original A/B ownership, source carriers, accepted tasks, unresolved product
+obligations and next actions. A/B continue their current product work independently.
+
+The requested estate-census export keeps the filename
+~/gwcap/estate-census/marketontology-WS-2026-10-24.md but contains this canonical
+MARKET-OS record. The correction and material test result return to the same
+#dotsandgroksecretary coordination thread, parent 1792747724.730429.

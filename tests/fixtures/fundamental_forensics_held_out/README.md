@@ -25,5 +25,14 @@ Layout: `packages/<cik10>/<accession>/package_manifest.json` plus a per-CIK
 `scripts/capture_fif_issuer_packages.py --out-root`. Filing bytes are staged
 outside git at `~/lanes/stage/fif-heldout` on host `mastermind-pc` (lane
 packet named `ubuntu1`; the stage lives on the host that ran the capture) and
-reach git only as sha256 digests in the manifests. Labels are still absent:
-no `labels/` directory and no `_SEALED` marker exists in this root.
+reach git only as sha256 digests in the manifests.
+
+## Labels (2026-10-21)
+
+Label JSON files and their `_SEALED` markers live under `packs/PKxx/labels/`.
+They are written only by independent labeler lanes (`fif-heldout-lab-<x>-20261021`),
+never by pack lanes, build lanes or the integrating seat, and the seat merges
+them unchanged. A seal's `sealed_by` line carries the lane id named in that
+lane's packet; the admitted run that performed the work is recorded in the
+pull request that merged the labels. The isolation test requires a seal beside
+every label file. Packs without a `labels/` directory are not yet labelled.
