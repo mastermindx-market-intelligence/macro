@@ -16445,6 +16445,7 @@ jobs:
       - "scripts/build_expectation_surface.py"
       - "tests/test_finance_intelligence_page.py"
       - "tests/test_finance_intelligence_hydration.py"
+      - "tests/test_finance_intelligence_honest_shell.py"
       - "tests/finance_intelligence_hydration_harness.js"
       # direct (non-.py) reads of the page suite: public-access map + committed site copy
       - "config/site_access.yml"
@@ -16508,7 +16509,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml jinja2
       - name: finance intelligence page + hydration tests
-        run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
+        run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py tests/test_finance_intelligence_honest_shell.py -q
       - name: finance intelligence contract tests
         run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py tests/test_finance_case_signal.py tests/test_finance_witness_hints.py tests/test_finance_r10_signal_gate.py tests/test_finance_page_signal.py tests/test_finance_watching.py -q
 

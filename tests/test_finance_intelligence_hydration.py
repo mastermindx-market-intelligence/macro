@@ -701,8 +701,13 @@ def test_hydration_paints_no_live_region_and_the_page_owns_exactly_one() -> None
     page = _parse((TEMPLATES / "finance_intelligence.html.j2").read_text(encoding="utf-8")).root
     live = [el for el in page.walk()
             if "aria-live" in el.attrs or el.attrs.get("role") in _LIVE_ROLES]
-    assert len(live) == 1 and "fi-notice-live" in live[0].classes, \
-        [(el.tag, el.attrs) for el in live]
+    # Ruling F-5 flip: the not-connected shell adds one static polite region —
+    # the unbuilt status panel — beside the runtime notice. Painted rows still
+    # carry none (asserted above); the notice stays the only runtime region.
+    assert len(live) == 2, [(el.tag, el.attrs) for el in live]
+    classes = {frozenset((el.attrs.get("class") or "").split()) for el in live}
+    assert frozenset(("fi-notice-live",)) in classes, classes
+    assert frozenset(("fi-unbuilt",)) in classes, classes
 
 
 @needs_node
@@ -1181,7 +1186,7 @@ _EXPOSURE_WORDS = {
 }
 _IDENTITY_WORDS = {
     "en": {"IDENTITY_VALIDATED": "Identity confirmed", "IDENTITY_UNRESOLVED": "Identity unresolved",
-           "RESEARCH_HINT_UNVALIDATED": "Research hint, not validated"},
+           "RESEARCH_HINT_UNVALIDATED": "Research hint, not confirmed"},
     "zh": {"IDENTITY_VALIDATED": "身份已确认", "IDENTITY_UNRESOLVED": "身份尚未确认",
            "RESEARCH_HINT_UNVALIDATED": "研究线索，尚未确认"},
 }
@@ -1486,25 +1491,36 @@ def _w20a_scene(lang: str, read_url: "str | None", routes: dict | None = None) -
 @needs_node
 @pytest.mark.parametrize("lang", ["en", "zh"])
 def test_w20a_not_connected_keeps_committed_hint_and_watching_visible(lang: str) -> None:
+    """Ruling F-5 flip: the not-connected runtime keeps ONLY
+    #company-exposure (its head plus the hint lede and roster). The
+    rerating-map section — with its committed falsifiers list — now hides
+    with the other unpainted sections; the page is unbuilt, so no watching
+    list stays painted."""
     snap = _run(_w20a_scene(lang, ""))["first"]
     assert snap["fetchCalls"] == []  # empty URL must never reach fetchJson
     assert snap["noticeEn"] == "Not yet connected to the evidence service."
     assert snap["noticeZh"] == "尚未接入证据服务。"
     hidden_ids = [h["id"] for h in snap["displayNone"]]
-    for sid in ("what-changed", "system-map", "subtheme-atlas",
+    for sid in ("what-changed", "rerating-map", "system-map", "subtheme-atlas",
                 "macro-matrix", "constraint-map"):
         assert sid in hidden_ids, f"{sid} must stay hidden"
-    for sid in ("rerating-map", "company-exposure"):
-        assert sid not in hidden_ids, f"{sid} keeps its own display"
+    assert "company-exposure" not in hidden_ids, "company-exposure keeps its own display"
     hidden_classes = [h["className"] for h in snap["displayNone"]]
-    for cls in ("fi-falsifiers", "fi-hint-roster", "fi-section-head"):
+    for cls in ("fi-hint-roster", "fi-section-head"):
         assert cls not in hidden_classes, f"{cls} must not be hidden"
     hidden_mounts = {h["mount"] for h in snap["displayNone"]}
-    for mount in ("slice-select", "rerating-steps", "rerating-bridge", "falsifiers",
-                  "conflict-list", "exposure-thead", "exposure-thead-more",
+    # Ruling F-5: #company-exposure is the one kept section, so its empty
+    # mounts hide individually; the rerating-map mounts ride inside the
+    # wholesale-hidden section instead.
+    for mount in ("exposure-thead", "exposure-thead-more",
                   "exposure-rows", "exposure-rows-more", "exposure-more",
                   "exposure-cards", "exposure-cards-more"):
         assert mount in hidden_mounts, f"empty mount {mount} must be hidden"
+    for mount in ("slice-select", "rerating-steps", "rerating-bridge",
+                  "falsifiers", "conflict-list"):
+        assert mount not in hidden_mounts, (
+            f"{mount} hides with its section, not individually"
+        )
     dom = _dom(snap)
     assert dom.one("li", "fi-falsifier", data_falsifier_id="syn-fin-case-alpha")
     assert dom.one("li", "fi-hint-row", data_record_id="fin-research-v-2025")
