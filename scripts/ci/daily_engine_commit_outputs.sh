@@ -62,6 +62,13 @@ if [ "$cgp_audit_rc" -ne 0 ]; then
   echo "::error title=China gold premium final render audit::normalized Gold panel disagrees with current source/engine truth; see data/quality/china_gold_premium.json"
 fi
 git add data/ site/ reports/
+# Grey Deer EW-P1: same-settled-bundle mirrors and market session must agree.
+# Read-only, no second health ledger. WARN rather than abort: unrelated nightly
+# market outputs remain publishable while the original source owner repairs
+# a partial/missing mirror or a source clock. The consumer must still abstain.
+if ! python -m scripts.check_risk_envelope_pair --root .; then
+  echo "::warning title=Grey Deer settled envelope mirror/clock divergence::risk envelope data/site copies missing, different or behind current market_state; inspect the printed typed result; do not treat stale mirror as a fresh hazard or enable rotation alerts"
+fi
 # separate + tolerant: `git add site/ templates/` exits 128 when a pathspec
 # matches nothing, and this step runs under `-eo pipefail` — a missing
 # templates/ would abort the commit and lose the whole render rather than
@@ -206,6 +213,14 @@ if ! push_staged_heal data/ site/ reports/ templates/; then
   exit 1
 fi
 if git diff --cached --quiet; then echo "no engine output changes after conflict heal"; exit 0; fi
+# Stage candidate and working tree differ across failure/rebase windows. Read the
+# *index* at the final staging boundary; a successful worktree-only parity check
+# cannot prove what the original engine will actually commit. This is read-only
+# and advisory: absent or provisional inputs keep the derived contract unqualified
+# without losing unrelated market-ledger outputs.
+if ! python -m scripts.check_risk_envelope_pair --root . --git-ref INDEX; then
+  echo "::warning title=Grey Deer staged risk envelope divergence::staged index risk source copies missing, different or off-session; do not treat this candidate as an admitted settled bundle"
+fi
 bash scripts/ci/options_signal_nightly.sh commit-broad-candidate \
   "engine: regime update $(date -u +%F)"
 # best-effort push (see commit-data). The deploy below uses the uploaded
@@ -294,7 +309,18 @@ while push_attempt; do
     # This is the actual final candidate, including any render-sync commit.
     qledger_push_candidate=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
     python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref "$qledger_push_candidate" || exit 1
-    if push_do origin "$qledger_push_candidate:refs/heads/main"; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
+    if push_do origin "$qledger_push_candidate:refs/heads/main"; then
+      echo "pushed engine outputs on attempt $PUSH_ATTEMPT"
+      # Before the push, the worktree check cannot detect a site-only post-rebase
+      # overwrite of the derived settled public copy. Inspect immutable HEAD
+      # (the exact successfully pushed commit), not any later local builder
+      # mutation. A mismatch is a typed source-integrity incident, not reason
+      # to retroactively undo unrelated ledger publication or force market risk.
+      if ! python -m scripts.check_risk_envelope_pair --root . --git-ref HEAD; then
+        echo "::warning title=Grey Deer committed risk envelope pair divergence::pushed HEAD has nonidentical or off-session settled risk copies; consult the typed result and source publisher owner; do not activate risk alerts from either unqualified copy"
+      fi
+      push_won; exit 0
+    fi
   fi
   push_abort_rebase
   push_backoff
