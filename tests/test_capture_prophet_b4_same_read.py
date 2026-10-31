@@ -10,13 +10,13 @@ future-owner interposition) — the only new fixture material is the durable
 candidates-store parquet part and the committed standouts file the capture
 script itself reads.
 
-At BASE the alias seam is unbound (``resolve_alias_table() -> None``) and the
+Without the committed Data OS reference the alias seam is unbound (``None``) and the
 entry-geometry/metric owners do not exist, so every capture row is honestly
 ``UNAVAILABLE_DATA`` with the owners' typed reasons — that census is the
 deliverable, and these tests assert it byte for byte.
 """
 import json
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 
@@ -45,6 +45,7 @@ from tests.test_prophet_strategy_definition import (
     _b4_reader_world,
 )
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
 _SESSION = "2026-09-17"
 _CAPTURE_REL = Path("data") / "us_prophet_rank" / "b4_capture"
 _FIRST_CAPTURED_AT = datetime(2026, 9, 17, 20, 5, 0, tzinfo=timezone.utc)
@@ -314,7 +315,7 @@ def test_row_key_set_is_closed_and_no_state_token_is_ever_persisted(
 def test_evaluated_row_persists_facts_only_and_round_trips_the_verdict(
         tmp_path, monkeypatch):
     world = _world(tmp_path)
-    monkeypatch.setattr(capture, "resolve_alias_table", lambda: _B4Aliases("UNIT"))
+    monkeypatch.setattr(capture, "resolve_alias_table", lambda *_: _B4Aliases("UNIT"))
     _inject_future_geometry_metric_owners(monkeypatch)
 
     assert _run(monkeypatch, tmp_path, world, "--nightly") == 0
@@ -443,16 +444,92 @@ def test_live_root_override_is_report_only(tmp_path, monkeypatch, capsys):
     assert json.loads(capsys.readouterr().out)["mode"] == "report"
 
 
-def test_alias_seam_is_unbound_at_base_and_the_gap_is_typed_not_guessed(
-        tmp_path, monkeypatch):
+def test_alias_seam_is_unbound_without_the_reference_and_the_gap_is_typed_not_guessed(
+        tmp_path, monkeypatch, capsys):
     world = _world(tmp_path)
 
-    assert capture.resolve_alias_table() is None
+    assert not (tmp_path / "data" / "reference" / "vendor_aliases.parquet").exists()
+    assert capture.resolve_alias_table(tmp_path) is None
     assert _run(monkeypatch, tmp_path, world, "--nightly") == 0
+    doc = json.loads(capsys.readouterr().out)
+    assert doc["alias_table"] == {"bound": False, "receipt": None}
     row = _read_rows(_capture_file(tmp_path))[0]
     assert row["state"] == "UNAVAILABLE_DATA"
     # The adapter's own refusal is the captured reason — never a guessed alias.
     assert row["unavailable_reasons"] == ["IDENTITY_ALIAS_UNRESOLVED"]
+
+
+def _write_alias_reference(root, rows):
+    path = root / "data" / "reference" / "vendor_aliases.parquet"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    frame = pd.DataFrame(rows, columns=[
+        "vendor", "vendor_symbol", "security_id", "valid_from", "valid_to",
+        "ingested_at", "known_at", "evidence_sha256", "binding_sha256", "alias_kind",
+    ])
+    frame.to_parquet(path, index=False)
+    return path
+
+
+def test_alias_seam_binds_the_committed_data_os_reference_and_the_row_evaluates(
+        tmp_path, monkeypatch, capsys):
+    """The bound seam resolves the candidate's canonical security_id to its
+    ``store`` symbol through the ONE identity reader; the same world that was
+    IDENTITY_ALIAS_UNRESOLVED without the reference now EVALUATES, and the run
+    document names the exact reference bytes (sha256) it resolved against."""
+    world = _world(tmp_path)
+    path = _write_alias_reference(tmp_path, [
+        {"vendor": "store", "vendor_symbol": "UNIT", "security_id": "SEC:US-XNAS-AAPL"},
+        {"vendor": "yahoo", "vendor_symbol": "AAPL", "security_id": "SEC:US-XNAS-AAPL"},
+    ])
+    _inject_future_geometry_metric_owners(monkeypatch)
+
+    table = capture.resolve_alias_table(tmp_path)
+    assert table is not None
+    assert table.vendor_symbol_for("store", "SEC:US-XNAS-AAPL", date(2026, 9, 17)) == "UNIT"
+    assert table.resolve("store", "UNIT", date(2026, 9, 17)) == "SEC:US-XNAS-AAPL"
+    assert table.receipt == {
+        "path": str(path),
+        "sha256": "sha256:" + sha256(path.read_bytes()).hexdigest(),
+    }
+
+    assert _run(monkeypatch, tmp_path, world, "--nightly") == 0
+    doc = json.loads(capsys.readouterr().out)
+    assert doc["alias_table"] == {"bound": True, "receipt": table.receipt}
+    assert doc["counts_by_state"] == {"EVALUATED": 1}
+    assert doc["counts_by_reason"] == {}
+    row = _read_rows(_capture_file(tmp_path))[0]
+    assert row["state"] == "EVALUATED"
+    assert row["unavailable_reasons"] == []
+    assert not set(row["facts"]) & set(capture.VERDICT_FIELDS)
+
+
+def test_a_present_but_unlawful_alias_reference_is_a_typed_refusal_not_a_silent_unbind(
+        tmp_path, monkeypatch, capsys):
+    world = _world(tmp_path)
+    # two timeless rows claim the same store symbol: an ambiguous translation layer
+    _write_alias_reference(tmp_path, [
+        {"vendor": "store", "vendor_symbol": "UNIT", "security_id": "SEC:US-XNAS-AAPL"},
+        {"vendor": "store", "vendor_symbol": "UNIT", "security_id": "SEC:US-XNAS-OTHER"},
+    ])
+    with pytest.raises(capture.TypedRefusal) as info:
+        capture.resolve_alias_table(tmp_path)
+    assert info.value.token == "ALIAS_TABLE_MALFORMED"
+
+    assert _run(monkeypatch, tmp_path, world, "--nightly") == 3
+    assert json.loads(capsys.readouterr().out)["refused"] == "ALIAS_TABLE_MALFORMED"
+    assert not (tmp_path / _CAPTURE_REL).exists()
+
+
+def test_the_production_reference_binds_and_resolves_a_store_symbol():
+    """The committed estate reference loads through the seam as production will
+    read it: a known canonical id round-trips to its ``store`` symbol."""
+    table = capture.resolve_alias_table(_REPO_ROOT)
+    assert table is not None, "data/reference/vendor_aliases.parquet is the committed Data OS reference"
+    assert table.receipt["sha256"].startswith("sha256:")
+    on = date(2026, 10, 30)
+    symbol = table.vendor_symbol_for("store", "SEC:US-XNYS-A", on)
+    assert symbol == "A"
+    assert table.resolve("store", symbol, on) == "SEC:US-XNYS-A"
 
 
 # ── Spec 8: ZERO AUTHORITY — no product builder or template reads the stream ─

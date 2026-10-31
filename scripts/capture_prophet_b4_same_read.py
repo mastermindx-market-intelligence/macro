@@ -28,9 +28,12 @@ is not lane-gated, builds every row, prints the run document and writes nothing
 Pages — and ``captured_at`` is the writer's own UTC clock, stamped once per
 run.  Owner inputs are never guessed: the native live root is the publishers'
 fixed constant (report mode may override it for inspection; ``--nightly`` may
-not), the alias table comes from the ``resolve_alias_table`` seam (``None`` at
-BASE — no in-repo Data OS provider exists), and the D01 signal-gate artifact
-stays its owner's (``None`` at BASE).
+not), the alias table is the Data OS reader ``lib.dataos.identity.VendorAliasTable``
+over the committed ``data/reference/vendor_aliases.parquet`` (the estate's ONLY
+identity reader, loaded through the same intake snapshot the B1 generation uses;
+absent reference -> unbound -> the adapter's typed ``IDENTITY_ALIAS_UNRESOLVED``
+row reason, never a guessed alias; an unlawful table -> typed whole-run refusal),
+and the D01 signal-gate artifact stays its owner's (``None`` at BASE).
 
 NO AVAILABILITY VERDICT IS EVER PERSISTED (seat ruling R6-D11-01 rule 3:
 ``ENTRY_OPEN`` is never persisted and it is forbidden to create it).  The row
@@ -73,6 +76,8 @@ from engine.prophet_entry_availability import (  # noqa: E402
     EntryAvailabilityContractError,
 )
 from engine.prophet_entry_availability_sources import RuntimeOwnerFactError  # noqa: E402
+from engine.us_candidate_episode_intake import _records_snapshot  # noqa: E402
+from lib.dataos.identity import IdentityError, VendorAliasTable  # noqa: E402
 from engine.prophet_candidate_state import CandidateStateContractError  # noqa: E402
 from engine.us_candidate_episode import (  # noqa: E402
     EpisodeContractError,
@@ -202,16 +207,58 @@ class CaptureDayFileError(ValueError):
     """The committed day file is not a lawful capture stream."""
 
 
-def resolve_alias_table() -> object:
-    """The Data OS alias provider seam.  ``None`` at BASE.
+ALIAS_REFERENCE_PARTS = ("data", "reference", "vendor_aliases.parquet")
 
-    No in-repo ``vendor_symbol_for``/``resolve`` provider exists yet, so the
-    canonical-security-id -> store-symbol relation is unbound and the sources
-    adapter's own ``RuntimeOwnerFactError`` becomes the captured typed reason
-    (``IDENTITY_ALIAS_UNRESOLVED``).  Binding a real provider here is a separate
-    owner decision; this seam exists so there is exactly one place to bind it.
+
+class BoundAliasTable:
+    """The Data OS alias reader plus the receipt of the bytes it was built from.
+
+    Delegates the two calls the sources adapter requires (``vendor_symbol_for`` /
+    ``resolve``) to ``lib.dataos.identity.VendorAliasTable`` unchanged; the
+    receipt (path + sha256 of the parquet payload) lands in the run document so
+    every capture names the exact identity reference it resolved against.
     """
-    return None
+
+    __slots__ = ("_table", "receipt")
+
+    def __init__(self, table: object, receipt: Mapping[str, object]) -> None:
+        self._table = table
+        self.receipt = dict(receipt)
+
+    def vendor_symbol_for(self, vendor: str, security_id: str, on: object) -> object:
+        return self._table.vendor_symbol_for(vendor, security_id, on)
+
+    def resolve(self, vendor: str, vendor_symbol: str, on: object) -> object:
+        return self._table.resolve(vendor, vendor_symbol, on)
+
+
+def resolve_alias_table(root: object = None) -> object:
+    """The Data OS alias provider: the ONE in-repo identity reader, or ``None``.
+
+    Reads ``data/reference/vendor_aliases.parquet`` under ``root`` through the
+    intake's ``_records_snapshot`` (the same rows + sha256 receipt the B1
+    candidate-episode generation binds its identity spine from) and builds
+    ``VendorAliasTable.from_records`` over them.  Absent reference -> ``None``:
+    the canonical-security-id -> store-symbol relation stays unbound and the
+    sources adapter's own ``RuntimeOwnerFactError`` remains the captured typed
+    row reason (``IDENTITY_ALIAS_UNRESOLVED``) — never a guessed alias.  A
+    reference that is present but unlawful (ambiguous overlapping rows, a
+    missing column) is a typed refusal of the whole run, not a silent unbind.
+    """
+    base = Path(root).resolve() if root is not None else _repo_root()
+    path = base.joinpath(*ALIAS_REFERENCE_PARTS)
+    if not path.is_file():
+        return None
+    try:
+        rows, receipt = _records_snapshot(path)
+        table = VendorAliasTable.from_records(rows)
+    except (IdentityError, OSError, ValueError, KeyError) as exc:
+        raise TypedRefusal(
+            "ALIAS_TABLE_MALFORMED",
+            f"the Data OS alias reference {path} is present but not a lawful "
+            f"alias table: {type(exc).__name__}: {exc}",
+        ) from exc
+    return BoundAliasTable(table, receipt)
 
 
 def _now() -> datetime:
@@ -656,7 +703,8 @@ def run(
         )
     snapshot = _load_snapshot(root_path)
 
-    alias_table = resolve_alias_table()
+    alias_table = resolve_alias_table(root_path)
+    alias_receipt = getattr(alias_table, "receipt", None)
     captured_at = _now_iso(_now())
     rows: list[dict[str, object]] = []
     for native_row in native_rows:
@@ -705,6 +753,10 @@ def run(
         "data_root": str(root_path),
         "stamp_date": stamp_date,
         "snapshot_generation_id": str(snapshot.generation_id),
+        "alias_table": {
+            "bound": alias_table is not None,
+            "receipt": dict(alias_receipt) if isinstance(alias_receipt, Mapping) else None,
+        },
         "candidates": len(native_rows),
         "strategies": len(STRATEGY_DEFINITIONS),
         "rows": len(rows),
