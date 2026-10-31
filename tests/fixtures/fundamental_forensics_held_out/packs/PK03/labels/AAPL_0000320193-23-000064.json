@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000320193-23-000064",
+    "expected_period_end": "2023-04-01",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "13927000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "aapl-20230401.htm | us-gaap:OperatingIncomeLoss @ i69d4a39da7854778b08de05c8ab07a19_D20230101-20230401 (StatementBusinessSegmentsAxis=aapl:AmericasSegmentMember) | 'Operating income $ 13,927 $ 15,279 $ 31,791 $ 34,864' | Segment operating income for the largest segment, Americas, for the three months ended April 1, 2023; segment note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_profit_or_loss",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000320193-23-000064|extract|segment_profit_or_loss"
+  },
+  {
+    "accession": "0000320193-23-000064",
+    "expected_period_end": "2023-04-01",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "37784000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "aapl-20230401.htm | us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax @ i69d4a39da7854778b08de05c8ab07a19_D20230101-20230401 (StatementBusinessSegmentsAxis=aapl:AmericasSegmentMember) | 'Net sales $ 37,784 $ 40,882 $ 87,062 $ 92,378' | Largest reportable segment by net sales for the three months ended April 1, 2023: Americas (vs Europe 23,945; Greater China 17,812); segment note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_revenue",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000320193-23-000064|extract|segment_revenue"
+  }
+]

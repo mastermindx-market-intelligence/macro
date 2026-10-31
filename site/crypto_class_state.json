@@ -2,9 +2,9 @@
   "schema": "crypto.class_state/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-10-25",
+  "as_of": "2026-10-31",
   "universe_coverage": {
-    "as_of": "2026-10-25",
+    "as_of": "2026-10-31",
     "listed": 50,
     "requested": 50,
     "excluded": [
@@ -14,6 +14,14 @@
         "id": "aster-2",
         "source": "CoinGecko",
         "as_of": "2026-09-24",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_btw.parquet",
+        "symbol": "BTW",
+        "id": "bitway",
+        "source": "CoinGecko",
+        "as_of": "2026-10-30",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -54,14 +62,6 @@
         "id": "paxg-pax-gold",
         "source": "CoinPaprika",
         "as_of": "2026-09-19",
-        "reason": "OLDER_SNAPSHOT"
-      },
-      {
-        "file": "market_pepe.parquet",
-        "symbol": "PEPE",
-        "id": "pepe",
-        "source": "CoinGecko",
-        "as_of": "2026-10-23",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -170,7 +170,7 @@
       "pages_declared": false
     },
     "breadth": {
-      "as_of": "2026-10-25",
+      "as_of": "2026-10-31",
       "eligible": 3,
       "required": 10,
       "excluded": 47,
@@ -187,8 +187,8 @@
   "market": {
     "stance": "Market cap is lower",
     "total_state": "Falling",
-    "dominance_state": "Steady",
-    "fear_state": "Neutral",
+    "dominance_state": "Rising",
+    "fear_state": "Fearful",
     "breadth_state": "Building history",
     "cap_move": "valuation",
     "cap_splices": [
@@ -461,26 +461,52 @@
         "to_label_en": "direct total",
         "to_label_zh": "直接总量",
         "support_before": 4,
-        "support_after": 6,
-        "level_ratio": 0.9792013096092356,
+        "support_after": 7,
+        "level_ratio": 0.9792013096092357,
+        "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-10-27",
+        "from_basis": "direct",
+        "to_basis": "derived",
+        "from_label_en": "direct total",
+        "from_label_zh": "直接总量",
+        "to_label_en": "derived total",
+        "to_label_zh": "推算总量",
+        "support_before": 7,
+        "support_after": 3,
+        "level_ratio": 1.1214533365761121,
+        "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-10-30",
+        "from_basis": "derived",
+        "to_basis": "direct",
+        "from_label_en": "derived total",
+        "from_label_zh": "推算总量",
+        "to_label_en": "direct total",
+        "to_label_zh": "直接总量",
+        "support_before": 3,
+        "support_after": 2,
+        "level_ratio": 0.987300739458698,
         "regime_treatment": "continuity_adjusted"
       }
     ]
   },
   "flows": {
-    "etf": "Unavailable",
-    "stablecoins": "Unavailable",
+    "etf": "Steady",
+    "stablecoins": "Falling",
     "volume": "Quiet tape"
   },
   "flow_kinds": {
     "etf": {
       "kind": "subscription",
-      "observation": "stale",
+      "observation": "pending",
       "expected_cadence": "us_business_day"
     },
     "stablecoins": {
       "kind": "issuance",
-      "observation": "stale",
+      "observation": "current",
       "expected_cadence": "calendar_day"
     },
     "volume": {
@@ -491,8 +517,8 @@
   },
   "heat": {
     "funding": "Unavailable",
-    "open_interest": "Leverage light",
-    "volatility": "Volatility compressed",
+    "open_interest": "Leverage normal",
+    "volatility": "Volatility normal",
     "altseason": "Mixed relative trend"
   },
   "assets": {
@@ -500,13 +526,13 @@
       "trend": "Range",
       "risk": "Stressed",
       "relative": "Tracking Bitcoin",
-      "coverage": "3,799 daily observations from Coinbase daily OHLCV."
+      "coverage": "3,805 daily observations from Coinbase daily OHLCV."
     },
     "SOL": {
       "trend": "Range",
       "risk": "Stressed",
       "relative": "Leading Bitcoin",
-      "coverage": "1,957 daily observations from Coinbase daily OHLCV."
+      "coverage": "1,963 daily observations from Coinbase daily OHLCV."
     }
   }
 }

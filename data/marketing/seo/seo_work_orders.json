@@ -141,11 +141,10 @@
       "class": "title_length",
       "severity": "medium",
       "pages": [
-        "consumer_cyclical_plnt.html",
         "stock_seasonality.html",
         "watchlist.html"
       ],
-      "pages_count": 3,
+      "pages_count": 2,
       "suggested_fix": "Adjust title length to 15-70 chars",
       "falsifiable_check": "Measure len(title) for each page; assert 15 <= len <= 70"
     },
