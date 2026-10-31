@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
+from datetime import datetime, timezone
+from types import SimpleNamespace
 from pathlib import Path
 
 import pytest
@@ -15,6 +18,8 @@ from engine.release_actuals import (
     reconcile_receipts,
 )
 from scripts.reconcile_release_actuals import reconcile
+from scripts.official_release_parsers import parse_cpi_actual
+import scripts.watch_release_publications as watcher
 
 _CASES = {
     "CPI": {
@@ -177,8 +182,28 @@ def test_agency_source_id_and_parser_contracts_fail_closed(event_type: str) -> N
     assert normalize_publication(bad) == []
 
     bad = _publication(event_type)
-    bad["parser"]["version"] = 2
+    bad["parser"]["version"] = 3 if event_type == "CPI" else 2
     assert normalize_publication(bad) == []
+
+
+
+def test_cpi_v2_current_receipts_accept_without_invalidating_v1_history() -> None:
+    """The repaired watcher may emit v2; keep-first CPI v1 truth stays readable."""
+    historical = normalize_publication(_publication("CPI"))
+    assert len(historical) == 2
+    assert all(row["parser_version"] == 1 for row in historical)
+
+    current = _publication("CPI")
+    current["parser"]["version"] = 2
+    repaired = normalize_publication(current)
+    assert len(repaired) == 2
+    assert all(row["parser_version"] == 2 for row in repaired)
+    assert all(receipt_integrity_errors(row) == [] for row in repaired)
+    # The metric identity and source digest, not parser generation, determine
+    # keep-first receipt identity; a parser upgrade cannot create a duplicate.
+    assert [row["receipt_id"] for row in repaired] == [
+        row["receipt_id"] for row in historical
+    ]
 
 
 def test_unofficial_domain_or_missing_hash_fails_closed() -> None:
@@ -397,3 +422,274 @@ def test_committed_official_actual_ledger_quarantines_known_pce_binding_defects(
         for row in rows
     )
     assert all(row.get("official_reference_period") != "The" for row in rows)
+
+
+# CPI October 2026 recovery: retained typed parser and watcher regressions.
+OFFICIAL = b"""CONSUMER PRICE INDEX - SEPTEMBER 2026
+The Consumer Price Index for All Urban Consumers (CPI-U) increased 0.6 percent
+on a seasonally adjusted basis in September after rising 0.4 percent in August.
+Over the last 12 months, the all items index increased 3.7 percent before seasonal adjustment.
+The index for all items less food and energy rose 0.3 percent in September, as it did in August.
+The all items index rose 3.7 percent for the 12 months ending September.
+The all items less food and energy index rose 2.6 percent over the year,
+following a 2.4-percent increase over the 12 months ending August.
+The index for all items less food and energy rose 2.6 percent over the past 12 months.
+Not seasonally adjusted CPI measures.
+For the month, the index rose 0.6 percent prior to seasonal adjustment.
+"""
+
+
+def _sample():
+    actual = parse_cpi_actual(OFFICIAL)
+    assert actual is not None
+    event = {"event_id": "cpi:2026-10-14", "type": "CPI", "date": "2026-10-14"}
+    document = {
+        "source_url": "https://www.bls.gov/news.release/archives/cpi_10142026.htm",
+        "binding_kind": "detail_document",
+        "reference_period": "September 2026",
+    }
+    return actual, event, document
+
+
+def test_september_cpi_four_typed_values_and_source_period():
+    actual, _, _ = _sample()
+    assert {k: actual[k] for k in ("headline_mom", "headline_yoy", "core_mom", "core_yoy")} == {
+        "headline_mom": 0.6,
+        "headline_yoy": 3.7,
+        "core_mom": 0.3,
+        "core_yoy": 2.6,
+    }
+    assert actual["reference_period"] == "September 2026"
+    assert len(actual["metrics"]) == 4
+    assert all(row["period"] == "September 2026" for row in actual["metrics"])
+
+
+@pytest.mark.parametrize("mutation", [
+    lambda s: s.replace("rose 2.6 percent over the past 12 months.", ""),
+    lambda s: s.replace("rose 0.3 percent in September", "rose 0.3 percent in August"),
+    lambda s: s.replace("on a seasonally adjusted basis", "on a not seasonally adjusted basis"),
+    lambda s: s + " Reference period: August 2026",
+    lambda s: s + " The all items less food and energy index rose 9.9 percent over the year.",
+])
+def test_bad_or_conflicting_cpi_prose_not_promoted(mutation):
+    assert parse_cpi_actual(mutation(OFFICIAL.decode()).encode()) is None
+
+
+def test_old_feed_shorthand_still_supported():
+    text = (
+        "Consumer Price Index for All Urban Consumers (CPI-U) rose 0.1 percent in July (SA); "
+        "the index for all items increased 3.4 percent over the last 12 months, not seasonally adjusted. "
+        "The index for all items less food and energy rose 0.2 percent in July (SA); "
+        "the index for all items less food and energy was up 2.5 percent over the year (NSA). "
+        "Reference period: July 2026"
+    )
+    actual = parse_cpi_actual(text.encode())
+    assert actual is not None
+    assert (actual["headline_mom"], actual["core_mom"], actual["headline_yoy"], actual["core_yoy"]) == (
+        .1, .2, 3.4, 2.5
+    )
+
+
+def test_dated_document_bound_to_release():
+    actual, event, document = _sample()
+    assert watcher._cpi_detail_matches_release(actual, event, document)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("source_url", "https://www.bls.gov/news.release/archives/cpi_09112026.htm"),
+    ("source_url", "https://www.bls.gov.evil.test/news.release/archives/cpi_10142026.htm"),
+    ("source_url", "https://u:p@www.bls.gov/news.release/archives/cpi_10142026.htm"),
+    ("reference_period", "August 2026"),
+    ("binding_kind", "feed_entry"),
+])
+def test_cpi_dated_document_mismatch_is_rejected(field, value):
+    actual, event, document = _sample()
+    document[field] = value
+    assert not watcher._cpi_detail_matches_release(actual, event, document)
+
+
+@pytest.mark.parametrize("problem", ["missing", "wrong_period", "wrong_unit", "duplicate"])
+def test_cpi_identity_mismatch_is_rejected(problem):
+    actual, event, document = _sample()
+    if problem == "missing":
+        actual["metrics"].pop()
+    elif problem == "wrong_period":
+        actual["metrics"][0]["period"] = "August 2026"
+    elif problem == "wrong_unit":
+        actual["metrics"][0]["unit"] = "index_level"
+    else:
+        actual["metrics"][0]["metric_id"] = actual["metrics"][1]["metric_id"]
+    assert not watcher._cpi_detail_matches_release(actual, event, document)
+
+
+@pytest.mark.parametrize("actual,error,status", [
+    ({}, None, "incomplete"),
+    ({"kind": "inflation"}, None, "verified"),
+    ({}, "TimeoutError", "source_unavailable"),
+])
+def test_extraction_records_attempt_vs_success(actual, error, status):
+    now = datetime(2026, 10, 15, 2, 45, tzinfo=timezone.utc)
+    before = {"status": "verified", "last_success_at": "2026-10-14T12:31:00+00:00"}
+    copy = deepcopy(before)
+    updated = watcher._extraction_attempt(before, actual=actual, now=now, error=error)
+    assert before == copy
+    assert updated["status"] == status
+    assert updated["last_attempt_at"] == now.isoformat()
+    assert updated["last_success_at"] == (now.isoformat() if actual else before["last_success_at"])
+
+
+@pytest.mark.parametrize("ready,version,attempted,expected", [
+    (False, 1, None, True),
+    (False, 2, None, False),
+    (True, 1, None, False),
+    (False, 1, {"name": "cpi", "version": 2}, False),
+    (False, 1, {"name": "cpi", "version": 1}, True),
+])
+def test_upgrade_is_single_catchup_not_retry_storm(monkeypatch, ready, version, attempted, expected):
+    monkeypatch.setattr(
+        watcher, "SOURCES",
+        (SimpleNamespace(actual_parser="cpi", actual_parser_version=2, event_types=("CPI",)),),
+    )
+    event = {"event_id": "cpi:2026-10-14", "type": "CPI"}
+    publication = {"data_ready": ready, "parser": {"name": "cpi", "version": version}}
+    if attempted is not None:
+        publication["extraction"] = {"attempted_parser": attempted}
+    assert bool(watcher._parser_upgrade_keys([event], {event["event_id"]: publication})) == expected
+
+
+def test_cpi_feed_only_never_becomes_accepted_actual():
+    """An official RSS publication with unavailable detail is not verified CPI."""
+    import hashlib
+
+    released = datetime(2026, 7, 14, 12, 35, tzinfo=timezone.utc)
+    rss = """<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>bls.gov:feed:cpi</id><title>Consumer Price Index</title><entry>
+    <title>Consumer Price Index — June 2026</title>
+    <id>https://www.bls.gov/news.release/archives/cpi_07142026.htm</id>
+    <published>2026-07-14T08:31:00-04:00</published>
+    <link href="https://www.bls.gov/news.release/archives/cpi_07142026.htm"/>
+    <content type="html">Consumer Price Index for All Urban Consumers rose 0.2 percent
+    in June 2026. All items index rose 2.7 percent over the last 12 months.
+    Core CPI 0.3 percent monthly.</content>
+    </entry></feed>""".encode()
+    calls = []
+
+    def fetcher(spec, prior, timeout):
+        calls.append(spec.url)
+        if spec.url.endswith("cpi_07142026.htm"):
+            raise TimeoutError("detail unavailable")
+        assert spec.url == "https://www.bls.gov/feed/cpi.rss"
+        return {
+            "status": 200,
+            "body": rss,
+            "fingerprint": hashlib.sha256(rss).hexdigest(),
+            "etag": '"rss"',
+            "last_modified": "Tue, 14 Jul 2026 12:35:00 GMT",
+            "content_type": "application/atom+xml",
+        }
+
+    _, payload = watcher.detect(now=released, state={}, fetcher=fetcher)
+    cpi = next(row for row in payload["publications"] if row["type"] == "CPI")
+    assert cpi["status"] == "published_unparsed"
+    assert cpi["data_ready"] is False
+    assert not cpi.get("actual")
+    assert cpi["extraction"]["status"] == "source_unavailable"
+    assert cpi["extraction"]["error_code"] == "TimeoutError"
+    assert calls == [
+        "https://www.bls.gov/feed/cpi.rss",
+        "https://www.bls.gov/news.release/archives/cpi_07142026.htm",
+    ]
+
+
+def _aged_cpi_state(**overrides):
+    _, event, document = _sample()
+    row = {
+        **event, "time_et": "08:30", "source_id": "bls_cpi",
+        "status": "published_unparsed", "data_ready": False,
+        "source_url": document["source_url"], "reference_period": "September 2026",
+        "source_sha256": "a" * 64, "content_sha256": "a" * 64,
+        "detected_at": "2026-10-14T12:31:17+00:00",
+        "parser": {"name": "cpi", "version": 1}, **overrides,
+    }
+    return {"publications": {event["event_id"]: row}}
+
+
+def test_aged_cpi_recovers_on_ordinary_tick_without_feed_or_rebuild(monkeypatch):
+    import hashlib
+    from datetime import timedelta
+
+    monkeypatch.setattr(watcher, "scheduled_releases", lambda *args, **kwargs: [])
+    state = _aged_cpi_state()
+    event_id, before = next(iter(state["publications"].items()))
+    now = datetime(2026, 10, 31, 6, 4, tzinfo=timezone.utc)
+    calls = []
+
+    def fetch(spec, prior, timeout):
+        calls.append(spec.url)
+        assert spec.url == before["source_url"]
+        assert not prior
+        if len(calls) == 1:
+            raise TimeoutError("temporarily unavailable")
+        return {"status": 200, "body": OFFICIAL, "url": spec.url,
+                "fingerprint": hashlib.sha256(OFFICIAL).hexdigest()}
+
+    state, _ = watcher.detect(now=now, state=state, fetcher=fetch)
+    assert calls == [before["source_url"]]
+    row = state["publications"][event_id]
+    assert row["data_ready"] is False and row["source_url"] == before["source_url"]
+    assert row["extraction"]["status"] == "source_unavailable"
+    state, _ = watcher.detect(now=now + timedelta(minutes=1), state=state, fetcher=fetch)
+    assert len(calls) == 1
+    state, payload = watcher.detect(now=now + timedelta(hours=1), state=state, fetcher=fetch)
+    row, = payload["publications"]
+    assert len(calls) == 2 and row["event_id"] == event_id
+    assert row["status"] == "published" and row["data_ready"] is True
+    assert row["detected_at"] == before["detected_at"]
+    assert row["actual"]["source_url"] == before["source_url"]
+    assert row["source_sha256"] == row["content_sha256"] == hashlib.sha256(OFFICIAL).hexdigest()
+    assert row["extraction"]["status"] == "verified" and len(row["actual"]["metrics"]) == 4
+    watcher.detect(now=now + timedelta(days=1), state=state, fetcher=fetch)
+    assert len(calls) == 2
+
+
+@pytest.mark.parametrize("override", [
+    {"source_url": "https://www.bls.gov/feed/cpi.rss"},
+    {"source_url": "https://www.bls.gov/news.release/archives/cpi_09112026.htm"},
+    {"source_url": "https://www.bls.gov.evil.test/news.release/archives/cpi_10142026.htm"},
+    {"data_ready": True}, {"reference_period": ""}, {"source_id": "bls_ppi"},
+])
+def test_aged_cpi_replay_requires_retained_event_bound_evidence(monkeypatch, override):
+    monkeypatch.setattr(watcher, "scheduled_releases", lambda *args, **kwargs: [])
+    calls = []
+    watcher.detect(now=datetime(2026, 10, 31, tzinfo=timezone.utc),
+                   state=_aged_cpi_state(**override), fetcher=lambda *args: calls.append(args))
+    assert not calls
+
+
+@pytest.mark.parametrize("fault", ["wrong_period", "redirect", "malformed"])
+def test_aged_cpi_rejects_unbound_document_and_exhausts_budget(monkeypatch, fault):
+    import hashlib
+    from datetime import timedelta
+
+    monkeypatch.setattr(watcher, "scheduled_releases", lambda *args, **kwargs: [])
+    state = _aged_cpi_state()
+    key, before = next(iter(state["publications"].items()))
+    now = datetime(2026, 10, 31, tzinfo=timezone.utc)
+    calls = []
+
+    def fetch(spec, prior, timeout):
+        calls.append(spec.url)
+        body = {"wrong_period": OFFICIAL.replace(b"September", b"August").replace(b"SEPTEMBER", b"AUGUST"),
+                "malformed": b"pending"}.get(fault, OFFICIAL)
+        url = spec.url if fault != "redirect" else "https://www.bls.gov/news.release/cpi.htm"
+        return {"status": 200, "body": body, "url": url,
+                "fingerprint": hashlib.sha256(body).hexdigest()}
+
+    for hours in [0, 1, 3, 24]:
+        state, _ = watcher.detect(now=now + timedelta(hours=hours), state=state, fetcher=fetch)
+        row = state["publications"][key]
+        assert row["data_ready"] is False and not row.get("actual")
+        assert row["source_sha256"] == before["source_sha256"]
+        assert row["source_url"] == before["source_url"]
+    assert len(calls) == 3
+    assert state[watcher.DEFECT_REPAIR_STATE_KEY][key]["status"] == "exhausted"

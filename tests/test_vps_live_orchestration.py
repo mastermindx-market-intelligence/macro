@@ -39,6 +39,19 @@ The index for all items less food and energy rose 0.3 percent in June
 2.9 percent over the year.
 """
 
+# A feed entry is publication evidence, NOT an authoritative CPI facts document.
+# The watcher must fetch this dated BLS release, verify its period and then parse.
+CPI_JULY_14_PAGE = b"""
+<html><body><h1>CONSUMER PRICE INDEX - JUNE 2026</h1>
+<p>The Consumer Price Index for All Urban Consumers (CPI-U) increased 0.2 percent
+on a seasonally adjusted basis in June after rising 0.1 percent in May.</p>
+<p>Over the last 12 months, the all items index increased 2.7 percent
+before seasonal adjustment.</p>
+<p>The index for all items less food and energy rose 0.3 percent in June.</p>
+<p>The index for all items less food and energy rose 2.9 percent over the
+past 12 months.</p></body></html>
+"""
+
 BEA_JULY_30_FEED = b"""
 <rss version="2.0"><channel>
   <item name="GDP">
@@ -123,9 +136,9 @@ def _bls_cpi_feed(*, event_date: str, content: str = CPI_ENTRY_TEXT) -> bytes:
       <title>Consumer Price Index</title>
       <entry>
         <title>Consumer Price Index — June 2026</title>
-        <id>https://www.bls.gov/news.release/archives/cpi_{event_date.replace('-', '')}.htm</id>
+        <id>https://www.bls.gov/news.release/archives/cpi_{datetime.strptime(event_date, '%Y-%m-%d'):%m%d%Y}.htm</id>
         <published>{event_date}T07:50:00-04:00</published>
-        <link href="https://www.bls.gov/news.release/archives/cpi_{event_date.replace('-', '')}.htm"/>
+        <link href="https://www.bls.gov/news.release/archives/cpi_{datetime.strptime(event_date, '%Y-%m-%d'):%m%d%Y}.htm"/>
         <content type="html"><![CDATA[{content}]]></content>
       </entry>
     </feed>
@@ -143,6 +156,14 @@ def _http_result(body: bytes, *, last_modified: str = "Tue, 14 Jul 2026 12:30:00
     }
 
 
+def _cpi_feed_or_detail(spec, *, event_date: str):
+    # The producer must not promote facts from a feed summary.  Return the
+    # current dated release document on the second HTTP request.
+    if spec.url.endswith("cpi_07142026.htm"):
+        return _http_result(CPI_JULY_14_PAGE)
+    return _http_result(_bls_cpi_feed(event_date=event_date))
+
+
 def test_release_watcher_seeds_before_release_then_detects_change():
     before = datetime(2026, 7, 14, 12, 25, tzinfo=timezone.utc)  # 08:25 ET
     after = datetime(2026, 7, 14, 12, 31, tzinfo=timezone.utc)   # 08:31 ET
@@ -156,8 +177,9 @@ def test_release_watcher_seeds_before_release_then_detects_change():
     assert payload["publications"] == []
 
     def changed_fetcher(spec, prior, timeout):
-        assert prior["fingerprint"]
-        return _http_result(_bls_cpi_feed(event_date="2026-07-14"))
+        if spec.feed_kind:
+            assert prior["fingerprint"]
+        return _cpi_feed_or_detail(spec, event_date="2026-07-14")
 
     state, payload = wrp.detect(now=after, state=state, fetcher=changed_fetcher)
     assert len(payload["publications"]) == 1
@@ -173,13 +195,18 @@ def test_release_watcher_seeds_before_release_then_detects_change():
     assert publication["source_released_at"] == "2026-07-14T12:30:00+00:00"
     assert publication["source_time_basis"] == "scheduled_embargo_floor"
     assert publication["is_context_only"] is True
+    # The faster display path must remain admissible to the existing
+    # downstream canonical first-print reconciliation, not die on a parser bump.
+    cpi_receipts = [row for row in receipts_from_payload(payload) if row["release"].startswith("cpi_")]
+    assert {row["release"] for row in cpi_receipts} == {"cpi_headline", "cpi_core"}
+    assert all(row["parser_version"] == 2 for row in cpi_receipts)
 
 
 def test_release_watcher_cold_start_recovers_from_official_date():
     after = datetime(2026, 7, 14, 12, 35, tzinfo=timezone.utc)
 
     def fetcher(spec, prior, timeout):
-        return _http_result(_bls_cpi_feed(event_date="2026-07-14"))
+        return _cpi_feed_or_detail(spec, event_date="2026-07-14")
 
     _, payload = wrp.detect(now=after, state={}, fetcher=fetcher)
     assert [row["type"] for row in payload["publications"]] == ["CPI"]
@@ -259,7 +286,7 @@ def test_new_non_fomc_coverage_immediately_recovers_outside_fast_window():
 
     def fetcher(spec, prior, timeout):
         calls.append(spec.source_id)
-        return _http_result(_bls_cpi_feed(event_date="2026-07-14"))
+        return _cpi_feed_or_detail(spec, event_date="2026-07-14")
 
     _, payload = wrp.detect(
         now=after_fast_window,
@@ -272,7 +299,7 @@ def test_new_non_fomc_coverage_immediately_recovers_outside_fast_window():
     )
     assert publication["status"] == "published"
     assert publication["data_ready"] is True
-    assert calls == ["bls_cpi"]
+    assert calls == ["bls_cpi", "bls_cpi"]
 
 
 def test_release_watcher_retains_precoverage_publication_evidence():
@@ -796,7 +823,7 @@ def test_non_fomc_unparsed_release_retries_and_self_heals_next_day():
 
     def fetcher(spec, prior, timeout):
         assert spec.source_id == "bls_cpi"
-        return _http_result(_bls_cpi_feed(event_date="2026-07-14"))
+        return _cpi_feed_or_detail(spec, event_date="2026-07-14")
 
     _, payload = wrp.detect(now=retry_tick, state=state, fetcher=fetcher)
     recovered = next(row for row in payload["publications"] if row["type"] == "CPI")
