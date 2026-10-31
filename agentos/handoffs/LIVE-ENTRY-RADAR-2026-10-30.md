@@ -30,6 +30,10 @@ changed:
     uncertain stop/trim units and removed follower1R inference.
 - path: agentos/workstreams/WS-LIVE-ENTRY-RADAR.md
   what: Add task-tree artifact pointer only in this draft; existing waves/owner/next action unchanged.
+- path: research/live_entry_radar/rs_pullback_launch/RS_EARLY_ONSET_EVALUATION_CANDIDATE_2026_10_30.md
+  what: Publish fixed B0/A1/A2 early-RS-leadership science candidate, full-eligible-population,
+    attention budget, PIT source/known-at, chronological holdout and falsifiers. No Evaluation OS
+    registration, data/outcome read, predictive score or customer publication.
 - path: tests/test_entry_radar_first_green_next_close.py
   what: 36 native synthetic next-close cases, pending-window refusal, strict close/green tests, delayed-source
     and pre-formation-window risk, reference identity and unchanged source authority.
@@ -88,6 +92,17 @@ verified:
     terminal ruling1793410715.581279
   result: Actual file IDs F0CDT0T11UH(317228B) andF0CDJSFNXJ7(24031B),reported matching SHA256s. Parent file-read
     response empty; do not claim independent byte audit. No extra X calls,active child or watcher.
+- claim: Prior source semantic head 4cb442be completed its actual hosted required checks.
+  command: GitHub.fetch_commit_workflow_runs for 4cb442bebe9b9441dad4e2838b4a140d1d150f68 and
+    GitHub.fetch_workflow_run_jobs for ci41156423843 and fences41156423764.
+  result: Both workflows SUCCESS, all12 ci-pack jobs, contract-delta and ci-gate SUCCESS;
+    evidence applies to that exact earlier semantic source head. Subsequent documentation-only commits
+    must receive their own relevant checks before release.
+- claim: Early-onset candidate specification was published/read back, and the task tree was updated.
+  command: GitHub.create_file and GitHub.fetch_file at1954143fef413f81b263f75403de4e4e6d6ff864;
+    GitHub.update_file of RS_LEADERSHIP_SUITE_MASTERPLAN.md on b7f86c8f3203fe599d2f0457cdb1b9746d9eea10.
+  result: New 12141-character source-candidate blob951f750a6c6dd61152fd79662a676949eefad0c7;
+    task P3.3 remains proposed and unregistered, with explicit source link. No outcomes read.
 unverified:
 - claim: Second increment source publication and exact-head hosted CI/non-author review.
   what_would_verify: Read back the commit containing this cumulative checkpoint and native source digests,
@@ -118,7 +133,10 @@ unresolved:
   native file read returned empty, so no independent parent byte verification. Research and artifact childrenSTOPconfirmed,no
   watchers; no automatic continuation.
 next_actions:
-- Consume the next committed#10225 source/readback and its exact-head hosted owner tests; preserve the242native
+- Reconcile required hosted CI on the new documentation successor head after source candidate/handoff
+  edits, then obtain genuine independent non-author review for the current source owner. Never self-approve
+  or merge a Draft without its permitted review/release conditions.
+- Preserve the242native
   tests,113subtests,5localCIchecks and8mutation receipts. Do not carry earlier-head CI forward.
 - Continue calendar2025/full-account census only under a separately bounded source acquisition after inspecting
   the delivered metadata where a working file reader is available; preserve965reported IDs and current unread/partial
@@ -150,3 +168,17 @@ prs:
 # RS Leadership Suite source milestone
 
 Current leadership is the Chairman-assigned session on Macro #10225. The task tree is `research/live_entry_radar/rs_pullback_launch/RS_LEADERSHIP_SUITE_MASTERPLAN.md`. This source checkpoint preserves the original-source corrections and additive implementation, not a second runtime record or accepted release. The sole Git publication target remains the existing branch.
+
+## Recovery continuation 2026-10-31 UTC
+
+Chairman instructed the active session to resume this same product mission. The source-only current
+task-tree addition is `RS_EARLY_ONSET_EVALUATION_CANDIDATE_2026_10_30.md`; it is deliberately
+not a registered experiment or substitute for unavailable real data. Current source carrier
+remains Macro #10225 in Draft. Earlier source head 4cb442be is hosted CI/fences green; the
+document-only successor requires current-head evidence. No existing first-green/rejection owner
+or production source adapter was edited in this continuation. The P1.4 host source-inspection
+request and P2.1 Fabric research commission each received a platform safety block; those
+specific actions were not rerouted or retried. This does not create a new source or runtime
+owner. Exact next action: consume current-head CI/review, continue only an independently
+admitted user-path or source-qualification slice, never promote synthetic signals or claim
+live customer data.
