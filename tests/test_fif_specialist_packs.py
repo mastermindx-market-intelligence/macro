@@ -3220,6 +3220,78 @@ def test_pk09_mw_has_existed_and_not_remediated_is_present() -> None:
     assert contract.validate_pack_result(result) == []
 
 
+# Review F5-1/F5-5 (B.3 pattern revision v7): a remediation carrying its
+# own date is compared against the filing's period of report — the
+# synthetic fixture's period end is June 30, 2026 — instead of defaulting
+# to "remediated on or before the balance date" when the weakness clause
+# holds no as-of date. The reviewer's sentences are carried byte-for-byte.
+
+
+def test_pk09_mw_dated_remediation_after_period_end_is_present() -> None:
+    # F5-1: "as of September 30, 2026", "in July 2026" (month-year read
+    # at the month's last day) and "during the quarter ended September
+    # 30, 2026" all land after the June 30, 2026 period of report; v6
+    # fell through to "remediated" (absent) because the weakness clause
+    # carries no as-of date and the month-year form did not parse.
+    as_of = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it has been remediated "
+        "as of September 30, 2026.</div>",
+    )
+    weakness = _row(as_of, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(as_of) == []
+    month_year = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it was remediated "
+        "in July 2026.</div>",
+    )
+    weakness = _row(month_year, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(month_year) == []
+    quarter = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it was remediated "
+        "during the quarter ended September 30, 2026.</div>",
+    )
+    weakness = _row(quarter, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(quarter) == []
+
+
+def test_pk09_mw_dated_remediation_before_period_end_is_absent() -> None:
+    # F5-1 controls: "in May 2026" and "on March 31, 2026" precede the
+    # June 30, 2026 period of report, so the remediation holds as of the
+    # balance date and the weakness is absent through the dated
+    # comparison, not the v6 dateless default.
+    month_year = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it was remediated "
+        "in May 2026.</div>",
+    )
+    weakness = _row(month_year, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(month_year) == []
+    on_date = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it was remediated "
+        "on March 31, 2026.</div>",
+    )
+    weakness = _row(on_date, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(on_date) == []
+
+
 # 32. PK09 invariance and CLI -------------------------------------------------
 
 
