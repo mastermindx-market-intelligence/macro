@@ -39,6 +39,7 @@ from engine import news_common as nc
 from engine import qbus as _qbus          # W2: unified item/event store
 from engine import news_events as _ne     # W2: event-identity layer (display-only)
 from engine import ticker_shape           # shared ticker gate (emitter-strict half)
+from engine import qbus_news_contract as _qnc  # R1 canonical report-key fns (pure stdlib)
 
 # Per-call reject collector — set to a fresh list by feed() before any
 # _normalise() calls; None between builds so no state leaks across invocations.
@@ -171,7 +172,9 @@ def _normalise(title: str, url: str, domain: str, seendate: str, source: str,
                provider: str, relevance: float, now: datetime,
                _crawled_at: str = "", _desk: str = "financial_news",
                _themes: list[str] | None = None,
-               _emit_qbus: bool = True) -> dict | None:
+               _emit_qbus: bool = True,
+               _item_id: str | None = None,
+               _published_utc: str | None = None) -> dict | None:
     """Build a scored headline dict, or None if it should be dropped (off-allowlist
     GDELT). Provider-tagged items keep a tier-3 floor so PR-wire domains survive.
 
@@ -181,6 +184,13 @@ def _normalise(title: str, url: str, domain: str, seendate: str, source: str,
       • timestamp_quality — assigned per-provider (P2 table); PUBLISHER_STATED
         feeds get the RSS back-dating sanity check (P2 recommendation).
       • qbus row emitted via qbus.append_items (fire-and-forget; never raises).
+
+    Freshness-honesty additions (public keys, so _public() keeps them):
+      • _item_id — the canonical R1 report key `source:source_item_id` when the
+        provider has one (Polygon/Massive only). Absent otherwise; never minted
+        for providers without a canonical namespace.
+      • _published_utc — the provider's own publish clock as an aware-UTC ISO
+        string. Absent when the provider states none (or a naive timestamp).
     """
     title = (title or "").strip()
     if not title:
@@ -222,6 +232,11 @@ def _normalise(title: str, url: str, domain: str, seendate: str, source: str,
            "_id": nc.event_id(title, domain)}
     if suspect_backdated:
         out["suspect_backdated"] = True
+    # Public (no leading underscore) so _public() keeps them in the artifacts.
+    if _item_id:
+        out["item_id"] = _item_id
+    if _published_utc:
+        out["published_utc"] = _published_utc
 
     # W2: emit a qbus row so the same wire item is counted once across desks.
     if _emit_qbus:
@@ -281,10 +296,32 @@ def _polygon_articles(results: list[dict], now: datetime) -> list[dict]:
                 break
         pub = (a.get("publisher") or {})
         dom = _domain_of(pub.get("homepage_url") or a.get("article_url", ""))
+        # R1 report key — the SAME source:source_item_id identity that
+        # engine.qbus_news_contract.normalize_massive_news mints for this payload
+        # (and qbus_news_cluster uses as story_id). Reuse the contract's own
+        # functions; any refusal (bad publisher homepage / id) means no item_id.
+        item_id = ""
+        try:
+            item_id = ("massive:" + _qnc.massive_publisher_domain(a)
+                       + ":" + _qnc._source_id(a.get("id")))
+        except _qnc.NewsContractError:
+            item_id = ""
+        # Provider publish clock: aware values become UTC ISO; naive values are
+        # omitted — a timezone is never assumed.
+        published_utc = ""
+        _pub_raw = a.get("published_utc")
+        if isinstance(_pub_raw, str) and _pub_raw:
+            try:
+                _pd = datetime.fromisoformat(_pub_raw.replace("Z", "+00:00"))
+            except ValueError:
+                _pd = None
+            if _pd is not None and _pd.tzinfo is not None:
+                published_utc = _pd.astimezone(timezone.utc).isoformat()
         h = _normalise(a.get("title", ""), a.get("article_url", ""), dom,
                        a.get("published_utc", ""), pub.get("name", dom), tks,
                        a.get("description", ""), sent, "polygon", 1.0, now,
-                       _crawled_at=crawled_at)
+                       _crawled_at=crawled_at,
+                       _item_id=item_id, _published_utc=published_utc)
         if h:
             h["per_ticker_sentiment"] = {k: {"positive": "pos", "negative": "neg",
                                               "neutral": "neutral"}.get(v)
@@ -343,10 +380,12 @@ def _finnhub_news(cfg: dict, now: datetime) -> tuple[list[dict], list[dict], str
                 iso = (datetime.fromtimestamp(dt, tz=timezone.utc).isoformat()
                        if isinstance(dt, (int, float)) and dt else "")
                 rel = [t.upper() for t in str(a.get("related", "")).split(",") if t.strip()]
+                # Provider clock only — no item_id: Finnhub has no canonical R1
+                # namespace, and minting one would create a new id namespace.
                 h = _normalise(a.get("headline", ""), a.get("url", ""),
                                _domain_of(a.get("url", "")), iso, a.get("source", ""),
                                rel, a.get("summary", ""), None, "finnhub", 0.95, now,
-                               _crawled_at=crawled_at)
+                               _crawled_at=crawled_at, _published_utc=iso)
                 if h:
                     market.append(h)
         # per-megacap company news (small, bounded set)
@@ -364,10 +403,11 @@ def _finnhub_news(cfg: dict, now: datetime) -> tuple[list[dict], list[dict], str
                         dt = a.get("datetime")
                         iso = (datetime.fromtimestamp(dt, tz=timezone.utc).isoformat()
                                if isinstance(dt, (int, float)) and dt else "")
+                        # Same rule as the market loop: clock, never an item_id.
                         h = _normalise(a.get("headline", ""), a.get("url", ""),
                                        _domain_of(a.get("url", "")), iso, a.get("source", ""),
                                        [t], a.get("summary", ""), None, "finnhub", 1.0, now,
-                                       _crawled_at=crawled_at)
+                                       _crawled_at=crawled_at, _published_utc=iso)
                         if h:
                             company.append(h)
                     time.sleep(0.2)
@@ -874,6 +914,21 @@ def feed(today: date | None = None, use_cache: bool = True) -> dict | None:
     return out
 
 
+def _mastermind_top_row(h: dict, t: str) -> dict:
+    """One compact top[] row: the six legacy keys verbatim, plus the R1 report
+    key / provider publish clock copied from the headline only when it carries
+    a non-empty value for them."""
+    row = {"title": h.get("title"), "url": h.get("url"),
+           "source": h.get("source"), "published": h.get("seendate"),
+           "sentiment": (h.get("per_ticker_sentiment") or {}).get(t) or h.get("sentiment"),
+           "summary": h.get("summary", "")}
+    if h.get("item_id"):
+        row["item_id"] = h["item_id"]
+    if h.get("published_utc"):
+        row["published_utc"] = h["published_utc"]
+    return row
+
+
 def mastermind_by_ticker(feed_dict: dict | None) -> dict:
     """Compact per-ticker signal for the Mastermind 'news_flow' lens.
 
@@ -912,11 +967,7 @@ def mastermind_by_ticker(feed_dict: dict | None) -> dict:
             "baskets": info.get("basket_names", []),
             "sectors": info.get("sectors", []),
             "is_mag7": info.get("is_mag7", False),
-            "top": [{"title": h.get("title"), "url": h.get("url"),
-                     "source": h.get("source"), "published": h.get("seendate"),
-                     "sentiment": (h.get("per_ticker_sentiment") or {}).get(t) or h.get("sentiment"),
-                     "summary": h.get("summary", "")}
-                    for h in items[:4]],
+            "top": [_mastermind_top_row(h, t) for h in items[:4]],
             "note": "Public-record financial news flow. Context-only — informs narrative, never sizes alone.",
         }
     return out
