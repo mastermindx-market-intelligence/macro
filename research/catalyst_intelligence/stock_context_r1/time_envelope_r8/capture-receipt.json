@@ -1,0 +1,84 @@
+{
+  "base_head": "6995b4d25b083b2c4907c2306ab77a93d6279ed6",
+  "captured_at": "2026-10-20T07:12:55.180884Z",
+  "captures": [
+    {
+      "assessment_id": "sha256:b9ad14ba845df958c19a26138b35df97c8f8b8ed20a75cb14288707ae253e12e",
+      "case": "delayed_reconstruction",
+      "exit_code": 0,
+      "request_sha256": "70db1d79b009190a3a76bd041be73a29ee480f0d501e5192a815f54c53e05c3e",
+      "stdout_sha256": "c4799c41792553d19234b9bdd978b27170f11b9e804c1927a36e4f041de651fb"
+    },
+    {
+      "assessment_id": "sha256:de884c25dabcb6f7a34d66d86d8aa4645c12a43cc55334d0859f2d4c388e9bb0",
+      "case": "history_missing",
+      "exit_code": 0,
+      "request_sha256": "ca20ca697f3ae8f699575fe7e2793e37f0b0f7b8f8b0da8e1835eb987cd23a60",
+      "stdout_sha256": "39defcc38d635182c05c1bac28a05ffc357f0f70614fb370aa124572fc7b52b2"
+    }
+  ],
+  "compatibility_replays": [
+    {
+      "assessment_id": "sha256:72556d7460579fc458ef77b7468d094d48292e05a6d2d33a503c4df707ade1fa",
+      "baseline_cli_and_current_stdout_bytes_equal": true,
+      "exit_code": 0,
+      "frozen_capture_json_equal": true,
+      "frozen_capture_scope": "R1 source",
+      "request": "research/catalyst_intelligence/stock_context_r1/fixtures/owner_request.json",
+      "stdout_sha256": "f92e428ccf3c5b610eaab29547eaae5a70d6fa9916ff17775ff851125f1c205f"
+    },
+    {
+      "assessment_id": "sha256:6363c8e9f26355f485e717370834487afd9aeb403e0417ef63566da648896deb",
+      "baseline_cli_and_current_stdout_bytes_equal": true,
+      "exit_code": 0,
+      "frozen_capture_json_equal": true,
+      "frozen_capture_scope": "R5 separately documented owner composition; not the current branch baseline",
+      "request": "research/catalyst_intelligence/company_assessment_v2_r5/fixtures/current_unavailable.request.json",
+      "stdout_sha256": "e9307c9609fe16f0e66d720b8f2268dd80f3002b0632c7ac2e3d3af5f155c2d8"
+    },
+    {
+      "assessment_id": "sha256:c62e6e1d8787b05f59ec1ef6d58c5dde5acd07858bcee5c087b3357a6ea36880",
+      "baseline_cli_and_current_stdout_bytes_equal": true,
+      "exit_code": 0,
+      "frozen_capture_json_equal": true,
+      "frozen_capture_scope": "R5 separately documented owner composition; not the current branch baseline",
+      "request": "research/catalyst_intelligence/company_assessment_v2_r5/fixtures/history_missing.request.json",
+      "stdout_sha256": "dac0f0dfda27958be3b9c8eb770b9f5113b63974e02d7aa2da31165ba817ec81"
+    },
+    {
+      "assessment_id": "sha256:b22e56e7e7c2e1da195db4f01217fd0375c069c55006e6b17a5f8aeed552722b",
+      "baseline_cli_and_current_stdout_bytes_equal": true,
+      "exit_code": 0,
+      "frozen_capture_json_equal": false,
+      "frozen_capture_scope": "R5 separately documented owner composition; not the current branch baseline",
+      "request": "research/catalyst_intelligence/company_assessment_v2_r5/fixtures/peers_missing.request.json",
+      "stdout_sha256": "057a8cfcab85c87e3341ede5eeb1410f35f2316b4995816429630e073a8e8689"
+    },
+    {
+      "assessment_id": "sha256:987003b209d1076d479a2fd8cfd5256f5085c575e40f79276713e4425d5d3efa",
+      "baseline_cli_and_current_stdout_bytes_equal": true,
+      "exit_code": 0,
+      "frozen_capture_json_equal": false,
+      "frozen_capture_scope": "R5 separately documented owner composition; not the current branch baseline",
+      "request": "research/catalyst_intelligence/company_assessment_v2_r5/fixtures/source_revision.request.json",
+      "stdout_sha256": "c80d1d1c77b37aef28d3a0b1264f52f56bd7679efff4ae349d48ffa8ad3d487c"
+    }
+  ],
+  "historical_capture_disposition": "Two R5 frozen captures (source_revision and peers_missing) include the separately composed R3/R4 owner repairs documented in R5/README.md. Their trigger lists differ from this published branch already at the unchanged baseline CLI. They remain untouched historical evidence; all five same-branch baseline/current CLI outputs are byte-identical.",
+  "legacy_sources_unchanged_from_base_sha256": {
+    "engine/catalyst_intelligence/assessment.py": "104e02d28d3dfca1438b1f2629b0c354633616e822b780d129a036813b0bd0d5",
+    "engine/catalyst_intelligence/assessment_v2.py": "3c321c686f19e1a089c27d163f5280955215793f5fb33fdd4a99a971ef17590b",
+    "engine/catalyst_intelligence/peer_context.py": "8d7b15d3cf90af5da6fd1c53711c3814e9af856460e4dfffaad9a233ea3934c7",
+    "tests/test_catalyst_stock_context.py": "88f60e2a2a9e04a89f5c90c27e646a884849e76b2ebd66cf4b040cd37dcd281a"
+  },
+  "operation_id": "catalyst-stock-context-r1-20261019",
+  "provenance": "Synthetic R5 supplied owner fixture, converted by tests.test_catalyst_time_envelope.supplied_v3. R8 adds truthful information/materialization/receipt/composition clocks. No live source acquisition, current market fact or native admission.",
+  "qualification": "NONACTIVATED_RESEARCH_CONSUMER",
+  "schema": "catalyst.time_envelope_capture.v1",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "b401196b905dd2f3b9e82ada34c7160230ef4673f3164571c12dd99553c1f80d",
+    "engine/catalyst_intelligence/__main__.py": "67b6c9944b378387117fc0106258559962389ea3deeec54a35c007c73c0a2aa9",
+    "engine/catalyst_intelligence/assessment_v3.py": "f7a95ab98a9c9e499bf42ff51840ea656ff3bfbe4e9fe3d9e7cb1982c2b2866a",
+    "tests/test_catalyst_time_envelope.py": "d06d1ab445aa95d0d272500a161837f711b603c572a8375d78cae9e33511f3f8"
+  }
+}

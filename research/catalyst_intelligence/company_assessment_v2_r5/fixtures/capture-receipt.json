@@ -1,0 +1,54 @@
+{
+  "schema": "catalyst.v2_replay_capture.v1",
+  "synthetic": true,
+  "native_admission_established": false,
+  "source_sha256": {
+    "engine/catalyst_intelligence/assessment_v2.py": "3c321c686f19e1a089c27d163f5280955215793f5fb33fdd4a99a971ef17590b",
+    "engine/catalyst_intelligence/__main__.py": "7f878761813b5742a072feb011f66b770a2d9c366bf0d35839ff19dea6749d9f",
+    "engine/prophet_entry_availability.py": "a753eb41771bddd8f9832a355c87999485a4042a1dea849ccaca39b35ed97b9f",
+    "engine/news_impact/thesis.py": "29e2eb60232e978f2a1a0404d00f495405128de516c53ee5acc1cf5df165a641"
+  },
+  "base_request_sha256": "bd515b37fae9605a85aaaf32328ce080e74494e58c5453364d834768f2ff1865",
+  "owner_prs": {
+    "entry": 9731,
+    "news": 9732
+  },
+  "scope": "COMPOSED_RESEARCH_CHECKOUT_NOT_PUBLISHED_RUNTIME",
+  "adaptations": [
+    "Existing synthetic R1 identity/price/entry fixture retained.",
+    "Prior owner snapshot moved to an explicit synthetic 14:10 cutoff.",
+    "Invented numeric fingerprint correction at 18:00 and known-source mirror at 19:00.",
+    "No economic amount or direction inferred from the fingerprint."
+  ],
+  "captures": [
+    {
+      "name": "source_revision",
+      "request_sha256": "8fab5e309b123df98977d7d2d6aaceb5adf7c06689009499061c930e6dd7448a",
+      "assessment_sha256": "f931c29502f023ee04327eef16cb4222c4114f5ab14cb73c8a7dfe056334cdd2",
+      "assessment_id": "sha256:314fa948f76698026822d46309981341a9bc3fa977c85175873a1208a49f8858",
+      "cli_exit_code": 0
+    },
+    {
+      "name": "peers_missing",
+      "request_sha256": "adbc3e0c9f0e885967835f017b0763e95933c408f698bb4793a1f4b1745da8cc",
+      "assessment_sha256": "023d9fef08c7647fd14616d92bd1cf704d3ca7ef6272a4e40728740a98c3ba71",
+      "assessment_id": "sha256:416b670acb90ed6fb5dba3392ef5ba048b2efd2c110547e55ba41a230dee84fb",
+      "cli_exit_code": 0
+    },
+    {
+      "name": "history_missing",
+      "request_sha256": "86ff6ba264241a5725bf5780b57eb347e8ead950fe142fe97b79f13a5590b425",
+      "assessment_sha256": "dac0f0dfda27958be3b9c8eb770b9f5113b63974e02d7aa2da31165ba817ec81",
+      "assessment_id": "sha256:c62e6e1d8787b05f59ec1ef6d58c5dde5acd07858bcee5c087b3357a6ea36880",
+      "cli_exit_code": 0
+    },
+    {
+      "name": "current_unavailable",
+      "request_sha256": "78a01ce0532a7ff2b4ed49e074277b60b13c7ae26023b13a92fee070b71608f3",
+      "assessment_sha256": "e9307c9609fe16f0e66d720b8f2268dd80f3002b0632c7ac2e3d3af5f155c2d8",
+      "assessment_id": "sha256:6363c8e9f26355f485e717370834487afd9aeb403e0417ef63566da648896deb",
+      "cli_exit_code": 0
+    }
+  ],
+  "real_path_assertions": "PASS"
+}

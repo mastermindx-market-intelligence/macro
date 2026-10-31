@@ -1,0 +1,19 @@
+{
+  "source_pin": "97261c2a319e62faec05690c04e6fae180540235",
+  "kind": "synthetic contract integration fixture",
+  "source_admission": false,
+  "request_digest": "sha256:ff41bda56bcc4bdf1e62a3b34a2acf08465e9c302290e8e3317c3bde0bf804d0",
+  "sources": [
+    "tests/test_news_impact_thesis.py::case1_log,case1_owners",
+    "tests/test_prophet_strategy_definition.py::_b4_episode,_b4_facts",
+    "engine/prophet_candidate_state.py::project_candidate_states",
+    "engine/prophet_entry_availability.py::evaluate_entry_availability"
+  ],
+  "adaptations": [
+    "B4 issuer/security renamed consistently to NVDA to match NewsImpact fixture company_id",
+    "B4 decision/session/quote clocks moved to Sep28 source fixture window",
+    "B4 price44 deliberately past chase43.60 boundary",
+    "Peer membership and prices invented; fixture-only rights refs",
+    "Explicit current and historical NewsImpact owner decision cuts supplied"
+  ]
+}

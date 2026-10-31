@@ -4418,6 +4418,11 @@ CURATED_EXCLUSIVE = {
     # F04 real-Git acquisition reads three deploy scripts. Its dedicated job
     # preserves the broader self-heal owner without widening unrelated probes.
     "deploy-git-history",
+    # 2026-10-19 Catalyst R1: the CLI subprocess made inference select this
+    # research consumer on templates/index.html (137 > 136 jobs). Its
+    # exclusive scope retains all 31 static closure paths, package initializers,
+    # and actual schema/fixture reads. Packing ceilings and closure guards stay fixed.
+    "catalyst-stock-context",
     # PR #7861: Options matrix source/session/retention checks are hermetic.
     # The exclusive manifest scope retains both suites, their concrete import
     # closure, config.yml fallback and the retention-fixture wildcard. This
