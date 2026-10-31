@@ -211,6 +211,17 @@ waves:
     next_action: A remains sole F00C CSV consolidation writer; B independently verifies. Reconcile all 130
       IDs and separate public-family obligations with current accepted, partial, rejected and unknown dispositions.
       Coverage is distinct from parity and scientific acceptance.
+  - id: flagship-today-since-last-visit
+    title: Flagship vertical 1 — Today, for me (what changed in your book since your last visit)
+    status: in_progress
+    depends_on: []
+    next_action: >
+      Receiver seat commissions slice 1 through the fabric: Terminal proxy for POST
+      /api/portfolio/changes, a Today section that posts the client-held previous
+      state_digest and renders the desk's change lines with honest first-visit, no-change,
+      free-tier teaser, unavailable and signed-out states, each ticker linking to its
+      security page; independent non-author review, merge-on-green, beta deploy
+      observation, then signed-in browser proof recorded separately from acceptance.
   - id: joined-journey
     title: MarketOntology J1 — qualified joined Macro-to-Terminal journey
     status: todo
@@ -344,6 +355,10 @@ artifacts:
   - "agentos/handoffs/WS-MARKET-OS-2026-10-24-marketontology-census.md"
   - "research/market_intelligence_productization/MARKETONTOLOGY_MARKET_OS_ADOPTION_QUALIFICATION_2026-10-24.json"
 next_action: >
+  RECEIVER 2026-10-31: the Fable flagship seat (PR 10230, handoff
+  WS-MARKET-OS-2026-10-31-fable-flagship-receiver) owns Market OS completion; its first
+  vertical is wave flagship-today-since-last-visit. Earlier text retained as history.
+
   PRIMARY PRODUCT: A1B is PROVEN_LIVE / DONE. Before any A2-A6 implementation,
   Sol refreshes current Macro/Terminal truth and commissions one independently useful
   vertical; eligibility is not execution. MAINTENANCE: #6510 may proceed independently
