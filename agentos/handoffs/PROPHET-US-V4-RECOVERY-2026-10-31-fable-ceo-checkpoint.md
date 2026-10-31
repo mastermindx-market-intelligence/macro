@@ -335,6 +335,33 @@ verified:
       (HOLD); ci-authority/main rejects the non-main base as expected; the dag.yml
       entry is a declaration only (dag-conformance), the nightly runs the preflight
       inside scripts/ci/daily_engine_prophet_nightly.sh after delta_manifest.
+  - claim: Entry Timing W2 registration r8 is FROZEN (freeze commit 7cdea8919475, SHA recorded at 915e50b3c6e7) after a round-8 PASS; T3 is in the P family; the R look is no earlier than 2026-11-19.
+    command: >
+      Round-8 Opus review on 51ea5382 (PASS; nits confirmed at 90c54a11);
+      python3 research/prophet_v4/entry_timing_w2_t1_census.py ... --main-sha a7eef2ce9737
+      --units-out research/prophet_v4/entry_timing_w2_units_2026-10-31.json;
+      python3 research/prophet_v4/entry_timing_w2_freeze.py --review-head 51ea53823b8e ...;
+      shasum of the registration at 7cdea891 == PREREG.json registration.sha256_at_freeze;
+      python3 -m pytest tests/test_entry_timing_w2_freeze.py -q (3 passed); gh pr ready 10283.
+    result: >
+      Machine freeze research/prophet_v4/entry_timing_w2/PREREG.json mirrors the 59-key
+      frozen-field block; per-unit population file committed (1,087 R units, sessions and
+      ids only); T3 availability gate 26/26 exact pairs (120-session 3-day-bucket lookback
+      on the panel DATE index) -> T3 in the P Holm family, descriptive at R; R maturity
+      session 2026-11-19 (T3 bound t_disc+K+1, + H=10; observed arms alone 2026-11-10);
+      entitlement exclusion list pinned EMPTY (none exists; Data OS owner role); --main-sha
+      must lie on origin/main's first-parent line. No outcome/price/grade read. #10283
+      marked ready; contract-delta gate running locally; CI pending; the sweeper merges only
+      on green + reviewDecision (never self-approved/self-merged).
+  - claim: A2 #10289 round-3 review returned APPROVE-READY; nits fixed at ea8e38052b3e (38 preflight tests).
+    command: Opus reviewer (read-only) on 645caaa6; python3 -m pytest tests/test_prophet_settlement_preflight.py -q.
+    result: >
+      N1-N6 all REPAIRED (N1/N2 tests discriminate by mutation probe; no new fail-open or
+      crash; QUALIFIED path unchanged; VALID_EMPTY consistent with the owner reader). Nits:
+      duplicate import removed; VALID_EMPTY -> QUALIFIED and STALE/PENDING/UNAVAILABLE ->
+      GMI_RECEIPT_NOT_AVAILABLE pinned by a test with the owner validator stubbed (the
+      production ceiling makes that branch unobservable today). Draft, never armed, stacked
+      on #10209 (HOLD): retarget to main and arm only after #10209 lands.
   - claim: PR #10255 round 2 (fresh bounded reviewer at 6454a74a) returned APPROVE-READY and the PR is armed merge-on-green.
     command: gh pr view 10255 --comments (the round-2 verdict comment); one GraphQL read of mergeStateStatus/labels.
     result: >
@@ -344,8 +371,8 @@ verified:
       ci-pack runs (10-31 ~10:xxZ read: #10277 d03acfd0, #10267 750dd2c2, #10255
       6454a74a all OPEN/UNSTABLE/armed).
 unverified:
-  - claim: W2 registration r8 (51ea53823b8e) is ready to freeze.
-    what_would_verify: the round-8 independent review's PASS / APPROVE-READY-TO-FREEZE on that exact head; until then no freeze and no outcome read. T3 gate (union_admission reads completed closes only, asof-capable) is evaluated at freeze.
+  - claim: W2 freeze PR #10283 (head 915e50b3) merges to main through the sweeper against that exact head.
+    what_would_verify: green hosted CI on 915e50b3, reviewDecision, then merge --match-head-commit 915e50b3 by the sweeper; until then no freeze and no outcome read. T3 gate (union_admission reads completed closes only, asof-capable) is evaluated at freeze.
   - claim: PR #10267 (head 750dd2c2) hosted CI green and merged by the merge-on-green sweeper against that exact head.
     what_would_verify: the sweeper's merge commit on origin/main; mergeStateStatus read once via the bound PR status, not by polling.
   - claim: PR #10277 (head 82812b81) and PR #10255 (head 6454a74a) merge through the sweeper against those exact heads.
@@ -408,24 +435,19 @@ next_actions:
     preregistration (#7751 A1), its prospective population, H10 MAE endpoint, cost
     floor, multiplicity treatment, fixed looks and refusal handling unchanged.
   - >
-    5. A2 Draft PR #10289 (head 645caaa6, stacked on #10209's head da3a0451): consume
-    the round-3 bounded delta review (commissioned on 645caaa6); APPROVE-READY -> record
-    on the PR and keep it draft; REVISE -> repair in the A2 worktree, push, round 4.
-    It inherits #10209's HOLD: never armed or merged ahead of its base, retarget to main
-    only after #10209 lands. ci-authority/main's unsupported_base_ref is expected. Do
-    not re-run the fabric operation.
+    5. A2 PR #10289 (head ea8e3805, APPROVE-READY by independent review, draft, stacked on
+    #10209's head da3a0451): nothing to do until #10209 lands; then retarget to main, consume
+    one hosted CI run, arm merge-on-green (never self-merge). ci-authority/main's
+    unsupported_base_ref is expected while stacked. Do not re-run the fabric operation.
   - >
-    6. Entry Timing W2 (Draft PR #10283, registration r8 at 51ea5382, DRAFT - UNFROZEN;
-    census v8 = pinned re-run committed; estimator module + CI wiring on the branch):
-    consume the round-8 bounded delta review; REVISE -> r9 on the branch, post on
-    #10283, round 9; PASS -> run the freeze inputs (census re-run with --main-sha
-    a7eef2ce9737, the per-unit alias blob at c_disc, T3 availability gate on the panel
-    index, panel commit SHA per look, Data OS exclusion list pinned (none found -> empty
-    list with owner role), R maturity session from observed t_exec, the +1-clock and
-    no-LATE_DISCOVERY_ARRIVAL sensitivities declared) and mirror a machine freeze from
-    the parsed YAML block; R can never promote; no outcome read before freeze; a separate
-    registration, never a change to #7751 A1. B-17 34-session window census (7,918 C0
-    episodes, none complete) stays null - no favorable subset.
+    6. Entry Timing W2 is FROZEN (PR #10283, head 915e50b3, ready): consume hosted CI once;
+    arm merge-on-green after the local contract-delta gate is green; the sweeper merges on
+    green + reviewDecision. P looks begin only once the nightly producer commits every
+    session (#10255) and the §2 floors are reached (300 units / 100 pairs / 5 full blocks of
+    44); the single R look is no earlier than 2026-11-19 (PREREG.json r_maturity) and reads
+    outcomes through the frozen estimator only; T3 is in the P family; the entitlement pin
+    is EMPTY. A different study may not change this registration; #7751 A1 untouched. B-17
+    34-session window census stays null - no favorable subset.
   - >
     7. Reference coverage (the whole W1 loss): ROUTED 10-31 by a
     HANDOFF_SOURCE_LINK_V1 comment on program issue #6805 to the Data OS owner role
@@ -517,9 +539,10 @@ anchor gates on T1, unpinned walk) and revision 6 (2d81bf31) answers it with a 4
 block, full-block floors, the more conservative of two bounds, a server-witness arrival
 clock and a T1 that is never anchor-gated; rounds 6 and 7 returned REVISE (no blocker)
 and revision 8 (51ea5382: +1-clock readouts on every deciding P look, census --main-sha
-with the pinned re-run committed, tested estimator module) is under a round-8 delta
-review. The A2 preflight patch's carrier (Draft #10289, stacked on #10209) went through
-two REVISE rounds and is at 645caaa6 (70 tests) under a round-3 delta review;
+with the pinned re-run committed, tested estimator module) PASSED round 8 and is FROZEN at
+7cdea891 (PREREG.json; T3 in the P family; R look no earlier than 2026-11-19; PR #10283
+ready, CI pending). The A2 preflight patch's carrier (Draft #10289, stacked on #10209) is
+APPROVE-READY at ea8e3805 after three review rounds and waits only for #10209;
 ci-authority rejects the non-main base as expected. #10277's contract-delta red is repaired at
 82812b81 (ci-pack running; merge-blocked stays until green). Still nothing merged,
 frozen or production-proven.
