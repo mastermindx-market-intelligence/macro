@@ -1,8 +1,8 @@
 {
   "schema": "fif.a34_pack_proof_ledger.v1",
   "matrix_row": "A34",
-  "base_commit": "9f658e53db9731890885772231ca8467bbc528f1",
-  "generated_at": "2026-10-21T01:33:20.612255+00:00",
+  "base_commit": "ebd432d7e92dae90fcdcadaf6b7f083762e8693e",
+  "generated_at": "2026-10-31T12:02:36.521689+00:00",
   "protocol_id": "fif-q0-quality-protocol/v1",
   "packs": [
     {
@@ -23,8 +23,8 @@
           "calibration_labels": 0
         },
         "held_out": {
-          "state": "missing",
-          "sealed": false,
+          "state": "present",
+          "sealed": true,
           "quality_label": null
         },
         "review": {
@@ -38,7 +38,6 @@
       },
       "gaps": [
         "gold",
-        "held_out",
         "review",
         "live"
       ]
@@ -61,8 +60,8 @@
           "calibration_labels": 0
         },
         "held_out": {
-          "state": "missing",
-          "sealed": false,
+          "state": "present",
+          "sealed": true,
           "quality_label": null
         },
         "review": {
@@ -76,7 +75,6 @@
       },
       "gaps": [
         "gold",
-        "held_out",
         "review",
         "live"
       ]
@@ -99,8 +97,8 @@
           "calibration_labels": 0
         },
         "held_out": {
-          "state": "missing",
-          "sealed": false,
+          "state": "present",
+          "sealed": true,
           "quality_label": null
         },
         "review": {
@@ -114,7 +112,6 @@
       },
       "gaps": [
         "gold",
-        "held_out",
         "review",
         "live"
       ]
@@ -137,8 +134,8 @@
           "calibration_labels": 0
         },
         "held_out": {
-          "state": "missing",
-          "sealed": false,
+          "state": "present",
+          "sealed": true,
           "quality_label": null
         },
         "review": {
@@ -152,7 +149,6 @@
       },
       "gaps": [
         "gold",
-        "held_out",
         "review",
         "live"
       ]
@@ -175,8 +171,8 @@
           "calibration_labels": 0
         },
         "held_out": {
-          "state": "missing",
-          "sealed": false,
+          "state": "present",
+          "sealed": true,
           "quality_label": null
         },
         "review": {
@@ -190,7 +186,6 @@
       },
       "gaps": [
         "gold",
-        "held_out",
         "review",
         "live"
       ]
@@ -213,8 +208,8 @@
           "calibration_labels": 0
         },
         "held_out": {
-          "state": "missing",
-          "sealed": false,
+          "state": "present",
+          "sealed": true,
           "quality_label": null
         },
         "review": {
@@ -228,7 +223,6 @@
       },
       "gaps": [
         "gold",
-        "held_out",
         "review",
         "live"
       ]
@@ -251,8 +245,8 @@
           "calibration_labels": 0
         },
         "held_out": {
-          "state": "missing",
-          "sealed": false,
+          "state": "present",
+          "sealed": true,
           "quality_label": null
         },
         "review": {
@@ -266,7 +260,6 @@
       },
       "gaps": [
         "gold",
-        "held_out",
         "review",
         "live"
       ]
@@ -285,12 +278,12 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 26,
+          "calibration_tests": 31,
           "calibration_labels": 0
         },
         "held_out": {
-          "state": "missing",
-          "sealed": false,
+          "state": "present",
+          "sealed": true,
           "quality_label": null
         },
         "review": {
@@ -304,7 +297,6 @@
       },
       "gaps": [
         "gold",
-        "held_out",
         "review",
         "live"
       ]
@@ -323,12 +315,12 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 16,
+          "calibration_tests": 41,
           "calibration_labels": 0
         },
         "held_out": {
-          "state": "missing",
-          "sealed": false,
+          "state": "present",
+          "sealed": true,
           "quality_label": null
         },
         "review": {
@@ -342,7 +334,6 @@
       },
       "gaps": [
         "gold",
-        "held_out",
         "review",
         "live"
       ]
@@ -361,7 +352,7 @@
         "gold": {
           "state": "missing",
           "evidence": [],
-          "calibration_tests": 8,
+          "calibration_tests": 26,
           "calibration_labels": 0
         },
         "held_out": {
@@ -403,8 +394,8 @@
           "calibration_labels": 0
         },
         "held_out": {
-          "state": "missing",
-          "sealed": false,
+          "state": "present",
+          "sealed": true,
           "quality_label": null
         },
         "review": {
@@ -418,7 +409,6 @@
       },
       "gaps": [
         "gold",
-        "held_out",
         "review",
         "live"
       ]
@@ -441,8 +431,8 @@
           "calibration_labels": 0
         },
         "held_out": {
-          "state": "missing",
-          "sealed": false,
+          "state": "present",
+          "sealed": true,
           "quality_label": null
         },
         "review": {
@@ -456,7 +446,6 @@
       },
       "gaps": [
         "gold",
-        "held_out",
         "review",
         "live"
       ]
@@ -465,55 +454,46 @@
   "gaps_by_pack": {
     "PK01": [
       "gold",
-      "held_out",
       "review",
       "live"
     ],
     "PK02": [
       "gold",
-      "held_out",
       "review",
       "live"
     ],
     "PK03": [
       "gold",
-      "held_out",
       "review",
       "live"
     ],
     "PK04": [
       "gold",
-      "held_out",
       "review",
       "live"
     ],
     "PK05": [
       "gold",
-      "held_out",
       "review",
       "live"
     ],
     "PK06": [
       "gold",
-      "held_out",
       "review",
       "live"
     ],
     "PK07": [
       "gold",
-      "held_out",
       "review",
       "live"
     ],
     "PK08": [
       "gold",
-      "held_out",
       "review",
       "live"
     ],
     "PK09": [
       "gold",
-      "held_out",
       "review",
       "live"
     ],
@@ -525,13 +505,11 @@
     ],
     "PK11": [
       "gold",
-      "held_out",
       "review",
       "live"
     ],
     "PK12": [
       "gold",
-      "held_out",
       "review",
       "live"
     ]
