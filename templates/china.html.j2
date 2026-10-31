@@ -707,6 +707,7 @@
   .cn-depth > summary { list-style:none; cursor:pointer; display:flex; align-items:center;
     gap:9px; padding:10px 12px; color:var(--text); font-size:12px; font-weight:750;
     user-select:none; }
+  .cn-depth > summary{min-height:40px;box-sizing:border-box}
   .cn-depth > summary::-webkit-details-marker { display:none; }
   .cn-depth > summary::before { content:"›"; font-size:17px; line-height:1;
     color:var(--muted); transform:rotate(0deg); transition:transform .13s; }
@@ -1006,6 +1007,7 @@
   body.page-china .cnx-hero-btns{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;position:relative}
   body.page-china .cnx-hbtn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);color:var(--text);border-radius:999px;padding:5px 12px;font-size:11.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
   body.page-china .cnx-hbtn:hover{background:rgba(255,255,255,.09)}
+  body.page-china .cnx-hbtn{min-height:40px;box-sizing:border-box}
   body.page-china .cnx-hbtn .n{font-weight:700}
   body.page-china .cnx-path-h{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
   body.page-china .cnx-path-svg{width:100%;height:auto;display:block}
@@ -1057,6 +1059,8 @@
   .cnx-wrap .cnx-playbook-context{font-size:10.5px;line-height:1.35;color:var(--muted);margin:2px 0 0}
   .cnx-wrap .cnx-reason-row{position:relative}
   .cnx-wrap .cnx-lens{flex:none;width:26px;height:26px;margin-left:auto;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:help;line-height:1;position:relative}
+  .cnx-wrap .cnx-lens{touch-action:manipulation}
+  @media (hover:none),(pointer:coarse){.cnx-wrap .cnx-lens::before{content:'';position:absolute;left:50%;top:50%;width:40px;height:40px;transform:translate(-50%,-50%)}}
   .cnx-wrap .cnx-change-list{display:grid;gap:0}
   .cnx-wrap .cnx-change-row{display:grid;grid-template-columns:44px minmax(66px,.34fr) minmax(0,1fr);gap:8px;align-items:start;padding:7px 4px;margin:0 -4px;border-bottom:1px solid var(--line);border-radius:var(--r-ctl,8px);font-size:11.5px;text-decoration:none;color:inherit}
   .cnx-wrap .cnx-change-row:last-child{border-bottom:none}
@@ -1142,6 +1146,7 @@
   body.page-china .cnx-dlg-head{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid rgba(255,255,255,.09)}
   body.page-china .cnx-dlg-title{font-size:13px;font-weight:700;letter-spacing:.7px;text-transform:uppercase}
   body.page-china .cnx-dlg-close{background:none;border:1px solid rgba(255,255,255,.16);color:var(--text);width:28px;height:28px;border-radius:50%;font-size:15px;cursor:pointer;line-height:1}
+  body.page-china .cnx-dlg-close{width:40px;height:40px}
   body.page-china .cnx-dlg-body{padding:18px 22px 22px}
   /* Dialog open/close animation — ported from the US mx5 dialogs: the backdrop fades,
      the panel rises + scales in, and the body's first children stagger-fade-up. JS adds
@@ -2521,7 +2526,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-dlg" id="cnx-dlg-read">
     <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
     <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Market State — Evidence & Signals','市场状态 — 证据与信号') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
+      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Market State — Evidence & Signals','市场状态 — 证据与信号') }}</span><button type="button" class="cnx-dlg-close" aria-label="{{ t('Close','关闭') }}" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
         <div class="cnx-eyebrow">{{ t('What the composite measures','综合指标测量') }} · {{ _ms_score }}/100 {{ t(_ms_label, _ms_label_zh) }}</div>
         {% if _ms_thesis or _ms_thesis_zh %}
@@ -2614,7 +2619,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-dlg" id="cnx-dlg-markets">
     <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
     <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Markets — Index Health & Cross-Asset','市场 — 指数健康与跨资产') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
+      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Markets — Index Health & Cross-Asset','市场 — 指数健康与跨资产') }}</span><button type="button" class="cnx-dlg-close" aria-label="{{ t('Close','关闭') }}" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
         <div class="cnx-eyebrow">{{ t('Index health','指数健康度') }}</div>
         {% if index_health %}
@@ -2702,7 +2707,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-dlg" id="cnx-dlg-sentiment">
     <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
     <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Market Sentiment — Breakdown','市场情绪 — 分解') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
+      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Market Sentiment — Breakdown','市场情绪 — 分解') }}</span><button type="button" class="cnx-dlg-close" aria-label="{{ t('Close','关闭') }}" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
         {% set _fe = latest.fear_euphoria %}
         {% if _fe and _fe.components %}
@@ -2757,7 +2762,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-dlg" id="cnx-dlg-sector">
     <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
     <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Sectors — Ladder, Rotation & Breadth','板块 — 阶梯、轮动与宽度') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
+      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Sectors — Ladder, Rotation & Breadth','板块 — 阶梯、轮动与宽度') }}</span><button type="button" class="cnx-dlg-close" aria-label="{{ t('Close','关闭') }}" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
         {% if pb_obj %}
         <div class="cnx-eyebrow">{{ t('Act on now','现在行动') }}</div>
@@ -2830,7 +2835,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-dlg" id="cnx-dlg-policy">
     <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
     <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Policy & Credit — PBoC, Impulse & Tape','政策与信贷 — 央行、脉冲与盘面') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
+      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Policy & Credit — PBoC, Impulse & Tape','政策与信贷 — 央行、脉冲与盘面') }}</span><button type="button" class="cnx-dlg-close" aria-label="{{ t('Close','关闭') }}" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
         <div class="cnx-cols2">
           <div>
@@ -2881,7 +2886,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-dlg" id="cnx-dlg-flows">
     <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
     <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Connect Flows — Southbound & Smart Money','互联通资金 — 南向与聪明钱') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
+      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Connect Flows — Southbound & Smart Money','互联通资金 — 南向与聪明钱') }}</span><button type="button" class="cnx-dlg-close" aria-label="{{ t('Close','关闭') }}" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
         <div class="cnx-cols2">
           <div>
@@ -2931,7 +2936,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-dlg" id="cnx-dlg-property">
     <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
     <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Property & Fiscal','房地产与财政') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
+      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Property & Fiscal','房地产与财政') }}</span><button type="button" class="cnx-dlg-close" aria-label="{{ t('Close','关闭') }}" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
         {% if P %}
         {% set R = P.regime %}
@@ -2978,7 +2983,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-dlg" id="cnx-dlg-aibrief">
     <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
     <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title"><span class="l-en">AI Brief — China Synthesis</span><span class="l-zh">AI简报 — 中国综合</span></span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
+      <div class="cnx-dlg-head"><span class="cnx-dlg-title"><span class="l-en">AI Brief — China Synthesis</span><span class="l-zh">AI简报 — 中国综合</span></span><button type="button" class="cnx-dlg-close" aria-label="{{ t('Close','关闭') }}" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
         {# ABX v2 — the ONE shared body renderer. China lens; no catalysts (china_brief
            has no forward_watch). The nightly receipt is injected into the footer slot. #}
@@ -3003,7 +3008,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-dlg" id="cnx-dlg-news">
     <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
     <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Macro News & Official Policy Tone','宏观新闻与官方政策基调') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
+      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Macro News & Official Policy Tone','宏观新闻与官方政策基调') }}</span><button type="button" class="cnx-dlg-close" aria-label="{{ t('Close','关闭') }}" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
         {% if CN and CN.tone %}
         <div class="cnx-eyebrow">{{ t('Official tone — CCTV 新闻联播','官方基调 — 央视新闻联播') }}</div>
@@ -3031,7 +3036,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-dlg" id="cnx-dlg-alerts">
     <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
     <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Alerts Centre','警报中心') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
+      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Alerts Centre','警报中心') }}</span><button type="button" class="cnx-dlg-close" aria-label="{{ t('Close','关闭') }}" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
         {% for a in (latest.alerts or []) %}
         <div class="cnx-row">
@@ -3053,7 +3058,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-dlg" id="cnx-dlg-playbook">
     <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
     <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Regime Playbook','周期策略') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
+      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Regime Playbook','周期策略') }}</span><button type="button" class="cnx-dlg-close" aria-label="{{ t('Close','关闭') }}" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
         {% if pb_obj %}
         {# Posture dial #}
@@ -3113,7 +3118,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-dlg" id="cnx-dlg-events">
     <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()"></div>
     <div class="cnx-dlg-panel">
-      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Calendar — Next 14 Days','日历 — 未来14天') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
+      <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Calendar — Next 14 Days','日历 — 未来14天') }}</span><button type="button" class="cnx-dlg-close" aria-label="{{ t('Close','关闭') }}" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
         {% if calendar %}
         <table class="cnx-mt">
