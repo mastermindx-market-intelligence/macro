@@ -23,6 +23,10 @@ from lib.intl_gs_transmission_present import (
 from tests import intl_gs_transmission_fixture as fixture
 
 ROOT = Path(__file__).resolve().parents[1]
+# R-03 note (review r1): the frozen spec named 24c59413bbc41bce5ef0b8a2f423330da557e1bd;
+# this constant is the #9949 W2F merge commit the lane actually started from before its
+# accepted rebase onto a newer main — content-identical to 24c5941 for the three files
+# compared here (surveillance css, theme.css, build_intl.py).
 BASE_SHA = "e6debbb05b47b518f0a39f4dbf9d26f95f9c7fa7"
 CSS_PATH = ROOT / "templates/intl_workspace_surveillance.css"
 TEMPLATE_PATH = ROOT / "templates/intl_workspace/transmission.html.j2"
@@ -397,6 +401,15 @@ def test_withheld_and_unavailable_render_states_never_numbers():
     assert strip_row["value_text"] == "12.5"
     assert strip_row["tick_x"] == 150
     assert strip_row["ticks"] == [{"rank": 1, "x": 200}, {"rank": 5, "x": 0}]
+
+    # R-05 pin (review r1): a shown numeral renders at the source's own precision,
+    # never in scientific notation — :g switched at 1e+06 and below 1e-04.
+    for value, text in ((1234567.25, "1234567.25"), (1.25e-05, "0.0000125")):
+        tampered = json.loads(json.dumps(payload))
+        tampered["rank_strips"]["JP"][0].update(
+            {"state": "shown", "value": value, "rank": 2, "rank_population": 5})
+        assert present_transmission(tampered)["origins"][0]["rank_strip"][0][
+            "value_text"] == text
 
 
 # --------------------------------------------------------------------------

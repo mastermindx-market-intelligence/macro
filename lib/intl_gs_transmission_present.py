@@ -15,6 +15,7 @@ returns a canonically identical view model.
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from decimal import Decimal
 
 from engine.intl_transmission_evidence import (
     ALTERNATIVE_IDS,
@@ -233,7 +234,12 @@ def _numeral_text(value):
     """The numeral string at the source's own precision; never re-scaled."""
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return None, None
-    text = f"{value:g}"
+    if isinstance(value, int):
+        text = str(value)
+    else:
+        text = repr(float(value))
+        if "e" in text or "E" in text:  # :g switched to scientific notation (R-05)
+            text = format(Decimal(text), "f")
     decimals = len(text.split(".")[1]) if "." in text else 0
     return text, decimals
 
