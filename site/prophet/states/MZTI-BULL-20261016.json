@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MZTI-BULL-20261016",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
-  "management_confidence": 61.5,
-  "raw_confidence": 64.0,
-  "delta_vs_base": 1.5,
+  "management_confidence": 60.8,
+  "raw_confidence": 59.9,
+  "delta_vs_base": 0.8,
   "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 92.2,
+    "validity": 79.1,
     "progress": 0.0,
-    "pace": 85.8,
+    "pace": 81.1,
     "retention": 50.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.942,
+    "dist_to_stop_r": 0.841,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 17.8,
-    "p1": -0.0387,
-    "p2": -0.0194,
+    "horizon_pct_used": 20.0,
+    "p1": -0.1061,
+    "p2": -0.053,
     "p3": null,
-    "move_r": -0.058,
+    "move_r": -0.159,
     "mfe_r": 0.0,
     "mae_r": -0.197
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 8,
-  "tau": 0.1778
+  "days_elapsed": 9,
+  "tau": 0.2
 }
