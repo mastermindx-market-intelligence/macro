@@ -652,8 +652,9 @@ def _compose_diagnostic_receipts(public, receipts):
     """Pure typed receipt join into the incumbent advisory display schema.
 
     These are structural provenance inputs, never authenticated owner evidence.
-    No original expectation descriptor binds a good/bad control to a variant in
-    the current generation contract, so output-control adjudication stays NOT_RUN.
+    Optional owner declarations are bound by the driver before effects. Historical
+    outcomes without that declaration keep output-control adjudication NOT_RUN.
+    This source join does not authenticate a producer or pre-execution chronology.
     """
     import hashlib
     import json
@@ -665,8 +666,9 @@ def _compose_diagnostic_receipts(public, receipts):
         if not ok:
             raise ValueError("INVALID_DIAGNOSTIC_ENGINEERING_RECEIPTS")
 
-    require(type(receipts) is dict and set(receipts) == {
-        "run", "commission", "source", "staged", "outcome"})
+    required = {"run", "commission", "source", "staged", "outcome"}
+    require(type(receipts) is dict and (set(receipts) == required
+            or set(receipts) == required | {"output_expectation"}))
     run, commission, source, staged, outcome = (receipts[key] for key in
         ("run", "commission", "source", "staged", "outcome"))
     require(type(run) is bridge.SyntheticRun
@@ -760,7 +762,7 @@ def _compose_diagnostic_receipts(public, receipts):
         require(bool(attempts) and len(attempts) == len(prepared.decisions)
                 and not outcome.refusal_reasons
                 and all(row["state"] == "CLEANED_SUCCESS" for row in attempts)
-                and public["status"] == "DIAGNOSTIC_ONLY")
+                and public["status"] in ("DIAGNOSTIC_ONLY", "REFUSED"))
         require(type(outcome.outputs) is tuple and len(outcome.outputs) == len(prepared.schedules))
         for group, output in zip(prepared.schedules, outcome.outputs):
             staging_accounting._bound(output, "output")
@@ -787,8 +789,18 @@ def _compose_diagnostic_receipts(public, receipts):
                  "evidence_sha256": staged.trial_readback.sha256},
                 {"id": "prefix_schedule", "status": "MATCHED_EXPECTATION" if outcome.completed else "NOT_RUN",
                  "evidence_sha256": hashlib.sha256(encoded).hexdigest() if outcome.completed else None}]
+    output_status, output_evidence = "NOT_RUN", None
+    if receipts.get("output_expectation") is not None:
+        from engine.research_codegen import output_expectations
+        frozen = receipts["output_expectation"]
+        require(type(frozen) is output_expectations.FrozenOutputExpectation
+                and frozen.expected_generation == staged.expected_generation)
+        output_status, output_evidence = output_expectations.compare_output_expectation(
+            frozen, prepared, outcome, adopted)
+    controls.append({"id": "output_contract", "status": output_status,
+                     "evidence_sha256": output_evidence})
     controls.extend({"id": key, "status": "NOT_RUN", "evidence_sha256": None}
-                    for key in ("output_contract", "physical_boundary", "resource_overload"))
+                    for key in ("physical_boundary", "resource_overload"))
     return {"schema": "research_codegen.engineering_evidence.v1",
             "identity": {key: public[key] for key in (*bridge._IDENTITY, "artifact_sha256")},
             "accounting": {"expected_generation_sha256": staged.expected_generation.sha256,

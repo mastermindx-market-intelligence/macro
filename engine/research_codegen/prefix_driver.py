@@ -330,6 +330,7 @@ class PrefixDriverOutcome:
     source_sha256: str
     config_sha256: str
     total_wall_seconds: float
+    output_expectation_sha256: str | None = None
 
 
 def _transport_error(exc):
@@ -408,7 +409,8 @@ def _adopt(attempt, plan, identity, task, cap):
     return envelope["rows"][0]
 
 
-def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None):
+def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None,
+                      output_expectation=None):
     """Run the exact per-decision prefix workload and return grouped owner outputs.
 
     ``source`` is opaque bounded UTF-8 candidate bytes bound to the retained source
@@ -418,6 +420,8 @@ def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None):
     attempts stop on any uncertain outcome, permission refusal, budget cap or
     non-adopted receipt, and the exact attempts are retained.  Non-available rows
     keep their original status; nothing is zero-filled, dropped, salvaged or ranked.
+    An optional independently declared output expectation is validated before any
+    transport and only its immutable digest is retained; it grants no execution.
     """
     _require(type(prepared) is bridge_module.PreparedSyntheticInputs,
              "EXACT_PREPARED_INPUTS_REQUIRED")
@@ -449,6 +453,12 @@ def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None):
     _require(_finite(spec.total_wall_seconds)
              and 0 < spec.total_wall_seconds <= transport_module.MAX_WALL_SECONDS,
              "ATTEMPT_BUDGET_INVALID")
+    # Freeze the declaration identity before the first transport effect.
+    expectation_sha256 = None
+    if output_expectation is not None:
+        from .output_expectations import validate_output_expectation
+        validate_output_expectation(output_expectation, prepared)
+        expectation_sha256 = output_expectation.descriptor.sha256
     # Validate and plan every task before the first transport effect.
     tasks = []
     for task in prepared.decisions:
@@ -528,7 +538,7 @@ def run_prefix_driver(prepared, *, source, engine, spec, config_sha256=None):
             outputs = (*outputs, BoundBytes(raw, hashlib.sha256(raw).hexdigest(), len(raw)))
     return PrefixDriverOutcome(identity, tuple(attempts), outputs, complete,
                                tuple(reasons), source.sha256, config_sha256,
-                               elapsed_total)
+                               elapsed_total, expectation_sha256)
 
 
 def connect_prepared_outputs(run, outcome, *, commission=None):
