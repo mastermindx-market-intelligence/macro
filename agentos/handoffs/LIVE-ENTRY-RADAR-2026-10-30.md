@@ -103,6 +103,13 @@ verified:
     GitHub.update_file of RS_LEADERSHIP_SUITE_MASTERPLAN.md on b7f86c8f3203fe599d2f0457cdb1b9746d9eea10.
   result: New 12141-character source-candidate blob951f750a6c6dd61152fd79662a676949eefad0c7;
     task P3.3 remains proposed and unregistered, with explicit source link. No outcomes read.
+- claim: Daily RS-onset pure consumer and existing pivot suites pass together.
+  command: python3 -m pytest -q tests/test_entry_radar_rs_onset_features.py tests/test_entry_radar_first_green_variants.py tests/test_entry_radar_first_green_next_close.py tests/test_entry_radar_first_green_descriptor.py tests/test_entry_radar_leader_pivot_descriptor.py tests/test_entry_radar_leader_pivot_progress.py tests/test_entry_radar_leader_pivot_progress_edges.py tests/test_entry_radar_rs_pullback_phase1.py
+  result: 264 tests and 113 subtests passed locally, exit0, PID43993, 17.66s;
+    original comparator behavior untouched, no real data or predictive proof.
+- claim: Existing research-price-panel CI path selection retains native ownership.
+  command: python3 -m pytest -q tests/test_ci_pack.py::test_manifest_job_local_delta_is_bounded_to_changed_job tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered tests/test_ci_pack.py::test_declared_scope_must_cover_paths_the_job_itself_reads
+  result: 3 passed, exit0, PID45842, 3.92s; hosted check on new head is still owed.
 unverified:
 - claim: Second increment source publication and exact-head hosted CI/non-author review.
   what_would_verify: Read back the commit containing this cumulative checkpoint and native source digests,
@@ -133,6 +140,7 @@ unresolved:
   native file read returned empty, so no independent parent byte verification. Research and artifact childrenSTOPconfirmed,no
   watchers; no automatic continuation.
 next_actions:
+- Verify the published source-inert daily RS-onset feature consumer on current PR head, exact CI and independently reviewed code; do not promote ranking/source permissions.
 - Reconcile required hosted CI on the new documentation successor head after source candidate/handoff
   edits, then obtain genuine independent non-author review for the current source owner. Never self-approve
   or merge a Draft without its permitted review/release conditions.
@@ -182,3 +190,7 @@ specific actions were not rerouted or retried. This does not create a new source
 owner. Exact next action: consume current-head CI/review, continue only an independently
 admitted user-path or source-qualification slice, never promote synthetic signals or claim
 live customer data.
+
+## Daily onset continuation
+
+P3.2 source implementation added engine/entry_radar/replay/rs_onset_features.py and tests/test_entry_radar_rs_onset_features.py. This is independently scoped from the native 30m comparators and the still-blocked source-admission route. The 22 new tests pass in a 264-test native suite with 113 subtests; 3 focused CI-scope tests also pass. All source-admission, detector, rank, issuance and trade authority remain false. Subsequent exact-head hosted checks and independent non-author review are required.
