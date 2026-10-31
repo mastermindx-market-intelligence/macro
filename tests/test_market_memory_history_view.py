@@ -184,3 +184,18 @@ def test_bad_transcript_catalog_binding_refuses_before_export(monkeypatch,tmp_pa
         module().export_browser(root,tmp_path/'bad.html',expected_manifest_sha256=receipt['manifest_sha256'],
             transcripts_catalog_path=tmp_path/'catalog.json')
     assert not (tmp_path/'bad.html').exists()
+
+
+def test_controller_pending_reveal_and_integrity_lifetimes():
+    """Run the whole controller with real gzip/SHA and a minimal DOM adapter."""
+    import shutil
+    import subprocess
+    node = shutil.which('node')
+    if not node:
+        pytest.fail('Node is required for Market Memory controller checks')
+    root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [node, '--test', 'tests/market_memory_history_controller.test.cjs'],
+        cwd=root, capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
