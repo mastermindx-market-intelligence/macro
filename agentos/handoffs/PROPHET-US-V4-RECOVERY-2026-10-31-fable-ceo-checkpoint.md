@@ -227,6 +227,53 @@ verified:
       anchor knowability; REJECT_FUTILITY terminal; trim once; R maturity from
       observed t_exec; the frozen YAML block parses (49 keys). Round-5 review running
       on 438b1ac4. The seat does not self-approve.
+  - claim: W2 round 5 returned REVISE on 438b1ac4; revision 6 (2d81bf311b88) with census v6 answers every finding.
+    command: >
+      python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions
+      <W1 r3 map> --commit-walk --document-walk --server-arrival (v6: pinned
+      origin/main SHA, GitHub check-suite createdAt witness per first-arrival commit,
+      window scan continues past a late-knowable BUY row, strict sets need a fully
+      covered window, skipped-blob counter, knowable maps + shift distributions
+      exported; dates, flags, arrival instants only).
+    result: >
+      Round-5 REVISE: B1 futility/monitoring looks had no session floor; B2 l = 22
+      too short, floors must count full blocks, percentile bound anti-conservative
+      with few blocks; M1 arrival clock was the bot's commit clock; M2 scan broke at a
+      late-knowable row; M3 exact units with a gap after admission entered the strict
+      set; M4 anchor gates applied to T1; M5 walk unpinned; m1-m5, n1. r6 adds
+      W2-ADJ-07 (block 44 = 2(K+H+2); deciding bound = more conservative of MBB
+      percentile and t(B-1) on full non-overlapping block means; fixed look >= 5 full
+      blocks = 220 sessions, futility >= 150 units and >= 3 blocks, monitoring looks
+      point estimates only; planning on block means: SE ~50, crit ~+82 bps, power80
+      ~+125, pass-at-zero ~0.09; r5 design-effect figures withdrawn), W2-ADJ-08
+      (arrival = max(commit clock, earliest check-suite createdAt); witness for 31/44
+      stamp commits and 23/54 document commits, every witness within 2 min after the
+      commit clock, no knowable session changed; unwitnessed commits listed; R
+      readout also with both clocks +1), W2-ADJ-09 (AVOIDED/REFUSED apply to T0/T2/T3
+      only; T1 enters whenever _classify_buy_row admitted inside K). Census v6:
+      counts unchanged except 23 (was 21) censored units carry a late-knowable BUY
+      row (stamp lag 9/10) and all 26 exact pairs carry a gap after admission -> 0
+      strict pairs, 0 full blocks in R; discovery-document shift over 1,087 R units:
+      1,076 at +1, 11 at +2 (LATE_DISCOVERY_ARRIVAL, flagged); over all 54 receipts
+      1 session for 37 and 2-11 for 17 (08-21 / 09-04 documents that reached main
+      days later); pinned origin/main 761e814eda84 (the ref moved between two
+      same-day runs). YAML block: 54 keys, every flow value with commas inside
+      parentheses quoted, validator walk clean. Round-6 review running on 2d81bf31.
+      The seat does not self-approve.
+  - claim: PR #10277's contract-delta red is repaired at 82812b818eb3; the merge-blocked marker stays until hosted CI is green.
+    command: >
+      wired tests/test_report_us_candidate_episode_waterfall.py into the prophet-lab
+      run step (.github/ci/legacy-jobs.yml) and the ci.yml paths; python3
+      scripts/check_contract_delta.py --base 91b936c46424 -> 0 introduced, 0
+      inherited; one GraphQL read of the head's check contexts.
+    result: >
+      At 82812b81: contract-delta SUCCESS, ci-authority/main SUCCESS, ci-plan /
+      fence-pack / capability-broker / grader-manifest / self-mod-fence SUCCESS;
+      ci-pack-0..11 IN_PROGRESS; the only red is the standing
+      ci-authority/codex/merge-queue-pilot. The merge-blocked label and the guard
+      comment ("bootstrap under the pre-existing check standard") remain; the seat
+      posted the repair note (comment 6542015074) and will remove the marker only with
+      a visible comment once ci-pack and ci-gate are green; never self-merge.
   - claim: The retained A2 preflight patch has a reviewable carrier — Draft PR #10289, stacked on #10209.
     command: >
       git apply of the fabric result's patch onto da3a04518f13 (the exact #10209 head)
@@ -248,12 +295,12 @@ verified:
       ci-pack runs (10-31 ~10:xxZ read: #10277 d03acfd0, #10267 750dd2c2, #10255
       6454a74a all OPEN/UNSTABLE/armed).
 unverified:
-  - claim: W2 registration r5 (438b1ac4) is ready to freeze.
-    what_would_verify: the round-5 independent review's APPROVE-READY-TO-FREEZE on that exact head; until then no freeze and no outcome read. T3 gate (union_admission reads completed closes only, asof-capable) is evaluated at freeze.
+  - claim: W2 registration r6 (2d81bf311b88) is ready to freeze.
+    what_would_verify: the round-6 independent review's APPROVE-READY-TO-FREEZE on that exact head; until then no freeze and no outcome read. T3 gate (union_admission reads completed closes only, asof-capable) is evaluated at freeze.
   - claim: PR #10267 (head 750dd2c2) hosted CI green and merged by the merge-on-green sweeper against that exact head.
     what_would_verify: the sweeper's merge commit on origin/main; mergeStateStatus read once via the bound PR status, not by polling.
-  - claim: PR #10277 (head d03acfd0) and PR #10255 (head 6454a74a) merge through the sweeper against those exact heads.
-    what_would_verify: the sweeper's merge commits on origin/main; #10255 additionally needs the fresh bounded round-2 non-author review (the first round-2 reviewer stalled 70 min without a verdict and was stopped) and green hosted CI at 6454a74a before arming.
+  - claim: PR #10277 (head 82812b81) and PR #10255 (head 6454a74a) merge through the sweeper against those exact heads.
+    what_would_verify: the sweeper's merge commits on origin/main; #10277 first needs ci-pack + ci-gate green at 82812b81 and the merge-blocked marker removed with a visible comment (the guard's condition: green under the pre-existing standard, not a semantic excuse); #10255 additionally needs the fresh bounded round-2 non-author review (the first round-2 reviewer stalled 70 min without a verdict and was stopped) and green hosted CI at 6454a74a before arming.
   - claim: W2 registration revision 2 is READY TO FREEZE.
     what_would_verify: the round-2 independent review verdict on 549d416f; then the census re-run with the W1 r2 session + VendorAliasTable join, k*, the T3 gate, the price-panel commit SHA, the Data OS exclusion list, and a machine freeze mirroring §2-§7. No outcome may be read before that.
   - claim: >
@@ -299,10 +346,13 @@ next_actions:
     2. Production proof on the next scheduled nightly (see unverified); record it
     here and in the W3 ledger; do not dispatch daily.yml manually.
   - >
-    3. #10267 (B4 seam, 750dd2c2) and #10277 (W1, d03acfd0) are both reviewed
-    APPROVE-READY and armed merge-on-green: consume each sweeper outcome once at a
-    real boundary; if hosted CI reds, repair on the branch (never relabel silently,
-    #5291). Never self-approve or self-merge.
+    3. #10267 (B4 seam, 750dd2c2) and #10277 (W1, now 82812b81 after the
+    contract-delta repair; reviewed APPROVE-READY at d03acfd0, the repair touches CI
+    wiring only) are armed merge-on-green; #10277 also carries merge-blocked from the
+    semantic-proof guard: consume its checks once at a real boundary, and when
+    ci-pack + ci-gate are green at 82812b81 remove merge-blocked with a visible
+    comment naming this session and the green evidence; if hosted CI reds, repair on
+    the branch (never relabel silently, #5291). Never self-approve or self-merge.
   - >
     4. Decide the B4 capture's durable home (unresolved above) with the Data OS /
     live-plane owners before any nightly wiring; preserve the amended B4
@@ -314,13 +364,17 @@ next_actions:
     independent non-author review of the preflight's refusal semantics (NOT_SETTLED
     receipt, non-fatal alarm, no publication); it inherits #10209's HOLD and is never
     armed or merged ahead of its base. Do not re-run the fabric operation.
+    ci-authority/main rejects it (unsupported_base_ref / inactive_base_context) because
+    its base is not main — expected for a stacked draft; retarget to main only after
+    #10209 lands, never before.
   - >
-    6. Entry Timing W2 (Draft PR #10283, registration r5 at 438b1ac4, DRAFT -
-    UNFROZEN; census v5 committed): consume the round-5 review; apply any REVISE on
-    the branch as r6; only on APPROVE-READY-TO-FREEZE run the freeze inputs (census v5
-    re-run with the per-unit alias blob at c_disc, T3 availability gate on the panel
-    index, panel commit SHA per look, Data OS exclusion list, R maturity session from
-    observed t_exec) and mirror a machine freeze from the parsed YAML block; R can never promote; no outcome
+    6. Entry Timing W2 (Draft PR #10283, registration r6 at 2d81bf31, DRAFT -
+    UNFROZEN; census v6 committed): consume the round-6 review; apply any REVISE on
+    the branch as r7; only on APPROVE-READY-TO-FREEZE run the freeze inputs (census v6
+    re-run with --server-arrival at a pinned origin/main SHA, the per-unit alias blob
+    at c_disc, T3 availability gate on the panel index, panel commit SHA per look, Data
+    OS exclusion list, R maturity session from observed t_exec, the +1-clock and
+    no-LATE_DISCOVERY_ARRIVAL sensitivities declared) and mirror a machine freeze from the parsed YAML block; R can never promote; no outcome
     read before freeze; a separate registration, never a change to #7751 A1. B-17
     34-session window census (7,918 C0 episodes, none complete) stays null — no
     favorable subset.
@@ -410,9 +464,14 @@ overlapping holds; a code/prose lane-state mismatch whose "59 rows / 07-31" evid
 July-walk artifact); census v5 confirmed the reviewer (154 HEAD-only BUY rows from the
 09-14 and 10-19 heals, 07-31 healthy) and revision 5 (438b1ac4) registers a block
 bootstrap with session floors, one heal rule, a T0 lower bound and a binding timing
-guard; round 5 is running. The A2 preflight patch gained a carrier (Draft #10289,
-stacked on #10209, 27 tests, unreviewed). Still nothing merged, frozen or
-production-proven.
+guard; round 5 returned REVISE (block too short, floors in units not blocks, bot clock,
+anchor gates on T1, unpinned walk) and revision 6 (2d81bf31) answers it with a 44-session
+block, full-block floors, the more conservative of two bounds, a server-witness arrival
+clock and a T1 that is never anchor-gated; round 6 is running. The A2 preflight patch
+gained a carrier (Draft #10289, stacked on #10209, 27 tests, unreviewed; ci-authority
+rejects the non-main base as expected). #10277's contract-delta red is repaired at
+82812b81 (ci-pack running; merge-blocked stays until green). Still nothing merged,
+frozen or production-proven.
 
 Canonical sources: completion brief and census at e757498822a2 (Draft #10242),
 recovery carrier #10174 (29cfb98b), program issue #6805 (comment 6539985230), shared
