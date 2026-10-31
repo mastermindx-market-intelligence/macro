@@ -1,0 +1,34 @@
+{
+  "schema": "eval_os.integration_qualification.v1",
+  "incoming_main": "816d3eea6bf3e7aee321d79a6f306ade107eea01",
+  "prior_head": "80e18a622d659e12a4a7828fae2527fd34ff35fb",
+  "trigger": "controller-confirmed real merge conflict; owner repair requested with label armed",
+  "resolution": "Nine exact additive CI path unions plus eight new A1 dependency paths; all main changes preserved",
+  "local_checks": {
+    "initial_affected": {
+      "pass": 267,
+      "fail": 1,
+      "failure": "A1 missing new main import dependencies"
+    },
+    "response_and_adversarial": {
+      "pass": 136,
+      "fail": 0,
+      "seconds": 12.95
+    },
+    "final_selection_and_curated_set": {
+      "pass": 2,
+      "fail": 0,
+      "seconds": 7.36
+    },
+    "agentos": {
+      "records": 1738,
+      "errors": 0,
+      "warnings": 164
+    }
+  },
+  "source_reuse": "16/17 runtime bindings and seven earlier suite bindings unchanged; only main API restart trigger expansion changes updater bytes",
+  "final_exact_head_tracked_inventory": "required after containing local integration commit, before publication",
+  "hosted_ci": "new containing head must run fresh binding checks",
+  "production_proven": false,
+  "manifest_sha256": "9c5f28a4b17582b6c838cb75f775cb2bca3b9a7842349ff5cc4a57c44f80b71a"
+}

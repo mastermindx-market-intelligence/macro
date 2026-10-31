@@ -32,6 +32,8 @@ let API_CACHE_GENERATION = 0;
 const API_CACHE_BYPASS = new Set([
   "/api/live_runs",
   "/api/analytics/fp/realtime",
+  "/api/intelligence_os",
+  "/api/intelligence_os/engine",
 ]);
 
 /* The analytics panels are the one family where 15s is the wrong number. They are
@@ -724,7 +726,9 @@ function setSidebarOpen(open) {
   sidebar.classList.toggle("open", next); scrim.classList.toggle("show", next);
   document.body.classList.toggle("nav-open", next);
   toggle.setAttribute("aria-expanded", next ? "true" : "false");
-  toggle.setAttribute("aria-label", next ? "Close navigation" : "Open navigation");
+  toggle.setAttribute("data-admin-aria-en", next ? "Close navigation" : "Open navigation");
+  toggle.setAttribute("data-admin-aria-zh", next ? "关闭导航" : "打开导航");
+  toggle.setAttribute("aria-label", iosText(next ? "Close navigation" : "Open navigation"));
   if (!next && wasOpen && sidebar.contains(document.activeElement)) toggle.focus();
   sidebar.inert = mobile && !next;
   if (mobile && !next) sidebar.setAttribute("aria-hidden", "true");
@@ -806,6 +810,7 @@ function currentEngineId() {
 }
 function gotoEngine(id) { location.hash = "#/engine/" + encodeURIComponent(id); }
 function backToIntelligenceOs() {
+  IOS.restoreFocus = true;
   if (currentEngineId()) history.replaceState(null, "", location.pathname + location.search);
   go("intelligence_os");
 }
@@ -4321,13 +4326,56 @@ async function renderLobeDetail(id) {
    T1 overlay; where no adjudication exists the cell reads "—" and stays empty. Guessing
    one would turn a census into an authority claim, which is the one thing this surface
    must never do. */
+/* Display only: canonical status/filter/owner data remain unchanged. */
+const IOS_LABEL_ZH = {"Intelligence OS": "智能证据评估", "Evidence disposition": "证据状态", "Evidence": "证据", "Operational health": "运行状况", "Authority": "权限", "Engine": "引擎", "Engines": "引擎", "Program": "项目", "Output class": "输出类型", "Outputs": "输出", "Worst state": "最差运行状态", "Reasons": "依据与限制", "Declared ruler": "声明的评估窗口", "Selected ruler": "实际评估窗口", "Ruler": "评估窗口", "Cohort / version": "样本组 / 版本", "Coverage": "覆盖情况", "Maturity": "观测成熟度", "Evidence contract": "证据契约", "Measurement contract": "测量契约", "Owner lifecycle": "原所有者生命周期", "Owner reason": "原所有者说明", "Evidence references": "证据引用", "Source references": "来源引用", "Technical details": "技术详情", "Unknown": "未知", "Not determined": "尚未确定", "No read": "无法读取", "Registry gap": "登记缺口", "No T1 evidence disposition": "没有登记的证据状态", "No engine matches this filter.": "没有符合筛选条件的引擎。", "Empty band — valid evidence": "该组为空，仍保留显示", "Strongest evidence first · never performance": "按证据支持程度排序，不是绩效排名", "CEO evidence view": "证据总览", "Re-derive": "重新读取", "Re-deriving…": "正在重新读取…", "Could not read evidence": "无法读取证据", "Evidence request failed": "证据请求失败", "Last known evidence": "上次已知证据", "Retry": "重试", "Back to Intelligence OS": "返回证据评估", "Filter by engine, producer or program…": "按引擎、生成器或项目筛选…", "Observed": "读取时间", "Canonical engines": "登记引擎", "Artifacts": "输出文件", "Assessed": "已评估", "No promotion or trading authority": "不授予升级或交易权限", "No source link is declared.": "没有声明可访问的来源链接。", "No evidence references declared.": "尚未声明证据引用。", "Unknown engine": "未知引擎", "Could not read engine": "无法读取引擎", "Clear filters": "清除筛选", "All engines": "全部引擎", "Previous": "上一页", "Next": "下一页", "Page": "页", "Loading…": "正在载入…", "Details": "详情", "Unavailable": "不可用", "Partial horizon evidence": "仅完成部分窗口的评估", "Declared horizon": "声明的观察窗口", "Graded horizon": "已评估的窗口", "No class adjudication": "输出类型尚未确认", "Evidence strength does not rank performance or permit a trade.": "证据支持程度不是绩效排名，也不授予交易权限。", "Validated": "已有验证支持", "Accruing": "证据积累中", "Ungraded by design": "按设计不评分", "Degraded": "证据受限", "Disproven": "已有否定证据", "healthy": "正常", "degraded": "受限", "stale": "过期", "unavailable": "不可用", "predictive": "预测", "ranking": "排序", "classification_state": "状态分类", "detection_event": "事件检测", "descriptive": "描述", "salience": "显著性", "generative": "生成", "No compatible task, version and cohort qualification is projected.": "当前未提供与该任务、版本和样本组相符的验证范围。", "Forward observations have not matured for this window.": "该窗口的前瞻观测尚未成熟。", "Current source evidence could not be read.": "当前来源证据无法读取。", "The output class has not been adjudicated.": "输出类型尚未确认。", "The owner retired this method; retirement does not prove a failed hypothesis.": "所有者已退役此方法；退役本身不证明假设被否定。", "The owner has not started this evidence cohort.": "所有者尚未开始积累该样本组的证据。", "Incompatible clock bases were refused.": "不兼容的时间基准已被拒绝混合。", "This descriptive output is intentionally ungraded.": "此描述性输出按设计不评分。", "Current operational health cannot be qualified.": "当前运行状况无法确认。", "The available grade covers a shorter horizon than declared.": "已有评估仅覆盖比声明更短的窗口。", "Unknown reason": "未识别的说明代码", "Owner scope": "所有者验证范围", "Validation scope": "验证范围", "Assessment time": "评估时间", "Last assessed": "上次评估时间", "Previous assessed": "先前评估时间", "Refresh failed; showing previous evidence.": "刷新失败；正在显示先前证据。", "Evidence clock": "证据起点", "Available grade": "已有评估", "Control coverage": "对照覆盖率", "Benchmark coverage": "基准覆盖情况", "Source not accessible": "无法访问来源", "No browser link is declared for this reference.": "此引用没有声明可通过浏览器访问的链接。", "owner scope": "原所有者范围", "output class": "输出类型", "owner lifecycle": "原所有者生命周期", "graded by design": "是否按设计评分", "provider": "证据读取来源", "ruler": "评估窗口", "basis": "时间基准", "maturity": "观测成熟度", "coverage": "覆盖情况", "reasons": "依据与限制", "evidence refs": "证据引用", "state": "运行状态", "authority": "权限", "program": "项目", "not determined": "尚未确定", "no read": "无法读取", "none": "无", "none declared": "尚未声明", "Evidence refresh failed": "证据刷新失败", "Refresh failed. Showing the previous assessment": "刷新失败，当前显示上次评估", "assessment time unavailable": "评估时间不可用", "Observatory →": "运行监测 →", "Could not derive the estate": "无法读取证据", "No T1 evidence disposition. This noncanonical output group remains visible for operational census and repair only.": "没有登记的证据状态。此未登记输出组仍保留显示，仅供运行清点与修复。", "Derived from owner-native evidence and current output health. It ranks evidence strength, never headline performance, and carries no promotion authority.": "由原所有者证据与当前运行状况推导，仅说明证据支持程度，不代表绩效排名或升级权限。", "filter by engine, producer or program…": "按引擎、生成器或项目筛选…", "clear all": "清除筛选", "all programs": "全部项目", "prev": "上一页", "next": "下一页", "page": "页", "strongest evidence first · never performance": "按证据支持程度排序，不是绩效排名", "canonical engines": "登记引擎", "registry gaps": "登记缺口", "artifacts": "输出文件", "assessed": "已评估", "Derived on demand from T1 identity/semantics, T4 output health and existing owner-native evidence — nothing on this page is stored.": "按需读取登记身份与语义、运行状况及原所有者证据；页面不另存证据。", "served from the in-process cache": "来自进程内缓存", "Computed": "计算耗时", "Presence source": "存在性来源", "Write-time evidence refused": "不采用文件修改时间作为新鲜度证据", "Why Eval OS answered the way it did": "证据评估为何得出此结果", "A reason is a disclosure, not a fault.": "依据是对限制的说明，并不等同故障。", "Top reason codes": "主要说明代码", "Across": "覆盖", "output": "输出", "path": "路径", "freshness": "新鲜度", "reader": "读取来源", "self-health": "自身状态", "required in": "必需输入", "optional in": "可选输入", "Freshness not measured": "尚未测量新鲜度", "No freshness SLA": "没有新鲜度时限", "Source as of": "来源时间", "Authority is inherited from T1, not assigned by this view.": "权限继承自登记来源，本页面不授予权限。", "no live lobes": "没有已登记运行输出", "outputs": "输出", "Owner": "所有者", "producer": "生成器", "engine": "引擎", "Evidence estate unavailable": "证据来源不可用", "previously assessed": "上次评估", "Decl.": "声明", "Graded": "已评估", "Horizon unit": "窗口单位", "Market calendar": "市场日历", "Independent dates": "独立日期", "Needed dates": "所需日期", "Cohort rows": "样本组行数", "Controlled rows": "有对照行数", "Refused rows": "拒绝行数", "Available evidence windows": "已有证据窗口", "Owner validation is not qualification of this task or cohort.": "原所有者验证状态不等同当前任务或样本组的验证。", "Forward record status": "前瞻记录状态", "Basis partitions": "时间基准分组", "calendar_days": "日历日", "trading_days": "交易日", "complete": "完整", "partial": "部分", "could_not_look": "无法读取", "no age": "未测量时间差", "no watermark read": "未读取时间水印", "watermark unusable": "时间水印不可用", "no SLA declared": "未声明新鲜度时限", "lobe": "运行输出", "bound": "归属范围", "asof": "来源时间", "by": "判断来源", "all": "全部", "Engine details": "引擎详情", "Unit not declared": "未声明单位", "Declared window": "声明窗口", "Graded window": "已评估窗口", "Reason codes": "说明代码", "Unknown clock basis": "未知时间基准", "Registration horizon": "登记时的窗口", "Observed dates": "观测日期数", "display": "仅展示", "Display only": "仅展示", "class": "输出类型", "class rationale": "输出类型依据", "No adjudicated output class. That is a gap in the T1 overlay, not a grade — Eval OS never infers one.": "输出类型尚未确认，这是登记信息缺口，并非评分；评估页面不会推断类型。", "Close navigation": "关闭导航", "Open navigation": "打开导航", "No browser link is declared for these references.": "这些引用尚未声明可访问的浏览器链接。"};
+Object.assign(IOS_LABEL_ZH, {"Owner measurements": "原所有者测量", "Owner measurements describe the bound family; compatible task, version and cohort qualification is not established here.": "这些测量描述绑定的原所有者系列；本页未确认与任务、版本和样本组兼容的验证范围。", "Owner measurement basis": "原所有者测量基准", "Wilson lower bound (date hit proportion)": "日期命中比例的 Wilson 下界", "Owner hit rate": "原所有者命中率", "Signed excess mean": "有方向的超额均值", "Absolute excess mean": "超额绝对值均值", "Excess direction basis": "超额方向基准", "Excess by direction": "按方向划分的超额", "Whole-family benchmark baseline": "全系列基准参照", "Baseline denominator": "参照样本分母", "The owner does not project the baseline denominator. These values include the whole family and are separate from controlled-cohort support.": "原所有者未提供参照的样本分母。这些值覆盖全系列，与对照样本组的证据支持分别显示。", "Owner clock basis": "原所有者时间基准", "Owner ruler": "原所有者评估窗口", "Controlled-cohort support": "对照样本组的证据支持", "Clock bases remain separate; no pooled estimate is inferred.": "各时间基准分别保留，不推导合并估计。", "Repository source declaration": "仓库中的来源声明", "Source declarations describe the contract; they do not supply outcome evidence.": "来源声明描述契约，本身不提供结果证据。", "No browser link is declared for this reference.": "此引用没有声明可通过浏览器访问的链接。", "Owner uncertainty and support": "原所有者的不确定性与支持", "Unknown (not projected by owner)": "未知（原所有者未提供）"});
+const IOS_REASON_COPY = {
+  "owner_recorded_snapshot_current_unqualified": ["Recorded owner support is available; its current source and task qualification are not established.", "已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。"],
+  "owner_snapshot_unavailable": ["The owner's recorded support could not be read. No grading was run for this request.", "无法读取所有者记录的证据支持；本次请求没有运行评分。"],"owner_validation_scope_unqualified": ["No compatible task, version and cohort qualification is projected.", "当前未提供与该任务、版本和样本组相符的验证范围。"], "insufficient_maturity": ["Forward observations have not matured for this window.", "该窗口的前瞻观测尚未成熟。"], "evidence_provider_unreadable": ["Current source evidence could not be read.", "当前来源证据无法读取。"], "output_class_null": ["The output class has not been adjudicated.", "输出类型尚未确认。"], "owner_terminal_retired": ["The owner retired this method; retirement does not prove a failed hypothesis.", "所有者已退役此方法；退役本身不证明假设被否定。"], "evidence_clock_not_started": ["The owner has not started this evidence cohort.", "所有者尚未开始积累该样本组的证据。"], "evidence_not_started": ["The owner has not started this evidence cohort.", "所有者尚未开始积累该样本组的证据。"], "mixed_clock_basis_refused": ["Incompatible clock bases were refused.", "不兼容的时间基准已被拒绝混合。"], "health_assessment_unqualified": ["Current operational health cannot be qualified.", "当前运行状况无法确认。"], "health_missing": ["Current operational health cannot be qualified.", "当前运行状况无法确认。"], "health_blind": ["Current operational health cannot be qualified.", "当前运行状况无法确认。"], "t1_semantic_ungraded": ["This descriptive output is intentionally ungraded.", "此描述性输出按设计不评分。"], "health_unassessed": ["Current operational health cannot be qualified.", "当前运行状况无法确认。"], "health_partial": ["Current operational health cannot be qualified.", "当前运行状况无法确认。"], "health_unknown_state": ["Current operational health cannot be qualified.", "当前运行状况无法确认。"], "health_no_outputs": ["Current operational health cannot be qualified.", "当前运行状况无法确认。"], "health_unknown": ["Current operational health cannot be qualified.", "当前运行状况无法确认。"], "health_stale": ["Current operational health cannot be qualified.", "当前运行状况无法确认。"], "health_degraded": ["Current operational health cannot be qualified.", "当前运行状况无法确认。"], "health_unavailable": ["Current operational health cannot be qualified.", "当前运行状况无法确认。"], "owner_terminal_falsified": ["The owner records falsification for this method.", "所有者记录此方法已被否定。"]};
+function iosText(text) {
+  return document.documentElement.dataset.lang === "zh" ? (IOS_LABEL_ZH[text] || text) : text;
+}
+function iosCopy(text) {
+  const zh = IOS_LABEL_ZH[text];
+  return zh ? `<span class="l-en">${esc(text)}</span><span class="l-zh">${esc(zh)}</span>` : esc(text);
+}
+function iosReason(code) {
+  const pair = IOS_REASON_COPY[code];
+  return pair ? `<span class="l-en">${esc(pair[0])}</span><span class="l-zh">${esc(pair[1])}</span>` : esc(code);
+}
+function iosRestoreFocus(root) {
+  if (!IOS.restoreFocus) return;
+  IOS.restoreFocus = false;
+  const link = Array.from(root.querySelectorAll("[data-ios-engine]")).find(el => el.dataset.iosEngine === IOS.returnFocusId);
+  const target = link || root.querySelector("#iosSearch");
+  if (target) target.focus();
+}
+function iosLanguageAttributes() {
+  document.querySelectorAll("[data-ios-label]").forEach(el => el.setAttribute("data-label", iosText(el.dataset.iosLabel)));
+  document.querySelectorAll("[data-ios-copy]").forEach(el => {
+    const key = el.dataset.iosCopy;
+    if (el.dataset.iosAttr) el.setAttribute(el.dataset.iosAttr, iosText(key));
+    else el.textContent = iosText(key);
+  });
+  const search = $("#iosSearch");
+  if (search) search.placeholder = iosText("filter by engine, producer or program…");
+  const refresh = $("#ios-refresh");
+  if (refresh && refresh.disabled) refresh.textContent = iosText("Re-deriving…");
+  const status = $("#iosRefreshStatus");
+  if (status && status.dataset.failed === "true") {
+    status.textContent = iosText("Refresh failed. Showing the previous assessment") +
+      (status.dataset.assessed ? " · " + status.dataset.assessed : " · " + iosText("assessment time unavailable")) + ".";
+  }
+}
+document.addEventListener("langchange", iosLanguageAttributes);
+
 const IOS_STATE_CLS = {
   healthy: "s-ok", degraded: "s-warn", stale: "s-bad", unavailable: "s-bad",
 };
 /* An unknown state is NEVER styled like a pass — it renders muted with its own word. */
 const iosStateCls = (s) => (s == null ? "s-mut" : (IOS_STATE_CLS[s] || "s-mut"));
 const iosStateWord = (s) => (s == null ? "not determined" : String(s));
-function iosStatePill(s) { return `<span class="statpill ${iosStateCls(s)}">${esc(iosStateWord(s))}</span>`; }
+function iosStatePill(s) { return `<span class="statpill ${iosStateCls(s)}">${iosCopy(iosStateWord(s))}</span>`; }
 
 /* The worst-state cell for an engine ROW, which is never allowed to read green over
    blindness. worst_state folds only real verdicts (a null must not outrank one), so an
@@ -4342,7 +4390,7 @@ function iosRowStateCell(r) {
   const blind = Number(r.n_blind || 0);
   const total = Number(r.n_artifacts || 0);
   if (total && blind >= total) {
-    return `<span class="statpill s-mut" title="every output of this engine was unreadable — Eval OS could not look, which is not a health verdict">no read</span>`;
+    return `<span class="statpill s-mut" title="every output of this engine was unreadable — Eval OS could not look, which is not a health verdict">${iosCopy("no read")}</span>`;
   }
   const badge = blind > 0
     ? ` <span class="statpill s-mut" title="${esc(String(blind))} of this engine's ${esc(String(total))} outputs could not be read at all — the state beside this badge covers only the rest">${esc(String(blind))} blind</span>`
@@ -4350,20 +4398,221 @@ function iosRowStateCell(r) {
   return iosStatePill(r.worst_state) + badge;
 }
 
-const IOS = { filter: { state: null, output_class: null, authority: null, owner_program: null }, q: "", page: 1, rows: [], data: null };
+/* IOS_EVIDENCE_CONTRACT_START */
+const IOS_EVIDENCE_STATUS_ORDER = [
+  "Validated", "Accruing", "Ungraded by design", "Degraded", "Disproven",
+];
+const IOS_EVIDENCE_STATUS_CLS = {
+  "Validated": "s-ok",
+  "Accruing": "s-warn",
+  "Ungraded by design": "s-mut",
+  "Degraded": "s-bad",
+  "Disproven": "s-bad",
+};
+function iosEvidenceStatusCls(status) {
+  return IOS_EVIDENCE_STATUS_CLS[String(status || "")] || "s-mut";
+}
+function iosEvidenceStatusPill(status) {
+  const word = status || "not determined";
+  return `<span class="statpill ${iosEvidenceStatusCls(status)}">${iosCopy(word)}</span>`;
+}
+function iosEvidenceCell(engine) {
+  const e = engine || {};
+  if (e.canonical_t1 === false) {
+    return `<span class="statpill s-mut">${iosCopy("Registry gap")}</span><div class="sub ios-evidence-provider">${iosCopy("No T1 evidence disposition")}</div>`;
+  }
+  const reason = (e.evidence_reason_codes || [])[0];
+  const ruler = e.evidence_ruler || {};
+  const declared = (ruler.declared_horizon || {}).horizon_d;
+  const graded = ruler.selected_qledger_rung;
+  return `${iosEvidenceStatusPill(e.evidence_status)}<div class="sub ios-evidence-provider">${esc((e.evidence_provider || {}).binding || (e.evidence_provider || {}).kind || "owner-native")}</div>
+    ${reason ? `<div class="sub ios-evidence-reason">${iosReason(reason)}</div>` : ""}
+    ${(declared || graded) ? `<div class="sub">${iosCopy("Declared window")} ${esc(Array.isArray(declared) ? declared.join(" / ") : declared || "—")} · ${iosCopy((ruler.declared_horizon || {}).horizon_unit || "Unit not declared")}</div>
+      <div class="sub">${iosCopy("Graded window")} ${esc(graded || "—")}</div>` : ""}
+    ${graded && (Array.isArray(declared) ? declared : [declared]).some(v => Number(v) > Number(graded)) ? `<div class="sub">${iosCopy("Partial horizon evidence")}</div>` : ""}`;
+}
+function iosNormalizeCeoBands(bands) {
+  const byStatus = {};
+  (Array.isArray(bands) ? bands : []).forEach(row => {
+    if (row && IOS_EVIDENCE_STATUS_ORDER.includes(row.evidence_status)) {
+      byStatus[row.evidence_status] = row;
+    }
+  });
+  return IOS_EVIDENCE_STATUS_ORDER.map(status => Object.assign(
+    { evidence_status: status, n_engines: 0, engine_ids: [] },
+    byStatus[status] || {},
+    { evidence_status: status },
+  ));
+}
+function iosEvidenceJson(value) {
+  if (value === null || value === undefined) return `<code class="mono">null</code>`;
+  const text = (typeof value === "string") ? value : JSON.stringify(value);
+  return `<code class="mono">${esc(text)}</code>`;
+}
+Object.assign(IOS_LABEL_ZH, {"Matched control":"匹配对照", "Benchmark relative":"基准参照", "Not applicable":"不适用", "Pooled signed excess":"可合并的有方向超额", "Magnitude only (directions are not pooled)":"仅超额幅度（不合并方向）"});
+Object.assign(IOS_LABEL_ZH, {"Recorded owner support": "原所有者记录的证据支持", "Recorded by owner at": "所有者记录时间", "Owner evaluation date": "所有者评估日期", "Current source qualification": "当前来源验证范围", "Unavailable": "不可确认", "Named generation": "指定来源版本", "Matched host-local generation": "匹配本机的指定来源版本", "Not matched or unversioned": "未匹配或没有版本记录", "Recorded support does not establish current price, calendar freshness or task qualification.": "记录的证据支持不能确认当前价格、交易日历新鲜度或任务验证范围。", "Recorded owner support is available; its current source and task qualification are not established.": "已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。", "The owner's recorded support could not be read. No grading was run for this request.": "无法读取所有者记录的证据支持；本次请求没有运行评分。"});
+function iosMeasurementDetail(e) {
+  const ruler = e.evidence_ruler || {};
+  const selected = ruler.selected_qledger_rung;
+  const recorded = (e.evidence_provider || {}).recorded_snapshot;
+  const disclosure = recorded ? `<div class="section">${iosCopy("Recorded owner support")}</div><div class="ios-evidence-grid">
+    <div class="ios-evidence-kv"><span>${iosCopy("Recorded by owner at")}</span><div>${recorded.recorded_at == null ? iosCopy("Unknown") : esc(recorded.recorded_at)}</div></div>
+    <div class="ios-evidence-kv"><span>${iosCopy("Owner evaluation date")}</span><div>${recorded.evaluation_date == null ? iosCopy("Unknown") : esc(recorded.evaluation_date)}</div></div>
+    <div class="ios-evidence-kv"><span>${iosCopy("Current source qualification")}</span><div>${iosCopy("Unavailable")}</div></div>
+    <div class="ios-evidence-kv"><span>${iosCopy("Named generation")}</span><div>${iosCopy(recorded.named_generation_match ? "Matched host-local generation" : "Not matched or unversioned")}</div></div>
+    </div><div class="note">${iosCopy("Recorded support does not establish current price, calendar freshness or task qualification.")}</div>` : "";
+  const measurement = (((e.evidence_measurement || {}).by_horizon || {})[selected]);
+  if (!measurement) return disclosure;
+  const basisLabels = {matched_control:"Matched control", benchmark:"Benchmark relative", not_applicable:"Not applicable", pooled_signed:"Pooled signed excess", magnitude_only:"Magnitude only (directions are not pooled)"};
+  const value = v => v == null ? iosCopy("Unknown (not projected by owner)") : (typeof v === "string" && Object.prototype.hasOwnProperty.call(basisLabels, v) ? iosCopy(basisLabels[v]) : iosEvidenceJson(v));
+  const pair = (label, v) => `<div class="ios-evidence-kv"><span>${iosCopy(label)}</span><div>${value(v)}</div></div>`;
+  const render = (m, clock) => {
+    const matched = m.evidence_basis === "matched_control";
+    const baselineKeys = ["hit_rate", "excess_mean", "mean_abs_excess", "excess_basis", "excess_mean_by_direction"];
+    const labels = ["Owner hit rate", "Signed excess mean", "Absolute excess mean", "Excess direction basis", "Excess by direction"];
+    return `<div class="section">${iosCopy("Owner uncertainty and support")}</div><div class="ios-evidence-grid">
+      ${pair("Owner ruler", selected)}${pair("Owner clock basis", clock || m.clock_basis)}${pair("Owner measurement basis", m.evidence_basis)}
+      ${pair("Observed dates", m.n_dates)}${pair("Wilson lower bound (date hit proportion)", m.wilson_ci_low)}
+      ${pair("Owner reason", m.reason)}
+      ${matched ? pair("Controlled-cohort support", m.n_controlled_dates) : baselineKeys.map((k,i) => pair(labels[i],m[k])).join("")}
+    </div>${matched ? `<div class="section">${iosCopy("Whole-family benchmark baseline")}</div><div class="note">${iosCopy("The owner does not project the baseline denominator. These values include the whole family and are separate from controlled-cohort support.")}</div><div class="ios-evidence-grid">
+      ${pair("Baseline denominator", null)}${baselineKeys.map((k,i) => pair(labels[i],m["benchmark_baseline_" + k])).join("")}</div>` : ""}`;
+  };
+  const bases = Object.entries(measurement.by_clock_basis || {});
+  return disclosure + `<div class="section">${iosCopy("Owner measurements")}</div><div class="note">${iosCopy("Owner measurements describe the bound family; compatible task, version and cohort qualification is not established here.")}</div>
+    ${bases.length ? `<div class="note">${iosCopy("Clock bases remain separate; no pooled estimate is inferred.")}</div>` + bases.map(([basis,m]) => render(m,basis)).join("") : render(measurement,null)}`;
+}
+function iosEvidenceSourceLinks(e) {
+  const links = new Map((e.evidence_source_links || []).filter(link => link && /^https:\/\/github\.com\/mastermindx-market-intelligence\/macro\/blob\/[0-9a-f]{40}\/(?:docs\/|research\/|config\/qual_ladder\.yml$)/.test(link.url || "")).map(link => [link.reference, link]));
+  return (e.evidence_refs || []).map(ref => {
+    const link = links.get(ref);
+    return `<div class="ios-out-line"><span>${esc(ref)}</span><span>${link ? `<a href="${esc(link.url)}" target="_blank" rel="noopener noreferrer">${iosCopy("Repository source declaration")}</a>` : iosCopy("No browser link is declared for this reference.")}</span></div>`;
+  }).join("") || `<div class="note">${iosCopy("No evidence references declared.")}</div>`;
+}
+function iosEvidenceDetailCard(e) {
+  e = e || {};
+  if (e.canonical_t1 === false) {
+    return `<div class="card ios-evidence-card">
+      <div class="ios-evidence-head"><h3>${iosCopy("Evidence disposition")}</h3><span class="spacer"></span><span class="statpill s-mut">${iosCopy("Registry gap")}</span></div>
+      <div class="sub ios-evidence-law">${iosCopy("No T1 evidence disposition. This noncanonical output group remains visible for operational census and repair only.")}</div>
+    </div>`;
+  }
+  const reasons = (e.evidence_reason_codes || []).map(code =>
+    `<span class="statpill s-mut mono">${iosReason(code)}</span>`).join(" ") || `<span class="muted">${iosCopy("none")}</span>`;
+  const refs = (e.evidence_refs || []).map(ref =>
+    `<span class="statpill s-mut mono">${esc(ref)}</span>`).join(" ") || `<span class="muted">${iosCopy("none declared")}</span>`;
+  const row = (label, value) => `<div class="ios-evidence-kv"><span>${iosCopy(label)}</span><div>${iosEvidenceJson(value)}</div></div>`;
+  const plain = (label, value) => `<div class="ios-evidence-kv"><span>${iosCopy(label)}</span><div>${value == null ? iosCopy("Unknown") : iosCopy(String(value))}</div></div>`;
+  const ruler = e.evidence_ruler || {}, clock = ruler.qledger_clock || {};
+  const rawDeclared = (ruler.declared_horizon || {}).horizon_d;
+  const declaredValues = (Array.isArray(rawDeclared) ? rawDeclared : [rawDeclared]).filter(v => v != null);
+  const selected = ruler.selected_qledger_rung;
+  const maturity = ((e.evidence_maturity || {}).rungs || {})[selected] || {};
+  const coverage = ((e.evidence_coverage || {}).by_horizon || {})[selected] || {};
+  const partialHorizon = selected != null && declaredValues.some(v => Number(v) > Number(selected));
+  return `<div class="card ios-evidence-card">
+    <div class="ios-evidence-head"><h3>${iosCopy("Evidence disposition")}</h3><span class="spacer"></span>${iosEvidenceStatusPill(e.evidence_status)}</div>
+    <div class="sub ios-evidence-law">${iosCopy("Derived from owner-native evidence and current output health. It ranks evidence strength, never headline performance, and carries no promotion authority.")}</div>
+    <div class="ios-evidence-grid">
+      ${plain("Output class", e.output_class)}
+      ${plain("Declared horizon", declaredValues.length ? declaredValues.join(" / ") : null)}
+      ${plain("Graded horizon", selected)}
+      ${plain("Horizon unit", clock.horizon_unit)}
+      ${plain("Market calendar", clock.clock_market)}
+      ${plain("Observed dates", maturity.n_dates)}
+      ${plain("Needed dates", maturity.needed)}
+      ${plain("Control coverage", coverage.control_coverage)}
+      ${plain("Cohort rows", coverage.n_cohort_rows)}
+      ${plain("Controlled rows", coverage.n_controlled_rows)}
+      ${plain("Refused rows", coverage.n_control_refused_rows)}
+      ${plain("Owner lifecycle", e.validation_state)}
+    </div>
+    ${partialHorizon ? `<div class="note">${iosCopy("Partial horizon evidence")}</div>` : ""}
+    ${e.validation_state === "validated" ? `<div class="note">${iosCopy("Owner validation is not qualification of this task or cohort.")}</div>` : ""}
+    ${iosMeasurementDetail(e)}
+    <details class="ios-evidence-technical"><summary>${iosCopy("Technical details")}</summary><div class="ios-evidence-grid">
+      ${row("output class", e.output_class == null ? null : e.output_class)}
+      ${row("owner lifecycle", { validation_state: e.validation_state, evidence: e.validation_state_evidence || null })}
+      ${row("graded by design", { value: e.graded_by_design == null ? null : e.graded_by_design, source: e.graded_by_design_source || null })}
+      ${row("provider", e.evidence_provider || null)}
+      ${row("owner scope", e.evidence_owner_scope || null)}
+      ${row("ruler", e.evidence_ruler || null)}
+      ${row("basis", e.evidence_basis || null)}
+      ${row("maturity", e.evidence_maturity || null)}
+      ${row("coverage", e.evidence_coverage || null)}
+      ${row("Owner measurements", e.evidence_measurement || null)}
+      ${row("Source references", e.evidence_source_links || [])}
+      ${row("Reason codes", e.evidence_reason_codes || [])}
+    </div></details>
+    <div class="ios-out-line"><span class="ios-out-key">${iosCopy("reasons")}</span><span>${reasons}</span></div>
+    <div class="ios-out-line"><span class="ios-out-key">${iosCopy("evidence refs")}</span><span>${refs}</span></div>
+    ${iosEvidenceSourceLinks(e)}
+    ${(e.evidence_source_links || []).length ? `<div class="note">${iosCopy("Source declarations describe the contract; they do not supply outcome evidence.")}</div>` : ""}
+  </div>`;
+}
+Object.assign(IOS_LABEL_ZH, {
+  "Recorded disagreements": "记录的观点分歧", "Context annotations only": "仅作背景注释",
+  "These recorded readings retain their original scope and dates; they do not establish current validation.": "这些记录保留原有范围和日期，不能据此确认当前验证状态。",
+  "Numeric source verification": "数值来源核验",
+  "Unavailable in this view": "此视图暂不可核验",
+  "No source-verification receipt is available in this view.": "此视图暂无数值来源核验凭据。",
+  "Recorded findings are unavailable.": "无法读取已记录的分歧。",
+  "No findings in this recorded report.": "此记录中没有分歧条目。",
+  "No recorded findings match this engine.": "没有与此引擎对应的已记录分歧。",
+  "No supported findings could be displayed from this partial report.": "此不完整记录中暂无可显示的有效条目。",
+  "Findings without an engine association": "无法关联到引擎的条目",
+  "Rejected owner records": "未能显示的所有者记录",
+  "Recorded source gaps": "记录的来源缺口", "Recorded findings": "记录条目",
+  "Label lag": "标签滞后", "Label tension": "标签分歧", "Directional opposition": "方向分歧",
+  "Context note": "背景说明", "Context tension": "背景分歧",
+  "Exact artifact association": "输出文件精确关联", "Ambiguous association": "关联不明确",
+  "No engine association": "未关联引擎", "Recorded source": "记录来源",
+  "Source digest": "来源内容摘要"
+});
+function iosTypedFindings(findings) {
+  if (!findings) return "";
+  const rows = Array.isArray(findings.records) ? findings.records : null;
+  const source = findings.source || {};
+  const isDetail = Object.prototype.hasOwnProperty.call(findings, "global_unbound_records");
+  const unbound = isDetail ? findings.global_unbound_records : findings.unbound_records;
+  const kinds = {"label-lag":"Label lag", "label-tension":"Label tension", "directional-opposition":"Directional opposition"};
+  const bindings = {exact_path:"Exact artifact association", ambiguous:"Ambiguous association", unbound:"No engine association"};
+  const item = (label, value) => `<div class="ios-evidence-kv"><span>${iosCopy(label)}</span><div>${value == null ? iosCopy("Unknown") : esc(value)}</div></div>`;
+  const side = reading => `<div class="ios-out-line"><span><code>${esc(reading.artifact || "")}</code><br>${esc(reading.reading || "")}</span><span>${iosCopy(bindings[reading.binding] || "No engine association")}</span></div>`;
+  const emptyMessage = rows == null ? "Recorded findings are unavailable."
+    : findings.status === "partial" || findings.rejected_records > 0
+      ? "No supported findings could be displayed from this partial report."
+      : isDetail ? "No recorded findings match this engine." : "No findings in this recorded report.";
+  const records = rows && rows.length ? `<details class="ios-evidence-technical"><summary>${iosCopy("Recorded findings")} · ${esc(rows.length)}</summary>${rows.map(r => `<div class="section">${iosCopy(kinds[r.kind] || "Unknown")} · ${iosCopy(r.severity === "tension" ? "Context tension" : "Context note")}</div>
+    <div class="sub">${esc(r.pair_id)} · ${esc(r.as_of)}</div>${side(r.a || {})}${side(r.b || {})}<div class="note">${esc(r.note || "")}</div>`).join("")}</details>`
+    : `<div class="note">${iosCopy(emptyMessage)}</div>`;
+  const gaps = Array.isArray(findings.gaps) && findings.gaps.length
+    ? `<details class="ios-evidence-technical"><summary>${iosCopy("Recorded source gaps")} · ${esc(findings.gaps.length)}</summary><ul>${findings.gaps.map(g => `<li>${esc(g)}</li>`).join("")}</ul></details>` : "";
+  return `<div class="card ios-evidence-card ios-typed-findings"><h3>${iosCopy("Recorded disagreements")}</h3>
+    <div class="note">${iosCopy("Context annotations only")} · ${iosCopy("These recorded readings retain their original scope and dates; they do not establish current validation.")}</div>
+    <div class="ios-evidence-grid">${item("Source as of", source.as_of)}${item("Findings without an engine association", unbound)}
+      ${findings.rejected_records ? item("Rejected owner records", findings.rejected_records) : ""}
+      <div class="ios-evidence-kv"><span>${iosCopy("Numeric source verification")}</span><div>${iosCopy("Unavailable in this view")}<div class="sub">${iosCopy("No source-verification receipt is available in this view.")}</div></div></div></div>
+    ${records}${gaps}<details class="ios-evidence-technical"><summary>${iosCopy("Recorded source")}</summary><div class="ios-evidence-grid">
+      ${item("path", source.path)}${item("Source digest", source.sha256)}</div></details></div>`;
+}
+
+/* IOS_EVIDENCE_CONTRACT_END */
+
+const IOS = { filter: { evidence_status: null, state: null, output_class: null, authority: null, owner_program: null }, q: "", page: 1, rows: [], data: null };
 const IOS_PAGE_SIZE = 60;
 
-function iosChip(label, active, on, data) {
+function iosChip(label, active, on, data, count = null) {
   /* Same law as entChip: `on` is JS source pasted into an attribute, so a value may only
      travel through data-* and be read back off this.dataset — an interpolated string
      literal would close the attribute on its own quotes. */
-  return `<button class="ent-chip${active ? " on" : ""}"${dataAttrs(data)} onclick="${esc(on)}">${esc(label)}</button>`;
+  return `<button class="ent-chip${active ? " on" : ""}"${dataAttrs(data)} onclick="${esc(on)}">${iosCopy(label)}${count == null ? "" : " (" + esc(String(count)) + ")"}</button>`;
 }
 
 function iosCountsToChips(counts, kind, activeVal) {
   return Object.entries(counts || {})
     .sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])))
-    .map(([k, n]) => iosChip(`${k} (${n})`, activeVal === k, `iosSetFilter('${kind}', this.dataset.val)`, { val: k }))
+    .map(([k, n]) => iosChip(k === "null" ? "Not determined" : k, activeVal === k, `iosSetFilter('${kind}', this.dataset.val)`, { val: k }, n))
     .join("");
 }
 
@@ -4371,12 +4620,13 @@ function iosMatches(r) {
   const f = IOS.filter;
   const cls = r.output_class == null ? "null" : String(r.output_class);
   const st  = r.worst_state == null ? "null" : String(r.worst_state);
+  if (f.evidence_status && (!r.canonical_t1 || String(r.evidence_status) !== f.evidence_status)) return false;
   if (f.state && st !== f.state) return false;
   if (f.output_class && cls !== f.output_class) return false;
   if (f.authority && String(r.authority) !== f.authority) return false;
   if (f.owner_program && String(r.owner_program) !== f.owner_program) return false;
   if (IOS.q) {
-    const hay = `${r.engine_id} ${r.owner_program || ""} ${r.producer || ""} ${r.output_class || ""}`.toLowerCase();
+    const hay = `${r.engine_id} ${r.owner_program || ""} ${r.producer || ""} ${r.output_class || ""} ${r.evidence_status || ""} ${(r.evidence_reason_codes || []).join(" ")}`.toLowerCase();
     if (!hay.includes(IOS.q.toLowerCase())) return false;
   }
   return true;
@@ -4389,17 +4639,18 @@ function iosRenderTable() {
   const slice = all.slice((IOS.page - 1) * IOS_PAGE_SIZE, IOS.page * IOS_PAGE_SIZE);
   const tbl = $("#iosTbl");
   if (!tbl) return;
-  tbl.innerHTML = slice.length ? `<table class="ent-table"><thead><tr>
-      <th>Engine</th><th>Program</th><th>Output class</th><th>Authority</th><th class="r">Outputs</th><th>Worst state</th></tr></thead><tbody>
+  tbl.innerHTML = slice.length ? `<table class="ent-table ios-engine-table"><thead><tr>
+      <th>${iosCopy("Engine")}</th><th>${iosCopy("Evidence")}</th><th>${iosCopy("Program")}</th><th>${iosCopy("Output class")}</th><th>${iosCopy("Authority")}</th><th class="r">${iosCopy("Outputs")}</th><th>${iosCopy("Worst state")}</th></tr></thead><tbody>
     ${slice.map(r => `<tr>
-        <td><a href="#/engine/${encodeURIComponent(r.engine_id)}" class="mono" style="word-break:break-all">${esc(r.engine_id)}</a></td>
-        <td class="sub">${esc(r.owner_program || "—")}</td>
-        <td>${r.output_class ? `<b>${esc(r.output_class)}</b>` : `<span class="muted" title="no adjudicated class in the T1 overlay — never guessed here">—</span>`}</td>
-        <td class="sub">${esc(r.authority || "—")}</td>
-        <td class="r">${fmtNum(r.n_artifacts)}</td>
-        <td>${iosRowStateCell(r)}</td>
+        <td data-ios-label="Engine" data-label="Engine"><span class="ios-cell-label">${iosCopy("Engine")}</span><a href="#/engine/${encodeURIComponent(r.engine_id)}" data-ios-engine="${esc(r.engine_id)}" class="mono" style="word-break:break-all">${esc(r.engine_id)}</a></td>
+        <td data-ios-label="Evidence" data-label="Evidence"><span class="ios-cell-label">${iosCopy("Evidence")}</span>${iosEvidenceCell(r)}</td>
+        <td class="sub" data-ios-label="Program" data-label="Program"><span class="ios-cell-label">${iosCopy("Program")}</span>${esc(r.owner_program || "—")}</td>
+        <td data-ios-label="Output class" data-label="Output class"><span class="ios-cell-label">${iosCopy("Output class")}</span>${r.output_class ? `<b>${iosCopy(r.output_class)}</b>` : `<span class="muted" title="no adjudicated class in the T1 overlay — never guessed here">—</span>`}</td>
+        <td class="sub" data-ios-label="Authority" data-label="Authority"><span class="ios-cell-label">${iosCopy("Authority")}</span>${iosCopy(r.authority === "display" ? "Display only" : r.authority || "—")}</td>
+        <td class="r" data-ios-label="Outputs" data-label="Outputs"><span class="ios-cell-label">${iosCopy("Outputs")}</span>${fmtNum(r.n_artifacts)}</td>
+        <td data-ios-label="Worst state" data-label="Worst state"><span class="ios-cell-label">${iosCopy("Worst state")}</span>${iosRowStateCell(r)}</td>
       </tr>`).join("")}
-  </tbody></table>` : `<div class="card sub">No engine matches this filter.</div>`;
+  </tbody></table>` : `<div class="card sub">${iosCopy("No engine matches this filter.")}</div>`;
   const cnt = $("#iosCnt"); if (cnt) cnt.textContent = fmtNum(all.length);
   const pager = $("#iosPager");
   if (pager) pager.innerHTML = pages > 1 ? `
@@ -4411,14 +4662,16 @@ function iosRenderTable() {
 function iosSetFilter(kind, val) {
   IOS.filter[kind] = (IOS.filter[kind] === val) ? null : val;   // second click clears
   IOS.page = 1;
+  iosRenderCeo();
   iosRenderChips();
   iosRenderTable();
 }
 function iosClearFilters() {
-  IOS.filter = { state: null, output_class: null, authority: null, owner_program: null };
+  IOS.filter = { evidence_status: null, state: null, output_class: null, authority: null, owner_program: null };
   IOS.q = ""; IOS.page = 1;
+  iosLanguageAttributes();
   const box = $("#iosSearch"); if (box) box.value = "";
-  iosRenderChips(); iosRenderTable();
+  iosRenderCeo(); iosRenderChips(); iosRenderTable();
 }
 function iosGoto(p) { IOS.page = Math.max(1, p); iosRenderTable(); }
 
@@ -4433,87 +4686,135 @@ function iosRenderChips() {
      a select instead of a chip row; the other three are closed enough to see at a glance. */
   const progs = Object.keys(IOS.rows.reduce((acc, r) => { acc[r.owner_program || "—"] = 1; return acc; }, {})).sort();
   el.innerHTML = `
-    <div class="ios-filter-row"><span class="ios-filter-label">state</span>${iosCountsToChips(byWorst, "state", f.state)}</div>
-    <div class="ios-filter-row"><span class="ios-filter-label">output class</span>${iosCountsToChips(c.by_output_class, "output_class", f.output_class)}</div>
-    <div class="ios-filter-row"><span class="ios-filter-label">authority</span>${iosCountsToChips(c.by_authority, "authority", f.authority)}</div>
-    <div class="ios-filter-row"><span class="ios-filter-label">program</span>
-      <select id="iosProg"><option value="">all programs</option>
+    <div class="ios-filter-row"><span class="ios-filter-label">${iosCopy("Evidence")}</span>${iosNormalizeCeoBands(d.ceo_view).map(band => iosChip(band.evidence_status, f.evidence_status === band.evidence_status, `iosSetFilter('evidence_status', this.dataset.val)`, { val: band.evidence_status }, band.n_engines)).join("")}</div>
+    <div class="ios-filter-row"><span class="ios-filter-label">${iosCopy("state")}</span>${iosCountsToChips(byWorst, "state", f.state)}</div>
+    <div class="ios-filter-row"><span class="ios-filter-label">${iosCopy("output class")}</span>${iosCountsToChips(c.by_output_class, "output_class", f.output_class)}</div>
+    <div class="ios-filter-row"><span class="ios-filter-label">${iosCopy("authority")}</span>${iosCountsToChips(c.by_authority, "authority", f.authority)}</div>
+    <div class="ios-filter-row"><span class="ios-filter-label">${iosCopy("program")}</span>
+      <select id="iosProg"><option value="" data-ios-copy="all programs">${esc(iosText("all programs"))}</option>
         ${progs.map(p => `<option value="${esc(p)}"${f.owner_program === p ? " selected" : ""}>${esc(p)}</option>`).join("")}</select>
-      <button class="ent-chip" onclick="iosClearFilters()">clear all</button>
+      <button class="ent-chip" onclick="iosClearFilters()">${iosCopy("clear all")}</button>
     </div>`;
   const sel = $("#iosProg");
   if (sel) sel.onchange = () => { IOS.filter.owner_program = sel.value || null; IOS.page = 1; iosRenderTable(); };
 }
 
+function iosCeoView(bands) {
+  const active = IOS.filter.evidence_status;
+  return `<div class="section ios-ceo-title">${iosCopy("CEO evidence view")} <span class="sub">${iosCopy("strongest evidence first · never performance")}</span></div>
+    <div class="ios-ceo-bands" role="list" aria-label="Engines ordered by evidence strength">
+      ${iosNormalizeCeoBands(bands).map((band, index) => {
+        const ids = Array.isArray(band.engine_ids) ? band.engine_ids : [];
+        const sample = ids.slice(0, 3).join(" · ") || "Empty band — valid evidence";
+        return `<button class="ios-evidence-band${active === band.evidence_status ? " on" : ""}" role="listitem" data-val="${esc(band.evidence_status)}" onclick="iosSetFilter('evidence_status', this.dataset.val)">
+          <span class="ios-band-order">${index + 1}</span>
+          <span class="ios-band-name ${iosEvidenceStatusCls(band.evidence_status)}">${iosCopy(band.evidence_status)}</span>
+          <b class="ios-band-count">${fmtNum(band.n_engines)}</b>
+          <span class="ios-band-sample">${ids.length ? esc(sample) : iosCopy("Empty band — valid evidence")}</span>
+        </button>`;
+      }).join("")}
+    </div>`;
+}
+
+function iosRenderCeo() {
+  const el = $("#iosCeo");
+  if (el && IOS.data) el.innerHTML = iosCeoView(IOS.data.ceo_view);
+}
+
 function iosHero(d) {
   const c = d.census || {}, g = d.generated || {};
-  const st = c.by_state || {}, as = c.by_assessment_status || {};
-  const chip = (label, n, cls) => `<span class="statpill ${cls}">${esc(String(n == null ? 0 : n))} ${esc(label)}</span>`;
+  const evidence = iosNormalizeCeoBands(d.ceo_view);
+  const canonical = c.canonical_engines == null ? c.engines : c.canonical_engines;
+  const gaps = Number(c.noncanonical_output_groups || 0);
+  const chip = (label, n, cls) => `<span class="statpill ${cls}">${esc(String(n == null ? 0 : n))} ${iosCopy(label)}</span>`;
   return `<div class="nw-hero">
     <div class="nw-hero-row">
-      <span class="nw-hero-status-word">Intelligence OS</span>
-      <span class="sub" style="margin-left:2px">${fmtNum(c.engines)} engines · ${fmtNum(c.artifacts)} artifacts · ${fmtNum(c.outputs_assessed)} assessed</span>
+      <span class="nw-hero-status-word">${iosCopy("Intelligence OS")}</span>
+      <span class="sub" style="margin-left:2px">${fmtNum(canonical)} ${iosCopy("canonical engines")}${gaps ? ` · ${fmtNum(gaps)} ${iosCopy("registry gaps")}` : ""} · ${fmtNum(c.artifacts)} ${iosCopy("artifacts")} · ${fmtNum(c.outputs_assessed)} ${iosCopy("assessed")}</span>
       <span class="spacer"></span>
-      <button class="btn" id="ios-to-nw" title="the bus view of the same estate">Observatory →</button>
-      <button class="btn" id="ios-refresh" title="bypass both caches and re-derive the whole estate now">Re-derive</button>
+      <button class="btn" id="ios-to-nw" title="the bus view of the same estate">${iosCopy("Observatory \u2192")}</button>
+      <button class="btn" id="ios-refresh" title="bypass both caches and re-derive the whole estate now">${iosCopy("Re-derive")}</button>
     </div>
     <div class="nw-hero-chips">
-      ${chip("healthy", st.healthy, "s-ok")}
-      ${chip("degraded", st.degraded, "s-warn")}
-      ${chip("stale", st.stale, "s-bad")}
-      ${chip("unavailable", st.unavailable, "s-bad")}
-      ${chip("could not look", as.could_not_look, "s-mut")}
+      ${evidence.map(band => chip(band.evidence_status, band.n_engines, iosEvidenceStatusCls(band.evidence_status))).join("")}
     </div>
-    <div class="nw-hero-note">Derived on demand from the signal registry and the T1 adjudication overlay — nothing on this page is stored.
-      ${g.observed_at ? `Observed ${esc(String(g.observed_at).replace("T", " ").slice(0, 19))} UTC` : ""}
-      · ${g.cache === "hit" ? "served from the in-process cache" : `computed in ${esc(String(g.compute_seconds))}s`}
-      · presence read from <code>${esc(g.root_mode || "?")}</code>${g.trust_mtime ? "" : " · write-time evidence refused — a deployed file's mtime is its git pull time, not its write time"}.</div>
+    <div class="nw-hero-note">${iosCopy("Derived on demand from T1 identity/semantics, T4 output health and existing owner-native evidence — nothing on this page is stored.")}
+      ${g.observed_at ? `${iosCopy("Observed")} ${esc(String(g.observed_at).replace("T", " ").slice(0, 19))} UTC` : ""}
+      · ${g.cache === "hit" ? iosCopy("served from the in-process cache") : `${iosCopy("Computed")} ${esc(String(g.compute_seconds == null ? "—" : g.compute_seconds))}s`}
+      · ${iosCopy("Presence source")} <code>${esc(g.root_mode || "?")}</code>${g.trust_mtime ? "" : " · " + iosCopy("Write-time evidence refused")}.</div>
   </div>`;
 }
 
 function iosReasonCard(c) {
   const rows = (c.top_reason_codes || []);
   if (!rows.length) return "";
-  return `<div class="card"><h3>Why Eval OS answered the way it did</h3>
-    <div class="sub" style="margin-bottom:6px">Top reason codes across all ${fmtNum(c.artifacts)} outputs. A reason is a disclosure, not a fault.</div>
+  return `<div class="card"><h3>${iosCopy("Why Eval OS answered the way it did")}</h3>
+    <div class="sub" style="margin-bottom:6px">${iosCopy("Top reason codes")} · ${fmtNum(c.artifacts)} ${iosCopy("outputs")}. ${iosCopy("A reason is a disclosure, not a fault.")}</div>
     <div>${rows.map(r => `<span class="statpill s-mut mono">${esc(r.code)} · ${esc(String(r.n))}</span>`).join(" ")}</div></div>`;
 }
 
-RENDER.intelligence_os = async () => {
+RENDER.intelligence_os = async (snapshot = null) => {
   const v = $("#view");
   v.innerHTML = `<div class="skeleton skeleton-title"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card" style="height:220px"></div>`;
-  const d = await api("/api/intelligence_os");
-  if (!d || !d.ok) { v.innerHTML = nwEmpty("Could not derive the estate", (d && d.error) || "panel error"); return; }
+  let d = snapshot;
+  if (!d) {
+    try { d = await api("/api/intelligence_os"); }
+    catch (_) { d = { ok: false, error: "Evidence request failed" }; }
+  }
+  if (!d || !d.ok) { v.innerHTML = nwEmpty(iosText("Could not derive the estate"), iosText("Evidence request failed")); return; }
   IOS.data = d; IOS.rows = d.engines || []; IOS.page = 1;
   const c = d.census || {};
   v.innerHTML = iosHero(d) + iosReasonCard(c) + `
-    <div class="section">Engines <span class="cnt" id="iosCnt">${fmtNum(IOS.rows.length)}</span></div>
+    <div id="iosRefreshStatus" class="note sub" role="status" aria-live="polite"></div>
+    <div class="note">${iosCopy("No promotion or trading authority")}</div>
+    <div id="iosCeo">${iosCeoView(d.ceo_view)}</div>
+    <div class="section">${iosCopy("Engines")} <span class="cnt" id="iosCnt">${fmtNum(IOS.rows.length)}</span></div>
     <div id="iosChips" class="ios-chips"></div>
     <div style="margin:8px 0">
       <input id="iosSearch" class="ent-search" type="search" placeholder="filter by engine, producer or program…" autocomplete="off">
     </div>
     <div id="iosTbl"></div>
-    <div id="iosPager" class="ent-pager"></div>`;
+    <div id="iosPager" class="ent-pager"></div>` + iosTypedFindings(d.typed_findings);
   iosRenderChips();
   iosRenderTable();
   const nwBtn = $("#ios-to-nw"); if (nwBtn) nwBtn.onclick = () => go("neural_web");
   const rf = $("#ios-refresh");
   if (rf) rf.onclick = async () => {
-    rf.disabled = true; rf.textContent = "re-deriving…";
+    rf.disabled = true; rf.textContent = iosText("Re-deriving…");
     /* force=1 bypasses the browser cache, the server's 15s response cache AND the panel
        module's own 5-minute cache — anything less returns the same bytes and looks like
        a no-op button. */
-    const fresh = await api("/api/intelligence_os?force=1", { cache: "no-store" });
-    if (fresh && fresh.ok) { IOS.data = fresh; IOS.rows = fresh.engines || []; RENDER.intelligence_os(); }
-    else { rf.disabled = false; rf.textContent = "Re-derive"; toast((fresh && fresh.error) || "re-derive failed", true); }
+    let fresh;
+    try { fresh = await api("/api/intelligence_os?force=1", { cache: "no-store" }); }
+    catch (_) { fresh = { ok: false }; }
+    if (fresh && fresh.ok) {
+      clearApiCache();
+      apiCacheStore("/api/intelligence_os", { value: fresh,
+        expiresAt: Date.now() + apiCacheTtl("/api/intelligence_os") });
+      RENDER.intelligence_os(fresh);
+    }
+    else {
+      rf.disabled = false; rf.innerHTML = iosCopy("Re-derive");
+      const status = $("#iosRefreshStatus");
+      const assessed = ((IOS.data || {}).generated || {}).observed_at;
+      if (status) {
+        status.dataset.failed = "true";
+        status.dataset.assessed = assessed || "";
+        iosLanguageAttributes();
+      }
+      toast(iosText("Evidence refresh failed"), true);
+    }
   };
+  iosLanguageAttributes();
   const box = $("#iosSearch");
   if (box) box.oninput = () => { IOS.q = box.value.trim(); IOS.page = 1; iosRenderTable(); };
+  wrapViewTables();
+  iosRestoreFocus(v);
 };
 
 /* ---- Intelligence OS · engine detail (#/engine/<engine_id>) --------------- */
 function iosCrumbs(current) {
-  return `<div class="crumbs"><a href="#" data-ios-back>← Intelligence OS</a><span class="crumbs-sep">/</span><span class="crumbs-current">${esc(current)}</span></div>`;
+  return `<div class="crumbs"><a href="#" data-ios-back>← ${iosCopy("Intelligence OS")}</a><span class="crumbs-sep">/</span><span class="crumbs-current">${esc(current)}</span></div>`;
 }
 
 function iosInputRows(label, rows) {
@@ -4528,14 +4829,14 @@ function iosOutputCard(o, lobeIds) {
   /* Age is shown AGAINST the SLA, never alone: "36h" is a fact about a clock and says
      nothing until you know what was promised. */
   const ageTxt = age == null
-    ? `<span class="muted">no age — ${esc(o.source_asof ? "watermark unusable" : "no watermark read")}</span>`
-    : `${esc(fmtAge(age))}${sla ? ` / ${esc(fmtAge(sla))} SLA` : ' <span class="muted">· no SLA declared</span>'}`;
+    ? `<span class="muted">${iosCopy("no age")} — ${iosCopy(o.source_asof ? "watermark unusable" : "no watermark read")}</span>`
+    : `${esc(fmtAge(age))}${sla ? ` / ${esc(fmtAge(sla))} SLA` : ' <span class="muted">· ${iosCopy("no SLA declared")}</span>'}`;
   const reasons = (o.reason_codes || []).map(r => `<span class="statpill s-mut mono">${esc(r)}</span>`).join(" ");
   const reader = o.reader_observation
-    ? `<div class="ios-out-line"><span class="ios-out-key">reader</span><span class="statpill s-mut">${esc(o.reader_observation.source || "")}</span>
+    ? `<div class="ios-out-line"><span class="ios-out-key">${iosCopy("reader")}</span><span class="statpill s-mut">${esc(o.reader_observation.source || "")}</span>
         <span class="sub">${esc(o.reader_observation.verdict || "")}${o.reader_observation.detail ? " — " + esc(o.reader_observation.detail) : ""}</span></div>` : "";
   const selfh = o.self_health
-    ? `<div class="ios-out-line"><span class="ios-out-key">self-health</span><span class="statpill ${o.self_health.status === "ok" ? "s-ok" : o.self_health.status === "unknown" ? "s-mut" : "s-warn"}">${esc(o.self_health.status || "")}</span>
+    ? `<div class="ios-out-line"><span class="ios-out-key">${iosCopy("self-health")}</span><span class="statpill ${o.self_health.status === "ok" ? "s-ok" : o.self_health.status === "unknown" ? "s-mut" : "s-warn"}">${esc(o.self_health.status || "")}</span>
         <span class="sub">${esc(o.self_health.source || "")}${o.self_health.detail ? " — " + esc(o.self_health.detail) : ""}</span></div>` : "";
   const lobeLink = lobeIds && lobeIds[o.artifact_id]
     ? ` <a href="#/lobe/${encodeURIComponent(o.artifact_id)}" class="sub" title="this artifact is a Neural Web lobe — open its bus view">lobe ↗</a>` : "";
@@ -4544,22 +4845,23 @@ function iosOutputCard(o, lobeIds) {
       <b class="mono">${esc(o.artifact_id)}</b>${lobeLink}
       <span class="spacer"></span>
       ${iosStatePill(o.state)}
-      <span class="statpill s-mut">${esc(o.assessment_status || "")}</span>
+      <span class="statpill s-mut">${iosCopy(o.assessment_status || "")}</span>
       ${o.decided_by ? `<span class="statpill s-mut" title="which observation plane decided the state">by ${esc(o.decided_by)}</span>` : ""}
     </div>
-    <div class="ios-out-line"><span class="ios-out-key">path</span><code class="mono">${esc(o.path || "")}</code>
+    <div class="ios-out-line"><span class="ios-out-key">${iosCopy("path")}</span><code class="mono">${esc(o.path || "")}</code>
       <span class="statpill s-mut">${esc(o.storage || "")}</span>
       <span class="statpill s-mut" title="exact = this producer registers one artifact; upper = a producer-level union that may over-attribute">${esc(o.dependency_bound || "")} bound</span></div>
-    <div class="ios-out-line"><span class="ios-out-key">freshness</span>${ageTxt}
-      ${o.source_asof ? `<span class="sub mono">asof ${esc(o.source_asof)}</span>` : ""}</div>
+    <div class="ios-out-line"><span class="ios-out-key">${iosCopy("freshness")}</span>${ageTxt}
+      ${o.source_asof ? `<span class="sub mono">${iosCopy("asof")} ${esc(o.source_asof)}</span>` : ""}</div>
     ${iosInputRows("required in", o.required_inputs)}
     ${iosInputRows("optional in", o.optional_inputs)}
     ${reader}${selfh}
-    ${reasons ? `<div class="ios-out-line"><span class="ios-out-key">reasons</span><span>${reasons}</span></div>` : ""}
+    ${reasons ? `<div class="ios-out-line"><span class="ios-out-key">${iosCopy("reasons")}</span><span>${reasons}</span></div>` : ""}
   </div>`;
 }
 
 async function renderEngineDetail(id) {
+  IOS.returnFocusId = id;
   CURRENT = "intelligence_os"; setActiveNav("intelligence_os");
   hideLobeTip();
   if (RT_TIMER)   { clearInterval(RT_TIMER);   RT_TIMER   = null; }
@@ -4568,10 +4870,12 @@ async function renderEngineDetail(id) {
   setTopbarTitle("Intelligence OS");
   const v = $("#view");
   v.innerHTML = iosCrumbs(id) + `<div class="skeleton skeleton-title"></div><div class="skeleton skeleton-card" style="height:160px"></div>`;
-  const d = await api("/api/intelligence_os/engine?id=" + encodeURIComponent(id));
+  let d;
+  try { d = await api("/api/intelligence_os/engine?id=" + encodeURIComponent(id)); }
+  catch (_) { d = { ok: false, error: "Evidence request failed" }; }
   const wireBack = () => { const b = v.querySelector("[data-ios-back]"); if (b) b.onclick = (e) => { e.preventDefault(); backToIntelligenceOs(); }; };
   if (!d || !d.ok) {
-    v.innerHTML = iosCrumbs(id) + nwEmpty("Unknown engine", (d && d.error) || `No engine with id “${id}”.`);
+    v.innerHTML = iosCrumbs(id) + nwEmpty(iosText(d && Array.isArray(d.known_ids_sample) ? "Unknown engine" : "Could not read engine"), iosText("Evidence request failed"));
     wireBack(); return;
   }
   const e = d.engine || {};
@@ -4598,21 +4902,23 @@ async function renderEngineDetail(id) {
   const head = `<div class="nw-hero">
     <div class="nw-hero-row">
       <span class="nw-hero-status-word mono" style="font-size:16px;word-break:break-all">${esc(e.engine_id || id)}</span>
-      <span class="spacer"></span>${iosStatePill(e.worst_state)}
+      <span class="spacer"></span>${iosEvidenceStatusPill(e.evidence_status)}${iosStatePill(e.worst_state)}
     </div>
     <div class="nw-hero-chips">
-      <span class="statpill s-mut">program ${esc(e.owner_program || "—")}</span>
-      <span class="statpill s-mut">${fmtNum(e.n_artifacts)} output${e.n_artifacts === 1 ? "" : "s"}</span>
-      <span class="statpill ${e.output_class ? "s-mut" : "s-mut"}">class ${esc(e.output_class || "—")}</span>
-      <span class="statpill s-mut">authority ${esc(e.authority || "—")}</span>
+      <span class="statpill s-mut">${iosCopy("program")} ${esc(e.owner_program || "—")}</span>
+      <span class="statpill s-mut">${fmtNum(e.n_artifacts)} ${iosCopy("Outputs")}</span>
+      <span class="statpill ${e.output_class ? "s-mut" : "s-mut"}">${iosCopy("class")} ${iosCopy(e.output_class || "—")}</span>
+      <span class="statpill s-mut">${iosCopy("authority")} ${iosCopy(e.authority === "display" ? "Display only" : e.authority || "—")}</span>
     </div>
-    ${e.producer ? `<div class="sub" style="margin-top:4px">producer <code class="mono">${esc(e.producer)}</code></div>` : ""}
-    ${e.output_class_rationale ? `<div class="sub" style="margin-top:4px">class rationale: ${esc(e.output_class_rationale)}</div>` : ""}
+    ${e.producer ? `<div class="sub" style="margin-top:4px">${iosCopy("producer")} <code class="mono">${esc(e.producer)}</code></div>` : ""}
+    ${e.output_class_rationale ? `<div class="sub" style="margin-top:4px">${iosCopy("class rationale")}: ${esc(e.output_class_rationale)}</div>` : ""}
     ${e.excluded_reason ? `<div class="sub" style="margin-top:4px;color:var(--warn)">not a graded engine cell — ${esc(e.excluded_reason)}</div>` : ""}
-    ${e.output_class ? "" : `<div class="nw-hero-note">No adjudicated output class. That is a gap in the T1 overlay, not a grade — Eval OS never infers one.</div>`}
+    ${e.output_class ? "" : `<div class="nw-hero-note">${iosCopy("No adjudicated output class. That is a gap in the T1 overlay, not a grade — Eval OS never infers one.")}</div>`}
   </div>`;
   v.innerHTML = iosCrumbs(e.engine_id || id) + head
-    + `<div class="section">Outputs <span class="cnt">${(d.outputs || []).length}</span></div>`
+    + iosEvidenceDetailCard(e)
+    + iosTypedFindings(d.typed_findings)
+    + `<div class="section">${iosCopy("Outputs")} <span class="cnt">${(d.outputs || []).length}</span></div>`
     + (d.outputs || []).map(o => iosOutputCard(o, lobeIds)).join("");
   wireBack();
 }

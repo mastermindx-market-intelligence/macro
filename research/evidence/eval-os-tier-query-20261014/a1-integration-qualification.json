@@ -1,0 +1,37 @@
+{
+  "schema": "eval_os.followon_integration.v1",
+  "parents": [
+    "7c41a768073df4eef769a53ae54647d18b3a075d",
+    "0fb4b0d0633f488a0d904c5e15be3d93e3fced29"
+  ],
+  "initial_combined_regression": {
+    "tests": 724,
+    "passed": 709,
+    "failed": 15,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 863.907,
+    "failures_file": "followon-failed-nodeids.json",
+    "cause": "missing YAML frontmatter in newly authored source-interface handoff; all failures in AgentOS actual-store consumers"
+  },
+  "repair": "existing handoff schema metadata; canonical actual-store validation1739records0errors164inheritedwarnings",
+  "selection_controls": "2 PASS25.78s; all sixnewinputs select incumbentcodeowner",
+  "ci_owner_changes": "eval-os-a1 sixpaths only; prior registry twopath additions preserved; all commands/gates/deps unchanged",
+  "actual_head_tracked_closure": {
+    "head": "1870efdb15dfa1e5ce22978eb7a0e5e31549db62",
+    "a1": {
+      "paths": 1180,
+      "missing": []
+    },
+    "registry": {
+      "paths": 775,
+      "missing": []
+    },
+    "agentos": {
+      "paths": 44,
+      "missing": []
+    }
+  },
+  "failed_controls_rerun": "15 PASS226.03s; repaired schema consumer checks",
+  "scope": "Local combined regression qualified by709initialpasses +15affectedrepairpasses, existingselection2passes andactualHEADclosure. Newtwo-case tranche separately qualified; finalcontainingHEADhostedCI remainsowed."
+}

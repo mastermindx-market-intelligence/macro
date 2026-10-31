@@ -4,7 +4,7 @@
 <!--
   com.mastermind.optionshub.plist — launchd agent for the nightly Options Hub builder.
 
-  Runs build_options_hub_nightly (all available roots, --publish) on weekdays at 16:45 ET.
+  Runs build_options_hub_nightly (all available roots, publication enabled) on weekdays at 16:45 ET.
   The poller exits by 16:05 ET; 16:45 ET gives it 40 min of headroom before the nightly
   build reads from the same thetadata store.
 
@@ -37,7 +37,7 @@
     source '/Users/chriswong/Documents/Cluade/Macro Dashboard/.env'
     set +a
     cd '/Users/chriswong/Documents/Cluade/Macro Dashboard'
-    python -m scripts.build_options_hub_nightly --publish
+    python -m scripts.build_options_hub_nightly
 -->
 <plist version="1.0">
 <dict>

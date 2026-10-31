@@ -23,6 +23,181 @@
   function L(en,zh){return '<span class="l-en">'+en+'</span><span class="l-zh">'+(zh==null?en:zh)+'</span>';}
   function pc(v,dp){return v==null?'—':((v>0?'+':'')+(v*100).toFixed(dp==null?1:dp)+'%');}
 
+/* EARLY_CONTEXT_FN_START */
+function earlyContextHtml(ev, lang, nowMs) {
+  var ZH = lang === 'zh', DAY = 86400000, MAXROWS = 64, MAXCODES = 10, STALE_DAYS = 4;
+  var STATE_KEYS = ['DEFENSIVE_RELATIVE_STRENGTH', 'MIXED_ROTATION', 'BROADENING', 'NO_EARLY_SHIFT'];
+  var escFn = (typeof esc === 'function') ? esc : function (s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  };
+  var W = {
+    title: ['Early defensive rotation evidence', '早期防御性轮动证据'],
+    unavail: ['Early-context evidence unavailable:', '早期观察暂不可用：'],
+    noPacket: ['Early defensive observations are unavailable; this does not mean there is no rotation.', '早期防御性观察暂不可用；这不代表没有轮动。'],
+    empty: ['No registered defensive comparisons', '没有已登记的防御性比较'],
+    stale: ['Historical/stale snapshot — not a current signal', '历史／陈旧快照——不是当前信号'],
+    d1: ['Forecast and sizing: not qualified', '预测与仓位：尚未通过验证'],
+    d2: ['Price comparison, not measured fund flows', '价格比较，不代表已测得的资金流'],
+    stateCopy: ['Producer-reported overall rotation state:', '数据源报告的整体轮动状态：'],
+    noState: ['no state recorded', '未记录状态'],
+    states: [['defensive relative strength', '防御板块相对强势'], ['mixed rotation', '混合轮动'], ['broadening', '上涨范围扩大'], ['no early shift', '无早期变化']],
+    asOf: ['Observation date', '观察日期'], age: ['UTC calendar age', 'UTC日历天数'], days: ['day(s)', '天'],
+    scope: ['Defensive-sector comparisons only. Retailers and broadening proxies remain separate context.', '仅显示防御板块比较；零售商与市场扩散代理仍是独立背景。'],
+    avT: ['Availability', '可用时间'], na1: ['unknown', '未知'], avAt: ['first available', '首次可用'],
+    lnT: ['Lineage', '来源链'], roots: ['sources', '来源'], more: ['more not shown', '项未显示'],
+    reasons: ['Evidence notes', '证据说明'], noCodes: ['none recorded', '无记录'], details: ['Source and window details', '来源与窗口详情'],
+    twoS: ['Two-session', '两个交易日'], fiveS: ['Five-session', '五个交易日'], twentyS: ['Twenty-session', '二十个交易日'],
+    winNA: ['unavailable', '不可用'], numAbs: ['defensive leg absolute return', '防御端绝对收益'],
+    denAbs: ['risk leg absolute return', '风险端绝对收益'], rel: ['relative wealth', '相对财富变化'],
+    flatBoth: ['Both legs flat; no measured shift', '两端均持平；无可测变化'],
+    defFlat: ['Defensive leg flat', '防御端持平'], riskFlat: ['Risk leg flat', '风险端持平'],
+    riskOff: ['Defensive leg rising; risk leg falling', '防御端上涨；风险端下跌'],
+    shelter: ['Relative shelter only: both legs falling', '仅相对抗跌：两端均下跌'],
+    bothUp: ['Both legs rising; compare their relative returns', '两端均上涨；请比较相对收益'],
+    defDown: ['Defensive leg falling; risk leg rising', '防御端下跌；风险端上涨'],
+    bothDown: ['Both legs falling; no positive relative shift', '两端均下跌；无正向相对变化'],
+    conflict: ['Two-session and twenty-session relative directions disagree', '两日与二十日的相对方向相反'],
+    conflictGap: ['Twenty-session comparison unavailable; longer-horizon agreement is unknown.', '二十日比较不可用；较长周期是否一致尚未知。'],
+    rowNA: ['Not displayed as evidence', '不作为证据显示'],
+    dupConflict: ['Abstained: duplicate alias with conflicting evidence', '未采用：重复别名的证据冲突'],
+    dupSame: ['Duplicate alias collapsed; shown once', '重复别名已合并，仅显示一次']
+  };
+  function T(k) { return W[k][ZH ? 1 : 0]; }
+  function E(s) { return escFn(String(s == null ? '' : s).slice(0, 2048)); }
+  function codes(list) {
+    if (!Array.isArray(list)) return E(T('noCodes'));
+    var out = [];
+    for (var i = 0; i < list.length && i < 64 && out.length < MAXCODES; i++) {
+      if (typeof list[i] === 'string' && list[i]) out.push(list[i].slice(0, 160));
+    }
+    return out.length ? E(out.join(', ')) : E(T('noCodes'));
+  }
+  function ts(s) {
+    if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return NaN;
+    var v = Date.parse(s + 'T00:00:00Z');
+    return isFinite(v) && new Date(v).toISOString().slice(0, 10) === s ? v : NaN;
+  }
+  function N(v) { return typeof v === 'number' && isFinite(v) ? v : null; }
+  function pct(v) { return (v > 0 ? '+' : '') + v.toFixed(2) + '%'; }
+  function block(inner) {
+    return '<section class="rc-early-context" aria-label="' + E(T('title')) + '"><h4 class="rc-ec-title">' + E(T('title')) + '</h4>' + inner
+      + '<p class="rc-ec-disclosure">' + E(T('d1')) + ' · ' + E(T('d2')) + '</p></section>';
+  }
+  function unavail(code) { return block('<p class="rc-ec-unavail" role="note">' + E(T('unavail') + ' ' + code) + '</p>'); }
+  // The caller supplies the display clock. No second, hidden clock or market calendar.
+  if (N(nowMs) === null || nowMs < 0 || !isFinite(new Date(nowMs).getTime())) return unavail('CLOCK_UNUSABLE');
+  var today = Math.floor(nowMs / DAY) * DAY;
+  var ctx = ev && typeof ev === 'object' && !Array.isArray(ev) ? ev.early_context : undefined;
+  if (ctx === undefined || ctx === null) return block('<p class="rc-ec-nopacket" role="note">' + E(T('noPacket')) + '</p>');
+  if (typeof ctx !== 'object' || Array.isArray(ctx)) return unavail('PACKET_UNREADABLE');
+  if (ctx.schema !== 'rotation_early_context/v1' || ctx.definition_id !== 'rotation_early_context/1' || ctx.display_only !== true) return unavail('SCHEMA_UNRECOGNIZED');
+  var asOf = ctx.as_of, asOfTs = ts(asOf);
+  if (!isFinite(asOfTs)) return unavail('AS_OF_UNREADABLE');
+  if (asOfTs > today) return unavail('AS_OF_IN_FUTURE');
+  var si = ctx.state === null ? -1 : STATE_KEYS.indexOf(ctx.state);
+  if (si < 0 && ctx.state !== null) return unavail('STATE_UNRECOGNIZED');
+  var pairs = ctx.pairs;
+  if (!Array.isArray(pairs)) return unavail('PACKET_UNREADABLE');
+  if (pairs.length > MAXROWS) return unavail('ROW_LIMIT_EXCEEDED');
+  if (pairs.some(function(p){ return !p || typeof p !== 'object' || Array.isArray(p); })) return unavail('PAIR_UNREADABLE');
+  var age = Math.floor((today - asOfTs) / DAY), out = [];
+  if (age >= STALE_DAYS) out.push('<p class="rc-ec-stale" role="note"><strong>' + E(T('stale')) + '</strong></p>');
+  out.push('<p class="rc-ec-asof">' + E(T('asOf')) + ': <time datetime="' + E(asOf) + '">' + E(asOf) + '</time> · ' + E(T('age')) + ': ' + age + ' ' + E(T('days')) + '</p>');
+  var av = ctx.availability && typeof ctx.availability === 'object' ? ctx.availability : {};
+  var ln = ctx.lineage && typeof ctx.lineage === 'object' ? ctx.lineage : {};
+  out.push('<p class="rc-ec-quality">' + E(T('avT') + ': ' + (typeof av.status === 'string' ? av.status : T('na1')) + ' · ' + T('lnT') + ': ' + (typeof ln.status === 'string' ? ln.status : T('na1'))) + '</p>');
+  var def = pairs.filter(function(p){ return p.context_group === 'defensive_sector'; });
+  function rowSig(r) {
+    return JSON.stringify({schema:r.schema, requested_as_of:r.requested_as_of, value_as_of:r.value_as_of,
+      eligible_2s:r.eligible_2s, horizons:r.horizons, reason_codes:r.reason_codes, lineage:r.lineage});
+  }
+  var byAlias = Object.create(null), mode = Object.create(null), hidden = Object.create(null), j, k;
+  for (j = 0; j < def.length; j++) {
+    if (typeof def[j].num !== 'string' || typeof def[j].den !== 'string') continue;
+    k = JSON.stringify([def[j].num.trim().toUpperCase(), def[j].den.trim().toUpperCase()]);
+    (byAlias[k] = byAlias[k] || []).push(j);
+  }
+  for (k in byAlias) {
+    var idx = byAlias[k];
+    if (idx.length < 2) continue;
+    var same = true, sig0;
+    try {
+      sig0 = rowSig(def[idx[0]]);
+      for (var m1 = 1; m1 < idx.length; m1++) if (rowSig(def[idx[m1]]) !== sig0) same = false;
+    } catch (err) { same = false; }
+    for (var m2 = 0; m2 < idx.length; m2++) mode[idx[m2]] = same ? 'same' : 'conflict';
+    if (same) for (var m3 = 1; m3 < idx.length; m3++) hidden[idx[m3]] = true;
+  }
+  function checkWin(w, sessions) {
+    if (!w || typeof w !== 'object' || Array.isArray(w)) return {ok:false, why:'WINDOW_ABSENT'};
+    if (w.eligible !== true) return {ok:false, why:'WINDOW_NOT_INDEPENDENTLY_ELIGIBLE'};
+    if (w.sessions !== sessions) return {ok:false, why:'WINDOW_SESSION_COUNT_MISMATCH'};
+    if (w.end !== asOf) return {ok:false, why:'WINDOW_END_DATE_MISMATCH'};
+    var st = ts(w.start);
+    if (!isFinite(st) || st >= asOfTs) return {ok:false, why:'WINDOW_START_UNREADABLE'};
+    var n = N(w.numerator_return_pct), d = N(w.denominator_return_pct), r = N(w.ratio_return_pct);
+    if (n === null || d === null || r === null) return {ok:false, why:'WINDOW_VALUE_NOT_A_FINITE_NUMBER'};
+    if (!(n > -100) || !(d > -100)) return {ok:false, why:'WINDOW_ABSOLUTE_RETURN_AT_OR_BELOW_MINUS_100'};
+    if (!(Math.abs(((1 + n / 100) / (1 + d / 100) - 1) * 100 - r) <= 1e-6)) return {ok:false, why:'WINDOW_RATIO_INCONSISTENT'};
+    return {ok:true, n:n, d:d, r:r, w:w};
+  }
+  function dirKey(n, d, r) {
+    if (n === 0 && d === 0) return 'flatBoth';
+    if (n === 0) return 'defFlat';
+    if (d === 0) return 'riskFlat';
+    if (n > 0 && d > 0) return 'bothUp';
+    if (n > 0) return 'riskOff';
+    if (d > 0) return 'defDown';
+    return r > 0 ? 'shelter' : 'bothDown';
+  }
+  function winHtml(title, c) {
+    if (!c.ok) return '<p class="rc-ec-win-na" role="note">' + E(title + ' — ' + T('winNA') + ': ' + c.why) + '</p>';
+    return '<div class="rc-ec-window"><h5>' + E(title) + '</h5><dl class="rc-ec-values">'
+      + '<div><dt>' + E(T('numAbs')) + '</dt><dd>' + E(pct(c.n)) + '</dd></div>'
+      + '<div><dt>' + E(T('denAbs')) + '</dt><dd>' + E(pct(c.d)) + '</dd></div>'
+      + '<div><dt>' + E(T('rel')) + '</dt><dd>' + E(pct(c.r)) + '</dd></div></dl></div>';
+  }
+  function rowHtml(row, note) {
+    var o = ['<article class="rc-ec-pair">'];
+    if (note) o.push('<p class="rc-ec-row-note">' + E(note) + '</p>');
+    function na(code) { return o.join('') + '<p class="rc-ec-row-na" role="note">' + E(T('rowNA') + ': ' + code) + '</p></article>'; }
+    if (row.schema !== 'ratio_lens.short_horizon.v1') return na('ROW_SCHEMA_UNRECOGNIZED');
+    if (typeof row.num !== 'string' || !row.num.trim() || typeof row.den !== 'string' || !row.den.trim()) return na('ROW_PAIR_IDENTITY_MISSING');
+    o.push('<h5 class="rc-ec-pair-title">' + E(row.num + ' / ' + row.den) + '</h5>');
+    if (row.requested_as_of !== asOf || row.value_as_of !== asOf) return na('ROW_DATE_MISMATCH');
+    var hz = row.horizons && typeof row.horizons === 'object' && !Array.isArray(row.horizons) ? row.horizons : {};
+    var e2 = row.eligible_2s === true ? checkWin(hz['2s'], 2) : {ok:false, why:'ROW_2S_NOT_ELIGIBLE'};
+    var e5 = checkWin(hz['5s'], 5), e20 = checkWin(hz['20s'], 20);
+    if (e2.ok) o.push('<p class="rc-ec-label">' + E(T(dirKey(e2.n, e2.d, e2.r))) + '</p>');
+    o.push(winHtml(T('twoS'), e2));
+    if (e2.ok && e20.ok && e2.r * e20.r < 0) o.push('<p class="rc-ec-conflict" role="note"><strong>' + E(T('conflict')) + '</strong> · ' + E(pct(e2.r) + ' / ' + pct(e20.r)) + '</p>');
+    else if (e2.ok && !e20.ok) o.push('<p class="rc-ec-conflict" role="note">' + E(T('conflictGap')) + '</p>');
+    o.push('<details class="rc-ec-details"><summary>' + E(T('details')) + '</summary>');
+    var nm = ZH ? row.name_zh || row.name_en : row.name_en || row.name_zh;
+    if (typeof nm === 'string') o.push('<p>' + E(nm) + '</p>');
+    o.push(winHtml(T('fiveS'), e5), winHtml(T('twentyS'), e20));
+    o.push('<p class="rc-ec-meta">' + E(typeof row.pair_id === 'string' ? row.pair_id : '') + ' · ' + E(asOf) + '</p>');
+    [e2, e5, e20].forEach(function(c){ if(c.ok) o.push('<p class="rc-ec-meta">' + E(c.w.start + ' → ' + c.w.end) + ' · ' + codes(c.w.reason_codes) + '</p>'); });
+    o.push('<p class="rc-ec-reasons">' + E(T('reasons') + ': ') + codes(row.reason_codes) + '</p></details>');
+    return o.join('') + '</article>';
+  }
+  if (!def.length) out.push('<p class="rc-ec-empty" role="note">' + E(T('empty')) + '</p>');
+  else {
+    out.push('<div class="rc-ec-grid">');
+    for (var n2 = 0; n2 < def.length; n2++) {
+      if (hidden[n2]) continue;
+      if (mode[n2] === 'conflict') out.push('<article class="rc-ec-pair"><h5>' + E(def[n2].num + ' / ' + def[n2].den) + '</h5><p class="rc-ec-row-na" role="note">' + E(T('dupConflict')) + '</p></article>');
+      else out.push(rowHtml(def[n2], mode[n2] === 'same' ? T('dupSame') : ''));
+    }
+    out.push('</div>');
+  }
+  out.push('<details class="rc-ec-packet"><summary>' + E(T('details')) + '</summary><p>' + E(T('stateCopy')) + ' ' + E(si < 0 ? T('noState') : W.states[si][ZH ? 1 : 0]) + '</p><p>' + E(T('scope')) + '</p>');
+  out.push('<p>' + E(T('avAt') + ': ' + (typeof av.available_at === 'string' ? av.available_at : T('na1'))) + '</p>');
+  out.push('<p>' + E(T('roots') + ': ') + codes(ln.roots) + '</p><p>' + E(T('reasons') + ': ') + codes(ctx.reason_codes) + '</p></details>');
+  return block(out.join(''));
+}
+/* EARLY_CONTEXT_FN_END */
+
   /* ── styles (injected once, guarded by element id — subsector_rotation.js model).
      Carried over from the retired page's own <style> block; `#rc-events h2` becomes
      `#rc-events h3` because the heading demoted when the section moved inside
@@ -30,6 +205,15 @@
   function injectStyle(){
     if(document.getElementById('rc-events-style')) return;
     var c=''
+      +'.rc-early-context{margin:14px 0;padding:14px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2);overflow-wrap:anywhere;}'
+      +'.rc-ec-title{font-size:15px;font-weight:800;margin:0 0 6px;}.rc-ec-asof,.rc-ec-quality{font-size:11px;color:var(--muted);margin:4px 0;}'
+      +'.rc-ec-grid{display:grid;align-items:start;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px;margin:12px 0;}'
+      +'.rc-ec-pair{min-width:0;padding:12px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);}'
+      +'.rc-ec-pair h5{font-size:12px;margin:0 0 5px;}.rc-ec-pair .rc-ec-pair-title{font-size:14px;}.rc-ec-label{font-size:12px;line-height:1.5;margin:6px 0 10px;}'
+      +'.rc-ec-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 10px;}.rc-ec-values dt{font-size:10px;color:var(--muted);line-height:1.35;}.rc-ec-values dd{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;margin:5px 0 0;}'
+      +'.rc-ec-stale,.rc-ec-conflict{border-left:3px solid var(--warn);padding:6px 9px;color:var(--ink-warn,var(--warn));font-size:11px;line-height:1.5;}'
+      +'.rc-ec-details,.rc-ec-packet{font-size:11px;line-height:1.5;}.rc-ec-details summary,.rc-ec-packet summary{cursor:pointer;padding:5px 0;}.rc-ec-details summary:focus-visible,.rc-ec-packet summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;}'
+      +'.rc-ec-meta,.rc-ec-reasons,.rc-ec-row-note,.rc-ec-disclosure{font-size:10.5px;line-height:1.5;color:var(--muted);}.rc-ec-win-na,.rc-ec-row-na,.rc-ec-empty,.rc-ec-nopacket,.rc-ec-unavail{font-size:12px;line-height:1.5;}'
       +'#rc-events { margin:0 2px 22px; }'
       +'#rc-events h3 { font-size:17px; font-weight:800; letter-spacing:-.015em; margin:0 0 4px; }'
       +'.rc-sub { color:var(--muted); font-size:12px; margin:0 0 10px; max-width:84ch; line-height:1.5; }'
@@ -116,8 +300,9 @@
       +'<section id="rc-events" aria-label="Rotation events">'
       +'<h3>⟲ '+L('Rotation Events','轮动事件')+'</h3>'
       +'<p class="rc-sub">'+L(
-          'Where money is moving between sectors — leaving one, turning up in another. A heads-up on shifting leadership, not a buy list.',
-          '资金在板块之间的流向——从一处撤出、在另一处转强。这是领导权变化的提示，并非买入清单。')+'</p>'
+          'Price-based evidence of changing sector leadership. Compare early observations with recorded events; neither is a buy list.',
+          '基于价格的板块领导力变化证据。比较早期观察与已记录事件；两者均非买入清单。')+'</p>'
+      +'<div id="rc-early-context"></div>'
       +'<div id="rc-flowmap-content"></div>'
       +'<div id="rc-closures"></div>'
       +'<div id="rc-events-content"><p class="rc-quiet">'
@@ -134,8 +319,8 @@
     var active=(ev&&ev.active)||[];
     if(!active.length){
       el.innerHTML='<p class="rcf-empty">'
-        +t('No money-flow events right now — a quiet tape is a valid read. Nothing to do.',
-           '当前无资金流向事件——安静的盘面也是有效读数。无需操作。')
+        +t('No confirmed rotation events in this snapshot. Early observations above are separate; an empty event list is not an all-clear.',
+           '此快照无已确认的轮动事件。上方早期观察独立显示；事件列表为空不代表风险已排除。')
         +'</p>';
       return;
     }
@@ -195,8 +380,8 @@
         stanceCls='rcf-weak';
       } else {
         // handoff (default for unknown types — cautious fallback per spec)
-        stateLineEn='Money leaving '+donorEn+', turning up in '+recvEn;
-        stateLineZh='资金撤出'+donorZh+'，在'+recvZh+'转强';
+        stateLineEn='Recorded leadership shift: '+donorEn+' → '+recvEn;
+        stateLineZh='已记录的领导力转移：'+donorZh+' → '+recvZh;
         stanceText=t('Watch — don\'t chase','观望，不要追高');
         stanceCls='rcf-watch';
       }
@@ -472,8 +657,8 @@
             :(e.to_sector_en||e.sector_name_en||(e.to_leg&&(e.to_leg.name_en||e.to_leg.key))||'');
           if(toSec){
             html+='<div style="font-size:11px;color:var(--ink-link, var(--link));margin-top:8px;">'
-              +t('Money is rotating toward '+esc(toSec)+' — see it in the flow map above.',
-                 '资金正在轮向'+esc(toSec)+'——见上方资金流向图。')
+              +t('Relative leadership is shifting toward '+esc(toSec)+' — see the recorded comparison above.',
+                 '相对领导力正向'+esc(toSec)+'转移——见上方已记录的比较。')
               +'</div>';
           }
         });
@@ -492,6 +677,8 @@
       fetch('marketdata/rotation_events.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
       fetch('marketdata/sector_fragmentation.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
     ]).then(function(res){
+      var earlyEl=document.getElementById('rc-early-context');
+      if(earlyEl) earlyEl.innerHTML=earlyContextHtml(res[0],isZh()?'zh':'en',Date.now());
       if(!res[0]&&!res[1]){
         var el=document.getElementById('rc-events-content');
         if(el) el.innerHTML='<p class="rc-quiet"><span class="l-en">Rotation-event data unavailable.</span><span class="l-zh">轮动事件数据暂不可用。</span></p>';

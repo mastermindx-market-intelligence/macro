@@ -1,0 +1,20 @@
+{
+  "reviewer": "existing Sol science coordinator",
+  "scope": "draft scientific design only; no runner/test/hosted/PIT claim",
+  "status": "accepted",
+  "fixtures": {
+    "benchmark_mag7_narration_2026-08-03.json": "88689c9582d7c5e40828ecb3578c0dbbe52f8277c11c4a84191f966b7463d5c3",
+    "benchmark_mag7_forced_override_2026-07-11.json": "cee090e93dcd00fecfe7f687a079ce099ee248365e850e9b55fa618c60080909"
+  },
+  "source_paths": [
+    "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+    "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md"
+  ],
+  "limitations": [
+    "Current-doctrine supplied-adjudication text",
+    "Historical source availability unverified",
+    "Shared Mag7 episode also overlaps capex; no independent-empirical-count claim",
+    "Dependence group descriptive; runner does not enforce statistical independence",
+    "Original20case15seeded objective remains open"
+  ]
+}

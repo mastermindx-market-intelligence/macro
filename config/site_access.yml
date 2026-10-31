@@ -275,6 +275,7 @@ public:
     - /intl_workspace_macro.css
     - /intl_workspace_risk.css
     - /intl_workspace_history.css
+    - /intl_workspace_surveillance.css
     - /intl_workspace_state.js
     - /intl_library_search.js
     - /intl_workspace_scenario.js
@@ -471,6 +472,12 @@ public:
     # inside the existing authenticated Brain transport and thread endpoints.
     - /mm_brain_visuals.js
     - /mm_brain_visuals.css
+    - /mm_brain_presentation.js
+    - /mm_brain_markdown.js
+    - /mm_brain_finance.js
+    - /mm_brain_finance.css
+    - /mm_brain_finance_math_v1.js
+    - /mm_brain_math.js
     # ── Estate-wide sweep of the same defect (census:
     # research/SITE_ACCESS_ASSET_CENSUS_2026_08_11.md) ────────────────────────
     #
