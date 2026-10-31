@@ -10233,6 +10233,9 @@ jobs:
       - "tests/test_us_candidate_episode_wiring.py"
       - "tests/test_us_candidate_episode_identity_retry.py"
       - "tests/fixtures/us_candidate_episode/**"
+      # Entry Timing W1 (2026-10-31): the intake waterfall report and its receipt-recovery suite.
+      - "scripts/report_us_candidate_episode_waterfall.py"
+      - "tests/test_report_us_candidate_episode_waterfall.py"
       - "engine/prophet_object_change.py"
       - "tests/test_prophet_object_change.py"
       - "engine/prophet_daily_brief_evidence_sources.py"
@@ -10288,6 +10291,8 @@ jobs:
       # the context-and-grades data job only runs after merge.
       - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
         run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py tests/test_us_candidate_episode_identity_retry.py -q
+      - name: Entry Timing W1 intake waterfall — receipt-recovered document sessions over the full git history
+        run: python -m pytest tests/test_report_us_candidate_episode_waterfall.py -q
 
       # B21 U2: the pure producer half over the B1 ledger and B3 projections.
       # Hermetic — fixtures mint real B1 envelopes through the B1 writer and
