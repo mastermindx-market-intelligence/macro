@@ -13,8 +13,11 @@ from __future__ import annotations
 from bs4 import BeautifulSoup
 
 from tests.test_pullback_hides_legacy_odds import (
+    HEAD_EN,
+    HEAD_ZH,
     NOTICE_EN,
     NOTICE_ZH,
+    RECOVERY,
     _country,
     _env,
     _us_dialog,
@@ -45,3 +48,19 @@ def test_unhidden_odds_block_keeps_its_exact_opening_bytes():
     ).render(rd=dict(_RD))
     opening = html[html.index('<div class="rrx-odds">'):]
     assert opening.startswith('<div class="rrx-odds">\n    <div class="rrx-odds-l">')
+
+
+def test_cn_recovery_title_puts_each_language_in_its_own_span():
+    title = BeautifulSoup(_country(native_view("cn"), recovery=RECOVERY), "html.parser").select_one(".rrx-rec-ttl")
+    assert title.select_one(".l-en").get_text() == "Risk receding — radar intensity rolling over"
+    assert title.select_one(".l-zh").get_text() == "风险回落 — 雷达强度见顶回落"
+
+
+def test_flagless_recovery_title_keeps_its_exact_bytes():
+    html = _env().from_string(
+        '{% import "_risk_radar_card.html.j2" as rrc %}{{ rrc.risk_radar_card(rd, []) }}'
+    ).render(rd=dict(_RD, recovery=RECOVERY))
+    title = html[html.index('<span class="rrx-rec-ttl">'):]
+    assert title.startswith(
+        f'<span class="rrx-rec-ttl"><span class="l-en">{HEAD_EN}</span><span class="l-zh">{HEAD_ZH}</span></span>'
+    )

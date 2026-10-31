@@ -122,7 +122,7 @@
         {
           "path": "templates/_risk_radar_card.html.j2",
           "role": "jinja_template",
-          "sha256": "5cf0265f3335234f32a3c4e8901c2a360c9eb86013f2d92d2935b125fff8da68"
+          "sha256": "254b14f6ac0510662b3e317b5ba991b54e7c43c2e72cdc507c2ce26d7ad759e1"
         },
         {
           "path": "templates/_risk_radar_dlg.css.j2",
@@ -476,7 +476,7 @@
         {
           "path": "templates/_risk_radar_card.html.j2",
           "role": "jinja_template",
-          "sha256": "5cf0265f3335234f32a3c4e8901c2a360c9eb86013f2d92d2935b125fff8da68"
+          "sha256": "254b14f6ac0510662b3e317b5ba991b54e7c43c2e72cdc507c2ce26d7ad759e1"
         },
         {
           "path": "templates/_risk_radar_dlg.css.j2",

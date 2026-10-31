@@ -79,8 +79,9 @@
    escalating odds ramp drawn against the normal base rate, a state-coloured header,
    compact threat meters + plain-English evidence, and the action line. #}
 {#- hide_odds: the China dialog passes true while a measured pullback leads it. The odds
-   block becomes one line, and the recovery panel drops its odds trace, odds turn and odds
-   edge. Every other caller omits it, so their output is unchanged. -#}
+   block becomes one line, and the recovery panel drops its odds trace, odds turn, odds
+   edge and its buy/re-entry Do line; the receding headline names the radar intensity, not
+   the odds. Every other caller omits it, so their output is unchanged. -#}
 {% macro risk_radar_card(rd, scares=none, show_threats=true, plain_gross=false, hide_odds=false) -%}
 {%- set rc = 'var(--act)' if rd.state=='risk-off' else ('var(--orange)' if rd.state=='elevated' else ('var(--warn)' if rd.state=='caution' else ('var(--info)' if rd.state=='watch' else 'var(--ok)'))) -%}
 {#- icon ladder (RRX2 WA-1): 👀 retired; watch shows 🌤️ when recovery panel is receding else 📡.
@@ -174,7 +175,7 @@
   <div class="rrx-rec{{ ' is-turn' if rv.turn_confirmed }}" style="--rvc:{{ rvc }}">
     <div class="rrx-rec-hd">
       <span class="rrx-rec-ar">{{ '↘' if rv.receding else '◔' }}</span>
-      <span class="rrx-rec-ttl">{{ t(rv.headline_en, rv.headline_zh) }}</span>
+      <span class="rrx-rec-ttl">{% if hide_odds and rv.receding and not rv.turn_confirmed %}{{ t('Risk receding — radar intensity rolling over','风险回落 — 雷达强度见顶回落') }}{% else %}{{ t(rv.headline_en, rv.headline_zh) }}{% endif %}</span>
       {% if rv.turn_confirmed %}<span class="rrx-rec-tag">{{ t('TURN','转向') }}</span>{% endif %}{% if rv.turn_confirmed_full %}<span class="rrx-rec-tag">{{ t('INTERNALS ✓','内部确认 ✓') }}</span>{% endif %}
       {{ help(rv.caveat_en, rv.caveat_zh) }}
     </div>
@@ -270,7 +271,7 @@
     {%- endif %}
     {%- endif %}
     {%- endif %}
-    {% if rv.do_en %}<div class="rrx-rec-do"><span class="rrx-rec-do-k">{{ t('Do','应对') }}</span>{{ t(rv.do_en, rv.do_zh) }}</div>{% endif %}
+    {% if rv.do_en and not hide_odds %}<div class="rrx-rec-do"><span class="rrx-rec-do-k">{{ t('Do','应对') }}</span>{{ t(rv.do_en, rv.do_zh) }}</div>{% endif %}
   </div>
   {% endif %}
   {% if scares %}

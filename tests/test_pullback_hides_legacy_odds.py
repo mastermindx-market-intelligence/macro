@@ -2,9 +2,10 @@
 
 US: the dialog swaps its ``.riskdlg-odds`` block for one line. China: the dialog
 passes ``hide_odds`` to the shared radar card, which swaps its odds block for the
-same line and drops the recovery panel's odds trace, odds turn and odds edge.
-The panel's headline and central-bank catalysts stay. Every other caller of the
-card omits the flag: Hong Kong, Canada and the US front-page banner are unchanged.
+same line and drops the recovery panel's odds trace, odds turn, odds edge and
+its buy/re-entry Do line. The receding headline names the radar intensity, not
+the odds; the central-bank catalysts stay. Every other caller of the card omits
+the flag: Hong Kong, Canada and the US front-page banner are unchanged.
 """
 from __future__ import annotations
 
@@ -31,11 +32,16 @@ SUB_EN = "Pullback odds 31% → 24% (peaked 3 days ago)."
 SUB_ZH = "回撤概率 31% → 24%（3 日前见顶）。"
 EDGE_EN = "buying dips has historically worked ~6pp more often (synthetic)"
 EDGE_ZH = "逢低买入成功率约高6个百分点（合成）"
+# The engine's receding headline and Do line name the odds and a buy plan.
+HEAD_EN = "Risk receding — pullback odds rolling over"
+HEAD_ZH = "风险回落 — 回撤概率见顶回落"
+DO_EN = ("Odds are rolling over but no liquidity catalyst yet. Stop forced de-grossing; "
+         "ready a buy plan and wait for a liquidity turn to confirm.")
+DO_ZH = "概率回落，但尚无流动性催化。停止被动减仓；备好买入计划，待流动性转向确认。"
 RECOVERY = {
     "present": True, "phase": "receding", "receding": True, "peaking": False,
     "turn_confirmed": False, "turn_confirmed_full": False,
-    "headline_en": "Risk receding — pullback odds rolling over",
-    "headline_zh": "风险回落 — 回撤概率见顶回落",
+    "headline_en": HEAD_EN, "headline_zh": HEAD_ZH, "do_en": DO_EN, "do_zh": DO_ZH,
     "sub_en": SUB_EN, "sub_zh": SUB_ZH, "caveat_en": "Illustrative context.", "caveat_zh": "仅为示意性背景。",
     "spark_pts": "0,10 5,2 10,6", "spark_w": 10, "spark_h": 12,
     "spark_peak": {"x": 5, "y": 2}, "spark_last": {"x": 10, "y": 6},
@@ -169,8 +175,30 @@ def test_cn_leading_drops_the_recovery_odds_and_keeps_its_catalysts():
         assert text not in rest
     chips = panel.select(".rrx-rec-chip")
     assert len(chips) == 1 and "Fed liquidity expanding" in chips[0].get_text()
-    # The engine headline names the odds direction without a figure. It stays.
-    assert "Risk receding" in panel.select_one(".rrx-rec-ttl").get_text()
+    # The engine headline names the odds turn and its Do line readies a buy plan.
+    title = panel.select_one(".rrx-rec-ttl").get_text()
+    assert "Risk receding" in title and "radar intensity" in title and "雷达强度" in title
+    assert "odds" not in title.lower() and "概率" not in title
+    assert panel.select_one(".rrx-rec-do") is None
+    for text in (HEAD_EN, HEAD_ZH, DO_EN, DO_ZH, "buy plan", "买入计划"):
+        assert text not in rest
+
+
+def test_cn_leading_drops_the_turn_confirmed_re_entry_line():
+    turn_do = "Begin scaling exposure back in tranches"
+    rv = dict(RECOVERY, turn_confirmed=True,
+              headline_en="Risk receding — liquidity turning supportive",
+              headline_zh="风险回落 — 流动性转向支持",
+              do_en=turn_do + " — keep stops.", do_zh="可分批逐步回补敞口。")
+    leading = _country(native_view("cn"), recovery=rv)
+    soup, rest = _outside_measured(leading)
+    panel = soup.select_one(".rrx-rec")
+    assert panel.select_one(".rrx-rec-do") is None
+    assert turn_do not in rest and "回补敞口" not in rest
+    # Its headline names no odds, so it stays.
+    assert "liquidity turning supportive" in panel.select_one(".rrx-rec-ttl").get_text()
+    plain = _country(None, recovery=rv)
+    assert turn_do in plain and 'class="rrx-rec-do"' in plain
 
 
 @pytest.mark.parametrize("view", [None, "rejected", "monitoring"])
@@ -180,8 +208,9 @@ def test_cn_not_leading_keeps_the_odds_and_the_recovery_odds(view):
     assert "riskdlg-legacy-details" not in html
     assert 'class="rrx-odds"' in html and "Pullback odds" in html
     assert 'class="rrx-rec-mid"' in html and 'class="rrx-rec-sal"' in html
-    for text in (SUB_EN, SUB_ZH, EDGE_EN, EDGE_ZH):
+    for text in (SUB_EN, SUB_ZH, EDGE_EN, EDGE_ZH, HEAD_EN, HEAD_ZH, DO_EN, DO_ZH):
         assert text in html
+    assert 'class="rrx-rec-do"' in html and "radar intensity" not in html
     assert NOTICE_EN not in html and NOTICE_ZH not in html
     assert "rrx-odds-off" not in html
 
@@ -196,6 +225,7 @@ def test_hk_and_ca_dialogs_keep_the_shared_odds_block(mkt, recovery):
     assert NOTICE_EN not in plain and "rrx-odds-off" not in plain
     if recovery:
         assert SUB_EN in plain and EDGE_EN in plain
+        assert HEAD_EN in plain and DO_EN in plain and "radar intensity" not in plain
 
 
 def test_card_callers_that_omit_the_flag_keep_the_odds():
@@ -206,6 +236,7 @@ def test_card_callers_that_omit_the_flag_keep_the_odds():
     default, explicit = tpl.render(rd=dict(_RD, recovery=RECOVERY)).split("|", 1)
     assert default == explicit
     assert 'class="rrx-odds"' in default and SUB_EN in default and EDGE_EN in default
+    assert HEAD_EN in default and DO_EN in default and "radar intensity" not in default
     assert NOTICE_EN not in default
 
 
