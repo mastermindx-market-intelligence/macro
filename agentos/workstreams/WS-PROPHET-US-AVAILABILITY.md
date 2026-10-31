@@ -16,17 +16,45 @@ class: build
 blast_radius: reversible
 ambiguity: specified
 next_action: >
-  PR #7180 remains the active bounded producer/source-bound carrier. Its reviewed
-  semantic head 99b9bc18 composes conflict-free with current main 3df8685c and
-  passes the current-base local release matrix; publish the documentation-only
-  qualification on the same branch, require fresh terminal hosted CI and genuine
-  independent approval, and merge only after release-owner acceptance. Then
-  integrate existing PR #7187 and reconcile existing PR #7457 once, in that order.
-  PR #7161 already merged as bdad6706 and is DO_NOT_REDO. Keep the parent capability
-  BUILT_NOT_PROVEN until exact deployed-commit source, protected-serving, browser,
-  and subsequent scheduled-refresh proof. China run 35021696056 remains proven and
-  must not be retried.
+  2026-10-31 BOUNDED A2 READ-CONSUMER COORDINATION.
+  Historical producer/source PRs #7180, #7187 and #7457
+  are already MERGED per current GitHub; do not reland
+  them from this outdated prose (DO_NOT_REDO).
+  W0/W3 remain in_progress with their own original proof
+  and W1/W2 are separately gated. The V4-A2 sibling
+  workstream's read-only Check E settlement consumer is
+  proposed in isolated Draft/HOLD #10256, exact current
+  source head based on 8c6f946842af4fbf61d49b588448d39a677b4d45.
+  It changes only the existing Check E liveness detector,
+  its tests and this explicit Availability ownership record.
+  No new HTTP fetch or paid-index read, no second publisher,
+  no new detector/alert/dispatch authority, and no edits
+  to the sole rescue scheduler or its budgets.
+  The consumer parses public prophet.settlement_manifest/v1
+  as supplied read-only evidence: predeploy absence silent,
+  PENDING advisory, blind INDETERMINATE, SETTLED never
+  excuses existing A-D/heartbeat failures. Exact immutable
+  initial code head 8c6f9468 passed 111 focused/complete
+  liveness tests locally on a separately reconstructed
+  source snapshot; hosted fence 41179369155 SUCCESS
+  at that initial code head. Follow-up owner-record commit
+  requires its own fresh hosted checks, so do not claim CI
+  on a newer head. Original independent Fabric reviewer
+  was TERMINAL rc75 REFUSED host temperature before execution,
+  no SOURCE_PASS and no permission for bypass retry.
+  Availability owner/custody read-only evidence query in
+  Slack thread 1793430537.066329 remains a distinct
+  carrier; consume its RESULT and preserve actual live
+  writer/effect fences. Coordinate review and controlled
+  real-path acceptance through this existing workstream
+  before any release. Parent V4 #10202 and producer
+  clock #10209 remain Draft/HOLD unmerged; no accepted
+  GMI fourth asset or protected served identity exists.
+  This records-only source delta neither releases #10256
+  nor finishes A2 or W0/W3.
 owns_paths:
+  - scripts/check_nightly_liveness.py
+  - tests/test_nightly_liveness.py
   - scripts/prophet_rescue.py
   - .github/workflows/prophet-rescue.yml
   - tests/test_prophet_rescue.py
