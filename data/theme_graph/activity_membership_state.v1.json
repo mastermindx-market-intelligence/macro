@@ -1,0 +1,43 @@
+{
+  "authority": {
+    "may_gate": false,
+    "may_materialize_edges": false,
+    "may_publish": false,
+    "may_qualify": false,
+    "may_rank": false,
+    "may_size": false
+  },
+  "event_count": 0,
+  "events_path": "data/theme_graph/probation/activity_history_events.jsonl",
+  "events_sha256": null,
+  "fold": {
+    "current": 0,
+    "excluded_after_cutoff": 0,
+    "history": 0,
+    "refused": 0,
+    "refused_rows": [],
+    "retained": 0
+  },
+  "generated_at": "2026-10-30T20:38:22.550211+00:00",
+  "graph_agreement": {
+    "extra_in_graph": [],
+    "extra_in_graph_count": 0,
+    "graph_activity_count": 0,
+    "missing_in_graph": [],
+    "missing_in_graph_count": 0,
+    "projected_count": 0,
+    "rule": "latest_belief MEMBER_OF activity_history valid_to null",
+    "status": "AGREE"
+  },
+  "mode": "ACTIVITY_MEMBERSHIP_STATE",
+  "projected_edges": [],
+  "projected_evidence_count": 0,
+  "projection_refusals": [],
+  "qualification": {
+    "reason_codes": [
+      "D2E_UNSEALED"
+    ],
+    "status": "NOT_QUALIFIED"
+  },
+  "schema": "gmi.activity_membership_state/v1"
+}

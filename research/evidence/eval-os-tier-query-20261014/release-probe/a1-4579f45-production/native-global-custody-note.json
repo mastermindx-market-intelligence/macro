@@ -1,0 +1,7 @@
+{
+  "observed_at": "2026-10-24T03:09:45Z",
+  "action": "Two native global coordinate clicks intended to close our DevTools",
+  "actual_second_return": "UI element in Line Details | US Mobile - Google Chrome - Chris",
+  "conclusion": "Both coordinate clicks were issued in one System Events script. Only the final generic US Mobile page-element return is retained. This proves loss of foreground custody but identifies neither click semantic target, first recipient nor exact transition. Effects of both global clicks UNKNOWN; no per-click before/after record.",
+  "resolution": "Retained-evidence diagnosis closed. No live unrelated-account inspection, undo or retry. Exact retained admin-tab work may continue; no global coordinates/keyboard without exclusive custody. No demonstrated human-only repair."
+}

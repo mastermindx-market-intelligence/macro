@@ -71,6 +71,10 @@ from engine.company_intelligence.issuer_profiles import (
     profile_for_ticker,
 )
 from engine.earnings_release.binding import submissions_rows
+from engine.earnings_release.receipts import (
+    ReceiptError, SEC_ACQUISITION_SCHEMA, SEC_REDIRECT_POLICY, sec_declared_charset,
+    resolve_sec_acquisition_location, validate_sec_acquisition_receipt, validate_sec_acquisition_url,
+)
 from engine.earnings_transcript_intake import (
     TranscriptRef,
     fetch_body,
@@ -158,6 +162,10 @@ class RefreshError(RuntimeError):
     """A required source is unavailable; the sibling marker must not move."""
 
 
+def _read_failure_context(exc: BaseException) -> str:
+    return json.dumps(ci_reader.read_failure_diagnostics(exc), sort_keys=True, separators=(",", ":"))
+
+
 HttpGet = Callable[[str], tuple[int, bytes]]
 FetchIndex = Callable[[str], object]
 FetchBody = Callable[[str, TranscriptRef], dict[str, Any]]
@@ -192,6 +200,108 @@ def _http_get(url: str) -> tuple[int, bytes]:
             if attempt < _RETRIES - 1:
                 time.sleep(1.5 * (attempt + 1))
     raise RefreshError(f"SEC request failed: {url}: {last}")
+
+
+
+class _SecHttpResult(tuple):
+    """Two-item HTTP result retaining actual selected-exhibit transport metadata.
+
+    Legacy/custom HttpGet tuples remain valid inputs but carry no acquisition
+    claim. The generic HTTP helper and its other consumers are unchanged.
+    """
+
+    def __new__(cls, status: int, body: bytes, metadata: dict[str, Any]):
+        result = super().__new__(cls, (status, body))
+        result.acquisition_metadata = metadata
+        return result
+
+
+def _http_get_sec_exhibit(url: str, *, cik: object, accession: object) -> _SecHttpResult:
+    """Selected SEC exhibit only: check each target BEFORE following a redirect."""
+    import requests
+
+    requested = validate_sec_acquisition_url(url, cik=cik, accession=accession)
+    key = {"cik": str(cik).zfill(10), "accession": str(accession)}
+    headers = {"User-Agent": _SEC_UA, "Accept-Encoding": "gzip, deflate"}
+    last: Exception | None = None
+    for attempt in range(_RETRIES):
+        current, hops, visited = requested, [], {requested}
+        try:
+            while True:
+                # No implicit requests redirect can leave the admitted filing.
+                response = requests.get(current, headers=headers, timeout=_TIMEOUT, allow_redirects=False)
+                try:
+                    if response.history or response.url != current:
+                        raise RefreshError("selected SEC transport followed an unobserved redirect")
+                    validate_sec_acquisition_url(response.url, **key)
+                    status = response.status_code
+                    if status in {301, 302, 303, 307, 308}:
+                        location = response.headers.get("Location")
+                        next_url = resolve_sec_acquisition_location(current, location, **key)
+                        if len(hops) >= 5 or next_url in visited:
+                            raise RefreshError("selected SEC redirect limit or cycle")
+                        hops.append({"url": current, "status": status, "location": location, "next_url": next_url})
+                        visited.add(next_url)
+                        current = next_url
+                        continue
+                    # requests.content has already handled HTTP Content-Encoding.
+                    # It is an entity body, not a raw-wire or compressed-byte claim.
+                    body = response.content
+                    metadata = {
+                        "schema": SEC_ACQUISITION_SCHEMA, "filing_key": key,
+                        "requested_url": requested, "final_url": response.url,
+                        "redirect_policy": SEC_REDIRECT_POLICY, "redirects": hops,
+                        "http_status": status,
+                        "body_representation": "requests.content_after_content_decoding",
+                        "content_type": response.headers.get("Content-Type"),
+                        "content_encoding": response.headers.get("Content-Encoding"),
+                        "declared_charset": sec_declared_charset(response.headers.get("Content-Type")),
+                        "entity_sha256": sha256(body).hexdigest(), "entity_length": len(body),
+                        # This clock belongs only to this actual response acquisition.
+                        "acquired_at": datetime.now(timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z"),
+                    }
+                    result = _SecHttpResult(status, body, metadata)
+                    break
+                finally:
+                    response.close()
+            if status in {429, 500, 502, 503, 504} and attempt < _RETRIES - 1:
+                time.sleep(1.5 * (attempt + 1))
+                continue
+            return result
+        except ReceiptError as exc:
+            raise RefreshError(f"selected SEC acquisition refused: {exc}") from exc
+        except requests.RequestException as exc:
+            last = exc
+            if attempt < _RETRIES - 1:
+                time.sleep(1.5 * (attempt + 1))
+    raise RefreshError(f"selected SEC request failed: {requested}: {last}")
+
+
+def _get_selected_exhibit(http_get: HttpGet, url: str, *, cik: object, accession: object) -> tuple[int, bytes]:
+    if isinstance(http_get, _RecordingHttpGet):
+        return http_get.selected_exhibit(url, cik=cik, accession=accession)
+    if http_get is _http_get:
+        return _http_get_sec_exhibit(url, cik=cik, accession=accession)
+    # A custom/offline two-item transport does not acquire new provenance.
+    return http_get(url)
+
+
+def _acquisition_receipt(response: tuple[int, bytes], *, cik: object, accession: object,
+                         url: str, text: str, decode_policy: str) -> dict[str, Any] | None:
+    if not isinstance(response, _SecHttpResult):
+        return None
+    metadata = dict(response.acquisition_metadata)
+    body = response[1]
+    try:
+        body.decode("utf-8", errors="strict")
+        decoder = "utf-8"
+    except UnicodeDecodeError:
+        decoder = "latin-1"
+    metadata.update({"decoder": decoder, "decode_errors": "strict", "decode_policy": decode_policy,
+                     "source_sha256": sha256(text.encode("utf-8")).hexdigest(),
+                     "source_utf8_length": len(text.encode("utf-8"))})
+    return validate_sec_acquisition_receipt(metadata, cik=cik, accession=accession,
+                                           source_url=url, source_text=text, entity_body=body)
 
 
 def _parse_sgml_manifest_entries(text: str) -> list[dict[str, str]]:
@@ -511,7 +621,8 @@ def _acquire_results_filing_legacy(
             continue
         exhibit_url = f"{archive_base}/{filename}"
         time.sleep(_PACE_S)
-        exhibit_status, exhibit_body = http_get(exhibit_url)
+        exhibit_response = _get_selected_exhibit(http_get, exhibit_url, cik=cik, accession=row_accession)
+        exhibit_status, exhibit_body = exhibit_response
         if exhibit_status != 200 or not exhibit_body.strip():
             message = f"Exhibit 99.1 unavailable at {exhibit_url}: HTTP {exhibit_status}"
             if accession is not None:
@@ -529,7 +640,7 @@ def _acquire_results_filing_legacy(
             last_error = message
             continue
         acceptance = _iso_z(row["acceptance_datetime"])
-        return {
+        filing = {
             "cik": cik,
             "accession": row_accession,
             # NEW-2 fix (Opus red-team round 2, 2026-08-23): never
@@ -543,6 +654,12 @@ def _acquire_results_filing_legacy(
             "exhibit_body": exhibit_text,
             "items": row["items"],
         }
+        acquisition = _acquisition_receipt(exhibit_response, cik=cik, accession=row_accession,
+                                           url=exhibit_url, text=exhibit_text,
+                                           decode_policy="utf8_strict_then_latin1_strict")
+        if acquisition is not None:
+            filing["acquisition_receipt"] = acquisition
+        return filing
     raise RefreshError(last_error or f"no results filing with an EX-99.1 exhibit is available for CIK {cik}")
 
 
@@ -553,6 +670,11 @@ class _RecordingHttpGet:
 
     def __call__(self, url: str) -> tuple[int, bytes]:
         response = self._http_get(url)
+        self.responses[url] = response
+        return response
+
+    def selected_exhibit(self, url: str, *, cik: object, accession: object) -> tuple[int, bytes]:
+        response = _get_selected_exhibit(self._http_get, url, cik=cik, accession=accession)
         self.responses[url] = response
         return response
 
@@ -584,7 +706,8 @@ def _trace_row(row: Mapping[str, Any], *, exhibit_url: str | None, outcome: str,
 
 def _selected_acquisition(row: Mapping[str, Any], exhibit_url: str, exhibit_body: bytes,
                           exhibit_text: str, *, currentness: str | None = None,
-                          checked_at: str | None = None) -> dict[str, Any]:
+                          checked_at: str | None = None,
+                          response: tuple[int, bytes] | None = None) -> dict[str, Any]:
     receipt = {"sha256": sha256(exhibit_body).hexdigest(), "length": len(exhibit_body)}
     acquisition = {
         "cik": str(row.get("cik") or ""),
@@ -601,6 +724,11 @@ def _selected_acquisition(row: Mapping[str, Any], exhibit_url: str, exhibit_body
     }
     if currentness is not None:
         acquisition["currentness"] = {"state": currentness, "checked_at": checked_at}
+    if response is not None:
+        transport = _acquisition_receipt(response, cik=acquisition["cik"], accession=acquisition["accession"],
+                                         url=exhibit_url, text=exhibit_text, decode_policy="utf8_strict")
+        if transport is not None:
+            acquisition["acquisition_receipt"] = transport
     return acquisition
 
 
@@ -766,7 +894,7 @@ def _acquire_results_filing_traced(*, cik: str, http_get: HttpGet,
                 last_error = fatal_error = failure
                 break
             selected = _selected_acquisition(
-                row, exhibit_url, exhibit_body, exhibit_text,
+                row, exhibit_url, exhibit_body, exhibit_text, response=exhibit_response,
                 currentness="up_to_date", checked_at=datetime.now(
                     timezone.utc
                 ).isoformat(timespec="seconds").replace("+00:00", "Z"),
@@ -826,7 +954,7 @@ def _acquire_results_filing_traced(*, cik: str, http_get: HttpGet,
         if outcome == "selected":
             selected_target_accession = row_accession
             selected = _selected_acquisition(
-                row, exhibit_url or header_url, exhibit_body, exhibit_body.decode("utf-8"),
+                row, exhibit_url or header_url, exhibit_body, exhibit_body.decode("utf-8"), response=exhibit_response,
                 currentness="newer_source_pending" if pending else "up_to_date",
                 checked_at=datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
             )
@@ -865,6 +993,8 @@ def _acquire_results_filing_traced(*, cik: str, http_get: HttpGet,
         "excluded_non_results": sum(item["outcome"] == "excluded_non_results" for item in trace_rows),
         "typed_handling": typed_handling,
     }
+    if selected is not None and "acquisition_receipt" in selected:
+        trace["source"]["acquisition_receipt"] = selected["acquisition_receipt"]
     if fatal_error:
         trace["failure"] = fatal_error
     elif last_error and selected is None:
@@ -969,6 +1099,16 @@ def exhibit_source_sha256(workspace: Mapping[str, Any] | None) -> str | None:
     return None
 
 
+
+def prior_exhibit_acquisition_receipt(workspace: Mapping[str, Any] | None) -> object | None:
+    """Prior held fact only; the builder must replay it against the fresh body."""
+    if isinstance(workspace, Mapping):
+        for source in workspace.get("sources") or []:
+            if isinstance(source, Mapping) and source.get("kind") == "issuer_release":
+                return source.get("acquisition_receipt")
+    return None
+
+
 def prior_lifecycle_state(workspace: Mapping[str, Any] | None) -> str | None:
     """The prior published workspace's OWN ``lifecycle.state``, or ``None``.
 
@@ -1070,18 +1210,19 @@ def load_prior_workspace(
     try:
         return fetcher(event_id)
     except _PriorWorkspaceNotPublished as exc:
-        log.debug("%s: prior workspace not published (%s)", event_id, exc)
+        log.debug("%s: prior workspace not published", event_id)
         return None
     except Exception as exc:  # noqa: BLE001 - every other failure is a genuine fetch failure, never silently absent
+        details = _read_failure_context(exc)
         print(
             "::warning title=event-workspace-prior-fetch-failed::"
-            f"{event_id}: prior workspace fetch failed ({type(exc).__name__}: {exc}) — "
+            f"{event_id}: prior workspace fetch failed ({details}) — "
             "refusing to treat this as first-generation; this event's rebuild is skipped this cycle",
             flush=True,
         )
-        log.info("%s: prior workspace fetch failed, refusing first-generation fallback (%s)", event_id, exc)
+        log.info("%s: prior workspace fetch failed, refusing first-generation fallback (%s)", event_id, details)
         raise PriorWorkspaceFetchFailed(
-            f"{event_id}: prior workspace fetch failed ({type(exc).__name__}: {exc})"
+            f"{event_id}: prior workspace fetch failed ({details})"
         ) from exc
 
 
@@ -1142,7 +1283,8 @@ def load_prior_workspace_for_ticker(ticker: str, *, base_url: str | None = None)
     if issuer is None:
         return None
 
-    def _anomaly(detail: str) -> PriorWorkspaceFetchFailed:
+    def _anomaly(reason: str, exc: BaseException) -> PriorWorkspaceFetchFailed:
+        detail = f"{reason} ({_read_failure_context(exc)})"
         print(
             "::warning title=event-workspace-prior-fetch-failed::"
             f"{ticker}: {detail} — refusing to treat this as no-prior-to-carry",
@@ -1155,9 +1297,9 @@ def load_prior_workspace_for_ticker(ticker: str, *, base_url: str | None = None)
             issuer.company_id, base_url=base_url,
         )
     except ci_reader.WorkspaceChainIntegrityError as exc:
-        raise _anomaly(str(exc)) from exc
+        raise _anomaly("current-generation contract read failed", exc) from exc
     except Exception as exc:  # noqa: BLE001 - every other failure is a genuine fetch failure, never silently absent
-        raise _anomaly(f"current-generation read failed ({type(exc).__name__}: {exc})") from exc
+        raise _anomaly("current-generation read failed", exc) from exc
 
     if matched_event_id is None:
         return None  # (i) no nest yet, or (ii) well-formed, no entry for this issuer
@@ -1456,12 +1598,12 @@ def _event_known_revisions(
     except Exception as exc:  # noqa: BLE001 - chain-state ambiguity must never read as "nothing represented"
         print(
             "::warning title=event-workspace-chain-read-failed::"
-            f"{event_id}: source-revision chain read failed ({type(exc).__name__}: {exc}) — "
+            f"{event_id}: source-revision chain read failed {_read_failure_context(exc)} — "
             "refusing to treat this as no-prior-revision-represented",
             flush=True,
         )
         raise PriorWorkspaceFetchFailed(
-            f"{event_id}: chain read failed ({type(exc).__name__}: {exc})"
+            f"{event_id}: chain read failed {_read_failure_context(exc)}"
         ) from exc
 
 
@@ -1867,6 +2009,7 @@ def discover_new_homebuilder_revisions(
             prior_source_sha256=exhibit_source_sha256(prior_ws),
             prior_lifecycle_state=prior_lifecycle_state(prior_ws),
             prior_observed_at=prior_observed_at(prior_ws),
+            prior_acquisition_receipt=prior_exhibit_acquisition_receipt(prior_ws),
             profile=profile,
         )
         if payload.get("event_id") != event_id:
@@ -2042,7 +2185,7 @@ def refresh(
             # the flagship has no per-issuer loop to skip within —
             # refresh() produces exactly one flagship record, not N
             # independent ones.
-            raise RefreshError(f"flagship prior workspace fetch failed: {exc}") from exc
+            raise RefreshError(f"flagship prior workspace fetch failed: {_read_failure_context(exc)}") from exc
     else:
         prior = prior_workspace
     source_clock = filing["acceptance_datetime"]
@@ -2065,6 +2208,7 @@ def refresh(
         prior_source_sha256=exhibit_source_sha256(prior),
         prior_lifecycle_state=prior_lifecycle_state(prior),
         prior_observed_at=prior_observed_at(prior),
+        prior_acquisition_receipt=prior_exhibit_acquisition_receipt(prior),
     )
     if payload.get("event_id") != FLAGSHIP_EVENT_ID:
         raise RefreshError(f"flagship event_id drifted: {payload.get('event_id')}")
@@ -2158,7 +2302,9 @@ def refresh(
     try:
         current_marker_raw = current_marker_loader()
     except Exception as exc:  # noqa: BLE001 - a genuine failure to read the current marker must abort
-        raise RefreshError(f"failed to read the current event workspace marker: {exc}") from exc
+        raise RefreshError(
+            f"failed to read the current event workspace marker {_read_failure_context(exc)}"
+        ) from exc
     if current_marker_raw is not None:
         current_marker_bytes, current_marker = current_marker_raw
     else:
@@ -2229,7 +2375,7 @@ def refresh(
             # "nothing to carry."
             raise RefreshError(
                 f"{ticker}: carry-forward lookup for the Phase 1 base snapshot failed — refusing to "
-                f"publish a nest that might silently drop a corrected event: {carry_exc}"
+                f"publish a nest that might silently drop a corrected event: {_read_failure_context(carry_exc)}"
             ) from carry_exc
         discovery_boundary: str | None = None
         if current_prior is not None:
@@ -2256,7 +2402,7 @@ def refresh(
             # discipline above).
             raise RefreshError(
                 f"{ticker}: source-revision discovery failed — refusing to publish a nest that "
-                f"might silently drop a corrected event: {exc}"
+                f"might silently drop a corrected event: {_read_failure_context(exc)}"
             ) from exc
         except Exception as exc:  # noqa: BLE001 - SEC access failure during discovery is fail-soft
             # The carry-forward read above ALREADY seeded workspaces[...]
@@ -2382,7 +2528,7 @@ def refresh(
     elif dry_run:
         print("event workspaces: dry-run validated; sibling marker not promoted")
     else:
-        print("event workspaces: immutable generation published and sibling marker promoted")
+        print("event workspaces: generation validated; publish step returned success")
     return publish_rc
 
 
@@ -2392,20 +2538,48 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out-dir", type=Path, required=True, help="Company Intelligence product prefix")
     parser.add_argument("--terminal-tx-index-url", default=DEFAULT_TX_INDEX_URL)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--evidence-out", type=Path)
+    parser.add_argument("--evidence-ready-output", type=Path)
+    parser.add_argument("--evidence-checkout", default="")
+    parser.add_argument("--evidence-run-id", default="")
+    parser.add_argument("--evidence-run-attempt", default="")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(message)s")
+    evidence = None
+    publisher = publish_event_workspaces
+    if args.evidence_out is not None:
+        from functools import partial
+        from scripts.company_intelligence_publication_evidence import EvidenceValidationError, PublicationEvidence
+        try:
+            evidence = PublicationEvidence(args.evidence_out, checkout=args.evidence_checkout,
+                run_id=args.evidence_run_id, run_attempt=args.evidence_run_attempt)
+        except EvidenceValidationError as exc:
+            print(f"event workspaces: evidence unavailable: {exc.code}", file=sys.stderr)
+            return 1
+        publisher = partial(publish_event_workspaces, evidence=evidence)
+    refresh_outcome = "failed"
     try:
-        return refresh(
+        result = refresh(
             args.work_dir,
             tx_index_url=args.terminal_tx_index_url,
             out_dir=args.out_dir,
             dry_run=args.dry_run,
             prior_workspace=load_prior_flagship_workspace,
+            publish_generation=publisher,
         )
+        refresh_outcome = "returned_success" if result == 0 else "returned_conflict" if result == PUBLISH_CONFLICT else "failed"
+        return result
     except RefreshError as exc:
         print(f"::error title=event-workspaces::{exc}", flush=True)
         print(f"event workspaces: refresh refused: {exc}", file=sys.stderr)
         return 1
+
+    finally:
+        if evidence is not None:
+            ready = evidence.finish(args.out_dir, refresh_outcome)
+            if ready and args.evidence_ready_output is not None:
+                evidence.mark_ready(args.evidence_ready_output)
+
 
 
 if __name__ == "__main__":

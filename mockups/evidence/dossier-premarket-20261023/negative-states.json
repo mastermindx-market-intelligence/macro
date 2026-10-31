@@ -1,0 +1,56 @@
+{
+  "synthetic": true,
+  "tool": "capture_negative.py",
+  "tool_sha256": "41a79e8dcdd60fc949a2bc88bd3cfa20747b589cd4bb8689309f3bb89d893c95",
+  "network": "file fixture with http/https aborted and CSP connect-src none",
+  "states": [
+    {
+      "state": "expired",
+      "theme": "dark",
+      "locale": "en",
+      "width": 390,
+      "file": "expired-dark-en-390.png",
+      "sha256": "2b4116e4fa5e112a2af61dea161db60a7b68efa7515739388079470792411abd",
+      "observed": {
+        "regular": "100.00",
+        "extended": "",
+        "status": "stale",
+        "visibleText": "Extended quote expired. Showing the regular quote.",
+        "overflow": false
+      },
+      "page_errors": []
+    },
+    {
+      "state": "unavailable",
+      "theme": "light",
+      "locale": "zh",
+      "width": 390,
+      "file": "unavailable-light-zh-390.png",
+      "sha256": "e9989d2f7289574e7be531b6decbe5d20f4c966c20e95d34dc8e534ee649cb0e",
+      "observed": {
+        "regular": "100.00",
+        "extended": "",
+        "status": "unavailable",
+        "visibleText": "\u76d8\u524d\u76d8\u540e\u62a5\u4ef7\u6682\u4e0d\u53ef\u7528\uff0c\u73b0\u663e\u793a\u5e38\u89c4\u65f6\u6bb5\u62a5\u4ef7\u3002",
+        "overflow": false
+      },
+      "page_errors": []
+    },
+    {
+      "state": "recovery",
+      "theme": "light",
+      "locale": "en",
+      "width": 1440,
+      "file": "recovery-light-en-1440.png",
+      "sha256": "3cd8f5e9bcb4149502fde921228c4d59564c41c54441b7ccc98bc8c14b9ae0af",
+      "observed": {
+        "regular": "100.00",
+        "extended": "$99.00",
+        "status": "current",
+        "visibleText": "Pre-market\n$99.00\n-$1.00 \u00b7 -1.00%\nvs regular close $100.00 \u00b7 2026-10-22\nObserved 1s ago",
+        "overflow": false
+      },
+      "page_errors": []
+    }
+  ]
+}

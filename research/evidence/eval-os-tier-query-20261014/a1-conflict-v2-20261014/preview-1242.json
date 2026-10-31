@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-10-14T12:42:59.894626+00:00",
+  "a1_head": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+  "candidate": "a8d9f1952dd621a80e30525374145aee71ff3a7f",
+  "main": "479e2c695154e0604436c10058799532cbad5e8f",
+  "merge_tree_rc": 1,
+  "preview_tree": "48df3192ca6954cecc27dd056e76863a19bc2ab9",
+  "conflicts": [
+    "CONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml"
+  ],
+  "local_head_clean_and_unchanged": true,
+  "source_or_remote_updated": false
+}

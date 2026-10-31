@@ -1,0 +1,101 @@
+{
+  "source_commit": "48cf3140e2ff153769044fe0b621f4719d3bace8",
+  "source_path": "site/marketdata/rotation_events.json",
+  "source_blob": "6de0971e238d29a6ec3875c00880b2d67a2ec8c2",
+  "source_sha256": "9eb9993be7db6dec2b07669d300b35bb16f7e7ca98d54ab5695fa9baec07a916",
+  "artifact_as_of": "2026-10-08",
+  "generated_utc": "2026-10-09 14:18 UTC",
+  "early_state": "MIXED_ROTATION",
+  "confirmed_events": 0,
+  "created_events": 0,
+  "component_sha256": "b6235b6eef93ea4cd82fdd2172bba816358135e28c1f59229a822c08df73d608",
+  "probe_clock": "2026-10-09T14:30:00Z",
+  "checks_passed": 6,
+  "scope": "Retained repository build artifact -> candidate function reconstruction, not proof of historic deployment or user delivery",
+  "defensive_pairs": [
+    {
+      "pair_id": "xlp_vs_smh",
+      "num": "XLP",
+      "den": "SMH",
+      "window": {
+        "sessions": 2,
+        "start": "2026-10-06",
+        "end": "2026-10-08",
+        "eligible": true,
+        "numerator_return_pct": 1.9804340547059374,
+        "denominator_return_pct": -3.9889297183794414,
+        "ratio_return_pct": 6.2173703048784414,
+        "shape": "RECEIVER_UP_DONOR_DOWN",
+        "missing_num_sessions": [],
+        "missing_den_sessions": [],
+        "reason_codes": []
+      },
+      "reasons": [
+        "2S_VS_20S_SIGN_CONFLICT"
+      ]
+    },
+    {
+      "pair_id": "xlp_vs_xlk",
+      "num": "XLP",
+      "den": "XLK",
+      "window": {
+        "sessions": 2,
+        "start": "2026-10-06",
+        "end": "2026-10-08",
+        "eligible": true,
+        "numerator_return_pct": 1.9804340547059374,
+        "denominator_return_pct": -2.089109515199572,
+        "ratio_return_pct": 4.156374791154921,
+        "shape": "RECEIVER_UP_DONOR_DOWN",
+        "missing_num_sessions": [],
+        "missing_den_sessions": [],
+        "reason_codes": []
+      },
+      "reasons": [
+        "2S_VS_20S_SIGN_CONFLICT"
+      ]
+    },
+    {
+      "pair_id": "xlu_vs_xlk",
+      "num": "XLU",
+      "den": "XLK",
+      "window": {
+        "sessions": 2,
+        "start": "2026-10-06",
+        "end": "2026-10-08",
+        "eligible": true,
+        "numerator_return_pct": -0.21865926365777222,
+        "denominator_return_pct": -2.089109515199572,
+        "ratio_return_pct": 1.9103597590425299,
+        "shape": "BOTH_DOWN",
+        "missing_num_sessions": [],
+        "missing_den_sessions": [],
+        "reason_codes": []
+      },
+      "reasons": [
+        "2S_VS_20S_SIGN_CONFLICT"
+      ]
+    },
+    {
+      "pair_id": "xlv_vs_xlk",
+      "num": "XLV",
+      "den": "XLK",
+      "window": {
+        "sessions": 2,
+        "start": "2026-10-06",
+        "end": "2026-10-08",
+        "eligible": true,
+        "numerator_return_pct": 0.6403778488659251,
+        "denominator_return_pct": -2.089109515199572,
+        "ratio_return_pct": 2.7877260134706425,
+        "shape": "RECEIVER_UP_DONOR_DOWN",
+        "missing_num_sessions": [],
+        "missing_den_sessions": [],
+        "reason_codes": []
+      },
+      "reasons": [
+        "2S_VS_20S_SIGN_CONFLICT"
+      ]
+    }
+  ]
+}

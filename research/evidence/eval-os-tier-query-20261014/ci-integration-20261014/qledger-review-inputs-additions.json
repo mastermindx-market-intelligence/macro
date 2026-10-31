@@ -1,0 +1,33 @@
+{
+  "head_before": "f095dfe19364e8ba3f3d9251c9765a6491e996d4",
+  "added": [
+    "config.yml",
+    "engine/indicators_m2.py",
+    "engine/marketing/__init__.py",
+    "engine/marketing/accounts.py",
+    "engine/marketing/authority.py",
+    "engine/marketing/campaign_compiler.py",
+    "engine/marketing/chart_render.py",
+    "engine/marketing/charter.py",
+    "engine/marketing/claims.py",
+    "engine/marketing/cmo.py",
+    "engine/marketing/departments.py",
+    "engine/marketing/economics.py",
+    "engine/marketing/events.py",
+    "engine/marketing/ledgers.py",
+    "engine/marketing/logo_cache.py",
+    "engine/marketing/opportunity_bus.py",
+    "engine/marketing/publication.py",
+    "engine/marketing/share_cards.py",
+    "engine/marketing/source_authority.py",
+    "engine/marketing/state.py",
+    "research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json",
+    "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+    "tests/__init__.py",
+    "tests/conftest.py"
+  ],
+  "old_count": 865,
+  "new_count": 889,
+  "conftest_closure_count": 122,
+  "existing_execution_definitions_unchanged": true
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "eval_os.release_decision.v1",
+  "observed_at": "2026-10-14T01:11:01.590604+00:00",
+  "pr": 6651,
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "current_head": "30c61c5c838b63730cc5ef6c82f9f3b106c5b6f0",
+  "authority": "Chris, direct user message in original root conversation",
+  "verbatim": "Approved\u2014release HOLD-FOR-SOL on PR #6651. Use the existing repository merge controller, including base-only updates with fresh checks. Once all binding checks pass, continue through deployment and production verification autonomously.",
+  "decision": "APPROVED",
+  "binding_checks_waived": false,
+  "merge_armed": false,
+  "merged": false,
+  "production_proven": false,
+  "github_release_comment": "https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6158644348",
+  "protected_skillpack_commit": "9a8e9b50b6158eb38af78a5b867eedba1719b908",
+  "skillpack_compatibility": {
+    "schema": "mastermind.sol_skillpack.v1",
+    "version": "1.0.1",
+    "minimum_bootstrap_major": 1
+  }
+}

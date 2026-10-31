@@ -1,0 +1,14 @@
+The Intelligence OS overview and engine-detail journey expose five evidence bands, owner-recorded readiness, explicit horizon and source limits, bilingual theme controls, and bounded read-only consumers. Unknown evidence stays unknown; owner qualification is separate from financial validation or promotion.
+
+This revision closes the hosted ancestor-input failure introduced when the incumbent refreshed A1 to current main. The A1 job imported thirteen existing package initializers without declaring them in its CI paths. The correction declares those exact thirteen inputs, returning the ancestor census from357total/147substantive rows to344/138 without changing either ceiling. All319job execution definitions, prior path memberships, eightA1suites, weights and pack limits remain intact. Product/runtime source is unchanged by this correction.
+
+Validation:
+- Source2d0e6e334986eb73496c102a939ee4e24a688c63: the previously failing ancestor-census test and two affected CI registration controls pass. Complete tracked dependency closure haszero misses; strict probes select136/135/129jobs,5694/5502/5445weights,10packs each within existing limits.
+- Independent same-ID Fabric review eval-a1-ancestor-review-01a1333d-c1 found no material defect. Parent consumed and accepted its retained result with documented report qualifiers; actual local verification is separately recorded.
+- Original b1 CI38601317870 passed all12packs,contract-delta andci-gate. Its final artifact validates126jobs/348semantic commandsteps; those are not unit-test counts and do not qualify this new revision.
+- The incumbent's fea refresh is an exact ordinary merge ofb1+main1865, with all17productionfiles unchanged. Its actual CI38624362438 failure is preserved in the canonical evidence, not waived or classified as inherited.
+- Accepted earlier API/UI/measurement and source-bound visual proof is retained at its actual revisions. No installed or authenticated production acceptance is inferred.
+
+Chris released HOLD-FOR-SOL and authorized the incumbent controller, ordinary fresh checks, normal deployment and production verification. His one-time manual base-integration exception was consumed in7e; this correction performs no further manual base integration. The incumbent exclusively owns final merge and subsequent admitted refresh. Fresh hosted checks for the actual published head remain required.
+
+After protected merge, bind both production verifiers to the final qualified source and verify normal updater progress,17installed files/admin process, actual served assets, authenticatedAPI-to-DOM behavior, dark/light×EN/ZH×desktop/mobile, genuine postrelease owner progression and actual operator comprehension. The T5/T6/T12 follow-on remains separate. SCOPED_COMMISSION_COMPLETE=false; LEGACY_PROGRAMME_COMPLETE=false; PRODUCTION_PROVEN=false.

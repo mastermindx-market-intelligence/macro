@@ -37,7 +37,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config  # noqa: E402
-from lib.pages import write_page  # noqa: E402
+from lib.pages import write_page, rendered_ticker_pages  # noqa: E402
 
 log = logging.getLogger(__name__)
 
@@ -511,6 +511,12 @@ def build(write: bool = True, root=None) -> dict:
         if unsafe:
             reasons.append(f"ticker_skipped_unsafe_filename: {len(unsafe)} tickers")
         index = _ticker_index(obs, clk, status)
+        # company_page (wave 3a): set once per index entry from the tickers that
+        # actually ship a stocks/<T>.html page, so the page link can never 404.
+        pages = rendered_ticker_pages(root / "site")
+        for entry in index:
+            t = entry["ticker"]
+            entry["company_page"] = f"stocks/{t}.html" if t in pages else None
         ticker_docs = []
         for entry in index:
             t = entry["ticker"]
@@ -520,6 +526,7 @@ def build(write: bool = True, root=None) -> dict:
             ticker_docs.append((t, {
                 "ticker": t,
                 "identity_status": entry["identity_status"],
+                "company_page": entry["company_page"],
                 "financial_influence": False,
                 "k3e_admissible": False,
                 "series": {m: {h: per_metric.get(m, {}).get(h, [])

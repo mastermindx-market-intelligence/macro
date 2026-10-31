@@ -1,0 +1,23 @@
+{
+  "sourceHead": "f9ae97c0890226b7e42b0ab91990aaa4008b7efd",
+  "pageSha256": "7b551d4c7a601e75d4f1dc018750acf15ac95e9734c17db542997f7c29a8a2b1",
+  "cssSha256": "b889eecafe6f2c67ce1c36a05c42954ee06e4427246991768cba19f41b8561ec",
+  "restCells": 8,
+  "governedHoverFocusCells": 4,
+  "positiveFindings": [],
+  "missingRequiredPngNegativeFindings": [
+    "/Volumes/Mastermind/agent-workspaces/codex/6e18/shared-shell-handoff/shared-shell-astra-handoff/acceptance/reference-visual/guard-stage/mockups/evidence/reference-explicit-open-20261024/EVIDENCE.yml: macro:reference mobile/zh/light references screenshot 'evidence/58f44c944385f5ed.png' which does not exist at /Volumes/Mastermind/agent-workspaces/codex/6e18/shared-shell-handoff/shared-shell-astra-handoff/acceptance/reference-visual/guard-stage/mockups/evidence/reference-explicit-open-20261024/evidence/58f44c944385f5ed.png"
+  ],
+  "restoredFindings": [],
+  "materialPaths": [
+    "templates/reference.html.j2"
+  ],
+  "requiredInteractions": {
+    "templates/reference.html.j2": [
+      "focus",
+      "hover"
+    ]
+  },
+  "canonicalGuardSha256": "c1604698d38e6f6bb8079f468e11caa581d8efacc9ed53413c6c34a96f1dcf1a",
+  "scope": "Exact source diff875ffd->candidate; immutable actual template bytes plus staged genuine canonical bundle; ordinary full-repo guard remains importer duty"
+}

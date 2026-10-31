@@ -1,0 +1,21 @@
+{
+  "schema": "catalyst.r6_composed_source.v1",
+  "consumer_head": "a073abedc58d945b10eb27380d49b879754c5bcc",
+  "entry_head": "d4d43810c18f8e48b8cf49fa447392f7901f6b97",
+  "news_base_head": "28f35fd86233cae3a42078966538cd8248c3f738",
+  "news_source_sha256": {
+    "engine/news_impact/thesis.py": "ae862a16afb7e8cc51debabc3c81615f16218b0f66351264c71d2696e64096bd",
+    "engine/news_impact/producer_facts.py": "712796386c750a949ea5e0d1d30ed8e26a27048164a5393b52cb2ed2e6273b17",
+    "tests/test_news_impact_thesis.py": "7159c3d5ba11d23bb0cb1bf031eceb446bedb0660a0fe56ca32e91334ef25df9",
+    "tests/test_news_impact_producer_facts.py": "a3b0de9b446ee951c6e332c3cb1b5dc8baa0db8c59fb1d816f3a51a3cdee8fcc",
+    "engine/catalyst_intelligence/assessment_v2.py": "3c321c686f19e1a089c27d163f5280955215793f5fb33fdd4a99a971ef17590b",
+    "engine/catalyst_intelligence/__main__.py": "7f878761813b5742a072feb011f66b770a2d9c366bf0d35839ff19dea6749d9f",
+    "engine/prophet_entry_availability.py": "a753eb41771bddd8f9832a355c87999485a4042a1dea849ccaca39b35ed97b9f"
+  },
+  "published_merge_commit": null,
+  "native_admission_established": false,
+  "restored_unchanged_dependencies": {
+    "collectors": "a073abedc58d945b10eb27380d49b879754c5bcc",
+    "research/prophet_v4/news_to_business_impact_20261006": "a073abedc58d945b10eb27380d49b879754c5bcc"
+  }
+}

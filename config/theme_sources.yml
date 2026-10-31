@@ -16,7 +16,7 @@
 # this registry governs GMI emissions only — it does not retro-gate owner products.
 
 version: 1
-updated: "2026-10-06"
+updated: "2026-10-19"
 
 families:
   mastermind_curated:
@@ -130,6 +130,13 @@ families:
     source_route: "https://group.stabilus.com/news-and-events/press-releases/ — press releases, exact path-scoped prefix"
     review: { date: "2026-09-25", by: "gmi-semiconductor-b", outcome: "RECOGNITION ONLY per Sol #7780 issuecomment-5825621672 item 6 and 5825811888 item 2 — NOT display approval. Terms prepared by the Robotics R7 qualification (#7780 5825666880) and applied once here by the shared rights owner. rights_class unresolved REFUSES public emission; promoting this family later requires its own reviewed terms." }
     notes: "auth_class keyless_public is INFERRED from the fixture URLs being keyless. It is NOT an acquisition or retention permission receipt: the qualifying lane fetched no document and every retention_ref is still a placeholder."
+
+  sec_public_filing_facts:
+    rights_class: derived_display_ok
+    auth_class: keyless_public
+    source_route: "Attributed fact-only assertions from verified retained public SEC filings; exact native filing and receipt binding required"
+    review: { date: "2026-10-19", by: "marketontology-a-source-policy-review", outcome: "Official SEC reuse FAQ and Website Dissemination policy explicitly permit public filing reuse. Applied only to attributed fact-only F04 company research; basis: research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json. This is a documented source-policy review, not a Chairman grant, vendor license, or economic-truth ruling." }
+    notes: "No broad SEC URL-prefix admission. Excludes source-body redistribution, artwork/logos/trademarks, third-party licensed datasets, private C01 material and trade/training authority. Current identity, native clocks, exact source support, corrections and consumer-purpose qualification remain enforced."
 
   # Reserved families — rows uncommented only when an ingestion wave actually lands
   # (the corroboration evidence class ships empty in W3A; directive §29):

@@ -255,3 +255,30 @@ list: grain `unknown` requires a null `published_at`, `date` a plain `YYYY-MM-DD
 `instant` a full date-time. It strengthens the clock law (the Robotics pinned
 unknown+null case passes); it is recorded here as a shared-contract addition
 pending the Robotics owner's acknowledgement on its carrier.
+
+## F04 current ETF identity adoption
+
+`identity_resolution.adopt_etf_references` is a read-only composition beside the
+unchanged **company-only** `gmi.identity_resolution/v1` sidecar. It writes no rows
+and does not clear company `ENTITY_TYPE_CONFLICT` results. An active company wrapper
+sharing a fund reference refuses ETF adoption; an already retired wrapper stays
+retired and its historical refusal is preserved.
+
+For a current US house membership-document ETF reference, canonical security/listing
+identity comes only from the existing Data OS `membership` vendor alias reader, with
+inverse round trip, agreement across available vendor namespaces, and an active
+canonical master row. Neither `etf:<symbol>`, a fund name, nor inception-code equality
+supplies that identity. The current producer receipt binds the listing snapshot used
+by the same reference generation; its real completion receipt and bytes must validate.
+The listing's explicit `etf` flag qualifies **instrument type only**. Its
+`listing_sec_identity_binding_eligible:false` remains unchanged: this observation does
+not create the canonical identity supplied separately by Data OS. Venue comparison
+uses the canonical producer's existing closed exchange/MIC table.
+
+Results distinguish available canonical identity, unavailable inputs/type/alias and
+ambiguous active wrappers/aliases. They retain master generation, listing observation
+and source-known clocks. Identity is latest-published/current, never historical;
+issuer grouping, ETF holdings, weights and performance are not inferred. F04 binds
+these source bytes into its rechecked response manifest, without exposing raw source
+rows. Additional geography or namespace support requires native qualified inputs;
+absence is not a symbol-matching fallback.

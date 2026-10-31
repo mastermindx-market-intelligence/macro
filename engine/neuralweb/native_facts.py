@@ -142,6 +142,8 @@ class NativeFactExecution:
     answer: str
     receipt: dict[str, Any]
     clauses: tuple[dict[str, Any], ...]
+    # Internal QA only: never placed in the public native receipt or answer.
+    numeric_verification: dict[str, Any] | None = None
 
 
 def _symbol_candidates(message: str) -> tuple[tuple[tuple[str, int, int], ...], bool]:
@@ -652,6 +654,7 @@ def execute_native_fact_plan(
     repo_root: str | Path | None = None,
     clock: Callable[[], float] = perf_counter,
     route_decision_ms: float | None = None,
+    request_id: str | None = None,
 ) -> NativeFactExecution:
     """Resolve and render a plan through the frozen W1-A runtime only.
 
@@ -855,7 +858,27 @@ def execute_native_fact_plan(
             "total_ms": total_ms,
         },
     }
-    return NativeFactExecution(answer=answer, receipt=receipt, clauses=tuple(clauses))
+    numeric_verification = None
+    if request_id is not None:
+        # Consume the actual admitted resolver envelopes while this request owns
+        # them. Only the small verdict leaves this frame; no source-value cache
+        # or public QA field is introduced. The gateway supplies its compiled
+        # context request id and uses that same id for the internal response log.
+        try:
+            from engine.neuralweb.response_eval import verify_native_numeric_response
+            numeric_verification = verify_native_numeric_response(
+                answer, receipt, request_id=request_id, source_request_id=request_id,
+                symbol=plan.symbol,
+                source_envelopes=[by_field[field] for field in plan.field_ids if field in by_field],
+            )
+        except Exception:
+            # Internal telemetry must never break the already resolved answer.
+            numeric_verification = {
+                "status": "not_assessed", "reason": "internal_error", "checked_count": 0,
+                "references": [], "internal_qa_only": True,
+            }
+    return NativeFactExecution(answer=answer, receipt=receipt, clauses=tuple(clauses),
+                               numeric_verification=numeric_verification)
 
 
 __all__ = [

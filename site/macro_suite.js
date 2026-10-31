@@ -79,13 +79,25 @@
         selectTab(next.getAttribute('data-mq-tab'), { focus: true });
       });
     });
-    var requested = (window.location.hash || '').replace('#', '');
-    if (!requested || !selectTab(requested, { updateUrl: false })) {
-      selectTab(tabs[0].getAttribute('data-mq-tab'), { updateUrl: false });
-    }
     function mqApplyHash() {
       var name = (window.location.hash || '').replace('#', '');
-      if (name) selectTab(name, { updateUrl: false });
+      if (!name) return false;
+      if (selectTab(name, { updateUrl: false })) return true;
+      // Only the qualified Shared Shell candidate opts into section resolution.
+      // The bridge exists before INIT; waiting for .active would lose deep links.
+      var bridge = window.MMXSharedShell;
+      if (!bridge || bridge.__mmxBridge !== 'mmx.shared-shell.v1') return false;
+      try { name = decodeURIComponent(name); } catch (error) { return false; }
+      var target = byId(name);
+      var panel = target && target.closest(PANEL_SELECTOR);
+      if (!panel || !selectTab(panel.getAttribute('data-mq-panel'), { updateUrl: false })) return false;
+      // LOCATION_ACCEPTED can follow the bridge's first scroll while this panel
+      // was hidden. Complete that same section navigation after revealing it.
+      if (typeof target.scrollIntoView === 'function') target.scrollIntoView({ block: 'start' });
+      return true;
+    }
+    if (!mqApplyHash()) {
+      selectTab(tabs[0].getAttribute('data-mq-tab'), { updateUrl: false });
     }
     window.addEventListener('hashchange', mqApplyHash);
     window.addEventListener('mmx:shell-location', mqApplyHash);

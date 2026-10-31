@@ -1,0 +1,120 @@
+{
+  "schema": "eval_os_independent_CI_scope_repair_review.v1",
+  "observed_at": "2026-10-13T10:52:45.372627+00:00",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "reviewer": "01a13341-2c83-79b2-9a5a-dddb12e780e3",
+  "adjudication": "ACCEPTED_BOUNDED_MANIFEST_COVERAGE_REPAIR",
+  "reviewed_manifest_sha256": "acfe6050b9ec63219a97f4dce924f333de562e12207da6489830238ed5f39f67",
+  "proposal_receipt_sha256": "cbce8663dc6de6bc5391fdf1f06d47a59af5330eff74b30bee4f2b4138991371",
+  "failed_frontier": {
+    "head": "213d5f29105e21d20e7b05b7ee9df94c3d85477e",
+    "CI_run": 38368483974,
+    "root_reported": "11packsPASS;pack0 curated exclusive import closure andcontract_deltaFAIL",
+    "retained_log_sha256": "d738281d4ce2ff5b83ada1574ec4ae0f4398598ea4c5ceb56f1fc433a4143c66",
+    "missing_job_path_pairs": 16,
+    "jobs": 7,
+    "failure_cause": "Exclusive path declarations no longer cover static transitive imports; exact same predicate in test_ci_pack andcheck_contract_delta"
+  },
+  "fresh_main": {
+    "commit": "595a89279c50bf8d697fa9eb068d15308c4d38ce",
+    "job_count": 295,
+    "main_manifest_sha256": "160e2bc59d3e4f42f8c7477825b638d9a963d4061e10ecbb49d8afe83807c0d5",
+    "existing_main_does_not_supply_16_pairs": true,
+    "incoming_neural_web_job_equal_prior_integrated_main": true
+  },
+  "repair": {
+    "exact_additions": {
+      "biocatalyst-history": [
+        "engine/k3e_eval1_forward.py",
+        "engine/pick_forward_dist.py"
+      ],
+      "biocatalyst-serving": [
+        "engine/k3e_eval1_forward.py",
+        "engine/pick_forward_dist.py"
+      ],
+      "fif-kernel-guards": [
+        "engine/k3e_eval1_forward.py",
+        "engine/pick_forward_dist.py",
+        "engine/seasonality/multiplicity.py"
+      ],
+      "flow-surface": [
+        "engine/k3e_eval1_forward.py",
+        "engine/pick_forward_dist.py"
+      ],
+      "ticker-news-qbus": [
+        "engine/k3e_eval1_forward.py",
+        "engine/pick_forward_dist.py",
+        "engine/seasonality/multiplicity.py"
+      ],
+      "unrun-government-revenue-candidate-projection": [
+        "engine/k3e_eval1_forward.py",
+        "engine/pick_forward_dist.py"
+      ],
+      "unrun-government-revenue-grader": [
+        "engine/k3e_eval1_forward.py",
+        "engine/pick_forward_dist.py"
+      ]
+    },
+    "path_pairs_equal_retained_failure": true,
+    "job_ids_equal_current_main": true,
+    "neural_web_exactly_preserves_accepted_A1_job": true,
+    "no_incoming_neural_web_changes_discarded": true,
+    "checks": {
+      "biocatalyst-history": {
+        "non_path_fields_equal_main": true,
+        "original_path_order_preserved": true,
+        "only_named_paths_added": true,
+        "no_paths_removed": true
+      },
+      "biocatalyst-serving": {
+        "non_path_fields_equal_main": true,
+        "original_path_order_preserved": true,
+        "only_named_paths_added": true,
+        "no_paths_removed": true
+      },
+      "fif-kernel-guards": {
+        "non_path_fields_equal_main": true,
+        "original_path_order_preserved": true,
+        "only_named_paths_added": true,
+        "no_paths_removed": true
+      },
+      "flow-surface": {
+        "non_path_fields_equal_main": true,
+        "original_path_order_preserved": true,
+        "only_named_paths_added": true,
+        "no_paths_removed": true
+      },
+      "ticker-news-qbus": {
+        "non_path_fields_equal_main": true,
+        "original_path_order_preserved": true,
+        "only_named_paths_added": true,
+        "no_paths_removed": true
+      },
+      "unrun-government-revenue-candidate-projection": {
+        "non_path_fields_equal_main": true,
+        "original_path_order_preserved": true,
+        "only_named_paths_added": true,
+        "no_paths_removed": true
+      },
+      "unrun-government-revenue-grader": {
+        "non_path_fields_equal_main": true,
+        "original_path_order_preserved": true,
+        "only_named_paths_added": true,
+        "no_paths_removed": true
+      }
+    },
+    "all_untouched_job_text_blocks_byte_identical_to_main": true,
+    "application_source_test_hashes_checked": 21,
+    "application_source_test_hash_changes": {},
+    "unchanged_fields": "Steps/commands,exclusive flags,gates,weights,env andall other parsed job fields preserved. Existing path relative ordering preserved; added16 literals only."
+  },
+  "reason": "scope:exclusive replaces inference. Adding only the witnessed transitive paths is the owning rule's prescribed safe coverage correction. Main has no equivalent repair; adopting fresh main plus these additions preserves sibling work and accepted application semantics. Do not weaken the scope audit, remove exclusivity or change accepted science to evade the gate.",
+  "pending": [
+    "Root focused existing closure control/manifest validation receipt",
+    "Committed andpublished repair head, exact-head concluded CI andindependent identity binding",
+    "Namedzoom/motion,normalrun,hold/release,installed/authenticated production/operator gates remain asprevious frontier until actual receipts"
+  ],
+  "tests_or_CI_queries_by_reviewer": false,
+  "source_writes": false,
+  "new_delegation_operations": false
+}

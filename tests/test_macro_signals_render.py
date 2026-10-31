@@ -485,3 +485,66 @@ class TestMinimalVm:
         vm["latest"] = {}
         html = _render(vm)
         assert "<!DOCTYPE html>" in html
+
+
+# ---------------------------------------------------------------------------
+# Summary-only strongest-driver magnitude ranking (signed z remains intact).
+# ---------------------------------------------------------------------------
+
+def _driver_rows(html: str):
+    mood = html.split('id="mood"', 1)[1].split('Full breakdown', 1)[0]
+    rows = re.findall(r'<div class="leg">(.*?)</div>\s*(?=<div class="leg">|<details class="deep">)', mood, re.S)
+    assert len(rows) <= 3
+    return [
+        (
+            re.search(r'<span[^>]*>([^<]+)</span>', row).group(1),
+            re.search(r'width:([^;]+);background:([^"]+)', row).groups(),
+            re.findall(r'<span[^>]*>([^<]+)</span>', row)[-1],
+        )
+        for row in rows
+    ]
+
+
+def _assert_driver_case(z_values, expected_indices):
+    from copy import deepcopy
+
+    vm = _full_vm()
+    legs = [
+        {"name_en": f"Driver {i}", "name_zh": f"驱动{i}", "value": i,
+         "unit": "%", "z": z, "obs_count": 252}
+        for i, z in enumerate(z_values)
+    ]
+    original = deepcopy(legs)
+    vm["fear_greed"]["legs_included"] = legs
+    html = _render(vm)
+    rows = _driver_rows(html)
+    assert [row[0] for row in rows] == [f"Driver {i}" for i in expected_indices]
+    for row, index in zip(rows, expected_indices):
+        z = z_values[index]
+        assert row[2] == f"{z:+.1f}"
+        assert row[1][1] == ("var(--down)" if z < 0 else "var(--up)")
+        assert float(row[1][0].removesuffix("%")) == min(abs(z) / 3 * 100, 100)
+    breakdown = html.split('Full breakdown', 1)[1].split('</details>', 1)[0]
+    assert [f"Driver {i}" for i in range(len(legs))] == re.findall(
+        r'<td class="l"><b><span class="l-en">(Driver \d+)</span>', breakdown
+    )
+    assert legs == original
+
+
+def test_drivers_mixed_sign_largest_fear_first():
+    _assert_driver_case([0.2, -3, 1, -2, 0.5], [1, 3, 2])
+
+
+def test_drivers_all_negative_still_rank_by_absolute_z():
+    _assert_driver_case([-0.5, -3, -1, -2], [1, 3, 2])
+
+
+def test_drivers_equal_magnitude_stable_and_zero():
+    _assert_driver_case([0, -2, 2, -2, 0, 1], [1, 2, 3])
+    _assert_driver_case([0, 0, 0, 0], [0, 1, 2])
+
+
+def test_drivers_fewer_than_three():
+    _assert_driver_case([-1.2, 0.1], [0, 1])
+    _assert_driver_case([0], [0])
+    _assert_driver_case([], [])

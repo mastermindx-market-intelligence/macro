@@ -1,0 +1,54 @@
+{
+  "schema": "eval_os.followon_adoption_probe_qualification.v1",
+  "at": "2026-10-14T12:06:25.802254+00:00",
+  "parent_followon": "0302a535d9659aa2d4a2f18a21c758c856c1ea1b",
+  "tested_files_sha256": {
+    "research/evidence/eval-os-tier-query-20261014/release-probe/followon_adoption_probe.py": "a5025031512a1add65b4def961ed3907e6152746d7e41a9562d1201de10a3c13",
+    "research/evidence/eval-os-tier-query-20261014/release-probe/bind_followon_adoption_probe.py": "12356be910b30e5b51ce1ad93241c5adf1213d12f437203e24e7d44dcb869713",
+    "research/evidence/eval-os-tier-query-20261014/release-probe/test_followon_adoption_probe.py": "86623eb977550719c9c3b243be76f6531956fa4f5bc1958491989c7fe48b0a27",
+    "research/evidence/eval-os-tier-query-20261014/release-probe/README.md": "97ae441ba015fa44d9d9b1b9bb8469e633eb712c710eef3a3fe077a3740aa76e"
+  },
+  "final_unittest_count": 13,
+  "final_unittest_exit": 0,
+  "red_witnesses": 4,
+  "review": "Assigning-root review and deterministic fake-consumer qualification; no independent review claim.",
+  "offline_binding_matches_seven_original_source_blobs": true,
+  "product_source_changed": false,
+  "ci_definition_changed": false,
+  "production_invocation": false,
+  "remote_fabric_worker_started": false,
+  "fabric_run_id": "eval-followon-adoption-probe-01a1333d-c1",
+  "source_only_a1_repair": {
+    "schema": "eval_os.a1_conflict_source_repair_proposal.v1",
+    "at": "2026-10-14T12:02:55.332435+00:00",
+    "original_a1": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+    "observed_main": "a5a5482b1d64b8a064a0355189d90c428660a850",
+    "proposal_commit": "a8d9f1952dd621a80e30525374145aee71ff3a7f",
+    "proposal_parent": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+    "parent_count": 1,
+    "main_not_merged_into_proposal": true,
+    "affected_jobs": [
+      "fif-kernel-guards",
+      "crypto-assistant-context",
+      "research-price-panel",
+      "ticker-news-qbus"
+    ],
+    "all_job_definitions_preserved": 309,
+    "all_path_memberships_and_counts_preserved": true,
+    "only_changed_path": ".github/ci/legacy-jobs.yml",
+    "patch_sha256": "a739f54936e760ac588e1faf7631ab8c9d13558416094f499e0c55973ee3a41e",
+    "proposal_manifest_sha256": "bf467ccb61d0cf611c19a14f072ba963d520462f965e01aa222007d2e39897da",
+    "preview_merge_rc": 0,
+    "preview_tree": "012ab7f6bea6143bb06ef9d17482b00d1a4a6b54",
+    "source_branch_updated": false,
+    "remote_updated": false,
+    "ci_launched": false,
+    "acceptance": "Prepared source-only collision repair; no independent review or hosted qualification yet. Root source custody remains distinct from controller-only base refresh and merge."
+  },
+  "limits": [
+    "Seven direct file identities only; no dependency closure or atomic data snapshot",
+    "No earned tier, rights-qualified QLedger finding, actual Discovery adoption or operator acceptance",
+    "A1 source repair is not published;11 active PR proofs against cap8 at12:04:40",
+    "All final completion/production flags remain false"
+  ]
+}

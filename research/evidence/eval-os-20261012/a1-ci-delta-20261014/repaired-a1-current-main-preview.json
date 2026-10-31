@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-14T14:34:06.834592+00:00",
+  "head": "eee78d5c73b207dcaf9aec9b1c4a0be0bdf50f41",
+  "parents": [
+    "1b7916353dd4609e2e092e16d466e93ca1597fd1"
+  ],
+  "observed_main": "190311584167a164d9a78a390071b19fcb4b5382",
+  "preview_rc": 1,
+  "preview_tree": "08e0572b29928d7715a7a20af3030f5219e10eef",
+  "scope": "Object-only preview; no base merge, branch or worktree mutation."
+}
