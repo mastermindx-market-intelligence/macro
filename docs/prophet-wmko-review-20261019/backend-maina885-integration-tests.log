@@ -1,0 +1,76 @@
+{"environment": {"python": "/private/tmp/prophet-wmko-test-env-20261018/bin/python", "version": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]", "yfinance": "/private/tmp/prophet-wmko-test-env-20261018/lib/python3.14/site-packages/yfinance/__init__.py"}, "head": "89d9ee9cbc980abd99a8704e068fdfa0cfcdb117", "merge_head": "a88592f801123a6d06268c712b318cf1fe6e7e35", "pr_before": {"comments": 4, "head": "89d9ee9cbc980abd99a8704e068fdfa0cfcdb117", "labels": ["merge-blocked"]}, "protected_mastermind_pin": "d5cce731a23588ddbf4df806bd9e8dcfa5eecf24", "results": [], "root": "prophet-wmko-miss-20261018", "scope": "Existing backend battery and precise restart closure on the original resolved integration; no source edit, commit, push, CI dispatch, production mutation or live proof.", "started_at": "2026-10-19T11:59:41.556551+00:00", "tested_index_tree": "eabfd64918f852327a713ea4f5afdc6743b9e04d", "type": "run_start"}
+{"type": "command_start", "name": "backend_battery", "argv": ["/private/tmp/prophet-wmko-test-env-20261018/bin/python", "-m", "pytest", "tests/test_us_turn_watch.py", "tests/test_us_turn_watch_v2.py", "tests/test_prophet_early_observations.py", "tests/test_prophet_early_observations_v2.py", "tests/test_prophet_observations_api.py", "tests/test_prophet_wmko_delivery_contract.py", "tests/test_yahoo_universe_backfill.py", "tests/test_us_scan_tier.py", "tests/test_us_leader_pullback_coverage.py", "-q"], "started_at": "2026-10-19T11:59:41.575248+00:00"}
+........................................................................ [ 18%]
+........................................................................ [ 36%]
+........................................................................ [ 54%]
+...........................s............................................ [ 73%]
+........................................................................ [ 91%]
+..................................                                       [100%]
+=============================== warnings summary ===============================
+../../../../../../opt/homebrew/lib/python3.14/site-packages/fastapi/testclient.py:1
+  /opt/homebrew/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_prophet_observations_api.py::test_real_auth_chain_denies_before_query_or_source_read[401]
+  /Volumes/Mastermind 2/agent-workspaces/macro/web/prophet-wmko-coverage-20261018/app/tape.py:434: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_prophet_observations_api.py::test_real_auth_chain_denies_before_query_or_source_read[401]
+tests/test_prophet_observations_api.py::test_real_auth_chain_denies_before_query_or_source_read[401]
+  /opt/homebrew/lib/python3.14/site-packages/fastapi/applications.py:4681: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)  # ty: ignore[deprecated]
+
+tests/test_prophet_observations_api.py::test_real_auth_chain_denies_before_query_or_source_read[401]
+  /Volumes/Mastermind 2/agent-workspaces/macro/web/prophet-wmko-coverage-20261018/app/tape.py:438: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("shutdown")
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-67133b39-3c44-403d-bc22-c201ee2a54a3/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-67133b39-3c44-403d-bc22-c201ee2a54a3/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-67133b39-3c44-403d-bc22-c201ee2a54a3/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-67133b39-3c44-403d-bc22-c201ee2a54a3/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+393 passed, 1 skipped, 7 warnings in 55.17s
+
+{"type": "command_end", "name": "backend_battery", "argv": ["/private/tmp/prophet-wmko-test-env-20261018/bin/python", "-m", "pytest", "tests/test_us_turn_watch.py", "tests/test_us_turn_watch_v2.py", "tests/test_prophet_early_observations.py", "tests/test_prophet_early_observations_v2.py", "tests/test_prophet_observations_api.py", "tests/test_prophet_wmko_delivery_contract.py", "tests/test_yahoo_universe_backfill.py", "tests/test_us_scan_tier.py", "tests/test_us_leader_pullback_coverage.py", "-q"], "started_at": "2026-10-19T11:59:41.575248+00:00", "elapsed_seconds": 59.776, "exit_code": 0, "stdout_sha256": "320ea7d90c2830c2516da309639b0d6a9e57e917ae9f0d386d739156a6a123a1", "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "summary_lines": ["393 passed, 1 skipped, 7 warnings in 55.17s"]}
+{"type": "command_start", "name": "restart_closure", "argv": ["/private/tmp/prophet-wmko-test-env-20261018/bin/python", "-m", "pytest", "tests/test_deploy_update_self_heal.py::test_api_load_time_import_closure_is_covered_by_restart_regex", "-q"], "started_at": "2026-10-19T12:00:41.352427+00:00"}
+.                                                                        [100%]
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-b25141df-2e5a-4deb-a927-cbaa9adcc81f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-b25141df-2e5a-4deb-a927-cbaa9adcc81f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-b25141df-2e5a-4deb-a927-cbaa9adcc81f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-b25141df-2e5a-4deb-a927-cbaa9adcc81f/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 2 warnings in 10.45s
+
+{"type": "command_end", "name": "restart_closure", "argv": ["/private/tmp/prophet-wmko-test-env-20261018/bin/python", "-m", "pytest", "tests/test_deploy_update_self_heal.py::test_api_load_time_import_closure_is_covered_by_restart_regex", "-q"], "started_at": "2026-10-19T12:00:41.352427+00:00", "elapsed_seconds": 12.653, "exit_code": 0, "stdout_sha256": "3a6f4bfa1833fa436127c9a1246435c154fd05564367ae25cb0375426c97ec5f", "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "summary_lines": ["1 passed, 2 warnings in 10.45s"]}
+{"type": "command_start", "name": "owner_shell_syntax", "argv": ["bash", "-n", "app/deploy/update.sh"], "started_at": "2026-10-19T12:00:54.005826+00:00"}
+
+{"type": "command_end", "name": "owner_shell_syntax", "argv": ["bash", "-n", "app/deploy/update.sh"], "started_at": "2026-10-19T12:00:54.005826+00:00", "elapsed_seconds": 0.046, "exit_code": 0, "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "summary_lines": []}
+{"type": "run_complete", "success": true, "completed_at": "2026-10-19T12:00:55.857030+00:00", "source_tree_unchanged": true}

@@ -1,0 +1,170 @@
+[
+  {
+    "path": "app/prophet_observations.py",
+    "blob": "24942aabdc89005674c372bab596f5f52c7e0458"
+  },
+  {
+    "path": "config/us_turn_watch_universe.v2.json",
+    "blob": "5d5c17f0391a07135eb21112d1e61fe2d492e8e9"
+  },
+  {
+    "path": "docs/PROPHET_WMKO_BACKEND_DELIVERY_2026-10-18.md",
+    "blob": "bd9bce34e540eb1ed1e7f23e4a561ef27ff75a8a"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/api-restart-closure.log",
+    "blob": "0590b8f1a3c2ee6470a76bcb68eec54634223202"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-final-tests.log",
+    "blob": "dce4cf148cd015cc89c9b23df2d856c2887fab2c"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-main6397-integration-evidence.json",
+    "blob": "e84347bf22411993964c6e18af186ece05b68ba8"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-main6397-integration-tests.log",
+    "blob": "41d4360c0617dff29d1cb261e23205be2ae901ad"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-main6397-manifest-union.json",
+    "blob": "12ce3609667bd5e2de2af911b9a642b93644d9c2"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-main6397-merge-custody.json",
+    "blob": "3f204d461fa358c7f4e5adf4fd9dcfeb6393e901"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-main6397-merge-union.log",
+    "blob": "3f513b6ee20181cb0eb4344988a848184fd8d478"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-main68-integration-evidence.json",
+    "blob": "43efa3c481286bb965613be983e99fb7e816edef"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-main68-integration-tests.log",
+    "blob": "73b2c37ce4c9ad91ec0cae3425725eeacb270b42"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-main68-manifest-loader.log",
+    "blob": "da22fbe275a0dfb42ad98444e930c6260f4dd2b3"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-main68-manifest-union.json",
+    "blob": "2f0d3b4b0a86fa175d23d0644537023338c09aec"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-maina885-integration-evidence.json",
+    "blob": "51b166ef421c4c053265021869f2fe220bf6eee7"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-maina885-integration-tests.log",
+    "blob": "7a6a980f6a3c7d887aace595158e724f695fab03"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-maina885-manifest-union.json",
+    "blob": "34793f2e1aedeadf4bdfed82c76bf818f1cc72ae"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-maina885-merge-custody.json",
+    "blob": "0093af095ed82d7c69a705c75d46330ae5363755"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-maina885-merge-union.log",
+    "blob": "c24c4af15cdfb49b98c7868c390e52fad3612d70"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-mainec836-frozen-clock-repair.json",
+    "blob": "972a57fae7e04be321f6e63686d56c5632982cb4"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-mainec836-integration-before-clock-fix.json",
+    "blob": "4eab3ca00ca26635687648564a187db1f9b8933f"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-mainec836-integration-before-clock-fix.log",
+    "blob": "08247fd6f86049b758d6a3df02648afbbc25318a"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-mainec836-integration-evidence.json",
+    "blob": "fae5cb58ffea8aa4317ef1ad7e41a534f2b50c76"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-mainec836-integration-tests.log",
+    "blob": "7aa1e37a79521b1c3271020c4e8d03a21aded707"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-mainec836-manifest-union.json",
+    "blob": "9f1ce503fb4079060365371053652124a953b15f"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-mainec836-merge-custody.json",
+    "blob": "e6da9ea9a01744054365951116dc1eab1ceb4470"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-mainec836-merge-union.log",
+    "blob": "a0b4aa4c330b0e4419225e3e6043bea55b4ff689"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/backend-pre-review-tests.log",
+    "blob": "8a54260239f123afc6af33986260d900ad2528f6"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/main6397-integration-reconciliation.md",
+    "blob": "5ae77f48d814a876079a11a45cef86dc715d0d5d"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/main68-integration-reconciliation.md",
+    "blob": "92170651dae670bf2db74d3c86393b47412a5c34"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/maina885-integration-reconciliation.md",
+    "blob": "8daebcfa4d790e53e69b543b9ae9856992025cd2"
+  },
+  {
+    "path": "docs/prophet-wmko-review-20261019/mainec836-integration-reconciliation.md",
+    "blob": "57f06a730f69c812cfdcf6a57f34bf99c5ad87c6"
+  },
+  {
+    "path": "docs/superpowers/plans/2026-10-18-prophet-early-opportunity-reliability.md",
+    "blob": "feedf5e6a374b8c1f814210bef033d1db6d3cf6e"
+  },
+  {
+    "path": "engine/prophet_early_observations.py",
+    "blob": "18a1e76a982b30555721d48e71bfa6643b38cd12"
+  },
+  {
+    "path": "engine/us_turn_watch.py",
+    "blob": "bd6c04ba9b8ce7843ff9c96f3713e6e596711c0f"
+  },
+  {
+    "path": "research/prophet_v4/wm_ko_20261018/v1_parity_proof_20261018.json",
+    "blob": "6d40e8b42b81a320ea0326a8935e1044bb8d6036"
+  },
+  {
+    "path": "scripts/backfill_yahoo_universe.py",
+    "blob": "03ba737b901760d665e4511f0e5b57405871b9c9"
+  },
+  {
+    "path": "tests/test_prophet_early_observations_v2.py",
+    "blob": "fcb6ffa2118277a6fce421f4ce8a14bcf7c4b5d8"
+  },
+  {
+    "path": "tests/test_prophet_wmko_delivery_contract.py",
+    "blob": "b48f83e3d813cab6fb3c115526aa07e4ee343bd1"
+  },
+  {
+    "path": "tests/test_us_turn_watch.py",
+    "blob": "6ccb2546f668db219ab8ddb901d8a134b3bbffa6"
+  },
+  {
+    "path": "tests/test_us_turn_watch_v2.py",
+    "blob": "10de7724f3d531d74ce0f8169f4fcfa49b7dd32e"
+  },
+  {
+    "path": "tests/test_yahoo_universe_backfill.py",
+    "blob": "8ece0c76aab76bdab1bd74273771221a942c3121"
+  }
+]

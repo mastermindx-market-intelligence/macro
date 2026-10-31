@@ -1,0 +1,25 @@
+{
+  "main_jobs": 356,
+  "raw_exact_main_job_blocks": 338,
+  "changed_jobs": [
+    "bea-gvc-current-descriptive-consumer",
+    "c19-wp32-integrated-answer-correction-denial-pins",
+    "c19-wp22-dhi-traversal",
+    "options-matrix-code",
+    "flow-surface",
+    "prophet-lab",
+    "fif-kernel-guards",
+    "ontology-explorer",
+    "qledger-cluster-honest-ci",
+    "nw-lobe-unfreeze",
+    "biocatalyst-history",
+    "crypto-assistant-context",
+    "unrun-government-revenue-candidate-projection",
+    "washout-turn-organ",
+    "unrun-government-revenue-grader",
+    "research-price-panel",
+    "ticker-news-qbus",
+    "eval-os-a1"
+  ],
+  "preamble_exact": true
+}
