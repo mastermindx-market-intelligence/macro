@@ -1,0 +1,8 @@
+{
+  "url": "https://www.imf.org/external/datamapper/api/v2/indicators",
+  "status": 200,
+  "retrieved_at": "2026-10-19T23:22:49.766258+00:00",
+  "content_type": "application/json",
+  "bytes": 51269,
+  "sha256": "e959ce49068e187742c6d6a3f6205f85ad6c771e9a64028d2e64e5b76c0da42f"
+}

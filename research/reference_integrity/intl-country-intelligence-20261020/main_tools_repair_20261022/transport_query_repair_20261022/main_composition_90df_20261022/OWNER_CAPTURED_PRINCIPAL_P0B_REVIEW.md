@@ -1,0 +1,15 @@
+# Independent new P0B capture review — ACCEPT
+
+Owner-captured faithful summary of /root/intl_release_gate_review. Original capture source45e70cb40d6e9ac1a49478b1920ab6a7275f7f58; theme50eb4991c6f9a2b00ad3accb33fa85cebc3dc0c7ceac2ab093d9e2e2f3045e51. Reviewer parsed complete current browser receipts, manifest and fixture; read execution/rebind/validation and complete canonical log; did not rerun or independently inspect screenshot pixels.
+
+128 actual cases pass: HK48primary+16degraded andCanada48+16, each8 screenshots;16distinct screenshots. Chromium155.0.8059.85. Canonical rendering/browsers exit0; renderer started07:51:19Z; captures completed07:54:06Z. DriverSHA3268b9c5e95ebbf790d2e24d9df1c00536738fa2ed24579f5fc5c31c00ba957b independently matched execution. Baseline3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86/treeb4dd8fd9b29b4eb769239d35df2a7911e793c7ec remains historical, not relabelled.
+
+Exact matched hashes: fixturec2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d; HK0f0de5ed970998468195b24ad6df20c90c61524ce636e3f6904dbf84c8c2a1b0; Canada2cbc0b63b958ed7027be405d788539917c80b29e0f0722463a76cf753323b6dd; manifest503024d1d23ce23e4d204e92e4af9e5eb87ecbfc2354fb838b2d8578d2c7a1d8; execution7f82541914143b041df97e084d1cd6ba78b4ff5e54f09e350d8a041c9134d7ad.
+
+Parent histories independently set-compared: incoming12 + local16 historical entries plus both current parent extensions ->18distinctobjects, exactly newhistory,0missing/0extra. Both currentparentextensions retained. All othermanifestfields exactincomingmain. ParentmanifestSHAs168df0b76726c4313777c4fc6a68bc0f1e4658df257e97723a51120bc61a5962 anddf761dafe1fb82246b4f2f4df19c5fea93d1f2bced8c74dc41b2a75e1332e2c2.
+
+Receiptclosure exit0; canonical136passed9pytestcleanupwarnings64.79s; entirelogSHA7353099ed050697838fef4ef1fbe52f8da8b6da913e26a2029e30972b4a822d6 independently matched.
+
+Newclosure includesfavicon: HK20construction+29loaded/54completepaths;Canada18+32/57; union59paths. Constructionmapsexactmarketfixtureinputmaps and ownercaseoutputhashesexactfixture. Intersection with any shared_shell_bridge.js or intl_workspace.js path=[]; later changes limited to these preserve applicability only after59dependencyandreceipt/screenshotbindings remainverified. Retaincaptureidentity45; no relabellednew-headcaptureclaim.
+
+Accepted scope: reproducible browser fixture. Canonical build unavailable; production claims none. Query repair acceptance remains separate.

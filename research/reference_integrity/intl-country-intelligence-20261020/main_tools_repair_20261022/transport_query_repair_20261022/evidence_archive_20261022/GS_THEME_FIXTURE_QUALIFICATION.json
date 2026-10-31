@@ -1,0 +1,13 @@
+{
+  "schema": "intl.archive_fixture_qualification.v1",
+  "reason": "Source inspection found the exact reviewed GS theme fixture is an ordinary-file dependency of tests/test_intl_gs_foundation.py and the enrolled CI manifest. Restore it unchanged before publication; do not alter the guard.",
+  "original_archive_head": "d73b6f4bb15fb7882fbedb83aac41a354a02458b",
+  "restored_path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/proposed_main6a420261022_repair/theme.css",
+  "sha256": "d7be48a71598c3c806deb271f346c996dc5136e1030f17546407092b6938e419",
+  "bytes": 224325,
+  "matches_original_ba446_and_archive": true,
+  "archive_members_retained": 259,
+  "net_original_paths_removed_after_qualification": 258,
+  "source_test_guard_changed": false,
+  "discovery": "Static dependency inspection; no hosted missing-fixture result is claimed"
+}

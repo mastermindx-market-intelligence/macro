@@ -1,0 +1,175 @@
+{
+  "baseline_exit_code": 0,
+  "candidate_exit_code": 0,
+  "changed_asset_lists": [
+    {
+      "path": [
+        "apps",
+        "http",
+        "servers",
+        "srv0",
+        "routes",
+        "8",
+        "handle",
+        "0",
+        "routes",
+        "1",
+        "match",
+        "0",
+        "path"
+      ],
+      "assets": 9
+    },
+    {
+      "path": [
+        "apps",
+        "http",
+        "servers",
+        "srv0",
+        "routes",
+        "8",
+        "handle",
+        "0",
+        "routes",
+        "3",
+        "match",
+        "0",
+        "path"
+      ],
+      "assets": 9
+    },
+    {
+      "path": [
+        "apps",
+        "http",
+        "servers",
+        "srv0",
+        "routes",
+        "8",
+        "handle",
+        "0",
+        "routes",
+        "43",
+        "match",
+        "0",
+        "not",
+        "0",
+        "path"
+      ],
+      "assets": 9
+    },
+    {
+      "path": [
+        "apps",
+        "http",
+        "servers",
+        "srv0",
+        "errors",
+        "routes",
+        "1",
+        "handle",
+        "0",
+        "routes",
+        "0",
+        "handle",
+        "0",
+        "routes",
+        "0",
+        "match",
+        "0",
+        "not",
+        "0",
+        "path"
+      ],
+      "assets": 9
+    },
+    {
+      "path": [
+        "apps",
+        "http",
+        "servers",
+        "srv1",
+        "routes",
+        "1",
+        "handle",
+        "0",
+        "routes",
+        "1",
+        "match",
+        "0",
+        "path"
+      ],
+      "assets": 9
+    },
+    {
+      "path": [
+        "apps",
+        "http",
+        "servers",
+        "srv1",
+        "routes",
+        "1",
+        "handle",
+        "0",
+        "routes",
+        "3",
+        "match",
+        "0",
+        "path"
+      ],
+      "assets": 9
+    },
+    {
+      "path": [
+        "apps",
+        "http",
+        "servers",
+        "srv1",
+        "routes",
+        "1",
+        "handle",
+        "0",
+        "routes",
+        "43",
+        "match",
+        "0",
+        "not",
+        "0",
+        "path"
+      ],
+      "assets": 9
+    },
+    {
+      "path": [
+        "apps",
+        "http",
+        "servers",
+        "srv1",
+        "errors",
+        "routes",
+        "0",
+        "handle",
+        "0",
+        "routes",
+        "0",
+        "handle",
+        "0",
+        "routes",
+        "0",
+        "match",
+        "0",
+        "not",
+        "0",
+        "path"
+      ],
+      "assets": 9
+    }
+  ],
+  "remaining_difference_count": 0,
+  "remaining_differences": [],
+  "warnings": {
+    "baseline": "",
+    "candidate": ""
+  },
+  "runtime_started_or_reloaded": false
+}

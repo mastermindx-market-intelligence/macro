@@ -1,0 +1,41 @@
+{
+  "schema": "mastermind.intl_integration_design_guards.v1",
+  "started_at": "2026-10-20T08:20:59.592859+00:00",
+  "finished_at": "2026-10-20T08:21:04.258165+00:00",
+  "source_parent": "ec1277e909ffed27f58f9f4b107b81f5985fb7b8",
+  "main_parent": "13e098071ab2799c41a170d21ad522f751dfb15a",
+  "diff_sha256": "9f341a8351ac2fdc76a3ec3e7dc09b40d7a61d38ac316122eeb391a5530ab7b4",
+  "results": {
+    "design_system": {
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/tmp/intl-integration-final-20261020.diff"
+      ],
+      "exit_code": 0,
+      "log": "integration_design_system.log"
+    },
+    "runtime_style": {
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/check_runtime_style_injection.py"
+      ],
+      "exit_code": 0,
+      "log": "integration_runtime_style.log"
+    },
+    "visual_evidence": {
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/intl-integration-final-20261020.diff"
+      ],
+      "exit_code": 0,
+      "log": "integration_visual_evidence.log"
+    }
+  },
+  "passed": true
+}

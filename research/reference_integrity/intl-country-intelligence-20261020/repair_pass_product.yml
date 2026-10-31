@@ -1,0 +1,226 @@
+schema: mastermind.rig_review.v1
+reference_id: intl-country-intelligence-20261020
+role: product_regression
+reviewer_identity: /root/intl_rig_product_quarantined
+reviewer_model: GPT-6 Astra Pro
+independent_of_author: true
+review_stage: repair_verification
+reviewed_at: "2026-10-20T21:10:33+00:00"
+verdict: PASS
+conditions: []
+findings: []
+artifact:
+  commit: 883a1e48efdf9c334c08665262efa0961b1997a0
+  source_commit: 442042e591d255dd24b540ff240edb4c0410c297
+  html_sha256: ad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0
+  workspace: /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018
+  evidence_root: research/reference_integrity/intl-country-intelligence-20261020
+  html: proposed_dock4_repair/intl.html
+  binding: FINAL_ARTIFACT_EVIDENCE.json
+  build_receipt: repair_dock4_build_receipt.json
+  input_snapshot_sha256: 081592644c4f2d425fdde59d7b8e153e4aa214aa00d115ba64b13bd31c145b08
+  input_files_retained: 510
+  source_overlays: []
+  source_reacquisition: false
+historical_reviews:
+  preserved_without_rewriting: true
+  original_artifact: 46f02fa355abbfaa4387203c0e3190db6747bed9
+  first_pass:
+    frozen_at: "2026-10-20T14:03:31.850411+00:00"
+    sha256: 2c6267cc7d7ac3caad55689f94271935ccc3dbf1247359b15edd12a1dbe9c747
+    verdict: PASS_WITH_CONDITIONS
+    findings: [PRC-001, PRC-002]
+  rationale_pass:
+    amended_at: "2026-10-20T14:13:13+00:00"
+    verdict: PASS_WITH_CONDITIONS
+    PRC-001: upheld
+    PRC-002: upheld
+  relationship_to_this_return: >-
+    This is a new repair judgment on the frozen dock4 artifact. Both original
+    major findings remain valid for the original artifact; neither the blind
+    first pass nor its rationale amendment is retagged as a review of dock4.
+repair_resolutions:
+  - id: PRC-001
+    capability: country.source-trace
+    original_severity: major
+    status: closed_by_verified_repair
+    finding: >-
+      The formerly anonymous GDP and untraced equity claims now disclose
+      identifiable sources and calculation inputs. Japan, South Korea,
+      Australia, the United Kingdom and the Euro Area identify their FRED
+      series and underlying providers, geography, units and seasonal treatment,
+      link the public series, label GDP as a year-over-year calculation, and
+      expose the five quarterly levels and formula. Taiwan and India retain
+      their unavailable GDP state without invented attribution. All seven
+      equity disclosures identify Yahoo Finance and the exact instrument,
+      observation date, price convention, trend and drawdown windows, and the
+      252 stored daily inputs. The disclosure explicitly states that acquisition
+      dates were not retained and that observations may be revised.
+    verification: >-
+      The prior independent repair inspection of source 0be244ba05355f4260b28da89dac4587f5a772e4
+      examined the producer/readers and recomputed all five displayed GDP changes
+      and all seven equity windows from the rendered raw rows. In this review I
+      independently extracted every complete country section from both
+      proposed_final_repair/intl.html and proposed_dock4_repair/intl.html:
+      KR, JP, TW, IN, AU, GB and EZ are character-identical. I also inspected all
+      ten final narrow source-disclosure PNGs, including Japan and Euro Area GDP
+      inputs and Japan daily equity rows in English dark and Chinese light.
+      Provider links, definitions, raw values and the vintage limitation remain
+      legible with the final asset package.
+    evidence:
+      - proposed_dock4_repair/intl.html
+      - final_source_disclosure_audit.json
+      - final_source_disclosure_resolution.json
+      - dock4_source_disclosure_browser.json
+      - FINAL_ARTIFACT_EVIDENCE.json
+    qualification: >-
+      The retained audit's two unconditional Taiwan/India GDP-link failures
+      were resolved by verifying that GDP was unavailable in both original and
+      repaired artifacts; they were not converted into fabricated observations.
+  - id: PRC-002
+    capability: workspace.view-selection
+    original_severity: major
+    status: closed_by_verified_repair
+    finding: >-
+      The final two-column mobile navigation exposes the complete Data & tools
+      entrance at both 320px and 390px in both English themes, without needing
+      horizontal navigation discovery. All twelve final entry viewports were
+      inspected directly. The existing assistant occupies a reserved toolbar
+      slot and the persistent tools entrance remains visible while reading.
+      Actual click receipts open the retained tools disclosure, while query and
+      view-selection receipts preserve all six research views.
+    verification: >-
+      The final complete browser receipt records 46 passing checks and the
+      focused receipt records 109, including visible navigation, tools
+      activation, assistant reserved space, opening, closing, focus return and
+      post-close placement. I inspected the reading states at desktop English
+      light, mobile Chinese dark and narrow English both themes, plus the
+      narrow English dark assistant open/closed images; the returned focus
+      outline is visible on the original launcher and research text is clear
+      of it. The final comparison and library supporting-view images retain
+      their existing qualification-unavailable states and research entrances.
+    evidence:
+      - repair_dock4/complete_browser_receipt.json
+      - repair_dock4/review_counterexamples.json
+      - proposed_dock4_repair/intl.html
+additional_repair_verification:
+  legacy_fragment_clearance: >-
+    The earlier source-based concern about retained headings landing beneath
+    the fixed toolbar is closed. The final artifact applies a measured
+    toolbar-height scroll margin to country and retained-tool IDs; all 48
+    legacy-fragment cases pass with at least 15.5px clearance. I inspected
+    actual growth/inflation, central-bank, credit/bond and leaderboard landing
+    PNGs across desktop, mobile and narrow states.
+  same_document_country_navigation: >-
+    Dock2's actual Japan desktop Chinese dark landing failure is repaired.
+    The final embedded 124-line country script exactly matches the inspected
+    corrected source: it reveals the requested country, aligns on the next
+    frame only while that nonempty hash remains active, and preserves empty
+    fragment restoration. The final Japan landing image shows its heading
+    below the toolbar; the receipt records top 70.015625px against toolbar
+    bottom 54px. All 132 final landing checks pass. The 112 history checks
+    cover all seven country destinations at desktop and narrow widths in both
+    languages/themes, native Back/Forward, rapid latest-destination selection
+    and restoration of the initial Korea state with an empty fragment.
+  final_asset_package: >-
+    The final build receipt includes the immutable Inter and InterDisplay font
+    files, account.js, mm_brain_visuals.css, favicon.svg and nav_market.js.
+    FINAL_ARTIFACT_EVIDENCE.json records no local static response failures, and
+    the focused receipt's complete-local-static-dependencies check has an
+    empty failure list. The final PNGs were actually re-read; dock2 or dock3
+    screenshots were not relabeled as final evidence.
+strengths:
+  - >-
+    The country reading sequence continues to connect a sourced economic
+    assessment, published growth and annual-average inflation paths, named
+    policy decisions, observations and differentiated conditions that could
+    alter the outlook. The final full-page desktop English light and mobile
+    Chinese dark images preserve that sequence and the separate published
+    history/projection chart treatment.
+  - >-
+    Source repair makes the stronger research presentation auditable: raw
+    economic levels and daily market inputs are available beside explicit
+    calculation definitions, while missing GDP, unknown FX qualification,
+    provider geography, broader-European equity proxy scope and unavailable
+    acquisition clocks remain disclosed.
+  - >-
+    Supporting research remains reachable from a visible persistent entrance,
+    query/view routes and legacy fragments. The assistant retains its original
+    panel and focus owner while reserving its own space, and country/history
+    navigation is now supported by complete-input behavioral evidence.
+verification:
+  method: >-
+    Independent read-only inspection of actual source, rendered HTML, factual
+    browser receipts and PNG images on the authorized m2studio workspace.
+    No remote process, source edit, browser-state mutation, account action,
+    publication or deployment was performed by this reviewer.
+  receipt_results:
+    complete_browser: {passed: 46, failed: 0}
+    focused_navigation_and_assistant: {passed: 109, failed: 0}
+    fragment_landings: {passed: 132, failed: 0}
+    country_history: {passed: 112, failed: 0}
+    source_disclosures: {passed: 12, failed: 0}
+  actual_final_images_inspected: 38
+  screenshot_root: mockups/refs/reference_integrity/intl-country-intelligence-20261020
+  image_paths:
+    - after_dock4_repair/viewport-mobile-en-light.png
+    - after_dock4_repair/viewport-mobile-en-dark.png
+    - after_dock4_repair/viewport-mobile-zh-light.png
+    - after_dock4_repair/viewport-mobile-zh-dark.png
+    - after_dock4_repair/viewport-desktop-en-light.png
+    - after_dock4_repair/viewport-desktop-en-dark.png
+    - after_dock4_repair/viewport-desktop-zh-light.png
+    - after_dock4_repair/viewport-desktop-zh-dark.png
+    - after_dock4_repair/viewport-narrow-en-light.png
+    - after_dock4_repair/viewport-narrow-en-dark.png
+    - after_dock4_repair/viewport-narrow-zh-light.png
+    - after_dock4_repair/viewport-narrow-zh-dark.png
+    - after_dock4_sources/sources-JP-narrow-en-dark.png
+    - after_dock4_sources/gdp-JP-narrow-en-dark.png
+    - after_dock4_sources/sources-EZ-narrow-en-dark.png
+    - after_dock4_sources/gdp-EZ-narrow-en-dark.png
+    - after_dock4_sources/sources-JP-narrow-zh-light.png
+    - after_dock4_sources/gdp-JP-narrow-zh-light.png
+    - after_dock4_sources/equity-rows-JP-narrow-zh-light.png
+    - after_dock4_sources/sources-EZ-narrow-zh-light.png
+    - after_dock4_sources/gdp-EZ-narrow-zh-light.png
+    - after_dock4_sources/equity-rows-JP-narrow-en-dark.png
+    - after_dock4_repair/reading-desktop-en-light.png
+    - after_dock4_repair/reading-mobile-zh-dark.png
+    - after_dock4_repair/reading-narrow-en-light.png
+    - after_dock4_repair/reading-narrow-en-dark.png
+    - after_dock4_anchors/anchor-intl-growth-inflation-desktop-en-light.png
+    - after_dock4_anchors/anchor-intl-central-banks-mobile-zh-dark.png
+    - after_dock4_anchors/anchor-intl-credit-bonds-narrow-en-light.png
+    - after_dock4_anchors/anchor-lb-board-narrow-en-dark.png
+    - after_dock4_anchors/anchor-imc-country-JP-desktop-zh-dark.png
+    - after_dock4_anchors/anchor-imc-country-JP-narrow-en-dark.png
+    - after_dock4_repair/assistant-open-narrow-en-dark.png
+    - after_dock4_repair/assistant-closed-narrow-en-dark.png
+    - after_dock4_repair/8eb3ccd5f1f426a7.png
+    - after_dock4_repair/89c1340f2b642c8a.png
+    - after_dock4_repair/tools-compare-desktop-en-light.png
+    - after_dock4_repair/tools-library-mobile-zh-dark.png
+limitations:
+  - >-
+    This verdict covers product regression and reference integrity of the
+    named frozen artifact. Browser execution was performed by the capture
+    carrier; I examined its actual images, detailed outcomes and artifact
+    bindings rather than claiming to have independently executed a new browser
+    session.
+  - >-
+    The final browser scope is anonymous and isolated. External analytics were
+    intentionally blocked; authenticated tiers, live provider destination
+    responses, live acquisition, hosted CI, merge and production-served
+    acceptance are outside this verdict.
+  - >-
+    I inspected the 38 final images listed above, not every one of the 106 PNGs
+    in the final binding. The original first-pass limitation also remains:
+    the 91,860px incumbent full-page PNG timed out and was not inspected;
+    actual incumbent viewports and the production source contract were used.
+  - >-
+    Existing unavailable legacy inputs and unlinked catalogue destinations
+    remain limitations of the incumbent source/data contract. Their retention
+    is not evidence of new acquisition, and this repair approval does not
+    claim those research data gaps have been filled.
+

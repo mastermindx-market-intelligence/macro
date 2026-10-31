@@ -1,0 +1,38 @@
+....................................F................................... [ 30%]
+........................................................................ [ 61%]
+........................................................................ [ 92%]
+.................                                                        [100%]
+=================================== FAILURES ===================================
+____ test_realized_overnight_rate_does_not_contradict_an_approximate_target ____
+
+    def test_realized_overnight_rate_does_not_contradict_an_approximate_target():
+        jp = baseline_policy("JP")
+        observation = {"value": 1.247, "period": "2026-09", "instrument": jp["instrument"],
+                       "observation_convention": "end_of_period",
+                       "first_observed_at": "2026-10-01T00:00:00+00:00"}
+        assert select_policy_decision([jp], "JP", today=date(2026, 10, 19), monthly=observation)["current"]
+        observation.update(setting_qualifier="around", value=0.5)
+>       assert select_policy_decision([jp], "JP", today=date(2026, 10, 19), monthly=observation)["state"] == "conflict"
+E       AssertionError: assert 'verified' == 'conflict'
+E         
+E         - conflict
+E         + verified
+
+tests/test_intl_policy_evidence.py:225: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-f1676c39-a439-418b-9a17-99335a2b7b0c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-f1676c39-a439-418b-9a17-99335a2b7b0c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-f1676c39-a439-418b-9a17-99335a2b7b0c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-f1676c39-a439-418b-9a17-99335a2b7b0c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_policy_evidence.py::test_realized_overnight_rate_does_not_contradict_an_approximate_target
+1 failed, 232 passed, 2 warnings in 4.81s

@@ -181,11 +181,39 @@ def _intl_closes() -> pd.DataFrame:
         tickers += list(c.get("indices") or {c["index"]: None})
         tickers.append(c["fx"])
     cols = {}
+    fx_tickers = {c["fx"] for c in cfg.values()}
     for t in dict.fromkeys(tickers):
-        df = store.read("intl", t)
+        try:
+            df = store.read("intl", t)
+        except Exception:
+            if t not in fx_tickers:
+                raise
+            log.warning("intl: unreadable FX series %s; retaining other country inputs", t)
+            continue
         if df is not None and "close" in df.columns:
             cols[t] = df["close"]
     return pd.DataFrame(cols).sort_index()
+
+
+def country_currency_inputs():
+    """Read quote and capture from the same frame, without changing legacy closes."""
+    from lib.intl_currency_observation import FX_CAPTURE_COLUMN, stored_source_context
+    result = {}
+    for cc, cfg in countries().items():
+        observations = []
+        try:
+            frame = store.read("intl", cfg["fx"])
+            if frame is not None and {"close", FX_CAPTURE_COLUMN} <= set(frame.columns):
+                for stamp, row in frame[["close", FX_CAPTURE_COLUMN]].iterrows():
+                    try:
+                        label = pd.Timestamp(stamp).date()
+                        observations.append((label, row["close"], row[FX_CAPTURE_COLUMN]))
+                    except (TypeError, ValueError, OverflowError):
+                        continue
+        except Exception:  # A broken optional FX frame cannot kill country analysis.
+            log.warning("intl: currency capture unavailable for %s", cc)
+        result[cc] = {"observations": observations, "source": stored_source_context(cc, cfg)}
+    return result
 
 
 def read_intl_macro_col(col: str) -> pd.Series | None:

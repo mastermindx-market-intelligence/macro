@@ -1,0 +1,119 @@
+{
+  "schema": "mastermind.intl_policy_paper_update.v1",
+  "recorded_at": "2026-10-19T11:30:50.612372+00:00",
+  "state": "APPLIED_AND_READ_BACK_NOT_PRODUCTION_ACCEPTANCE",
+  "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+  "page_id": "p-G-0",
+  "url": "https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-G-0",
+  "file_display_name": "International Markets · R10 · Current Build",
+  "page_display_name": "Country Intelligence · R12 · Build Reference",
+  "native_tool_family": "mastermind_paper_paper",
+  "catalog_sha256": "1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db",
+  "qualified_version": "0.5.14",
+  "host_identity": null,
+  "parent_receipt": {
+    "path": "../paper_r12_receipt.json",
+    "sha256": "b74bb57b8f724d0d766a88a6a42c61d98329326de9d3fca383691d7785a8e846",
+    "scope": "Original six-board R12 layout; not overwritten by this increment."
+  },
+  "scope": {
+    "updated_boards": [
+      "DMX-0",
+      "DW7-0",
+      "E4D-0",
+      "EC2-0"
+    ],
+    "updated_country_headlines": [
+      "JP",
+      "AU",
+      "EZ",
+      "IN"
+    ],
+    "existing_text_node_replacements": 32,
+    "country_headline_readback": {
+      "checks": 16,
+      "passed": 16,
+      "failures": []
+    },
+    "policy_detail": "Four existing Korea policy tiles reparented below growth, before external balance; named decision, prior/current values, decision/effective dates, authored rationale and source labels.",
+    "new_rationale_sections": 4,
+    "new_source_rows": 4,
+    "preserved_detail_boards": [
+      "ER4-0",
+      "ER5-0"
+    ]
+  },
+  "effects": {
+    "path": "paper/effects.json",
+    "sha256": "edb07d566f8aa0f6939a8c229db64bdb5a456586efda8d5b84cad29b4ffd16dc",
+    "count": 14,
+    "all_state": "APPLIED_RESPONSE_OBSERVED",
+    "finish_operation_id": "intl-policy-coverage-paper-finish-20261019",
+    "unknown_effects": 0,
+    "snapshot_note": "Before/after document snapshot identifiers are protocol bindings; actual copy and layout verification comes from the separately recorded readbacks, JSX and rendered images."
+  },
+  "readbacks": {
+    "country_copy": {
+      "path": "paper/country_copy_readback.json",
+      "sha256": "0f34c0cbb53d6dc991496c7ecdd626be5fd43a0651fc49656d4f509f44b33b5a"
+    },
+    "policy_panel_jsx": [
+      {
+        "node_id": "DRZ-0",
+        "path": "paper/DRZ-0.jsx",
+        "sha256": "814acd72d77e733f33dd8880c6f886758769ef2d185f3a941508ba6ed12efa34"
+      },
+      {
+        "node_id": "E0M-0",
+        "path": "paper/E0M-0.jsx",
+        "sha256": "987dd7ae147d112bfffeac877dc3cdd84e2d0d36ef2f244371ef45d98147aa3b"
+      },
+      {
+        "node_id": "E9F-0",
+        "path": "paper/E9F-0.jsx",
+        "sha256": "142753fac5cba34e958814a6127c7e876bdcbae1553956c29356a9354fabca5e"
+      },
+      {
+        "node_id": "EGH-0",
+        "path": "paper/EGH-0.jsx",
+        "sha256": "f990506cd3dde5dbb2bb78fffa5eacd4e195d53136ccbb8a93115754d41e9712"
+      }
+    ]
+  },
+  "visual_review": {
+    "status": "Root visually inspected the three returned native images after the update; no observed clipping or overlap in the reviewed scope.",
+    "images": [
+      {
+        "node_id": "DMX-0",
+        "path": "paper/DMX-0.jpg",
+        "mime_type": "image/jpeg",
+        "bytes": 225866,
+        "sha256": "ef4b51b714502fc60a9869885eb98152d075c15dcba06b21475d55d4892805b3",
+        "origin": "Exact bytes of the returned native Paper image block; no image edit."
+      },
+      {
+        "node_id": "E9F-0",
+        "path": "paper/E9F-0.jpg",
+        "mime_type": "image/jpeg",
+        "bytes": 21158,
+        "sha256": "c9cf07dedbf28115bf43a75db40c3f4e030e6d39206ae81c20257386b7259db8",
+        "origin": "Exact bytes of the returned native Paper image block; no image edit."
+      },
+      {
+        "node_id": "EC2-0",
+        "path": "paper/EC2-0.jpg",
+        "mime_type": "image/jpeg",
+        "bytes": 91368,
+        "sha256": "5667171d45ad8500e74dad42f8ce39a5a70e1a0aa0e4ebd50c4b39ed6cc93c22",
+        "origin": "Exact bytes of the returned native Paper image block; no image edit."
+      }
+    ]
+  },
+  "limitations": [
+    "The file's legacy R10 display name is not a claim that the rejected R10 page was reused; all edits target p-G-0 and the four named R12 boards.",
+    "Native app host identity is not exposed; no M1/M2 host claim is made.",
+    "Paper JSX exports source labels as styled divs; source URL rendering is separately proven by the integrated HTML browser checks, not Paper link-click verification.",
+    "Only the four revised headlines and the Korea policy sections are newly compared. This is not a blanket pixel-equivalence claim for all seven country details.",
+    "UK and Taiwan detail-board source content retains its earlier qualification."
+  ]
+}

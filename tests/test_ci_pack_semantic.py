@@ -3673,6 +3673,7 @@ def test_bea_original_installer_proof_cannot_satisfy_new_blocking_setup_plan(tmp
 
 
 import ast as _cm_ast
+import hashlib as _cm_hashlib
 import json as _cm_json
 from pathlib import Path as _CMPath
 import re as _cm_re
@@ -3813,19 +3814,30 @@ def _cm_python_environment(parent, executable):
 
 
 def _cm_frozen_namespace(checkout):
-    """Compile the two ORIGINAL guard bodies, dropping only pytest decoration."""
+    """Compile the ACTUAL frozen-file guard and its exact theme exception.
+
+    Do not restore the obsolete pre-theme guard or provide replacement helpers:
+    the semantic CI fixture must execute the source guard shipped by this PR.
+    """
     source = ROOT / 'tests' / 'test_intl_gs_foundation.py'
     parsed = _cm_ast.parse(source.read_text(encoding='utf-8'), filename=str(source))
-    names = {'_frozen_base', 'test_frozen_files_unchanged_vs_origin_main'}
+    names = {'_frozen_base', '_frozen_source_matches', '_git_frozen_bytes',
+             'test_frozen_files_match_origin_main_or_exact_accepted_country_theme'}
     functions = [node for node in parsed.body
                  if isinstance(node, _cm_ast.FunctionDef) and node.name in names]
-    if {node.name for node in functions} != names:
-        raise AssertionError('original frozen-file functions are missing')
+    pairs = [node for node in parsed.body
+             if isinstance(node, _cm_ast.Assign)
+             and len(node.targets) == 1
+             and isinstance(node.targets[0], _cm_ast.Name)
+             and node.targets[0].id == '_ACCEPTED_COUNTRY_THEME_PAIR']
+    if {node.name for node in functions} != names or len(functions) != len(names) or len(pairs) != 1:
+        raise AssertionError('current frozen-file guard or reviewed theme pin missing')
     for node in functions:
         node.decorator_list = []
     namespace = {'REPO': checkout, 'subprocess': _cm_subprocess,
-                 're': _cm_re, 'pytest': pytest}
-    exec(compile(_cm_ast.Module(body=functions, type_ignores=[]),
+                 're': _cm_re, 'hashlib': _cm_hashlib, 'pytest': pytest}
+    # The assignment is copied from the REAL guard, not fabricated by this test.
+    exec(compile(_cm_ast.Module(body=pairs + functions, type_ignores=[]),
                  str(source), 'exec'), namespace)
     return namespace
 
@@ -3859,6 +3871,91 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(_cm_git(f["checkout"], "rev-parse", "origin/main"), f["canonical"])
         self.assertIn(f["canonical"], result.stdout)
+        self.assert_head(f)
+
+    def test_dislocation_manifest_runs_bounded_canonical_main_before_full_browser_contract(self):
+        """Run W3U's ACTUAL manifest step on a shallow synthetic merge.
+
+        This verifies a finite pinned acquisition, not a command-text-only
+        claim. No test/Chromium step, job deadline, or frozen-file guard is
+        traded away to recover the old pack-3 timeout.
+        """
+        jobs = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))["jobs"]
+        job = jobs["international-dislocation-explorer"]
+        self.assertEqual(job["timeout-minutes"], 8)
+        self.assertEqual(job["scope"], "exclusive")
+        self.assertEqual(job["steps"][0]["with"]["fetch-depth"], 0)
+        steps = {item.get("name"): item for item in job["steps"]}
+        self.assertEqual(steps["Dislocation explorer view contracts"]["run"],
+                         "python -m pytest tests/test_intl_gs_dislocations_view.py -q")
+        self.assertEqual(steps["Dislocation explorer DOM and selection in Chromium"]["run"],
+                         "node --test tests/intl_gs_dislocations_browser.test.cjs")
+        name = "canonical base for the frozen-file guard (fail closed)"
+        run = steps[name]["run"]
+        self.assertEqual(run, next(item["run"] for item in
+            jobs["international-workspace-browser"]["steps"] if item.get("name") == name))
+        self.assertNotIn("git fetch origin", run)
+        self.assertIn("from scripts.run_ci_pack import prepare_canonical_main", run)
+
+        f = self.fixture()
+        environment = _cm_python_environment(self.parent, _cm_sys.executable)
+        environment.update({
+            "PYTHONPATH": str(ROOT),
+            # The actual tested tree always overrides inherited event identity.
+            "CI_TESTED_TREE_SHA": f["tested"],
+            "TESTED_TREE_SHA": "f" * 40,
+            "CI_BASE_SHA": f["parents"][0],
+            "TESTED_BASE_SHA": f["parents"][0],
+        })
+        command = PACK.render_command(run, base_ref="main", head_ref="feature")
+        completed = _cm_subprocess.run(
+            ["bash", "-e", "-o", "pipefail", "-c", command],
+            cwd=f["checkout"], env=environment, capture_output=True, text=True,
+            timeout=45,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+        self.assertEqual(_cm_git(f["checkout"], "rev-parse", "origin/main"), f["canonical"])
+        self.assertEqual(_cm_git(f["checkout"], "merge-base", "origin/main", "HEAD"),
+                         f["parents"][0])
+        self.assert_head(f)
+
+        # Execute W3U's real offline guard, not a replacement permissive stub.
+        frozen = ROOT / "tests/test_intl_gs_dislocations_view.py"
+        parsed = _cm_ast.parse(frozen.read_text(encoding="utf-8"), filename=str(frozen))
+        functions = [node for node in parsed.body
+                     if isinstance(node, _cm_ast.FunctionDef) and node.name == "_merge_base"]
+        self.assertEqual(len(functions), 1)
+        namespace = {"REPO": f["checkout"], "subprocess": _cm_subprocess,
+                     "re": _cm_re, "pytest": pytest}
+        exec(compile(_cm_ast.Module(body=functions, type_ignores=[]),
+                     str(frozen), "exec"), namespace)
+        real_guard = namespace["_merge_base"]
+        self.assertEqual(real_guard(), f["parents"][0])
+        self.assert_head(f)
+
+        # Negative 1: the REAL W3U guard refuses absent origin/main offline.
+        _cm_git(f["checkout"], "update-ref", "-d", "refs/remotes/origin/main")
+        with self.assertRaisesRegex(pytest.fail.Exception, "origin/main does not resolve"):
+            real_guard()
+        self.assert_head(f)
+
+        # Negative 2: a locally present but DISCONNECTED main ref is not a
+        # canonical merge base. Use commit-tree with no parents, no remote fetch.
+        orphan = _cm_subprocess.run(
+            ["git", "-C", str(f["checkout"]), "-c", "user.name=W3U Fixture",
+             "-c", "user.email=w3u@example.invalid", "commit-tree",
+             "HEAD^{tree}"],
+            input="unrelated root\n", text=True, capture_output=True, check=True,
+        ).stdout.strip()
+        self.assertRegex(orphan, r"^[0-9a-f]{40}$")
+        _cm_git(f["checkout"], "update-ref", "refs/remotes/origin/main", orphan)
+        probe = _cm_subprocess.run(
+            ["git", "-C", str(f["checkout"]), "merge-base", "origin/main", "HEAD"],
+            capture_output=True, text=True,
+        )
+        self.assertEqual(probe.returncode, 1, probe.stdout + probe.stderr)
+        with self.assertRaisesRegex(pytest.fail.Exception, "no merge base"):
+            real_guard()
         self.assert_head(f)
 
     def test_private_python_binding_preserves_venv_context_and_arguments(self):
@@ -3965,7 +4062,7 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
         self.assertEqual(before, (f['checkout'] / '.git' / 'config').read_bytes())
         guards = _cm_frozen_namespace(f['checkout'])
         for path in _CM_FROZEN_PATHS:
-            guards['test_frozen_files_unchanged_vs_origin_main'](path)
+            guards['test_frozen_files_match_origin_main_or_exact_accepted_country_theme'](path)
 
     def test_missing_required_blob_refuses_after_fetch_without_lazy_fallback(self):
         f = self.fixture(full_checkout=True)
@@ -4147,10 +4244,10 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
                 self.assertEqual(_cm_prepare(f), f['canonical'])
                 guards = _cm_frozen_namespace(f['checkout'])
                 self.assertEqual(guards['_frozen_base'](), f['parents'][0])
-                guard = guards['test_frozen_files_unchanged_vs_origin_main']
+                guard = guards['test_frozen_files_match_origin_main_or_exact_accepted_country_theme']
                 for path in _CM_FROZEN_PATHS:
                     if changed and path == _CM_FROZEN_PATHS[0]:
-                        with self.assertRaisesRegex(AssertionError, 'changed vs merge-base'):
+                        with self.assertRaisesRegex(AssertionError, 'changed outside the exact accepted country-theme composition'):
                             guard(path)
                     else:
                         guard(path)

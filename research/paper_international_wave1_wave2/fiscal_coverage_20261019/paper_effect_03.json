@@ -1,0 +1,170 @@
+{
+  "schema": "mastermind.intl_paper_fiscal_effect.v1",
+  "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+  "page_id": "p-G-0",
+  "operation_id": "intl-country-cockpit-20261018-fiscal-paper-values-20261020",
+  "tool": "set_text_content",
+  "arguments": {
+    "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "updates": [
+      {
+        "nodeId": "EVZ-0",
+        "textContent": "Government balance"
+      },
+      {
+        "nodeId": "EVY-0",
+        "textContent": "The baseline moves from deficit to surplus."
+      },
+      {
+        "nodeId": "EVV-0",
+        "textContent": "-1.3%"
+      },
+      {
+        "nodeId": "EVR-0",
+        "textContent": "1.4%"
+      },
+      {
+        "nodeId": "EWB-0",
+        "textContent": "Gross government debt"
+      },
+      {
+        "nodeId": "EWA-0",
+        "textContent": "Debt falls relative to GDP in the baseline."
+      },
+      {
+        "nodeId": "EW7-0",
+        "textContent": "47.3%"
+      },
+      {
+        "nodeId": "EW3-0",
+        "textContent": "46.2%"
+      },
+      {
+        "nodeId": "EWN-0",
+        "textContent": "Government balance"
+      },
+      {
+        "nodeId": "EWM-0",
+        "textContent": "The baseline moves from deficit to surplus."
+      },
+      {
+        "nodeId": "EWJ-0",
+        "textContent": "-1.3%"
+      },
+      {
+        "nodeId": "EWF-0",
+        "textContent": "1.4%"
+      },
+      {
+        "nodeId": "EWZ-0",
+        "textContent": "Gross government debt"
+      },
+      {
+        "nodeId": "EWY-0",
+        "textContent": "Debt falls relative to GDP in the baseline."
+      },
+      {
+        "nodeId": "EWV-0",
+        "textContent": "47.3%"
+      },
+      {
+        "nodeId": "EWR-0",
+        "textContent": "46.2%"
+      },
+      {
+        "nodeId": "EXB-0",
+        "textContent": "Government balance"
+      },
+      {
+        "nodeId": "EXA-0",
+        "textContent": "The baseline moves from deficit to surplus."
+      },
+      {
+        "nodeId": "EX7-0",
+        "textContent": "-1.3%"
+      },
+      {
+        "nodeId": "EX3-0",
+        "textContent": "1.4%"
+      },
+      {
+        "nodeId": "EXN-0",
+        "textContent": "Gross government debt"
+      },
+      {
+        "nodeId": "EXM-0",
+        "textContent": "Debt falls relative to GDP in the baseline."
+      },
+      {
+        "nodeId": "EXJ-0",
+        "textContent": "47.3%"
+      },
+      {
+        "nodeId": "EXF-0",
+        "textContent": "46.2%"
+      },
+      {
+        "nodeId": "EXZ-0",
+        "textContent": "Government balance"
+      },
+      {
+        "nodeId": "EXY-0",
+        "textContent": "The baseline moves from deficit to surplus."
+      },
+      {
+        "nodeId": "EXV-0",
+        "textContent": "-1.3%"
+      },
+      {
+        "nodeId": "EXR-0",
+        "textContent": "1.4%"
+      },
+      {
+        "nodeId": "EYB-0",
+        "textContent": "Gross government debt"
+      },
+      {
+        "nodeId": "EYA-0",
+        "textContent": "Debt falls relative to GDP in the baseline."
+      },
+      {
+        "nodeId": "EY7-0",
+        "textContent": "47.3%"
+      },
+      {
+        "nodeId": "EY3-0",
+        "textContent": "46.2%"
+      },
+      {
+        "nodeId": "EYS-0",
+        "textContent": "The baseline retains an external surplus. Its composition matters more than the sign alone."
+      },
+      {
+        "nodeId": "EYQ-0",
+        "textContent": "22.0% → 23.1%"
+      },
+      {
+        "nodeId": "EYN-0",
+        "textContent": "The projected surplus is broadly unchanged as a share of GDP."
+      },
+      {
+        "nodeId": "EYL-0",
+        "textContent": "0.3% → 0.3%"
+      },
+      {
+        "nodeId": "EYI-0",
+        "textContent": "Debt falls relative to GDP in the baseline."
+      },
+      {
+        "nodeId": "EYG-0",
+        "textContent": "21.1% → 20.0%"
+      }
+    ]
+  },
+  "expected_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+  "state": "APPLIED_RESPONSE_OBSERVED",
+  "retry_allowed": false,
+  "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+  "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+  "observed_at": "2026-10-20T01:44:54.001Z"
+}

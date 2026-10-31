@@ -1,0 +1,13 @@
+{
+  "stopped_at": "2026-10-22T02:28:41.425430+00:00",
+  "processes": {
+    "parent": {
+      "pid": 93530,
+      "returncode": 0
+    },
+    "child": {
+      "pid": 93528,
+      "returncode": -15
+    }
+  }
+}

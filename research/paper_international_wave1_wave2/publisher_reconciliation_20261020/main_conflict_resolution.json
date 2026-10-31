@@ -1,0 +1,28 @@
+{
+  "schema": "mastermind.intl_main_conflict_resolution.v1",
+  "recorded_at": "2026-10-20T07:48:29.914330+00:00",
+  "source_parent": "ec1277e909ffed27f58f9f4b107b81f5985fb7b8",
+  "main_parent": "13e098071ab2799c41a170d21ad522f751dfb15a",
+  "paths": {
+    ".github/ci/legacy-jobs.yml": {
+      "before_sha256": "fda985933541a1120c9d540792ae33052d69dce1c14b4c8a8dbf857327da4190",
+      "resolved_sha256": "62e68a7145bd3dc8760ca704b07cee8ab2870c522f0709e642b0e6842175c7e7"
+    },
+    "app/deploy/Caddyfile": {
+      "before_sha256": "4334ccf1da1714ddb3bcff9d9a57b3fef95bcfb52129dea150a2c3d1a2ab1338",
+      "resolved_sha256": "0cbe288bf37b66ff899714496c5984bbd096225f86664775fe76a1711c454e4d"
+    },
+    "tests/test_site_access_boundary.py": {
+      "before_sha256": "88fecc96c362633c667fc5fbe201a9fbb60b1f923de72152f9e283496b187d0f",
+      "resolved_sha256": "55724269e662af26a3a0d7a6c76b1538943d0073d4f1e598952b52c84f64d104"
+    }
+  },
+  "ci_hunks": 3,
+  "ci_resolution": "Union of disjoint existing-scope path additions; preserve every upstream dependency and every International helper.",
+  "caddy_hunks": 4,
+  "caddy_resolution": "Preserve current-main matcher tokens and append exactly the nine already-reviewed International presentation assets.",
+  "test_resolution": "Preserve complete current-main module AST and add only the original exact International test AST and its fnmatchcase import.",
+  "test_ast_preservation": true,
+  "validation_pending": true,
+  "merge_commit_created": false
+}

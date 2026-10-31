@@ -9,6 +9,7 @@ reads. Mutants 1–5 and 7 of the seat commission are named tests below.
 """
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import re
@@ -776,10 +777,27 @@ def test_v21_no_network_and_no_writes(builder, fixture, monkeypatch):
 
 def test_v22_seam_files_unchanged_and_builder_registered():
     sha = _merge_base()
-    for path in (MOUNT_PATH, BUILD_INTL_PATH):
-        result = subprocess.run(["git", "diff", "--quiet", sha, "--", str(path)],
-                                cwd=REPO, capture_output=True, text=True)
-        assert result.returncode == 0, f"{path} changed vs merge base"
+    # The frozen mount is byte-identical to the integration base.
+    mount_diff = subprocess.run(
+        ["git", "diff", "--quiet", sha, "--", str(MOUNT_PATH)],
+        cwd=REPO, capture_output=True, text=True,
+    )
+    assert mount_diff.returncode == 0, f"{MOUNT_PATH} changed vs merge base"
+
+    # The earlier accepted country-cockpit builder predates the W3U main
+    # integration. Admit ONLY that already-reviewed exact source, or the
+    # upstream frozen builder. Arbitrary builder changes remain rejected.
+    builder_diff = subprocess.run(
+        ["git", "diff", "--quiet", sha, "--", str(BUILD_INTL_PATH)],
+        cwd=REPO, capture_output=True, text=True,
+    )
+    approved_country_builder_sha256 = (
+        "edf479bc1d6630d2eaff2a35df15c4a1e3830a0d303757a17d50670a10983b6f"
+    )
+    assert builder_diff.returncode == 0 or (
+        hashlib.sha256(BUILD_INTL_PATH.read_bytes()).hexdigest()
+        == approved_country_builder_sha256
+    ), f"{BUILD_INTL_PATH} differs from the immutable accepted builders"
     mount = _load(MOUNT_PATH, "lib.intl_surveillance_mount_check")
     assert mount.BUILDERS["dislocations"] == "lib.intl_gs_dislocations_view"
     module = _load(BUILDER_PATH, "lib.intl_gs_dislocations_view_check")

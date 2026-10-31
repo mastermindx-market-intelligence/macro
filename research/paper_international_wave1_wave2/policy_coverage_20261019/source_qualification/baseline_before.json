@@ -1,0 +1,19 @@
+{
+  "head": "11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+  "policy_record_ids": {
+    "GB": "GB:bank_rate:1acacb67d1c6b4a2fb4242ee",
+    "TW": "TW:discount_rate:6d770222a2dc6ffad23b01a0"
+  },
+  "retrieved_at": "2026-10-18T23:56:41.276358+00:00",
+  "archive_count": 37,
+  "errors": [
+    {
+      "source": "imf",
+      "error": "HTTPError"
+    },
+    {
+      "source": "taiwan",
+      "error": "URLError"
+    }
+  ]
+}

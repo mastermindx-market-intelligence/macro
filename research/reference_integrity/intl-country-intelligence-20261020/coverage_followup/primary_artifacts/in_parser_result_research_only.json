@@ -1,0 +1,57 @@
+{
+  "schema": "research_national_gdp_parser_result.v1",
+  "research_only": true,
+  "production_admitted": false,
+  "admission_state": "not_admitted",
+  "source_sha256": "152d9020853769fe4fe4433bec038a558aae1312bbb13ec072058e8dd5b0bc49",
+  "retrieved_at": "2026-10-20T21:04:50.418704+00:00",
+  "first_production_admission_at": null,
+  "parser_version": "local_mospi_20260831_reviewed_fixture_v1",
+  "observation_candidate": {
+    "cc": "IN",
+    "metric": "gdp",
+    "value": 7.8,
+    "value_text": "7.8",
+    "reported_decimals": 1,
+    "unit": "% y/y",
+    "status": "provisional",
+    "source_status_label": "Quarterly Estimates",
+    "period": "2026-Q2",
+    "reference_start": "2026-04-01",
+    "reference_end": "2026-06-30",
+    "native_period": "Q1 FY 2026-27 (April-June 2026)",
+    "comparison_native_period": "Q1 FY 2025-26 (April-June 2025)",
+    "price_basis": "constant_2022_23_prices",
+    "measure_basis": "real_gdp",
+    "growth_basis": "year_over_year",
+    "seasonal_adjustment": "not_stated",
+    "seasonal_review_scope": "12-page extracted text; physical page 9 visually verified separately",
+    "method": "published_rate_with_native_level_crosscheck",
+    "provider": "MoSPI / National Statistics Office",
+    "published": "2026-08-31",
+    "source_url": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1788172583113_d65a77cf-240e-4491-82ee-59f78618fa41_Press_Note_on_GDP_Estimates_for_Q1_2026-27.pdf",
+    "source_physical_page": 9,
+    "source_printed_page": 8,
+    "source_tables": [
+      "Statement 1: Quarterly Estimates of GVA at Basic Prices for Q1, 2026-27 (Constant Prices)",
+      "Statement 2: Quarterly Estimates of Expenditure Components of GDP for Q1, 2026-27 (Constant Prices)"
+    ],
+    "native_level_unit": "INR crore at constant 2022-23 prices",
+    "native_levels": [
+      {
+        "native_period": "Q1 FY 2024-25",
+        "value": 7061843
+      },
+      {
+        "native_period": "Q1 FY 2025-26",
+        "value": 7546230
+      },
+      {
+        "native_period": "Q1 FY 2026-27",
+        "value": 8136153
+      }
+    ],
+    "calculated_yoy_unrounded_decimal": "7.817453218362016530108411700",
+    "next_release_date": "2026-11-30"
+  }
+}

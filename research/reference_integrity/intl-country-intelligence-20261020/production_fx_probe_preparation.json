@@ -1,0 +1,40 @@
+{
+  "schema": "intl_fx_probe_preparation.v1",
+  "prepared_at_utc": "2026-10-20T15:25:37.196455+00:00",
+  "probe": {
+    "path": "/workspace/scratch/26adebeff658/intl_fx_production_acceptance.py",
+    "bytes": 13373,
+    "sha256": "d7827b6c4f0b37d57dc89e199ea2490626f04726717970346f359f0764408486"
+  },
+  "validation": {
+    "syntax": "PASS",
+    "cli_help_exit_code": 0,
+    "synthetic_actual_selector_consumer_checks_passed": 66,
+    "source_pin": "6ad0c377ed80a8ccf07ecbfb6c7b44530b753cf7",
+    "guard_dependency_imports": "PASS",
+    "guard_actual_operations_blocked": [
+      "file write",
+      "directory creation",
+      "subprocess launch",
+      "DNS lookup",
+      "posix spawn"
+    ],
+    "guard_handlers_checked_by_direct_audit_event": [
+      "socket.connect",
+      "socket.sendto"
+    ],
+    "guard_limit": "Local host denies socket creation; connect/sendto were audit-handler tests only. Guard is for the trusted reader chain, not a sandbox for arbitrary native code.",
+    "static_review": "No selector, consumer, endpoint-window, seven-file, legacy-control, freshness or source-identity defect found; early bytecode suppression and missing guard events corrected.",
+    "production_probe": "NOT_RUN",
+    "parquet_end_to_end": "NOT_RUN; this local environment has no pyarrow or fastparquet"
+  },
+  "workflow_review": {
+    "inspected_main": "db2cde0a760585972980ea2d08ea4c5bf93c2282",
+    "backfill_blob": "632bc998254543ccf88cd6edea38b4a7e03e0c80",
+    "render_blob": "54d1e69add408cd3532451f85b355626c78c451a",
+    "both_workflows": "UNCHANGED",
+    "automatic_render_after_backfill": false,
+    "render_caveat": "run_py records a nonzero builder return as annotation/summary but does not propagate it; workflow green alone is insufficient"
+  },
+  "production_receipts": "Existing canonical FX Parquet rows, column intl_fx_adapter_capture; no production receipt created by this task."
+}

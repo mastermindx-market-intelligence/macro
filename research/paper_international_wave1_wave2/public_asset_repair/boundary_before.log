@@ -1,0 +1,32 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_intl_workspace_dependencies_are_public_presentation_assets ________
+tests/test_site_access_boundary.py:107: in test_intl_workspace_dependencies_are_public_presentation_assets
+    assert assets <= set(public["exact"])
+E   AssertionError: assert {'/intl_libra...cro.css', ...} <= {'/', '/88bb9...lean.js', ...}
+E
+E     Extra items in the left set:
+E     '/intl_workspace_scenario.js'
+E     '/intl_workspace.js'
+E     '/intl_workspace_risk.css'
+E     '/intl_workspace_state.js'
+E     '/intl_workspace_entry.js'...
+E
+E     ...Full output truncated (4 lines hidden), use '-vv' to show
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-91b74123-6ed1-4ba2-b8f7-f202e12082f5/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-91b74123-6ed1-4ba2-b8f7-f202e12082f5/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-91b74123-6ed1-4ba2-b8f7-f202e12082f5/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-91b74123-6ed1-4ba2-b8f7-f202e12082f5/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_site_access_boundary.py::test_intl_workspace_dependencies_are_public_presentation_assets
+1 failed, 2 warnings in 10.12s

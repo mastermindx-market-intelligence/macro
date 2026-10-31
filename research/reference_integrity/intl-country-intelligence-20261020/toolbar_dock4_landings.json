@@ -1,0 +1,2339 @@
+{
+  "recorded_at": "2026-10-20T21:06:52.994025+00:00",
+  "source_commit": "442042e591d255dd24b540ff240edb4c0410c297",
+  "html_sha256": "ad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0",
+  "country_evidence_equivalence": [
+    {
+      "cc": "JP",
+      "identical_country_html": true,
+      "prior_sha256": "88b7af10710c861e2fd4f513bc7d4e601a7dd142529eac20c69c6b1c9c321b8d",
+      "new_sha256": "88b7af10710c861e2fd4f513bc7d4e601a7dd142529eac20c69c6b1c9c321b8d"
+    },
+    {
+      "cc": "KR",
+      "identical_country_html": true,
+      "prior_sha256": "4aef96815b04d907f34f07d5cafe2079b373496ddab56e7046fbe6c12aa37785",
+      "new_sha256": "4aef96815b04d907f34f07d5cafe2079b373496ddab56e7046fbe6c12aa37785"
+    },
+    {
+      "cc": "TW",
+      "identical_country_html": true,
+      "prior_sha256": "eb5501b61ae1a1f68a64aa961a52663e0717176a0ae6d896c9c2c9b665ab42c6",
+      "new_sha256": "eb5501b61ae1a1f68a64aa961a52663e0717176a0ae6d896c9c2c9b665ab42c6"
+    },
+    {
+      "cc": "IN",
+      "identical_country_html": true,
+      "prior_sha256": "ec1e4128c86b86026bd0e47d3430c2dfceac16379dee9fce34d3b99efc529974",
+      "new_sha256": "ec1e4128c86b86026bd0e47d3430c2dfceac16379dee9fce34d3b99efc529974"
+    },
+    {
+      "cc": "AU",
+      "identical_country_html": true,
+      "prior_sha256": "5065eab8830638c45747b2ba6400212f120c749f359a84f41c9f83404909bb23",
+      "new_sha256": "5065eab8830638c45747b2ba6400212f120c749f359a84f41c9f83404909bb23"
+    },
+    {
+      "cc": "GB",
+      "identical_country_html": true,
+      "prior_sha256": "9e5be9f36d36f16537a5be4c55db18e787cfaaf03ea09c260ff5498aaafa96db",
+      "new_sha256": "9e5be9f36d36f16537a5be4c55db18e787cfaaf03ea09c260ff5498aaafa96db"
+    },
+    {
+      "cc": "EZ",
+      "identical_country_html": true,
+      "prior_sha256": "97a636aa413662edf72fdae513ff3edd03c9eae3657ceb82f9d81748000b99ee",
+      "new_sha256": "97a636aa413662edf72fdae513ff3edd03c9eae3657ceb82f9d81748000b99ee"
+    }
+  ],
+  "checks": [
+    {
+      "id": "landing-intl-growth-inflation-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-growth-inflation",
+        "exists": true,
+        "top": 69.640625,
+        "height": 35.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-central-banks-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-central-banks",
+        "exists": true,
+        "top": 70.03125,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-credit-bonds-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-credit-bonds",
+        "exists": true,
+        "top": 69.640625,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-lb-board-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "id": "lb-board",
+        "exists": true,
+        "top": 69.890625,
+        "height": 450.984375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-country-JP-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-country-JP",
+        "exists": true,
+        "top": 70.265625,
+        "height": 1810.46875,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-world-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-world",
+        "exists": true,
+        "top": 69.78125,
+        "height": 135.484375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-countries-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-countries",
+        "exists": true,
+        "top": 70.265625,
+        "height": 2474.65625,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-connections-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-connections",
+        "exists": true,
+        "top": 69.921875,
+        "height": 281.875,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-analysis-tools-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-analysis-tools",
+        "exists": true,
+        "top": 69.796875,
+        "height": 8494.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "click-tools-clear-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "top": 70.171875,
+        "bar": 54,
+        "open": true
+      }
+    },
+    {
+      "id": "no-page-exceptions-desktop-en-light",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "landing-intl-growth-inflation-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-growth-inflation",
+        "exists": true,
+        "top": 69.640625,
+        "height": 35.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-central-banks-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-central-banks",
+        "exists": true,
+        "top": 70.03125,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-credit-bonds-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-credit-bonds",
+        "exists": true,
+        "top": 69.640625,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-lb-board-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "lb-board",
+        "exists": true,
+        "top": 69.890625,
+        "height": 450.984375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-country-JP-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-country-JP",
+        "exists": true,
+        "top": 70.265625,
+        "height": 1810.46875,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-world-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-world",
+        "exists": true,
+        "top": 69.78125,
+        "height": 135.484375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-countries-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-countries",
+        "exists": true,
+        "top": 70.265625,
+        "height": 2474.65625,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-connections-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-connections",
+        "exists": true,
+        "top": 69.921875,
+        "height": 281.875,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-analysis-tools-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-analysis-tools",
+        "exists": true,
+        "top": 69.796875,
+        "height": 8494.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "click-tools-clear-desktop-en-dark",
+      "passed": true,
+      "actual": {
+        "top": 70.171875,
+        "bar": 54,
+        "open": true
+      }
+    },
+    {
+      "id": "no-page-exceptions-desktop-en-dark",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "landing-intl-growth-inflation-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-growth-inflation",
+        "exists": true,
+        "top": 70.25,
+        "height": 35.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-central-banks-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-central-banks",
+        "exists": true,
+        "top": 69.640625,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-credit-bonds-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-credit-bonds",
+        "exists": true,
+        "top": 69.890625,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-lb-board-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "lb-board",
+        "exists": true,
+        "top": 70.1875,
+        "height": 450.984375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-country-JP-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-country-JP",
+        "exists": true,
+        "top": 70.015625,
+        "height": 1789.84375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-world-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-world",
+        "exists": true,
+        "top": 69.78125,
+        "height": 114.234375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-countries-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-countries",
+        "exists": true,
+        "top": 70.015625,
+        "height": 2454.03125,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-connections-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-connections",
+        "exists": true,
+        "top": 70.046875,
+        "height": 281.875,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-analysis-tools-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-analysis-tools",
+        "exists": true,
+        "top": 69.921875,
+        "height": 8341.578125,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "click-tools-clear-desktop-zh-light",
+      "passed": true,
+      "actual": {
+        "top": 70.296875,
+        "bar": 54,
+        "open": true
+      }
+    },
+    {
+      "id": "no-page-exceptions-desktop-zh-light",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "landing-intl-growth-inflation-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-growth-inflation",
+        "exists": true,
+        "top": 70.25,
+        "height": 35.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-central-banks-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-central-banks",
+        "exists": true,
+        "top": 69.640625,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-credit-bonds-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-credit-bonds",
+        "exists": true,
+        "top": 69.890625,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-lb-board-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "lb-board",
+        "exists": true,
+        "top": 70.1875,
+        "height": 450.984375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-country-JP-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-country-JP",
+        "exists": true,
+        "top": 70.015625,
+        "height": 1789.84375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-world-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-world",
+        "exists": true,
+        "top": 69.78125,
+        "height": 114.234375,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-countries-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-countries",
+        "exists": true,
+        "top": 70.015625,
+        "height": 2454.03125,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-connections-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-connections",
+        "exists": true,
+        "top": 70.046875,
+        "height": 281.875,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-analysis-tools-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-analysis-tools",
+        "exists": true,
+        "top": 69.921875,
+        "height": 8341.578125,
+        "toolbarTop": 0,
+        "toolbarBottom": 54,
+        "toolbarStuck": true,
+        "viewportHeight": 900,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "click-tools-clear-desktop-zh-dark",
+      "passed": true,
+      "actual": {
+        "top": 70.296875,
+        "bar": 54,
+        "open": true
+      }
+    },
+    {
+      "id": "no-page-exceptions-desktop-zh-dark",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "landing-intl-growth-inflation-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-growth-inflation",
+        "exists": true,
+        "top": 102.046875,
+        "height": 35.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-central-banks-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-central-banks",
+        "exists": true,
+        "top": 102.1875,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-credit-bonds-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-credit-bonds",
+        "exists": true,
+        "top": 102.375,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-lb-board-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "id": "lb-board",
+        "exists": true,
+        "top": 101.546875,
+        "height": 595.40625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-country-JP-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-country-JP",
+        "exists": true,
+        "top": 102.015625,
+        "height": 2566.625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-world-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-world",
+        "exists": true,
+        "top": 102.09375,
+        "height": 179.625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-countries-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-countries",
+        "exists": true,
+        "top": 101.71875,
+        "height": 3571.90625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-connections-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-connections",
+        "exists": true,
+        "top": 101.625,
+        "height": 787.515625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-analysis-tools-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-analysis-tools",
+        "exists": true,
+        "top": 102.140625,
+        "height": 16016.640625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "click-tools-clear-mobile-en-light",
+      "passed": true,
+      "actual": {
+        "top": 102.171875,
+        "bar": 86,
+        "open": true
+      }
+    },
+    {
+      "id": "no-page-exceptions-mobile-en-light",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "landing-intl-growth-inflation-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-growth-inflation",
+        "exists": true,
+        "top": 102.046875,
+        "height": 35.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-central-banks-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-central-banks",
+        "exists": true,
+        "top": 102.1875,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-credit-bonds-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-credit-bonds",
+        "exists": true,
+        "top": 102.375,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-lb-board-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "lb-board",
+        "exists": true,
+        "top": 101.546875,
+        "height": 595.40625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-country-JP-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-country-JP",
+        "exists": true,
+        "top": 102.015625,
+        "height": 2566.625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-world-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-world",
+        "exists": true,
+        "top": 102.09375,
+        "height": 179.625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-countries-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-countries",
+        "exists": true,
+        "top": 101.71875,
+        "height": 3571.90625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-connections-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-connections",
+        "exists": true,
+        "top": 101.625,
+        "height": 787.515625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-analysis-tools-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-analysis-tools",
+        "exists": true,
+        "top": 102.140625,
+        "height": 16016.640625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "click-tools-clear-mobile-en-dark",
+      "passed": true,
+      "actual": {
+        "top": 102.171875,
+        "bar": 86,
+        "open": true
+      }
+    },
+    {
+      "id": "no-page-exceptions-mobile-en-dark",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "landing-intl-growth-inflation-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-growth-inflation",
+        "exists": true,
+        "top": 101.609375,
+        "height": 35.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-central-banks-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-central-banks",
+        "exists": true,
+        "top": 102.390625,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-credit-bonds-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-credit-bonds",
+        "exists": true,
+        "top": 101.984375,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-lb-board-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "lb-board",
+        "exists": true,
+        "top": 102.171875,
+        "height": 746.859375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-country-JP-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-country-JP",
+        "exists": true,
+        "top": 101.765625,
+        "height": 2440.1875,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-world-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-world",
+        "exists": true,
+        "top": 102.09375,
+        "height": 162.03125,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-countries-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-countries",
+        "exists": true,
+        "top": 102.125,
+        "height": 3378.84375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-connections-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-connections",
+        "exists": true,
+        "top": 101.96875,
+        "height": 723.765625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-analysis-tools-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-analysis-tools",
+        "exists": true,
+        "top": 101.734375,
+        "height": 14812.328125,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "click-tools-clear-mobile-zh-light",
+      "passed": true,
+      "actual": {
+        "top": 101.859375,
+        "bar": 86,
+        "open": true
+      }
+    },
+    {
+      "id": "no-page-exceptions-mobile-zh-light",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "landing-intl-growth-inflation-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-growth-inflation",
+        "exists": true,
+        "top": 101.609375,
+        "height": 35.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-central-banks-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-central-banks",
+        "exists": true,
+        "top": 102.390625,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-credit-bonds-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-credit-bonds",
+        "exists": true,
+        "top": 101.984375,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-lb-board-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "lb-board",
+        "exists": true,
+        "top": 102.171875,
+        "height": 746.859375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-country-JP-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-country-JP",
+        "exists": true,
+        "top": 101.765625,
+        "height": 2440.1875,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-world-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-world",
+        "exists": true,
+        "top": 102.09375,
+        "height": 162.03125,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-countries-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-countries",
+        "exists": true,
+        "top": 102.125,
+        "height": 3378.84375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-connections-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-connections",
+        "exists": true,
+        "top": 101.96875,
+        "height": 723.765625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-analysis-tools-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-analysis-tools",
+        "exists": true,
+        "top": 101.734375,
+        "height": 14812.328125,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 844,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "click-tools-clear-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "top": 101.859375,
+        "bar": 86,
+        "open": true
+      }
+    },
+    {
+      "id": "no-page-exceptions-mobile-zh-dark",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "landing-intl-growth-inflation-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-growth-inflation",
+        "exists": true,
+        "top": 102.015625,
+        "height": 57.1875,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-central-banks-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-central-banks",
+        "exists": true,
+        "top": 101.53125,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-credit-bonds-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-credit-bonds",
+        "exists": true,
+        "top": 102.125,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-lb-board-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "id": "lb-board",
+        "exists": true,
+        "top": 101.59375,
+        "height": 595.40625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-country-JP-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-country-JP",
+        "exists": true,
+        "top": 102.109375,
+        "height": 2772.703125,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-world-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-world",
+        "exists": true,
+        "top": 102.09375,
+        "height": 217.46875,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-countries-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-countries",
+        "exists": true,
+        "top": 101.5625,
+        "height": 3860.125,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-connections-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-connections",
+        "exists": true,
+        "top": 101.6875,
+        "height": 851.265625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-analysis-tools-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-analysis-tools",
+        "exists": true,
+        "top": 101.953125,
+        "height": 18310.375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "click-tools-clear-narrow-en-light",
+      "passed": true,
+      "actual": {
+        "top": 101.578125,
+        "bar": 86,
+        "open": true
+      }
+    },
+    {
+      "id": "no-page-exceptions-narrow-en-light",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "landing-intl-growth-inflation-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-growth-inflation",
+        "exists": true,
+        "top": 102.015625,
+        "height": 57.1875,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-central-banks-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-central-banks",
+        "exists": true,
+        "top": 101.53125,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-credit-bonds-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-credit-bonds",
+        "exists": true,
+        "top": 102.125,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-lb-board-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "lb-board",
+        "exists": true,
+        "top": 101.59375,
+        "height": 595.40625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-country-JP-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-country-JP",
+        "exists": true,
+        "top": 102.109375,
+        "height": 2772.703125,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-world-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-world",
+        "exists": true,
+        "top": 102.09375,
+        "height": 217.46875,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-countries-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-countries",
+        "exists": true,
+        "top": 101.5625,
+        "height": 3860.125,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-connections-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-connections",
+        "exists": true,
+        "top": 101.6875,
+        "height": 851.265625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-analysis-tools-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-analysis-tools",
+        "exists": true,
+        "top": 101.953125,
+        "height": 18310.375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "click-tools-clear-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "top": 101.578125,
+        "bar": 86,
+        "open": true
+      }
+    },
+    {
+      "id": "no-page-exceptions-narrow-en-dark",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "landing-intl-growth-inflation-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-growth-inflation",
+        "exists": true,
+        "top": 101.5,
+        "height": 35.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-central-banks-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-central-banks",
+        "exists": true,
+        "top": 102.3125,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-credit-bonds-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-credit-bonds",
+        "exists": true,
+        "top": 102.3125,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-lb-board-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "lb-board",
+        "exists": true,
+        "top": 101.796875,
+        "height": 746.859375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-country-JP-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-country-JP",
+        "exists": true,
+        "top": 102.359375,
+        "height": 2573.296875,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-world-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-world",
+        "exists": true,
+        "top": 102.09375,
+        "height": 179.625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-countries-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-countries",
+        "exists": true,
+        "top": 101.71875,
+        "height": 3525.453125,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-connections-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "imc-connections",
+        "exists": true,
+        "top": 102.171875,
+        "height": 723.765625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-analysis-tools-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "id": "intl-analysis-tools",
+        "exists": true,
+        "top": 101.9375,
+        "height": 16120.5625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "click-tools-clear-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "top": 102.0625,
+        "bar": 86,
+        "open": true
+      }
+    },
+    {
+      "id": "no-page-exceptions-narrow-zh-light",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "landing-intl-growth-inflation-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-growth-inflation",
+        "exists": true,
+        "top": 101.5,
+        "height": 35.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-central-banks-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-central-banks",
+        "exists": true,
+        "top": 102.3125,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-credit-bonds-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-credit-bonds",
+        "exists": true,
+        "top": 102.3125,
+        "height": 22.09375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-lb-board-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "lb-board",
+        "exists": true,
+        "top": 101.796875,
+        "height": 746.859375,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-country-JP-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-country-JP",
+        "exists": true,
+        "top": 102.359375,
+        "height": 2573.296875,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-world-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-world",
+        "exists": true,
+        "top": 102.09375,
+        "height": 179.625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-countries-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-countries",
+        "exists": true,
+        "top": 101.71875,
+        "height": 3525.453125,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-imc-connections-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "imc-connections",
+        "exists": true,
+        "top": 102.171875,
+        "height": 723.765625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "landing-intl-analysis-tools-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "id": "intl-analysis-tools",
+        "exists": true,
+        "top": 101.9375,
+        "height": 16120.5625,
+        "toolbarTop": 0,
+        "toolbarBottom": 86,
+        "toolbarStuck": true,
+        "viewportHeight": 720,
+        "clear": true,
+        "overflow": false,
+        "toolsOpen": true,
+        "assistantInSlot": true
+      }
+    },
+    {
+      "id": "click-tools-clear-narrow-zh-dark",
+      "passed": true,
+      "actual": {
+        "top": 102.0625,
+        "bar": 86,
+        "open": true
+      }
+    },
+    {
+      "id": "no-page-exceptions-narrow-zh-dark",
+      "passed": true,
+      "actual": []
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-intl-growth-inflation-desktop-en-light.png",
+      "sha256": "a9636c97fb19ca9fa9231b2fa2b54fbf72952ca037a82ba3349f974827e9f08f",
+      "bytes": 319684,
+      "captured_at": "2026-10-20T21:04:18.855496+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-intl-central-banks-desktop-en-light.png",
+      "sha256": "ea79910390baaca6f1e4573258e4684db07cc8a16787d9dfb08cc41d02b149e2",
+      "bytes": 191484,
+      "captured_at": "2026-10-20T21:04:20.036193+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-intl-credit-bonds-desktop-en-light.png",
+      "sha256": "0ce6d7cbbf26ce597795571b02a771aba90e9c837b42fb8091a567d0dd102b24",
+      "bytes": 240382,
+      "captured_at": "2026-10-20T21:04:21.211416+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-lb-board-desktop-en-light.png",
+      "sha256": "27fa0567d7be7996b6e7d7a7a82722385a3c17ad9b8ab15f59e68db3156de9d0",
+      "bytes": 235758,
+      "captured_at": "2026-10-20T21:04:22.396567+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-imc-country-JP-desktop-en-light.png",
+      "sha256": "1cd97a47e19185ddb576d8772fc1d7c371b08cf3492276843675f8af373b7206",
+      "bytes": 170682,
+      "captured_at": "2026-10-20T21:04:23.590615+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-imc-country-JP-desktop-en-dark.png",
+      "sha256": "ce8e4f473f6a1642b9848cf7fd2b2d1ff8a3399f3d981eeb2904e6c795c0cd83",
+      "bytes": 145335,
+      "captured_at": "2026-10-20T21:04:36.653179+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-imc-country-JP-desktop-zh-light.png",
+      "sha256": "bd8cd02b12cc269992ee8808d0aeeac95c71ef2d071b039d6dc51048574b285c",
+      "bytes": 175097,
+      "captured_at": "2026-10-20T21:04:49.687902+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-imc-country-JP-desktop-zh-dark.png",
+      "sha256": "af23b183fcce5c7239d7b92afabfdc4daaeb4903ea2451f93e16f09a80848f45",
+      "bytes": 150128,
+      "captured_at": "2026-10-20T21:05:02.446284+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-imc-country-JP-mobile-en-light.png",
+      "sha256": "4de9d0017d89ee6e6c2d2f31eb78ef8b7fcc9a1e78e295837bc8b28ac9d1946e",
+      "bytes": 96126,
+      "captured_at": "2026-10-20T21:05:15.348740+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-imc-country-JP-mobile-en-dark.png",
+      "sha256": "128db8d695beb24ccfcb2e3f2a24ee5887a28af7a2ca8bc63f0e43db6323a35a",
+      "bytes": 88905,
+      "captured_at": "2026-10-20T21:05:27.844587+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-imc-country-JP-mobile-zh-light.png",
+      "sha256": "58e1fd8f659dde1510f498046228d7262aff869e8a1d1fd6d8f76b28d9964fc2",
+      "bytes": 93718,
+      "captured_at": "2026-10-20T21:05:40.487155+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-intl-growth-inflation-mobile-zh-dark.png",
+      "sha256": "37bf4cc4415c9d8096b02efc98767297bd60501f3906fa0d8f4757b1702ab327",
+      "bytes": 157855,
+      "captured_at": "2026-10-20T21:05:48.866243+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-intl-central-banks-mobile-zh-dark.png",
+      "sha256": "a4560fa881c2502fc4c73cbc912d05366caec662951381a392953b653990fe0f",
+      "bytes": 89121,
+      "captured_at": "2026-10-20T21:05:49.955704+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-intl-credit-bonds-mobile-zh-dark.png",
+      "sha256": "9cf14e67866a0c7a1f65dc0c207ca264e53bf6ec5f4c235fb32c222261e16fa8",
+      "bytes": 80001,
+      "captured_at": "2026-10-20T21:05:51.038517+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-lb-board-mobile-zh-dark.png",
+      "sha256": "0d57499117bf9dd7c223c0b3332ebcb4e2971959126fdeb76cc6059d10a11d18",
+      "bytes": 75874,
+      "captured_at": "2026-10-20T21:05:52.128269+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-imc-country-JP-mobile-zh-dark.png",
+      "sha256": "566926dd07b25ddf2db4cac572eae0890c1fac27f8a1e1d9af723334aaf77e4c",
+      "bytes": 85742,
+      "captured_at": "2026-10-20T21:05:53.250314+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-intl-growth-inflation-narrow-en-light.png",
+      "sha256": "7cf5551cf95becdbf49812a91baa96a42e6a2ae31c8b22e9c319b78ab2cb5c45",
+      "bytes": 122722,
+      "captured_at": "2026-10-20T21:06:01.509283+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-intl-central-banks-narrow-en-light.png",
+      "sha256": "eff9ab9f7ee2aa91de8b78c39d32475e4de9e91efb65b94496db160637b6154e",
+      "bytes": 67276,
+      "captured_at": "2026-10-20T21:06:02.630084+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-intl-credit-bonds-narrow-en-light.png",
+      "sha256": "c488e246973226b0e99b08ffbd762f93e4a86b36c6f0d02cf48af377eb99e7c0",
+      "bytes": 60607,
+      "captured_at": "2026-10-20T21:06:03.729493+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-lb-board-narrow-en-light.png",
+      "sha256": "6bdb985bf82a554a5d6867bb6e6ec734fc74daf3d388d29471e07e1668d942ba",
+      "bytes": 76250,
+      "captured_at": "2026-10-20T21:06:04.833510+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-imc-country-JP-narrow-en-light.png",
+      "sha256": "4140ce6cfbe014b7f30ee76c2c0587df3a3ad2f11e78b99026ca61acf4eca855",
+      "bytes": 82474,
+      "captured_at": "2026-10-20T21:06:06.319506+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-intl-growth-inflation-narrow-en-dark.png",
+      "sha256": "49af792ca8a895746c945a8b9a91eb991b94a548b2e037135cba33f40b82102d",
+      "bytes": 125452,
+      "captured_at": "2026-10-20T21:06:14.856719+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-intl-central-banks-narrow-en-dark.png",
+      "sha256": "781f590df253e743978c29d8bf3c233678d44bebb0c9e4775a87367392b3d099",
+      "bytes": 67317,
+      "captured_at": "2026-10-20T21:06:15.978292+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-intl-credit-bonds-narrow-en-dark.png",
+      "sha256": "49e664c81ba322c4d3965ecceca54aea0486da5137bff4f943509a64d60e7a5d",
+      "bytes": 59522,
+      "captured_at": "2026-10-20T21:06:17.092930+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-lb-board-narrow-en-dark.png",
+      "sha256": "14b4417f454e9d149d0a3e85581b4553bb05b5ad8fae9884594234171346f8a8",
+      "bytes": 76633,
+      "captured_at": "2026-10-20T21:06:18.213268+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-imc-country-JP-narrow-en-dark.png",
+      "sha256": "6638daf779bd36765276c97173f5986109edeb9981abb2a9efe011457bc242d3",
+      "bytes": 75178,
+      "captured_at": "2026-10-20T21:06:19.317398+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-imc-country-JP-narrow-zh-light.png",
+      "sha256": "c54a59989872f5c4c13b981d12c89aa9159c4ee8e69fa25f07e89c6fab1b35f0",
+      "bytes": 81333,
+      "captured_at": "2026-10-20T21:06:31.957177+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock4_anchors/anchor-imc-country-JP-narrow-zh-dark.png",
+      "sha256": "c1fdf8b0d9031a54f10eca587e304d93aa473d66f02c3d3dec7e3948e53e5460",
+      "bytes": 73869,
+      "captured_at": "2026-10-20T21:06:44.745580+00:00"
+    }
+  ],
+  "passed": 132,
+  "failed": 0,
+  "limits": [
+    "Direct fragment loads and native navigation clicks; no manual scroll correction used in this probe.",
+    "Actual isolated anonymous browser; no source reacquisition or authenticated session."
+  ]
+}

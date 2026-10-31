@@ -1,0 +1,52 @@
+{
+  "schema": "intl.main_composition_runtime_summary.v1",
+  "started_at": "2026-10-22T08:19:49.193838+00:00",
+  "source_commit": "48b5c3312a22548010f330f03ac0b261695c16b6",
+  "html_sha256": "8bb526d514e49ad35a4dc577684ff8da78b460f3f2ba463d3830c53843c44cbc",
+  "build_receipt_sha256": "e091465cf5e67f7222cd197e0cafadc582b97b3ee47089ddda159d04627d9912",
+  "retained_input_count": 510,
+  "retained_assets": 43,
+  "checks": [
+    {
+      "name": "frozen_country_equivalence",
+      "exit_code": 0,
+      "duration_seconds": 0.72,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/frozen_country_equivalence.log",
+      "log_sha256": "66ddd45534e230501b4c535ad57f627040c0de05e5717e57cc3bc24956a9a8f5"
+    },
+    {
+      "name": "standalone_fragment_landings",
+      "exit_code": 0,
+      "duration_seconds": 30.44,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/standalone_fragment_landings.log",
+      "log_sha256": "1e729cf8c3504cc10a63df810c57415e4730c616ad31f3ad75b2ad26f27531ae"
+    },
+    {
+      "name": "standalone_country_history",
+      "exit_code": 0,
+      "duration_seconds": 14.92,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/standalone_country_history.log",
+      "log_sha256": "933b8ee57c3bfd27d2aec7d26d73705a12b73139e649244c1dc8003a004ee3f5"
+    }
+  ],
+  "landings": {
+    "receipt": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/toolbar_main90df20261022_landings.json",
+    "sha256": "d7b197fe55ce162cf36734311cc803c2c031631657228831023b60f060397856",
+    "passed": 22,
+    "failed": 0,
+    "source_commit": "48b5c3312a22548010f330f03ac0b261695c16b6",
+    "html_sha256": "8bb526d514e49ad35a4dc577684ff8da78b460f3f2ba463d3830c53843c44cbc"
+  },
+  "country_history": {
+    "receipt": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/country_history_main90df20261022.json",
+    "sha256": "fe7e1a27a8ab6177ee6f059166947a698f9b73fd460b3c019f18e96c6dc00487",
+    "passed": 28,
+    "failed": 0,
+    "source_commit": "48b5c3312a22548010f330f03ac0b261695c16b6",
+    "html_sha256": "8bb526d514e49ad35a4dc577684ff8da78b460f3f2ba463d3830c53843c44cbc"
+  },
+  "countries_equal": true,
+  "completed_at": "2026-10-22T08:20:20.374570+00:00",
+  "head_unchanged": true,
+  "pass": true
+}

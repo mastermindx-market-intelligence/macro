@@ -1,0 +1,74 @@
+{
+  "source_commit": "ca4efe7b36a47887c18746ffa9d931e15b97e5f2",
+  "links": [
+    {
+      "label": "Open Leadership rotation \u6253\u5f00\u9886\u6da8\u8f6e\u52a8",
+      "chain": [
+        {
+          "tag": "a",
+          "class": [
+            "intl-library__tool-link"
+          ]
+        },
+        {
+          "tag": "li",
+          "class": [
+            "intl-library__tool"
+          ]
+        },
+        {
+          "tag": "ol",
+          "class": [
+            "intl-library__tools"
+          ]
+        },
+        {
+          "tag": "section",
+          "class": [
+            "intl-library__group"
+          ],
+          "data-im-library-group": "leaders",
+          "id": "im-catalogue-library-group-1"
+        },
+        {
+          "tag": "div",
+          "class": [
+            "intl-library__groups"
+          ],
+          "id": "im-catalogue-library-groups"
+        },
+        {
+          "tag": "section",
+          "class": [
+            "intl-library"
+          ],
+          "id": "im-catalogue-library"
+        },
+        {
+          "tag": "section",
+          "class": [
+            "intl-workspace"
+          ]
+        },
+        {
+          "tag": "details",
+          "id": "intl-analysis-tools"
+        },
+        {
+          "tag": "main",
+          "class": [
+            "intl-flow"
+          ]
+        },
+        {
+          "tag": "body",
+          "class": [
+            "page-intl",
+            "imc-page"
+          ]
+        }
+      ]
+    }
+  ],
+  "visibility_not_measured": true
+}

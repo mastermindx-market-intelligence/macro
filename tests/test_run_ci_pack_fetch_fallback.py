@@ -273,7 +273,9 @@ prepare_canonical_main(
 '''
 
 
-def _assert_international_canonical_fetch(definition: dict[str, object]) -> None:
+def _assert_international_canonical_fetch(
+    definition: dict[str, object], *, frozen_test: str = "tests/test_intl_gs_foundation.py"
+) -> None:
     """Pin the required gate, its uncaught helper call, and its shell envelope."""
     gates = [step for step in definition.get('steps', [])
              if isinstance(step, dict) and step.get('name') == _INTERNATIONAL_CANONICAL_STEP]
@@ -282,7 +284,7 @@ def _assert_international_canonical_fetch(definition: dict[str, object]) -> None
     steps = definition['steps']
     frozen_steps = [index for index, step in enumerate(steps)
                     if isinstance(step, dict) and
-                    'test_intl_gs_foundation.py' in str(step.get('run', ''))]
+                    frozen_test in str(step.get('run', ''))]
     assert len(frozen_steps) == 1 and steps.index(gate) < frozen_steps[0], (
         'International canonical gate must precede its frozen-file test'
     )
@@ -323,8 +325,14 @@ def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
             for step in definition.get("steps", [])
             if isinstance(step, dict) and "run" in step
         ]
-        if job_id == "international-workspace-browser":
-            _assert_international_canonical_fetch(definition)
+        helper_consumers = {
+            "international-workspace-browser": "tests/test_intl_gs_foundation.py",
+            "international-dislocation-explorer": "tests/test_intl_gs_dislocations_view.py",
+        }
+        if job_id in helper_consumers:
+            _assert_international_canonical_fetch(
+                definition, frozen_test=helper_consumers[job_id]
+            )
         else:
             assert any(
                 "git fetch origin " in run and "github.base_ref" in run for run in runs
@@ -342,6 +350,25 @@ def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
             assert forbidden not in command_surface, (
                 f"{job_id} depends on unrelated remote namespace via {forbidden!r}"
             )
+
+
+@pytest.mark.parametrize("case", [
+    "missing-gate", "renamed-gate", "duplicate-gate", "conditional-gate",
+    "gate-after-tests", "continue-on-error", "missing-import", "missing-call",
+    "wrong-import", "wrong-helper", "wrong-tested-identity",
+    "wrong-fallback-identity", "wrong-base", "swallowed-exception",
+    "shell-or-true", "trailing-shell",
+])
+def test_w3u_bounded_canonical_fetch_rejects_contract_mutation(case: str) -> None:
+    """W3U must keep the exact fail-closed helper before its actual frozen guard."""
+    payload = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
+    definition = _international_contract_mutation(
+        payload["jobs"]["international-dislocation-explorer"], case
+    )
+    with pytest.raises(AssertionError):
+        _assert_international_canonical_fetch(
+            definition, frozen_test="tests/test_intl_gs_dislocations_view.py"
+        )
 
 
 @pytest.fixture(scope="module")

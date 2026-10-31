@@ -1,0 +1,24 @@
+{
+  "schema": "intl.authority_inventory_blocker.v1",
+  "observed_head": "ba4466fc170f2f4f3cdfdb131ca6b51508703934",
+  "pr": 9596,
+  "complete_owner_git_path_count": 3080,
+  "trusted_limit": 3000,
+  "trusted_controller_source": "200c72cdc69b93c494e2615076c03f0f3c8313fd:scripts/ci_authority.py",
+  "check": {
+    "id": 120082470906,
+    "name": "ci-authority/main",
+    "status": "completed",
+    "conclusion": "failure",
+    "completed_at": "2026-10-22T20:52:45Z",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/runs/120082470906",
+    "output": {
+      "title": "CI authority context rejected",
+      "summary": "{\"schema\":\"ci.authority.v1\",\"event\":\"pull_request_target\",\"repository\":\"mastermindx-market-intelligence/macro\",\"pull_request_number\":9596,\"event_action\":\"edited\",\"head_sha\":\"ba4466fc170f2f4f3cdfdb131ca6b51508703934\",\"head_repository\":\"mastermindx-market-intelligence/macro\",\"base_sha\":\"2d33475adef502ab6b00b8003356c1b0ad1673c0\",\"base_ref\":\"main\",\"base_repository\":\"mastermindx-market-intelligence/macro\",\"author\":\"mastermindxryan\",\"actor\":\"mastermindx-2\",\"current_base_sha\":null,\"post_files_base_sha\":null,\"inventory_base_sha\":null,\"changed_files_snapshot_attempts\":0,\"changed_file_count\":null,\"authority_hit_count\":0,\"authority_hits\":[],\"author_admin_verified\":false,\"actor_admin_verified\":false,\"admin_verified\":false,\"allowed\":false,\"reason\":\"current_pull_identity_rejected\",\"check_context\":\"ci-authority/main\",\"context_base_ref\":\"main\",\"context_active\":true,\"context_allowed\":false,\"context_reason\":\"current_pull_identity_rejected\"}",
+      "text": null,
+      "annotations_count": 0,
+      "annotations_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/check-runs/120082470906/annotations"
+    }
+  },
+  "ruling": "Genuine active authority rejection; not waiting for logical CI. Preserve gate and reduce redundant evidence paths by fully verified archive consolidation."
+}

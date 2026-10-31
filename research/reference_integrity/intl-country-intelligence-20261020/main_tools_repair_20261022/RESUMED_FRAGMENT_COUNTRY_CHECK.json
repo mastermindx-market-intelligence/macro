@@ -1,0 +1,31 @@
+{
+  "started_at": "2026-10-22T06:15:31.759106+00:00",
+  "reason": "User requested resumed fragment-landings and country-evidence check first",
+  "source_commit": "ca4efe7b36a47887c18746ffa9d931e15b97e5f2",
+  "checks": [
+    {
+      "name": "country_equivalence",
+      "driver_sha256": "aa9ea5ffc737a52b043eb702ec40d7666c320dc8a3ba9e4359986444cbd5aedd",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/compare_country_build.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "52834e3305d48e4beada6e90544e1d0b09fdc7514b52008ac0e6315887c06049"
+    },
+    {
+      "name": "standalone_toolbar_landings",
+      "driver_sha256": "489021987f18862c190a2323d7518bc6f02affc865c916cb1518d8ddf9299144",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/verify_standalone_toolbar_landings.py",
+        "--label",
+        "shelltools20261022"
+      ],
+      "exit_code": 0,
+      "log_sha256": "a352ee433ab961b2b714671b6130011041f48c557dac8712f5c4d0c351fc4c73"
+    }
+  ],
+  "completed_at": "2026-10-22T06:16:02.429812+00:00",
+  "pass": true
+}

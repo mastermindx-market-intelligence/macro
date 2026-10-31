@@ -4,8 +4,8 @@ site/intl_stocks.html (stocks) + site/intl_stock.html (per-stock search shell).
 Standalone like scripts/build_canada.py — shares only the parquet store. Recomputes
 the per-country regimes (live == backtest), assembles the cross-country comparison,
 the pooled standouts and the flagged sector-rotation board, and renders the dark,
-bilingual templates/intl.html.j2 (rendered twice via a `mode` flag). Returns 0 on
-ANY engine error so it can never break the macro / vector site builds.
+bilingual templates/intl.html.j2 (rendered twice via a `mode` flag). Optional
+stock tools degrade independently; a failed primary refresh returns nonzero.
 
 Usage: python -m scripts.build_intl   (run after build_site, before build_vector)
 """
@@ -348,9 +348,9 @@ def main() -> int:
     try:
         from engine.intl_run import run
         latest = run()
-    except Exception as e:  # noqa: BLE001 — never break the site build
-        log.error("intl engine failed (%s); skipping intl page", e)
-        return 0
+    except Exception as e:  # noqa: BLE001 — expose a failed primary refresh
+        log.error("intl engine failed (%s); intl page was not refreshed", e)
+        return 1
 
     # Five first-class country/region macro dashboards share the freshly computed
     # international regime records and histories.  Build them before the much
@@ -1047,7 +1047,12 @@ def main() -> int:
 
     try:
         from engine import intl_stocks
-        closes, members = intl_stocks.panel()
+        try:
+            closes, members = intl_stocks.panel()
+        except Exception as e:  # noqa: BLE001 — optional stock cache is not country analysis
+            from pandas import DataFrame
+            log.warning("intl stock panel unavailable (%s); continuing country analysis", e)
+            closes, members = DataFrame(), DataFrame()
         alpha = None
         try:
             alpha = intl_stocks.compute_intl_alpha(closes, members)
@@ -1097,7 +1102,23 @@ def main() -> int:
         except Exception as exc:  # Preserve all incumbent views on adapter failure.
             log.error("International workspace unavailable (%s)", type(exc).__name__)
 
+        from lib.intl_country_inputs import load_country_inputs, load_stored_country_observations
+        from lib.intl_country_assessment import build_country_assessments
+        country_inputs = load_country_inputs(config.data_dir(), Path(__file__).resolve().parent.parent)
+        country_day = datetime.now(timezone.utc).date()
+        stored_observations = load_stored_country_observations(
+            config.data_dir(), config.load().get("intl") or {}, today=country_day)
+        country_analysis = build_country_assessments(
+            latest, today=country_day, stored_observations=stored_observations,
+            official=country_inputs.get("official"), forecasts=country_inputs.get("forecasts"),
+            commentary=country_inputs.get("commentary"),
+            forecast_archive=country_inputs.get("forecast_archive"),
+            policy_decisions=country_inputs.get("policy_decisions"),
+            policy_reviews=country_inputs.get("policy_reviews"),
+        )
+
         vm = {
+            "intl_analysis": country_analysis,
             "intl_workspace": workspace,
             "latest": latest,
             "built": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
@@ -1176,8 +1197,8 @@ def main() -> int:
         }
         (idir / "hub.json").write_text(json.dumps(_hub_payload, indent=2))
     except Exception as e:  # noqa: BLE001
-        log.error("intl page render failed (%s); skipping", e)
-        return 0
+        log.exception("intl page render failed (%s); intl page was not refreshed", e)
+        return 1
     return 0
 
 

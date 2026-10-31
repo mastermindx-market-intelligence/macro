@@ -1,0 +1,519 @@
+{
+  "schema": "mastermind.intl_ci_integration.v1",
+  "recorded_at": "2026-10-19T05:45:45.694743+00:00",
+  "operation": "intl-country-cockpit-20261018",
+  "pr": "https://github.com/mastermindx-market-intelligence/macro/pull/9596",
+  "parent_commit": "88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4",
+  "latest_main_observed": "af9854fe19796f15e2f30a69fbc6c39f60306336",
+  "state": "prepared_for_same_carrier_publication",
+  "qualification": "File hashes bind this follow-up working snapshot, excluding this receipt to avoid a self-reference. A commit, hosted result, review or production status must be read from its actual owner; none is manufactured by this record.",
+  "owned_repairs": {
+    "ci_dependency_paths_added": 63,
+    "affected_jobs": 6,
+    "new_suites_enrolled": 4,
+    "theme_blends_moved_without_color_change": 6,
+    "paired_theme": "site/theme.css"
+  },
+  "semantic_parent_evidence": {
+    "path": "research/paper_international_wave1_wave2/country_outlook_verification_20261019.json",
+    "sha256": "e814d13983cddb3bbdc5ebaa366d6292e8b96d1d8cf8f80c7efb6cb7db268f77",
+    "python_cases": 160,
+    "browser_states": 12,
+    "journeys": 10,
+    "paper_effects": 67,
+    "qualification": "Dated published-parent evidence; country-analysis and collector semantics are unchanged in this follow-up."
+  },
+  "canonical_capture": {
+    "manifest": "mockups/evidence/intl-country-r12/manifest.json",
+    "sha256": "f3af136221b677daa259d030ad873ce70efa8211f13b0256689a8601325e1b15",
+    "states": 24,
+    "rest_states": 8,
+    "interaction_states": 16,
+    "scope": "Anonymous isolated real-template fixture; explicit gaps and failed fixture requests remain in canonical manifest."
+  },
+  "computed_style_comparison": {
+    "checks": 6,
+    "elements_per_check": 3168,
+    "all_identical": true,
+    "scope": "dark/light at rest, hover and focus; original and current HTML with corresponding actual template assets"
+  },
+  "html_publication_tests": {
+    "cases_passed": 10,
+    "log": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_html_publication_tests.txt",
+    "qualification": "Fresh build and existing public-HTML policy selection; overlaps the earlier semantic suite. The new regression proves the country controller remains inline through the normal HTML writer and opt-in JS externalizer."
+  },
+  "contract_final": {
+    "started_at": "2026-10-19T05:30:46.006344+00:00",
+    "finished_at": "2026-10-19T05:37:19.261048+00:00",
+    "manifest_sha256": "d76e31b791503d27ff1d7d70f98007a6274092e2b8506aef5cee7261036e943d",
+    "test_intl_build_sha256": "09636fc99c862233dc37704ba862e9ca3e97ac1a41c8dedbc854fb6199ad544c",
+    "import_closure_findings": {},
+    "country_suites_unwired": [],
+    "other_unwired_suites": [],
+    "qualification": "Canonical current-snapshot primitives; hosted PR-versus-base contract-delta remains separate. Ancestor-init census is report-only and is not used as a gate."
+  },
+  "final_local_gates": [
+    {
+      "name": "ci_manifest_fragments",
+      "command": [
+        "/private/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/ci_pack_fragments.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "ci_manifest_fragments.txt"
+    },
+    {
+      "name": "ci_design_final",
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/country_cockpit_preview/ci_ui_delta.diff"
+      ],
+      "exit_code": 0,
+      "log": "ci_design_final.txt"
+    },
+    {
+      "name": "ci_visual_final",
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/country_cockpit_preview/ci_ui_delta.diff"
+      ],
+      "exit_code": 0,
+      "log": "ci_visual_final.txt"
+    },
+    {
+      "name": "ci_template_site_sync_final",
+      "command": [
+        "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+        "-m",
+        "scripts.check_template_site_sync"
+      ],
+      "exit_code": 0,
+      "log": "ci_template_site_sync_final.txt"
+    }
+  ],
+  "precommit_checks": [
+    {
+      "name": "whitespace",
+      "exit_code": 0,
+      "log": "ci_precommit_whitespace.txt"
+    },
+    {
+      "name": "agentos",
+      "exit_code": 0,
+      "log": "ci_precommit_agentos.txt"
+    }
+  ],
+  "release_dependencies": [
+    {
+      "kind": "inherited_binding_ci_failure",
+      "owner": "https://github.com/mastermindx-market-intelligence/macro/pull/9592#issuecomment-6248814344",
+      "state": "genuine Full RIG receipts required for three October Sector Central packets; inherited-base classification is not a waiver"
+    },
+    {
+      "kind": "independent_release_review",
+      "state": "not dispatched; session discovery returned backend_unavailable / installed Session Bridge owner is unavailable"
+    },
+    {
+      "kind": "normal_render_and_served_acceptance",
+      "state": "not executed; follow original protected release and actual VPS publisher after binding gates"
+    }
+  ],
+  "release_path_document": "research/paper_international_wave1_wave2/RELEASE_PATH_R12_20261019.md",
+  "file_count": 75,
+  "files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha256": "d76e31b791503d27ff1d7d70f98007a6274092e2b8506aef5cee7261036e943d",
+      "bytes": 1746984
+    },
+    {
+      "path": "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+      "sha256": "9ca47fcf3c2e006da1e769d55822943667704940f4e1a2e5fb23d46adee04157",
+      "bytes": 22527
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/EVIDENCE.yml",
+      "sha256": "ababa3c6a42f90ee457502d2da46ffcaa1d8c5210d7a8ea867caeb513bc0ce10",
+      "bytes": 207
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/README.md",
+      "sha256": "ed19409d3f85501d6429457c15bf800b1819bac7641355472ca67070bac658b7",
+      "bytes": 4457
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/manifest.json",
+      "sha256": "f3af136221b677daa259d030ad873ce70efa8211f13b0256689a8601325e1b15",
+      "bytes": 20347
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/0a8307c3f2f427bf--country-focus.png",
+      "sha256": "0a8307c3f2f427bfde1ebf9864ba34fffc116e580b441b2e6ec2a7eed94daf62",
+      "bytes": 440512
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/0a9abae8258952ad--country-hover.png",
+      "sha256": "0a9abae8258952ad9a627816c351dcafe9832e5306e8f9f1119205c3c4187b02",
+      "bytes": 440325
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/1c4c3d594753e3fe--country-hover.png",
+      "sha256": "1c4c3d594753e3febda795e3f4fef2d3de50671e7c8c3353948b823c312aae6a",
+      "bytes": 414175
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/2f930bad7dfd6030--country-hover.png",
+      "sha256": "2f930bad7dfd60301cf30041f5d72844a29ee723f126ebaf014f0d3b128906e7",
+      "bytes": 571768
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/3bb14076d14b0b29.png",
+      "sha256": "3bb14076d14b0b29d7820e2ff7db5a30d032c3d9fbcb7477bf44703923a03548",
+      "bytes": 571133
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/3c4da930d6c3be90--country-hover.png",
+      "sha256": "3c4da930d6c3be9020512483b3ebb131deab1856892ad09ed21bcbc614a4863d",
+      "bytes": 542172
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/67dc15cd8a98d375.png",
+      "sha256": "67dc15cd8a98d3753de1732c4aeadf204397de8382ceb928b690fc78127de7c5",
+      "bytes": 432167
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/79ff9c89c8ec1104--country-focus.png",
+      "sha256": "79ff9c89c8ec1104b14896590ad02b9f2ccbd9f82dce720293f7c2c76537a2ff",
+      "bytes": 423352
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/8073d717656e5ae2--country-focus.png",
+      "sha256": "8073d717656e5ae25408ac971452be8009c725f7011395959c0343de32be3b27",
+      "bytes": 544190
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/85ac052e17e573fa--country-hover.png",
+      "sha256": "85ac052e17e573faa2fb10f4ea47464f6e54ad0bad164627a14c4304060d51ae",
+      "bytes": 422711
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/89f6cc0c2e36a80b--country-hover.png",
+      "sha256": "89f6cc0c2e36a80ba14cdf25d7e1c3590a0ed7e9fcde8b6ee026020ee5683d1e",
+      "bytes": 570439
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/8ca63d72f600cc97--country-hover.png",
+      "sha256": "8ca63d72f600cc97d8193c439ad6b4938bc7059d73aeb134f46f1e56e8c21127",
+      "bytes": 431907
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/8ff4294e3ea408e6.png",
+      "sha256": "8ff4294e3ea408e60c117d1415cb13ea48b7c33651c67410d42497c9d8e739ba",
+      "bytes": 440262
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/975671e7f32742cf.png",
+      "sha256": "975671e7f32742cfc3c674415b54e0648cec71b5a68b3f3aeac9070cc0084340",
+      "bytes": 414358
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/a4fe9e35164b7205--country-focus.png",
+      "sha256": "a4fe9e35164b72058a12e7e28236f0160684862ec665639b6748d295e95d7c1f",
+      "bytes": 432019
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/b794caf254ccbff8--country-focus.png",
+      "sha256": "b794caf254ccbff8eaf3a627f51e2a27dcbfcee1104565a545da124a8934a7a8",
+      "bytes": 544302
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/ccda307ffd239dd1.png",
+      "sha256": "ccda307ffd239dd185964798c6f587e20e9194b4dbbbbd6aa6a0b9d2da8b389f",
+      "bytes": 542419
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/cda4c2ee94fb65f0--country-hover.png",
+      "sha256": "cda4c2ee94fb65f02be42a31e25179781f823c1af4b9fef6742ae957053d77d1",
+      "bytes": 542818
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/e24dd7d07c4c9cde--country-focus.png",
+      "sha256": "e24dd7d07c4c9cde7699b87039072691f6ad782d79d81cc4b6ad36df10ab588e",
+      "bytes": 414711
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/e581fb348a169ab6--country-focus.png",
+      "sha256": "e581fb348a169ab68600cb7172d30cb768d7d41a87725425d27b1a569519a101",
+      "bytes": 574478
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/ed58c6c578cdcdce--country-focus.png",
+      "sha256": "ed58c6c578cdcdceb5196bc4635148960601e8f8d14dd243c4c420743f3f42fc",
+      "bytes": 572313
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/f49b42e20b694e87.png",
+      "sha256": "f49b42e20b694e876fbb2c256a27c909b188413eb9ac5d4067e768589184bd5b",
+      "bytes": 570469
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/f7e39261833a1489.png",
+      "sha256": "f7e39261833a14899ef38fa2f0ecb45f680770a3f3004e2af45f65d07c0184cc",
+      "bytes": 422560
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/screens/fd0b8d4ffd9bc6a6.png",
+      "sha256": "fd0b8d4ffd9bc6a6a83ca53ce579ff5afce8441267d702ec35450f0e456d9fc9",
+      "bytes": 541950
+    },
+    {
+      "path": "mockups/evidence/intl-country-r12/smells.json",
+      "sha256": "fc8fa17060c79e61190fc80bf0a4304a47d5f04ea6f9685b9e9b85461edf0130",
+      "bytes": 3477
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/RELEASE_PATH_R12_20261019.md",
+      "sha256": "7849d50902942209c498c72951a5562a7471592ce305aa86546b1387ad828f00",
+      "bytes": 9910
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/capture_country_cockpit.py",
+      "sha256": "4ea4a527bb92b9279e0b3ea00696c8c3fb322a70c79a0f0698dac46d1b0d0dc5",
+      "bytes": 2315
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_canonical_capture.txt",
+      "sha256": "ca6084bcd137c5b8fa5f1bf206c42f9bddfdb8de2612343d826de485b7a211a3",
+      "bytes": 163
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_contract_final.json",
+      "sha256": "da2f7dd9b79242e7352a04c3ab21a3132023f147cbb7c32b158beaf9d73cd1e5",
+      "bytes": 567
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_contract_primitives.json",
+      "sha256": "9f84d9821573148b2e67ae9c92540293cf8baf669778a8c85988f8dd220f8e1a",
+      "bytes": 5245
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_design_final.txt",
+      "sha256": "26d7d28b5896ed98bcb7ce871025a02e966f81691b703f2a9a49890389264ef5",
+      "bytes": 279
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_design_ratchet.txt",
+      "sha256": "26d7d28b5896ed98bcb7ce871025a02e966f81691b703f2a9a49890389264ef5",
+      "bytes": 279
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_html_publication_tests.txt",
+      "sha256": "8c9841e59416e4a2966522e2626db37a1399a893c037ad49a4229a5381edd444",
+      "bytes": 1078
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_manifest_fragments.txt",
+      "sha256": "5c24bb0309ff837e2139785557fa45685b38af863f1f5511c91f5975d9098424",
+      "bytes": 124
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_precommit_agentos.txt",
+      "sha256": "06814782699e12c153441b531bbf0e235a2f8c70ef2610857aa4055d5f5fe4f8",
+      "bytes": 28984
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_precommit_whitespace.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_published_asset_pair.json",
+      "sha256": "034d2146b40ede68265160d16532e54d88910217e9d845cb77ca2ffb66562237",
+      "bytes": 410
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_repair_validation_runs.json",
+      "sha256": "b770d02817cbf3457677112f3488f222eadf7bf670e8052017415b66ba99c7de",
+      "bytes": 2956
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_template_site_sync.txt",
+      "sha256": "1c96a66ff8bc30647c8f43ff87118bbd8d52cd48a966d47d49eb3cd69fa61a79",
+      "bytes": 504
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_template_site_sync_final.txt",
+      "sha256": "1770c205f9359963447d3ace432553c23f947e0e5cc42aa13473fac45177bba8",
+      "bytes": 44
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_theme_emitter_dependency.txt",
+      "sha256": "900a6fd07cea43420689e7424598b8b3f4620cf7a178ceabadc33927be82bef4",
+      "bytes": 966
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_token_computed_style_comparison.json",
+      "sha256": "2c1b62dfcb78e22d69b1d965d30fa6a114a18bd0621018de92c60b4863d1ba43",
+      "bytes": 1655
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_token_pixel_comparison.json",
+      "sha256": "5d424f01c089aefaf7eb845c605f128d65d1b4a115ceff7ad1083ffb4958a661",
+      "bytes": 6566
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_ui_delta.diff.gz",
+      "sha256": "f51c87a592b6d048377fc245e3a9a478c7dfaca5fb0a6648c4d74977bd8e6064",
+      "bytes": 383463
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_visual_final.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_visual_receipt_after.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_visual_receipt_before.txt",
+      "sha256": "1ff14c42bdeba2c1b81f87355c8ff482f50ee88fe1198d5e205d3888a11760fb",
+      "bytes": 184
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/country_inputs.json",
+      "sha256": "9e6e7133bb22b3f988f175e899b6308d9a3ba519f6a2a54fea216671d9c7d263",
+      "bytes": 143268
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_dark_en.png",
+      "sha256": "70f9f3fe6517f3eb13d814a7b5235e0e84d3d7db60a1d805e2ad4418ae011d83",
+      "bytes": 541097
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_dark_zh.png",
+      "sha256": "8ba670779706bcb3e8da75c53781f3548747991acb9f76ec7c1277b9c83e2460",
+      "bytes": 540554
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_light_en.png",
+      "sha256": "3b5505fc641dd169e02f3b28994070d695307dfe278223d551fc3b34da638638",
+      "bytes": 569554
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_1440_light_zh.png",
+      "sha256": "3bc00d7020bd64b12d8c5821b8dc39de2ab52a1b048be947577073922c6e7c19",
+      "bytes": 569430
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_dark_en.png",
+      "sha256": "b888c2022913ec991c91e474382ebfdd2dfe06247200fecf5f399e1ec3cfc43a",
+      "bytes": 123867
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_light_en.png",
+      "sha256": "7ced592eb27dfced16555d6e387911ab4cc83534f6178918aaadfdc2e0b7154b",
+      "bytes": 126018
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_320_light_zh.png",
+      "sha256": "b47043cb878fada094b3d14e855a7788161816ac4f049f2b61cac14f24e856ec",
+      "bytes": 125607
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_dark_en.png",
+      "sha256": "c98e45e9af5fc41fccc5e35e8822401d339330f4d484370078f0869ee913f610",
+      "bytes": 134193
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_dark_zh.png",
+      "sha256": "a5c405d2f65d694db4854edce0ef00dea2b0c12de3f8381f3f4e5d2cf3440833",
+      "bytes": 134401
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_light_en.png",
+      "sha256": "44857fa43da1b9bb39aa2ec5bfb3706da4335761df471b724f8619cbe0195faa",
+      "bytes": 136585
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/integrated_390_light_zh.png",
+      "sha256": "bb277f5fca44a3932cfd172bcc6113b794d629d5fd00818ca72bdf6df5a41643",
+      "bytes": 137034
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/intl_country_preview.html",
+      "sha256": "0218e3837e4e8169cad219b5f91a7b73bd195d033a69b0f910905dd5767ff3fc",
+      "bytes": 228495
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/intl_integrated_preview.html",
+      "sha256": "b9b77bdeb442c9d0ee7df6f013318145be0536a8a8b138236e0e5349ca0a2dfa",
+      "bytes": 1651820
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/intl_stocks_integrated_preview.html",
+      "sha256": "510b7025401a2f683f5e981ba8ecb77fe16d4c42fad1ac28093721e21adb2410",
+      "bytes": 97987
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/manifest.json",
+      "sha256": "f525cf12912472bf4f216200f91f1fa1ab9a482d83aae14916f372cf8337f875",
+      "bytes": 5150
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/outlook_browser_ci.txt",
+      "sha256": "a07dc193e07be3561506870026631e779ea178e54419d2a18fc99c7fe30f68e3",
+      "bytes": 7707
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/outlook_render_ci.txt",
+      "sha256": "1ea428b7a1a4ffd572ca27bb05bbb6887b73f21dec3447cb9b8751bdf98fc429",
+      "bytes": 4348
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/country_cockpit_preview/outlook_validation_runs.json",
+      "sha256": "8a137e79cdd1c01d7b40580eb1364da3fd0ba1f55aa6319e411298207a70a02c",
+      "bytes": 5832
+    },
+    {
+      "path": "site/theme.css",
+      "sha256": "61428c7d20e6b4a47450def2301d1f087eac354d1db4ec04be001e39a74d2eb7",
+      "bytes": 222317
+    },
+    {
+      "path": "templates/intl_country_cockpit.css",
+      "sha256": "e087262b1cd9832a39e988f31fc90f62ae763f4eb165ab91168fd22856c6dd1f",
+      "bytes": 26031
+    },
+    {
+      "path": "templates/theme.css",
+      "sha256": "61428c7d20e6b4a47450def2301d1f087eac354d1db4ec04be001e39a74d2eb7",
+      "bytes": 222317
+    },
+    {
+      "path": "tests/test_intl_build.py",
+      "sha256": "09636fc99c862233dc37704ba862e9ca3e97ac1a41c8dedbc854fb6199ad544c",
+      "bytes": 11695
+    }
+  ],
+  "checked_diff_input": {
+    "path": "research/paper_international_wave1_wave2/country_cockpit_preview/ci_ui_delta.diff.gz",
+    "compressed_sha256": "f51c87a592b6d048377fc245e3a9a478c7dfaca5fb0a6648c4d74977bd8e6064",
+    "raw_sha256": "9832972409ed460bf8ce9cebebce81c4b51723b9dbe62cd48373d23897cdc25e",
+    "raw_bytes": 3783564,
+    "qualification": "Lossless copy of the exact complete-diff input used by the recorded local design/visual gates; subsequent changes are evidence/continuity records only."
+  },
+  "untracked_whitespace": {
+    "files_checked": 53,
+    "findings": []
+  },
+  "log_normalization": "Only terminal blank lines removed from newly created text logs; observed outputs and outcomes preserved."
+}

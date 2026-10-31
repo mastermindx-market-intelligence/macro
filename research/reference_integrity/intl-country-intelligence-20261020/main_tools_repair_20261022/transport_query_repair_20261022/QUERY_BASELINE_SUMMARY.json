@@ -1,0 +1,62 @@
+{
+  "schema": "intl.query_baseline_summary.v1",
+  "source": "ca4efe7b36a47887c18746ffa9d931e15b97e5f2",
+  "product_equivalent_published_head": "14ed4f12f31b71c63bbabd969aebbf9c4305ccaa",
+  "runs": [
+    {
+      "version": 10,
+      "passed": 73,
+      "failed": 14,
+      "contexts": 5,
+      "status": "reproduced_failure",
+      "exit_code": 1,
+      "driver_sha256": "029cd85598d6562ea289019494b22ce059e3d22491c0042dcfd2121898a580f9",
+      "observation_sha256": "f42b9457fa889fdab8f0a62c40f1327efe6f4a18b3b2c392d6915646af994816",
+      "shutdown": {
+        "stopped_at": "2026-10-22T07:09:37.227664+00:00",
+        "processes": {
+          "child": {
+            "pid": 64024,
+            "exit_code": -15
+          },
+          "parent": {
+            "pid": 64025,
+            "exit_code": 0
+          }
+        },
+        "parent_tracked_source_clean": true
+      },
+      "asset_response_count": 31,
+      "bad_asset_responses": 0,
+      "errors": 0
+    },
+    {
+      "version": 11,
+      "passed": 73,
+      "failed": 14,
+      "contexts": 5,
+      "status": "reproduced_failure",
+      "exit_code": 1,
+      "driver_sha256": "80a6c9b80259188bfff30a8bfb5b42bc34437dbc77bd076b9f4e077c52b22525",
+      "observation_sha256": "81c0beae30df3a6a20fa63ec7b4b31b8852649caeedc50ed1737faba5e4d1a75",
+      "shutdown": {
+        "stopped_at": "2026-10-22T07:18:26.321924+00:00",
+        "processes": {
+          "child": {
+            "pid": 93908,
+            "exit_code": -15
+          },
+          "parent": {
+            "pid": 93909,
+            "exit_code": 0
+          }
+        },
+        "parent_tracked_source_clean": true
+      },
+      "asset_response_count": 31,
+      "bad_asset_responses": 0,
+      "errors": 0
+    }
+  ],
+  "interpretation": "Both untouched-source runs reproduce genuine ordinary warning/nondefault-state/readiness failures. Missing future API metadata is not the sole failure. Later v11 only strengthens candidate retention/restoration oracles; all failures remain nonzero."
+}

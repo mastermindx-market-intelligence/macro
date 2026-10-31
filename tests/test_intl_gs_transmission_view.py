@@ -6,6 +6,7 @@ specimen-marked inputs) injected as ``lib.intl_gs_transmission_view``; the
 production site keeps the Transmission tab ``not_built`` because no admitted
 live IM17 producer exists yet (V1). No data/ path is read, no network call.
 """
+import hashlib
 import importlib.util
 import json
 import re
@@ -21,6 +22,7 @@ from lib.intl_gs_transmission_present import (
     present_transmission,
 )
 from tests import intl_gs_transmission_fixture as fixture
+from tests.test_intl_gs_foundation import _frozen_source_matches
 
 ROOT = Path(__file__).resolve().parents[1]
 # R-03 note (review r1): the frozen spec named 24c59413bbc41bce5ef0b8a2f423330da557e1bd;
@@ -28,6 +30,13 @@ ROOT = Path(__file__).resolve().parents[1]
 # accepted rebase onto a newer main — content-identical to 24c5941 for the three files
 # compared here (surveillance css, theme.css, build_intl.py).
 BASE_SHA = "e6debbb05b47b518f0a39f4dbf9d26f95f9c7fa7"
+# The International country-cockpit builder was separately accepted at
+# bdeb609bf11a170c39713461eace85b47d2ca18c, before W4B merged.
+# Permit ONLY this exact audited byte image alongside the W2F frozen baseline:
+# W4B owns no arbitrary edits to build_intl.py.
+ACCEPTED_COUNTRY_BUILDER_SHA256 = (
+    "edf479bc1d6630d2eaff2a35df15c4a1e3830a0d303757a17d50670a10983b6f"
+)
 CSS_PATH = ROOT / "templates/intl_workspace_surveillance.css"
 TEMPLATE_PATH = ROOT / "templates/intl_workspace/transmission.html.j2"
 PRESENTER_PATH = ROOT / "lib/intl_gs_transmission_present.py"
@@ -521,7 +530,11 @@ def test_native_radio_switch_contract():
     assert module.ASSETS.count("intl_workspace_surveillance.css") == 1
     base = _git_show("scripts/build_intl.py")
     if base is not None:
-        assert base == (ROOT / "scripts/build_intl.py").read_bytes()
+        candidate = (ROOT / "scripts/build_intl.py").read_bytes()
+        assert (candidate == base
+                or hashlib.sha256(candidate).hexdigest()
+                   == ACCEPTED_COUNTRY_BUILDER_SHA256), \
+            "build_intl.py must equal W2F base or exact accepted country builder"
 
 
 # --------------------------------------------------------------------------
@@ -602,8 +615,10 @@ def test_css_block_scoped_literal_free_and_stripe_free():
 
     base_theme = _git_show("templates/theme.css")
     if base_theme is not None:
-        assert base_theme == (ROOT / "templates/theme.css").read_bytes(), \
-            "templates/theme.css must equal the merge base"
+        assert _frozen_source_matches(
+            "templates/theme.css", base_theme,
+            (ROOT / "templates/theme.css").read_bytes(),
+        ), "theme.css must equal W2F base or exact accepted directional country-theme pair"
 
 
 # --------------------------------------------------------------------------

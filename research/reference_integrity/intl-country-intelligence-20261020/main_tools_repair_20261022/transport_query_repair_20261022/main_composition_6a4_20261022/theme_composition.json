@@ -1,0 +1,10 @@
+{
+  "source_parents": [
+    "20d22192613f1f5eb062d85e9aca1b2bb3e48036",
+    "6a4c0079d1aec13b08cb554f6f7424b775165d09"
+  ],
+  "theme_sha256": "d7be48a71598c3c806deb271f346c996dc5136e1030f17546407092b6938e419",
+  "local_additive_lines_preserved": 5,
+  "incoming_theme_exact_after_removing_only_local_additions": true,
+  "template_site_equal": true
+}

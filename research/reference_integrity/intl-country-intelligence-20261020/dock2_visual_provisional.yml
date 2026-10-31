@@ -1,0 +1,134 @@
+role: visual_taste
+reviewer_identity: /root/intl_rig_visual_quarantined
+review_stage: dock2_provisional_visual_review
+reviewed_source_commit: 5b6b88fc16a1b11f2dc394ad17a3ecc996d0cefd
+reviewed_html_sha256: 5111ab2116ab5764b4d6c18d89dc4b6b78b6b90144631d60c2923618d5571d18
+replacement_source_announced: 442042e591d255dd24b540ff240edb4c0410c297
+final_evidence_commit: null
+verdict: PASS_WITH_CONDITIONS
+final_approval: withheld
+status: Dock2 inspection complete; awaiting the faithful dock3 render and final immutable binding.
+
+finding_dispositions:
+  - id: VTC-001
+    status: remains_resolved_in_dock2
+    reason: All four section-navigation labels remain fully visible in the inspected 320px and 390px EN/ZH light/dark entry and reading states, including beside the reserved assistant slot.
+
+  - id: VTC-002
+    status: visibly_restored_in_dock2
+    reason: The recognizable assistant control remains readily reachable in the sticky navigation bar during reading, and all twelve inspected open-panel captures show the existing shared assistant surface.
+
+  - id: VTC-003
+    status: remains_resolved_in_dock2
+    reason: Equity trend or 股市趋势 remains directly associated with each country status in the inspected expanded and collapsed summaries.
+
+  - id: VTC-004
+    original_severity: major
+    status: provisionally_resolved_in_dock2
+    reason: The closed assistant now occupies a reserved slot in the opaque navigation bar and no longer covers thesis, transmission, conditions, or country-summary text in any of the twelve inspected entry and reading combinations.
+    final_resolution_pending: The actual production font and shared visual assets must be included, and the loaded launcher must remain in that slot after the panel closes.
+
+new_visual_findings: []
+
+remaining_conditions:
+  - id: FINAL-RENDER-FIDELITY
+    condition: Inspect dock3 with the production-served Inter fonts and missing local UI assets included.
+    evidence: The dock2 capture manifest records font, account.js, and favicon failures; root confirmed production returns the Inter fonts and account.js successfully and is repairing the bundle.
+    implication: Dock2 establishes the observed toolbar arrangement but does not establish final typography or narrow-width fit with the intended assets.
+
+  - id: FINAL-COUNTRY-LANDING
+    condition: Inspect the repaired Japan desktop ZH-dark same-document landing and its exact source/HTML binding.
+    evidence: toolbar_dock2_landings.json records the Japan section top at -1647.984375px with the toolbar bottom at 54px; the corresponding actual image shows the end of Japan followed by Taiwan rather than Japan's heading.
+    implication: This known landing failure remains open for final acceptance despite the satisfactory toolbar placement.
+
+  - id: FINAL-LOADED-LAUNCHER
+    condition: Verify the loaded mmb-launch control remains inside the toolbar slot after the assistant has opened and closed with the actual shared visual stylesheet.
+    evidence: Dock2 reserved-space checks measure mmb-boot; close/focus checks record focus returning to mmb-launch without recording its post-close geometry.
+    implication: A post-close screenshot and slot measurement would directly settle this remaining placement question.
+
+  - id: FINAL-IMMUTABLE-BINDING
+    condition: Bind the final visual decision to the repaired source, final HTML hash, and frozen evidence commit.
+    implication: This provisional receipt does not approve the announced replacement source or carry approval forward to unexamined captures.
+
+observed_strengths:
+  - The assistant placement integrates with existing navigation without competing with country research or requiring a new floating element over the reading column.
+  - The desktop toolbar remains compact, while the two-row mobile navigation preserves clear labels and a distinct assistant target.
+  - The inspected 320px reading states leave complete thesis and transmission lines visible beneath the toolbar.
+  - The eight complete-page captures preserve the earlier country-first reading hierarchy, compact closed-country rows, and secondary placement of research tools.
+  - Representative successful country and legacy-tool anchor captures place their content below the sticky toolbar.
+  - The shared assistant panel remains legible as a desktop side panel and a full-screen mobile surface in both languages and themes.
+
+inspected_images:
+  - directory: /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock2_repair
+    files:
+      - viewport-desktop-en-light.png
+      - viewport-desktop-en-dark.png
+      - viewport-desktop-zh-light.png
+      - viewport-desktop-zh-dark.png
+      - viewport-mobile-en-light.png
+      - viewport-mobile-en-dark.png
+      - viewport-mobile-zh-light.png
+      - viewport-mobile-zh-dark.png
+      - viewport-narrow-en-light.png
+      - viewport-narrow-en-dark.png
+      - viewport-narrow-zh-light.png
+      - viewport-narrow-zh-dark.png
+      - reading-desktop-en-light.png
+      - reading-desktop-en-dark.png
+      - reading-desktop-zh-light.png
+      - reading-desktop-zh-dark.png
+      - reading-mobile-en-light.png
+      - reading-mobile-en-dark.png
+      - reading-mobile-zh-light.png
+      - reading-mobile-zh-dark.png
+      - reading-narrow-en-light.png
+      - reading-narrow-en-dark.png
+      - reading-narrow-zh-light.png
+      - reading-narrow-zh-dark.png
+      - assistant-open-desktop-en-light.png
+      - assistant-open-desktop-en-dark.png
+      - assistant-open-desktop-zh-light.png
+      - assistant-open-desktop-zh-dark.png
+      - assistant-open-mobile-en-light.png
+      - assistant-open-mobile-en-dark.png
+      - assistant-open-mobile-zh-light.png
+      - assistant-open-mobile-zh-dark.png
+      - assistant-open-narrow-en-light.png
+      - assistant-open-narrow-en-dark.png
+      - assistant-open-narrow-zh-light.png
+      - assistant-open-narrow-zh-dark.png
+      - 6f5d9537b3254f87.png
+      - 41c4bef4a992d248.png
+      - 796b727c51d9899a.png
+      - 9c64a241c0e2373e.png
+      - 9937292b9ef42894.png
+      - 68b38be19584a8b0.png
+      - 57294f0b154e0784.png
+      - 7eaa8645e9c54805.png
+
+  - directory: /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_dock2_anchors
+    files:
+      - anchor-imc-country-JP-narrow-en-dark.png
+      - anchor-imc-country-JP-narrow-zh-light.png
+      - anchor-intl-growth-inflation-narrow-en-light.png
+      - anchor-intl-central-banks-mobile-zh-dark.png
+      - anchor-imc-country-JP-desktop-zh-dark.png
+      - anchor-imc-country-JP-desktop-en-light.png
+      - anchor-intl-credit-bonds-narrow-en-dark.png
+      - anchor-lb-board-mobile-zh-dark.png
+
+supporting_records_examined:
+  directory: /Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020
+  files:
+    - repair_dock2/complete_build_receipt.json
+    - repair_dock2/complete_capture_manifest.json
+    - repair_dock2/review_counterexamples.json
+    - toolbar_dock2_landings.json
+
+limits:
+  - All 52 listed images were actually displayed and examined; the delayed desktop EN-light Japan anchor image was retrieved through its tool-result call before being included.
+  - The build receipt was read through its source, input, HTML, and initial asset entries; the other three listed JSON records were parsed in full.
+  - The seven-country HTML equivalence is supported by the factual equivalence receipt, while visual placement judgments come from the listed images.
+  - The assistant captures show the signed-out state and do not establish authenticated conversation behavior.
+  - No remote processes, source edits, publication actions, or delegated visual judgments were performed.
+  - Original first-pass, rationale-pass, and VTC-004 history remain applicable to their own reviewed artifacts and are not erased by this provisional repair assessment.

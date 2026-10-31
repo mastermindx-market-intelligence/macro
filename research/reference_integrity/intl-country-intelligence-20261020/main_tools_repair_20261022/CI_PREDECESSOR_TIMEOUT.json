@@ -1,0 +1,21 @@
+{
+  "schema": "intl.ci_timeout_diagnosis.v1",
+  "head": "ae6de4e56e2f826beab78f4de29fcaa89f27dbeb",
+  "workflow_run": 39712269996,
+  "job": 119607481390,
+  "pack": "ci-pack-5",
+  "failed_job": "admin-js-no-undef",
+  "observed_failure": "eslint did not finish within 180s; exit 2",
+  "classification": "Tool execution timeout; no lint violation reported. Underlying network/process cause unproven. Check remains failed.",
+  "tested_merge": "e9bf21346",
+  "tested_base": "a1ff21e17ab43872758d653e4295f9a805fca350",
+  "rerun_issued": false,
+  "product_source_change": false,
+  "log_source": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39712269996/job/119607481390",
+  "excerpt": [
+    "2026-10-22T02:48:56.3295600Z check_admin_js: ERROR — eslint did not finish within 180s (cold npx fetch blocked? registry unreachable?)",
+    "2026-10-22T02:48:56.3738783Z ##[error]admin-js-no-undef: step 'admin JS must have no out-of-scope references (eslint no-undef)' exited 2",
+    "2026-10-22T03:11:50.1029372Z CI_PACK_FAILED_JOBS=[]",
+    "2026-10-22T03:12:08.1345754Z CI_PACK_FAILED_JOBS=[\"admin-js-no-undef\"]"
+  ]
+}

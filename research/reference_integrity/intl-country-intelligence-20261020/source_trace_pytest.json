@@ -1,0 +1,28 @@
+{
+  "started_at": "2026-10-20T14:54:25.395387+00:00",
+  "finished_at": "2026-10-20T14:54:38.578277+00:00",
+  "argv": [
+    "/private/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_intl_country_cockpit.py",
+    "tests/test_intl_equity_risk.py",
+    "tests/test_intl_build.py",
+    "tests/test_intl_currency_observation.py",
+    "-q"
+  ],
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "exit_code": 0,
+  "sha256": {
+    "lib/intl_country_inputs.py": "a7d9205597b960e72da41c640fc725ddb59716c60b40226f8e3fb79598065108",
+    "lib/intl_country_assessment.py": "34be50dc9ddda218deeb265aa7090c209a04ddbb00c9b548668ab8041a897919",
+    "engine/intl_equity_risk.py": "2ab13f6accdeb181fc74475d5f800c11b510a55dc7ac03477fe3d1bbb9fc528d",
+    "scripts/build_intl.py": "41e2d7c791c4022f9165c267d31fc5cc4b22b188fbfba2c48a9a1980742a61f0",
+    "templates/intl_country_cockpit.html.j2": "89e39b790652d7209d0f70023a24d1e8114d9b50fb13208c4a10f143d95bf80d",
+    "templates/intl_country_cockpit.css": "1c22937178ac408ef277fa98a55edf5414fc5957d2bf60d40948c5d9e35b4505",
+    "tests/test_intl_country_cockpit.py": "d4b544af112578c1564503e40a7e489ad093d005f4195a364185f5b7c0e57e00",
+    "tests/test_intl_equity_risk.py": "9599196fae0ad7d09e48caa5f22131d06759d9075a9d9e57aca08332b28d5d23",
+    "tests/test_intl_build.py": "52d2d882f862307f76920ff04504ca4c0d34c29fe304dc7e99c7dacac0b563d6"
+  },
+  "log_sha256": "05dd0594aab4309dd94b00598c54523c175031e2f301fbc631598932c99e1f2d"
+}

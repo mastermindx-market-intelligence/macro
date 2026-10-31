@@ -1,0 +1,1162 @@
+TAP version 13
+# Subtest: standalone page: zero surface
+ok 1 - standalone page: zero surface
+  ---
+  duration_ms: 13.85175
+  type: 'test'
+  ...
+# Subtest: candidate guards: flag, generation, referrer
+ok 2 - candidate guards: flag, generation, referrer
+  ---
+  duration_ms: 29.750125
+  type: 'test'
+  ...
+# Subtest: INIT rejects unverified sources without effects
+ok 3 - INIT rejects unverified sources without effects
+  ---
+  duration_ms: 8.867625
+  type: 'test'
+  ...
+# Subtest: missing document meta: initialization_failed, no activation
+ok 4 - missing document meta: initialization_failed, no activation
+  ---
+  duration_ms: 6.563
+  type: 'test'
+  ...
+# Subtest: valid INIT: chrome suppression, context, READY shape
+ok 5 - valid INIT: chrome suppression, context, READY shape
+  ---
+  duration_ms: 6.218875
+  type: 'test'
+  ...
+# Subtest: static chrome rules are dormant and both published assets match their templates
+ok 6 - static chrome rules are dormant and both published assets match their templates
+  ---
+  duration_ms: 6.850334
+  type: 'test'
+  ...
+# Subtest: unverified INIT cannot activate or probe shell CSS
+ok 7 - unverified INIT cannot activate or probe shell CSS
+  ---
+  duration_ms: 2.422833
+  type: 'test'
+  ...
+# Subtest: missing, blocked, wrong or unreadable CSS refuses activation and queued navigation
+ok 8 - missing, blocked, wrong or unreadable CSS refuses activation and queued navigation
+  ---
+  duration_ms: 9.623834
+  type: 'test'
+  ...
+# Subtest: CSS removed during document boot cannot produce initial READY or restoration
+ok 9 - CSS removed during document boot cannot produce initial READY or restoration
+  ---
+  duration_ms: 0.706333
+  type: 'test'
+  ...
+# Subtest: CSS removal prevents subsequent CONTEXT or repeated INIT readiness claims
+ok 10 - CSS removal prevents subsequent CONTEXT or repeated INIT readiness claims
+  ---
+  duration_ms: 2.93975
+  type: 'test'
+  ...
+# Subtest: CONTEXT apply, staleness, unsupported_context
+ok 11 - CONTEXT apply, staleness, unsupported_context
+  ---
+  duration_ms: 6.528166
+  type: 'test'
+  ...
+# Subtest: user themechange echoes as CONTEXT_REQUEST; suppression while applying
+ok 12 - user themechange echoes as CONTEXT_REQUEST; suppression while applying
+  ---
+  duration_ms: 2.044833
+  type: 'test'
+  ...
+# Subtest: VISIBILITY dispatches exactly one CustomEvent shape
+ok 13 - VISIBILITY dispatches exactly one CustomEvent shape
+  ---
+  duration_ms: 1.4675
+  type: 'test'
+  ...
+# Subtest: LOCATION_ACCEPTED and stale kinds have no outbound effect
+ok 14 - LOCATION_ACCEPTED and stale kinds have no outbound effect
+  ---
+  duration_ms: 4.060459
+  type: 'test'
+  ...
+# Subtest: navigate after INIT: catalog-exact admission and closed keys
+ok 15 - navigate after INIT: catalog-exact admission and closed keys
+  ---
+  duration_ms: 3.559875
+  type: 'test'
+  ...
+# Subtest: openAuth intents only
+ok 16 - openAuth intents only
+  ---
+  duration_ms: 0.7105
+  type: 'test'
+  ...
+# Subtest: anchors: projection, same-tab click, external, download
+ok 17 - anchors: projection, same-tab click, external, download
+  ---
+  duration_ms: 2.152834
+  type: 'test'
+  ...
+# Subtest: uncontrolled hashchange/popstate reports navigation_unavailable only
+ok 18 - uncontrolled hashchange/popstate reports navigation_unavailable only
+  ---
+  duration_ms: 1.483542
+  type: 'test'
+  ...
+# Subtest: scroll VIEW_STATE throttled to about 100ms
+ok 19 - scroll VIEW_STATE throttled to about 100ms
+  ---
+  duration_ms: 224.110208
+  type: 'test'
+  ...
+# Subtest: pre-INIT: queue cap 8, replace-only history, drain after INIT
+ok 20 - pre-INIT: queue cap 8, replace-only history, drain after INIT
+  ---
+  duration_ms: 1.320208
+  type: 'test'
+  ...
+# Subtest: pre-INIT sensitive history becomes queued authentication_navigation
+ok 21 - pre-INIT sensitive history becomes queued authentication_navigation
+  ---
+  duration_ms: 0.604458
+  type: 'test'
+  ...
+# Subtest: restore and fresh-page focus
+ok 22 - restore and fresh-page focus
+  ---
+  duration_ms: 1.4485
+  type: 'test'
+  ...
+# Subtest: pagehide: listeners removed, history unwrapped, api inert
+ok 23 - pagehide: listeners removed, history unwrapped, api inert
+  ---
+  duration_ms: 0.534875
+  type: 'test'
+  ...
+# Subtest: catalog bound admits the real 13015 legacy + 14 native projection
+ok 24 - catalog bound admits the real 13015 legacy + 14 native projection
+  ---
+  duration_ms: 13.424917
+  type: 'test'
+  ...
+# Subtest: catalog rejects over-bound totals, duplicates and collisions
+ok 25 - catalog rejects over-bound totals, duplicates and collisions
+  ---
+  duration_ms: 42.448625
+  type: 'test'
+  ...
+# Subtest: transport pairs never reserialize non-reserved query bytes
+ok 26 - transport pairs never reserialize non-reserved query bytes
+  ---
+  duration_ms: 0.882458
+  type: 'test'
+  ...
+# Subtest: fragment anchor click: view first, child replace only, parent push
+ok 27 - fragment anchor click: view first, child replace only, parent push
+  ---
+  duration_ms: 0.685417
+  type: 'test'
+  ...
+# Subtest: already-current fragment scrolls without fabricating a parent entry
+ok 28 - already-current fragment scrolls without fabricating a parent entry
+  ---
+  duration_ms: 0.521667
+  type: 'test'
+  ...
+# Subtest: API navigate of a fragment: child replace only, caller mode preserved
+ok 29 - API navigate of a fragment: child replace only, caller mode preserved
+  ---
+  duration_ms: 0.575708
+  type: 'test'
+  ...
+# Subtest: internal _blank anchors project to the parent href and keep native new-tab clicks
+ok 30 - internal _blank anchors project to the parent href and keep native new-tab clicks
+  ---
+  duration_ms: 0.490041
+  type: 'test'
+  ...
+# Subtest: explicit parent-origin targets are first-party and map back for classification
+ok 31 - explicit parent-origin targets are first-party and map back for classification
+  ---
+  duration_ms: 0.67525
+  type: 'test'
+  ...
+# Subtest: noopener is added without dropping existing rel tokens
+ok 32 - noopener is added without dropping existing rel tokens
+  ---
+  duration_ms: 0.506333
+  type: 'test'
+  ...
+# Subtest: parent-origin hrefs never become a default _self frame navigation
+ok 33 - parent-origin hrefs never become a default _self frame navigation
+  ---
+  duration_ms: 1.394459
+  type: 'test'
+  ...
+# Subtest: newer CONTEXT after the initial READY is acknowledged without restoring
+ok 34 - newer CONTEXT after the initial READY is acknowledged without restoring
+  ---
+  duration_ms: 1.033833
+  type: 'test'
+  ...
+# Subtest: CONTEXT newer than an unsent initial READY yields exactly one READY
+ok 35 - CONTEXT newer than an unsent initial READY yields exactly one READY
+  ---
+  duration_ms: 0.750083
+  type: 'test'
+  ...
+# Subtest: repeated trusted INIT is idempotent and path-validated
+ok 36 - repeated trusted INIT is idempotent and path-validated
+  ---
+  duration_ms: 0.690167
+  type: 'test'
+  ...
+# Subtest: setters run even when the attributes already equal the request
+ok 37 - setters run even when the attributes already equal the request
+  ---
+  duration_ms: 0.518916
+  type: 'test'
+  ...
+# Subtest: a throwing incumbent setter surfaces failure instead of READY
+ok 38 - a throwing incumbent setter surfaces failure instead of READY
+  ---
+  duration_ms: 1.199791
+  type: 'test'
+  ...
+# Subtest: outbound messages match the host contract and never carry auth payloads
+ok 39 - outbound messages match the host contract and never carry auth payloads
+  ---
+  duration_ms: 0.896792
+  type: 'test'
+  ...
+# Subtest: response classification distinguishes actual gate and product documents
+ok 40 - response classification distinguishes actual gate and product documents
+  ---
+  duration_ms: 1.987625
+  type: 'test'
+  ...
+# Subtest: presentation application is visible to incumbent owners only while setters run
+ok 41 - presentation application is visible to incumbent owners only while setters run
+  ---
+  duration_ms: 0.468459
+  type: 'test'
+  ...
+# Subtest: the first context application is observable before activation and never after
+ok 42 - the first context application is observable before activation and never after
+  ---
+  duration_ms: 0.51075
+  type: 'test'
+  ...
+# Subtest: legacy boot theme/lang overwrite is restored at DOM ready and never echoed
+ok 43 - legacy boot theme/lang overwrite is restored at DOM ready and never echoed
+  ---
+  duration_ms: 0.553417
+  type: 'test'
+  ...
+# Subtest: a parent CONTEXT received during loading wins the DOM-ready restoration
+ok 44 - a parent CONTEXT received during loading wins the DOM-ready restoration
+  ---
+  duration_ms: 0.502833
+  type: 'test'
+  ...
+# Subtest: a boot-window INIT repeated while loading still restores exactly once
+ok 45 - a boot-window INIT repeated while loading still restores exactly once
+  ---
+  duration_ms: 1.015292
+  type: 'test'
+  ...
+# Subtest: a throwing setter at DOM-ready restoration is an explicit initialization failure
+ok 46 - a throwing setter at DOM-ready restoration is an explicit initialization failure
+  ---
+  duration_ms: 0.521833
+  type: 'test'
+  ...
+# Subtest: an incumbent setter that overrides the parent presentation blocks READY
+ok 47 - an incumbent setter that overrides the parent presentation blocks READY
+  ---
+  duration_ms: 0.476125
+  type: 'test'
+  ...
+# Subtest: locale read-back prefers data-lang and normalizes the zh-CN html.lang
+ok 48 - locale read-back prefers data-lang and normalizes the zh-CN html.lang
+  ---
+  duration_ms: 0.494542
+  type: 'test'
+  ...
+# Subtest: a genuine post-readiness zh choice survives data-lang/zh-CN and round-trips
+ok 49 - a genuine post-readiness zh choice survives data-lang/zh-CN and round-trips
+  ---
+  duration_ms: 0.476042
+  type: 'test'
+  ...
+# Subtest: _self, _parent and named targets are projected while default handling is kept
+ok 50 - _self, _parent and named targets are projected while default handling is kept
+  ---
+  duration_ms: 0.660083
+  type: 'test'
+  ...
+# Subtest: an unregistered href rewrite is reclassified instead of navigating a stale target
+ok 51 - an unregistered href rewrite is reclassified instead of navigating a stale target
+  ---
+  duration_ms: 0.757042
+  type: 'test'
+  ...
+# Subtest: interactive parser state waits for deferred legacy boot before initial READY
+ok 52 - interactive parser state waits for deferred legacy boot before initial READY
+  ---
+  duration_ms: 0.644625
+  type: 'test'
+  ...
+# Subtest: bootstrap observes DOMContentLoaded before a delayed INIT while images still load
+ok 53 - bootstrap observes DOMContentLoaded before a delayed INIT while images still load
+  ---
+  duration_ms: 0.571834
+  type: 'test'
+  ...
+# Subtest: queued initial fragment callbacks cannot publish boot preferences to the parent
+ok 54 - queued initial fragment callbacks cannot publish boot preferences to the parent
+  ---
+  duration_ms: 0.646917
+  type: 'test'
+  ...
+# Subtest: correct semantic locale cannot conceal a wrong html language at readiness
+ok 55 - correct semantic locale cannot conceal a wrong html language at readiness
+  ---
+  duration_ms: 0.515083
+  type: 'test'
+  ...
+# Subtest: accepted fragment updates reach actual window page subscribers exactly once
+ok 56 - accepted fragment updates reach actual window page subscribers exactly once
+  ---
+  duration_ms: 3.664708
+  type: 'test'
+  ...
+# Subtest: accepted location subscriber may replace current history without an event loop
+ok 57 - accepted location subscriber may replace current history without an event loop
+  ---
+  duration_ms: 0.595292
+  type: 'test'
+  ...
+# Subtest: superseded same-document acknowledgments cannot notify a stale page location
+ok 58 - superseded same-document acknowledgments cannot notify a stale page location
+  ---
+  duration_ms: 0.541666
+  type: 'test'
+  ...
+# Subtest: pathname-changing history routes through the parent without altering the child document
+ok 59 - pathname-changing history routes through the parent without altering the child document
+  ---
+  duration_ms: 0.83825
+  type: 'test'
+  ...
+# Subtest: pre-INIT pathname-changing history stays put and drains as document navigation
+ok 60 - pre-INIT pathname-changing history stays put and drains as document navigation
+  ---
+  duration_ms: 1.806708
+  type: 'test'
+  ...
+# Subtest: same-path history preserves local state and raw query bytes while parent owns entries
+ok 61 - same-path history preserves local state and raw query bytes while parent owns entries
+  ---
+  duration_ms: 1.208083
+  type: 'test'
+  ...
+# Subtest: a full pre-INIT queue cannot mutate an unreported history location
+ok 62 - a full pre-INIT queue cannot mutate an unreported history location
+  ---
+  duration_ms: 0.876083
+  type: 'test'
+  ...
+# Subtest: direct authentication fragments never enter API navigation messages
+ok 63 - direct authentication fragments never enter API navigation messages
+  ---
+  duration_ms: 4.380416
+  type: 'test'
+  ...
+# Subtest: direct authentication fragments never mutate history before or after INIT
+ok 64 - direct authentication fragments never mutate history before or after INIT
+  ---
+  duration_ms: 1.409417
+  type: 'test'
+  ...
+# Subtest: direct authentication-fragment anchor activation is claimed without leaking the URL
+ok 65 - direct authentication-fragment anchor activation is claimed without leaking the URL
+  ---
+  duration_ms: 0.405708
+  type: 'test'
+  ...
+# Subtest: post-readiness context never acknowledges a setter that leaves the presentation wrong
+ok 66 - post-readiness context never acknowledges a setter that leaves the presentation wrong
+  ---
+  duration_ms: 1.064625
+  type: 'test'
+  ...
+# Subtest: repeated INIT cannot falsely acknowledge a broken incumbent setter
+ok 67 - repeated INIT cannot falsely acknowledge a broken incumbent setter
+  ---
+  duration_ms: 0.41425
+  type: 'test'
+  ...
+# Subtest: authentication material in the initial child URL never enters READY
+ok 68 - authentication material in the initial child URL never enters READY
+  ---
+  duration_ms: 0.93525
+  type: 'test'
+  ...
+# Subtest: persisted pagehide preserves the bridge for restored browser documents
+ok 69 - persisted pagehide preserves the bridge for restored browser documents
+  ---
+  duration_ms: 0.60475
+  type: 'test'
+  ...
+# Subtest: credential-bearing history URLs never mutate or enter the protocol
+ok 70 - credential-bearing history URLs never mutate or enter the protocol
+  ---
+  duration_ms: 1.060208
+  type: 'test'
+  ...
+# Subtest: A authored fragment stays same-document across a view query change; an authored path does not
+ok 71 - A authored fragment stays same-document across a view query change; an authored path does not
+  ---
+  duration_ms: 0.833708
+  type: 'test'
+  ...
+# Subtest: B classification reads the current href attribute, never a stale projected record
+ok 72 - B classification reads the current href attribute, never a stale projected record
+  ---
+  duration_ms: 0.759
+  type: 'test'
+  ...
+# Subtest: C raw query bytes decide equality: spaces, plus, comma, %2c, duplicates and empty segments
+ok 73 - C raw query bytes decide equality: spaces, plus, comma, %2c, duplicates and empty segments
+  ---
+  duration_ms: 1.918083
+  type: 'test'
+  ...
+# Subtest: D the helper is pure: no location, history, message, attribute, focus or scroll effect
+ok 74 - D the helper is pure: no location, history, message, attribute, focus or scroll effect
+  ---
+  duration_ms: 1.519375
+  type: 'test'
+  ...
+# Subtest: page search: exact decoded transport keys are removed without changing other bytes
+ok 75 - page search: exact decoded transport keys are removed without changing other bytes
+  ---
+  duration_ms: 1.9785
+  type: 'test'
+  ...
+# Subtest: page search: repeated pre and post INIT reads have no effects or queued work
+ok 76 - page search: repeated pre and post INIT reads have no effects or queued work
+  ---
+  duration_ms: 1.001125
+  type: 'test'
+  ...
+# Subtest: page search: actual cleanup retires cached reader while persisted pagehide preserves it
+ok 77 - page search: actual cleanup retires cached reader while persisted pagehide preserves it
+  ---
+  duration_ms: 0.4605
+  type: 'test'
+  ...
+# Subtest: page search: replacement and throwing current capability or location refuse without throwing
+ok 78 - page search: replacement and throwing current capability or location refuse without throwing
+  ---
+  duration_ms: 0.818875
+  type: 'test'
+  ...
+# Subtest: canada_stock.html.j2: no bridge keeps standalone behavior
+ok 79 - canada_stock.html.j2: no bridge keeps standalone behavior
+  ---
+  duration_ms: 5.605
+  type: 'test'
+  ...
+# Subtest: canada_stock.html.j2: candidate present but pre-INIT queues without any Location mutation or stale handler run
+ok 80 - canada_stock.html.j2: candidate present but pre-INIT queues without any Location mutation or stale handler run
+  ---
+  duration_ms: 1.116792
+  type: 'test'
+  ...
+# Subtest: canada_stock.html.j2: active bridge accepted fragment transition runs the real fromHash exactly once
+ok 81 - canada_stock.html.j2: active bridge accepted fragment transition runs the real fromHash exactly once
+  ---
+  duration_ms: 0.363625
+  type: 'test'
+  ...
+# Subtest: canada_stock.html.j2: refusal never escapes (no raw assignment, no handler)
+ok 82 - canada_stock.html.j2: refusal never escapes (no raw assignment, no handler)
+  ---
+  duration_ms: 7.7
+  type: 'test'
+  ...
+# Subtest: canada_stock.html.j2: same-market adapter dispatches no synthetic hashchange
+ok 83 - canada_stock.html.j2: same-market adapter dispatches no synthetic hashchange
+  ---
+  duration_ms: 0.501834
+  type: 'test'
+  ...
+# Subtest: canada_stock.html.j2: standalone hashchange kept AND mmx:shell-location listener added
+ok 84 - canada_stock.html.j2: standalone hashchange kept AND mmx:shell-location listener added
+  ---
+  duration_ms: 0.545667
+  type: 'test'
+  ...
+# Subtest: china_lookup.html.j2: no bridge keeps standalone behavior
+ok 85 - china_lookup.html.j2: no bridge keeps standalone behavior
+  ---
+  duration_ms: 1.7855
+  type: 'test'
+  ...
+# Subtest: china_lookup.html.j2: candidate present but pre-INIT queues without any Location mutation or stale handler run
+ok 86 - china_lookup.html.j2: candidate present but pre-INIT queues without any Location mutation or stale handler run
+  ---
+  duration_ms: 1.6325
+  type: 'test'
+  ...
+# Subtest: china_lookup.html.j2: active bridge accepted fragment transition runs the real fromHash exactly once
+ok 87 - china_lookup.html.j2: active bridge accepted fragment transition runs the real fromHash exactly once
+  ---
+  duration_ms: 3.998083
+  type: 'test'
+  ...
+# Subtest: china_lookup.html.j2: refusal never escapes (no raw assignment, no handler)
+ok 88 - china_lookup.html.j2: refusal never escapes (no raw assignment, no handler)
+  ---
+  duration_ms: 1.313583
+  type: 'test'
+  ...
+# Subtest: china_lookup.html.j2: same-market adapter dispatches no synthetic hashchange
+ok 89 - china_lookup.html.j2: same-market adapter dispatches no synthetic hashchange
+  ---
+  duration_ms: 0.10825
+  type: 'test'
+  ...
+# Subtest: china_lookup.html.j2: standalone hashchange kept AND mmx:shell-location listener added
+ok 90 - china_lookup.html.j2: standalone hashchange kept AND mmx:shell-location listener added
+  ---
+  duration_ms: 6.202833
+  type: 'test'
+  ...
+# Subtest: hk_lookup.html.j2: no bridge keeps standalone behavior
+ok 91 - hk_lookup.html.j2: no bridge keeps standalone behavior
+  ---
+  duration_ms: 3.903417
+  type: 'test'
+  ...
+# Subtest: hk_lookup.html.j2: candidate present but pre-INIT queues without any Location mutation or stale handler run
+ok 92 - hk_lookup.html.j2: candidate present but pre-INIT queues without any Location mutation or stale handler run
+  ---
+  duration_ms: 2.33325
+  type: 'test'
+  ...
+# Subtest: hk_lookup.html.j2: active bridge accepted fragment transition runs the real fromHash exactly once
+ok 93 - hk_lookup.html.j2: active bridge accepted fragment transition runs the real fromHash exactly once
+  ---
+  duration_ms: 1.478167
+  type: 'test'
+  ...
+# Subtest: hk_lookup.html.j2: refusal never escapes (no raw assignment, no handler)
+ok 94 - hk_lookup.html.j2: refusal never escapes (no raw assignment, no handler)
+  ---
+  duration_ms: 5.420584
+  type: 'test'
+  ...
+# Subtest: hk_lookup.html.j2: same-market adapter dispatches no synthetic hashchange
+ok 95 - hk_lookup.html.j2: same-market adapter dispatches no synthetic hashchange
+  ---
+  duration_ms: 0.043917
+  type: 'test'
+  ...
+# Subtest: hk_lookup.html.j2: standalone hashchange kept AND mmx:shell-location listener added
+ok 96 - hk_lookup.html.j2: standalone hashchange kept AND mmx:shell-location listener added
+  ---
+  duration_ms: 0.28025
+  type: 'test'
+  ...
+# Subtest: intl_stock.html.j2: no bridge keeps standalone behavior
+ok 97 - intl_stock.html.j2: no bridge keeps standalone behavior
+  ---
+  duration_ms: 2.53875
+  type: 'test'
+  ...
+# Subtest: intl_stock.html.j2: candidate present but pre-INIT queues without any Location mutation or stale handler run
+ok 98 - intl_stock.html.j2: candidate present but pre-INIT queues without any Location mutation or stale handler run
+  ---
+  duration_ms: 1.3755
+  type: 'test'
+  ...
+# Subtest: intl_stock.html.j2: active bridge accepted fragment transition runs the real fromHash exactly once
+ok 99 - intl_stock.html.j2: active bridge accepted fragment transition runs the real fromHash exactly once
+  ---
+  duration_ms: 3.28225
+  type: 'test'
+  ...
+# Subtest: intl_stock.html.j2: refusal never escapes (no raw assignment, no handler)
+ok 100 - intl_stock.html.j2: refusal never escapes (no raw assignment, no handler)
+  ---
+  duration_ms: 4.502708
+  type: 'test'
+  ...
+# Subtest: intl_stock.html.j2: same-market adapter dispatches no synthetic hashchange
+ok 101 - intl_stock.html.j2: same-market adapter dispatches no synthetic hashchange
+  ---
+  duration_ms: 0.148959
+  type: 'test'
+  ...
+# Subtest: intl_stock.html.j2: standalone hashchange kept AND mmx:shell-location listener added
+ok 102 - intl_stock.html.j2: standalone hashchange kept AND mmx:shell-location listener added
+  ---
+  duration_ms: 1.233416
+  type: 'test'
+  ...
+# Subtest: finance_intelligence: no bridge keeps standalone hash write (natural hashchange)
+ok 103 - finance_intelligence: no bridge keeps standalone hash write (natural hashchange)
+  ---
+  duration_ms: 5.955125
+  type: 'test'
+  ...
+# Subtest: finance_intelligence: same-hash arrival still calls handleHash once with no navigation
+ok 104 - finance_intelligence: same-hash arrival still calls handleHash once with no navigation
+  ---
+  duration_ms: 1.906709
+  type: 'test'
+  ...
+# Subtest: finance_intelligence: queued (pre-INIT) hand-off mutates nothing and skips the handler
+ok 105 - finance_intelligence: queued (pre-INIT) hand-off mutates nothing and skips the handler
+  ---
+  duration_ms: 5.038292
+  type: 'test'
+  ...
+# Subtest: finance_intelligence: accepted synchronous transition runs handleHash once
+ok 106 - finance_intelligence: accepted synchronous transition runs handleHash once
+  ---
+  duration_ms: 0.768
+  type: 'test'
+  ...
+# Subtest: finance_intelligence: refusal performs no raw fallback and no handler run
+ok 107 - finance_intelligence: refusal performs no raw fallback and no handler run
+  ---
+  duration_ms: 3.592292
+  type: 'test'
+  ...
+# Subtest: finance_intelligence: hashchange kept + shell-location listener added
+ok 108 - finance_intelligence: hashchange kept + shell-location listener added
+  ---
+  duration_ms: 0.646375
+  type: 'test'
+  ...
+# Subtest: baskets_china.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+ok 109 - baskets_china.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+  ---
+  duration_ms: 7.517333
+  type: 'test'
+  ...
+# Subtest: baskets_china.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+ok 110 - baskets_china.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+  ---
+  duration_ms: 0.33925
+  type: 'test'
+  ...
+# Subtest: subsector_rotation_china.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+ok 111 - subsector_rotation_china.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+  ---
+  duration_ms: 2.697458
+  type: 'test'
+  ...
+# Subtest: subsector_rotation_china.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+ok 112 - subsector_rotation_china.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+  ---
+  duration_ms: 0.379541
+  type: 'test'
+  ...
+# Subtest: flow_desk.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+ok 113 - flow_desk.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+  ---
+  duration_ms: 2.787
+  type: 'test'
+  ...
+# Subtest: flow_desk.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+ok 114 - flow_desk.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+  ---
+  duration_ms: 0.144583
+  type: 'test'
+  ...
+# Subtest: flow_leaders.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+ok 115 - flow_leaders.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+  ---
+  duration_ms: 1.180125
+  type: 'test'
+  ...
+# Subtest: flow_leaders.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+ok 116 - flow_leaders.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+  ---
+  duration_ms: 0.101417
+  type: 'test'
+  ...
+# Subtest: options_screener.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+ok 117 - options_screener.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+  ---
+  duration_ms: 1.004875
+  type: 'test'
+  ...
+# Subtest: options_screener.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+ok 118 - options_screener.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+  ---
+  duration_ms: 0.076083
+  type: 'test'
+  ...
+# Subtest: subsector_rotation.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+ok 119 - subsector_rotation.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+  ---
+  duration_ms: 4.497375
+  type: 'test'
+  ...
+# Subtest: subsector_rotation.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+ok 120 - subsector_rotation.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+  ---
+  duration_ms: 0.316833
+  type: 'test'
+  ...
+# Subtest: vector_allocation.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+ok 121 - vector_allocation.html.j2: stub redirect honors presence gate, queue and refusal without raw escape
+  ---
+  duration_ms: 3.97975
+  type: 'test'
+  ...
+# Subtest: vector_allocation.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+ok 122 - vector_allocation.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched
+  ---
+  duration_ms: 0.14925
+  type: 'test'
+  ...
+# Subtest: baskets.html.j2: theme-detail and fallback redirects queue pre-INIT with zero Location calls
+ok 123 - baskets.html.j2: theme-detail and fallback redirects queue pre-INIT with zero Location calls
+  ---
+  duration_ms: 3.526458
+  type: 'test'
+  ...
+# Subtest: baskets.html.j2: meta refresh wrapped, robots meta untouched
+ok 124 - baskets.html.j2: meta refresh wrapped, robots meta untouched
+  ---
+  duration_ms: 0.154709
+  type: 'test'
+  ...
+# Subtest: gex: symbol dest carried verbatim; meta rewrite is the guarded no-op it now is
+ok 125 - gex: symbol dest carried verbatim; meta rewrite is the guarded no-op it now is
+  ---
+  duration_ms: 6.255625
+  type: 'test'
+  ...
+# Subtest: gex: meta refresh wrapped in noscript; robots untouched
+ok 126 - gex: meta refresh wrapped in noscript; robots untouched
+  ---
+  duration_ms: 0.073333
+  type: 'test'
+  ...
+# Subtest: terminal_overlay host-off fallback: standalone unchanged; handled/refused never raw
+ok 127 - terminal_overlay host-off fallback: standalone unchanged; handled/refused never raw
+  ---
+  duration_ms: 5.837542
+  type: 'test'
+  ...
+# Subtest: terminal_overlay no-root fallback: standalone unchanged; handled/refused never raw
+ok 128 - terminal_overlay no-root fallback: standalone unchanged; handled/refused never raw
+  ---
+  duration_ms: 4.210125
+  type: 'test'
+  ...
+# Subtest: terminal_overlay no-frame fallback: standalone unchanged; handled/refused never raw
+ok 129 - terminal_overlay no-frame fallback: standalone unchanged; handled/refused never raw
+  ---
+  duration_ms: 1.023708
+  type: 'test'
+  ...
+# Subtest: no adapter gates the bridge on .active anywhere in the touched sources
+ok 130 - no adapter gates the bridge on .active anywhere in the touched sources
+  ---
+  duration_ms: 40.024209
+  type: 'test'
+  ...
+# Subtest: every touched source gates on window.MMXSharedShell presence and falls back only when absent
+ok 131 - every touched source gates on window.MMXSharedShell presence and falls back only when absent
+  ---
+  duration_ms: 17.939667
+  type: 'test'
+  ...
+# Subtest: theme.js bridge helpers exist and carry NO presented-state prerequisite
+ok 132 - theme.js bridge helpers exist and carry NO presented-state prerequisite
+  ---
+  duration_ms: 22.305042
+  type: 'test'
+  ...
+# Subtest: candidate exists while the bridge is NOT yet presenting: applyingContext is observed anyway
+ok 133 - candidate exists while the bridge is NOT yet presenting: applyingContext is observed anyway
+  ---
+  duration_ms: 4.966416
+  type: 'test'
+  ...
+# Subtest: INITIAL bridge apply (presented=false, applyingContext=true): no storage writes, no account write, repaint + emit + existing handlers, no flourish, Auto survives
+ok 134 - INITIAL bridge apply (presented=false, applyingContext=true): no storage writes, no account write, repaint + emit + existing handlers, no flourish, Auto survives
+  ---
+  duration_ms: 10.017125
+  type: 'test'
+  ...
+# Subtest: LATER bridge apply (presented=true, applyingContext=true): same no-write repaint semantics
+ok 135 - LATER bridge apply (presented=true, applyingContext=true): same no-write repaint semantics
+  ---
+  duration_ms: 4.011916
+  type: 'test'
+  ...
+# Subtest: user-driven theme choice while the shell presents keeps the EXACT legacy persistence + flourish + pref-sync write
+ok 136 - user-driven theme choice while the shell presents keeps the EXACT legacy persistence + flourish + pref-sync write
+  ---
+  duration_ms: 11.62775
+  type: 'test'
+  ...
+# Subtest: standalone (no candidate): byte-equivalent legacy behavior incl. late server prefs with the _prefSyncing loop guard
+ok 137 - standalone (no candidate): byte-equivalent legacy behavior incl. late server prefs with the _prefSyncing loop guard
+  ---
+  duration_ms: 6.997875
+  type: 'test'
+  ...
+# Subtest: candidate present (pre-INIT window included): late _applyServerPrefs never fights the parent context
+ok 138 - candidate present (pre-INIT window included): late _applyServerPrefs never fights the parent context
+  ---
+  duration_ms: 7.030709
+  type: 'test'
+  ...
+# Subtest: setter exception during a bridge apply: bridge finally clears suppression; the apply persisted nothing; a later user choice still persists
+ok 139 - setter exception during a bridge apply: bridge finally clears suppression; the apply persisted nothing; a later user choice still persists
+  ---
+  duration_ms: 4.310083
+  type: 'test'
+  ...
+# Subtest: _mmOpenOnboard is the single auth seam: fixed tokens, claims pre-INIT (queue-safe), never opens an in-frame sheet or lazy-loads the script
+ok 140 - _mmOpenOnboard is the single auth seam: fixed tokens, claims pre-INIT (queue-safe), never opens an in-frame sheet or lazy-loads the script
+  ---
+  duration_ms: 5.718
+  type: 'test'
+  ...
+# Subtest: standalone _mmOpenOnboard keeps the legacy sheet route and lazy-load fallback
+ok 141 - standalone _mmOpenOnboard keeps the legacy sheet route and lazy-load fallback
+  ---
+  duration_ms: 10.507667
+  type: 'test'
+  ...
+# Subtest: _openSDash is the single settings seam: 'settings' intent only, section never forwarded, dash never built; exactly one intent per entry
+ok 142 - _openSDash is the single settings seam: 'settings' intent only, section never forwarded, dash never built; exactly one intent per entry
+  ---
+  duration_ms: 3.463208
+  type: 'test'
+  ...
+# Subtest: standalone _openSDash still builds and shows the dashboard
+ok 143 - standalone _openSDash still builds and shows the dashboard
+  ---
+  duration_ms: 4.892042
+  type: 'test'
+  ...
+# Subtest: theme.js guard topology: seam count is exact and public auth/settings exports stay guard-free
+ok 144 - theme.js guard topology: seam count is exact and public auth/settings exports stay guard-free
+  ---
+  duration_ms: 0.6635
+  type: 'test'
+  ...
+# Subtest: account.js helpers exist and carry NO presented-state prerequisite
+ok 145 - account.js helpers exist and carry NO presented-state prerequisite
+  ---
+  duration_ms: 1.746292
+  type: 'test'
+  ...
+# Subtest: late account hydration never overrides a qualified parent context (pre-INIT included)
+ok 146 - late account hydration never overrides a qualified parent context (pre-INIT included)
+  ---
+  duration_ms: 1.147042
+  type: 'test'
+  ...
+# Subtest: standalone applyPrefs still hydrates exactly as before
+ok 147 - standalone applyPrefs still hydrates exactly as before
+  ---
+  duration_ms: 0.510083
+  type: 'test'
+  ...
+# Subtest: persistPref queues NOTHING during a bridge apply (initial window included) but keeps the user-edit queue
+ok 148 - persistPref queues NOTHING during a bridge apply (initial window included) but keeps the user-edit queue
+  ---
+  duration_ms: 0.636416
+  type: 'test'
+  ...
+# Subtest: claimsPref stays exactly symmetric with the persistPref guard (single-owner handshake)
+ok 149 - claimsPref stays exactly symmetric with the persistPref guard (single-owner handshake)
+  ---
+  duration_ms: 0.416125
+  type: 'test'
+  ...
+# Subtest: account.js guard wiring and the untouched MMAccount export
+ok 150 - account.js guard wiring and the untouched MMAccount export
+  ---
+  duration_ms: 0.116667
+  type: 'test'
+  ...
+# Subtest: onboard _mmShellHandoff: existence-keyed, fixed tokens only, false without a candidate, no presented read
+ok 151 - onboard _mmShellHandoff: existence-keyed, fixed tokens only, false without a candidate, no presented read
+  ---
+  duration_ms: 4.049667
+  type: 'test'
+  ...
+# Subtest: openSheet is the single sheet seam: every opener hands off, opts never cross, no in-frame build, upgrade lane unreachable
+ok 152 - openSheet is the single sheet seam: every opener hands off, opts never cross, no in-frame build, upgrade lane unreachable
+  ---
+  duration_ms: 0.753458
+  type: 'test'
+  ...
+# Subtest: standalone openSheet keeps the exact legacy modes/opts flow (sign-in/sign-up/upgrade routing intact)
+ok 153 - standalone openSheet keeps the exact legacy modes/opts flow (sign-in/sign-up/upgrade routing intact)
+  ---
+  duration_ms: 2.398583
+  type: 'test'
+  ...
+# Subtest: onboard guards are centralized: exactly two _mmShellHandoff sites, export line byte-identical
+ok 154 - onboard guards are centralized: exactly two _mmShellHandoff sites, export line byte-identical
+  ---
+  duration_ms: 0.229875
+  type: 'test'
+  ...
+# Subtest: storage hygiene: nowhere does the adapter introduce a parallel preference key
+ok 155 - storage hygiene: nowhere does the adapter introduce a parallel preference key
+  ---
+  duration_ms: 1.764667
+  type: 'test'
+  ...
+# Subtest: adapter adds no browser/runtime requirements: extracted seams never reference fetch/XHR/cookie/timer APIs beyond the incumbent ones
+ok 156 - adapter adds no browser/runtime requirements: extracted seams never reference fetch/XHR/cookie/timer APIs beyond the incumbent ones
+  ---
+  duration_ms: 0.659083
+  type: 'test'
+  ...
+# Subtest: terminal_overlay: the candidate handoff is the first decision in openInternal, before host check and overlay build
+ok 157 - terminal_overlay: the candidate handoff is the first decision in openInternal, before host check and overlay build
+  ---
+  duration_ms: 3.999
+  type: 'test'
+  ...
+# Subtest: terminal_overlay: the gate keys on candidate presence, never on bridge .active (pre-INIT included)
+ok 158 - terminal_overlay: the gate keys on candidate presence, never on bridge .active (pre-INIT included)
+  ---
+  duration_ms: 4.557583
+  type: 'test'
+  ...
+# Subtest: terminal_overlay: existing direct-parent messaging semantics and guards are untouched
+ok 159 - terminal_overlay: existing direct-parent messaging semantics and guards are untouched
+  ---
+  duration_ms: 3.508
+  type: 'test'
+  ...
+# Subtest: terminal_overlay: no invented surfaces - no storage, network, CSP or route-registry logic in the launch owner
+ok 160 - terminal_overlay: no invented surfaces - no storage, network, CSP or route-registry logic in the launch owner
+  ---
+  duration_ms: 0.741
+  type: 'test'
+  ...
+# Subtest: terminal_overlay: the handoff surface is exposed for the stock-table fallback (one admission rule)
+ok 161 - terminal_overlay: the handoff surface is exposed for the stock-table fallback (one admission rule)
+  ---
+  duration_ms: 0.766084
+  type: 'test'
+  ...
+# Subtest: standalone (no bridge): the incumbent overlay portal still builds, frames and animates
+ok 162 - standalone (no bridge): the incumbent overlay portal still builds, frames and animates
+  ---
+  duration_ms: 3.120084
+  type: 'test'
+  ...
+# Subtest: standalone non-dashboard host: raw Location fallback is byte-identical to the incumbent
+ok 163 - standalone non-dashboard host: raw Location fallback is byte-identical to the incumbent
+  ---
+  duration_ms: 1.191167
+  type: 'test'
+  ...
+# Subtest: standalone no-root / no-frame fallbacks: raw Location to directUrl, unchanged
+ok 164 - standalone no-root / no-frame fallbacks: raw Location to directUrl, unchanged
+  ---
+  duration_ms: 8.294209
+  type: 'test'
+  ...
+# Subtest: candidate PRE-INIT: handoff is claimed by presence; zero overlay, frame, history or body-lock effects
+ok 165 - candidate PRE-INIT: handoff is claimed by presence; zero overlay, frame, history or body-lock effects
+  ---
+  duration_ms: 2.640958
+  type: 'test'
+  ...
+# Subtest: candidate ACTIVE: same single handoff, still no overlay side effects
+ok 166 - candidate ACTIVE: same single handoff, still no overlay side effects
+  ---
+  duration_ms: 2.273875
+  type: 'test'
+  ...
+# Subtest: candidate: the destination is always the admitted RELATIVE /terminal route - never the absolute app URL
+ok 167 - candidate: the destination is always the admitted RELATIVE /terminal route - never the absolute app URL
+  ---
+  duration_ms: 2.177958
+  type: 'test'
+  ...
+# Subtest: candidate: retained safe symbol / AI / return semantics
+ok 168 - candidate: retained safe symbol / AI / return semantics
+  ---
+  duration_ms: 5.838334
+  type: 'test'
+  ...
+# Subtest: candidate: embed-only parameters and auth secrets are never forwarded to the native route
+ok 169 - candidate: embed-only parameters and auth secrets are never forwarded to the native route
+  ---
+  duration_ms: 4.127333
+  type: 'test'
+  ...
+# Subtest: candidate: symbol falls back to the incumbent query when the launch carries no config.symbol
+ok 170 - candidate: symbol falls back to the incumbent query when the launch carries no config.symbol
+  ---
+  duration_ms: 2.263375
+  type: 'test'
+  ...
+# Subtest: candidate: dotted symbols survive exactly (BRK.B, 9988.HK, 0002.HK)
+ok 171 - candidate: dotted symbols survive exactly (BRK.B, 9988.HK, 0002.HK)
+  ---
+  duration_ms: 23.219167
+  type: 'test'
+  ...
+# Subtest: candidate: return links stay on this document’s own first-party origin, the incumbent convention
+ok 172 - candidate: return links stay on this document’s own first-party origin, the incumbent convention
+  ---
+  duration_ms: 26.269792
+  type: 'test'
+  ...
+# Subtest: candidate: a refused handoff claims the launch - no overlay, no raw Location, no nested native UI
+ok 173 - candidate: a refused handoff claims the launch - no overlay, no raw Location, no nested native UI
+  ---
+  duration_ms: 0.43075
+  type: 'test'
+  ...
+# Subtest: candidate: an invalid configured native URL is refused, never a nested overlay
+ok 174 - candidate: an invalid configured native URL is refused, never a nested overlay
+  ---
+  duration_ms: 21.592083
+  type: 'test'
+  ...
+# Subtest: candidate: the canonical "/" native variant is admitted as the /terminal route
+ok 175 - candidate: the canonical "/" native variant is admitted as the /terminal route
+  ---
+  duration_ms: 1.068709
+  type: 'test'
+  ...
+# Subtest: candidate: a launch URL that is not the native app route is refused, not reframed
+ok 176 - candidate: a launch URL that is not the native app route is refused, not reframed
+  ---
+  duration_ms: 6.138458
+  type: 'test'
+  ...
+# Subtest: candidate on a non-dashboard host (the shell-nested real case): never the raw www/terminal bounce
+ok 177 - candidate on a non-dashboard host (the shell-nested real case): never the raw www/terminal bounce
+  ---
+  duration_ms: 1.545959
+  type: 'test'
+  ...
+# Subtest: candidate: an unrelated (non-Terminal) launch shape is not silently swallowed
+ok 178 - candidate: an unrelated (non-Terminal) launch shape is not silently swallowed
+  ---
+  duration_ms: 0.958041
+  type: 'test'
+  ...
+# Subtest: stocktable: no candidate keeps both incumbent behaviors exactly
+ok 179 - stocktable: no candidate keeps both incumbent behaviors exactly
+  ---
+  duration_ms: 6.625375
+  type: 'test'
+  ...
+# Subtest: stocktable: candidate present routes to the admitted relative /terminal, never the absolute app URL
+ok 180 - stocktable: candidate present routes to the admitted relative /terminal, never the absolute app URL
+  ---
+  duration_ms: 1.474125
+  type: 'test'
+  ...
+# Subtest: stocktable: candidate mode still prefers MDXTerminal.open (the gated overlay seam)
+ok 181 - stocktable: candidate mode still prefers MDXTerminal.open (the gated overlay seam)
+  ---
+  duration_ms: 0.587459
+  type: 'test'
+  ...
+# Subtest: stocktable: candidate without the overlay controller still offers only the relative native route
+ok 182 - stocktable: candidate without the overlay controller still offers only the relative native route
+  ---
+  duration_ms: 0.317208
+  type: 'test'
+  ...
+# Subtest: stocktable: candidate with Terminal disabled keeps the incumbent same-page destination
+ok 183 - stocktable: candidate with Terminal disabled keeps the incumbent same-page destination
+  ---
+  duration_ms: 0.540209
+  type: 'test'
+  ...
+# Subtest: stocktable: a refused native handoff does not escape the frame
+ok 184 - stocktable: a refused native handoff does not escape the frame
+  ---
+  duration_ms: 4.976625
+  type: 'test'
+  ...
+# Subtest: stocktable: an invalid configured native base is claimed (nothing navigates, nothing escapes)
+ok 185 - stocktable: an invalid configured native base is claimed (nothing navigates, nothing escapes)
+  ---
+  duration_ms: 1.936875
+  type: 'test'
+  ...
+# Subtest: stocktable: shipped text no longer hands an absolute URL to the bridge and still gates on presence
+ok 186 - stocktable: shipped text no longer hands an absolute URL to the bridge and still gates on presence
+  ---
+  duration_ms: 0.491167
+  type: 'test'
+  ...
+# Subtest: the repair invents no API: the shipped seams use only the closed bridge surface
+ok 187 - the repair invents no API: the shipped seams use only the closed bridge surface
+  ---
+  duration_ms: 0.603375
+  type: 'test'
+  ...
+# Subtest: defect A is header-side only: no macro launch owner invents CSP or frame-ancestors logic
+ok 188 - defect A is header-side only: no macro launch owner invents CSP or frame-ancestors logic
+  ---
+  duration_ms: 0.1785
+  type: 'test'
+  ...
+# Subtest: the handoff is idempotent per launch and offers one destination string
+ok 189 - the handoff is idempotent per launch and offers one destination string
+  ---
+  duration_ms: 1.962375
+  type: 'test'
+  ...
+# Subtest: native handoff does not nest credential-like or recursive return state
+ok 190 - native handoff does not nest credential-like or recursive return state
+  ---
+  duration_ms: 8.9425
+  type: 'test'
+  ...
+# Subtest: safe native return preserves presentation bytes but drops child transport
+ok 191 - safe native return preserves presentation bytes but drops child transport
+  ---
+  duration_ms: 2.767667
+  type: 'test'
+  ...
+# Subtest: missing native controller fallback retains only a page return
+ok 192 - missing native controller fallback retains only a page return
+  ---
+  duration_ms: 1.420209
+  type: 'test'
+  ...
+1..192
+# tests 192
+# suites 0
+# pass 192
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1644.85675

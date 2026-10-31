@@ -1,0 +1,39 @@
+{
+  "schema": "intl.p0b_composition_gate_execution.v1",
+  "source_commit": "f1fafde0bbf95550ed964de3a60920a2619778e4",
+  "base": "a2451ccfbcfb4d32bcc4230dc8a774c4fd1d6cd3",
+  "diff_file_sha256": "f526833b4424c198bf1765b75874c432c4b027285778f57e512129d5fb987cb5",
+  "started_at": "2026-10-23T06:12:58.154797+00:00",
+  "executions": [
+    {
+      "name": "closure",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/check_p0b_receipt_closure.py",
+        "--diff-file",
+        "/tmp/intl-resume-main-20261022T1252/brain_composition_product_diff_20261023.txt"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.08,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/p0b_gate_closure.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "pytest",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_stock_dashboard_first_frame.py",
+        "tests/test_check_p0b_receipt_closure.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 62.6,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/p0b_gate_pytest.log",
+      "log_sha256": "0eb37d844a47bc69bb5d20cb48be8fc45af3f6d9822f3d42f3ea6c199f299b0d"
+    }
+  ],
+  "state": "PASS",
+  "completed_at": "2026-10-23T06:14:00.838300+00:00"
+}

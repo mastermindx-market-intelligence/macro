@@ -1,0 +1,1569 @@
+{
+  "schema": "intl.main_composition.v1",
+  "at": "2026-10-21T23:50:05.126589+00:00",
+  "principal_exception": "PRINCIPAL_JUDGMENT: original integration owner resolves cross-owner source and evidence composition; no parallel implementation owner",
+  "parents": [
+    "3a329e6837915d4833a89952245f6509c0bec3f0",
+    "2fed30a5a14f6bdd5e69d42c5bfcbac5814b3915"
+  ],
+  "merge_base": "0ef818070c57709a67e44dca2193652d41e29640",
+  "ci_conflicts_resolved": 4,
+  "jobs": 347,
+  "job_checks": [
+    {
+      "job": "options-r1-sector-holdings-coverage",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "bea-gvc-current-descriptive-consumer",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "company-intelligence-private-runtime",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "microstructure-pressure-response-r0",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "yahoo-daily-archive-refresh",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "live-flow-recovery-guards",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "integrated-answer-v0",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "c19-wp19-integrated-answer-pins",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "c19-wp32-integrated-answer-correction-denial-pins",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "c19-wp22-dhi-traversal",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "c19-wp31-incremental-information",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "inline-js",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "nav-gap",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "nav-mega",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "crypto-shelves",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "board-shadow-substrate",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "board-contradictions",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "signal-gate-pair-coherence",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ms-board-coherence",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "gh-annotation-line-start",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q01-arbfree-surface",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "am-edition-producer",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "options-alpha-candidate-feed",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "all-exports-resolve",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "no-module-leak",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "admin-js-no-undef",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "path-prune-lint",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "rebase-css-autoresolve",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "conflict-markers",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "title-i18n",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "signal-contract",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q02-american-exercise",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "session-anchor-era",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "trial-budgets",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "local-projections",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "breakdown-control-seed-determinism",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "outcome-spine",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "conviction-profile",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "gmi-classification-axes",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "chronicle-suite",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "cycle-ontology-js",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "cycle-forward-log",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "tier-gate",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "regwall-boundary",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q03-share-basis",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "lens-tap-boundary",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "cycles-payload-split",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "options-matrix-code",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "flow-surface",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "cycle-grading-stats",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "engine-render-guards",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "c19-wp13-debt-maturity-as-of",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "international-workspace-pure-js",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "international-global-universe",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "international-workspace-foundation",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_prices.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py",
+        "templates/intl_country_cockpit.css",
+        "templates/intl_country_cockpit.html.j2",
+        "templates/intl_country_cockpit.js",
+        "tests/fixtures/intl_currency_observations_20261020.json",
+        "tests/fixtures/intl_weo_october_2026_fiscal_api.json",
+        "tests/fixtures/intl_weo_october_2026_tables.json",
+        "tests/test_intl_country_cockpit.py",
+        "tests/test_intl_currency_observation.py",
+        "tests/test_intl_forecast_vintages.py",
+        "tests/test_intl_outlook_interpretation.py",
+        "tests/test_intl_policy_evidence.py"
+      ]
+    },
+    {
+      "job": "international-workspace-browser",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py",
+        "templates/intl_country_cockpit.css",
+        "templates/intl_country_cockpit.html.j2",
+        "templates/intl_country_cockpit.js"
+      ]
+    },
+    {
+      "job": "stock-dashboard-first-frame",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "prophet-lab",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "attested-history-guards",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q04-sign-uncertainty",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "express-render-guards",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "fif-kernel-guards",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "collector-registry",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "capital-structure-intelligence",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "covenant-headroom",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "stock-seasonality",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "china-native-collectors",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "china-altdata-catalysts",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "china-board-breadth",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "china-radar-record",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "china-search-universe",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "china-mechanics-display",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "cycle-consistency",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "synapse-read-gate",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "neural-web",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q05-exec-sensitivity",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "intelligence-registry",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py"
+      ]
+    },
+    {
+      "job": "neural-web-core",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "cn-standout-audit",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ci-control-plane-contracts",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "workflow-yaml",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "causal-factory",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "rlt-rebalance-calendar-pulse",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "nyse-calendar-freshness",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "dag-conformance",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "push-retry-policy",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q06-sparse-cal",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "transmission-chains",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ontology-explorer",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "research-factory-authority",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "market-memory-e0-contract",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "research-codegen-runtime-qualification",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "cycle-pattern-authority",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "private-boundary",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ruling-graph",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "contract-drift",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "flow-cohorts",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "options-catalyst-links",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "options-payoff-lab-consumer",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "options-signal-campaign-v2",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q07-fitted-har-vol",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "uk-policy-desk",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "finance-intelligence",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "consumer-cyclical-economic-change",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "flow-signals-ledger",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "flow-signal-cohorts",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "broad-etf-flows",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "qledger-cluster-honest-ci",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "altdata-new-sources",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "china-sector-desk-gate",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "china-native-w2",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "wri-risk-core",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "house-law-registry",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q08-cov-shrinkage",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "research-screener",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "leader-radar-unit",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "evidence-clock",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "vintage-pin-fence",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "validated-claims",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "validated-claims-source",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "validated-claims-contract",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "design-governance",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "p0b-receipt-closure",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "template-site-sync",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "data-base-shim",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q09-venue-concentration",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "grader-manifest",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "self-mod-fence",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "agentos-knowledge-contracts",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "capability-broker",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "hub-a11y",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "font-ui-defined",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ratio-lens",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "leadership-rotation-contract",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "leadership-rotation-science",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "leadership-measured-read",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "hk-confirming-turn",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "hk-cycle-ontology",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "hk-leadership",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "hk-context-chips",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q10-offex-residual",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "hk-robustness-w5",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "hk-integration-seams",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "hkrv-w3-banner",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "regen-hk-g1-fixture-guard",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "basket-staleness-warn",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ftr-tape-surfaces",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "live-flow-ops",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "international-transmission-evidence",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ird-substrate-engines",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "sanctions-map-page",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "itr-turn-rotation",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py"
+      ]
+    },
+    {
+      "job": "altdata-brain-govern",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q11-episode-duration",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "nw-lobe-unfreeze",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py"
+      ]
+    },
+    {
+      "job": "sa-w4-improvement-lanes",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "lr-rotation-evidence-modes",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "rc-r14-china-rotation-events",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "codex-research-engine",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "metab-throttle-ux",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "admin-live-runs",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "cbf-regime",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ccw-w1-data-spine",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ccw-w2-gspread-engine",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ccw-w3-credit-momentum",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ccw-w4-credit-desk",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q12-parity-forward",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ccw-w6-study-s1",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "support-email-spine",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "serving-observability",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "billing-emails",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "billing-offers",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "site-gate",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "stock-liquidity-profile",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "pick-lab-liquidity",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "pick-lab-cn-render",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ths-factorwatch-build-notes",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "narrative-radar-display",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "commodity-strategies-grid-fields",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "cn-reversal-sleeve-display",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "regional-baskets-scorecard",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "global-liquidity-transmission",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "china-strategies-income-tile",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "global-liquidity-transmission-contracts",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ric-d0-fed-path-provenance",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ric-e0-retrospective-runners",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "regime-outlook-mapping",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ric-w2-surface",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "collect-identity",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q13-rn-tail-density",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "research-vault",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "research-vault-source-lineage",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "research-vault-api",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "biocatalyst-serving",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "lib/intl_currency_observation.py"
+      ]
+    },
+    {
+      "job": "biocatalyst-evidence",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "biocatalyst-worker",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "biocatalyst-history",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "biocatalyst-contracts",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "biocatalyst-deploy-integration",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "deploy-git-history",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "biocatalyst-regulatory",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q14-horizon-vrp",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "marketing-social-publisher",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "marketing-media-pipeline",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "marketing-engine",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "marketing-scoring-optional",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "marketing-data",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "publish-r2-client",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "chart-render",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "chart-render-data",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "portfolio-ctx",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "options-estate-guards",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "prelaunch-hardening",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q15-noise-robust-rv",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "free-content-estate",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "calculator-input-integrity",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "public-render-fastlane",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "press-lane",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-vector-dsr",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "crypto-assistant-context",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "crypto-vector-r2-organs",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-oracle-desk",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-marketing-desk",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-grading-board",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-intl-libraries",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-data-plane",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "defense-rail-laws",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-government-revenue",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q16-delayed-aci",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "govrev-company-bridge",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "govrev-program-ontology",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-government-revenue-candidate-projection",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "information-to-price-eval-receipts",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-factor-research",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-serving-admin",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "geo-enrich-credential-boundary",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-ops-workers",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-builders-render",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-nav-chrome",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-builders-stores",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-site-surfaces",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q17-stable-whitening",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-release-forecast",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-brain-desks",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-register-honesty",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-neuralweb-cortex",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-vector-baskets",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "washout-turn-organ",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py"
+      ]
+    },
+    {
+      "job": "prophet-anticipation-intake",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "coiled-mtf-anchor-era",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-page-guards",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-picks-boards",
+      "main_and_local_closure_preserved": true,
+      "local_added_paths": [
+        "lib/intl_currency_observation.py"
+      ]
+    },
+    {
+      "job": "quant-q18-async-session-cov",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "prophet-us-b4-prereg-registration",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "healthcare-fda-supply",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "earnings-economic-source-selection",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "earnings-economic-dossier",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "prophet-us-context-and-grades",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-prophet-learning-loop",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-intl-collectors",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-russell-breadth",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-brain-gateway",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ric-y0-yield-momentum",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ric-y1-curve-accounting",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-macro-panels",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-market-plumbing",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q19-first-passage-ambiguity",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-publish-ops",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-inline-js-guard",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-import-hygiene",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "price-basis-census",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-scoring-engine",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-template-chips",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-pit-probes",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-dark-guards",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-hk-board",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-subsector-themes",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ohlc-basis-coherence",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "quant-q20-spa-challenger",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-government-revenue-grader",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "research-price-panel",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "entry-radar-identity-snapshot",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "entry-radar-rs-pullback-calendar",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "zh-filing-term",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "earnings-release-identity",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "market-memory-contract",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "group-pulse",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "group-read-surface",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "leadership-rotation-countercases",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "group-earnings-pulse",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "group-linked-outsiders",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "fif-saved-research-notifications",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "falsifier-tripwires",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "options-nbbo-cohort",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "product-experience-registry",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "product-experience-capture",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "momoedge-browser-observe",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "mastermindx-selector-capture-attestation",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "reference-integrity",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "dataos-prospective-reference",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "dataos-acceptance",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "dataos-web-workspace",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "dataos-verification",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "dataos-foundation",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "dataos-identity-seams",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ticker-news-qbus",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "no-client-supplied-identity",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "dislocation-p0-a1-blind-harvest",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "unrun-cell-b-v2-buyback-census",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "market-os-macro-workspaces",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "market-os-macro-suite-pages",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "markets-regime-strip",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "dashboard-render-contract",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "options-skew-engine",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "market-ontology-f09-usgs-mcs",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "recurring-briefs",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "skew-accrual-lane",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "mining-economic-dossier",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "industrials-result-cash",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "house-law-registry-code",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "pb-d-event-quality",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "company-relationship-candidates",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "gmi-source-diagnostic-kernel",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "news-impact-contracts",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "site20-s4-chart-brief-js",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "sni-s2-event-response",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "single-name-coverage-profiles",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "grey-deer-observed-moves",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "grey-deer-pullback-forward",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "grey-deer-pullback-stage1",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "sni-s1-residual",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "sni-shared-and-drafts",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "sni-program-guards",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "sni-public-exposure-scan",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "sni-acceptance-evidence",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "c19-wp11-reader-pins",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "ric-f0-a10-canonical-calendar",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "c19-wp24-superseded-generations",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "c19-wp24-consumer-states",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "c19-wp24-dtc-map",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "c19-wp29-hk-southbound-two-period",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "c19-wp15-operating-driver-pins",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "grey-deer-pboc-liquidity",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "c19-short-pressure-availability",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "options-pilot-chronology-code",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "commodities-research-workspace",
+      "unchanged_from_main": true
+    },
+    {
+      "job": "options-r1-rotation-relative-trend",
+      "unchanged_from_main": true
+    }
+  ],
+  "caddy_resolution": "exact incoming main subsumes all nine locally added public assets",
+  "caddy_blob": "7e13fc89817725188ba37d2550acca21056e0130",
+  "lineage": [
+    {
+      "parent": "accepted_local",
+      "commit": "3a329e6837915d4833a89952245f6509c0bec3f0",
+      "original_path": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_composition_20261021/accepted_local/manifest.json",
+      "sha256": "abfddb0998e28d160147ebbf1ff1e9b73ebfc857ac6e45b2ee10ce37b778059a"
+    },
+    {
+      "parent": "accepted_local",
+      "commit": "3a329e6837915d4833a89952245f6509c0bec3f0",
+      "original_path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_composition_20261021/accepted_local/mobile-layout.json",
+      "sha256": "e5f4779404515dd2199da662803249c26dbd838a94b5748ada2f0c94ad30edfd"
+    },
+    {
+      "parent": "accepted_local",
+      "commit": "3a329e6837915d4833a89952245f6509c0bec3f0",
+      "original_path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_composition_20261021/accepted_local/mobile-layout-canada.json",
+      "sha256": "c92c85bea09a77c3070d188c0beb0d0be745ae2ed5e5bde314d5c7cf3a0803f9"
+    },
+    {
+      "parent": "accepted_local",
+      "commit": "3a329e6837915d4833a89952245f6509c0bec3f0",
+      "original_path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_composition_20261021/accepted_local/rendered-fixture.json",
+      "sha256": "91a8f743c1d99973888f5a63ff0032bc5faedd3e04991dfd48999996b2a5a762"
+    },
+    {
+      "parent": "incoming_main",
+      "commit": "2fed30a5a14f6bdd5e69d42c5bfcbac5814b3915",
+      "original_path": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_composition_20261021/incoming_main/manifest.json",
+      "sha256": "a1a0ac32197849f2377d75cd4796e81c3ae62cfd15605b3dcc7b5f4fe59df601"
+    },
+    {
+      "parent": "incoming_main",
+      "commit": "2fed30a5a14f6bdd5e69d42c5bfcbac5814b3915",
+      "original_path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_composition_20261021/incoming_main/mobile-layout.json",
+      "sha256": "09c1dd94b8573a24af71252fc6566a76fdcca8b5bc30cd2a861e7c9ac3270ae7"
+    },
+    {
+      "parent": "incoming_main",
+      "commit": "2fed30a5a14f6bdd5e69d42c5bfcbac5814b3915",
+      "original_path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_composition_20261021/incoming_main/mobile-layout-canada.json",
+      "sha256": "05fea4bb6b53707a3ef607135aac6c5f67fa0d4cc1677868ac0351f3f02aa331"
+    },
+    {
+      "parent": "incoming_main",
+      "commit": "2fed30a5a14f6bdd5e69d42c5bfcbac5814b3915",
+      "original_path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+      "archive": "research/reference_integrity/intl-country-intelligence-20261020/main_composition_20261021/incoming_main/rendered-fixture.json",
+      "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+    }
+  ],
+  "p0b_state": "Both parents archived; incoming main receipts are a historical staging point. Fresh actual browser outputs are required before publication.",
+  "interrupted_merge_recovery_sha256": "7907709b7fba29144e58e0c2666bb05ee835aa924a9f98140d95fd95fe76d577",
+  "country_review_artifact": "883a1e48efdf9c334c08665262efa0961b1997a0",
+  "country_source_changed": false,
+  "production_acceptance": false
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "mastermind.intl_release_observation.v1",
+  "persisted_at": "2026-10-19 11:31:37 UTC",
+  "observed_no_later_than": "2026-10-19T11:26:32Z",
+  "observation_note": "Stored read-only publisher/GitHub responses inspected after session resumption; persistence does not constitute a new publisher call.",
+  "typed_status": {
+    "schema": "mastermind.studio_git_publish_status.v1",
+    "operation_id": "intl-country-cockpit-20261018",
+    "branch": "sol/web-intl-country-cockpit-20261018",
+    "local_head_sha": "11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+    "remote_head_sha": "88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4",
+    "clean": false,
+    "publication_state": "DIFFERENT_REMOTE_HEAD",
+    "ready_to_push": false
+  },
+  "github": {
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9596",
+    "head_sha": "88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4",
+    "draft": true,
+    "updated_at": "2026-10-19T09:16:46Z"
+  },
+  "original_action": {
+    "id": "d07df7c6e45d35c54338808701350ece97c605401ad69a0fd28bb415d05a5a56",
+    "state": "EFFECT_UNKNOWN",
+    "error_code": "PUSH_RESULT_UNCERTAIN",
+    "resolved": false
+  },
+  "owner_record": {
+    "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1617#issuecomment-6256723747",
+    "comments": [
+      {
+        "id": 6248981930,
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1617#issuecomment-6248981930",
+        "created_at": "2026-10-18T10:54:36Z",
+        "updated_at": "2026-10-18T10:54:36Z",
+        "body": "Additional source-linked performance proof (2026-10-18): after the existing M2 C2 Personal live Git command precheck intermittently failed at 15,004 ms, a **read-only, in-memory proposed 45,000-ms config** against the actual INSTALLED workspace-access/git-publish modules and original Macro operation completed native status in **19,266 ms**; result local+remote exact 9eb408279e7ea8de99a667e296c4b0ddebfd799b, clean true, publication_state APPLIED. No installed config or manifest was mutated by that test. Live C2 Personal production installation remains protected at manifest 4bb0b40cbc7849487c0d886b30261f70fd6e1828d1d217643a56e3fa6aea40fb, command budget 15,000 ms. This materially validates need for bounded 45,000 ms; DO NOT imply release/installation happened before protected PR merge. Exact installation and original source publication already persisted on #1604 comment 6248975715."
+      },
+      {
+        "id": 6256723747,
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1617#issuecomment-6256723747",
+        "created_at": "2026-10-18T23:53:04Z",
+        "updated_at": "2026-10-18T23:53:04Z",
+        "body": "## C2 Personal timeout migration — protected-master integration repair (2026-10-18)\n\nSource recovery continued on EXISTING PR #1617 and EXISTING branch `sol/web-c2-personal-publisher-timeout-20261018`; no replacement PR/worktree or alternate publisher. The previous immutable head `2e53d66f56bed592a74331228bc234bfb4e0f318` passed all prior hosted PR-head CI, but became GitHub merge-conflicting after the newer protected master added C2/Paper lifecycle serialization. Do not reuse old PR-head CI as proof for the new head.\n\n**Current integration**\n- Original source head `2e53d66f56bed592a74331228bc234bfb4e0f318`, current protected base `bcf4a2f72538682f2fbe4902f6417e59cd038678`.\n- One non-rewriting merge in the SAME original source workspace produced new commit `6bc0bca3fe6780b10f1c5870b16bac26d04fc0c9` with those exact two parents. Normal non-force push succeeded and canonical GitHub remote branch readback matched this exact head.\n- Exactly TWO PR-owned changed paths remain versus integrated protected master: `integrations/studio_direct_mcp/private_service.py` and `integrations/studio_direct_mcp/private_service_test.py`. No protected-master source changes were dropped.\n- Conflict resolution specifically preserves upstream `_c2_lifecycle_mutex(account)` for modifying C2 Personal timeout upgrade and skips lock only on read-only preflight; it also preserves existing C2 Business/Personal compatibility mutex paths and the accepted separate Fabric/C3 lifecycle owner set.\n- **188/188 combined private_service_test + private_service_backend_release_test PASS**, including dedicated new lock-refusal/preflight test (8 C2 timeout tests total). Python syntax and candidate-path diff checks PASS.\n- **Real running C2 Personal preflight PASS** from the freshly integrated source: `NOT_APPLIED`, source/modules unchanged, 15000 -> 45000 ms command budget, existing 60000 ms push budget retained, changed files only config.json + manifest.json. Original installed manifest remained `4bb0b40cbc7849487c0d886b30261f70fd6e1828d1d217643a56e3fa6aea40fb`; live service remained running at 127.0.0.1:45026 with prior configuration.\n- GitHub PR #1617 now `MERGEABLE`; protected native **auto-merge re-armed**, current-head hosted checks just launched and must pass. DO NOT bypass CI/merge_group to install.\n\n**After protected merge, still owed**\n1. Read accepted protected merged installer source; recheck original M2 C2 Personal manifest CAS and exact single-host service ownership.\n2. Native official stop; if bootout reply ambiguous, reconcile exact launchctl/port/manifest BEFORE another effect. Only when stopped, use one manifest-CAS `--c2-personal-git-timeout-only` config-only migration, verify sealed files/config, official start.\n3. Verify installed C2 Personal MCP tools and **live** Git publisher status for the original Macro operation `intl-country-cockpit-20261018`. GitHub remote original Macro branch HEAD already equals `9eb408279e7ea8de99a667e296c4b0ddebfd799b`, Macro PR #9596 remains separate and draft. As of this recovery the original Macro worktree contains NEW uncommitted edits from another writer; do not alter, recommit, or repush those files. Its `clean` indicator may legitimately differ after new work. Publisher acceptance is a nonrefusing typed response plus correct original remote publication/repository routing, not forcibly cleaning someone else's workspace.\n4. Persist exact postinstall receipts here, then retire the single existing conditional watcher only when proven complete; if write unavailable in scheduled surface, return a typed exact boundary, do not claim completion.\n\nMISSION_COMPLETE: false (one final guarded runtime config install and live status remain).\n"
+      }
+    ],
+    "post_install_or_original_action_resolution_receipt_observed": false
+  },
+  "qualification": "Current refs and absence of a new owner comment do not settle the original attempted push. No commit, push retry, Ready, merge, deploy or restart was performed."
+}

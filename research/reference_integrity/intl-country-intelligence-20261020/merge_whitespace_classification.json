@@ -1,0 +1,10 @@
+{
+  "recorded_at": "2026-10-20T15:03:24.928735+00:00",
+  "head": "a63e499566bcfbcad363142087d4329bd4482373",
+  "merge_head": "4b6e6ea52676308d0f239bb8e9c74af230e61039",
+  "inherited_main_paths_byte_identical": 300,
+  "composed_manifest_check_exit": 0,
+  "broad_whitespace_exit": 2,
+  "broad_whitespace_log": "research/reference_integrity/intl-country-intelligence-20261020/inherited_main_whitespace_check.log",
+  "classification": "All staged files except the already semantically checked CI manifest exactly match incoming protected-main blobs. Broad whitespace warnings belong to retained incoming main evidence, which is preserved unchanged."
+}

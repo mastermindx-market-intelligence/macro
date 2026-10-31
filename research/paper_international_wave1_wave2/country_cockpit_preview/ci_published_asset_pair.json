@@ -1,0 +1,9 @@
+{
+  "owner": "lib.site_assets.copy_asset",
+  "source": "templates/theme.css",
+  "paired_output": "site/theme.css",
+  "before_output_sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+  "source_sha256": "61428c7d20e6b4a47450def2301d1f087eac354d1db4ec04be001e39a74d2eb7",
+  "output_sha256": "61428c7d20e6b4a47450def2301d1f087eac354d1db4ec04be001e39a74d2eb7",
+  "byte_identical": true
+}

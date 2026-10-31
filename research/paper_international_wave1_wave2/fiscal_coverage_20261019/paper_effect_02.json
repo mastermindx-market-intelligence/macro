@@ -1,0 +1,274 @@
+{
+  "schema": "mastermind.intl_paper_fiscal_effect.v1",
+  "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+  "page_id": "p-G-0",
+  "operation_id": "intl-country-cockpit-20261018-fiscal-paper-rows-20261020",
+  "tool": "duplicate_nodes",
+  "arguments": {
+    "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "nodes": [
+      {
+        "id": "EOD-0",
+        "parentId": "EO8-0"
+      },
+      {
+        "id": "EOD-0",
+        "parentId": "EO8-0"
+      },
+      {
+        "id": "EOV-0",
+        "parentId": "EOQ-0"
+      },
+      {
+        "id": "EOV-0",
+        "parentId": "EOQ-0"
+      },
+      {
+        "id": "EPD-0",
+        "parentId": "EP8-0"
+      },
+      {
+        "id": "EPD-0",
+        "parentId": "EP8-0"
+      },
+      {
+        "id": "EPV-0",
+        "parentId": "EPQ-0"
+      },
+      {
+        "id": "EPV-0",
+        "parentId": "EPQ-0"
+      },
+      {
+        "id": "ESU-0",
+        "parentId": "ER5-0"
+      }
+    ]
+  },
+  "expected_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+  "state": "APPLIED_RESPONSE_OBSERVED",
+  "retry_allowed": false,
+  "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+  "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+  "observed_at": "2026-10-20T01:44:04.698Z",
+  "result": {
+    "duplicatedNodes": [
+      {
+        "sourceId": "EOD-0",
+        "newId": "EVO-0",
+        "name": "Current account projection",
+        "component": "Frame",
+        "worldX": null,
+        "worldY": null,
+        "x": null,
+        "y": null,
+        "descendantIdMap": {
+          "EOE-0": "EVX-0",
+          "EOH-0": "EVP-0",
+          "EOI-0": "EVU-0",
+          "EOL-0": "EVT-0",
+          "EOM-0": "EVQ-0",
+          "EON-0": "EVS-0",
+          "EOO-0": "EVR-0",
+          "EOJ-0": "EVW-0",
+          "EOK-0": "EVV-0",
+          "EOF-0": "EVZ-0",
+          "EOG-0": "EVY-0"
+        }
+      },
+      {
+        "sourceId": "EOD-0",
+        "newId": "EW0-0",
+        "name": "Current account projection",
+        "component": "Frame",
+        "worldX": null,
+        "worldY": null,
+        "x": null,
+        "y": null,
+        "descendantIdMap": {
+          "EOE-0": "EW9-0",
+          "EOH-0": "EW1-0",
+          "EOI-0": "EW6-0",
+          "EOL-0": "EW5-0",
+          "EOM-0": "EW2-0",
+          "EON-0": "EW4-0",
+          "EOO-0": "EW3-0",
+          "EOJ-0": "EW8-0",
+          "EOK-0": "EW7-0",
+          "EOF-0": "EWB-0",
+          "EOG-0": "EWA-0"
+        }
+      },
+      {
+        "sourceId": "EOV-0",
+        "newId": "EWC-0",
+        "name": "Current account projection",
+        "component": "Frame",
+        "worldX": null,
+        "worldY": null,
+        "x": null,
+        "y": null,
+        "descendantIdMap": {
+          "EOW-0": "EWL-0",
+          "EOZ-0": "EWD-0",
+          "EP0-0": "EWI-0",
+          "EP3-0": "EWH-0",
+          "EP4-0": "EWE-0",
+          "EP5-0": "EWG-0",
+          "EP6-0": "EWF-0",
+          "EP1-0": "EWK-0",
+          "EP2-0": "EWJ-0",
+          "EOX-0": "EWN-0",
+          "EOY-0": "EWM-0"
+        }
+      },
+      {
+        "sourceId": "EOV-0",
+        "newId": "EWO-0",
+        "name": "Current account projection",
+        "component": "Frame",
+        "worldX": null,
+        "worldY": null,
+        "x": null,
+        "y": null,
+        "descendantIdMap": {
+          "EOW-0": "EWX-0",
+          "EOZ-0": "EWP-0",
+          "EP0-0": "EWU-0",
+          "EP3-0": "EWT-0",
+          "EP4-0": "EWQ-0",
+          "EP5-0": "EWS-0",
+          "EP6-0": "EWR-0",
+          "EP1-0": "EWW-0",
+          "EP2-0": "EWV-0",
+          "EOX-0": "EWZ-0",
+          "EOY-0": "EWY-0"
+        }
+      },
+      {
+        "sourceId": "EPD-0",
+        "newId": "EX0-0",
+        "name": "Current account projection",
+        "component": "Frame",
+        "worldX": null,
+        "worldY": null,
+        "x": null,
+        "y": null,
+        "descendantIdMap": {
+          "EPE-0": "EX9-0",
+          "EPH-0": "EX1-0",
+          "EPI-0": "EX6-0",
+          "EPL-0": "EX5-0",
+          "EPM-0": "EX2-0",
+          "EPN-0": "EX4-0",
+          "EPO-0": "EX3-0",
+          "EPJ-0": "EX8-0",
+          "EPK-0": "EX7-0",
+          "EPF-0": "EXB-0",
+          "EPG-0": "EXA-0"
+        }
+      },
+      {
+        "sourceId": "EPD-0",
+        "newId": "EXC-0",
+        "name": "Current account projection",
+        "component": "Frame",
+        "worldX": null,
+        "worldY": null,
+        "x": null,
+        "y": null,
+        "descendantIdMap": {
+          "EPE-0": "EXL-0",
+          "EPH-0": "EXD-0",
+          "EPI-0": "EXI-0",
+          "EPL-0": "EXH-0",
+          "EPM-0": "EXE-0",
+          "EPN-0": "EXG-0",
+          "EPO-0": "EXF-0",
+          "EPJ-0": "EXK-0",
+          "EPK-0": "EXJ-0",
+          "EPF-0": "EXN-0",
+          "EPG-0": "EXM-0"
+        }
+      },
+      {
+        "sourceId": "EPV-0",
+        "newId": "EXO-0",
+        "name": "Current account projection",
+        "component": "Frame",
+        "worldX": null,
+        "worldY": null,
+        "x": null,
+        "y": null,
+        "descendantIdMap": {
+          "EPW-0": "EXX-0",
+          "EPZ-0": "EXP-0",
+          "EQ0-0": "EXU-0",
+          "EQ3-0": "EXT-0",
+          "EQ4-0": "EXQ-0",
+          "EQ5-0": "EXS-0",
+          "EQ6-0": "EXR-0",
+          "EQ1-0": "EXW-0",
+          "EQ2-0": "EXV-0",
+          "EPX-0": "EXZ-0",
+          "EPY-0": "EXY-0"
+        }
+      },
+      {
+        "sourceId": "EPV-0",
+        "newId": "EY0-0",
+        "name": "Current account projection",
+        "component": "Frame",
+        "worldX": null,
+        "worldY": null,
+        "x": null,
+        "y": null,
+        "descendantIdMap": {
+          "EPW-0": "EY9-0",
+          "EPZ-0": "EY1-0",
+          "EQ0-0": "EY6-0",
+          "EQ3-0": "EY5-0",
+          "EQ4-0": "EY2-0",
+          "EQ5-0": "EY4-0",
+          "EQ6-0": "EY3-0",
+          "EQ1-0": "EY8-0",
+          "EQ2-0": "EY7-0",
+          "EPX-0": "EYB-0",
+          "EPY-0": "EYA-0"
+        }
+      },
+      {
+        "sourceId": "ESU-0",
+        "newId": "EYC-0",
+        "name": "External & fiscal position",
+        "component": "Frame",
+        "worldX": null,
+        "worldY": null,
+        "x": null,
+        "y": null,
+        "descendantIdMap": {
+          "ESV-0": "EYU-0",
+          "ESZ-0": "EYP-0",
+          "ET5-0": "EYK-0",
+          "ETB-0": "EYF-0",
+          "ETH-0": "EYD-0",
+          "ETI-0": "EYE-0",
+          "ETC-0": "EYH-0",
+          "ETF-0": "EYG-0",
+          "ETD-0": "EYJ-0",
+          "ETE-0": "EYI-0",
+          "ET6-0": "EYM-0",
+          "ET9-0": "EYL-0",
+          "ET7-0": "EYO-0",
+          "ET8-0": "EYN-0",
+          "ET0-0": "EYR-0",
+          "ET3-0": "EYQ-0",
+          "ET1-0": "EYT-0",
+          "ET2-0": "EYS-0",
+          "ESW-0": "EYW-0",
+          "ESX-0": "EYV-0"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+diff --git a/tests/test_site_access_boundary.py b/tests/test_site_access_boundary.py
+index db31917adcfa..e7fe1d8348a0 100644
+--- a/tests/test_site_access_boundary.py
++++ b/tests/test_site_access_boundary.py
+@@ -684,6 +684,20 @@ def test_no_source_maps_secrets_or_server_source_in_site_tree():
+     assert bad == []
+ 
+ 
++def test_baskets_seo_redirect_preserves_exact_trusted_shell_admission():
++    # The moved stub must run its bridge.navigate before the parent commits a
++    # successor generation. Query-preserving HTTP redirects still fail READY.
++    match = re.search(r"@baskets_seo_redirect\s*\{(.*?)\n\t\}", CADDY, re.S)
++    assert match
++    assert " ".join(match.group(1).split()) == " ".join("""path /baskets_china.html
++        not {
++            query mmx_shell=1
++            header Referer https://beta.mastermind-x.com/*
++        }""".split())
++    assert "redir @baskets_seo_redirect /sector_central_china.html 301" in CADDY
++    assert "redir /baskets_china.html " not in CADDY
++
++
+ def test_fail_closed_and_browser_hardening_are_present():
+     assert 'rewrite /api/regwall/check' in CADDY
+     assert 'rewrite /api/paywall/check' in CADDY

@@ -1,0 +1,24 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"schema\":\"mastermind.fabric_mcp.v1\",\"action\":\"fabric_request\",\"run_id\":\"intl-20261022-workspace-transport-query-r2\",\"root_id\":\"01a1101f-2a37-7320-9a9b-5df3ce1b890d\",\"parent_id\":\"root\",\"controller_pid\":72069,\"delivery\":\"CONTROLLER_CREATED\",\"worker_started\":null,\"worker_start_proven\":false,\"adapter_exit_code\":null,\"execution_absence_proven\":false,\"next_observation\":\"fabric_status with the same run and root; fabric_controller_output with this PID when needed\",\"retry_allowed\":false}"
+    }
+  ],
+  "structuredContent": {
+    "schema": "mastermind.fabric_mcp.v1",
+    "action": "fabric_request",
+    "run_id": "intl-20261022-workspace-transport-query-r2",
+    "root_id": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "parent_id": "root",
+    "controller_pid": 72069,
+    "delivery": "CONTROLLER_CREATED",
+    "worker_started": null,
+    "worker_start_proven": false,
+    "adapter_exit_code": null,
+    "execution_absence_proven": false,
+    "next_observation": "fabric_status with the same run and root; fabric_controller_output with this PID when needed",
+    "retry_allowed": false
+  },
+  "isError": false
+}

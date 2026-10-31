@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: query source: refused native popstate preserves the pending scenario and its original draft
+ok 1 - query source: refused native popstate preserves the pending scenario and its original draft
+  ---
+  duration_ms: 4102.977625
+  type: 'test'
+  ...
+# Subtest: GS query composition: transport and unchanged business selection cause no history or navigation writes
+ok 2 - GS query composition: transport and unchanged business selection cause no history or navigation writes
+  ---
+  duration_ms: 4029.040166
+  type: 'test'
+  ...
+# Subtest: GS query composition: one market-only correction preserves raw business bytes before INIT
+ok 3 - GS query composition: one market-only correction preserves raw business bytes before INIT
+  ---
+  duration_ms: 2927.1345
+  type: 'test'
+  ...
+# Subtest: GS query composition: rejected business queries are not sanitized by market alignment
+ok 4 - GS query composition: rejected business queries are not sanitized by market alignment
+  ---
+  duration_ms: 4350.4155
+  type: 'test'
+  ...
+# Subtest: GS query composition: native Back and Forward preserve one intended clamp before and after INIT
+ok 5 - GS query composition: native Back and Forward preserve one intended clamp before and after INIT
+  ---
+  duration_ms: 2538.488375
+  type: 'test'
+  ...
+# Subtest: Scenario query ordering: invalid-existing before INIT
+ok 6 - Scenario query ordering: invalid-existing before INIT
+  ---
+  duration_ms: 3315.259917
+  type: 'test'
+  ...
+# Subtest: Scenario query ordering: valid-existing before INIT
+ok 7 - Scenario query ordering: valid-existing before INIT
+  ---
+  duration_ms: 3029.347541
+  type: 'test'
+  ...
+# Subtest: Scenario query ordering: valid-new before INIT
+ok 8 - Scenario query ordering: valid-new before INIT
+  ---
+  duration_ms: 2795.7695
+  type: 'test'
+  ...
+# Subtest: Scenario query ordering: invalid-existing after INIT
+ok 9 - Scenario query ordering: invalid-existing after INIT
+  ---
+  duration_ms: 3166.128125
+  type: 'test'
+  ...
+# Subtest: Scenario query ordering: valid-existing after INIT
+ok 10 - Scenario query ordering: valid-existing after INIT
+  ---
+  duration_ms: 3239.047084
+  type: 'test'
+  ...
+# Subtest: Scenario query ordering: valid-new after INIT
+ok 11 - Scenario query ordering: valid-new after INIT
+  ---
+  duration_ms: 3047.941375
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 36824.071791

@@ -1,0 +1,4 @@
+{"gate": "design", "exit_code": 0, "log": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/design.log"}
+{"gate": "visual", "exit_code": 0, "log": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/visual.log"}
+{"gate": "tracked_whitespace", "exit_code": 0, "log": "research/paper_international_wave1_wave2/fx_coverage_20261020/gates/tracked_whitespace.log"}
+{"passed": true, "paper_receipt": {"path": "research/paper_international_wave1_wave2/fx_coverage_20261020/paper_currency_coverage_receipt.json", "sha256": "79997eaa36f432ed03baa28fae53fc75ba46ca932c72da2732858183c55d50dc", "bytes": 8552}, "html_sha256": {"intl_country_preview.html": "d1e7bc139601e8ed8cb84d9368c0d284d98316061499ba850dbb3d42f86c5c70", "intl_integrated_preview.html": "8354968aecd636c43aad2c8945393b2fabee6f313181f90618825d90b6737b5a", "intl_stocks_integrated_preview.html": "94ff3532e86169db559f85ae74e21eb029524844bc8272d445f8db4d771672e8"}}

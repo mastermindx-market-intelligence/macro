@@ -1,0 +1,4 @@
+outcome: captured
+pages: 1  states: 24/24 captured
+manifest: mockups/evidence/intl-country-r12/manifest.json
+smells: mockups/evidence/intl-country-r12/smells.json

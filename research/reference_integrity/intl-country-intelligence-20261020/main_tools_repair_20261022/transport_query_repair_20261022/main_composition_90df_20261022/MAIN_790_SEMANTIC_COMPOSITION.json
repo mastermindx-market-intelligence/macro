@@ -1,0 +1,405 @@
+{
+  "schema": "intl.latest_main_semantic_composition.v1",
+  "recorded_at": "2026-10-22T08:24:42.701998+00:00",
+  "base": "90df0e302637ade26b894aee46141b6a1813a630",
+  "head": "48b5c3312a22548010f330f03ac0b261695c16b6",
+  "main": "790990a28c3350ea3e05895e2bffaa9d21c0fd46",
+  "tree": "5e1a50496fb35ecc9769ae9791e786ef7423750b",
+  "all_ci_jobs_checked": 349,
+  "ci_job_set_union": true,
+  "foundation_exact_local": true,
+  "foundation_paths": 375,
+  "new_build_suite_retained": true,
+  "overlaps": [
+    {
+      "job": "nw-lobe-unfreeze",
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py"
+      ],
+      "main_added_paths": [
+        "research/theme_graph/activity_curation_receipts/**"
+      ],
+      "nonpath_fields_exact_main": true,
+      "path_union_correct": true
+    },
+    {
+      "job": "washout-turn-organ",
+      "local_added_paths": [
+        "collectors/intl_country_sources.py",
+        "collectors/intl_policy_sources.py",
+        "collectors/intl_weo.py",
+        "config/intl_country_baseline.json",
+        "config/intl_country_commentary.json",
+        "config/intl_country_releases.json",
+        "lib/intl_country_assessment.py",
+        "lib/intl_country_inputs.py",
+        "lib/intl_country_outlook.py",
+        "lib/intl_currency_observation.py",
+        "lib/intl_forecast_vintages.py",
+        "lib/intl_policy_evidence.py"
+      ],
+      "main_added_paths": [
+        "templates/watchlist.js",
+        "templates/watchstore.js",
+        "tests/test_prophet_r7_wave_a_watchlist.py"
+      ],
+      "nonpath_fields_exact_main": true,
+      "path_union_correct": true
+    }
+  ],
+  "changed_job_owners": [
+    {
+      "job": "biocatalyst-serving",
+      "owner": "international"
+    },
+    {
+      "job": "intelligence-registry",
+      "owner": "international"
+    },
+    {
+      "job": "international-workspace-browser",
+      "owner": "international"
+    },
+    {
+      "job": "international-workspace-foundation",
+      "owner": "international"
+    },
+    {
+      "job": "itr-turn-rotation",
+      "owner": "international"
+    },
+    {
+      "job": "nw-lobe-unfreeze",
+      "owner": "full_path_union_main_commands"
+    },
+    {
+      "job": "prophet-lab",
+      "owner": "protected_main"
+    },
+    {
+      "job": "unrun-picks-boards",
+      "owner": "international"
+    },
+    {
+      "job": "washout-turn-organ",
+      "owner": "full_path_union_main_commands"
+    }
+  ],
+  "prophet_lab_and_pack_test_exact_main": true,
+  "screener_exact_additive_token_composition": true,
+  "screener_sha256": "8b8edfe2e047f7d7037bde5e5af27861c106ad8c90a2aac200337af287061922",
+  "payload_unchanged": true,
+  "banner_count": 0,
+  "watchstore_template_site_exact_main": true,
+  "build_static_assets_bound": 42,
+  "build_static_asset_rows": [
+    {
+      "output": "account.js",
+      "source_path": "templates/account.js",
+      "capture_sha256": "c1732806e5acbc4c91ac183fee873772108eb6abce433d6e17e9601d4ed5a260",
+      "prospective_sha256": "c1732806e5acbc4c91ac183fee873772108eb6abce433d6e17e9601d4ed5a260",
+      "unchanged": true
+    },
+    {
+      "output": "chart_i18n.js",
+      "source_path": "templates/chart_i18n.js",
+      "capture_sha256": "23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315",
+      "prospective_sha256": "23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315",
+      "unchanged": true
+    },
+    {
+      "output": "charts.js",
+      "source_path": "templates/charts.js",
+      "capture_sha256": "84a794395899da373f00ae59374aab93c3a41aee56ac55e973f2f960e95ed47c",
+      "prospective_sha256": "84a794395899da373f00ae59374aab93c3a41aee56ac55e973f2f960e95ed47c",
+      "unchanged": true
+    },
+    {
+      "output": "dashboard-icons.css",
+      "source_path": "templates/dashboard-icons.css",
+      "capture_sha256": "be32e541eabb7deeb4a6c88ff20bd1a0a53a96c873fb3773ed01da470682b0e9",
+      "prospective_sha256": "be32e541eabb7deeb4a6c88ff20bd1a0a53a96c873fb3773ed01da470682b0e9",
+      "unchanged": true
+    },
+    {
+      "output": "dashboard-icons.js",
+      "source_path": "templates/dashboard-icons.js",
+      "capture_sha256": "ee1d516321594b8459adef23e0cd75427563ce72305543aaa2fcc9a7105e2b03",
+      "prospective_sha256": "ee1d516321594b8459adef23e0cd75427563ce72305543aaa2fcc9a7105e2b03",
+      "unchanged": true
+    },
+    {
+      "output": "data_base.js",
+      "source_path": "templates/data_base.js",
+      "capture_sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+      "prospective_sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+      "unchanged": true
+    },
+    {
+      "output": "favicon.svg",
+      "source_path": "templates/favicon.svg",
+      "capture_sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
+      "prospective_sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
+      "unchanged": true
+    },
+    {
+      "output": "Inter-400.woff2",
+      "source_path": "templates/fonts/Inter-400.woff2",
+      "capture_sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+      "prospective_sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+      "unchanged": true
+    },
+    {
+      "output": "Inter-500.woff2",
+      "source_path": "templates/fonts/Inter-500.woff2",
+      "capture_sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+      "prospective_sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+      "unchanged": true
+    },
+    {
+      "output": "Inter-600.woff2",
+      "source_path": "templates/fonts/Inter-600.woff2",
+      "capture_sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+      "prospective_sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+      "unchanged": true
+    },
+    {
+      "output": "Inter-700.woff2",
+      "source_path": "templates/fonts/Inter-700.woff2",
+      "capture_sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+      "prospective_sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+      "unchanged": true
+    },
+    {
+      "output": "Inter-800.woff2",
+      "source_path": "templates/fonts/Inter-800.woff2",
+      "capture_sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+      "prospective_sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+      "unchanged": true
+    },
+    {
+      "output": "Inter-900.woff2",
+      "source_path": "templates/fonts/Inter-900.woff2",
+      "capture_sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e",
+      "prospective_sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e",
+      "unchanged": true
+    },
+    {
+      "output": "InterDisplay-500.woff2",
+      "source_path": "templates/fonts/InterDisplay-500.woff2",
+      "capture_sha256": "a5b16b4bd4d1ad12a11c12bc3325bd09250364237e943974a7560ec2b7f22c9a",
+      "prospective_sha256": "a5b16b4bd4d1ad12a11c12bc3325bd09250364237e943974a7560ec2b7f22c9a",
+      "unchanged": true
+    },
+    {
+      "output": "InterDisplay-600.woff2",
+      "source_path": "templates/fonts/InterDisplay-600.woff2",
+      "capture_sha256": "d8bb10ec73c52ddeeed35b9e7913cf0cf0226ca3469c696883413f49ef03aa61",
+      "prospective_sha256": "d8bb10ec73c52ddeeed35b9e7913cf0cf0226ca3469c696883413f49ef03aa61",
+      "unchanged": true
+    },
+    {
+      "output": "InterDisplay-700.woff2",
+      "source_path": "templates/fonts/InterDisplay-700.woff2",
+      "capture_sha256": "634290d856dfb3503c76eb655754e324b7b3513fb66254346db6046d186a253e",
+      "prospective_sha256": "634290d856dfb3503c76eb655754e324b7b3513fb66254346db6046d186a253e",
+      "unchanged": true
+    },
+    {
+      "output": "intl_library_search.js",
+      "source_path": "templates/intl_library_search.js",
+      "capture_sha256": "019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f",
+      "prospective_sha256": "019933a8f2f6c705dae32c68f83c065b24f693a2e899c33381b21fb6b86f748f",
+      "unchanged": true
+    },
+    {
+      "output": "intl_workspace.css",
+      "source_path": "templates/intl_workspace.css",
+      "capture_sha256": "e321de56cf527fc980deb3cab0bb809fc48edc5b69c585601e6076ce651eb40e",
+      "prospective_sha256": "e321de56cf527fc980deb3cab0bb809fc48edc5b69c585601e6076ce651eb40e",
+      "unchanged": true
+    },
+    {
+      "output": "intl_workspace.js",
+      "source_path": "templates/intl_workspace.js",
+      "capture_sha256": "d910e296a5d6ea9b58f79ec59ab112b79a58cad21dff96f0a4831204ab06b296",
+      "prospective_sha256": "d910e296a5d6ea9b58f79ec59ab112b79a58cad21dff96f0a4831204ab06b296",
+      "unchanged": true
+    },
+    {
+      "output": "intl_workspace_entry.js",
+      "source_path": "templates/intl_workspace_entry.js",
+      "capture_sha256": "3b476b4ce04b91f0a8854c4a3e5b2e26f672cfa21c67445d8ce765edc62a8b1b",
+      "prospective_sha256": "3b476b4ce04b91f0a8854c4a3e5b2e26f672cfa21c67445d8ce765edc62a8b1b",
+      "unchanged": true
+    },
+    {
+      "output": "intl_workspace_history.css",
+      "source_path": "templates/intl_workspace_history.css",
+      "capture_sha256": "a4d333467c17afeffd8a47316082357a89d5d85618c37a613be25e6e240807d0",
+      "prospective_sha256": "a4d333467c17afeffd8a47316082357a89d5d85618c37a613be25e6e240807d0",
+      "unchanged": true
+    },
+    {
+      "output": "intl_workspace_macro.css",
+      "source_path": "templates/intl_workspace_macro.css",
+      "capture_sha256": "11b8e48f9f15a8e90c556e0c703e60818ac1db8a9c02786fd6f59ccbc219dc15",
+      "prospective_sha256": "11b8e48f9f15a8e90c556e0c703e60818ac1db8a9c02786fd6f59ccbc219dc15",
+      "unchanged": true
+    },
+    {
+      "output": "intl_workspace_risk.css",
+      "source_path": "templates/intl_workspace_risk.css",
+      "capture_sha256": "5f21f98f0604c86876fd2d693e542094c85c8107da127b409c0b2865726a816e",
+      "prospective_sha256": "5f21f98f0604c86876fd2d693e542094c85c8107da127b409c0b2865726a816e",
+      "unchanged": true
+    },
+    {
+      "output": "intl_workspace_scenario.js",
+      "source_path": "templates/intl_workspace_scenario.js",
+      "capture_sha256": "91217398f9f527173fc0be1a01dca305b84f2060c7b3b0e215866ef564471ab4",
+      "prospective_sha256": "91217398f9f527173fc0be1a01dca305b84f2060c7b3b0e215866ef564471ab4",
+      "unchanged": true
+    },
+    {
+      "output": "intl_workspace_state.js",
+      "source_path": "templates/intl_workspace_state.js",
+      "capture_sha256": "54575d3715bd4a85466789cf461ce17c27b13258e54304a50800c7d16488e35d",
+      "prospective_sha256": "54575d3715bd4a85466789cf461ce17c27b13258e54304a50800c7d16488e35d",
+      "unchanged": true
+    },
+    {
+      "output": "live.js",
+      "source_path": "templates/live.js",
+      "capture_sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+      "prospective_sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+      "unchanged": true
+    },
+    {
+      "output": "live_config.js",
+      "source_path": "site/live_config.js",
+      "capture_sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+      "prospective_sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+      "unchanged": true
+    },
+    {
+      "output": "logo_config.js",
+      "source_path": "templates/logo_config.js",
+      "capture_sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+      "prospective_sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+      "unchanged": true
+    },
+    {
+      "output": "mm_brain.js",
+      "source_path": "templates/mm_brain.js",
+      "capture_sha256": "0bf2f2151db84e12eb8a8ee3a250aed6b63c3a27db41776209358ba666d13748",
+      "prospective_sha256": "0bf2f2151db84e12eb8a8ee3a250aed6b63c3a27db41776209358ba666d13748",
+      "unchanged": true
+    },
+    {
+      "output": "mm_brain_visuals.css",
+      "source_path": "templates/mm_brain_visuals.css",
+      "capture_sha256": "1eb2aabf14bb977f030f5db0e1680b9dad8d1089d45d9d16882091d98cb871ab",
+      "prospective_sha256": "1eb2aabf14bb977f030f5db0e1680b9dad8d1089d45d9d16882091d98cb871ab",
+      "unchanged": true
+    },
+    {
+      "output": "mtf.js",
+      "source_path": "templates/mtf.js",
+      "capture_sha256": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0",
+      "prospective_sha256": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0",
+      "unchanged": true
+    },
+    {
+      "output": "nav_market.js",
+      "source_path": "templates/nav_market.js",
+      "capture_sha256": "4e9012bb4b463ff19c308263d0229112c345f72c2f4ada4496c55443a92bdb12",
+      "prospective_sha256": "4e9012bb4b463ff19c308263d0229112c345f72c2f4ada4496c55443a92bdb12",
+      "unchanged": true
+    },
+    {
+      "output": "navigation-refresh.css",
+      "source_path": "templates/navigation-refresh.css",
+      "capture_sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+      "prospective_sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+      "unchanged": true
+    },
+    {
+      "output": "product-nav-icons.css",
+      "source_path": "templates/product-nav-icons.css",
+      "capture_sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+      "prospective_sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+      "unchanged": true
+    },
+    {
+      "output": "shared_shell.css",
+      "source_path": "templates/shared_shell.css",
+      "capture_sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "prospective_sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "unchanged": true
+    },
+    {
+      "output": "shared_shell_bridge.js",
+      "source_path": "templates/shared_shell_bridge.js",
+      "capture_sha256": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+      "prospective_sha256": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+      "unchanged": true
+    },
+    {
+      "output": "stock-logos.js",
+      "source_path": "templates/stock-logos.js",
+      "capture_sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+      "prospective_sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+      "unchanged": true
+    },
+    {
+      "output": "stockdata.js",
+      "source_path": "templates/stockdata.js",
+      "capture_sha256": "da6004af868bfc355aeb8b976c3f83db92e28616953c28088d22915a9bbdb576",
+      "prospective_sha256": "da6004af868bfc355aeb8b976c3f83db92e28616953c28088d22915a9bbdb576",
+      "unchanged": true
+    },
+    {
+      "output": "stockview.js",
+      "source_path": "templates/stockview.js",
+      "capture_sha256": "b7490d45695708cf6e3f5d62dff79062f0a1a665fd8c90f4ee9a7442a8925e36",
+      "prospective_sha256": "b7490d45695708cf6e3f5d62dff79062f0a1a665fd8c90f4ee9a7442a8925e36",
+      "unchanged": true
+    },
+    {
+      "output": "tablesort.js",
+      "source_path": "templates/tablesort.js",
+      "capture_sha256": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42",
+      "prospective_sha256": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42",
+      "unchanged": true
+    },
+    {
+      "output": "theme.css",
+      "source_path": "templates/theme.css",
+      "capture_sha256": "50eb4991c6f9a2b00ad3accb33fa85cebc3dc0c7ceac2ab093d9e2e2f3045e51",
+      "prospective_sha256": "50eb4991c6f9a2b00ad3accb33fa85cebc3dc0c7ceac2ab093d9e2e2f3045e51",
+      "unchanged": true
+    },
+    {
+      "output": "theme.js",
+      "source_path": "site/theme.js",
+      "capture_sha256": "a46f66779fbeb07ae9aed69b3cb7bdc952d6f55d59dc2f80e07bbbe88ce549f6",
+      "prospective_sha256": "a46f66779fbeb07ae9aed69b3cb7bdc952d6f55d59dc2f80e07bbbe88ce549f6",
+      "unchanged": true
+    }
+  ],
+  "unbound_build_assets": [],
+  "changed_build_asset_inputs": [],
+  "head_unchanged": true
+}

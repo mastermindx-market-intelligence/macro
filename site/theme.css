@@ -157,6 +157,10 @@
   /* Retained evidence states share the canonical theme surfaces. */
   --surface-warn-subtle: color-mix(in srgb, var(--warn) 6%, var(--panel));
   --surface-skeleton-deep: color-mix(in srgb, var(--panel2) 86%, var(--line));
+  /* International country research: existing blends owned by shared theme. */
+  --imc-summary-hover: color-mix(in srgb, var(--panel2) 65%, transparent);
+  --imc-country-line: color-mix(in srgb, var(--line) 58%, var(--link));
+  --imc-context-surface: color-mix(in srgb, var(--panel2) 65%, var(--panel));
   /* ── Macro Command tints (templates/macro_command.css) ────────────────────
      color-mix on an added surface line is enforce-added-illegal; the mixes
      live here so the surface only names tokens. --text/--info/--ok track
@@ -223,6 +227,7 @@ html[data-theme="light"] {
   --mc-stance-warn: color-mix(in srgb, var(--warn) 6%, transparent);
   --mc-stance-bad: color-mix(in srgb, var(--act) 6%, transparent);
   --mc-stance-neutral: color-mix(in srgb, var(--muted) 6%, transparent);
+  --imc-country-line: color-mix(in srgb, var(--link) 35%, var(--line));
   --esurf-ser1: #2f63c4;
   --esurf-ser2: #8f6a04;
   --esurf-band: color-mix(in srgb, var(--esurf-ser1) 11%, transparent);

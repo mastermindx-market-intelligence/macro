@@ -1,0 +1,68 @@
+{
+  "schema": "intl_bis_source_validation.v1",
+  "url": "https://data.bis.org/static/bulk/WS_CBPOL_csv_flat.zip",
+  "http_status": 200,
+  "request_started_at": "2026-10-20T09:47:32.267295+00:00",
+  "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
+  "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d",
+  "source_bytes": 4139244,
+  "countries": {
+    "EZ": {
+      "value": 2.5,
+      "period": "2026-09",
+      "comparison_qualification": "qualified",
+      "instrument": "deposit_facility_rate",
+      "qualifier": null,
+      "comparison_observation_date": "2026-09-30",
+      "decision_state": "verified"
+    },
+    "AU": {
+      "value": 4.6,
+      "period": "2026-09",
+      "comparison_qualification": "qualified",
+      "instrument": "cash_rate_target",
+      "qualifier": null,
+      "comparison_observation_date": "2026-09-30",
+      "decision_state": "verified"
+    },
+    "GB": {
+      "value": 3.75,
+      "period": "2026-09",
+      "comparison_qualification": "qualified",
+      "instrument": "bank_rate",
+      "qualifier": null,
+      "comparison_observation_date": "2026-09-30",
+      "decision_state": "verified"
+    },
+    "JP": {
+      "value": 1.25,
+      "period": "2026-09",
+      "comparison_qualification": "qualified",
+      "instrument": "uncollateralized_overnight_call_rate_target",
+      "qualifier": "around",
+      "comparison_observation_date": "2026-09-30",
+      "decision_state": "verified"
+    },
+    "KR": {
+      "value": 3.0,
+      "period": "2026-09",
+      "comparison_qualification": "qualified",
+      "instrument": "bok_base_rate",
+      "qualifier": null,
+      "comparison_observation_date": "2026-09-30",
+      "decision_state": "verified"
+    },
+    "IN": {
+      "value": 5.25,
+      "period": "2026-06",
+      "comparison_qualification": "qualified",
+      "instrument": "policy_repo_rate",
+      "qualifier": null,
+      "comparison_observation_date": "2026-06-30",
+      "decision_state": "verified"
+    }
+  },
+  "canonical_store_written": false,
+  "baseline_admitted": false,
+  "source_documentation": "https://www.bis.org/statistics/cbpol/cbpol_doc.pdf"
+}

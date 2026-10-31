@@ -1,0 +1,176 @@
+{
+  "schema": "intl.main6a4_source_commit_preparation.v1",
+  "recorded_at": "2026-10-22T09:04:13.754664+00:00",
+  "source_commit": "51b217b3eb1ee211d54706d2673ab183de9452b3",
+  "product_changes": [
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+    "site/research_screener.html"
+  ],
+  "query_source_unchanged": [
+    "templates/shared_shell_bridge.js",
+    "site/shared_shell_bridge.js",
+    "templates/intl_workspace.js",
+    "site/intl_workspace.js",
+    "templates/intl_workspace_state.js",
+    "site/intl_workspace_state.js"
+  ],
+  "p0b_canonical_pass": true,
+  "screener_pass": true,
+  "files": [
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+      "bytes": 131030,
+      "sha256": "ba006303b4701dcd21a4cae7dc8e194ba125bd32ee67738ae34a5b5ff0d406ac"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "bytes": 497151,
+      "sha256": "68943e2590694c0406ec16732f8c302cfddf9bdaa34ffc44d2fe6896c3bfa9e6"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "bytes": 489572,
+      "sha256": "1cfcbe0a08c8f8adca60d40735bbdc107de596066cb92837756828fe35288e3d"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/DATA_REVIEW_SOURCE_APPLICABILITY.json",
+      "bytes": 11009,
+      "sha256": "a528de295bfd54c3692ba6affa4b85aa37c31ead7649a8bb262456284ad7c21b"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/OWNER_CAPTURED_PRINCIPAL_COMPOSITION_REVIEW.md",
+      "bytes": 2467,
+      "sha256": "1f2e62b173691c474cddd532e9ec3b912e87a6405861a21358732d05d117178a"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/PR_BODY_PUBLICATION_TEMPLATE.md",
+      "bytes": 15351,
+      "sha256": "a07c319c13ccec3924e0e96f107a759d8323e77c9b4ccc7b71d35b7a0f9d0968"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/bind_p0b_composition.py",
+      "bytes": 4267,
+      "sha256": "8f148897e51964e5bb508d33351e08474d1cbf34d9415e387d644922ce2be832"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/build_main_candidate.py",
+      "bytes": 5495,
+      "sha256": "c31f8fac365fe86b43173ea2f18693113b3f88591ce8443cd96d3617d6b25178"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/canonical_receipt_tests.log",
+      "bytes": 192,
+      "sha256": "525fa4e64d7b11ed496d6b1958bd24db71c2d9087f4f3110bbe9d65aa9d86ced"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/changed_product_paths.txt",
+      "bytes": 295713,
+      "sha256": "f958ab9c9b99446ac510617b09702602c82615df482a7a95cdcf833a50b05c9e"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/compare_main_country.py",
+      "bytes": 3168,
+      "sha256": "bebe1ae9b3aedb988d42ea9c07d352ad18f6138f66c8a48bb0aa64a06e5bf0fb"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/p0b_ca.log.gz",
+      "bytes": 25577,
+      "sha256": "43623684509667003011c6cbefdffbe39616b129ac00b05fb56d2e9600278e82"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/p0b_execution.json",
+      "bytes": 5440,
+      "sha256": "9b19e0d2a016024b5636ff1599a62af12a50f76c5f07326fdbb2a1ec773fb172"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/p0b_hk.log.gz",
+      "bytes": 24183,
+      "sha256": "8fb26380e5046eb799e4854185089e517da8dc441e5194f6efccf01c87b589d2"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/p0b_rebind.json",
+      "bytes": 926,
+      "sha256": "689288b823ab22152aa78abe9eafb50649f0a441d7b4e31a7be12f7dfed234e8"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/p0b_render.log",
+      "bytes": 30907,
+      "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/receipt_closure.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/reconcile_screener_html.py",
+      "bytes": 3991,
+      "sha256": "8c6aaad81aedc659106174f1fb760b942360aa621e7fa6cd58e7400dcd801b59"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/run_final_repository_guards.py",
+      "bytes": 3745,
+      "sha256": "3bdb99ef212ad8c0c5a38056b2faa4d719e7c227034ca048ea706beccb5cebeb"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/run_p0b_composition.py",
+      "bytes": 4081,
+      "sha256": "8c6ca2e6516edfb0611e25afca516790c018e89990f8bcf72a3f477e087a4794"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/screener_apply.json",
+      "bytes": 1424,
+      "sha256": "bb31b4ab61fd5d4e7428f1e2832b000a18d1756fcbeb4a882ca4305b351e39f8"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/screener_canonical_bake.diff",
+      "bytes": 1608,
+      "sha256": "7310f4a11bdc47e0a16e72d1d016c0dab096531f254777675bb9b5093917ad4a"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/screener_preflight.json",
+      "bytes": 1281,
+      "sha256": "028e00014f4b6606a80592889f2f2f470843d70a1a36b29c93435845fe2513b6"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/screener_tests.log",
+      "bytes": 100,
+      "sha256": "b345996930fb126a1109390db3f63503a024f6b30322c0be98dc58ee4be01a57"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/screener_validation.json",
+      "bytes": 789,
+      "sha256": "e9715f0dc4a8e5465c1aa7f89b9435458d4689a44f894899224c182e63a7d456"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/validation.json",
+      "bytes": 1918,
+      "sha256": "e0099f800b4dafa8da7803a3139128bd35321d148a034ba789a6a580c6d7b555"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/verify_main_composition.py",
+      "bytes": 4187,
+      "sha256": "efd2b743e89c64768d337ded2bbc887fb4b757fd293582822182779ddb2d9264"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/verify_standalone_country_history.py",
+      "bytes": 6333,
+      "sha256": "9365fa1b6c28700c8c4034e8b481d72107a28537093192fc25a41e9491de5771"
+    },
+    {
+      "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_6a4_20261022/verify_standalone_toolbar_landings.py",
+      "bytes": 6358,
+      "sha256": "f1f8f340382e0cc14578229604638dccade0ef5fd745f8279f03f8699538a7c8"
+    },
+    {
+      "path": "site/research_screener.html",
+      "bytes": 73864,
+      "sha256": "6ef992cbcc98c734e423462fae87d62063c5c9956fc3cb1d1df1462b54b5e8e9"
+    }
+  ],
+  "count": 30,
+  "bytes": 1652127,
+  "self_note": "This evidence record is created after its bounded file inventory."
+}

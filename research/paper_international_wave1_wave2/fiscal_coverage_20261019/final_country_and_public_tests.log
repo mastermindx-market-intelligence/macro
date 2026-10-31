@@ -1,0 +1,76 @@
+........................................................................ [ 34%]
+.........................................................FFF............ [ 69%]
+................................................................         [100%]
+=================================== FAILURES ===================================
+_ test_source_review_suppresses_the_dependent_national_thesis_and_policy_rationale _
+
+    def test_source_review_suppresses_the_dependent_national_thesis_and_policy_rationale():
+        from datetime import datetime, timezone
+        base = json.loads((ROOT / "config/intl_country_baseline.json").read_text())
+        old = next(r for r in base["policy_decisions"] if r["cc"] == "AU")
+        event = {**old, "schema": "intl_policy_review.v1", "status": "review_required", "record_id": None,
+                 "observed_at": datetime.now(timezone.utc).isoformat()}
+        model = current_policy_model(policy_reviews=[*base.get("policy_reviews", []), event])
+        country = next(c for c in model["countries"] if c["cc"] == "AU")
+>       assert country["policy_decision"]["state"] == "review_required"
+E       AssertionError: assert 'verified' == 'review_required'
+E         
+E         - review_required
+E         + verified
+
+tests/test_intl_country_cockpit.py:331: AssertionError
+____ test_first_failed_policy_qualification_withholds_same_bank_commentary _____
+
+    def test_first_failed_policy_qualification_withholds_same_bank_commentary():
+        from datetime import datetime, timezone
+        base = json.loads((ROOT / "config/intl_country_baseline.json").read_text())
+        item = next(r for r in base["policy_decisions"] if r["cc"] == "AU")
+        event = {**item, "schema": "intl_policy_review.v1", "status": "review_required",
+                 "record_id": None, "observed_at": datetime.now(timezone.utc).isoformat()}
+        model = current_policy_model(
+            policy_decisions=[r for r in base["policy_decisions"] if r["cc"] != "AU"],
+            policy_reviews=[event])
+        country = next(c for c in model["countries"] if c["cc"] == "AU")
+>       assert country["research"] is None
+E       AssertionError: assert {'kind': 'attributed_assessment', 'published': '2026-09-29', 'provider': 'Reserve Bank of Australia', 'source_url': 'https://www.rba.gov.au/media-releases/2026/mr-26-27.html', ...} is None
+
+tests/test_intl_country_cockpit.py:350: AssertionError
+_ test_new_announcement_retires_older_national_interpretation_before_effective_date _
+
+    def test_new_announcement_retires_older_national_interpretation_before_effective_date():
+        from datetime import datetime, timezone
+        from lib.intl_policy_evidence import normalize_policy_decision
+        base = json.loads((ROOT / "config/intl_country_baseline.json").read_text())
+        item = next(r for r in base["policy_decisions"] if r["cc"] == "GB")
+        future = normalize_policy_decision({**item, "value": 4.0, "previous_value": 3.75,
+            "action": "increase", "decision_date": "2026-10-15", "published": "2026-10-15",
+            "effective_date": "2026-11-01", "last_change_date": "2026-11-01",
+            "first_observed_at": datetime.now(timezone.utc).isoformat()})
+        assert future is not None
+        model = current_policy_model(policy_decisions=[*base["policy_decisions"], future])
+        country = next(c for c in model["countries"] if c["cc"] == "GB")
+        assert country["policy_decision"]["current"]
+        assert country["policy_decision"]["value"] == 3.75
+>       assert country["research"] is None
+E       AssertionError: assert {'kind': 'attributed_assessment', 'published': '2026-09-17', 'provider': 'Bank of England', 'source_url': 'https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026', ...} is None
+
+tests/test_intl_country_cockpit.py:370: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-8d85346e-f390-4b1d-b949-774db26d13b6/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-8d85346e-f390-4b1d-b949-774db26d13b6/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-8d85346e-f390-4b1d-b949-774db26d13b6/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-8d85346e-f390-4b1d-b949-774db26d13b6/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_country_cockpit.py::test_source_review_suppresses_the_dependent_national_thesis_and_policy_rationale
+FAILED tests/test_intl_country_cockpit.py::test_first_failed_policy_qualification_withholds_same_bank_commentary
+FAILED tests/test_intl_country_cockpit.py::test_new_announcement_retires_older_national_interpretation_before_effective_date
+3 failed, 205 passed, 2 warnings in 7.48s

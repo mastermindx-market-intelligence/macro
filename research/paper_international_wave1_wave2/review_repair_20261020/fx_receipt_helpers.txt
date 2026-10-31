@@ -1,0 +1,82 @@
+
+FX_CAPTURE_COLUMN = "intl_fx_adapter_capture"
+FX_CAPTURE_SCHEMA = "intl_fx_adapter_capture.v1"
+FX_DATE_POLICY = "provider_daily_label_no_timezone_conversion_v1"
+FX_CAPTURE_POLICY = "exclude_request_start_UTC_day_v1"
+
+
+def _instant(value):
+    if type(value) is not str:
+        return None
+    try:
+        stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return stamp.astimezone(timezone.utc) if stamp.tzinfo is not None else None
+    except (ValueError, OverflowError):
+        return None
+
+
+def adapter_capture_receipt(ticker, observed, value, *, started_at, returned_at):
+    """Bind a real adapter invocation result, never a vendor-finality claim.
+
+    The caller is IntlPriceAdapter immediately after yf.download returns.
+    No receipt is created by the store reader or for a fallback cached frame.
+    """
+    cc = next((cc for cc, spec in SPECS.items() if spec[1] == ticker), None)
+    day, price = _day(observed), _price(value)
+    start, end = _instant(started_at), _instant(returned_at)
+    if cc is None or day is None or price is None or start is None or end is None or end < start:
+        return None
+    payload = {
+        "schema": FX_CAPTURE_SCHEMA, "provider": "Yahoo Finance", "collector": "intl_prices",
+        "configured_series": ticker, "price_field": "close", "interval": "1d", "auto_adjust": True,
+        "date_policy": FX_DATE_POLICY, "eligibility_policy": FX_CAPTURE_POLICY,
+        "date": day.isoformat(), "quote_hex": price.hex(),
+        "adapter_request_started_at_utc": start.isoformat(),
+        "adapter_result_returned_at_utc": end.isoformat(),
+        "eligible_before_date": start.date().isoformat(),
+    }
+    return json.dumps({**payload, "receipt_sha256": _digest(payload)},
+                      sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+
+def _read_adapter_receipt(raw, cc, observed, value, today):
+    if type(raw) is str:
+        if len(raw) > 4000:
+            return None
+        try:
+            raw = json.loads(raw)
+        except (TypeError, ValueError):
+            return None
+    keys = {"schema", "provider", "collector", "configured_series", "price_field",
+            "interval", "auto_adjust", "date_policy", "eligibility_policy", "date",
+            "quote_hex", "adapter_request_started_at_utc", "adapter_result_returned_at_utc",
+            "eligible_before_date", "receipt_sha256"}
+    if type(raw) is not dict or set(raw) != keys:
+        return None
+    start = _instant(raw["adapter_request_started_at_utc"])
+    end = _instant(raw["adapter_result_returned_at_utc"])
+    if (raw["schema"] != FX_CAPTURE_SCHEMA or raw["provider"] != "Yahoo Finance"
+            or raw["collector"] != "intl_prices" or raw["configured_series"] != SPECS[cc][1]
+            or raw["price_field"] != "close" or raw["interval"] != "1d"
+            or raw["auto_adjust"] is not True or raw["date_policy"] != FX_DATE_POLICY
+            or raw["eligibility_policy"] != FX_CAPTURE_POLICY
+            or start is None or end is None or not start <= end
+            or end.date() > today or observed is None or value is None
+            or observed >= start.date() or raw["date"] != observed.isoformat()
+            or raw["quote_hex"] != value.hex()
+            or raw["eligible_before_date"] != start.date().isoformat()):
+        return None
+    try:
+        if raw["receipt_sha256"] != _digest({k:v for k,v in raw.items() if k != "receipt_sha256"}):
+            return None
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return dict(raw)
+
+
+def stored_source_context(cc, country_config):
+    """Source identity only. Endpoints must supply actual row-bound receipts."""
+    source = incumbent_source_context(cc, country_config)
+    if source is None:
+        return None
+    return {**source, "kind": "captured_store", "endpoint_receipts": None}

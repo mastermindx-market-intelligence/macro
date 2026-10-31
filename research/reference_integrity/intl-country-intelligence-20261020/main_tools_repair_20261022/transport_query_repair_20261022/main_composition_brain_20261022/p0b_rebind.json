@@ -1,0 +1,109 @@
+{
+  "schema": "intl.p0b_composition_rebind.v1",
+  "at": "2026-10-23T06:09:37.322848+00:00",
+  "source_commit": "f1fafde0bbf95550ed964de3a60920a2619778e4",
+  "execution_receipt": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_brain_20261022/p0b_execution.json",
+  "execution_receipt_sha256": "114d58d3a2bfc239fbe5fa8139aba5314e673bc275492fc27f29fa7bec2b3388",
+  "manifest_sha256": "81c458e91c02383211577ca94aed8bfd6711c60e1af8e2a42c4bdd39a7c775d8",
+  "preserved_incoming_history": 15,
+  "preserved_local_history": 21,
+  "preserved_generations": [
+    {
+      "label": "incoming_main",
+      "source_commit": "081475dcbe8828c71240add2538fcd9c2ff91611",
+      "files": [
+        {
+          "name": "manifest.json",
+          "sha256": "ceebd4d467a9a5af8bd2760c18688f965525d392b8024b064035c267c619fb4b"
+        },
+        {
+          "name": "mobile-layout.json",
+          "sha256": "3098d00bba7c6251ec83e88909ebb3e9d3a04966093b6d27da0e349983a9783f"
+        },
+        {
+          "name": "mobile-layout-canada.json",
+          "sha256": "445b30c385e171554b8aeb35a4232fe8d2459536d9d4007090c4edb9a7c90d1a"
+        }
+      ]
+    },
+    {
+      "label": "incoming_main_24559",
+      "source_commit": "24559ffa06bcf06fa8e9f36bb7e078412bd769fe",
+      "files": [
+        {
+          "name": "manifest.json",
+          "sha256": "ef907954192dc9672f5f716a3bed1b92eaae7d42ab977e2fca460b385181f98a"
+        },
+        {
+          "name": "mobile-layout.json",
+          "sha256": "c57aee8f2acfa965b9b3f51a3532facb98106ee9e46a1f956150f12a6161d40f"
+        },
+        {
+          "name": "mobile-layout-canada.json",
+          "sha256": "82bbcdc2187764d7f4bbd265896727f5aef2a7cfbfedef610117b252765787e5"
+        }
+      ]
+    },
+    {
+      "label": "previous_published",
+      "source_commit": "92dac636b20467c7a6de1efa9a27b328da976f45",
+      "files": [
+        {
+          "name": "manifest.json",
+          "sha256": "ba006303b4701dcd21a4cae7dc8e194ba125bd32ee67738ae34a5b5ff0d406ac"
+        },
+        {
+          "name": "mobile-layout.json",
+          "sha256": "1cfcbe0a08c8f8adca60d40735bbdc107de596066cb92837756828fe35288e3d"
+        },
+        {
+          "name": "mobile-layout-canada.json",
+          "sha256": "68943e2590694c0406ec16732f8c302cfddf9bdaa34ffc44d2fe6896c3bfa9e6"
+        }
+      ]
+    }
+  ],
+  "history_preservation": [
+    {
+      "label": "incoming_main",
+      "source_commit": "081475dcbe8828c71240add2538fcd9c2ff91611",
+      "historical_extensions": 15,
+      "current_extensions": 1,
+      "unique_extensions": 16,
+      "added_unique_extensions": 16,
+      "archived_manifest_sha256": "ceebd4d467a9a5af8bd2760c18688f965525d392b8024b064035c267c619fb4b"
+    },
+    {
+      "label": "incoming_main_24559",
+      "source_commit": "24559ffa06bcf06fa8e9f36bb7e078412bd769fe",
+      "historical_extensions": 15,
+      "current_extensions": 1,
+      "unique_extensions": 16,
+      "added_unique_extensions": 4,
+      "archived_manifest_sha256": "ef907954192dc9672f5f716a3bed1b92eaae7d42ab977e2fca460b385181f98a"
+    },
+    {
+      "label": "previous_published",
+      "source_commit": "92dac636b20467c7a6de1efa9a27b328da976f45",
+      "historical_extensions": 21,
+      "current_extensions": 1,
+      "unique_extensions": 22,
+      "added_unique_extensions": 9,
+      "archived_manifest_sha256": "ba006303b4701dcd21a4cae7dc8e194ba125bd32ee67738ae34a5b5ff0d406ac"
+    }
+  ],
+  "composed_history": 29,
+  "both_parent_current_extensions_preserved": true,
+  "full_historical_union_preserved": true,
+  "all_generation_current_extensions_preserved": true,
+  "newest_incoming_wrapper_preserved": true,
+  "actual_browser_cases": 128,
+  "actual_screenshots": 16,
+  "claims": {
+    "source_contract": "browser_fixture",
+    "browser_fixture": "reproducible",
+    "canonical_build": "unavailable",
+    "production": "none"
+  },
+  "pass": true
+}

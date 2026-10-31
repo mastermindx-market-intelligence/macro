@@ -1,0 +1,1 @@
+::error title=ui-visual-evidence::ui-visual-evidence guard REFUSED: sparse worktree — mockups not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full

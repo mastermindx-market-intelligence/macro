@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_research_screener.py",
+    "-q"
+  ],
+  "exit_code": 0,
+  "seconds": 5.47,
+  "log_sha256": "f8ba144bfeff1d39ab104dba5643eddef00a60c93fbe05b03dfb5b0c4c8186ff",
+  "html_sha256": "64334eca555dd0fd3d98ad8d30ee20e90640a682e8329865d327f86b212cff8f",
+  "payload_sha256": "b766115f51fd729dd3c46b58ea1cbcdf4f4fb44b8b9878700f1ae76e6dc91fdd",
+  "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/query_screener_suite.log"
+}

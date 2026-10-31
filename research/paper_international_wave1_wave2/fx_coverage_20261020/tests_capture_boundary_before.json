@@ -1,0 +1,15 @@
+{
+  "started_at": "2026-10-20T04:06:25.839102+00:00",
+  "finished_at": "2026-10-20T04:06:30.589678+00:00",
+  "command": [
+    "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_intl_currency_observation.py",
+    "-k",
+    "matures or follow_the_capture or before_the_observation"
+  ],
+  "returncode": 1,
+  "log": "tests_capture_boundary_before.log"
+}

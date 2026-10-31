@@ -1,0 +1,51 @@
+{
+  "schema": "mastermind.intl_policy_integrity_checks.v1",
+  "checked_at": "2026-10-19T11:49:35.477999+00:00",
+  "preserved_baseline_fields": {
+    "official": true,
+    "forecast_archive": true,
+    "cpi_series": true,
+    "forecasts": true,
+    "errors": true
+  },
+  "legacy_policy_id_and_observation_preservation": {
+    "GB": true,
+    "TW": true
+  },
+  "new_policy_coverage": [
+    "AU",
+    "EZ",
+    "GB",
+    "IN",
+    "JP",
+    "KR",
+    "TW"
+  ],
+  "new_review_events": 5,
+  "review_status": "verified",
+  "acquired_documents": 11,
+  "all_acquisitions_http_200": true,
+  "browser_canonical_manifest_match": true,
+  "canonical_capture_png_hashes_match": true,
+  "html_archives_match_captured_bytes": true,
+  "paper_receipt_and_manifest_match": true,
+  "asset_repair_source_hashes_match": true,
+  "supplementary_final_text_whitespace": {
+    "paths": [
+      "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+      "research/paper_international_wave1_wave2/policy_coverage_20261019/POLICY_COVERAGE_20261019.md",
+      "research/paper_international_wave1_wave2/policy_coverage_20261019/australia_fiscal_candidate.json",
+      "research/paper_international_wave1_wave2/policy_coverage_20261019/australia_fiscal_candidate.md",
+      "research/paper_international_wave1_wave2/policy_coverage_20261019/australia_fiscal_acquisition.json"
+    ],
+    "findings": []
+  },
+  "tracked_diff_check_exit": 0,
+  "runtime_pdf_dependency": {
+    "declared": "pdfplumber==0.11.10",
+    "installed_in_verification_environment": "0.11.10",
+    "import_is_lazy": true,
+    "production_requirements_path": "requirements.txt",
+    "new_dependency_added": false
+  }
+}

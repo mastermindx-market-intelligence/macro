@@ -1,0 +1,213 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_______ test_primary_country_build_survives_corrupt_optional_stock_cache _______
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-3333/test_primary_country_build_sur0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10fce96d0>
+
+    def test_primary_country_build_survives_corrupt_optional_stock_cache(tmp_path, monkeypatch):
+        from scripts import build_intl
+        data, site = _isolated_primary_build(tmp_path, monkeypatch)
+        cache = data / "intl_search"
+        cache.mkdir()
+        for name in ("closes.parquet", "members.parquet"):
+            (cache / name).write_bytes(b"deliberately undecodable optional parquet")
+        assert build_intl.main() == 0
+>       output = (site / "intl.html").read_text()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_intl_build.py:243: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py:787: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/private/tmp/pytest-of-chriswong/pytest-3333/test_primary_country_build_sur0/site/intl.html')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-3333/test_primary_country_build_sur0/site/intl.html'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py:771: FileNotFoundError
+----------------------------- Captured stdout call -----------------------------
+[timing] DY spillover: insufficient_data in 0.00s
+[timing] build_intl intl_risk block: 0.04s
+------------------------------ Captured log call -------------------------------
+WARNING  build_intl:build_intl.py:391 world_risk: CN (china/000001.SS) close missing — dropped from dial
+WARNING  build_intl:build_intl.py:391 world_risk: HK (hk/^HSI) close missing — dropped from dial
+WARNING  build_intl:build_intl.py:428 world_risk: CNY=X missing — CN momentum leg falls back to local terms
+WARNING  engine.contagion:contagion.py:322 [timing] DY spillover: insufficient data in 0.00s
+WARNING  engine.cb_desk:cb_desk.py:325 cb_desk: calendar load failed: [Errno 2] No such file or directory: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/data/intl_risk/cb_calendar.yml'
+ERROR    engine.flow_regime:flow_regime.py:1625 flow_regime.compose: load_inputs_from_store failed: 'close'
+Traceback (most recent call last):
+  File "/opt/homebrew/lib/python3.14/site-packages/pandas/core/indexes/base.py", line 3641, in get_loc
+    return self._engine.get_loc(casted_key)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 168, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 197, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7668, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7676, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'close'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/engine/flow_regime.py", line 1623, in compose
+    inputs = load_inputs_from_store()
+  File "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/engine/flow_regime.py", line 535, in load_inputs_from_store
+    pd.DataFrame(spy_df).rename(columns=str.lower)["close"], errors="coerce"
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/pandas/core/frame.py", line 4378, in __getitem__
+    indexer = self.columns.get_loc(key)
+  File "/opt/homebrew/lib/python3.14/site-packages/pandas/core/indexes/base.py", line 3648, in get_loc
+    raise KeyError(key) from err
+KeyError: 'close'
+ERROR    build_intl:build_intl.py:863 flow_regime history accrual failed (non-fatal): 'close'
+Traceback (most recent call last):
+  File "/opt/homebrew/lib/python3.14/site-packages/pandas/core/indexes/base.py", line 3641, in get_loc
+    return self._engine.get_loc(casted_key)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 168, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 197, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7668, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7676, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'close'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/scripts/build_intl.py", line 847, in main
+    _cbf_inputs = _cbf_load()
+  File "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/engine/flow_regime.py", line 535, in load_inputs_from_store
+    pd.DataFrame(spy_df).rename(columns=str.lower)["close"], errors="coerce"
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/pandas/core/frame.py", line 4378, in __getitem__
+    indexer = self.columns.get_loc(key)
+  File "/opt/homebrew/lib/python3.14/site-packages/pandas/core/indexes/base.py", line 3648, in get_loc
+    raise KeyError(key) from err
+KeyError: 'close'
+ERROR    build_intl:build_intl.py:1171 intl page render failed (Could not open Parquet input source '<Buffer>': Parquet magic bytes not found in footer. Either the file is corrupted or this is not a parquet file.); skipping
+____________ test_primary_render_failure_is_not_reported_as_success ____________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-3333/test_primary_render_failure_is0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10fdca030>
+
+    def test_primary_render_failure_is_not_reported_as_success(tmp_path, monkeypatch):
+        from scripts import build_intl
+        _, site = _isolated_primary_build(tmp_path, monkeypatch)
+        def fail(*args, **kwargs):
+            raise RuntimeError("controlled primary render failure")
+        monkeypatch.setattr(build_intl, "render_international_pages", fail)
+>       assert build_intl.main() != 0
+E       AssertionError: assert 0 != 0
+E        +  where 0 = <function main at 0x10ff78ca0>()
+E        +    where <function main at 0x10ff78ca0> = <module 'scripts.build_intl' from '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/scripts/build_intl.py'>.main
+
+tests/test_intl_build.py:255: AssertionError
+----------------------------- Captured stdout call -----------------------------
+[timing] DY spillover: insufficient_data in 0.00s
+[timing] build_intl intl_risk block: 0.00s
+------------------------------ Captured log call -------------------------------
+WARNING  build_intl:build_intl.py:391 world_risk: CN (china/000001.SS) close missing — dropped from dial
+WARNING  build_intl:build_intl.py:391 world_risk: HK (hk/^HSI) close missing — dropped from dial
+WARNING  build_intl:build_intl.py:428 world_risk: CNY=X missing — CN momentum leg falls back to local terms
+WARNING  engine.contagion:contagion.py:322 [timing] DY spillover: insufficient data in 0.00s
+WARNING  engine.cb_desk:cb_desk.py:325 cb_desk: calendar load failed: [Errno 2] No such file or directory: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/data/intl_risk/cb_calendar.yml'
+ERROR    engine.flow_regime:flow_regime.py:1625 flow_regime.compose: load_inputs_from_store failed: 'close'
+Traceback (most recent call last):
+  File "/opt/homebrew/lib/python3.14/site-packages/pandas/core/indexes/base.py", line 3641, in get_loc
+    return self._engine.get_loc(casted_key)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 168, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 197, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7668, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7676, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'close'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/engine/flow_regime.py", line 1623, in compose
+    inputs = load_inputs_from_store()
+  File "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/engine/flow_regime.py", line 535, in load_inputs_from_store
+    pd.DataFrame(spy_df).rename(columns=str.lower)["close"], errors="coerce"
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/pandas/core/frame.py", line 4378, in __getitem__
+    indexer = self.columns.get_loc(key)
+  File "/opt/homebrew/lib/python3.14/site-packages/pandas/core/indexes/base.py", line 3648, in get_loc
+    raise KeyError(key) from err
+KeyError: 'close'
+ERROR    build_intl:build_intl.py:863 flow_regime history accrual failed (non-fatal): 'close'
+Traceback (most recent call last):
+  File "/opt/homebrew/lib/python3.14/site-packages/pandas/core/indexes/base.py", line 3641, in get_loc
+    return self._engine.get_loc(casted_key)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 168, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 197, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7668, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7676, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'close'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/scripts/build_intl.py", line 847, in main
+    _cbf_inputs = _cbf_load()
+  File "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/engine/flow_regime.py", line 535, in load_inputs_from_store
+    pd.DataFrame(spy_df).rename(columns=str.lower)["close"], errors="coerce"
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/pandas/core/frame.py", line 4378, in __getitem__
+    indexer = self.columns.get_loc(key)
+  File "/opt/homebrew/lib/python3.14/site-packages/pandas/core/indexes/base.py", line 3648, in get_loc
+    raise KeyError(key) from err
+KeyError: 'close'
+WARNING  build_intl:build_intl.py:148 International EOD evidence withheld; no current qualified returns
+WARNING  lib.global_regime_fragment:global_regime_fragment.py:89 Global-regime fragment unavailable: [Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-3333/test_primary_render_failure_is0/site/macrodata/global_regime_fragment.json'
+ERROR    build_intl:build_intl.py:1171 intl page render failed (controlled primary render failure); skipping
+____________ test_primary_engine_failure_is_not_reported_as_success ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10a0efac0>
+
+    def test_primary_engine_failure_is_not_reported_as_success(monkeypatch):
+        from engine import intl_run
+        from scripts import build_intl
+        def fail():
+            raise RuntimeError("controlled primary engine failure")
+        monkeypatch.setattr(intl_run, "run", fail)
+>       assert build_intl.main() != 0
+E       AssertionError: assert 0 != 0
+E        +  where 0 = <function main at 0x10ff78ca0>()
+E        +    where <function main at 0x10ff78ca0> = <module 'scripts.build_intl' from '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/scripts/build_intl.py'>.main
+
+tests/test_intl_build.py:265: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    build_intl:build_intl.py:331 intl engine failed (controlled primary engine failure); skipping intl page
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-58ad4600-33a3-48f5-8b41-129d73413429/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-58ad4600-33a3-48f5-8b41-129d73413429/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-58ad4600-33a3-48f5-8b41-129d73413429/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-58ad4600-33a3-48f5-8b41-129d73413429/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_build.py::test_primary_country_build_survives_corrupt_optional_stock_cache
+FAILED tests/test_intl_build.py::test_primary_render_failure_is_not_reported_as_success
+FAILED tests/test_intl_build.py::test_primary_engine_failure_is_not_reported_as_success
+3 failed, 8 deselected, 2 warnings in 3.06s

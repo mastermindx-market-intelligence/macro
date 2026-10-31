@@ -1,0 +1,33 @@
+312faf2c10c5709b2f5c8dbc312f289da884e888
+100644 51423a5460dca19531fbbe77fe9aae6e037af037 1	mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+100644 1d0739f85abcf8229cc7cb1a6b2ce711c0c1bd1b 2	mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+100644 388cd50f2bb3a17a48452b0589e9e0e2e57b414f 3	mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+100644 66e1c88fe87c745632f4a4107326917f2c82806e 1	mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+100644 5a9cf79a00c73aac7925749a27186572e17a44e9 2	mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+100644 21f18e32d00f014e6c525d040f59cedcd774e34d 3	mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+100644 2b359cd7c18aba0d1c376dfef8b5569180599ac5 1	mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+100644 06ae3c17e0b6e615695574ceaa91559ec84d0de7 2	mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+100644 18e571c7ccefd53e47513efe6f0dd851ce731e80 3	mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+100644 ad3b81480920861e8acf6da2ea6c0f4b626a7ce6 1	site/research_screener.html
+100644 f50ba9ed1e0f4e13224a71b94def1a5855bd48d0 2	site/research_screener.html
+100644 ff8ce97ee19e07d7d8a42f0d310f67fb00931ba1 3	site/research_screener.html
+100644 3e132c2782b14ab852f1b34b0391134511305dcc 1	site/theme.css
+100644 30c3d2859f7d3936dbd205f0ce2a251267c23345 2	site/theme.css
+100644 5fc8db9655afde3645b524c9aa9e10390c534b08 3	site/theme.css
+100644 3e132c2782b14ab852f1b34b0391134511305dcc 1	templates/theme.css
+100644 30c3d2859f7d3936dbd205f0ce2a251267c23345 2	templates/theme.css
+100644 5fc8db9655afde3645b524c9aa9e10390c534b08 3	templates/theme.css
+
+Auto-merging .github/ci/legacy-jobs.yml
+Auto-merging mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+CONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/manifest.json
+Auto-merging mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+CONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+Auto-merging mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+CONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+Auto-merging site/research_screener.html
+CONFLICT (content): Merge conflict in site/research_screener.html
+Auto-merging site/theme.css
+CONFLICT (content): Merge conflict in site/theme.css
+Auto-merging templates/theme.css
+CONFLICT (content): Merge conflict in templates/theme.css

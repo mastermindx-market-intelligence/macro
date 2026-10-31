@@ -11,6 +11,7 @@ same entitlement as health and never reports an unreadable config as within.
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 

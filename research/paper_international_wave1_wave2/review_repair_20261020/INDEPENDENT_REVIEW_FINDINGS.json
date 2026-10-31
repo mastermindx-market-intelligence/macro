@@ -1,0 +1,78 @@
+{
+  "schema": "intl_independent_review_repair.v1",
+  "candidate": "1a292672de4bb3f14b00c88e4af1f493b854a364",
+  "tree": "41c8a43bf830ca678d51c2444e59a4751760ac8c",
+  "main_being_composed": "422e121246f956834085853a49dfc6c2250d3dab",
+  "recorded_at": "2026-10-20 09:18:23 UTC",
+  "verdict": "REPAIR",
+  "reviews": [
+    {
+      "agent": "intl_candidate_contract_review",
+      "scope": "Independent exact-commit data, logic and integration review; read-only source deductions, no test execution",
+      "findings": [
+        {
+          "id": "FX-CUSTODY",
+          "priority": "P1",
+          "finding": "Receipt-free configured-store FX can promote a frozen partial-day quote when rendering advances a day.",
+          "required": "Acquisition-time row eligibility retained through actual store and engine; legacy rows fail closed."
+        },
+        {
+          "id": "FORECAST-CUSTODY",
+          "priority": "P2",
+          "finding": "Trusted refreshed forecast archives are admitted again with render-time lifecycle clocks.",
+          "required": "Preserve retained admission, withdrawal and supersession; keep live anti-backdating."
+        },
+        {
+          "id": "BIS-COMPARABILITY",
+          "priority": "P2",
+          "finding": "Actual BIS output lacks the typed instrument, qualifier, end-of-period convention and custody used by the policy conflict consumer.",
+          "required": "Qualify active-era source semantics and test actual parser-to-consumer conflict."
+        },
+        {
+          "id": "OPTIONAL-STOCK-FAILURE",
+          "priority": "P2",
+          "finding": "Corrupt optional stock parquet can suppress primary country rendering and return success.",
+          "required": "Isolate optional acquisition and signal primary failure."
+        }
+      ],
+      "limits": [
+        "No hosted CI execution",
+        "CI legacy manifest source unavailable to reviewer through GitHub; recorded hash inspected",
+        "No canonical-store or served-adoption proof",
+        "New main composition and repairs require exact delta review"
+      ]
+    },
+    {
+      "agent": "intl_candidate_product_review",
+      "scope": "Independent source review and eight actual EN/ZH, light/dark desktop/mobile screenshots plus three market regions",
+      "findings": [
+        {
+          "id": "CONDITIONS-EDGE",
+          "priority": "P2",
+          "finding": "Light conditions panel retains a colored left border."
+        },
+        {
+          "id": "COUNTRY-HISTORY",
+          "priority": "P2",
+          "finding": "Native country disclosure changes the open country without updating its URL/history."
+        },
+        {
+          "id": "PARTIAL-COUNTRIES",
+          "priority": "P2",
+          "finding": "Hardcoded Global connections can target an absent country and the click handler dereferences null."
+        }
+      ],
+      "additional_checks": [
+        "Actual mobile rail focus ring visibility",
+        "Localized landmark names",
+        "Future observed values should be withheld, not labeled as earlier"
+      ],
+      "accepted_direction": "Retain country-first research architecture, distinct theme materials and substantive sourced interpretation.",
+      "limits": [
+        "Alternative interaction counterexamples were source-derived, not browser-executed by reviewer",
+        "No production inspection"
+      ]
+    }
+  ],
+  "effect_state": "SOURCE_REPAIRS_PENDING_NO_RELEASE_APPROVAL"
+}

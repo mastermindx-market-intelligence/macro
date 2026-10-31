@@ -1,0 +1,23 @@
+{
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"schema\": \"mastermind.studio_git_publish_status.v1\",\n  \"operation_id\": \"intl-country-cockpit-20261018\",\n  \"branch\": \"sol/web-intl-country-cockpit-20261018\",\n  \"local_head_sha\": \"11c83bb5dfb0c8199a0fb0cb2c6e70452c724984\",\n  \"remote_head_sha\": \"88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4\",\n  \"clean\": false,\n  \"publication_state\": \"DIFFERENT_REMOTE_HEAD\",\n  \"ready_to_push\": false\n}"
+      }
+    ],
+    "structuredContent": {
+      "schema": "mastermind.studio_git_publish_status.v1",
+      "operation_id": "intl-country-cockpit-20261018",
+      "branch": "sol/web-intl-country-cockpit-20261018",
+      "local_head_sha": "11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+      "remote_head_sha": "88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4",
+      "clean": false,
+      "publication_state": "DIFFERENT_REMOTE_HEAD",
+      "ready_to_push": false
+    },
+    "isError": false
+  },
+  "persisted_at": "2026-10-20T07:30:23.697095+00:00",
+  "time_note": "Native status was returned after the terminal server reads; persistence time does not claim a new status call."
+}

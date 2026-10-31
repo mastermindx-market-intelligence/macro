@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/tmp/intl-country-cockpit-ci-20261020/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_fundamental_forensics_latency.py",
+    "-q"
+  ],
+  "started_at": "2026-10-20T13:20:18.980372+00:00",
+  "finished_at": "2026-10-20T13:20:26.626919+00:00",
+  "elapsed_seconds": 7.647,
+  "exit_code": 0,
+  "initial_collection_failure_retained": "deterministic_clock_test.json"
+}

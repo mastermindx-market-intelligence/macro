@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/intl_country_cockpit.css
+  - templates/intl_country_cockpit.html.j2
+manifest: mockups/evidence/intl-integration-20261020/manifest.json

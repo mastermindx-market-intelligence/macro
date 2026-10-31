@@ -1,0 +1,49 @@
+{
+  "schema": "intl_country_release_catalogue.v1",
+  "releases": [
+    {
+      "provider": "IMF",
+      "family": "WEO",
+      "edition": "2026-10",
+      "published": "2026-10-13",
+      "information_cutoff": "2026-09-30",
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
+      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf",
+      "documentation_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf",
+      "format": "weo_statistical_tables",
+      "parser_version": "weo_tables_2026_v1",
+      "year": 2026,
+      "max_bytes": 4000000
+    },
+    {
+      "provider": "IMF",
+      "family": "WEO",
+      "edition": "2026-10",
+      "published": "2026-10-13",
+      "information_cutoff": "2026-09-30",
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
+      "dataset_url": "https://www.imf.org/external/datamapper/api/v2/GGXCNL_NGDP/KOR/TWN/IND/AUS?periods=2026,2027",
+      "documentation_url": "https://data.imf.org/-/media/iData/External-Storage/Documents/C4182C5C54794FC48892DE8F6C74FF82/en/October-2026-WEO-Database-Appendix.pdf",
+      "format": "weo_fiscal_datamapper",
+      "parser_version": "weo_fiscal_datamapper_v1",
+      "year": 2026,
+      "max_bytes": 2000000,
+      "indicator_id": "GGXCNL_NGDP"
+    },
+    {
+      "provider": "IMF",
+      "family": "WEO",
+      "edition": "2026-10",
+      "published": "2026-10-13",
+      "information_cutoff": "2026-09-30",
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
+      "dataset_url": "https://www.imf.org/external/datamapper/api/v2/GGXWDG_NGDP/KOR/TWN/IND/AUS?periods=2026,2027",
+      "documentation_url": "https://data.imf.org/-/media/iData/External-Storage/Documents/C4182C5C54794FC48892DE8F6C74FF82/en/October-2026-WEO-Database-Appendix.pdf",
+      "format": "weo_fiscal_datamapper",
+      "parser_version": "weo_fiscal_datamapper_v1",
+      "year": 2026,
+      "max_bytes": 2000000,
+      "indicator_id": "GGXWDG_NGDP"
+    }
+  ]
+}

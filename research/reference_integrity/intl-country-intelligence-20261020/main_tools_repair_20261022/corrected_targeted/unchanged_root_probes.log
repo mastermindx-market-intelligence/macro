@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: ROOT already-canceled activation leaves disclosures and navigation unchanged
+ok 1 - ROOT already-canceled activation leaves disclosures and navigation unchanged
+  ---
+  duration_ms: 1751.788667
+  type: 'test'
+  ...
+# Subtest: ROOT a newer destination outside Tools cancels its pending alignment
+ok 2 - ROOT a newer destination outside Tools cancels its pending alignment
+  ---
+  duration_ms: 550.72625
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4940.036542

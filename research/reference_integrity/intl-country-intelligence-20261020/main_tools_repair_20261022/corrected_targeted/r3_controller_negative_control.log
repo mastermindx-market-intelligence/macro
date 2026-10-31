@@ -1,0 +1,120 @@
+TAP version 13
+# Subtest: F native Tools links remain native in root and sibling positions, embedded and standalone
+not ok 1 - F native Tools links remain native in root and sibling positions, embedded and standalone
+  ---
+  duration_ms: 1209.980958
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.cjs:712:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    embedded imc-country-JP download keeps disclosures unchanged
+    + actual - expected
+    
+      {
+        jp: true,
+        legacy: false,
+        refFold: false,
+    +   tools: true
+    -   tools: false
+      }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    refFold: false
+    tools: false
+    legacy: false
+    jp: true
+  actual:
+    refFold: false
+    tools: true
+    legacy: false
+    jp: true
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.cjs:741:18)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: F an intercepted parent-origin role=button repeats the current Tools fragment
+not ok 2 - F an intercepted parent-origin role=button repeats the current Tools fragment
+  ---
+  duration_ms: 944.713708
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.cjs:751:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.cjs:776:14)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: F an activation canceled at window capture leaves disclosure, position and navigation unchanged
+not ok 3 - F an activation canceled at window capture leaves disclosure, position and navigation unchanged
+  ---
+  duration_ms: 665.564292
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.cjs:783:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      {
+        jp: true,
+        legacy: false,
+        refFold: false,
+    +   tools: true
+    -   tools: false
+      }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    refFold: false
+    tools: false
+    legacy: false
+    jp: true
+  actual:
+    refFold: false
+    tools: true
+    legacy: false
+    jp: true
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.cjs:795:12)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: G newer outside, missing, country and query destinations cancel pending research alignment
+not ok 4 - G newer outside, missing, country and query destinations cancel pending research alignment
+  ---
+  duration_ms: 3423.159875
+  type: 'test'
+  location: '/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.cjs:802:1'
+  failureType: 'testCodeFailure'
+  error: 'frame.waitForFunction: Timeout 3000ms exceeded.'
+  code: 'ERR_TEST_FAILURE'
+  name: 'TimeoutError'
+  stack: |-
+    awaitArrival (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.cjs:278:15)
+    TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/corrected_targeted/r3_controller_negative_control.cjs:824:44)
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 0
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9526.096833

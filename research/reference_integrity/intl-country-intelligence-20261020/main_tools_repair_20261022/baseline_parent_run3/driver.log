@@ -1,0 +1,2 @@
+{"scope":"1440-en-dark","passed":16,"failed":[{"id":"tools_first_opens","error":null},{"id":"tools_repeat_reopens_without_ack","error":null},{"id":"nested_arrival_visible","error":null},{"id":"nested_repeat_reopens_without_ack","error":null}]}
+{"status":"reproduced_failure","passed":18,"failed":4,"contexts":1,"report":"/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/baseline_parent_run3/observation.json"}

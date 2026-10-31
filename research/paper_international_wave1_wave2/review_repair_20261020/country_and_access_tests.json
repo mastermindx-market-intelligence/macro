@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_intl_currency_observation.py",
+    "tests/test_intl_forecast_vintages.py",
+    "tests/test_intl_policy_evidence.py",
+    "tests/test_intl_country_cockpit.py",
+    "tests/test_intl_outlook_interpretation.py",
+    "tests/test_intl_build.py",
+    "tests/test_site_access_boundary.py"
+  ],
+  "exit_code": 0,
+  "seconds": 54.377,
+  "log_sha256": "9ba3a6e5145bec8362f18b8efada3468a5c728a0d663bb7d26f23a43deecccfd",
+  "tail": "........................................................................ [ 18%]\n........................................................................ [ 37%]\n........................................................................ [ 55%]\n........................................................................ [ 74%]\n........................................................................ [ 92%]\n............................                                             [100%]\n=============================== warnings summary ===============================\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-89d1d9ae-0aa1-4ec3-979b-4ca9d4122281/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-89d1d9ae-0aa1-4ec3-979b-4ca9d4122281/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-89d1d9ae-0aa1-4ec3-979b-4ca9d4122281/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-89d1d9ae-0aa1-4ec3-979b-4ca9d4122281/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n388 passed, 2 warnings in 52.93s\n"
+}

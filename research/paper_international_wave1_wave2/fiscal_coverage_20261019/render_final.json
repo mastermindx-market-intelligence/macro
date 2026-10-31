@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+    "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+    "--source-dir",
+    "/tmp/intl-fiscal-coverage-20261019",
+    "--output-dir",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/fiscal_coverage_20261019/preview",
+    "--reuse-inputs"
+  ],
+  "started_at": "2026-10-20T01:50:18.185563+00:00",
+  "finished_at": "2026-10-20T01:50:19.765912+00:00",
+  "exit_code": 0,
+  "log": "render_final.log"
+}

@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-10-22 08:10:38 UTC",
+  "root_id": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "run_id": "intl-20261022-query-r1-artifact-return",
+  "response_sha256": "3becf3b364b6771a0c2ea52dec0e44f91e84710fb03485f4c9bb622b4b530fc1",
+  "response_bytes": 493,
+  "accepted": false,
+  "retry_allowed": false,
+  "observed_result": "QWEN_FINAL_RESPONSE_UNCONFIRMED; provider429 cooldown1800s; rc1; terminal continuation_evidence_unqualified; execution_absence_proven=false",
+  "response_content_scope": "Sanitized result summary; digest identifies the complete original retained Fabric response, not this summary.",
+  "disposition": "No replay, provider thread probing, failover or artifact-retrieval retry."
+}

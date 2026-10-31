@@ -1,0 +1,7 @@
+{
+  "schema": "intl.query_source_commit_readback.v1",
+  "commit": "96cf630b9dffec366568216e8d5ef1125e212cbf",
+  "previous_head": "df1aa0c587bd1fef7a6b20fb69ca2e22afd423fd",
+  "action_ref": "5b67566f214bebd55b6db8ad9b228464eb35ae7e1c086c2dd79bc0bbb86c2920",
+  "effect_state": "APPLIED"
+}

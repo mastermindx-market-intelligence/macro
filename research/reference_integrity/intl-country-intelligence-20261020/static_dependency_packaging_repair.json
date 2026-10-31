@@ -1,0 +1,25 @@
+{
+  "recorded_at": "2026-10-20T20:55:03.155599+00:00",
+  "source_commit": "442042e591d255dd24b540ff240edb4c0410c297",
+  "finding": "Original complete captures had404 font/account/favicon dependencies because reference packaging copied only directly referenced HTML/build assets. Production serves the fonts/account files.",
+  "actual_production_head_checks": [
+    {
+      "path": "/fonts/Inter-400.woff2",
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "/fonts/Inter-600.woff2",
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "/account.js",
+      "status": 200,
+      "content_type": "text/javascript; charset=utf-8"
+    }
+  ],
+  "repair": "Archive exact site/fonts and site/favicon.svg from the same immutable source; include account.js and mm_brain_visuals.css from pinned templates. Every output asset carries its content hash/source path in the normal build receipt.",
+  "prior_captures_preserved": true,
+  "production_source_changed": false
+}

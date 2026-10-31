@@ -1,0 +1,212 @@
+[
+  {
+    "cc": "JP",
+    "instrument": "uncollateralized_overnight_call_rate_target",
+    "provider": "Bank of Japan",
+    "unit": "percent",
+    "value": 1.25,
+    "previous_value": 1.0,
+    "action": "increase",
+    "decision_date": "2026-09-18",
+    "published": "2026-09-18",
+    "effective_date": "2026-09-24",
+    "last_change_date": "2026-09-24",
+    "source_url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+    "rationale_en": "The BOJ raised the target by a 7–2 majority as wage and input costs spread into prices. Further normalization depends on activity, inflation and financial conditions.",
+    "rationale_zh": "工资与投入成本向价格传导，日银以7票对2票上调目标。后续正常化取决于经济活动、通胀与金融条件。",
+    "votes": null,
+    "setting_qualifier": "around",
+    "supporting_sources": [
+      {
+        "source_url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf",
+        "roles": [
+          "previous_value"
+        ],
+        "label": "decision_reference",
+        "label_en": "Decision reference",
+        "label_zh": "决定参考资料",
+        "source_sha256": "9b2bf863babccf5d17b890274aa207d16ddc5467b5846e9ca85f8ce098c6c313",
+        "retrieved_at": "2026-10-19T09:33:51.655327+00:00"
+      }
+    ],
+    "schema": "intl_policy_decision.v1",
+    "record_id": "JP:uncollateralized_overnight_call_rate_target:1a43e89c1a169e5d124f0a83",
+    "source_sha256": "36d7aa63ff283e25dcc07bc1f6e0caaad8e6764d30cf22433b5c2dd0b6bda391",
+    "first_observed_at": "2026-10-19T09:42:39.585914+00:00",
+    "instrument_en": "Overnight call-rate target",
+    "instrument_zh": "无担保隔夜拆借利率目标",
+    "change_pp": 0.25,
+    "setting_qualifier_en": "Around",
+    "setting_qualifier_zh": "约"
+  },
+  {
+    "cc": "KR",
+    "instrument": "bok_base_rate",
+    "provider": "Bank of Korea",
+    "unit": "percent",
+    "value": 3.0,
+    "previous_value": 2.75,
+    "action": "increase",
+    "decision_date": "2026-08-27",
+    "published": "2026-08-27",
+    "effective_date": "2026-08-27",
+    "last_change_date": "2026-08-27",
+    "source_url": "https://www.bok.or.kr/eng/bbs/E0000634/view.do?depth=400423&depth2=400417&depth3=400423&menuNo=400423&nttId=11064193&oldMenuNo=400423&pageIndex=1&pageUnit=10&programType=newsDataEng&searchCnd=1&searchKwd=",
+    "rationale_en": "Export strength is lifting domestic demand while inflation and Seoul housing risks persist. Six members backed an increase; one preferred a hold.",
+    "rationale_zh": "出口强劲带动内需，通胀与首尔房市风险仍在。六名委员支持加息，一名主张维持不变。",
+    "votes": {
+      "hold": 1,
+      "increase": 6,
+      "decrease": 0
+    },
+    "supporting_sources": [
+      {
+        "source_url": "https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200761",
+        "roles": [
+          "effective_date",
+          "previous_value"
+        ],
+        "label": "rate_history",
+        "label_en": "Rate history",
+        "label_zh": "利率记录",
+        "source_sha256": "7c696b47e5c765fa747fd89a487f5db42a6bbabd002ddb4470d95068064db9cd",
+        "retrieved_at": "2026-10-19T09:33:52.472225+00:00"
+      }
+    ],
+    "schema": "intl_policy_decision.v1",
+    "record_id": "KR:bok_base_rate:dce548023e9b40bc2bc2acd9",
+    "source_sha256": "98e743616f899cda2ffa400d6ec36da21eb5d4d9660cceb3d680894143277e18",
+    "first_observed_at": "2026-10-19T09:42:39.585914+00:00",
+    "instrument_en": "BOK Base Rate",
+    "instrument_zh": "韩国央行基准利率",
+    "change_pp": 0.25
+  },
+  {
+    "cc": "AU",
+    "instrument": "cash_rate_target",
+    "provider": "Reserve Bank of Australia",
+    "unit": "percent",
+    "value": 4.6,
+    "previous_value": 4.35,
+    "action": "increase",
+    "decision_date": "2026-09-29",
+    "published": "2026-09-29",
+    "effective_date": "2026-09-30",
+    "last_change_date": "2026-09-30",
+    "source_url": "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+    "rationale_en": "Inflation pressure broadened as energy and capacity costs rose, despite cooling spending and housing. The Board unanimously judged further tightening necessary.",
+    "rationale_zh": "能源与产能成本上升使通胀压力扩散，消费与住房却在降温。委员会一致认为需要进一步收紧政策。",
+    "votes": null,
+    "supporting_sources": [
+      {
+        "source_url": "https://www.rba.gov.au/statistics/cash-rate/",
+        "roles": [
+          "effective_date",
+          "previous_value"
+        ],
+        "label": "rate_history",
+        "label_en": "Rate history",
+        "label_zh": "利率记录",
+        "source_sha256": "88c7e1cef9814b8849af7ab8b25a41e8b99d688e0024884a8761ca4368dc791d",
+        "retrieved_at": "2026-10-19T09:33:52.259532+00:00"
+      }
+    ],
+    "schema": "intl_policy_decision.v1",
+    "record_id": "AU:cash_rate_target:d405aed30fa1f66e4141eed4",
+    "source_sha256": "963658a27a9babdf5f8480005902f9a35aa26a6eac3784af2f65390bb7e2a4b3",
+    "first_observed_at": "2026-10-19T09:42:39.585914+00:00",
+    "instrument_en": "Cash-rate target",
+    "instrument_zh": "现金利率目标",
+    "change_pp": 0.25
+  },
+  {
+    "cc": "EZ",
+    "instrument": "deposit_facility_rate",
+    "provider": "European Central Bank",
+    "unit": "percent",
+    "value": 2.5,
+    "previous_value": 2.25,
+    "action": "increase",
+    "decision_date": "2026-09-10",
+    "published": "2026-09-10",
+    "effective_date": "2026-09-16",
+    "last_change_date": "2026-09-16",
+    "source_url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+    "rationale_en": "The energy shock prolonged inflation pressure despite resilient growth. The increase was unanimous; subsequent decisions remain dependent on incoming evidence.",
+    "rationale_zh": "增长保持韧性，能源冲击却延长了通胀压力。本次加息获一致支持；后续决定仍取决于新信息。",
+    "votes": null,
+    "supporting_sources": [
+      {
+        "source_url": "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+        "roles": [
+          "votes"
+        ],
+        "label": "policy_discussion",
+        "label_en": "Policy discussion",
+        "label_zh": "政策讨论",
+        "source_sha256": "2892fdf6903a1685c3f79346d81788b34ee7ff521388cee7724f0935de49aeb5",
+        "retrieved_at": "2026-10-19T09:33:57.200400+00:00"
+      },
+      {
+        "source_url": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html",
+        "roles": [
+          "previous_value"
+        ],
+        "label": "rate_history",
+        "label_en": "Rate history",
+        "label_zh": "利率记录",
+        "source_sha256": "93a15f5f35a9e45262c0b203e3ac4e2308047d04b91d13f1588cb6598e609a64",
+        "retrieved_at": "2026-10-19T09:33:53.146816+00:00"
+      }
+    ],
+    "schema": "intl_policy_decision.v1",
+    "record_id": "EZ:deposit_facility_rate:b32bca58733532aee5436b3d",
+    "source_sha256": "53e2efdaf0f62afff2fcc552cf60145cbcaac19759240d94efaa433cde6f0000",
+    "first_observed_at": "2026-10-19T09:42:39.585914+00:00",
+    "instrument_en": "Deposit-facility rate",
+    "instrument_zh": "存款便利利率",
+    "change_pp": 0.25
+  },
+  {
+    "cc": "IN",
+    "instrument": "policy_repo_rate",
+    "provider": "Reserve Bank of India",
+    "unit": "percent",
+    "value": 5.5,
+    "previous_value": 5.25,
+    "action": "increase",
+    "decision_date": "2026-10-07",
+    "published": "2026-10-07",
+    "effective_date": "2026-10-07",
+    "last_change_date": "2026-10-07",
+    "source_url": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+    "rationale_en": "Resilient demand met rising inflation risks. All six members backed the rate increase; two separately opposed changing the stance from neutral to calibrated tightening.",
+    "rationale_zh": "需求保持韧性，通胀风险上升。六名委员均支持加息；其中两名另行反对将中性立场改为审慎收紧。",
+    "votes": {
+      "hold": 0,
+      "increase": 6,
+      "decrease": 0
+    },
+    "supporting_sources": [
+      {
+        "source_url": "https://www.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=13727",
+        "roles": [
+          "effective_date",
+          "previous_value"
+        ],
+        "label": "implementation",
+        "label_en": "Implementation notice",
+        "label_zh": "生效通知",
+        "source_sha256": "9c7c1500b770c758a885670390f0b84287594485c4665d809c9efb700d325929",
+        "retrieved_at": "2026-10-19T09:33:55.723781+00:00"
+      }
+    ],
+    "schema": "intl_policy_decision.v1",
+    "record_id": "IN:policy_repo_rate:b66fd556c4f4413a29870e0c",
+    "source_sha256": "b069fad58ba02ef813a54412b63be509e695b5dc7bc3a995ddb9b6ade289f130",
+    "first_observed_at": "2026-10-19T09:42:39.585914+00:00",
+    "instrument_en": "Policy repo rate · LAF",
+    "instrument_zh": "流动性调节机制政策回购利率",
+    "change_pp": 0.25
+  }
+]

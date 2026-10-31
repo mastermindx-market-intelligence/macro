@@ -1,0 +1,79 @@
+  [PASS] EN affirmative unearned: fired=True expected=True
+  [PASS] zh affirmative unearned: fired=True expected=True
+  [PASS] zh 经验证 affirmative unearned: fired=True expected=True
+  [PASS] zh 已经验证 (matched via 经验证) unearned: fired=True expected=True
+  [PASS] zh 经过验证 affirmative unearned: fired=True expected=True
+  [PASS] EN negated (disclaimer): fired=False expected=False
+  [PASS] zh negated (disclaimer): fired=False expected=False
+  [PASS] zh 未经验证 negated: fired=False expected=False
+  [PASS] zh 没有经验证 negated (hk_lookup disclaimer shape): fired=False expected=False
+  [PASS] zh 尚未…验证 negated: fired=False expected=False
+  [PASS] zh 缺乏经验证 negated: fired=False expected=False
+  [PASS] EN allowlisted on a listed surface: fired=False expected=False
+  [PASS] SAME phrase on an UNLISTED surface fires: fired=True expected=True
+  [PASS] allowlisted '&' entry matches rendered '&amp;': fired=False expected=False
+  [PASS] unearned claim behind '&amp;' still fires: fired=True expected=True
+  [PASS] entry with NO surfaces backs nothing (fail closed): fired=True expected=True
+  [PASS] negation behind entity apostrophe ignored: fired=False expected=False
+  [PASS] EN negated perfect-tense contraction: fired=False expected=False
+  [PASS] perfect-tense contraction behind entity apostrophe: fired=False expected=False
+  [PASS] EN negated 'cannot be validated': fired=False expected=False
+  [PASS] jinja ternary literal (factors val payload source) is code, not prose: fired=False expected=False
+  [PASS] rendered factors val payload is a data value, not a claim: fired=False expected=False
+  [PASS] numeric validated JSON key is a data field, not a claim: fired=False expected=False
+  [PASS] prose beside a numeric validated JSON key still fires: fired=True expected=True
+  [PASS] earned validated_tag enum value is data, not a claim: fired=False expected=False
+  [PASS] prose beside an earned validated_tag enum still fires: fired=True expected=True
+  [PASS] CSS class selector is not a claim: fired=False expected=False
+  [PASS] chained class selector is not a claim: fired=False expected=False
+  [PASS] descendant + chained selector is not a claim: fired=False expected=False
+  [PASS] dotted attribute access is not a claim: fired=False expected=False
+  [PASS] selectors NAMED in a comment are still selectors: fired=False expected=False
+  [PASS] HYPHENATED PROSE fires — a hyphen is not a selector: fired=True expected=True
+  [PASS] …the same adjective opening a sentence fires: fired=True expected=True
+  [PASS] …an acronym-hyphen form fires: fired=True expected=True
+  [PASS] …and a code comment earns no exemption: fired=True expected=True
+  [PASS] a selector no longer suppresses copy sharing its line: fired=True expected=True
+  [PASS] a sentence boundary is not an identifier: fired=True expected=True
+  [PASS] excising an identifier cannot break the negation beside it: fired=False expected=False
+  [PASS] quoted 'validated' in the verbatim excerpt is not a claim: fired=False expected=False
+  [PASS] ...in the third-party report title: fired=False expected=False
+  [PASS] ...in the third-party teaser (and the meta description): fired=False expected=False
+  [PASS] ...in a related report's title: fired=False expected=False
+  [PASS] OUR copy in .rr-gate on the same page STILL FAILS: fired=True expected=True
+  [PASS] OUR zh copy on the same page STILL FAILS: fired=True expected=True
+  [PASS] quoted text WITHOUT the attestation gets no exemption: fired=True expected=True
+  [PASS] same page shape in templates/ is never exempt: fired=True expected=True
+  [PASS] same page shape outside the research vault is never exempt: fired=True expected=True
+  [PASS] unclosed excerpt region fails CLOSED (nothing masked): fired=True expected=True
+  [PASS] crawl hub: third-party title in <span class="ti">: fired=False expected=False
+  [PASS] crawl hub: our own chrome on that page STILL FAILS: fired=True expected=True
+  [PASS] vault page: third-party titles inside the baked catalog JSON: fired=False expected=False
+  [PASS] vault page: our own copy outside the catalog STILL FAILS: fired=True expected=True
+  [PASS] china tape: wire headline in .tp-title is not a claim: fired=False expected=False
+  [PASS] china tape: a zh wire headline (已经验证) is not a claim either: fired=False expected=False
+  [PASS] china tape: the same words in the data-search index are not a claim: fired=False expected=False
+  [PASS] china tape: wire summary in .tp-sum is not a claim: fired=False expected=False
+  [PASS] china tape: OUR theme chip inside the same item STILL FAILS: fired=True expected=True
+  [PASS] china tape: OUR channel chip inside the same item STILL FAILS: fired=True expected=True
+  [PASS] china tape: OUR importance label inside the same item STILL FAILS: fired=True expected=True
+  [PASS] china tape: OUR hero lead above the feed STILL FAILS: fired=True expected=True
+  [PASS] china tape: OUR zh disclaimer below the feed STILL FAILS: fired=True expected=True
+  [PASS] china tape WITHOUT the feed attestation gets no exemption: fired=True expected=True
+  [PASS] same page shape in templates/ is never exempt: fired=True expected=True
+  [PASS] same page shape on another site page is never exempt: fired=True expected=True
+  [PASS] china tape: unclosed .tp-title fails CLOSED (nothing masked): fired=True expected=True
+  [PASS] #3765 read_en: token on a bare continuation line FIRES: fired=True expected=True
+  [PASS] zh 已验证 in a label_zh FIRES: fired=True expected=True
+  [PASS] dataclass/profile keyword copy FIRES: fired=True expected=True
+  [PASS] f-string literal part FIRES: fired=True expected=True
+  [PASS] zh 经验证 in a note_zh FIRES: fired=True expected=True
+  [PASS] negated engine copy is NOT a claim: fired=False expected=False
+  [PASS] allowlisted engine copy on a listed surface does not fire: fired=False expected=False
+  [PASS] SAME allowlisted copy on an unlisted surface FIRES: fired=True expected=True
+  [PASS] dislocation zh note (经验证的一道闸) is backed on its own surface: fired=False expected=False
+  [PASS] data field `"validated": True` is not copy: fired=False expected=False
+  [PASS] code identifiers are not copy: fired=False expected=False
+  [PASS] research-registry `notes` bookkeeping is out of scope: fired=False expected=False
+  [PASS] LLM tool `description` is out of scope: fired=False expected=False
+  [PASS] unparseable engine file FAILS CLOSED: fired=True expected=True

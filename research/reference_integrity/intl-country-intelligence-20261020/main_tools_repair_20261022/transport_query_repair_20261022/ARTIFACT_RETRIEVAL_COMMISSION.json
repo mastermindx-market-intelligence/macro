@@ -1,0 +1,20 @@
+{
+  "schema": "intl.completed_worker_artifact_retrieval.v1",
+  "purpose": "Read-only gzip/base64 return of exact already-completed R1 patch; not reimplementation or retry",
+  "packet": "MISSION: Retrieve one already-completed worker's exact patch as a compact inline artifact. This is a read-only packaging task, not an implementation retry.\nOriginal root01a1101f-2a37-7320-9a9b-5df3ce1b890d; original completed run intl-20261022-workspace-transport-query-r1 (TERMINAL, root verified, controller return RECORDED, rc0). That worker returned only production hunks because its complete patch exceeded the response cap. Root has NOT applied or accepted the patch.\nKnown original worker host ubuntu3; original exact artifact /home/ubuntu3/scratch-intl-20261022/workspace-transport-query.patch.\nExpected bytes80079, SHA256420997f5ec5174601ebe4572bbaa357288df5655637915e1742a13ae104dfe28,1275lines.\nROLE from protected Mastermind c9cbee5569ba50e30e28715d930809061a169517 skills/mastermind-fabric-orchestration/references/worker.md: consume exactly bounded role/effect/budget, no descendants, no independent self-approval, no publish/deploy or refusal bypass; return exact artifact and actual limits.\nROUTE mechanical/C0_MECHANICAL; one paid leaf, no descendants/nativehelpers/providerdelegation/hiddenworkers.\nRead only that known artifact if present in your admitted local worker filesystem. Do not SSH, obtain credentials, read unrelated files, modify any source/artifact/worktree, contact GitHub, rerun tests or reconstruct/reimplement missing files. If assigned to a host lacking that path, report exact absence and stop; do not hunt across hosts.\nVerify exact raw length and SHA256. If mismatch, report metadata and stop without encoding a substitute. If matched, gzip.compress(raw,mtime=0), base64 encode the complete gzip, and return the ENTIRE encoding inline in a JSON object with fields role_consumed:true,path,raw_bytes,raw_sha256,encoding:\"gzip+base64\",gzip_bytes,gzip_sha256,data. The fullcompressed80KBtext patch should fit comfortably under60000UTF8responsebytes. Avoid prose, tool logs, repeated production hunks or a scratch-file-only answer. Never truncate. This has no test/implementation acceptance claim.\nNo source edits/commits/push/PR/comments/messages/production/acquisition/auth changes. No second implementation run. Return the already completed exact artifact.",
+  "dispatch": {
+    "schema": "mastermind.fabric_mcp.v1",
+    "action": "fabric_request",
+    "run_id": "intl-20261022-query-r1-artifact-return",
+    "root_id": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "parent_id": "root",
+    "controller_pid": 37546,
+    "delivery": "CONTROLLER_CREATED",
+    "worker_started": null,
+    "worker_start_proven": false,
+    "adapter_exit_code": null,
+    "execution_absence_proven": false,
+    "next_observation": "fabric_status with the same run and root; fabric_controller_output with this PID when needed",
+    "retry_allowed": false
+  }
+}

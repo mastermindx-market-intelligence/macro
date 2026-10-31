@@ -1,0 +1,111 @@
+{
+  "pass": true,
+  "countries": [
+    {
+      "id": "imc-country-AU",
+      "accepted_sha256": "8bdf68da23c0df558d038e1074f14f63a12eec9d089d47f63787037981ca9fc0",
+      "candidate_sha256": "8bdf68da23c0df558d038e1074f14f63a12eec9d089d47f63787037981ca9fc0",
+      "identical": true
+    },
+    {
+      "id": "imc-country-EZ",
+      "accepted_sha256": "7cb91fd0dcf7367611bc3a318d6cc53b635b1be7cf0bfc5ac6ecfcb1fa77d3b8",
+      "candidate_sha256": "7cb91fd0dcf7367611bc3a318d6cc53b635b1be7cf0bfc5ac6ecfcb1fa77d3b8",
+      "identical": true
+    },
+    {
+      "id": "imc-country-GB",
+      "accepted_sha256": "fd6006895b007425755a61a9412614fcb16a07fa72dc9d533578b1fb0ae27542",
+      "candidate_sha256": "fd6006895b007425755a61a9412614fcb16a07fa72dc9d533578b1fb0ae27542",
+      "identical": true
+    },
+    {
+      "id": "imc-country-IN",
+      "accepted_sha256": "be1e4facfe5f2a5c7b081e70bbd0dac0a3d9e8f3ebb6f81434c27c9874f47d20",
+      "candidate_sha256": "be1e4facfe5f2a5c7b081e70bbd0dac0a3d9e8f3ebb6f81434c27c9874f47d20",
+      "identical": true
+    },
+    {
+      "id": "imc-country-JP",
+      "accepted_sha256": "9948b44f7e2df6c36e442b3231f964611606c6b730edadaa9d9fed56f86abc03",
+      "candidate_sha256": "9948b44f7e2df6c36e442b3231f964611606c6b730edadaa9d9fed56f86abc03",
+      "identical": true
+    },
+    {
+      "id": "imc-country-KR",
+      "accepted_sha256": "8b38e943e132b036f711146beee2dc8d845149985c33ec17dfae8f499f232361",
+      "candidate_sha256": "8b38e943e132b036f711146beee2dc8d845149985c33ec17dfae8f499f232361",
+      "identical": true
+    },
+    {
+      "id": "imc-country-TW",
+      "accepted_sha256": "79c24fbca6e9fbb7f7484163d23e2cdd7b4c1b235ede0ec06947781259d9f5c9",
+      "candidate_sha256": "79c24fbca6e9fbb7f7484163d23e2cdd7b4c1b235ede0ec06947781259d9f5c9",
+      "identical": true
+    }
+  ],
+  "changed_assets": [
+    {
+      "path": "account.js",
+      "candidate_sha256": "c1732806e5acbc4c91ac183fee873772108eb6abce433d6e17e9601d4ed5a260",
+      "accepted_sha256": "94a05a679fc9f62bc8c21f762501af80f156d78b8b479848639f3d724f85a852",
+      "identical": false
+    },
+    {
+      "path": "intl_workspace_entry.js",
+      "candidate_sha256": "3b476b4ce04b91f0a8854c4a3e5b2e26f672cfa21c67445d8ce765edc62a8b1b",
+      "accepted_sha256": "8dccfb1b655c6533a2a78dbe49b856f3f6bc51ac08a7fa996892149e0c0996c7",
+      "identical": false
+    },
+    {
+      "path": "mm_brain.js",
+      "candidate_sha256": "0bf2f2151db84e12eb8a8ee3a250aed6b63c3a27db41776209358ba666d13748",
+      "accepted_sha256": "0f265c17318efe486b5aa319da50c4a6c89866f7122924a5b9cfce855ee60c5d",
+      "identical": false
+    },
+    {
+      "path": "nav_market.js",
+      "candidate_sha256": "4e9012bb4b463ff19c308263d0229112c345f72c2f4ada4496c55443a92bdb12",
+      "accepted_sha256": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
+      "identical": false
+    },
+    {
+      "path": "navigation-refresh.css",
+      "candidate_sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+      "accepted_sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+      "identical": false
+    },
+    {
+      "path": "shared_shell.css",
+      "candidate_sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "accepted_sha256": null,
+      "identical": false
+    },
+    {
+      "path": "shared_shell_bridge.js",
+      "candidate_sha256": "31b150d8335f7abafa6210bcaf26d98a9e7e2251e34a09ce69f4524c59720e30",
+      "accepted_sha256": null,
+      "identical": false
+    },
+    {
+      "path": "theme.js",
+      "candidate_sha256": "a46f66779fbeb07ae9aed69b3cb7bdc952d6f55d59dc2f80e07bbbe88ce549f6",
+      "accepted_sha256": "1c9d7ad51904b385a7e7a698bc6926a8b04bf3b8d656bcb88c3371248f397491",
+      "identical": false
+    }
+  ],
+  "script_src": [
+    "shared_shell_bridge.js?v=31b150d8",
+    "intl_workspace_state.js",
+    "intl_library_search.js",
+    "intl_workspace_scenario.js",
+    "intl_workspace.js",
+    "intl_workspace_entry.js",
+    "logo_config.js",
+    "stock-logos.js",
+    "live_config.js",
+    "live.js",
+    "theme.js",
+    "tablesort.js"
+  ]
+}

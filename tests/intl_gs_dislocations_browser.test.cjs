@@ -3,7 +3,7 @@
 // real intl.html seam (tests/intl_gs_dislocations_fixture.py, real
 // attach_surveillance + the real builder) in Chromium, over the W2F fixture
 // route idiom (tests/intl_gs_foundation_browser.test.cjs).
-const test = require('node:test');
+const {test, after} = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -11,13 +11,40 @@ const {execFileSync} = require('node:child_process');
 const {chromium} = require('playwright');
 const root = path.resolve(__dirname, '..');
 
+// The site fixture is immutable within one test-file invocation. Generate it
+// through its real Python owner once per variant/scenario; never replace it
+// with a mock or share it across CI runs.
+const renderedFixtures = new Map();
 function fixtureHtml(variant, scenario) {
-  return execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
+  const key = JSON.stringify([variant, scenario]);
+  if (renderedFixtures.has(key)) return renderedFixtures.get(key);
+  const html = execFileSync(process.env.INTL_TEST_PYTHON || 'python3',
     [path.join(__dirname, 'intl_gs_dislocations_fixture.py'),
      '--variant', variant, '--scenario', scenario, '--print-html'],
     {cwd: root, env: {...process.env, PYTHONPATH: root}, encoding: 'utf8',
      maxBuffer: 32 * 1024 * 1024});
+  renderedFixtures.set(key, html);
+  return html;
 }
+
+// A whole Chromium *process* is expensive on hosted Linux. Reuse only that
+// process, while creating and closing a fresh browser context for EVERY page
+// assertion: isolated cookies/storage, URL, theme, language, and event state.
+// Errors propagate; there is no retry or substituted browser result.
+let browserPromise = null;
+let activeContexts = 0;
+function sharedBrowser() {
+  if (!browserPromise) {
+    browserPromise = chromium.launch({headless: true,
+      ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL
+        ? {channel: process.env.PLAYWRIGHT_CHROMIUM_CHANNEL} : {})});
+  }
+  return browserPromise;
+}
+after(async () => {
+  assert.equal(activeContexts, 0, 'every test page context must close');
+  if (browserPromise) await (await browserPromise).close();
+});
 
 function serveRoute(route, pathname) {
   const types = {'.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2'};
@@ -37,12 +64,12 @@ async function withRoutedPage(fn, {variant = 'specimen', scenario = 'restricted'
                                    width = 1440, height = 900, theme = 'dark',
                                    lang = 'en', query = '?view=dislocations',
                                    trackFailures = false} = {}) {
-  const browser = await chromium.launch({headless: true,
-    ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? {channel: process.env.PLAYWRIGHT_CHROMIUM_CHANNEL} : {})});
+  const browser = await sharedBrowser();
+  const context = await browser.newContext({viewport: {width, height}});
+  activeContexts += 1;
   try {
     const html = fixtureHtml(variant, scenario);
     const failures = {console: [], responses: []};
-    const context = await browser.newContext({viewport: {width, height}});
     const web = await context.newPage();
     web.setDefaultTimeout(8000);
     web.setDefaultNavigationTimeout(30000);
@@ -67,7 +94,11 @@ async function withRoutedPage(fn, {variant = 'specimen', scenario = 'restricted'
     await web.waitForTimeout(250);
     await fn(web, failures);
   } finally {
-    await browser.close();
+    try {
+      await context.close();
+    } finally {
+      activeContexts -= 1;
+    }
   }
 }
 

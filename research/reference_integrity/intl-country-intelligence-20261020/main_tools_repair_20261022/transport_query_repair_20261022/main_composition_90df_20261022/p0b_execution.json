@@ -1,0 +1,124 @@
+{
+  "schema": "intl.p0b_composition_execution.v1",
+  "source_commit": "45e70cb40d6e9ac1a49478b1920ab6a7275f7f58",
+  "started_at": "2026-10-22T07:51:19.068794+00:00",
+  "driver_sha256": "3268b9c5e95ebbf790d2e24d9df1c00536738fa2ed24579f5fc5c31c00ba957b",
+  "canonical_commands": true,
+  "effects": {
+    "collectors": false,
+    "publish": false,
+    "ledger_advance": false,
+    "production": false
+  },
+  "executions": [
+    {
+      "name": "p0b_render",
+      "command": [
+        "/tmp/intl-country-cockpit-ci-20261021/bin/python",
+        "scripts/render_stock_dashboard_fixture.py",
+        "--market",
+        "all",
+        "--out-dir",
+        "/tmp/intl-p0b-remint-main90df-20261022",
+        "--receipt",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json"
+      ],
+      "started_at": "2026-10-22T07:51:19.069435+00:00",
+      "completed_at": "2026-10-22T07:51:22.586382+00:00",
+      "duration_seconds": 3.52,
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/p0b_render.log",
+      "log_sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+    },
+    {
+      "name": "p0b_ca",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "scripts/verify_stock_dashboard_mobile_layout.cjs",
+        "--html",
+        "/tmp/intl-p0b-remint-main90df-20261022/canada_stocks.html",
+        "--site-dir",
+        "site",
+        "--fixture-receipt",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "--fixture-assets-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
+        "--screenshot-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc",
+        "--historical-head",
+        "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
+        "--historical-tree",
+        "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec",
+        "--browser",
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "--out",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json"
+      ],
+      "started_at": "2026-10-22T07:51:22.589776+00:00",
+      "completed_at": "2026-10-22T07:54:06.813911+00:00",
+      "duration_seconds": 164.23,
+      "exit_code": 0,
+      "log_sha256": "2cbc0b63b958ed7027be405d788539917c80b29e0f0722463a76cf753323b6dd",
+      "log_archive": {
+        "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/p0b_ca.log.gz",
+        "sha256": "df29fe8c7c1eb63c5221428344743e4df6aa17e01a7e5caa5c8054ce40120a38",
+        "encoding": "gzip",
+        "uncompressed_sha256": "2cbc0b63b958ed7027be405d788539917c80b29e0f0722463a76cf753323b6dd"
+      },
+      "original_log_path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/p0b_ca.log"
+    },
+    {
+      "name": "p0b_hk",
+      "command": [
+        "/opt/homebrew/bin/node",
+        "scripts/verify_stock_dashboard_mobile_layout.cjs",
+        "--html",
+        "/tmp/intl-p0b-remint-main90df-20261022/hk_stocks.html",
+        "--site-dir",
+        "site",
+        "--fixture-receipt",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "--fixture-assets-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
+        "--screenshot-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc",
+        "--historical-head",
+        "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
+        "--historical-tree",
+        "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec",
+        "--browser",
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "--out",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json"
+      ],
+      "started_at": "2026-10-22T07:51:22.589537+00:00",
+      "completed_at": "2026-10-22T07:54:06.814246+00:00",
+      "duration_seconds": 164.23,
+      "exit_code": 0,
+      "log_sha256": "0f0de5ed970998468195b24ad6df20c90c61524ce636e3f6904dbf84c8c2a1b0",
+      "log_archive": {
+        "path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/p0b_hk.log.gz",
+        "sha256": "26dbd3608c2f8f08d47ee9e9abd2637f9b7557043f89cb82598f781998d5ead0",
+        "encoding": "gzip",
+        "uncompressed_sha256": "0f0de5ed970998468195b24ad6df20c90c61524ce636e3f6904dbf84c8c2a1b0"
+      },
+      "original_log_path": "research/reference_integrity/intl-country-intelligence-20261020/main_tools_repair_20261022/transport_query_repair_20261022/main_composition_90df_20261022/p0b_hk.log"
+    }
+  ],
+  "state": "PASS",
+  "completed_at": "2026-10-22T07:54:06.816514+00:00",
+  "actual_receipts": [
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+      "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "sha256": "0f0de5ed970998468195b24ad6df20c90c61524ce636e3f6904dbf84c8c2a1b0"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "sha256": "2cbc0b63b958ed7027be405d788539917c80b29e0f0722463a76cf753323b6dd"
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "started_at": "2026-10-20T10:33:36.568538+00:00",
+  "scope": "Actual Chrome renders of explicitly identified controls; no canonical input or receipt changed; no current-market claim.",
+  "states": [
+    {
+      "name": "partial_jp",
+      "kind": "PARTIAL_COVERAGE_CONTROL",
+      "locale": "en",
+      "theme": "light",
+      "width": 390,
+      "evaluated_at": null,
+      "file": "partial_jp_en_light_390.png",
+      "sha256": "73f0be923a3985bf51a774451e104b579df80f74e27d196f4448ef1886810a9f",
+      "html_sha256": "303c945b1634d8d2771860843ba247b2feb4ae8bd6b62afa34becef357fd19d7",
+      "checks": {
+        "no_horizontal_overflow": true,
+        "no_missing_country_links": true
+      },
+      "passed": true
+    },
+    {
+      "name": "partial_jp",
+      "kind": "PARTIAL_COVERAGE_CONTROL",
+      "locale": "zh",
+      "theme": "dark",
+      "width": 320,
+      "evaluated_at": null,
+      "file": "partial_jp_zh_dark_320.png",
+      "sha256": "bf28f4be5383f361581f40f1ba6ab766dcfd6f90cef3ac2dbbabc308863ddd3d",
+      "html_sha256": "303c945b1634d8d2771860843ba247b2feb4ae8bd6b62afa34becef357fd19d7",
+      "checks": {
+        "no_horizontal_overflow": true,
+        "no_missing_country_links": true
+      },
+      "passed": true
+    },
+    {
+      "name": "dated_kr",
+      "kind": "TIME_SHIFTED_AGEING_CONTROL",
+      "locale": "en",
+      "theme": "light",
+      "width": 320,
+      "evaluated_at": null,
+      "file": "dated_kr_en_light_320.png",
+      "sha256": "444287c77721f318dc9a89a82fdd65528d66c158fa55f236348d76276826728b",
+      "html_sha256": "c67dde95f24495b7254098ac387840586558703f78aa9e68dfe377aafac6bc94",
+      "checks": {
+        "no_horizontal_overflow": true,
+        "dated_evidence_labeled": true
+      },
+      "passed": true
+    },
+    {
+      "name": "unavailable_kr",
+      "kind": "TIME_SHIFTED_AGEING_CONTROL",
+      "locale": "zh",
+      "theme": "dark",
+      "width": 320,
+      "evaluated_at": null,
+      "file": "unavailable_kr_zh_dark_320.png",
+      "sha256": "22e943af083a3aac711679d65f227be9a1031a279acf5808ddddbb0cd1e5c80d",
+      "html_sha256": "fe12fb9c7b1aaf76a81e3a6c9c8a5a65acdb0b7204c542f8ef301faa211ede52",
+      "checks": {
+        "no_horizontal_overflow": true,
+        "expired_value_withheld": true
+      },
+      "passed": true
+    },
+    {
+      "name": "monthly_review_gb",
+      "kind": "SYNTHETIC_MONTHLY_COLLISION_CONTROL",
+      "locale": "en",
+      "theme": "light",
+      "width": 390,
+      "evaluated_at": null,
+      "file": "monthly_review_gb_en_light_390.png",
+      "sha256": "4c67641b4a83e0990c3e2ea649baccfc93dd1def5e581d3ff964643ce8b341f2",
+      "html_sha256": "b74389c2c26f35f80c0df20ce0f8a059b06111df6ef8677d105122b90584eacb",
+      "checks": {
+        "no_horizontal_overflow": true,
+        "monthly_review_visible": true,
+        "national_decision_preserved": true
+      },
+      "passed": true
+    },
+    {
+      "name": "monthly_review_gb",
+      "kind": "SYNTHETIC_MONTHLY_COLLISION_CONTROL",
+      "locale": "zh",
+      "theme": "dark",
+      "width": 390,
+      "evaluated_at": null,
+      "file": "monthly_review_gb_zh_dark_390.png",
+      "sha256": "20a49e422e23f83a3c12040bb687987f0ee0e492c03be755148e532788dc1c7b",
+      "html_sha256": "b74389c2c26f35f80c0df20ce0f8a059b06111df6ef8677d105122b90584eacb",
+      "checks": {
+        "no_horizontal_overflow": true,
+        "monthly_review_visible": true,
+        "national_decision_preserved": true
+      },
+      "passed": true
+    }
+  ],
+  "page_errors": [],
+  "finished_at": "2026-10-20T10:33:56.473486+00:00",
+  "passed": true
+}

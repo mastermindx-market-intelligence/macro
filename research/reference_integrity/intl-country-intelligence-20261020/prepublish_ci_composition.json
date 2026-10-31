@@ -1,0 +1,24 @@
+{
+  "recorded_at": "2026-10-20T21:11:30.285815+00:00",
+  "integrated_main": "0ef818070c57709a67e44dca2193652d41e29640",
+  "artifact_head": "883a1e48efdf9c334c08665262efa0961b1997a0",
+  "observed_main": "0bd1bedcff4069b0a06b6679566c430c19a25e4f",
+  "clean_merge_tree": "b0aa05bd3bf7636931e818b968e95fa51a4a69d3",
+  "job_count": 342,
+  "changed_in_candidate": [
+    "biocatalyst-serving",
+    "intelligence-registry",
+    "international-workspace-browser",
+    "international-workspace-foundation",
+    "itr-turn-rotation",
+    "nw-lobe-unfreeze",
+    "unrun-picks-boards",
+    "washout-turn-organ"
+  ],
+  "changed_in_new_main": [
+    "options-nbbo-cohort"
+  ],
+  "issues": [],
+  "merged_manifest_sha256": "c130cd869048717ca6d9edd4e034e1e03cea686c0263765de64204a8c5d4d82a",
+  "mutation": "read-only tree composition; no candidate ref or source changed"
+}
