@@ -3,11 +3,13 @@ workstream: "WS:COMMISSION-19-DATA-INTELLIGENCE"
 session: "claude/ssd-c19-agentos-ws-r16-1d7c11257db59e7a (Macro SSD worktree c19-agentos-ws-r16-1d7c11257db59e7a; Mastermind ledger branch c19/ledger-r16-dd5239a9; Claude session dd5239a9-fdd7-49fa-91df-ac0fa26a8eb1, Opus 5.5)"
 model: opus
 ended_because: ci_handoff
-prs: [10074, 10259, 10273, 10284, 9569, 10295, 1246, 1898, 1899]
+prs: [10074, 10259, 10273, 10284, 9569, 10295, 10302, 1246, 1898, 1899]
 decisions:
   - DEC:FIF-3A3-ACCEPTED-GOLDEN-QUERY-ON-MAIN
   - DEC:MI-BUILDOUT-I-ROUTE-WAITS-FOR-ALL-FOUR-LEGS
   - DEC:EARNINGS-INTELLIGENCE-PROGRAM-OWNERSHIP
+discoveries:
+  - DSC:EDGAR-SUBMISSIONS-ACCEPTANCE-DATETIME-IS-TRUE-UTC
 mission: >-
   Take the C19 seat back under the 2026-10-24 leadership-continuity ruling (Mastermind #1842) after
   seat 7ab343c8 went quiet past ledger r15, run the overdue WP31 read, assess what is left of the
@@ -46,15 +48,18 @@ verified:
   - claim: "Ledger r16 (#1898) is independently approved at c9d30d7d"
     command: "Lane O (run c19-w15-o-review-r16-20261031) and lane P (run c19-w15-p-rereview-r16-20261031) packets, judged by artifact against the diff"
     result: "Lane O REQUEST_CHANGES: r16 stated the A2 direction backwards and carried one stale line; repaired in c9d30d7d1c62; lane P re-reviewed the changed lines only and returned APPROVE. The seat had armed #1898 before review and disarmed it; it is enqueued only after its required test check concludes green"
-  - claim: "The A2 correction's DST behaviour (frozen evaluator arithmetic, reproduced by lib/edgar_clock.py in Macro #10295)"
+  - claim: "Prereg §10 A2's premise is false: the submissions-JSON acceptanceDateTime is true UTC (DSC:EDGAR-SUBMISSIONS-ACCEPTANCE-DATETIME-IS-TRUE-UTC)"
+    command: "Live SEC reads, non-universe filers, headers only: A2's four cited filings; a census of 9 filers across 10-K, 10-Q, 13F-HR, 4 and 8-K, 2015-2026, EST and EDT; a sample of the 2026-10-04 8-K store capture; each JSON value compared with the html-unescaped SGML ACCEPTANCE-DATETIME read as New York time"
+    result: "4/4, 117/117 (2 index-headers 404s excluded) and 76/76 agree to the second; MSFT 0001193125-26-027198 reads 21:04:38Z in both, where A2 pinned 2026-01-29T02:04:38Z (+5 h). The 2026-07-05 capture held New York wall time labelled Z for 27 non-universe issuers (cause unproven). A2's correction puts t_rel 4-5 h early; prereg §10 A5 (Macro #10302) withdraws it for J >= 2026-11-16T00:00Z"
+  - claim: "The A2 correction's DST behaviour (frozen evaluator arithmetic, reproduced by lib/edgar_clock.py in Macro #10295); it applies only to clocks before A5's date"
     command: "Minute sweep of submissions_acceptance_utc over 2026-03-07..09 and 2026-10-31..11-02 UTC, for JSON values J and for J = U - NY offset at U"
     result: "None for J in 2026-03-08 07:00-10:59Z and 2026-11-01 06:00-10:59Z; under the offset-at-U model, 60 true instants (2026-03-08 06:00-06:59Z) resolve exactly +1 h and none resolve wrong at fall back. All of these lie outside EDGAR filing hours (17 CFR 232.12(c)); WP31 is unaffected; the prereg's 'the hour around a daylight-saving change' understates the windows (ledger r17; any correction is a new §10 amendment)"
   - claim: "Guarded fabric mints refuse on every pool host"
     command: "POOL_TASK_CLASS=review ~/.local/bin/pool remote <host> glm <packet> '<cwd>' glm-5.3 --new-macro-worktree ... on ubuntu0-3"
     result: "rc=78 FABRIC_SPARSE_GIT_CONFIG_UNQUALIFIED on each (donor git configs fail the _sparse_config allowlist at ext/remote_sub_exec.py:202-283); routed to the fabric owner; no donor config was edited"
 unverified:
-  - claim: "Macro #10295 (U2 Phase 1) is correct and safe to merge"
-    what_would_verify: "Lane Q2's packet (glm-5.3, ubuntu2, run c19-w15-q2-review-u2p1-20261031), judged by artifact, plus concluded green CI at 206340ef; the first run c19-w15-q-review-u2p1-20261031 was refused rc=75 on the staging-disk reserve after the seat minted a full checkout, and was re-minted sparse"
+  - claim: "Macro #10302 (prereg §10 A5) is correct and safe to merge"
+    what_would_verify: "Lane S2's packet (glm-5.3, ubuntu0, run c19-w15-s2-review-a5-20261031), judged by artifact against the diff, plus concluded green CI at 0acca70e; the first run c19-w15-s-review-a5-20261031 was refused rc=75 on ubuntu1 host temperature and was re-placed on ubuntu0 under a new run id and a new sparse tree"
   - claim: "Read 2's two pit_unrecoverable episodes were caused by a transient reader failure"
     what_would_verify: "Read 2b after Macro #10284 lands: the final-failure counter and not_evaluable_detail distinguish a reader failure from a clock or chain fault"
   - claim: "The U6 production proof: the daily commodities payload keeps sources.crude_stocks.state == available after #10259"
@@ -69,11 +74,12 @@ unresolved:
   - "Executive connector OAuth and Linear OAuth remain unauthorized human gates."
 next_actions:
   - "#1899 and #1246 are merged. When #1898's required test check is green at c9d30d7d: enqueue it with --match-head-commit, read the queue entry back over GraphQL, keep one watcher, land-check, then post the #1243 pointer."
-  - "Macro #10295: on an accepting lane Q2 verdict and concluded green CI, mark it ready (gh pr ready) so the sweeper merges it; on REQUEST_CHANGES, repair and commission a changed-lines re-review under a new run id. Never self-approve. Then remove the sparse lane tree ~/lanes/wt/c19-w15-q on ubuntu2."
+  - "Macro #10302: on an accepting lane S2 verdict, add merge-on-green and keep one watcher; it must merge before 2026-11-16T00:00Z or A5 is void. On REQUEST_CHANGES, repair and commission a changed-lines re-review under a new run id. Never self-approve. Then remove the lane trees ~/lanes/wt/c19-w15-s (ubuntu1) and ~/lanes/wt/c19-w15-s2 (ubuntu0)."
+  - "Macro #10295: close unmerged with a retraction comment (its premise is refuted and lane Q2's approval is superseded), then remove the sparse lane tree ~/lanes/wt/c19-w15-q on ubuntu2."
   - "Let the Macro sweeper merge #10284, #10259, #10273 and #9569 on concluded green; no manual update-branch; when a watcher exits on a head change, re-arm one watcher at the new head; land-check each merge against fresh main."
   - "After #10284 lands: re-read universe EDGAR submission headers only, then run read 2b once (counts only) -> ledger r17."
   - "After #10259 lands: the note on #8125 and the U6 production proof."
-  - "Ledger r17 records: the #1898 review and disarm, the #1899 and #1246 merges, the U5 and U2 verdicts with their corrections, PR #10295, the A2 DST windows, the stale DEC-CS-V2 citation, the lane quarantine Bash block, the rc=75 disk refusal and the sparse re-mint."
+  - "Ledger r17 records: the #1898 review and disarm, the #1899 and #1246 merges, the U5 and U2 verdicts with their corrections, PR #10295 and its withdrawal, the A2 premise refutation (census, vintage diagnosis, rule-level effect) with named retractions of every place the seat repeated A2 as fact (r16 lines on A2 and U2, the U2 ruling, the 13F KNOWN DEFECT comment, the collector relabels, WS:109, the #10295 body), PR #10302 (A5), the lane S temperature refusal and the S2 re-placement, the A2 DST windows, the stale DEC-CS-V2 citation, the lane quarantine Bash block, the rc=75 disk refusal and the sparse re-mint."
 do_not_redo:
   - "Do not re-run WP31 read 1b or read 2; do not call either a §5 look; never run the evaluator in CI or more than once per look; never read universe labels, event workspaces or EX-99.1 values outside it."
   - "Do not reconstruct the lost v1 exposure ledger; v2 under ~/.local/state/mastermind/c19-wp31/ is authoritative from read 2."
@@ -101,5 +107,8 @@ CS-leg pins #10273, G #10284) each passed an independent GLM review, and the sea
 red on pytest 9.2.0; the reviewed pin in #1899 merged at 10:23:46Z and the queue went green, and
 #1246 merged behind it at 11:14:52Z. Ledger r16 (Mastermind #1898) holds the full account; an
 independent lane caught an inverted A2 direction in it, the seat repaired it, and a changed-lines
-re-review approved. The U2 design's first phase is Macro #10295, a shared EDGAR acceptance-clock
-reader that leaves the frozen evaluator untouched, now under independent review.
+re-review approved. The seat then tested A2's premise rather than only its arithmetic: live
+SEC headers show the submissions-JSON acceptance clock is already true UTC, so A2's correction
+puts WP31's release clock 4-5 h early. Macro #10295, built on that premise, is withdrawn, and
+Macro #10302 adds prereg §10 A5, which reads the clock as given from 2026-11-16 and is under
+independent review.
