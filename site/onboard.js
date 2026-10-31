@@ -31,6 +31,47 @@
   var SS_STASH = "mm.onboardLanding";        // per-tab wizard stash (this surface)
   var LS_PENDING_PREFS = "mm.pendingPrefs";  // SAME key the Terminal applies on first sign-in
   var LS_ONBOARD_RESUME = "mm.onboardResume";// Google-OAuth round-trip stash (matches terminal oauth.ts)
+  var LS_FIRST_TOUCH_UTM = "mm.firstTouchUtm";
+  var UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content"];
+  // D07's canonical marketing tokens only. Never retain a URL, referrer, free text
+  // or an auth/payment claim. One complete touch is captured before URL scrubbing;
+  // it survives reload/confirmation navigation without mixing later campaigns.
+  function validFirstTouchUtm(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).length !== UTM_KEYS.length) return null;
+    var out = {};
+    for (var i = 0; i < UTM_KEYS.length; i++) {
+      var key = UTM_KEYS[i], token = value[key];
+      if (typeof token !== "string" || token.length < 1 || token.length > 128 || /[^A-Za-z0-9_.:-]/.test(token)) return null;
+      out[key] = token;
+    }
+    return out;
+  }
+  function captureFirstTouchUtm() {
+    try {
+      var raw = localStorage.getItem(LS_FIRST_TOUCH_UTM);
+      if (raw !== null) {
+        var saved = null;
+        try { if (raw.length <= 2048) saved = validFirstTouchUtm(JSON.parse(raw)); } catch (e) {}
+        if (saved) return saved;
+        localStorage.removeItem(LS_FIRST_TOUCH_UTM);
+      }
+    } catch (e) {}  // blocked storage must never block account creation
+    var candidate = {}, touch = null;
+    try {
+      var params = new URLSearchParams(window.location.search);
+      for (var i = 0; i < UTM_KEYS.length; i++) {
+        var values = params.getAll(UTM_KEYS[i]);
+        if (values.length !== 1) return null;
+        candidate[UTM_KEYS[i]] = values[0];
+      }
+      touch = validFirstTouchUtm(candidate);
+    } catch (e) {}
+    if (touch) {
+      try { localStorage.setItem(LS_FIRST_TOUCH_UTM, JSON.stringify(touch)); } catch (e) {}
+    }
+    return touch;
+  }
+  var firstTouchUtm = captureFirstTouchUtm();
   var SS_ME = "mm.me";                        // /api/me cache (60s) — shared by upgrade mode + auth chrome
   var ME_TTL = 60000;                         // 60s
   var STRIPE_JS = "https://js.stripe.com/v3";
@@ -323,6 +364,7 @@
     doneTrial:    ["Your __T__ trial is live — first charge on __D__.", "你的 __T__ 试用已生效——首次扣款为 __D__。"],
     doneSubscribed:["Your __T__ plan is live.", "你的 __T__ 方案已开通。"],
     doneReady:    ["Your dashboards, signals and the Terminal are ready.", "你的看板、信号与 Terminal 已就绪。"],
+    donePrefsPending: ["Your preferences haven’t synced yet. After signing in, you can retry saving them in Settings.", "你的偏好尚未同步。登录后，可在设置中重试保存。"],
     openDashboard:["Open the dashboard", "打开仪表盘"],
     openTerminal: ["Open the Terminal →", "打开 Terminal →"],
 
@@ -479,7 +521,7 @@
     firstName: "", lastName: "", email: "", password: "",
     prefs: { market_focus: [], trade_types: [], theme_pref: "auto" },
     plan: "pro", period: "annual",
-    confirmPending: false, trialActive: false, trialEnd: null, subLive: false,
+    confirmPending: false, prefsPending: false, trialActive: false, trialEnd: null, subLive: false,
     // upgrade mode (post-login monetization sheet). upStep is the upgrade lane's
     // OWN progression (plan → billing) — it never borrows the signup stepper.
     pendingUpgrade: false, upgradeOpts: null, me: null, upStep: "plan",
@@ -499,7 +541,7 @@
         open: S.open, mode: S.mode, step: S.step,
         firstName: S.firstName, lastName: S.lastName, email: S.email,
         prefs: S.prefs, plan: S.plan, period: S.period,
-        confirmPending: S.confirmPending, trialActive: S.trialActive, trialEnd: S.trialEnd,
+        confirmPending: S.confirmPending, prefsPending: S.prefsPending, trialActive: S.trialActive, trialEnd: S.trialEnd,
         subLive: S.subLive,
         planTouched: S.planTouched
       }));
@@ -1192,8 +1234,10 @@
         });
         return;
       }
-      // signup — stash first/last in user_metadata (mirror of terminal StepAccount)
-      sb.auth.signUp({ email: S.email, password: S.password, options: { data: { first_name: S.firstName, last_name: S.lastName } } })
+      // UTM is untrusted attribution only; never an auth or entitlement input.
+      var signupData = { first_name: S.firstName, last_name: S.lastName };
+      if (firstTouchUtm) signupData.utm = validFirstTouchUtm(firstTouchUtm);
+      sb.auth.signUp({ email: S.email, password: S.password, options: { data: signupData } })
         .then(function (r) {
           if (r.error) { showErr(r.error.message); setSubmitBusy(false); return; }
           S.password = "";
@@ -1589,19 +1633,47 @@
       market_focus: S.prefs.market_focus, trade_types: S.prefs.trade_types,
       theme_pref: S.prefs.theme_pref, onboarded_at: new Date().toISOString()
     };
+    S.prefsPending = true;
     if (S.confirmPending) {
-      // no session yet — stash to the SAME key the Terminal applies on first sign-in
-      try { localStorage.setItem(LS_PENDING_PREFS, JSON.stringify(payload)); } catch (e) {}
-      return;
+      // No authenticated subject yet: retain the existing, honestly unbound
+      // guest shape. The auth broker delivers it after a real session restores.
+      var broker = window.MDXAuth;
+      if (broker && broker.queueOnboardingPrefs) broker.queueOnboardingPrefs(payload, null);
+      else {
+        try {
+          var previous = JSON.parse(localStorage.getItem(LS_PENDING_PREFS) || 'null');
+          if (Array.isArray(previous) || (previous && Object.prototype.hasOwnProperty.call(previous, 'owner_user_id'))) return Promise.resolve({ status: 'held' });
+          localStorage.setItem(LS_PENDING_PREFS, JSON.stringify(payload));
+        } catch (e) {}
+      }
+      return Promise.resolve({ status: 'pending' });
     }
-    sbClient().then(function (sb) {
-      if (!sb) return;
-      sb.auth.getSession().then(function (r) {
-        var sess = r && r.data && r.data.session;
-        if (sess) { sb.auth.updateUser({ data: payload }).then(null, function () {}); }
-        else { try { localStorage.setItem(LS_PENDING_PREFS, JSON.stringify(payload)); } catch (e) {} }
+    var auth = window.MDXAuth, source = auth && auth.user && auth.user();
+    var sourceId = source && source.id, sourceEmail = source && source.email || S.email;
+    // The broker already knows this actor. Retain their bound choice BEFORE
+    // any client/identity lookup can fail; a later lookup cannot recast it.
+    var queuedForSource = false;
+    if (sourceId && auth && auth.queueOnboardingPrefs) {
+      queuedForSource = auth.queueOnboardingPrefs(payload, sourceId);
+      if (!queuedForSource) return Promise.resolve({ status: 'pending' });
+    }
+    return sbClient().then(function (sb) {
+      auth = window.MDXAuth;
+      if (!sb || !auth || !auth.queueOnboardingPrefs || !auth.deliverOnboardingPrefs) return { status: 'pending' };
+      return sb.auth.getUser().then(function (r) {
+        var user = r && !r.error && r.data && r.data.user;
+        if (!user || !user.id || (sourceId ? sourceId !== user.id : !sourceEmail || sourceEmail !== user.email)) return { status: 'held' };
+        if (!queuedForSource && !auth.queueOnboardingPrefs(payload, user.id)) return { status: 'pending' };
+        return auth.deliverOnboardingPrefs().then(function (result) {
+          var current = auth.user && auth.user();
+          if (!current || current.id !== user.id) return { status: 'held' };
+          S.prefsPending = result.status !== 'delivered' && result.status !== 'nothing-pending';
+          stashSave();
+          if (S.step === STEP_DONE) render();
+          return result;
+        });
       });
-    });
+    }).catch(function () { return { status: 'pending' }; });
   }
 
   // ══════════════════════════ STEP 3 — PLAN ══════════════════════════════════
@@ -2544,6 +2616,7 @@
       bodyBox.appendChild(l2);
     }
     if (!S.confirmPending && !S.trialActive && !S.subLive) { bodyBox.appendChild(T("p", "obm-done-line", "doneReady")); }
+    if (S.prefsPending) bodyBox.appendChild(T("p", "obm-done-line", "donePrefsPending"));
     wrap.appendChild(mark); wrap.appendChild(head); wrap.appendChild(bodyBox);
     root.appendChild(wrap);
 
@@ -3165,6 +3238,7 @@
       S.firstName = st.firstName || ""; S.lastName = st.lastName || ""; S.email = st.email || "";
       S.prefs = st.prefs || S.prefs; S.plan = normTier(st.plan) || S.plan; S.period = st.period || S.period;
       S.confirmPending = !!st.confirmPending; S.trialActive = !!st.trialActive; S.trialEnd = (typeof st.trialEnd === "number") ? st.trialEnd : null;
+      S.prefsPending = !!st.prefsPending;
       S.subLive = !!st.subLive;
       S.planTouched = !!st.planTouched || (st.step || 1) >= 3;  // stale stashes: reached-plan implies touched
       openSheet(S.mode, {});

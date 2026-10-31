@@ -325,3 +325,261 @@ def test_roots_required_unless_daily():
 def test_workers_above_hard_cap_rejected():
     with pytest.raises(SystemExit):
         topup.main(["--daily", "--workers", "7"])
+
+
+@pytest.fixture
+def bounded_eod_case(tmp_path, monkeypatch):
+    """Real incumbent CSV/parser/normalizer with only requests transport replaced."""
+    import io
+    from types import SimpleNamespace
+    from collectors import thetadata as td
+    root_store = tmp_path / 'store'
+    root_store.mkdir()
+    parent = tmp_path / 'captures'
+    parent.mkdir()
+    scope = dict(start=date(2020, 10, 19), end=date(2020, 10, 22),
+        original_root='01a156f1-f450-7793-8951-bddadd4784c2',
+        assigning_parent='01a15700-1ae2-7a73-9756-f1546da7ace8',
+        max_response_bytes=16384, max_total_bytes=65536,
+        max_response_rows=100, max_total_rows=400)
+    calls, statuses, bodies = [], {}, {}
+    for root in topup._EOD_CATCHUP_ROOTS:
+        bodies[root] = ('symbol,expiration,strike,right,last_trade,close,volume\n' + ''.join(
+            f'{root},2020-11-20,100,CALL,2020-10-{day}T16:00:00,2,3\n'
+            for day in range(19, 23))).encode()
+        topup._merge_day(root_store, 'eod', root, date(2020, 10, 16), _df(date(2020, 10, 16)))
+    class Session:
+        def get_adapter(self, url):
+            return SimpleNamespace(max_retries=SimpleNamespace(total=0))
+        def get(self, url, **kwargs):
+            root = kwargs['params']['symbol']
+            # Exact original operation reservation must precede actual GET.
+            receipt = json.loads((parent/'operation'/'receipt.json').read_text())
+            assert receipt['requests'][-1]['state'] == 'REQUEST_STARTED'
+            assert receipt['attempts'] == len(calls)+1
+            calls.append((url, kwargs))
+            response = SimpleNamespace(status_code=statuses.get(root, 200), close=lambda: None)
+            response.iter_content = lambda **kw: iter([bodies[root]])
+            return response
+    monkeypatch.setattr(td, '_session', Session)
+    monkeypatch.setattr(td, 'reachable', lambda: pytest.fail('Hidden health probe'))
+    monkeypatch.setattr(td, '_concurrent_windows', lambda *a, **kw: pytest.fail('Hidden retry/windows'))
+    original_read = pd.read_csv
+    def read_csv(stream, *args, **kwargs):
+        if isinstance(stream, io.BytesIO):
+            data = stream.getvalue()
+            assert any((parent/'operation'/f'{r}.csv').exists() and
+                (parent/'operation'/f'{r}.csv').read_bytes()==data for r in bodies)
+        return original_read(stream, *args, **kwargs)
+    monkeypatch.setattr(pd, 'read_csv', read_csv)
+    return SimpleNamespace(store=root_store, directory=parent/'operation', scope=scope,
+        calls=calls, statuses=statuses, bodies=bodies, td=td)
+
+
+def test_bounded_eod_retains_before_parse_and_merges_only_separately(bounded_eod_case):
+    c = bounded_eod_case
+    record = topup.capture_bounded_eod_catchup(c.store, c.directory, **c.scope)
+    assert record['state']=='CAPTURED' and record['attempts']==4 and record['raw_rows']==16
+    assert record['store_writes']==0
+    assert len(c.calls)==4 and all(call[1]['allow_redirects'] is False for call in c.calls)
+    for root in topup._EOD_CATCHUP_ROOTS:
+        assert not topup._has_day(c.store, 'eod', root, c.scope['start'])
+    merged = topup.merge_bounded_eod_capture(c.store, c.directory)
+    assert merged['state']=='MERGED' and merged['store_writes']==16 and len(c.calls)==4
+    for root in topup._EOD_CATCHUP_ROOTS:
+        assert topup._has_day(c.store, 'eod', root, date(2020, 10, 16))
+        for day in range(19,23):
+            assert topup._has_day(c.store, 'eod', root, date(2020, 10, day))
+    with pytest.raises(ValueError):
+        topup.merge_bounded_eod_capture(c.store, c.directory)
+    with pytest.raises(ValueError):
+        topup.capture_bounded_eod_catchup(c.store, c.directory, **c.scope)
+    assert len(c.calls)==4
+
+
+@pytest.mark.parametrize('kind', ['refusal', 'wrong_root', 'wrong_date', 'malformed'])
+def test_bounded_eod_stops_first_bad_source_and_never_writes(bounded_eod_case, kind):
+    c = bounded_eod_case
+    if kind=='refusal':c.statuses['GLD']=472
+    elif kind=='wrong_root':c.bodies['GLD']=c.bodies['GLD'].replace(b'GLD,',b'SPY,')
+    elif kind=='wrong_date':c.bodies['GLD']=c.bodies['GLD'].replace(b'2020-10-19',b'2020-10-16')
+    else:c.bodies['GLD']=b'not a contract CSV\n'
+    with pytest.raises(ValueError):
+        topup.capture_bounded_eod_catchup(c.store,c.directory,**c.scope)
+    record=json.loads((c.directory/'receipt.json').read_text())
+    assert len(c.calls)==1 and record['state']=='STOPPED' and record['store_writes']==0
+    assert record['requests'][0]['state']==('REFUSED' if kind=='refusal' else 'RAW_CAPTURED')
+    assert not topup._has_day(c.store,'eod','GLD',c.scope['start'])
+
+
+@pytest.mark.parametrize('field,value', [('max_total_bytes',300),('max_total_rows',5),
+    ('max_response_bytes',10),('max_response_rows',1)])
+def test_bounded_eod_individual_and_aggregate_caps_stop_chain(bounded_eod_case,field,value):
+    c=bounded_eod_case;c.scope[field]=value
+    with pytest.raises(ValueError):topup.capture_bounded_eod_catchup(c.store,c.directory,**c.scope)
+    record=json.loads((c.directory/'receipt.json').read_text())
+    assert record['state'] in ('STOPPED','EFFECT_UNKNOWN') and len(c.calls)<=2
+    assert record['store_writes']==0
+
+
+def test_bounded_eod_abrupt_attempt_stays_unknown_no_replay(bounded_eod_case,monkeypatch):
+    c=bounded_eod_case
+    class Abrupt:
+        def get_adapter(self,url):
+            from types import SimpleNamespace
+            return SimpleNamespace(max_retries=SimpleNamespace(total=0))
+        def get(self,*args,**kwargs):
+            record=json.loads((c.directory/'receipt.json').read_text())
+            assert record['attempts']==1 and record['requests'][0]['state']=='REQUEST_STARTED'
+            raise KeyboardInterrupt('simulated missing return')
+    monkeypatch.setattr(c.td,'_session',Abrupt)
+    with pytest.raises(KeyboardInterrupt):topup.capture_bounded_eod_catchup(c.store,c.directory,**c.scope)
+    record=json.loads((c.directory/'receipt.json').read_text())
+    assert record['state']==record['requests'][0]['state']=='EFFECT_UNKNOWN'
+    with pytest.raises(FileExistsError):topup.capture_bounded_eod_catchup(c.store,c.directory,**c.scope)
+
+
+def test_bounded_eod_claim_durability_failure_precedes_get(bounded_eod_case,monkeypatch):
+    c=bounded_eod_case
+    def fail(path):raise OSError('directory fsync failure')
+    monkeypatch.setattr(topup,'_eod_sync_directory',fail)
+    with pytest.raises(OSError):topup.capture_bounded_eod_catchup(c.store,c.directory,**c.scope)
+    assert not c.calls and c.directory.exists()
+
+
+@pytest.mark.parametrize('failure',['lock','existing_day'])
+def test_bounded_eod_refuses_before_claim_on_store_conflict(bounded_eod_case,failure):
+    c=bounded_eod_case
+    if failure=='existing_day':
+        topup._merge_day(c.store,'eod','GLD',c.scope['start'],_df(c.scope['start']))
+        with pytest.raises(ValueError):topup.capture_bounded_eod_catchup(c.store,c.directory,**c.scope)
+    else:
+        with topup._writer_lock(c.store) as held:
+            assert held
+            with pytest.raises(RuntimeError):topup.capture_bounded_eod_catchup(c.store,c.directory,**c.scope)
+    assert not c.calls and not c.directory.exists()
+
+
+def test_bounded_eod_interrupted_merge_preserves_nonretryable_state(bounded_eod_case,monkeypatch):
+    c=bounded_eod_case;topup.capture_bounded_eod_catchup(c.store,c.directory,**c.scope)
+    original=topup._merge_day;n=[]
+    def fail_after_one(*args):
+        n.append(1)
+        if len(n)>1:raise OSError('simulated store failure')
+        return original(*args)
+    monkeypatch.setattr(topup,'_merge_day',fail_after_one)
+    with pytest.raises(OSError):topup.merge_bounded_eod_capture(c.store,c.directory)
+    assert json.loads((c.directory/'receipt.json').read_text())['state']=='MERGE_STARTED'
+    with pytest.raises(ValueError):topup.merge_bounded_eod_capture(c.store,c.directory)
+    assert len(n)==2 and len(c.calls)==4
+
+
+@pytest.mark.parametrize('mutation',['digest','future','root','scope','bytes'])
+def test_bounded_eod_merge_refuses_tampered_receipt(bounded_eod_case,mutation):
+    c=bounded_eod_case;topup.capture_bounded_eod_catchup(c.store,c.directory,**c.scope)
+    p=c.directory/'receipt.json';record=json.loads(p.read_text());first=record['requests'][0]
+    if mutation=='digest':first['response_sha256']='0'*64
+    elif mutation=='future':first['received_at']='2099-01-01T00:00:00Z'
+    elif mutation=='root':first['parameters']['symbol']='SPY'
+    elif mutation=='scope':record['end']='2020-10-23'
+    else:record['response_bytes']+=1
+    p.write_text(json.dumps(record))
+    with pytest.raises(ValueError):topup.merge_bounded_eod_capture(c.store,c.directory)
+    assert not topup._has_day(c.store,'eod','GLD',c.scope['start'])
+
+
+@pytest.mark.parametrize('stage',['capture','merge'])
+def test_bounded_eod_preserves_unreconciled_canonical_temporary_file(bounded_eod_case,stage):
+    c=bounded_eod_case
+    if stage=='merge':topup.capture_bounded_eod_catchup(c.store,c.directory,**c.scope)
+    temporary=topup._tmp_path(c.store/'eod'/'GLD'/'2020.parquet')
+    temporary.write_bytes(b'original unknown store effect')
+    with pytest.raises(ValueError,match='Unreconciled'):
+        if stage=='merge':topup.merge_bounded_eod_capture(c.store,c.directory)
+        else:topup.capture_bounded_eod_catchup(c.store,c.directory,**c.scope)
+    assert temporary.read_bytes()==b'original unknown store effect'
+    assert len(c.calls)==(4 if stage=='merge' else 0)
+
+
+@pytest.mark.parametrize('field,value',[('collector_sha256','0'*64),('store_ref','/some/other/store')])
+def test_bounded_eod_refuses_different_collector_or_store(bounded_eod_case,field,value):
+    c=bounded_eod_case;topup.capture_bounded_eod_catchup(c.store,c.directory,**c.scope)
+    path=c.directory/'receipt.json';record=json.loads(path.read_text());record[field]=value
+    path.write_text(json.dumps(record))
+    with pytest.raises(ValueError):topup.merge_bounded_eod_capture(c.store,c.directory)
+    assert not topup._has_day(c.store,'eod','GLD',c.scope['start'])
+
+
+def test_bounded_eod_merge_rechecks_claim_under_writer_lock(bounded_eod_case, monkeypatch):
+    from contextlib import contextmanager
+    c = bounded_eod_case
+    topup.capture_bounded_eod_catchup(c.store, c.directory, **c.scope)
+    receipt = c.directory / 'receipt.json'
+    original_lock = topup._writer_lock
+    @contextmanager
+    def competing_merge(store):
+        # Another admitted caller started and failed before writing any day.
+        record = json.loads(receipt.read_text())
+        record['state'] = 'MERGE_STARTED'
+        receipt.write_text(json.dumps(record))
+        with original_lock(store) as acquired:
+            yield acquired
+    monkeypatch.setattr(topup, '_writer_lock', competing_merge)
+    with pytest.raises(ValueError, match='receipt changed'):
+        topup.merge_bounded_eod_capture(c.store, c.directory)
+    assert json.loads(receipt.read_text())['state'] == 'MERGE_STARTED'
+    assert not topup._has_day(c.store, 'eod', 'GLD', c.scope['start'])
+    assert len(c.calls) == 4
+
+
+@pytest.mark.parametrize('clock', ['created_only', 'missing_last_trade', 'conflicting_date'])
+def test_bounded_eod_requires_raw_source_session_clock(bounded_eod_case, clock):
+    c = bounded_eod_case
+    if clock == 'created_only':
+        c.bodies['GLD'] = c.bodies['GLD'].replace(b'last_trade', b'created')
+    elif clock == 'missing_last_trade':
+        lines = c.bodies['GLD'].decode().splitlines()
+        c.bodies['GLD'] = ('\n'.join(','.join(line.split(',')[:4] + line.split(',')[5:])
+            for line in lines) + '\n').encode()
+    else:
+        # _date formerly hid source observations outside the requested window.
+        c.bodies['GLD'] = c.bodies['GLD'].replace(b'last_trade,', b'last_trade,_date,')
+        for day in range(19, 23):
+            c.bodies['GLD'] = c.bodies['GLD'].replace(
+                f'2020-10-{day}T16:00:00,'.encode(),
+                f'2020-10-16T16:00:00,2020-10-{day},'.encode())
+    with pytest.raises(ValueError, match='source'):
+        topup.capture_bounded_eod_catchup(c.store, c.directory, **c.scope)
+    record = json.loads((c.directory / 'receipt.json').read_text())
+    assert record['state'] == 'STOPPED' and record['requests'][0]['state'] == 'RAW_CAPTURED'
+    assert (c.directory / 'GLD.csv').read_bytes() == c.bodies['GLD']
+    assert record['store_writes'] == 0 and len(c.calls) == 1
+
+
+@pytest.mark.parametrize('failure', ['file', 'directory'])
+def test_bounded_eod_durability_failure_keeps_merge_started(bounded_eod_case, monkeypatch, failure):
+    import os
+    c = bounded_eod_case
+    topup.capture_bounded_eod_catchup(c.store, c.directory, **c.scope)
+    dest = c.store / 'eod' / 'GLD' / '2020.parquet'
+    real_fsync = os.fsync
+    real_directory_sync = topup._eod_sync_directory
+    def fail_file(fd):
+        if failure == 'file' and os.fstat(fd).st_ino == dest.stat().st_ino:
+            raise OSError('canonical file fsync failed')
+        return real_fsync(fd)
+    def fail_directory(path):
+        if failure == 'directory' and path == dest.parent:
+            raise OSError('canonical directory fsync failed')
+        return real_directory_sync(path)
+    monkeypatch.setattr(os, 'fsync', fail_file)
+    monkeypatch.setattr(topup, '_eod_sync_directory', fail_directory)
+    with pytest.raises(OSError, match='canonical'):
+        topup.merge_bounded_eod_capture(c.store, c.directory)
+    record = json.loads((c.directory / 'receipt.json').read_text())
+    assert record['state'] == 'MERGE_STARTED' and record['store_writes'] == 0
+    # Bytes may already exist; no receipt is allowed to claim durable completion.
+    assert topup._has_day(c.store, 'eod', 'GLD', c.scope['start'])
+    with pytest.raises(ValueError):
+        topup.merge_bounded_eod_capture(c.store, c.directory)
+    assert len(c.calls) == 4

@@ -1,15 +1,15 @@
 {
-  "appended": 20,
-  "asof": "2026-10-20",
+  "appended": 22,
+  "asof": "2026-10-29",
   "candidates": {
-    "R": 1,
-    "T": 30,
-    "W": 23
+    "R": 4,
+    "T": 12,
+    "W": 41
   },
   "deduped": {
     "R": 1,
-    "T": 10,
-    "W": 23
+    "T": 0,
+    "W": 34
   },
   "dry_run": false,
   "feature_source": {
@@ -27,36 +27,31 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 45
+        "ohlcv_absent": 29
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "E-commerce": {
-          "theme_thrust_frac": 0.1613,
+        "Defense & Aerospace": {
+          "theme_thrust_frac": 0.3684,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
         "Environmental Sustainability": {
-          "theme_thrust_frac": 0.1818,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "FinTech": {
-          "theme_thrust_frac": 0.1429,
+          "theme_thrust_frac": 0.1905,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
         "Real Estate & REITs": {
-          "theme_thrust_frac": 0.1765,
+          "theme_thrust_frac": 0.2647,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 120,
-      "tickers_read": 165
+      "tickers_ok": 77,
+      "tickers_read": 106
     },
     "keys": [
       "relay_count_3d",
@@ -76,14 +71,14 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 188,
-      "n_covered": 143,
+      "members_indexed": 138,
+      "n_covered": 111,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-10-20",
+      "last_session": "2026-10-29",
       "n_tickers": 1549,
       "ok": true,
       "reason": null,
@@ -93,9 +88,14 @@
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": false,
-      "n_asked": 0,
-      "n_covered": 0
+      "consulted": true,
+      "direction": "bull",
+      "grid": "W",
+      "horizon": "13w",
+      "n_asked": 7,
+      "n_covered": 7,
+      "reason": null,
+      "source": "engine.event_atlas.receipt"
     },
     "enabled": true,
     "keys": [
@@ -116,30 +116,34 @@
     ]
   },
   "flag_tickers": {
-    "R": [],
-    "T": [
-      "VICI",
-      "EGP",
-      "ELS",
-      "GLPI",
-      "KIM",
-      "KRC",
-      "MAC",
-      "O",
-      "REG",
-      "RHP",
-      "SPG",
-      "FDX",
-      "AOS",
-      "CWST",
-      "NEE",
-      "ICE",
-      "TRUP",
-      "AXP",
-      "DAVE",
-      "GWRE"
+    "R": [
+      "ENSG",
+      "SWKS",
+      "MIR"
     ],
-    "W": []
+    "T": [
+      "BXP",
+      "DLR",
+      "EQIX",
+      "SBRA",
+      "VNO",
+      "PLD",
+      "CWT",
+      "FSLR",
+      "BWXT",
+      "GE",
+      "KTOS",
+      "VSAT"
+    ],
+    "W": [
+      "BWXT",
+      "CRH",
+      "DTE",
+      "DKS",
+      "TXT",
+      "VICI",
+      "D"
+    ]
   },
   "n_universe": 1491,
   "overflow": {
@@ -147,41 +151,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-21 19:59:36",
-  "runtime_s": 105.5,
+  "run_utc": "2026-10-30 20:45:01",
+  "runtime_s": 94.3,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": -1,
-    "asof": "2026-10-21",
-    "n_members": 188,
+    "age_days": 3,
+    "asof": "2026-10-26",
+    "n_members": 138,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.175,
+        "emerging_score": 3.775,
         "rank": 1,
-        "theme": "Defense & Aerospace"
+        "theme": "Biometrics"
       },
       {
-        "emerging_score": 2.365,
+        "emerging_score": 1.702,
         "rank": 2,
+        "theme": "Cybersecurity"
+      },
+      {
+        "emerging_score": 1.336,
+        "rank": 3,
         "theme": "Real Estate & REITs"
       },
       {
-        "emerging_score": 2.088,
-        "rank": 3,
-        "theme": "E-commerce"
-      },
-      {
-        "emerging_score": 1.96,
+        "emerging_score": 1.188,
         "rank": 4,
         "theme": "Environmental Sustainability"
       },
       {
-        "emerging_score": 1.888,
+        "emerging_score": 1.127,
         "rank": 5,
-        "theme": "FinTech"
+        "theme": "Defense & Aerospace"
       }
     ]
   },
@@ -190,19 +194,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 23,
-    "asof_max": "2026-10-20",
-    "asof_mismatch": 0,
-    "asof_run": "2026-10-20",
+    "aligned": 41,
+    "asof_max": "2026-10-30",
+    "asof_mismatch": 41,
+    "asof_run": "2026-10-29",
     "evaluated": 712,
-    "fresh": 26,
+    "fresh": 42,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 20.2,
+    "runtime_s": 16.0,
     "skipped": 5,
     "source": "baskets/membership.json",
-    "state_turn": 66,
+    "state_turn": 60,
     "universe_n": 717
   }
 }

@@ -1,0 +1,52 @@
+{
+  "schema": "eval_os.final_hosted_ci_consumption.v1",
+  "observed_at": "2026-10-15T11:22:43.168995+00:00",
+  "identity": {
+    "workflow_run_id": "38716442763",
+    "workflow": "ci",
+    "event": "pull_request",
+    "role": "pr_head",
+    "subject_head_sha": "ff7912003742ebfaa172a30c68dc8d65ddc9330e",
+    "tested_tree_sha": "1ac926152208d1ca3160bd255c2b0190148b5305",
+    "base_sha": "fb59691f231cddc30f8dd4452507b8f657724626",
+    "plan_sha256": "328f79a236f4761bc126113d553819e86b4c55070a5f7fcaf345e23941e89cae",
+    "evidence_sha256": "e7a70f82aee39d76d69d0136256e63fc6a5388a0e6f2dccf3bc1df8754779775"
+  },
+  "artifact_id": 11967297948,
+  "artifact_zip_sha256": "8ccedaaca889220ba14bbfd64bbee041a49b6447ca324b574702f30350d6a78c",
+  "advertised_digest_verified": true,
+  "canonical_loader_and_gate": "scripts/ci_semantic_proof.py",
+  "logical_jobs": 127,
+  "passed_semantic_command_steps": 350,
+  "inherited_steps": 0,
+  "blocking_steps": 0,
+  "infrastructure_blocking": false,
+  "semantic_gate_clear": true,
+  "a1_job": {
+    "infrastructure": {
+      "outcome": "passed"
+    },
+    "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+    "logical_job_id": "eval-os-a1",
+    "pack_index": 9,
+    "steps": [
+      {
+        "classification": "passed",
+        "failure_signature": null,
+        "outcome": "passed",
+        "proof_id": "require Node for actual renderer contracts",
+        "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
+      },
+      {
+        "classification": "passed",
+        "failure_signature": null,
+        "outcome": "passed",
+        "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+        "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
+      }
+    ]
+  },
+  "limits": "Original terminal run and artifact, exact head/tested/base identity. Semantic command steps are not unit-test or zero-skip counts. Protected merge, installation and production acceptance remain open.",
+  "merged": false,
+  "production_proven": false
+}
