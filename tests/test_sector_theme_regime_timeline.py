@@ -180,10 +180,13 @@ def test_p3b_12_invalid_breadth_bounds_do_not_become_false_direction():
     a, b = pair()
     b["fingerprint"]["horizons"]["5d"]["participation"][
         "positive_return_breadth"]["identification_bounds"] = [1.8, 1.9]
-    change = compose_regime_timeline([a, b])["changes"][0]
-    assert change["aggregate_positive_breadth_delta"] == {
-        "status": "unmeasured", "reason": "invalid_or_missing_breadth_bounds"
-    }
+    result = compose_regime_timeline([a, b])
+    # A fingerprint with corrupted coverage bounds is not the source frame.
+    # Refuse the whole chronology rather than displaying a suspect direction.
+    assert result["status"] == "HELD"
+    assert result["reason"] == "fingerprint_frame_numeric_mismatch"
+    assert result["changes"] == []
+    assert result["ranking_or_trading_authority"] is False
 
 
 def test_p3b_13_future_unknown_clock_or_broken_end_is_held():
@@ -283,3 +286,38 @@ def test_p3b_recovery_noncausal_membership_known_at_refused():
     rows[1]["frame"]["clock"]["membership_known_at"] = (
         "2026-11-10T20:00:00+00:00")
     assert compose_regime_timeline(rows)["reason"] == "noncausal_membership_availability"
+
+
+def test_p3b_recovery_fp_numeric_must_be_recomputed_from_source_frame():
+    rows = list(pair())
+    rows[0]["fingerprint"]["horizons"]["5d"]["rs_market"] = {
+        "status": "measured", "unit": "fraction", "value": -0.90,
+    }
+    result = compose_regime_timeline(rows)
+    assert result["status"] == "HELD"
+    assert result["reason"] == "fingerprint_frame_numeric_mismatch"
+
+
+def test_p3b_recovery_measured_n_matches_constituent_return_states():
+    rows = list(pair())
+    rows[0]["frame"]["universe"]["measured_return_n"] = 0
+    result = compose_regime_timeline(rows)
+    assert result["status"] == "HELD"
+    assert result["reason"] == "invalid_measured_security_count"
+
+
+def test_p3b_recovery_no_theme_parent_even_if_every_row_omits_it():
+    rows = list(pair())
+    for r in rows:
+        r["comparison_basis"]["parent_id"] = None
+    result = compose_regime_timeline(rows)
+    assert result["status"] == "HELD"
+    assert result["reason"] == "missing_theme_parent_identity"
+
+
+def test_p3b_recovery_unknown_group_kind_refused():
+    rows = list(pair())
+    rows[1]["group_kind"] = "microtheme_without_native_members"
+    result = compose_regime_timeline(rows)
+    assert result["status"] == "HELD"
+    assert result["reason"] == "unqualified_group_kind"

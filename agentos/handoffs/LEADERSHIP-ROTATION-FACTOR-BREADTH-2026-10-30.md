@@ -223,3 +223,34 @@ Historical unresolved records preserved from the recovery input:
   path. Preserve PR Draft/Hold; acquire exact-head CI/fences and independent
   review, then genuine GMI owner rights/constituent/quote vintage and signed-in
   consumer evidence before product acceptance.
+
+
+## 2026-10-30 P3 self-consistency mutation follow-up (not external acceptance)
+
+The same source-only P1-P3c repair mission continued after the first P3
+audit response: a deterministic 1,170-case malformed/altered-input matrix
+across comparison (414), multi-horizon (324) and timeline (432) had 0 crashes,
+0 authority escalations. It also detected accepted altered **numeric** P1
+fingerprint values versus their own retained P2 factor frame, plausible but
+fabricated 0/1 measured-return counts, missing parent reference on themes, and
+unsupported group kinds. Five new discriminating source tests failed on
+immutable 46792c6 before the follow-on correction; after enforcing canonical
+P1 fingerprint-frame equality and member-return count recomputation, requiring
+theme parent identity and refusing unsupported kinds, seven new tests plus two
+pre-existing test clarifications yielded **278/278** passing isolated suites.
+The two clarified cases now require full as-issued consistency instead of
+allowing caller-mutated fingerprints to silently degrade their direction.
+
+The same 1,170-case audit after repair still had 0 exceptions/escalations; the
+remaining four accepted output deltas were changes of an unverified but
+syntactically valid parent-ID **label** in comparison. P2's owner-preview
+contract cannot independently authenticate the true parent ID or source
+rights; this is an explicit **OWNER_ATTESTATION_REQUIRED**, not a proven
+publisher-ready benchmark link. The consumer remains research-only, false
+publication/rank/alert/forecast/trade flags, never a real market signal.
+
+The non-author independent audit commissioned on frozen 46792c6 has
+controller-launch evidence only and must be reconciled on its original root;
+a future follow-on source commit requires an independent delta review of its
+exact immutable head. Keep PR Draft/Hold pending exact-head CI, review,
+owner-authenticated rights/known-at/quotes, Paper and signed-in user path.

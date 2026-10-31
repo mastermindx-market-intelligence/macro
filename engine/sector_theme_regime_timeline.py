@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 import math
 
 from engine.leadership_rotation_context import breadth_change
+from engine.sector_theme_regime_fingerprint import compose_regime_fingerprint
 
 SCHEMA = "sector_theme_regime_timeline/v1"
 INPUT_SCHEMA = "sector_theme_owner_preview/v1"
@@ -231,7 +232,11 @@ def compose_regime_timeline(previews: Sequence[Mapping]) -> dict:
                 or fp_members != members):
             return _hold("invalid_source_population")
         measured_n = frame["universe"].get("measured_return_n")
-        if type(measured_n) is not int or not 0 <= measured_n <= len(members):
+        actually_measured_n = sum(
+            _num(frame["constituents"][mid].get("return_frac")) is not None
+            for mid in members
+        )
+        if type(measured_n) is not int or measured_n != actually_measured_n:
             return _hold("invalid_measured_security_count")
         issuer_map = row.get("issuer_by_security_id")
         if (not isinstance(issuer_map, Mapping)
@@ -248,6 +253,10 @@ def compose_regime_timeline(previews: Sequence[Mapping]) -> dict:
             return _hold("noncausal_membership_availability")
         if not isinstance(at.get("participation"), Mapping):
             return _hold("missing_participation")
+        if row.get("group_kind") not in ("sector", "theme", "industry"):
+            return _hold("unqualified_group_kind")
+        if row["group_kind"] != "sector" and cur_basis[-1] is None:
+            return _hold("missing_theme_parent_identity")
         if not isinstance(fp.get("authority"), Mapping) or any(
             fp["authority"].get(k) is not False for k in (
                 "eligible_for_customer_publication", "predictive_promoted",
@@ -255,6 +264,12 @@ def compose_regime_timeline(previews: Sequence[Mapping]) -> dict:
             )
         ):
             return _hold("fingerprint_claims_authority")
+        try:
+            computed = compose_regime_fingerprint({basis["horizon"]: frame})
+        except (TypeError, ValueError, OverflowError, KeyError, AttributeError):
+            return _hold("invalid_source_factor_frame")
+        if computed["horizons"][basis["horizon"]] != at:
+            return _hold("fingerprint_frame_numeric_mismatch")
         last_cutoff, last_end = cutoff, end
         accepted.append((row, basis, fp, frame, at, members))
     records = []

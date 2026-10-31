@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 import math
 
 from engine.sector_theme_regime_explain import explain_regime_preview
+from engine.sector_theme_regime_fingerprint import compose_regime_fingerprint
 
 SCHEMA = "sector_theme_regime_comparison/v1"
 INPUT = "sector_theme_owner_preview/v1"
@@ -212,8 +213,17 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
                 or len(frame_members) != len(set(frame_members))
                 or set(members) != set(frame_members)):
             return _hold("invalid_or_mismatched_group_population")
+        observed = frame.get("constituents")
+        if (not isinstance(observed, Mapping)
+                or set(observed) != set(members)
+                or any(not isinstance(v, Mapping) for v in observed.values())):
+            return _hold("invalid_or_mismatched_group_population")
+        actually_measured_n = sum(
+            _numeric(observed[mid].get("return_frac"))["status"] == "measured"
+            for mid in members
+        )
         if (type(universe.get("measured_return_n")) is not int
-                or not 0 <= universe["measured_return_n"] <= len(members)):
+                or universe["measured_return_n"] != actually_measured_n):
             return _hold("invalid_measured_security_count")
         issuer_map = p.get("issuer_by_security_id")
         if (not isinstance(issuer_map, Mapping)
@@ -232,6 +242,16 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
         parent_id = basis.get("parent_id")
         if parent_id is not None and _name(parent_id) is None:
             return _hold("malformed_parent_identity")
+        if p["group_kind"] != "sector" and parent_id is None:
+            return _hold("missing_theme_parent_identity")
+        # Never trust caller-carried fingerprint quantities when the retained
+        # source factor frame deterministically re-proves a different value.
+        try:
+            computed = compose_regime_fingerprint({basis["horizon"]: frame})
+        except (TypeError, ValueError, OverflowError, KeyError, AttributeError):
+            return _hold("invalid_source_factor_frame")
+        if computed["horizons"][basis["horizon"]] != at:
+            return _hold("fingerprint_frame_numeric_mismatch")
         for member in members:
             member_to_groups[member].add(gid)
             issuer_to_groups[issuer_map[member]].add(gid)

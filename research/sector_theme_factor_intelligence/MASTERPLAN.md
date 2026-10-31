@@ -131,3 +131,35 @@ source boundary only. CI/fences on the new immutable repair head, separate
 independent review covering repairs/P1/P2, authentic GMI identity/rights/vintage,
 Paper design and a signed-in producer-to-user path remain required. P4-P8 and
 W6 scientific qualification retain their original HOLD/dependency contracts.
+
+
+## 2026-10-30 additional P3 self-consistency qualifications
+
+A second isolated source-only mutation audit produced 1,170 changed
+P3-consumer input cases with 0 uncaught errors or authority promotion.
+It exposed a distinct evidence-integrity hole: callers could alter
+fingerprint RS/breadth numerics after P2's factor frame existed, causing
+a supposedly same-source timeline or cross-theme scanner to accept
+contradictory values. Also some bounded `measured_return_n` counts were
+not reconciled with actual observed members; theme parent IDs could be
+absent; and chronology group kinds were not checked. The follow-on
+repair re-projects exactly one horizon through incumbent P1
+`compose_regime_fingerprint` to bind numeric/evidence content to the
+retained frame; recomputes actual measured-return count from typed
+constituent return observations; and requires a parent on non-sector
+themes and a supported group kind. It deliberately changes two prior
+tests from permissive corrupted-input degradation to the stronger
+whole-composition HELD contract. Five additional counterexamples
+were red on pre-repair 46792c6; all **278** source-focused cases pass
+after correction.
+
+The only accepted mutation output deltas in the follow-on audit were
+arbitrary, syntactically nonempty `comparison_basis.parent_id`
+strings. P1 frame does not carry an independently authenticated
+parent-ID receipt; P2's owner-reported identity cannot elevate this
+label from **unverified**. P3 still allows labeled research previews
+only and cannot claim a genuine source-bound parent benchmark,
+publication, score, alert or trade. The authenticated producer path
+must prove this ID (and quote/basis/source rights), not infer it.
+Frozen-head CI/review from 46792c6 is not exact-head proof of any
+new follow-on commit. This strengthens P3 only, does not start P4-P8.

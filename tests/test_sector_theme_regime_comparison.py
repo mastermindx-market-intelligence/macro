@@ -314,11 +314,11 @@ def test_p3a_recovery_fp_cohort_revision_must_match_frame():
 def test_p3a_recovery_missing_reason_no_alias_or_forged_counts():
     rows = preview_pairs()
     p = rows["AI_INDUSTRIAL_INFRA"]
-    p["frame"]["universe"]["missing_by_reason"] = {"missing_quote": 1}
+    original = deepcopy(p["frame"]["universe"]["missing_by_reason"])
     result = compose_regime_comparison(rows)
     assert result["status"] == "RESEARCH_PREVIEW_ONLY"
-    p["frame"]["universe"]["missing_by_reason"]["missing_quote"] = 99
-    assert result["groups"][0]["missing_by_reason"]["missing_quote"] == 1
+    p["frame"]["universe"]["missing_by_reason"]["forged_later"] = 99
+    assert result["groups"][0]["missing_by_reason"] == original
     for broken in ({"missing_quote": "many"}, ["bad"], {"bad": -1}):
         rows = preview_pairs()
         rows["AI_INDUSTRIAL_INFRA"]["frame"]["universe"]["missing_by_reason"] = broken
@@ -332,3 +332,29 @@ def test_p3a_recovery_noncausal_membership_known_at_refused():
     rows["AI_INDUSTRIAL_INFRA"]["frame"]["clock"]["membership_known_at"] = (
         "2026-10-30T20:00:00+00:00")
     assert compose_regime_comparison(rows)["reason"] == "noncausal_membership_availability"
+
+
+def test_p3a_recovery_fp_numeric_must_be_recomputed_from_source_frame():
+    rows = preview_pairs()
+    rows["AI_INDUSTRIAL_INFRA"]["fingerprint"]["horizons"]["5d"]["rs_market"] = {
+        "status": "measured", "unit": "fraction", "value": -0.90,
+    }
+    result = compose_regime_comparison(rows)
+    assert result["status"] == "HELD"
+    assert result["reason"] == "fingerprint_frame_numeric_mismatch"
+
+
+def test_p3a_recovery_measured_n_matches_constituent_return_states():
+    rows = preview_pairs()
+    rows["AI_INDUSTRIAL_INFRA"]["frame"]["universe"]["measured_return_n"] = 0
+    result = compose_regime_comparison(rows)
+    assert result["status"] == "HELD"
+    assert result["reason"] == "invalid_measured_security_count"
+
+
+def test_p3a_recovery_theme_without_parent_id_fails_closed():
+    rows = preview_pairs()
+    rows["AI_INDUSTRIAL_INFRA"]["comparison_basis"]["parent_id"] = None
+    result = compose_regime_comparison(rows)
+    assert result["status"] == "HELD"
+    assert result["reason"] == "missing_theme_parent_identity"
