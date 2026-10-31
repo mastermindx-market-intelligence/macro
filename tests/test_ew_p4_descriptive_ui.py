@@ -270,7 +270,7 @@ def test_cross_product_handoff_study_link_and_no_delivery_claim():
     study = re.search(r'<details class="gde-ew-study">.*?</details>', dlg, re.S).group(0)
     oid = fixture["notification"]["observation_id"]
     assert oid in study
-    assert 'href="sector_central.html#moving"' in study
+    assert 'href="sector_central.html#rc-events-mount"' in study
     text = _text(_new_elements(dlg))
     for word in ("terminal", "mastermind", "delivered", "delivery"):
         assert word not in text.lower(), word
@@ -392,3 +392,39 @@ def test_css_no_edge_stripe_no_color_literal_focus_visible():
     # the pre-existing rc-ec edge stripe is repaired (even border, warn surface)
     assert ".rc-ec-stale,.rc-ec-conflict{border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--surface-warn-subtle);" in js
     assert ".rc-ec-stale,.rc-ec-conflict{border-left:" not in js
+
+
+# ── repair wave B (orchestrator design review) ───────────────────────────
+def test_sessions_must_be_an_integer_not_a_float():
+    fixture = deepcopy(_fixtures()["journey_b_both_fell"])
+    fixture["notification"]["values"]["sessions"] = 2.0
+    with pytest.raises(ValueError):
+        lib_validate(fixture["notification"])
+    assert state_of(render(envelope(fixture))) == "unreadable"
+
+
+def test_unavailable_caveat_only_when_no_qualified_observation():
+    caveat = "Rotation evidence is unavailable for this session."
+    observed = render(envelope(_fixtures()["journey_b_both_fell"]))
+    assert state_of(observed) == "observed"
+    assert caveat not in observed
+    missing = render(envelope(None))
+    assert state_of(missing) == "unavailable"
+    assert caveat in missing
+
+
+def test_quality_and_build_time_are_separated():
+    g = glance(render(envelope(_fixtures()["journey_b_both_fell"])))
+    assert ' · <span class="gde-ew-built">' in g
+
+
+def test_routes_land_on_the_registered_sector_central_hash():
+    dlg = render(envelope(_fixtures()["journey_b_both_fell"]))
+    new = _new_elements(dlg)
+    assert "sector_central.html#moving" not in new
+    assert "sector_central.html#rc-events-mount" in new
+    router = (ROOT / "templates" / "si_workspace.js").read_text(encoding="utf-8")
+    assert "'rc-events-mount':['moving','rc-events-mount']" in router
+    js = (ROOT / "templates" / "rotation_events.js").read_text(encoding="utf-8")
+    assert 'href="#rc-early-context"' not in js
+    assert js.count('href="#rc-events-mount"') == 2

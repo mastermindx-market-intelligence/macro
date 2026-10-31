@@ -360,9 +360,9 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
     + '<p class="rc-ew-head"><span class="rc-ew-scope" id="rc-ew-title">' + L2('US Technology leadership', '美国科技领涨') + '</span> <span class="rc-ew-state">' + L2(word[0], word[1]) + '</span></p>'
     + '<p class="rc-ew-what">' + L2(whatEn, whatZh) + '</p>'
     + (state === 'corrected' ? '<p class="rc-ew-note">' + L2('Corrected; the original notice remains in history.', '已更正；原通知仍保留在历史记录中。') + '</p>' : '')
-    + '<p class="rc-ew-when">' + L2(whenEn + ' · ' + avEn + ' · Quality: ' + qEn, whenZh + ' · ' + avZh + ' · 质量：' + qZh) + ' ' + built + '</p>'
+    + '<p class="rc-ew-when">' + L2(whenEn + ' · ' + avEn + ' · Quality: ' + qEn, whenZh + ' · ' + avZh + ' · 质量：' + qZh) + (built ? ' · ' + built : '') + '</p>'
     + '<p class="rc-ew-means">' + L2('Watch only: this describes what happened, not what comes next.', '仅供观察：描述已发生的变化，不代表后续走势。') + '</p>'
-    + '<a class="rc-ew-next" href="#rc-early-context">' + L2('Review what changed', '查看变化依据') + '</a>';
+    + '<a class="rc-ew-next" href="#rc-events-mount">' + L2('Review what changed', '查看变化依据') + '</a>';
   if (legs) {
     out += '<div class="rc-ew-tablewrap"><table class="rc-ew-legs">'
       + '<caption>' + L2('2 sessions, ' + dEn(win.start) + ' → ' + dEn(win.end) + ' · US cash sessions', '2个交易日，' + dZh(win.start) + ' → ' + dZh(win.end) + ' · 美股交易日') + '</caption><tbody>'
@@ -370,8 +370,6 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
       + '<tr><th scope="row">' + L2('Donor (denominator)', '出让方（分母）') + '</th><td>' + E(n.den) + '</td><td>' + E(pct2(v.d)) + '</td></tr>'
       + '<tr><th scope="row">' + L2('Relative (' + n.num + ' vs ' + n.den + ')', '相对（' + n.num + ' 对 ' + n.den + '）') + '</th><td>—</td><td>' + E(pct2(v.r)) + '</td></tr>'
       + '</tbody></table>';
-    if (v.r > 0 && v.n < 0 && v.d < 0) out += '<p class="rc-ew-contextline">' + L2('Both fell; ' + n.num + ' fell less than ' + n.den + '.', '两者都下跌；' + n.num + '跌幅小于' + n.den + '。') + '</p>';
-    else if (v.r < 0 && v.n > 0 && v.d > 0) out += '<p class="rc-ew-contextline">' + L2('Both rose; ' + n.num + ' rose less than ' + n.den + '.', '两者都上涨；' + n.num + '涨幅小于' + n.den + '。') + '</p>';
     out += '</div>'
       + '<div class="rc-ew-horizons">'
       + '<div class="rc-ew-hz"><span class="rc-ew-hz-k">' + L2('2-session', '2个交易日') + '</span> <span class="rc-ew-hz-v">' + E(pct2(v.r)) + '</span> <span class="rc-ew-hz-q">' + L2('Measured', '已测量') + '</span></div>'
@@ -413,7 +411,7 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
     var lin = (Array.isArray(view.lineage_roots)) ? view.lineage_roots.filter(function (x) { return typeof x === 'string'; }).join(', ') : '';
     out += '<div><dt>' + L2('Immutable reference', '不可变引用') + '</dt><dd>' + E('rotobs_ ids are content-addressed: the first 40 hex of SHA-256 over the record fingerprint and its predecessor.') + ' ' + E('Lineage roots: ' + (lin || 'none')) + '</dd></div>'
       + '<div><dt>' + L2('Rights', '权利') + '</dt><dd>' + L2('Derived comparison from daily closes on the approved price route; raw prices are not republished.', '基于已核准价格数据源日收盘价的推导比较；不转载原始价格。') + '</dd></div>'
-      + '<div><dt>' + L2('Stable link', '稳定链接') + '</dt><dd>' + E(oid) + ' · <a class="rc-ew-next" href="#rc-early-context">' + L2('Sector Central', '行业中心') + '</a></dd></div>'
+      + '<div><dt>' + L2('Stable link', '稳定链接') + '</dt><dd>' + E(oid) + ' · <a class="rc-ew-next" href="#rc-events-mount">' + L2('Sector Central', '行业中心') + '</a></dd></div>'
       + '</dl>';
   } else {
     var ecLine = 'No qualified observation for this session.';
