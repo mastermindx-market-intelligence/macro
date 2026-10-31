@@ -16634,6 +16634,7 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "engine/prophet_opportunity_presentation.py"
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -44140,6 +44141,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/prophet_opportunity_presentation.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
