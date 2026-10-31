@@ -58,6 +58,7 @@
    --up/--down under html[data-lang="zh"], Asia convention).
    ============================================================================ #}
 {% import "_risk_radar_card.html.j2" as rrc %}
+{% import "_risk_radar_pullback_depth.html.j2" as pb_depth %}
 
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
@@ -100,6 +101,19 @@
     </div>
     <div class="{{ _dcl }}-body rrd">
 
+      {#- China only: measured settled-close damage leads when the canonical
+          observation confirms an active decline; the radar below stays as the
+          forward-risk evidence. HK / CA dialogs are unchanged. -#}
+      {%- set _pbv = c.get('pullback_view') if (mkt == 'cn' and c.get('pullback_view') is mapping) else none -%}
+      {#- The fragment's own qualification decides; one rule, not two. -#}
+      {%- set _pb_active = _pbv is not none and (pb_depth.lead('cn', _pbv)|trim) == '1' -%}
+      {% if _pb_active %}
+      {{ pb_depth.detail('cn', _pbv) }}
+      <script>{% include "_risk_radar_pullback_depth.js.j2" %}</script>
+      <details class="riskdlg-legacy-details">
+        <summary>{{ t('Forward risk and drivers','前瞻风险与驱动因素') }}</summary>
+      {% endif %}
+
       {# ── 1. Headline: what is loudest, how loud, what to do about it ─────── #}
       <div class="rrd-hd tone-{{ _tone }}">
         <div class="rrd-hd-ico">{{ rrd_glyph('alert') }}</div>
@@ -126,7 +140,7 @@
           every key, possibly None) from a stub: the card computes its odds scale from
           rd.dd21 BEFORE its own `is not none` guard, so a stub would raise there and take
           the whole page render with it. A stub renders the headline and nothing else. -#}
-      {% if r.state and r.dd21 is defined %}{{ rrc.risk_radar_card(r, sc, show_threats=false, plain_gross=(mkt=='cn')) }}{% endif %}
+      {% if r.state and r.dd21 is defined %}{{ rrc.risk_radar_card(r, sc, show_threats=false, plain_gross=(mkt=='cn'), hide_odds=_pb_active) }}{% endif %}
 
       {# ── 3. Signal tiles: Leading · Overseas · Track record · Calendar ───── #}
       {%- set _tl_lead = c.leading if c.leading else none -%}
@@ -415,6 +429,7 @@
         <span class="l-en">These are windows, not certainties — re-drawn nightly. The response is sizing, not stock picking; forward records are still accruing.</span>
         <span class="l-zh">这些是概率窗口而非定论——每晚重算。应对是仓位控制而非选股；前瞻记录仍在积累中。</span>
       </div>
+      {%- if _pb_active %}</details>{% endif %}
 
     </div>
   </div>

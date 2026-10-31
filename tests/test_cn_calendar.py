@@ -54,10 +54,16 @@ class TestSpringFestival:
         assert cn.is_session(date(2019, 2, 11)) is True
 
     def test_long_closure_tail_reads_as_a_session_not_a_holiday(self):
-        """2024 actually closed Feb 9-16, but only the core is encoded. Feb 15 therefore
-        reads as a session — a false "stale", which is the SAFE direction and the reason the
-        china sentinel budget is 12 days."""
-        assert cn.is_session(date(2024, 2, 15)) is True
+        """2021 actually closed Feb 11-17, but a year without an exchange notice keeps only
+        the core. Feb 16 therefore reads as a session — a false "stale", which is the SAFE
+        direction and the reason the china sentinel budget is 12 days."""
+        assert cn.is_session(date(2021, 2, 16)) is True
+
+    def test_exchange_notice_closes_the_tail_the_core_misses(self):
+        """2024 closed Feb 9-16. The recorded exchange notice overrides the fallback core,
+        so Feb 15 is a closure, not a false "stale"."""
+        assert cn.is_session(date(2024, 2, 15)) is False
+        assert cn.is_session(date(2024, 2, 19)) is True
 
 
 class TestFixedAndLunarHolidays:

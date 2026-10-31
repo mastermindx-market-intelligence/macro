@@ -22,7 +22,7 @@ Public API — keep the signature stable; HK / Canada lanes build against it:
 
     illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=None,
           baseline=None, reference=None, bands=None, value_fmt="{:,.1f}",
-          max_points=220, aria_en="", aria_zh=None) -> str
+          max_points=220, aria_en="", aria_zh=None, minus=None, id_prefix=None) -> str
 
 `series`:
   * single-series kinds: {"dates": [iso...], "vals": [float...]}
@@ -42,6 +42,8 @@ __all__ = ["illus", "regime_tape", "session_filmstrip"]
 _VBW = 560.0
 _PAD_T = 8.0     # top breathing room so the end-dot glow isn't clipped
 _PAD_B = 8.0     # bottom breathing room
+# Caller namespace for generated ids. None means the fragment is unchanged.
+_ID_PREFIX_RE = re.compile(r"^[a-z][a-z0-9-]{0,15}$")
 
 
 # --------------------------------------------------------------------------- #
@@ -111,11 +113,20 @@ def _hash_id(kind, pairs, extra=""):
     return h.hexdigest()[:8]
 
 
-def _fmt(v, value_fmt):
+def _fmt(v, value_fmt, minus=None):
+    """Format one visible number; `minus` (when given) swaps the sign glyph.
+
+    str.format always emits ASCII "-" for a negative value. A surface that
+    prints the same figure elsewhere with U+2212 passes minus="−" so one panel
+    prints one glyph. Only the sign is touched: a value that rounds to -0.0
+    under the "z" flag formats as "0.0" and stays unsigned."""
     try:
-        return value_fmt.format(v)
+        out = value_fmt.format(v)
     except (ValueError, KeyError, IndexError):
-        return f"{v:g}"
+        out = f"{v:g}"
+    if minus is not None:
+        out = out.replace("-", minus, 1)
+    return out
 
 
 def _scale(pairs, height, *, baseline=None, reference=None, zero_floor=False):
@@ -227,9 +238,9 @@ def _corner_labels(pairs):
             f'<span class="ilx-d ilx-d1">{d1}</span>')
 
 
-def _end_tag(last_v, value_fmt, unit_en, unit_zh):
+def _end_tag(last_v, value_fmt, unit_en, unit_zh, minus=None):
     """End-value tag: last value + unit, bilingual via l-en/l-zh spans."""
-    num = escape(_fmt(last_v, value_fmt))
+    num = escape(_fmt(last_v, value_fmt, minus))
     ue, uz = escape(unit_en or ""), escape(unit_zh if unit_zh is not None else (unit_en or ""))
     unit_html = ""
     if ue or uz:
@@ -621,27 +632,87 @@ def regime_tape(price, *, allocation=None, regimes=None, events=None, projection
     )
 
 
+def _reject_bad_id_prefix(id_prefix: str | None) -> None:
+    """``None`` is the un-namespaced renderer. Any other value must match."""
+    if id_prefix is None:
+        return
+    if isinstance(id_prefix, str) and _ID_PREFIX_RE.fullmatch(id_prefix):
+        return
+    raise ValueError("id_prefix must match ^[a-z][a-z0-9-]{0,15}$")
+
+
+def _prefix_generated_ids(html: str, id_prefix: str) -> str:
+    """Prefix every generated id and every internal reference to it.
+
+    References are ``url(#...)``, ``href="#..."``, ``aria-labelledby`` and
+    ``aria-describedby``. Tokens that are not a generated id are left as-is.
+    Called only when a prefix was supplied, so the ``None`` path never rewrites.
+    """
+    ids = re.findall(r'\bid="([^"]*)"', html)
+    if not ids:
+        return html
+    mapped = {old: f"{id_prefix}{old}" for old in ids}
+
+    def sub_id(match):
+        return f'id="{mapped.get(match.group(1), match.group(1))}"'
+
+    def sub_url(match):
+        return f"url(#{mapped.get(match.group(1), match.group(1))})"
+
+    def sub_href(match):
+        return f'href="#{mapped.get(match.group(1), match.group(1))}"'
+
+    def sub_aria(match):
+        def tok(piece):
+            token = piece.group(0)
+            return mapped.get(token, token)
+        return f"{match.group(1)}{re.sub(r'\S+', tok, match.group(2))}{match.group(3)}"
+
+    html = re.sub(r'\bhref="#([^"]*)"', sub_href, html)
+    html = re.sub(r"url\(#([^)]*)\)", sub_url, html)
+    html = re.sub(r'\bid="([^"]*)"', sub_id, html)
+    for attr in ("aria-labelledby", "aria-describedby"):
+        html = re.sub(rf'(\b{attr}=")([^"]*)(")', sub_aria, html)
+    return html
+
+
 # --------------------------------------------------------------------------- #
 # public entry point
 # --------------------------------------------------------------------------- #
 def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=None,
           baseline=None, reference=None, bands=None, value_fmt="{:,.1f}",
-          max_points=220, aria_en="", aria_zh=None) -> str:
+          max_points=220, aria_en="", aria_zh=None, minus=None,
+          id_prefix: str | None = None) -> str:
     """Render a series as an ilx / Signal-Ink SVG+HTML fragment. See module docstring.
 
+    `minus` (default None = unchanged output): when set (e.g. "−"), every visible
+    number this figure renders — the end-value tag and the reference-level label —
+    prints that glyph instead of the ASCII "-" str.format emits. Opt-in so panels
+    that print the same figure beside the chart can agree on one minus glyph.
+
     Returns an HTML string (a <figure>). Never raises on bad data — an empty or
-    too-short series returns the honest-null fragment."""
+    too-short series returns the honest-null fragment. ``id_prefix``, when
+    given, must match ``^[a-z][a-z0-9-]{0,15}$`` (otherwise ``ValueError``) and
+    is prepended to every generated id and every internal reference to it.
+    ``None`` leaves the fragment byte-identical to the un-namespaced renderer."""
+    _reject_bad_id_prefix(id_prefix)
+
+    def finish(html: str) -> str:
+        if id_prefix is None:
+            return html
+        return _prefix_generated_ids(html, id_prefix)
+
     height = int(height)
 
     if kind == "multi":
-        return _render_multi(series or [], height=height, value_fmt=value_fmt,
-                             max_points=max_points, aria_en=aria_en, aria_zh=aria_zh,
-                             baseline=baseline)
+        return finish(_render_multi(series or [], height=height, value_fmt=value_fmt,
+                                     max_points=max_points, aria_en=aria_en, aria_zh=aria_zh,
+                                     baseline=baseline))
 
     series = series or {}
     pairs = _downsample(_clean(series.get("dates"), series.get("vals")), max_points)
     if len(pairs) < 4:
-        return _null_fragment(accent, height, aria_en)
+        return finish(_null_fragment(accent, height, aria_en))
 
     uid = _hash_id(kind, pairs, extra=f"{accent}{baseline}{reference}")
 
@@ -651,7 +722,7 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
         plen = 1.0
         corners = _corner_labels(pairs)
         end = _end_tag(pairs[-1][1], value_fmt,
-                       unit_en, unit_zh) if (unit_en or unit_zh) else ""
+                       unit_en, unit_zh, minus=minus) if (unit_en or unit_zh) else ""
     else:
         zero_floor = (kind == "drawdown")
         xy, y0, _rng, vmin, vmax = _scale(
@@ -670,7 +741,7 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
             defs, mid, body, dot = _svg_drawdown(xy, y0, uid, height)
         else:  # "line"
             defs, mid, body, dot = _svg_line(xy, uid)
-        end = _end_tag(pairs[-1][1], value_fmt, unit_en, unit_zh)
+        end = _end_tag(pairs[-1][1], value_fmt, unit_en, unit_zh, minus=minus)
         corners = _corner_labels(pairs)
 
     # reference level marker (e.g. NBS climate neutral=100) as an HTML caption anchored
@@ -682,7 +753,7 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
             pairs, height, reference=reference, zero_floor=(kind == "drawdown"))
         ry = round(bot - (reference - lo) / (hi - lo) * (bot - top), 2)
         ref_pct = round(ry / height * 100, 1)
-        refnum = escape(_fmt(reference, "{:g}"))
+        refnum = escape(_fmt(reference, "{:g}", minus))
         ref_html = (
             f'<line class="ilx-ref" x1="0" y1="{ry}" x2="{int(_VBW)}" y2="{ry}"/>'
         )
@@ -725,7 +796,7 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
         f'aria-hidden="true"><defs>{defs}</defs>{mid}{body if kind != "bars" else ""}'
         f'{dot if kind != "bars" else ""}</svg>'
     )
-    return (
+    return finish(
         f'<figure class="ilx ilx-{escape(kind)}" style="{style}" '
         f'role="img" aria-label="{aria}">{svg}{band_html}{ref_html}{corners}{end}</figure>'
     )
