@@ -1,0 +1,402 @@
+{
+  "aapl_golden_used_as_held_out": false,
+  "builders_read_held_out": false,
+  "cells": [
+    {
+      "exclusion_reasons": [
+        "no_prediction"
+      ],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 2,
+      "n_labeled": 2,
+      "n_predicted": 0,
+      "polarity": "positive",
+      "section_family": "debt_outstanding",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 4,
+      "n_predicted": 4,
+      "polarity": "positive",
+      "section_family": "debt_outstanding",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [
+        "not_evaluable"
+      ],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": false,
+      "n_excluded": 1,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "positive",
+      "section_family": "covenant_text",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "debt_outstanding",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 4,
+      "n_predicted": 4,
+      "polarity": "positive",
+      "section_family": "liquidity",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 5,
+      "n_predicted": 5,
+      "polarity": "positive",
+      "section_family": "maturity_schedule",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [
+        "not_evaluable"
+      ],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 2,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "covenant_text",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "negative",
+      "section_family": "debt_outstanding",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 6,
+      "n_predicted": 6,
+      "polarity": "positive",
+      "section_family": "liquidity",
+      "split": "held_out"
+    }
+  ],
+  "evaluated_at": "2026-10-31T10:32:45Z",
+  "evaluator_role": "independent_q1",
+  "failed_families": [
+    {
+      "blocks": [
+        "PK01"
+      ],
+      "disposition": "unavailable_research_only",
+      "does_not_block": [
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK08",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "numerator_denominator": {
+        "abstention": "3/3",
+        "false_positive_rate": null,
+        "precision": null,
+        "recall": "0/3",
+        "source_fidelity_error": null
+      },
+      "pack_id": "PK01",
+      "reason_codes": [
+        "precision_below_floor",
+        "underpowered"
+      ],
+      "relabel_forbidden": true,
+      "reopen_requires": "fresh held-out labels under a new Q0 split decision",
+      "section_family": "covenant_text"
+    },
+    {
+      "blocks": [
+        "PK01"
+      ],
+      "disposition": "unavailable_research_only",
+      "does_not_block": [
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK08",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "numerator_denominator": {
+        "abstention": "6/10",
+        "false_positive_rate": "0/2",
+        "precision": "2/2",
+        "recall": "2/8",
+        "source_fidelity_error": "0/2"
+      },
+      "pack_id": "PK01",
+      "reason_codes": [
+        "precision_below_floor"
+      ],
+      "relabel_forbidden": true,
+      "reopen_requires": "fresh held-out labels under a new Q0 split decision",
+      "section_family": "debt_outstanding"
+    },
+    {
+      "blocks": [
+        "PK01"
+      ],
+      "disposition": "unavailable_research_only",
+      "does_not_block": [
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK08",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "numerator_denominator": {
+        "abstention": "0/10",
+        "false_positive_rate": null,
+        "precision": "10/10",
+        "recall": "10/10",
+        "source_fidelity_error": "0/10"
+      },
+      "pack_id": "PK01",
+      "reason_codes": [
+        "precision_below_floor"
+      ],
+      "relabel_forbidden": true,
+      "reopen_requires": "fresh held-out labels under a new Q0 split decision",
+      "section_family": "liquidity"
+    },
+    {
+      "blocks": [
+        "PK01"
+      ],
+      "disposition": "unavailable_research_only",
+      "does_not_block": [
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK08",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "numerator_denominator": {
+        "abstention": "0/5",
+        "false_positive_rate": null,
+        "precision": "5/5",
+        "recall": "5/5",
+        "source_fidelity_error": "0/5"
+      },
+      "pack_id": "PK01",
+      "reason_codes": [
+        "precision_below_floor"
+      ],
+      "relabel_forbidden": true,
+      "reopen_requires": "fresh held-out labels under a new Q0 split decision",
+      "section_family": "maturity_schedule"
+    }
+  ],
+  "false_positives": [],
+  "head_commit": "761e814eda8460d09ad6c53adc8ee495b4283cf1",
+  "language_gate": {
+    "guarded_token_count": 0,
+    "hyphen_guarded_count": 0
+  },
+  "metrics": {
+    "extraction": {
+      "abstention": {
+        "denominator": 28,
+        "exclusions": [
+          "insufficient_evidence:3",
+          "not_applicable:6"
+        ],
+        "numerator": 9,
+        "wilson95": [
+          0.1793,
+          0.5066
+        ]
+      },
+      "false_positive_rate": {
+        "denominator": 2,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.6576
+        ]
+      },
+      "precision": {
+        "denominator": 17,
+        "exclusions": [
+          "PK01|0000018230-23-000011|extract|covenant_term_observation",
+          "PK01|0000018230-23-000047|extract|covenant_term_observation",
+          "PK01|0000018230-23-000056|extract|covenant_term_observation"
+        ],
+        "numerator": 17,
+        "wilson95": [
+          0.8157,
+          1.0
+        ]
+      },
+      "recall": {
+        "denominator": 26,
+        "exclusions": [],
+        "numerator": 17,
+        "wilson95": [
+          0.4622,
+          0.8059
+        ]
+      },
+      "source_fidelity_error": {
+        "denominator": 17,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.1843
+        ]
+      }
+    },
+    "findings": {
+      "abstention": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "false_positive_rate": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "precision": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "recall": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      }
+    },
+    "refusal": {
+      "abstention": {
+        "denominator": 2,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.6576
+        ]
+      },
+      "precision": {
+        "denominator": 6,
+        "exclusions": [],
+        "numerator": 2,
+        "wilson95": [
+          0.0968,
+          0.7
+        ]
+      },
+      "recall": {
+        "denominator": 2,
+        "exclusions": [],
+        "numerator": 2,
+        "wilson95": [
+          0.3424,
+          1.0
+        ]
+      }
+    }
+  },
+  "numerator_denominator_note": "Every rate is numerator/denominator with exclusions listed; truthful refusal is excluded from positive coverage.",
+  "pack_id": "PK01",
+  "pack_name": "Debt, liquidity, covenants and maturities",
+  "protocol_id": "fif-q0-quality-protocol/v1",
+  "quality_label": "underpowered",
+  "schema": "fundamental_forensics.pack_quality_report/v1",
+  "split_roots": {
+    "gold": "tests/fixtures/fundamental_forensics/",
+    "held_out": "tests/fixtures/fundamental_forensics_held_out/"
+  }
+}

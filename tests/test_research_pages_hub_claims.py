@@ -121,3 +121,44 @@ def test_hub_as_of_label_is_bilingual_and_never_both_visible():
     assert f'<span class="l-zh">存档截至 {AS_OF}</span>' in html
     # the page's existing toggle contract is what keeps the two halves apart
     assert 'html:not([data-lang="zh"]) .l-zh{ display:none; }' in html
+
+
+# The hub's t() macro prints both arms through |safe, so `as_of` has to arrive
+# escaped. No capital T in these values: _fmt_date cuts at the first "T".
+_HOSTILE = "<img src=x onerror=alert(1)>"
+_HOSTILE_YEARS = (_HOSTILE, '"><script>alert(1)</script>', "2026<b>", "20267", "202",
+                  "abcd", "٢٠٢٦", " 2026", "2026 ")
+
+
+def test_fmt_date_accepts_only_a_four_digit_numeric_year():
+    from scripts import build_research_pages as rp
+
+    for year in _HOSTILE_YEARS:
+        assert rp._fmt_date(f"{year}-07-24") == "", repr(year)
+    assert rp._fmt_date("2026-07-24") == "Jul 24, 2026"
+    assert rp._fmt_date("0999-01-02") == "Jan 2, 0999"
+
+
+def test_as_of_is_escaped_in_both_language_arms():
+    html = _render(as_of=_HOSTILE)
+    assert _HOSTILE not in html
+    assert "<img" not in html
+    assert ('<span class="l-en">Archive as of &lt;img src=x onerror=alert(1)&gt;</span>'
+            '<span class="l-zh">存档截至 &lt;img src=x onerror=alert(1)&gt;</span>') in html
+
+
+def test_as_of_is_not_escaped_twice():
+    html = _render(as_of="Oct & <19>, 2026")
+    assert "Archive as of Oct &amp; &lt;19&gt;, 2026" in html
+    assert "存档截至 Oct &amp; &lt;19&gt;, 2026" in html
+    assert "&amp;amp;" not in html and "&amp;lt;" not in html
+    assert ('<span class="l-en">Archive as of Oct 19, 2026</span>'
+            '<span class="l-zh">存档截至 Oct 19, 2026</span>') in _render(as_of=AS_OF)
+
+
+def test_hostile_generated_at_never_reaches_the_built_hub(monkeypatch, tmp_path):
+    for i, year in enumerate(_HOSTILE_YEARS):
+        catalog = {"generated_at": f"{year}-10-19", "items": _ITEMS}
+        html = _build_index(monkeypatch, tmp_path / str(i), catalog)
+        assert "Archive as of" not in html, repr(year)
+        assert "onerror" not in html and "alert(1)" not in html, repr(year)

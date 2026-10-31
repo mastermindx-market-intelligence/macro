@@ -75,7 +75,7 @@
     "label": "neutral",
     "name": "Brokers & Securities",
     "name_zh": "\u5238\u5546",
-    "rank": 12,
+    "rank": 13,
     "reco": "hold",
     "score": 30
   },
@@ -96,12 +96,12 @@
     "score": 19
   },
   "cn_defense": {
-    "label": "deteriorating",
+    "label": "neutral",
     "name": "Defense & Aerospace",
     "name_zh": "\u519b\u5de5\u822a\u5929",
-    "rank": 15,
-    "reco": "avoid",
-    "score": 26
+    "rank": 12,
+    "reco": "hold",
+    "score": 30
   },
   "cn_food_bev": {
     "label": "emerging",
@@ -139,7 +139,7 @@
     "label": "deteriorating",
     "name": "Industrial Metals",
     "name_zh": "\u6709\u8272\u91d1\u5c5e",
-    "rank": 13,
+    "rank": 14,
     "reco": "avoid",
     "score": 27
   },
@@ -195,7 +195,7 @@
     "label": "deteriorating",
     "name": "Solar / Photovoltaics",
     "name_zh": "\u5149\u4f0f",
-    "rank": 14,
+    "rank": 15,
     "reco": "avoid",
     "score": 26
   }

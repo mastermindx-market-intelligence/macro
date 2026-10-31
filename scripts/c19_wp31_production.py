@@ -117,6 +117,15 @@ class ProductionInputs:
     k3e_load_source: Callable[..., Any] | None = None
     k3e_load_aliases: Callable[..., Any] | None = None
     git_runner: Callable[..., subprocess.CompletedProcess] | None = None
+    revisions_reader: Callable[..., Any] | None = None
+    # Live read 1 (2026-10-22): the incumbent chain walk (up to 500 hops, one
+    # 8 s HTTP request per hop) raised once on a slow R2 hop and the runner —
+    # by design, one reader call per read — marked EVERY eligible S leg
+    # ``chain_unreadable`` and the first live episode ``pit_unrecoverable``.
+    # A transient transport error is retried a bounded number of times; a
+    # final failure still propagates so the runner's fail-closed path stands.
+    reader_attempts: int = 3
+    reader_backoff_seconds: float = 2.0
 
     pace_seconds: float = 0.12
     sleeper: Callable[[float], Any] = time.sleep
@@ -148,6 +157,8 @@ class ProductionInputs:
             "k_inputs_unavailable",
             "k_inputs_requests",
             "index_headers_requests",
+            "revisions_reader_attempts",
+            "revisions_reader_transient_failures",
         ):
             self.counts.setdefault(key, 0)
 
@@ -188,6 +199,38 @@ class ProductionInputs:
             return self.companyfacts_client
         from collectors import fundamental_forensics_companyfacts as fcfc
         return fcfc.SecCompanyFactsCollector(user_agent=_resolve_user_agent(self.repo))
+
+    def _revisions_reader(self) -> Callable[..., Any]:
+        if self.revisions_reader is not None:
+            return self.revisions_reader
+        from engine.neuralweb.company_intelligence_reader import (
+            read_all_event_source_revisions,
+        )
+        return read_all_event_source_revisions  # type: ignore[return-value]
+
+    def read_revisions(self, event_ids: Any, *, max_hops: int = 500) -> Any:
+        """The runner's ONE revisions-reader call, with bounded transient retry.
+
+        Each attempt is the same whole-chain walk over the same ids (there is
+        no partial result to resume from), so a retry never changes what a
+        successful read returns.  ``reader_attempts`` bounds the attempts;
+        after the last one the exception propagates unchanged and
+        :func:`c19_wp31_sources.collect_s_legs` keeps its fail-closed
+        ``chain_unreadable`` path.
+        """
+        reader = self._revisions_reader()
+        attempts = max(1, int(self.reader_attempts))
+        ids = list(event_ids)
+        for attempt in range(1, attempts + 1):
+            self.counts["revisions_reader_attempts"] += 1
+            try:
+                return reader(ids, max_hops=max_hops)
+            except Exception:  # noqa: BLE001 - typed by the incumbent; any raise is a failed walk
+                if attempt >= attempts:
+                    raise
+                self.counts["revisions_reader_transient_failures"] += 1
+                self.sleeper(self.reader_backoff_seconds * attempt)
+        raise RuntimeError("unreachable")  # pragma: no cover
 
     def _git_runner(self) -> Callable[..., subprocess.CompletedProcess]:
         if self.git_runner is not None:
@@ -410,6 +453,6 @@ class ProductionInputs:
             now=self.now,
             prior_reads=tuple(prior_reads),
             resolve_ticker=None,    # incumbent identity resolver
-            revisions_reader=None,  # incumbent revision chain reader
+            revisions_reader=self.read_revisions,  # incumbent chain reader, bounded transient retry
             max_hops=500,
         )

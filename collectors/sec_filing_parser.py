@@ -46,7 +46,13 @@ SEC_FILING_PARSER_VERSION = "1"
 # carrying ANY element whose local name casefolds to ``base`` (any namespace;
 # previously only an exact-case XHTML ``base``) now refuses where a pre-D1X-5
 # build admits it.  The 140-file corpus census found 0 such members, so no
-# accepted output changed.  Refusal verdicts are not fingerprint-bound;
+# accepted output changed.  The nil-fact inert-attribute tolerance
+# (DEC:FIF-PARSER-NIL-FACT-INERT-ATTRIBUTES-TOLERATED-20261031) is another
+# strict widening under this same fingerprint: a nil numeric fact carrying
+# inert decimals/precision/scale/format/sign is admitted with all five dropped
+# and exactly one per-fact ``nil_fact_inert_attributes_dropped`` diagnostic, a
+# path that previously raised, so every accepted output stays byte-identical.
+# Refusal verdicts are not fingerprint-bound;
 # they are bound by the committed ``_VERDICT_PIN`` in
 # tests/test_fif_gsrc_capture.py, regenerated in the same PR.  Runtime
 # library versions are observed provenance and must not invalidate retained
@@ -1270,7 +1276,7 @@ def _fact_accuracy(
     nil: bool,
     inline: bool,
     limits: Mapping[str, int],
-) -> tuple[str | None, str | None, str | None, int | None, str | None]:
+) -> tuple[str | None, str | None, str | None, int | None, str | None, list[str]]:
     decimals = _attr(node, "decimals")
     precision = _attr(node, "precision")
     _validate_accuracy_lexicals(decimals, precision)
@@ -1281,15 +1287,34 @@ def _fact_accuracy(
     if not numeric:
         if any(value is not None for value in (decimals, precision, sign, scale)):
             raise SecFilingParseError("non-numeric fact carries numeric attributes")
+        if nil and format_qname is not None:
+            raise SecFilingParseError("nil fact cannot carry accuracy, transform, sign, or scale")
     elif not nil and (decimals is None and precision is None):
         raise SecFilingParseError("numeric fact must carry decimals or precision unless nil")
-    if nil and any(value is not None for value in (decimals, precision, sign, scale, format_qname)):
-        raise SecFilingParseError("nil fact cannot carry accuracy, transform, sign, or scale")
     if not inline and any(value is not None for value in (sign, scale, format_qname)):
         raise SecFilingParseError("native XBRL fact cannot carry Inline XBRL attributes")
+    if nil:
+        # DEC:FIF-PARSER-NIL-FACT-INERT-ATTRIBUTES-TOLERATED-20261031: a nil
+        # fact has no value, so decimals/precision/scale/format/sign on it are
+        # inert.  They are dropped (and reported per fact) instead of refusing
+        # the member.  The native Inline-attribute check above deliberately
+        # stays first: a structural violation is not inert.  This branch used
+        # to raise, so the widening never changes accepted output bytes.
+        dropped = sorted(
+            name
+            for name, value in (
+                ("decimals", decimals),
+                ("format", format_qname),
+                ("precision", precision),
+                ("scale", scale),
+                ("sign", sign),
+            )
+            if value is not None
+        )
+        return None, None, None, None, None, dropped
     if inline and sign not in {None, "-"}:
         raise SecFilingParseError("Inline XBRL sign must be '-' when present")
-    return decimals, precision, sign, scale, format_qname
+    return decimals, precision, sign, scale, format_qname, []
 
 
 def _fact_record(
@@ -1306,7 +1331,7 @@ def _fact_record(
     inline: bool,
     document_ids: Mapping[str, int],
     document_base_changed: bool,
-) -> tuple[dict[str, Any], dict[str, Any] | None]:
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     fact_id = _attr(node, "id")
     if fact_id is not None:
         _normalized_identifier(fact_id, field_name="fact id")
@@ -1347,7 +1372,7 @@ def _fact_record(
             _assert_allowed_attrs(node, common | {"unitRef"}, field_name="ix:fraction")
     else:
         _assert_allowed_attrs(node, {"id", "contextRef", "unitRef", "decimals", "precision", f"{{{XSI}}}nil", f"{{{XML}}}lang"}, field_name="native XBRL fact")
-    decimals, precision, sign, scale, format_qname = _fact_accuracy(
+    decimals, precision, sign, scale, format_qname, dropped_attributes = _fact_accuracy(
         node, numeric=numeric, nil=nil, inline=inline, limits=limits
     )
     if kind == "fraction" and any(value is not None for value in (decimals, precision, sign, scale, format_qname)):
@@ -1399,7 +1424,7 @@ def _fact_record(
     # order used to construct raw_value: fact-local material, then each link.
     raw = _node_text_bytes("".join(raw_parts), limits, field_name="fact")
     fraction: dict[str, Any] | None = None
-    diagnostic: dict[str, Any] | None = None
+    fact_diagnostics: list[dict[str, Any]] = []
     if nil:
         if raw or excluded_events or node.children:
             raise SecFilingParseError("nil fact must not contain content")
@@ -1442,11 +1467,23 @@ def _fact_record(
             raw, format_qname=format_qname, sign=sign, scale=scale, inline=inline
         )
     if status in {"unsupported_transform", "invalid_value"}:
-        diagnostic = {
-            "code": status,
-            "fact_start": node.start,
-            "format": format_qname,
-        }
+        fact_diagnostics.append(
+            {
+                "code": status,
+                "fact_start": node.start,
+                "format": format_qname,
+            }
+        )
+    if dropped_attributes:
+        # Per-fact diagnostic, never a counter: it is emitted only on the
+        # previously-refusing path, so accepted output stays byte-identical.
+        fact_diagnostics.append(
+            {
+                "code": "nil_fact_inert_attributes_dropped",
+                "fact_start": node.start,
+                "attributes": dropped_attributes,
+            }
+        )
     return (
         {
             "fact_id": fact_id,
@@ -1473,7 +1510,7 @@ def _fact_record(
             "excluded_text_spans": _event_spans(excluded_events),
             "source_span": _span(node.start, int(node.end)),
         },
-        diagnostic,
+        fact_diagnostics,
     )
 
 
@@ -1944,7 +1981,7 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
     facts: list[dict[str, Any]] = []
     diagnostics: list[dict[str, Any]] = []
     for node in facts_nodes:
-        fact, diagnostic = _fact_record(
+        fact, fact_diagnostics = _fact_record(
             node,
             events,
             chains.get(node.start, []),
@@ -1959,8 +1996,7 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
             document_base_changed=document_base_changed,
         )
         facts.append(fact)
-        if diagnostic is not None:
-            diagnostics.append(diagnostic)
+        diagnostics.extend(fact_diagnostics)
     for context in contexts:
         if context["segment_content_status"] == "partial":
             diagnostics.append(
@@ -2266,7 +2302,7 @@ def validate_sec_filing_parse_result(
     )
     facts = _exact_list(result["facts"], field_name="facts", maximum=limits["max_facts"])
     diagnostics = _exact_list(
-        result["diagnostics"], field_name="diagnostics", maximum=limits["max_facts"] + (2 * limits["max_contexts"])
+        result["diagnostics"], field_name="diagnostics", maximum=(2 * limits["max_facts"]) + (2 * limits["max_contexts"])
     )
     for label, items in (("contexts", contexts), ("units", units), ("continuations", continuations), ("facts", facts)):
         _source_ordered(items, field_name=label, length=length)
@@ -2643,7 +2679,52 @@ def validate_sec_filing_parse_result(
             item.get("fact_start", item.get("source_spans", [{"start": 0}])[0]["start"]), item["code"]
         )
     )
-    if diagnostics != expected_diagnostics:
+    # nil_fact_inert_attributes_dropped cannot be recomputed from the fact
+    # records (the dropped attributes are gone by design), so it is admitted
+    # structurally against the nil numeric fact records instead.
+    inert_diagnostics: list[Any] = []
+    admitted_diagnostics: list[Any] = []
+    for item in diagnostics:
+        if isinstance(item, dict) and item.get("code") == "nil_fact_inert_attributes_dropped":
+            inert_diagnostics.append(item)
+        else:
+            admitted_diagnostics.append(item)
+    if admitted_diagnostics != expected_diagnostics:
+        raise SecFilingParseError("diagnostics are not derived from parser records")
+    nil_numeric_fact_by_start = {
+        fact["source_span"]["start"]: fact
+        for fact in facts
+        if fact["kind"] == "numeric"
+        and fact["nil"]
+        and all(fact[name] is None for name in ("decimals", "format", "precision", "scale", "sign"))
+    }
+    inert_starts: set[Any] = set()
+    for item in inert_diagnostics:
+        if (
+            set(item) != {"code", "fact_start", "attributes"}
+            or isinstance(item["fact_start"], bool)
+            or not isinstance(item["fact_start"], int)
+            or type(item["attributes"]) is not list
+            or not item["attributes"]
+            or any(
+                not isinstance(name, str) or name not in {"decimals", "format", "precision", "scale", "sign"}
+                for name in item["attributes"]
+            )
+            or len(item["attributes"]) != len(set(item["attributes"]))
+            or item["attributes"] != sorted(item["attributes"])
+        ):
+            raise SecFilingParseError("nil-fact inert-attribute diagnostic is malformed")
+        if item["fact_start"] not in nil_numeric_fact_by_start:
+            raise SecFilingParseError("nil-fact inert-attribute diagnostic does not point at a nil numeric fact")
+        if item["fact_start"] in inert_starts:
+            raise SecFilingParseError("nil-fact inert-attribute diagnostic is duplicated")
+        inert_starts.add(item["fact_start"])
+    if diagnostics != sorted(
+        diagnostics,
+        key=lambda item: (
+            item.get("fact_start", item.get("source_spans", [{"start": 0}])[0]["start"]), item["code"]
+        ),
+    ):
         raise SecFilingParseError("diagnostics are not derived from parser records")
     coverage_fields = {"document_scope", "fact_inventory_complete", "context_references_complete", "unit_references_complete", "continuation_graph_complete", "canonical_value_complete", "context_count", "unit_count", "continuation_count", "fact_count", "diagnostic_count", "unknown_scenario_content_count", "unknown_segment_content_count", "structural_validation_complete", "ixds_validation_complete", "xbrl_schema_validation_complete", "taxonomy_validation_complete"}
     ix_coverage_fields = {"ix_relationship_count", "ix_footnote_count", "ix_footnote_continuation_count"}

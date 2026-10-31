@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LSTR-BULL-20261013",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 14.2,
@@ -14,23 +14,23 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": -1.833,
+    "dist_to_stop_r": -1.694,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 24.4,
-    "p1": -1.8889,
-    "p2": -0.9444,
+    "horizon_pct_used": 26.7,
+    "p1": -1.7959,
+    "p2": -0.898,
     "p3": null,
-    "move_r": -2.833,
+    "move_r": -2.694,
     "mfe_r": 0.302,
     "mae_r": -2.833
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-10-21",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 11,
-  "tau": 0.2444,
+  "days_elapsed": 12,
+  "tau": 0.2667,
   "closed": true,
   "outcome": "INVALIDATED"
 }

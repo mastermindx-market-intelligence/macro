@@ -196,9 +196,9 @@ ALPHA_PRIMARY_LIMIT = "Synthetic limit: a measured description is not a measured
 
 
 def test_sector_card_names_the_admitted_watching_statement():
-    """W10-FIN-3: the Theme Tracker sector deep-dive card shows the admitted
-    alpha synthetic statement as a bilingual "What we are watching" line
-    tagged data-state-falsifier="NOT_YET_EVALUABLE". The WATCHING token must
+    """Ruling F-5 flips W10-FIN-3: the Theme Tracker sector deep-dive card
+    carries NO watching line at all — no alpha synthetic statement, no
+    data-state-falsifier="NOT_YET_EVALUABLE" marker. The WATCHING token must
     not appear, names stay aria-labelledby/-describedby over l-en/l-zh, and
     the existing aria id set must remain a subset of the aria refs."""
     import json as _json
@@ -211,11 +211,11 @@ def test_sector_card_names_the_admitted_watching_statement():
         "the pinned watching statement drifted from the alpha fixture"
     )
     html = _render_partial(SECTOR_PARTIAL)
-    assert ALPHA_PRIMARY_LIMIT in html, (
-        "the card must name the alpha fixture primary_limit verbatim"
+    assert ALPHA_PRIMARY_LIMIT not in html, (
+        "the card must not name the alpha fixture primary_limit"
     )
-    assert 'data-state-falsifier="NOT_YET_EVALUABLE"' in html, (
-        "the watching line must carry the admitted falsifier state"
+    assert 'data-state-falsifier="NOT_YET_EVALUABLE"' not in html, (
+        "the watching line and its state marker must be gone"
     )
     assert "WATCHING" not in html, "the WATCHING token must not appear"
     assert "aria-label=" not in html, (

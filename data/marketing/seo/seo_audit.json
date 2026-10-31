@@ -190,13 +190,6 @@
       "detail": "Missing OG tags: og_title, og_desc, og_image"
     },
     {
-      "id": "title_length_consumer_cyclical_plnt_html",
-      "severity": "medium",
-      "class": "title_length",
-      "page": "consumer_cyclical_plnt.html",
-      "detail": "Title length 72 chars (expected 15-70): PLNT economic change — Consumer Cyclical synthetic display — MastermindX"
-    },
-    {
       "id": "desc_length_crypto_html",
       "severity": "medium",
       "class": "desc_length",
@@ -860,7 +853,7 @@
     "missing_description": 28,
     "missing_og": 28,
     "missing_canonical": 27,
-    "title_length": 3,
+    "title_length": 2,
     "desc_length": 6,
     "page_weight": 1,
     "missing_lang": 1,
@@ -872,7 +865,7 @@
   "issue_counts_by_severity": {
     "critical": 0,
     "high": 51,
-    "medium": 56,
+    "medium": 55,
     "low": 2
   }
 }

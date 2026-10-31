@@ -1,12 +1,12 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "UBER-BULL-20260623",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 9.9,
   "raw_confidence": 8.0,
-  "delta_vs_base": -50.0,
+  "delta_vs_base": -50.1,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
@@ -14,23 +14,23 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": -0.145,
+    "dist_to_stop_r": -0.165,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 255.6,
-    "p1": -0.7631,
-    "p2": -0.3816,
+    "horizon_pct_used": 257.8,
+    "p1": -0.7766,
+    "p2": -0.3883,
     "p3": null,
-    "move_r": -1.145,
+    "move_r": -1.165,
     "mfe_r": 0.751,
-    "mae_r": -1.145
+    "mae_r": -1.165
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: overtime \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 5.919998474121087,
-  "_mae": -9.019996337890632,
+  "_mae": -9.180000000000007,
   "_max_p1": 0.500845894595693,
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 115,
-  "tau": 2.5556,
+  "days_elapsed": 116,
+  "tau": 2.5778,
   "closed": true,
   "outcome": "INVALIDATED"
 }
