@@ -406,7 +406,7 @@ change which session the rules select:
 - **`C(e)`** is one session early for a release that falls within 4 hours (EDT) or
   5 hours (EST) after a session's scheduled close. For a regular session that is
   16:00–20:00 EDT or 16:00–21:00 EST, measured in New York time.
-- **The cost exit** (§3.3) is one session early for a release during the first 4 hours
+- **The cost exit** (§5) is one session early for a release during the first 4 hours
   (EDT) or 5 hours (EST) of a session.
 - **The K window** and **A0's `<= C(e)` filter** move with `C(e)`.
 - **The label** (§3.3) does not depend on the clock and is unchanged.

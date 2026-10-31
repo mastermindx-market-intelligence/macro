@@ -328,6 +328,9 @@ def test_edgar_json_clock_a5_dst_hours_resolve() -> None:
 def test_edgar_json_clock_a5_offsets_are_honoured() -> None:
     fix = sources._edgar_json_acceptance_utc
     assert fix("2026-12-08T16:05:00-05:00") == datetime(2026, 12, 8, 21, 5, tzinfo=UTC)
+    # E is compared as an instant, not as local text: 20:30 EST on 11-15 is
+    # 01:30Z on 11-16, at or after E, so it is returned as given.
+    assert fix("2026-11-15T20:30:00-05:00") == datetime(2026, 11, 16, 1, 30, tzinfo=UTC)
 
 
 def test_enumerate_after_a5_reads_the_clock_as_given() -> None:
@@ -340,6 +343,19 @@ def test_enumerate_after_a5_reads_the_clock_as_given() -> None:
     assert episode["t_rel"] == "2026-12-08T21:05:00Z"
     assert _dt(episode["cutoff"]) == _close_utc(day)
     assert episode["status"] == "ELIGIBLE"
+
+
+def test_enumerate_at_exactly_e_reads_the_clock_as_given() -> None:
+    # J == E is 19:00 EST on Sunday 11-15.  A5 returns it as given (A2 would read
+    # 19:00Z, 14:00 EST); C(e) is Friday 11-13's close either way (§2).
+    day = date(2026, 11, 13)
+    assert is_session(day) and early_close("US", day) is None
+    assert not is_session(date(2026, 11, 14)) and not is_session(date(2026, 11, 15))
+    rows = [_eightk("DHI", "0000000000-26-000146",
+                    "2026-11-16T00:00:00.000Z", "2026-11-13")]
+    (episode,) = sources.enumerate_episodes(rows)
+    assert episode["t_rel"] == "2026-11-16T00:00:00Z"
+    assert _dt(episode["cutoff"]) == _close_utc(day)
 
 
 def test_enumerate_before_a5_keeps_the_a2_shift() -> None:

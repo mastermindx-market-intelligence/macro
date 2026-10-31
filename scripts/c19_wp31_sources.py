@@ -261,7 +261,10 @@ def _parse_utc(value: Any) -> datetime | None:
 
 
 def _edgar_json_acceptance_utc(value: Any) -> datetime | None:
-    """``t_rel`` from an EDGAR submissions-JSON ``acceptanceDateTime`` (prereg §10 A2, A5).
+    """True instant from an EDGAR submissions-JSON ``acceptanceDateTime`` (prereg §10 A2, A5).
+
+    Used for an episode's ``t_rel`` and for a quarter-q revision's
+    ``source_available_at`` (§2 rule 4).
 
     The JSON value J is true UTC (prereg §10 A5, checked against the filing
     header's ET ``ACCEPTANCE-DATETIME``).  J >= :data:`A5_EFFECTIVE` is returned
