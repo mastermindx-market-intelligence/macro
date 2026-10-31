@@ -1,0 +1,7 @@
+{
+  "observed_at": "2026-10-14T13:35:15.547283+00:00",
+  "source": "566a10d139a041b4eca915420063290a9a302882",
+  "canonical_manifest_load_pass": true,
+  "loaded_job_count": 314,
+  "scope": "Manifest admission only; unchanged execution/probe vectors and monotonic closure proof in followon-incoming-scope-repair.json. No fresh hosted or future merged-tree proof."
+}

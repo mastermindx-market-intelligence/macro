@@ -151,7 +151,7 @@ EDGE_ENUMS: dict[str, set[str]] = {
     "source_class": {"curated", "scrape", "filing", "co_movement",
                      "llm_proposed_ratified"},
     "date_provenance": {"curated_changelog", "seed_constant", "raw_snapshot",
-                        "crosswalk", "membership_pit"},
+                        "crosswalk", "membership_pit", "activity_history"},
     "economic_share_display": {"none", "weak", "core"},
     "trading_beta_display": {"none", "weak", "core"},
     "attention_share_display": {"none", "weak", "core"},
@@ -186,13 +186,43 @@ LIFECYCLE_ENUMS: dict[str, set[str]] = {
 #: Which node kinds each edge type may connect. The pairing table is the structural
 #: answer to "did somebody quietly compose a new path": a MEMBER_OF from a company to a
 #: canonical theme, or an EXPRESSES from a local theme to a basket, would be a new
-#: semantics smuggled in as data.
+#: semantics smuggled in as data. The ONE exception is the curated activity-history
+#: fold: ACTIVITY_HISTORY_PAIRING below admits a company -> canonical theme MEMBER_OF
+#: per ROW, by its exact provenance triple — never by pair, so the pair itself stays
+#: out of this table and any other company -> theme MEMBER_OF still breaches.
 EDGE_PAIRING: dict[str, set[tuple[str, str]]] = {
     "MEMBER_OF": {("company", "basket"), ("company", "local_theme")},
     "EXPRESSES": {("basket", "theme"), ("basket", "local_theme"),
                   ("local_theme", "theme")},
     "TRACKS": {("etf", "basket")},
 }
+
+#: The curated activity-history fold (engine.theme_graph.materialize,
+#: ACTIVITY_HISTORY_CONFIDENCE_BASIS) is the ONE owned path that may emit a
+#: company -> canonical theme MEMBER_OF; admission is per ROW by its exact
+#: provenance triple, never by pair, so any other company -> theme MEMBER_OF still
+#: breaches. Both refusal sites that see (src kind, dst kind) — the EDGE_PAIRING
+#: loop and the §9.6 per-ticker-tags check — consult _activity_history_admitted()
+#: so they cannot drift apart on which rows the fold owns.
+ACTIVITY_HISTORY_PAIRING: dict[str, tuple] = {
+    "MEMBER_OF": (("company", "theme"),
+                  {"source_class": "curated", "date_provenance": "activity_history",
+                   "confidence_basis": "activity_history.v1"}),
+}
+
+
+def _activity_history_admitted(etype: str, pair: tuple[str, str], row: dict) -> bool:
+    """True iff this exact ROW carries the activity-history fold's provenance triple.
+
+    A row whose type has no admission entry, whose kinds differ from the admitted
+    pair, or that is missing ANY provenance column is never admitted — absence is
+    not equality."""
+    admission = ACTIVITY_HISTORY_PAIRING.get(etype)
+    if admission is None or pair != admission[0]:
+        return False
+    return all(col in row and str(row[col]) == want
+               for col, want in admission[1].items())
+
 
 #: GMI theme hierarchy (W-C1, DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK).
 THEME_TIERS: frozenset[str] = frozenset(
@@ -456,6 +486,8 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
             etype = str(row.get("type"))
             pair = (kinds.get(str(row.get("src")), "?"),
                     kinds.get(str(row.get("dst")), "?"))
+            if _activity_history_admitted(etype, pair, row):
+                continue  # the curated activity-history fold's own row, per row
             seen_pairs.setdefault(etype, set()).add(pair)
             example.setdefault((etype, *pair), str(row.get("edge_id")))
         for etype, pairs in sorted(seen_pairs.items()):
@@ -1286,6 +1318,10 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
     if kinds and {"type", "src", "dst"} <= set(edges.columns):
         for row in edges.to_dict("records"):
             src, dst = str(row.get("src")), str(row.get("dst"))
+            if _activity_history_admitted(
+                    str(row.get("type")),
+                    (kinds.get(src, "?"), kinds.get(dst, "?")), row):
+                continue  # the curated activity-history fold's own row, per row
             if kinds.get(src) == "company" and kinds.get(dst) == "theme":
                 breaches.append(
                     f"hierarchy: edge {str(row.get('edge_id'))!r} is company→theme "
@@ -1589,6 +1625,21 @@ def selftest(tmp_root: Path | None = None) -> int:
     checks.append((any("not a pairing this type may carry" in x
                        for x in audit(d, empty_breaks)[0]),
                    "a company→theme MEMBER_OF is the refused derived edge and must breach"))
+
+    # The activity-history admission is per ROW, never per pair: the same
+    # company→theme MEMBER_OF with a crosswalk provenance is still a smuggle.
+    nodes, edges, ev = _clean_rows()
+    nodes.append({**nodes[0], "node_id": "theme:crosswalk_fixture", "kind": "theme",
+                  "tier": "theme"})
+    crosswalked = {**edges[0], "dst": "theme:crosswalk_fixture",
+                   "edge_id": "member_of:co:us:AAA->theme:crosswalk_fixture@2024-01-01",
+                   "date_provenance": "crosswalk"}
+    d = _fixture(tmp_root / "pairing_crosswalk", nodes=nodes,
+                 edges=[*edges, crosswalked], evidence=ev)
+    checks.append((any("not a pairing this type may carry" in x
+                       for x in audit(d, empty_breaks)[0]),
+                   "a company→theme MEMBER_OF outside the activity-history provenance "
+                   "triple (e.g. crosswalk) must still breach"))
 
     # A store written before the additive columns existed: a NOTICE, never a breach —
     # v1 is additive-only, so that shape was valid when it was written.

@@ -1,0 +1,24 @@
+# Independent bounded reviews — original Shared Shell continuation
+
+Operation: WS:MARKET-OS / market-os-shared-shell-design-20260924-sol-001 / shared-shell-production-20261018-c1.
+H=e2d10f933587f58be8716505529a37f8839901f7; M=42c859546ececa797b400db0adeb8c5a22f96832.
+This is the principal's durable transcription of the three existing advisers' returned rulings, not a new worker, lifecycle owner or test run.
+
+## sni_receipt_counsel — actual worktree text NONBLOCKING
+Complete contiguous studio_direct_read_file coverage: Caddyfile 1391 lines/13 pages, update.sh 2568 lines/23 pages. Reassembled returned line text exactly equals immutable H plus four Brain visuals asset-list insertions and one brain_visuals restart-trigger insertion. No extra change or missing section. Preserves beta 3001/public TLS, ordinary 3000, shared public-data, exact beta referrer admission, framing/cache/region/payload guards; updater preserves lib/shared_shell.py trigger and transaction/validation handling.
+Raw-file/index hashes remain root's binding, not adviser native measurement: Caddy 76055B/cb8adb3ce636e956fdb58831b960495f6cfba4dc75c578c62bfae39a3b64af3a; updater 141857B/337664e579503b69d3bd11d4aeba817c9393f90d165a6a7821b07a52ef905394. UTF8 expected text lengths with final newline agree.
+The earlier deployment pytest session remains exit1 despite 334 passing assertions, pending unchanged rerun after source freeze. All read_file requests returned; no native process, mutation or test in this completed review.
+
+## beta_recovery_counsel — Sector candidate content/contract NONBLOCKING
+Complete 3964-line fixed candidate read: E/macro-e2d-42c-html-canonical-merge/site_sector_central.html.candidate. Producing receipt attributes 374831B/SHA60a9d08240b02a87c437e737d61bf78a82ee879935847f7419725425e2446b91, merge-file exit0/no markers. This is not an independently recomputed raw hash or applied-index/browser result.
+Six distinct rail/panel pairs: overview433/447, map434/1710, moving435/1844, money436/1979, explore437/2015, confluence439/2261. Overview initial on/aria-current retained. Confluence retains heading, four family tabs and sc-app mount.
+Entire 44305-character inline script with all three MMXSharedShell navigation call sites is byte-identical to H template blob9f1f75beba1a9a12f725135be9a367a79d58d065. Validated basket ID push and standalone fallback retained; known-ID legacy theme redirect uses replace; trace fallback push and real encoded basket anchors retained. H router blob46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c declares six views and listens to hashchange/mmx:shell-location. Capability block remains after head, bridge data-sync ahead of page scripts; external Terminal CTA and All Tools dialog hooks preserved.
+No wholesale-M shortcut accepted. Paper remains REVISE. Actual applied assets, six-view interactions, basket handoff and Back/Forward remain public acceptance work. No source/index/producer/test action.
+
+## sector_rig_counsel — CI additive H/M resolver NONBLOCKING
+Complete 58-line resolver and 8150-byte result read via read_file only. Exact H/M guards and 12 expected conflicts; H-side permits only lib/shared_shell.py and lib/site_assets.py path insertions. Candidate follows M's 330 job IDs/order and new stock-liquidity-profile. Nonpath fields use three-way rules and refuse unequal concurrent changes. Both parent path subsequences and Counter multiplicities preserved. test_ci_pack executable AST equals M after stripping docstrings; both rationale histories retained. Incoming ceilings 5822/5697/5600 are unmeasured, not acceptance.
+General-method gaps explicitly identified: assert no baseline path deletions before additive formula; assert no H-only job omitted by M inventory; bind staged/raw working bytes separately. Root's subsequent p0b-bind-stage prewrite checks close these for H/M: B329/H329/M330, H IDs subset M, both-parent per-job Counter deletions empty, four CI/deploy staged/current hashes exact. N not covered.
+Four-node observer advice: copy actual failed-test rows without assertion/selector mutation; attribute incoming weights only for exact candidate-selected IDs; use fresh probe/log/basetemp; freeze all repository files including mockups/evidence during pytest. Raw ls-files --stage -z SHA is an index-entry-list SHA, not a Git tree. Partial-merge diagnostic would be permitted but final fully resolved validation remains required.
+
+## Transport boundary
+Earlier adviser start_process calls were aborted without PID/output/exit after 910–1396 seconds. Submitted commands were strictly readonly Git inspections. Remote completion unknown; no modifying source effect submitted. Do not retry. Subsequent file-only review requests returned completely. These adviser consultations do not replace original Fabric workers or create watchers.

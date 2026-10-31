@@ -1,0 +1,43 @@
+{
+  "all_projected_cohort_outcomes_equal": true,
+  "archive_files_verified_unchanged": 84,
+  "archive_hash_manifest_sha256": "74689b531fc168e67e73b5ac4c708a7facb90ece7dd4d9e39692091975c35fda",
+  "closed_day_total": {
+    "all_ohlc_equal_windows": 48,
+    "dense_equal_windows": 38,
+    "native_rows": 48,
+    "sparse_equal_windows": 10
+  },
+  "code_sha256": {
+    "lib/dataos/tiingo_forex.py": "7d30b518225222eac431877bb9f71e5e78454cb5056dfd7f44fe24aace171796",
+    "lib/dataos/tiingo_reader.py": "f563efc37718fc509bc86159ff0bead4eb55ab2f6b4e5c1118088f606a6b54b3",
+    "lib/dataos/tiingo_views.py": "62e98c024b9c9019ed4b5d25818873463a6a0c1d4464ef3f3961f05677c6deb1"
+  },
+  "compared_report": "interval-reconciliation-integration.json",
+  "compared_report_sha256": "1c9ad5c7a93513c766cff83e42de067cecdac8920dad6e40758eb936e53c9e65",
+  "eligible_observations": 0,
+  "empty_responses": 2,
+  "materializer_calls": 0,
+  "monitoring_admitted": false,
+  "new_api_requests": 0,
+  "open_interval": {
+    "all_ohlc_equal_windows": 1,
+    "close_equal_windows": 1,
+    "compared_windows": 1,
+    "dense_equal_windows": 0,
+    "native_rows": 1,
+    "sparse_equal_windows": 1
+  },
+  "raw_prices_in_report": false,
+  "retained": {
+    "all_ohlc_equal_windows": 6,
+    "close_equal_windows": 7,
+    "compared_windows": 7,
+    "dense_equal_windows": 5,
+    "native_rows": 7,
+    "sparse_equal_windows": 1
+  },
+  "schema": "forex_r26.interval_reconciliation_qualified_readback.v1",
+  "test_sha256": "d90967b778b0ee05b40b1f1476dd5df69d2dfa8c8431defc9fb72308b2737dd1",
+  "verified_at_utc": "2026-10-22T03:16:24.888404+00:00"
+}

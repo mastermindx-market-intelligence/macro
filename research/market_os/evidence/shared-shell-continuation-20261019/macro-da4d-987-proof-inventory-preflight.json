@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-10-20T18:57:33.944875+00:00",
+  "old_indexed_files": 509,
+  "candidate_sources": 545,
+  "identical_old_collisions": 48,
+  "new_files_before_validation": 497,
+  "raw_bytes": 62026149,
+  "reference_map": {
+    "macro-da4d-987-composed-tests.json": "macro-da4d-987-composed-tests.json",
+    "macro-da4d-987-source-commit.json": "macro-da4d-987-source-commit.json",
+    "macro-da4d-987-p0b-actual.json": "macro-da4d-987-p0b-actual.json",
+    "macro-da4d-987-p0b-binding.json": "macro-da4d-987-p0b-binding.json",
+    "macro-da4d-987-p0b-history-preparation.json": "macro-da4d-987-p0b-history-preparation.json",
+    "macro-da4d-987-about-wrapper.json": "macro-da4d-987-about-wrapper.json",
+    "macro-da4d-987-about-replay--actual.json": "macro-da4d-987-about-replay--actual.json.gz",
+    "beta-same-a-recovery-after-1-health.stdout.json": "beta-same-a-recovery-after-1-health.stdout.json",
+    "beta-same-a-failed-reconciliation.json": "beta-same-a-failed-reconciliation.json",
+    "beta-same-a-recovery.json": "beta-same-a-recovery.json",
+    "beta-same-a-service-proof.json": "beta-same-a-service-proof.json"
+  },
+  "remote": "f8943924a4536012afa0c1e86703ff3d9b0dafdd\trefs/heads/main\nb312bc4c08cf7633bf8fd259d2d46ec545fa120f\trefs/heads/sol/market-os-shared-shell-design-20260924",
+  "head": "6d56650ea21395e7ffb0412bde73881b58dd1a66",
+  "clean": true,
+  "scope": "Read-only inventory before original proof import; no pack mutation or publication"
+}

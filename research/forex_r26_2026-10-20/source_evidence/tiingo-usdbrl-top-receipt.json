@@ -1,0 +1,44 @@
+{
+  "schema": "mastermind.forex.source_probe.v1",
+  "observed_at_utc": "2026-10-21T13:49:11.998525+00:00",
+  "purpose": "Distinguish empty historical window from one contemporaneous top-of-book request; not admission",
+  "source": "forex-top",
+  "pair_candidate": "USDBRL",
+  "request_path": "/tiingo/fx/usdbrl/top",
+  "receipt_id": "4747f3b622bb4270d115d8cf8892baa9eafcbc7066a405b31c52e5df71038b25",
+  "receipt_path": "receipts/forex-top/2026-10-21/cf4dbe0809a9dcae-4f53cda18c2baa0c0354bb5f.json",
+  "raw_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "raw_bytes": 2,
+  "http_status": 200,
+  "source_observed_at_utc": "2026-10-21T13:47:15.592914+00:00",
+  "vendor_row_count": 0,
+  "status": "EMPTY_CAPTURED",
+  "materialization": {
+    "status": "RAW_ONLY",
+    "reason": "NO_REVIEWED_L1_PROJECTOR",
+    "source": "forex-top"
+  },
+  "acquisition": {
+    "exit_code": 0,
+    "seconds": 0.42,
+    "result": {
+      "attempted": 1,
+      "ok": 1,
+      "new": 1,
+      "failed": 0,
+      "row_hints": 0,
+      "bytes": 2,
+      "errors": []
+    },
+    "automatic_retry": false
+  },
+  "scan": {
+    "count": 1,
+    "truncated": false
+  },
+  "conclusion": "Both exact requests returned valid empty responses; no currently served quote was established by this probe. This does not establish global vendor non-support.",
+  "dataos_identity_admitted": false,
+  "pit_backtest_eligible": false,
+  "monitoring_admitted": false,
+  "qualified_finalized_4h_observations": 0
+}

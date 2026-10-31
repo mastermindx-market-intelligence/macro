@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-10-20T05:48:33.986491+00:00",
+  "head": "e2d10f933587f58be8716505529a37f8839901f7",
+  "main": "1f44ac1873ac8dba2147ad91567446fbbe0a83ea",
+  "fetch_retried": false,
+  "preview": {
+    "argv": [
+      "git",
+      "--no-optional-locks",
+      "merge-tree",
+      "--write-tree",
+      "--name-only",
+      "e2d10f933587f58be8716505529a37f8839901f7",
+      "1f44ac1873ac8dba2147ad91567446fbbe0a83ea"
+    ],
+    "exit": 0,
+    "stdout": "033b4be997c628cd8aa0d2c90b53cab4ba8695e2\n",
+    "stderr": ""
+  },
+  "source_mutation": false
+}

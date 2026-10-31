@@ -1,0 +1,28 @@
+{
+  "schema": "mastermind.attended.browser_connection_observation.v1",
+  "programme": "WS:MARKET-OS",
+  "user_requested_fresh_browser": true,
+  "local_extension_result": {
+    "isError": true,
+    "error_code": "UNKNOWN",
+    "message": "Browser access requires the originating browser context. Open ChatGPT in the browser with the connected extension and try again."
+  },
+  "fallback": "User-authorized fresh CUA cloud browser for independently requested public-beta acceptance; not a DNSPod sign-in bypass",
+  "cloud_browser": {
+    "family": "Chrome",
+    "type": "cdp",
+    "browser_id": "1",
+    "tab_id": "1",
+    "url": "https://beta.mastermind-x.com/",
+    "visible_text": "upstream connect error or disconnect/reset before headers. reset reason: remote connection failure"
+  },
+  "reconciliation": [
+    "Unsupported visibility option refused before tab creation.",
+    "Subsequent createBrowserTab opened exactly tab1 but JS assignment reported betaTab is not defined; existing tab1 was rebound without creating another tab."
+  ],
+  "application_acceptance": false,
+  "security_warning_bypassed": false,
+  "dns_changed": false,
+  "auth_flow_executed": false,
+  "prior_dnspod_state": "Last actually accessible original DNSPod tab1065716971 was at sign-in; current extension cannot access originating browser context."
+}

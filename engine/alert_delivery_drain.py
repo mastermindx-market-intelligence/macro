@@ -56,6 +56,7 @@ from typing import Callable
 
 from lib import user_prefs
 from lib.tiers import normalize_tier, tier_rank
+from lib.frozen_delivery_client import FrozenEmailDelivery, FrozenEmailAdmission, origin as delivery_origin
 
 # --------------------------------------------------------------------------- #
 # Typed reads (F08 freeze section 5 vocabulary)
@@ -482,7 +483,8 @@ class Decision:
 
 
 def decide_row(row: dict, *, user_state: str, record: dict | None,
-              ent: TypedRead, suppression: TypedRead, now_utc: datetime) -> Decision:
+              ent: TypedRead, suppression: TypedRead, now_utc: datetime,
+              frozen_admission: FrozenEmailAdmission | None = None) -> Decision:
     if user_state != READ_OK or record is None:
         return Decision(action="unevaluable", reason="prefs_unknown")
     meta = record.get("user_metadata") if isinstance(record, dict) else None
@@ -513,11 +515,33 @@ def decide_row(row: dict, *, user_state: str, record: dict | None,
     if ent.state == READ_UNAVAILABLE:
         return Decision(action="unevaluable", reason="entitlement_unavailable")
     requires_tier = payload.get("requires_tier")
+    if category == "options_exposure_node":
+        # Category policy is server-owned. A missing/free payload cannot lower
+        # the native Options plan minimum; a legitimate stricter tier survives.
+        rank = tier_rank()
+        if rank is None or "essential" not in rank:
+            return Decision(action="unevaluable", reason="entitlement_unavailable")
+        if requires_tier is not None and not isinstance(requires_tier, str):
+            return Decision(action="unevaluable", reason="entitlement_unavailable")
+        requested = normalize_tier(requires_tier)
+        # Unknown nonempty requirements retain the incumbent fail-closed
+        # entitlement decision; never downgrade a future tier to essential.
+        if not requested or (requested in rank
+                             and rank.index(requested) < rank.index("essential")):
+            requires_tier = "essential"
+        else:
+            requires_tier = requested
     ent_decision = entitlement_decision(ent, now_utc, requires_tier=requires_tier)
     if ent_decision == "unavailable":
         return Decision(action="unevaluable", reason="entitlement_unavailable")
     if ent_decision == "suppress":
         return Decision(action="suppress", reason="entitlement_lapsed", to_email=to_email, lang=prefs.lang)
+    if category == "options_exposure_node":
+        # A committed event has already disarmed. Current armed state or row
+        # grant fields cannot stand in for this explicit private host capability.
+        if not isinstance(frozen_admission,FrozenEmailAdmission) or not frozen_admission.matches(row):
+            return Decision(action="unevaluable", reason="options_exposure_node_admission_unavailable",
+                            to_email=to_email, lang=prefs.lang)
     if prefs.quiet_note == "unparsed":
         # An unrecognised quiet_hours shape must never fail OPEN to a silent send --
         # surface it as unevaluable (typed, counted, visible in the run receipt).
@@ -673,7 +697,8 @@ def _selector_failure(state: str, *, read_state: str) -> DrainResult:
 
 def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None,
          limit: int = 200, dry_run: bool = False,
-         fire_event_id: str | None = None) -> DrainResult:
+         fire_event_id: str | None = None,
+         frozen_delivery: FrozenEmailDelivery | None = None) -> DrainResult:
     """Drain one batch. NEVER raises for a delivery reason.
 
     ``send_fn(fire_event_id=..., to_email=..., payload=..., lang=..., user_id=...,
@@ -714,7 +739,7 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
         "&or=(status.eq.pending,"
         f"and(status.eq.failed,attempts.lt.{int(ALERT_RETRY_ATTEMPTS_CAP)}),"
         f"and(status.eq.deferred,deliver_after.lte.{urllib.parse.quote(now_iso)}))"
-        "&select=id,user_id,alert_id,fire_event_id,status,payload,attempts,deliver_after"
+        "&select=id,user_id,alert_id,fire_event_id,channel,status,payload,attempts,deliver_after"
         f"&order=created_at.asc&limit={read_limit}")
 
     # Canary validation happens before the receipt is opened. A selector that is
@@ -769,6 +794,20 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
         payload = raw_payload if isinstance(raw_payload, dict) else {}
         if payload.get("category") is None:
             category_unfiltered_n += 1
+        frozen = payload.get("category") == "options_exposure_node" or "frozen_node" in payload
+        admission = None
+        if frozen:
+            # Pin a selected authoritative row before any row mutation. Unknown
+            # proof/current account never becomes a suppression or send credit.
+            if isinstance(frozen_delivery,FrozenEmailDelivery):
+                if delivery_origin(_env("SUPABASE_URL")) != frozen_delivery.origin:
+                    unevaluable_n += 1
+                    continue
+                admission = frozen_delivery.authorize(row,now_iso)
+                if admission is None:
+                    unevaluable_n += 1
+                    continue
+                row=json.loads(admission.row_json); payload=row["payload"]
         user_id = row.get("user_id")
 
         user_state, record = fetch_user_record(str(user_id)) if user_id else (READ_UNAVAILABLE, None)
@@ -779,10 +818,13 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
             suppression = typed_get(f"email_suppression?email=eq.{urllib.parse.quote(addr, safe='')}&select=email,reason") if addr else TypedRead(READ_OK_ZERO, [])
             ent = typed_get(f"user_entitlements?user_id=eq.{urllib.parse.quote(str(user_id), safe='')}&select=tier,status,current_period_end,source")
 
+        if frozen and admission is not None and (not isinstance(record,dict) or record.get("id") != user_id):
+            unevaluable_n += 1
+            continue
         decision = decide_row(row, user_state=user_state, record=record, ent=ent,
-                              suppression=suppression, now_utc=now_utc)
+                              suppression=suppression, now_utc=now_utc,frozen_admission=admission)
 
-        if decision.action == "unevaluable":
+        if decision.action == "unevaluable" or (frozen and admission is None):
             unevaluable_n += 1
             continue
 
@@ -813,7 +855,25 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
                 degraded_n += 1
             continue
 
-        # action == send
+        # action == send. Recheck the selected row and current canonical account
+        # after local policy reads; no historical firing grant is cached for send.
+        if frozen:
+            final = frozen_delivery.authorize(row,now_iso)
+            current_state,current_user=fetch_user_record(str(user_id))
+            if (final is None or not final.matches(row) or current_state != READ_OK
+                    or not isinstance(current_user,dict) or current_user.get("id") != user_id
+                    or str(current_user.get("email") or "") != decision.to_email):
+                unevaluable_n += 1
+                continue
+            address=str(current_user.get("email") or "").strip().lower()
+            current_suppression=typed_get(f"email_suppression?email=eq.{urllib.parse.quote(address,safe='')}&select=email,reason")
+            current_ent=typed_get(f"user_entitlements?user_id=eq.{urllib.parse.quote(str(user_id),safe='')}&select=tier,status,current_period_end,source")
+            current_decision=decide_row(row,user_state=current_state,record=current_user,ent=current_ent,
+                suppression=current_suppression,now_utc=now_utc,frozen_admission=final)
+            if current_decision.action != "send":
+                unevaluable_n += 1
+                continue
+            decision=current_decision
         fire_event_id = row.get("fire_event_id")
         attempt_n = int(row.get("attempts") or 0)
         try:

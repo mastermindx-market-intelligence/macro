@@ -1,0 +1,92 @@
+cd '/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27'
+.venv-shared-shell/bin/python - <<'PY'
+from pathlib import Path
+import subprocess,sys,json,re,hashlib,datetime,yaml
+w=Path.cwd();root=Path('/tmp/shared-shell-css-visual-20261019T1107');destroot=root/'postgap-merge-candidates'
+B='fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd';H='e22e1c33c810da99f7389f5069dd2ee045270c85';M='aa208d3c9ca38a57e92bd8e912eadd17d08f8d92';T='167df5d775c1e79471db639d01ebb2f5ac4b9f8d'
+def git(*args):
+ p=subprocess.run(['git',*args],cwd=w,capture_output=True,timeout=120)
+ assert p.returncode==0,(args,p.stderr.decode());return p.stdout
+assert git('rev-parse','HEAD').decode().strip()==H and not git('status','--porcelain=v1','--untracked-files=all').strip()
+sys.path.insert(0,str(w));from lib.shared_shell import inject_shared_shell_text,BLOCK
+sha=lambda b:hashlib.sha256(b).hexdigest()
+r={'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'base':B,'ours':H,'incoming':M,'preview_tree':T,'source_effect':False,'files':[]}
+def save(path,b,o,t,c,proof):
+ assert not re.search(rb'(?m)^(<<<<<<< |=======|>>>>>>> )',c),path
+ p=destroot/path;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(c)
+ r['files'].append({'path':path,'base_sha256':sha(b),'ours_sha256':sha(o),'incoming_sha256':sha(t),'candidate_sha256':sha(c),'candidate_bytes':len(c),**proof})
+auth="try{ window.MDXAuth.open('signin'); }catch(e){ location.href = 'plans.html'; }"
+rules={
+ 'site/etfs.html':[(auth,"if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('signin'); return; } "+auth,1)],
+ 'site/us_stocks.html':[("location.href = 'stock.html#' + encodeURIComponent(tk);","var _d = 'stock.html#' + encodeURIComponent(tk); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { location.href = _d; }",1),("    window.addEventListener('hashchange', fromHash);","    window.addEventListener('hashchange', fromHash);\n    window.addEventListener('mmx:shell-location', fromHash);",1),("          try{ window.MDXAuth.open('signin'); }catch(e2){ location.href = 'plans.html'; }","          if(window.MMXSharedShell){ window.MMXSharedShell.openAuth('signin'); return; }\n          try{ window.MDXAuth.open('signin'); }catch(e2){ location.href = 'plans.html'; }",1)]
+}
+for p,ops in rules.items():
+ b,o,t=[git('show',s+':'+p) for s in [B,H,M]]
+ def forward(s):
+  for before,after,n in ops:
+   assert s.count(before)==n,(p,'adapter anchor',s.count(before),n);s=s.replace(before,after)
+  return inject_shared_shell_text(s,version='048314d5',css_version='b1918cca')
+ assert forward(b.decode())==o.decode(),('base does not reconstruct ours',p)
+ c=forward(t.decode());rev=BLOCK.sub('',c,count=1)
+ for before,after,n in reversed(ops):
+  assert rev.count(after)==n;rev=rev.replace(after,before)
+ assert rev==t.decode() and inject_shared_shell_text(c,version='048314d5',css_version='b1918cca')==c
+ save(p,b,o,t,c.encode(),{'base_to_ours_reconstructed':True,'incoming_recovered_exactly':True,'injector_idempotent':True,'adapter_count':len(ops)})
+pat=r'(?ms)^<<<<<<< [^\n]+\n(.*?)^=======\n(.*?)^>>>>>>> [^\n]+\n'
+for p in ['app/deploy/Caddyfile','app/deploy/update.sh','.github/ci/legacy-jobs.yml']:
+ b,o,t=[git('show',s+':'+p) for s in [B,H,M]];mt=git('show',T+':'+p).decode();seen=[]
+ def resolve(m):
+  a,c=m.groups()
+  if p=='app/deploy/Caddyfile':
+   assert len(a.splitlines())==len(c.splitlines())==1
+   sa,sc=set(a.split()),set(c.split())
+   assert sa-sc=={'/shared_shell_bridge.js','/shared_shell.css'} and sc-sa=={'/institutional_holding_research.css','/institutional_holding_research.js'}
+   before=' /nav_market.js ';after=' /nav_market.js /shared_shell_bridge.js /shared_shell.css '
+   assert c.count(before)==1
+   result=c.replace(before,after);assert result.replace(after,before)==c
+  elif p=='app/deploy/update.sh':
+   before='lib/(config|ai_costs|';after='lib/(config|shared_shell|ai_costs|'
+   assert c.count(before)==1 and a.count(after)==1
+   result=c.replace(before,after)
+   assert o.decode().replace(after,before)==b.decode()
+   assert result.replace(after,before)==c
+  else:
+   assert a in ['      - "lib/shared_shell.py"\n      - "lib/site_assets.py"\n','      - "lib/shared_shell.py"\n']
+   assert all(not l.strip() or l.startswith('      - ') or l.startswith('      # ') for l in c.splitlines())
+   result=a+c
+  seen.append({'ours':a,'incoming':c,'resolved':result});return result
+ c=re.sub(pat,resolve,mt);proof={'conflict_count':len(seen),'preserves_both_intents':True}
+ if p=='app/deploy/Caddyfile':assert len(seen)==4
+ if p=='app/deploy/update.sh':
+  assert len(seen)==1 and c.replace('lib/(config|shared_shell|ai_costs|','lib/(config|ai_costs|')==t.decode()
+  proof['inverse_recovers_entire_incoming_file']=True
+ if p=='.github/ci/legacy-jobs.yml':
+  assert len(seen)==14
+  bj,oj,tj,mj=[yaml.safe_load(x)['jobs'] for x in [b,o,t,c]]
+  assert list(mj)==list(tj) and len(mj)==329
+  deltas=[];sentinel=object()
+  for job,j in mj.items():
+   if job not in bj:assert j==tj[job];continue
+   bo,oo,tt=bj[job],oj[job],tj[job]
+   assert set(j)==set(tt)|set(oo)
+   for key in set(bo)|set(oo)|set(tt):
+    bv,ov,tv=bo.get(key,sentinel),oo.get(key,sentinel),tt.get(key,sentinel)
+    if key=='paths':
+     bs,os_,ts=[set(x if x is not sentinel else []) for x in (bv,ov,tv)]
+     expected=(ts|(os_-bs))-(bs-os_)
+     assert set(j.get(key,[]))==expected,(job,key,'path intent mismatch')
+    else:
+     if ov==bv:expected=tv
+     elif tv==bv or ov==tv:expected=ov
+     else:raise AssertionError((job,key,'unresolved semantic overlap'))
+     assert j.get(key,sentinel)==expected,(job,key,'metadata intent mismatch')
+   if oo!=bo:deltas.append({'job':job,'fields':[k for k in set(bo)|set(oo) if bo.get(k,sentinel)!=oo.get(k,sentinel)]})
+  proof.update({'base_job_count':len(bj),'ours_job_count':len(oj),'incoming_job_count':len(tj),'merged_job_count':len(mj),'incoming_job_order_preserved':True,'new_incoming_jobs':[x for x in tj if x not in bj],'all_job_fields_three_way_verified':True,'ours_job_delta_fields':deltas})
+ save(p,b,o,t,c.encode(),proof)
+ assert len(seen)>0
+ (root/('postgap-conflict-'+p.replace('/','_')+'.json')).write_text(json.dumps(seen,indent=2)+'\n')
+assert not git('status','--porcelain=v1','--untracked-files=all').strip()
+r['finished_at']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+raw=json.dumps(r,indent=2)+'\n';(root/'macro-postgap-five-conflict-candidates.json').write_text(raw)
+print(raw);print(json.dumps({'receipt_sha256':sha(raw.encode())}))
+PY

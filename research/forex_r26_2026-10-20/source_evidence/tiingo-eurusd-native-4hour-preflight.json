@@ -1,0 +1,9 @@
+{
+  "source_head": "57bb2f29a4bb341ef32eaa04d5cd058e1045b53d",
+  "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-20&resampleFreq=4hour&startDate=2026-10-19",
+  "plan_sha256": "14ecfd1ad7a6c98f5576babfbbff3fdba3accb1a0aa2f22538dcc5eb03369264",
+  "archive_root_exists": true,
+  "receipt_match_count": 0,
+  "receipts": [],
+  "acquisition_performed": false
+}

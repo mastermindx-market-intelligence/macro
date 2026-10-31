@@ -1,0 +1,1430 @@
+{
+  "schema_version": "guidance_original_release_pilot_v1",
+  "created_utc_date": "2026-10-21",
+  "purpose": "Source qualification and measurement pilot distinguishing annual headlines from changes in the remaining-period operating outlook; no investment-performance claim.",
+  "frozen_sample": {
+    "issuers": [
+      "MSFT",
+      "CAT",
+      "DUK"
+    ],
+    "selection": "Purposive issuer choice for different disclosure formats, frozen by parent before extraction; not selected by market outcomes and not population-representative.",
+    "event_rule": "All four quarterly earnings releases PUBLISHED in calendar 2022 per issuer; fiscal periods can end in 2021 or 2022.",
+    "expected_current_events": 12,
+    "retained_current_events": 12,
+    "calibration_examples_excluded": [
+      "WMT",
+      "CLX"
+    ]
+  },
+  "classification_contract": {
+    "primary_information_stage": "original earnings release text; exact first public availability not assumed",
+    "later_call_handling": "Official call context, when inspected, is separate and cannot overwrite a release-time unavailable label.",
+    "comparison_unit": "Same issuer, metric, target period, accounting/currency basis, and business scope. Different target years and changed exclusions are not like-for-like revisions.",
+    "remaining_period_test": "Annual maintenance or a changed annual midpoint alone cannot identify a remaining-period revision. No missing values are imputed as unchanged.",
+    "numeric_reconstruction": "No annual-EPS-minus-quarterly-EPS forecast bridge was constructed.",
+    "no_observed_fundamental_repair_inference": "A financial/tax benefit, FX translation update, new fiscal year, or scope change is recorded separately from a forward operating revision."
+  },
+  "blinding_and_review": {
+    "intended_design": "Outcome-blinded original-source measurement",
+    "achieved_design": "Market-outcome-unjoined provisional classification; strict blinding not achieved.",
+    "market_data_feeds_fetched": false,
+    "market_prices_or_returns_in_artifact": false,
+    "market_outcomes_joined": false,
+    "incidental_exposure": "Initial searches using site: text returned off-scope third-party market-response/consensus/current-price snippets. Explicit domain filtering was then used; one later issuer-report snippet contained TSR. Those sources were not opened for analysis or copied into packets and did not determine labels.",
+    "review": "One native extraction lane per issuer plus integration checks against primary release passages; not independent double annotation. No inter-rater agreement estimate.",
+    "issuer_identity_blinded": false,
+    "later_fundamental_content_visible_in_other_packets": true,
+    "earlier_labels_use_later_fundamental_content": false
+  },
+  "coverage_and_qualification": {
+    "current_events_by_issuer": {
+      "CAT": 4,
+      "DUK": 4,
+      "MSFT": 4
+    },
+    "source_records": 34,
+    "release_body_annual_class_counts": {
+      "guidance_deferred_MSFT": 4,
+      "no_comparable_operating_range_found_CAT": 4,
+      "new_fiscal_year_DUK": 1,
+      "annual_maintenance_DUK": 2,
+      "scope_noncomparable_DUK": 1
+    },
+    "release_body_remaining_operating_revision_unresolved_count": 12,
+    "later_call_context_packets": 3,
+    "SEC_acceptance_timestamps_verified_for_current_events": 2,
+    "earliest_public_release_timestamps_verified_for_current_events": 0,
+    "intraday_execution_qualified": false,
+    "complete_intervening_disclosure_census": false,
+    "predictive_or_trading_usefulness_qualified": false,
+    "interpretation": "Unresolved release-body classifications are retained observations about this source scope, not evidence that the issuer never supplied useful forward information."
+  },
+  "common_temporal_limits": [
+    "A historical page retrieved today and its printed publication date do not alone prove the original text version or exact first public dissemination.",
+    "SEC exhibit accession identifies a filed/furnished version; acceptance time, where known, is separate from earliest issuer release time.",
+    "Scheduled publication/call times are not observed actual dissemination times.",
+    "Call-transcript statements cannot enter earlier release-time information; exact statement and transcript-publication timestamps remain unqualified."
+  ],
+  "issuer_specific_source_limits": {
+    "MSFT": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312522165839/0001193125-22-165839-index.html",
+        "status": "acceptance_index_unavailable_via_web_tool",
+        "effect": "June 2 update has printed date and accession; exact SEC acceptance not retained"
+      },
+      {
+        "url": "https://news.microsoft.com/speeches/page/6/",
+        "refs": [
+          "turn62view0"
+        ],
+        "status": "issuer_archive_opened; original FY22Q1/Q2 transcript DOCX links identified but content retrieval failed",
+        "effect": "No invented January or October-2021 call labels"
+      }
+    ],
+    "CAT": [
+      "All four operating-revision classifications remain unresolved from the selected original releases; this is not a statement that Caterpillar gave no guidance elsewhere.",
+      "Two SEC acceptance timestamps were verified; exact original-release timestamps remain unverified for all four.",
+      "The August issuer PDF returned 502; its original SEC exhibit was opened instead.",
+      "A full original-call/conference chain was outside this bounded release-only lane."
+    ],
+    "DUK": [
+      "Retrieval of historical pages today does not prove unchanged original-page contents or the first public dissemination time.",
+      "Original issuer releases are available as SEC exhibits with accession identifiers; SEC acceptance timestamps were not retrieved.",
+      "Schedule notices establish intended 07:00 ET release timing only. No intraday execution qualification.",
+      "No claim that bounded archive searches establish exhaustive absence of intervening revisions."
+    ]
+  },
+  "sources": [
+    {
+      "source_id": "MSFT_FY22Q1_RELEASE",
+      "url": "https://www.microsoft.com/en-us/investor/earnings/fy-2022-q1/press-release-webcast",
+      "title": "Microsoft FY22 Q1 earnings release",
+      "printed_publication_date": "2021-10-26",
+      "source_kind": "issuer_historical_release_page",
+      "source_refs": [
+        "turn47view0"
+      ],
+      "inspected_locations": "Business Outlook; headline; Non-GAAP Definition",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "MSFT_FY22Q2_RELEASE",
+      "url": "https://www.microsoft.com/en-us/investor/earnings/fy-2022-q2/press-release-webcast",
+      "title": "Microsoft FY22 Q2 earnings release",
+      "printed_publication_date": "2022-01-25",
+      "source_kind": "issuer_historical_release_page",
+      "source_refs": [
+        "turn45view0",
+        "turn47view1"
+      ],
+      "inspected_locations": "Business Outlook lines 47-48; Webcast Details lines 57-59",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "MSFT_FY22Q3_RELEASE",
+      "url": "https://www.microsoft.com/en-us/investor/earnings/fy-2022-q3/press-release-webcast",
+      "title": "Microsoft FY22 Q3 earnings release",
+      "printed_publication_date": "2022-04-26",
+      "source_kind": "issuer_historical_release_page",
+      "source_refs": [
+        "turn45view1",
+        "turn47view2"
+      ],
+      "inspected_locations": "Opening financial adjustments lines 18-30; Business Outlook lines 62-64",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "MSFT_FY22Q4_RELEASE",
+      "url": "https://www.microsoft.com/en-us/investor/earnings/fy-2022-q4/press-release-webcast",
+      "title": "Microsoft FY22 Q4 earnings release",
+      "printed_publication_date": "2022-07-26",
+      "source_kind": "issuer_historical_release_page",
+      "source_refs": [
+        "turn45view2",
+        "turn47view3"
+      ],
+      "inspected_locations": "Impact of Recent Events lines 20-29; FY2022 reconciliation lines 56-81; Business Outlook lines 84-86",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "MSFT_FY23Q1_RELEASE",
+      "url": "https://www.microsoft.com/en-us/investor/earnings/fy-2023-q1/press-release-webcast",
+      "title": "Microsoft FY23 Q1 earnings release",
+      "printed_publication_date": "2022-10-25",
+      "source_kind": "issuer_historical_release_page",
+      "source_refs": [
+        "turn45view3",
+        "turn47view4"
+      ],
+      "inspected_locations": "GAAP/non-GAAP reconciliation lines 19-30; Business Outlook lines 60-62",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "MSFT_FY22Q3_CALL",
+      "url": "https://www.microsoft.com/en-us/investor/events/fy-2022/earnings-fy-2022-q3",
+      "title": "Microsoft FY22 Q3 official earnings-call transcript",
+      "printed_publication_date": "2022-04-26",
+      "source_kind": "issuer_official_call_transcript_retrieved_today",
+      "source_refs": [
+        "turn55view5",
+        "turn58view1"
+      ],
+      "inspected_locations": "CFO outlook lines 175-222",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "MSFT_FY22Q4_CALL",
+      "url": "https://www.microsoft.com/en-us/investor/events/FY-2022/earnings-fy-2022-q4",
+      "title": "Microsoft FY22 Q4 official earnings-call transcript",
+      "printed_publication_date": "2022-07-26",
+      "source_kind": "issuer_official_call_transcript_retrieved_today",
+      "source_refs": [
+        "turn55view6",
+        "turn58view2"
+      ],
+      "inspected_locations": "CFO full-year outlook lines 233-242",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "MSFT_FY23Q1_CALL",
+      "url": "https://www.microsoft.com/en-us/investor/events/fy-2023/earnings-fy-2023-q1",
+      "title": "Microsoft FY23 Q1 official earnings-call transcript",
+      "printed_publication_date": "2022-10-25",
+      "source_kind": "issuer_official_call_transcript_retrieved_today",
+      "source_refs": [
+        "turn55view7",
+        "turn58view0"
+      ],
+      "inspected_locations": "Full-year outlook lines 306-311",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "MSFT_20220602_8K",
+      "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312522165839/d295016d8k.htm",
+      "title": "Microsoft June 2, 2022 Form 8-K Item 7.01",
+      "printed_publication_date": "2022-06-02",
+      "source_kind": "issuer_sec_current_report",
+      "source_refs": [
+        "turn55view0"
+      ],
+      "inspected_locations": "Item 7.01 lines 81-82",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "accession": "0001193125-22-165839",
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "MSFT_20220602_FX_EXHIBIT",
+      "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312522165839/d295016dex991.htm",
+      "title": "Microsoft FY22 Q4 FX update through May, Exhibit 99.1",
+      "printed_publication_date": "2022-06-02",
+      "source_kind": "issuer_sec_exhibit",
+      "source_refs": [
+        "turn55view1"
+      ],
+      "inspected_locations": "Slide 3 table and footnotes, extracted lines 14-15",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "accession": "0001193125-22-165839",
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "MSFT_20220125_AVAILABILITY_NOTICE",
+      "url": "https://news.microsoft.com/source/2022/01/25/microsoft-earnings-press-release-available-on-investor-relations-website-13/",
+      "title": "Microsoft earnings-release availability notice",
+      "printed_publication_date": "2022-01-25",
+      "source_kind": "issuer_publication_notice_with_editorial_update",
+      "source_refs": [
+        "turn64view0"
+      ],
+      "inspected_locations": "Editor's note and publication paragraph lines 11-13",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "MSFT_20220111_SCHEDULE",
+      "url": "https://news.microsoft.com/source/2022/01/11/microsoft-announces-quarterly-earnings-release-date-50/",
+      "title": "Microsoft advance scheduling notice for FY22 Q2",
+      "printed_publication_date": "2022-01-11",
+      "source_kind": "issuer_advance_notice",
+      "source_refs": [
+        "turn64view1"
+      ],
+      "inspected_locations": "Publication schedule line 11",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "cat_20211028_pdf",
+      "url": "https://www.caterpillar.com/content/dam/caterpillarDotCom/releases/3q21/3q21-caterpillar-inc-financial-results.pdf",
+      "title": "Caterpillar Reports Third-Quarter 2021 Results",
+      "printed_publication_date": "2021-10-28",
+      "source_kind": "original_issuer_document_or_SEC_record",
+      "source_refs": [
+        "turn41view4",
+        "turn52view3"
+      ],
+      "inspected_locations": "Original issuer PDF; opening narrative, outlook/expect search, and tax section on printed page 5.",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": [
+        "turn66view0"
+      ]
+    },
+    {
+      "source_id": "cat_20220128_release",
+      "url": "https://www.sec.gov/Archives/edgar/data/18230/000001823022000014/cat_exx991x4qx2021xearning.htm",
+      "title": "Caterpillar Reports Fourth-Quarter and Full-Year 2021 Results",
+      "printed_publication_date": "2022-01-28",
+      "source_kind": "original_issuer_document_or_SEC_record",
+      "source_refs": [
+        "turn40view0",
+        "turn41view0",
+        "turn50view1"
+      ],
+      "inspected_locations": "Original issuer PDF, opening narrative through Notes, tax discussion printed page 6; SEC exhibit corroboration.",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "issuer_url": "https://www.caterpillar.com/en/news/corporate-press-releases/h/4q21-results-caterpillar-inc.html",
+      "issuer_pdf_url": "https://www.caterpillar.com/content/dam/caterpillarDotCom/releases/4q21/4q21-caterpillar-inc-financial-results.pdf",
+      "integration_review_source_refs": [
+        "turn65view0",
+        "turn66view1"
+      ]
+    },
+    {
+      "source_id": "cat_20220128_sec_index",
+      "url": "https://www.sec.gov/Archives/edgar/data/18230/000001823022000014/0000018230-22-000014-index.html",
+      "title": "SEC filing detail 0000018230-22-000014",
+      "printed_publication_date": "2022-01-28",
+      "source_kind": "original_issuer_document_or_SEC_record",
+      "source_refs": [
+        "turn52view0"
+      ],
+      "inspected_locations": "Filing date, acceptance timestamp, and exhibit link.",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "cat_20220428_release",
+      "url": "https://www.sec.gov/Archives/edgar/data/18230/000001823022000107/ex991toformcat1q2022earnin.htm",
+      "title": "Caterpillar Reports First-Quarter 2022 Results",
+      "printed_publication_date": "2022-04-28",
+      "source_kind": "original_issuer_document_or_SEC_record",
+      "source_refs": [
+        "turn40view1",
+        "turn41view1",
+        "turn46view5",
+        "turn52view1"
+      ],
+      "inspected_locations": "Issuer HTML opening narrative; full issuer PDF identified and searched for expectations/outlook; tax section printed page 5; SEC exhibit corroboration.",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "issuer_url": "https://www.caterpillar.com/en/news/corporate-press-releases/h/1q22-results-caterpillar-inc.html",
+      "issuer_pdf_url": "https://www.caterpillar.com/content/dam/caterpillarDotCom/releases/1q22/1q22-caterpillar-inc-financial-results.pdf",
+      "integration_review_source_refs": [
+        "turn65view1",
+        "turn66view2"
+      ]
+    },
+    {
+      "source_id": "cat_20220428_8k",
+      "url": "https://www.sec.gov/Archives/edgar/data/18230/000001823022000107/cat-20220428.htm",
+      "title": "Caterpillar 2022-04-28 Form 8-K",
+      "printed_publication_date": "2022-04-28",
+      "source_kind": "original_issuer_document_or_SEC_record",
+      "source_refs": [
+        "turn50view2"
+      ],
+      "inspected_locations": "Item 2.02 and exhibit 99.1 link.",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "cat_20220517_investor_day",
+      "url": "https://www.caterpillar.com/en/news/corporate-press-releases/h/caterpillar-highlights-services-and-energy-transition-growth.html",
+      "title": "Caterpillar Highlights Services and Energy Transition Growth Opportunities at 2022 Investor Day",
+      "printed_publication_date": "2022-05-17",
+      "source_kind": "original_issuer_document_or_SEC_record",
+      "source_refs": [
+        "turn48view0"
+      ],
+      "inspected_locations": "Issuer release narrative, lines 317-332 in retrieval.",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": [
+        "turn65view4",
+        "turn66view5"
+      ]
+    },
+    {
+      "source_id": "cat_20190502_investor_day",
+      "url": "https://www.caterpillar.com/en/news/corporate-press-releases/h/050219_investor_day_announcement.html",
+      "title": "Caterpillar Raises Dividend, Sets New Financial Targets and Provides Update on Enterprise Strategy at 2019 Investor Day",
+      "printed_publication_date": "2019-05-02",
+      "source_kind": "original_issuer_document_or_SEC_record",
+      "source_refs": [
+        "turn56view3"
+      ],
+      "inspected_locations": "Issuer release strategic-target narrative.",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "cat_20220802_release",
+      "url": "https://www.sec.gov/Archives/edgar/data/18230/000001823022000178/ex991toformcat2q2022earnin.htm",
+      "title": "Caterpillar Reports Second-Quarter 2022 Results",
+      "printed_publication_date": "2022-08-02",
+      "source_kind": "original_issuer_document_or_SEC_record",
+      "source_refs": [
+        "turn40view2",
+        "turn50view0",
+        "turn52view2",
+        "turn52view5"
+      ],
+      "inspected_locations": "Issuer HTML and full SEC release exhibit; tax section printed page 5 and outlook search. Issuer PDF returned 502 twice.",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "issuer_url": "https://www.caterpillar.com/en/news/corporate-press-releases/h/2q22-results-caterpillar-inc.html",
+      "issuer_pdf_url": "https://www.caterpillar.com/content/dam/caterpillarDotCom/releases/2q22/2q22-caterpillar-inc-financial-results.pdf",
+      "integration_review_source_refs": [
+        "turn65view2",
+        "turn66view3"
+      ]
+    },
+    {
+      "source_id": "cat_20221027_release",
+      "url": "https://www.sec.gov/Archives/edgar/data/18230/000001823022000216/ex991toformcat3q2022earnin.htm",
+      "title": "Caterpillar Reports Third-Quarter 2022 Results",
+      "printed_publication_date": "2022-10-27",
+      "source_kind": "original_issuer_document_or_SEC_record",
+      "source_refs": [
+        "turn40view3",
+        "turn41view3",
+        "turn46view6",
+        "turn50view3"
+      ],
+      "inspected_locations": "Issuer HTML, PDF tax section printed page 5, outlook/expect search, SEC exhibit narrative.",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "issuer_url": "https://www.caterpillar.com/en/news/corporate-press-releases/h/3q22-results-caterpillar-inc.html",
+      "issuer_pdf_url": "https://www.caterpillar.com/content/dam/caterpillarDotCom/releases/3q22/3q22-caterpillar-inc-financial-results.pdf",
+      "integration_review_source_refs": [
+        "turn65view3",
+        "turn66view4"
+      ]
+    },
+    {
+      "source_id": "cat_20221027_sec_index",
+      "url": "https://www.sec.gov/Archives/edgar/data/18230/000001823022000216/0000018230-22-000216-index.htm",
+      "title": "SEC filing detail 0000018230-22-000216",
+      "printed_publication_date": "2022-10-27",
+      "source_kind": "original_issuer_document_or_SEC_record",
+      "source_refs": [
+        "turn56view2"
+      ],
+      "inspected_locations": "Filing date, acceptance timestamp, and release exhibit link.",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "cat_release_archive",
+      "url": "https://www.caterpillar.com/en/news/corporate-press-releases/h.html",
+      "title": "Caterpillar Corporate Press Release Archive",
+      "printed_publication_date": null,
+      "source_kind": "original_issuer_document_or_SEC_record",
+      "source_refs": [
+        "turn40view5"
+      ],
+      "inspected_locations": "Archive entries from October 2021 through October 2022.",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "DUK_2021Q3_RELEASE",
+      "url": "https://www.sec.gov/Archives/edgar/data/1326160/000132616021000228/er-20210930xearningsreleas.htm",
+      "title": "Duke third-quarter 2021 issuer release",
+      "printed_publication_date": "2021-11-04",
+      "source_kind": "issuer_original_release_sec_exhibit_99_1",
+      "source_refs": [
+        "turn53view0"
+      ],
+      "inspected_locations": "Opening bullets and management outlook; lines 14\u201329; non-GAAP definitions lines 95\u2013114",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "accession": "0001326160-21-000228",
+      "integration_review_source_refs": [
+        "turn68view0"
+      ]
+    },
+    {
+      "source_id": "DUK_2021Q4_RELEASE",
+      "url": "https://www.sec.gov/Archives/edgar/data/1326160/000132616022000007/er-20211231xearningsreleas.htm",
+      "title": "Duke fourth-quarter and full-year 2021 issuer release",
+      "printed_publication_date": "2022-02-10",
+      "source_kind": "issuer_original_release_sec_exhibit_99_1",
+      "source_refs": [
+        "turn43view0"
+      ],
+      "inspected_locations": "Opening bullets and explanation; lines 14\u201328; quarterly results lines 35\u201336",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "accession": "0001326160-22-000007",
+      "integration_review_source_refs": [
+        "turn67view0",
+        "turn68view3"
+      ]
+    },
+    {
+      "source_id": "DUK_2022Q1_RELEASE",
+      "url": "https://www.sec.gov/Archives/edgar/data/1326160/000132616022000177/er-20220331xearningsreleas.htm",
+      "title": "Duke first-quarter 2022 issuer release",
+      "printed_publication_date": "2022-05-09",
+      "source_kind": "issuer_original_release_sec_exhibit_99_1",
+      "source_refs": [
+        "turn43view1"
+      ],
+      "inspected_locations": "Opening bullets and outlook; lines 14\u201328; electric-segment drivers lines 40\u201341",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "accession": "0001326160-22-000177",
+      "integration_review_source_refs": [
+        "turn67view1",
+        "turn68view4"
+      ]
+    },
+    {
+      "source_id": "DUK_2022Q2_RELEASE",
+      "url": "https://www.sec.gov/Archives/edgar/data/1326160/000132616022000244/er-20220630xearningsreleas.htm",
+      "title": "Duke second-quarter 2022 issuer release",
+      "printed_publication_date": "2022-08-04",
+      "source_kind": "issuer_original_release_sec_exhibit_99_1",
+      "source_refs": [
+        "turn43view2"
+      ],
+      "inspected_locations": "Opening bullets, adjustment explanation and outlook; lines 14\u201327",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "accession": "0001326160-22-000244",
+      "integration_review_source_refs": [
+        "turn67view2"
+      ]
+    },
+    {
+      "source_id": "DUK_2022Q3_RELEASE",
+      "url": "https://www.sec.gov/Archives/edgar/data/1326160/000132616022000277/er-20220930xearningsreleas.htm",
+      "title": "Duke third-quarter 2022 issuer release",
+      "printed_publication_date": "2022-11-04",
+      "source_kind": "issuer_original_release_sec_exhibit_99_1",
+      "source_refs": [
+        "turn49view0"
+      ],
+      "inspected_locations": "Opening bullets and outlook lines 14\u201332; special-item reconciliation lines 73\u2013112",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "accession": "0001326160-22-000277",
+      "integration_review_source_refs": [
+        "turn67view3"
+      ]
+    },
+    {
+      "source_id": "DUK_2021Q4_SCHEDULE",
+      "url": "https://news.duke-energy.com/releases/duke-energy-to-announce-fourth-quarter-and-year-end-2021-financial-results-on-feb-10",
+      "title": "Advance scheduling notice for February release",
+      "printed_publication_date": "2022-01-13",
+      "source_kind": "issuer_advance_notice",
+      "source_refs": [
+        "turn59view0"
+      ],
+      "inspected_locations": "Lines 22\u201325",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "DUK_2022Q1_SCHEDULE",
+      "url": "https://news.duke-energy.com/releases/duke-energy-to-announce-first-quarter-2022-financial-results-on-may-9",
+      "title": "Advance scheduling notice for May release",
+      "printed_publication_date": "2022-04-11",
+      "source_kind": "issuer_advance_notice",
+      "source_refs": [
+        "turn59view1"
+      ],
+      "inspected_locations": "Lines 22\u201326",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "DUK_2022Q2_SCHEDULE",
+      "url": "https://news.duke-energy.com/releases/duke-energy-to-announce-second-quarter-2022-financial-results-on-aug-4",
+      "title": "Advance scheduling notice for August release",
+      "printed_publication_date": "2022-07-11",
+      "source_kind": "issuer_advance_notice",
+      "source_refs": [
+        "turn59view2"
+      ],
+      "inspected_locations": "Lines 22\u201326",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "DUK_2022Q3_SCHEDULE",
+      "url": "https://news.duke-energy.com/releases/duke-energy-to-announce-third-quarter-2022-financial-results-on-nov-4",
+      "title": "Advance scheduling notice for November release",
+      "printed_publication_date": "2022-10-12",
+      "source_kind": "issuer_advance_notice",
+      "source_refs": [
+        "turn59view3"
+      ],
+      "inspected_locations": "Lines 22\u201326",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "integration_review_source_refs": []
+    },
+    {
+      "source_id": "DUK_2022_ANNUAL_MEETING_RELEASE",
+      "url": "https://investors.duke-energy.com/news/news-details/2022/Duke-Energy-making-rapid-clean-energy-progress-CEO-tells-shareholders-at-annual-meeting-05-05-2022/default.aspx",
+      "title": "Issuer annual-meeting release",
+      "printed_publication_date": "2022-05-05",
+      "source_kind": "issuer_release",
+      "source_refs": [
+        "turn61view0"
+      ],
+      "inspected_locations": "Body lines 41\u201374",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "bounded_inspection_result": "Inspected release does not supply a replacement FY2022 adjusted-EPS range; meeting Q&A and all other communications were not exhaustively reviewed.",
+      "integration_review_source_refs": [
+        "turn68view2"
+      ]
+    },
+    {
+      "source_id": "DUK_2022_ENERGY_UPDATE",
+      "url": "https://www.sec.gov/Archives/edgar/data/1326160/000110465922105599/tm2227398d1_ex99-1.htm",
+      "title": "Issuer energy-transition presentation",
+      "printed_publication_date": "2022-10-04",
+      "source_kind": "issuer_presentation_sec_exhibit",
+      "source_refs": [
+        "turn53view1"
+      ],
+      "inspected_locations": "Title and key messages; extracted text checked for annual EPS range",
+      "retrieval_date_utc": "2026-10-21",
+      "verbatim_evidence_quotes": [],
+      "original_first_public_availability_proven": false,
+      "accession": "0001104659-22-105599",
+      "bounded_inspection_result": "Inspected text describes a longer-term capital-plan update; no replacement FY2022 adjusted-EPS range located. Image/transcript completeness not qualified.",
+      "integration_review_source_refs": [
+        "turn68view1"
+      ]
+    }
+  ],
+  "packets": [
+    {
+      "issuer": "Caterpillar Inc.",
+      "ticker": "CAT",
+      "cik": "0000018230",
+      "same_day_call_included": false,
+      "guidance_chain_completeness": "bounded_original_release_archive_review_only",
+      "packet_id": "CAT_2022_01_28",
+      "current_source_id": "cat_20220128_release",
+      "event_date": "2022-01-28",
+      "reported_fiscal_period": "Q4 and FY2021 ended 2021-12-31",
+      "forecast_target_period": "FY2022 operating outlook not stated; FY2021 discussed as completed actuals",
+      "nearest_prior_release_source_id": "cat_20211028_pdf",
+      "nearest_comparable_prior_operating_outlook": null,
+      "prior_comparator_status": "Previous quarterly release available; comparable FY2022 operating guidance not located.",
+      "intervening_source_ids": [],
+      "context_source_ids": [
+        "cat_20190502_investor_day"
+      ],
+      "metric_basis": "Caterpillar consolidated profit per diluted share; non-GAAP adjusted results exclude pension/OPEB mark-to-market and restructuring; tax discussion separately identified.",
+      "non_operating_revision": {
+        "metric": "FY2021 annual effective tax rate",
+        "prior": 25,
+        "current": 23,
+        "unit": "percent approximately",
+        "direction": "lower_at_final_actualization",
+        "is_forward_operating_revision": false
+      },
+      "evidence_source_ids": [
+        "cat_20220128_release",
+        "cat_20211028_pdf",
+        "cat_20220128_sec_index"
+      ],
+      "interpretation": "Retain unavailable forward classification. Actual-year tax true-up is not FY2022 repair.",
+      "provisional_labels": {
+        "annual_headline": "not_stated_in_inspected_release",
+        "remaining_period_operating_revision": "unresolved_no_comparable_operating_outlook_in_release",
+        "explicit_remaining_period_maintenance": false,
+        "realized_roll_forward": "Completed FY2021 actuals; cannot label a forward annual raise from actual growth.",
+        "exceptional_financial_effects": "FY2021 tax-rate true-up 25% estimated at Q3 to approximately 23% actual, $118 million benefit; pension/OPEB mark-to-market and restructuring excluded from adjusted EPS."
+      },
+      "availability": {
+        "issuer_time": null,
+        "printed_date": "2022-01-28",
+        "sec_accepted_raw": "2022-01-28 06:31:05",
+        "sec_timezone_explicit_in_retrieved_page": false,
+        "source_id": "cat_20220128_sec_index",
+        "certainty": "dated_original_exhibit_and_SEC_acceptance_record; earliest_dissemination_unverified",
+        "actual_first_public_timestamp": null,
+        "intraday_execution_qualified": false
+      },
+      "source_gaps": [
+        "Annual/remaining-period operating range not found in inspected release; same-day call and conference remarks were not classified.",
+        "Intervening communication chain is bounded, not exhaustive."
+      ],
+      "post_call_context": null,
+      "label_status": "provisional_release_body_measurement; no_trade_signal",
+      "future_release_information_used_for_label": false
+    },
+    {
+      "issuer": "Caterpillar Inc.",
+      "ticker": "CAT",
+      "cik": "0000018230",
+      "same_day_call_included": false,
+      "guidance_chain_completeness": "bounded_original_release_archive_review_only",
+      "packet_id": "CAT_2022_04_28",
+      "current_source_id": "cat_20220428_release",
+      "event_date": "2022-04-28",
+      "reported_fiscal_period": "Q1 FY2022 ended 2022-03-31",
+      "forecast_target_period": "FY2022 for tax estimate; no comparable annual or remaining-period operating range located",
+      "nearest_prior_release_source_id": "cat_20220128_release",
+      "nearest_comparable_prior_operating_outlook": null,
+      "prior_comparator_status": "Prior quarter reports completed FY2021; comparable FY2022 operating outlook unavailable in selected release sources.",
+      "intervening_source_ids": [],
+      "metric_basis": "Consolidated adjusted profit per share excludes restructuring; estimated annual global tax rate excludes specified discrete items.",
+      "non_operating_revision": {
+        "metric": "FY2022 estimated annual global tax rate",
+        "current": 24,
+        "prior_same_horizon": null,
+        "unit": "percent",
+        "direction": "same_horizon_revision_unknown",
+        "is_forward_operating_revision": false
+      },
+      "evidence_source_ids": [
+        "cat_20220428_release",
+        "cat_20220428_8k",
+        "cat_20220128_release"
+      ],
+      "interpretation": "Do not compare the prior year's tax outcome with the current-year estimate as a same-horizon operating downgrade.",
+      "provisional_labels": {
+        "annual_headline": "not_stated_in_inspected_release",
+        "remaining_period_operating_revision": "unresolved_no_comparable_operating_outlook_in_release",
+        "explicit_remaining_period_maintenance": false,
+        "realized_roll_forward": "Quarterly actual performance disclosed, but no annual-operating-guidance bridge established.",
+        "exceptional_financial_effects": "Estimated FY2022 tax rate 24%; prior 23% figure is completed FY2021, a different horizon. Discrete stock-compensation tax benefit $12 million."
+      },
+      "availability": {
+        "issuer_time": null,
+        "printed_date": "2022-04-28",
+        "sec_accepted_raw": null,
+        "certainty": "dated_issuer_release_and_dated_SEC_8K_corroboration; exact_acceptance_and_earliest_dissemination_unverified",
+        "source_id": "cat_20220428_8k",
+        "actual_first_public_timestamp": null,
+        "intraday_execution_qualified": false
+      },
+      "source_gaps": [
+        "Annual/remaining-period operating range not found in inspected release; same-day call and conference remarks were not classified.",
+        "Intervening communication chain is bounded, not exhaustive."
+      ],
+      "post_call_context": null,
+      "label_status": "provisional_release_body_measurement; no_trade_signal",
+      "future_release_information_used_for_label": false
+    },
+    {
+      "issuer": "Caterpillar Inc.",
+      "ticker": "CAT",
+      "cik": "0000018230",
+      "same_day_call_included": false,
+      "guidance_chain_completeness": "bounded_original_release_archive_review_only",
+      "packet_id": "CAT_2022_08_02",
+      "current_source_id": "cat_20220802_release",
+      "event_date": "2022-08-02",
+      "reported_fiscal_period": "Q2 FY2022 ended 2022-06-30",
+      "forecast_target_period": "FY2022 tax estimate; strategic Investor Day targets are longer-term/through-cycle",
+      "nearest_prior_release_source_id": "cat_20220428_release",
+      "nearest_comparable_prior_operating_outlook": null,
+      "prior_comparator_status": "Prior earnings release supplies a same-year tax comparator; May Investor Day supplies separate long-term margin target context, not a FY2022 remainder forecast.",
+      "intervening_source_ids": [
+        "cat_20220517_investor_day"
+      ],
+      "context_source_ids": [
+        "cat_20190502_investor_day"
+      ],
+      "metric_basis": "Consolidated adjusted profit per share excludes restructuring; annual global tax rate excludes discrete items; strategic adjusted margin targets are not the same fiscal horizon.",
+      "non_operating_revision": {
+        "metric": "FY2022 estimated annual global tax rate",
+        "prior": 24,
+        "current": 24,
+        "unit": "percent approximately",
+        "direction": "numerically_unchanged_across_inspected_releases",
+        "is_explicit_operating_maintenance": false,
+        "is_forward_operating_revision": false
+      },
+      "evidence_source_ids": [
+        "cat_20220802_release",
+        "cat_20220428_release",
+        "cat_20220517_investor_day"
+      ],
+      "interpretation": "Long-term margin reaffirmation and unchanged tax estimate cannot be promoted to explicit maintenance of remaining FY2022 operating earnings.",
+      "provisional_labels": {
+        "annual_headline": "not_stated_in_inspected_release",
+        "remaining_period_operating_revision": "unresolved_no_comparable_operating_outlook_in_release",
+        "explicit_remaining_period_maintenance": false,
+        "realized_roll_forward": "Q2 actuals and present demand commentary do not establish a remaining-period operating revision.",
+        "exceptional_financial_effects": "$55 million discrete tax benefit primarily concerns prior-year tax estimates."
+      },
+      "availability": {
+        "issuer_time": null,
+        "printed_date": "2022-08-02",
+        "sec_accepted_raw": null,
+        "certainty": "dated_issuer_release_and_original_SEC_exhibit; SEC_acceptance_index_unavailable_and_earliest_dissemination_unverified",
+        "actual_first_public_timestamp": null,
+        "intraday_execution_qualified": false
+      },
+      "source_gaps": [
+        "Annual/remaining-period operating range not found in inspected release; same-day call and conference remarks were not classified.",
+        "Intervening communication chain is bounded, not exhaustive."
+      ],
+      "post_call_context": null,
+      "label_status": "provisional_release_body_measurement; no_trade_signal",
+      "future_release_information_used_for_label": false
+    },
+    {
+      "issuer": "Caterpillar Inc.",
+      "ticker": "CAT",
+      "cik": "0000018230",
+      "same_day_call_included": false,
+      "guidance_chain_completeness": "bounded_original_release_archive_review_only",
+      "packet_id": "CAT_2022_10_27",
+      "current_source_id": "cat_20221027_release",
+      "event_date": "2022-10-27",
+      "reported_fiscal_period": "Q3 FY2022 ended 2022-09-30",
+      "forecast_target_period": "FY2022 tax estimate; remaining Q4 operating outlook unresolved in selected release",
+      "nearest_prior_release_source_id": "cat_20220802_release",
+      "nearest_comparable_prior_operating_outlook": null,
+      "prior_comparator_status": "Prior release provides the FY2022 tax estimate; no same-horizon operating range identified.",
+      "intervening_source_ids": [],
+      "context_source_ids": [
+        "cat_20220517_investor_day"
+      ],
+      "metric_basis": "Consolidated adjusted profit per share excludes restructuring; tax estimate and discrete settlement effects are separately reported.",
+      "non_operating_revision": {
+        "metric": "FY2022 estimated annual global tax rate",
+        "prior": 24,
+        "current": 23,
+        "unit": "percent approximately",
+        "direction": "lower_tax_estimate",
+        "is_forward_operating_revision": false
+      },
+      "evidence_source_ids": [
+        "cat_20221027_release",
+        "cat_20220802_release",
+        "cat_20221027_sec_index"
+      ],
+      "interpretation": "The observed annual estimate revision is tax-related; do not label it forward operating repair.",
+      "provisional_labels": {
+        "annual_headline": "annual_operating_outlook_not_stated_in_inspected_release",
+        "remaining_period_operating_revision": "unresolved_no_comparable_operating_outlook_in_release",
+        "explicit_remaining_period_maintenance": false,
+        "realized_roll_forward": "Q3 actual profits rose, but an annual operating-guidance revision bridge is not supplied in the inspected release.",
+        "exceptional_financial_effects": "Tax-rate estimate decreases to approximately 23%, with $20 million benefit; separate IRS-settlement discrete tax benefit $41 million."
+      },
+      "availability": {
+        "issuer_time": null,
+        "printed_date": "2022-10-27",
+        "sec_accepted_raw": "2022-10-27 06:30:50",
+        "sec_timezone_explicit_in_retrieved_page": false,
+        "source_id": "cat_20221027_sec_index",
+        "certainty": "dated_original_exhibit_and_SEC_acceptance_record; earliest_dissemination_unverified",
+        "actual_first_public_timestamp": null,
+        "intraday_execution_qualified": false
+      },
+      "source_gaps": [
+        "Annual/remaining-period operating range not found in inspected release; same-day call and conference remarks were not classified.",
+        "Intervening communication chain is bounded, not exhaustive."
+      ],
+      "post_call_context": null,
+      "label_status": "provisional_release_body_measurement; no_trade_signal",
+      "future_release_information_used_for_label": false
+    },
+    {
+      "packet_id": "DUK_2022_02_10",
+      "issuer": "Duke Energy Corporation",
+      "ticker": "DUK",
+      "event_date": "2022-02-10",
+      "reported_fiscal_period": "FY2021 and Q4 ended 2021-12-31",
+      "current_source_id": "DUK_2021Q4_RELEASE",
+      "availability": {
+        "printed_publication_date_certainty": "date_present_in_issuer_release_and_SEC_exhibit",
+        "planned_release_local_time": "07:00",
+        "planned_release_timezone": "US Eastern time (ET as printed)",
+        "planned_time_source_id": "DUK_2021Q4_SCHEDULE",
+        "actual_first_public_timestamp": null,
+        "sec_acceptance_timestamp": null,
+        "timestamp_status": "intended_time_verified_actual_first_availability_not_verified",
+        "intraday_execution_qualified": false
+      },
+      "prior_comparator": {
+        "source_id": "DUK_2021Q3_RELEASE",
+        "status": "nearest_verified_prior_earnings_outlook_different_target_year",
+        "target_period": "FY2021",
+        "adjusted_eps_range": [
+          5.15,
+          5.3
+        ],
+        "same_horizon_comparable": false,
+        "same_fiscal_horizon": false,
+        "business_scope_comparable": null
+      },
+      "current_outlook": {
+        "target_period": "FY2022 ending 2022-12-31",
+        "adjusted_eps_range": [
+          5.3,
+          5.6
+        ],
+        "basis": "USD per common share; issuer-adjusted non-GAAP EPS; separate GAAP reported EPS. Company says future special items prevent a complete forward GAAP reconciliation.",
+        "long_term_growth": {
+          "range_pct": [
+            5,
+            7
+          ],
+          "through_year": 2026,
+          "base": "original FY2021 guidance midpoint $5.15"
+        }
+      },
+      "provisional_labels": {
+        "annual_headline": "initiated_new_fiscal_year_not_a_comparable_raise",
+        "remaining_period_operating_revision": "unknown_no_prior_same_horizon_forecast",
+        "realized_roll_forward": "prior_year_completed_results_do_not_measure_revision_to_new_year",
+        "business_scope_change": "not_identified_in_this_release",
+        "exceptional_effects": "FY2021 adjusted results exclude coal-ash/insurance and workforce items; not a bridge to FY2022 guidance",
+        "explicit_remaining_period_maintenance": false
+      },
+      "evidence_status": "direct_quantitative_annual_level; revision_unavailable",
+      "source_gaps": [
+        "No earlier same-horizon FY2022 EPS range established in inspected sources; January scheduling notice says FY2022 guidance will be provided in February.",
+        "All intervening communications not exhaustively censused."
+      ],
+      "post_call_context": null,
+      "evidence_source_ids": [
+        "DUK_2021Q4_RELEASE",
+        "DUK_2021Q3_RELEASE"
+      ],
+      "label_status": "provisional_release_body_measurement; no_trade_signal",
+      "future_release_information_used_for_label": false
+    },
+    {
+      "packet_id": "DUK_2022_05_09",
+      "issuer": "Duke Energy Corporation",
+      "ticker": "DUK",
+      "event_date": "2022-05-09",
+      "reported_fiscal_period": "Q1 ended 2022-03-31",
+      "current_source_id": "DUK_2022Q1_RELEASE",
+      "availability": {
+        "printed_publication_date_certainty": "date_present_in_issuer_release_and_SEC_exhibit",
+        "planned_release_local_time": "07:00",
+        "planned_release_timezone": "US Eastern time (ET as printed)",
+        "planned_time_source_id": "DUK_2022Q1_SCHEDULE",
+        "actual_first_public_timestamp": null,
+        "sec_acceptance_timestamp": null,
+        "timestamp_status": "intended_time_verified_actual_first_availability_not_verified",
+        "intraday_execution_qualified": false
+      },
+      "prior_comparator": {
+        "source_id": "DUK_2021Q4_RELEASE",
+        "status": "nearest_verified_comparable_EPS_guidance_not_proven_latest_all_communications",
+        "target_period": "FY2022",
+        "adjusted_eps_range": [
+          5.3,
+          5.6
+        ],
+        "same_horizon_comparable": true,
+        "intervening_sources_reviewed": [
+          "DUK_2022_ANNUAL_MEETING_RELEASE"
+        ],
+        "same_fiscal_horizon": true,
+        "business_scope_comparable": true
+      },
+      "current_outlook": {
+        "target_period": "FY2022 ending 2022-12-31",
+        "adjusted_eps_range": [
+          5.3,
+          5.6
+        ],
+        "basis": "USD per common share; issuer-adjusted non-GAAP EPS; separate GAAP reported EPS. Company says future special items prevent a complete forward GAAP reconciliation.",
+        "long_term_growth": {
+          "range_pct": [
+            5,
+            7
+          ],
+          "through_year": 2026,
+          "base": "original FY2021 guidance midpoint $5.15"
+        }
+      },
+      "provisional_labels": {
+        "annual_headline": "maintained_explicit",
+        "remaining_period_operating_revision": "unknown_annual_reaffirmation_does_not_identify_Q2_Q4_revision",
+        "realized_roll_forward": "no_quantified_guidance_bridge; current-quarter adjusted_EPS_1.30",
+        "business_scope_change": "not_identified_in_comparable_annual_range",
+        "exceptional_effects": "Reported EPS 1.08 differs from adjusted 1.30 due to Indiana coal-ash ruling; seven cents of storm expenses remain in adjusted operating results.",
+        "explicit_remaining_period_maintenance": false
+      },
+      "evidence_status": "direct_quantitative_and_qualitative_annual_maintenance; remainder_unresolved",
+      "source_gaps": [
+        "Prior expectations for the newly completed quarter were not established, so a remaining-period revision cannot be inferred by subtraction.",
+        "Interim-comparator coverage bounded, not exhaustive."
+      ],
+      "post_call_context": null,
+      "evidence_source_ids": [
+        "DUK_2022Q1_RELEASE",
+        "DUK_2021Q4_RELEASE",
+        "DUK_2022_ANNUAL_MEETING_RELEASE"
+      ],
+      "label_status": "provisional_release_body_measurement; no_trade_signal",
+      "future_release_information_used_for_label": false
+    },
+    {
+      "packet_id": "DUK_2022_08_04",
+      "issuer": "Duke Energy Corporation",
+      "ticker": "DUK",
+      "event_date": "2022-08-04",
+      "reported_fiscal_period": "Q2 ended 2022-06-30",
+      "current_source_id": "DUK_2022Q2_RELEASE",
+      "availability": {
+        "printed_publication_date_certainty": "date_present_in_issuer_release_and_SEC_exhibit",
+        "planned_release_local_time": "07:00",
+        "planned_release_timezone": "US Eastern time (ET as printed)",
+        "planned_time_source_id": "DUK_2022Q2_SCHEDULE",
+        "actual_first_public_timestamp": null,
+        "sec_acceptance_timestamp": null,
+        "timestamp_status": "intended_time_verified_actual_first_availability_not_verified",
+        "intraday_execution_qualified": false
+      },
+      "prior_comparator": {
+        "source_id": "DUK_2022Q1_RELEASE",
+        "status": "nearest_verified_comparable_EPS_guidance_not_proven_latest_all_communications",
+        "target_period": "FY2022",
+        "adjusted_eps_range": [
+          5.3,
+          5.6
+        ],
+        "same_horizon_comparable": true,
+        "same_fiscal_horizon": true,
+        "business_scope_comparable": true
+      },
+      "current_outlook": {
+        "target_period": "FY2022 ending 2022-12-31",
+        "adjusted_eps_range": [
+          5.3,
+          5.6
+        ],
+        "basis": "USD per common share; issuer-adjusted non-GAAP EPS; separate GAAP reported EPS. Company says future special items prevent a complete forward GAAP reconciliation.",
+        "long_term_growth": {
+          "range_pct": [
+            5,
+            7
+          ],
+          "through_year": 2026,
+          "base": "original FY2021 guidance midpoint $5.15"
+        }
+      },
+      "provisional_labels": {
+        "annual_headline": "maintained_explicit",
+        "remaining_period_operating_revision": "unknown_annual_reaffirmation_does_not_identify_H2_revision",
+        "realized_roll_forward": "no_quantified_guidance_bridge; current-quarter_adjusted_EPS_1.14",
+        "business_scope_change": "strategic_review_announced_but_current_guidance_still_includes_Commercial_Renewables",
+        "exceptional_effects": "Reported and adjusted EPS both 1.14 because special items offset; equality does not mean absence of adjustments. Coal-ash and derivative-accounting effects identified.",
+        "explicit_remaining_period_maintenance": false
+      },
+      "evidence_status": "direct_quantitative_and_qualitative_annual_maintenance; remainder_unresolved",
+      "source_gaps": [
+        "No explicit same-horizon remaining-half forecast comparison established.",
+        "Interim announcements/presentations not exhaustively censused."
+      ],
+      "post_call_context": null,
+      "evidence_source_ids": [
+        "DUK_2022Q2_RELEASE",
+        "DUK_2022Q1_RELEASE"
+      ],
+      "label_status": "provisional_release_body_measurement; no_trade_signal",
+      "future_release_information_used_for_label": false
+    },
+    {
+      "packet_id": "DUK_2022_11_04",
+      "issuer": "Duke Energy Corporation",
+      "ticker": "DUK",
+      "event_date": "2022-11-04",
+      "reported_fiscal_period": "Q3 ended 2022-09-30",
+      "current_source_id": "DUK_2022Q3_RELEASE",
+      "availability": {
+        "printed_publication_date_certainty": "date_present_in_issuer_release_and_SEC_exhibit",
+        "planned_release_local_time": "07:00",
+        "planned_release_timezone": "US Eastern time (ET as printed)",
+        "planned_time_source_id": "DUK_2022Q3_SCHEDULE",
+        "actual_first_public_timestamp": null,
+        "sec_acceptance_timestamp": null,
+        "timestamp_status": "intended_time_verified_actual_first_availability_not_verified",
+        "intraday_execution_qualified": false
+      },
+      "prior_comparator": {
+        "source_id": "DUK_2022Q2_RELEASE",
+        "status": "nearest_verified_annual_range_but_business_scope_changed",
+        "target_period": "FY2022",
+        "adjusted_eps_range": [
+          5.3,
+          5.6
+        ],
+        "intervening_sources_reviewed": [
+          "DUK_2022_ENERGY_UPDATE"
+        ],
+        "same_fiscal_horizon": true,
+        "business_scope_comparable": false,
+        "overall_comparable": false
+      },
+      "current_outlook": {
+        "target_period": "FY2022 ending 2022-12-31",
+        "adjusted_eps_range": [
+          5.2,
+          5.3
+        ],
+        "basis": "USD per common share; issuer-adjusted non-GAAP EPS; separate GAAP reported EPS. Company says future special items prevent a complete forward GAAP reconciliation. Current guidance excludes Commercial Renewables.",
+        "new_fiscal_year_outlook": {
+          "target_period": "FY2023",
+          "adjusted_eps_range": [
+            5.55,
+            5.75
+          ],
+          "scope": "excludes Commercial Renewables",
+          "revision_status": "new_target_not_a_raise_against_FY2022"
+        },
+        "long_term_growth": {
+          "range_pct": [
+            5,
+            7
+          ],
+          "through_year": 2027,
+          "base": "FY2023 adjusted EPS guidance midpoint $5.65"
+        }
+      },
+      "provisional_labels": {
+        "annual_headline": "raw_range_lower_and_narrower_but_business_scope_noncomparable",
+        "remaining_period_operating_revision": "unresolved_no_like_for_like_Q4_guidance_bridge_in_release",
+        "realized_roll_forward": "not_identified_as_explanation_of_annual_change",
+        "business_scope_change": "explicit_Commercial_Renewables_removal; discontinued_presentation_planned_for_Q4",
+        "exceptional_effects": "Q3 reported EPS 1.81 versus adjusted 1.78 reflects a separate International Disposal Group tax-liability release, not the prospective Commercial Renewables removal.",
+        "explicit_remaining_period_maintenance": false
+      },
+      "evidence_status": "direct_quantitative_scope_change; directional_operating_revision_unresolved",
+      "source_gaps": [
+        "Release alone does not reconcile the old and new EPS range on identical scope; do not substitute later earnings-call explanations for the release-time packet.",
+        "2023 initiation and long-term rebasing are different horizons, not same-period revision observations.",
+        "October presentation text inspected; exact latest-comparator completeness not proven."
+      ],
+      "post_call_context": null,
+      "evidence_source_ids": [
+        "DUK_2022Q3_RELEASE",
+        "DUK_2022Q2_RELEASE",
+        "DUK_2022_ENERGY_UPDATE"
+      ],
+      "label_status": "provisional_release_body_measurement; no_trade_signal",
+      "future_release_information_used_for_label": false
+    },
+    {
+      "packet_id": "MSFT_2022_01_25",
+      "ticker": "MSFT",
+      "issuer": "Microsoft Corporation",
+      "event_date": "2022-01-25",
+      "reported_fiscal_period": "FY2022 Q2 ended 2021-12-31",
+      "current_source_id": "MSFT_FY22Q2_RELEASE",
+      "availability": {
+        "printed_publication_date": "2022-01-25",
+        "actual_first_public_timestamp": null,
+        "sec_acceptance_timestamp": null,
+        "scheduled_release": "after market close; exact clock time unspecified",
+        "schedule_source_id": "MSFT_20220111_SCHEDULE",
+        "scheduled_call": "14:30 Pacific time",
+        "timestamp_status": "printed_date_and_intended_schedule_only; original_exact_availability_unverified",
+        "intraday_execution_qualified": false
+      },
+      "prior_comparator": {
+        "source_id": "MSFT_FY22Q1_RELEASE",
+        "prior_date": "2021-10-26",
+        "status": "nearest_prior_release_identified_but_guidance_deferred_to_call",
+        "comparable_prior_outlook": null,
+        "intervening_sources_reviewed": [],
+        "completeness": "bounded_search_not_exhaustive"
+      },
+      "forecast_target_period": "No numerical annual or remaining-period forecast stated in the release body; forthcoming call separately referenced.",
+      "metric_basis": "Release actuals distinguish GAAP results and constant-currency comparisons; no annual operating guidance basis available here.",
+      "provisional_labels": {
+        "annual_headline": "not_stated_in_release_guidance_deferred",
+        "remaining_period_operating_revision": "unknown_no_comparable_release_outlook",
+        "realized_roll_forward": "completed_quarter_results_not_a_forward_revision",
+        "exceptional_financial_effects": "no annual guidance bridge established",
+        "explicit_remaining_period_maintenance": false
+      },
+      "post_call_context": null,
+      "source_gaps": [
+        "Original October 2021 and January 2022 call DOCX links were identified from the issuer speech archive, but contents could not be retrieved through the available routes.",
+        "No complete intervening-guidance census or SEC release-acceptance record was established."
+      ],
+      "unavailable_original_links": [
+        "https://c.s-microsoft.com/en-us/CMSFiles/TranscriptFY22Q1.docx?version=e37d28b9-9e59-5215-5ce4-f68170baebf8",
+        "https://c.s-microsoft.com/en-us/CMSFiles/TranscriptFY22Q2.docx?version=9b096353-1d5b-fdfb-f5ba-5e79031d3433"
+      ],
+      "evidence_source_ids": [
+        "MSFT_FY22Q2_RELEASE",
+        "MSFT_FY22Q1_RELEASE",
+        "MSFT_20220111_SCHEDULE",
+        "MSFT_20220125_AVAILABILITY_NOTICE"
+      ],
+      "label_status": "provisional_release_body_measurement; no_trade_signal",
+      "future_release_information_used_for_label": false
+    },
+    {
+      "packet_id": "MSFT_2022_04_26",
+      "ticker": "MSFT",
+      "issuer": "Microsoft Corporation",
+      "event_date": "2022-04-26",
+      "reported_fiscal_period": "FY2022 Q3 ended 2022-03-31",
+      "current_source_id": "MSFT_FY22Q3_RELEASE",
+      "availability": {
+        "printed_publication_date": "2022-04-26",
+        "actual_first_public_timestamp": null,
+        "sec_acceptance_timestamp": null,
+        "scheduled_call": "14:30 Pacific time",
+        "timestamp_status": "printed_date_only; call_time_is_not_release_time",
+        "intraday_execution_qualified": false
+      },
+      "prior_comparator": {
+        "source_id": "MSFT_FY22Q2_RELEASE",
+        "prior_date": "2022-01-25",
+        "status": "prior_release_defers_guidance_to_call; original_call_content_unavailable",
+        "comparable_prior_outlook": null,
+        "intervening_sources_reviewed": [],
+        "completeness": "bounded_search_not_exhaustive"
+      },
+      "forecast_target_period": "Release body has no numerical forward range. Later call discusses FY2022 Q4 ending 2022-06-30 and FY2023 ending 2023-06-30 separately.",
+      "metric_basis": "GAAP versus adjusted growth; constant currency; Nuance acquisition adds business perimeter.",
+      "provisional_labels": {
+        "annual_headline": "not_stated_in_release_guidance_deferred",
+        "remaining_period_operating_revision": "unknown_no_comparable_release_outlook",
+        "realized_roll_forward": "FX_and_Nuance_actual_effects_relative_to_January_guidance_not_a_future_raise",
+        "exceptional_financial_effects": "FX and acquisition effects; prior-year tax comparison adjustment",
+        "explicit_remaining_period_maintenance": false
+      },
+      "post_call_context": {
+        "source_id": "MSFT_FY22Q3_CALL",
+        "disclosure_stage": "later_same_day_call",
+        "release_time_eligible": false,
+        "annual_commentary": "FY2023 double-digit revenue and operating-income growth expected; earlier same-horizon comparator not established.",
+        "remaining_period_commentary": "FY2022 Q4 outlook includes a full quarter of Nuance, FX and Russia assumptions; compare only with the same horizon/basis.",
+        "annual_revision_label": "new_or_first_located_horizon_commentary_not_verified_raise",
+        "exact_statement_availability": null
+      },
+      "source_gaps": [
+        "January original call link was located but its content was unavailable.",
+        "Call statement time and transcript publication time were not qualified.",
+        "No complete interim communication chain was reconstructed."
+      ],
+      "evidence_source_ids": [
+        "MSFT_FY22Q3_RELEASE",
+        "MSFT_FY22Q2_RELEASE",
+        "MSFT_FY22Q3_CALL"
+      ],
+      "label_status": "provisional_release_body_measurement; no_trade_signal",
+      "future_release_information_used_for_label": false
+    },
+    {
+      "packet_id": "MSFT_2022_07_26",
+      "ticker": "MSFT",
+      "issuer": "Microsoft Corporation",
+      "event_date": "2022-07-26",
+      "reported_fiscal_period": "FY2022 Q4 and full year ended 2022-06-30",
+      "current_source_id": "MSFT_FY22Q4_RELEASE",
+      "availability": {
+        "printed_publication_date": "2022-07-26",
+        "actual_first_public_timestamp": null,
+        "sec_acceptance_timestamp": null,
+        "scheduled_call": "14:30 Pacific time",
+        "timestamp_status": "printed_date_only; call_time_is_not_release_time",
+        "intraday_execution_qualified": false
+      },
+      "prior_comparator": {
+        "source_id": "MSFT_20220602_FX_EXHIBIT",
+        "prior_date": "2022-06-02",
+        "status": "nearest_located_interim_update_for_completed_FY22_Q4_not_new_FY23",
+        "target_period": "FY2022 Q4 ended 2022-06-30",
+        "same_horizon_as_new_FY23": false,
+        "intervening_sources_reviewed": [
+          "MSFT_20220602_8K",
+          "MSFT_20220602_FX_EXHIBIT"
+        ],
+        "prior_FY23_context_source_id": "MSFT_FY22Q3_CALL",
+        "completeness": "known_interim_FX_update_included; exhaustive_latest_comparator_not_proven"
+      },
+      "forecast_target_period": "Release reports completed FY2022; later call supplies FY2023 and FY2023 Q1 outlook.",
+      "metric_basis": "Quarter-specific reported USD FX bridge differs from FY2023 operating growth. Later FY2023 margin outlook includes a depreciation-estimate change.",
+      "provisional_labels": {
+        "annual_headline": "not_stated_in_release_guidance_deferred; completed_annual_actuals_not_guidance",
+        "remaining_period_operating_revision": "unknown_in_release_body",
+        "realized_roll_forward": "completed_Q4_macro_and_exceptional_effects_reported_against_April_baseline",
+        "exceptional_financial_effects": "FX, Russia charges and severance; no forward operating bridge in release",
+        "explicit_remaining_period_maintenance": false
+      },
+      "post_call_context": {
+        "source_id": "MSFT_FY22Q4_CALL",
+        "prior_source_id": "MSFT_FY22Q3_CALL",
+        "disclosure_stage": "later_same_day_call",
+        "release_time_eligible": false,
+        "target_period": "FY2023 ending 2023-06-30",
+        "annual_revision_label": "double_digit_growth_reiterated; accounting_basis_changed",
+        "annual_commentary": "Double-digit revenue and operating-income growth reiterated in USD and constant currency; USD margin roughly flat.",
+        "accounting_change": "Equipment useful lives extended four to six years; estimated FY2023 operating-income benefit about $3.7bn, including about $1.1bn in Q1.",
+        "forward_operating_repair": "not_established_from_reported_growth_maintenance_with_accounting_change",
+        "exact_statement_availability": null
+      },
+      "source_gaps": [
+        "Do not treat the June quarter update as an annual FY2023 comparator.",
+        "Release's stated actual FX effect uses the April baseline; it is not all incremental to the June revision.",
+        "Exact first-release and call-statement availability remain unverified."
+      ],
+      "evidence_source_ids": [
+        "MSFT_FY22Q4_RELEASE",
+        "MSFT_FY22Q3_CALL",
+        "MSFT_FY22Q4_CALL",
+        "MSFT_20220602_8K",
+        "MSFT_20220602_FX_EXHIBIT"
+      ],
+      "label_status": "provisional_release_body_measurement; no_trade_signal",
+      "future_release_information_used_for_label": false
+    },
+    {
+      "packet_id": "MSFT_2022_10_25",
+      "ticker": "MSFT",
+      "issuer": "Microsoft Corporation",
+      "event_date": "2022-10-25",
+      "reported_fiscal_period": "FY2023 Q1 ended 2022-09-30",
+      "current_source_id": "MSFT_FY23Q1_RELEASE",
+      "availability": {
+        "printed_publication_date": "2022-10-25",
+        "actual_first_public_timestamp": null,
+        "sec_acceptance_timestamp": null,
+        "scheduled_call": "14:30 Pacific time",
+        "timestamp_status": "printed_date_only; call_time_is_not_release_time",
+        "intraday_execution_qualified": false
+      },
+      "prior_comparator": {
+        "source_id": "MSFT_FY22Q4_CALL",
+        "prior_date": "2022-07-26",
+        "status": "prior_FY23_call_outlook_available; no annual outlook in prior release body",
+        "target_period": "FY2023 ending 2023-06-30",
+        "same_horizon_comparable": "metric_and_exclusion_dependent",
+        "intervening_sources_reviewed": [],
+        "completeness": "bounded_search_not_exhaustive"
+      },
+      "forecast_target_period": "Release defers guidance. Later call discusses FY2023 full year and remaining period after Q1.",
+      "metric_basis": "USD versus constant-currency growth; depreciation accounting; prior-year tax benefit affects historical comparison. Constant-currency margin exclusions also change in later call.",
+      "provisional_labels": {
+        "annual_headline": "not_stated_in_release_guidance_deferred",
+        "remaining_period_operating_revision": "unknown_in_release_body",
+        "realized_roll_forward": "historical_tax_comparison_does_not_measure_future_revision",
+        "exceptional_financial_effects": "prior-year intangible-property tax benefit removed for adjusted growth comparison",
+        "explicit_remaining_period_maintenance": false
+      },
+      "post_call_context": {
+        "source_id": "MSFT_FY23Q1_CALL",
+        "prior_source_id": "MSFT_FY22Q4_CALL",
+        "disclosure_stage": "later_same_day_call",
+        "release_time_eligible": false,
+        "target_period": "FY2023 ending 2023-06-30",
+        "annual_revision_label": "USD_operating_margin_deteriorates; constant_currency_growth_reiterated; mixed_drivers",
+        "annual_commentary": "USD margin moves from approximately flat to about one percentage point lower year-on-year; constant-currency double-digit revenue and operating-income growth reiterated.",
+        "remaining_period_revision": "explicit_lower_expected_Windows_OEM_revenue_for_remainder; aggregate_remaining_profit_revision_not_quantified",
+        "driver_bridge": "Management cites Q1 actuals, remaining-year OEM weakness and over $800m additional energy costs. Do not attribute the entire annual revision to remaining-period demand.",
+        "comparability_warning": "The flat constant-currency margin statement now excludes incremental lower OEM revenue as well as depreciation benefit; this is not like-for-like maintenance of the July margin definition.",
+        "exact_statement_availability": null,
+        "energy_cost_timing": "Later-call Q&A: some of the greater-than-$800m annual increment was in Q1; most is expected in Q2-Q4, approximately $250m per remaining quarter. This is not an aggregate remaining-period profit-revision estimate."
+      },
+      "source_gaps": [
+        "The primary release-time label cannot incorporate later-call facts.",
+        "Remaining-period aggregate revision cannot be isolated numerically from the cited mixed bridge.",
+        "No complete interim guidance chain or original transcript publication timestamp established."
+      ],
+      "evidence_source_ids": [
+        "MSFT_FY23Q1_RELEASE",
+        "MSFT_FY22Q4_CALL",
+        "MSFT_FY23Q1_CALL"
+      ],
+      "label_status": "provisional_release_body_measurement; no_trade_signal",
+      "future_release_information_used_for_label": false
+    }
+  ],
+  "verbatim_evidence_quote_words_total": 0,
+  "next_measurement_gate": "Independent source-based review using the same release-stage contract, then a separately timestamped call-stage pilot if authorized. Freeze labels before any future market-outcome join.",
+  "independent_source_review": {
+    "scope": "four focal packets; source review of existing labels, not double-blind annotation",
+    "file": "guidance_review.md",
+    "disposition": "accepted with annual-operating wording and energy-timing clarifications; no outcome join"
+  }
+}

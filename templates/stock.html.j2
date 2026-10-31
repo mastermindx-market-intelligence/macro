@@ -1942,6 +1942,7 @@
     if (t) load(t);
   }
   window.addEventListener('hashchange', fromHash);
+  window.addEventListener('mmx:shell-location', fromHash);
 
   function tf(label, m) {
     if (!m || m.rsi14 == null) return '';
@@ -2123,6 +2124,7 @@
         [].forEach.call(sd.querySelectorAll('.lock-cta'), function (b) {
           b.addEventListener('click', function () {
             var mode = b.getAttribute('data-auth');
+            if (window.MMXSharedShell) { window.MMXSharedShell.openAuth(mode === 'signup' ? 'signup' : 'signin'); return; }
             if (window.MMOnboard && typeof window.MMOnboard.open === 'function') window.MMOnboard.open(mode, {});
             else if (window.MDXAuth && typeof window.MDXAuth.open === 'function') window.MDXAuth.open(mode);
             else location.href = mode === 'signup' ? '/?signup=1' : '/?signin=1';
@@ -3625,7 +3627,7 @@
       if(j&&j.anticipation){ show(j.anticipation); return; }
       return fetch('anticipationdata/'+safeT(t)+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(show);
     }).catch(function(){panel.style.display='none';});}
-  window.addEventListener('hashchange',load); load();
+  window.addEventListener('hashchange',load); window.addEventListener('mmx:shell-location',load); load();
 })();
 </script>
 <p class="muted" style="font-size:12px">Generated {{ generated_utc }} UTC · charts rendered in-house with

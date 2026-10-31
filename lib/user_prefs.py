@@ -69,6 +69,8 @@ ALERT_CATEGORIES: tuple[str, ...] = (
     "holdings_material_change",
     "thesis_window",
     "fif_saved_issuer",
+    # Explicit delivery preference only; not source/action or enrollment authority.
+    "options_exposure_node",
 )
 
 #: Every stored preference and its KIND. PREF_VALUES stays the enum sub-table.
@@ -353,6 +355,14 @@ def write_user_prefs(user_id: str, patch: dict, *, base: dict | None = None,
     if not isinstance(fresh, dict):
         # Same refusal as a failed read: we do not know what is stored, so a PUT could
         # replace an object we never saw.
+        return False
+    if ("alert_categories" in clean and "alert_categories" in fresh
+            and normalize_value("alert_categories", fresh["alert_categories"]) is None):
+        # The read helper omits invalid/future category sets. That omission must
+        # never turn a later full-set save into permission to erase stored consent.
+        # Keep the closed validation contract; unrelated preference writes may
+        # still preserve this opaque value in the fresh merge base.
+        log.warning("user_prefs: refusing category replacement of an uninterpretable stored set")
         return False
     merged = dict(fresh)
     merged.update(clean)

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+import threading
 from datetime import datetime, timezone
 from types import SimpleNamespace
 import pytest
@@ -37,7 +38,10 @@ def test_stage_events_correlate_without_changing_catalog_bytes(original, monkeyp
     stages = [fields for event, fields in events if event == 'stage']
     seq = next(fields['seq'] for event, fields in events if event == 'start')
     assert [r['stage'] for r in stages] == STAGES
-    assert all(set(r) == {'tag', 'seq', 'stage', 'elapsed_ms', 'thread_cpu_ms'} for r in stages)
+    assert all(set(r) == {'tag', 'seq', 'stage', 'elapsed_ms', 'thread_cpu_ms',
+                          'native_thread_id'} for r in stages)
+    assert all(fields['native_thread_id'] == threading.get_native_id()
+               for event, fields in events if event in {'start', 'stage', 'finish'})
     assert all(r['seq'] == seq and r['tag'] == 'retained_catalog'
                and r['elapsed_ms'] >= 0 and r['thread_cpu_ms'] >= 0 for r in stages)
     assert next(fields for event, fields in events if event == 'finish')['success'] is True
@@ -307,3 +311,212 @@ def test_incomplete_exact_capture_locator_refuses_before_owner(original, monkeyp
     with pytest.raises(HTTPException) as exc:
         discover(original, **selector)
     assert exc.value.status_code == 400
+
+
+def _row_spec(value, query):
+    """The exact catalog-to-context mapping the Brain tool instructions name."""
+    method = next(m for m in value["methods"] if m["mode"] == value["mode"])
+    spec = {key: query[key] for key in ("query_id", "subject_id")}
+    spec.update({key: value["generation"][key]
+                 for key in ("generation_id", "generation_sha256")})
+    spec.update(query_cutoff=query["earliest_supported_cutoff"],
+                method_spec_id=method["method_spec_id"])
+    return spec
+
+
+def _selected_row(original, value):
+    return next(row for row in value["entries"]
+                if row["query_id"] == original[3]["query_id"])
+
+
+@pytest.fixture
+def fractional_original(tmp_path, monkeypatch):
+    from datetime import timedelta
+    from engine.neuralweb.market_memory_retained_context_cohort import utc_instant
+    actual_capture = trusted.capture_trusted_regime_context
+    def capture_with_fractional_completion(*args, **kwargs):
+        # Actual writer, with completion one microsecond after the authenticated
+        # identity clock used for packet as_known_at. No receipt is rewritten.
+        completed = utc_instant(kwargs["identity_evidence"].observed_at) + timedelta(microseconds=1)
+        monkeypatch.setattr(trusted, "_utc_now", lambda: completed)
+        return actual_capture(*args, **kwargs)
+    monkeypatch.setattr(trusted, "capture_trusted_regime_context", capture_with_fractional_completion)
+    return original.__wrapped__(tmp_path, monkeypatch)
+
+
+@pytest.mark.parametrize("clock_name", ["as_known_at", "raw_source_observed_at",
+                                      "raw_source_built_at", "feature_as_of"])
+def test_premature_cutoff_stays_denied_and_row_earliest_supported_cutoff_succeeds(
+        fractional_original, clock_name, caplog):
+    original = fractional_original
+    caplog.set_level(logging.INFO, logger=api._read_observation_log.name)
+    value = discover(original)
+    query = _selected_row(original, value)
+    spec = _row_spec(value, query)
+    from datetime import timedelta
+    from engine.neuralweb.market_memory_retained_context_cohort import utc_instant
+    exact = utc_instant(query["earliest_supported_cutoff"])
+    clocks = {name: utc_instant(stamp) for name, stamp in query["clocks"].items()}
+    assert max(clocks.values()) == exact
+    premature = {name: stamp for name, stamp in clocks.items() if stamp < exact}
+    # The owning fixture spaces captured_at after as_known_at by a fraction of
+    # a second, so the newest clock a row shows short of the cutoff is still
+    # premature and the two are distinguishable at sub-second resolution.
+    gap = clocks["captured_at"] - clocks["as_known_at"]
+    assert premature, "catalog row must carry an earlier availability clock"
+    assert gap == timedelta(microseconds=1)
+    raw_clocks = dict(query["clocks"])
+    assert clock_name in premature
+    with pytest.raises(HTTPException) as exc:
+        api.retained_macro_for_user(original[0], "member",
+                                    dict(spec, query_cutoff=raw_clocks[clock_name]))
+    assert exc.value.status_code == 503
+    assert exc.value.detail == {"state": "EXACT_RETAINED_EVIDENCE_UNAVAILABLE"}
+    failures = [record.args[1] for record in caplog.records if ".failure " in record.getMessage()]
+    assert [row["category"] for row in failures] == ["CUTOFF_NOT_SUPPORTED"]
+    # Availability is proven first: only the cutoff is wrong, so a denial here
+    # is a real cutoff refusal, never a silent move to a later clock or a
+    # substitution of another row or generation.
+    answer = api.retained_macro_for_user(original[0], "member", spec)
+    assert answer["source_cards"][0]["context_id"] == query["context_id"]
+
+
+def test_actual_brain_dispatch_consumes_exact_mapping_and_keeps_premature_denial(
+        original, monkeypatch):
+    monkeypatch.setattr(api, "_repo_root", lambda: original[0])
+    from engine.neuralweb import brain_gateway as gateway
+    from engine.neuralweb.market_memory_retained_context_cohort import utc_instant
+    value = discover(original)
+    query = _selected_row(original, value)
+    spec = _row_spec(value, query)
+    answer = gateway._dispatch_brain_tool("get_retained_market_context", spec,
+        original[0], original[0], "", user_id="member")
+    assert answer["source_cards"][0]["context_id"] == query["context_id"]
+    raw_clocks = dict(query["clocks"])
+    exact = utc_instant(query["earliest_supported_cutoff"])
+    premature_name = next(name for name, stamp in raw_clocks.items()
+                          if utc_instant(stamp) < exact)
+    denied = gateway._dispatch_brain_tool("get_retained_market_context",
+        dict(spec, query_cutoff=raw_clocks[premature_name]),
+        original[0], original[0], "", user_id="member")
+    assert denied["http_status"] == 503
+    assert denied["state"] == "EXACT_RETAINED_EVIDENCE_UNAVAILABLE"
+    assert "source_cards" not in denied and "context_id" not in denied
+
+
+def test_concurrent_retained_macro_failures_stay_linked_and_reclaim_both_permits(
+        original, monkeypatch, caplog):
+    caplog.set_level(logging.INFO, logger=api._read_observation_log.name)
+    from concurrent.futures import ThreadPoolExecutor
+    from engine.neuralweb import market_memory_pit as pit
+    errors = [pit.MarketMemoryContextNotFound("private-a"),
+              pit.OwnerReadBudgetError("private-b")]
+    barrier = threading.Barrier(2)
+    error_lock = threading.Lock()
+    def fail(_self, *args, **kwargs):
+        with error_lock:
+            failure = errors.pop(0)
+        barrier.wait(timeout=10)
+        raise failure
+    monkeypatch.setattr(trusted.TrustedFileAsKnownAtReader,
+                        "read_pinned_generation", fail)
+
+    def run(_index):
+        try:
+            api.retained_macro_for_user(original[0], "member", original[3])
+            return threading.get_native_id(), None
+        except HTTPException as exc:
+            return threading.get_native_id(), (exc.status_code, exc.detail["state"])
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(run, range(2)))
+    worker_threads = {native for native, _outcome in results}
+    assert sorted(outcome for _native, outcome in results if outcome) == [
+        (404, "EXACT_CAPTURE_NOT_FOUND"), (503, "OWNER_READ_BUDGET_EXCEEDED")]
+    assert "private-a" not in caplog.text and "private-b" not in caplog.text
+    failures = [record.args[1] for record in caplog.records
+                if ".failure " in record.getMessage()]
+    assert {row["category"] for row in failures} == {
+        "EXACT_CAPTURE_NOT_FOUND", "OWNER_READ_BUDGET_EXCEEDED"}
+    assert len({row["seq"] for row in failures}) == 2
+    assert all(row["native_thread_id"] in worker_threads for row in failures)
+    assert not api._read_observation_active
+    assert api._playback_slots.acquire(blocking=False)
+    assert api._playback_slots.acquire(blocking=False)
+    api._playback_slots.release()
+    api._playback_slots.release()
+
+
+def test_brain_tool_schemas_name_the_exact_catalog_to_context_mapping():
+    from engine.neuralweb import brain_analogues
+    catalog_text = brain_analogues.RETAINED_CATALOG_TOOL_SCHEMA["description"]
+    context_text = brain_analogues.RETAINED_CONTEXT_TOOL_SCHEMA["description"]
+    mapping = ("row.query_id", "row.subject_id", "catalog.generation.generation_id",
+               "catalog.generation.generation_sha256", "catalog.methods",
+               "method_spec_id", "query_cutoff=row.earliest_supported_cutoff")
+    for token in mapping:
+        assert token in catalog_text, token
+        assert token in context_text, token
+    clocks = ("captured_at", "as_known_at", "fraction of a second")
+    for token in clocks:
+        assert token in catalog_text and token in context_text, token
+    guard = ("never move it later", "never substitute another row or generation",
+             "never invent a timestamp", "Do not automatically retry on BUSY")
+    for token in guard:
+        assert token in catalog_text and token in context_text, token
+    schema = brain_analogues.RETAINED_CONTEXT_TOOL_SCHEMA["input_schema"]
+    assert schema["additionalProperties"] is False
+    assert set(schema["required"]) == {"query_id", "subject_id", "generation_id",
+                                       "generation_sha256", "query_cutoff", "method_spec_id"}
+    assert set(schema["properties"]) == set(schema["required"]) | {"limit"}
+    assert schema["properties"]["limit"] == {"type": "integer", "minimum": 1, "maximum": 8}
+    cutoff = schema["properties"]["query_cutoff"]
+    assert cutoff["type"] == "string" and "row.earliest_supported_cutoff" in cutoff["description"]
+    assert "never widen" in cutoff["description"]
+    assert "limit=2" in context_text and "once" in context_text
+    assert "eligible neighbors" in context_text and "Report fewer" in context_text
+    assert "no chronological substitutes" in context_text
+    assert "Catalog metadata alone proves neither actual field values nor comparability" in context_text
+
+
+@pytest.mark.parametrize("changes,status,state,category", [
+    ({"generation_sha256": "f" * 64}, 503, "EXACT_RETAINED_EVIDENCE_UNAVAILABLE", "GENERATION_MISMATCH"),
+    ({"method_spec_id": "mmretainedmethod_" + "f" * 64}, 400, "REGISTERED_METHOD_REQUIRED", "REGISTERED_METHOD_REQUIRED"),
+    ({"query_id": "mmquery_" + "f" * 64}, 404, "EXACT_CAPTURE_NOT_FOUND", "EXACT_CAPTURE_NOT_FOUND"),
+    ({"subject_id": "mmsecurity_" + "f" * 64}, 403, "SOURCE_USE_NOT_ADMITTED", "SOURCE_USE_NOT_ADMITTED"),
+])
+def test_actual_macro_refusals_keep_http_state_and_log_only_category(
+        original, changes, status, state, category, caplog):
+    caplog.set_level(logging.INFO, logger=api._read_observation_log.name)
+    with pytest.raises(HTTPException) as error:
+        api.retained_macro_for_user(original[0], "member", {**original[3], **changes})
+    assert error.value.status_code == status and error.value.detail == {"state": state}
+    failures = [record.args[1] for record in caplog.records if ".failure " in record.getMessage()]
+    assert len(failures) == 1 and failures[0]["category"] == category
+    assert set(failures[0]) == {"tag", "seq", "native_thread_id", "category"}
+    for value in changes.values():
+        assert value not in caplog.text
+    assert not api._read_observation_active
+    assert api._playback_slots.acquire(False) and api._playback_slots.acquire(False)
+    api._playback_slots.release(); api._playback_slots.release()
+
+
+def test_unclassified_macro_exception_is_not_stringified_or_remapped(original, monkeypatch, caplog):
+    caplog.set_level(logging.INFO, logger=api._read_observation_log.name)
+    class UnknownFailure(RuntimeError):
+        def __str__(self):
+            pytest.fail("diagnostic tried to stringify private exception")
+    original_error = UnknownFailure("Bearer private-value /private/path")
+    def fail(*args, **kwargs):
+        raise original_error
+    monkeypatch.setattr(api.market_memory, "retained_macro_context", fail)
+    with pytest.raises(UnknownFailure) as error:
+        api.retained_macro_for_user(original[0], "member", original[3])
+    assert error.value is original_error
+    failures = [record.args[1] for record in caplog.records if ".failure " in record.getMessage()]
+    assert len(failures) == 1 and failures[0]["category"] == "OTHER_TECHNICAL"
+    assert set(failures[0]) == {"tag", "seq", "native_thread_id", "category"}
+    assert "private-value" not in caplog.text and "UnknownFailure" not in caplog.text
+    assert not api._read_observation_active
+    assert api._playback_slots.acquire(False) and api._playback_slots.acquire(False)
+    api._playback_slots.release(); api._playback_slots.release()

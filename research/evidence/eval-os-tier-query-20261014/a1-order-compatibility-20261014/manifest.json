@@ -1,0 +1,66 @@
+{
+  "records": [
+    {
+      "file": "preview.json",
+      "sha256": "d29347b0bff11b1680a84d4de05ddd97a2f4e8e2880b6ce1ab80a8247bac0bf7",
+      "bytes": 427
+    },
+    {
+      "file": "conflict-blocks.json",
+      "sha256": "96d0f6b9b925f90ae9978322f73b6153cfebae2f72ca8ec713c2f29d5d7de8bb",
+      "bytes": 1076
+    },
+    {
+      "file": "order-repair-proposal.json",
+      "sha256": "8dbd318f56240ae565059541c7291a25106ee28cb7c7af43bf42564d3bf6a846",
+      "bytes": 573
+    },
+    {
+      "file": "order-repair-proposal-v2.json",
+      "sha256": "809732a8f387ca7cfcacfed9781d8745e3d14c722781e1d496b1db62d15842a1",
+      "bytes": 573
+    },
+    {
+      "file": "repaired-preview-v2.log",
+      "sha256": "ecdfab533d87bf5593031f2419f905e9e88af7767fc7ab61925b2d8666b45e68",
+      "bytes": 41
+    },
+    {
+      "file": "order-tests-v2.xml",
+      "sha256": "2772461dc0b790f3fd21081c4551fe2d92ca7e1657d5f4827c197cb88b84e7a5",
+      "bytes": 593
+    },
+    {
+      "file": "order-tests-v2.log",
+      "sha256": "23e5bf1a7a7b64576c98cafdeb631cacbe69361fcda45d125b6c5c7db78c778d",
+      "bytes": 9364
+    },
+    {
+      "file": "adjudication.json",
+      "sha256": "8ba18d8c516293df7a049ee5e9a2a3c1c0873cb351a5bef86e648225d9c2a963",
+      "bytes": 955
+    },
+    {
+      "file": "source-only-order.patch.gz",
+      "sha256": "9df5071a624afd39d8624e4670a6b687fb7ce011196782e25ecec75a9bf6f5d9",
+      "decoded_sha256": "d1082c0551471ec8d84662ca4ba9b27af4e086ac31b6a636b881cfa41b3924a9",
+      "bytes": 657
+    },
+    {
+      "file": "qualified-vs-current-main-1619.json",
+      "sha256": "d24165e449ccb0edf90703653568aeb1855bf14148a03fc83d8e7572a19006c8",
+      "bytes": 297
+    },
+    {
+      "file": "qualified-current-main-impact-1620.json",
+      "sha256": "9e62a95af4990ede31320a4c0775dccf645064ae0d7b569c03832da7833f8028",
+      "bytes": 4622
+    },
+    {
+      "file": "current-main-differential-review-1622.json",
+      "sha256": "7f3e4e3c527432b481c7b987641859962286266d60ce39453a8bfb619851e473",
+      "bytes": 762
+    }
+  ],
+  "note": "Original evidence bytes; patch compressed without decoded changes."
+}

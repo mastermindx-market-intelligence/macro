@@ -1200,10 +1200,12 @@ function tlInitTab() {
   var tab = TABS.indexOf(hash) >= 0 ? hash : (TABS.indexOf(stored) >= 0 ? stored : 'screener');
   tlSwitchTab(tab);
 }
-window.addEventListener('hashchange', function() {
+function tlApplyHash() {
   var h = (location.hash||'').replace('#','');
   if (TABS.indexOf(h) >= 0) tlSwitchTab(h);
-});
+}
+window.addEventListener('hashchange', tlApplyHash);
+window.addEventListener('mmx:shell-location', tlApplyHash);
 
 /* Tab buttons */
 document.querySelectorAll('.tab-btn').forEach(function(btn) {

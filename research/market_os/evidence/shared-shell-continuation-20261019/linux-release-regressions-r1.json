@@ -1,0 +1,41 @@
+{
+  "started_at": "2026-10-19T13:26:48.880658+00:00",
+  "owner_sha256": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+  "platform": "linux",
+  "pytest": "8.3.5",
+  "args": [
+    "-q",
+    "tests/test_terminal_beta_transaction.py",
+    "tests/test_terminal_beta_cache_custody.py",
+    "tests/test_terminal_beta_dependency_custody.py",
+    "tests/test_terminal_beta_bootstrap.py",
+    "tests/test_terminal_build_admission.py",
+    "tests/test_terminal_build_rollback.py",
+    "--basetemp=/tmp/shared-shell-linux-release-regressions-r1"
+  ],
+  "inputs": {
+    "ops/terminal_source_audit.beta.json": "9b6c95d2f3134f37640312106fcf10dd2be5a1d4c01002e959ac5cb71614fae9",
+    "ops/terminal-beta.service": "50e577a4651268ef377a1d3d5d00d90a36b7ae821847656c2a2125bdecc64d84",
+    "ops/terminal-build.sh": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+    "ops/terminal_source_audit.production.json": "76e5914d0239b34edc680f5d1a050ef0ff8fa0e6982497ad88d749aa0a1212f2",
+    "ops/terminal_release_preflight.py": "a8d1db606afed780cf43b5471ef27d127621eb5de843d36d8d310ba62a8a0b23",
+    "ops/terminal_audit/git_ops.py": "2be139a547daa54eb0c017659d08e8acf7a1bf31a3570bf42c1409c9aae4f394",
+    "ops/terminal_audit/__init__.py": "a2fd45a70b4b2693d5b5843476dfcdb44b60470ca3e302996b348cc76988bf93",
+    "ops/terminal_audit/compare.py": "efb98c67d1e46e05d0c7f74c3d38246eb14f1d792340f15e13131ba99c6ba794",
+    "ops/terminal_audit/audit.py": "172d9795a744e3a199906094d2be06dc36afa8d566c30e31402b9ae84004dd47",
+    "ops/terminal_audit/policy.py": "37527b3bdc7bda42b08e217392a30b825b7c397411b70a9600b1f0eaef3246aa",
+    "ops/terminal_audit/cli.py": "f85041c9c1d5b8126dd52c50374aa0c8495c7114f1ad81d2500aee9414385845",
+    "ops/terminal_audit/model.py": "9118df22542f6937805e5ecca9c16303a6ed48cb994a159725e5515b68ef6d62",
+    "tests/test_terminal_build_rollback.py": "759cbc7e331accdbc4f41960e081c46fe65fd13ac608aef477dad3e706ddb654",
+    "tests/terminal_beta_transaction_fixture.py": "7f71846703c65b1bf589d12f2232a2670d1c3f712377c91581e273b0f4af5859",
+    "tests/test_terminal_beta_build_output_custody.py": "8ef2f73c6ba53710ef6d25338539b5856ff72cfa535f7a2ddd0ac8e5be010add",
+    "tests/test_terminal_beta_transaction.py": "d62a668f4dcf34e542030902c57990ac1cd3a901ce29ba71c4a5e50fb8ebed1a",
+    "tests/test_terminal_beta_cache_custody.py": "8a0d51a5949ded0c28f26d253d8b229dfefc1f92cdc2717b06f4a1e06c0ef541",
+    "tests/test_terminal_build_admission.py": "dd48d6930ed9063e3832fd4f5d72bbefb3dd8dc0e427e6a392d0b8a1cb5936bc",
+    "tests/test_terminal_beta_dependency_custody.py": "d8e152b317eda2e583b0094606340b212c58aa20736c3cf0b2558b86c216e709",
+    "tests/test_terminal_beta_bootstrap.py": "872625d078531ec3a5e9b92969e477269ef673e80787891dc11106cabf7ed222"
+  },
+  "finished_at": "2026-10-19T13:29:44.982215+00:00",
+  "exit": 0,
+  "log_sha256": "b632569e63cc1e593932f7dfccc716df88811a2d4d5f1c93cf43bb2b26a0389f"
+}

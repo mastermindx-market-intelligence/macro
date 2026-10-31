@@ -203,3 +203,90 @@ def test_cards_have_no_whitespace_only_line():
     seg = _card_seg(_render([fallback]))
     assert '</div>\n        <div><span class="m-k"><span class="l-en">Income</span>' in seg
     assert '8.4y</span></div>\n      </div>' in seg
+
+
+# --------------------------------------------------------------------------- #
+# the as-of line: each card prints its own data date (parity with the US grid)
+
+# ci-trigger-closure: data — the builder is read as text only, never imported
+_BUILDER = _ROOT / "scripts/build_china_strategies.py"
+
+_ASOF_SPAN = ('      </div>\n      <span class="m-sub"><span class="l-en">As of</span>'
+              '<span class="l-zh">截至</span> Oct 16, 2026</span>\n      <div class="scard-foot">')
+
+
+def test_as_of_label_formats_a_date():
+    from scripts._china_income_card import as_of_label
+    assert as_of_label("2026-10-16") == "Oct 16, 2026"
+    assert as_of_label("2013-07-01") == "Jul 01, 2013"
+
+
+def test_as_of_label_refuses_everything_else():
+    from datetime import datetime
+    from scripts._china_income_card import as_of_label
+    for bad in (None, 5, datetime(2026, 10, 16), "2026/10/16", "", "Oct 16, 2026",
+                "2026-13-01", "2026-10-16T00:00:00"):
+        assert as_of_label(bad) is None
+
+
+def test_vector_card_prints_its_as_of():
+    card = _vector_card(income=None, bear_n=2, win_start="2013-07-19",
+                        as_of="Oct 16, 2026")
+    assert _card_seg(_render([card])).count(_ASOF_SPAN) == 1
+
+
+def test_timed_card_prints_its_as_of():
+    assert _card_seg(_render([_timed_card(as_of="Oct 16, 2026")])).count(_ASOF_SPAN) == 1
+
+
+def test_card_without_as_of_renders_the_seed_markup():
+    renders = []
+    for over in ({}, {"as_of": None}, {"as_of": ""}):
+        html = _render([_vector_card(income=2.6, bear_n=None, win_start=None,
+                                     years=8.4, **over)])
+        assert '8.4y</span></div>\n      </div>\n      <div class="scard-foot">' in _card_seg(html)
+        assert "As of" not in html and "截至" not in html
+        renders.append(html)
+    assert renders[0] == renders[1] == renders[2]
+
+
+def test_as_of_en_and_zh_views():
+    seg = _card_seg(_render([_timed_card(as_of="Oct 16, 2026")]))
+    en, zh = _view(seg, "en"), _view(seg, "zh")
+    assert "As of" in en and "Oct 16, 2026" in en and "截至" not in en
+    assert "截至" in zh and "Oct 16, 2026" in zh and "As of" not in zh
+
+
+def test_as_of_cards_have_no_whitespace_only_line():
+    cards = (_vector_card(income=None, bear_n=2, win_start="2013-07-19", years=12.3,
+                          as_of="Oct 16, 2026", experimental=True),
+             _timed_card(as_of="Oct 16, 2026", experimental=True))
+    for card in cards:
+        assert re.search(r"\n[ \t]*\n", _card_seg(_render([card]))) is None
+
+
+def test_as_of_line_adds_no_style_or_colour_literal():
+    src = (_ROOT / "templates" / _TEMPLATE).read_text(encoding="utf-8")
+    assert src.count("{%- if c.as_of %}") == 1
+    i = src.index("{%- if c.as_of %}")
+    block = src[i:src.index("{%- endif %}", i) + len("{%- endif %}")]
+    lines = block.splitlines()
+    assert len(lines) == 3
+    assert "t('As of','截至')" in block and 'class="m-sub"' in block
+    for bad in ("style=", "<style", "rgb(", "hsl("):
+        assert bad not in block
+    assert not re.search(r"#[0-9a-fA-F]{3,6}", block)
+    for line in lines:
+        assert len(line) <= 100
+
+
+def test_builder_wires_the_vector_card_as_of():
+    lines = _BUILDER.read_text(encoding="utf-8").splitlines()
+    for prev, want in (("            income, tile = None, IC.sample_tile(bt)",
+                        "            as_of = IC.as_of_label(ca._as_of())"),
+                       ("        tile = IC.sample_tile(None)", "        as_of = None")):
+        assert lines.count(prev) == 1 and lines.count(want) == 1
+        assert lines[lines.index(prev) + 1] == want
+    want = '        "as_of": as_of,'
+    assert lines.count(want) == 1
+    assert lines[lines.index(want) + 1] == "        **tile,"

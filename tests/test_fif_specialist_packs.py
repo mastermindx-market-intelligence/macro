@@ -89,6 +89,7 @@ from engine.fundamental_forensics.specialist_packs import (
 from engine.fundamental_forensics.specialist_packs import base as pack_base
 from engine.fundamental_forensics.specialist_packs import narrative as pack_narrative
 from engine.fundamental_forensics.specialist_packs import pk06_leases
+from engine.fundamental_forensics.specialist_packs import pk08_contingencies
 from engine.fundamental_forensics.specialist_packs import pk09_controls
 from engine.fundamental_forensics.specialist_packs import pk10_proxy
 from engine.fundamental_forensics import specialist_pack_contract as contract
@@ -6832,6 +6833,146 @@ def test_rf9_calculation_children_conflict_names_the_conflict() -> None:
     ]
 
 
+def _produce_pack_with_ledger(
+    monkeypatch, pack_id: str, pack_input: PackInput, occurrences: list
+) -> dict:
+    ledger = _RawFactLedger(tuple(occurrences))
+    report = _ixbrl.ConversionReport(
+        filings=(), ledger_sha256="0" * 64, source_namespace_families=()
+    )
+    monkeypatch.setattr(
+        _ixbrl,
+        "parse_and_convert_golden_packages",
+        lambda packages: (ledger, {}, report),
+    )
+    return produce_pack(pack_id, pack_input)
+
+
+def test_pk04_grouped_conflict_names_the_duplicate_facts(monkeypatch) -> None:
+    # R-F9 sink repair F1: the grouped resolver's per-member conflict row must
+    # name the duplicate facts exactly as the plain FactMapping path does.
+    revenue = "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
+    us_member = "{http://xbrl.sec.gov/country/2025}US"
+    first = _probe_occurrence(
+        key="geo-dup-a",
+        concept=revenue,
+        value=Decimal("800000000"),
+        start=_date(2024, 9, 29),
+        end=POR,
+        dimensions=((GEOGRAPHICAL_LEDGER_AXIS, us_member),),
+    )
+    second = _probe_occurrence(
+        key="geo-dup-b",
+        concept=revenue,
+        value=Decimal("900000000"),
+        start=_date(2024, 9, 29),
+        end=POR,
+        dimensions=((GEOGRAPHICAL_LEDGER_AXIS, us_member),),
+    )
+    result = _produce_pack_with_ledger(
+        monkeypatch, "PK04", _pk04_input(), [first, second]
+    )
+    row = _row(result, "revenue_disaggregated")
+    assert row["quality_state"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+    assert row["source_occurrence_ids"] == sorted(
+        {first.occurrence_id, second.occurrence_id}
+    )
+    assert (
+        _rf9_expected(
+            "revenue_disaggregated",
+            ((first, "800000000"), (second, "900000000")),
+        )
+        in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_grouped_conflict_names_the_duplicate_facts(monkeypatch) -> None:
+    # R-F9 sink repair F1: same disclosure on a PK03 dimensioned segment field.
+    revenue = "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
+    americas = _aapl_member("AmericasSegmentMember")
+    first = _probe_occurrence(
+        key="seg-dup-a",
+        concept=revenue,
+        value=Decimal("800000000"),
+        start=_date(2024, 9, 29),
+        end=POR,
+        dimensions=(
+            (SEGMENT_LEDGER_AXIS, americas),
+            (CONSOLIDATION_ITEMS_LEDGER_AXIS, "us-gaap:OperatingSegmentsMember"),
+        ),
+    )
+    second = _probe_occurrence(
+        key="seg-dup-b",
+        concept=revenue,
+        value=Decimal("900000000"),
+        start=_date(2024, 9, 29),
+        end=POR,
+        dimensions=(
+            (SEGMENT_LEDGER_AXIS, americas),
+            (CONSOLIDATION_ITEMS_LEDGER_AXIS, "us-gaap:OperatingSegmentsMember"),
+        ),
+    )
+    result = _produce_pack_with_ledger(
+        monkeypatch, "PK03", _pk03_input(), [first, second]
+    )
+    row = _row(result, "segment_revenue")
+    assert row["quality_state"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+    assert row["source_occurrence_ids"] == sorted(
+        {first.occurrence_id, second.occurrence_id}
+    )
+    assert (
+        _rf9_expected(
+            "segment_revenue",
+            ((first, "800000000"), (second, "900000000")),
+        )
+        in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_allowlist_conflict_names_the_duplicate_facts(monkeypatch) -> None:
+    # R-F9 sink repair F1: the allowlist dimensioned resolver (PK03's
+    # unallocated_corporate_and_eliminations) discloses the same conflict.
+    revenue = "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
+    corporate = "us-gaap:CorporateNonSegmentMember"
+    first = _probe_occurrence(
+        key="elim-dup-a",
+        concept=revenue,
+        value=Decimal("800000000"),
+        start=_date(2024, 9, 29),
+        end=POR,
+        dimensions=((CONSOLIDATION_ITEMS_LEDGER_AXIS, corporate),),
+    )
+    second = _probe_occurrence(
+        key="elim-dup-b",
+        concept=revenue,
+        value=Decimal("900000000"),
+        start=_date(2024, 9, 29),
+        end=POR,
+        dimensions=((CONSOLIDATION_ITEMS_LEDGER_AXIS, corporate),),
+    )
+    result = _produce_pack_with_ledger(
+        monkeypatch, "PK03", _pk03_input(), [first, second]
+    )
+    row = _row(result, "unallocated_corporate_and_eliminations")
+    assert row["quality_state"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+    assert row["source_occurrence_ids"] == sorted(
+        {first.occurrence_id, second.occurrence_id}
+    )
+    assert (
+        _rf9_expected(
+            "unallocated_corporate_and_eliminations",
+            ((first, "800000000"), (second, "900000000")),
+        )
+        in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
 def test_rf10_form_rank_beats_newer_interim_and_overflow_raises() -> None:
     ten_k = load_golden_aapl_package(ROOT, accession=ACCESSION)
     ten_q = load_golden_aapl_package(ROOT, accession="0000320193-26-000020")
@@ -7665,9 +7806,12 @@ PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK11": "58e1c524a82210daffc392c855309c73b5d4ca55732c100c3a3a6babe7d41ba4",
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",
 }
-# This producer's own byte-determinism pin, captured at the lane's fork point.
+# This producer's own byte-determinism pin, captured at the lane's fork point;
+# re-pinned by the second repair (review F3 seat ruling): the range row's
+# mapping_rule_digest now pins the live RANGE_DISCLOSED_PATTERN bytes (masked-
+# envelope diff vs the previous pin: empty).
 PK08_AAPL_ENVELOPE_SHA256 = (
-    "f022209f26ac312c963e9b295ee7b9e0e634b08aa64803a11e247076fd5de596"
+    "9200ce0e91e7867e1186e5b96f0ecbdc01d3f56fddfb5d81ff07f13e905260b3"
 )
 # §TESTS 1: the fixture's two nil balance-sheet occurrences (ledger scan).
 PK08_AAPL_NIL_IDS = {
@@ -7753,6 +7897,57 @@ _PK08_CONTING_RANGE = (
     "Contingencies The Company is a party to certain pending legal matters. "
     "For those matters, the Company estimates a range of reasonably possible "
     "loss of $10 million to $20 million."
+)
+# Range-pattern revision v2 (F1/F2 review): the reviewer's literal inputs.
+_PK08_CONTING_RANGE_FULL_DIGIT = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, the Company estimates a range of reasonably possible "
+    "loss of $450,000,000 to $900,000,000."
+)
+_PK08_CONTING_NOT_ESTIMABLE_AFTER_BE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, the loss or range of loss cannot be reasonably "
+    "estimated by the Company."
+)
+_PK08_CONTING_NOT_ESTIMABLE_NO_BE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, the Company cannot reasonably estimate the loss or "
+    "range of loss."
+)
+_PK08_CONTING_NOT_ESTIMABLE_OVER_MATERIAL = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, the Company has no material exposure and the loss or "
+    "range of loss cannot be reasonably estimated by the Company."
+)
+# Second repair (review F2): the two sentences the first repair's arm still
+# typed missing/missing_dependency.
+_PK08_CONTING_NOT_ESTIMABLE_NOT_POSSIBLE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to estimate the amount or range "
+    "of loss."
+)
+_PK08_CONTING_NOT_ESTIMABLE_CANNOT_BE_MADE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, an estimate of the possible loss cannot be made."
+)
+# Second repair (review F2): a dollar range governs a not-estimable phrase —
+# both orders resolve by RANGE_ARM_PRIORITY, never first-match-by-position.
+_PK08_CONTING_DISCLOSED_THEN_NOT_ESTIMABLE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, the Company estimates a range of reasonably possible "
+    "loss of $10 million to $20 million, although the loss cannot be "
+    "reasonably estimated beyond that range."
+)
+_PK08_CONTING_NOT_ESTIMABLE_THEN_DISCLOSED = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "The loss cannot be reasonably estimated in full, although for those "
+    "matters the Company estimates a range of reasonably possible loss of "
+    "$10 million to $20 million."
+)
+_PK08_CONTING_BARE_DOLLAR = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, the Company considers a loss of $ reasonably "
+    "possible but cannot quantify an amount."
 )
 _PK08_ITEM3_BODY = (
     "Item 3. Legal Proceedings The Company and its subsidiaries are parties "
@@ -8209,6 +8404,256 @@ def test_pk08_range_in_prose_only_is_never_valued() -> None:
         for line in result["limitations"]
     )
     assert _check(result, "accrual_vs_range")["status"] == "not_evaluable"
+    assert contract.validate_pack_result(result) == []
+
+
+# 51.5b range-pattern revision v2 (F1/F2 review): the reviewer's inputs ------
+
+
+def test_pk08_prose_range_full_digit_amount() -> None:
+    # F1: the full-digit dollar form retypes the range rows exactly as the
+    # "$10 million" form always has (the C2 ruling is form-independent).
+    result = produce_pack(
+        "PK08",
+        _pk08_testco_input(contingencies_prose=_PK08_CONTING_RANGE_FULL_DIGIT),
+    )
+    rows = {row["field_id"]: row for row in result["fields"]}
+    for field_id in ("loss_contingency_range_low", "loss_contingency_range_high"):
+        row = rows[field_id]
+        assert row["quality_state"] == "missing", field_id
+        assert row["reason"] == "numeric_value_in_narrative_only", field_id
+        assert row["value"] is None, field_id
+    # The disclosed arm's literal IS in the catalogue: the enum values.
+    disclosed = rows["loss_contingency_range_disclosed"]
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["text_value"] == "disclosed_range"
+    # The accrual is a plain ledger absence — the prose rule never touches it.
+    assert rows["loss_contingency_accrual"]["reason"] == (
+        "missing_standard_fact:us-gaap:LossContingencyAccrualAtCarryingValue"
+    )
+    assert any(
+        line.startswith("pk08.range_in_prose_only:")
+        for line in result["limitations"]
+    )
+    assert _check(result, "accrual_vs_range")["status"] == "not_evaluable"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_estimable_adverb_after_be() -> None:
+    # F2 input A: "cannot be reasonably estimated" values not_estimable —
+    # the adverb-after-"be" order the v1 arm missed typed this row
+    # narrative_span_not_located.
+    result = produce_pack(
+        "PK08",
+        _pk08_testco_input(
+            contingencies_prose=_PK08_CONTING_NOT_ESTIMABLE_AFTER_BE
+        ),
+    )
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["non_value_state"] is None
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["value"] is None
+    assert disclosed["evidence_kind"] == "text_span"
+    assert disclosed["reason"] is None
+    span = disclosed["source_span"]
+    assert span["document_id"] == PK08_TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    # F3 (second review): the v1 shadow copy is gone — the live digest is the
+    # provenance, so no revision limitation line exists.
+    assert not any(
+        "range_pattern_revision" in line for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_estimable_no_be_form() -> None:
+    # F2: the no-"be" phrasing ("cannot reasonably estimate") values the
+    # same declared literal as input A.
+    result = produce_pack(
+        "PK08",
+        _pk08_testco_input(
+            contingencies_prose=_PK08_CONTING_NOT_ESTIMABLE_NO_BE
+        ),
+    )
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["non_value_state"] is None
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["value"] is None
+    assert disclosed["evidence_kind"] == "text_span"
+    assert disclosed["reason"] is None
+    span = disclosed["source_span"]
+    assert span["document_id"] == PK08_TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    # F3 (second review): the v1 shadow copy is gone — the live digest is the
+    # provenance, so no revision limitation line exists.
+    assert not any(
+        "range_pattern_revision" in line for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_estimable_governs_over_not_material() -> None:
+    # F2 input B: "no material" earlier in the sentence must not oust the
+    # governing estimate clause — arms resolve by RANGE_ARM_PRIORITY, not
+    # first-match-by-position, so the A.3 not_material refusal never fires.
+    result = produce_pack(
+        "PK08",
+        _pk08_testco_input(
+            contingencies_prose=_PK08_CONTING_NOT_ESTIMABLE_OVER_MATERIAL
+        ),
+    )
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["value"] is None
+    assert not any(
+        "catalogue lacks literal 'not_material'" in line
+        for line in result["limitations"]
+    )
+    # F3 (second review): the v1 shadow copy is gone — the live digest is the
+    # provenance, so no revision limitation line exists.
+    assert not any(
+        "range_pattern_revision" in line for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_prose_amount_requires_digits() -> None:
+    # F1 negative: "$ reasonably possible" is not a dollar amount — no
+    # prose-only retype; the range rows stay plain ledger absences.
+    result = produce_pack(
+        "PK08",
+        _pk08_testco_input(contingencies_prose=_PK08_CONTING_BARE_DOLLAR),
+    )
+    rows = {row["field_id"]: row for row in result["fields"]}
+    for field_id, alias in (
+        ("loss_contingency_range_low", _PK08_RANGE_LOW),
+        ("loss_contingency_range_high", _PK08_RANGE_HIGH),
+    ):
+        row = rows[field_id]
+        assert row["quality_state"] == "missing", field_id
+        assert row["reason"] == f"missing_standard_fact:{alias}", field_id
+        assert row["value"] is None, field_id
+    disclosed = rows["loss_contingency_range_disclosed"]
+    assert disclosed["quality_state"] == "missing"
+    assert disclosed["reason"] == "missing_dependency"
+    assert not any(
+        "range_in_prose_only" in line for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+# 51.5c second repair (review F2/F3): complete not_estimable forms, disclosed
+# precedence, and honest live-pattern provenance --------------------------------
+
+
+def _pk08_span_text(pack_input: PackInput, span: dict) -> str:
+    """The raw-document bytes one row's ``source_span`` offsets address."""
+    document = pack_input.packages[0].members[span["document_id"]]
+    return document[span["start_offset"] : span["end_offset"]].decode("utf-8")
+
+
+def test_pk08_not_estimable_not_possible_form() -> None:
+    # F2 sentence A: "it is not possible to estimate the amount or range of
+    # loss" values not_estimable — the first repair's arm still typed this
+    # sentence missing/missing_dependency.
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_NOT_ESTIMABLE_NOT_POSSIBLE
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["non_value_state"] is None
+    assert disclosed["coverage_state"] == "source_trace_complete"
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["value"] is None
+    assert disclosed["evidence_kind"] == "text_span"
+    assert disclosed["reason"] is None
+    span = disclosed["source_span"]
+    assert span["document_id"] == PK08_TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    assert _pk08_span_text(pack_input, span) == "is not possible to estimate"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_estimable_cannot_be_made_form() -> None:
+    # F2 sentence B: "an estimate of the possible loss cannot be made" values
+    # not_estimable — same typed-missing miss as sentence A.
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_NOT_ESTIMABLE_CANNOT_BE_MADE
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["non_value_state"] is None
+    assert disclosed["coverage_state"] == "source_trace_complete"
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["value"] is None
+    assert disclosed["evidence_kind"] == "text_span"
+    assert disclosed["reason"] is None
+    span = disclosed["source_span"]
+    assert span["document_id"] == PK08_TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    assert _pk08_span_text(pack_input, span) == (
+        "estimate of the possible loss cannot be made"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_disclosed_governs_over_not_estimable() -> None:
+    # F2 precedence: a span carrying a dollar range AND "cannot be reasonably
+    # estimated" resolves disclosed_range in both orders — the arms evaluate
+    # by RANGE_ARM_PRIORITY over the whole span, never first-match-by-position.
+    for prose in (
+        _PK08_CONTING_DISCLOSED_THEN_NOT_ESTIMABLE,
+        _PK08_CONTING_NOT_ESTIMABLE_THEN_DISCLOSED,
+    ):
+        pack_input = _pk08_testco_input(contingencies_prose=prose)
+        result = produce_pack("PK08", pack_input)
+        disclosed = _row(result, "loss_contingency_range_disclosed")
+        assert disclosed["quality_state"] == "valued", prose
+        assert disclosed["non_value_state"] is None, prose
+        assert disclosed["text_value"] == "disclosed_range", prose
+        assert disclosed["value"] is None, prose
+        assert disclosed["reason"] is None, prose
+        span = disclosed["source_span"]
+        assert span["end_offset"] > span["start_offset"], prose
+        assert _pk08_span_text(pack_input, span) == (
+            "range of reasonably possible loss"
+        ), prose
+        assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_range_digest_is_the_live_pattern() -> None:
+    # F3 seat ruling: the digest of a text-span mapping is the digest of the
+    # bytes that performed the match. The produced row's mapping_rule_digest
+    # must equal the digest base.py derives for the live
+    # RANGE_DISCLOSED_PATTERN — computed here through the same helper the
+    # producer uses, so a shadow byte-string reintroduced as the digest
+    # source fails this equality.
+    result = produce_pack(
+        "PK08",
+        _pk08_testco_input(
+            contingencies_prose=_PK08_CONTING_NOT_ESTIMABLE_AFTER_BE
+        ),
+    )
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    expected = pack_base._text_span_digest(
+        pack_base.TextSpanMapping(
+            section=pk08_contingencies.NOTE_CC,
+            pattern=pk08_contingencies.RANGE_DISCLOSED_PATTERN,
+            kind="enum",
+        )
+    )
+    assert disclosed["mapping_rule_digest"] == expected
+    assert (
+        pk08_contingencies._RANGE_DISCLOSED_MAPPING.pattern
+        == pk08_contingencies.RANGE_DISCLOSED_PATTERN
+    )
+    assert not hasattr(pk08_contingencies, "RANGE_DISCLOSED_PATTERN_V1")
     assert contract.validate_pack_result(result) == []
 
 

@@ -1,0 +1,11 @@
+{
+  "merged_base_at": "2026-10-19T23:44:56.915690+00:00",
+  "head": "f06f887d65ac6e34684bc6c3a3ffd60cd3cdaa7b",
+  "parents": "52e8195fbc21e863d9e72433256215139467fc87 50a8c01553ee92731a53dfcff36256308cfb5f0e",
+  "status": "",
+  "owner_sha256": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+  "pr_paths": [
+    "ops/terminal-build.sh",
+    "tests/test_terminal_beta_build_output_custody.py"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "started_at": "2026-10-20T00:59:36.766041+00:00",
+  "scope": "Stage one exact protected script in a private root directory only; no owner execution",
+  "protected_owner_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+  "source_sha256": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+  "stage_program_sha256": "e2193259ed0037412e6d1cb19c37653aae0f0076967653f2dc221ef16dca43ba",
+  "finished_at": "2026-10-20T00:59:37.622524+00:00",
+  "exit": 0,
+  "stdout": "{\"phase\": \"private_directory_created\", \"directory\": \"/root/mastermind-beta-owner-93e303cc-ucmhwhpm\", \"owner_R\": \"93e303cc32566e72fb086af6d04ba3aa41866c5c\", \"bootstrap_executed\": false}\n{\"phase\": \"private_protected_owner_staged\", \"staged_at\": \"2026-10-20T00:59:37.624336+00:00\", \"owner_R\": \"93e303cc32566e72fb086af6d04ba3aa41866c5c\", \"application_A\": \"e45bde2cac07ac3b29285ff70c40d68900fad62c\", \"directory\": \"/root/mastermind-beta-owner-93e303cc-ucmhwhpm\", \"script\": \"/root/mastermind-beta-owner-93e303cc-ucmhwhpm/terminal-build.sh\", \"sha256\": \"c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d\", \"bytes\": 207242, \"uid\": 0, \"gid\": 0, \"nlink\": 1, \"mode\": \"0700\", \"directory_entries\": [\"terminal-build.sh\"], \"bootstrap_executed\": false}\n",
+  "stderr": ""
+}

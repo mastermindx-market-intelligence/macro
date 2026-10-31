@@ -1,0 +1,13 @@
+{
+  "passed": 8,
+  "checks": [
+    "decision close is not executable entry; next open is used",
+    "entry-session stop is included at fixed signal ATR",
+    "opening gap through stop fills at open, not stop",
+    "adjustment factor applied to correct dates; incomplete outcomes unknown",
+    "peak then trough before decision; prefix invariance",
+    "pre-peak low cannot masquerade as a post-peak reset",
+    "comparator excludes the focal observation",
+    "nonoverlap uses fixed endpoint without reading stop outcomes"
+  ]
+}

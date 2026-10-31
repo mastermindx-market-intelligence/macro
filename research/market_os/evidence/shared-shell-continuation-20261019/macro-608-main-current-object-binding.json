@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-10-20T19:07:02.136439+00:00",
+  "incoming": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "new_delta_missing": 13,
+  "missing_objects_referenced_by_current_tree": [],
+  "current_tree_listing_bytes": 13634993,
+  "current_tree_listing_sha256": "069adb0e2d3c8c3dfc94a3e5acb2ce8f96668cf6d1cfe8c0e75d8df8393c06f1",
+  "scope": "Distinguish missing historical objects from current merge inputs; no claim of complete all-history object availability"
+}

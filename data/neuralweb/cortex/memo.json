@@ -1,11 +1,30 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-10-20T20:28:29+00:00",
-  "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
-  "what_fired": [],
-  "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
-  "decaying_families": [],
-  "deserves_operator": [],
+  "as_of": "2026-10-21T09:04:22+00:00",
+  "summary": "Context-only committee read: the US backdrop is MIXED (43), not a calibrated risk-off edge. The confirmed Q2 label is lagging axes that currently indicate Q3, while restrictive and rising real rates, a bear steepener, stronger USD, weak breadth, BROKEN leadership, widening HY credit, and aligned systematic cutting describe a fragile transition. Offsetting evidence remains material: recession signal is off, financial conditions are still loose, systemic stress is calm, liquidity quantity is expanding, and the risk-radar caution cell\u2019s measured 21-day drawdown rate is 16.0% versus a 17.8% base rate. Accordingly this memo originates no position, probability, ranking, or escalation.",
+  "what_fired": [
+    "Confirmed regime label Q2 conflicts with current Q3-sign axes; Q3 confirmation is only 1 of 7 sessions.",
+    "Leadership deteriorated from CRACKING to BROKEN while breadth remains near the 15th percentile and HY OAS widened.",
+    "Risk radar shows credit/growth conjunction, but remains advisory and below its own measured base-rate threshold.",
+    "Factor weather is mixed with profitability leading; the factor panel has only 11 dates, Pair G is dormant, and factor attention has no graded history.",
+    "Four shadow attention records were filed with pre-committed falsifiers: regime label/axis reconciliation, leadership-credit-breadth persistence, overdue Long Treasuries thesis review, and overdue China-overweight thesis review."
+  ],
+  "contradictions_review": "The central contradiction is defensive tape versus incomplete macro confirmation: poor breadth, broken leadership, credit widening, a firm dollar, and short gamma coexist with loose financial conditions, expanding liquidity quantity, low recession risk, calm systemic stress, and a below-base caution-cell drawdown rate. The Q2 regime label also conflicts with its own current axes and with the growth-scare radar. Factor Pair G contributes no current contradiction because its ledger is dormant until at least 60 panel dates. Open Master Brain theses require attention where current evidence conflicts: the Long Treasuries overweight has met its stated invalidating conditions (real 10-year yield 2.8% and bear steepening), and the China-equities overweight is inconsistent with fresh-enough regime context showing Q3/contracting liquidity plus strained leadership; the dedicated China market-state surface is stale.",
+  "decaying_families": [
+    "altdata: negative shrunken IC across pooled 5/21/63-day horizons and explicitly held out of service.",
+    "desk:radar, desk:stock_desk, desk:thematic_desk, and desk:narrative_brain: negative 63-day signed-excess estimates; none is armed.",
+    "policy and desk:policy_intent: negative signed-excess history with thin or vacuous held-out tests; not armed.",
+    "intel_hub: approximately flat at 5 days and negative at 21 days in Q2/Q3; held as unarmed context.",
+    "ca_board, cn_board, and hk_board positive MFE summaries are not actionable evidence because their outcome basis is unsigned and their held-out comparisons are vacuous or below the registered bar."
+  ],
+  "deserves_operator": [
+    "Reconcile the confirmed Q2 label with Q3-sign axes after the seven-session confirmation rule; do not infer a flip early.",
+    "Watch whether BROKEN leadership, widening HY credit, and weak breadth persist together for 21 sessions; clear only on the filed multi-leg recovery criterion.",
+    "Score or retire overdue Long Treasuries thesis mb-2026-07-01-1 using its original falsifier; current evidence meets the stated invalidation condition.",
+    "Score or retire overdue China-equities overweight thesis mb-2026-07-09-1; current Q3/contracting-liquidity context conflicts, and the China market-state input is stale.",
+    "Repair thesis-ledger hygiene: several open theses are far past check-by dates, and duplicate thesis IDs appear, weakening contradiction review and calibration.",
+    "Treat the risk-radar headline conservatively: its caution state is advisory, its state-specific 21-day rate is below base, and the forward log has no graded alerts."
+  ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
     "as_of": "2026-10-20",
@@ -25,67 +44,77 @@
     },
     "is_context_only": true
   },
-  "tool_call_census": {},
+  "tool_call_census": {
+    "read_world_state": 1,
+    "read_factor_state": 1,
+    "query_spine": 1,
+    "read_contradictions": 1,
+    "list_factor_contradictions": 1,
+    "read_kernel": 1,
+    "read_master_brain_theses": 1,
+    "flag_attention": 1,
+    "write_memo": 1
+  },
   "is_context_only": true,
   "run_status": {
-    "status": "degraded",
-    "degraded": true,
-    "degradation_reason": "model_unavailable",
-    "model_used": "claude-sonnet-4-6",
+    "status": "ok",
+    "degraded": false,
+    "degradation_reason": null,
+    "model_used": "claude-opus-4-8",
     "provider_attempts": [
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgE7wCWQRzPFqMoTK8V4Y'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgE7wLsC3pQRjGAj5oE2X'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgE7xatKwGoFnimLDgUSP'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
         "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgE839UFPBAxuNXYZVqEo'}"
+        "error_type": "transient",
+        "error_message": "Codex provider timeout"
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgE8Gabi5VGLwnkdTCBeG'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgE8GbNbFkmcd21MLK9Ez'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       }
     ],
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
+    "tool_call_batches": 4,
+    "individual_tool_calls": 9,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-10-20T08:06:54Z"
+    "context_as_of": "2026-10-21T08:12:18Z"
   }
 }
