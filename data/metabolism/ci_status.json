@@ -1,18 +1,12 @@
 {
-  "ts": "2026-10-31T12:59:10+00:00",
-  "main_sha": "00fad1d78a7be117c2536809e69edbed31b2ed62",
+  "ts": "2026-10-31T18:56:37+00:00",
+  "main_sha": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "red_required": [
     {
       "name": "sweep",
       "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41203335091/job/124543356076"
-    },
-    {
-      "name": "sweep",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41203243455/job/124543085599"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41202658805/job/124541371184"
     },
     {
       "name": "tier-gate",
@@ -46,9 +40,9 @@
     }
   ],
   "green": false,
-  "consecutive_failures": 242,
+  "consecutive_failures": 243,
   "sensed_shas": [
-    "00fad1d78a7be117c2536809e69edbed31b2ed62",
+    "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
     "686ec075ebfa89a6a2e29133d24ee84aa46e52c7"
   ],
   "heartbeat_degraded": false
