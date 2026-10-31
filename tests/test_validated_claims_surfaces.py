@@ -290,6 +290,14 @@ _ADJUDICATED = [
     ("site/alerts.html",
      '<span class="l-zh">来自经验证的领先前兆突破的前瞻减仓窗口（脉冲雷达）。</span>',
      "经验证的领先前兆突破"),
+    # The home feed prints the same alert (scripts/build_vector.py loads btc_alerts events).
+    ("site/start.html",
+     '<span class="l-en">Forward de-risk window from a verified LEADING precursor cross '
+     '(impulse radar). Holdout-validated, leak-free; act early</span>',
+     "Holdout-validated, leak-free"),
+    ("site/start.html",
+     '<span class="l-zh">来自经验证的领先前兆突破的前瞻减仓窗口（脉冲雷达）。</span>',
+     "经验证的领先前兆突破"),
     ("site/cycle_app.js",
      "' · backtest-validated OOS; live cohort accruing (come-back: n_matured≥40 per cell)')",
      "backtest-validated OOS; live cohort accruing"),
