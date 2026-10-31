@@ -1705,3 +1705,67 @@ def test_harness_experience_default_text_remains_unchanged(simple: Path) -> None
                       "--budget", "12000", "--text")
     assert result.returncode == 0, result.stderr
     assert "HARNESS EXPERIENCE" not in result.stdout
+
+# Composition regression: the newer Evaluation OS optional discovery field and
+# Harness2 evidence association are additive, not competing metadata schemas.
+def _combined_evaluation_finding() -> dict[str, Any]:
+    return {
+        "engine": "harness2",
+        "metric": "verified task correctness",
+        "observed_change": {"baseline": None, "current": None, "unit": "pass rate"},
+        "segment": "prospective controlled trial",
+        "evidence_link": "github:mastermindx-market-intelligence/macro#9965",
+        "suggested_tier": None,
+    }
+
+
+def test_harness_experience_and_evaluation_finding_coexist(simple: Path) -> None:
+    experience = _harness_experience_meta()
+    finding = _combined_evaluation_finding()
+    _discovery(simple, "KEEP", harness_experience=experience, evaluation_finding=finding)
+    result = _compile("--root", str(simple), "--workstream", "TARGET", "--now", FROZEN,
+                      "--budget", "12000", "--harness-experience")
+    assert result.returncode == 0, result.stderr
+    item = next(i for i in _items(_bundle(result)) if i["key"] == "DSC:KEEP")
+    assert item["harness_experience"]["harness_artifact"] == experience["harness_artifact"]
+    assert item["harness_experience"]["source_run_ids"] == experience["source_run_ids"]
+
+    module = _load_cli()
+    payload = {
+        "key": "BOTH-METADATA", "claim": "The source-bound comparison retains signed data.",
+        "falsifier": "pytest tests/test_agentos_compile.py checks both fields.",
+        "so_what": "Retain both evidence associations without promotion authority.",
+        "kind": "architecture", "verified_at": "2026-08-10",
+        "verified_by": "pytest tests/test_agentos_compile.py",
+        "scope": ["WS:TARGET"], "confidence": "suspected",
+        "harness_experience": experience, "evaluation_finding": finding,
+    }
+    rendered = module.draft_discovery(payload)
+    record = yaml.safe_load(rendered.split("---", 2)[1])
+    assert record["evaluation_finding"] == finding
+    assert record["harness_experience"] == experience
+
+
+@pytest.mark.parametrize("invalid,expected", [
+    ("evaluation_finding", "bad-evaluation-finding"),
+    ("harness_experience", "bad-harness-experience"),
+])
+def test_combined_metadata_fails_closed_per_invalid_field(
+    simple: Path, invalid: str, expected: str,
+) -> None:
+    experience = _harness_experience_meta()
+    finding = _combined_evaluation_finding()
+    if invalid == "evaluation_finding":
+        finding["suggested_tier"] = "T9"
+    else:
+        experience["harness_artifact"]["digest"] = "not-a-digest"
+    _discovery(simple, "KEEP", harness_experience=experience, evaluation_finding=finding)
+    result = _compile("--root", str(simple), "--workstream", "TARGET", "--now", FROZEN,
+                      "--budget", "12000", "--harness-experience")
+    assert result.returncode == 0, result.stderr
+    bundle = _bundle(result)
+    assert not any(i.get("harness_experience") for i in _items(bundle))
+    assert any(i["key"] == "DSC:KEEP" for i in bundle["excluded"])
+    rec_path = simple / "discoveries" / "DSC-KEEP.md"
+    record = yaml.safe_load(rec_path.read_text().split("---", 2)[1])
+    assert expected in {p.rule for p in _load_cli().check_discovery(record, rec_path)}
