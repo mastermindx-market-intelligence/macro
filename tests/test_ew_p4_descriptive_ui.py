@@ -10,6 +10,7 @@ research/grey_deer/evidence/EW_P4_DESCRIPTIVE_UI_2026-10-31.md for the mapping.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from copy import deepcopy
@@ -430,3 +431,58 @@ def test_routes_land_on_the_registered_sector_central_hash():
     js = (ROOT / "templates" / "rotation_events.js").read_text(encoding="utf-8")
     assert 'href="#rc-early-context"' not in js
     assert js.count('href="#rc-events-mount"') == 2
+
+
+# ---------------------------------------------------------------------------
+# Visual receipt: the committed shots depict the source under test.
+# ---------------------------------------------------------------------------
+
+EVIDENCE = ROOT / "research" / "evidence" / "ew_p4_descriptive_ui_20261031"
+
+
+def _git_blob_id(path: Path) -> str:
+    data = path.read_bytes()
+    return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+
+
+def test_receipt_shots_depict_the_source_under_test():
+    """The shots were rendered from the receipt's source_revision. A file cannot name
+    the commit that contains it, so the receipt binds the render INPUTS instead: every
+    one must be byte-identical (git blob id) on the tree CI checks out, which makes the
+    receipt hold for the exact head under test and fail on any later render edit."""
+    rec = json.loads((EVIDENCE / "receipt.json").read_text(encoding="utf-8"))
+    assert rec["base"] == "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd"
+    eq = rec["pr_source_equivalence"]
+    assert eq["all_equal"] is True
+    paths = {r["path"] for r in eq["render_files"]}
+    assert {
+        "templates/_risk_envelope_band.html.j2",
+        "templates/_risk_envelope_band.css.j2",
+        "templates/rotation_events.js",
+        "tests/probe_ew_p4_descriptive_ui_browser.py",
+    } <= paths
+    assert {f"tests/fixtures/ew_p4_observation/{p.name}" for p in FIX.glob("*.json")} <= paths
+    for row in eq["render_files"]:
+        p = ROOT / row["path"]
+        if row["path"].startswith("site/") and not p.exists():
+            continue  # sparse local trees omit site/; templates/ carries the same bytes
+        assert row["blob_at_source_revision"] == row["blob_on_pr_branch"], row["path"]
+        assert _git_blob_id(p) == row["blob_at_source_revision"], row["path"]
+
+    cases = rec["cases"]
+    assert len(cases) == 46
+    matrix = {(c["surface"], c["state"], c["lang"], c["theme"], c["width"]) for c in cases}
+    for surface, state in (("radar", "stale"), ("radar", "observed"), ("sc", "observed")):
+        for lang in ("en", "zh"):
+            for theme in ("dark", "light"):
+                for width in (1280, 390, 320):
+                    assert (surface, state, lang, theme, width) in matrix
+    radar_states = {c["state"] for c in cases if c["surface"] == "radar"}
+    sc_states = {c["state"] for c in cases if c["surface"] == "sc"}
+    assert {"partial", "conflicting", "unavailable", "withdrawn", "corrected", "unreadable"} <= radar_states
+    assert {"stale", "withdrawn", "corrected", "unreadable"} <= sc_states
+    for case in cases:
+        shot = EVIDENCE / case["screenshot"]
+        assert hashlib.sha256(shot.read_bytes()).hexdigest() == case["sha256"], case["screenshot"]
+        assert case["no_horizontal_overflow"] is True, case["screenshot"]
+        assert case["page_errors"] == [], case["screenshot"]
