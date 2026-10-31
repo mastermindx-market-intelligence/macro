@@ -192,6 +192,17 @@ git add -f site/live/notify_state.json 2>/dev/null || true
 # imputed from its close-only per-stock JSON so the chart draws candlesticks.
 # US 4H intraday chart data (built by build_site -> build_chart_data.emit_intraday
 # from the cached data/intraday) — gitignored, force-add so the deploy ships it.
+# GH001 carve-out (scripts/ci/qledger_carve.sh — #9556 parity for THIS committer).
+# data/qledger/claims.jsonl sits at GitHub's 100 MiB blob limit on main and grows
+# on every runner; staging it rejected the WHOLE engine commit every night from
+# 2026-10-21 (run 40803269874: "GH001 large-file rejection") — regime update,
+# curated US candidate tier, rendered site all lost at the next checkout. Unstage
+# the oversize qledger planes (custody snapshot + verified park + restore on
+# exit; the ledger's own publication stays with the qledger publication program).
+# A carve that cannot secure custody withholds this commit: exit 1, because a
+# lost engine commit must red the run (see the push_lost branch below).
+. "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"
+qledger_carve_staged || exit 1
 if git diff --cached --quiet; then echo "no engine output changes"; exit 0; fi
 # Fail-closed conflict gate (P0 2026-08-01, d29e4dd44d / #4167): a conflicted
 # autostash apply anywhere upstream of this step leaves `Updated upstream /
