@@ -324,10 +324,10 @@ looks_P: {monitoring: [50, 100], futility: 150, fixed: first session on which ev
 look_R: {t_disc_from: 2026-08-26, t_disc_to: 2026-10-23, looks: 1, after_freeze: true, may_promote: false, may_reject: false, changes_P_constants: false, maturity_session: set at freeze = first session after max over R units and arms of t_exec + H (observed, not assumed)}
 secondary_family_holm: [D_policy(T2 - T1), D_policy(T3 - T1) if gate passes]
 descriptive: [decomposition terms, interval units both bounds, T1b buyable==True, incumbent_led(_unknown) negative lead, R 26 exact pairs with pre-gap flag, placebo T0 at t_disc - 5, mdv20_usd terciles, anchor era, lead terciles, t_vis, t_auth]
-avoided_window: [t_disc, t_exec - 1] for every arm
+avoided_window: "[t_disc, t_exec - 1] for every arm"
 false_start: close < anchor within hold before any close >= fill + ATR14 ; ATR14 = mean |dclose| over 14 sessions strictly before t_disc
-tolerance: {false_start_rate_delta_pp_max: 10 (co-condition pairs; binds at the fixed look), false_start_loss_differential_mean_bps_min: -50 (mean of loss_T0 - loss_T1 over primary units, loss_arm = min(outcome,0)*1[arm false start], 0 for cash; binds at the fixed look; never a REJECT trigger)}
-bounds: [cost_x1, cost_x2, drop_top_5pct_abs_D (trimmed once on the full-sample ranking, before resampling)]; shared index set; any flip -> FRAGILE -> blocks PROMOTE
+tolerance: "{false_start_rate_delta_pp_max: 10 (co-condition pairs; binds at the fixed look), false_start_loss_differential_mean_bps_min: -50 (mean of loss_T0 - loss_T1 over primary units, loss_arm = min(outcome,0)*1[arm false start], 0 for cash; binds at the fixed look; never a REJECT trigger)}"
+bounds: "[cost_x1, cost_x2, drop_top_5pct_abs_D (trimmed once on the full-sample ranking, before resampling)]; shared index set; any flip -> FRAGILE -> blocks PROMOTE"
 critical_values: {assumed_sd_policy_bps: 500, assumed_sd_timing_bps: 400, assumed_design_effect_policy: 2.25, assumed_design_effect_timing: 1.5, policy_n300_se_bps: 43, policy_n300_critical_mean_bps: 46, policy_n300_80pct_power_bps: 83, timing_n100_se_bps: 49, timing_n100_critical_mean_bps: 56, timing_n100_80pct_power_bps: 97, pass_rate_at_true_zero_n300: 0.14, pass_rate_at_true_zero_n300_if_independent: 0.22}
 generation_recorded_at: reported per unit as an instant against the T0 fill (R 1087/1087 at or before); not the T0 clock
 falsifiers: {descriptive: [placebo at t_disc - 5, D_timing by lead tercile], binding_via_promote: decomposition sign pattern (timing point estimate < 0 blocks PROMOTE)}
