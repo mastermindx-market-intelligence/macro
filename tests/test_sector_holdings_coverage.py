@@ -11,6 +11,7 @@ skips cleanly when it is absent.
 """
 from __future__ import annotations
 
+import errno
 import json
 import logging
 import math
@@ -514,3 +515,135 @@ def test_the_cli_publishes_a_readable_feed_to_the_explicit_out_path(tmp_path, mo
     assert json.loads(raw.decode("utf-8"))["meta"]["schema"] == SCHEMA
     assert _names(tmp_path) == ["sector_holdings_coverage.json"]
     assert default_out.exists() == default_existed  # the default site path is never written
+
+
+# --- destination metadata and symlink refusals (review F1/F2 on #10300) ------
+#
+# The published feed is a served artifact, so its mode and its identity are
+# part of what the site exposes. Two destination states must fail loudly
+# rather than be guessed: a metadata read that fails (the destination's real
+# mode is UNKNOWN) and a symlink destination (os.replace would replace the
+# LINK, not the file it points at).
+
+
+def _stat_failing_on(target: Path, exc: OSError):
+    """A Path.stat that raises *exc* for *target* and behaves normally for
+    every other path, so the fault is provably scoped to the destination and
+    never reaches the staged temporary sibling."""
+    real_stat = Path.stat
+
+    def _stat(self, *args, **kwargs):
+        if self == target:
+            raise exc
+        return real_stat(self, *args, **kwargs)
+
+    return _stat
+
+
+def test_a_metadata_failure_never_widens_an_existing_destination_mode(
+        tmp_path, monkeypatch):
+    """F1: destination.stat() failing with EIO leaves the destination's real
+    mode UNKNOWN, so the publication must fail loudly.
+
+    Reading that failure as "the destination is absent" would take the
+    default create mode (0666 & ~umask) and replace a restricted 0600 file
+    with a 0644 one — silently widening the permissions of an artifact the
+    site serves. Nothing may be staged or replaced while the mode is unknown.
+    """
+    out = tmp_path / "sector_holdings_coverage.json"
+    _sentinel(out, 0o600)
+    previous = os.umask(0o022)  # the default create mode is 0644 under this umask
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(Path, "stat",
+                          _stat_failing_on(out, OSError(errno.EIO, "Input/output error")))
+            with pytest.raises(OSError):
+                shc.write_holdings_coverage(out, _published_feed())
+    finally:
+        os.umask(previous)
+
+    assert out.read_bytes() == SENTINEL  # the last good feed is byte-identical
+    assert stat.S_IMODE(out.stat().st_mode) == 0o600  # its mode is untouched
+    assert _names(tmp_path) == ["sector_holdings_coverage.json"]  # no temp sibling
+
+
+def test_the_metadata_guard_leaves_the_ordinary_destination_paths_unchanged(
+        tmp_path, monkeypatch):
+    """The guard fails closed for the destination it was told about, not for
+    the publication as a whole: with the same scoped fault on an unrelated
+    path, an existing destination still keeps its own mode and an absent one
+    still gets the readable create mode."""
+    existing = tmp_path / "existing.json"
+    _sentinel(existing, 0o640)
+    absent = tmp_path / "absent.json"
+    previous = os.umask(0o022)
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(Path, "stat",
+                          _stat_failing_on(tmp_path / "not-the-destination.json",
+                                           OSError(errno.EIO, "Input/output error")))
+            shc.write_holdings_coverage(existing, _published_feed())
+            shc.write_holdings_coverage(absent, _published_feed())
+    finally:
+        os.umask(previous)
+
+    assert stat.S_IMODE(existing.stat().st_mode) == 0o640  # an existing mode is kept
+    assert stat.S_IMODE(absent.stat().st_mode) == 0o644  # a new file stays readable
+    for published in (existing, absent):
+        assert json.loads(published.read_text(encoding="utf-8"))["meta"]["schema"] == SCHEMA
+
+
+def test_a_symlink_destination_is_refused_instead_of_replaced(tmp_path):
+    """F2: os.replace onto a symlink path replaces the LINK itself, not the
+    file it points at, so the served feed would quietly stop being the one
+    that was written. The link is refused loudly and left exactly as it was."""
+    target = tmp_path / "real_feed.json"
+    target.write_bytes(SENTINEL)
+    os.chmod(target, 0o640)
+    link = tmp_path / "sector_holdings_coverage.json"
+    link.symlink_to(target)
+
+    with pytest.raises(OSError):
+        shc.write_holdings_coverage(link, _published_feed())
+
+    assert link.is_symlink()  # still a link, not a regular file
+    assert os.readlink(link) == str(target)
+    assert target.read_bytes() == SENTINEL  # the target is untouched
+    assert stat.S_IMODE(target.stat().st_mode) == 0o640
+    assert _names(tmp_path) == ["real_feed.json", "sector_holdings_coverage.json"]
+
+
+def test_a_dangling_symlink_destination_is_refused_too(tmp_path):
+    """A dangling link has no target to preserve, but replacing it would
+    still destroy the link the operator put there."""
+    link = tmp_path / "sector_holdings_coverage.json"
+    missing = tmp_path / "never_written.json"
+    link.symlink_to(missing)
+
+    with pytest.raises(OSError):
+        shc.write_holdings_coverage(link, _published_feed())
+
+    assert link.is_symlink()
+    assert os.readlink(link) == str(missing)
+    assert not missing.exists()  # nothing was written through the link
+    assert _names(tmp_path) == ["sector_holdings_coverage.json"]
+
+
+def test_a_refused_destination_keeps_the_hook_and_cli_failure_contracts(
+        tmp_path, caplog, monkeypatch):
+    """A refusal is an ordinary publication failure: the additive hook warns
+    and returns None, and the CLI with an explicit --out exits 1."""
+    link = tmp_path / "sector_holdings_coverage.json"
+    link.symlink_to(tmp_path / "never_written.json")
+    snap = _frame([("NVDA", 14.21)], day="2026-10-19")
+    monkeypatch.setattr(shc, "load_snapshots",
+                        lambda funds: {f: (snap if f == "XLK" else None) for f in funds})
+
+    with caplog.at_level(logging.WARNING):
+        assert emit_holdings_coverage_additive(
+            tmp_path, snapshots_loader=lambda: {"XLK": snap}) is None
+    assert "feed skipped" in caplog.text
+    assert main(["--out", str(link)]) == 1
+    assert link.is_symlink()
+    assert _names(tmp_path) == ["sector_holdings_coverage.json"]
+

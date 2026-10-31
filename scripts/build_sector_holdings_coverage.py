@@ -31,6 +31,7 @@ writes under site/, which this checkout never writes.)
 from __future__ import annotations
 
 import argparse
+import errno
 import json
 import logging
 import os
@@ -180,14 +181,35 @@ def _publish_mode(destination: Path) -> int:
     process's umask), because tempfile.mkstemp's 0600 would leave the feed
     unreadable to the static site. Neither branch ever widens the permissions
     the destination already had.
+
+    ONLY a genuinely absent destination may take that default mode. Any other
+    metadata failure (EIO, ESTALE, EACCES) leaves the destination's real mode
+    UNKNOWN, so it propagates instead of being read as "absent": guessing the
+    default there would replace a restricted 0600 file with a 0644 one and
+    silently widen its permissions.
     """
     try:
         return stat.S_IMODE(destination.stat().st_mode)
-    except OSError:
+    except FileNotFoundError:
         pass
     umask = os.umask(0)  # read it once; this builder is single-threaded
     os.umask(umask)
     return 0o666 & ~umask
+
+
+def _reject_symlink_destination(destination: Path) -> None:
+    """Refuse to publish onto a symlink.
+
+    os.replace onto a symlink path REPLACES the link itself with a regular
+    file: the file the link pointed at keeps its old bytes while the served
+    feed quietly stops being the one that was written. A dangling link would
+    be replaced just the same. Neither is a publication the caller asked for,
+    so both are refused loudly and the link is left exactly as it was.
+    """
+    if os.path.islink(destination):
+        raise FileExistsError(errno.EEXIST,
+                              "destination is a symlink; refusing to replace it",
+                              str(destination))
 
 
 def _fsync_parent_dir(directory: Path) -> None:
@@ -226,6 +248,10 @@ def write_holdings_coverage(path: Path, feed: dict) -> None:
     # Serialize before the parent exists: a serialization error must not create
     # a directory or leave an output behind.
     payload = json.dumps(feed, separators=(",", ":"), ensure_ascii=False)
+    # Both destination checks come BEFORE anything is created or staged: a
+    # refusal must leave the previously published feed, its mode and its
+    # directory exactly as they were.
+    _reject_symlink_destination(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     mode = _publish_mode(path)
     fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
