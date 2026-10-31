@@ -374,10 +374,10 @@
   {# ── EW-P4.T1 glance: five-second descriptive read, visible without opening anything.
      Describes what happened; never a forecast, odds, or sizing. #}
   <div class="gde-ew" id="gde-ew" role="group" aria-labelledby="gde-ew-title" data-ew-state="{{ _ew.state }}" data-ew-scope="tech_leadership" data-observation-id="{{ _ew.oid|e if _ew.has else '' }}">
-    <p class="gde-ew-head"><span class="gde-ew-scope" id="gde-ew-title"><span class="l-en">US Technology leadership</span><span class="l-zh">美国科技领涨</span></span> <span class="gde-ew-state"><span class="l-en">{{ _ew.word_en }}</span><span class="l-zh">{{ _ew.word_zh }}</span></span></p>
-    <p class="gde-ew-what"><span class="l-en">{{ _ew.what_en }}</span><span class="l-zh">{{ _ew.what_zh }}</span></p>
+    <p class="gde-ew-head"><span class="gde-ew-scope" id="gde-ew-title"><span class="l-en">US Technology leadership</span><span class="l-zh">美国科技领涨</span></span> <span class="gde-ew-state"><span class="l-en">{{ _ew.word_en|e }}</span><span class="l-zh">{{ _ew.word_zh|e }}</span></span></p>
+    <p class="gde-ew-what"><span class="l-en">{{ _ew.what_en|e }}</span><span class="l-zh">{{ _ew.what_zh|e }}</span></p>
     {% if _ew.state == 'corrected' %}<p class="gde-ew-note"><span class="l-en">Corrected; the original notice remains in history.</span><span class="l-zh">已更正；原通知仍保留在历史记录中。</span></p>{% endif %}
-    <p class="gde-ew-when"><span class="l-en">{{ _ew.when_en }} · {{ _ew.avail_note_en }} · Quality: {{ _ew.qual_en }}</span><span class="l-zh">{{ _ew.when_zh }} · {{ _ew.avail_note_zh }} · 质量：{{ _ew.qual_zh }}</span>{% if _ew.built_en %} · <span class="gde-ew-built"><span class="l-en">{{ _ew.built_en|e }}</span><span class="l-zh">{{ _ew.built_zh|e }}</span></span>{% endif %}</p>
+    <p class="gde-ew-when"><span class="l-en">{{ _ew.when_en|e }} · {{ _ew.avail_note_en|e }} · Quality: {{ _ew.qual_en|e }}</span><span class="l-zh">{{ _ew.when_zh|e }} · {{ _ew.avail_note_zh|e }} · 质量：{{ _ew.qual_zh|e }}</span>{% if _ew.built_en %} · <span class="gde-ew-built"><span class="l-en">{{ _ew.built_en|e }}</span><span class="l-zh">{{ _ew.built_zh|e }}</span></span>{% endif %}</p>
     <p class="gde-ew-means"><span class="l-en">Watch only: this describes what happened, not what comes next.</span><span class="l-zh">仅供观察：描述已发生的变化，不代表后续走势。</span></p>
     <a class="gde-ew-next" href="sector_central.html#rc-events-mount"><span class="l-en">Review what changed</span><span class="l-zh">查看变化依据</span></a>
   </div>
@@ -446,29 +446,29 @@
             {% if _ew.legs %}
             <div class="gde-ew-tablewrap">
               <table class="gde-ew-legs">
-                <caption><span class="l-en">2 sessions, {{ _EW_MONTHS_EN[_ew.win.get('start')[5:7]|int - 1] }} {{ _ew.win.get('start')[8:10]|int }} → {{ _ew.event_en }} · US cash sessions</span><span class="l-zh">2个交易日，{{ _ew.win.get('start')[5:7]|int }}月{{ _ew.win.get('start')[8:10]|int }}日 → {{ _ew.event_zh }} · 美股交易日</span></caption>
+                <caption><span class="l-en">2 sessions, {{ _EW_MONTHS_EN[_ew.win.get('start')[5:7]|int - 1] }} {{ _ew.win.get('start')[8:10]|int }} → {{ _ew.event_en|e }} · US cash sessions</span><span class="l-zh">2个交易日，{{ _ew.win.get('start')[5:7]|int }}月{{ _ew.win.get('start')[8:10]|int }}日 → {{ _ew.event_zh|e }} · 美股交易日</span></caption>
                 <tbody>
-                  <tr><th scope="row"><span class="l-en">Receiver (numerator)</span><span class="l-zh">接收方（分子）</span></th><td class="tnum">{{ _ew.num }}</td><td class="tnum">{{ '+' if _ew.n > 0 else '' }}{{ '%.2f'|format(_ew.n) }}%</td></tr>
-                  <tr><th scope="row"><span class="l-en">Donor (denominator)</span><span class="l-zh">出让方（分母）</span></th><td class="tnum">{{ _ew.den }}</td><td class="tnum">{{ '+' if _ew.d > 0 else '' }}{{ '%.2f'|format(_ew.d) }}%</td></tr>
-                  <tr><th scope="row"><span class="l-en">Relative ({{ _ew.num }} vs {{ _ew.den }})</span><span class="l-zh">相对（{{ _ew.num }} 对 {{ _ew.den }}）</span></th><td class="tnum">—</td><td class="tnum">{{ _ew.r_s }}%</td></tr>
+                  <tr><th scope="row"><span class="l-en">Receiver (numerator)</span><span class="l-zh">接收方（分子）</span></th><td class="tnum">{{ _ew.num|e }}</td><td class="tnum">{{ '+' if _ew.n > 0 else '' }}{{ '%.2f'|format(_ew.n) }}%</td></tr>
+                  <tr><th scope="row"><span class="l-en">Donor (denominator)</span><span class="l-zh">出让方（分母）</span></th><td class="tnum">{{ _ew.den|e }}</td><td class="tnum">{{ '+' if _ew.d > 0 else '' }}{{ '%.2f'|format(_ew.d) }}%</td></tr>
+                  <tr><th scope="row"><span class="l-en">Relative ({{ _ew.num|e }} vs {{ _ew.den|e }})</span><span class="l-zh">相对（{{ _ew.num|e }} 对 {{ _ew.den|e }}）</span></th><td class="tnum">—</td><td class="tnum">{{ _ew.r_s|e }}%</td></tr>
                 </tbody>
               </table>
               {% if _ew.r > 0 and _ew.n < 0 and _ew.d < 0 %}
-              <p class="gde-ew-contextline"><span class="l-en">Both fell; {{ _ew.num }} fell less than {{ _ew.den }}.</span><span class="l-zh">两者都下跌；{{ _ew.num }}跌幅小于{{ _ew.den }}。</span></p>
+              <p class="gde-ew-contextline"><span class="l-en">Both fell; {{ _ew.num|e }} fell less than {{ _ew.den|e }}.</span><span class="l-zh">两者都下跌；{{ _ew.num|e }}跌幅小于{{ _ew.den|e }}。</span></p>
               {% elif _ew.r < 0 and _ew.n > 0 and _ew.d > 0 %}
-              <p class="gde-ew-contextline"><span class="l-en">Both rose; {{ _ew.num }} rose less than {{ _ew.den }}.</span><span class="l-zh">两者都上涨；{{ _ew.num }}涨幅小于{{ _ew.den }}。</span></p>
+              <p class="gde-ew-contextline"><span class="l-en">Both rose; {{ _ew.num|e }} rose less than {{ _ew.den|e }}.</span><span class="l-zh">两者都上涨；{{ _ew.num|e }}涨幅小于{{ _ew.den|e }}。</span></p>
               {% endif %}
             </div>
             {# ── EW-P4 D3: horizons with identical markup; never color-only meaning. #}
             <div class="gde-ew-horizons">
-              <div class="gde-ew-hz"><span class="gde-ew-hz-k"><span class="l-en">2-session</span><span class="l-zh">2个交易日</span></span> <span class="gde-ew-hz-v tnum">{{ _ew.r_s }}%</span> <span class="gde-ew-hz-q"><span class="l-en">Measured</span><span class="l-zh">已测量</span></span></div>
+              <div class="gde-ew-hz"><span class="gde-ew-hz-k"><span class="l-en">2-session</span><span class="l-zh">2个交易日</span></span> <span class="gde-ew-hz-v tnum">{{ _ew.r_s|e }}%</span> <span class="gde-ew-hz-q"><span class="l-en">Measured</span><span class="l-zh">已测量</span></span></div>
               <div class="gde-ew-hz">{% if _ew.hz_ok %}<span class="gde-ew-hz-k"><span class="l-en">20-session</span><span class="l-zh">20个交易日</span></span> <span class="gde-ew-hz-v tnum">{{ '+' if _ew.hz_r > 0 else '' }}{{ '%.2f'|format(_ew.hz_r) }}%</span> <span class="gde-ew-hz-q"><span class="l-en">Measured</span><span class="l-zh">已测量</span></span>{% else %}<span class="gde-ew-hz-k"><span class="l-en">20-session</span><span class="l-zh">20个交易日</span></span> <span class="gde-ew-hz-v tnum">—</span> <span class="gde-ew-hz-q"><span class="l-en">Not supplied</span><span class="l-zh">未提供</span></span>{% endif %}</div>
             </div>
             {% if _ew.state == 'conflicting' %}<p class="gde-ew-contextline"><span class="l-en">The two-session move conflicts with the 20-session trend.</span><span class="l-zh">两个交易日的变化与20个交易日趋势不一致。</span></p>{% endif %}
             {# ── EW-P4 D4: what argues against this reading. #}
             <p class="gde-disc-h"><span class="l-en">What argues against this</span><span class="l-zh">反方证据</span></p>
             <ul class="gde-ew-against">
-              {% if _ew.n is number and _ew.n < 0 and _ew.d is number and _ew.d < 0 %}<li><span class="l-en">Relative shelter only: {{ _ew.num }} also fell.</span><span class="l-zh">仅为相对抗跌：{{ _ew.num }}同样下跌。</span></li>{% endif %}
+              {% if _ew.n is number and _ew.n < 0 and _ew.d is number and _ew.d < 0 %}<li><span class="l-en">Relative shelter only: {{ _ew.num|e }} also fell.</span><span class="l-zh">仅为相对抗跌：{{ _ew.num|e }}同样下跌。</span></li>{% endif %}
               {% if _ew.state == 'conflicting' %}<li><span class="l-en">The 20-session trend points the other way.</span><span class="l-zh">20个交易日趋势方向相反。</span></li>{% endif %}
               {% if not _ew.hz_ok %}<li><span class="l-en">No 20-session comparison was supplied.</span><span class="l-zh">未提供20个交易日对比。</span></li>{% endif %}
               <li><span class="l-en">Two sessions are a short window; one session can undo it.</span><span class="l-zh">两个交易日窗口很短，一个交易日即可逆转。</span></li>
@@ -487,17 +487,17 @@
                 {% if _ew.prev %}<div><dt><span class="l-en">Previous ID</span><span class="l-zh">前一编号</span></dt><dd class="tnum gde-ew-id">{{ _ew.prev|e }}</dd></div>{% endif %}
                 <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><span class="l-en">macro.rotation_observation.v1 · notification only · basis {{ _ew.basis|e }}</span><span class="l-zh">macro.rotation_observation.v1 · 仅通知 · 基准 {{ _ew.basis|e }}</span></dd></div>
                 <div><dt><span class="l-en">Calendar</span><span class="l-zh">日历</span></dt><dd><span class="l-en">US cash-equity sessions</span><span class="l-zh">美股现货交易日</span></dd></div>
-                <div><dt><span class="l-en">Pair</span><span class="l-zh">配对</span></dt><dd class="tnum">{{ _ew.num }} / {{ _ew.den }} · relative = (1+n)/(1+d) − 1</dd></div>
+                <div><dt><span class="l-en">Pair</span><span class="l-zh">配对</span></dt><dd class="tnum">{{ _ew.num|e }} / {{ _ew.den|e }} · relative = (1+n)/(1+d) − 1</dd></div>
                 <div><dt><span class="l-en">Close basis</span><span class="l-zh">收盘基准</span></dt><dd><span class="l-en">Dividend-adjusted daily close; adjusted prices can be revised when distributions are restated.</span><span class="l-zh">股息调整后日收盘价；分红数据更正时调整价格可能被修订。</span></dd></div>
-                <div><dt><span class="l-en">Source timestamps</span><span class="l-zh">来源时间戳</span></dt><dd class="tnum"><span class="l-en">source_as_of {{ _n.get('source_as_of') or '—' }} · event_as_of {{ _ew.event }} · observed {{ _ew.obs_at[0:16]|replace('T', ' ') }} UTC · not_after {{ _ew.not_after[0:16]|replace('T', ' ') }} UTC (notification window closes)</span><span class="l-zh">数据源日期 {{ _n.get('source_as_of') or '—' }} · 事件日期 {{ _ew.event }} · 观察于 {{ _ew.obs_at[0:16]|replace('T', ' ') }} UTC · 通知窗口截止 {{ _ew.not_after[0:16]|replace('T', ' ') }} UTC</span></dd></div>
-                <div><dt><span class="l-en">Coverage</span><span class="l-zh">覆盖范围</span></dt><dd><span class="l-en">{{ _ew.cov.get('evaluable_2s') if _ew.cov else '—' }} of {{ _ew.cov.get('registered_pairs') if _ew.cov else '—' }} pairs evaluable; missing: {{ ((_ew.cov.get('missing_pair_ids') or []) | join(', ') | e) if (_ew.cov and (_ew.cov.get('missing_pair_ids') or [])) else 'none' }}</span><span class="l-zh">{{ _ew.cov.get('evaluable_2s') if _ew.cov else '—' }} / {{ _ew.cov.get('registered_pairs') if _ew.cov else '—' }} 个配对可评估；缺失：{{ ((_ew.cov.get('missing_pair_ids') or []) | join(', ') | e) if (_ew.cov and (_ew.cov.get('missing_pair_ids') or [])) else '无' }}</span></dd></div>
+                <div><dt><span class="l-en">Source timestamps</span><span class="l-zh">来源时间戳</span></dt><dd class="tnum"><span class="l-en">source_as_of {{ (_n.get('source_as_of') or '—')|e }} · event_as_of {{ _ew.event|e }} · observed {{ _ew.obs_at[0:16]|replace('T', ' ')|e }} UTC · not_after {{ _ew.not_after[0:16]|replace('T', ' ')|e }} UTC (notification window closes)</span><span class="l-zh">数据源日期 {{ (_n.get('source_as_of') or '—')|e }} · 事件日期 {{ _ew.event|e }} · 观察于 {{ _ew.obs_at[0:16]|replace('T', ' ')|e }} UTC · 通知窗口截止 {{ _ew.not_after[0:16]|replace('T', ' ')|e }} UTC</span></dd></div>
+                <div><dt><span class="l-en">Coverage</span><span class="l-zh">覆盖范围</span></dt><dd><span class="l-en">{{ (_ew.cov.get('evaluable_2s') if _ew.cov else '—')|e }} of {{ (_ew.cov.get('registered_pairs') if _ew.cov else '—')|e }} pairs evaluable; missing: {{ ((_ew.cov.get('missing_pair_ids') or []) | join(', ') | e) if (_ew.cov and (_ew.cov.get('missing_pair_ids') or [])) else 'none' }}</span><span class="l-zh">{{ (_ew.cov.get('evaluable_2s') if _ew.cov else '—')|e }} / {{ (_ew.cov.get('registered_pairs') if _ew.cov else '—')|e }} 个配对可评估；缺失：{{ ((_ew.cov.get('missing_pair_ids') or []) | join(', ') | e) if (_ew.cov and (_ew.cov.get('missing_pair_ids') or [])) else '无' }}</span></dd></div>
                 {% if _ew.previous is mapping %}
                 <div><dt><span class="l-en">Original vs corrected</span><span class="l-zh">原始与更正后</span></dt><dd>
                   {% set _pv = _ew.previous.get('values') or none %}
                   {% set _pvok = _pv is mapping and _pv.get('numerator_return_pct') is number and _pv.get('numerator_return_pct') is not boolean and _pv.get('denominator_return_pct') is number and _pv.get('denominator_return_pct') is not boolean and _pv.get('ratio_return_pct') is number and _pv.get('ratio_return_pct') is not boolean %}
                   <span class="l-en">Original ({{ _ew.previous.get('observation_id')|e }}): {{ ('n %+.2f%% · d %+.2f%% · r %+.2f%%'|format(_pv.get('numerator_return_pct'), _pv.get('denominator_return_pct'), _pv.get('ratio_return_pct'))) if _pvok else 'no values recorded' }}</span>
                   <span class="l-zh">原始（{{ _ew.previous.get('observation_id')|e }}）：{{ ('n %+.2f%% · d %+.2f%% · r %+.2f%%'|format(_pv.get('numerator_return_pct'), _pv.get('denominator_return_pct'), _pv.get('ratio_return_pct'))) if _pvok else '无记录数值' }}</span>
-                  {% if _ew.state == 'withdrawn' %}<span class="l-en">Current: Withdrawn — the record no longer asserts a measurement.</span><span class="l-zh">当前：已撤回——本记录不再主张任何测量值。</span>
+                  <br>{% if _ew.state == 'withdrawn' %}<span class="l-en">Current: Withdrawn — the record no longer asserts a measurement.</span><span class="l-zh">当前：已撤回——本记录不再主张任何测量值。</span>
                   {% elif _ew.n is number and _ew.d is number and _ew.r is number %}<span class="l-en">Corrected: {{ 'n %+.2f%% · d %+.2f%% · r %+.2f%%'|format(_ew.n, _ew.d, _ew.r) }}</span><span class="l-zh">更正后：{{ 'n %+.2f%% · d %+.2f%% · r %+.2f%%'|format(_ew.n, _ew.d, _ew.r) }}</span>
                   {% else %}<span class="l-en">Corrected: no values recorded</span><span class="l-zh">更正后：无记录数值</span>{% endif %}
                 </dd></div>
@@ -508,7 +508,7 @@
               </dl>
               {% else %}
               <dl class="gde-ew-dl">
-                <div><dt><span class="l-en">Rotation context</span><span class="l-zh">轮动上下文</span></dt><dd class="tnum"><span class="l-en">as_of {{ (_rotation.get('as_of') or '—')|e }} · coverage {{ _rotation.get('coverage') or '—' }} · excluded_reason {{ (_rotation.get('excluded_reason') or '—')|e }} · clock {{ ((_rotation.get('source_clock_receipt') or {}).get('generated_utc') or '—')|e }}</span><span class="l-zh">数据日期 {{ (_rotation.get('as_of') or '—')|e }} · 覆盖 {{ _rotation.get('coverage') or '—' }} · 排除原因 {{ (_rotation.get('excluded_reason') or '—')|e }} · 时钟 {{ ((_rotation.get('source_clock_receipt') or {}).get('generated_utc') or '—')|e }}</span></dd></div>
+                <div><dt><span class="l-en">Rotation context</span><span class="l-zh">轮动上下文</span></dt><dd class="tnum"><span class="l-en">as_of {{ (_rotation.get('as_of') or '—')|e }} · coverage {{ (_rotation.get('coverage') or '—')|e }} · excluded_reason {{ (_rotation.get('excluded_reason') or '—')|e }} · clock {{ ((_rotation.get('source_clock_receipt') or {}).get('generated_utc') or '—')|e }}</span><span class="l-zh">数据日期 {{ (_rotation.get('as_of') or '—')|e }} · 覆盖 {{ (_rotation.get('coverage') or '—')|e }} · 排除原因 {{ (_rotation.get('excluded_reason') or '—')|e }} · 时钟 {{ ((_rotation.get('source_clock_receipt') or {}).get('generated_utc') or '—')|e }}</span></dd></div>
                 <div><dt><span class="l-en">Observation</span><span class="l-zh">观察记录</span></dt><dd><span class="l-en">No qualified observation for this session.</span><span class="l-zh">本交易日无合格观察记录。</span></dd></div>
               </dl>
               {% endif %}

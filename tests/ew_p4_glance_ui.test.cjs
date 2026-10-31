@@ -210,3 +210,34 @@ test('repair wave B: separator, routes and a single both-fell sentence', () => {
   // count from an integer one; the Radar (Jinja) path enforces integers.
   assert.equal(JSON.parse('{"s":2.0}').s, 2);
 });
+
+test('repair wave C: bilingual study rows, separated history, escaped record fields', () => {
+  const zh = render('corrected', 'zh');
+  for (const s of ['<span class="l-zh">数据源日期 ', '个配对可评估；缺失：', '<span class="l-zh">rotobs_ 编号为内容寻址', '来源链根：']) {
+    assert.ok(zh.includes(s), 'ZH study row: ' + s);
+  }
+  assert.ok(render('corrected', 'en').includes('<br><span class="l-en">Corrected: '), 'original and corrected on separate lines');
+  assert.ok(render('withdrawn', 'en').includes('<br><span class="l-en">Current: Withdrawn'), 'original and current on separate lines');
+  assert.ok(fn(null, { as_of: '2026-10-30' }, '2026-10-30', 'zh', NOW).includes('<span class="l-zh">数据日期 2026-10-30</span>'),
+    'ZH rotation context');
+  const bad = '<img src=x onerror=alert(1)>';
+  const w = fixture('withdrawn');
+  w.previous.observation_id = bad;
+  w.basis = bad;
+  w.notification.source_as_of = '2026-10-29' + bad;
+  w.notification.observed_at = '2026-10-30' + bad + 'T21:15:00Z';
+  w.coverage = { evaluable_2s: bad, registered_pairs: 8, missing_pair_ids: [] };
+  w.lineage_roots = [bad];
+  const outs = [
+    fn(w, null, '2026-10-30', 'en', NOW),
+    fn(null, { as_of: bad }, '2026-10-30', 'en', NOW),
+    fn(null, { as_of: '2026-09-01' }, bad, 'en', NOW),
+    fn(null, { as_of: bad }, bad, 'zh', NOW),
+  ];
+  assert.equal(stateOf(outs[0]), 'withdrawn', 'payloads leave the validated state unchanged');
+  assert.equal(stateOf(outs[2]), 'stale', 'aged context with a malformed session');
+  for (const h of outs) {
+    assert.ok(!h.includes('<img'), 'raw injected element');
+    assert.ok(h.includes('&lt;img'), 'payload rendered as text');
+  }
+});

@@ -433,6 +433,26 @@ def test_routes_land_on_the_registered_sector_central_hash():
     assert js.count('href="#rc-events-mount"') == 2
 
 
+def test_record_fields_are_escaped_and_history_is_separated():
+    """Repair wave C: record-supplied strings render as text in both hosts' new
+    elements, and the original and current values sit on separate lines."""
+    bad = "<img src=x onerror=alert(1)>"
+    w = deepcopy(_fixtures()["withdrawn"])
+    w["previous"]["observation_id"] = bad
+    w["basis"] = bad
+    w["notification"]["source_as_of"] = "2026-10-29" + bad
+    w["coverage"] = {"evaluable_2s": bad, "registered_pairs": 8, "missing_pair_ids": []}
+    dlg = render(envelope(w))
+    assert state_of(dlg) == "withdrawn"
+    new = _new_elements(dlg)
+    assert "<img" not in new and "&lt;img" in new
+    assert '<br><span class="l-en">Current: Withdrawn' in dlg  # raw render: the parser re-serializes <br> as <br/>
+    corrected = render(envelope(_fixtures()["corrected"]))
+    assert '<br><span class="l-en">Corrected: ' in corrected
+    quiet = _new_elements(render(envelope(None, rotation={"coverage": bad})))
+    assert "<img" not in quiet and "&lt;img" in quiet
+
+
 # ---------------------------------------------------------------------------
 # Visual receipt: the committed shots depict the source under test.
 # ---------------------------------------------------------------------------
