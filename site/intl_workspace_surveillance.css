@@ -573,8 +573,11 @@ html[data-lang="zh"] .intl-gs .intl-dislocations__notplotted-label{text-transfor
 .intl-gs .intl-gs__minibarwrap{display:inline-flex;align-items:center;}
 
 /* ---- disclosures (workspace family idiom: details/summary, zero new JS) ---- */
-.intl-gs summary{list-style:none;cursor:pointer;}
-.intl-gs summary::-webkit-details-marker{display:none;}
+/* fx6 leak fix (ORCH-6): bare `summary` under .intl-gs styled every sibling view's
+   summaries (inspector/history/compare/macro/risk/chart_cohorts). Scoped to this
+   lane's own disclosure summaries (.intl-gs__disclosure, main:0 occurrences). */
+.intl-gs .intl-gs__disclosure{list-style:none;cursor:pointer;}
+.intl-gs .intl-gs__disclosure::-webkit-details-marker{display:none;}
 .intl-gs .intl-gs__disclosure{display:flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;border-radius:var(--r-btn,8px);border:1px solid var(--line);background:transparent;color:var(--text);font-family:var(--font-ui);font-size:var(--fs-sm);font-weight:600;}
 .intl-gs .intl-gs__disclosure:hover{background:var(--panel2);}
 .intl-gs .intl-gs__nodata{margin-top:8px;}
@@ -585,7 +588,10 @@ html[data-lang="zh"] .intl-gs .intl-dislocations__notplotted-label{text-transfor
 .intl-gs .intl-gs__bands4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
 
 /* ---- KPI slot additions (spec 8: integer pairs, market name beside value) ---- */
-.intl-gs .intl-gs__kpi__tier{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;max-width:100%;min-width:0;}
+/* fx6 leak fix: intl-gs__kpi__tier is a foundation class (_gs_macros.html.j2:248
+   gs_kpi renders it in every sibling view); scoped under the mount-rendered
+   scanner-only panel root (.intl-gs__view--scanner, main:0 occurrences). */
+.intl-gs .intl-gs__view--scanner .intl-gs__kpi__tier{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;max-width:100%;min-width:0;}
 .intl-gs .intl-gs__kpi__unitword{font-size:var(--fs-sm);color:var(--muted);font-weight:400;}
 .intl-gs .intl-gs__kpi__market{font-size:var(--fs-sm);color:var(--text);font-weight:600;}
 
@@ -623,14 +629,22 @@ html[data-lang="zh"] .intl-gs .intl-gs__covgrid__head{text-transform:none;letter
 .intl-gs .intl-gs__covlegend__line,.intl-gs .intl-gs__covimpact__line{display:flex;align-items:center;gap:8px;}
 .intl-gs .intl-gs__covrecovery__line{display:flex;align-items:baseline;gap:8px;color:var(--muted);}
 .intl-gs .intl-gs__covrecovery__status{font-size:var(--fs-micro);}
-.intl-gs .intl-gs__marketscope{display:flex;flex-direction:column;gap:4px;}
+/* fx6 leak fix: intl-gs__marketscope is shared with the W2B dossier view
+   (dossier.html.j2:34 + the W2B region's own rule); scoped under the
+   scanner-only panel root. */
+.intl-gs .intl-gs__view--scanner .intl-gs__marketscope{display:flex;flex-direction:column;gap:4px;}
 
 /* ---- breakpoints (11): rails stack, pairs single column, mobile cards ---- */
 @media (max-width:1279px){.intl-gs .intl-gs__covlower{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}.intl-gs .intl-gs__covlegend{grid-column:1 / -1;}}
 @media (max-width:1099px){.intl-gs .intl-gs__bands4{grid-template-columns:1fr;}}
 /* R-02: between 1100-1319 the beside-rail wrap shrinks below the ten-column budget,
-   so the Q2 split stacks early (rail full-width below) and the table keeps room. */
-@media (min-width:1100px) and (max-width:1319px){.intl-gs .intl-gs__split{flex-direction:column;}.intl-gs .intl-gs__rail{width:100%;position:static;}}
+   so the Q2 split stacks early (rail full-width below) and the table keeps room.
+   fx6 leak fix (ORCH-6): .intl-gs__split/.intl-gs__rail are FOUNDATION classes
+   (main css:111-113, 243-245) used by every sibling view (dislocations, dossier,
+   transmission); the 1100-1319 early-stack is the scanner's own behaviour, so it
+   is scoped under the mount-rendered scanner panel root (.intl-gs__view--scanner,
+   rendered by the foundation gs_panel_root macro; main:0 occurrences). */
+@media (min-width:1100px) and (max-width:1319px){.intl-gs .intl-gs__view--scanner .intl-gs__split{flex-direction:column;}.intl-gs .intl-gs__view--scanner .intl-gs__rail{width:100%;position:static;}}
 @media (max-width:900px){
   .intl-gs .intl-gs__scannerwrap{display:none;}
   .intl-gs .intl-gs__mcards{display:flex;flex-direction:column;gap:8px;}
