@@ -97,13 +97,19 @@
     "knowable_session": "2026-08-24",
     "server_witness": true
    },
-   "2026-08-07": {
+   "2026-08-05": {
     "commit": "69268b06502c",
     "arrived_et": "2026-08-23T19:25:44-04:00",
     "knowable_session": "2026-08-24",
     "server_witness": true
    },
-   "2026-08-14": {
+   "2026-08-06": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-07": {
     "commit": "69268b06502c",
     "arrived_et": "2026-08-23T19:25:44-04:00",
     "knowable_session": "2026-08-24",
@@ -115,7 +121,25 @@
     "knowable_session": "2026-08-24",
     "server_witness": true
    },
+   "2026-08-14": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-17": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
    "2026-08-18": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-19": {
     "commit": "69268b06502c",
     "arrived_et": "2026-08-23T19:25:44-04:00",
     "knowable_session": "2026-08-24",
@@ -128,30 +152,6 @@
     "server_witness": true
    },
    "2026-08-21": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
-   "2026-08-17": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
-   "2026-08-05": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
-   "2026-08-19": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
-   "2026-08-06": {
     "commit": "69268b06502c",
     "arrived_et": "2026-08-23T19:25:44-04:00",
     "knowable_session": "2026-08-24",
@@ -1004,9 +1004,19 @@
   },
   "executable_lead_sessions_exact_strict": null
  },
+ "inputs": {
+  "checkout_head": "51ea53823b8e59eb3d99a84b199c63d3a5365b48",
+  "walk_sha": "a7eef2ce9737f35e26cb31eec9d9412fb98535dd",
+  "candidates_parquet_files": 4,
+  "generation_event_files": 3,
+  "candidates_and_events_sha256": "d243af3db0b5dc3c58bc7263b49076fb8f1ca1b92566d860a68a31cf74748919",
+  "spy_parquet_sha256": "bfb908a59386cc032261999fedcb7354c3a36c4e8d6c3f49a8cfd26dd723592f",
+  "receipt_sessions_sha256": "a706b757e83b74aa9579040b96930a04dd82d3a7826fdccfab03c6f6a31fc6cd",
+  "note": "--main-sha pins the git walks only; a freeze re-run must also match these digests to reproduce the freeze basis"
+ },
  "provenance": {
   "census_version": "v8",
-  "command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <W1 r3 receipt map> --commit-walk --document-walk --server-arrival --k 10 --buffer-minutes 30 --r-from 2026-08-26 --r-to 2026-10-23",
+  "command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <tw_receipt_sessions.json> --commit-walk --document-walk --server-arrival --main-sha a7eef2ce9737",
   "receipt_sessions_source": "turn_watch_receipt_sessions(data_root, git_ref='origin/main') from scripts/report_us_candidate_episode_waterfall.py at PR #10277 head d03acfd075d9 (54 receipts); re-derived at freeze, never hand-edited",
   "lane_state": "first-parent ARRIVAL on origin/main pinned at a7eef2ce9737 (resolved once at start-up and passed to every git read of both walks) (156 commits of the four monthly candidates parquets 2026-07..10): the first blob carrying each stamp_date fixes its BUY rows, curated coverage and signal_asof; a later blob that changes that date's BUY set is a HEAL and the session is a GAP (09-14 +50 BUY rows healed 09-16; 10-19 +104 healed 10-21); HEAD never read for lane state; HEAD disagreement reported (154 BUY rows exist only in the two heals)",
   "identity_join": "security-first: candidate symbols from the membership alias records, EVERY candidate confirmed by VendorAliasTable.resolve('membership', symbol, on=session) == security_id, tested on every healthy window session for every unit (uniform span); alias parquet sha256 pinned",
@@ -1025,7 +1035,8 @@
   ],
   "v8_changes": [
    "--main-sha <sha> pins the walk for a reproducible re-run (round-7 N2); this file is the re-run at --main-sha a7eef2ce9737 and reproduces v7 on every top-level key (freeze_basis.counts, both walks, witness 31/44 + 23/54 on main, 0 off-main, skipped blobs/docs [])",
-   "no census logic change; v7 facts stand"
+   "no census logic change; v7 facts stand",
+   "round-8 nits: sorted set iteration (byte-stable), --main-sha must be an ancestor of origin/main, inputs block digests every working-tree input"
   ],
   "rerun_command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <tw_receipt_sessions.json> --commit-walk --document-walk --server-arrival --main-sha a7eef2ce9737"
  }

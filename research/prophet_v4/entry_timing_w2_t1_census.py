@@ -70,6 +70,29 @@ def _opened() -> list[dict]:
     return out
 
 
+def input_digests(a) -> dict:
+    """Digests of every working-tree input the census reads (the --main-sha pin covers git reads only)."""
+    import hashlib
+    def sha(p: Path) -> str:
+        h = hashlib.sha256()
+        with open(p, "rb") as f:
+            for chunk in iter(lambda: f.read(1 << 20), b""):
+                h.update(chunk)
+        return h.hexdigest()
+    cands = sorted(glob.glob(str(ROOT / "candidates" / "2026-*.parquet")))
+    events = sorted(glob.glob(str(GEN / "events" / "*.jsonl")))
+    agg = hashlib.sha256()
+    for p in cands + events:
+        agg.update(f"{p}:{sha(Path(p))}\n".encode())
+    head = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+    return {"checkout_head": head, "walk_sha": pinned_main(),
+            "candidates_parquet_files": len(cands), "generation_event_files": len(events),
+            "candidates_and_events_sha256": agg.hexdigest(),
+            "spy_parquet_sha256": sha(Path("data/yahoo/SPY.parquet")),
+            "receipt_sessions_sha256": sha(a.receipt_sessions) if a.receipt_sessions else None,
+            "note": "--main-sha pins the git walks only; a freeze re-run must also match these digests to reproduce the freeze basis"}
+
+
 def _sessions() -> list[str]:
     idx = pd.to_datetime(pd.read_parquet("data/yahoo/SPY.parquet", columns=[]).index)
     return sorted(set(idx.strftime("%Y-%m-%d")))
@@ -142,7 +165,7 @@ def commit_walk(months: list[str] | None, sessions: list[str], buffer_minutes: i
             finally:
                 Path(tmp).unlink(missing_ok=True)
             d["sd"] = pd.to_datetime(d["stamp_date"]).dt.strftime("%Y-%m-%d")
-            for sd in set(d["sd"]):
+            for sd in sorted(set(d["sd"])):   # round-8 nit 3: byte-stable output
                 month_of.setdefault(sd, set()).add(m)
             cur = set(d[d.tier == "curated"]["sd"])
             b = d[d.lane == "buy"]
@@ -150,7 +173,7 @@ def commit_walk(months: list[str] | None, sessions: list[str], buffer_minutes: i
             buy_now: dict[str, set[str]] = {}
             for sd, t in zip(b["sd"], b["ticker"]):
                 buy_now.setdefault(sd, set()).add(t)
-            for sd in set(d["sd"]):
+            for sd in sorted(set(d["sd"])):   # round-8 nit 3: byte-stable output
                 if sd not in first_arrival:
                     first_arrival[sd] = (ctime, sha)
                     first_curated[sd] = sd in cur
@@ -539,11 +562,14 @@ def main() -> None:
     ap.add_argument("--buffer-minutes", type=int, default=30)
     ap.add_argument("--document-walk", action="store_true")
     ap.add_argument("--server-arrival", action="store_true")
-    ap.add_argument("--main-sha", help="pin the walk to this commit instead of resolving origin/main (round-7 N2: reproducible re-run)")
+    ap.add_argument("--main-sha", help="pin the WALK to this commit (must be an ancestor of origin/main) instead of resolving origin/main (round-7 N2); working-tree inputs are digested separately in the inputs block")
     a = ap.parse_args()
     global MAIN_SHA
     if a.main_sha:
         MAIN_SHA = subprocess.run(["git", "rev-parse", "--verify", a.main_sha + "^{commit}"], capture_output=True, text=True, check=True).stdout.strip()
+        # round-8 nit 2: the walk claims an origin/main first-parent history, so the pin must lie on it
+        if subprocess.run(["git", "merge-base", "--is-ancestor", MAIN_SHA, "origin/main"]).returncode != 0:
+            raise SystemExit(f"--main-sha {a.main_sha} is not an ancestor of origin/main")
     global USE_SERVER_ARRIVAL
     USE_SERVER_ARRIVAL = bool(a.server_arrival)
     c, opened, sessions = _stamps(), _opened(), _sessions()
@@ -560,6 +586,7 @@ def main() -> None:
         raw = json.loads(a.receipt_sessions.read_text())
         out["freeze_basis"] = freeze_basis(c, opened, raw.get("sessions", raw), sessions, k=a.k,
                                            r_from=a.r_from, r_to=a.r_to, walk=walk, dwalk=dwalk)
+    out["inputs"] = input_digests(a)   # round-8 nit 1: the walk is pinned by SHA; these are not
     print(json.dumps(out, indent=1, default=str))
 
 
