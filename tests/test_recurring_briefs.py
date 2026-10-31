@@ -1270,11 +1270,13 @@ def test_monitor_read_failure_is_explicit_not_false_calm(monkeypatch):
     # installs only pytest, while the real thesis monitor imports numpy/pandas.
     import sys
     import types
+    import engine
 
     fake_tcm = types.ModuleType("engine.thesis_condition_monitor")
     fake_tcm.load_tripwire_view = lambda: ([], {}, "read_unavailable")
     fake_tcm.fired_windows = lambda entries, latch_state: ()
     monkeypatch.setitem(sys.modules, "engine.thesis_condition_monitor", fake_tcm)
+    monkeypatch.setattr(engine, "thesis_condition_monitor", fake_tcm, raising=False)
 
     rows = rb.load_monitors_for_target(_thesis_target())
     assert rows == [{
