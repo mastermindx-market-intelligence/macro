@@ -90,7 +90,7 @@
     </h2>
     <table>
       <tr><th>{{ t('regime', '周期') }}</th><th>{{ t('periods', '次数') }}</th>
-        <th>{{ t('median length (days)', '存续中位数（天）') }}</th>
+        <th>{{ t('median length (weekdays)', '存续中位数（周一至周五计，天）') }}</th>
         <th>{{ t('most common next', '最常见的下一周期') }}{{ t(' (sample)', '（样本）') }}</th></tr>
       {% for row in lifespan_rows %}
       <tr><td>{{ td(row.name) }}</td><td>{{ row.n }}</td><td>{{ row.median }}</td>
@@ -102,8 +102,9 @@
       <tr><td colspan="4" class="muted">{{ t('Regime in force:', '现行周期：') }}
         {{ td(regime_in_force.name) }} — {{ t('since', '始于') }}
         {{ regime_in_force.start }}, {{ regime_in_force.age_days }}
-        {{ t('sessions old', '个交易日') }} · {{ t('median', '中位数') }}
-        {{ regime_in_force.median_days }} · {{ regime_in_force.n_segments }}
+        {{ t('weekdays old', '天（周一至周五计）') }}
+        {% if regime_in_force.median_days is not none %}· {{ t('median', '中位数') }}
+        {{ regime_in_force.median_days }} {% endif %}· {{ regime_in_force.n_segments }}
         {{ t('periods in the sample', '个样本时段') }}</td></tr>
       {% endif %}
     </table>

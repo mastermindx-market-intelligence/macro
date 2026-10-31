@@ -11,9 +11,16 @@ W33 SPEC 1 (findings F1/F2/F6 of the W32D design packet):
 * The panel's help text claimed ``since 2007`` while the printed periods
   (127/152/72/91 = 442) are the unwindowed sample: 287 of those 442 segments
   start before 2007 (``engine/playbook.py:226-241`` applies no window).
-* ``median length (days)`` prints trading sessions, not calendar days
-  (``engine/playbook.py:222`` is a row count); the producer's own prose says
-  "trading days" (``engine/playbook.py:889``).
+* The length is a row count (``quad_segments``), and
+  ``data/regime/regime_history.parquet`` holds one row for every Monday to
+  Friday in its span: 15,497 rows, 15,497 weekdays, Christmas included. So it
+  is a count of weekdays, market holidays included, and the labels say that.
+* ``quad_segments`` ends with the period still running, whose length is only
+  its age so far. The note and the progress atoms now read finished periods
+  only: on the committed record the median for Reflation is 31 of 151, not 30
+  of 152. The four table rows still come from ``transition_stats`` through
+  ``scripts/build_site.py``, which this change does not touch, so that row
+  still prints 30.
 
 Synthetic fixtures only: no ``data/`` or ``site/`` read and no builder call.
 
@@ -22,32 +29,36 @@ Run: MM_DATA_GUARD=off PYTHONPATH=. python3 -m pytest \
 """
 from __future__ import annotations
 
+import ast
 import re
 import sys
 from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from jinja2 import Environment, FileSystemLoader  # noqa: E402
 
 from engine import i18n  # noqa: E402
+from engine import playbook  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "templates" / "history.html.j2"
 
-# --- the committed record (values quoted by the design packet's F2) ---------
+# --- the committed record, read through the finished periods only ------------
 AGE_NOTE = (
-    "This Reflation stretch is 17 trading days old (historical median: 30). "
+    "This Reflation stretch is 17 weekdays old (historical median: 31). "
     "When Reflation ended, it went to: Goldilocks 47%, Stagflation 34%, "
     "Growth scare 19%"
 )
 AGE_NOTE_ZH = (
-    "本轮再通胀已持续 17 个交易日（历史中位数：30）。当再通胀结束时，"
+    "本轮再通胀已持续 17 天（周一至周五计，历史中位数：31）。当再通胀结束时，"
     "它转向了：理想增长 47%、滞胀 34%、增长恐慌 19%"
 )
-PROGRESS = {"age_days": 17, "median_days": 30, "pct_longer": 75.0,
+PROGRESS = {"age_days": 17, "median_days": 31, "pct_longer": 75.0,
             "median_remaining_days": 22, "phase": "early", "bar_pct": 19.8,
-            "zone_early_pct": 23.3, "zone_mid_pct": 52.0, "n_history": 152}
+            "zone_early_pct": 23.3, "zone_mid_pct": 52.0, "n_history": 151}
 
 # --- the four rows site/history.html prints (F1: 127/152/72/91) -------------
 LIFESPAN_ROWS = [
@@ -65,12 +76,14 @@ LIFESPAN_ROWS = [
      "next_zh": "理想增长 52%、再通胀 26%"},
 ]
 
-ATOMS_EN = ("17 trading days old", "median 30",
-            "75% of predecessors ran longer",
-            "about 22 sessions of median remaining",
-            "152 periods in the sample", "phase early")
-ATOMS_ZH = ("17 个交易日", "中位数 30", "75% 的前期周期持续更久",
-            "中位剩余约 22 个交易日", "152 个样本时段", "阶段 早期")
+REMAINING_EN = ("among past runs that reached this age and continued, the median "
+                "further length was 22 weekdays")
+REMAINING_ZH = "历史上达到此存续期后继续延续的周期，其后续长度中位数为 22 天（周一至周五计）"
+ATOMS_EN = ("17 weekdays old", "median 31",
+            "75% of predecessors ran longer", REMAINING_EN,
+            "151 periods in the sample", "phase early")
+ATOMS_ZH = ("17 天（周一至周五计）", "中位数 31", "75% 的前期周期持续更久",
+            REMAINING_ZH, "151 个样本时段", "阶段 早期")
 
 BANNED = ("实时", "申报", "证伪", "validated", "已验证", "live", "forecast",
           "falsifier", "refuted", "z-score", "percentile rank", "probability",
@@ -124,10 +137,10 @@ def _age_block() -> list:
 def test_renders_the_committed_regime_age_note() -> None:
     html = _render(_latest())
     en, zh = _view(html, "zh"), _view(html, "en")
-    assert "This Reflation stretch is 17 trading days old" in en
-    assert "(historical median: 30)" in en
+    assert "This Reflation stretch is 17 weekdays old" in en
+    assert "(historical median: 31)" in en
     assert "Goldilocks 47%, Stagflation 34%, Growth scare 19%" in en
-    assert "本轮再通胀已持续 17 个交易日（历史中位数：30）" in zh
+    assert "本轮再通胀已持续 17 天（周一至周五计，历史中位数：31）" in zh
     assert "理想增长 47%、滞胀 34%、增长恐慌 19%" in zh
     hit = re.search(r'<span class="l-zh">\s*(本轮再通胀[^<]*?)\s*</span>', html)
     assert hit, "the zh twin of the age note is not inside an l-zh span"
@@ -156,7 +169,7 @@ def test_block_absent_when_playbook_missing() -> None:
     en = _view(html, "zh")
     assert panel.count("<tr>") == 5, "the lifespan table lost or gained a row"
     assert "None" not in panel
-    assert "trading days old" not in en
+    assert "weekdays old" not in en
     assert "periods in the sample" not in en
     for row in LIFESPAN_ROWS:
         assert row["name"] in html
@@ -174,12 +187,129 @@ def test_help_text_no_longer_claims_a_2007_window() -> None:
 
 
 def test_median_column_states_its_unit() -> None:
-    """F6: engine/playbook.py:222 counts rows of a trading-day frame."""
+    """quad_segments counts rows, and the frame has one for every weekday."""
     html = _render(_latest())
     en, zh = _view(html, "zh"), _view(html, "en")
-    assert "median length (trading days)" in en
-    assert "存续中位数（交易日）" in zh
+    assert "median length (weekdays)" in en
+    assert "存续中位数（周一至周五计，天）" in zh
     assert "median length (days)" not in en
+    assert "median length (trading days)" not in en
+    assert "存续中位数（交易日）" not in zh
+
+
+def test_median_remaining_states_its_past_sample() -> None:
+    """It is a fact about past runs, so it must not read as this run's future."""
+    pb = {"regime_age_note": None, "regime_age_note_zh": None,
+          "progress": dict(PROGRESS)}
+    html = _render(_latest(pb))
+    en, zh = _view(html, "zh"), _view(html, "en")
+    assert REMAINING_EN in en
+    assert REMAINING_ZH in zh
+    for old in ("of median remaining", "about 22", "remaining", "trading days"):
+        assert old not in en, old
+    for old in ("中位剩余", "剩余", "个交易日"):
+        assert old not in zh, old
+
+
+def test_median_remaining_clause_absent_when_no_past_run_went_further() -> None:
+    pb = {"regime_age_note": None, "regime_age_note_zh": None,
+          "progress": {**PROGRESS, "median_remaining_days": None}}
+    html = _render(_latest(pb))
+    assert "among past runs" not in _view(html, "zh")
+    assert "历史上达到此存续期" not in _view(html, "en")
+    assert "None" not in _panel(html)
+
+
+# --- engine: the period still running is not a sample of its own length --------
+
+def _series(lengths: list) -> "playbook.pd.Series":
+    """[(quad, n_weekdays), ...] on a Monday-to-Friday index."""
+    pd = playbook.pd
+    quads = [quad for quad, n in lengths for _ in range(n)]
+    return pd.Series(quads, index=pd.bdate_range(end="2026-10-16", periods=len(quads)))
+
+
+def _alternating(q2_lengths: list, running: int) -> "playbook.pd.Series":
+    """Finished Q2 periods with a 5-weekday Q1 after each, then Q2 still running."""
+    closed = [seg for n in q2_lengths for seg in (("Q2", n), ("Q1", 5))]
+    return _series(closed + [("Q2", running)])
+
+
+EIGHT = [10, 20, 30, 40, 50, 60, 70, 80]
+
+
+def test_quad_segments_ends_with_the_period_still_running() -> None:
+    """The premise of closed_durations. If this changes, iloc[:-1] drops a real one."""
+    seg = playbook.quad_segments(_alternating([10, 20], 7))
+    assert seg["days"].tolist() == [10, 5, 20, 5, 7]
+    assert seg.iloc[-1]["quad"] == "Q2"
+
+
+def test_closed_durations_drops_only_the_running_period() -> None:
+    durs = playbook.closed_durations(_alternating([10, 20], 7), "Q2")
+    assert durs.tolist() == [10, 20]
+    assert playbook.closed_durations(_alternating([10, 20], 7), "Q1").tolist() == [5, 5]
+
+
+def test_closed_median_is_none_with_no_finished_period() -> None:
+    frame = _series([("Q1", 5), ("Q2", 3)])
+    assert playbook.closed_median(frame, "Q2") is None
+    assert playbook.closed_median(frame, "Q1") == 5
+    assert playbook.closed_median(_alternating([10, 20, 60], 100), "Q2") == 20
+    assert playbook.closed_median(_alternating([26, 27], 100), "Q2") == 26
+
+
+def test_progress_reads_finished_periods_only() -> None:
+    """Nine Q2 periods with the running one, eight without: every figure shifts."""
+    got = playbook.regime_progress(_alternating(EIGHT, 35), "Q2", 35)
+    assert got["n_history"] == 8
+    assert got["median_days"] == 45, "40 would mean the running period was counted"
+    assert got["pct_longer"] == 62.0, "56 would mean it inflated the denominator"
+    assert got["median_remaining_days"] == 25
+    assert got["age_days"] == 35
+    assert got["phase"] == "mid"
+    assert got["bar_pct"] == pytest.approx(47.9)
+    assert got["zone_early_pct"] == pytest.approx(45.3)
+    assert got["zone_mid_pct"] == pytest.approx(77.0)
+
+
+def test_progress_needs_eight_finished_periods() -> None:
+    assert playbook.regime_progress(_alternating(EIGHT[:7], 35), "Q2", 35) is None
+    assert playbook.regime_progress(_alternating(EIGHT, 35), "Q2", 35) is not None
+
+
+def test_progress_past_every_finished_period() -> None:
+    got = playbook.regime_progress(_alternating(EIGHT, 100), "Q2", 100)
+    assert got["pct_longer"] == 0.0
+    assert got["median_remaining_days"] is None
+    assert got["phase"] == "overdue"
+    assert got["bar_pct"] == 100.0
+
+
+def test_age_note_is_the_pinned_text_on_the_finished_median() -> None:
+    nxt = {"Q1": 0.47, "Q3": 0.34, "Q4": 0.19}
+    en, zh = playbook.regime_age_note(_alternating([21, 31, 41], 500), "Q2", 17, nxt)
+    assert en == AGE_NOTE
+    assert zh == AGE_NOTE_ZH
+
+
+@pytest.mark.parametrize("lengths, nxt", [
+    ([("Q1", 5), ("Q2", 3)], {"Q1": 1.0}),
+    ([("Q2", 10), ("Q1", 5), ("Q2", 3)], {}),
+])
+def test_age_note_is_absent_without_a_median_or_a_next(lengths, nxt) -> None:
+    assert playbook.regime_age_note(_series(lengths), "Q2", 3, nxt) == (None, None)
+
+
+def test_build_playbook_reads_progress_and_note_through_the_helpers() -> None:
+    """build_playbook is too heavy to call here, so pin the wiring in its source."""
+    tree = ast.parse((ROOT / "engine" / "playbook.py").read_text(encoding="utf-8"))
+    fn = next(n for n in tree.body
+              if isinstance(n, ast.FunctionDef) and n.name == "build_playbook")
+    calls = {n.func.id for n in ast.walk(fn)
+             if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)}
+    assert {"regime_progress", "regime_age_note"} <= calls
+    assert "quad_segments" not in calls
 
 
 def test_added_lines_are_within_the_length_and_copy_laws() -> None:

@@ -31280,7 +31280,9 @@ jobs:
     # closure (276) plus the tests package init and conftest. Own job instead of four
     # test paths on a shared job (+2 packing weight each on every probe that selects
     # it); the ceilings stay fixed.
+    # The four ancestor inits are declared so this job adds no census rows.
     paths:
+      - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -31352,6 +31354,7 @@ jobs:
       - "engine/china_signal_lab.py"
       - "engine/china_validation.py"
       - "engine/cn_newswires.py"
+      - "engine/codex_lane/__init__.py"
       - "engine/codex_lane/runner.py"
       - "engine/codex_provider.py"
       - "engine/conditions.py"
@@ -31449,6 +31452,7 @@ jobs:
       - "engine/oracle/__init__.py"
       - "engine/oracle/washout_counterread.py"
       - "engine/passport.py"
+      - "engine/pick_lab/__init__.py"
       - "engine/pick_lab/hk_snapshot.py"
       - "engine/pick_lab/profile.py"
       - "engine/pick_lab/signals_1d.py"
@@ -31524,6 +31528,7 @@ jobs:
       - "lib/closes_panel.py"
       - "lib/cn_calendar.py"
       - "lib/config.py"
+      - "lib/dataos/__init__.py"
       - "lib/dataos/identity.py"
       - "lib/delisted_symbols.py"
       - "lib/exchange_holidays.py"

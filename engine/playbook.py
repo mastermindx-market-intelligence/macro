@@ -241,6 +241,79 @@ def transition_stats(quad: pd.Series) -> dict:
     return out
 
 
+def closed_durations(quad: pd.Series, q: str) -> np.ndarray:
+    """Lengths of q's finished periods, counted in rows of the regime frame.
+
+    quad_segments ends with the period still running. Its length there is only
+    its age so far, so it is not a sample of how long q lasts.
+    """
+    closed = quad_segments(quad).iloc[:-1]
+    return closed.loc[closed["quad"] == q, "days"].to_numpy()
+
+
+def closed_median(quad: pd.Series, q: str) -> int | None:
+    durs = closed_durations(quad, q)
+    return int(np.median(durs)) if len(durs) else None
+
+
+def regime_progress(quad_series: pd.Series, quad: str, age: int) -> dict | None:
+    """Where the period in force sits among quad's finished periods."""
+    durs = closed_durations(quad_series, quad)
+    if len(durs) < 8:
+        return None
+    t33, t66, p90 = (float(np.percentile(durs, p)) for p in (33, 66, 90))
+    pct_longer = float((durs > age).mean() * 100)
+    longer = durs[durs > age]
+    med_remaining = int(np.median(longer) - age) if len(longer) else None
+    phase = ("early" if age < t33 else "mid" if age < t66
+             else "late" if age <= p90 else "overdue")
+    phase_note = {
+        "early": "still young — regime-aligned positions have historical room to run",
+        "mid": "mid-life — ride it, but keep the next-shift watchlist warm",
+        "late": "older than most — tighten stops on regime-dependent positions "
+                "and take the transition radar seriously",
+        "overdue": "has outlived nearly all its predecessors — treat every "
+                   "warning flag as live",
+    }[phase]
+    phase_note_zh = {
+        "early": "仍处早期 — 顺应周期的仓位在历史上仍有上行空间",
+        "mid": "中期 — 顺势持有，但保持下一次转换的观察名单热度",
+        "late": "比多数周期更长 — 收紧依赖周期仓位的止损，"
+                "并认真对待转换雷达",
+        "overdue": "已超越几乎所有前期周期 — 将每一个预警标志视为有效",
+    }[phase]
+    return {
+        "age_days": int(age), "median_days": int(np.median(durs)),
+        "pct_longer": round(pct_longer, 0),
+        "median_remaining_days": med_remaining,
+        "phase": phase, "phase_note": phase_note, "phase_note_zh": phase_note_zh,
+        "bar_pct": round(min(age / p90, 1.0) * 100, 1),
+        "zone_early_pct": round(t33 / p90 * 100, 1),
+        "zone_mid_pct": round(t66 / p90 * 100, 1),
+        "n_history": int(len(durs)),
+    }
+
+
+def regime_age_note(quad_series: pd.Series, quad: str, age: int,
+                    nxt: dict) -> tuple[str | None, str | None]:
+    """The age line in both languages. The regime frame has a row for every
+    Monday to Friday, market holidays included, so age and median are weekdays."""
+    median = closed_median(quad_series, quad)
+    if not median or not nxt:
+        return None, None
+    en = (f"This {QUAD_SHORT[quad]} stretch is {age} weekdays old "
+          f"(historical median: {median}). When {QUAD_SHORT[quad]} ended, "
+          f"it went to: "
+          + ", ".join(f"{QUAD_SHORT.get(k, k)} {v:.0%}"
+                      for k, v in sorted(nxt.items(), key=lambda kv: -kv[1])))
+    zh = (f"本轮{QUAD_SHORT_ZH[quad]}已持续 {age} 天（周一至周五计，"
+          f"历史中位数：{median}）。当{QUAD_SHORT_ZH[quad]}结束时，"
+          f"它转向了："
+          + "、".join(f"{QUAD_SHORT_ZH.get(k, k)} {v:.0%}"
+                     for k, v in sorted(nxt.items(), key=lambda kv: -kv[1])))
+    return en, zh
+
+
 # ------------------------------------------------------ measured evidence ----
 
 def risk_evidence(closes: pd.DataFrame, regime: pd.DataFrame,
@@ -846,56 +919,8 @@ def build_playbook(f: pd.DataFrame, regime: pd.DataFrame, closes: pd.DataFrame,
 
     # --- regime progress: where are we in this regime's typical lifespan? -----
     cur = trans["current"]
-    seg = quad_segments(regime["quad"])
-    durs = seg.loc[seg["quad"] == quad, "days"].to_numpy()
-    progress = None
-    if len(durs) >= 8:
-        age = cur["age_days"]
-        t33, t66, p90 = (float(np.percentile(durs, p)) for p in (33, 66, 90))
-        pct_longer = float((durs > age).mean() * 100)
-        longer = durs[durs > age]
-        med_remaining = int(np.median(longer) - age) if len(longer) else None
-        phase = ("early" if age < t33 else "mid" if age < t66
-                 else "late" if age <= p90 else "overdue")
-        phase_note = {
-            "early": "still young — regime-aligned positions have historical room to run",
-            "mid": "mid-life — ride it, but keep the next-shift watchlist warm",
-            "late": "older than most — tighten stops on regime-dependent positions "
-                    "and take the transition radar seriously",
-            "overdue": "has outlived nearly all its predecessors — treat every "
-                       "warning flag as live",
-        }[phase]
-        phase_note_zh = {
-            "early": "仍处早期 — 顺应周期的仓位在历史上仍有上行空间",
-            "mid": "中期 — 顺势持有，但保持下一次转换的观察名单热度",
-            "late": "比多数周期更长 — 收紧依赖周期仓位的止损，"
-                    "并认真对待转换雷达",
-            "overdue": "已超越几乎所有前期周期 — 将每一个预警标志视为有效",
-        }[phase]
-        progress = {
-            "age_days": int(age), "median_days": int(np.median(durs)),
-            "pct_longer": round(pct_longer, 0),
-            "median_remaining_days": med_remaining,
-            "phase": phase, "phase_note": phase_note, "phase_note_zh": phase_note_zh,
-            "bar_pct": round(min(age / p90, 1.0) * 100, 1),
-            "zone_early_pct": round(t33 / p90 * 100, 1),
-            "zone_mid_pct": round(t66 / p90 * 100, 1),
-            "n_history": int(len(durs)),
-        }
-
-    age_note = None
-    age_note_zh = None
-    if cur.get("median_days") and nxt:
-        age_note = (f"This {QUAD_SHORT[quad]} stretch is {cur['age_days']} trading days old "
-                    f"(historical median: {cur['median_days']}). When {QUAD_SHORT[quad]} ended, "
-                    f"it went to: "
-                    + ", ".join(f"{QUAD_SHORT.get(k, k)} {v:.0%}"
-                                for k, v in sorted(nxt.items(), key=lambda kv: -kv[1])))
-        age_note_zh = (f"本轮{QUAD_SHORT_ZH[quad]}已持续 {cur['age_days']} 个交易日 "
-                       f"（历史中位数：{cur['median_days']}）。当{QUAD_SHORT_ZH[quad]}结束时，"
-                       f"它转向了："
-                       + "、".join(f"{QUAD_SHORT_ZH.get(k, k)} {v:.0%}"
-                                  for k, v in sorted(nxt.items(), key=lambda kv: -kv[1])))
+    progress = regime_progress(regime["quad"], quad, cur["age_days"])
+    age_note, age_note_zh = regime_age_note(regime["quad"], quad, cur["age_days"], nxt)
 
     next_list = [{"code": k, "name": QUAD_SHORT.get(k, k),
                   "meaning": QUAD_MEANING.get(k, ""), "prob_pct": round(v * 100)}

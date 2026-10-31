@@ -98,13 +98,14 @@
                           latest.playbook.regime_age_note_zh) }}</p>
     {% endif %}
     <p class="muted">{{ t('Regime in force', '现行周期') }} —
-      {{ _pg.age_days }} {{ t('trading days old', '个交易日') }}
+      {{ _pg.age_days }} {{ t('weekdays old', '天（周一至周五计）') }}
       · {{ t('median', '中位数') }} {{ _pg.median_days }}
       · {{ '%.0f'|format(_pg.pct_longer) }}%
       {{ t('of predecessors ran longer', '的前期周期持续更久') }}
       {% if _pg.get('median_remaining_days') is not none %}
-      · {{ t('about', '中位剩余约') }} {{ _pg.median_remaining_days }}
-      {{ t('sessions of median remaining', '个交易日') }}{% endif %}
+      · {{ t('among past runs that reached this age and continued, the median further '
+             ~ 'length was', '历史上达到此存续期后继续延续的周期，其后续长度中位数为') }}
+      {{ _pg.median_remaining_days }} {{ t('weekdays', '天（周一至周五计）') }}{% endif %}
       · {{ _pg.n_history }} {{ t('periods in the sample', '个样本时段') }}
       {% if _pg.get('phase') %}· {{ t('phase', '阶段') }}
       {{ t(_ph_en.get(_pg.phase, _pg.phase), _ph_zh.get(_pg.phase, _pg.phase)) }}
@@ -112,7 +113,7 @@
     {% endif %}
     <table>
       <tr><th>{{ t('regime', '周期') }}</th><th>{{ t('periods', '次数') }}</th>
-        <th>{{ t('median length (trading days)', '存续中位数（交易日）') }}</th>
+        <th>{{ t('median length (weekdays)', '存续中位数（周一至周五计，天）') }}</th>
         <th>{{ t('most common next', '最常见的下一周期') }}</th></tr>
       {% for row in lifespan_rows %}
       <tr><td>{{ td(row.name) }}</td><td>{{ row.n }}</td><td>{{ row.median }}</td><td>{{ t(row.next, row.next_zh) }}</td></tr>

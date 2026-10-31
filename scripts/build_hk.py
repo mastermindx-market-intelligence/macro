@@ -290,8 +290,8 @@ def _build_sector_pages(env) -> int:
 
 
 def _build_history(env, latest: dict, generated: str) -> None:
-    from engine.playbook import (QUAD_SHORT, next_quads_line, quad_segments,
-                                 transition_stats)
+    from engine.playbook import (QUAD_SHORT, closed_median, next_quads_line,
+                                 quad_segments, transition_stats)
     hist = store.read("hk_regime", "regime_history")
     if hist is None or "quad" not in hist.columns:
         log.warning("hk history: no regime_history; skipping history page")
@@ -301,17 +301,21 @@ def _build_history(env, latest: dict, generated: str) -> None:
     px = mdf["close"] if mdf is not None else pd.Series(dtype=float)
     trans = transition_stats(hist["quad"])
     # The segment in force: quad_segments carries its start date and
-    # transition_stats its age/median, neither of which reached a template
-    # before. Under two segments there is no median to age against, so the
-    # page degrades to the rendering it had (no age row, no sample marker).
+    # transition_stats its age, neither of which reached a template before.
+    # Under two segments there is nothing to age against, so the page degrades
+    # to the rendering it had (no age row, no sample marker).
     cur = trans.get("current") or {}
     seg = quad_segments(hist["quad"])
+    # transition_stats counts the running segment's age so far as a length, so
+    # the regime in force takes its median from finished periods. There may be
+    # none, and then the page prints no median for it.
+    cur_median = closed_median(hist["quad"], cur["quad"]) if cur.get("quad") else None
     in_force = None
-    if len(seg) >= 2 and cur.get("quad") and cur.get("median_days") is not None:
+    if len(seg) >= 2 and cur.get("quad"):
         in_force = {"name": QUAD_SHORT.get(cur["quad"], cur["quad"]),
                     "start": str(seg.iloc[-1]["start"])[:10],
                     "age_days": int(cur["age_days"]),
-                    "median_days": int(cur["median_days"]),
+                    "median_days": cur_median,
                     "n_segments": int(trans.get("n_segments", 0))}
     rows = []
     for q in ("Q1", "Q2", "Q3", "Q4"):
@@ -323,8 +327,11 @@ def _build_history(env, latest: dict, generated: str) -> None:
         sample = None
         if in_force is not None and isinstance(n, int):
             sample = n - (1 if q == cur.get("quad") else 0)
+        median = trans["median_days"].get(q, "—")
+        if q == cur.get("quad"):
+            median = cur_median if cur_median is not None else "—"
         rows.append({"name": QUAD_SHORT[q], "n": n if n is not None else "—",
-                     "median": trans["median_days"].get(q, "—"), "sample": sample,
+                     "median": median, "sample": sample,
                      "next": next_quads_line(nxt), "next_zh": next_quads_line(nxt, zh=True)})
     html = env.get_template("hk_history.html.j2").render(
         latest=latest, generated_utc=generated,
