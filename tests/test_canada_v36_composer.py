@@ -196,7 +196,7 @@ def test_evidence_and_record_section_restores_track_record():
     macro_end = template.index("{% endmacro %}", macro_start)
     macro = template[macro_start:macro_end]
     assert "Evidence & Record" in section and "证据与往绩" in section
-    assert "measurement.html" in section
+    assert "measurement.html" not in section  # admin-only: the public host returns 404
     assert "ca_track_record_surface()" in section
     assert 'id="ca-track-record"' in macro and "_track_record_dlg.html.j2" in macro
     assert "appendChild(trk)" not in composer

@@ -300,7 +300,7 @@ def test_evidence_and_record_renders_owner_track_record_in_place():
     end = template.index("</section>", start)
     section = template[start:end]
     assert "Evidence & Record" in section and "证据与往绩" in section
-    assert "measurement.html" in section
+    assert "measurement.html" not in section  # admin-only: the public host returns 404
     assert 'id="track-record"' in section
     assert "_track_record_dlg.html.j2" in section
     assert "evidenceWraps" not in text and "evidenceSectionHtml" not in text
