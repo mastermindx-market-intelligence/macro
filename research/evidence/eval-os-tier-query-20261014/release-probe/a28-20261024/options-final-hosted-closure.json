@@ -1,0 +1,24 @@
+{
+  "tested": "e2fd5aea3351cdc8f321ca171168163134e9d61c",
+  "repair_source": "c564d418531a6a6f2559e06b6b52400c33006b23",
+  "added_paths": [
+    "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md",
+    "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+    "research/SNB_FLOOR_RATE_CASE_2015_01_15.md",
+    "research/BLS_SURVEY_REVISION_CASE_2024_03_08.md",
+    "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+    "research/FOMC_QT_CLOCK_CASE_2024_05_01.md",
+    "research/GDP_GROWTH_UNITS_CASE_2024_04_25.md",
+    "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
+    "research/POLICY_AND_CONTRACT_CASES_2020_2022.md",
+    "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+    "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+    "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+    "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md"
+  ],
+  "only_manifest_thirteen_paths_changed": true,
+  "unchanged_other_jobs_full_closure_reused_from": "options-hosted-full-closure.json",
+  "all_job_definitions": 355,
+  "canonical_affected_closure_findings": {},
+  "elapsed_seconds": 27.737416374962777
+}

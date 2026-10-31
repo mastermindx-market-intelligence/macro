@@ -1,0 +1,19 @@
+{
+  "state": "A28_OPEN_INDEPENDENT_FOLLOWON_RELEASE_NOT_A_PERFORMANCE_FIX",
+  "source_candidate": "e065bf59e85f30ce9be74558773e09e8a96265a5",
+  "retained_root_diagnosis": "../production-4579f45-20261024/A28-retained-path-diagnosis.json",
+  "decision": "Continue qualified follow-on source admission independently. Its CLI additions do not alter the A1 derive/cache implementation or eager selected-store transport; performance effects were not measured. A28 remains a concrete programme acceptance gate, and follow-on landing is not a performance pass.",
+  "smallest_useful_correction": {
+    "scope": "Separate bounded T4 prewarm implementation in scripts/build_output_health.py:_prewarm_head_contents, retaining existing read semantics and canonical owner.",
+    "change": "Replace capture_output of whole git cat-file batch with an incrementally parsed, immutable-revision-bound stream. Inspect header type/size before retaining any body, bound each read and body retention using the existing cap, preserve missing/empty/nonUTF8/source reason semantics and stream cleanup. No entire stdout buffer before cap.",
+    "why_bounded": "This removes a demonstrated contract violation in one source optimization without changing which claims/grades/rows count or the selected legacy/native owner. It is not by itself a complete A28 fix: the existing oversize fallback and cache retention remain explicit obligations.",
+    "acceptance": "Use existing framing/empty/newline/cache parity controls plus adversarial oversized/truncated stream and process cleanup cases against the same complete-result contract. Do not add another broad benchmark, reload production corpus or claim measured savings from old small fixtures."
+  },
+  "subsequent_T1_obligation": {
+    "site": "scripts/build_intelligence_registry.py:_load_qledger and _read_tracked_uncached; engine/qledger_store.py:read_tracked_claims_text/open_raw_lines",
+    "observed_contract": "_load_qledger obtains complete claims text and splits it; legacy worktree/git readers have no byte/time cap. Existing open_raw_lines already provides incremental selected-binding transport, so assess adapting the consumer through that existing interface, not a new claims store or owner.",
+    "preserve": "Current ClaimsReadScope, complete counts/horizon/unknown/owner semantics, verified native snapshot and legacy/git fallback provenance, generation refusal and typed inability. No truncating firstNrows/claims, forced owner/cutover, source clock reset, or altered QLedger producer."
+  },
+  "performance_claim": "NONE:25.9s firstpage/2.27s detail and704MB process peak are whole observations; no component attribution or new performance threshold established.",
+  "effects": "Retained JSON and local source inspection only; no production corpus read, new benchmark, source performance edit or QLedger owner write."
+}

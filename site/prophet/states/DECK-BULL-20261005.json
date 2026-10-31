@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DECK-BULL-20261005",
-  "asof": "2026-10-22",
+  "asof": "2026-10-30",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 70.9,
-  "raw_confidence": 67.7,
-  "delta_vs_base": 10.9,
+  "management_confidence": 41.8,
+  "raw_confidence": 43.9,
+  "delta_vs_base": -18.2,
   "recommended_action": "hold",
-  "human_state": "On Track",
+  "human_state": "Stalling",
   "components": {
     "validity": 100.0,
-    "progress": 33.8,
-    "pace": 76.5,
+    "progress": 6.3,
+    "pace": 12.0,
     "retention": 50.0,
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.591,
-    "dist_to_t1_r": 0.909,
-    "dist_to_t2_r": 2.409,
-    "horizon_pct_used": 35.6,
-    "p1": 0.394,
-    "p2": 0.197,
+    "dist_to_stop_r": 1.063,
+    "dist_to_t1_r": 1.437,
+    "dist_to_t2_r": 2.937,
+    "horizon_pct_used": 53.3,
+    "p1": 0.0422,
+    "p2": 0.0211,
     "p3": null,
-    "move_r": 0.591,
+    "move_r": 0.063,
     "mfe_r": 0.881,
-    "mae_r": -0.198
+    "mae_r": -0.259
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 5.710002746582035,
-  "_mae": -1.2800027465820278,
+  "_mae": -1.6799966430664028,
   "_max_p1": 0.5874488422409502,
   "_first_trigger_ts": "2026-10-07",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 16,
-  "tau": 0.3556
+  "days_elapsed": 24,
+  "tau": 0.5333
 }

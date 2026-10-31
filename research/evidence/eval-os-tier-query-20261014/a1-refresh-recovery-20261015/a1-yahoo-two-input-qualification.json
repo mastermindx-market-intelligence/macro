@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-15T18:18:27.225710+00:00",
+  "source": {
+    "at": "2026-10-15T18:16:39.741209+00:00",
+    "preserved_followon_commit": "cb274db9ffc5fdb650130837a855c933a3e07160",
+    "preserved_followon_tree": "950f7af145d9e3dc752b11526db7b9559ba89ba3",
+    "a1_preview_commit": "cb6128ff99bd659f4f8f93210ce84f0d00235bfb",
+    "a1_preview_tree": "b3ccbe6fec5d417d45a994b14deb95067bf7d158",
+    "scratch": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/eval-os-intl-closure-20261015-ca1cbf15a7963c73",
+    "carrier_modified": false
+  },
+  "target": "eval-os-a1",
+  "closure_count": 1210,
+  "actual_missing_before": [
+    "collectors/yahoo.py",
+    "lib/stooq.py"
+  ],
+  "missing_after": [],
+  "focused_exit": 0,
+  "packing_selection_parity": [
+    {
+      "path": "templates/index.html",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "scripts/build_free_content.py",
+      "before": true,
+      "after": true
+    },
+    {
+      "path": "engine/prophet/plan_book.py",
+      "before": false,
+      "after": false
+    }
+  ],
+  "elapsed_seconds": 49.73,
+  "a1_carrier_modified": false
+}

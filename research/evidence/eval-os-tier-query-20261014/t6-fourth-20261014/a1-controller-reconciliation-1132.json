@@ -1,0 +1,26 @@
+{
+  "observed_at": "2026-10-14T11:33:04.238661+00:00",
+  "source_observation": {
+    "headRefOid": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+    "mergeCommit": null,
+    "mergedAt": null,
+    "number": 6651,
+    "state": "OPEN"
+  },
+  "controller_run": 38553142558,
+  "controller_concluded_at": "2026-10-14T10:59:39Z",
+  "sweep_body_complete": true,
+  "gh_log_warning": "log not found: 115816287349; retained sweep body includes decision and completion; other job log not claimed",
+  "log_sha256": "6b8802764b37a3c6c7aa8563c379673628a3c16ff466cd167d77f51d0a431fb7",
+  "a1_decision": "required freshness update deferred; no update-branch performed",
+  "indexed_pr_ci_runs_at_sweep": 8,
+  "global_cap": 8,
+  "slots_available_at_sweep": 0,
+  "capacity_counts_are_historical": true,
+  "lines": [
+    "sweep\tsweep merge-on-green pull requests\t2026-10-14T10:59:25.4028583Z ##[notice]PR #6651: checks are clean but the proof is stale \u2014 main commit 2395385ea4d1 changed the check definitions themselves, so no existing green describes the checks that run now. Merging main into the head; its fresh checks decide on a later sweep.",
+    "sweep\tsweep merge-on-green pull requests\t2026-10-14T10:59:25.8905273Z ##[notice]PR #6651: its proof is stale (main commit 2395385ea4d1 changed the check definitions themselves, so no existing green describes the checks that run now), but this sweep has 0/0 effective CI workload slot(s) in use (8 indexed pull-request ci run(s) plus 0 unindexed durable reservation(s), global cap 8, 0 CI workload slot(s) available this sweep). Controller state is unchanged; a later sweep picks it up.",
+    "sweep\tsweep merge-on-green pull requests\t2026-10-14T10:59:36.5420317Z merge-on-green sweep complete: 39 blocked, 2 incomplete, 1 pending, 29 refresh-deferred (2 main commit(s) classified, 0/0 effective refresh slot(s) used across 0/8 bounded update attempt(s) (8 indexed pull-request ci run(s) plus 0 unindexed durable reservation(s), global cap 8, 0 CI workload slot(s) available this sweep), ~14999 API requests left; main proof: 14 clean name(s) at aaad2f8c6144, 0.7h old (ci.yml@aaad2f8c6144 (14 passed) + fences.yml@f5f19f61b909 (RED: nothing passed)); baseline: not needed (proof is 0.7h old); semantic-main: not needed (breaker is green); source-baseline: not needed (breaker is green); self-wake: not needed)"
+  ],
+  "mutations_by_root": []
+}

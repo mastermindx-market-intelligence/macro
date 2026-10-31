@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-10-22",
+  "as_of": "2026-10-30",
   "horizon_days": 45,
   "display_only": true,
   "upcoming": [
@@ -14,20 +14,38 @@
       "provisional": true,
       "display_only": true,
       "date": "2026-11-30",
-      "days_until": 39,
+      "days_until": 31,
       "imminent": false,
       "dow": "Mon",
       "dow_zh": "\u5468\u4e00",
       "md": "Nov 30",
       "md_zh": "11\u670830\u65e5"
+    },
+    {
+      "type": "HSI_REVIEW",
+      "name_en": "HSI / HS-TECH Index Review (2026-Q4)",
+      "name_zh": "\u6052\u6307 / \u6052\u79d1\u6307\u6570\u5b63\u5ea6\u68c0\u8ba8\uff082026\u5e74\u7b2c4\u5b63\u5ea6\uff09",
+      "announce_date": "2026-11-30",
+      "effective_date": "2026-12-14",
+      "scope": "HSI \u00b7 HS-TECH",
+      "source_note": "rule-computed: 2nd Monday of Dec 2026; verify at hsi.com.hk",
+      "provisional": true,
+      "display_only": true,
+      "date": "2026-12-14",
+      "days_until": 45,
+      "imminent": false,
+      "dow": "Mon",
+      "dow_zh": "\u5468\u4e00",
+      "md": "Dec 14",
+      "md_zh": "12\u670814\u65e5"
     }
   ],
   "imminent": {
-    "en": "Next catalyst: MSCI Index Review \u2014 Nov quarterly 2026 in 39 days (Nov 30) [provisional].",
-    "zh": "\u4e0b\u4e00\u7ed3\u6784\u6027\u50ac\u5316\uff1aMSCI\u6307\u6570\u68c0\u8ba8 \u2014 2026\u5e7411\u6708\uff08quarterly\uff0939\u5929\u540e\uff0811\u670830\u65e5\uff09 [provisional]\u3002",
+    "en": "Next catalyst: MSCI Index Review \u2014 Nov quarterly 2026 in 31 days (Nov 30) [provisional].",
+    "zh": "\u4e0b\u4e00\u7ed3\u6784\u6027\u50ac\u5316\uff1aMSCI\u6307\u6570\u68c0\u8ba8 \u2014 2026\u5e7411\u6708\uff08quarterly\uff0931\u5929\u540e\uff0811\u670830\u65e5\uff09 [provisional]\u3002",
     "type": "MSCI_REVIEW",
     "date": "2026-11-30",
-    "days_until": 39,
+    "days_until": 31,
     "imminent": false,
     "provisional": true,
     "display_only": true

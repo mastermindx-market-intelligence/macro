@@ -1,0 +1,32 @@
+{
+  "observed_at": "2026-10-15T21:47:20.956986+00:00",
+  "pr_head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+  "pr_state": "open",
+  "merged": false,
+  "merge_commit_sha": "248037474cd2cd1ad3d45efcfbd7a9f1f3cf52ad",
+  "mergeable_state": "clean",
+  "canonical_verdict": "incomplete",
+  "problems": [
+    "ci-authority"
+  ],
+  "check_count": 27,
+  "authority": [
+    {
+      "id": 116650737614,
+      "name": "ci-authority",
+      "conclusion": "success"
+    },
+    {
+      "id": 116650577511,
+      "name": "ci-authority",
+      "conclusion": "cancelled"
+    }
+  ],
+  "controller": {
+    "id": 38811385852,
+    "status": "completed",
+    "conclusion": "success",
+    "updated_at": "2026-10-15T21:41:51Z"
+  },
+  "annotations": []
+}

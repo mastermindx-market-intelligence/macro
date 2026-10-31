@@ -1,0 +1,8 @@
+{
+  "schema": "eval_os.ci_observation_cadence_correction.v1",
+  "source_observation_at": "2026-10-14T11:45:57.192654+00:00",
+  "capacity_diagnosis_at": "2026-10-14T11:48:40.685334+00:00",
+  "requested_minimum_seconds": 300,
+  "interval_seconds": 163.493,
+  "disposition": "One capacity diagnosis was made too soon. It was read-only, with no permission refusal bypass or write; this is a process lapse, not a claimed compliant observation. Subsequent phases at11:57:47 and12:04:40 exceeded300seconds. Next CI observation no earlier than12:09:45UTC; no timer-only retry."
+}

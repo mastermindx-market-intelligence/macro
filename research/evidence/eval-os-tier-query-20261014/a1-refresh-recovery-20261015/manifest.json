@@ -1,0 +1,42 @@
+{
+  "schema": "eval_os.retained_evidence_manifest.v1",
+  "records": [
+    {
+      "file": "ci-semantic-evidence-final.zip",
+      "sha256": "726cff115f0620ae2810461c58f74e4b535ec97cfc2a2a469b039158794d7706",
+      "bytes": 30902
+    },
+    {
+      "file": "b1-terminal-consumption-20261015.json",
+      "sha256": "c44d8847eef35ca2352024a1281283aea3518ec517442e53cd781e175f9529b1",
+      "bytes": 915
+    },
+    {
+      "file": "refreshed-source-comparison.json",
+      "sha256": "530b3faf280b9d080c7d1d3802426c1ba0cee5fe256c46518eaea91faa8ff354",
+      "bytes": 5201
+    },
+    {
+      "file": "refreshed-base-only-verification.json",
+      "sha256": "ed3a72355a8231f82b05a24f801b8bb1320a2c5ec2178089601a46799a1dfb95",
+      "bytes": 464
+    },
+    {
+      "file": "hosted-observation-20261015-0625.json.gz",
+      "sha256": "1cfea3e78cb3564adb61351456eb1a61d37f092079137736c35eaef559425ac4",
+      "bytes": 15033,
+      "encoding": "gzip",
+      "decoded_sha256": "66b34f4ea9eb934fe79ddd822f7127437472b65a26cbf8f0915c1e5281287e64",
+      "decoded_bytes": 298639
+    },
+    {
+      "file": "current-head-observation.json.gz",
+      "sha256": "b102bd31f2b7440d72266764c5cec1825a6ab879e5cb11b77bfc40386f83d9c6",
+      "bytes": 16957,
+      "encoding": "gzip",
+      "decoded_sha256": "6fba22500c58c76e34ada11dc41c0dcab53ce655fcdd5444eaf17675ae3c3428",
+      "decoded_bytes": 297492
+    }
+  ],
+  "scope": "Original b1 terminal proof passed348 command steps/126jobs; current fea base-only refresh has unchanged17productionfiles but new ancestor-init census failure. No current-head gate,merge or production acceptance."
+}

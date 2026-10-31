@@ -11,7 +11,7 @@
   var BRIDGE_VERSION = "20261018.1";
   var DOCUMENT_META_NAME = "mmx-shell-document";
   var RESPONSE_META_NAME = "mmx-shell-response";
-  var PROD_PARENT_ORIGIN = "https://beta.mastermind-x.com";
+  var APPROVED_PARENT_ORIGINS = ["https://beta.mastermind-x.com", "https://app.mastermind-x.com"];
   var LOCAL_PARENTS = ["http://localhost:3100", "http://127.0.0.1:3100"];
   var MAX_QUEUE = 8;
   var MAX_URL = 8192;
@@ -118,7 +118,7 @@
 
   var childOrigin;
   try { childOrigin = new URL(w.location.href).origin; } catch (e) { return; }
-  var allowedParents = [PROD_PARENT_ORIGIN];
+  var allowedParents = APPROVED_PARENT_ORIGINS.slice();
   var host = "";
   try { host = w.location.hostname || ""; } catch (e) {}
   if ((host === "localhost" || host === "127.0.0.1") && childOrigin !== "https://www.mastermind-x.com") {

@@ -1,0 +1,66 @@
+{
+  "benchmark_id": "ecb_rate_clock_2022-07-21",
+  "frozen": true,
+  "source": "research/POLICY_AND_CONTRACT_CASES_2020_2022.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2022-07-21",
+    "session_label": "date only",
+    "adjudication_date": "2026-10-15",
+    "historical_source_availability": "unverified",
+    "dependence_group": "euro-area-policy-july-2022",
+    "source": {
+      "path": "research/POLICY_AND_CONTRACT_CASES_2020_2022.md",
+      "sha256": "ddcde453e8c828904670f5a5b1017601dbfea7df23f99261285de559f8966113"
+    },
+    "input_facts": [
+      {
+        "event_date": "2022-07-21",
+        "source_lines": [
+          27,
+          29
+        ],
+        "text": "On July 21, 2022 the ECB announces 50-basis-point increases in its three key rates, effective July 27: main refinancing 0.50%, marginal lending 0.75%, and deposit facility 0.00%.\nThe release describes future rate decisions as meeting-by-meeting and data-dependent.\nThe Transmission Protection Instrument is approved and can be activated against unwarranted, disorderly dynamics threatening policy transmission. Its purchase scale depends on those risks and has no ex-ante limit.",
+        "sha256": "8d87c3f70fb01752783f87c0947448c7ad19874718577ba7862dde8f8d62ffdf"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        33,
+        33
+      ],
+      "text": "Fifty basis points means 0.50 percentage point, with distinct resulting levels for three facilities. The announced changes take effect July 27, not automatically July 21. A zero deposit rate is not a zero rate for every ECB operation or every borrower. Instrument approval is not observed activation or purchases; no ex-ante cap does not guarantee unlimited realized buying. The future rate path and market returns are not supplied.",
+      "sha256": "f36ffd3c845900680d2952efee57942c90bd431a41f18c1ee2b6f37e78057826"
+    }
+  },
+  "question_en": "Compare the three resulting rates, quantify the change in percentage points, explain the announcement and effective dates, and assess what the TPI and future-rate statements establish.",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT \u2014 cutoff date 2022-07-21 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2022-07-21] On July 21, 2022 the ECB announces 50-basis-point increases in its three key rates, effective July 27: main refinancing 0.50%, marginal lending 0.75%, and deposit facility 0.00%.\nThe release describes future rate decisions as meeting-by-meeting and data-dependent.\nThe Transmission Protection Instrument is approved and can be activated against unwarranted, disorderly dynamics threatening policy transmission. Its purchase scale depends on those risks and has no ex-ante limit.",
+  "expected_properties": [
+    {
+      "tag": "rate_levels",
+      "check": "Fifty basis points means 0.50 percentage point, with distinct resulting levels for the three facilities: main refinancing 0.50%, marginal lending 0.75% and deposit facility 0.00%."
+    },
+    {
+      "tag": "effective_date",
+      "check": "The announced rate changes take effect July 27, not automatically on the July 21 announcement date."
+    },
+    {
+      "tag": "facility_scope",
+      "check": "The zero deposit-facility rate is not a zero rate for every ECB operation or every borrower."
+    },
+    {
+      "tag": "activation_limits",
+      "check": "Transmission Protection Instrument approval is not observed activation or purchases, and no ex-ante cap does not guarantee unlimited realized buying; the future rate path and market returns are not supplied."
+    }
+  ],
+  "known_failure_modes": [
+    "Treating fifty basis points as something other than a 0.50-percentage-point increase, or collapsing the three key rates into one level instead of main refinancing 0.50%, marginal lending 0.75% and deposit facility 0.00%.",
+    "Stating that the new rates applied on the July 21 announcement date rather than taking effect on July 27.",
+    "Reading the zero deposit-facility rate as a zero rate for every ECB operation or every borrower.",
+    "Presenting TPI approval as observed activation or purchases, inferring unlimited realized buying from the absence of an ex-ante cap, or deriving the future rate path or market returns the release does not supply."
+  ],
+  "gold_standard_sentence": "Fifty basis points means 0.50 percentage point, with distinct resulting levels for three facilities. The announced changes take effect July 27, not automatically July 21. A zero deposit rate is not a zero rate for every ECB operation or every borrower. Instrument approval is not observed activation or purchases; no ex-ante cap does not guarantee unlimited realized buying. The future rate path and market returns are not supplied.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}
