@@ -10,9 +10,11 @@ set -e  # mirror GitHub's default `bash -e {0}` step shell — daily.yml declare
 set +e
 PROPHET_BASELINE="${RUNNER_TEMP}/prophet-build-${GITHUB_RUN_ID}.before.json"
 PROPHET_DELTA="${RUNNER_TEMP}/prophet-build-${GITHUB_RUN_ID}.delta.tsv"
+PROPHET_INVENTORY="${RUNNER_TEMP}/prophet-build-${GITHUB_RUN_ID}.inventory.json"
 PROPHET_SOURCE_SNAPSHOT="${RUNNER_TEMP}/prophet-source-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT:-1}.json"
 PROPHET_SOURCE_BLOB="${RUNNER_TEMP}/prophet-source-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT:-1}.us_standouts.json"
-export PROPHET_BASELINE PROPHET_DELTA PROPHET_SOURCE_SNAPSHOT PROPHET_SOURCE_BLOB
+PROPHET_PREFLIGHT_RECEIPT="${RUNNER_TEMP}/prophet-preflight-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT:-1}.json"
+export PROPHET_BASELINE PROPHET_DELTA PROPHET_INVENTORY PROPHET_SOURCE_SNAPSHOT PROPHET_SOURCE_BLOB PROPHET_PREFLIGHT_RECEIPT
 # Snapshot exactly the builder-owned publication files before running.
 # Correction ledgers are INPUTS, never outputs, and are deliberately
 # absent from this closed allowlist. The exact board bytes and the full
@@ -406,11 +408,40 @@ changed = sorted(path for path, sha in after.items() if before.get(path) != sha)
 with Path(os.environ["PROPHET_DELTA"]).open("w", encoding="utf-8") as fh:
     for path in changed:
         fh.write(f"{path}\t{before.get(path, 'MISSING')}\t{after[path]}\n")
+# V4-A2 issuer-side full-population binding: persist the ENTIRE post-build
+# inventory, not the changed-only delta above. The settlement preflight binds
+# every build-owned path byte-for-byte, including unchanged and first-seen
+# files the delta TSV can never name. Unset in the extracted-verbatim test
+# harness, which only exercises the delta contract.
+inventory_target = os.environ.get("PROPHET_INVENTORY")
+if inventory_target:
+    # Alarm-only evidence: a failed inventory write must never flip the
+    # checkpoint contract (manifest_rc stays 0); the preflight then refuses
+    # INVENTORY_MISSING and the run shows the warning.
+    try:
+        Path(inventory_target).write_text(
+            json.dumps(after, sort_keys=True), encoding="utf-8"
+        )
+    except OSError as exc:
+        print(
+            "::warning title=prophet full-population inventory::could not persist "
+            f"the inventory ({exc}); settlement preflight will refuse INVENTORY_MISSING",
+            flush=True,
+        )
 PY
   manifest_rc=$?
   if [ "$manifest_rc" -eq 0 ]; then
     echo "succeeded=true" >> "$GITHUB_OUTPUT"
     echo "delta_manifest=$PROPHET_DELTA" >> "$GITHUB_OUTPUT"
+    # V4-A2 issuer-side qualification preflight (alarm, never a gate): binds
+    # the FULL post-build population inventory, the frozen board bytes, the
+    # final computed_at index bytes and the incumbent GMI ThemeState
+    # accepted-generation receipt. Its typed NOT_SETTLED receipt never gates
+    # the checkpoint, never publishes and carries no private payload.
+    python3 -m scripts.prophet_settlement_preflight 2>&1; preflight_rc=$?
+    if [ "$preflight_rc" -ne 0 ]; then
+      echo "::warning title=prophet accepted-source preflight::preflight could not produce its typed receipt (rc=$preflight_rc); settlement evidence stays unbound"
+    fi
   else
     echo "succeeded=false" >> "$GITHUB_OUTPUT"
     echo "::warning title=build_prophet manifest::build returned 0 but its owned-output delta could not be proven (rc=$manifest_rc); early publication withheld"
