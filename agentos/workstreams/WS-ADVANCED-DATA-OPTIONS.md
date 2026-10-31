@@ -107,37 +107,29 @@ waves:
     title: Restore the store-bearing M1 to the `m1-theta` product workflow; commission AD-1 end to end
     status: in_progress
     depends_on: [AD-1T1]
-    pr: [7889, 8203]
+    pr: [7889, 8203, 9461]
     next_action: >
-      LABEL CORRECTION (2026-09-29): this item previously read `theta-m1`, which
-      is the REVERSED label — it is carried by mac-builder-3, an M2 with no
-      store. The store-bearing host's label is `m1-theta`. Targeting the
-      reversed one yields a store-less producer that looks correctly placed;
-      #7889 documents the same trap and gets the label right.
-      Blocked on TWO independent external boundaries, either sufficient alone.
-      (1) HOST: the M1 is wedged — ping 0% loss and Tailscale up, SSH
-      authenticates, but every command dies `exec request failed on channel 0`
-      (cannot fork), after 96% disk / pressure=emergency on 2026-09-17 drove
-      its runner out of the registry. `m1-theta` has no carrier, so
-      runner-policy.yml's `orphaned` record is CORRECT and R6 blocks correctly
-      — do not drive a W4 admission on #7889's original premise, which has
-      inverted. (2) DATA: the canonical store on that host holds ZERO roots in
-      every tier while its manifest advertises healthy/372/2026-09-25. So
-      re-placing the job does not produce a brief — this is not only a
-      placement fault. #8203 makes the drained store refuse to resolve instead
-      of publishing a blank board, and is MERGED — squash
-      54f62e4d4b25c4e475ece482aff856d052e42e67, 2026-09-29, all nine paths
-      verified blob-identical in origin/main. Refilling the store is owned by
-      the store's writer, not by this workstream. Rollback of #8203 is a config
-      flip (`THETADATA_STORE_PROBE_S=0`), measured against a hanging readdir —
-      no revert, no deploy. The producer-level AD-1T2b drained-store tests are
-      PARKED at origin/claude/ad1t2b-producer-tests-parked (64ed54bf4c5e): they
-      need `--require-store`, which is absent from main and lives only in
-      #7889's held branch, so they land WITH #7889 when W4 admits it.
-      See DSC:A-DRAINED-STORE-PASSES-A-SHAPE-CHECK-AND-PUBLISHES-A-BLANK-BOARD,
-      DSC:A-SILENT-FAIL-OPEN-REPRODUCES-THE-INCIDENT-IT-PREVENTS,
-      DSC:HARDENING-A-UNIVERSAL-RESOLVER-AT-MODULE-SCOPE-CAN-BREAK-EVERY-IMPORT
-      and agentos/handoffs/ADVANCED-DATA-OPTIONS-2026-09-29-drained-store-false-green.md.
+      Current source recovery, 2026-10-18: the old wedged-host/empty-store
+      observation is historical and no longer the current blocker.
+      PR 7889 merged as 86e75c6fee3dbfeb321865595e973d824fa2cf88; installed
+      native runner canary 37121988954 passed on m1-nightly-2. PR 8203's
+      drained-store refusal remains intact. PR 9461 merged as
+      cd75e57693acafec3659957a6e9b98f2f4cb2b13 after exact-head CI
+      39083575663 passed all 12 packs and gate. Its workflow/test blobs match
+      the accepted source; exhausted publication retries now fail visibly.
+      Read-only October 17 source footers found 372 current EOD/Greeks files
+      through October 15 and OI through October 16, with zero read errors.
+      This is footer freshness, not producer/consumer acceptance. The actual
+      brief still showed settled August 19, positions August 20 and 41 trading
+      days behind. AD1_M1_LANE remains absent; latest observed workflow
+      39185548089 skipped. Restore the unchanged 200 GiB full-work capacity
+      floor, then use one bounded existing-workflow proof to establish current
+      runner admission and producer/publication/consumer behavior. The old
+      options-intel run queued without runner/steps; organization-settings
+      inspection returned 403. That refused administration read must not be
+      replayed or bypassed, but it did not establish a workflow execution denial.
+      Keep m1-theta (M1 store-bearing) distinct from theta-m1 (store-less M2).
+      Do not create another Theta instance/store or use a raw-producer bypass.
   - id: AD-2
     title: Evidence Receipts, Nulls, Lifecycle, Corrections
     status: todo
@@ -214,7 +206,7 @@ do_not_redo:
 next_action: >
   AD-1T1 is PROVEN_LIVE and must not be reopened or rerun merely to show activity.
   The exact next product dependency is AD-1T2: restore the store-bearing M1 to the
-  theta-m1 product workflow and production-prove AD-1 end to end, including the
+  m1-theta product workflow and production-prove AD-1 end to end, including the
   consumer/availability path needed by downstream Options Alpha PIT composition.
   AD-2 remains CLOSED until AD-1 production acceptance. Broken R2 sync is not an
   AD-1T2 prerequisite unless new evidence proves it necessary.
@@ -241,12 +233,13 @@ The canonical T1 store lives on the M1 host
 (`/Users/chriswong/theta-ops-wt/data/thetadata_eod`, resolved ONLY via
 `engine.thetadata_store.resolve_thetadata_store()`), fed by the theta launchd
 lanes (`com.macro.theta-terminal`, `com.macro.thetadata-backfill`,
-`com.macro.thetadata-r2sync`, `com.macro.theta-staleness`). daily.yml pins
-ThetaData-consuming jobs to the theta-m1 runner labels.
+`com.macro.thetadata-r2sync`, `com.macro.theta-staleness`). The AD-1 workflow uses `m1-theta` on physical M1 runner `m1-nightly-2`;
+`theta-m1` belongs to the store-less M2 and is not interchangeable.
 
 The repo-local `data/thetadata_eod/` is an EMPTY STUB (`n_roots=0`) and must
 never be treated as production truth — the resolver refuses it by design.
 
+Historical August 22 cutover evidence (not current store availability):
 `site/options_intel_brief.json` is built from the canonical ThetaData store
 since AD-1T0 (PR #6253, merge a45ac6f58e63): honest
 `board_state=INSUFFICIENT_COVERAGE` at 39/375 = 0.104 source coverage. The
