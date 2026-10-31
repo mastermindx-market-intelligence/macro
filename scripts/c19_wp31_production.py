@@ -159,6 +159,7 @@ class ProductionInputs:
             "index_headers_requests",
             "revisions_reader_attempts",
             "revisions_reader_transient_failures",
+            "revisions_reader_final_failures",
         ):
             self.counts.setdefault(key, 0)
 
@@ -212,11 +213,14 @@ class ProductionInputs:
         """The runner's ONE revisions-reader call, with bounded transient retry.
 
         Each attempt is the same whole-chain walk over the same ids (there is
-        no partial result to resume from), so a retry never changes what a
-        successful read returns.  ``reader_attempts`` bounds the attempts;
-        after the last one the exception propagates unchanged and
-        :func:`c19_wp31_sources.collect_s_legs` keeps its fail-closed
-        ``chain_unreadable`` path.
+        no partial result to resume from), started from the then-current
+        workspace marker, so a later attempt may see a newer head; the
+        per-episode cutoff filters in :mod:`c19_wp31_sources` decide what any
+        head contributes.  ``reader_attempts`` bounds the attempts;
+        after the last one the failure is counted in
+        ``revisions_reader_final_failures`` and the exception propagates
+        unchanged, so :func:`c19_wp31_sources.collect_s_legs` keeps its
+        fail-closed ``chain_unreadable`` path.
         """
         reader = self._revisions_reader()
         attempts = max(1, int(self.reader_attempts))
@@ -227,6 +231,7 @@ class ProductionInputs:
                 return reader(ids, max_hops=max_hops)
             except Exception:  # noqa: BLE001 - typed by the incumbent; any raise is a failed walk
                 if attempt >= attempts:
+                    self.counts["revisions_reader_final_failures"] += 1
                     raise
                 self.counts["revisions_reader_transient_failures"] += 1
                 self.sleeper(self.reader_backoff_seconds * attempt)
