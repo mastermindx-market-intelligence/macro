@@ -188,6 +188,23 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
         if bar_key in observed_keys:
             raise ValueError("duplicate observed bar identity")
         observed_keys.add(bar_key)
+        # The caller must retain every full source interval, including failed
+        # ones. Otherwise dropping a missing candle can splice the previous
+        # oscillator sample directly to a future one and mint a false cross.
+        start, finish = _instant(bar.get("bar_start_utc")), _instant(bar.get("bar_end_utc"))
+        try:
+            local_day = date.fromisoformat(bar["session_date"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError("bar/session NY date invalid") from exc
+        if (start.tz_convert(NY).date() != local_day or
+                finish.tz_convert(NY).date() != local_day or finish <= start):
+            raise ValueError("bar/session NY date mismatch")
+        prev = sorted_bars[idx-1] if idx else None
+        if prev is None or prev["symbol"] != sym or prev["session_date"] != bar["session_date"]:
+            if (start.tz_convert(NY).hour, start.tz_convert(NY).minute) != (9, 30):
+                raise ValueError("missing opening full bar from session")
+        elif _instant(prev["bar_end_utc"]) != start:
+            raise ValueError("missing or overlapping RTH bar observations")
         if idx and sorted_bars[idx-1]["symbol"] != bar["symbol"]:
             lines = []
         if status != "FULL_KNOWN":
