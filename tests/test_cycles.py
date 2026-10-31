@@ -149,10 +149,76 @@ def test_signal_age_fields_prose() -> None:
     assert fresh["strength"] == "strong" and "+80" in fresh["age_line"]
     today = signal_age_fields("FRESH BUY", 80, {"days": 0, "capped": False,
                                                 "prev_state": None, "date": "2026-06-13"})
-    assert "today" in today["age_line"] and today["age_short"] == "today"
+    assert "13 Jun 2026" in today["age_line"] and "today" not in today["age_line"]
+    assert "2026年6月13日" in today["age_line_zh"] and "今日" not in today["age_line_zh"]
+    assert today["age_short"] == "13 Jun" and today["age_short_zh"] == "6月13日"
     capped = signal_age_fields("RALLY ON", 55, {"days": 45, "capped": True,
                                                 "prev_state": None, "date": None})
     assert "45+" in capped["age_line"] and "established" in capped["age_line"]
+
+
+def test_signal_age_fields_same_day_names_the_session() -> None:
+    """A zero-day line is frozen into the page, so it names the session.
+
+    The line must not say the cross happened today. A missing or unparsable
+    date names the latest session instead. A two-day line is untouched.
+    """
+    hit = signal_age_fields(
+        "FRESH BUY", 80,
+        {"days": 0, "capped": False, "prev_state": "TURN SIGNALED",
+         "date": "2026-10-30"})
+    assert hit["age_line"] == (
+        "⏱ BUY ZONE signal triggered on 30 Oct 2026 (fresh cross from BOTTOMING). "
+        "Signal strength: strong (score +80/100).")
+    assert hit["age_line_zh"] == (
+        "⏱ 买入区信号于2026年10月30日刚刚触发（全新交叉，自筑底中翻转）。 "
+        "信号强度：强（评分 +80/100）。")
+    assert "today" not in hit["age_line"]
+    assert "今日" not in hit["age_line_zh"]
+    assert hit["age_short"] == "30 Oct" and hit["age_short_zh"] == "10月30日"
+    assert hit["age_days"] == 0
+
+    bare = signal_age_fields(
+        "FRESH BUY", 80,
+        {"days": 0, "capped": False, "prev_state": None, "date": "2026-06-05"})
+    assert "5 Jun 2026" in bare["age_line"] and "05 Jun" not in bare["age_line"]
+    assert "2026年6月5日" in bare["age_line_zh"]
+    assert "2026年06月" not in bare["age_line_zh"]
+    assert "today" not in bare["age_line"] and "今日" not in bare["age_line_zh"]
+
+    missing = signal_age_fields(
+        "FRESH BUY", 80,
+        {"days": 0, "capped": False, "prev_state": None, "date": None})
+    assert missing["age_line"] == (
+        "⏱ BUY ZONE signal triggered at the latest session (fresh cross). "
+        "Signal strength: strong (score +80/100).")
+    assert missing["age_line_zh"] == (
+        "⏱ 买入区信号于最新交易日刚刚触发（全新交叉）。 "
+        "信号强度：强（评分 +80/100）。")
+    assert "today" not in missing["age_line"] and "今日" not in missing["age_line_zh"]
+    assert missing["age_short"] == "latest session"
+    assert missing["age_short_zh"] == "最新交易日"
+
+    junk = signal_age_fields(
+        "FRESH BUY", 80,
+        {"days": 0, "capped": False, "prev_state": None, "date": "today"})
+    assert "at the latest session" in junk["age_line"]
+    assert "于最新交易日" in junk["age_line_zh"]
+    assert "today" not in junk["age_line"] and "今日" not in junk["age_line_zh"]
+    assert junk["age_short"] == "latest session"
+
+    two = signal_age_fields(
+        "FRESH BUY", 80,
+        {"days": 2, "capped": False, "prev_state": "TURN SIGNALED",
+         "date": "2026-06-05"})
+    assert two["age_line"] == (
+        "⏱ BUY ZONE signal triggered 2 trading days ago (~2026-06-05), "
+        "switching from BOTTOMING. Signal strength: strong (score +80/100).")
+    assert two["age_line_zh"] == (
+        "⏱ 买入区信号于 2 个交易日前触发（约 2026-06-05），自筑底中切换而来。 "
+        "信号强度：强（评分 +80/100）。")
+    assert two["age_short"] == "2d ago" and two["age_short_zh"] == "2天前"
+    assert two["age_days"] == 2
 
 
 def test_analyze_attaches_age() -> None:
@@ -799,6 +865,7 @@ if __name__ == "__main__":
                test_failed_cycle_flag, test_ladder_states_sane, test_decline_on_breakdown,
                test_signal_age_detects_recent_cross, test_signal_age_contract_holds,
                test_signal_age_thin_history, test_signal_age_fields_prose,
+               test_signal_age_fields_same_day_names_the_session,
                test_analyze_attaches_age, test_eq_proximity_peaks_near_the_low,
                test_eq_grade_bands, test_eq_sign_anchored_to_state,
                test_eq_every_state_classified, test_eq_thin_history_bows_out,
