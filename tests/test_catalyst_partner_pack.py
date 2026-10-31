@@ -1027,10 +1027,16 @@ class CatalystNativePackTests(unittest.TestCase):
         self.assertIsNone(unattested_packet["publication_time_utc"])
         self.assertIn("publication_time_not_attested",
                       unattested_packet["missing_data"])
-        unattested = self._pack(unattested_packet, unattested_scan)
-        self.assertIsNone(unattested["event"]["publication_time_utc"])
-        self.assertIn("publication_time_not_attested",
-                      unattested["event"]["missing_data"])
+        # Under the #8700 producer, an unattested primary publication on the
+        # legacy path (no verified document observation) blocks the primary
+        # source, so the native packet is not public and the pack refuses it;
+        # no clock is ever substituted for the missing publication time.
+        self.assertEqual(unattested_packet["public_disposition"],
+                         "BLOCKED_PUBLIC")
+        self.assertIn("primary_source_public_rights_unavailable",
+                      unattested_packet["missing_data"])
+        self.refused("NATIVE_PUBLIC_RIGHTS_BLOCKED",
+                     unattested_packet, unattested_scan)
 
     def test_native_schema_revision_refused(self):
         packet, scan = self._native()
