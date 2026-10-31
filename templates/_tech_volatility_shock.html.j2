@@ -60,7 +60,7 @@
   </summary>
   <div class="tvs-body">
     <div class="tvs-ruler"><span class="tvs-label">SPY / QQQ · Same-session comparison</span>
-      <span class="tvs-muted" style="font-size:12px">As of {{ tech_shock.asof or 'unknown' }}</span></div>
+      <span class="tvs-muted" style="font-size:12px">As of {{ tech_shock.asof or 'unknown' }}{% if tech_shock.source_state == 'published_projection' %} · Last qualified published observation{% endif %}</span></div>
     {% if tech_shock.status != 'ok' %}
       <div class="tvs-notice" role="status">
         {{ 'Stale observation' if tech_shock.status == 'stale' else 'Partial observation' if tech_shock.status == 'partial' else 'Unverified source coverage' }}:
