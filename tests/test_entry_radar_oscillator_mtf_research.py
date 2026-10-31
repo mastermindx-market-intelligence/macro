@@ -257,6 +257,20 @@ class OscillatorSignals(unittest.TestCase):
             oscillator_events(bars=combined, indicator="CANON_RSI_MACD",
                               eligibility=self.elig, decision_cutoff_utc="2026-10-30T20:00:00Z")
 
+    def test_missing_first_full_bar_cannot_rephase_history(self):
+        missing_open = self.rows[1:]
+        with self.assertRaisesRegex(ValueError, "missing opening full bar"):
+            oscillator_events(bars=missing_open, indicator="SUPPLIED_LINES",
+                              eligibility=self.elig, supplied=self.supplied(),
+                              decision_cutoff_utc="2026-10-30T20:00:00Z")
+
+    def test_removed_middle_full_bar_cannot_create_false_crossover(self):
+        missing_middle = [self.rows[0], self.rows[2], self.rows[3]]
+        with self.assertRaisesRegex(ValueError, "missing or overlapping RTH bar"):
+            oscillator_events(bars=missing_middle, indicator="SUPPLIED_LINES",
+                              eligibility=self.elig, supplied=self.supplied(),
+                              decision_cutoff_utc="2026-10-30T20:00:00Z")
+
     def test_duplicate_bar_identity_refused(self):
         with self.assertRaisesRegex(ValueError, "duplicate observed"):
             oscillator_events(bars=self.rows + [self.rows[0]], indicator="CANON_RSI_MACD",
@@ -272,7 +286,7 @@ class OscillatorSignals(unittest.TestCase):
     def test_modified_full_bar_bounds_refused(self):
         changed = [dict(x) for x in self.rows]
         changed[1]["bar_start_utc"] = changed[0]["bar_start_utc"]
-        with self.assertRaisesRegex(ValueError, "inconsistent full bar"):
+        with self.assertRaisesRegex(ValueError, "missing or overlapping RTH bar"):
             oscillator_events(bars=changed, indicator="CANON_RSI_MACD",
                               eligibility=self.elig, decision_cutoff_utc="2026-10-30T20:00:00Z")
 
