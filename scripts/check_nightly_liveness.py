@@ -1026,6 +1026,126 @@ def fetch_staleness_json(timeout: float = 15.0) -> "dict | None":
 _HEARTBEAT_NOT_REQUESTED = object()
 
 
+#: The optional settlement claim the V4-A2 availability program adds to
+#: /live/staleness.json once its producer side ships. Check E only READS this
+#: block — the field is written by the VPS sentinel (scripts/freshness_sentinel.py,
+#: whose ``sentinel.first_fresh/v1`` idiom this reader mirrors), and its release,
+#: acceptance and source authority live with the sibling WS:PROPHET-US-AVAILABILITY
+#: workstream, never here. The reader contract is CLOSED: an unknown schema id or
+#: status token is unknown evidence, and the only fields ever lifted out of the
+#: block are the schema id, the status token and the two bundle dates — /live/
+#: staleness.json is served to anyone, so a block carrying anything else must not
+#: leak it through a liveness annotation, the same direction the sentinel's own
+#: private ``facts`` stripping takes at the Caddy boundary.
+PROPHET_SETTLEMENT_SCHEMA = "prophet.settlement_manifest/v1"
+
+#: Closed status vocabulary. Anything else is not this program's settlement state.
+_PROPHET_SETTLEMENT_STATUSES = ("PENDING", "SETTLED", "UNAVAILABLE_DATA")
+
+
+def _grade_prophet_settlement(
+    block: object, heartbeat_fresh: "bool | None"
+) -> "tuple[list[str], dict]":
+    """Typed reader evidence for the optional ``prophet_settlement`` block.
+
+    WARN+FACTS ONLY, by contract: this reader can never add a fail_reason and can
+    never excuse one — Check E's pass/fail stays governed by the heartbeat age
+    alone, so a claimed SETTLED is incapable of paging and incapable of quieting a
+    page. ``heartbeat_fresh`` is True (in budget), False (over budget) or None (no
+    usable heartbeat clock). Only a QUALIFIED closed shape — the known schema id,
+    a known status token and, for SETTLED, both bundle dates parseable — reading
+    on a FRESH heartbeat is recorded into facts; anything else is described in a
+    warning as exactly what it is (unreadable, unrecognized, advisory, or a claim
+    that is not honored). Facts lift out only the closed schema id, the closed
+    status token and bundle dates re-formatted from their PARSED values — never a
+    raw echo of any other key (or any other value) a block might carry.
+    """
+    warn: list[str] = []
+    facts: dict[str, Any] = {}
+    if block is None:
+        # Absent key (pre-deploy) or an explicit null: NO evidence — no breach,
+        # no false green, and no noise either.
+        return warn, facts
+    if not isinstance(block, dict):
+        warn.append(
+            "CHECK E INDETERMINATE: prophet_settlement is not a readable "
+            "settlement block — no settlement state can be graded"
+        )
+        return warn, facts
+    schema = block.get("schema")
+    status = block.get("status")
+    if schema != PROPHET_SETTLEMENT_SCHEMA or status not in _PROPHET_SETTLEMENT_STATUSES:
+        warn.append(
+            "CHECK E INDETERMINATE: prophet_settlement carries an unknown schema "
+            "or status — no settlement state can be graded from an unrecognized "
+            "shape"
+        )
+        return warn, facts
+    owed = _parse_date(block.get("owed_session"))
+    source_asof = _parse_date(block.get("source_asof"))
+    if status == "UNAVAILABLE_DATA":
+        facts["prophet_settlement_schema"] = schema
+        facts["prophet_settlement_status"] = status
+        warn.append(
+            "CHECK E INDETERMINATE: prophet_settlement reads UNAVAILABLE_DATA — "
+            "the issuer reports no gradable settlement; this is neither an "
+            "outage nor a recovery on its own"
+        )
+        return warn, facts
+    if status == "PENDING":
+        # Advisory, with or without the full bundle: the issuer/GMI side can be
+        # unavailable for a long time and that must never become a permanent
+        # page — the non-settled state is noise-free until the heartbeat itself
+        # gives a reason to alarm.
+        facts["prophet_settlement_schema"] = schema
+        facts["prophet_settlement_status"] = status
+        if owed is not None:
+            facts["prophet_settlement_owed_session"] = owed.isoformat()
+        if source_asof is not None:
+            facts["prophet_settlement_source_asof"] = source_asof.isoformat()
+        bundle = "" if (owed is not None and source_asof is not None) \
+            else " without a complete settlement bundle"
+        warn.append(
+            f"CHECK E ADVISORY: prophet_settlement reads PENDING{bundle} — "
+            "settlement is claimed not yet supplied; advisory only, the "
+            "heartbeat still grades this check"
+        )
+        return warn, facts
+    # status == "SETTLED" — a SUPPLIED CLAIM. Qualify the shape first, then the
+    # heartbeat: a claim reading on a stale or unreadable heartbeat is described
+    # but NOT honored and NOT recorded — the settlement acceptance decision is
+    # not this check's to make.
+    if owed is None or source_asof is None:
+        warn.append(
+            "CHECK E INDETERMINATE: prophet_settlement claims SETTLED without a "
+            "complete bundle (owed_session/source_asof) — the claim does not "
+            "qualify and no settlement state is recorded"
+        )
+        return warn, facts
+    # A genuine public SETTLED envelope cannot contradict its own source
+    # vintage or report unresolved failure codes. The A2 public projection
+    # always supplies a failures list; missing is unverified, not settled.
+    if source_asof < owed or block.get("failures") != []:
+        warn.append(
+            "CHECK E INDETERMINATE: prophet_settlement claims SETTLED with "
+            "an owed/source contradiction or missing/nonempty failures — "
+            "claim NOT honored"
+        )
+        return warn, facts
+    if heartbeat_fresh is not True:
+        warn.append(
+            "CHECK E: prophet_settlement claims SETTLED while the sentinel "
+            "heartbeat is stale or unreadable — the claim is NOT honored; the "
+            "heartbeat alone grades this check"
+        )
+        return warn, facts
+    facts["prophet_settlement_schema"] = schema
+    facts["prophet_settlement_status"] = status
+    facts["prophet_settlement_owed_session"] = owed.isoformat()
+    facts["prophet_settlement_source_asof"] = source_asof.isoformat()
+    return warn, facts
+
+
 def evaluate_sentinel_heartbeat(
     doc: object, now: datetime
 ) -> "tuple[list[str], list[str], dict]":
@@ -1041,6 +1161,17 @@ def evaluate_sentinel_heartbeat(
 
     ``doc is _HEARTBEAT_NOT_REQUESTED`` (the caller never asked) contributes
     NOTHING, not even a warning — see the constant's own comment.
+
+    The OPTIONAL ``prophet_settlement`` block (V4-A2 availability-consumer seam,
+    written post-deploy by the sibling WS:PROPHET-US-AVAILABILITY side) is read
+    as TYPED READER EVIDENCE ONLY — see ``_grade_prophet_settlement``. It can add
+    no fail_reason and can never excuse one: the heartbeat age alone still grades
+    this check even when the block claims SETTLED, which is described only as a
+    supplied claim from a qualified closed public shape on a fresh heartbeat,
+    never as independent production acceptance. A pre-deploy document without the
+    key contributes no evidence and no noise; UNAVAILABLE_DATA or an
+    unknown/malformed shape is INDETERMINATE (no synthetic green, no synthetic
+    outage); PENDING is an advisory non-settled note, never a page.
     """
     fail: list[str] = []
     warn: list[str] = []
@@ -1058,24 +1189,32 @@ def evaluate_sentinel_heartbeat(
     if not isinstance(last_pass, str) or not last_pass:
         last_pass = doc.get("generated_at")
     stamp = _parse_dt(last_pass) if isinstance(last_pass, str) else None
+    heartbeat_fresh: "bool | None" = None
     if stamp is None:
         warn.append(
             "CHECK E INDETERMINATE: /live/staleness.json carries no usable "
             "heartbeat.last_pass_utc or generated_at field"
         )
-        return fail, warn, facts
-    age_min = (now - stamp).total_seconds() / 60.0
-    facts["sentinel_heartbeat_age_minutes"] = round(age_min, 1)
-    budget_min = SENTINEL_CADENCE_MINUTES * SENTINEL_HEARTBEAT_MAX_MISSED_CADENCES
-    if age_min > budget_min:
-        fail.append(
-            f"SENTINEL HEARTBEAT STALE [Check E]: /live/staleness.json last pass "
-            f"{stamp.isoformat()} is {age_min:.0f} min old (budget {budget_min:.0f} "
-            "min = 3 sentinel cadences). The VPS-side dead-man sentinel "
-            "(scripts/freshness_sentinel.py, app/deploy/macro-sentinel.timer) "
-            "appears to have stopped running — its own death is otherwise invisible "
-            "from the GitHub failure domain."
-        )
+    else:
+        age_min = (now - stamp).total_seconds() / 60.0
+        facts["sentinel_heartbeat_age_minutes"] = round(age_min, 1)
+        budget_min = SENTINEL_CADENCE_MINUTES * SENTINEL_HEARTBEAT_MAX_MISSED_CADENCES
+        if age_min > budget_min:
+            fail.append(
+                f"SENTINEL HEARTBEAT STALE [Check E]: /live/staleness.json last pass "
+                f"{stamp.isoformat()} is {age_min:.0f} min old (budget {budget_min:.0f} "
+                "min = 3 sentinel cadences). The VPS-side dead-man sentinel "
+                "(scripts/freshness_sentinel.py, app/deploy/macro-sentinel.timer) "
+                "appears to have stopped running — its own death is otherwise invisible "
+                "from the GitHub failure domain."
+            )
+        else:
+            heartbeat_fresh = True
+    s_warn, s_facts = _grade_prophet_settlement(
+        doc.get("prophet_settlement"), heartbeat_fresh
+    )
+    warn.extend(s_warn)
+    facts.update(s_facts)
     return fail, warn, facts
 
 
