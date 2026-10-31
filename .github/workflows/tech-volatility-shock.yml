@@ -1,0 +1,39 @@
+name: tech-volatility-shock
+# Focused regression lane: the upstream ci.yml pack selector has no broad
+# 'pytest tests/' invocation. Both new source-bound suites therefore need an
+# actual executable CI owner; source-only changes must trigger it as well.
+# This is unit-only and never reads R2 credentials or writes live market data.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+    paths:
+      - "engine/tech_volatility_shock.py"
+      - "scripts/tech_shock_macro.py"
+      - "scripts/build_site.py"
+      - "scripts/render_macro_fast.py"
+      - "templates/_tech_volatility_shock.html.j2"
+      - "tests/test_tech_volatility_shock.py"
+      - "tests/test_tech_shock_macro.py"
+      - ".github/workflows/tech-volatility-shock.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-bound-shock:
+    name: source-bound-shock
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Install bounded unit-test dependencies
+        run: python -m pip install "pytest>=8" "pandas>=2.2" "jinja2>=3.1" "pyyaml>=6.0"
+      - name: Verify source-bound EOD analytics and Macro-only view
+        run: python -m pytest -q tests/test_tech_volatility_shock.py tests/test_tech_shock_macro.py
