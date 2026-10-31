@@ -1,5 +1,5 @@
 {
- "asof": "2026-10-30",
+ "asof": "2026-10-31",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -22,7 +22,7 @@
  "n": 3068,
  "n_failed": 0,
  "fail_pct": 0.0,
- "n_flags": 143,
+ "n_flags": 142,
  "universes": [
   {
    "name": "stocks",
@@ -37,7 +37,7 @@
     {
      "name": "ECHO",
      "kind": "zombie",
-     "detail": "dead-registry name advancing 1802d past its 2021-11-22 registry bar; overlap corr -0.139"
+     "detail": "dead-registry name advancing 1803d past its 2021-11-22 registry bar; overlap corr -0.139"
     }
    ]
   },
@@ -46,7 +46,7 @@
    "n": 2815,
    "n_failed": 0,
    "fail_pct": 0.0,
-   "n_flags": 142,
+   "n_flags": 141,
    "skipped": false,
    "note": "",
    "failed": [],
@@ -329,7 +329,7 @@
     {
      "name": "GETY",
      "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-29) but no current NASDAQ/NYSE listing"
+     "detail": "fresh bars (2026-10-30) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "GPRE",
@@ -654,7 +654,7 @@
     {
      "name": "STRS",
      "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-29) but no current NASDAQ/NYSE listing"
+     "detail": "fresh bars (2026-10-30) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "SVC",
@@ -732,11 +732,6 @@
      "detail": "same instrument as its dead-registry rows (corr 1.0) \u2014 the registry, not the store, carries foreign/live tape"
     },
     {
-     "name": "WEAV",
-     "kind": "delisted_printing",
-     "detail": "fresh bars (2026-10-23) but no current NASDAQ/NYSE listing"
-    },
-    {
      "name": "WNC",
      "kind": "registry_mismatch",
      "detail": "same instrument as its dead-registry rows (corr 0.9998) \u2014 the registry, not the store, carries foreign/live tape"
@@ -779,7 +774,7 @@
   "zombie": 5,
   "rebirth": 3,
   "registry_mismatch": 128,
-  "delisted_printing": 7,
+  "delisted_printing": 6,
   "member_identity": 0
  },
  "stores": [
@@ -790,8 +785,8 @@
     {
      "ticker": "ECHO",
      "registry_last": "2021-11-22",
-     "store_tip": "2026-10-29",
-     "days_past_death": 1802,
+     "store_tip": "2026-10-30",
+     "days_past_death": 1803,
      "overlap": {
       "n_overlap": 99,
       "ret_corr_full": -0.0318,
@@ -1036,8 +1031,8 @@
     {
      "ticker": "BBBY",
      "registry_last": "2023-05-19",
-     "store_tip": "2026-10-29",
-     "days_past_death": 1259,
+     "store_tip": "2026-10-30",
+     "days_past_death": 1260,
      "overlap": {
       "n_overlap": 2362,
       "ret_corr_full": 0.9305,
@@ -1439,8 +1434,8 @@
     {
      "ticker": "ELME",
      "registry_last": "2026-04-02",
-     "store_tip": "2026-10-29",
-     "days_past_death": 210,
+     "store_tip": "2026-10-30",
+     "days_past_death": 211,
      "overlap": {
       "n_overlap": 1856,
       "ret_corr_full": 1.0,
@@ -2563,7 +2558,7 @@
     },
     {
      "ticker": "GETY",
-     "store_tip": "2026-10-29",
+     "store_tip": "2026-10-30",
      "acked": false
     },
     {
@@ -2583,13 +2578,8 @@
     },
     {
      "ticker": "STRS",
-     "store_tip": "2026-10-29",
+     "store_tip": "2026-10-30",
      "acked": true
-    },
-    {
-     "ticker": "WEAV",
-     "store_tip": "2026-10-23",
-     "acked": false
     }
    ]
   }
@@ -2614,8 +2604,7 @@
  "unacked_zombies": [],
  "unacked_delisted_printing": [
   "baskets/ohlcv/GETY",
-  "baskets/ohlcv/NATH",
-  "baskets/ohlcv/WEAV"
+  "baskets/ohlcv/NATH"
  ],
  "unacked_member_identity": [],
  "undeclared_ledger_identities": []
