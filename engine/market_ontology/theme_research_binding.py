@@ -9,18 +9,46 @@ shared query-format validation and generation/fingerprint mechanics "where
 all vertical inputs are explicit arguments rather than semiconductor
 defaults".
 
+The str-typed ``ResearchQuery`` / ``OwnerBundle`` carriers and the five
+gates ``passes_time_mode``, ``review_excluded``,
+``filter_interpretation_blocks``, ``correction_lineage`` and
+``collapse_syndicated`` live here too, but they did not all arrive from the
+same place. ``passes_time_mode`` and ``filter_interpretation_blocks`` moved
+out of the semiconductor composer. ``passes_time_mode`` still compares the
+three mode tokens that composer compared (``latest``, ``source_history``,
+``system_replay``), so the move does not change a semiconductor response
+byte. ``filter_interpretation_blocks`` is that composer's replay filter on
+interpretation blocks, same rule. ``review_excluded`` and
+``correction_lineage`` were never on that composer: they are vertical-neutral
+forms of gates the Robotics and Nuclear verticals carried on their own
+branches, and neither branch is on this tree — each vertical module is
+absent at this commit and on ``origin/main``, Robotics' first carrier
+merged then was reverted the same day
+(``agentos/workstreams/WS-GMI-ROBOTICS.md``, ROB-W1) and nuclear never
+landed. ``_correction_lineage`` is the R3-7 family pattern of
+research/energy/nuclear_program/rulings/R-ENE-2026-09-25-w2-module-r3.md;
+``_review_excluded`` is recorded in the Robotics known-revisions decision
+and the nuclear implementation handoff. ``collapse_syndicated`` has no
+provenance this tree can show: the token occurs in no ``research/`` or
+``agentos/`` artifact at this commit — only in this shell, the composer's
+re-export and alias block, and the two shared-shell suites — so it is
+documented here as an unwired proposed form, not as another vertical's
+carried gate. They land here unwired: nothing in this tree calls them
+except the shared-shell equality suite, which exercises them directly.
+The semiconductor module binds them in its alias block and never invokes
+them, so no semiconductor response byte depends on them.
+
 What is deliberately NOT here
 -----------------------------
 Slice and view vocabularies, labels, registration membership, schema ids,
-evidence schema ids, definition versions, vertical query literals, economic
-interpretation, financial logic, row construction, vertical limitation
-tokens, evidence-selection policy, rights/source mappings, navigation, and
-every ranking/gating/entry/sizing/trading authority. Those stay with their
-vertical. Semiconductor's five view literals and its ``ResearchQuery``
-literals are NOT promoted into universal law merely because other lanes
-mirrored them, and nothing here is a framework, plugin system, dynamic
-registry, schema, store, route, queue, publisher, rights plane, identity
-plane or lifecycle plane.
+evidence schema ids, definition versions, economic interpretation, financial
+logic, row construction, rights/source mappings, navigation, and every
+ranking/gating/entry/sizing/trading authority. Those stay with their
+vertical. ``ResearchQuery`` carries ``str`` fields, not a vertical
+``Literal`` vocabulary, and semiconductor's five view literals are not
+promoted into universal law. Nothing here is a framework, plugin system,
+dynamic registry, schema, store, route, queue, publisher, rights plane,
+identity plane or lifecycle plane.
 
 Why a leaf
 ----------
@@ -38,26 +66,42 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
 __all__ = [
+    "SHARED_CONTRACT_MODULE",
+    "SHARED_SHELL_MODULE",
     "BundleUnavailable",
+    "OwnerBundle",
+    "ResearchQuery",
     "ResearchRefusal",
     "canonical_text",
+    "collapse_syndicated",
+    "correction_lineage",
+    "filter_interpretation_blocks",
     "generation_fingerprint",
     "in_anchor_scope",
     "is_instant",
     "le",
     "parse_clock",
     "parse_day",
+    "passes_time_mode",
     "readable",
+    "review_excluded",
     "validate_cutoff_format",
     "validate_pagination",
     "validate_replay_cutoffs",
     "within",
 ]
+
+#: The shared assertion contract. The string stays this module; callers
+#: import it lazily. The shell module constant sits next to it so a vertical
+#: can load both owners without naming a sibling vertical.
+SHARED_CONTRACT_MODULE = "engine.theme_graph.curation_assertion"
+SHARED_SHELL_MODULE = "engine.market_ontology.theme_research_binding"
 
 
 # ---------------------------------------------------------------------------
@@ -88,6 +132,50 @@ class ResearchRefusal(ValueError):
     def __init__(self, code: str):
         super().__init__(code)
         self.code = code
+
+
+# ---------------------------------------------------------------------------
+# Str-typed carriers. Field order is the semiconductor order: frozen
+# dataclasses bind positionally, and a reorder would misbind every caller.
+# The closed literal vocabularies stayed behind; these fields are ``str``.
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class ResearchQuery:
+    anchor_theme_id: str
+    slice_key: str
+    view: str
+    time_mode: str
+    source_cutoff: str | None
+    recorded_cutoff: str | None
+    offset: int = 0
+    limit: int = 50
+    expected_generation: str | None = None
+
+
+@dataclass(frozen=True)
+class OwnerBundle:
+    revision_tuple: tuple[tuple[str, str], ...]
+    rights_revision: str
+    assertions: tuple[Mapping[str, Any], ...]
+    identity_results: tuple[Mapping[str, Any], ...]
+    event_workspaces: tuple[Mapping[str, Any], ...]
+    financial_packets: tuple[Mapping[str, Any], ...]
+    interpretation_blocks: tuple[Mapping[str, Any], ...]
+    native_refs: tuple[Mapping[str, Any], ...]
+    omissions: tuple[str, ...]
+
+
+def _curation_source_ref(assertion: Mapping[str, Any]) -> str:
+    """``gmi-curation://<theme>/<revision>`` from fields already on the row.
+
+    Same text ``source_ref_for`` emits for a fixture assertion that already
+    validates. This leaf does not import the assertion validator: importing
+    it would pull the schema stack into every mount producer.
+    """
+    scope = assertion.get("scope") or {}
+    theme = scope.get("canonical_theme_id") if isinstance(scope, Mapping) else None
+    return f"gmi-curation://{theme}/{assertion.get('curation_revision')}"
 
 
 # ---------------------------------------------------------------------------
@@ -196,6 +284,210 @@ def readable(value: Any) -> bool:
     except (ValueError, TypeError):
         return False
     return True
+
+
+def passes_time_mode(assertion: Mapping[str, Any], query: ResearchQuery,
+                     limitations: set[str]) -> bool:
+    """The semiconductor time gate, moved unchanged.
+
+    ``latest`` keeps the row. ``source_history`` keeps a row whose
+    publication or availability is inside ``source_cutoff`` (no cutoff keeps
+    the whole selection). ``system_replay`` keeps a row whose availability
+    and recording are both inside the two cutoffs, and refuses to invent a
+    midnight for a date-only publication on the cutoff day. An unreadable
+    owner timestamp is withheld and named; it is not a 503.
+    """
+    source = assertion["source"]
+
+    if query.time_mode == "latest":
+        return True
+
+    if query.time_mode == "source_history":
+        if query.source_cutoff is None:
+            return True  # no cutoff given: history is the whole selection
+        # ``comparable`` tracks whether a date was actually READ, not whether a
+        # field was present: an unreadable timestamp is undatable in the only
+        # sense this gate can act on, so it reuses the existing
+        # ``undatable_excluded`` token rather than vanishing silently.
+        comparable = False
+        published = source.get("published_at")
+        if published is not None and readable(published):
+            comparable = True
+            if within(published, query.source_cutoff):
+                return True
+        available = source.get("available_at")
+        if isinstance(available, str) and available != "unknown" and readable(available):
+            comparable = True
+            if within(available, query.source_cutoff):
+                return True
+        if not comparable:
+            limitations.add("undatable_excluded")
+        return False
+
+    # system_replay: known availability AND system recording, both inside cutoffs
+    available = source.get("available_at")
+    # An availability this transport cannot READ is availability it does not
+    # know, so it joins the unknown case rather than raising out of the gate.
+    if not isinstance(available, str) or available == "unknown" or not readable(available):
+        limitations.add("availability_unknown_excluded")
+        return False
+    if not within(available, query.source_cutoff):
+        return False
+    # Split "cannot be dated" from "dated, and outside the cutoff". Only the
+    # first is a LIMITATION: being outside the cutoff is the answer the caller
+    # asked for, while an undatable row is a row the caller never learns about
+    # unless it is named. This is the same token the source_history branch
+    # already emits, for the same reason.
+    retained = source.get("retained_at")
+    if not readable(retained):
+        limitations.add("undatable_excluded")
+        return False
+    if not within(retained, query.recorded_cutoff):
+        return False
+    published = source.get("published_at")
+    if published is not None:
+        grain = source.get("published_at_grain")
+        if grain == "date":
+            # never synthesize midnight: a date-only publication on the cutoff
+            # day cannot be placed before or after the cutoff instant
+            if is_instant(query.source_cutoff) and readable(published) \
+                    and parse_day(published) == parse_clock(query.source_cutoff).date():
+                limitations.add("same_day_grain_ambiguous")
+                return False
+        if not readable(published):
+            limitations.add("undatable_excluded")
+            return False
+        if not within(published, query.source_cutoff):
+            return False
+    return True
+
+
+def review_excluded(assertion: Mapping[str, Any], *, now: str | None,
+                    limitations: set[str]) -> bool:
+    """Whether a review disposition or a due date removes this assertion.
+
+    ``now`` is the caller's clock (a replay cutoff, or the newest review
+    stamp the caller chose). This function does not read the wall clock.
+    ``held`` and ``rejected`` are excluded. A due date ``le`` ``now`` is
+    excluded. Anything else, including a due date with no ``now``, stays.
+    """
+    review = assertion.get("review") or {}
+    disposition = review.get("disposition") if isinstance(review, Mapping) else None
+    if disposition in ("held", "rejected"):
+        limitations.add(
+            "held_present" if disposition == "held" else "rejected_present")
+        return True
+    due = review.get("review_due_at") if isinstance(review, Mapping) else None
+    if isinstance(due, str) and due and now is not None and le(due, now):
+        limitations.add("review_expired_present")
+        return True
+    return False
+
+
+def filter_interpretation_blocks(
+    blocks: Sequence[Mapping[str, Any]],
+    *,
+    time_mode: str,
+    recorded_cutoff: Any,
+    limitations: set[str],
+    replay_mode: str = "system_replay",
+) -> list[dict[str, Any]]:
+    """The semiconductor replay filter for interpretation blocks.
+
+    Outside ``replay_mode`` every block is kept. Inside it, a block whose
+    ``reviewed_at`` cannot be read is withheld (``undatable_excluded``) and
+    a block reviewed after ``recorded_cutoff`` is withheld without a
+    limitation — being outside the cutoff is the answer the caller asked
+    for. Order is ``interpretation_id``.
+    """
+    chosen = []
+    for block in blocks:
+        if time_mode == replay_mode:
+            reviewed = block.get("reviewed_at")
+            if not readable(reviewed):
+                limitations.add("undatable_excluded")
+                continue
+            if not within(reviewed, recorded_cutoff):
+                continue
+        chosen.append(dict(block))
+    chosen.sort(key=lambda item: item.get("interpretation_id", ""))
+    return chosen
+
+
+def correction_lineage(assertion: Mapping[str, Any],
+                       visible: Sequence[Mapping[str, Any]]) -> list[str]:
+    """Walk ``correction.predecessor_revision`` over ``visible`` only.
+
+    A predecessor that is not in ``visible`` is emitted as a pointer built
+    from the last served row's theme and that revision, and the walk stops.
+    A cycle stops. Nothing outside ``visible`` is read.
+    """
+    by_revision = {
+        item.get("curation_revision"): item
+        for item in visible if isinstance(item, Mapping)
+    }
+    lineage: list[str] = []
+    seen = {assertion.get("curation_revision")}
+    current: Mapping[str, Any] = assertion
+    while True:
+        correction = current.get("correction") or {}
+        prior = correction.get("predecessor_revision") if isinstance(correction, Mapping) else None
+        if not isinstance(prior, str) or not prior or prior in seen:
+            break
+        predecessor = by_revision.get(prior)
+        if predecessor is None:
+            prefix = _curation_source_ref(current).rsplit("/", 1)[0]
+            lineage.append(f"{prefix}/{prior}")
+            break
+        seen.add(prior)
+        lineage.append(_curation_source_ref(predecessor))
+        current = predecessor
+    return lineage
+
+
+def collapse_syndicated(
+    assertions: Sequence[Mapping[str, Any]],
+    limitations: set[str],
+) -> tuple[list[Mapping[str, Any]], dict[str, list[str]]]:
+    """Drop an unambiguous syndicated copy and record it under its original.
+
+    A row whose ``limitations.source_dependence`` is
+    ``syndicated_copy_of:<publisher>`` collapses onto the single original
+    with that publisher and the same predicate. Zero or several originals
+    and the copy stays. The returned corroboration maps the original's
+    ``curation_revision`` to the copy's source ref. ``syndicated_collapsed``
+    is added once per collapsed copy.
+    """
+    def _dependence(item: Mapping[str, Any]) -> str:
+        raw_limits = item.get("limitations") or {}
+        if not isinstance(raw_limits, Mapping):
+            return ""
+        dependence = raw_limits.get("source_dependence") or ""
+        return dependence if isinstance(dependence, str) else ""
+
+    corroboration: dict[str, list[str]] = {}
+    survivors: list[Mapping[str, Any]] = []
+    for assertion in assertions:
+        dependence = _dependence(assertion)
+        if not dependence.startswith("syndicated_copy_of:"):
+            survivors.append(assertion)
+            continue
+        upstream = dependence[len("syndicated_copy_of:"):]
+        originals = [
+            candidate for candidate in assertions
+            if ((candidate.get("source") or {}).get("publisher") == upstream
+                if isinstance(candidate.get("source"), Mapping) else False)
+            and not _dependence(candidate).startswith("syndicated_copy_of:")
+            and candidate.get("predicate") == assertion.get("predicate")
+        ]
+        if len(originals) == 1:
+            original = originals[0]
+            corroboration.setdefault(original["curation_revision"], []).append(
+                _curation_source_ref(assertion))
+            limitations.add("syndicated_collapsed")
+        else:
+            survivors.append(assertion)
+    return survivors, corroboration
 
 
 # ---------------------------------------------------------------------------

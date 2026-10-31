@@ -4553,6 +4553,10 @@ CURATED_EXCLUSIVE = {
     # the transport suites import app.main, whose closure smears whole-tree
     # scan roots onto all three packing probes (+1 job each) when inferred.
     "semiconductor-b-boundary",
+    # PR-S shared theme-research shell. Exclusive so the composer's
+    # company-intelligence / theme-graph fallback reads are not declared
+    # and the packing probes stay unselected. Paths are the owned closure.
+    "theme-research-shared-shell",
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
     # (unrun-publish-ops) is `gate: data`, which ci.yml never plans, so they
