@@ -290,6 +290,11 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4
+      # tests/test_ud_b2_w1_red_first_proof.py reads site/macro.html at the pre-fold
+      # commit, and this checkout is one commit deep. Fetch only that commit's trees;
+      # git show then pulls the one blob it needs. fetch-depth: 0 would cost minutes.
+      - name: fetch the pre-fold commit for the red-first proof
+        run: git fetch --no-tags --depth=1 --filter=blob:none origin c22864f80967e77e6e42cd926ef00f11f7197d06
       # The import-light tier-gate runs the shell/boundary cases, while the two
       # builder assertions intentionally require pandas + plotly. Pair the suite
       # with this fat lane so those assertions execute instead of skip everywhere.
