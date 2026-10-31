@@ -43424,6 +43424,38 @@ jobs:
       - name: observed-move labels, features and price-basis refusal
         run: python -m pytest tests/test_observed_moves.py -q
 
+  grey-deer-ew-forecast-reader:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # Grey Deer EW-P3 (amends #10219, EW-P3.T1): the forecast reader STUB. It always
+    # returns NOT_EXECUTABLE and opens nothing under data/ before its window gate;
+    # the test proves that with open() guards. Hermetic: tmp_path only. paths: list
+    # the whole import closure (stdlib + lib/nyse_calendar + engine/trial_ledger).
+    timeout-minutes: 10
+    paths:
+      - "scripts/__init__.py"
+      - "scripts/grey_deer_ew_forecast_reader.py"
+      - "tests/test_grey_deer_ew_forecast_reader.py"
+      - "research/grey_deer/ew_completion_20261031/EW_FORECAST_PREREG_v1_2026-10-31.md"
+      - "research/grey_deer/ew_completion_20261031/CLAIM_EVIDENCE_CONTRACT_v1_2026-10-31.md"
+      - "lib/__init__.py"
+      - "lib/nyse_calendar.py"
+      - "engine/__init__.py"
+      - "engine/trial_ledger.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: EW-P3 forecast reader stub tests
+        run: >-
+          TZ=UTC python -m pytest -q -p no:cacheprovider
+          tests/test_grey_deer_ew_forecast_reader.py
+
   grey-deer-pullback-forward:
     if: ${{ false }}
     gate: code
