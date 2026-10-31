@@ -100,15 +100,22 @@ unverified:
       and protected machine-consumer evidence. A3 and A4
       remain separate; no current GitHub Draft is live.
 unresolved:
-  - A2 in_progress, implementation is BUILT_NOT_PROVEN; no live SETTLED.
-  - A2 source output field public is safe but requires genuine issuer and reader proof.
-  - Genuine producer clock is in #10209 Draft and is not deployed.
-  - GMI accepted current-use ThemeState and source-purpose grant unproven,
+  - >
+    A2 in_progress, implementation is BUILT_NOT_PROVEN; no live SETTLED.
+  - >
+    A2 source output field public is safe but requires genuine issuer and reader proof.
+  - >
+    Genuine producer clock is in #10209 Draft and is not deployed.
+  - >
+    GMI accepted current-use ThemeState and source-purpose grant unproven,
     so never upgrade a shadow generation into accepted quartet.
-  - Fabric preflight source labor has no START/return proof yet.
-  - Availability Agent OS next_action stale relative to 3 merged PRs;
+  - >
+    Fabric preflight source labor has no START/return proof yet.
+  - >
+    Availability Agent OS next_action stale relative to 3 merged PRs;
     sister source owner must reconcile, not duplicate.
-  - Protected release, independent formal GitHub approval, production
+  - >
+    Protected release, independent formal GitHub approval, production
     mutation drills and A3 publication contract remain held.
 next_actions:
   - >
@@ -134,27 +141,37 @@ next_actions:
     require production proof and independent GitHub approval
     for later release, with no self-merge or A3 bypass.
 do_not_redo:
-  - Never rerun A1 2026-08-14 replay, B1 canonical episode identity,
+  - >
+    Never rerun A1 2026-08-14 replay, B1 canonical episode identity,
     B2-0/B2-1 closed source work or original 30-wave architecture census.
-  - Do not re-run exact-green #10202 CI 41125933425 or #10209
+  - >
+    Do not re-run exact-green #10202 CI 41125933425 or #10209
     CI 41110624274 without changing the immutable heads.
-  - Do not re-review #10202 2ea0 SOURCE_PASS or #10209
+  - >
+    Do not re-review #10202 2ea0 SOURCE_PASS or #10209
     da3a SOURCE_PASS unless semantic material/source change requires it.
-  - Do not duplicate existing Prophet checkpoint, R2 public health
+  - >
+    Do not duplicate existing Prophet checkpoint, R2 public health
     publisher, liveness, rescue, ThemeState owner, trade authority
     or protected-plan HTTP access.
-  - Do not promote GMI shadow, Git checkpoint-only digest,
+  - >
+    Do not promote GMI shadow, Git checkpoint-only digest,
     index-only evidence, fresh published_at or pure synthetic
     SETTLED into complete accepted production settlement.
-  - No auto-merge, self-approval, deployment, branch replacement
+  - >
+    No auto-merge, self-approval, deployment, branch replacement
     or blind Fabric retry. Preserve all effect and source leases.
 danger_areas:
-  - GitHub hosted code green is not production settlement.
-  - Existing GMI descriptive ThemeState does not prove
+  - >
+    GitHub hosted code green is not production settlement.
+  - >
+    Existing GMI descriptive ThemeState does not prove
     authorized current-generation owner use.
-  - Superseded Availability workstream prose is not a
+  - >
+    Superseded Availability workstream prose is not a
     present release instruction: three referenced PRs are merged.
-  - Fabric controller created is not worker START.
+  - >
+    Fabric controller created is not worker START.
 prs: [10174, 10176, 10180, 10202, 10209]
 ---
 
