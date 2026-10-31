@@ -285,6 +285,16 @@ family disclosures, the window label "Events from 23 Oct to 30 Oct 2026", and
 remain pre-merge local renders; this page is the committed nightly render of
 the merged code.
 
+**Anchor note (review r2).** "HEAD" in this census means the measurement
+commit `fff8ab44c690` (page blob `152aedcd…`, last renders `b4a4333cdd87` /
+`c600dd5631f1`). The integration branch that carries this file merges past
+later nightly renders: at the PR head `2dc087c36922` the tracked page is blob
+`101568d8e1f3`, last committed by `9b539ae59f5e` ("engine-render: regime
+recompute + re-render 2026-10-31 (scope=all)") and `b4a4333cdd87`. Re-measured
+at that head with the same greps: `nxConsequence` 1, `nx-depth nx-family` 6,
+`nx-empty` 11, window "Events from 23 Oct to 30 Oct 2026" — identical counts.
+The artifact fact and the receipt gap below are unchanged by the newer blob.
+
 **"Covering-render proof still owed" in committed terms** (MASTERPLAN.md:88),
 restated against that page — two separate facts. What EXISTS is a committed
 nightly-rendered page carrying the section: artifact evidence that the render
@@ -318,11 +328,12 @@ of the rendered artifact.
 | :126 "the six-family consequence interface" | exactly six disclosures (impact.py:1091 order; template loop :1093-1116; test_news_page_render.py:985 asserts count == 6) | RECONCILED |
 | :126 "The per-family source is already built" | `family_views` producer + consumer + tests all present at HEAD (impact.py:1206-1214; build_site.py:7680; tests :1391/:1413/:1428/:985) | RECONCILED |
 | :126 "unresolved retained checkpoint concerns covering generation and served proof" | nightly generation of the section is in the render path (build_site.py:7671-7689, read-time projection); no covering-generation or served receipt has landed since 2026-10-11 | RECONCILED |
+| :88 "preserve family counts and correction history" (correction history) | the event schema carries `retracted`/`retraction_reason` (impact.py:247-249, "spine.py's correction plane"); no committed receipt or test in the F05 chain measures a retracted event's delivery or omission on the served section — an evidence gap at the consumer/receipt stage, not a contradiction | GAP-COVERAGE |
 | :358 "preserve available-record counts" | `available_count` = collapsed display records (impact.py:1213), distinct from `in_window` source events (:1194-1201); template prints it (:1097, :1101); manifest demonstrates 3/0 divergence; tests :1391/:985 pin it | RECONCILED |
 | :358 "six family disclosures and honest empties" | six `nx-depth nx-family` details (:1093-1116); typed empties at three levels — surface (:1081-1090), family (:1105-1115), producer states (:1189-1193); tests :1413/:1247/:350 | RECONCILED |
 
-Counts: 10 RECONCILED (one as RECONCILED-ARTIFACT), 1 GAP (GAP-RECEIPT),
-0 CONTRADICTED.
+Counts: 10 RECONCILED (one as RECONCILED-ARTIFACT), 2 GAP (GAP-RECEIPT,
+GAP-COVERAGE), 0 CONTRADICTED.
 
 ## Gaps for C3
 
