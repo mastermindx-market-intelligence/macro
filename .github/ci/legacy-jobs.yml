@@ -26884,6 +26884,35 @@ jobs:
       - name: Connected deployment Git history contracts
         run: python -m pytest tests/test_deploy_git_history.py -q
 
+  deploy-git-store-maintenance:
+    if: ${{ false }}
+    gate: code
+    # 2026-10-19 root-disk incident: the nightly bounded repack of /opt/macro's
+    # Git store, its units, the journald cap and the update.sh/setup.sh stanzas
+    # that self-arm them. The functional half runs the real script against
+    # hermetic file:// repositories and needs Linux flock/ionice/GNU df.
+    scope: exclusive
+    paths:
+      - "app/deploy/macro-git-store-maintenance.sh"
+      - "app/deploy/macro-git-store-maintenance.service"
+      - "app/deploy/macro-git-store-maintenance.timer"
+      - "app/deploy/journald-macro-vps.conf"
+      - "app/deploy/update.sh"
+      - "app/deploy/setup.sh"
+      - "app/deploy/*.sh"
+      - "tests/test_deploy_git_store_maintenance.py"
+    timeout-minutes: 12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Git store maintenance test dependencies
+        run: pip install pytest
+      - name: Bounded Git store maintenance contracts
+        run: python -m pytest tests/test_deploy_git_store_maintenance.py -q
+
   biocatalyst-regulatory:
     if: ${{ false }}
     gate: code
