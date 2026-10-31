@@ -214,9 +214,10 @@ class BoundAliasTable:
     """The Data OS alias reader plus the receipt of the bytes it was built from.
 
     Delegates the two calls the sources adapter requires (``vendor_symbol_for`` /
-    ``resolve``) to ``lib.dataos.identity.VendorAliasTable`` unchanged; the
-    receipt (path + sha256 of the parquet payload) lands in the run document so
-    every capture names the exact identity reference it resolved against.
+    ``resolve``) to ``lib.dataos.identity.VendorAliasTable`` unchanged.  The
+    receipt (path + sha256 of the parquet payload) is reported in the run
+    document only (stdout): captured rows keep their closed key set and carry
+    no alias field, and this script persists nothing about the receipt.
     """
 
     __slots__ = ("_table", "receipt")
@@ -232,22 +233,37 @@ class BoundAliasTable:
         return self._table.resolve(vendor, vendor_symbol, on)
 
 
-def resolve_alias_table(root: object = None) -> object:
+def resolve_alias_table(root: object = None, *, required: bool = False) -> object:
     """The Data OS alias provider: the ONE in-repo identity reader, or ``None``.
 
     Reads ``data/reference/vendor_aliases.parquet`` under ``root`` through the
     intake's ``_records_snapshot`` (the same rows + sha256 receipt the B1
     candidate-episode generation binds its identity spine from) and builds
-    ``VendorAliasTable.from_records`` over them.  Absent reference -> ``None``:
-    the canonical-security-id -> store-symbol relation stays unbound and the
-    sources adapter's own ``RuntimeOwnerFactError`` remains the captured typed
-    row reason (``IDENTITY_ALIAS_UNRESOLVED``) — never a guessed alias.  A
-    reference that is present but unlawful (ambiguous overlapping rows, a
-    missing column) is a typed refusal of the whole run, not a silent unbind.
+    ``VendorAliasTable.from_records`` over them.
+
+    Absent (or not a regular file) reference: in report / dry-run mode this
+    returns ``None`` — the canonical-security-id -> store-symbol relation
+    stays unbound and the sources adapter's own ``RuntimeOwnerFactError``
+    remains the typed row reason (``IDENTITY_ALIAS_UNRESOLVED``), never a
+    guessed alias.  With ``required=True`` (the durable nightly write) it is a
+    typed refusal of the whole run instead: the reference is a tracked file,
+    so its absence means an incomplete checkout, and a durable row written
+    against an unbound seam could never be told apart from a security that
+    truly has no store alias — nor corrected later, because the day file keeps
+    the first row written under each key.  A reference that is present but
+    unlawful (ambiguous overlapping rows, a missing column) is a typed refusal
+    in every mode, not a silent unbind.
     """
     base = Path(root).resolve() if root is not None else _repo_root()
     path = base.joinpath(*ALIAS_REFERENCE_PARTS)
     if not path.is_file():
+        if required:
+            raise TypedRefusal(
+                "ALIAS_REFERENCE_MISSING",
+                f"the Data OS alias reference {path} is absent from this checkout "
+                "(it is a tracked file); a durable nightly capture may not persist "
+                "rows against an unbound identity seam",
+            )
         return None
     try:
         rows, receipt = _records_snapshot(path)
@@ -703,7 +719,7 @@ def run(
         )
     snapshot = _load_snapshot(root_path)
 
-    alias_table = resolve_alias_table(root_path)
+    alias_table = resolve_alias_table(root_path, required=bool(nightly and not dry_run))
     alias_receipt = getattr(alias_table, "receipt", None)
     captured_at = _now_iso(_now())
     rows: list[dict[str, object]] = []

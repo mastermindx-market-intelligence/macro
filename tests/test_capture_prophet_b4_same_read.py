@@ -16,6 +16,7 @@ entry-geometry/metric owners do not exist, so every capture row is honestly
 deliverable, and these tests assert it byte for byte.
 """
 import json
+import subprocess
 from datetime import date, datetime, timezone
 from hashlib import sha256
 from pathlib import Path
@@ -73,17 +74,22 @@ def _write_candidates_part(root, tickers):
     pd.DataFrame(rows).to_parquet(part / f"{_SESSION[:7]}.parquet", index=False)
 
 
-def _world(tmp_path, *, tickers=("UNIT",), session=_SESSION):
+def _world(tmp_path, *, tickers=("UNIT",), session=_SESSION, alias_reference=True):
     """One complete capture world: candidates store, episode store, live owners.
 
-    Built ON the imported reader-world fixture; the only additions are the two
+    Built ON the imported reader-world fixture; the only additions are the
     committed artifacts the capture script itself reads — the candidates store
-    part and the board standouts file.  Each observation's source receipt is
-    DERIVED from the actual durable store row exactly as production intake
-    derives it, so the script's builder-identical derivation resolves the very
-    event the episode store carries.
+    part, the board standouts file and (by default) an EMPTY but lawful Data OS
+    alias reference, so the durable nightly path has its tracked file while the
+    seam still resolves nothing and the adapter's own typed refusal stays the
+    row reason.  Each observation's source receipt is DERIVED from the actual
+    durable store row exactly as production intake derives it, so the script's
+    builder-identical derivation resolves the very event the episode store
+    carries.
     """
     _write_candidates_part(tmp_path, tickers)
+    if alias_reference:
+        _write_alias_reference(tmp_path, [])
     native = {row["ticker"]: row for row in _stamp_native_rows(tmp_path)}
     observations = []
     for ticker in tickers:
@@ -315,7 +321,7 @@ def test_row_key_set_is_closed_and_no_state_token_is_ever_persisted(
 def test_evaluated_row_persists_facts_only_and_round_trips_the_verdict(
         tmp_path, monkeypatch):
     world = _world(tmp_path)
-    monkeypatch.setattr(capture, "resolve_alias_table", lambda *_: _B4Aliases("UNIT"))
+    monkeypatch.setattr(capture, "resolve_alias_table", lambda *_, **__: _B4Aliases("UNIT"))
     _inject_future_geometry_metric_owners(monkeypatch)
 
     assert _run(monkeypatch, tmp_path, world, "--nightly") == 0
@@ -444,19 +450,43 @@ def test_live_root_override_is_report_only(tmp_path, monkeypatch, capsys):
     assert json.loads(capsys.readouterr().out)["mode"] == "report"
 
 
-def test_alias_seam_is_unbound_without_the_reference_and_the_gap_is_typed_not_guessed(
+def test_alias_seam_is_unbound_without_the_reference_in_dry_run_and_the_gap_is_typed_not_guessed(
         tmp_path, monkeypatch, capsys):
-    world = _world(tmp_path)
+    """Report / dry-run: no reference -> unbound seam, the adapter's own typed
+    refusal is the row reason, nothing durable is written."""
+    world = _world(tmp_path, alias_reference=False)
 
     assert not (tmp_path / "data" / "reference" / "vendor_aliases.parquet").exists()
     assert capture.resolve_alias_table(tmp_path) is None
-    assert _run(monkeypatch, tmp_path, world, "--nightly") == 0
+    assert _run(monkeypatch, tmp_path, world, "--nightly", "--dry-run") == 0
     doc = json.loads(capsys.readouterr().out)
     assert doc["alias_table"] == {"bound": False, "receipt": None}
-    row = _read_rows(_capture_file(tmp_path))[0]
-    assert row["state"] == "UNAVAILABLE_DATA"
-    # The adapter's own refusal is the captured reason — never a guessed alias.
-    assert row["unavailable_reasons"] == ["IDENTITY_ALIAS_UNRESOLVED"]
+    assert doc["counts_by_state"] == {"UNAVAILABLE_DATA": len(capture.STRATEGY_DEFINITIONS)}
+    # The adapter's own refusal is the reported reason — never a guessed alias.
+    assert set(doc["counts_by_reason"]) == {"IDENTITY_ALIAS_UNRESOLVED"}
+    assert not (tmp_path / _CAPTURE_REL).exists()
+
+
+@pytest.mark.parametrize("shape", ["absent", "directory"])
+def test_a_durable_nightly_capture_refuses_an_absent_reference_instead_of_degrading_rows(
+        tmp_path, monkeypatch, capsys, shape):
+    """The reference is a tracked file: its absence is an incomplete checkout,
+    not a lawful "no alias" state.  A durable row written against the unbound
+    seam could never be told apart from a security with no store alias, nor
+    corrected later (the day file keeps the first row under each key), so the
+    nightly write is a typed refusal with nothing persisted."""
+    world = _world(tmp_path, alias_reference=False)
+    path = tmp_path / "data" / "reference" / "vendor_aliases.parquet"
+    if shape == "directory":
+        path.mkdir(parents=True)
+    assert capture.resolve_alias_table(tmp_path) is None
+    with pytest.raises(capture.TypedRefusal) as refusal:
+        capture.resolve_alias_table(tmp_path, required=True)
+    assert refusal.value.token == "ALIAS_REFERENCE_MISSING"
+
+    assert _run(monkeypatch, tmp_path, world, "--nightly") == 3
+    assert json.loads(capsys.readouterr().out)["refused"] == "ALIAS_REFERENCE_MISSING"
+    assert not (tmp_path / _CAPTURE_REL).exists()
 
 
 def _write_alias_reference(root, rows):
@@ -520,16 +550,34 @@ def test_a_present_but_unlawful_alias_reference_is_a_typed_refusal_not_a_silent_
     assert not (tmp_path / _CAPTURE_REL).exists()
 
 
+def _reference_is_sparse_omitted(relative: Path) -> bool:
+    """True when the tracked reference is skip-worktree (sparse session tree)."""
+    proc = subprocess.run(
+        ["git", "ls-files", "-v", "--", str(relative)],
+        cwd=_REPO_ROOT, capture_output=True, text=True, check=False)
+    return proc.returncode == 0 and proc.stdout[:1] == "S"
+
+
 def test_the_production_reference_binds_and_resolves_a_store_symbol():
     """The committed estate reference loads through the seam as production will
-    read it: a known canonical id round-trips to its ``store`` symbol."""
-    table = capture.resolve_alias_table(_REPO_ROOT)
-    assert table is not None, "data/reference/vendor_aliases.parquet is the committed Data OS reference"
+    read it: a currently valid ``store`` alias round-trips both ways.  A sparse
+    session worktree that omits ``data/`` skips; a tracked-but-missing file in
+    a full checkout fails, exactly as the durable nightly write would refuse."""
+    relative = Path(*capture.ALIAS_REFERENCE_PARTS)
+    if not (_REPO_ROOT / relative).is_file():
+        if _reference_is_sparse_omitted(relative):
+            pytest.skip("sparse worktree omits data/reference (skip-worktree)")
+        pytest.fail(f"{relative} is tracked but missing from this checkout")
+    table = capture.resolve_alias_table(_REPO_ROOT, required=True)
     assert table.receipt["sha256"].startswith("sha256:")
+    frame = pd.read_parquet(_REPO_ROOT / relative)
+    store = frame[(frame["vendor"] == "store") & frame["valid_to"].isna()]
+    assert not store.empty, "the production reference carries at least one open store alias"
+    probe = store.iloc[0]
     on = date(2026, 10, 30)
-    symbol = table.vendor_symbol_for("store", "SEC:US-XNYS-A", on)
-    assert symbol == "A"
-    assert table.resolve("store", symbol, on) == "SEC:US-XNYS-A"
+    symbol = table.vendor_symbol_for("store", str(probe["security_id"]), on)
+    assert symbol == str(probe["vendor_symbol"])
+    assert table.resolve("store", symbol, on) == str(probe["security_id"])
 
 
 # ── Spec 8: ZERO AUTHORITY — no product builder or template reads the stream ─
