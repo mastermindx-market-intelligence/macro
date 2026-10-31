@@ -15,7 +15,7 @@
       "lag_days": 0,
       "state": "fresh"
     },
-    "TCOM": {
+    "JD": {
       "asof": "2026-10-30",
       "lag_days": 0,
       "state": "fresh"
@@ -30,7 +30,7 @@
       "lag_days": 0,
       "state": "fresh"
     },
-    "JD": {
+    "TCOM": {
       "asof": "2026-10-30",
       "lag_days": 0,
       "state": "fresh"
