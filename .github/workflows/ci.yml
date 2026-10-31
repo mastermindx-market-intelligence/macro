@@ -3766,6 +3766,9 @@ on:
       # Hermetic receipt compatibility also runs in the prophet-lab code gate.
       - "tests/test_prophet_today_provenance.py"
       - "tests/test_prophet_miss_audit.py"
+      # Entry Timing W1 (2026-10-31): waterfall report + suite run in prophet-lab.
+      - "scripts/report_us_candidate_episode_waterfall.py"
+      - "tests/test_report_us_candidate_episode_waterfall.py"
       - "scripts/grade_us_prophet_candidates.py"
       # Archetype coverage pipeline (2026-08): the candidates-stamp heal script and
       # the suite pinning fac-less classification + store freshness + fill-null-only
