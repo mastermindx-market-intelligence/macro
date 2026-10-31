@@ -1,0 +1,7648 @@
+{
+  "schema": "mastermind.paper_effect_ledger.r31",
+  "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "procedure_pin": "0d51da5463a18a251905ec0ef5a580ccdb0b3546",
+  "catalog_sha256": "1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db",
+  "note": "Each native mutation used a fresh accepted file/schema snapshot guard. This compact ledger omits HTML bodies; final native JSX carries current design contents. Applied responses are not a claim that a subsequently replaced/collided node remains current. See the reconciled scope incident in validation.json.",
+  "effects": [
+    {
+      "operation_id": "bonds-transmission-r31-20261018-001",
+      "tool": "create_artboard",
+      "arguments": {
+        "pageId": "p-1H-0",
+        "name": "R31 · S06 Structure & Financing · Deep Tools",
+        "styles": {
+          "width": "1440px",
+          "height": "2400px",
+          "display": "flex",
+          "flexDirection": "column",
+          "backgroundColor": "var(--mx-light-bg)",
+          "left": "0px",
+          "top": "6300px"
+        }
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:37:56.988Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "id",
+          "name",
+          "worldX",
+          "worldY",
+          "width",
+          "height"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-002",
+      "tool": "update_styles",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "6B6Q-1"
+            ],
+            "styles": {
+              "left": "0px",
+              "top": "6300px",
+              "height": "fit-content"
+            }
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:38:15.640Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "updates"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-003",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B6Q-1",
+        "mode": "insert-children",
+        "html_characters": 176
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:38:18.296Z",
+      "created_nodes": [
+        {
+          "id": "6B6S-1",
+          "name": "R31 Structure and financing tools",
+          "component": "Frame"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-004",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B6S-1",
+        "mode": "insert-children",
+        "html_characters": 974
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:38:45.573Z",
+      "created_nodes": [
+        {
+          "id": "6B6W-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6B6X-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B6Y-1",
+          "name": "MASTERMIND / IMPLEME…",
+          "component": "Text"
+        },
+        {
+          "id": "6B6Z-1",
+          "name": "Deepen the decision",
+          "component": "Text"
+        },
+        {
+          "id": "6B70-1",
+          "name": "Structure, cash timi…",
+          "component": "Text"
+        },
+        {
+          "id": "6B71-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B72-1",
+          "name": "R31 · extension to R…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-005",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B6S-1",
+        "mode": "insert-children",
+        "html_characters": 379
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:38:47.924Z",
+      "created_nodes": [
+        {
+          "id": "6B74-1",
+          "name": "I13 Structure tool and build scorecard",
+          "component": "Frame"
+        },
+        {
+          "id": "6B75-1",
+          "name": "I13 Tool column",
+          "component": "Frame"
+        },
+        {
+          "id": "6B76-1",
+          "name": "I13 Scorecard column",
+          "component": "Frame"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-006",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B75-1",
+        "mode": "insert-children",
+        "html_characters": 2260
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:38:50.597Z",
+      "created_nodes": [
+        {
+          "id": "6B78-1",
+          "name": "Market structure inspector",
+          "component": "Frame"
+        },
+        {
+          "id": "6B79-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6B7A-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B7B-1",
+          "name": "I13 / MARKET STRUCTU…",
+          "component": "Text"
+        },
+        {
+          "id": "6B7C-1",
+          "name": "Read the structure",
+          "component": "Text"
+        },
+        {
+          "id": "6B7D-1",
+          "name": "Action Close ×",
+          "component": "Frame"
+        },
+        {
+          "id": "6B7E-1",
+          "name": "Close ×",
+          "component": "Text"
+        },
+        {
+          "id": "6B7F-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6B7G-1",
+          "name": "Action US Treasury 10Y ▾",
+          "component": "Frame"
+        },
+        {
+          "id": "6B7H-1",
+          "name": "US Treasury 10Y ▾",
+          "component": "Text"
+        },
+        {
+          "id": "6B7I-1",
+          "name": "Action Yield · NY close ▾",
+          "component": "Frame"
+        },
+        {
+          "id": "6B7J-1",
+          "name": "Yield · NY close ▾",
+          "component": "Text"
+        },
+        {
+          "id": "6B7K-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B7L-1",
+          "name": "Synthetic example",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-007",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B78-1",
+        "mode": "insert-children",
+        "html_characters": 800
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:39:39.520Z",
+      "created_nodes": [
+        {
+          "id": "6B7N-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B7O-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6B7P-1",
+          "name": "Rebound. Reversal un…",
+          "component": "Text"
+        },
+        {
+          "id": "6B7Q-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B7R-1",
+          "name": "Wait for the close",
+          "component": "Text"
+        },
+        {
+          "id": "6B7S-1",
+          "name": "Short-term gains sti…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-008",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B78-1",
+        "mode": "insert-children",
+        "html_characters": 1789
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:39:41.890Z",
+      "created_nodes": [
+        {
+          "id": "6B7U-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6B7V-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B7W-1",
+          "name": "NEXT LEVEL",
+          "component": "Text"
+        },
+        {
+          "id": "6B7X-1",
+          "name": "5.08%",
+          "component": "Text"
+        },
+        {
+          "id": "6B7Y-1",
+          "name": "2 bp below the curre…",
+          "component": "Text"
+        },
+        {
+          "id": "6B7Z-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B80-1",
+          "name": "DISTANCE",
+          "component": "Text"
+        },
+        {
+          "id": "6B81-1",
+          "name": "0.25×",
+          "component": "Text"
+        },
+        {
+          "id": "6B82-1",
+          "name": "Daily volatility · i…",
+          "component": "Text"
+        },
+        {
+          "id": "6B83-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B84-1",
+          "name": "INVALIDATION",
+          "component": "Text"
+        },
+        {
+          "id": "6B85-1",
+          "name": "5.22%",
+          "component": "Text"
+        },
+        {
+          "id": "6B86-1",
+          "name": "A close above weaken…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-009",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B78-1",
+        "mode": "insert-children",
+        "html_characters": 2786
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:39:44.381Z",
+      "created_nodes": [
+        {
+          "id": "6B88-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B89-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6B8A-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B8B-1",
+          "name": "Yield history",
+          "component": "Text"
+        },
+        {
+          "id": "6B8C-1",
+          "name": "5.08% confirmation",
+          "component": "Text"
+        },
+        {
+          "id": "6B8D-1",
+          "name": "5.22% invalidation",
+          "component": "Text"
+        },
+        {
+          "id": "6B8E-1",
+          "name": "SVG",
+          "component": "SVG"
+        },
+        {
+          "id": "6B8F-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8G-1",
+          "name": "4.90%",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8H-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8I-1",
+          "name": "5.00%",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8J-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8K-1",
+          "name": "5.10%",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8L-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8M-1",
+          "name": "5.20%",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8N-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8O-1",
+          "name": "5.30%",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8P-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8Q-1",
+          "name": "5.40%",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8R-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8S-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8T-1",
+          "name": "Path",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8U-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8V-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8W-1",
+          "name": "5.10%",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8X-1",
+          "name": "D−21",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8Y-1",
+          "name": "D−10",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6B8Z-1",
+          "name": "D close",
+          "component": "SVGVisualElement"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-010",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B78-1",
+        "mode": "insert-children",
+        "html_characters": 1783
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:39:49.281Z",
+      "created_nodes": [
+        {
+          "id": "6B91-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6B92-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B93-1",
+          "name": "1 SESSION",
+          "component": "Text"
+        },
+        {
+          "id": "6B94-1",
+          "name": "+0.60%",
+          "component": "Text"
+        },
+        {
+          "id": "6B95-1",
+          "name": "7–10Y Treasury total…",
+          "component": "Text"
+        },
+        {
+          "id": "6B96-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B97-1",
+          "name": "5 SESSIONS",
+          "component": "Text"
+        },
+        {
+          "id": "6B98-1",
+          "name": "+1.40%",
+          "component": "Text"
+        },
+        {
+          "id": "6B99-1",
+          "name": "Rebound is visible",
+          "component": "Text"
+        },
+        {
+          "id": "6B9A-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6B9B-1",
+          "name": "20 SESSIONS",
+          "component": "Text"
+        },
+        {
+          "id": "6B9C-1",
+          "name": "−2.40%",
+          "component": "Text"
+        },
+        {
+          "id": "6B9D-1",
+          "name": "Monthly trend still …",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-011",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B78-1",
+        "mode": "insert-children",
+        "html_characters": 2159
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:40:39.573Z",
+      "created_nodes": [
+        {
+          "id": "6BC6-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BC7-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BC8-1",
+          "name": "Curve participation",
+          "component": "Text"
+        },
+        {
+          "id": "6BC9-1",
+          "name": "Front end leads; lon…",
+          "component": "Text"
+        },
+        {
+          "id": "6BCA-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BCB-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BCC-1",
+          "name": "2Y −12 bp",
+          "component": "Text"
+        },
+        {
+          "id": "6BCD-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BCE-1",
+          "name": "5Y −4 bp",
+          "component": "Text"
+        },
+        {
+          "id": "6BCF-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BCG-1",
+          "name": "10Y −8 bp",
+          "component": "Text"
+        },
+        {
+          "id": "6BCH-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BCI-1",
+          "name": "30Y −1 bp",
+          "component": "Text"
+        },
+        {
+          "id": "6BCJ-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BCK-1",
+          "name": "Long versus short du…",
+          "component": "Text"
+        },
+        {
+          "id": "6BCL-1",
+          "name": "5D: +0.90 pp · 20D: …",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-012",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B78-1",
+        "mode": "insert-children",
+        "html_characters": 1379
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:40:43.027Z",
+      "created_nodes": [
+        {
+          "id": "6BCN-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BCO-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BCP-1",
+          "name": "Keep the close rule",
+          "component": "Text"
+        },
+        {
+          "id": "6BCQ-1",
+          "name": "Break + retest is av…",
+          "component": "Text"
+        },
+        {
+          "id": "6BCR-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BCS-1",
+          "name": "Action Rule settings",
+          "component": "Frame"
+        },
+        {
+          "id": "6BCT-1",
+          "name": "Rule settings",
+          "component": "Text"
+        },
+        {
+          "id": "6BCU-1",
+          "name": "Action Use these conditions",
+          "component": "Frame"
+        },
+        {
+          "id": "6BCV-1",
+          "name": "Use these conditions",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-013",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B76-1",
+        "mode": "insert-children",
+        "html_characters": 4245
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:40:47.014Z",
+      "created_nodes": [
+        {
+          "id": "6BCX-1",
+          "name": "Panel",
+          "component": "Frame"
+        },
+        {
+          "id": "6BCY-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BCZ-1",
+          "name": "I13 / IMPLEMENTATION…",
+          "component": "Text"
+        },
+        {
+          "id": "6BD0-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BD1-1",
+          "name": "OPEN",
+          "component": "Text"
+        },
+        {
+          "id": "6BD2-1",
+          "name": "Curve → Inspect stru…",
+          "component": "Text"
+        },
+        {
+          "id": "6BD3-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BD4-1",
+          "name": "INPUT",
+          "component": "Text"
+        },
+        {
+          "id": "6BD5-1",
+          "name": "Exact yield series, …",
+          "component": "Text"
+        },
+        {
+          "id": "6BD6-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BD7-1",
+          "name": "MEANING",
+          "component": "Text"
+        },
+        {
+          "id": "6BD8-1",
+          "name": "Show horizon conflic…",
+          "component": "Text"
+        },
+        {
+          "id": "6BD9-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BDA-1",
+          "name": "CALCULATE",
+          "component": "Text"
+        },
+        {
+          "id": "6BDB-1",
+          "name": "Distance = signed yi…",
+          "component": "Text"
+        },
+        {
+          "id": "6BDC-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BDD-1",
+          "name": "STATES",
+          "component": "Text"
+        },
+        {
+          "id": "6BDE-1",
+          "name": "Provisional intraday…",
+          "component": "Text"
+        },
+        {
+          "id": "6BDF-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BDG-1",
+          "name": "SAVE",
+          "component": "Text"
+        },
+        {
+          "id": "6BDH-1",
+          "name": "Use these conditions…",
+          "component": "Text"
+        },
+        {
+          "id": "6BDI-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BDJ-1",
+          "name": "ACCESS",
+          "component": "Text"
+        },
+        {
+          "id": "6BDK-1",
+          "name": "Focusable chart poin…",
+          "component": "Text"
+        },
+        {
+          "id": "6BDL-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BDM-1",
+          "name": "ACCEPT",
+          "component": "Text"
+        },
+        {
+          "id": "6BDN-1",
+          "name": "5.079% crosses 5.080…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-014",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B76-1",
+        "mode": "insert-children",
+        "html_characters": 2659
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:40:49.535Z",
+      "created_nodes": [
+        {
+          "id": "6BDP-1",
+          "name": "Panel",
+          "component": "Frame"
+        },
+        {
+          "id": "6BDQ-1",
+          "name": "RULE SETTINGS / EXPA…",
+          "component": "Text"
+        },
+        {
+          "id": "6BDR-1",
+          "name": "Require a retest",
+          "component": "Text"
+        },
+        {
+          "id": "6BDS-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BDT-1",
+          "name": "Break",
+          "component": "Text"
+        },
+        {
+          "id": "6BDU-1",
+          "name": "Close below 5.08%",
+          "component": "Text"
+        },
+        {
+          "id": "6BDV-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BDW-1",
+          "name": "Retest",
+          "component": "Text"
+        },
+        {
+          "id": "6BDX-1",
+          "name": "5.06–5.08% within 3 …",
+          "component": "Text"
+        },
+        {
+          "id": "6BDY-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BDZ-1",
+          "name": "Hold",
+          "component": "Text"
+        },
+        {
+          "id": "6BE0-1",
+          "name": "Next close lower; st…",
+          "component": "Text"
+        },
+        {
+          "id": "6BE1-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BE2-1",
+          "name": "Action Cancel",
+          "component": "Frame"
+        },
+        {
+          "id": "6BE3-1",
+          "name": "Cancel",
+          "component": "Text"
+        },
+        {
+          "id": "6BE4-1",
+          "name": "Action Apply to draft",
+          "component": "Frame"
+        },
+        {
+          "id": "6BE5-1",
+          "name": "Apply to draft",
+          "component": "Text"
+        },
+        {
+          "id": "6BE6-1",
+          "name": "User-authored exampl…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-015",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B76-1",
+        "mode": "insert-children",
+        "html_characters": 1275
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:40:53.339Z",
+      "created_nodes": [
+        {
+          "id": "6BE8-1",
+          "name": "Panel",
+          "component": "Frame"
+        },
+        {
+          "id": "6BE9-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BEA-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BEB-1",
+          "name": "Distance unavailable",
+          "component": "Text"
+        },
+        {
+          "id": "6BEC-1",
+          "name": "0 bp volatility",
+          "component": "Text"
+        },
+        {
+          "id": "6BED-1",
+          "name": "The yield gap is sti…",
+          "component": "Text"
+        },
+        {
+          "id": "6BEE-1",
+          "name": "Action Inspect history",
+          "component": "Frame"
+        },
+        {
+          "id": "6BEF-1",
+          "name": "Inspect history",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-016",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B6S-1",
+        "mode": "insert-children",
+        "html_characters": 374
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:40:57.548Z",
+      "created_nodes": [
+        {
+          "id": "6BEH-1",
+          "name": "I05 Funding extension",
+          "component": "Frame"
+        },
+        {
+          "id": "6BEI-1",
+          "name": "I05 Funding tool column",
+          "component": "Frame"
+        },
+        {
+          "id": "6BEJ-1",
+          "name": "I05 Funding score column",
+          "component": "Frame"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-017",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BEI-1",
+        "mode": "insert-children",
+        "html_characters": 2865
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:42:23.345Z",
+      "created_nodes": [
+        {
+          "id": "6BMD-1",
+          "name": "Reported issuer schedule",
+          "component": "Frame"
+        },
+        {
+          "id": "6BME-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BMF-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BMG-1",
+          "name": "FUNDING CALENDAR",
+          "component": "Text"
+        },
+        {
+          "id": "6BMH-1",
+          "name": "Map funding dates",
+          "component": "Text"
+        },
+        {
+          "id": "6BMI-1",
+          "name": "Action Close ×",
+          "component": "Frame"
+        },
+        {
+          "id": "6BMJ-1",
+          "name": "Close ×",
+          "component": "Text"
+        },
+        {
+          "id": "6BMK-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BML-1",
+          "name": "Action CoreWeave ▾",
+          "component": "Frame"
+        },
+        {
+          "id": "6BMM-1",
+          "name": "CoreWeave ▾",
+          "component": "Text"
+        },
+        {
+          "id": "6BMN-1",
+          "name": "Action Consolidated · USD ▾",
+          "component": "Frame"
+        },
+        {
+          "id": "6BMO-1",
+          "name": "Consolidated · USD ▾",
+          "component": "Text"
+        },
+        {
+          "id": "6BMP-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BMQ-1",
+          "name": "Reported · 30 Jun 20…",
+          "component": "Text"
+        },
+        {
+          "id": "6BMR-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BMS-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BMT-1",
+          "name": "Obligations",
+          "component": "Text"
+        },
+        {
+          "id": "6BMU-1",
+          "name": "Cash calendar",
+          "component": "Text"
+        },
+        {
+          "id": "6BMV-1",
+          "name": "Draw eligibility",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-018",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BMD-1",
+        "mode": "insert-children",
+        "html_characters": 2226
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:42:30.022Z",
+      "created_nodes": [
+        {
+          "id": "6BMX-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BMY-1",
+          "name": "Timing needs a rollf…",
+          "component": "Text"
+        },
+        {
+          "id": "6BMZ-1",
+          "name": "Annual principal buc…",
+          "component": "Text"
+        },
+        {
+          "id": "6BN0-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BN1-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BN2-1",
+          "name": "TOTAL PRINCIPAL",
+          "component": "Text"
+        },
+        {
+          "id": "6BN3-1",
+          "name": "$35.551bn",
+          "component": "Text"
+        },
+        {
+          "id": "6BN4-1",
+          "name": "As reported at the c…",
+          "component": "Text"
+        },
+        {
+          "id": "6BN5-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BN6-1",
+          "name": "REMAINING 2026",
+          "component": "Text"
+        },
+        {
+          "id": "6BN7-1",
+          "name": "$4.413bn",
+          "component": "Text"
+        },
+        {
+          "id": "6BN8-1",
+          "name": "June reporting bucke…",
+          "component": "Text"
+        },
+        {
+          "id": "6BN9-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BNA-1",
+          "name": "CASH COVERAGE",
+          "component": "Text"
+        },
+        {
+          "id": "6BNB-1",
+          "name": "Unavailable",
+          "component": "Text"
+        },
+        {
+          "id": "6BNC-1",
+          "name": "Obligor and timing g…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-019",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BMD-1",
+        "mode": "insert-children",
+        "html_characters": 3628
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:42:33.420Z",
+      "created_nodes": [
+        {
+          "id": "6BNE-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BNF-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BNG-1",
+          "name": "Principal by reporti…",
+          "component": "Text"
+        },
+        {
+          "id": "6BNH-1",
+          "name": "Action Open filing ↗",
+          "component": "Frame"
+        },
+        {
+          "id": "6BNI-1",
+          "name": "Open filing ↗",
+          "component": "Text"
+        },
+        {
+          "id": "6BNJ-1",
+          "name": "SVG",
+          "component": "SVG"
+        },
+        {
+          "id": "6BNK-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNL-1",
+          "name": "0bn",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNM-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNN-1",
+          "name": "5bn",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNO-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNP-1",
+          "name": "10bn",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNQ-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNR-1",
+          "name": "15bn",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNS-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNT-1",
+          "name": "4.413",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNU-1",
+          "name": "Remaining 2026",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNV-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNW-1",
+          "name": "6.184",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNX-1",
+          "name": "2027",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNY-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BNZ-1",
+          "name": "4.416",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BO0-1",
+          "name": "2028",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BO1-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BO2-1",
+          "name": "2.421",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BO3-1",
+          "name": "2029",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BO4-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BO5-1",
+          "name": "3.221",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BO6-1",
+          "name": "2030",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BO7-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BO8-1",
+          "name": "14.896",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BO9-1",
+          "name": "Thereafter",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BOA-1",
+          "name": "Principal only · int…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-020",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BMD-1",
+        "mode": "insert-children",
+        "html_characters": 2200
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:42:40.178Z",
+      "created_nodes": [
+        {
+          "id": "6BOE-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BOF-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BOG-1",
+          "name": "Exact payment dates",
+          "component": "Text"
+        },
+        {
+          "id": "6BOH-1",
+          "name": "Partial mapping",
+          "component": "Text"
+        },
+        {
+          "id": "6BOI-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BOJ-1",
+          "name": "Cash usable by each …",
+          "component": "Text"
+        },
+        {
+          "id": "6BOK-1",
+          "name": "Needs legal-pool map…",
+          "component": "Text"
+        },
+        {
+          "id": "6BOL-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BOM-1",
+          "name": "June undrawn commitm…",
+          "component": "Text"
+        },
+        {
+          "id": "6BON-1",
+          "name": "Current draw eligibi…",
+          "component": "Text"
+        },
+        {
+          "id": "6BOO-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BOP-1",
+          "name": "Action Inspect obligations",
+          "component": "Frame"
+        },
+        {
+          "id": "6BOQ-1",
+          "name": "Inspect obligations",
+          "component": "Text"
+        },
+        {
+          "id": "6BOR-1",
+          "name": "Action Build cash scenario",
+          "component": "Frame"
+        },
+        {
+          "id": "6BOS-1",
+          "name": "Build cash scenario",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-021",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BEJ-1",
+        "mode": "insert-children",
+        "html_characters": 3841
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:42:44.934Z",
+      "created_nodes": [
+        {
+          "id": "6BOU-1",
+          "name": "Panel",
+          "component": "Frame"
+        },
+        {
+          "id": "6BOV-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BOW-1",
+          "name": "I05 / EXTENSION / IM…",
+          "component": "Text"
+        },
+        {
+          "id": "6BOX-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BOY-1",
+          "name": "OPEN",
+          "component": "Text"
+        },
+        {
+          "id": "6BOZ-1",
+          "name": "Credit → Map maturit…",
+          "component": "Text"
+        },
+        {
+          "id": "6BP0-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BP1-1",
+          "name": "READ",
+          "component": "Text"
+        },
+        {
+          "id": "6BP2-1",
+          "name": "Annual reported prin…",
+          "component": "Text"
+        },
+        {
+          "id": "6BP3-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BP4-1",
+          "name": "DISTINGUISH",
+          "component": "Text"
+        },
+        {
+          "id": "6BP5-1",
+          "name": "Principal versus car…",
+          "component": "Text"
+        },
+        {
+          "id": "6BP6-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BP7-1",
+          "name": "ROLL FORWARD",
+          "component": "Text"
+        },
+        {
+          "id": "6BP8-1",
+          "name": "Amendments, new draw…",
+          "component": "Text"
+        },
+        {
+          "id": "6BP9-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BPA-1",
+          "name": "CALCULATE",
+          "component": "Text"
+        },
+        {
+          "id": "6BPB-1",
+          "name": "Cash balance is cumu…",
+          "component": "Text"
+        },
+        {
+          "id": "6BPC-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BPD-1",
+          "name": "SCENARIO",
+          "component": "Text"
+        },
+        {
+          "id": "6BPE-1",
+          "name": "Separate documented …",
+          "component": "Text"
+        },
+        {
+          "id": "6BPF-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BPG-1",
+          "name": "ACCEPT",
+          "component": "Text"
+        },
+        {
+          "id": "6BPH-1",
+          "name": "Same-day funding aft…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-022",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BEI-1",
+        "mode": "insert-children",
+        "html_characters": 2267
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:43:52.094Z",
+      "created_nodes": [
+        {
+          "id": "6BRC-1",
+          "name": "Cash timing scenario",
+          "component": "Frame"
+        },
+        {
+          "id": "6BRD-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BRE-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BRF-1",
+          "name": "CASH CALENDAR / ALTE…",
+          "component": "Text"
+        },
+        {
+          "id": "6BRG-1",
+          "name": "Test the cash",
+          "component": "Text"
+        },
+        {
+          "id": "6BRH-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BRI-1",
+          "name": "Synthetic Parent A",
+          "component": "Text"
+        },
+        {
+          "id": "6BRJ-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BRK-1",
+          "name": "Action Parent A · USD ▾",
+          "component": "Frame"
+        },
+        {
+          "id": "6BRL-1",
+          "name": "Parent A · USD ▾",
+          "component": "Text"
+        },
+        {
+          "id": "6BRM-1",
+          "name": "Action 16 Oct → 15 Jan ▾",
+          "component": "Frame"
+        },
+        {
+          "id": "6BRN-1",
+          "name": "16 Oct → 15 Jan ▾",
+          "component": "Text"
+        },
+        {
+          "id": "6BRO-1",
+          "name": "Action Assumptions ⓘ",
+          "component": "Frame"
+        },
+        {
+          "id": "6BRP-1",
+          "name": "Assumptions ⓘ",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-023",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BRC-1",
+        "mode": "insert-children",
+        "html_characters": 2225
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:43:56.301Z",
+      "created_nodes": [
+        {
+          "id": "6BSD-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BSE-1",
+          "name": "January needs financ…",
+          "component": "Text"
+        },
+        {
+          "id": "6BSF-1",
+          "name": "$190m covers payment…",
+          "component": "Text"
+        },
+        {
+          "id": "6BSG-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BSH-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BSI-1",
+          "name": "OPENING USABLE CASH",
+          "component": "Text"
+        },
+        {
+          "id": "6BSJ-1",
+          "name": "$2.10bn",
+          "component": "Text"
+        },
+        {
+          "id": "6BSK-1",
+          "name": "$0.90bn restricted i…",
+          "component": "Text"
+        },
+        {
+          "id": "6BSL-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BSM-1",
+          "name": "FIRST PAYMENT GAP",
+          "component": "Text"
+        },
+        {
+          "id": "6BSN-1",
+          "name": "15 Jan",
+          "component": "Text"
+        },
+        {
+          "id": "6BSO-1",
+          "name": "2027 · before any ne…",
+          "component": "Text"
+        },
+        {
+          "id": "6BSP-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BSQ-1",
+          "name": "TO PAY OBLIGATIONS",
+          "component": "Text"
+        },
+        {
+          "id": "6BSR-1",
+          "name": "$190m",
+          "component": "Text"
+        },
+        {
+          "id": "6BSS-1",
+          "name": "Minimum financing in…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-024",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BRC-1",
+        "mode": "insert-children",
+        "html_characters": 2511
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:43:59.017Z",
+      "created_nodes": [
+        {
+          "id": "6BSW-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BSX-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BSY-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BSZ-1",
+          "name": "Before new financing",
+          "component": "Text"
+        },
+        {
+          "id": "6BT0-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BT1-1",
+          "name": "With eligible $900m …",
+          "component": "Text"
+        },
+        {
+          "id": "6BT2-1",
+          "name": "$300m buffer",
+          "component": "Text"
+        },
+        {
+          "id": "6BT3-1",
+          "name": "SVG",
+          "component": "SVG"
+        },
+        {
+          "id": "6BT4-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BT5-1",
+          "name": "2.0bn",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BT6-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BT7-1",
+          "name": "1.0bn",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BT8-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BT9-1",
+          "name": "0.0bn",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BTA-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BTB-1",
+          "name": "Path",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BTC-1",
+          "name": "Path",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BTD-1",
+          "name": "$710m",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BTE-1",
+          "name": "−$190m",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BTF-1",
+          "name": "16 Oct",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BTG-1",
+          "name": "16 Nov",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BTH-1",
+          "name": "16 Dec",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6BTI-1",
+          "name": "15 Jan",
+          "component": "SVGVisualElement"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-025",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BRC-1",
+        "mode": "insert-children",
+        "html_characters": 2552
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:44:01.964Z",
+      "created_nodes": [
+        {
+          "id": "6BTP-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BTQ-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BTR-1",
+          "name": "14 Jan · eligible dr…",
+          "component": "Text"
+        },
+        {
+          "id": "6BTS-1",
+          "name": "+$900m",
+          "component": "Text"
+        },
+        {
+          "id": "6BTT-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BTU-1",
+          "name": "15 Jan · maturity",
+          "component": "Text"
+        },
+        {
+          "id": "6BTV-1",
+          "name": "−$800m",
+          "component": "Text"
+        },
+        {
+          "id": "6BTW-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BTX-1",
+          "name": "15 Jan · other inter…",
+          "component": "Text"
+        },
+        {
+          "id": "6BTY-1",
+          "name": "−$100m",
+          "component": "Text"
+        },
+        {
+          "id": "6BTZ-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BU0-1",
+          "name": "Action All cash events",
+          "component": "Frame"
+        },
+        {
+          "id": "6BU1-1",
+          "name": "All cash events",
+          "component": "Text"
+        },
+        {
+          "id": "6BU2-1",
+          "name": "Action Delay $200m receipt",
+          "component": "Frame"
+        },
+        {
+          "id": "6BU3-1",
+          "name": "Delay $200m receipt",
+          "component": "Text"
+        },
+        {
+          "id": "6BU4-1",
+          "name": "Action Use this scenario",
+          "component": "Frame"
+        },
+        {
+          "id": "6BU5-1",
+          "name": "Use this scenario",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-026",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BEJ-1",
+        "mode": "insert-children",
+        "html_characters": 2974
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:44:05.038Z",
+      "created_nodes": [
+        {
+          "id": "6BUK-1",
+          "name": "Panel",
+          "component": "Frame"
+        },
+        {
+          "id": "6BUL-1",
+          "name": "DRAW ELIGIBILITY / I…",
+          "component": "Text"
+        },
+        {
+          "id": "6BUM-1",
+          "name": "Can the facility fun…",
+          "component": "Text"
+        },
+        {
+          "id": "6BUN-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BUO-1",
+          "name": "Commitment",
+          "component": "Text"
+        },
+        {
+          "id": "6BUP-1",
+          "name": "$1,500m",
+          "component": "Text"
+        },
+        {
+          "id": "6BUQ-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BUR-1",
+          "name": "Already drawn",
+          "component": "Text"
+        },
+        {
+          "id": "6BUS-1",
+          "name": "−$400m",
+          "component": "Text"
+        },
+        {
+          "id": "6BUT-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BUU-1",
+          "name": "Letters of credit",
+          "component": "Text"
+        },
+        {
+          "id": "6BUV-1",
+          "name": "−$200m",
+          "component": "Text"
+        },
+        {
+          "id": "6BUW-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BUX-1",
+          "name": "Borrowing-base capac…",
+          "component": "Text"
+        },
+        {
+          "id": "6BUY-1",
+          "name": "$1,000m",
+          "component": "Text"
+        },
+        {
+          "id": "6BUZ-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BV0-1",
+          "name": "Eligible availabilit…",
+          "component": "Text"
+        },
+        {
+          "id": "6BV1-1",
+          "name": "$900m",
+          "component": "Text"
+        },
+        {
+          "id": "6BV2-1",
+          "name": "Assumes the correct …",
+          "component": "Text"
+        },
+        {
+          "id": "6BV3-1",
+          "name": "Action Inspect conditions",
+          "component": "Frame"
+        },
+        {
+          "id": "6BV4-1",
+          "name": "Inspect conditions",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-027",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BEJ-1",
+        "mode": "insert-children",
+        "html_characters": 1475
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:44:08.561Z",
+      "created_nodes": [
+        {
+          "id": "6BVT-1",
+          "name": "Panel",
+          "component": "Frame"
+        },
+        {
+          "id": "6BVU-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BVV-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BVW-1",
+          "name": "Timing incomplete",
+          "component": "Text"
+        },
+        {
+          "id": "6BVX-1",
+          "name": "Real issuer mode",
+          "component": "Text"
+        },
+        {
+          "id": "6BVY-1",
+          "name": "An annual bucket can…",
+          "component": "Text"
+        },
+        {
+          "id": "6BVZ-1",
+          "name": "Resolve payment date…",
+          "component": "Text"
+        },
+        {
+          "id": "6BW0-1",
+          "name": "Action Review missing inputs",
+          "component": "Frame"
+        },
+        {
+          "id": "6BW1-1",
+          "name": "Review missing input…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-028",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6B6S-1",
+        "mode": "insert-children",
+        "html_characters": 369
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:45:06.852Z",
+      "created_nodes": [
+        {
+          "id": "6BZJ-1",
+          "name": "I02 Shape extension",
+          "component": "Frame"
+        },
+        {
+          "id": "6BZK-1",
+          "name": "I02 Curve shock column",
+          "component": "Frame"
+        },
+        {
+          "id": "6BZL-1",
+          "name": "I02 Shape score column",
+          "component": "Frame"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-029",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BZK-1",
+        "mode": "insert-children",
+        "html_characters": 1771
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:45:10.666Z",
+      "created_nodes": [
+        {
+          "id": "6BZN-1",
+          "name": "Key rate duration sensitivity",
+          "component": "Frame"
+        },
+        {
+          "id": "6BZO-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BZP-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BZQ-1",
+          "name": "SHOCK SETTINGS / CUR…",
+          "component": "Text"
+        },
+        {
+          "id": "6BZR-1",
+          "name": "Let the curve bend",
+          "component": "Text"
+        },
+        {
+          "id": "6BZS-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BZT-1",
+          "name": "Manual sensitivity",
+          "component": "Text"
+        },
+        {
+          "id": "6BZU-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6BZV-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6BZW-1",
+          "name": "Curve shape",
+          "component": "Text"
+        },
+        {
+          "id": "6BZX-1",
+          "name": "Parallel",
+          "component": "Text"
+        },
+        {
+          "id": "6BZY-1",
+          "name": "Instrument repricing",
+          "component": "Text"
+        },
+        {
+          "id": "6BZZ-1",
+          "name": "A long-end selloff c…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-030",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BZN-1",
+        "mode": "insert-children",
+        "html_characters": 4754
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:45:14.206Z",
+      "created_nodes": [
+        {
+          "id": "6C01-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C02-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C03-1",
+          "name": "2Y",
+          "component": "Text"
+        },
+        {
+          "id": "6C04-1",
+          "name": "Action −15 bp",
+          "component": "Frame"
+        },
+        {
+          "id": "6C05-1",
+          "name": "−15 bp",
+          "component": "Text"
+        },
+        {
+          "id": "6C06-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C07-1",
+          "name": "Sensitivity",
+          "component": "Text"
+        },
+        {
+          "id": "6C08-1",
+          "name": "0.2",
+          "component": "Text"
+        },
+        {
+          "id": "6C09-1",
+          "name": "+.03% price",
+          "component": "Text"
+        },
+        {
+          "id": "6C0A-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C0B-1",
+          "name": "5Y",
+          "component": "Text"
+        },
+        {
+          "id": "6C0C-1",
+          "name": "Action −10 bp",
+          "component": "Frame"
+        },
+        {
+          "id": "6C0D-1",
+          "name": "−10 bp",
+          "component": "Text"
+        },
+        {
+          "id": "6C0E-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C0F-1",
+          "name": "Sensitivity",
+          "component": "Text"
+        },
+        {
+          "id": "6C0G-1",
+          "name": "1.1",
+          "component": "Text"
+        },
+        {
+          "id": "6C0H-1",
+          "name": "+.11% price",
+          "component": "Text"
+        },
+        {
+          "id": "6C0I-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C0J-1",
+          "name": "10Y",
+          "component": "Text"
+        },
+        {
+          "id": "6C0K-1",
+          "name": "Action +5 bp",
+          "component": "Frame"
+        },
+        {
+          "id": "6C0L-1",
+          "name": "+5 bp",
+          "component": "Text"
+        },
+        {
+          "id": "6C0M-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C0N-1",
+          "name": "Sensitivity",
+          "component": "Text"
+        },
+        {
+          "id": "6C0O-1",
+          "name": "5.2",
+          "component": "Text"
+        },
+        {
+          "id": "6C0P-1",
+          "name": "−.26% price",
+          "component": "Text"
+        },
+        {
+          "id": "6C0Q-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C0R-1",
+          "name": "30Y",
+          "component": "Text"
+        },
+        {
+          "id": "6C0S-1",
+          "name": "Action +12 bp",
+          "component": "Frame"
+        },
+        {
+          "id": "6C0T-1",
+          "name": "+12 bp",
+          "component": "Text"
+        },
+        {
+          "id": "6C0U-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C0V-1",
+          "name": "Sensitivity",
+          "component": "Text"
+        },
+        {
+          "id": "6C0W-1",
+          "name": "1.3",
+          "component": "Text"
+        },
+        {
+          "id": "6C0X-1",
+          "name": "−.16% price",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-031",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BZN-1",
+        "mode": "insert-children",
+        "html_characters": 909
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:45:17.186Z",
+      "created_nodes": [
+        {
+          "id": "6C0Z-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C10-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C11-1",
+          "name": "−0.28% estimated pri…",
+          "component": "Text"
+        },
+        {
+          "id": "6C12-1",
+          "name": "First order · exclud…",
+          "component": "Text"
+        },
+        {
+          "id": "6C13-1",
+          "name": "Action Apply shape",
+          "component": "Frame"
+        },
+        {
+          "id": "6C14-1",
+          "name": "Apply shape",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-032",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BZL-1",
+        "mode": "insert-children",
+        "html_characters": 3254
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:45:21.188Z",
+      "created_nodes": [
+        {
+          "id": "6C16-1",
+          "name": "Panel",
+          "component": "Frame"
+        },
+        {
+          "id": "6C17-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C18-1",
+          "name": "I02 / CURVE SHAPE / …",
+          "component": "Text"
+        },
+        {
+          "id": "6C19-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C1A-1",
+          "name": "OPEN",
+          "component": "Text"
+        },
+        {
+          "id": "6C1B-1",
+          "name": "Scenario → Curve sha…",
+          "component": "Text"
+        },
+        {
+          "id": "6C1C-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C1D-1",
+          "name": "INPUT",
+          "component": "Text"
+        },
+        {
+          "id": "6C1E-1",
+          "name": "Same instrument and …",
+          "component": "Text"
+        },
+        {
+          "id": "6C1F-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C1G-1",
+          "name": "CALCULATE",
+          "component": "Text"
+        },
+        {
+          "id": "6C1H-1",
+          "name": "−Σ(key-rate duration…",
+          "component": "Text"
+        },
+        {
+          "id": "6C1I-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C1J-1",
+          "name": "INTEGRATE",
+          "component": "Text"
+        },
+        {
+          "id": "6C1K-1",
+          "name": "Retain benchmark sho…",
+          "component": "Text"
+        },
+        {
+          "id": "6C1L-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C1M-1",
+          "name": "WITHHOLD",
+          "component": "Text"
+        },
+        {
+          "id": "6C1N-1",
+          "name": "Missing key-rate vec…",
+          "component": "Text"
+        },
+        {
+          "id": "6C1O-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C1P-1",
+          "name": "ACCEPT",
+          "component": "Text"
+        },
+        {
+          "id": "6C1Q-1",
+          "name": "The shown shape give…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-033",
+      "tool": "create_artboard",
+      "arguments": {
+        "pageId": "p-1E-0",
+        "name": "R31 · S07 Flow Evidence & Case Continuity",
+        "styles": {
+          "width": "1440px",
+          "height": "2200px",
+          "display": "flex",
+          "flexDirection": "column",
+          "backgroundColor": "var(--mx-light-bg)"
+        }
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:45:26.425Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "id",
+          "name",
+          "worldX",
+          "worldY",
+          "width",
+          "height"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-034",
+      "tool": "update_styles",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "6C1S-1"
+            ],
+            "styles": {
+              "left": "1560px",
+              "top": "6300px",
+              "height": "fit-content"
+            }
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:46:05.855Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "updates"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-035",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C1S-1",
+        "mode": "insert-children",
+        "html_characters": 171
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:46:10.759Z",
+      "created_nodes": [
+        {
+          "id": "6C21-1",
+          "name": "R31 Flow and case continuity",
+          "component": "Frame"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-036",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C21-1",
+        "mode": "insert-children",
+        "html_characters": 1001
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:46:13.426Z",
+      "created_nodes": [
+        {
+          "id": "6C23-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C24-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C25-1",
+          "name": "MASTERMIND / IMPLEME…",
+          "component": "Text"
+        },
+        {
+          "id": "6C26-1",
+          "name": "Follow evidence acro…",
+          "component": "Text"
+        },
+        {
+          "id": "6C27-1",
+          "name": "Buyer flows, saved r…",
+          "component": "Text"
+        },
+        {
+          "id": "6C28-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C29-1",
+          "name": "R31 · extension to R…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-037",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C21-1",
+        "mode": "insert-children",
+        "html_characters": 364
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:46:15.823Z",
+      "created_nodes": [
+        {
+          "id": "6C2B-1",
+          "name": "I14 Flow evidence",
+          "component": "Frame"
+        },
+        {
+          "id": "6C2C-1",
+          "name": "I14 Flow tool column",
+          "component": "Frame"
+        },
+        {
+          "id": "6C2D-1",
+          "name": "I14 Flow score column",
+          "component": "Frame"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-038",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C2C-1",
+        "mode": "insert-children",
+        "html_characters": 2617
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:46:18.385Z",
+      "created_nodes": [
+        {
+          "id": "6C2T-1",
+          "name": "Buyer transaction evidence inspector",
+          "component": "Frame"
+        },
+        {
+          "id": "6C2U-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C2V-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C2W-1",
+          "name": "CAPITAL FLOWS",
+          "component": "Text"
+        },
+        {
+          "id": "6C2X-1",
+          "name": "Trace the buyer",
+          "component": "Text"
+        },
+        {
+          "id": "6C2Y-1",
+          "name": "Action Close ×",
+          "component": "Frame"
+        },
+        {
+          "id": "6C2Z-1",
+          "name": "Close ×",
+          "component": "Text"
+        },
+        {
+          "id": "6C30-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C31-1",
+          "name": "Action Matched buyer group ▾",
+          "component": "Frame"
+        },
+        {
+          "id": "6C32-1",
+          "name": "Matched buyer group …",
+          "component": "Text"
+        },
+        {
+          "id": "6C33-1",
+          "name": "Action Same reporting period ▾",
+          "component": "Frame"
+        },
+        {
+          "id": "6C34-1",
+          "name": "Same reporting perio…",
+          "component": "Text"
+        },
+        {
+          "id": "6C35-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C36-1",
+          "name": "Synthetic example",
+          "component": "Text"
+        },
+        {
+          "id": "6C37-1",
+          "name": "Holdings changes nee…",
+          "component": "Text"
+        },
+        {
+          "id": "6C38-1",
+          "name": "Treasury purchases c…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-039",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C2T-1",
+        "mode": "insert-children",
+        "html_characters": 993
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:47:33.143Z",
+      "created_nodes": [
+        {
+          "id": "6C5S-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C5T-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C5U-1",
+          "name": "USD billions",
+          "component": "Text"
+        },
+        {
+          "id": "6C5V-1",
+          "name": "Holdings change",
+          "component": "Text"
+        },
+        {
+          "id": "6C5W-1",
+          "name": "Price revaluation",
+          "component": "Text"
+        },
+        {
+          "id": "6C5X-1",
+          "name": "FX + other",
+          "component": "Text"
+        },
+        {
+          "id": "6C5Y-1",
+          "name": "Net purchases",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-040",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C5S-1",
+        "mode": "insert-children",
+        "html_characters": 852
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:47:35.619Z",
+      "created_nodes": [
+        {
+          "id": "6C6I-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C6J-1",
+          "name": "Treasuries",
+          "component": "Text"
+        },
+        {
+          "id": "6C6K-1",
+          "name": "+5",
+          "component": "Text"
+        },
+        {
+          "id": "6C6L-1",
+          "name": "+3",
+          "component": "Text"
+        },
+        {
+          "id": "6C6M-1",
+          "name": "0",
+          "component": "Text"
+        },
+        {
+          "id": "6C6N-1",
+          "name": "+2",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-041",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C5S-1",
+        "mode": "insert-children",
+        "html_characters": 851
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:47:38.967Z",
+      "created_nodes": [
+        {
+          "id": "6C6U-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C6V-1",
+          "name": "AI credit",
+          "component": "Text"
+        },
+        {
+          "id": "6C6W-1",
+          "name": "−3",
+          "component": "Text"
+        },
+        {
+          "id": "6C6X-1",
+          "name": "−4",
+          "component": "Text"
+        },
+        {
+          "id": "6C6Y-1",
+          "name": "0",
+          "component": "Text"
+        },
+        {
+          "id": "6C6Z-1",
+          "name": "+1",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-042",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C2T-1",
+        "mode": "insert-children",
+        "html_characters": 1204
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:47:41.618Z",
+      "created_nodes": [
+        {
+          "id": "6C76-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C77-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C78-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C79-1",
+          "name": "Both assets bought",
+          "component": "Text"
+        },
+        {
+          "id": "6C7A-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C7B-1",
+          "name": "Funding origin unkno…",
+          "component": "Text"
+        },
+        {
+          "id": "6C7C-1",
+          "name": "This example does no…",
+          "component": "Text"
+        },
+        {
+          "id": "6C7D-1",
+          "name": "Inspect the same buy…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-043",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C2T-1",
+        "mode": "insert-children",
+        "html_characters": 2613
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:47:44.221Z",
+      "created_nodes": [
+        {
+          "id": "6C7K-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C7L-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C7M-1",
+          "name": "Who could switch?",
+          "component": "Text"
+        },
+        {
+          "id": "6C7N-1",
+          "name": "Mandate and duration…",
+          "component": "Text"
+        },
+        {
+          "id": "6C7O-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C7P-1",
+          "name": "Can we see the switc…",
+          "component": "Text"
+        },
+        {
+          "id": "6C7Q-1",
+          "name": "Matched transactions…",
+          "component": "Text"
+        },
+        {
+          "id": "6C7R-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C7S-1",
+          "name": "Could funding force …",
+          "component": "Text"
+        },
+        {
+          "id": "6C7T-1",
+          "name": "Repo, margins and de…",
+          "component": "Text"
+        },
+        {
+          "id": "6C7U-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6C7V-1",
+          "name": "Action Buyer eligibility",
+          "component": "Frame"
+        },
+        {
+          "id": "6C7W-1",
+          "name": "Buyer eligibility",
+          "component": "Text"
+        },
+        {
+          "id": "6C7X-1",
+          "name": "Action Funding pipes",
+          "component": "Frame"
+        },
+        {
+          "id": "6C7Y-1",
+          "name": "Funding pipes",
+          "component": "Text"
+        },
+        {
+          "id": "6C7Z-1",
+          "name": "Action Add evidence to case",
+          "component": "Frame"
+        },
+        {
+          "id": "6C80-1",
+          "name": "Add evidence to case",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-044",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C2D-1",
+        "mode": "insert-children",
+        "html_characters": 3746
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:47:46.977Z",
+      "created_nodes": [
+        {
+          "id": "6C87-1",
+          "name": "Panel",
+          "component": "Frame"
+        },
+        {
+          "id": "6C88-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C89-1",
+          "name": "I14 / IMPLEMENTATION…",
+          "component": "Text"
+        },
+        {
+          "id": "6C8A-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C8B-1",
+          "name": "OPEN",
+          "component": "Text"
+        },
+        {
+          "id": "6C8C-1",
+          "name": "Capital → Buyer flow…",
+          "component": "Text"
+        },
+        {
+          "id": "6C8D-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C8E-1",
+          "name": "INPUT",
+          "component": "Text"
+        },
+        {
+          "id": "6C8F-1",
+          "name": "Same holder scope, i…",
+          "component": "Text"
+        },
+        {
+          "id": "6C8G-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C8H-1",
+          "name": "BRIDGE",
+          "component": "Text"
+        },
+        {
+          "id": "6C8I-1",
+          "name": "Change in holdings =…",
+          "component": "Text"
+        },
+        {
+          "id": "6C8J-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C8K-1",
+          "name": "DISPLAY",
+          "component": "Text"
+        },
+        {
+          "id": "6C8L-1",
+          "name": "A holdings decline m…",
+          "component": "Text"
+        },
+        {
+          "id": "6C8M-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C8N-1",
+          "name": "FREQUENCY",
+          "component": "Text"
+        },
+        {
+          "id": "6C8O-1",
+          "name": "Quarterly holder dat…",
+          "component": "Text"
+        },
+        {
+          "id": "6C8P-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C8Q-1",
+          "name": "LINEAGE",
+          "component": "Text"
+        },
+        {
+          "id": "6C8R-1",
+          "name": "Primary issuance, re…",
+          "component": "Text"
+        },
+        {
+          "id": "6C8S-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6C8T-1",
+          "name": "ACCEPT",
+          "component": "Text"
+        },
+        {
+          "id": "6C8U-1",
+          "name": "Synthetic AI holding…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-045",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C21-1",
+        "mode": "insert-children",
+        "html_characters": 366
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:49:19.861Z",
+      "created_nodes": [
+        {
+          "id": "6CE5-1",
+          "name": "I15 Case continuity",
+          "component": "Frame"
+        },
+        {
+          "id": "6CE6-1",
+          "name": "I15 Case tool column",
+          "component": "Frame"
+        },
+        {
+          "id": "6CE7-1",
+          "name": "I15 Case score column",
+          "component": "Frame"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-046",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CE6-1",
+        "mode": "insert-children",
+        "html_characters": 1289
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:49:24.801Z",
+      "created_nodes": [
+        {
+          "id": "6CEV-1",
+          "name": "Save review and capability disclosure",
+          "component": "Frame"
+        },
+        {
+          "id": "6CEW-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CEX-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CEY-1",
+          "name": "SAVED RESEARCH",
+          "component": "Text"
+        },
+        {
+          "id": "6CEZ-1",
+          "name": "Review the revision",
+          "component": "Text"
+        },
+        {
+          "id": "6CF0-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CF1-1",
+          "name": "Current capability s…",
+          "component": "Text"
+        },
+        {
+          "id": "6CF2-1",
+          "name": "AI funding → Treasur…",
+          "component": "Text"
+        },
+        {
+          "id": "6CF3-1",
+          "name": "Will credit stress s…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-047",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CEV-1",
+        "mode": "insert-children",
+        "html_characters": 1720
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:49:30.603Z",
+      "created_nodes": [
+        {
+          "id": "6CFA-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CFB-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CFC-1",
+          "name": "Question · 1–5 sessi…",
+          "component": "Text"
+        },
+        {
+          "id": "6CFD-1",
+          "name": "Can be saved",
+          "component": "Text"
+        },
+        {
+          "id": "6CFE-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CFF-1",
+          "name": "Treasury, credit and…",
+          "component": "Text"
+        },
+        {
+          "id": "6CFG-1",
+          "name": "Adapter needed",
+          "component": "Text"
+        },
+        {
+          "id": "6CFH-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CFI-1",
+          "name": "Curve shocks and cas…",
+          "component": "Text"
+        },
+        {
+          "id": "6CFJ-1",
+          "name": "Full-case extension …",
+          "component": "Text"
+        },
+        {
+          "id": "6CFK-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CFL-1",
+          "name": "Confirmation and inv…",
+          "component": "Text"
+        },
+        {
+          "id": "6CFM-1",
+          "name": "Multi-asset monitor …",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-048",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CEV-1",
+        "mode": "insert-children",
+        "html_characters": 662
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:49:36.066Z",
+      "created_nodes": [
+        {
+          "id": "6CG2-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CG3-1",
+          "name": "Full save unavailabl…",
+          "component": "Text"
+        },
+        {
+          "id": "6CG4-1",
+          "name": "Save the question an…",
+          "component": "Text"
+        },
+        {
+          "id": "6CG5-1",
+          "name": "Question-only saving…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-049",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CEV-1",
+        "mode": "insert-children",
+        "html_characters": 909
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:49:39.939Z",
+      "created_nodes": [
+        {
+          "id": "6CGG-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CGH-1",
+          "name": "Action Save question only",
+          "component": "Frame"
+        },
+        {
+          "id": "6CGI-1",
+          "name": "Save question only",
+          "component": "Text"
+        },
+        {
+          "id": "6CGJ-1",
+          "name": "Action Keep working",
+          "component": "Frame"
+        },
+        {
+          "id": "6CGK-1",
+          "name": "Keep working",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-050",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CE7-1",
+        "mode": "insert-children",
+        "html_characters": 4374
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:49:46.134Z",
+      "created_nodes": [
+        {
+          "id": "6CGM-1",
+          "name": "Panel",
+          "component": "Frame"
+        },
+        {
+          "id": "6CGN-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CGO-1",
+          "name": "I15 / SAVE + COMPARE…",
+          "component": "Text"
+        },
+        {
+          "id": "6CGP-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CGQ-1",
+          "name": "OPEN",
+          "component": "Text"
+        },
+        {
+          "id": "6CGR-1",
+          "name": "Save analysis; Saved…",
+          "component": "Text"
+        },
+        {
+          "id": "6CGS-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CGT-1",
+          "name": "REUSE",
+          "component": "Text"
+        },
+        {
+          "id": "6CGU-1",
+          "name": "Terminal Investigati…",
+          "component": "Text"
+        },
+        {
+          "id": "6CGV-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CGW-1",
+          "name": "ADMISSION",
+          "component": "Text"
+        },
+        {
+          "id": "6CGX-1",
+          "name": "Current service admi…",
+          "component": "Text"
+        },
+        {
+          "id": "6CGY-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CGZ-1",
+          "name": "NO SILENT LOSS",
+          "component": "Text"
+        },
+        {
+          "id": "6CH0-1",
+          "name": "A question-only save…",
+          "component": "Text"
+        },
+        {
+          "id": "6CH1-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CH2-1",
+          "name": "REVISION",
+          "component": "Text"
+        },
+        {
+          "id": "6CH3-1",
+          "name": "Current evidence and…",
+          "component": "Text"
+        },
+        {
+          "id": "6CH4-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CH5-1",
+          "name": "RECOVERY",
+          "component": "Text"
+        },
+        {
+          "id": "6CH6-1",
+          "name": "Use the original ope…",
+          "component": "Text"
+        },
+        {
+          "id": "6CH7-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CH8-1",
+          "name": "MONITOR",
+          "component": "Text"
+        },
+        {
+          "id": "6CH9-1",
+          "name": "Existing Alerts rema…",
+          "component": "Text"
+        },
+        {
+          "id": "6CHA-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CHB-1",
+          "name": "ACCEPT",
+          "component": "Text"
+        },
+        {
+          "id": "6CHC-1",
+          "name": "Conflict preserves t…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-051",
+      "tool": "set_text_content",
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "6CF1-1",
+            "textContent": "Question-only save"
+          },
+          {
+            "nodeId": "6CFF-1",
+            "textContent": "Not yet supported"
+          },
+          {
+            "nodeId": "6CFI-1",
+            "textContent": "Not yet supported"
+          },
+          {
+            "nodeId": "6CFL-1",
+            "textContent": "Monitoring unavailable"
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:50:32.946Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "updates"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-052",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CE6-1",
+        "mode": "insert-children",
+        "html_characters": 1155
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:50:36.665Z",
+      "created_nodes": [
+        {
+          "id": "6CLB-1",
+          "name": "Saved versus current evidence",
+          "component": "Frame"
+        },
+        {
+          "id": "6CLC-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CLD-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CLE-1",
+          "name": "CHANGE REVIEW / COMP…",
+          "component": "Text"
+        },
+        {
+          "id": "6CLF-1",
+          "name": "What changed?",
+          "component": "Text"
+        },
+        {
+          "id": "6CLG-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CLH-1",
+          "name": "Synthetic revision e…",
+          "component": "Text"
+        },
+        {
+          "id": "6CLI-1",
+          "name": "Compare the saved vi…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-053",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CLB-1",
+        "mode": "insert-children",
+        "html_characters": 832
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:50:40.967Z",
+      "created_nodes": [
+        {
+          "id": "6CLK-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CLL-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CLM-1",
+          "name": "Evidence",
+          "component": "Text"
+        },
+        {
+          "id": "6CLN-1",
+          "name": "Saved · revision 3",
+          "component": "Text"
+        },
+        {
+          "id": "6CLO-1",
+          "name": "Latest close",
+          "component": "Text"
+        },
+        {
+          "id": "6CLP-1",
+          "name": "Meaning",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-054",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CLK-1",
+        "mode": "insert-children",
+        "html_characters": 741
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:50:47.067Z",
+      "created_nodes": [
+        {
+          "id": "6CLR-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CLS-1",
+          "name": "US 10Y yield",
+          "component": "Text"
+        },
+        {
+          "id": "6CLT-1",
+          "name": "5.18%",
+          "component": "Text"
+        },
+        {
+          "id": "6CLU-1",
+          "name": "5.10%",
+          "component": "Text"
+        },
+        {
+          "id": "6CLV-1",
+          "name": "5.08% test still pen…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-055",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CLK-1",
+        "mode": "insert-children",
+        "html_characters": 743
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:50:54.987Z",
+      "created_nodes": [
+        {
+          "id": "6CLZ-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CM0-1",
+          "name": "Credit breadth",
+          "component": "Text"
+        },
+        {
+          "id": "6CM1-1",
+          "name": "3 of 12",
+          "component": "Text"
+        },
+        {
+          "id": "6CM2-1",
+          "name": "5 of 12",
+          "component": "Text"
+        },
+        {
+          "id": "6CM3-1",
+          "name": "More peers weakening",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-056",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CLK-1",
+        "mode": "insert-children",
+        "html_characters": 735
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:50:57.895Z",
+      "created_nodes": [
+        {
+          "id": "6CM5-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CM6-1",
+          "name": "Funding",
+          "component": "Text"
+        },
+        {
+          "id": "6CM7-1",
+          "name": "Orderly",
+          "component": "Text"
+        },
+        {
+          "id": "6CM8-1",
+          "name": "Orderly",
+          "component": "Text"
+        },
+        {
+          "id": "6CM9-1",
+          "name": "No new invalidation",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-057",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CLB-1",
+        "mode": "insert-children",
+        "html_characters": 1397
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:51:04.954Z",
+      "created_nodes": [
+        {
+          "id": "6CMB-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CMC-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CMD-1",
+          "name": "Reopen the saved vie…",
+          "component": "Text"
+        },
+        {
+          "id": "6CME-1",
+          "name": "New evidence stays s…",
+          "component": "Text"
+        },
+        {
+          "id": "6CMF-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CMG-1",
+          "name": "Action View revision 3",
+          "component": "Frame"
+        },
+        {
+          "id": "6CMH-1",
+          "name": "View revision 3",
+          "component": "Text"
+        },
+        {
+          "id": "6CMI-1",
+          "name": "Action Create new revision",
+          "component": "Frame"
+        },
+        {
+          "id": "6CMJ-1",
+          "name": "Create new revision",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-058",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CE7-1",
+        "mode": "insert-children",
+        "html_characters": 1773
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:51:08.299Z",
+      "created_nodes": [
+        {
+          "id": "6CML-1",
+          "name": "Panel",
+          "component": "Frame"
+        },
+        {
+          "id": "6CMM-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CMN-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6CMO-1",
+          "name": "Saved · read unavail…",
+          "component": "Text"
+        },
+        {
+          "id": "6CMP-1",
+          "name": "The revision was sav…",
+          "component": "Text"
+        },
+        {
+          "id": "6CMQ-1",
+          "name": "Exact readback is un…",
+          "component": "Text"
+        },
+        {
+          "id": "6CMR-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CMS-1",
+          "name": "Action Retry read",
+          "component": "Frame"
+        },
+        {
+          "id": "6CMT-1",
+          "name": "Retry read",
+          "component": "Text"
+        },
+        {
+          "id": "6CMU-1",
+          "name": "Action Copy revision link",
+          "component": "Frame"
+        },
+        {
+          "id": "6CMV-1",
+          "name": "Copy revision link",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-059",
+      "tool": "set_text_content",
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "6CFF-1",
+            "textContent": "Treasury, credit and funding evidence"
+          },
+          {
+            "nodeId": "6CFG-1",
+            "textContent": "Not yet supported"
+          },
+          {
+            "nodeId": "6CFI-1",
+            "textContent": "Curve shocks and cash assumptions"
+          },
+          {
+            "nodeId": "6CFJ-1",
+            "textContent": "Not yet supported"
+          },
+          {
+            "nodeId": "6CFL-1",
+            "textContent": "Confirmation and invalidation rules"
+          },
+          {
+            "nodeId": "6CFM-1",
+            "textContent": "Monitoring unavailable"
+          },
+          {
+            "nodeId": "63YH-1",
+            "textContent": "Close above 5.22%."
+          },
+          {
+            "nodeId": "64EF-1",
+            "textContent": "Inspect buyer flows →"
+          },
+          {
+            "nodeId": "65YT-1",
+            "textContent": "Funding pipes"
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:52:10.035Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "updates"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-060",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "63Y5-1",
+        "mode": "insert-children",
+        "html_characters": 488
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:52:12.934Z",
+      "created_nodes": [
+        {
+          "id": "6CSY-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6CSZ-1",
+          "name": "Action Inspect structure →",
+          "component": "Frame"
+        },
+        {
+          "id": "6CT0-1",
+          "name": "Inspect structure →",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-061",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "64SW-1",
+        "mode": "insert-children",
+        "html_characters": 410
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:52:16.829Z",
+      "created_nodes": [
+        {
+          "id": "6CTD-1",
+          "name": "Action Curve shape →",
+          "component": "Frame"
+        },
+        {
+          "id": "6CTE-1",
+          "name": "Curve shape →",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-062",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C2C-1",
+        "mode": "insert-children",
+        "html_characters": 1170
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:53:23.626Z",
+      "created_nodes": [
+        {
+          "id": "6CZY-1",
+          "name": "Repo transmission mechanism",
+          "component": "Frame"
+        },
+        {
+          "id": "6CZZ-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6D00-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6D01-1",
+          "name": "FUNDING PIPES / ALTE…",
+          "component": "Text"
+        },
+        {
+          "id": "6D02-1",
+          "name": "Can dealers fund sup…",
+          "component": "Text"
+        },
+        {
+          "id": "6D03-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6D04-1",
+          "name": "Mechanism view",
+          "component": "Text"
+        },
+        {
+          "id": "6D05-1",
+          "name": "Trace cash supply, f…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-063",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CZY-1",
+        "mode": "insert-children",
+        "html_characters": 2241
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:53:33.876Z",
+      "created_nodes": [
+        {
+          "id": "6D0D-1",
+          "name": "SVG",
+          "component": "SVG"
+        },
+        {
+          "id": "6D0E-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0F-1",
+          "name": "More coupon supply",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0G-1",
+          "name": "Dealer inventory may…",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0H-1",
+          "name": "Path",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0I-1",
+          "name": "Path",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0J-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0K-1",
+          "name": "Repo borrowing",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0L-1",
+          "name": "Cash demand may rise",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0M-1",
+          "name": "Path",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0N-1",
+          "name": "Path",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0O-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0P-1",
+          "name": "More bill supply",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0Q-1",
+          "name": "Money funds gain an …",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0R-1",
+          "name": "Path",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0S-1",
+          "name": "Path",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0T-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0U-1",
+          "name": "Repo lending",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0V-1",
+          "name": "Cash supply may tigh…",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0W-1",
+          "name": "Path",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0X-1",
+          "name": "Path",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0Y-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D0Z-1",
+          "name": "Funding pressure",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D10-1",
+          "name": "Check rates, margins…",
+          "component": "SVGVisualElement"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-064",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CZY-1",
+        "mode": "insert-children",
+        "html_characters": 1308
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:53:36.518Z",
+      "created_nodes": [
+        {
+          "id": "6D1J-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6D1K-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6D1L-1",
+          "name": "PRESSURE BUILDS",
+          "component": "Text"
+        },
+        {
+          "id": "6D1M-1",
+          "name": "Repo spread widens",
+          "component": "Text"
+        },
+        {
+          "id": "6D1N-1",
+          "name": "Confirm with dealer …",
+          "component": "Text"
+        },
+        {
+          "id": "6D1O-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6D1P-1",
+          "name": "PRESSURE CAN EASE",
+          "component": "Text"
+        },
+        {
+          "id": "6D1Q-1",
+          "name": "Cash supply responds",
+          "component": "Text"
+        },
+        {
+          "id": "6D1R-1",
+          "name": "Inspect money fund a…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-065",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CZY-1",
+        "mode": "insert-children",
+        "html_characters": 713
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:53:42.096Z",
+      "created_nodes": [
+        {
+          "id": "6D31-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6D32-1",
+          "name": "Mechanism interpreta…",
+          "component": "Text"
+        },
+        {
+          "id": "6D33-1",
+          "name": "Action Test funding stress",
+          "component": "Frame"
+        },
+        {
+          "id": "6D34-1",
+          "name": "Test funding stress",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-066",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C2D-1",
+        "mode": "insert-children",
+        "html_characters": 1547
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:53:45.068Z",
+      "created_nodes": [
+        {
+          "id": "6D36-1",
+          "name": "Panel",
+          "component": "Frame"
+        },
+        {
+          "id": "6D37-1",
+          "name": "I14 / FUNDING VIEW",
+          "component": "Text"
+        },
+        {
+          "id": "6D38-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6D39-1",
+          "name": "Same-day indicators",
+          "component": "Text"
+        },
+        {
+          "id": "6D3A-1",
+          "name": "Repo versus IORB; Tr…",
+          "component": "Text"
+        },
+        {
+          "id": "6D3B-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6D3C-1",
+          "name": "Slower context",
+          "component": "Text"
+        },
+        {
+          "id": "6D3D-1",
+          "name": "Dealer holdings; mon…",
+          "component": "Text"
+        },
+        {
+          "id": "6D3E-1",
+          "name": "Preserve original fr…",
+          "component": "Text"
+        },
+        {
+          "id": "6D3F-1",
+          "name": "Aggregate reserves a…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-067",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "676B-1",
+        "mode": "replace",
+        "html_characters": 1853
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:53:48.600Z",
+      "created_nodes": [
+        {
+          "id": "6D3R-1",
+          "name": "Case revision access",
+          "component": "Frame"
+        },
+        {
+          "id": "6D3S-1",
+          "name": "SAVED VIEW",
+          "component": "Text"
+        },
+        {
+          "id": "6D3T-1",
+          "name": "Keep the revision",
+          "component": "Text"
+        },
+        {
+          "id": "6D3U-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6D3V-1",
+          "name": "Question",
+          "component": "Text"
+        },
+        {
+          "id": "6D3W-1",
+          "name": "AI funding → Treasur…",
+          "component": "Text"
+        },
+        {
+          "id": "6D3X-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6D3Y-1",
+          "name": "Saved snapshot",
+          "component": "Text"
+        },
+        {
+          "id": "6D3Z-1",
+          "name": "Revision 3 · illustr…",
+          "component": "Text"
+        },
+        {
+          "id": "6D40-1",
+          "name": "Action Review saved contents",
+          "component": "Frame"
+        },
+        {
+          "id": "6D41-1",
+          "name": "Review saved content…",
+          "component": "Text"
+        },
+        {
+          "id": "6D42-1",
+          "name": "Check what was retai…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-068",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "63VP-1",
+        "mode": "replace",
+        "html_characters": 2606
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:55:05.617Z",
+      "created_nodes": [
+        {
+          "id": "6D7D-1",
+          "name": "SVG",
+          "component": "SVG"
+        },
+        {
+          "id": "6D7E-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7F-1",
+          "name": "4.5%",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7G-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7H-1",
+          "name": "5.0%",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7I-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7J-1",
+          "name": "5.5%",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7K-1",
+          "name": "Polyline",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7L-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7M-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7N-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7O-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7P-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7Q-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7R-1",
+          "name": "Polyline",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7S-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7T-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7U-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7V-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7W-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7X-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7Y-1",
+          "name": "3M",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D7Z-1",
+          "name": "1Y",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D80-1",
+          "name": "2Y",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D81-1",
+          "name": "5Y",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D82-1",
+          "name": "10Y",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D83-1",
+          "name": "30Y",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D84-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6D85-1",
+          "name": "5.10%",
+          "component": "SVGVisualElement"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-069",
+      "tool": "set_text_content",
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "6889-1",
+            "textContent": "MASTERMIND / R30 + R31"
+          },
+          {
+            "nodeId": "688Z-1",
+            "textContent": "S02 Tools · S05 Build map · S06 Structure + financing · Mobile + tablet"
+          },
+          {
+            "nodeId": "66BJ-1",
+            "textContent": "Annual principal mapped; daily timing incomplete"
+          },
+          {
+            "nodeId": "66BR-1",
+            "textContent": "Open funding calendar"
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:55:08.700Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "updates"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-070",
+      "tool": "set_text_content",
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "6898-1",
+            "textContent": "MASTERMIND / R30 + R31"
+          },
+          {
+            "nodeId": "67ZI-1",
+            "textContent": "Eight routes and fifteen tools share one investigation. Runtime and model qualification remain separate."
+          },
+          {
+            "nodeId": "67ZK-1",
+            "textContent": "R30 + R31 · design specification"
+          },
+          {
+            "nodeId": "680J-1",
+            "textContent": "I02 Shape + calculation · I13 Structure · I10 Auction"
+          },
+          {
+            "nodeId": "680T-1",
+            "textContent": "I06 Hedge · I08 Funding · I14 Buyer flows"
+          },
+          {
+            "nodeId": "6813-1",
+            "textContent": "I02 Curve shape · I05 Cash timing · I04 Monitor"
+          },
+          {
+            "nodeId": "681D-1",
+            "textContent": "I15 Save + compare · I04 Monitor · I10 Check"
+          },
+          {
+            "nodeId": "685O-1",
+            "textContent": "Eight routes, fifteen tools, advanced states and responsive references."
+          },
+          {
+            "nodeId": "685Y-1",
+            "textContent": "Investigation and Alerts owners located; bond payload and condition extensions still required."
+          },
+          {
+            "nodeId": "64L8-1",
+            "textContent": "Compare the evidence"
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:55:54.212Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "updates"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-071",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6644-1",
+        "mode": "insert-children",
+        "html_characters": 883
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:55:57.025Z",
+      "created_nodes": [
+        {
+          "id": "6DBB-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6DBC-1",
+          "name": "Action Price structure →",
+          "component": "Frame"
+        },
+        {
+          "id": "6DBD-1",
+          "name": "Price structure →",
+          "component": "Text"
+        },
+        {
+          "id": "6DBE-1",
+          "name": "Action Buyer flows →",
+          "component": "Frame"
+        },
+        {
+          "id": "6DBF-1",
+          "name": "Buyer flows →",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-072",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "681G-1",
+        "mode": "insert-children",
+        "html_characters": 802
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:55:59.855Z",
+      "created_nodes": [
+        {
+          "id": "6DBH-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6DBI-1",
+          "name": "I13",
+          "component": "Text"
+        },
+        {
+          "id": "6DBJ-1",
+          "name": "Market structure",
+          "component": "Text"
+        },
+        {
+          "id": "6DBK-1",
+          "name": "Curve / price eviden…",
+          "component": "Text"
+        },
+        {
+          "id": "6DBL-1",
+          "name": "Horizon conflict, fi…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-073",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "681G-1",
+        "mode": "insert-children",
+        "html_characters": 806
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:56:02.534Z",
+      "created_nodes": [
+        {
+          "id": "6DC4-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6DC5-1",
+          "name": "I14",
+          "component": "Text"
+        },
+        {
+          "id": "6DC6-1",
+          "name": "Buyer flows",
+          "component": "Text"
+        },
+        {
+          "id": "6DC7-1",
+          "name": "Capital / substituti…",
+          "component": "Text"
+        },
+        {
+          "id": "6DC8-1",
+          "name": "Transactions versus …",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-074",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "681G-1",
+        "mode": "insert-children",
+        "html_characters": 810
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:56:05.702Z",
+      "created_nodes": [
+        {
+          "id": "6DCL-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6DCM-1",
+          "name": "I15",
+          "component": "Text"
+        },
+        {
+          "id": "6DCN-1",
+          "name": "Save + compare",
+          "component": "Text"
+        },
+        {
+          "id": "6DCO-1",
+          "name": "Save / review change…",
+          "component": "Text"
+        },
+        {
+          "id": "6DCP-1",
+          "name": "Canonical revision, …",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-075",
+      "tool": "move_nodes",
+      "arguments": {
+        "moves": [
+          {
+            "nodeId": "683E-1",
+            "parentId": "681G-1"
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T04:56:15.741Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "moves",
+          "affectedParents"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-076",
+      "tool": "set_text_content",
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "689Y-1",
+            "textContent": "S01 Overlays · S03 States · S04 Research · S07 Flows + revisions · Mobile"
+          },
+          {
+            "nodeId": "681K-1",
+            "textContent": "I01–I15 visual + behavior coverage"
+          },
+          {
+            "nodeId": "685F-1",
+            "textContent": "Owners identified"
+          },
+          {
+            "nodeId": "685G-1",
+            "textContent": "Reuse Terminal Investigation v2 and Alerts. Bond evidence, scenario retention and combined conditions require owner extensions."
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:02:27.214Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "updates"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-077",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BEI-1",
+        "mode": "insert-children",
+        "html_characters": 10324
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:03:20.837Z",
+      "created_nodes": [
+        {
+          "id": "6E28-1",
+          "name": "I05 Full cash event detail",
+          "component": "Frame"
+        },
+        {
+          "id": "6E29-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E2A-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E2B-1",
+          "name": "CASH EVENTS",
+          "component": "Text"
+        },
+        {
+          "id": "6E2C-1",
+          "name": "Inspect the schedule",
+          "component": "Text"
+        },
+        {
+          "id": "6E2D-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E2E-1",
+          "name": "Synthetic · USD m",
+          "component": "Text"
+        },
+        {
+          "id": "6E2F-1",
+          "name": "Parent A · base scen…",
+          "component": "Text"
+        },
+        {
+          "id": "6E2G-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E2H-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E2I-1",
+          "name": "DATE",
+          "component": "Text"
+        },
+        {
+          "id": "6E2J-1",
+          "name": "CASH EVENT",
+          "component": "Text"
+        },
+        {
+          "id": "6E2K-1",
+          "name": "BASIS",
+          "component": "Text"
+        },
+        {
+          "id": "6E2L-1",
+          "name": "CHANGE",
+          "component": "Text"
+        },
+        {
+          "id": "6E2M-1",
+          "name": "BALANCE",
+          "component": "Text"
+        },
+        {
+          "id": "6E2N-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E2O-1",
+          "name": "16 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "6E2P-1",
+          "name": "Opening usable cash",
+          "component": "Text"
+        },
+        {
+          "id": "6E2Q-1",
+          "name": "Opening",
+          "component": "Text"
+        },
+        {
+          "id": "6E2R-1",
+          "name": "—",
+          "component": "Text"
+        },
+        {
+          "id": "6E2S-1",
+          "name": "2,100",
+          "component": "Text"
+        },
+        {
+          "id": "6E2T-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E2U-1",
+          "name": "02 Nov",
+          "component": "Text"
+        },
+        {
+          "id": "6E2V-1",
+          "name": "Vendor payment",
+          "component": "Text"
+        },
+        {
+          "id": "6E2W-1",
+          "name": "Obligation",
+          "component": "Text"
+        },
+        {
+          "id": "6E2X-1",
+          "name": "−600",
+          "component": "Text"
+        },
+        {
+          "id": "6E2Y-1",
+          "name": "1,500",
+          "component": "Text"
+        },
+        {
+          "id": "6E2Z-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E30-1",
+          "name": "16 Nov",
+          "component": "Text"
+        },
+        {
+          "id": "6E31-1",
+          "name": "Debt interest",
+          "component": "Text"
+        },
+        {
+          "id": "6E32-1",
+          "name": "Obligation",
+          "component": "Text"
+        },
+        {
+          "id": "6E33-1",
+          "name": "−50",
+          "component": "Text"
+        },
+        {
+          "id": "6E34-1",
+          "name": "1,450",
+          "component": "Text"
+        },
+        {
+          "id": "6E35-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E36-1",
+          "name": "01 Dec",
+          "component": "Text"
+        },
+        {
+          "id": "6E37-1",
+          "name": "Operating receipt",
+          "component": "Text"
+        },
+        {
+          "id": "6E38-1",
+          "name": "Assumption",
+          "component": "Text"
+        },
+        {
+          "id": "6E39-1",
+          "name": "+200",
+          "component": "Text"
+        },
+        {
+          "id": "6E3A-1",
+          "name": "1,650",
+          "component": "Text"
+        },
+        {
+          "id": "6E3B-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E3C-1",
+          "name": "15 Dec",
+          "component": "Text"
+        },
+        {
+          "id": "6E3D-1",
+          "name": "Scheduled amortizati…",
+          "component": "Text"
+        },
+        {
+          "id": "6E3E-1",
+          "name": "Obligation",
+          "component": "Text"
+        },
+        {
+          "id": "6E3F-1",
+          "name": "−850",
+          "component": "Text"
+        },
+        {
+          "id": "6E3G-1",
+          "name": "800",
+          "component": "Text"
+        },
+        {
+          "id": "6E3H-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E3I-1",
+          "name": "16 Dec",
+          "component": "Text"
+        },
+        {
+          "id": "6E3J-1",
+          "name": "Lease payment",
+          "component": "Text"
+        },
+        {
+          "id": "6E3K-1",
+          "name": "Obligation",
+          "component": "Text"
+        },
+        {
+          "id": "6E3L-1",
+          "name": "−90",
+          "component": "Text"
+        },
+        {
+          "id": "6E3M-1",
+          "name": "710",
+          "component": "Text"
+        },
+        {
+          "id": "6E3N-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E3O-1",
+          "name": "15 Jan",
+          "component": "Text"
+        },
+        {
+          "id": "6E3P-1",
+          "name": "Debt maturity",
+          "component": "Text"
+        },
+        {
+          "id": "6E3Q-1",
+          "name": "Obligation",
+          "component": "Text"
+        },
+        {
+          "id": "6E3R-1",
+          "name": "−800",
+          "component": "Text"
+        },
+        {
+          "id": "6E3S-1",
+          "name": "−90",
+          "component": "Text"
+        },
+        {
+          "id": "6E3T-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E3U-1",
+          "name": "15 Jan",
+          "component": "Text"
+        },
+        {
+          "id": "6E3V-1",
+          "name": "Other interest + lea…",
+          "component": "Text"
+        },
+        {
+          "id": "6E3W-1",
+          "name": "Obligation",
+          "component": "Text"
+        },
+        {
+          "id": "6E3X-1",
+          "name": "−100",
+          "component": "Text"
+        },
+        {
+          "id": "6E3Y-1",
+          "name": "−190",
+          "component": "Text"
+        },
+        {
+          "id": "6E3Z-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E40-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E41-1",
+          "name": "Separate facts from …",
+          "component": "Text"
+        },
+        {
+          "id": "6E42-1",
+          "name": "The operating receip…",
+          "component": "Text"
+        },
+        {
+          "id": "6E43-1",
+          "name": "Action Edit receipt timing",
+          "component": "Frame"
+        },
+        {
+          "id": "6E44-1",
+          "name": "Edit receipt timing",
+          "component": "Text"
+        },
+        {
+          "id": "6E45-1",
+          "name": "No facility draw in …",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-078",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6BEJ-1",
+        "mode": "insert-children",
+        "html_characters": 2348
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:03:24.083Z",
+      "created_nodes": [
+        {
+          "id": "6E47-1",
+          "name": "I05 Late financing state",
+          "component": "Frame"
+        },
+        {
+          "id": "6E48-1",
+          "name": "I05 / PAYMENT CUTOFF",
+          "component": "Text"
+        },
+        {
+          "id": "6E49-1",
+          "name": "Cash arrives too lat…",
+          "component": "Text"
+        },
+        {
+          "id": "6E4A-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E4B-1",
+          "name": "Payment timing fails",
+          "component": "Text"
+        },
+        {
+          "id": "6E4C-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E4D-1",
+          "name": "15 Jan · 09:00 payme…",
+          "component": "Text"
+        },
+        {
+          "id": "6E4E-1",
+          "name": "$190m unfunded",
+          "component": "Text"
+        },
+        {
+          "id": "6E4F-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E4G-1",
+          "name": "15 Jan · 16:00 draw",
+          "component": "Text"
+        },
+        {
+          "id": "6E4H-1",
+          "name": "$710m closing cash",
+          "component": "Text"
+        },
+        {
+          "id": "6E4I-1",
+          "name": "A positive closing b…",
+          "component": "Text"
+        },
+        {
+          "id": "6E4J-1",
+          "name": "Action Move draw before cutoff",
+          "component": "Frame"
+        },
+        {
+          "id": "6E4K-1",
+          "name": "Move draw before cut…",
+          "component": "Text"
+        },
+        {
+          "id": "6E4L-1",
+          "name": "Synthetic alternate …",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-079",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CE7-1",
+        "mode": "insert-children",
+        "html_characters": 2598
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:03:26.902Z",
+      "created_nodes": [
+        {
+          "id": "6E4N-1",
+          "name": "I15 Concurrent revision conflict",
+          "component": "Frame"
+        },
+        {
+          "id": "6E4O-1",
+          "name": "I15 / REVISION CONFL…",
+          "component": "Text"
+        },
+        {
+          "id": "6E4P-1",
+          "name": "A newer revision exi…",
+          "component": "Text"
+        },
+        {
+          "id": "6E4Q-1",
+          "name": "Your draft started f…",
+          "component": "Text"
+        },
+        {
+          "id": "6E4R-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E4S-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E4T-1",
+          "name": "Your draft",
+          "component": "Text"
+        },
+        {
+          "id": "6E4U-1",
+          "name": "Kept on this device",
+          "component": "Text"
+        },
+        {
+          "id": "6E4V-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E4W-1",
+          "name": "Latest saved",
+          "component": "Text"
+        },
+        {
+          "id": "6E4X-1",
+          "name": "Revision 4",
+          "component": "Text"
+        },
+        {
+          "id": "6E4Y-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E4Z-1",
+          "name": "Action Review latest",
+          "component": "Frame"
+        },
+        {
+          "id": "6E50-1",
+          "name": "Review latest",
+          "component": "Text"
+        },
+        {
+          "id": "6E51-1",
+          "name": "Action Keep draft",
+          "component": "Frame"
+        },
+        {
+          "id": "6E52-1",
+          "name": "Keep draft",
+          "component": "Text"
+        },
+        {
+          "id": "6E53-1",
+          "name": "Review changes befor…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-080",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C21-1",
+        "mode": "insert-children",
+        "html_characters": 717
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:04:20.590Z",
+      "created_nodes": [
+        {
+          "id": "6E63-1",
+          "name": "R31 Responsive details",
+          "component": "Frame"
+        },
+        {
+          "id": "6E64-1",
+          "name": "RESPONSIVE DETAIL ST…",
+          "component": "Text"
+        },
+        {
+          "id": "6E65-1",
+          "name": "Keep the decision vi…",
+          "component": "Text"
+        },
+        {
+          "id": "6E66-1",
+          "name": "Full-screen sheets r…",
+          "component": "Text"
+        },
+        {
+          "id": "6E67-1",
+          "name": "Responsive detail row",
+          "component": "Frame"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-081",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6E67-1",
+        "mode": "insert-children",
+        "html_characters": 6912
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:05:49.130Z",
+      "created_nodes": [
+        {
+          "id": "6E6G-1",
+          "name": "R31 Mobile I13 Light EN",
+          "component": "Frame"
+        },
+        {
+          "id": "6E6H-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E6I-1",
+          "name": "Market structure",
+          "component": "Text"
+        },
+        {
+          "id": "6E6J-1",
+          "name": "Close detail",
+          "component": "Frame"
+        },
+        {
+          "id": "6E6K-1",
+          "name": "×",
+          "component": "Text"
+        },
+        {
+          "id": "6E6L-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E6M-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E6N-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E6O-1",
+          "name": "Synthetic",
+          "component": "Text"
+        },
+        {
+          "id": "6E6P-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E6Q-1",
+          "name": "Close-based",
+          "component": "Text"
+        },
+        {
+          "id": "6E6R-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E6S-1",
+          "name": "Rebound. Reversal un…",
+          "component": "Text"
+        },
+        {
+          "id": "6E6T-1",
+          "name": "Wait for a close bel…",
+          "component": "Text"
+        },
+        {
+          "id": "6E6U-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E6V-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E6W-1",
+          "name": "CURRENT",
+          "component": "Text"
+        },
+        {
+          "id": "6E6X-1",
+          "name": "5.10%",
+          "component": "Text"
+        },
+        {
+          "id": "6E6Y-1",
+          "name": "2 bp from the level",
+          "component": "Text"
+        },
+        {
+          "id": "6E6Z-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E70-1",
+          "name": "DISTANCE",
+          "component": "Text"
+        },
+        {
+          "id": "6E71-1",
+          "name": "0.25×",
+          "component": "Text"
+        },
+        {
+          "id": "6E72-1",
+          "name": "Daily volatility",
+          "component": "Text"
+        },
+        {
+          "id": "6E73-1",
+          "name": "SVG",
+          "component": "SVG"
+        },
+        {
+          "id": "6E74-1",
+          "name": "Rect",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6E75-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6E76-1",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6E77-1",
+          "name": "Polyline",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6E78-1",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6E79-1",
+          "name": "US 10Y yield · NY cl…",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6E7A-1",
+          "name": "Synthetic history",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "6E7B-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E7C-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E7D-1",
+          "name": "1 session · total re…",
+          "component": "Text"
+        },
+        {
+          "id": "6E7E-1",
+          "name": "+0.60%",
+          "component": "Text"
+        },
+        {
+          "id": "6E7F-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E7G-1",
+          "name": "5 sessions",
+          "component": "Text"
+        },
+        {
+          "id": "6E7H-1",
+          "name": "+1.40%",
+          "component": "Text"
+        },
+        {
+          "id": "6E7I-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E7J-1",
+          "name": "20 sessions",
+          "component": "Text"
+        },
+        {
+          "id": "6E7K-1",
+          "name": "−2.40%",
+          "component": "Text"
+        },
+        {
+          "id": "6E7L-1",
+          "name": "Front end leads; lon…",
+          "component": "Text"
+        },
+        {
+          "id": "6E7M-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E7N-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E7O-1",
+          "name": "Invalidation",
+          "component": "Text"
+        },
+        {
+          "id": "6E7P-1",
+          "name": "Close above 5.22%",
+          "component": "Text"
+        },
+        {
+          "id": "6E7Q-1",
+          "name": "Inspect rule and cal…",
+          "component": "Text"
+        },
+        {
+          "id": "6E7R-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E7S-1",
+          "name": "Action Back",
+          "component": "Frame"
+        },
+        {
+          "id": "6E7T-1",
+          "name": "Back",
+          "component": "Text"
+        },
+        {
+          "id": "6E7U-1",
+          "name": "Action Use conditions",
+          "component": "Frame"
+        },
+        {
+          "id": "6E7V-1",
+          "name": "Use conditions",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-082",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6E67-1",
+        "mode": "insert-children",
+        "html_characters": 4753
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:05:59.035Z",
+      "created_nodes": [
+        {
+          "id": "6E7X-1",
+          "name": "R31 Mobile I15 Light EN",
+          "component": "Frame"
+        },
+        {
+          "id": "6E7Y-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E7Z-1",
+          "name": "Save research",
+          "component": "Text"
+        },
+        {
+          "id": "6E80-1",
+          "name": "Close detail",
+          "component": "Frame"
+        },
+        {
+          "id": "6E81-1",
+          "name": "×",
+          "component": "Text"
+        },
+        {
+          "id": "6E82-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E83-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E84-1",
+          "name": "Question-only save",
+          "component": "Text"
+        },
+        {
+          "id": "6E85-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E86-1",
+          "name": "Review what is kept",
+          "component": "Text"
+        },
+        {
+          "id": "6E87-1",
+          "name": "AI funding → Treasur…",
+          "component": "Text"
+        },
+        {
+          "id": "6E88-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E89-1",
+          "name": "QUESTION",
+          "component": "Text"
+        },
+        {
+          "id": "6E8A-1",
+          "name": "Will credit stress s…",
+          "component": "Text"
+        },
+        {
+          "id": "6E8B-1",
+          "name": "Panel",
+          "component": "Frame"
+        },
+        {
+          "id": "6E8C-1",
+          "name": "Question + next chec…",
+          "component": "Text"
+        },
+        {
+          "id": "6E8D-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E8E-1",
+          "name": "Can be saved",
+          "component": "Text"
+        },
+        {
+          "id": "6E8F-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E8G-1",
+          "name": "Excluded from this s…",
+          "component": "Text"
+        },
+        {
+          "id": "6E8H-1",
+          "name": "Evidence charts",
+          "component": "Text"
+        },
+        {
+          "id": "6E8I-1",
+          "name": "Curve and cash assum…",
+          "component": "Text"
+        },
+        {
+          "id": "6E8J-1",
+          "name": "Confirmation and inv…",
+          "component": "Text"
+        },
+        {
+          "id": "6E8K-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E8L-1",
+          "name": "Monitoring unavailab…",
+          "component": "Text"
+        },
+        {
+          "id": "6E8M-1",
+          "name": "The question can be …",
+          "component": "Text"
+        },
+        {
+          "id": "6E8N-1",
+          "name": "Keep working to reta…",
+          "component": "Text"
+        },
+        {
+          "id": "6E8O-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E8P-1",
+          "name": "Action Keep working",
+          "component": "Frame"
+        },
+        {
+          "id": "6E8Q-1",
+          "name": "Keep working",
+          "component": "Text"
+        },
+        {
+          "id": "6E8R-1",
+          "name": "Action Save question",
+          "component": "Frame"
+        },
+        {
+          "id": "6E8S-1",
+          "name": "Save question",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-083",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6E67-1",
+        "mode": "insert-children",
+        "html_characters": 5559
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:06:09.022Z",
+      "created_nodes": [
+        {
+          "id": "6E8U-1",
+          "name": "R31 Mobile I05 Dark ZH",
+          "component": "Frame"
+        },
+        {
+          "id": "6E8V-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E8W-1",
+          "name": "现金情景",
+          "component": "Text"
+        },
+        {
+          "id": "6E8X-1",
+          "name": "Close detail",
+          "component": "Frame"
+        },
+        {
+          "id": "6E8Y-1",
+          "name": "×",
+          "component": "Text"
+        },
+        {
+          "id": "6E8Z-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E90-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E91-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E92-1",
+          "name": "模拟案例",
+          "component": "Text"
+        },
+        {
+          "id": "6E93-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E94-1",
+          "name": "可选深色主题",
+          "component": "Text"
+        },
+        {
+          "id": "6E95-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E96-1",
+          "name": "一月需要融资",
+          "component": "Text"
+        },
+        {
+          "id": "6E97-1",
+          "name": "Parent A · 美元 · 2026…",
+          "component": "Text"
+        },
+        {
+          "id": "6E98-1",
+          "name": "Panel",
+          "component": "Frame"
+        },
+        {
+          "id": "6E99-1",
+          "name": "按期支付所需资金",
+          "component": "Text"
+        },
+        {
+          "id": "6E9A-1",
+          "name": "$190m",
+          "component": "Text"
+        },
+        {
+          "id": "6E9B-1",
+          "name": "保留选定缓冲需要 $490m。",
+          "component": "Text"
+        },
+        {
+          "id": "6E9C-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E9D-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E9E-1",
+          "name": "期初可用现金",
+          "component": "Text"
+        },
+        {
+          "id": "6E9F-1",
+          "name": "$2,100m",
+          "component": "Text"
+        },
+        {
+          "id": "6E9G-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E9H-1",
+          "name": "受限现金 · 已排除",
+          "component": "Text"
+        },
+        {
+          "id": "6E9I-1",
+          "name": "$900m",
+          "component": "Text"
+        },
+        {
+          "id": "6E9J-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E9K-1",
+          "name": "选定经营缓冲",
+          "component": "Text"
+        },
+        {
+          "id": "6E9L-1",
+          "name": "$300m",
+          "component": "Text"
+        },
+        {
+          "id": "6E9M-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E9N-1",
+          "name": "融资必须先到账",
+          "component": "Text"
+        },
+        {
+          "id": "6E9O-1",
+          "name": "若 $900m 在付款前到账，期末预计现…",
+          "component": "Text"
+        },
+        {
+          "id": "6E9P-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6E9Q-1",
+          "name": "付款截止后到账",
+          "component": "Text"
+        },
+        {
+          "id": "6E9R-1",
+          "name": "截止时仍缺 $190m，不能用日终余额掩…",
+          "component": "Text"
+        },
+        {
+          "id": "6E9S-1",
+          "name": "查看全部现金事件 →",
+          "component": "Text"
+        },
+        {
+          "id": "6E9T-1",
+          "name": "模拟现金安排；不代表 CoreWeave…",
+          "component": "Text"
+        },
+        {
+          "id": "6E9U-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6E9V-1",
+          "name": "Action 返回",
+          "component": "Frame"
+        },
+        {
+          "id": "6E9W-1",
+          "name": "返回",
+          "component": "Text"
+        },
+        {
+          "id": "6E9X-1",
+          "name": "Action 使用情景",
+          "component": "Frame"
+        },
+        {
+          "id": "6E9Y-1",
+          "name": "使用情景",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-084",
+      "tool": "set_text_content",
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "6C1E-1",
+            "textContent": "Same position and valuation cutoff. Bind each maturity node to the curve type, bump and interpolation method; mismatched bases block calculation."
+          },
+          {
+            "nodeId": "6C8F-1",
+            "textContent": "Same holder, period, currency and market-value basis. Transactions are sourced separately from revaluation; zero means observed or explicitly assumed."
+          },
+          {
+            "nodeId": "6C8L-1",
+            "textContent": "Net buying can coexist with gross sales. Label residual estimates; preserve unexplained differences. Neither proves an asset-to-asset funding route."
+          },
+          {
+            "nodeId": "6E4B-1",
+            "textContent": "Cutoff gap remains"
+          },
+          {
+            "nodeId": "6E4H-1",
+            "textContent": "$710m projected later"
+          },
+          {
+            "nodeId": "6E4I-1",
+            "textContent": "Later financing restores projected cash after overdue obligations are paid. The earlier $190m funding gap remains."
+          },
+          {
+            "nodeId": "6E4L-1",
+            "textContent": "Synthetic alternate · $900m net usable draw; in-window draw fees and interest assumed zero."
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:06:52.853Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "updates"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-085",
+      "tool": "move_nodes",
+      "arguments": {
+        "moves": [
+          {
+            "nodeId": "6E6G-1",
+            "parentId": "6C21-1",
+            "index": 3
+          },
+          {
+            "nodeId": "6E7X-1",
+            "parentId": "6C21-1",
+            "index": 4
+          },
+          {
+            "nodeId": "6E8U-1",
+            "parentId": "6C21-1",
+            "index": 5
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:10:51.539Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "moves",
+          "affectedParents"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-086",
+      "tool": "update_styles",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "6E9Q-1"
+            ],
+            "styles": {
+              "color": "var(--mx-dark-warn)"
+            }
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:10:59.517Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "updates"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-087",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C21-1",
+        "mode": "insert-children",
+        "html_characters": 727
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:11:37.585Z",
+      "created_nodes": [
+        {
+          "id": "6EHM-1",
+          "name": "R31 responsive detail gallery",
+          "component": "Frame"
+        },
+        {
+          "id": "6EHN-1",
+          "name": "RESPONSIVE DETAIL ST…",
+          "component": "Text"
+        },
+        {
+          "id": "6EHO-1",
+          "name": "Keep the decision vi…",
+          "component": "Text"
+        },
+        {
+          "id": "6EHP-1",
+          "name": "Full-screen sheets k…",
+          "component": "Text"
+        },
+        {
+          "id": "6EHQ-1",
+          "name": "R31 responsive phone row",
+          "component": "Frame"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-088",
+      "tool": "move_nodes",
+      "arguments": {
+        "moves": [
+          {
+            "nodeId": "6E6G-1",
+            "parentId": "6EHQ-1",
+            "index": 0
+          },
+          {
+            "nodeId": "6E7X-1",
+            "parentId": "6EHQ-1",
+            "index": 1
+          },
+          {
+            "nodeId": "6E8U-1",
+            "parentId": "6EHQ-1",
+            "index": 2
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:11:43.678Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "moves",
+          "affectedParents"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-089",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6CE7-1",
+        "mode": "insert-children",
+        "html_characters": 1678
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:12:44.696Z",
+      "created_nodes": [
+        {
+          "id": "6EHS-1",
+          "name": "I15 Question-only save receipt",
+          "component": "Frame"
+        },
+        {
+          "id": "6EHT-1",
+          "name": "I15 / PARTIAL SUCCES…",
+          "component": "Text"
+        },
+        {
+          "id": "6EHU-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6EHV-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6EHW-1",
+          "name": "Question saved",
+          "component": "Text"
+        },
+        {
+          "id": "6EHX-1",
+          "name": "×",
+          "component": "Text"
+        },
+        {
+          "id": "6EHY-1",
+          "name": "Scenario values, cha…",
+          "component": "Text"
+        },
+        {
+          "id": "6EHZ-1",
+          "name": "Reopen the question …",
+          "component": "Text"
+        },
+        {
+          "id": "6EI0-1",
+          "name": "Action Open saved question",
+          "component": "Frame"
+        },
+        {
+          "id": "6EI1-1",
+          "name": "Open saved question",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-090",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C21-1",
+        "mode": "insert-children",
+        "html_characters": 3214
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:12:48.094Z",
+      "created_nodes": [
+        {
+          "id": "6EI3-1",
+          "name": "R31 Existing owner implementation bindings",
+          "component": "Frame"
+        },
+        {
+          "id": "6EI4-1",
+          "name": "IMPLEMENTATION / EXI…",
+          "component": "Text"
+        },
+        {
+          "id": "6EI5-1",
+          "name": "Bind to existing ser…",
+          "component": "Text"
+        },
+        {
+          "id": "6EI6-1",
+          "name": "Row",
+          "component": "Frame"
+        },
+        {
+          "id": "6EI7-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6EI8-1",
+          "name": "Research revisions",
+          "component": "Text"
+        },
+        {
+          "id": "6EI9-1",
+          "name": "Terminal Investigati…",
+          "component": "Text"
+        },
+        {
+          "id": "6EIA-1",
+          "name": "Reuse immutable revi…",
+          "component": "Text"
+        },
+        {
+          "id": "6EIB-1",
+          "name": "Owner: investigation…",
+          "component": "Text"
+        },
+        {
+          "id": "6EIC-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6EID-1",
+          "name": "Conditional monitors",
+          "component": "Text"
+        },
+        {
+          "id": "6EIE-1",
+          "name": "Terminal Alerts",
+          "component": "Text"
+        },
+        {
+          "id": "6EIF-1",
+          "name": "The current allowlis…",
+          "component": "Text"
+        },
+        {
+          "id": "6EIG-1",
+          "name": "Owner: /api/alerts +…",
+          "component": "Text"
+        },
+        {
+          "id": "6EIH-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6EII-1",
+          "name": "Evidence and methods",
+          "component": "Text"
+        },
+        {
+          "id": "6EIJ-1",
+          "name": "Macro + capital stru…",
+          "component": "Text"
+        },
+        {
+          "id": "6EIK-1",
+          "name": "Reuse source receipt…",
+          "component": "Text"
+        },
+        {
+          "id": "6EIL-1",
+          "name": "Design references: S…",
+          "component": "Text"
+        },
+        {
+          "id": "6EIM-1",
+          "name": "Read-only source ins…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-091",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C21-1",
+        "mode": "insert-children",
+        "html_characters": 2654
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:12:52.919Z",
+      "created_nodes": [
+        {
+          "id": "6EIO-1",
+          "name": "R31 Responsive implementation scorecard",
+          "component": "Frame"
+        },
+        {
+          "id": "6EIP-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6EIQ-1",
+          "name": "R31 / RESPONSIVE / I…",
+          "component": "Text"
+        },
+        {
+          "id": "6EIR-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6EIS-1",
+          "name": "LAYOUT",
+          "component": "Text"
+        },
+        {
+          "id": "6EIT-1",
+          "name": "At ≤767px, use a ful…",
+          "component": "Text"
+        },
+        {
+          "id": "6EIU-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6EIV-1",
+          "name": "KEYBOARD + READING",
+          "component": "Text"
+        },
+        {
+          "id": "6EIW-1",
+          "name": "Trap focus only in m…",
+          "component": "Text"
+        },
+        {
+          "id": "6EIX-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6EIY-1",
+          "name": "TABLES + INPUTS",
+          "component": "Text"
+        },
+        {
+          "id": "6EIZ-1",
+          "name": "Flow reconciliation …",
+          "component": "Text"
+        },
+        {
+          "id": "6EJ0-1",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "6EJ1-1",
+          "name": "CONTINUITY",
+          "component": "Text"
+        },
+        {
+          "id": "6EJ2-1",
+          "name": "Back preserves a loc…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-092",
+      "tool": "set_text_content",
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "6C37-1",
+            "textContent": "Holdings fell despite buying"
+          },
+          {
+            "nodeId": "6C38-1",
+            "textContent": "The matched buyer made net purchases of both AI credit and Treasuries."
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:13:09.652Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "updates"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-093",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "6C2T-1",
+        "mode": "insert-children",
+        "html_characters": 178
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:13:12.565Z",
+      "created_nodes": [
+        {
+          "id": "6EJ4-1",
+          "name": "Market values · tran…",
+          "component": "Text"
+        }
+      ],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "createdNodes"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-094",
+      "tool": "finish_working_on_nodes",
+      "arguments": {
+        "nodeIds": [
+          "63S3-1",
+          "648A-1",
+          "64G1-1",
+          "64PQ-1",
+          "670P-1",
+          "65YV-1",
+          "6693-1",
+          "67ZC-1",
+          "6885-1",
+          "6894-1",
+          "6B6Q-1",
+          "6C1S-1"
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:16:19.222Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "text"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-095",
+      "tool": "set_text_content",
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "6B7B-1",
+            "textContent": "MARKET STRUCTURE"
+          },
+          {
+            "nodeId": "6E4U-1",
+            "textContent": "Kept in this session"
+          }
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:30:26.162Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "updates"
+        ]
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r31-20261018-096",
+      "tool": "finish_working_on_nodes",
+      "arguments": {
+        "nodeIds": [
+          "6B6Q-1",
+          "6C1S-1"
+        ]
+      },
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "at": "2026-10-18T05:30:29.252Z",
+      "created_nodes": [],
+      "result_keys": [
+        [
+          "file",
+          "contentHash"
+        ],
+        [
+          "text"
+        ]
+      ]
+    }
+  ]
+}

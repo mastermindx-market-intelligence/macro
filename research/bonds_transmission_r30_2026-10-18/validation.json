@@ -1,0 +1,87 @@
+{
+  "at": "2026-10-18T03:43:42Z",
+  "paper_file": "01M2WGNCX9475G79JRKJTCM08P",
+  "new_artboards": 19,
+  "product_routes": 8,
+  "core_interactions": 12,
+  "specification_atlases": 5,
+  "responsive_references": 4,
+  "start_guides": 2,
+  "archived_originals": 28,
+  "native_effects_observed": 163,
+  "unknown_effects": 0,
+  "scope_target_audit_pass": true,
+  "global_token_hash": "cfd3d65c",
+  "forex_mutated": false,
+  "all_current_board_positions_read_back": true,
+  "archive_identity_inventory_verified": true,
+  "visual_review": "Native screenshots reviewed during authoring; targeted final readback after substantive layout and semantic corrections.",
+  "arithmetic": [
+    {
+      "name": "Treasury -25 bp",
+      "computed": 1.97,
+      "expected": 1.97,
+      "pass": true
+    },
+    {
+      "name": "Treasury +25 bp",
+      "computed": -1.9300000000000002,
+      "expected": -1.93,
+      "pass": true
+    },
+    {
+      "name": "Treasury -8 bp",
+      "computed": 0.6260479999999999,
+      "expected": 0.626048,
+      "pass": true
+    },
+    {
+      "name": "Corporate net",
+      "computed": -1.44,
+      "expected": -1.44,
+      "pass": true
+    },
+    {
+      "name": "2s10s",
+      "computed": 41.99999999999999,
+      "expected": 42,
+      "pass": true
+    },
+    {
+      "name": "Hedged yield",
+      "computed": 1.4999999999999996,
+      "expected": 1.5,
+      "pass": true
+    },
+    {
+      "name": "Relative comparison",
+      "computed": -5.000000000000004,
+      "expected": -5,
+      "pass": true
+    },
+    {
+      "name": "Net supply",
+      "computed": 55,
+      "expected": 55,
+      "pass": true
+    },
+    {
+      "name": "Interest shock",
+      "computed": 10000000,
+      "expected": 10000000,
+      "pass": true
+    }
+  ],
+  "jsx_exports": 19,
+  "working_indicators_finished": true,
+  "not_performed": [
+    "Production implementation",
+    "Live data binding",
+    "Notification activation",
+    "Historical backtest",
+    "Forecast calibration",
+    "End-to-end browser interaction tests",
+    "Runtime accessibility testing",
+    "Deployment"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "baseline_sha256": "b319f1bbf464b18a0ba94d6b1115d7e4b9a331d5ae78b68f2551ac12da76347f",
+  "source_contract": "macro_context.decision_publication.v1",
+  "captured_content_sha256": "d568576803a0fa032846f419fd433a9391e01c13e60e6dc4c75a8ff6017a1455",
+  "html_sha256": "6565f567302e39d16a9849609532f669b122045fd059a3c5e084b8caef0fc15f",
+  "bytes": 811982,
+  "routes": 8,
+  "tool_families": 15
+}

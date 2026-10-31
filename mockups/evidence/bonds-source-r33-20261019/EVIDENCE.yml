@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/bonds.html.j2
+  - templates/_bonds_source_adapter.js.j2
+  - templates/_bonds_source_inspector.js.j2
+  - templates/_bonds_source_inspector.css.j2
+manifest: mockups/evidence/bonds-source-r33-20261019/manifest.json

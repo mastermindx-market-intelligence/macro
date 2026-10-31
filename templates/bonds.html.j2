@@ -461,6 +461,9 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
 </style>
 {% include "_state_inks.html.j2" %}
 {% include "_vector_polish.html.j2" %}
+<style>
+{% include "_bonds_source_inspector.css.j2" %}
+</style>
 </head>
 <body>
 {% include "_site_nav.html.j2" %}
@@ -520,6 +523,7 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
         {% endif %}
         <span class="dtp-chip dtp-chip--snapshot"><i></i><span class="l-en">Latest bond snapshot</span><span class="l-zh">最新债券快照</span></span>
         <span class="dtp-asof"><span class="l-en">As of {{ hero.as_of or as_of }}</span><span class="l-zh">截至 {{ hero.as_of_zh or as_of_zh or as_of }}</span></span>
+        <button type="button" id="bonds-source-open" aria-haspopup="dialog" aria-controls="bonds-source-dialog" aria-expanded="false"><span class="l-en">Transmission sources</span><span class="l-zh">传导来源</span></button>
       </div>
       {% if hero.caveat_en %}<div class="mx-callout"><b class="l-en">Read the score with care:</b><b class="l-zh">读数注意：</b>
         <span class="l-en">{{ hero.caveat_en.split(':', 1)[1] if ':' in (hero.caveat_en or '') else hero.caveat_en }}</span>
@@ -1512,5 +1516,20 @@ els.forEach(function(e){io.observe(e);});})();
 <footer class="site-footer">
   <span>© 2026 Mastermind Inc</span>
 </footer>
+<!-- R33 display context: payload stays on the existing protected static boundary. -->
+<dialog id="bonds-source-dialog" aria-labelledby="bonds-source-title">
+  <header class="bonds-source-header">
+    <h2 id="bonds-source-title" class="bonds-source-title">{{ t('Bonds transmission sources', '债券传导来源') }}</h2>
+    <button type="button" id="bonds-source-close" class="bonds-source-close" aria-label="Close source inspector"><span aria-hidden="true">×</span></button>
+  </header>
+  <p id="bonds-source-status" class="source-sr-only" role="status" aria-live="polite"></p>
+  <div id="bonds-source-content" role="region" aria-labelledby="bonds-source-title" aria-busy="false" tabindex="-1"></div>
+</dialog>
+<script>
+{% include "_bonds_source_adapter.js.j2" %}
+</script>
+<script>
+{% include "_bonds_source_inspector.js.j2" %}
+</script>
 </body>
 </html>

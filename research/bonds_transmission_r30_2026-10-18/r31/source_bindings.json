@@ -1,0 +1,149 @@
+{
+  "schema": "mastermind.design_binding.bonds_transmission.r31",
+  "inspected_at": "2026-10-18",
+  "pins": {
+    "protected": "0d51da5463a18a251905ec0ef5a580ccdb0b3546",
+    "macro": "4f52d22596545cbd67b5143e188baf5660237024",
+    "terminal": "d6515f47232538161af8d3d4c27064165eda40fe"
+  },
+  "status": "source_owners_identified_bond_extensions_pending",
+  "owners": [
+    {
+      "capability": "retained_research",
+      "owner": "Terminal Investigation v2",
+      "status": "contract_and_service_source_read; production_not_executed",
+      "paths": [
+        {
+          "path": "docs/INVESTIGATION_V2_CONTRACT.md",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d6515f47232538161af8d3d4c27064165eda40fe/docs/INVESTIGATION_V2_CONTRACT.md"
+        },
+        {
+          "path": "terminal/lib/investigations.ts",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d6515f47232538161af8d3d4c27064165eda40fe/terminal/lib/investigations.ts"
+        },
+        {
+          "path": "terminal/lib/investigationContracts.ts",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d6515f47232538161af8d3d4c27064165eda40fe/terminal/lib/investigationContracts.ts"
+        },
+        {
+          "path": "terminal/app/api/investigations/route.ts",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d6515f47232538161af8d3d4c27064165eda40fe/terminal/app/api/investigations/route.ts"
+        }
+      ],
+      "existing_schema": "investigation_manifest.v2",
+      "endpoints": [
+        "GET /api/investigations",
+        "GET /api/investigations?id=<uuid>&revision=<n>",
+        "GET /api/investigations?operation_id=<uuid>",
+        "POST /api/investigations"
+      ],
+      "subject_admission": [
+        {
+          "owner": "terminal.analysis_symbol",
+          "kinds": [
+            "security"
+          ]
+        },
+        {
+          "owner": "data_os.security_master",
+          "kinds": [
+            "security",
+            "issuer"
+          ]
+        }
+      ],
+      "evidence_admission": [
+        {
+          "owner": "earnings.workspace_generation",
+          "object_type": "event_workspace"
+        }
+      ],
+      "extensions_required": [
+        "Bond/rates/CDS/flow evidence reference admission and exact owner resolution",
+        "Retained scenario/rule references through the existing revision owner",
+        "Capability-aware save/read UI; no silent partial retention"
+      ],
+      "constraints": [
+        "No parallel case store",
+        "No unsupported JSON disguised as question text",
+        "Exact revision and original operation receipt",
+        "Client identity is not authorization"
+      ]
+    },
+    {
+      "capability": "conditional_monitoring",
+      "owner": "Terminal Alerts",
+      "status": "route_allowlist_source_read; no runtime invocation",
+      "paths": [
+        {
+          "path": "terminal/app/api/alerts/route.ts",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d6515f47232538161af8d3d4c27064165eda40fe/terminal/app/api/alerts/route.ts"
+        }
+      ],
+      "searched_paths": [
+        "terminal/lib/alertDryRun.ts",
+        "terminal/lib/alertsView.ts",
+        "terminal/app/api/alerts/dry-run",
+        "terminal/app/api/alerts/receipts"
+      ],
+      "unsupported": "Arbitrary compound yield + matched credit basket + funding AND condition",
+      "extensions_required": [
+        "Existing condition schema and evaluator",
+        "Dry-run and receipt behavior",
+        "R30 source clocks, invalidation precedence and expiry semantics"
+      ],
+      "constraints": [
+        "No separate monitor store",
+        "No split independent alerts presented as the AND rule",
+        "No activation performed"
+      ]
+    },
+    {
+      "capability": "watchlists",
+      "owner": "Terminal watchlists",
+      "status": "source_read",
+      "paths": [
+        {
+          "path": "terminal/lib/watchlists.ts",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d6515f47232538161af8d3d4c27064165eda40fe/terminal/lib/watchlists.ts"
+        },
+        {
+          "path": "terminal/app/api/watchlist/route.ts",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d6515f47232538161af8d3d4c27064165eda40fe/terminal/app/api/watchlist/route.ts"
+        }
+      ],
+      "use": "Existing named list/symbol behavior only",
+      "constraint": "Not the owner of retained investigations or analytical scenarios"
+    },
+    {
+      "capability": "market_projection",
+      "owner": "macro_context.decision_workspaces.v1",
+      "source_pin": "62a3f9ad070c7583687aef8c30d53fd1764c6aab",
+      "source_scope": "R30 inspected builder preserved; current owner discovery does not upgrade its authority",
+      "paths": [
+        "scripts/build_macro_context.py"
+      ],
+      "fields": [
+        "world_state.rates_credit",
+        "world_state.fx_dollar",
+        "world_state.cross_asset_flows",
+        "source_receipts",
+        "stale_inputs"
+      ],
+      "claim_scope": "projection_only",
+      "display_only": true,
+      "probability_policy": "withheld"
+    },
+    {
+      "capability": "issuer_filing_facts",
+      "owner": "capital-structure-intelligence",
+      "schema": "capital_structure.event.v1",
+      "source_scope": "R30 owner review retained",
+      "constraint": "Filing events do not automatically provide a complete current dated debt/covenant/cash schedule"
+    }
+  ],
+  "live_data_bound": false,
+  "backend_changed": false,
+  "monitor_activated": false,
+  "forecast_qualified": false
+}

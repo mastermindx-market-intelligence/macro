@@ -1,0 +1,22 @@
+{
+  "started_at": "2026-10-19T23:30:16.941936+00:00",
+  "finished_at": "2026-10-19T23:34:06.731069+00:00",
+  "source_tree": "9cadadf11dc058085bd84b06c2701df014349947",
+  "source_tree_after": "9cadadf11dc058085bd84b06c2701df014349947",
+  "python": "3.12.4 | packaged by Anaconda, Inc. | (main, Jun 18 2024, 10:07:17) [Clang 14.0.6 ]",
+  "command": [
+    "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+    "-m",
+    "pytest",
+    "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+    "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+    "-q",
+    "--junitxml=/tmp/mmx-r33-second-main-guards-c4.xml"
+  ],
+  "child_pid": 25486,
+  "exit_code": 0,
+  "seconds": 239.036,
+  "log_sha256": "26b7d48e7148d3603313346deaf68f0aa36c0334a1a5ed2033ac04c8ddfabe0e",
+  "xml_sha256": "968305b4b6a605726a227d5f94b93841720218d250e9dfcc73ca19c0c82ccd1e"
+}

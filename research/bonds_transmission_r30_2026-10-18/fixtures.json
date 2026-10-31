@@ -1,0 +1,176 @@
+{
+  "schema": "r30.design_fixture_documentation",
+  "synthetic_market_data": true,
+  "not_live_market_data": true,
+  "treasury_duration": {
+    "modified_duration_years": 7.8,
+    "convexity_years_squared": 64,
+    "shock_bp": -25,
+    "price_change_pct": 1.97,
+    "opposite_shock_bp": 25,
+    "opposite_price_change_pct": -1.93
+  },
+  "curve": {
+    "type": "illustrative matching nominal curve",
+    "tenors": [
+      "3M",
+      "1Y",
+      "2Y",
+      "5Y",
+      "10Y",
+      "30Y"
+    ],
+    "yield_pct": [
+      4.9,
+      4.8,
+      4.68,
+      4.87,
+      5.1,
+      5.35
+    ],
+    "slope_2s10s_bp": 42
+  },
+  "scenario": {
+    "expected_short_rate_change_bp": -10,
+    "term_premium_change_bp": 2,
+    "net_benchmark_yield_change_bp": -8,
+    "treasury_price_change_pct": 0.626048,
+    "corporate_rate_duration": 5.5,
+    "corporate_spread_duration": 4.7,
+    "corporate_spread_change_bp": 40,
+    "rate_effect_pct": 0.44,
+    "spread_effect_pct": -1.88,
+    "net_corporate_price_change_pct": -1.44
+  },
+  "buyer": {
+    "base_currency": "JPY",
+    "mandate": "IG",
+    "duration_range_years": [
+      7,
+      10
+    ],
+    "hedge_tenor": "rolling 3M",
+    "current_annualized_hedge_cost_pct": 3.6,
+    "treasury_yield_pct": 5.1,
+    "indicative_yield_less_hedge_pct": 1.5,
+    "jgb_yield_pct": 1.55,
+    "treasury_minus_jgb_bp": -5,
+    "hedge_cost_minus25bp_result_pct": 1.75,
+    "hedge_cost_plus25bp_result_pct": 1.25
+  },
+  "issuer_currency_funding": {
+    "same_borrower": true,
+    "tenor_years": 5,
+    "base_currency": "USD",
+    "fixed_base_obligation": true,
+    "usd_pct": 5.6,
+    "eur_issue_pct": 4.1,
+    "eur_swap_adjustment_pct": 1.2,
+    "eur_after_swap_pct": 5.3,
+    "jpy_issue_pct": 2.2,
+    "jpy_swap_adjustment_pct": 3,
+    "jpy_after_swap_pct": 5.2,
+    "excluded": [
+      "fees",
+      "tax",
+      "collateral terms",
+      "execution costs"
+    ]
+  },
+  "supply": {
+    "unit": "USD billions face value",
+    "time": "illustrative next 5 sessions",
+    "not_observed_investor_flows": true,
+    "rows": [
+      {
+        "name": "US Treasuries",
+        "gross": 60,
+        "redemptions": 24,
+        "net": 36
+      },
+      {
+        "name": "AI corporate",
+        "gross": 12,
+        "redemptions": 3,
+        "net": 9
+      },
+      {
+        "name": "Other IG",
+        "gross": 25,
+        "redemptions": 15,
+        "net": 10
+      }
+    ],
+    "net_total": 55
+  },
+  "issuer_reported_snapshot": {
+    "synthetic": false,
+    "issuer": "CoreWeave",
+    "asof": "2026-06-30",
+    "published": "2026-08-11",
+    "source": "R03",
+    "unit": "USD billions",
+    "cash_equivalents": 5.524,
+    "restricted_cash_current": 0.873,
+    "current_recourse_debt": 6.235,
+    "current_nonrecourse_debt": 1.278,
+    "not_exact_maturity_schedule": true,
+    "requires_roll_forward": true
+  },
+  "financing_sensitivity": {
+    "synthetic": true,
+    "repriced_principal_usd": 1000000000,
+    "incremental_rate_bp": 100,
+    "incremental_annual_interest_usd": 10000000
+  },
+  "replay_fingerprint": {
+    "synthetic": true,
+    "not_actual_historical_performance": true,
+    "horizons_sessions": [
+      1,
+      5,
+      20
+    ],
+    "treasury_yield_change_bp": [
+      -8,
+      4,
+      1
+    ],
+    "credit_spread_change_bp": [
+      20,
+      60,
+      18
+    ],
+    "equity_price_change_pct": [
+      -1.3,
+      -4.6,
+      -0.8
+    ],
+    "usd_basket_price_change_pct": [
+      0.2,
+      1.1,
+      -0.3
+    ],
+    "repo_spread_change_bp": [
+      1,
+      18,
+      2
+    ]
+  },
+  "monitor": {
+    "synthetic": true,
+    "qualified_live_activation": false,
+    "confirmation_yield_strictly_below_pct": 5.08,
+    "invalidation_yield_strictly_above_pct": 5.22,
+    "peer_basket_oas_change_gte_bp": 15,
+    "peer_basket_weighting": "equal weights frozen at case open for acceptance fixture",
+    "required_peer_observations": 12,
+    "prior_breadth": 3,
+    "review_breadth": 5,
+    "breadth_denominator": 12,
+    "window_sessions": 5,
+    "invalidation_precedence": true,
+    "funding_must_be_current_and_orderly": true,
+    "pause_extends_expiry": false
+  }
+}

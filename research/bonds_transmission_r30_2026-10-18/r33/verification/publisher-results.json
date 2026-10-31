@@ -1,0 +1,19 @@
+{
+  "suite": "r33_macro_context_publication_and_existing_authority",
+  "status": "PASS",
+  "host": "m2studio",
+  "python": "3.14.7",
+  "command": "python3 -m pytest tests/test_macro_decision_publication.py tests/test_macro_context_authority.py -k 'publication or r25 or r26' -q --disable-warnings --maxfail=2",
+  "passed": 239,
+  "deselected": 49,
+  "failed": 0,
+  "warnings": 1,
+  "pytest_seconds": 31.77,
+  "exit_code": 0,
+  "worktree": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/bonds-transmission-r33-20261018-c4",
+  "base_commit": "023a376a87938d2b22c20a9172f6d46f552fa0e9",
+  "source_sha256": "8faf0dd041707cc31dee037f2b71fe51d4797a5ca3ceaa59c89a1953a80ab98d",
+  "test_sha256": "2d9a4b8e5c313ceddf87aa326cd5b4fe14109689da18895bbd8f715b60dd0cac",
+  "proof": "Studio Direct PID 62449 completed exit 0. Final source/test bytes read back and match the tested files; no publisher changes after this run.",
+  "limitation": "Bounded filtered regression; not a full repository or production deployment test."
+}
