@@ -126,6 +126,19 @@ DISCLOSURE_CONTROLS = (
 # tokens) by a subject restart, so the negation of an earlier predicate
 # ("was not effective ... because a material weakness ... existed") no
 # longer reaches the existence verb.
+# B.3 pattern revision v6 (review F4-1..F4-4, 2026-10-31): remediation
+# timing. A weakness is PRESENT as of the balance date unless the
+# sentence says it was remediated on or before that date. Arm 2's
+# refusal therefore splits in two: a negator ("no|not|without") still
+# refuses unless it belongs to a negated remediation ("has not been
+# remediated"), and "remediated" refuses only when the scan reaches it
+# without passing a "subsequently|later|after|not|never|no" marker or a
+# following "after" — so "was subsequently remediated" (after the as-of
+# date) and "has not been remediated" carry an affirmative match again,
+# while a bare "was remediated" stays refused. Arms 3/4 keep stopping at
+# "and"/"but"; the coordinated clause after the coordinator is read by
+# _material_weakness_value for a remediation predicate with its date
+# semantics.
 _MW_EXISTENCE_GUARD = (
     r"(?!(?:(?![,;]|\bwhich\b|\bthat\b|\band\b|\bbut\b)[^.]){0,60}?"
     r"\b(?:does not exist|did not exist|has been remediated|"
@@ -138,7 +151,9 @@ MATERIAL_WEAKNESS_IDENTIFIED = (
     r"identif(?:y|ied)(?![^.]{0,40}?(?:no|not|without)\b)"
     r"[^.]{0,40}?material weakness"
     r"|(?<![Nn]o )material weakness(?:es)?"
-    r"(?![^.]{0,80}?(?:no|not|without|remediated)\b)"
+    r"(?![^.]{0,80}?(?:no|not|without)\b(?![^.]{0,40}?\bremediated\b)"
+    r"|(?:(?!\b(?:subsequently|later|after|not|never|no)\b)[^.]){0,80}?"
+    r"remediated\b(?![^.]{0,30}?\bafter\b))"
     r"[^.]{0,80}?\bexist(?:s|ed)?\b"
     r"|[Tt]here (?:was|were|is|are)(?: a| an| one| one or more)?"
     r" material weakness(?:es)?" + _MW_EXISTENCE_GUARD +
@@ -328,6 +343,82 @@ _MW_CLAUSE_BOUNDARY = re.compile(
     r"|\b(?:and|but)\s+(?:\S+\s+){0,2}?(?:management|we|the company|"
     r"our management|the audit committee|it)\b"
 )
+# B.3 v6 (review F4-1..F4-4): the coordinated clause after "and"/"but" is
+# read forward for a remediation predicate. A negated remediation ("has
+# not been remediated") is not a remediation; a marker
+# "subsequently|later|after" places it after the balance date; a stated
+# "as of <Month D, YYYY>" remediation date is compared against the
+# sentence's own as-of date when both are present.
+_MW_COORDINATOR = re.compile(r"\b(?:and|but)\b", re.IGNORECASE)
+_MW_REMEDIATION_PARTICIPLE = re.compile(r"\bremediated\b", re.IGNORECASE)
+_MW_REMEDIATION_NEGATED = re.compile(r"\b(?:not|never|no)\b", re.IGNORECASE)
+_MW_REMEDIATION_LATER = re.compile(
+    r"\b(?:subsequently|later|after)\b", re.IGNORECASE
+)
+_MW_AS_OF_DATE = re.compile(
+    r"\bas of\s+((?:january|february|march|april|may|june|july|august|"
+    r"september|october|november|december)\s+\d{1,2},\s+\d{4})",
+    re.IGNORECASE,
+)
+_MW_MONTH_ORDINALS = {
+    "january": 1,
+    "february": 2,
+    "march": 3,
+    "april": 4,
+    "may": 5,
+    "june": 6,
+    "july": 7,
+    "august": 8,
+    "september": 9,
+    "october": 10,
+    "november": 11,
+    "december": 12,
+}
+
+
+def _mw_date_key(stated: str) -> tuple[int, int, int]:
+    month, day, year = stated.replace(",", "").split()
+    return (int(year), _MW_MONTH_ORDINALS[month.lower()], int(day))
+
+
+def _mw_coordinated_remediation_absent(text: str, from_pos: int) -> bool:
+    """B.3 v6: does the coordinated clause after ``from_pos`` read as an
+    unnegated remediation completed on or before the balance date?
+
+    The scan is bounded by the "."-bounded sentence holding the match, so
+    a remediation narrated in a later sentence never reaches it. A
+    remediation preceded by "not"/"never"/"no" ("has not been remediated")
+    or placed after the balance date by a "subsequently"/"later"/"after"
+    marker leaves the weakness present; a stated "as of <date>" on the
+    remediation is compared against the sentence's own as-of date when
+    both parse, and a remediation with no date and no marker is treated
+    as remediated (absent).
+    """
+    sentence_lo, sentence_hi = _sentence_bounds(text, from_pos, from_pos)
+    coordinator = _MW_COORDINATOR.search(text, from_pos, sentence_hi)
+    if coordinator is None:
+        return False
+    tail_lo = coordinator.end()
+    for hit in _MW_REMEDIATION_PARTICIPLE.finditer(text, tail_lo, sentence_hi):
+        if _MW_REMEDIATION_NEGATED.search(
+            text, max(sentence_lo, hit.start() - 30), hit.start()
+        ):
+            continue
+        if _MW_REMEDIATION_LATER.search(
+            text,
+            max(sentence_lo, hit.start() - 40),
+            min(sentence_hi, hit.end() + 30),
+        ):
+            continue
+        remediated_as_of = _MW_AS_OF_DATE.search(text, hit.end(), sentence_hi)
+        if remediated_as_of is not None:
+            as_of = _MW_AS_OF_DATE.search(text, sentence_lo, tail_lo)
+            if as_of is not None and _mw_date_key(as_of.group(1)) < _mw_date_key(
+                remediated_as_of.group(1)
+            ):
+                continue
+        return True
+    return False
 
 
 def _sentence_bounds(text: str, start: int, end: int) -> tuple[int, int]:
@@ -391,7 +482,8 @@ def _material_weakness_value(
     nt: Any, section_span: tuple[int, int], match: Any
 ) -> tuple[str, tuple[int, int]]:
     """B.3 v5 clause-bounded resolution (reviews F1-b, F1-1/F1-2, then
-    F1-A/F1-B/F1-C/F2-A/F2-B).
+    F1-A/F1-B/F1-C/F2-A/F2-B), plus the B.3 v6 remediation-timing read
+    (review F4-1..F4-4).
 
     Clause-boundary rule: the boolean is true only for an affirmative
     identification or existence, and a negation token ("no", "not",
@@ -425,11 +517,24 @@ def _material_weakness_value(
     "There was a material weakness and it has not been remediated"
     resolve true. The bare "material weakness ... exist/exists/existed"
     arm anchors on the whole word and refuses a "remediated" inside its
-    80-char window, so a prior-year remediated mention ("a material
-    weakness that existed in the prior year was remediated") carries no
-    affirmative existential match, while "There was no material
-    weakness", "a material weakness does not exist" and the arm's "No
-    material weakness existed" opening stay false.
+    80-char window unless that remediation is negated ("has not been
+    remediated") or placed after the balance date by a marker, so a
+    prior-year remediated mention ("a material weakness that existed in
+    the prior year was remediated") carries no affirmative existential
+    match, while "There was no material weakness", "a material weakness
+    does not exist" and the arm's "No material weakness existed" opening
+    stay false.
+
+    Remediation-timing rule (v6): after the clause-bounded look-back, the
+    coordinated clause following the match — text after the first
+    "and"/"but" inside the same "."-bounded sentence — is read for an
+    unnegated remediation predicate (see
+    ``_mw_coordinated_remediation_absent``). A remediation stated for
+    the balance date ("... but it has been remediated as of June 30,
+    2026") or with no date at all is an absence; a remediation placed
+    after the as-of date ("was subsequently remediated in the first
+    quarter of fiscal 2027") and a negated one ("and has not been
+    remediated") leave the weakness present.
     """
     text = nt.text
     verb = _MW_IDENTIFYING_VERB.search(text, match.start(), match.end())
@@ -438,6 +543,8 @@ def _material_weakness_value(
         clause_start = _mw_clause_start(text, lo, verb.start())
         if _MW_NEGATION_BEFORE.search(text, clause_start, verb.start()):
             return "false", (match.start(), match.end())
+    if _mw_coordinated_remediation_absent(text, match.end()):
+        return "false", (match.start(), match.end())
     return "true", (match.start(), match.end())
 
 
