@@ -40,7 +40,7 @@ scope:
   - macro
   - research/C19_WP31_INCREMENTAL_INFORMATION_PREREG.md
   - scripts/c19_wp31_sources.py
-  - collectors/edgar_8k.py
+  - collectors/edgar_earnings_8k.py
   - WS:COMMISSION-19-DATA-INTELLIGENCE
 confidence: verified
 ---
