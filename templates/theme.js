@@ -525,7 +525,15 @@
     // Keep the dynamic dependency cache-safe too. theme.js itself is
     // content-hashed in every page; this explicit release key prevents a
     // year-cached account.js from pinning an older navigation loader.
-    s.src = pfx + 'account.js?v=20261018-shared-shell-source-join'; s.async = true;
+    s.src = pfx + 'account.js?v=20261030-nav-prehydration'; s.async = true;
+    /* account.js failed to fetch: nav_market.js will never be appended and the
+       nav boot can never lift the pre-hydration barrier (_navlinks.html.j2),
+       so lift it here. Guarded — the progressive-loader sandbox has no
+       documentElement, and the class is simply absent on pages without it. */
+    s.onerror = function () {
+      var el = document.documentElement;
+      if (el && el.classList) el.classList.remove('mdx-nav-boot');
+    };
     document.head.appendChild(s);
   }
   var boot = window.MDX_PROGRESSIVE_BOOT;

@@ -19,7 +19,7 @@ const END = SOURCE.indexOf('\n})();', START);
 assert(END > START, 'canonical shared loader boundary missing');
 const CODE = SOURCE.slice(START, END + '\n})();'.length);
 const MM_DEFAULT = 'https://app.mastermind-x.com';
-const RELEASE_KEY = 'account.js?v=20261018-shared-shell-source-join';
+const RELEASE_KEY = 'account.js?v=20261030-nav-prehydration';
 
 /* ---- fakes ------------------------------------------------------------- */
 function makeTimers() {
@@ -46,9 +46,20 @@ function makeTimers() {
 
 function makeDocument() {
   const listeners = { pointerdown: [], keydown: [] };
+  const classLog = [];
+  const classSet = new Set(['mdx-nav-boot']); // the page booted with the barrier armed
   const doc = {
     scripts: [],
     head: { appendChild(node) { doc.scripts.push(node); } },
+    // Recording fake: the loaders' script onerror handlers lift the nav
+    // pre-hydration barrier (see _navlinks.html.j2) through this node.
+    documentElement: {
+      classList: {
+        contains(c) { return classSet.has(c); },
+        add(c) { classSet.add(c); classLog.push('add ' + c); },
+        remove(c) { classSet.delete(c); classLog.push('remove ' + c); }
+      }
+    },
     createElement(tag) { return { tagName: String(tag).toUpperCase(), src: null, async: undefined }; },
     addEventListener(type, fn) { (listeners[type] = listeners[type] || []).push(fn); },
     removeEventListener(type, fn) {
@@ -58,6 +69,8 @@ function makeDocument() {
     dispatch(type) { (listeners[type] || []).slice().forEach((fn) => fn({ type: type })); }
   };
   doc.listenerCount = (type) => (listeners[type] || []).length;
+  doc.classListLog = classLog;
+  doc.classListSet = classSet;
   return doc;
 }
 
@@ -251,6 +264,92 @@ async function test(name, fn) {
     await new Promise((r) => setImmediate(r));
     assert.strictEqual(scripts(env.doc).length, 1);
     assert.strictEqual(inputListeners(env.doc), 0);
+  });
+
+  /* ---- nav pre-hydration barrier ----------------------------------------
+     account.js is the second hop of the theme.js -> account.js ->
+     nav_market.js chain that owns the nav mega-menu runtime. When EITHER hop
+     fails to fetch, nav_market.js boot() never runs, so the loaders' script
+     onerror handlers are the fast lift for the barrier that
+     _navlinks.html.j2 arms before first paint. Cases below run the ACTUAL
+     loader source (same sandbox as above) plus the ACTUAL inline boot script
+     extracted from the partial, driven by fake timers. */
+
+  await test('barrier: account script fetch failure lifts mdx-nav-boot', () => {
+    const env = boot({ root: '/x/themes/' });
+    assert.strictEqual(scripts(env.doc).length, 1);
+    assert.strictEqual(env.doc.classListSet.has('mdx-nav-boot'), true, 'page boots with the barrier armed');
+    const s = scripts(env.doc)[0];
+    assert.strictEqual(typeof s.onerror, 'function', 'loader arms an onerror lift');
+    s.onerror();
+    assert.strictEqual(env.doc.classListSet.has('mdx-nav-boot'), false, 'fetch failure restores the legacy nav');
+    // A guarded handler must also survive a DOM without documentElement.
+    const bare = boot({});
+    bare.doc.documentElement = undefined;
+    assert.doesNotThrow(() => scripts(bare.doc)[0].onerror());
+  });
+
+  const NAVLINKS = fs.readFileSync(path.join(__dirname, '..', 'templates', '_navlinks.html.j2'), 'utf8');
+  const BOOT_SRC = NAVLINKS.split('<script>')[1].split('</script>')[0];
+
+  function barrierEnv(opts) {
+    const o = opts || {};
+    const timers = makeTimers();
+    const doc = makeDocument();
+    if (!o.keepBarrier) doc.classListSet.delete('mdx-nav-boot');
+    const sb = {
+      setTimeout: timers.setTimeout,
+      clearTimeout: timers.clearTimeout,
+      document: doc,
+      window: {}
+    };
+    if (o.acctLoading) sb.window.__mmAccountLoading = true;
+    if (o.navLoading) sb.window.__mmNavMarketLoading = true;
+    vm.runInContext(BOOT_SRC, vm.createContext(sb), { filename: '_navlinks.html.j2', displayErrors: true });
+    return { sb: sb, doc: doc, timers: timers };
+  }
+
+  await test('barrier boot script: arms mdx-nav-boot and lifts at the hard cap with no loader chain alive', () => {
+    const env = barrierEnv();
+    assert.strictEqual(env.doc.classListSet.has('mdx-nav-boot'), true, 'armed synchronously, before paint');
+    env.timers.advance(4999);
+    assert.strictEqual(env.doc.classListSet.has('mdx-nav-boot'), true);
+    env.timers.advance(1);
+    assert.strictEqual(env.doc.classListSet.has('mdx-nav-boot'), false, 'stalled page recovers its legacy nav');
+    assert.strictEqual(env.timers.pending, 0, 'no timer left behind');
+  });
+
+  await test('barrier boot script: extends only while a loader chain is demonstrably in flight, then caps', () => {
+    const env = barrierEnv({ acctLoading: true });
+    for (let i = 1; i <= 3; i++) {
+      env.timers.advance(5000);
+      assert.strictEqual(env.doc.classListSet.has('mdx-nav-boot'), true, 'still waiting, wake ' + i);
+    }
+    env.timers.advance(5000);
+    assert.strictEqual(env.doc.classListSet.has('mdx-nav-boot'), false, 'hard cap lifts it regardless');
+    assert.strictEqual(env.timers.pending, 0);
+  });
+
+  await test('barrier boot script: idempotent — a second partial include arms nothing new', () => {
+    const timers = makeTimers();
+    const doc = makeDocument();
+    doc.classListSet.delete('mdx-nav-boot'); // fresh page: nothing armed yet
+    const sb = { setTimeout: timers.setTimeout, clearTimeout: timers.clearTimeout, document: doc, window: {} };
+    vm.runInContext(BOOT_SRC, vm.createContext(sb), { filename: '_navlinks.html.j2' });
+    assert.strictEqual(timers.pending, 1);
+    vm.runInContext(BOOT_SRC, vm.createContext(sb), { filename: '_navlinks.html.j2' });
+    assert.strictEqual(timers.pending, 1, 'second include must not re-arm');
+  });
+
+  await test('barrier boot script: a late boot-lift wins — wake after removal is a no-op', () => {
+    const env = barrierEnv({ navLoading: true });
+    const addsAfterBoot = env.doc.classListLog.filter((e) => e.indexOf('add ') === 0).length;
+    // nav_market.js boot() removed the class while the watchdog was armed.
+    env.doc.classListSet.delete('mdx-nav-boot');
+    env.timers.advance(60000);
+    assert.strictEqual(env.doc.classListSet.has('mdx-nav-boot'), false);
+    const addsNow = env.doc.classListLog.filter((e) => e.indexOf('add ') === 0).length;
+    assert.strictEqual(addsNow, addsAfterBoot, 'no re-add after boot');
   });
 
   process.stdout.write('\n' + passed + ' passed, ' + failed.length + ' failed\n');
