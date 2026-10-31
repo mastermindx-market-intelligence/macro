@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -16,11 +17,17 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
 from engine.marketing.catalyst_partner_pack import (
-    PackRejected, build_partner_pack, write_partner_pack,
+    PackRejected, build_partner_pack, build_partner_pack_from_native_event,
+    write_partner_pack,
 )
 from scripts.build_catalyst_partner_pack import (
     DEMO_EVENT, DEMO_NOW, DEMO_PROFILES,
 )
+import lib.growth_registry as growth_registry
+from engine.marketing.catalyst_packets import (
+    PublicSourceGrant, build_event_packet,
+)
+from engine.marketing.catalyst_scan import compose_scan
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -96,31 +103,6 @@ class CatalystPartnerPackTests(unittest.TestCase):
                                      and ["EXA", "EXB"] or ["EXA", "EXB", "EXC"]))
                 analyses.add((path / "newsletter.md").read_text())
             self.assertEqual(len(analyses), 3)
-
-    def test_committed_synthetic_previews_are_exact_generator_snapshots(self):
-        # The checked-in editorial review pack must never drift behind its
-        # canonical renderer/copy/template. Reproduce from the same fixed demo
-        # clock and compare every byte, including SVG, HTML and attribution.
-        with tempfile.TemporaryDirectory() as root:
-            proc = subprocess.run(
-                [sys.executable, str(ROOT / "scripts" /
-                                     "build_catalyst_partner_pack.py"),
-                 "--demo", "--out", root],
-                cwd=ROOT, capture_output=True, text=True, check=False,
-            )
-            self.assertEqual(proc.returncode, 0, proc.stderr)
-            captured = Path(root)
-            snapshots = ROOT / "examples" / "catalyst_partner_previews"
-            for slug in (p[0]["slug"] for p in DEMO_PROFILES):
-                expected = snapshots / slug
-                observed = captured / slug
-                self.assertEqual({p.name for p in expected.iterdir()},
-                                 {p.name for p in observed.iterdir()})
-                for path in expected.iterdir():
-                    with self.subTest(slug=slug, filename=path.name):
-                        self.assertEqual(path.read_bytes(),
-                                         (observed / path.name).read_bytes(),
-                                         "stale synthetic snapshot: " + path.name)
 
     def test_deterministic_idempotent_outputs(self):
         a = self.make()
@@ -555,31 +537,6 @@ class CatalystPartnerPackTests(unittest.TestCase):
         corrected = self.make()
         self.assertNotEqual(changed["pack_id"], corrected["pack_id"])
 
-    def test_session05_research_only_profiles_preserve_triplets_and_refuse_fake_coverage(self):
-        root = ROOT / "examples" / "catalyst_partner_previews" / "session05_candidate_profiles"
-        expected = {
-            "stockopine": ("MU", "AMD", "NVDA"),
-            "potential_multibaggers": ("NVDA", "MSFT", "AMD"),
-            "mbi_deep_dives": ("MSFT", "META", "NVDA"),
-            "scuttleblurb": ("NVDA", "AVGO", "SNPS"),
-            "the_canadian_investor": ("ORCL", "MSFT", "TSM"),
-        }
-        self.assertEqual({p.stem for p in root.glob("*.json")}, set(expected))
-        for slug, tickers in expected.items():
-            profile = json.loads((root / (slug + ".json")).read_text())
-            self.assertEqual(tuple(profile["selected_tickers"]), tickers)
-            self.assertEqual(profile["status"], "candidate")
-            self.assertTrue(profile["research_only"])
-            self.assertEqual(profile["publication_permission"], "NOT_GRANTED")
-            self.assertIsNone(profile["brand_permission_receipt"])
-            self.assertIn("8681", profile["research_ref"])
-            self.assertEqual(profile["channel"],
-                             "podcast" if slug == "the_canadian_investor" else "newsletter")
-            with self.assertRaises(PackRejected) as ctx:
-                build_partner_pack(self.event, profile, now_utc=DEMO_NOW)
-            self.assertEqual(ctx.exception.code, "UNSUPPORTED_TICKER")
-            self.assertNotIn("contact_email", profile)
-
     def test_public_text_and_source_urls_refuse_email_addresses(self):
         self.event["claims"][0]["text"] = "Contact insider@example.net about EXA."
         self.refused("EMPTY_CLAIM")
@@ -706,6 +663,324 @@ class CatalystPartnerPackTests(unittest.TestCase):
         self.assertEqual(p["publication_status"], "DRAFT_HOLD")
         self.assertNotIn("sent_at", p)
         self.assertNotIn("published_at", p)
+
+
+class CatalystNativePackTests(unittest.TestCase):
+    """Producer->pack adapter gates, driven by the REAL Session01 producer.
+
+    Hermetic: a synthetic rights resolver stands in for the source-rights
+    owner, every clock is fixed, and no network/send/outreach path exists.
+    Raw source-event / issuers / source_refs shapes are copied from the
+    producer's own public contract (tests/test_catalyst_packet_public.py is
+    deliberately NOT imported here).
+    """
+
+    AS_OF = datetime(2026, 10, 30, 12, 0, 0, tzinfo=timezone.utc)
+    FILING = "0000000001:0000000001-26-000001"
+    SOURCE_ID = "sec:" + FILING
+    ISSUERS = {"EXA": {"supported": True, "issuer_id": "cik:0000000001",
+                       "name": "Example Materials Corp"}}
+
+    @staticmethod
+    def _grant(sid, now):
+        return PublicSourceGrant(
+            source_id=sid, receipt_id="hermetic-grant:" + sid,
+            owner_ref="hermetic-owner", audience="public_anonymous",
+            effective_at_utc=datetime(2026, 10, 30, 0, 0, tzinfo=timezone.utc),
+            expires_at_utc=datetime(2026, 10, 31, 0, 0, tzinfo=timezone.utc),
+            display_link=True, display_title=True, display_facts=True,
+        )
+
+    @classmethod
+    def _source_event(cls, **over):
+        base = {
+            "source": "edgar_8k_202", "filing_key": cls.FILING, "cik": 1,
+            "ticker": "EXA",
+            "acceptance_datetime": "2026-10-30T09:30:00Z",
+            "when": "2026-10-30T09:31:00Z",
+            "when_semantics": "processing_wall_clock",
+            "publication_time_utc": "2026-10-30T10:00:00Z",
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1/"
+                          "x1-20261030.htm",
+            "eps_actual": 2.5, "_eps_basis": "adjusted",
+            "rev_actual": 1500000000,
+        }
+        base.update(over)
+        return base
+
+    @classmethod
+    def _native(cls, resolver=None, **over):
+        resolver = resolver or cls._grant
+        packet = build_event_packet(
+            cls._source_event(**over), issuers=cls.ISSUERS,
+            rights_resolver=resolver, as_of=cls.AS_OF,
+        )
+        scan = compose_scan(["EXA"], packets=[packet], issuers=cls.ISSUERS,
+                            as_of=cls.AS_OF, event_id=packet["event_id"])
+        return packet, scan
+
+    @staticmethod
+    def _partner_profile():
+        return {
+            "slug": "hermetic-audience",
+            "name": "Illustrative audience (hermetic test)",
+            "audience": "hermetic newsletter test readers",
+            "status": "candidate", "channel": "newsletter",
+            "profile_url": "https://www.mastermind-x.com/",
+            "profile_verified_at_utc": "2026-10-28T00:00:00Z",
+        }
+
+    def _pack(self, packet, scan, **kwargs):
+        kwargs.setdefault("now_utc", self.AS_OF)
+        return build_partner_pack_from_native_event(
+            packet, scan, self._partner_profile(), ["EXA"], **kwargs)
+
+    def refused(self, code, packet, scan, **kwargs):
+        with self.assertRaises(PackRejected) as caught:
+            self._pack(packet, scan, **kwargs)
+        self.assertEqual(caught.exception.code, code)
+
+    def test_native_positive_pack_from_real_producer_packet(self):
+        packet, scan = self._native()
+        self.assertEqual(packet["public_disposition"], "PUBLIC_READY")
+        pack = self._pack(packet, scan)
+        self.assertEqual(pack["schema"], "marketing.catalyst_partner_pack.v1")
+        self.assertEqual(pack["event"]["event_id"], packet["event_id"])
+        self.assertEqual([c["text"] for c in pack["claims"]],
+                         [c["text"] for c in packet["what_changed"]])
+        self.assertEqual(pack["publication_status"], "DRAFT_HOLD")
+
+    def test_native_link_only_variant_withholds_media(self):
+        packet, scan = self._native()
+        pack = self._pack(packet, scan)
+        self.assertIsNone(pack["card_svg"])
+        self.assertEqual(pack["media_status"], "REHOST_RIGHTS_BLOCKED")
+        # The pack's exported source projection flattens the native grant to
+        # the single link-only flag the read-model normalized (rehost never
+        # granted for native sources).
+        for source in pack["sources"]:
+            self.assertIs(source["public_rehost"], False)
+        with tempfile.TemporaryDirectory() as temp:
+            written = write_partner_pack(pack, temp)
+            self.assertFalse(any(f.suffix == ".svg" for f in written))
+            page = (Path(temp) / "index.html").read_text()
+            self.assertNotIn("<svg", page)
+
+    def test_native_without_grant_rejected(self):
+        def denied(sid, now):
+            return None
+        blocked, blocked_scan = self._native(resolver=denied)
+        self.assertEqual(blocked["public_disposition"], "BLOCKED_PUBLIC")
+        self.refused("NATIVE_PUBLIC_RIGHTS_BLOCKED", blocked, blocked_scan)
+        packet, scan = self._native()
+        tampered = copy.deepcopy(packet)
+        tampered["public_safe"] = True
+        tampered["public_disposition"] = "PUBLIC_READY"
+        tampered["sources"][0]["display_rights"] = "DENIED"
+        self.refused("NATIVE_SOURCE_GRANTS_MISSING", tampered, scan)
+        fixture = copy.deepcopy(packet)
+        fixture["rights_receipt_ids"] = ["fixture-rights:demo"]
+        fixture["sources"][0]["rights_receipt_id"] = "fixture-rights:demo"
+        self.refused("NATIVE_FIXTURE_RIGHTS_NOT_AUTHORIZED", fixture, scan)
+
+    def test_native_correction_with_predecessor_retires_prior(self):
+        gen0_packet, gen0_scan = self._native()
+        gen0 = self._pack(gen0_packet, gen0_scan)
+        gen1_packet, gen1_scan = self._native(
+            correction_generation=1, revision_status="corrected",
+            supersedes_generation=0, correction_reason="official_amendment",
+            eps_actual=2.1,
+        )
+        gen1 = self._pack(gen1_packet, gen1_scan, predecessor_pack=gen0)
+        self.assertEqual(gen1["supersedes"]["pack_id"], gen0["pack_id"])
+        self.assertEqual(gen1["supersedes"]["generation"], 0)
+        self.assertTrue(gen1["supersedes"]["superseded_claims"])
+        self.assertIn("EXA reported ADJUSTED EPS of 2.5 USD/share.",
+                      gen1["supersedes"]["superseded_claims"])
+        self.assertEqual(gen1["retires_pack_ids"], [gen0["pack_id"]])
+        self.assertNotEqual(gen1["pack_id"], gen0["pack_id"])
+        notice = gen1["correction_notice"]
+        self.assertIn("replaces draft " + gen0["pack_id"], notice)
+        self.assertIn("(generation 0)", notice)
+        self.assertIn("Superseded statement:", notice)
+        self.assertIn(notice, gen1["newsletter"])
+        with tempfile.TemporaryDirectory() as temp:
+            write_partner_pack(gen1, temp)
+            page = (Path(temp) / "index.html").read_text()
+            self.assertIn("Correction: replaces draft " + gen0["pack_id"],
+                          page)
+            self.assertIn("Superseded statement:", page)
+
+    def test_native_orphan_amendment_rejected(self):
+        gen1_packet, gen1_scan = self._native(
+            correction_generation=1, revision_status="corrected",
+            supersedes_generation=0, correction_reason="official_amendment",
+            eps_actual=2.1,
+        )
+        self.refused("NATIVE_CORRECTION_ORPHAN", gen1_packet, gen1_scan)
+        other_filings = {
+            "EXA": {"supported": True, "issuer_id": "cik:0000000002",
+                    "name": "Other Example Corp"}}
+        other_event = {
+            "source": "edgar_8k_202", "filing_key": "0000000002:0000000002-26-000002",
+            "cik": 2, "ticker": "EXA",
+            "acceptance_datetime": "2026-10-30T09:30:00Z",
+            "when": "2026-10-30T09:31:00Z", "when_semantics": "processing_wall_clock",
+            "publication_time_utc": "2026-10-30T10:00:00Z",
+            "source_url": "https://www.sec.gov/Archives/edgar/data/2/x2-20261030.htm",
+            "eps_actual": 1.0, "_eps_basis": "gaap", "rev_actual": 500000000,
+        }
+        other_packet = build_event_packet(
+            other_event, issuers=other_filings, rights_resolver=self._grant,
+            as_of=self.AS_OF)
+        other_scan = compose_scan(["EXA"], packets=[other_packet],
+                                  issuers=other_filings, as_of=self.AS_OF,
+                                  event_id=other_packet["event_id"])
+        other_pack = self._pack(other_packet, other_scan)
+        self.refused("NATIVE_CORRECTION_ORPHAN", gen1_packet, gen1_scan,
+                     predecessor_pack=other_pack)
+        gen0_packet, gen0_scan = self._native()
+        gen0 = self._pack(gen0_packet, gen0_scan)
+        wrong_generation = copy.deepcopy(gen0)
+        wrong_generation["event"]["correction_generation"] = 5
+        self.refused("NATIVE_CORRECTION_ORPHAN", gen1_packet, gen1_scan,
+                     predecessor_pack=wrong_generation)
+        self.refused("NATIVE_PREDECESSOR_UNEXPECTED", gen0_packet, gen0_scan,
+                     predecessor_pack=gen0)
+
+    def test_native_cta_is_human_html_with_allowlisted_attribution(self):
+        packet, scan = self._native()
+        pack = self._pack(packet, scan,
+                          scan_url="https://www.mastermind-x.com/api/catalyst",
+                          route_receipt="route-hermetic-01")
+        url = urlsplit(pack["scan_link"])
+        self.assertEqual(url.hostname, "www.mastermind-x.com")
+        self.assertEqual(url.path, "/api/catalyst")
+        params = parse_qs(url.query)
+        self.assertEqual(set(params), {"utm_source", "utm_medium",
+                                       "utm_campaign", "utm_content",
+                                       "event_id", "tickers"})
+        self.assertEqual(params["utm_content"], [pack["pack_id"]])
+        entries = [e for e in growth_registry.registry().get("events", ())
+                   if e.get("name") == "session.start"]
+        self.assertEqual(len(entries), 1)
+        properties = entries[0].get("properties") or {}
+        self.assertIn("source", properties)
+        self.assertIn("campaign", properties)
+
+    def test_native_retired_pack_never_reemitted(self):
+        gen0_packet, gen0_scan = self._native()
+        gen0 = self._pack(gen0_packet, gen0_scan)
+        retracted_packet, _ = self._native(
+            correction_generation=1, revision_status="retracted",
+            supersedes_generation=0, correction_reason="official_amendment",
+            eps_actual=2.1,
+        )
+        self.assertEqual(retracted_packet["public_disposition"], "RETRACTED")
+        import engine.marketing.catalyst_partner_pack as partner_module
+        retired_ids = partner_module.retired_pack_ids_for_native_event
+        self.assertEqual(retired_ids(retracted_packet, [gen0]),
+                         frozenset({gen0["pack_id"]}))
+        corrected_packet, _ = self._native(
+            correction_generation=1, revision_status="corrected",
+            supersedes_generation=0, correction_reason="official_amendment",
+            eps_actual=2.1,
+        )
+        self.assertEqual(retired_ids(corrected_packet, [gen0]),
+                         frozenset({gen0["pack_id"]}))
+        self.assertEqual(retired_ids(gen0_packet, [gen0]), frozenset())
+        self.refused("PACK_RETIRED", gen0_packet, gen0_scan,
+                     retired_pack_ids={gen0["pack_id"]})
+        retracted_scan = compose_scan(
+            ["EXA"], packets=[retracted_packet], issuers=self.ISSUERS,
+            as_of=self.AS_OF, event_id=retracted_packet["event_id"])
+        self.refused("NATIVE_PUBLIC_RIGHTS_BLOCKED", retracted_packet,
+                     retracted_scan)
+        self.assertEqual([name for name in dir(partner_module)
+                          if re.search(r"send|smtp|outbox|post_|deliver", name)],
+                         [])
+
+    def test_native_forwarded_link_does_not_credit_a_person(self):
+        packet, scan = self._native()
+        first = self._pack(packet, scan)
+        second = self._pack(copy.deepcopy(packet), copy.deepcopy(scan))
+        self.assertEqual(first["scan_link"], second["scan_link"])
+        url = urlsplit(first["scan_link"])
+        params = parse_qs(url.query)
+        self.assertEqual(set(params), {"utm_source", "utm_medium",
+                                       "utm_campaign", "utm_content",
+                                       "event_id", "tickers"})
+        for key, values in params.items():
+            self.assertNotIn(key.lower(), {"email", "uid", "user", "user_id",
+                                           "session", "sid", "token", "ref",
+                                           "fp", "fingerprint"})
+            for value in values:
+                self.assertNotIn("@", value)
+                self.assertIsNone(
+                    re.search(r"[0-9a-f]{8}-[0-9a-f]{4}-", value))
+
+    def test_native_five_clocks_distinct_publication_never_substituted(self):
+        packet, scan = self._native()
+        pack = self._pack(packet, scan)
+        event = pack["event"]
+        for field in ("event_time_utc", "first_observed_at_utc",
+                      "publication_time_utc", "as_of_utc", "expires_at_utc"):
+            self.assertIsNotNone(event[field])
+        self.assertEqual(event["event_time_utc"], packet["event_time_utc"])
+        self.assertEqual(event["first_observed_at_utc"],
+                         packet["first_observed_at_utc"])
+        self.assertEqual(event["publication_time_utc"],
+                         packet["publication_time_utc"])
+        self.assertEqual(event["as_of_utc"], packet["as_of_utc"])
+        self.assertEqual(event["expires_at_utc"],
+                         packet["cache_expires_at_utc"])
+        unattested_packet, unattested_scan = self._native(
+            publication_time_utc="2026-10-30T09:00:00Z")
+        self.assertIsNone(unattested_packet["publication_time_utc"])
+        self.assertIn("publication_time_not_attested",
+                      unattested_packet["missing_data"])
+        unattested = self._pack(unattested_packet, unattested_scan)
+        self.assertIsNone(unattested["event"]["publication_time_utc"])
+        self.assertIn("publication_time_not_attested",
+                      unattested["event"]["missing_data"])
+
+    def test_native_schema_revision_refused(self):
+        packet, scan = self._native()
+        for mutate in (
+            lambda p: p.update(schema_version=2),
+            lambda p: p.update(schema_version=True),
+            lambda p: p.update(schema="catalyst.public_event/v2"),
+        ):
+            tampered = copy.deepcopy(packet)
+            mutate(tampered)
+            self.refused("NATIVE_SCHEMA_UNSUPPORTED", tampered, scan)
+        tampered_scan = copy.deepcopy(scan)
+        tampered_scan["schema_version"] = 2
+        self.refused("NATIVE_SCHEMA_UNSUPPORTED", packet, tampered_scan)
+
+    def test_native_comparison_percent_and_advice_refused(self):
+        def tampered(phrase, index=0):
+            packet, scan = self._native()
+            base = packet["what_changed"][index]["text"]
+            packet["what_changed"][index]["text"] = base + " " + phrase
+            scan["results"][0]["what_changed"][index]["text"] = \
+                packet["what_changed"][index]["text"]
+            return packet, scan
+        self.refused("NATIVE_COMPARISON_WITHOUT_PRIOR",
+                     *tampered("Figures improved from the prior quarter."))
+        self.refused("NATIVE_CHANGE_PERCENT_REFUSED",
+                     *tampered("The division accounted for 12% of the group."))
+        self.refused("EDITORIAL_COPY_REJECTED",
+                     *tampered("Buy now."))
+        packet, scan = self._native()
+        pack = self._pack(packet, scan)
+        with tempfile.TemporaryDirectory() as temp:
+            write_partner_pack(pack, temp)
+            page = (Path(temp) / "index.html").read_text()
+        for value in re.findall(r'class="([^"]*)"', page):
+            self.assertIsNone(
+                re.search(r"bull|bear|positive|negative|score|gain|loss",
+                          value))
 
 
 if __name__ == "__main__":

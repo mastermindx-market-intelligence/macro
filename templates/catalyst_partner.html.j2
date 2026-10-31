@@ -215,6 +215,9 @@
         {% if pack.event.correction_generation %}
         <p>Correction present: generation {{ pack.event.correction_generation }}. Retire older assets before approving this replacement.</p>
         {% endif %}
+        {% if pack.correction_notice is defined and pack.correction_notice %}
+        <p class="correction-note">{{ pack.correction_notice }}</p>
+        {% endif %}
         {% if pack.event.missing_data %}
         <p>Known missing data:
           {% for missing in pack.event.missing_data %}{{ missing }}{% if not loop.last %}; {% endif %}{% endfor %}</p>

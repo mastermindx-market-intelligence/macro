@@ -17,7 +17,7 @@ import tempfile
 import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 from urllib.parse import parse_qsl, quote, unquote, urlsplit
 
 PACK_SCHEMA = "marketing.catalyst_partner_pack.v1"
@@ -30,6 +30,18 @@ _ALLOWED_RELATIONS = {"DIRECT", "EVIDENCED_INDIRECT"}
 _ALLOWED_KINDS = {"earnings", "event", "company_news", "ai_capex", "semiconductor", "semiconductor_event"}
 _ALLOWED_CHANNELS = {"newsletter", "community", "social", "research", "podcast"}
 _DEMO_SCAN_URL = "https://preview.invalid/catalyst/scan/"
+# Native v1 facts carry NO comparable-prior figure, so comparative change
+# language can only be an invention on top of the read-model. Refuse it
+# outright rather than let a known figure read as an improvement.
+_NATIVE_COMPARISON = re.compile(
+    r"improv\w*|increas\w*|decreas\w*|grew|grow\w*|rose|rise|fell|fall\w*"
+    r"|beat\w*|miss\w*|exceed\w*|surpass\w*|record|higher|lower|stronger"
+    r"|weaker|jump\w*|surg\w*|plung\w*|outperform\w*|underperform\w*"
+    r"|year-over-year|yoy|q/q|y/y",
+    re.IGNORECASE,
+)
+_NATIVE_CORRECTION_REASONS = frozenset(
+    {"official_amendment", "source_retraction", "data_correction"})
 
 
 class PackRejected(ValueError):
@@ -619,6 +631,8 @@ def build_partner_pack_from_native_event(
     *, now_utc: datetime | None = None, preview_only: bool = True,
     scan_url: str | None = None, route_receipt: str | None = None,
     angle_plan: dict | None = None,
+    predecessor_pack: dict | None = None,
+    retired_pack_ids: Iterable[str] = (),
 ) -> dict:
     """Bridge the Session 01 PUBLIC read-model to this held asset compiler.
 
@@ -629,6 +643,10 @@ def build_partner_pack_from_native_event(
     only: no native source row grants image rehosting, so SVG stays WITHHELD.
     Both source owner and public scan must have been supplied by a trusted
     server-side caller; an arbitrary request body is NOT an admitted source.
+
+    A corrected generation (g > 0) MUST name the pack it supersedes via
+    ``predecessor_pack``; an orphan amendment is refused. ``retired_pack_ids``
+    is the C03 registry: a pack id listed there is never re-emitted.
     """
     _require(preview_only is True, "PUBLICATION_UNAUTHORIZED")
     _require(isinstance(native_event, dict) and isinstance(native_scan, dict),
@@ -667,6 +685,34 @@ def build_partner_pack_from_native_event(
                   or (revision == "CORRECTED" and generation > 0
                       and correction.get("status") == "corrected")),
              "NATIVE_CORRECTION_NOT_CURRENT")
+    # Correction binding: a replacement pack must name the exact pack it
+    # supersedes. An amendment with no verifiable predecessor is an orphan --
+    # it could retire nothing and leave the superseded draft in distribution.
+    prior_generation = None
+    predecessor = None
+    if generation:
+        prior_generation = correction.get("supersedes_generation")
+        _require(type(prior_generation) is int
+                 and 0 <= prior_generation < generation
+                 and correction.get("reason") in _NATIVE_CORRECTION_REASONS
+                 and isinstance(predecessor_pack, dict)
+                 and predecessor_pack.get("schema") == PACK_SCHEMA
+                 and isinstance(predecessor_pack.get("pack_id"), str)
+                 and re.fullmatch(r"cp_[0-9a-f]{18}",
+                                  predecessor_pack["pack_id"]) is not None
+                 and isinstance(predecessor_pack.get("event"), dict)
+                 and predecessor_pack["event"].get("event_id") == identity
+                 and predecessor_pack["event"].get("correction_generation")
+                 == prior_generation
+                 and isinstance(predecessor_pack.get("claims"), list)
+                 and all(isinstance(claim, dict)
+                         and isinstance(claim.get("text"), str)
+                         and claim["text"].strip()
+                         for claim in predecessor_pack["claims"]),
+                 "NATIVE_CORRECTION_ORPHAN")
+        predecessor = predecessor_pack
+    else:
+        _require(predecessor_pack is None, "NATIVE_PREDECESSOR_UNEXPECTED")
     native_kind = _atom(native_event.get("event_kind"),
                         "NATIVE_EVENT_KIND", 40)
     _require(native_kind in ("earnings", "ai_capex", "semiconductor_event"),
@@ -865,6 +911,12 @@ def build_partner_pack_from_native_event(
                     and set(claimed_refs) == set(relation_refs)
                 )
             _require(allowed_fact, "NATIVE_CLAIM_NOT_IN_PRODUCER")
+            # The v1 contract carries no comparable-prior figure, so change
+            # language or a percent can only be invented on top of the facts.
+            _require(_NATIVE_COMPARISON.search(text) is None,
+                     "NATIVE_COMPARISON_WITHOUT_PRIOR")
+            _require("%" not in text and "percent" not in text.lower(),
+                     "NATIVE_CHANGE_PERCENT_REFUSED")
             claim_id = "native-" + hashlib.sha256(
                 json.dumps([identity, generation, ticker, i, text, claimed_refs],
                            ensure_ascii=False, separators=(",", ":")
@@ -918,11 +970,92 @@ def build_partner_pack_from_native_event(
             "receipt_id": receipts[0],
         },
     }
-    return build_partner_pack(
+    pack = build_partner_pack(
         read_model, partner_profile, ticks, preview_only=preview_only,
         now_utc=now, scan_url=scan_url, route_receipt=route_receipt,
         angle_plan=angle_plan,
     )
+    # C03 retired registry: a pack id already retired for this event is never
+    # re-emitted, even if the same evidence would hash to the same id again.
+    _require(pack["pack_id"] not in set(retired_pack_ids), "PACK_RETIRED")
+    if predecessor is None:
+        pack["supersedes"] = None
+        pack["retires_pack_ids"] = []
+        pack["correction_notice"] = None
+        return pack
+    new_claim_texts = {claim["text"] for claim in pack["claims"]}
+    superseded_claims = [claim["text"] for claim in predecessor["claims"]
+                         if claim["text"] not in new_claim_texts]
+    pack["supersedes"] = {
+        "pack_id": predecessor["pack_id"],
+        "generation": prior_generation,
+        "superseded_claims": superseded_claims,
+    }
+    pack["retires_pack_ids"] = [predecessor["pack_id"]]
+    notice = (
+        f"Correction: replaces draft {predecessor['pack_id']} "
+        f"(generation {prior_generation})."
+        + "".join(f' Superseded statement: "{text}".'
+                  for text in superseded_claims)
+    )
+    # The notice is partner-facing copy, so it must clear the same public
+    # lexicon validators the pack itself already applies.
+    from engine.marketing.copywriter import banned_language
+    from engine.press.validators import check_advice_lexicon, check_banned_lexicon
+    notice_draft = {"title": pack["event"]["primary_subject"],
+                    "body_html": "<p>" + html.escape(notice) + "</p>"}
+    _require(check_advice_lexicon(notice_draft, {}, {}).get("ok") is True
+             and check_banned_lexicon(notice_draft, {}, {}).get("ok") is True
+             and not banned_language(notice),
+             "CORRECTION_NOTICE_REJECTED")
+    marker = ("This event has a revised generation. Review the underlying "
+              "correction trail before distribution.")
+    _require(marker in pack["newsletter"], "CORRECTION_NOTICE_REJECTED")
+    pack["newsletter"] = pack["newsletter"].replace(
+        marker, marker + "\n\n" + notice, 1)
+    pack["correction_notice"] = notice
+    return pack
+
+
+def retired_pack_ids_for_native_event(
+    native_event: dict, prior_packs: Iterable[dict],
+) -> frozenset[str]:
+    """C03 registry derivation: pack ids a future build must never re-emit.
+
+    For a RETRACTED native event every prior pack of the same event is
+    retired; for a CORRECTED generation g every prior pack of the same event
+    with an older correction generation is retired; a CURRENT event retires
+    nothing. Pure derivation from caller-owned manifests: no I/O, no logging
+    of content, no send or outreach of any kind.
+    """
+    _require(isinstance(native_event, dict), "NATIVE_RETIRED_REGISTRY_INVALID")
+    state = native_event.get("correction_state")
+    _require(state in ("CURRENT", "CORRECTED", "RETRACTED"),
+             "NATIVE_RETIRED_REGISTRY_INVALID")
+    if state == "CURRENT":
+        return frozenset()
+    generation = native_event.get("generation")
+    if state == "CORRECTED":
+        _require(type(generation) is int and generation > 0,
+                 "NATIVE_RETIRED_REGISTRY_INVALID")
+    retired: set[str] = set()
+    for pack in prior_packs:
+        _require(isinstance(pack, dict)
+                 and isinstance(pack.get("pack_id"), str)
+                 and isinstance(pack.get("event"), dict),
+                 "NATIVE_RETIRED_REGISTRY_INVALID")
+        event = pack["event"]
+        if event.get("event_id") != native_event.get("event_id"):
+            continue
+        if state == "RETRACTED":
+            retired.add(pack["pack_id"])
+            continue
+        prior = event.get("correction_generation")
+        _require(type(prior) is int and 0 <= prior,
+                 "NATIVE_RETIRED_REGISTRY_INVALID")
+        if prior < generation:
+            retired.add(pack["pack_id"])
+    return frozenset(retired)
 
 def write_partner_pack(pack: dict, destination: Path | str,
                        *, template_path: Path | str | None = None) -> list[Path]:
