@@ -871,6 +871,292 @@
     });
   }
 
+  /* ---- the checked, idempotent save (R7 Wave A §6.4/§10/§13) ----------------
+     saveChecked(listId, tickers, opts) — one save that reports what the ACCOUNT
+     actually answered, never repeats itself, and never claims "saved" without
+     reading the list back. Composed from the primitives above (symbolsFetch /
+     _deadline) plus its own single insert, _checkedInsert, which never hands a
+     failed write to the sync outbox — a checked ticker is written by this save
+     or by a later save's check-first read, never re-inserted behind the page.
+     _symbolInsert, the outbox and their retry semantics stay untouched for
+     every other caller.
+
+     opts.decisions   {TICKER: {en, zh}} — tonight's decision per ticker. For
+                      each ticker THIS save inserted and the read-back
+                      confirmed, it is frozen into the "When you saved"
+                      snapshot (localStorage `mdash.watchlist.saved_snap.v1`),
+                      never overwriting an existing entry: what you saved stays
+                      as it was. A ticker already on the list gets none.
+     opts.returnFocus an Element — echoed on every outcome detail so the page can
+                      hand focus back to the invoking control once the account
+                      has answered.
+
+     Resolves (never rejects) with one outcome, also dispatched on `document`
+     as `ws-save-outcome` (a `{state:'waiting', listName, names}` detail is
+     emitted once at the start of a real attempt):
+
+       {state:'saved', readBackAt, names, already, listCount, decisionsKept, listName}
+       {state:'rejected', reason, listName, names}   — the account answered no
+                                                       (4xx / PostgREST code) with
+                                                       nothing added anywhere
+       {state:'uncertain', askedAt, listName, names} — no answer in time, a lost
+                                                       response / 5xx the read-back
+                                                       could not confirm, or a
+                                                       write landed ambiguously;
+                                                       the NEXT save's check-first
+                                                       read is what prevents a
+                                                       second write, never a retry
+
+     `names` carries every requested ticker confirmed by the read-back (in
+     request order); `already` is the subset that was on the server BEFORE any
+     write, reported so the page can say "<N> names, <TK> is already in it". */
+  var SAVE_SNAP_KEY = 'mdash.watchlist.saved_snap.v1';
+  var SAVE_DEADLINE_TAG = 'saveChecked-deadline';
+  var saveChain = {};        // listId -> tail of the serialized save queue
+
+  /* Race one server call against the shared cloud deadline. The underlying
+     promise is NOT cancelled (a fetch cannot be) — a deadline loser may still
+     land its write afterwards, which is exactly the ambiguity 'uncertain'
+     names, and why the next attempt checks before writing again. */
+  function _withDeadline(fn) {
+    var d = _deadline(PF_CLOUD_DEADLINE_MS, SAVE_DEADLINE_TAG);
+    var p = Promise.resolve().then(fn);
+    return Promise.race([p, d.promise]).then(
+      function (v) { d.cancel(); return v; },
+      function (e) { d.cancel(); throw e; }
+    );
+  }
+  /* A refusal is an answer the ACCOUNT actually gave. postgrest-js resolves a
+     lost exchange as a plain object too — `{message:'TypeError: Failed to
+     fetch', code:''}` with status 0 — and a gateway 5xx body arrives the same
+     way, so "plain object with a message" proves nothing. A refusal therefore
+     needs a 4xx-class HTTP status from the account (401/403/409/422 …) or a
+     non-empty PostgREST/Postgres error `code`, and must not look like a lost
+     exchange. Status 0, any 5xx, a 408, a fetch/network/timeout message, and
+     our own Error instances (deadline tags, bad-args) are AMBIGUOUS: once an
+     insert was attempted, only the read-back may decide. */
+  var _AMBIGUOUS_ERR_RE = /failed to fetch|networkerror|network request failed|load failed|timed? ?out/i;
+  function _isRefusalErr(err) {
+    if (!err || typeof err !== 'object' || err instanceof Error) return false;
+    var status = (typeof err.status === 'number') ? err.status : null;
+    if (status !== null && (status === 0 || status === 408 || status >= 500)) return false;
+    if (_AMBIGUOUS_ERR_RE.test(String(err.message == null ? '' : err.message))) return false;
+    if (status !== null && status >= 400 && status < 500) return true;
+    return typeof err.code === 'string' && err.code !== '';
+  }
+  /* The checked save's own single insert: the row shape and cache bookkeeping
+     of _symbolInsert, with two differences the save contract needs.
+       - A failure is NEVER handed to the sync outbox (no pendingInserts
+         marker), so nothing re-inserts a checked ticker behind the user's back
+         after the page has reported 'uncertain'; the next save's check-first
+         read is the only road to a second write.
+       - The account's HTTP status rides on the thrown error, so
+         _isRefusalErr can tell a 4xx answer from a lost exchange (status 0)
+         or a gateway 5xx.
+     `onAttempt` fires immediately before the insert request leaves. */
+  function _checkedInsert(listId, t, onAttempt) {
+    return _listsGuard().then(function () {
+      return _cloudOf(listId) ? null : symbolsFetch(listId);
+    }).then(function () {
+      var c = _cloudOf(listId);
+      if (!c || c.set[t]) return { symbol: t, skipped: true };
+      setPill('syncing');
+      if (onAttempt) onAttempt();
+      return sb.from('watchlist_symbols')
+        .insert({ watchlist_id: listId, symbol: t, section: SECTION, position: _nextPos(listId) })
+        .then(function (res) {
+          if (res && res.error) {
+            var e = res.error;
+            if (e instanceof Error) throw e;
+            var out = (e && typeof e === 'object')
+              ? { message: e.message, code: e.code, details: e.details, hint: e.hint, status: e.status }
+              : { message: String(e) };
+            if (typeof res.status === 'number') out.status = res.status;
+            throw out;
+          }
+          _noteInserted(listId, [t]);
+          _syncClearInsertPending(listId, t);
+          setPill('synced');
+          return { symbol: t };
+        });
+    });
+  }
+  function _saveEmit(detail) {
+    try {
+      document.dispatchEvent(new CustomEvent('ws-save-outcome', { detail: detail }));
+    } catch (e) {}
+  }
+  function _listKnown(listId) {
+    for (var i = 0; i < listsCache.length; i++) {
+      if (String(listsCache[i].id) === String(listId)) return true;
+    }
+    return false;
+  }
+  function _pad2(n) { return ('0' + n).slice(-2); }
+  /* Freeze the "When you saved" snapshot for exactly the tickers THIS save
+     inserted and the read-back confirmed — a ticker that was already on the
+     server keeps whatever snapshot it had (none stays none), because today's
+     date and decision are not when it was saved. Returns how many entries were
+     actually stored (0 when storage refuses). Frozen history: an existing list+ticker entry is never
+     overwritten — a later correction belongs in the Tonight column, beside the
+     saved decision, not on top of it. Every storage access is guarded. */
+  function _saveSnapshots(listId, confirmed, decisions) {
+    if (!decisions || typeof decisions !== 'object') return 0;
+    var snap = {};
+    try {
+      var raw = localStorage.getItem(SAVE_SNAP_KEY);
+      if (raw) snap = JSON.parse(raw);
+    } catch (e) { snap = {}; }
+    if (!snap || typeof snap !== 'object') snap = {};
+    var perList = snap[listId];
+    if (!perList || typeof perList !== 'object') { perList = {}; snap[listId] = perList; }
+    var now = new Date();
+    var day = now.getFullYear() + '-' + _pad2(now.getMonth() + 1) + '-' + _pad2(now.getDate());
+    var stored = 0;
+    confirmed.forEach(function (t) {
+      if (perList[t]) return;                     // frozen history
+      var dec = decisions[t];
+      if (!dec || !(dec.en || dec.zh)) return;    // no decision supplied -> no snapshot
+      perList[t] = { d: day, en: String(dec.en || ''), zh: String(dec.zh || '') };
+      stored++;
+    });
+    if (!stored) return 0;
+    try { localStorage.setItem(SAVE_SNAP_KEY, JSON.stringify(snap)); } catch (e) { return 0; }
+    return stored;
+  }
+
+  /* The save must land in a list the account actually knows. listsCache is
+     only a cache — an id absent from it may be a list created elsewhere since
+     our last refresh, so absence alone never answers; ask once, then decide. */
+  function ensureList(listId) {
+    if (_listKnown(listId)) return Promise.resolve(true);
+    return _withDeadline(listsFetch).then(function () { return _listKnown(listId); });
+  }
+
+  function saveChecked(listId, tickers, opts) {
+    var o = opts || {};
+    // normalize + de-dupe the request, preserving order (fif's uppercase rule)
+    var want = [], seenReq = {};
+    (Array.isArray(tickers) ? tickers : [tickers]).forEach(function (t) {
+      var n = String(t == null ? '' : t).trim().toUpperCase();
+      if (n && !seenReq[n]) { seenReq[n] = 1; want.push(n); }
+    });
+    var listName = listNameOf(listId) || String(listId || '');
+    var askedAt = nowISO();
+    var rf = o.returnFocus || null;
+
+    // Serialize per list: two concurrent saves for one list would both pass a
+    // pre-read that cannot see the other's in-flight insert, and the schema
+    // carries no unique (watchlist_id, symbol) index to catch the duplicate.
+    var prev = saveChain[listId] || Promise.resolve();
+    var run = prev.then(_doSaveChecked, _doSaveChecked);
+    saveChain[listId] = run;
+    return run;
+
+    function _doSaveChecked() {
+      // synchronous guards: no attempt, no waiting event, zero network
+      if (!user || !sb) {
+        return Promise.resolve({
+          state: 'rejected', reason: 'no-session', listName: listName,
+          names: want.slice(), returnFocus: rf
+        }).then(_finish);
+      }
+      if (!listId || !want.length) {
+        return Promise.resolve({
+          state: 'rejected', reason: 'bad-args', listName: listName,
+          names: want.slice(), returnFocus: rf
+        }).then(_finish);
+      }
+      _saveEmit({ state: 'waiting', listName: listName, names: want.slice(), returnFocus: rf });
+
+      var wroteAnything = false;
+      var attempted = {};        // tickers whose insert request actually left
+      var uncertain = function () {
+        return { state: 'uncertain', askedAt: askedAt, listName: listName,
+                 names: want.slice(), returnFocus: rf };
+      };
+      var rejected = function (reason) {
+        return { state: 'rejected', reason: reason, listName: listName,
+                 names: want.slice(), returnFocus: rf };
+      };
+
+      return ensureList(listId)
+        .then(function (known) {
+          if (!known) return rejected('no-list');
+          // check FIRST: tickers already on the server are never written again
+          return _withDeadline(function () { return symbolsFetch(listId); })
+            .then(function (rows) {
+              var present = {};
+              (rows || []).forEach(function (r) {
+                if (r && r.symbol) present[String(r.symbol).toUpperCase()] = true;
+              });
+              var already = want.filter(function (t) { return !!present[t]; });
+              var missing = want.filter(function (t) { return !present[t]; });
+              var chain = Promise.resolve();
+              missing.forEach(function (t) {
+                chain = chain.then(function () {
+                  return _withDeadline(function () {
+                    return _checkedInsert(listId, t, function () { attempted[t] = true; });
+                  }).then(function () { wroteAnything = true; });
+                });
+              });
+              return chain.then(function () {
+                return { ok: true, already: already };
+              }, function (err) {
+                return { ok: false, err: err, already: already };
+              });
+            })
+            .then(function (stage) {
+              if (stage.state) return stage;
+              // A refusal with NOTHING landed is the account answering no. Any
+              // other write failure — a lost response (status 0, "Failed to
+              // fetch"), a gateway 5xx, the deadline, or a refusal after a
+              // landed write — is ambiguous: the list is read back once and
+              // only every requested ticker present may say 'saved'.
+              if (!stage.ok && _isRefusalErr(stage.err) && !wroteAnything) {
+                return rejected(String((stage.err && stage.err.message) ||
+                                       (stage.err && stage.err.code) || 'refused'));
+              }
+              return _withDeadline(function () { return symbolsFetch(listId); })
+                .then(function (rows) {
+                  var onList = {};
+                  (rows || []).forEach(function (r) {
+                    if (r && r.symbol) onList[String(r.symbol).toUpperCase()] = true;
+                  });
+                  var confirmed = want.filter(function (t) { return !!onList[t]; });
+                  if (confirmed.length !== want.length) return uncertain();
+                  // snapshot only what THIS save inserted and read back
+                  var mine = confirmed.filter(function (t) { return !!attempted[t]; });
+                  var kept = _saveSnapshots(listId, mine, o.decisions);
+                  return {
+                    state: 'saved', readBackAt: nowISO(),
+                    names: want.slice(), already: stage.already,
+                    listCount: (rows || []).length,
+                    decisionsKept: kept > 0,
+                    listName: listName, returnFocus: rf
+                  };
+                }, function () {
+                  // the read-back itself did not answer — the write's effect is
+                  // unknown either way, so 'uncertain' is the only honest state
+                  return uncertain();
+                });
+            });
+        })
+        .then(_finish, function (err) {
+          // ensureList / unexpected failures: a refusal answers no; anything
+          // else means nobody answered.
+          if (_isRefusalErr(err)) {
+            return _finish(rejected(String(err.message || err.code || 'refused')));
+          }
+          return _finish(uncertain());
+        });
+    }
+    function _finish(result) {
+      if (result && result.state !== 'waiting') _saveEmit(result);
+      return result;
+    }
+  }
+
   // ---- pull: fetch cloud symbols and merge into WL --------------------------
   function pull() {
     if (!user || !sb) return Promise.resolve();
@@ -1777,6 +2063,136 @@
   }
   function portfolioReadState() { return pfReadState; }
 
+
+  /* Explicit read-only consumers do not opt into sync initialization. In particular,
+     mounting Ontology must not create a list, fold a local book, or retry an outbox.
+     This operation uses the SAME shared auth client and portfolio_positions owner;
+     it has no cache and never substitutes anonymous local rows. The caller clears
+     its own private rendering on auth/page lifecycle changes. Abort is best effort,
+     not proof that an already-issued network read stopped. */
+  function portfolioReadOnly(options) {
+    options = options || {};
+    var active = true;
+    var ownerId = null;
+    var deadline = performance.now() + PF_CLOUD_DEADLINE_MS;
+    var controller = new AbortController();
+    var timer, rejectStopped;
+    var stopped = new Promise(function (_resolve, reject) { rejectStopped = reject; });
+    var listeners = [];
+    // A setup failure can happen before the race subscribes. Always own this rejection.
+    void stopped.catch(function () {});
+    function refusal(reason) { var e = new Error('PRIVATE_PORTFOLIO_UNAVAILABLE'); e.reason = reason; return e; }
+    function stop(reason) {
+      if (!active) return;
+      active = false;
+      controller.abort();
+      rejectStopped(refusal(reason));
+    }
+    function check() {
+      if (!active) throw refusal('cancelled');
+      if (performance.now() >= deadline) throw refusal('read-timeout');
+    }
+    function canonical() {
+      check();
+      var auth = window.MDXAuth;
+      var u = auth && typeof auth.user === 'function' && auth.user();
+      if (!u || typeof u.id !== 'string' || !u.id) throw refusal('signed-out');
+      if (ownerId !== null && u.id !== ownerId) throw refusal('identity-changed');
+      return u.id;
+    }
+    function listen(target, type, fn) {
+      target.addEventListener(type, fn);
+      listeners.push(function () { target.removeEventListener(type, fn); });
+    }
+    function result(state, rows, warning) {
+      return { schema: 'portfolio_read.v1', authority: 'cloud', state: state,
+        rows: rows, owner_id: state === 'ready' ? ownerId : null,
+        last_good_at: state === 'ready' ? nowISO() : null, warning: warning };
+    }
+    async function owner(client, token) {
+      canonical();
+      var answer = await client.auth.getSession();
+      canonical();
+      var session = answer && !answer.error && answer.data && answer.data.session;
+      if (!session || !session.user || session.user.id !== ownerId ||
+          typeof session.access_token !== 'string' || !session.access_token) throw refusal('identity-changed');
+      // A changed session is conservatively discarded, even for the same user.
+      // The caller may explicitly read again; this is not an account-switch claim.
+      if (token && session.access_token !== token) throw refusal('session-changed');
+      return session.access_token;
+    }
+    async function read() {
+      ownerId = canonical();
+      var getClient = window.MDXAuth && window.MDXAuth.client;
+      if (typeof getClient !== 'function') throw refusal('client-unavailable');
+      var client = await getClient();
+      canonical();
+      if (!client || !client.auth || typeof client.auth.getSession !== 'function')
+        throw refusal('client-unavailable');
+      var token = await owner(client);
+      check();
+      // Request one overflow row and the exact owner count. A server cap or a
+      // partial response must never turn an incomplete book into a false zero.
+      var query = client.from('portfolio_positions')
+        .select('id,user_id,ticker,shares,entry_price,entry_date,status,created_at', { count: 'exact' })
+        .eq('user_id', ownerId).order('created_at').limit(501);
+      if (typeof query.abortSignal === 'function') query = query.abortSignal(controller.signal);
+      var response = await query;
+      canonical();
+      if (!response || response.error || !Array.isArray(response.data)) throw refusal('cloud-unavailable');
+      if (!Number.isSafeInteger(response.count) || response.count < 0 || response.count > 500 ||
+          response.count !== response.data.length) throw refusal('incomplete-book');
+      var ids = new Set();
+      var rows = response.data.map(function (row) {
+        if (!row || row.user_id !== ownerId || typeof row.id !== 'string' || !row.id ||
+            row.id.length > 128 || ids.has(row.id) || typeof row.ticker !== 'string' ||
+            !row.ticker || row.ticker.length > 64 || !['open', 'closed'].includes(row.status))
+          throw refusal('invalid-book');
+        ids.add(row.id);
+        ['shares', 'entry_price'].forEach(function (key) {
+          if (row[key] !== null && (typeof row[key] !== 'number' || !Number.isFinite(row[key])))
+            throw refusal('invalid-book');
+        });
+        ['entry_date', 'created_at'].forEach(function (key) {
+          if (row[key] !== null && (typeof row[key] !== 'string' || row[key].length > 64))
+            throw refusal('invalid-book');
+        });
+        // Copy only the selected position fields. Private notes are not needed
+        // for exposure, and are neither queried nor forwarded by this method.
+        return { id: row.id, ticker: row.ticker, shares: row.shares,
+          entry_price: row.entry_price, entry_date: row.entry_date,
+          status: row.status, created_at: row.created_at };
+      });
+      await owner(client, token);
+      check();
+      return result('ready', rows, null);
+    }
+    return Promise.resolve().then(function () {
+      if (!Number.isFinite(deadline)) throw refusal('read-timeout');
+      var external = options.signal;
+      if (external && (typeof external.aborted !== 'boolean' ||
+          typeof external.addEventListener !== 'function' ||
+          typeof external.removeEventListener !== 'function')) throw refusal('invalid-options');
+      listen(window, 'mdx-auth', function () { stop('session-changed'); });
+      listen(window, 'pagehide', function () { stop('cancelled'); });
+      if (external) {
+        if (external.aborted) stop('cancelled');
+        else listen(external, 'abort', function () { stop('cancelled'); });
+      }
+      timer = setTimeout(function () { stop('read-timeout'); }, PF_CLOUD_DEADLINE_MS);
+      return Promise.race([read(), stopped]);
+    }).catch(function (e) {
+      var allowed = ['signed-out', 'identity-changed', 'session-changed', 'client-unavailable', 'read-timeout',
+        'cancelled', 'cloud-unavailable', 'incomplete-book', 'invalid-book', 'invalid-options'];
+      return result('error', null, allowed.includes(e && e.reason) ? e.reason : 'cloud-unavailable');
+    }).finally(function () {
+      active = false;
+      controller.abort();
+      clearTimeout(timer);
+      listeners.forEach(function (remove) { try { remove(); } catch (_) { /* best effort */ } });
+    });
+  }
+
   var PF_IMPORT_SELECT = 'id, user_id, ticker, shares, entry_price, entry_date, notes, status';
 
   function pfCloudRows(rows, uid) {
@@ -2107,6 +2523,203 @@
     });
   }
 
+  // F04 Macro Dashboard Watchlist overlay. Additive private read-only adapter,
+  // modeled on the accepted portfolioReadOnly cloud reader: canonical user and
+  // session checks, one monotonic 12000ms deadline, a Promise-owned rejection
+  // for setup failures, caller abort/pagehide/mdx-auth cleanup, and identity
+  // re-verified before and after every awaited read. It never touches
+  // listsFetch/symbolsFetch/init, the cache, sync, outbox or localStorage; the
+  // only effects are awaited Supabase reads on the existing watchlists and
+  // watchlist_symbols tables under the caller's RLS authority. No retries,
+  // no logs, token exports or JWT decoding.
+  function watchlistReadOnly(options) {
+    options = options || {};
+    var active = true;
+    var ownerId = null;
+    var deadline = performance.now() + PF_CLOUD_DEADLINE_MS;
+    var controller = new AbortController();
+    var timer, rejectStopped;
+    var stopped = new Promise(function (_resolve, reject) { rejectStopped = reject; });
+    var listeners = [];
+    // A setup failure can happen before the race subscribes. Always own this rejection.
+    void stopped.catch(function () {});
+    function refusal(reason) { var e = new Error('PRIVATE_WATCHLIST_UNAVAILABLE'); e.reason = reason; return e; }
+    function stop(reason) {
+      if (!active) return;
+      active = false;
+      controller.abort();
+      rejectStopped(refusal(reason));
+    }
+    function check() {
+      if (!active) throw refusal('cancelled');
+      if (performance.now() >= deadline) throw refusal('read-timeout');
+    }
+    function canonical() {
+      check();
+      var auth = window.MDXAuth;
+      var u = auth && typeof auth.user === 'function' && auth.user();
+      if (!u || typeof u.id !== 'string' || !u.id) throw refusal('signed-out');
+      if (ownerId !== null && u.id !== ownerId) throw refusal('identity-changed');
+      return u.id;
+    }
+    function listen(target, type, fn) {
+      target.addEventListener(type, fn);
+      listeners.push(function () { target.removeEventListener(type, fn); });
+    }
+    function result(state, payload, warning) {
+      var ready = state === 'ready';
+      return { schema: 'watchlist_read.v1', authority: 'cloud', state: state,
+        lists: ready ? payload.lists : null,
+        rows: ready ? payload.rows : null,
+        owner_id: ready ? ownerId : null,
+        list_id: ready ? payload.list_id : null,
+        last_good_at: ready ? nowISO() : null,
+        warning: warning };
+    }
+    async function owner(client, token) {
+      canonical();
+      var answer = await client.auth.getSession();
+      canonical();
+      var session = answer && !answer.error && answer.data && answer.data.session;
+      if (!session || !session.user || session.user.id !== ownerId ||
+          typeof session.access_token !== 'string' || !session.access_token) throw refusal('identity-changed');
+      // A changed session is conservatively discarded, even for the same user.
+      // The caller may explicitly read again; this is not an account-switch claim.
+      if (token && session.access_token !== token) throw refusal('session-changed');
+      return session.access_token;
+    }
+    // A list row is accepted only with a usable id/name, and only those two
+    // fields are copied. position and created_at merely steer the deterministic
+    // order, so they are checked loosely; any bad, duplicate or crossowner id
+    // refuses the whole read.
+    function listRow(row, ids) {
+      if (!row || row.user_id !== ownerId || typeof row.id !== 'string' || !row.id ||
+          row.id.length > 128 || ids.has(row.id) || typeof row.name !== 'string' ||
+          row.name.length > 256) throw refusal('invalid-lists');
+      ids.add(row.id);
+      if (row.position !== null && (typeof row.position !== 'number' || !Number.isFinite(row.position)))
+        throw refusal('invalid-lists');
+      if (row.created_at !== null && (typeof row.created_at !== 'string' || row.created_at.length > 64))
+        throw refusal('invalid-lists');
+      return { id: row.id, name: row.name };
+    }
+    // A symbol row must belong to the selected list. Duplicate symbols are
+    // legal owner rows (the table has no unique index yet), so every row is
+    // checked first and the dedupe happens only afterwards, in order.
+    function symbolRow(row, listId, seen) {
+      if (!row || row.watchlist_id !== listId || typeof row.symbol !== 'string' ||
+          !row.symbol || row.symbol.length > 64) throw refusal('invalid-symbols');
+      if (row.position !== null && (typeof row.position !== 'number' || !Number.isFinite(row.position)))
+        throw refusal('invalid-symbols');
+      if (row.created_at !== null && (typeof row.created_at !== 'string' || row.created_at.length > 64))
+        throw refusal('invalid-symbols');
+      if (seen.has(row.symbol)) return null;
+      seen.add(row.symbol);
+      return { symbol: row.symbol };
+    }
+    async function fetchLists(client, listId) {
+      var query;
+      if (listId) {
+        // Verify exactly this owner row and never enumerate another user's
+        // list; limit(2) turns any duplicate key into a refusal.
+        query = client.from('watchlists')
+          .select('id,user_id,name,position,created_at', { count: 'exact' })
+          .eq('user_id', ownerId).eq('id', listId).limit(2);
+      } else {
+        // Request one overflow row and the exact owner count. A server cap or
+        // a partial response must never turn an incomplete set into a false zero.
+        query = client.from('watchlists')
+          .select('id,user_id,name,position,created_at', { count: 'exact' })
+          .eq('user_id', ownerId)
+          .order('position').order('created_at').limit(101);
+      }
+      if (typeof query.abortSignal === 'function') query = query.abortSignal(controller.signal);
+      var answer = await query;
+      canonical();
+      if (!answer || answer.error || !Array.isArray(answer.data)) throw refusal('cloud-unavailable');
+      if (!Number.isSafeInteger(answer.count) || answer.count < 0) throw refusal('cloud-unavailable');
+      if (listId) {
+        // Exactly one owned row must match; anything else is not verifiable.
+        if (answer.count !== 1 || answer.data.length !== 1 || !answer.data[0] || answer.data[0].id !== listId)
+          throw refusal('list-not-found');
+      } else if (answer.count > 100 || answer.count !== answer.data.length) {
+        throw refusal('incomplete-lists');
+      }
+      var ids = new Set();
+      return answer.data.map(function (row) { return listRow(row, ids); });
+    }
+    async function read() {
+      ownerId = canonical();
+      var selected = null;
+      if (options.listId !== undefined && options.listId !== null) {
+        if (typeof options.listId !== 'string' || !options.listId || options.listId.length > 128)
+          throw refusal('invalid-options');
+        selected = options.listId;
+      }
+      var getClient = window.MDXAuth && window.MDXAuth.client;
+      if (typeof getClient !== 'function') throw refusal('client-unavailable');
+      var client = await getClient();
+      canonical();
+      if (!client || !client.auth || typeof client.auth.getSession !== 'function')
+        throw refusal('client-unavailable');
+      var token = await owner(client);
+      check();
+      var lists = await fetchLists(client, selected);
+      await owner(client, token);
+      check();
+      if (!selected) {
+        // Enumeration publishes id/name only; symbols need an explicit listId.
+        return result('ready', { lists: lists, rows: null, list_id: null }, null);
+      }
+      // Request one overflow row and the exact total. A server cap or a partial
+      // response must never turn an incomplete set into a false empty list.
+      var query = client.from('watchlist_symbols')
+        .select('watchlist_id,symbol,position,created_at', { count: 'exact' })
+        .eq('watchlist_id', selected)
+        .order('position').order('created_at').limit(501);
+      if (typeof query.abortSignal === 'function') query = query.abortSignal(controller.signal);
+      var answer = await query;
+      canonical();
+      if (!answer || answer.error || !Array.isArray(answer.data)) throw refusal('cloud-unavailable');
+      if (!Number.isSafeInteger(answer.count) || answer.count < 0 || answer.count > 500 ||
+          answer.count !== answer.data.length) throw refusal('incomplete-symbols');
+      var seen = new Set();
+      var rows = [];
+      answer.data.forEach(function (row) {
+        var copy = symbolRow(row, selected, seen);
+        if (copy) rows.push(copy);
+      });
+      await owner(client, token);
+      check();
+      return result('ready', { lists: lists, rows: rows, list_id: selected }, null);
+    }
+    return Promise.resolve().then(function () {
+      if (!Number.isFinite(deadline)) throw refusal('read-timeout');
+      var external = options.signal;
+      if (external && (typeof external.aborted !== 'boolean' ||
+          typeof external.addEventListener !== 'function' ||
+          typeof external.removeEventListener !== 'function')) throw refusal('invalid-options');
+      listen(window, 'mdx-auth', function () { stop('session-changed'); });
+      listen(window, 'pagehide', function () { stop('cancelled'); });
+      if (external) {
+        if (external.aborted) stop('cancelled');
+        else listen(external, 'abort', function () { stop('cancelled'); });
+      }
+      timer = setTimeout(function () { stop('read-timeout'); }, PF_CLOUD_DEADLINE_MS);
+      return Promise.race([read(), stopped]);
+    }).catch(function (e) {
+      var allowed = ['signed-out', 'identity-changed', 'session-changed', 'client-unavailable', 'read-timeout',
+        'cancelled', 'cloud-unavailable', 'incomplete-lists', 'incomplete-symbols', 'invalid-lists',
+        'invalid-symbols', 'list-not-found', 'invalid-options'];
+      return result('error', null, allowed.includes(e && e.reason) ? e.reason : 'cloud-unavailable');
+    }).finally(function () {
+      active = false;
+      controller.abort();
+      clearTimeout(timer);
+      listeners.forEach(function (remove) { try { remove(); } catch (_) { /* best effort */ } });
+    });
+  }
+
   // ---- public API ------------------------------------------------------------
   window.WatchStore = {
     status: status,
@@ -2116,6 +2729,7 @@
     /* Registered multi-list seam (W1a). Signed-out callers get a rejected promise —
        the anonymous store is watchlist.js's `mdash.watchlist.v1` blob, untouched. */
     lists: {
+      readOnly: watchlistReadOnly,
       all: listsAll,                 // cached view, no network
       refresh: listsFetch,
       create: listCreate,
@@ -2133,7 +2747,10 @@
       inspect: symbolInspect,       // observation only; never a write or retry receipt
       add: symbolAdd,
       remove: symbolRemove,
-      push: pushList                 // full-membership diff, scoped to one list
+      push: pushList,                // full-membership diff, scoped to one list
+      // R7 Wave A: the checked, idempotent save — reports what the account
+      // answered (saved | rejected | uncertain) after reading the list back.
+      saveChecked: saveChecked
     },
     // FIF X2-n designated-list helper (R2): the issuer-watch subscription
     // surface. Data functions only; no call site ships in this wave.
@@ -2147,6 +2764,7 @@
     },
     portfolio: {
       list: portfolioList,
+      readOnly: portfolioReadOnly,
       upsert: portfolioUpsert,
       importBatch: portfolioImportBatch,
       close: portfolioClose,

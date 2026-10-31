@@ -1,0 +1,70 @@
+{
+  "schema": "eval_os.a28.probe_proposal.v1",
+  "status": "AUTHORED_NOT_EXECUTED",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "source_head": "1c1411292d993d76bbe0eaaa38f636e5a170cbde",
+  "probe": "science/a28/probe_composed_scale.py",
+  "probe_sha256": "6a0a24f9c7fe79ee073add6fc5c107aa516021791f2661f03c7979d226a3759e",
+  "source_sha256": {
+    "admin/intelligence_os.py": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873",
+    "scripts/build_output_health.py": "75ea0931be2d0c1e6a89edd3cb9348e37286159a33b38bb27d77b65a3aa65869",
+    "scripts/build_intelligence_registry.py": "8f224e29d69517cbb5fd1e390ec05f70755d0bf5f89056ff016f2caf9d7381a9",
+    "engine/qledger_store.py": "b34edaad1cb5010093acbb4321b4ecf9287beea3422918f7e9f3b43f94584877",
+    "scripts/grade_qledger.py": "56d49a99be7105c29f80795c2c2af8d89605f660f6280042fdb28072731155b2",
+    "admin/evidence_findings.py": "d2355370c9c458db54a35e2253903d5b781b5b0193c945b587618706cb3bf909"
+  },
+  "input_identity": {
+    "receipt": "assurance/production-capacity-metadata.json",
+    "receipt_sha256": "de2d2479eceb0ad239b61fe80755c155745177ccc8966c6141a784ed397a0783",
+    "claims_bytes": 104577272,
+    "grades_bytes": 76734696,
+    "total_bytes": 181311968,
+    "observed_vps_mem_available_bytes": 2426531840,
+    "observed_vps_mem_total_bytes": 4106096640,
+    "observed_admin_service_rss_bytes": 8871936,
+    "observed_mac_memory_bytes": 206158430208,
+    "observation_times": "05:38/05:39 UTC, parent-supplied exact receipt; metadata only"
+  },
+  "actual_callgraph": {
+    "composed": "admin.intelligence_os._derive:614 acquires RLock before ClaimsReadScope then _derive_scoped; T1/T4 build_with_registry returns both from one pass.",
+    "baseline": "scripts.build_output_health.build_with_registry:846 resets shared caches; scripts.build_intelligence_registry._load_qledger:272 reads full text/splitlines.",
+    "claims_storage": "engine.qledger_store._production_claims_binding returns legacy unconditionally. Native storage is explicit synthetic compatibility only, not a production activation.",
+    "incremental": "Recorded readiness+findings bounded reads, metadata and pure DTOs. No grade parsing/readiness recomputation/quote classification.",
+    "cache": "_derive enters lock/scope before checking cache; legacy scope is no corpus retention. Cold/force serialized; native synthetic scope acquisition may still have cost on hit, outside this production legacy-size probe."
+  },
+  "cases": [
+    "Fresh-child unchanged real T1/T4 baseline with ClaimsReadScope",
+    "Fresh-child real A1 cold force",
+    "Same-child A1 cache hit (expect hit and no T1 claim transport)",
+    "Same-child forced refresh",
+    "Two same-process force callers (actual RLock serializes builds)"
+  ],
+  "discriminating_measurements": [
+    "Process ru_maxrss plus watchdog sampledRSS, actual units per OS; all imports included",
+    "Wall/CPU per operation; cache label checked; peaks cumulative per process explicitly labelled",
+    "Claims transport calls/ASCII bytes forwarded unchanged, not total physical I/O",
+    "Grades read attempts and readiness-compute attempts must be zero",
+    "Recorded-partial/current-unavailable, ready=None and legitimate numerical0 remain intact",
+    "Fixture file hashes unchanged and source hashes stable across execution"
+  ],
+  "acceptance_limits": {
+    "root_authorized_per_child_peak_rss_bytes": 1073741824,
+    "root_authorized_per_child_deadline_seconds": 60,
+    "required": "Both fresh child lanes finish successfully inside ceiling; no attempted grade parse/recompute, no source/fixture mutation, actual _derive input transport >= target claims bytes. Report remaining headroom relative to historical VPS observation; no automatic production pass.",
+    "watchdog": "50ms RSS polling plus final maxRSS overshoot check, terminate/kill only own child. This is observed watchdog enforcement, not an OS hard RSS guarantee.",
+    "latency": "60s is root-authorized synthetic abort bound, not customer SLA. admin Handler timeout30 is idle/socket timeout, not compute deadline."
+  },
+  "assumptions_and_limits": [
+    "Mac hardware is not VPS CPU/storage; elapsed time cannot predict VPS latency.",
+    "One synthetic T4 artifact tests ledger scaling but does not reproduce full estate graph/corrections or every live consumer.",
+    "Claims/grades use synthetic complete ASCII rows, unique and duplicate IDs, alternating20/126 horizons/directions; no market observations or source content.",
+    "Owner artifacts have disclosed byte padding; object cardinality differs from production.",
+    "Uses unversioned recorded artifact, matching currently retained historical semantics; bounded legacy versioned-receipt comparison is separately source/test reviewed, not timed by this probe.",
+    "A1-vs-baseline RSS difference is secondary: whole-child RSS must satisfy ceiling; negative noisy deltas cannot excuse absolute capacity.",
+    "Cold/force pair latency includes sequential wait; no separate server/socket/client proof claimed.",
+    "No current production headroom refresh is necessary for this local synthetic execution; historical2.26GiB is context only.",
+    "Passing unchanged T1 alone cannot discharge new on-demand request cost. Probe can establish differential support; full production release remains parent-owned."
+  ],
+  "execution": "Use admitted existing test interpreter: <python> science/a28/probe_composed_scale.py --execute --python <same-python>. No new worktree, application edit, data/study admission, worker or CI query.",
+  "syntax_validation": "AST parsed only; probe not executed by science."
+}

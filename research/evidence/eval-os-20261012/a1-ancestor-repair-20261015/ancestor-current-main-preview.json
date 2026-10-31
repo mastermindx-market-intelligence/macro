@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-10-15T06:41:47.347759+00:00",
+  "head": "2d0e6e334986eb73496c102a939ee4e24a688c63",
+  "main": "ccbd7d874b0b4233299edab2b413b037adc6c5d1",
+  "returncode": 0,
+  "output": "7298a3b2d616471ab16d1ad8a55519c9d806c747\n",
+  "error": "",
+  "effect": "Read-only preview; no main merge or source/ref update"
+}

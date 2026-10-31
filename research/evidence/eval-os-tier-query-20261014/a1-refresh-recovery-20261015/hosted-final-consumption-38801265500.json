@@ -1,0 +1,22 @@
+{
+  "consumed_at": "2026-10-15T21:37:27.088174+00:00",
+  "workflow_run_id": 38801265500,
+  "attempt": 1,
+  "head": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+  "artifact_id": 12007237637,
+  "zip_sha256": "6c4129d6651e7072bbce913c774fd0d44107554027c51a779c9d6625d4f9ecb2",
+  "canonical_mode": "semantic",
+  "plan_sha256": "c36592b22778e006aa1449de94ebf7a31260b13f5dfe2bfb87d1a27ed7308378",
+  "base_sha": "eb46b820042f27d1f4a517af2df8b158be83d063",
+  "tested_commit": "248037474cd2cd1ad3d45efcfbd7a9f1f3cf52ad",
+  "tested_git_tree": "3271d9ab08bb818eb09033c050a9827bff4a025b",
+  "jobs": 127,
+  "semantic_command_steps_passed": 351,
+  "blocked": 0,
+  "inherited": 0,
+  "infrastructure_blocking": false,
+  "clear": true,
+  "plan_execution_and_step_identities_match": true,
+  "local_binding_correction": "Canonical tested_tree_sha field names tested commit, already verified against actual Git tree by original plan. Initial local consumption supplied Git tree and correctly refused; corrected argument to original plan tested commit, no artifact or source change.",
+  "scope": "Original b4 terminal semantic CI proof. Binding checks, incumbent freshness/merge and production remain separate. Not unit-test count or zero-skip proof."
+}

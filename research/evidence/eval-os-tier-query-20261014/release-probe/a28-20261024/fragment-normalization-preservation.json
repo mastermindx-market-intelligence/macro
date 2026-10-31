@@ -1,0 +1,15 @@
+{
+  "base": "e09d782cb595407c00f3ab69b8a69de55c2e8b02",
+  "changed_path": ".github/ci/legacy-jobs.yml",
+  "normalization_only": {
+    "neural-web": 20,
+    "qledger-cluster-honest-ci": 1040
+  },
+  "entire_parsed_manifest_equal": true,
+  "all355_job_definitions_equal": true,
+  "job_and_path_order_equal": true,
+  "commands_memberships_limits_assertions": "Unchanged; only two leading spaces added to1060 path-entry lines in two jobs. Parser/test source exacte09.",
+  "before_manifest_blob": "85c5985ab6def5ed344a3536b6359a39cabf59ce",
+  "after_sha256": "cc5dc13cd84b1da8a6ed0f794eeb596834270e7f7a3e9f58974418e9738fd933",
+  "original_hosted_classification": "UNKNOWN; exact-base replay timed_out/descendant settlementunknown retained. Local immutable parser comparison is not hostedbasePASS."
+}

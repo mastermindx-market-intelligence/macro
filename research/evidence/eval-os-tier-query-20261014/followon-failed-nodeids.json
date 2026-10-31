@@ -1,0 +1,62 @@
+[
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_committed_store_is_valid",
+    "message": "AssertionError: ::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/reference/' does not exist in repo 'macro'\n  ::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/symbol_directory/' does not exist in repo 'macro'\n  ::warning title=agentos-phantom-owns-path::agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/openfigi/' does not exist in repo 'macro'\n  ::warning title=agentos-phantom-owns-path::agentos/workstream"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_a_one_sided_supersession_warns_but_never_blocks",
+    "message": "AssertionError: ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_a_one_sided_supersession_0/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/reference/' does not exist in repo 'macro'\n  ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_a_one_sided_supersession_0/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/symbol_directory/' does not exist in repo 'macro'\n  ::warni"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_warning_never_blocks",
+    "message": "AssertionError: ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_warning_never_blocks0/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/reference/' does not exist in repo 'macro'\n  ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_warning_never_blocks0/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/symbol_directory/' does not exist in repo 'macro'\n  ::warning title=a"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_state_rules_warn_and_do_not_block[active-but-complete]",
+    "message": "AssertionError: active-but-complete still hard-fails; a fleet-wide unscoped check must not gate on work state:\n  ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_state_rules_warn_and_do_n0/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/reference/' does not exist in repo 'macro'\n  ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_state_rules_warn_and_do_n0/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phan"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_state_rules_warn_and_do_not_block[blocked-without-cause]",
+    "message": "AssertionError: blocked-without-cause still hard-fails; a fleet-wide unscoped check must not gate on work state:\n  ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_state_rules_warn_and_do_n1/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/reference/' does not exist in repo 'macro'\n  ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_state_rules_warn_and_do_n1/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [ph"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_state_rules_warn_and_do_not_block[cause-without-blocked]",
+    "message": "AssertionError: cause-without-blocked still hard-fails; a fleet-wide unscoped check must not gate on work state:\n  ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_state_rules_warn_and_do_n2/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/reference/' does not exist in repo 'macro'\n  ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_state_rules_warn_and_do_n2/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [ph"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_clean_merge_of_two_valid_states_validates",
+    "message": "AssertionError: branch A is a valid state\nassert 1 == 0\n +  where 1 = CompletedProcess(args=['/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isola...1738 records (95 workstreams, 463 decisions, 516 discoveries, 664 handoffs) \u2014 1 error(s), 165 warning(s)\\n\", stderr='').returncode\n +    where CompletedProcess(args=['/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isola...1738 records (95 workstreams, 463 decisions, 516 discoveries, 664 handoffs) \u2014 1 error(s), 165 warning(s)\\n\", stderr='') = _validate((PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp8000"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_valid_handoff_is_counted",
+    "message": "AssertionError: ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_valid_handoff_is_counted0/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/reference/' does not exist in repo 'macro'\n  ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_valid_handoff_is_counted0/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/symbol_directory/' does not exist in repo 'macro'\n  ::warning"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_handoff_citation_counts_against_discovery_gc",
+    "message": "AssertionError: ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_handoff_citation_counts_a0/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/reference/' does not exist in repo 'macro'\n  ::warning title=agentos-phantom-owns-path::/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-2031/test_handoff_citation_counts_a0/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'data/symbol_directory/' does not exist in repo 'macro'\n  ::warni"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_phantom_artifact_warns",
+    "message": "AssertionError: phantom paths are hygiene, not schema \u2014 must not block\nassert 1 == 0\n +  where 1 = CompletedProcess(args=['/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isola...1738 records (95 workstreams, 463 decisions, 516 discoveries, 664 handoffs) \u2014 1 error(s), 165 warning(s)\\n\", stderr='').returncode"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_phantom_owns_path_warns",
+    "message": "assert 1 == 0\n +  where 1 = CompletedProcess(args=['/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isola...1738 records (95 workstreams, 463 decisions, 516 discoveries, 664 handoffs) \u2014 1 error(s), 165 warning(s)\\n\", stderr='').returncode"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_cross_repo_path_is_unchecked_when_that_checkout_is_absent",
+    "message": "assert 1 == 0\n +  where 1 = CompletedProcess(args=['/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isola...1738 records (95 workstreams, 463 decisions, 516 discoveries, 664 handoffs) \u2014 1 error(s), 165 warning(s)\\n\", stderr='').returncode"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_cross_repo_path_is_resolved_against_its_own_repo",
+    "message": "AssertionError: still a warning, never a hard failure\nassert 1 == 0\n +  where 1 = CompletedProcess(args=['/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isola...1738 records (95 workstreams, 463 decisions, 516 discoveries, 664 handoffs) \u2014 1 error(s), 176 warning(s)\\n\", stderr='').returncode"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_quiet_suppresses_warnings_but_not_errors",
+    "message": "assert 1 == 0\n +  where 1 = CompletedProcess(args=['/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-isola...1738 records (95 workstreams, 463 decisions, 516 discoveries, 664 handoffs) \u2014 1 error(s), 165 warning(s)\\n\", stderr='').returncode"
+  },
+  {
+    "nodeid": "tests/test_agentos_schema.py::test_no_subcommand_still_announces_itself_as_a_stub",
+    "message": "AssertionError: the committed store must be valid before breadth compilation\nassert not [<agentos_schema_breadth.Problem object at 0x1118a2380>]"
+  }
+]

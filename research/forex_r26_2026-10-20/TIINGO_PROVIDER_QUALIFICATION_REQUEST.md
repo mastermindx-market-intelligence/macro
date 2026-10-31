@@ -1,65 +1,53 @@
-# Tiingo Forex — concrete provider qualification request
+# Tiingo Forex — internal technical qualification checklist
 
-Prepared 21 October 2026 for the existing source/rights owner. **Not sent.** This packet asks for the remaining contract facts needed by the existing Forex R26 source owner; it does not grant identity, feed, rights or finality admission.
+**UNSENT. Do not dispatch the former licensing/product-use inquiry.**
 
-## Context to include with the request
+## Current authority — 22 October 2026
 
-We are qualifying literal currency-pair price-close conditions at a UTC 4H interval for EURUSD, GBPUSD, USDJPY, USDCHF, AUDUSD, USDCAD, USDMXN, USDBRL and USDCNH.
+The Chairman confirmed special licensing approval for the intended Forex R26 product use and directed the session to mark that complete, avoid a Tiingo licensing/product-use email, and continue the project. [Canonical correction: Macro #9996 comment 6331071428](https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6331071428).
 
-We used the existing licensed-account ingestion route. Preserve the account owner's plan attestation; this request does not presume that another purchase is necessary. No API token, key fingerprint, account identity or raw price rows are included.
+**LICENSING_AND_PRODUCT_USE: COMPLETE — Chairman-attested special approval.** This is the internal authorization basis; no new provider reply is claimed. Public documentation and successful HTTP access are not used as substitutes for that attestation. No purchase, account change, credential transfer or outbound message has occurred.
 
-The exact historical request pattern was:
+This file is an internal checklist for the existing source owner. Technical support is considered only if an indispensable fact cannot be resolved from retained data, incumbent code and primary documentation. The preceding prepared request remains historical in Git; its licensing question is superseded.
 
-```text
-/tiingo/fx/{lowercase_pair}/prices?startDate=2026-10-19&endDate=2026-10-20&resampleFreq=1min
-```
+## Existing evidence
 
-Use the exact escaped request strings in `source_evidence/tiingo-nine-pair-plan.json` when comparing server logs; the readable pattern above is not a byte-identical request identity.
+The fixed nine-pair historical request cohort comprises EURUSD, GBPUSD, USDJPY, USDCHF, AUDUSD, USDCAD, USDMXN, USDBRL and USDCNH. Eight 19–20 October minute responses retained 17,011 rows; USDBRL returned an exact verified empty response. A separate USDBRL top-of-book request was also empty and remains RAW_ONLY because no reviewed L1 top-of-book projector exists. These two requests do not establish global vendor non-support.
 
-Nine requests succeeded at HTTP level. Eight produced 17,011 total rows; USDBRL produced an empty array. A separately planned one-request `/tiingo/fx/usdbrl/top` probe also returned an empty array. Both empty responses were verified against retained raw receipts; neither establishes global non-support. The top response remains RAW_ONLY because the incumbent materializer has no reviewed top-of-book projector.
+The 21 October 22:45 UTC native EURUSD `4hour` capture retained seven rows. Its exact raw digest and receipt remain unchanged. Offline comparison with the earlier minute capture tests four interval-label hypotheses. Capture times differ by more than nine hours; a mismatch cannot uniquely identify aggregation rules versus revision effects.
 
-For the nonempty responses the first vendor timestamps on 19 October ranged from 11:30 to 13:15 UTC, despite the requested start date being 19 October. The last timestamps were 20 October 23:59 UTC, except USDMXN at 23:56. Observed steps between unique timestamps ranged up to 180–480 seconds by pair. These facts are diagnostic observations; we have not classified every omitted minute as data loss.
+A separate bounded pair of EURUSD requests for the closed 21 October UTC day was collected once through `scripts.tiingo_ingest.collect` on 22 October. Captures were approximately 1.904 seconds apart: 1,440 minute rows and six native four-hour rows. Exact request dimensions, raw hashes, actual capture clocks and research reader outcomes are in `source_evidence/tiingo-eurusd-20261021-paired-*.json`. Original prices remain in the incumbent archive.
 
-Full per-pair counts, request identities, capture clocks and raw hashes are in `source_evidence/tiingo-nine-pair-receipts.json`. Original prices stay in the existing archive.
+## Questions to resolve locally before any support escalation
 
-## Questions requiring an authoritative answer
-
-| Contract question | Concrete information requested | Why it changes implementation |
+| Topic | Evidence or implementable policy | Required qualification |
 | --- | --- | --- |
-| Historical OHLC basis | Are `open/high/low/close` built from bid, ask, midpoint, transaction prints, or another defined series? If midpoint, is it computed from synchronous bid/ask observations, and what filtering applies? Is the rule identical for all nine requested pairs? | Establish the exact threshold meaning. We cannot infer the historical basis from the separately documented top-of-book mid field. |
-| Timestamp and request boundaries | Does each historical `date` label the start, end or another point of its interval? What timezone and inclusion rules apply to startDate/endDate? What explains the observed midday first rows for the exact receipts? | Map vendor clocks to interval boundaries without shifting observations or treating request dates as publication times. |
-| Sparse minutes and completeness | Is a minute omitted when no accepted quote changes, when there are no valid input quotes, or for another reason? Is any close carried forward? How can a consumer distinguish a legitimate omitted interval from an incomplete response? Are row/window limits or pagination involved? | Decide whether a 4H bucket is complete. An elapsed wall clock or a row count alone is insufficient. |
-| Four-hour anchoring | The public Forex Request table documents `4hour` as a resampleFreq example. For that request value, what are the actual bucket anchors, interval labels, boundary inclusion rules, and timezone/DST behavior? Can buckets be bound to 00:00, 04:00, 08:00, 12:00, 16:00 and 20:00 UTC without a different price construction? Identify any pair/account exceptions. | Use one documented UTC 4H convention and avoid conflicting vendor/local aggregation semantics. |
-| Market closures and exceptional sessions | What are the documented weekly open/close rules, timezone names, DST handling and holiday/exception rules? Are partial boundary buckets emitted, omitted or labeled? | Avoid counting closures as missing data or treating a partial bucket as a complete observation. |
-| Finality and corrections | When is a historical bar considered complete? Can OHLC change after it first appears or after the interval closes? What correction window, revision indicator or supported retrieval policy distinguishes replacement values? Is a finalized status available? | Define a defensible finalization and correction-selection policy. We will not infer finality from the passage of time. |
-| Availability and freshness | Does the API expose original first-publication/availability time or only the vendor interval label/current response? What latency/delay applies to this account/product? Is there a supported way to detect stale successful responses? | Preserve capture time separately, avoid invented historical availability, and determine prospective freshness behavior. |
-| USDBRL and offshore CNH identity | Is literal USDBRL supported on these two documented request shapes and this account entitlement? What does an empty array mean? Confirm that USDCNH denotes the intended offshore RMB spot pair and whether any requested pair is an indicative/derived/non-spot series. | Keep the requested cohort honest. No BRL omission, futures substitution, reciprocal fallback or CNH/CNY substitution is assumed. |
-| Existing product-use rights | Ask the existing rights owner to map the already-attested account entitlement to the intended in-product display, derived 4H conditions and notification use, using the applicable agreement. | Resolve the product-use mapping without treating public marketing, successful access or a proposed new purchase as the account's contract. |
+| Observable and quote identity | Provider-reported historical OHLC can be named explicitly; it must not be called midpoint, trade or executable price without evidence. Literal pair naming remains base/quote. | Source/product owner must accept the intended observable and literal spot identity, including offshore CNH. Saved conditions must not silently change meaning. |
+| Interval labels and anchors | Compare each native bar against minute windows under start/end and boundary-inclusion hypotheses; separate dense equality from sparse equality. | Date labels are evidence for a mapping in the inspected cohort, not a universal vendor contract. Preserve partial first buckets and missing edges. |
+| Sparse data and closures | Conservatively withhold incomplete windows. Do not fill or carry forward absent minutes. | Explicitly limit supported coverage; full calendar/DST/holiday support must not be inferred from one dense day. |
+| Closure and corrections | Consider a versioned local closed-as-captured policy with later changes retained as revisions, through the existing owner. | Do not claim vendor immutability or silently choose a correction winner. Validate boundary, duplicate and conflicting-revision cases. |
+| Availability and freshness | Keep original response-observation time separate from vendor labels and durable availability. The archive stamps observed_at_utc before publication and retains the original clock for identical same-day responses; a future policy needs a separately verified, conservative post-publication/readback clock. | Unknown historical first publication remains unknown. Re-reading or deduplicating a receipt is not a new freshness observation. A recent historical response does not prove natural-boundary publication latency or live delivery. |
+| Empty BRL response | Preserve the exact empty responses and the full requested cohort. | Do not omit BRL, use a reciprocal/futures substitute, or infer global non-support. A specific unresolved support question may remain if existing evidence cannot establish intended coverage. |
 
-The requested response is a link to versioned documentation, an authoritative provider answer, or an explicit statement that a property is not offered. Each answer should identify the endpoint/product, applicable pairs, effective date and any exception. A broad statement that historical data is available does not answer clock, correction or completeness questions.
+## Admission boundary
 
-## Acceptance after an answer
+The reusable bridge remains `INSPECTION / RESEARCH_ONLY_VENDOR_SOURCE`. Its report never supplies eligible observations, a production feed, activation or evaluator-ready bar fields. The generic reader's false admission flags describe this technical boundary, not an unresolved licensing approval.
 
-The existing source owner will bind each accepted answer to the retained receipts and the existing identity/rights owners. Implement only the documented mapping, keep unresolved fields unknown, and add discriminating boundary/correction cases against that mapping. There is no requirement to manufacture a retrospective availability timestamp if the vendor does not provide one.
+A prospective feed must eventually bind explicit pair/feed identity, literal price meaning, UTC interval/calendar, observation identity and revision, capture-based availability, expiry/freshness, and conservative gap/correction handling to the existing evaluator contract. A local policy is an explicit product/source decision requiring its own proof; it is not an excuse to relabel unresolved data as vendor-final.
 
-A future qualified feed must still pass the existing evaluator contract: literal pair and price basis, qualified final 4H interval, explicit UTC boundary and calendar, observation identity/revision, availability/freshness, and gap/correction handling. A dense minute series or a successful provider response does not itself admit a live feed.
+The existing inactive-condition storage rejects activation. No evaluator, queue, collector schedule, notification or publication plane is created by this checklist.
 
-The current bridge remains a diagnostic surface: all 17,011 candidates stay outside `eligible_observations`; the verified empty USDBRL raw capture remains separate from a missing materialized artifact or failed reader.
+## Primary references already inspected
 
-## Primary references already checked
+- [Tiingo REST Forex documentation](https://www.tiingo.com/documentation/forex): historical OHLC and separately described top-of-book fields.
+- [Forex product](https://www.tiingo.com/products/forex-api): historical minute coverage and aggregated bid/ask product.
+- [Symbology](https://www.tiingo.com/documentation/appendix/symbology): base followed by quote currency.
+- `source_evidence/tiingo-documentation-request-syntax.json`: exact public documentation asset/excerpt provenance for `4hour`, minimum minute frequency and date-filter syntax.
 
-- [REST Forex documentation](https://www.tiingo.com/documentation/forex): historical OHLC and top-of-book fields. Its public Forex Request table documents minute/hour syntax including `4hour`, a `1min` minimum and `5min` default, plus inclusive date filters; exact primary-asset provenance is retained in `source_evidence/tiingo-documentation-request-syntax.json`. The date descriptions and request syntax do not settle bucket anchors, bar labels, completeness, finality or publication time.
-- [Forex product](https://www.tiingo.com/products/forex-api): historical minute coverage and aggregated bid/ask product descriptions.
-- [Symbology](https://www.tiingo.com/documentation/appendix/symbology): base currency followed by quote currency.
-- [Provider Forex API overview](https://www.tiingo.com/blog/forex-api/): distinguishes quotes from interval bars and notes that FX daily-close conventions require a choice; it does not settle the historical 4H, correction or availability contract above.
+No provider answer is fabricated, no external message has been sent, and licensing/product use must not be reopened.
 
-No message has been sent to the provider. This is a prepared packet for the existing source owner, not a provider response.
+## Post-boundary evidence added at 04:41 UTC
 
+One bounded follow-up through the incumbent ingestion owner produced a dense 240-minute EURUSD 00:00–04:00 candidate interval whose native OHLC exactly matches the raw-Decimal minute aggregate. The following 04:00–08:00 interval remains partial at 42 minutes, with a differing close across response clocks 1.542572 seconds apart. Original 02:49 responses are preserved; their last open minute and native open interval changed. See SOURCE_QUALIFICATION.md and `source_evidence/tiingo-eurusd-post-boundary-20261022-qualification.json`.
 
-## Additional exact probe for the provider — 21 October 2026
-
-The first native EURUSD `4hour` request was observed at 22:45:21 UTC on 21 October: `/tiingo/fx/eurusd/prices?endDate=2026-10-20&resampleFreq=4hour&startDate=2026-10-19`. It returned seven rows, first date label `2026-10-19T20:00:00.000Z`, last `2026-10-20T20:00:00.000Z`, every adjacent observed label four hours apart. All receipt/raw checks passed. No raw prices or credentials are included.
-
-Please explain why the first returned label occurs late on the requested start date, including any retention/window, account, row-limit, sparse-data, bucket-completeness or request-boundary rules. These are alternative hypotheses, not diagnosed causes. Confirm whether labels denote bucket starts or ends and how original publication, corrections and finality should be represented. This evidence narrows the question; it does not qualify the returned rows for monitoring.
-
-The packet remains **UNSENT**. A bounded search of the connected mailbox found no prior Forex/4hour technical correspondence. The separate existing News-rights draft is not evidence of Forex semantics or an authority to change the account. No external message, credential transfer, purchase or account change occurred.
+The factual post-boundary observation is now available without provider contact. First publication time, low-latency availability and closed-bar immutability are not established by this one 41-minute-late sample. Continue the documented prospective policy through existing source/runtime owners; no licensing inquiry or product-use approval remains outstanding.

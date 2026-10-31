@@ -1,0 +1,135 @@
+{
+  "schema": "eval-os.focused-code-job.final-review.v1",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "reviewer_native_thread": "01a13341-2c83-79b2-9a5a-dddb12e780e3",
+  "carrier": "Macro PR6651",
+  "source_state": "Working three-file repair after committed8d1a4d47bdb66ce4a456b76cea608172ff1e55b5; not a later published head attestation",
+  "ruling": "ACCEPTED_BOUNDED_SOURCE_AND_LOCAL_VERIFICATION",
+  "blocking_source_findings": [],
+  "reviewed_source_sha256": {
+    ".github/ci/legacy-jobs.yml": "a8ca41691f8ca49060180cb78715b44a2143b292e25ea5e6426372618ef6643f",
+    "tests/test_ci_pack.py": "c317b4ace504735142b7ead46103331fa1542927cf063bef02d0751b59859744",
+    "tests/test_eval_os_adversarial_acceptance.py": "fa823efeb16b0988e7920c79e7adf1c700f9c099b271fc7c48dc126de6eed8e2"
+  },
+  "ci_gap": {
+    "retained_plan_run": 38487031782,
+    "subject_head": "8d1a4d47bdb66ce4a456b76cea608172ff1e55b5",
+    "cause": "Ordinary PR gate code excluded legacy neural-web data job before selection. Previously green code checks lacked A1 eight-suite execution. Existing qledger-cluster-honest-ci already owns W6/grade readiness and remains intact.",
+    "repair": "Add focused eval-os-a1 exclusive code job with eight acceptance suites and mandatory node --version; preserve legacy data job and all old jobs."
+  },
+  "preservation": {
+    "all_299_old_parsed_jobs_unchanged": true,
+    "all_299_old_raw_job_blocks_unchanged": true,
+    "only_added_job": "eval-os-a1",
+    "application_changes": false,
+    "ceilings_or_protected_gates_softened": false
+  },
+  "closure": {
+    "declared_literal_paths": 1166,
+    "tracked_inferred_closure": 1166,
+    "missing": [],
+    "wildcards_or_opaque_root_fallbacks": [],
+    "five_direct_reader_findings_closed": [
+      "admin/static/index.html",
+      "tests/test_qledger_control_policy.py",
+      ".gitignore",
+      ".github/workflows/brain-eval.yml",
+      "engine/neuralweb/eval/benchmark_bear_steepener_2026-07-29.json"
+    ],
+    "sparse_inventory_39_omissions": "All39 distinct retained exactsite dependencies added only to new job. Full tracked inventory8d1 used; physical sparse existence alone is not final closure proof.",
+    "negative_landing": "templates/index.html remains excluded; admin/static/index.html included."
+  },
+  "readiness_fixture": {
+    "accepted": true,
+    "exact_test_hash": "fa823efeb16b0988e7920c79e7adf1c700f9c099b271fc7c48dc126de6eed8e2",
+    "meaning": "Real synthetic owner publishes readiness before no-write boundary. Only external alerts stubbed; consumer recomputation prohibited. Retained ready true remains partial recorded provenance with unavailable current qualification, Degraded explicit reason, qualified_task_scope None, panel/detail parity and unchanged estate bytes.",
+    "prior_red": "372PASS1FAIL retained stale positivecontrol requested computed readiness; test-only repair, not product contract relaxation."
+  },
+  "receipt_sha256": {
+    "integration/eval-os-ci-selection-red.txt": "a2027e8dd249e5154193f63f7be5082b46ac3479735a5b62f8e64d30ecb3662a",
+    "integration/eval-os-code-job-tests.xml": "4a1eac40e79baa8e413511f83a6b87c4fdb60619cbcf387a9022cb2836070df8",
+    "integration/eval-os-code-job-final-tests.xml": "e8b7494be26bdd979d6246d0091e90faa614812fe265d33b3d974f0d02f0c0b9",
+    "integration/eval-os-code-job-final-tests.txt": "ef7137db4d7f173b6cf63b5db186bf319fe10ffde2dba2ce089a6da11b3d656d",
+    "integration/eval-os-ci-selection-tests.xml": "d30ca6c94b7f175c5284bef8dc714ec9e796dd90d52e1736aebce2ea89d964ce",
+    "integration/eval-os-ci-selection-final-tests.xml": "4c664a0f7d3cae9e4b591f028d022b336843c8c6ef926b0a39ee251c8c615f3b",
+    "integration/eval-os-ci-selection-final-tests.txt": "c14504d50389c77731ac00fac37749dd45ce4c45c7dc2bddc7d5906611c6a5a2",
+    "integration/eval-os-ci-tracked-closure.json": "cf963e936910c3869b487fdcd264f1aa749d1a6def1712b8a8bbf44523ccf3fc",
+    "integration/eval-os-ci-tracked-closure-final.json": "c4bfd5b0d23c9d12db45b732e88202221c066dc83d8bca3aaa8a77289bea4980"
+  },
+  "consumed_junit_summaries": {
+    "integration/eval-os-code-job-tests.xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "0",
+        "tests": "373",
+        "time": "24.119",
+        "timestamp": "2026-10-13T17:05:50.246911-07:00",
+        "hostname": "m2studio"
+      }
+    ],
+    "integration/eval-os-code-job-final-tests.xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "373",
+        "time": "25.617",
+        "timestamp": "2026-10-13T17:10:42.648977-07:00",
+        "hostname": "m2studio"
+      }
+    ],
+    "integration/eval-os-ci-selection-tests.xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "4",
+        "time": "167.748",
+        "timestamp": "2026-10-13T17:06:46.929186-07:00",
+        "hostname": "m2studio"
+      }
+    ],
+    "integration/eval-os-ci-selection-final-tests.xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "2",
+        "time": "4.550",
+        "timestamp": "2026-10-13T17:12:26.281763-07:00",
+        "hostname": "m2studio"
+      }
+    ]
+  },
+  "verification_adjudication": {
+    "eight_suite_final": "373PASS/errors0/failures0/skipped0,25.71s",
+    "selection_and_set_final": "2PASS/errors0/failures0/skipped0,4.63s",
+    "prior_full_selection_curation_packing": "4PASS before44 additive paths; reused by root because additions only broaden alreadyselectednewjob and do not change named packingprobes, commands/gates/ceilings. Finalselection+trackedclosure qualified currentmanifest."
+  },
+  "acceptance_impact": {
+    "T22": "Source registration and local suite/selection evidence accepted; complete exact new published head hostedplan selection and terminal successfulexecution still owed. Neither old omitted-suitegreen nor local373PASS satisfies hostedCI.",
+    "T21_A39": "Prior genuine normal-owner progression retained; no new assertion from this CI repair.",
+    "unchanged_evidence": "Accepted application/scientific internalQA/browser fixture/resource receipts retained; adversarial fixture test hash explicitly supersedes prior test hash while measurement fixture/oracle/implementation remain unchanged.",
+    "open": [
+      "new-head hostedCI selection+execution",
+      "reserved HOLD release qualification",
+      "protected merge",
+      "installedcandidate/live authenticatedproduction proof",
+      "postrelease normalupdate T23",
+      "operator acceptance",
+      "external originallegacy obligations"
+    ]
+  },
+  "operation_discipline": {
+    "new_fabric_or_worker": false,
+    "reviewer_tests": false,
+    "ci_or_network_queries": false,
+    "source_edits": false,
+    "retained_fabric_operation": "eval-assurance-01a1333d-v1 terminal pre-launch admission failure; no retry"
+  }
+}

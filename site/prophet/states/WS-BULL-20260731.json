@@ -1,31 +1,31 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WS-BULL-20260731",
-  "asof": "2026-10-21",
+  "asof": "2026-10-30",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 37.9,
   "raw_confidence": 40.0,
   "delta_vs_base": -22.1,
-  "recommended_action": "trim",
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "recommended_action": null,
+  "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 18.7,
+    "progress": 22.1,
     "pace": 0.0,
     "retention": 100.0,
-    "overlay": 53.0
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.268,
-    "dist_to_t1_r": 1.232,
-    "dist_to_t2_r": 2.732,
-    "horizon_pct_used": 166.7,
-    "p1": 0.179,
-    "p2": 0.0895,
+    "dist_to_stop_r": 1.334,
+    "dist_to_t1_r": 1.166,
+    "dist_to_t2_r": 2.666,
+    "horizon_pct_used": 186.7,
+    "p1": 0.2228,
+    "p2": 0.1114,
     "p3": null,
-    "move_r": 0.268,
-    "mfe_r": 0.268,
+    "move_r": 0.334,
+    "mfe_r": 0.334,
     "mae_r": -0.532
   },
   "rr_ratio": 1.5,
@@ -36,15 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 2.980001678466799,
+  "_mfe": 3.710001220703127,
   "_mae": -5.910001525878904,
-  "_max_p1": 0.17897907978779573,
+  "_max_p1": 0.22282289613832595,
   "_first_trigger_ts": "2026-10-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 75,
-  "tau": 1.6667
+  "days_elapsed": 84,
+  "tau": 1.8667,
+  "closed": true,
+  "outcome": "NO_ENTRY"
 }

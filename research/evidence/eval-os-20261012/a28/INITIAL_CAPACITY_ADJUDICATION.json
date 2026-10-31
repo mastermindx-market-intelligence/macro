@@ -1,0 +1,46 @@
+{
+  "schema": "eval_os.a28.science_adjudication.v1",
+  "status": "LEDGER_SIZE_SYNTHETIC_QUALIFIED_CARDINALITY_EXTENSION_PENDING",
+  "consumed_receipts_sha256": {
+    "composed-scale-report.json": "7cf45be47347a3ce8b2e063f0dc079a1b023f3a8e1d348bffc12d8fff9046055",
+    "baseline-result.json": "38ed75de1df45276e135f394c8fc32e4e80a20f7d0f53196351ec0db47c52a3d",
+    "A1-result.json": "8966c19fa49edc4ffa635675fc0fe1324a5bbea2feb034556864a4b2e16d896d"
+  },
+  "observed": {
+    "claims_bytes": 104577282,
+    "claims_rows": 359548,
+    "grades_bytes": 76734746,
+    "grades_rows": 541168,
+    "baseline_peak_rss_bytes": 447348736,
+    "A1_peak_rss_bytes": 452182016,
+    "incremental_peak_rss_bytes": 4833280,
+    "A1_cold_wall_seconds": 4.201863374999448,
+    "A1_force_wall_seconds": 2.727728500000012,
+    "A1_hit_wall_seconds": 0.0008670839997648727,
+    "two_serialized_force_wall_seconds": 6.758615291000751,
+    "forced_claim_transports": 4,
+    "grade_read_attempts": 0,
+    "readiness_compute_attempts": 0,
+    "historical_available_minus_A1_peak_bytes": 1974349824,
+    "sources_stable": true,
+    "fixtures_unchanged": true
+  },
+  "rulings": [
+    "Full observed corpus byte scale is exercised and absolute process peak is below root1GiB ceiling; one artifact does not establish that release is unsafe.",
+    "The4.6MiB peak differential supports small incremental A1 memory at this fixture; peak includes imports and cumulative operations, not a precise allocation attribution.",
+    "Single-sample cold wall delta1.633s is not a recurring overhead or VPS latency estimate; CPUcold1.497s versus baseline1.478s is much closer.",
+    "Cachehit reads no claims; fourforcecalls produce exactly fourclaim text transports, proving no added A1 corpus reread or grade/readiness path in this experiment.",
+    "Source-current647artifact/369producer/102owner cardinality and808033B Synapse parsing/stat work were not exercised by one-artifactfixture. _synapse_dependency_mtime_key adds per-call metadata work including hits.",
+    "Exactly one cardinality extension is justified to discriminate that new work, without repeating corpus generation or changing application source.",
+    "Historical2.26GiB headroom is context only; localMac results do not reserve production memory or prove production/client latency."
+  ],
+  "extension": {
+    "helper": "probe_cardinality_extension.py",
+    "sha256": "267b32eafc04a7e09b29e50c1c58e4a343b5529b3e84c03e3acc1047afdb8a4b",
+    "syntax": "AST parsed, not executed",
+    "corpus_reuse": "same_inode_hardlinks; originals and original script preserved",
+    "budget": "Original1GiB peak watchdog,60s perchild; actual real builder/_derive, existing guards",
+    "source_synapse_sha256": "ec3f4ed483c1890710cc04f1766b4dd71785c195eab6d8872e57aaf5f026139f"
+  },
+  "scope_limit": "No empirical/current-market qualification, full production object graph/producer AST reproduction, customer SLO or production canary."
+}

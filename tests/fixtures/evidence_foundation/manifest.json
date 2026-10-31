@@ -5,7 +5,7 @@
       "file": "fif_packet_valid.json",
       "expected": "valid",
       "size_bytes": 3321,
-      "sha256": "3d0efbeac47394749ce8519f3113bde7acb07aae7fee2cb188464826ccdae2e4",
+      "sha256": "b6d86fdb68517a58cc3f733ff05376e0c8d5ef0a6f2aaadca932ae54477f33d8",
       "proves": "FIF financial packet pointer"
     },
     {

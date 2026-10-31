@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ACMR-BULL-20260930",
-  "asof": "2026-10-21",
+  "asof": "2026-10-30",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 13.7,
@@ -13,20 +13,20 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 21.6,
+    "retention": 12.5,
     "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.331,
+    "dist_to_stop_r": -0.757,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 42.2,
-    "p1": -0.887,
-    "p2": -0.4435,
+    "horizon_pct_used": 62.2,
+    "p1": -1.1717,
+    "p2": -0.5858,
     "p3": null,
-    "move_r": -1.331,
+    "move_r": -1.757,
     "mfe_r": 0.0,
-    "mae_r": -1.331
+    "mae_r": -1.757
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -28.42000091552734,
+  "_mae": -37.539999847412105,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 19,
-  "tau": 0.4222
+  "days_elapsed": 28,
+  "tau": 0.6222
 }

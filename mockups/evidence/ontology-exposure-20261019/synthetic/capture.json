@@ -1,0 +1,174 @@
+{
+  "generated_at": "2026-10-19T06:48:44.677605+00:00",
+  "scope": "synthetic fixture presentation only; no real authentication, issuer, source body, market value or production request",
+  "cells": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "images": {
+        "membership": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/63888e48014a5aa8.png",
+          "sha256": "63888e48014a5aa822bfb3c8c2c81f3d96546811a3269747d2d662609ffe9f62"
+        },
+        "company": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/68577e4d55494def.png",
+          "sha256": "68577e4d55494def8239b86c8efb499f692f73f5a903dc854db4eb1690833d4e"
+        }
+      },
+      "private_fixture_requests": 3,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "images": {
+        "membership": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/c4ebfe878a8f3e3a.png",
+          "sha256": "c4ebfe878a8f3e3a3523f44bc6d4da262aa694238ca208ac3657302af3eace15"
+        },
+        "company": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/8b1bdb11e5119b32.png",
+          "sha256": "8b1bdb11e5119b32b0aa6fcc8f6be14353de3f33ff2728f14b1b2095aedf1f8a"
+        }
+      },
+      "private_fixture_requests": 3,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "theme": "light",
+      "locale": "en",
+      "images": {
+        "membership": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/fd04b5f0abf18478.png",
+          "sha256": "fd04b5f0abf18478825855eebea02c6ef42880cc8eec16ce19bfbb1afe3487b1"
+        },
+        "company": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/0ac618cec3d72c85.png",
+          "sha256": "0ac618cec3d72c852d152796e53dfc606b148cbdba7c78098a1ca68715bad3f8"
+        }
+      },
+      "private_fixture_requests": 3,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "images": {
+        "membership": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/9b0f3a5388dcc606.png",
+          "sha256": "9b0f3a5388dcc6064195517a9042519736b70603a6ea20768899204b378ab794"
+        },
+        "company": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/beaa7f40f975b0d5.png",
+          "sha256": "beaa7f40f975b0d54d0e09d7c83f35d98ba5a831bfd1ece1834231cf3c26352d"
+        }
+      },
+      "private_fixture_requests": 3,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "images": {
+        "membership": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/05e483b369cfe839.png",
+          "sha256": "05e483b369cfe839e838dd15c836d04473900258ecd0aee48cbc418d6fde16b7"
+        },
+        "company": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/ab51c5de83719068.png",
+          "sha256": "ab51c5de8371906861543aceab4e04acf334f5153591277b555ad2645946d8d8"
+        }
+      },
+      "private_fixture_requests": 3,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "images": {
+        "membership": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/f59c9d530eb5e43d.png",
+          "sha256": "f59c9d530eb5e43d2201cf4658e2ba2d4882890d91cbcb6e3e1d340f8d1e6f89"
+        },
+        "company": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/6bb53dbc13e19381.png",
+          "sha256": "6bb53dbc13e193819c5ecee3ffee56504adb0b4fa6e232849e19f1f9b509aa44"
+        }
+      },
+      "private_fixture_requests": 3,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "locale": "en",
+      "images": {
+        "membership": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/7045e5ddb5274ce1.png",
+          "sha256": "7045e5ddb5274ce102cb9cfa78bdcc83f58400b62920df2cf7670f19f16d7249"
+        },
+        "company": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/830df57e6d9aa8e6.png",
+          "sha256": "830df57e6d9aa8e67f00bf0cdc2c342a77178a8fc5220a7a91f63e8faf83f4a3"
+        }
+      },
+      "private_fixture_requests": 3,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "images": {
+        "membership": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/dddfb661a073475e.png",
+          "sha256": "dddfb661a073475e122fb439ec92c65e95d7118d8784f2d298eeec1f959fd094"
+        },
+        "company": {
+          "file": "mockups/evidence/ontology-exposure-20261019/synthetic/74bf5b4ebcb41a7f.png",
+          "sha256": "74bf5b4ebcb41a7f904d93e824ed19b0e84bac1ea2f605b4b1457cbfcced16cf"
+        }
+      },
+      "private_fixture_requests": 3,
+      "console_errors": []
+    }
+  ],
+  "source_sha256": {
+    "templates/ontology.js": "57cbee810443077d9cead65bbd1eb3dc025b209f2b77480041f7a41a3b4e22a7",
+    "templates/ontology.css": "61b69accb8de819f30171f7ef6e42b29dba97c1483879216acf4251f84184b80",
+    "templates/ontology-company.js": "73dda515e459731b5238d752851241113ac194c070fa57944b02ac6ebbf9e65e",
+    "templates/ontology-company-controller.js": "49f6e9a9ba8a2deda9ea7cefe650611ea3f4863239d0ed19e58d837507be6f47",
+    "templates/ontology-company-contract.js": "9abd91d3cb310673ef8a3e37543085c932eac1c29a8dd04773deb38c868af33a",
+    "templates/ontology-company.css": "85c2a09d96066e25b2b060a1daf791c13443006fe7e9f610814f485731278b60"
+  }
+}

@@ -31,17 +31,17 @@
     "can_size": false
   },
   "compilation_state": "partial",
-  "content_sha256": "4c9770548041510ea4fdd533fa2828767ceb919f3a8cb8a6ea625df84a11b9d9",
+  "content_sha256": "75b21edfe297d03bba91ea745d7d07c2736ed43d0238a03b245579a9bdc5c3ad",
   "denominator": {
     "conflicted": 0,
-    "excluded": 3,
+    "excluded": 4,
     "identity_unresolved": 0,
-    "included": 1,
+    "included": 0,
     "missing": 3,
     "rights_blocked": 0,
     "stale": 0,
     "total": 4,
-    "unknown": 0,
+    "unknown": 1,
     "unsupported": 0
   },
   "display_only": true,
@@ -76,18 +76,16 @@
     "inferred": {
       "denominator": {
         "excluded": 0,
-        "included": 1,
-        "total": 1
+        "included": 0,
+        "total": 0
       },
       "label": "owner_derived_system_belief",
-      "slot_refs": [
-        "drl_resid_shock"
-      ]
+      "slot_refs": []
     },
     "market_reflection": {
       "denominator": {
-        "excluded": 6,
-        "included": 1,
+        "excluded": 7,
+        "included": 0,
         "total": 7
       },
       "incorporation_legs": [
@@ -101,7 +99,7 @@
           "slot_refs": [
             "drl_resid_shock"
           ],
-          "state": "observed"
+          "state": "unknown"
         },
         {
           "leg": "I3_estimate_revision",
@@ -147,9 +145,9 @@
       "slot_refs": []
     },
     "strongest_unresolved_fact": {
-      "fact": "attention_views unresolved: source_missing",
+      "fact": "drl_resid_shock unresolved: unknown",
       "slot_refs": [
-        "attention_views"
+        "drl_resid_shock"
       ],
       "state": "named"
     }
@@ -173,23 +171,23 @@
         "state": "full"
       },
       "derivation": "owner_read",
-      "exclusion_reason": null,
+      "exclusion_reason": "unknown",
       "family_binding": {
         "family_id": null,
         "kind": "research_only",
         "routed_to": null
       },
-      "included_in_composition": true,
+      "included_in_composition": false,
       "known_at": {
         "clock_class": "observed",
         "grain": "date",
-        "native_field": "harvested_asof",
-        "state": "known",
-        "value": "2026-08-14"
+        "native_field": null,
+        "state": "unknown",
+        "value": null
       },
       "missingness": {
-        "reason": null,
-        "state": "present",
+        "reason": "unknown",
+        "state": "absent",
         "zero_substituted": false
       },
       "object_class": "derived_view",
@@ -200,13 +198,8 @@
         "reader": "engine.price_pressure.ledger.read_ledger"
       },
       "provenance_class": "owner_artifact",
-      "state": "observed",
-      "value_or_null": {
-        "peer_ret": 0.0014,
-        "resid": 0.2456,
-        "resid_z": 11.85,
-        "ret": 0.247
-      },
+      "state": "unknown",
+      "value_or_null": null,
       "variation_receipt": null
     },
     {

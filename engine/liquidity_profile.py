@@ -34,6 +34,7 @@ import numpy as np
 import pandas as pd
 
 from engine.liquidity_chip import WINDOW, compute
+from engine.liquidity_currency import qualify_currency
 from lib.nyse_calendar import expected_last_session, is_session
 
 # --------------------------------------------------------------------------- #
@@ -355,11 +356,17 @@ def project(
         return refuse(STATUS_NO_COVERAGE, "ZERO_ADV_NO_COVERAGE")
 
     # -- gate 10: currency evidence -------------------------------------------- #
-    currency = _qualified_currency(
-        currency_evidence, ticker, recorded_utc.date(), expected20[0], expected20[-1]
-    )
+    if isinstance(currency_evidence, dict) and currency_evidence.get("schema") == "liquidity_currency_observations.v1":
+        currency = qualify_currency(currency_evidence, ticker=ticker,
+                                    sessions=expected20, recorded_at=recorded_utc)
+    else:
+        currency = _qualified_currency(
+            currency_evidence, ticker, recorded_utc.date(), expected20[0], expected20[-1]
+        )
     if currency is None:
         return refuse(STATUS_NO_COVERAGE, "CURRENCY_NOT_QUALIFIED")
+    if currency.get("schema") == "liquidity_currency_dated.v1":
+        currency["source_digest_basis"] = "canonical_json_sort_keys_compact_ascii"
     payload["currency"] = currency
 
     payload["metrics"] = dict(metrics)

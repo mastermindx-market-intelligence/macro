@@ -1,0 +1,52 @@
+{
+  "schema": "eval_os.hosted_a1_pack_consumption.v1",
+  "observed_at": "2026-10-15T11:10:33.403534+00:00",
+  "identity": {
+    "workflow_run_id": "38716442763",
+    "workflow": "ci",
+    "event": "pull_request",
+    "role": "pr_head",
+    "subject_head_sha": "ff7912003742ebfaa172a30c68dc8d65ddc9330e",
+    "base_sha": "fb59691f231cddc30f8dd4452507b8f657724626",
+    "tested_tree_sha": "1ac926152208d1ca3160bd255c2b0190148b5305",
+    "plan_sha256": "328f79a236f4761bc126113d553819e86b4c55070a5f7fcaf345e23941e89cae",
+    "pack_index": 9
+  },
+  "artifact_id": 11967139028,
+  "artifact_zip_sha256": "3ddfa4a86957f0ebb775c3a0b62f73241b9e3f3b67a9dfa21656910cdd8adeaa",
+  "artifact_digest_verified": true,
+  "member_sha256": "ae1d4ad280fe755b75a4525b3a6cfcb71e21f7e07d995a49bb0e40c75c12cf24",
+  "canonical_reconciler_source_sha256": "c3a36f7fafa5e2158c5e105d147553f026b9fc7002fab315df00165643e70a60",
+  "planned_pack_jobs": 13,
+  "observed_pack_jobs": 13,
+  "all_pack_semantic_steps_passed": true,
+  "semantic_step_count": 27,
+  "a1_job": {
+    "logical_job_id": "eval-os-a1",
+    "pack_index": 9,
+    "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+    "infrastructure": {
+      "outcome": "passed"
+    },
+    "steps": [
+      {
+        "proof_id": "require Node for actual renderer contracts",
+        "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06",
+        "outcome": "passed",
+        "failure_signature": null,
+        "classification": "passed"
+      },
+      {
+        "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+        "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb",
+        "outcome": "passed",
+        "failure_signature": null,
+        "classification": "passed"
+      }
+    ]
+  },
+  "scope": "Original pack9 consumed with canonical reconciler against original plan. Other missing local fragments are unobserved here, not new hosted failures. Counts are semantic command steps, not unit tests or zero-skip proof. Full terminal artifact and binding gate remain owed.",
+  "full_ci_proven": false,
+  "merged": false,
+  "production_proven": false
+}

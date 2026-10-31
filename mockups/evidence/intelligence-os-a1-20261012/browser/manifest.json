@@ -1,0 +1,1988 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "captured_at": "2026-10-13T07:42:08.776Z",
+  "tool": {
+    "module_ref": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/experience/capture_admin.cjs",
+    "module_sha256": "9cd6972ec767472502dd4dd61362eb53af4f88d6adb4dbd84665b8b623cb8bda",
+    "version": "bounded-synthetic-admin-1"
+  },
+  "target": {
+    "base_url": "http://127.0.0.1:61519",
+    "source_tree": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/eval-os-a1-preflight-20260922-f75c61cdabe6f12c",
+    "source_sha256": {
+      "admin/static/index.html": "27a1a4e55dee999b435dda94c86730987624621ee3868c7fbea086e308645179",
+      "admin/static/preferences.js": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f",
+      "admin/static/styles.css": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60",
+      "admin/static/app.js": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772",
+      "admin/theme_tokens.py": "1e27b1decad0273a3a495e7151be8ba22a03e131761ceeb93da065af1693cf46",
+      "templates/theme.css": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2",
+      "admin/server.py": "53e65e1fca02988f7a0838d2b64026b78e3921c7c66a366e4be6c04e1e93a87b",
+      "admin/intelligence_os.py": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873",
+      "admin/evidence_status.py": "5315e8e95b2a5ee3c5c12b88eac8126c8578db12a773357916aed20bdb459efd",
+      "admin/evidence_findings.py": "d2355370c9c458db54a35e2253903d5b781b5b0193c945b587618706cb3bf909",
+      "engine/intelligence_registry.py": "374d6ef5d23e6d3ad989db5f745bd8adafe1e3ecd00f8d66a3b275f1d86f1e04"
+    },
+    "fixture": {
+      "scope": "SYNTHETIC local actual admin renderer/handler; not production/user acceptance",
+      "url": "http://127.0.0.1:61519/fixture-session",
+      "pid": 68910,
+      "source_tree": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/eval-os-a1-preflight-20260922-f75c61cdabe6f12c",
+      "fixture_time": "2026-10-12T20:00:00+00:00",
+      "owner_recorded_at": "2026-10-11T18:00:00+00:00",
+      "findings_source_as_of": "2026-10-11",
+      "fixture_input_root": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/product/synthetic-combined-inputs",
+      "engine_ids": [
+        "engine/synthetic-immature.py::synthetic-fixture",
+        "engine/synthetic-supported-scope-unknown.py::synthetic-fixture",
+        "engine/synthetic-retired.py::synthetic-fixture",
+        "engine/synthetic-partial.py::synthetic-fixture",
+        "engine/synthetic-falsified.py::synthetic-fixture",
+        "engine/synthetic-descriptive.py::synthetic-fixture",
+        "engine/synthetic-unclassified.py::synthetic-fixture"
+      ]
+    }
+  },
+  "axes": {
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "access": [
+      "synthetic_fixture_session"
+    ]
+  },
+  "honesty": {
+    "access": "Actual source admin handler with synthetic signed local fixture session; no production account or protected outcome. Synthetic fixtures are labelled in rendered owner names.",
+    "authority": "Actual pixel captures and measurements; visual judgement recorded separately."
+  },
+  "pages": [
+    {
+      "page_id": "admin-intelligence-os",
+      "route": "/#/page/intelligence_os",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "dark",
+          "locale": "en",
+          "access": "synthetic_fixture_session",
+          "captured": true,
+          "file": "5ae0114484d58ad2.png",
+          "sha256": "5ae0114484d58ad21146be1f4e360f2eb8d8b1fa62168acd202e30bd80636b6d",
+          "bytes": 484666,
+          "width": 1440,
+          "height": 2126,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "observation": {
+            "theme": "dark",
+            "locale": "en",
+            "lang": "en",
+            "documentWidth": 1440,
+            "viewportWidth": 1440,
+            "bandCount": 5,
+            "engineRows": 7,
+            "bodyBg": "rgb(10, 12, 16)"
+          },
+          "assets": {
+            "/app.js": {
+              "status": 200,
+              "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+            },
+            "/styles.css": {
+              "status": 200,
+              "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+            },
+            "/preferences.js": {
+              "status": 200,
+              "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+            },
+            "/assets/theme-tokens.css": {
+              "status": 200,
+              "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+            }
+          },
+          "api_identity": {
+            "panel_file": "79d132e602d5e027--panel-api.json",
+            "detail_file": "67fcf0179c80811b--detail-api.json",
+            "panel_sha256": "79d132e602d5e027dc8aaa7b84bed6cae50b13d59fa35cb40c0772edaec5d024",
+            "detail_sha256": "67fcf0179c80811b02888e92895087010bc85a05446f6ba8c3a7148961764a88",
+            "panel_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture",
+              "compute_seconds": 0,
+              "cache": "miss",
+              "trust_mtime": false,
+              "source_generation": null
+            },
+            "detail_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture"
+            },
+            "engine_id": "engine/synthetic-immature.py::synthetic-fixture",
+            "panel_engine_projection_sha256": "ea08151094869b52cdc0de21f2d66528ed4c8d8d8fcacea40ea9f94cb6b336fd",
+            "detail_engine_projection_sha256": "e2b5c4dd6103f8ca2ec1fd34a73eff7ec17ff0c66369ad9176c6c68d3c914309",
+            "panel_detail_projection_agrees": false,
+            "compared_evidence_fields": [
+              "engine_id",
+              "evidence_status",
+              "evidence_reason_codes",
+              "evidence_provider",
+              "evidence_ruler",
+              "evidence_basis",
+              "evidence_maturity",
+              "evidence_coverage",
+              "evidence_owner_scope",
+              "validation_state",
+              "output_class",
+              "authority"
+            ],
+            "panel_detail_exact_differences": [
+              {
+                "key": "validation_state",
+                "panel": null,
+                "detail": "phase0"
+              }
+            ],
+            "full_engine_delta": [
+              {
+                "key": "state_counts",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": {
+                  "healthy": 1
+                },
+                "detail": null
+              },
+              {
+                "key": "n_blind",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": 0,
+                "detail": null
+              },
+              {
+                "key": "output_class_rationale",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "ledger",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "none"
+              },
+              {
+                "key": "ledger_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "no — not yet"
+              },
+              {
+                "key": "graded_by_design_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design_source",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "synthetic display fixture"
+              },
+              {
+                "key": "declared_horizon",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "horizon_d": [
+                    126
+                  ]
+                }
+              },
+              {
+                "key": "validation_state",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "phase0"
+              },
+              {
+                "key": "validation_state_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "bound_species": [
+                    {
+                      "species_id": "SYNTHETIC-V1",
+                      "validation_status": "phase0",
+                      "owner_scope": {
+                        "version": "fixture-v1",
+                        "market_scope": [
+                          "US"
+                        ]
+                      }
+                    }
+                  ],
+                  "reason": "synthetic fixture only"
+                }
+              },
+              {
+                "key": "evidence_ref",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  "synthetic:fixture-v1",
+                  "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                ]
+              },
+              {
+                "key": "excluded_reason",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "evidence_source_links",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  {
+                    "reference": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+                    "kind": "repository_source_declaration",
+                    "revision": "1c1411292d993d76bbe0eaaa38f636e5a170cbde",
+                    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                  }
+                ]
+              }
+            ],
+            "shared_evidence_projection_agrees": true,
+            "projection_ruling": "Strict equality remains explicit. Detail-only validation_state=phase0 enriches an absent panel field; all shared evidence fields must agree."
+          },
+          "focus": {
+            "id": "adminLanguage",
+            "outline": "rgb(106, 141, 255) solid 2px",
+            "ring": "rgb(106, 141, 255)"
+          },
+          "file_focus": "f89bc32593f08772--focus.png",
+          "focus_sha256": "f89bc32593f08772fdf64be8981631485a63676820c531ac78a081bb08e5a08d",
+          "detail": {
+            "file": "93d6749c8bfbfe2b--detail.png",
+            "sha256": "93d6749c8bfbfe2b2f14c1a7aa84b4e0aa37f123de82a38db9e1cf574bdb6112",
+            "bytes": 422154,
+            "width": 1440,
+            "height": 2331,
+            "documentWidth": 1440
+          },
+          "panel_text": "Intelligence OS\n7 canonical engines · 7 artifacts · 7 assessed\nObservatory →\nRe-derive\n0 Validated\n2 Accruing\n1 Ungraded by design\n3 Degraded\n1 Disproven\nDerived on demand from T1 identity/semantics, T4 output health and existing owner-native evidence — nothing on this page is stored. Observed 2026-10-12 20:00:00 UTC · Computed 0s · Presence source SYNTHETIC fixture · Write-time evidence refused.\nNo promotion or trading authority\nCEO evidence view\nstrongest evidence first · never performance\n1\nValidated\n0\nEmpty band — valid evidence\n2\nAccruing\n2\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture · engine/synthetic-unclassified.py::synthetic-fixture\n3\nUngraded by design\n1\nengine/synthetic-descriptive.py::synthetic-fixture\n4\nDegraded\n3\nengine/synthetic-immature.py::synthetic-fixture · engine/synthetic-partial.py::synthetic-fixture · engine/synthetic-retired.py::synthetic-fixture\n5\nDisproven\n1\nengine/synthetic-falsified.py::synthetic-fixture\nEngines\n7\nEVIDENCE\nValidated (0)\nAccruing (2)\nUngraded by design (1)\nDegraded (3)\nDisproven (1)\nSTATE\nhealthy (6)\nNot determined (1)\nOUTPUT CLASS\npredictive (2)\nclassification_state (1)\ndescriptive (1)\ndetection_event (1)\nNot determined (1)\nranking (1)\nAUTHORITY\ndisplay (7)\nPROGRAM\nall programs\nSYNTHETIC — no market outcomes\nclear all\nENGINE\tEVIDENCE\tPROGRAM\tOUTPUT CLASS\tAUTHORITY\tOUTPUTS\tWORST STATE\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture\tAccruing\nt1_owner_native\nNo compatible task, version and cohort qualification is projected.\nDeclared window 126 · Unit not declared\nGraded window —\n\tSYNTHETIC — no market outcomes\tranking\tDisplay only\t1\thealthy\nengine/synthetic-unclassified.py::synthetic-fixture\tAccruing\nt1_owner_native\nThe output class has not been adjudicated.\nDeclared window 126 · Unit not declared\nGraded window —\n\tSYNTHETIC — no market outcomes\t—\tDisplay only\t1\thealthy\nengine/synthetic-descriptive.py::synthetic-fixture\tUngraded by design\nt1_owner_native\nThis descriptive output is intentionally ungraded.\nDeclared window 126 · Unit not declared\nGraded window —\n\tSYNTHETIC — no market outcomes\tdescriptive\tDisplay only\t1\thealthy\nengine/synthetic-immature.py::synthetic-fixture\tDegraded\ndirect:qledger:synthetic\nRecorded owner support is available; its current source and task qualification are not established.\nDeclared window 126 · Unit not declared\nGraded window 63\nPartial horizon evidence\n\tSYNTHETIC — no market outcomes\tpredictive\tDisplay only\t1\thealthy\nengine/synthetic-partial.py::synthetic-fixture\tDegraded\nt1_owner_native\nCurrent operational health cannot be qualified.\nDeclared window 126 · Unit not declared\nGraded window —\n\tSYNTHETIC — no market outcomes\tclassification_state\tDisplay only\t1\tno read\nengine/synthetic-retired.py::synthetic-fixture\tDegraded\nt1_owner_native\nThe owner retired this method; retirement does not prove a failed hypothesis.\nDeclared window 126 · Unit not declared\nGraded window —\n\tSYNTHETIC — no market outcomes\tpredictive\tDisplay only\t1\thealthy\nengine/synthetic-falsified.py::synthetic-fixture\tDisproven\nt1_owner_native\nThe owner records falsification for this method.\nDeclared window 126 · Unit not declared\nGraded window —\n\tSYNTHETIC — no market outcomes\tdetection_event\tDisplay only\t1\thealthy\nRECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nRecorded findings · 2\nRecorded source gaps · 1\nRecorded source",
+          "detail_text": "←\nIntelligence OS\n/\nengine/synthetic-immature.py::synthetic-fixture\nengine/synthetic-immature.py::synthetic-fixture\nDegraded\nhealthy\nprogram SYNTHETIC — no market outcomes\n1 Outputs\nclass predictive\nauthority Display only\nproducer engine/synthetic-immature.py\nEVIDENCE DISPOSITION\nDegraded\nDerived from owner-native evidence and current output health. It ranks evidence strength, never headline performance, and carries no promotion authority.\nOUTPUT CLASS\npredictive\nDECLARED HORIZON\n126\nGRADED HORIZON\n63\nHORIZON UNIT\ntrading_days\nMARKET CALENDAR\nUS\nOBSERVED DATES\n0\nNEEDED DATES\n25\nCONTROL COVERAGE\n0\nCOHORT ROWS\n10\nCONTROLLED ROWS\n0\nREFUSED ROWS\n10\nOWNER LIFECYCLE\nphase0\nPartial horizon evidence\nRecorded owner support\nRECORDED BY OWNER AT\n2026-10-11T18:00:00+00:00\nOWNER EVALUATION DATE\nUnknown\nCURRENT SOURCE QUALIFICATION\nUnavailable\nNAMED GENERATION\nNot matched or unversioned\nRecorded support does not establish current price, calendar freshness or task qualification.\nOwner measurements\nOwner measurements describe the bound family; compatible task, version and cohort qualification is not established here.\nOwner uncertainty and support\nOWNER RULER\n63\nOWNER CLOCK BASIS\nexplicit_unit_v1:trading_days:US\nOWNER MEASUREMENT BASIS\nMatched control\nOBSERVED DATES\n0\nWILSON LOWER BOUND (DATE HIT PROPORTION)\nUnknown (not projected by owner)\nOWNER REASON\nSYNTHETIC fixture; not empirical outcomes\nCONTROLLED-COHORT SUPPORT\n0\nWhole-family benchmark baseline\nThe owner does not project the baseline denominator. These values include the whole family and are separate from controlled-cohort support.\nBASELINE DENOMINATOR\nUnknown (not projected by owner)\nOWNER HIT RATE\n0\nSIGNED EXCESS MEAN\nUnknown (not projected by owner)\nABSOLUTE EXCESS MEAN\n0\nEXCESS DIRECTION BASIS\nMagnitude only (directions are not pooled)\nEXCESS BY DIRECTION\n{\"1\":0.01,\"-1\":-0.01}\nTechnical details\nREASONS\nRecorded owner support is available; its current source and task qualification are not established. Forward observations have not matured for this window.\nEVIDENCE REFS\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1\nsynthetic:fixture-v1\nNo browser link is declared for this reference.\nresearch/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\nRepository source declaration\nspecies:SYNTHETIC-V1\nNo browser link is declared for this reference.\nSource declarations describe the contract; they do not supply outcome evidence.\nRECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nRecorded findings · 1\nRecorded source gaps · 1\nRecorded source\nOutputs\n1\nsynthetic-immature\nhealthy\ncomplete\nby content_watermark\nPATH\nsynthetic/synthetic-immature.json\nsynthetic\nexact bound\nFRESHNESS\n0m / 24h SLA\nasof 2026-10-12T20:00:00+00:00",
+          "console_errors": [],
+          "failed_responses": []
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "dark",
+          "locale": "zh",
+          "access": "synthetic_fixture_session",
+          "captured": true,
+          "file": "eefb34c7628460a0.png",
+          "sha256": "eefb34c7628460a0f37b20950cfe7f9a12f00592b5e2541af4ffc1d66aa49a7c",
+          "bytes": 489416,
+          "width": 1440,
+          "height": 2095,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "observation": {
+            "theme": "dark",
+            "locale": "zh",
+            "lang": "zh-CN",
+            "documentWidth": 1440,
+            "viewportWidth": 1440,
+            "bandCount": 5,
+            "engineRows": 7,
+            "bodyBg": "rgb(10, 12, 16)"
+          },
+          "assets": {
+            "/app.js": {
+              "status": 200,
+              "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+            },
+            "/styles.css": {
+              "status": 200,
+              "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+            },
+            "/preferences.js": {
+              "status": 200,
+              "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+            },
+            "/assets/theme-tokens.css": {
+              "status": 200,
+              "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+            }
+          },
+          "api_identity": {
+            "panel_file": "79d132e602d5e027--panel-api.json",
+            "detail_file": "67fcf0179c80811b--detail-api.json",
+            "panel_sha256": "79d132e602d5e027dc8aaa7b84bed6cae50b13d59fa35cb40c0772edaec5d024",
+            "detail_sha256": "67fcf0179c80811b02888e92895087010bc85a05446f6ba8c3a7148961764a88",
+            "panel_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture",
+              "compute_seconds": 0,
+              "cache": "miss",
+              "trust_mtime": false,
+              "source_generation": null
+            },
+            "detail_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture"
+            },
+            "engine_id": "engine/synthetic-immature.py::synthetic-fixture",
+            "panel_engine_projection_sha256": "ea08151094869b52cdc0de21f2d66528ed4c8d8d8fcacea40ea9f94cb6b336fd",
+            "detail_engine_projection_sha256": "e2b5c4dd6103f8ca2ec1fd34a73eff7ec17ff0c66369ad9176c6c68d3c914309",
+            "panel_detail_projection_agrees": false,
+            "compared_evidence_fields": [
+              "engine_id",
+              "evidence_status",
+              "evidence_reason_codes",
+              "evidence_provider",
+              "evidence_ruler",
+              "evidence_basis",
+              "evidence_maturity",
+              "evidence_coverage",
+              "evidence_owner_scope",
+              "validation_state",
+              "output_class",
+              "authority"
+            ],
+            "panel_detail_exact_differences": [
+              {
+                "key": "validation_state",
+                "panel": null,
+                "detail": "phase0"
+              }
+            ],
+            "full_engine_delta": [
+              {
+                "key": "state_counts",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": {
+                  "healthy": 1
+                },
+                "detail": null
+              },
+              {
+                "key": "n_blind",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": 0,
+                "detail": null
+              },
+              {
+                "key": "output_class_rationale",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "ledger",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "none"
+              },
+              {
+                "key": "ledger_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "no — not yet"
+              },
+              {
+                "key": "graded_by_design_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design_source",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "synthetic display fixture"
+              },
+              {
+                "key": "declared_horizon",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "horizon_d": [
+                    126
+                  ]
+                }
+              },
+              {
+                "key": "validation_state",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "phase0"
+              },
+              {
+                "key": "validation_state_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "bound_species": [
+                    {
+                      "species_id": "SYNTHETIC-V1",
+                      "validation_status": "phase0",
+                      "owner_scope": {
+                        "version": "fixture-v1",
+                        "market_scope": [
+                          "US"
+                        ]
+                      }
+                    }
+                  ],
+                  "reason": "synthetic fixture only"
+                }
+              },
+              {
+                "key": "evidence_ref",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  "synthetic:fixture-v1",
+                  "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                ]
+              },
+              {
+                "key": "excluded_reason",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "evidence_source_links",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  {
+                    "reference": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+                    "kind": "repository_source_declaration",
+                    "revision": "1c1411292d993d76bbe0eaaa38f636e5a170cbde",
+                    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                  }
+                ]
+              }
+            ],
+            "shared_evidence_projection_agrees": true,
+            "projection_ruling": "Strict equality remains explicit. Detail-only validation_state=phase0 enriches an absent panel field; all shared evidence fields must agree."
+          },
+          "focus": {
+            "id": "adminLanguage",
+            "outline": "rgb(106, 141, 255) solid 2px",
+            "ring": "rgb(106, 141, 255)"
+          },
+          "file_focus": "dada35285a186a5b--focus.png",
+          "focus_sha256": "dada35285a186a5b17db154f2c43f51347c371b33e668a353b6ce2a4ce7f7813",
+          "detail": {
+            "file": "4f0e04b9a6e4b5fe--detail.png",
+            "sha256": "4f0e04b9a6e4b5fe78989f3015eb79fe64697358fb3fece45909b7b94b2c2bc3",
+            "bytes": 436784,
+            "width": 1440,
+            "height": 2273,
+            "documentWidth": 1440
+          },
+          "panel_text": "智能证据评估\n7 登记引擎 · 7 输出文件 · 7 已评估\n运行监测 →\n重新读取\n0 已有验证支持\n2 证据积累中\n1 按设计不评分\n3 证据受限\n1 已有否定证据\n按需读取登记身份与语义、运行状况及原所有者证据；页面不另存证据。 读取时间 2026-10-12 20:00:00 UTC · 计算耗时 0s · 存在性来源 SYNTHETIC fixture · 不采用文件修改时间作为新鲜度证据.\n不授予升级或交易权限\n证据总览\n按证据支持程度排序，不是绩效排名\n1\n已有验证支持\n0\n该组为空，仍保留显示\n2\n证据积累中\n2\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture · engine/synthetic-unclassified.py::synthetic-fixture\n3\n按设计不评分\n1\nengine/synthetic-descriptive.py::synthetic-fixture\n4\n证据受限\n3\nengine/synthetic-immature.py::synthetic-fixture · engine/synthetic-partial.py::synthetic-fixture · engine/synthetic-retired.py::synthetic-fixture\n5\n已有否定证据\n1\nengine/synthetic-falsified.py::synthetic-fixture\n引擎\n7\n证据\n已有验证支持 (0)\n证据积累中 (2)\n按设计不评分 (1)\n证据受限 (3)\n已有否定证据 (1)\n运行状态\n正常 (6)\n尚未确定 (1)\n输出类型\n预测 (2)\n状态分类 (1)\n描述 (1)\n事件检测 (1)\n尚未确定 (1)\n排序 (1)\n权限\n仅展示 (7)\n项目\n全部项目\nSYNTHETIC — no market outcomes\n清除筛选\n引擎\t证据\t项目\t输出类型\t权限\t输出\t最差运行状态\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture\t证据积累中\nt1_owner_native\n当前未提供与该任务、版本和样本组相符的验证范围。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n\tSYNTHETIC — no market outcomes\t排序\t仅展示\t1\t正常\nengine/synthetic-unclassified.py::synthetic-fixture\t证据积累中\nt1_owner_native\n输出类型尚未确认。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n\tSYNTHETIC — no market outcomes\t—\t仅展示\t1\t正常\nengine/synthetic-descriptive.py::synthetic-fixture\t按设计不评分\nt1_owner_native\n此描述性输出按设计不评分。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n\tSYNTHETIC — no market outcomes\t描述\t仅展示\t1\t正常\nengine/synthetic-immature.py::synthetic-fixture\t证据受限\ndirect:qledger:synthetic\n已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。\n声明窗口 126 · 未声明单位\n已评估窗口 63\n仅完成部分窗口的评估\n\tSYNTHETIC — no market outcomes\t预测\t仅展示\t1\t正常\nengine/synthetic-partial.py::synthetic-fixture\t证据受限\nt1_owner_native\n当前运行状况无法确认。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n\tSYNTHETIC — no market outcomes\t状态分类\t仅展示\t1\t无法读取\nengine/synthetic-retired.py::synthetic-fixture\t证据受限\nt1_owner_native\n所有者已退役此方法；退役本身不证明假设被否定。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n\tSYNTHETIC — no market outcomes\t预测\t仅展示\t1\t正常\nengine/synthetic-falsified.py::synthetic-fixture\t已有否定证据\nt1_owner_native\n所有者记录此方法已被否定。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n\tSYNTHETIC — no market outcomes\t事件检测\t仅展示\t1\t正常\n记录的观点分歧\n仅作背景注释 · 这些记录保留原有范围和日期，不能据此确认当前验证状态。\n来源时间\n2026-10-11\n无法关联到引擎的条目\n1\n数值来源核验\n此视图暂不可核验\n此视图暂无数值来源核验凭据。\n记录条目 · 2\n记录的来源缺口 · 1\n记录来源",
+          "detail_text": "←\n智能证据评估\n/\nengine/synthetic-immature.py::synthetic-fixture\nengine/synthetic-immature.py::synthetic-fixture\n证据受限\n正常\n项目 SYNTHETIC — no market outcomes\n1 输出\n输出类型 预测\n权限 仅展示\n生成器 engine/synthetic-immature.py\n证据状态\n证据受限\n由原所有者证据与当前运行状况推导，仅说明证据支持程度，不代表绩效排名或升级权限。\n输出类型\n预测\n声明的观察窗口\n126\n已评估的窗口\n63\n窗口单位\n交易日\n市场日历\nUS\n观测日期数\n0\n所需日期\n25\n对照覆盖率\n0\n样本组行数\n10\n有对照行数\n0\n拒绝行数\n10\n原所有者生命周期\nphase0\n仅完成部分窗口的评估\n原所有者记录的证据支持\n所有者记录时间\n2026-10-11T18:00:00+00:00\n所有者评估日期\n未知\n当前来源验证范围\n不可确认\n指定来源版本\n未匹配或没有版本记录\n记录的证据支持不能确认当前价格、交易日历新鲜度或任务验证范围。\n原所有者测量\n这些测量描述绑定的原所有者系列；本页未确认与任务、版本和样本组兼容的验证范围。\n原所有者的不确定性与支持\n原所有者评估窗口\n63\n原所有者时间基准\nexplicit_unit_v1:trading_days:US\n原所有者测量基准\n匹配对照\n观测日期数\n0\n日期命中比例的 WILSON 下界\n未知（原所有者未提供）\n原所有者说明\nSYNTHETIC fixture; not empirical outcomes\n对照样本组的证据支持\n0\n全系列基准参照\n原所有者未提供参照的样本分母。这些值覆盖全系列，与对照样本组的证据支持分别显示。\n参照样本分母\n未知（原所有者未提供）\n原所有者命中率\n0\n有方向的超额均值\n未知（原所有者未提供）\n超额绝对值均值\n0\n超额方向基准\n仅超额幅度（不合并方向）\n按方向划分的超额\n{\"1\":0.01,\"-1\":-0.01}\n技术详情\n依据与限制\n已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。 该窗口的前瞻观测尚未成熟。\n证据引用\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1\nsynthetic:fixture-v1\n此引用没有声明可通过浏览器访问的链接。\nresearch/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\n仓库中的来源声明\nspecies:SYNTHETIC-V1\n此引用没有声明可通过浏览器访问的链接。\n来源声明描述契约，本身不提供结果证据。\n记录的观点分歧\n仅作背景注释 · 这些记录保留原有范围和日期，不能据此确认当前验证状态。\n来源时间\n2026-10-11\n无法关联到引擎的条目\n1\n数值来源核验\n此视图暂不可核验\n此视图暂无数值来源核验凭据。\n记录条目 · 1\n记录的来源缺口 · 1\n记录来源\n输出\n1\nsynthetic-immature\n正常\n完整\nby content_watermark\n路径\nsynthetic/synthetic-immature.json\nsynthetic\nexact bound\n新鲜度\n0m / 24h SLA\n来源时间 2026-10-12T20:00:00+00:00",
+          "console_errors": [],
+          "failed_responses": []
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "light",
+          "locale": "en",
+          "access": "synthetic_fixture_session",
+          "captured": true,
+          "file": "08033d97243d93a3.png",
+          "sha256": "08033d97243d93a32d1ff321a12b0224c9dd86e47a92133cb077b4d8b5610388",
+          "bytes": 413157,
+          "width": 1440,
+          "height": 2126,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "observation": {
+            "theme": "light",
+            "locale": "en",
+            "lang": "en",
+            "documentWidth": 1440,
+            "viewportWidth": 1440,
+            "bandCount": 5,
+            "engineRows": 7,
+            "bodyBg": "rgb(247, 248, 250)"
+          },
+          "assets": {
+            "/app.js": {
+              "status": 200,
+              "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+            },
+            "/styles.css": {
+              "status": 200,
+              "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+            },
+            "/preferences.js": {
+              "status": 200,
+              "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+            },
+            "/assets/theme-tokens.css": {
+              "status": 200,
+              "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+            }
+          },
+          "api_identity": {
+            "panel_file": "79d132e602d5e027--panel-api.json",
+            "detail_file": "67fcf0179c80811b--detail-api.json",
+            "panel_sha256": "79d132e602d5e027dc8aaa7b84bed6cae50b13d59fa35cb40c0772edaec5d024",
+            "detail_sha256": "67fcf0179c80811b02888e92895087010bc85a05446f6ba8c3a7148961764a88",
+            "panel_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture",
+              "compute_seconds": 0,
+              "cache": "miss",
+              "trust_mtime": false,
+              "source_generation": null
+            },
+            "detail_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture"
+            },
+            "engine_id": "engine/synthetic-immature.py::synthetic-fixture",
+            "panel_engine_projection_sha256": "ea08151094869b52cdc0de21f2d66528ed4c8d8d8fcacea40ea9f94cb6b336fd",
+            "detail_engine_projection_sha256": "e2b5c4dd6103f8ca2ec1fd34a73eff7ec17ff0c66369ad9176c6c68d3c914309",
+            "panel_detail_projection_agrees": false,
+            "compared_evidence_fields": [
+              "engine_id",
+              "evidence_status",
+              "evidence_reason_codes",
+              "evidence_provider",
+              "evidence_ruler",
+              "evidence_basis",
+              "evidence_maturity",
+              "evidence_coverage",
+              "evidence_owner_scope",
+              "validation_state",
+              "output_class",
+              "authority"
+            ],
+            "panel_detail_exact_differences": [
+              {
+                "key": "validation_state",
+                "panel": null,
+                "detail": "phase0"
+              }
+            ],
+            "full_engine_delta": [
+              {
+                "key": "state_counts",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": {
+                  "healthy": 1
+                },
+                "detail": null
+              },
+              {
+                "key": "n_blind",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": 0,
+                "detail": null
+              },
+              {
+                "key": "output_class_rationale",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "ledger",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "none"
+              },
+              {
+                "key": "ledger_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "no — not yet"
+              },
+              {
+                "key": "graded_by_design_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design_source",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "synthetic display fixture"
+              },
+              {
+                "key": "declared_horizon",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "horizon_d": [
+                    126
+                  ]
+                }
+              },
+              {
+                "key": "validation_state",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "phase0"
+              },
+              {
+                "key": "validation_state_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "bound_species": [
+                    {
+                      "species_id": "SYNTHETIC-V1",
+                      "validation_status": "phase0",
+                      "owner_scope": {
+                        "version": "fixture-v1",
+                        "market_scope": [
+                          "US"
+                        ]
+                      }
+                    }
+                  ],
+                  "reason": "synthetic fixture only"
+                }
+              },
+              {
+                "key": "evidence_ref",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  "synthetic:fixture-v1",
+                  "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                ]
+              },
+              {
+                "key": "excluded_reason",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "evidence_source_links",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  {
+                    "reference": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+                    "kind": "repository_source_declaration",
+                    "revision": "1c1411292d993d76bbe0eaaa38f636e5a170cbde",
+                    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                  }
+                ]
+              }
+            ],
+            "shared_evidence_projection_agrees": true,
+            "projection_ruling": "Strict equality remains explicit. Detail-only validation_state=phase0 enriches an absent panel field; all shared evidence fields must agree."
+          },
+          "focus": {
+            "id": "adminLanguage",
+            "outline": "color(srgb 0.151216 0.344784 0.902588) solid 2px",
+            "ring": "color(srgb 0.151216 0.344784 0.902588)"
+          },
+          "file_focus": "102996ee42d5c21f--focus.png",
+          "focus_sha256": "102996ee42d5c21f5c0759dc633817705014daa69fb2937fbe76c020703ef8cc",
+          "detail": {
+            "file": "cd5458cc241eb983--detail.png",
+            "sha256": "cd5458cc241eb98331a04a9f294917a5337def915e285a23af3f4bbd169c4625",
+            "bytes": 362673,
+            "width": 1440,
+            "height": 2331,
+            "documentWidth": 1440
+          },
+          "panel_text": "Intelligence OS\n7 canonical engines · 7 artifacts · 7 assessed\nObservatory →\nRe-derive\n0 Validated\n2 Accruing\n1 Ungraded by design\n3 Degraded\n1 Disproven\nDerived on demand from T1 identity/semantics, T4 output health and existing owner-native evidence — nothing on this page is stored. Observed 2026-10-12 20:00:00 UTC · Computed 0s · Presence source SYNTHETIC fixture · Write-time evidence refused.\nNo promotion or trading authority\nCEO evidence view\nstrongest evidence first · never performance\n1\nValidated\n0\nEmpty band — valid evidence\n2\nAccruing\n2\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture · engine/synthetic-unclassified.py::synthetic-fixture\n3\nUngraded by design\n1\nengine/synthetic-descriptive.py::synthetic-fixture\n4\nDegraded\n3\nengine/synthetic-immature.py::synthetic-fixture · engine/synthetic-partial.py::synthetic-fixture · engine/synthetic-retired.py::synthetic-fixture\n5\nDisproven\n1\nengine/synthetic-falsified.py::synthetic-fixture\nEngines\n7\nEVIDENCE\nValidated (0)\nAccruing (2)\nUngraded by design (1)\nDegraded (3)\nDisproven (1)\nSTATE\nhealthy (6)\nNot determined (1)\nOUTPUT CLASS\npredictive (2)\nclassification_state (1)\ndescriptive (1)\ndetection_event (1)\nNot determined (1)\nranking (1)\nAUTHORITY\ndisplay (7)\nPROGRAM\nall programs\nSYNTHETIC — no market outcomes\nclear all\nENGINE\tEVIDENCE\tPROGRAM\tOUTPUT CLASS\tAUTHORITY\tOUTPUTS\tWORST STATE\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture\tAccruing\nt1_owner_native\nNo compatible task, version and cohort qualification is projected.\nDeclared window 126 · Unit not declared\nGraded window —\n\tSYNTHETIC — no market outcomes\tranking\tDisplay only\t1\thealthy\nengine/synthetic-unclassified.py::synthetic-fixture\tAccruing\nt1_owner_native\nThe output class has not been adjudicated.\nDeclared window 126 · Unit not declared\nGraded window —\n\tSYNTHETIC — no market outcomes\t—\tDisplay only\t1\thealthy\nengine/synthetic-descriptive.py::synthetic-fixture\tUngraded by design\nt1_owner_native\nThis descriptive output is intentionally ungraded.\nDeclared window 126 · Unit not declared\nGraded window —\n\tSYNTHETIC — no market outcomes\tdescriptive\tDisplay only\t1\thealthy\nengine/synthetic-immature.py::synthetic-fixture\tDegraded\ndirect:qledger:synthetic\nRecorded owner support is available; its current source and task qualification are not established.\nDeclared window 126 · Unit not declared\nGraded window 63\nPartial horizon evidence\n\tSYNTHETIC — no market outcomes\tpredictive\tDisplay only\t1\thealthy\nengine/synthetic-partial.py::synthetic-fixture\tDegraded\nt1_owner_native\nCurrent operational health cannot be qualified.\nDeclared window 126 · Unit not declared\nGraded window —\n\tSYNTHETIC — no market outcomes\tclassification_state\tDisplay only\t1\tno read\nengine/synthetic-retired.py::synthetic-fixture\tDegraded\nt1_owner_native\nThe owner retired this method; retirement does not prove a failed hypothesis.\nDeclared window 126 · Unit not declared\nGraded window —\n\tSYNTHETIC — no market outcomes\tpredictive\tDisplay only\t1\thealthy\nengine/synthetic-falsified.py::synthetic-fixture\tDisproven\nt1_owner_native\nThe owner records falsification for this method.\nDeclared window 126 · Unit not declared\nGraded window —\n\tSYNTHETIC — no market outcomes\tdetection_event\tDisplay only\t1\thealthy\nRECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nRecorded findings · 2\nRecorded source gaps · 1\nRecorded source",
+          "detail_text": "←\nIntelligence OS\n/\nengine/synthetic-immature.py::synthetic-fixture\nengine/synthetic-immature.py::synthetic-fixture\nDegraded\nhealthy\nprogram SYNTHETIC — no market outcomes\n1 Outputs\nclass predictive\nauthority Display only\nproducer engine/synthetic-immature.py\nEVIDENCE DISPOSITION\nDegraded\nDerived from owner-native evidence and current output health. It ranks evidence strength, never headline performance, and carries no promotion authority.\nOUTPUT CLASS\npredictive\nDECLARED HORIZON\n126\nGRADED HORIZON\n63\nHORIZON UNIT\ntrading_days\nMARKET CALENDAR\nUS\nOBSERVED DATES\n0\nNEEDED DATES\n25\nCONTROL COVERAGE\n0\nCOHORT ROWS\n10\nCONTROLLED ROWS\n0\nREFUSED ROWS\n10\nOWNER LIFECYCLE\nphase0\nPartial horizon evidence\nRecorded owner support\nRECORDED BY OWNER AT\n2026-10-11T18:00:00+00:00\nOWNER EVALUATION DATE\nUnknown\nCURRENT SOURCE QUALIFICATION\nUnavailable\nNAMED GENERATION\nNot matched or unversioned\nRecorded support does not establish current price, calendar freshness or task qualification.\nOwner measurements\nOwner measurements describe the bound family; compatible task, version and cohort qualification is not established here.\nOwner uncertainty and support\nOWNER RULER\n63\nOWNER CLOCK BASIS\nexplicit_unit_v1:trading_days:US\nOWNER MEASUREMENT BASIS\nMatched control\nOBSERVED DATES\n0\nWILSON LOWER BOUND (DATE HIT PROPORTION)\nUnknown (not projected by owner)\nOWNER REASON\nSYNTHETIC fixture; not empirical outcomes\nCONTROLLED-COHORT SUPPORT\n0\nWhole-family benchmark baseline\nThe owner does not project the baseline denominator. These values include the whole family and are separate from controlled-cohort support.\nBASELINE DENOMINATOR\nUnknown (not projected by owner)\nOWNER HIT RATE\n0\nSIGNED EXCESS MEAN\nUnknown (not projected by owner)\nABSOLUTE EXCESS MEAN\n0\nEXCESS DIRECTION BASIS\nMagnitude only (directions are not pooled)\nEXCESS BY DIRECTION\n{\"1\":0.01,\"-1\":-0.01}\nTechnical details\nREASONS\nRecorded owner support is available; its current source and task qualification are not established. Forward observations have not matured for this window.\nEVIDENCE REFS\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1\nsynthetic:fixture-v1\nNo browser link is declared for this reference.\nresearch/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\nRepository source declaration\nspecies:SYNTHETIC-V1\nNo browser link is declared for this reference.\nSource declarations describe the contract; they do not supply outcome evidence.\nRECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nRecorded findings · 1\nRecorded source gaps · 1\nRecorded source\nOutputs\n1\nsynthetic-immature\nhealthy\ncomplete\nby content_watermark\nPATH\nsynthetic/synthetic-immature.json\nsynthetic\nexact bound\nFRESHNESS\n0m / 24h SLA\nasof 2026-10-12T20:00:00+00:00",
+          "console_errors": [],
+          "failed_responses": []
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "light",
+          "locale": "zh",
+          "access": "synthetic_fixture_session",
+          "captured": true,
+          "file": "412be2e607d1763c.png",
+          "sha256": "412be2e607d1763cfaa1b3cdc1ee12514df2dc238bb4727ebdc244799a5d48b5",
+          "bytes": 419582,
+          "width": 1440,
+          "height": 2095,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "observation": {
+            "theme": "light",
+            "locale": "zh",
+            "lang": "zh-CN",
+            "documentWidth": 1440,
+            "viewportWidth": 1440,
+            "bandCount": 5,
+            "engineRows": 7,
+            "bodyBg": "rgb(247, 248, 250)"
+          },
+          "assets": {
+            "/app.js": {
+              "status": 200,
+              "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+            },
+            "/styles.css": {
+              "status": 200,
+              "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+            },
+            "/preferences.js": {
+              "status": 200,
+              "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+            },
+            "/assets/theme-tokens.css": {
+              "status": 200,
+              "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+            }
+          },
+          "api_identity": {
+            "panel_file": "79d132e602d5e027--panel-api.json",
+            "detail_file": "67fcf0179c80811b--detail-api.json",
+            "panel_sha256": "79d132e602d5e027dc8aaa7b84bed6cae50b13d59fa35cb40c0772edaec5d024",
+            "detail_sha256": "67fcf0179c80811b02888e92895087010bc85a05446f6ba8c3a7148961764a88",
+            "panel_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture",
+              "compute_seconds": 0,
+              "cache": "miss",
+              "trust_mtime": false,
+              "source_generation": null
+            },
+            "detail_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture"
+            },
+            "engine_id": "engine/synthetic-immature.py::synthetic-fixture",
+            "panel_engine_projection_sha256": "ea08151094869b52cdc0de21f2d66528ed4c8d8d8fcacea40ea9f94cb6b336fd",
+            "detail_engine_projection_sha256": "e2b5c4dd6103f8ca2ec1fd34a73eff7ec17ff0c66369ad9176c6c68d3c914309",
+            "panel_detail_projection_agrees": false,
+            "compared_evidence_fields": [
+              "engine_id",
+              "evidence_status",
+              "evidence_reason_codes",
+              "evidence_provider",
+              "evidence_ruler",
+              "evidence_basis",
+              "evidence_maturity",
+              "evidence_coverage",
+              "evidence_owner_scope",
+              "validation_state",
+              "output_class",
+              "authority"
+            ],
+            "panel_detail_exact_differences": [
+              {
+                "key": "validation_state",
+                "panel": null,
+                "detail": "phase0"
+              }
+            ],
+            "full_engine_delta": [
+              {
+                "key": "state_counts",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": {
+                  "healthy": 1
+                },
+                "detail": null
+              },
+              {
+                "key": "n_blind",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": 0,
+                "detail": null
+              },
+              {
+                "key": "output_class_rationale",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "ledger",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "none"
+              },
+              {
+                "key": "ledger_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "no — not yet"
+              },
+              {
+                "key": "graded_by_design_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design_source",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "synthetic display fixture"
+              },
+              {
+                "key": "declared_horizon",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "horizon_d": [
+                    126
+                  ]
+                }
+              },
+              {
+                "key": "validation_state",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "phase0"
+              },
+              {
+                "key": "validation_state_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "bound_species": [
+                    {
+                      "species_id": "SYNTHETIC-V1",
+                      "validation_status": "phase0",
+                      "owner_scope": {
+                        "version": "fixture-v1",
+                        "market_scope": [
+                          "US"
+                        ]
+                      }
+                    }
+                  ],
+                  "reason": "synthetic fixture only"
+                }
+              },
+              {
+                "key": "evidence_ref",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  "synthetic:fixture-v1",
+                  "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                ]
+              },
+              {
+                "key": "excluded_reason",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "evidence_source_links",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  {
+                    "reference": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+                    "kind": "repository_source_declaration",
+                    "revision": "1c1411292d993d76bbe0eaaa38f636e5a170cbde",
+                    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                  }
+                ]
+              }
+            ],
+            "shared_evidence_projection_agrees": true,
+            "projection_ruling": "Strict equality remains explicit. Detail-only validation_state=phase0 enriches an absent panel field; all shared evidence fields must agree."
+          },
+          "focus": {
+            "id": "adminLanguage",
+            "outline": "color(srgb 0.151216 0.344784 0.902588) solid 2px",
+            "ring": "color(srgb 0.151216 0.344784 0.902588)"
+          },
+          "file_focus": "21857da92b446124--focus.png",
+          "focus_sha256": "21857da92b44612459582f83d1b748c7b63e1c73c7a7b5ea5c061b2637a56184",
+          "detail": {
+            "file": "c73d8ada2389ee93--detail.png",
+            "sha256": "c73d8ada2389ee9386f1021b40daa7e2805c54527f757494113debd607ef43b4",
+            "bytes": 376633,
+            "width": 1440,
+            "height": 2273,
+            "documentWidth": 1440
+          },
+          "panel_text": "智能证据评估\n7 登记引擎 · 7 输出文件 · 7 已评估\n运行监测 →\n重新读取\n0 已有验证支持\n2 证据积累中\n1 按设计不评分\n3 证据受限\n1 已有否定证据\n按需读取登记身份与语义、运行状况及原所有者证据；页面不另存证据。 读取时间 2026-10-12 20:00:00 UTC · 计算耗时 0s · 存在性来源 SYNTHETIC fixture · 不采用文件修改时间作为新鲜度证据.\n不授予升级或交易权限\n证据总览\n按证据支持程度排序，不是绩效排名\n1\n已有验证支持\n0\n该组为空，仍保留显示\n2\n证据积累中\n2\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture · engine/synthetic-unclassified.py::synthetic-fixture\n3\n按设计不评分\n1\nengine/synthetic-descriptive.py::synthetic-fixture\n4\n证据受限\n3\nengine/synthetic-immature.py::synthetic-fixture · engine/synthetic-partial.py::synthetic-fixture · engine/synthetic-retired.py::synthetic-fixture\n5\n已有否定证据\n1\nengine/synthetic-falsified.py::synthetic-fixture\n引擎\n7\n证据\n已有验证支持 (0)\n证据积累中 (2)\n按设计不评分 (1)\n证据受限 (3)\n已有否定证据 (1)\n运行状态\n正常 (6)\n尚未确定 (1)\n输出类型\n预测 (2)\n状态分类 (1)\n描述 (1)\n事件检测 (1)\n尚未确定 (1)\n排序 (1)\n权限\n仅展示 (7)\n项目\n全部项目\nSYNTHETIC — no market outcomes\n清除筛选\n引擎\t证据\t项目\t输出类型\t权限\t输出\t最差运行状态\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture\t证据积累中\nt1_owner_native\n当前未提供与该任务、版本和样本组相符的验证范围。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n\tSYNTHETIC — no market outcomes\t排序\t仅展示\t1\t正常\nengine/synthetic-unclassified.py::synthetic-fixture\t证据积累中\nt1_owner_native\n输出类型尚未确认。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n\tSYNTHETIC — no market outcomes\t—\t仅展示\t1\t正常\nengine/synthetic-descriptive.py::synthetic-fixture\t按设计不评分\nt1_owner_native\n此描述性输出按设计不评分。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n\tSYNTHETIC — no market outcomes\t描述\t仅展示\t1\t正常\nengine/synthetic-immature.py::synthetic-fixture\t证据受限\ndirect:qledger:synthetic\n已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。\n声明窗口 126 · 未声明单位\n已评估窗口 63\n仅完成部分窗口的评估\n\tSYNTHETIC — no market outcomes\t预测\t仅展示\t1\t正常\nengine/synthetic-partial.py::synthetic-fixture\t证据受限\nt1_owner_native\n当前运行状况无法确认。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n\tSYNTHETIC — no market outcomes\t状态分类\t仅展示\t1\t无法读取\nengine/synthetic-retired.py::synthetic-fixture\t证据受限\nt1_owner_native\n所有者已退役此方法；退役本身不证明假设被否定。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n\tSYNTHETIC — no market outcomes\t预测\t仅展示\t1\t正常\nengine/synthetic-falsified.py::synthetic-fixture\t已有否定证据\nt1_owner_native\n所有者记录此方法已被否定。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n\tSYNTHETIC — no market outcomes\t事件检测\t仅展示\t1\t正常\n记录的观点分歧\n仅作背景注释 · 这些记录保留原有范围和日期，不能据此确认当前验证状态。\n来源时间\n2026-10-11\n无法关联到引擎的条目\n1\n数值来源核验\n此视图暂不可核验\n此视图暂无数值来源核验凭据。\n记录条目 · 2\n记录的来源缺口 · 1\n记录来源",
+          "detail_text": "←\n智能证据评估\n/\nengine/synthetic-immature.py::synthetic-fixture\nengine/synthetic-immature.py::synthetic-fixture\n证据受限\n正常\n项目 SYNTHETIC — no market outcomes\n1 输出\n输出类型 预测\n权限 仅展示\n生成器 engine/synthetic-immature.py\n证据状态\n证据受限\n由原所有者证据与当前运行状况推导，仅说明证据支持程度，不代表绩效排名或升级权限。\n输出类型\n预测\n声明的观察窗口\n126\n已评估的窗口\n63\n窗口单位\n交易日\n市场日历\nUS\n观测日期数\n0\n所需日期\n25\n对照覆盖率\n0\n样本组行数\n10\n有对照行数\n0\n拒绝行数\n10\n原所有者生命周期\nphase0\n仅完成部分窗口的评估\n原所有者记录的证据支持\n所有者记录时间\n2026-10-11T18:00:00+00:00\n所有者评估日期\n未知\n当前来源验证范围\n不可确认\n指定来源版本\n未匹配或没有版本记录\n记录的证据支持不能确认当前价格、交易日历新鲜度或任务验证范围。\n原所有者测量\n这些测量描述绑定的原所有者系列；本页未确认与任务、版本和样本组兼容的验证范围。\n原所有者的不确定性与支持\n原所有者评估窗口\n63\n原所有者时间基准\nexplicit_unit_v1:trading_days:US\n原所有者测量基准\n匹配对照\n观测日期数\n0\n日期命中比例的 WILSON 下界\n未知（原所有者未提供）\n原所有者说明\nSYNTHETIC fixture; not empirical outcomes\n对照样本组的证据支持\n0\n全系列基准参照\n原所有者未提供参照的样本分母。这些值覆盖全系列，与对照样本组的证据支持分别显示。\n参照样本分母\n未知（原所有者未提供）\n原所有者命中率\n0\n有方向的超额均值\n未知（原所有者未提供）\n超额绝对值均值\n0\n超额方向基准\n仅超额幅度（不合并方向）\n按方向划分的超额\n{\"1\":0.01,\"-1\":-0.01}\n技术详情\n依据与限制\n已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。 该窗口的前瞻观测尚未成熟。\n证据引用\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1\nsynthetic:fixture-v1\n此引用没有声明可通过浏览器访问的链接。\nresearch/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\n仓库中的来源声明\nspecies:SYNTHETIC-V1\n此引用没有声明可通过浏览器访问的链接。\n来源声明描述契约，本身不提供结果证据。\n记录的观点分歧\n仅作背景注释 · 这些记录保留原有范围和日期，不能据此确认当前验证状态。\n来源时间\n2026-10-11\n无法关联到引擎的条目\n1\n数值来源核验\n此视图暂不可核验\n此视图暂无数值来源核验凭据。\n记录条目 · 1\n记录的来源缺口 · 1\n记录来源\n输出\n1\nsynthetic-immature\n正常\n完整\nby content_watermark\n路径\nsynthetic/synthetic-immature.json\nsynthetic\nexact bound\n新鲜度\n0m / 24h SLA\n来源时间 2026-10-12T20:00:00+00:00",
+          "console_errors": [],
+          "failed_responses": []
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "dark",
+          "locale": "en",
+          "access": "synthetic_fixture_session",
+          "captured": true,
+          "file": "4f778b375f8b300c.png",
+          "sha256": "4f778b375f8b300c3210a689505bea20f55a05739c140aeb13d61e1da18e38b6",
+          "bytes": 440616,
+          "width": 390,
+          "height": 5475,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "observation": {
+            "theme": "dark",
+            "locale": "en",
+            "lang": "en",
+            "documentWidth": 390,
+            "viewportWidth": 390,
+            "bandCount": 5,
+            "engineRows": 7,
+            "bodyBg": "rgb(10, 12, 16)"
+          },
+          "assets": {
+            "/app.js": {
+              "status": 200,
+              "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+            },
+            "/styles.css": {
+              "status": 200,
+              "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+            },
+            "/preferences.js": {
+              "status": 200,
+              "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+            },
+            "/assets/theme-tokens.css": {
+              "status": 200,
+              "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+            }
+          },
+          "api_identity": {
+            "panel_file": "79d132e602d5e027--panel-api.json",
+            "detail_file": "67fcf0179c80811b--detail-api.json",
+            "panel_sha256": "79d132e602d5e027dc8aaa7b84bed6cae50b13d59fa35cb40c0772edaec5d024",
+            "detail_sha256": "67fcf0179c80811b02888e92895087010bc85a05446f6ba8c3a7148961764a88",
+            "panel_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture",
+              "compute_seconds": 0,
+              "cache": "miss",
+              "trust_mtime": false,
+              "source_generation": null
+            },
+            "detail_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture"
+            },
+            "engine_id": "engine/synthetic-immature.py::synthetic-fixture",
+            "panel_engine_projection_sha256": "ea08151094869b52cdc0de21f2d66528ed4c8d8d8fcacea40ea9f94cb6b336fd",
+            "detail_engine_projection_sha256": "e2b5c4dd6103f8ca2ec1fd34a73eff7ec17ff0c66369ad9176c6c68d3c914309",
+            "panel_detail_projection_agrees": false,
+            "compared_evidence_fields": [
+              "engine_id",
+              "evidence_status",
+              "evidence_reason_codes",
+              "evidence_provider",
+              "evidence_ruler",
+              "evidence_basis",
+              "evidence_maturity",
+              "evidence_coverage",
+              "evidence_owner_scope",
+              "validation_state",
+              "output_class",
+              "authority"
+            ],
+            "panel_detail_exact_differences": [
+              {
+                "key": "validation_state",
+                "panel": null,
+                "detail": "phase0"
+              }
+            ],
+            "full_engine_delta": [
+              {
+                "key": "state_counts",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": {
+                  "healthy": 1
+                },
+                "detail": null
+              },
+              {
+                "key": "n_blind",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": 0,
+                "detail": null
+              },
+              {
+                "key": "output_class_rationale",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "ledger",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "none"
+              },
+              {
+                "key": "ledger_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "no — not yet"
+              },
+              {
+                "key": "graded_by_design_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design_source",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "synthetic display fixture"
+              },
+              {
+                "key": "declared_horizon",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "horizon_d": [
+                    126
+                  ]
+                }
+              },
+              {
+                "key": "validation_state",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "phase0"
+              },
+              {
+                "key": "validation_state_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "bound_species": [
+                    {
+                      "species_id": "SYNTHETIC-V1",
+                      "validation_status": "phase0",
+                      "owner_scope": {
+                        "version": "fixture-v1",
+                        "market_scope": [
+                          "US"
+                        ]
+                      }
+                    }
+                  ],
+                  "reason": "synthetic fixture only"
+                }
+              },
+              {
+                "key": "evidence_ref",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  "synthetic:fixture-v1",
+                  "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                ]
+              },
+              {
+                "key": "excluded_reason",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "evidence_source_links",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  {
+                    "reference": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+                    "kind": "repository_source_declaration",
+                    "revision": "1c1411292d993d76bbe0eaaa38f636e5a170cbde",
+                    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                  }
+                ]
+              }
+            ],
+            "shared_evidence_projection_agrees": true,
+            "projection_ruling": "Strict equality remains explicit. Detail-only validation_state=phase0 enriches an absent panel field; all shared evidence fields must agree."
+          },
+          "focus": {
+            "id": "adminLanguage",
+            "outline": "rgb(106, 141, 255) solid 2px",
+            "ring": "rgb(106, 141, 255)"
+          },
+          "file_focus": "f884546e812e4bb2--focus.png",
+          "focus_sha256": "f884546e812e4bb2eb08bff0d5674eff07fab4c980f439f28c0104f205935d81",
+          "detail": {
+            "file": "b62c4fa143eaa5f4--detail.png",
+            "sha256": "b62c4fa143eaa5f4b6989887edd21d41517a5b3dbb031eba04f77354e1c6df3b",
+            "bytes": 355939,
+            "width": 390,
+            "height": 3792,
+            "documentWidth": 390
+          },
+          "panel_text": "Intelligence OS\n7 canonical engines · 7 artifacts · 7 assessed\nObservatory →\nRe-derive\n0 Validated\n2 Accruing\n1 Ungraded by design\n3 Degraded\n1 Disproven\nDerived on demand from T1 identity/semantics, T4 output health and existing owner-native evidence — nothing on this page is stored. Observed 2026-10-12 20:00:00 UTC · Computed 0s · Presence source SYNTHETIC fixture · Write-time evidence refused.\nNo promotion or trading authority\nCEO evidence view\nstrongest evidence first · never performance\n1\nValidated\n0\nEmpty band — valid evidence\n2\nAccruing\n2\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture · engine/synthetic-unclassified.py::synthetic-fixture\n3\nUngraded by design\n1\nengine/synthetic-descriptive.py::synthetic-fixture\n4\nDegraded\n3\nengine/synthetic-immature.py::synthetic-fixture · engine/synthetic-partial.py::synthetic-fixture · engine/synthetic-retired.py::synthetic-fixture\n5\nDisproven\n1\nengine/synthetic-falsified.py::synthetic-fixture\nEngines\n7\nEVIDENCE\nValidated (0)\nAccruing (2)\nUngraded by design (1)\nDegraded (3)\nDisproven (1)\nSTATE\nhealthy (6)\nNot determined (1)\nOUTPUT CLASS\npredictive (2)\nclassification_state (1)\ndescriptive (1)\ndetection_event (1)\nNot determined (1)\nranking (1)\nAUTHORITY\ndisplay (7)\nPROGRAM\nall programs\nSYNTHETIC — no market outcomes\nclear all\nENGINE\tEVIDENCE\tPROGRAM\tOUTPUT CLASS\tAUTHORITY\tOUTPUTS\tWORST STATE\nEngine\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture\nEvidence\nAccruing\nt1_owner_native\nNo compatible task, version and cohort qualification is projected.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\nranking\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-unclassified.py::synthetic-fixture\nEvidence\nAccruing\nt1_owner_native\nThe output class has not been adjudicated.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\n—\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-descriptive.py::synthetic-fixture\nEvidence\nUngraded by design\nt1_owner_native\nThis descriptive output is intentionally ungraded.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\ndescriptive\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-immature.py::synthetic-fixture\nEvidence\nDegraded\ndirect:qledger:synthetic\nRecorded owner support is available; its current source and task qualification are not established.\nDeclared window 126 · Unit not declared\nGraded window 63\nPartial horizon evidence\nProgram\nSYNTHETIC — no market outcomes\nOutput class\npredictive\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-partial.py::synthetic-fixture\nEvidence\nDegraded\nt1_owner_native\nCurrent operational health cannot be qualified.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\nclassification_state\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nno read\nEngine\nengine/synthetic-retired.py::synthetic-fixture\nEvidence\nDegraded\nt1_owner_native\nThe owner retired this method; retirement does not prove a failed hypothesis.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\npredictive\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-falsified.py::synthetic-fixture\nEvidence\nDisproven\nt1_owner_native\nThe owner records falsification for this method.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\ndetection_event\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nRECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nRecorded findings · 2\nRecorded source gaps · 1\nRecorded source",
+          "detail_text": "←\nIntelligence OS\n/\nengine/synthetic-immature.py::synthetic-fixture\nengine/synthetic-immature.py::synthetic-fixture\nDegraded\nhealthy\nprogram SYNTHETIC — no market outcomes\n1 Outputs\nclass predictive\nauthority Display only\nproducer engine/synthetic-immature.py\nEVIDENCE DISPOSITION\nDegraded\nDerived from owner-native evidence and current output health. It ranks evidence strength, never headline performance, and carries no promotion authority.\nOUTPUT CLASS\npredictive\nDECLARED HORIZON\n126\nGRADED HORIZON\n63\nHORIZON UNIT\ntrading_days\nMARKET CALENDAR\nUS\nOBSERVED DATES\n0\nNEEDED DATES\n25\nCONTROL COVERAGE\n0\nCOHORT ROWS\n10\nCONTROLLED ROWS\n0\nREFUSED ROWS\n10\nOWNER LIFECYCLE\nphase0\nPartial horizon evidence\nRecorded owner support\nRECORDED BY OWNER AT\n2026-10-11T18:00:00+00:00\nOWNER EVALUATION DATE\nUnknown\nCURRENT SOURCE QUALIFICATION\nUnavailable\nNAMED GENERATION\nNot matched or unversioned\nRecorded support does not establish current price, calendar freshness or task qualification.\nOwner measurements\nOwner measurements describe the bound family; compatible task, version and cohort qualification is not established here.\nOwner uncertainty and support\nOWNER RULER\n63\nOWNER CLOCK BASIS\nexplicit_unit_v1:trading_days:US\nOWNER MEASUREMENT BASIS\nMatched control\nOBSERVED DATES\n0\nWILSON LOWER BOUND (DATE HIT PROPORTION)\nUnknown (not projected by owner)\nOWNER REASON\nSYNTHETIC fixture; not empirical outcomes\nCONTROLLED-COHORT SUPPORT\n0\nWhole-family benchmark baseline\nThe owner does not project the baseline denominator. These values include the whole family and are separate from controlled-cohort support.\nBASELINE DENOMINATOR\nUnknown (not projected by owner)\nOWNER HIT RATE\n0\nSIGNED EXCESS MEAN\nUnknown (not projected by owner)\nABSOLUTE EXCESS MEAN\n0\nEXCESS DIRECTION BASIS\nMagnitude only (directions are not pooled)\nEXCESS BY DIRECTION\n{\"1\":0.01,\"-1\":-0.01}\nTechnical details\nREASONS\nRecorded owner support is available; its current source and task qualification are not established. Forward observations have not matured for this window.\nEVIDENCE REFS\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1\nsynthetic:fixture-v1\nNo browser link is declared for this reference.\nresearch/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\nRepository source declaration\nspecies:SYNTHETIC-V1\nNo browser link is declared for this reference.\nSource declarations describe the contract; they do not supply outcome evidence.\nRECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nRecorded findings · 1\nRecorded source gaps · 1\nRecorded source\nOutputs\n1\nsynthetic-immature\nhealthy\ncomplete\nby content_watermark\nPATH\nsynthetic/synthetic-immature.json\nsynthetic\nexact bound\nFRESHNESS\n0m / 24h SLA\nasof 2026-10-12T20:00:00+00:00",
+          "console_errors": [],
+          "failed_responses": []
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "dark",
+          "locale": "zh",
+          "access": "synthetic_fixture_session",
+          "captured": true,
+          "file": "3aa14b2b84c666c1.png",
+          "sha256": "3aa14b2b84c666c13c642d0a3e1c062bcb32c41afee9fa1cab5147247a4ad9c1",
+          "bytes": 451471,
+          "width": 390,
+          "height": 5348,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "observation": {
+            "theme": "dark",
+            "locale": "zh",
+            "lang": "zh-CN",
+            "documentWidth": 390,
+            "viewportWidth": 390,
+            "bandCount": 5,
+            "engineRows": 7,
+            "bodyBg": "rgb(10, 12, 16)"
+          },
+          "assets": {
+            "/app.js": {
+              "status": 200,
+              "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+            },
+            "/styles.css": {
+              "status": 200,
+              "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+            },
+            "/preferences.js": {
+              "status": 200,
+              "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+            },
+            "/assets/theme-tokens.css": {
+              "status": 200,
+              "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+            }
+          },
+          "api_identity": {
+            "panel_file": "79d132e602d5e027--panel-api.json",
+            "detail_file": "67fcf0179c80811b--detail-api.json",
+            "panel_sha256": "79d132e602d5e027dc8aaa7b84bed6cae50b13d59fa35cb40c0772edaec5d024",
+            "detail_sha256": "67fcf0179c80811b02888e92895087010bc85a05446f6ba8c3a7148961764a88",
+            "panel_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture",
+              "compute_seconds": 0,
+              "cache": "miss",
+              "trust_mtime": false,
+              "source_generation": null
+            },
+            "detail_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture"
+            },
+            "engine_id": "engine/synthetic-immature.py::synthetic-fixture",
+            "panel_engine_projection_sha256": "ea08151094869b52cdc0de21f2d66528ed4c8d8d8fcacea40ea9f94cb6b336fd",
+            "detail_engine_projection_sha256": "e2b5c4dd6103f8ca2ec1fd34a73eff7ec17ff0c66369ad9176c6c68d3c914309",
+            "panel_detail_projection_agrees": false,
+            "compared_evidence_fields": [
+              "engine_id",
+              "evidence_status",
+              "evidence_reason_codes",
+              "evidence_provider",
+              "evidence_ruler",
+              "evidence_basis",
+              "evidence_maturity",
+              "evidence_coverage",
+              "evidence_owner_scope",
+              "validation_state",
+              "output_class",
+              "authority"
+            ],
+            "panel_detail_exact_differences": [
+              {
+                "key": "validation_state",
+                "panel": null,
+                "detail": "phase0"
+              }
+            ],
+            "full_engine_delta": [
+              {
+                "key": "state_counts",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": {
+                  "healthy": 1
+                },
+                "detail": null
+              },
+              {
+                "key": "n_blind",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": 0,
+                "detail": null
+              },
+              {
+                "key": "output_class_rationale",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "ledger",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "none"
+              },
+              {
+                "key": "ledger_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "no — not yet"
+              },
+              {
+                "key": "graded_by_design_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design_source",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "synthetic display fixture"
+              },
+              {
+                "key": "declared_horizon",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "horizon_d": [
+                    126
+                  ]
+                }
+              },
+              {
+                "key": "validation_state",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "phase0"
+              },
+              {
+                "key": "validation_state_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "bound_species": [
+                    {
+                      "species_id": "SYNTHETIC-V1",
+                      "validation_status": "phase0",
+                      "owner_scope": {
+                        "version": "fixture-v1",
+                        "market_scope": [
+                          "US"
+                        ]
+                      }
+                    }
+                  ],
+                  "reason": "synthetic fixture only"
+                }
+              },
+              {
+                "key": "evidence_ref",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  "synthetic:fixture-v1",
+                  "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                ]
+              },
+              {
+                "key": "excluded_reason",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "evidence_source_links",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  {
+                    "reference": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+                    "kind": "repository_source_declaration",
+                    "revision": "1c1411292d993d76bbe0eaaa38f636e5a170cbde",
+                    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                  }
+                ]
+              }
+            ],
+            "shared_evidence_projection_agrees": true,
+            "projection_ruling": "Strict equality remains explicit. Detail-only validation_state=phase0 enriches an absent panel field; all shared evidence fields must agree."
+          },
+          "focus": {
+            "id": "adminLanguage",
+            "outline": "rgb(106, 141, 255) solid 2px",
+            "ring": "rgb(106, 141, 255)"
+          },
+          "file_focus": "e09c4ab48c5d5d90--focus.png",
+          "focus_sha256": "e09c4ab48c5d5d900013d5d53d10e831ea4922311671f6ab7617bbffebad1b12",
+          "detail": {
+            "file": "bded651b59dc731a--detail.png",
+            "sha256": "bded651b59dc731a7c84bb14f09c52d9e0f9a303ec11579da16d5648a70de2f5",
+            "bytes": 354649,
+            "width": 390,
+            "height": 3622,
+            "documentWidth": 390
+          },
+          "panel_text": "智能证据评估\n7 登记引擎 · 7 输出文件 · 7 已评估\n运行监测 →\n重新读取\n0 已有验证支持\n2 证据积累中\n1 按设计不评分\n3 证据受限\n1 已有否定证据\n按需读取登记身份与语义、运行状况及原所有者证据；页面不另存证据。 读取时间 2026-10-12 20:00:00 UTC · 计算耗时 0s · 存在性来源 SYNTHETIC fixture · 不采用文件修改时间作为新鲜度证据.\n不授予升级或交易权限\n证据总览\n按证据支持程度排序，不是绩效排名\n1\n已有验证支持\n0\n该组为空，仍保留显示\n2\n证据积累中\n2\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture · engine/synthetic-unclassified.py::synthetic-fixture\n3\n按设计不评分\n1\nengine/synthetic-descriptive.py::synthetic-fixture\n4\n证据受限\n3\nengine/synthetic-immature.py::synthetic-fixture · engine/synthetic-partial.py::synthetic-fixture · engine/synthetic-retired.py::synthetic-fixture\n5\n已有否定证据\n1\nengine/synthetic-falsified.py::synthetic-fixture\n引擎\n7\n证据\n已有验证支持 (0)\n证据积累中 (2)\n按设计不评分 (1)\n证据受限 (3)\n已有否定证据 (1)\n运行状态\n正常 (6)\n尚未确定 (1)\n输出类型\n预测 (2)\n状态分类 (1)\n描述 (1)\n事件检测 (1)\n尚未确定 (1)\n排序 (1)\n权限\n仅展示 (7)\n项目\n全部项目\nSYNTHETIC — no market outcomes\n清除筛选\n引擎\t证据\t项目\t输出类型\t权限\t输出\t最差运行状态\n引擎\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture\n证据\n证据积累中\nt1_owner_native\n当前未提供与该任务、版本和样本组相符的验证范围。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n项目\nSYNTHETIC — no market outcomes\n输出类型\n排序\n权限\n仅展示\n输出\n1\n最差运行状态\n正常\n引擎\nengine/synthetic-unclassified.py::synthetic-fixture\n证据\n证据积累中\nt1_owner_native\n输出类型尚未确认。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n项目\nSYNTHETIC — no market outcomes\n输出类型\n—\n权限\n仅展示\n输出\n1\n最差运行状态\n正常\n引擎\nengine/synthetic-descriptive.py::synthetic-fixture\n证据\n按设计不评分\nt1_owner_native\n此描述性输出按设计不评分。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n项目\nSYNTHETIC — no market outcomes\n输出类型\n描述\n权限\n仅展示\n输出\n1\n最差运行状态\n正常\n引擎\nengine/synthetic-immature.py::synthetic-fixture\n证据\n证据受限\ndirect:qledger:synthetic\n已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。\n声明窗口 126 · 未声明单位\n已评估窗口 63\n仅完成部分窗口的评估\n项目\nSYNTHETIC — no market outcomes\n输出类型\n预测\n权限\n仅展示\n输出\n1\n最差运行状态\n正常\n引擎\nengine/synthetic-partial.py::synthetic-fixture\n证据\n证据受限\nt1_owner_native\n当前运行状况无法确认。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n项目\nSYNTHETIC — no market outcomes\n输出类型\n状态分类\n权限\n仅展示\n输出\n1\n最差运行状态\n无法读取\n引擎\nengine/synthetic-retired.py::synthetic-fixture\n证据\n证据受限\nt1_owner_native\n所有者已退役此方法；退役本身不证明假设被否定。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n项目\nSYNTHETIC — no market outcomes\n输出类型\n预测\n权限\n仅展示\n输出\n1\n最差运行状态\n正常\n引擎\nengine/synthetic-falsified.py::synthetic-fixture\n证据\n已有否定证据\nt1_owner_native\n所有者记录此方法已被否定。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n项目\nSYNTHETIC — no market outcomes\n输出类型\n事件检测\n权限\n仅展示\n输出\n1\n最差运行状态\n正常\n记录的观点分歧\n仅作背景注释 · 这些记录保留原有范围和日期，不能据此确认当前验证状态。\n来源时间\n2026-10-11\n无法关联到引擎的条目\n1\n数值来源核验\n此视图暂不可核验\n此视图暂无数值来源核验凭据。\n记录条目 · 2\n记录的来源缺口 · 1\n记录来源",
+          "detail_text": "←\n智能证据评估\n/\nengine/synthetic-immature.py::synthetic-fixture\nengine/synthetic-immature.py::synthetic-fixture\n证据受限\n正常\n项目 SYNTHETIC — no market outcomes\n1 输出\n输出类型 预测\n权限 仅展示\n生成器 engine/synthetic-immature.py\n证据状态\n证据受限\n由原所有者证据与当前运行状况推导，仅说明证据支持程度，不代表绩效排名或升级权限。\n输出类型\n预测\n声明的观察窗口\n126\n已评估的窗口\n63\n窗口单位\n交易日\n市场日历\nUS\n观测日期数\n0\n所需日期\n25\n对照覆盖率\n0\n样本组行数\n10\n有对照行数\n0\n拒绝行数\n10\n原所有者生命周期\nphase0\n仅完成部分窗口的评估\n原所有者记录的证据支持\n所有者记录时间\n2026-10-11T18:00:00+00:00\n所有者评估日期\n未知\n当前来源验证范围\n不可确认\n指定来源版本\n未匹配或没有版本记录\n记录的证据支持不能确认当前价格、交易日历新鲜度或任务验证范围。\n原所有者测量\n这些测量描述绑定的原所有者系列；本页未确认与任务、版本和样本组兼容的验证范围。\n原所有者的不确定性与支持\n原所有者评估窗口\n63\n原所有者时间基准\nexplicit_unit_v1:trading_days:US\n原所有者测量基准\n匹配对照\n观测日期数\n0\n日期命中比例的 WILSON 下界\n未知（原所有者未提供）\n原所有者说明\nSYNTHETIC fixture; not empirical outcomes\n对照样本组的证据支持\n0\n全系列基准参照\n原所有者未提供参照的样本分母。这些值覆盖全系列，与对照样本组的证据支持分别显示。\n参照样本分母\n未知（原所有者未提供）\n原所有者命中率\n0\n有方向的超额均值\n未知（原所有者未提供）\n超额绝对值均值\n0\n超额方向基准\n仅超额幅度（不合并方向）\n按方向划分的超额\n{\"1\":0.01,\"-1\":-0.01}\n技术详情\n依据与限制\n已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。 该窗口的前瞻观测尚未成熟。\n证据引用\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1\nsynthetic:fixture-v1\n此引用没有声明可通过浏览器访问的链接。\nresearch/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\n仓库中的来源声明\nspecies:SYNTHETIC-V1\n此引用没有声明可通过浏览器访问的链接。\n来源声明描述契约，本身不提供结果证据。\n记录的观点分歧\n仅作背景注释 · 这些记录保留原有范围和日期，不能据此确认当前验证状态。\n来源时间\n2026-10-11\n无法关联到引擎的条目\n1\n数值来源核验\n此视图暂不可核验\n此视图暂无数值来源核验凭据。\n记录条目 · 1\n记录的来源缺口 · 1\n记录来源\n输出\n1\nsynthetic-immature\n正常\n完整\nby content_watermark\n路径\nsynthetic/synthetic-immature.json\nsynthetic\nexact bound\n新鲜度\n0m / 24h SLA\n来源时间 2026-10-12T20:00:00+00:00",
+          "console_errors": [],
+          "failed_responses": []
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "light",
+          "locale": "en",
+          "access": "synthetic_fixture_session",
+          "captured": true,
+          "file": "08de51d51354d235.png",
+          "sha256": "08de51d51354d235ce741db5e2c88410baef48983b056d97e20df4d52f2ba94b",
+          "bytes": 388276,
+          "width": 390,
+          "height": 5475,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "observation": {
+            "theme": "light",
+            "locale": "en",
+            "lang": "en",
+            "documentWidth": 390,
+            "viewportWidth": 390,
+            "bandCount": 5,
+            "engineRows": 7,
+            "bodyBg": "rgb(247, 248, 250)"
+          },
+          "assets": {
+            "/app.js": {
+              "status": 200,
+              "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+            },
+            "/styles.css": {
+              "status": 200,
+              "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+            },
+            "/preferences.js": {
+              "status": 200,
+              "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+            },
+            "/assets/theme-tokens.css": {
+              "status": 200,
+              "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+            }
+          },
+          "api_identity": {
+            "panel_file": "79d132e602d5e027--panel-api.json",
+            "detail_file": "67fcf0179c80811b--detail-api.json",
+            "panel_sha256": "79d132e602d5e027dc8aaa7b84bed6cae50b13d59fa35cb40c0772edaec5d024",
+            "detail_sha256": "67fcf0179c80811b02888e92895087010bc85a05446f6ba8c3a7148961764a88",
+            "panel_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture",
+              "compute_seconds": 0,
+              "cache": "miss",
+              "trust_mtime": false,
+              "source_generation": null
+            },
+            "detail_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture"
+            },
+            "engine_id": "engine/synthetic-immature.py::synthetic-fixture",
+            "panel_engine_projection_sha256": "ea08151094869b52cdc0de21f2d66528ed4c8d8d8fcacea40ea9f94cb6b336fd",
+            "detail_engine_projection_sha256": "e2b5c4dd6103f8ca2ec1fd34a73eff7ec17ff0c66369ad9176c6c68d3c914309",
+            "panel_detail_projection_agrees": false,
+            "compared_evidence_fields": [
+              "engine_id",
+              "evidence_status",
+              "evidence_reason_codes",
+              "evidence_provider",
+              "evidence_ruler",
+              "evidence_basis",
+              "evidence_maturity",
+              "evidence_coverage",
+              "evidence_owner_scope",
+              "validation_state",
+              "output_class",
+              "authority"
+            ],
+            "panel_detail_exact_differences": [
+              {
+                "key": "validation_state",
+                "panel": null,
+                "detail": "phase0"
+              }
+            ],
+            "full_engine_delta": [
+              {
+                "key": "state_counts",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": {
+                  "healthy": 1
+                },
+                "detail": null
+              },
+              {
+                "key": "n_blind",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": 0,
+                "detail": null
+              },
+              {
+                "key": "output_class_rationale",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "ledger",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "none"
+              },
+              {
+                "key": "ledger_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "no — not yet"
+              },
+              {
+                "key": "graded_by_design_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design_source",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "synthetic display fixture"
+              },
+              {
+                "key": "declared_horizon",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "horizon_d": [
+                    126
+                  ]
+                }
+              },
+              {
+                "key": "validation_state",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "phase0"
+              },
+              {
+                "key": "validation_state_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "bound_species": [
+                    {
+                      "species_id": "SYNTHETIC-V1",
+                      "validation_status": "phase0",
+                      "owner_scope": {
+                        "version": "fixture-v1",
+                        "market_scope": [
+                          "US"
+                        ]
+                      }
+                    }
+                  ],
+                  "reason": "synthetic fixture only"
+                }
+              },
+              {
+                "key": "evidence_ref",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  "synthetic:fixture-v1",
+                  "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                ]
+              },
+              {
+                "key": "excluded_reason",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "evidence_source_links",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  {
+                    "reference": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+                    "kind": "repository_source_declaration",
+                    "revision": "1c1411292d993d76bbe0eaaa38f636e5a170cbde",
+                    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                  }
+                ]
+              }
+            ],
+            "shared_evidence_projection_agrees": true,
+            "projection_ruling": "Strict equality remains explicit. Detail-only validation_state=phase0 enriches an absent panel field; all shared evidence fields must agree."
+          },
+          "focus": {
+            "id": "adminLanguage",
+            "outline": "color(srgb 0.151216 0.344784 0.902588) solid 2px",
+            "ring": "color(srgb 0.151216 0.344784 0.902588)"
+          },
+          "file_focus": "ff25c01383eae43c--focus.png",
+          "focus_sha256": "ff25c01383eae43c4945184721c655fe13871531e38ba43795b654701d0c3a9a",
+          "detail": {
+            "file": "ed43054c38074185--detail.png",
+            "sha256": "ed43054c380741857b7a2dc146d3e090a8f303f6d719894004e4970d02485dde",
+            "bytes": 311886,
+            "width": 390,
+            "height": 3792,
+            "documentWidth": 390
+          },
+          "panel_text": "Intelligence OS\n7 canonical engines · 7 artifacts · 7 assessed\nObservatory →\nRe-derive\n0 Validated\n2 Accruing\n1 Ungraded by design\n3 Degraded\n1 Disproven\nDerived on demand from T1 identity/semantics, T4 output health and existing owner-native evidence — nothing on this page is stored. Observed 2026-10-12 20:00:00 UTC · Computed 0s · Presence source SYNTHETIC fixture · Write-time evidence refused.\nNo promotion or trading authority\nCEO evidence view\nstrongest evidence first · never performance\n1\nValidated\n0\nEmpty band — valid evidence\n2\nAccruing\n2\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture · engine/synthetic-unclassified.py::synthetic-fixture\n3\nUngraded by design\n1\nengine/synthetic-descriptive.py::synthetic-fixture\n4\nDegraded\n3\nengine/synthetic-immature.py::synthetic-fixture · engine/synthetic-partial.py::synthetic-fixture · engine/synthetic-retired.py::synthetic-fixture\n5\nDisproven\n1\nengine/synthetic-falsified.py::synthetic-fixture\nEngines\n7\nEVIDENCE\nValidated (0)\nAccruing (2)\nUngraded by design (1)\nDegraded (3)\nDisproven (1)\nSTATE\nhealthy (6)\nNot determined (1)\nOUTPUT CLASS\npredictive (2)\nclassification_state (1)\ndescriptive (1)\ndetection_event (1)\nNot determined (1)\nranking (1)\nAUTHORITY\ndisplay (7)\nPROGRAM\nall programs\nSYNTHETIC — no market outcomes\nclear all\nENGINE\tEVIDENCE\tPROGRAM\tOUTPUT CLASS\tAUTHORITY\tOUTPUTS\tWORST STATE\nEngine\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture\nEvidence\nAccruing\nt1_owner_native\nNo compatible task, version and cohort qualification is projected.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\nranking\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-unclassified.py::synthetic-fixture\nEvidence\nAccruing\nt1_owner_native\nThe output class has not been adjudicated.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\n—\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-descriptive.py::synthetic-fixture\nEvidence\nUngraded by design\nt1_owner_native\nThis descriptive output is intentionally ungraded.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\ndescriptive\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-immature.py::synthetic-fixture\nEvidence\nDegraded\ndirect:qledger:synthetic\nRecorded owner support is available; its current source and task qualification are not established.\nDeclared window 126 · Unit not declared\nGraded window 63\nPartial horizon evidence\nProgram\nSYNTHETIC — no market outcomes\nOutput class\npredictive\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-partial.py::synthetic-fixture\nEvidence\nDegraded\nt1_owner_native\nCurrent operational health cannot be qualified.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\nclassification_state\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nno read\nEngine\nengine/synthetic-retired.py::synthetic-fixture\nEvidence\nDegraded\nt1_owner_native\nThe owner retired this method; retirement does not prove a failed hypothesis.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\npredictive\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nEngine\nengine/synthetic-falsified.py::synthetic-fixture\nEvidence\nDisproven\nt1_owner_native\nThe owner records falsification for this method.\nDeclared window 126 · Unit not declared\nGraded window —\nProgram\nSYNTHETIC — no market outcomes\nOutput class\ndetection_event\nAuthority\nDisplay only\nOutputs\n1\nWorst state\nhealthy\nRECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nRecorded findings · 2\nRecorded source gaps · 1\nRecorded source",
+          "detail_text": "←\nIntelligence OS\n/\nengine/synthetic-immature.py::synthetic-fixture\nengine/synthetic-immature.py::synthetic-fixture\nDegraded\nhealthy\nprogram SYNTHETIC — no market outcomes\n1 Outputs\nclass predictive\nauthority Display only\nproducer engine/synthetic-immature.py\nEVIDENCE DISPOSITION\nDegraded\nDerived from owner-native evidence and current output health. It ranks evidence strength, never headline performance, and carries no promotion authority.\nOUTPUT CLASS\npredictive\nDECLARED HORIZON\n126\nGRADED HORIZON\n63\nHORIZON UNIT\ntrading_days\nMARKET CALENDAR\nUS\nOBSERVED DATES\n0\nNEEDED DATES\n25\nCONTROL COVERAGE\n0\nCOHORT ROWS\n10\nCONTROLLED ROWS\n0\nREFUSED ROWS\n10\nOWNER LIFECYCLE\nphase0\nPartial horizon evidence\nRecorded owner support\nRECORDED BY OWNER AT\n2026-10-11T18:00:00+00:00\nOWNER EVALUATION DATE\nUnknown\nCURRENT SOURCE QUALIFICATION\nUnavailable\nNAMED GENERATION\nNot matched or unversioned\nRecorded support does not establish current price, calendar freshness or task qualification.\nOwner measurements\nOwner measurements describe the bound family; compatible task, version and cohort qualification is not established here.\nOwner uncertainty and support\nOWNER RULER\n63\nOWNER CLOCK BASIS\nexplicit_unit_v1:trading_days:US\nOWNER MEASUREMENT BASIS\nMatched control\nOBSERVED DATES\n0\nWILSON LOWER BOUND (DATE HIT PROPORTION)\nUnknown (not projected by owner)\nOWNER REASON\nSYNTHETIC fixture; not empirical outcomes\nCONTROLLED-COHORT SUPPORT\n0\nWhole-family benchmark baseline\nThe owner does not project the baseline denominator. These values include the whole family and are separate from controlled-cohort support.\nBASELINE DENOMINATOR\nUnknown (not projected by owner)\nOWNER HIT RATE\n0\nSIGNED EXCESS MEAN\nUnknown (not projected by owner)\nABSOLUTE EXCESS MEAN\n0\nEXCESS DIRECTION BASIS\nMagnitude only (directions are not pooled)\nEXCESS BY DIRECTION\n{\"1\":0.01,\"-1\":-0.01}\nTechnical details\nREASONS\nRecorded owner support is available; its current source and task qualification are not established. Forward observations have not matured for this window.\nEVIDENCE REFS\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1\nsynthetic:fixture-v1\nNo browser link is declared for this reference.\nresearch/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\nRepository source declaration\nspecies:SYNTHETIC-V1\nNo browser link is declared for this reference.\nSource declarations describe the contract; they do not supply outcome evidence.\nRECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nRecorded findings · 1\nRecorded source gaps · 1\nRecorded source\nOutputs\n1\nsynthetic-immature\nhealthy\ncomplete\nby content_watermark\nPATH\nsynthetic/synthetic-immature.json\nsynthetic\nexact bound\nFRESHNESS\n0m / 24h SLA\nasof 2026-10-12T20:00:00+00:00",
+          "console_errors": [],
+          "failed_responses": []
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "light",
+          "locale": "zh",
+          "access": "synthetic_fixture_session",
+          "captured": true,
+          "file": "7cdc8513632291e7.png",
+          "sha256": "7cdc8513632291e72a994f03c382d54e59796a865967291f3a94229c7699d2fa",
+          "bytes": 399567,
+          "width": 390,
+          "height": 5348,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "observation": {
+            "theme": "light",
+            "locale": "zh",
+            "lang": "zh-CN",
+            "documentWidth": 390,
+            "viewportWidth": 390,
+            "bandCount": 5,
+            "engineRows": 7,
+            "bodyBg": "rgb(247, 248, 250)"
+          },
+          "assets": {
+            "/app.js": {
+              "status": 200,
+              "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+            },
+            "/styles.css": {
+              "status": 200,
+              "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+            },
+            "/preferences.js": {
+              "status": 200,
+              "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+            },
+            "/assets/theme-tokens.css": {
+              "status": 200,
+              "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+            }
+          },
+          "api_identity": {
+            "panel_file": "79d132e602d5e027--panel-api.json",
+            "detail_file": "67fcf0179c80811b--detail-api.json",
+            "panel_sha256": "79d132e602d5e027dc8aaa7b84bed6cae50b13d59fa35cb40c0772edaec5d024",
+            "detail_sha256": "67fcf0179c80811b02888e92895087010bc85a05446f6ba8c3a7148961764a88",
+            "panel_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture",
+              "compute_seconds": 0,
+              "cache": "miss",
+              "trust_mtime": false,
+              "source_generation": null
+            },
+            "detail_generated": {
+              "observed_at": "2026-10-12T20:00:00+00:00",
+              "root_mode": "SYNTHETIC fixture"
+            },
+            "engine_id": "engine/synthetic-immature.py::synthetic-fixture",
+            "panel_engine_projection_sha256": "ea08151094869b52cdc0de21f2d66528ed4c8d8d8fcacea40ea9f94cb6b336fd",
+            "detail_engine_projection_sha256": "e2b5c4dd6103f8ca2ec1fd34a73eff7ec17ff0c66369ad9176c6c68d3c914309",
+            "panel_detail_projection_agrees": false,
+            "compared_evidence_fields": [
+              "engine_id",
+              "evidence_status",
+              "evidence_reason_codes",
+              "evidence_provider",
+              "evidence_ruler",
+              "evidence_basis",
+              "evidence_maturity",
+              "evidence_coverage",
+              "evidence_owner_scope",
+              "validation_state",
+              "output_class",
+              "authority"
+            ],
+            "panel_detail_exact_differences": [
+              {
+                "key": "validation_state",
+                "panel": null,
+                "detail": "phase0"
+              }
+            ],
+            "full_engine_delta": [
+              {
+                "key": "state_counts",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": {
+                  "healthy": 1
+                },
+                "detail": null
+              },
+              {
+                "key": "n_blind",
+                "panel_present": true,
+                "detail_present": false,
+                "panel": 0,
+                "detail": null
+              },
+              {
+                "key": "output_class_rationale",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "ledger",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "none"
+              },
+              {
+                "key": "ledger_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "no — not yet"
+              },
+              {
+                "key": "graded_by_design_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "graded_by_design_source",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "synthetic display fixture"
+              },
+              {
+                "key": "declared_horizon",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "horizon_d": [
+                    126
+                  ]
+                }
+              },
+              {
+                "key": "validation_state",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": "phase0"
+              },
+              {
+                "key": "validation_state_evidence",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": {
+                  "bound_species": [
+                    {
+                      "species_id": "SYNTHETIC-V1",
+                      "validation_status": "phase0",
+                      "owner_scope": {
+                        "version": "fixture-v1",
+                        "market_scope": [
+                          "US"
+                        ]
+                      }
+                    }
+                  ],
+                  "reason": "synthetic fixture only"
+                }
+              },
+              {
+                "key": "evidence_ref",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  "synthetic:fixture-v1",
+                  "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                ]
+              },
+              {
+                "key": "excluded_reason",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": null
+              },
+              {
+                "key": "evidence_source_links",
+                "panel_present": false,
+                "detail_present": true,
+                "panel": null,
+                "detail": [
+                  {
+                    "reference": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+                    "kind": "repository_source_declaration",
+                    "revision": "1c1411292d993d76bbe0eaaa38f636e5a170cbde",
+                    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md"
+                  }
+                ]
+              }
+            ],
+            "shared_evidence_projection_agrees": true,
+            "projection_ruling": "Strict equality remains explicit. Detail-only validation_state=phase0 enriches an absent panel field; all shared evidence fields must agree."
+          },
+          "focus": {
+            "id": "adminLanguage",
+            "outline": "color(srgb 0.151216 0.344784 0.902588) solid 2px",
+            "ring": "color(srgb 0.151216 0.344784 0.902588)"
+          },
+          "file_focus": "8510c719f84b33fd--focus.png",
+          "focus_sha256": "8510c719f84b33fd3748f35dc8d3ec5e363c75d640899bc89f3f101a79814399",
+          "detail": {
+            "file": "ee77fca5d36f46c2--detail.png",
+            "sha256": "ee77fca5d36f46c26503900cd72e2f78b8f3497bb6816bc2d74a75f44b2c0549",
+            "bytes": 315315,
+            "width": 390,
+            "height": 3622,
+            "documentWidth": 390
+          },
+          "panel_text": "智能证据评估\n7 登记引擎 · 7 输出文件 · 7 已评估\n运行监测 →\n重新读取\n0 已有验证支持\n2 证据积累中\n1 按设计不评分\n3 证据受限\n1 已有否定证据\n按需读取登记身份与语义、运行状况及原所有者证据；页面不另存证据。 读取时间 2026-10-12 20:00:00 UTC · 计算耗时 0s · 存在性来源 SYNTHETIC fixture · 不采用文件修改时间作为新鲜度证据.\n不授予升级或交易权限\n证据总览\n按证据支持程度排序，不是绩效排名\n1\n已有验证支持\n0\n该组为空，仍保留显示\n2\n证据积累中\n2\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture · engine/synthetic-unclassified.py::synthetic-fixture\n3\n按设计不评分\n1\nengine/synthetic-descriptive.py::synthetic-fixture\n4\n证据受限\n3\nengine/synthetic-immature.py::synthetic-fixture · engine/synthetic-partial.py::synthetic-fixture · engine/synthetic-retired.py::synthetic-fixture\n5\n已有否定证据\n1\nengine/synthetic-falsified.py::synthetic-fixture\n引擎\n7\n证据\n已有验证支持 (0)\n证据积累中 (2)\n按设计不评分 (1)\n证据受限 (3)\n已有否定证据 (1)\n运行状态\n正常 (6)\n尚未确定 (1)\n输出类型\n预测 (2)\n状态分类 (1)\n描述 (1)\n事件检测 (1)\n尚未确定 (1)\n排序 (1)\n权限\n仅展示 (7)\n项目\n全部项目\nSYNTHETIC — no market outcomes\n清除筛选\n引擎\t证据\t项目\t输出类型\t权限\t输出\t最差运行状态\n引擎\nengine/synthetic-supported-scope-unknown.py::synthetic-fixture\n证据\n证据积累中\nt1_owner_native\n当前未提供与该任务、版本和样本组相符的验证范围。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n项目\nSYNTHETIC — no market outcomes\n输出类型\n排序\n权限\n仅展示\n输出\n1\n最差运行状态\n正常\n引擎\nengine/synthetic-unclassified.py::synthetic-fixture\n证据\n证据积累中\nt1_owner_native\n输出类型尚未确认。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n项目\nSYNTHETIC — no market outcomes\n输出类型\n—\n权限\n仅展示\n输出\n1\n最差运行状态\n正常\n引擎\nengine/synthetic-descriptive.py::synthetic-fixture\n证据\n按设计不评分\nt1_owner_native\n此描述性输出按设计不评分。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n项目\nSYNTHETIC — no market outcomes\n输出类型\n描述\n权限\n仅展示\n输出\n1\n最差运行状态\n正常\n引擎\nengine/synthetic-immature.py::synthetic-fixture\n证据\n证据受限\ndirect:qledger:synthetic\n已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。\n声明窗口 126 · 未声明单位\n已评估窗口 63\n仅完成部分窗口的评估\n项目\nSYNTHETIC — no market outcomes\n输出类型\n预测\n权限\n仅展示\n输出\n1\n最差运行状态\n正常\n引擎\nengine/synthetic-partial.py::synthetic-fixture\n证据\n证据受限\nt1_owner_native\n当前运行状况无法确认。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n项目\nSYNTHETIC — no market outcomes\n输出类型\n状态分类\n权限\n仅展示\n输出\n1\n最差运行状态\n无法读取\n引擎\nengine/synthetic-retired.py::synthetic-fixture\n证据\n证据受限\nt1_owner_native\n所有者已退役此方法；退役本身不证明假设被否定。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n项目\nSYNTHETIC — no market outcomes\n输出类型\n预测\n权限\n仅展示\n输出\n1\n最差运行状态\n正常\n引擎\nengine/synthetic-falsified.py::synthetic-fixture\n证据\n已有否定证据\nt1_owner_native\n所有者记录此方法已被否定。\n声明窗口 126 · 未声明单位\n已评估窗口 —\n项目\nSYNTHETIC — no market outcomes\n输出类型\n事件检测\n权限\n仅展示\n输出\n1\n最差运行状态\n正常\n记录的观点分歧\n仅作背景注释 · 这些记录保留原有范围和日期，不能据此确认当前验证状态。\n来源时间\n2026-10-11\n无法关联到引擎的条目\n1\n数值来源核验\n此视图暂不可核验\n此视图暂无数值来源核验凭据。\n记录条目 · 2\n记录的来源缺口 · 1\n记录来源",
+          "detail_text": "←\n智能证据评估\n/\nengine/synthetic-immature.py::synthetic-fixture\nengine/synthetic-immature.py::synthetic-fixture\n证据受限\n正常\n项目 SYNTHETIC — no market outcomes\n1 输出\n输出类型 预测\n权限 仅展示\n生成器 engine/synthetic-immature.py\n证据状态\n证据受限\n由原所有者证据与当前运行状况推导，仅说明证据支持程度，不代表绩效排名或升级权限。\n输出类型\n预测\n声明的观察窗口\n126\n已评估的窗口\n63\n窗口单位\n交易日\n市场日历\nUS\n观测日期数\n0\n所需日期\n25\n对照覆盖率\n0\n样本组行数\n10\n有对照行数\n0\n拒绝行数\n10\n原所有者生命周期\nphase0\n仅完成部分窗口的评估\n原所有者记录的证据支持\n所有者记录时间\n2026-10-11T18:00:00+00:00\n所有者评估日期\n未知\n当前来源验证范围\n不可确认\n指定来源版本\n未匹配或没有版本记录\n记录的证据支持不能确认当前价格、交易日历新鲜度或任务验证范围。\n原所有者测量\n这些测量描述绑定的原所有者系列；本页未确认与任务、版本和样本组兼容的验证范围。\n原所有者的不确定性与支持\n原所有者评估窗口\n63\n原所有者时间基准\nexplicit_unit_v1:trading_days:US\n原所有者测量基准\n匹配对照\n观测日期数\n0\n日期命中比例的 WILSON 下界\n未知（原所有者未提供）\n原所有者说明\nSYNTHETIC fixture; not empirical outcomes\n对照样本组的证据支持\n0\n全系列基准参照\n原所有者未提供参照的样本分母。这些值覆盖全系列，与对照样本组的证据支持分别显示。\n参照样本分母\n未知（原所有者未提供）\n原所有者命中率\n0\n有方向的超额均值\n未知（原所有者未提供）\n超额绝对值均值\n0\n超额方向基准\n仅超额幅度（不合并方向）\n按方向划分的超额\n{\"1\":0.01,\"-1\":-0.01}\n技术详情\n依据与限制\n已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。 该窗口的前瞻观测尚未成熟。\n证据引用\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1\nsynthetic:fixture-v1\n此引用没有声明可通过浏览器访问的链接。\nresearch/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\n仓库中的来源声明\nspecies:SYNTHETIC-V1\n此引用没有声明可通过浏览器访问的链接。\n来源声明描述契约，本身不提供结果证据。\n记录的观点分歧\n仅作背景注释 · 这些记录保留原有范围和日期，不能据此确认当前验证状态。\n来源时间\n2026-10-11\n无法关联到引擎的条目\n1\n数值来源核验\n此视图暂不可核验\n此视图暂无数值来源核验凭据。\n记录条目 · 1\n记录的来源缺口 · 1\n记录来源\n输出\n1\nsynthetic-immature\n正常\n完整\nby content_watermark\n路径\nsynthetic/synthetic-immature.json\nsynthetic\nexact bound\n新鲜度\n0m / 24h SLA\n来源时间 2026-10-12T20:00:00+00:00",
+          "console_errors": [],
+          "failed_responses": []
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}

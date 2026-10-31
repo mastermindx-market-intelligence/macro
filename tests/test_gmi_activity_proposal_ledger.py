@@ -216,10 +216,20 @@ def test_committed_ledger_rows_validate_and_carry_the_c01_proposal():
     rows = probation.read_activity_proposals()
     assert rows, "the committed activity ledger must not be empty"
     c01 = [row for row in rows if row["proposal_id"] == C01_PROPOSAL_ID]
-    assert len(c01) == 1
-    assert c01[0]["status"] == "PROPOSED"
+    # Append-only history of the first witness: the PROPOSED row, then the
+    # RATIFIED row the acting curator appended on 2026-10-22 (PR #10026). The
+    # RATIFIED row binds its receipt by sha256; nothing here grants graph
+    # membership use, which the bridge still holds on the Chairman ruling.
+    assert [row["status"] for row in c01] == ["PROPOSED", "RATIFIED"]
     assert c01[0]["curation"] is None
-    assert not [row for row in rows if row["status"] == "RATIFIED"]
+    receipt = Path("research/theme_graph/activity_curation_receipts/"
+                   "actprop_287edbf7e04b8aba873b7493.json")
+    assert receipt.exists()
+    assert c01[1]["curation"]["receipt_sha256"] == hashlib.sha256(
+        receipt.read_bytes()).hexdigest()
+    ratified = [row for row in rows if row["status"] == "RATIFIED"]
+    assert [row["proposal_id"] for row in ratified] == [C01_PROPOSAL_ID]
+    assert len(probation.ratified_activity_memberships(rows)) == 1
 
 
 def test_cli_refuses_vendor_family_target(tmp_path, capsys):

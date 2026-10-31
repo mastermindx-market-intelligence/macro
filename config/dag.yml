@@ -651,6 +651,13 @@ lanes:
           Polygon sweep self-gated on the embedded asof stamp) so every lane
           sizes heatmap tiles by real market cap. Non-fatal,
           continue-on-error; the payload itself is built inside build_site.
+      - id: capture_stock_liquidity_currency
+        module: scripts.capture_stock_liquidity_currency
+        note: >
+          Bounded MU dated trading-currency intake in the same existing
+          stocks-reference binding; follows the cap refresh before stock-library
+          build. No bar collection or site publication; incomplete input preserves
+          the retained receipt and the native liquidity projection stays unknown.
       - id: build_leader_pullback_coverage
         module: scripts.build_leader_pullback_coverage
         note: >
@@ -833,6 +840,13 @@ lanes:
           duplicate ticker or a non-closing sum emits no receipt rather than a
           wrong one. Writes no data/ path; grading the record by writing to it
           would be marking its own homework.
+      - id: publish_native_divergence_capture
+        module: scripts.publish_native_divergence_capture
+        note: >
+          Retains only this ordinary nightly's already-staged divergence capture
+          in the existing private Research store, after close_pass_reconcile.
+          Missing capture stays unavailable; uncertain effects are not retried.
+          The Actions artifact contains metadata only, not source payloads.
       - id: backfill_regime_stamps
         module: scripts.backfill_regime_stamps
         note: "nw-macro-rail R5 PR-C — regime stamp backfill on qledger rows (non-fatal); near-term yield ≈ 2 rows from regime_vector.parquet coverage"
@@ -1844,6 +1858,10 @@ lanes:
       - id: publish_r2
         module: scripts.publish_r2
         note: non-fatal; uploads OHLC + stockdata stores to Cloudflare R2
+      - id: publish_ohlc
+        module: scripts.publish_ohlc
+        args: [publish]
+        note: fail-closed; delivers only the completed main daily US OHLC generation to the existing VPS origin
       - id: audit_r2
         module: scripts.audit_r2
         note: non-fatal; data-plane freshness check
@@ -2275,6 +2293,16 @@ lanes:
           step timeout 12 min, continue-on-error; committed by the oracle Time
           Machine commit step.
           outputs: [data/theme_graph/shadow_theme_state.v1.json]
+      - id: build_activity_membership_state
+        module: scripts.build_thematic_state
+        note: >
+          GMI M2 — `--mode ACTIVITY_MEMBERSHIP_STATE`: the A2 activity-membership history fold +
+          edges.v1 projection over data/theme_graph/probation/activity_history_events.jsonl (absent =
+          honest empty state), atomic write of data/theme_graph/activity_membership_state.v1.json ONLY.
+          NOT_QUALIFIED by construction (D2E unsealed); authority all-false. Fail-open: one
+          ::warning title=gmi-activity-membership-state:: and the prior artifact stands; step
+          timeout 5 min, continue-on-error; committed by the oracle Time Machine commit step.
+          outputs: [data/theme_graph/activity_membership_state.v1.json]
 
   # ── daily.yml / cortex ───────────────────────────────────────────────────
   - workflow: .github/workflows/daily.yml
@@ -3223,6 +3251,10 @@ lanes:
           Fixed legacy redirect only, via stubs() in scope=stubs and scope=all.
           Returns before collectors, market computation, session clocks or payload
           writes; the full China basket build remains in its existing daily lane.
+      - id: build_movers_redirect_stub
+        module: scripts.build_ticker_pages
+        args: [--movers-page-only]
+        note: Fixed zero-data legacy notice in the existing stubs lane.
       - id: build_ticker_pages
         module: scripts.build_ticker_pages
         note: >
@@ -4721,6 +4753,17 @@ modules:
       - site/feeds/
     impure: false
     needs_secrets: false
+    event_driven: false
+
+  - module: scripts.publish_ohlc
+    reads:
+      - site/ohlc/
+      - site/_tmp/ohlc-complete.json
+      - app/deploy/ohlc_origin_known_hosts
+    writes:
+      - Existing VPS OHLC generation store (no git writes)
+    impure: true
+    needs_secrets: true
     event_driven: false
 
   - module: scripts.publish_r2
