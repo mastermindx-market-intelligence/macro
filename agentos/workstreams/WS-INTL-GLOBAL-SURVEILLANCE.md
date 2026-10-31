@@ -176,7 +176,7 @@ return identity `1+r_USD = (1+r_local)(1+r_FX)`. Roadmap and 21 hard acceptance 
 | W0 asset access | PR 9920 @898edecc | PRODUCTION_PROOF (2026-10-21T04:06:24Z) | anonymous 200 on intl.html + nine assets; /intl_data.json still 401 |
 | W1 IM11/IM12 | ORCH-1 → lanes W1A/W1B | MERGED (#9923 → 0062e28f, #9924 → 5d454fbe) | records under the seat kit `orch/fabric/reviews/INTL-GS-W1*.md` |
 | W2 IM13/IM14 UI | W2F/W2A/W2B | MERGED: #9949 → e6debbb0; #10278 (W2B dossier, carries ruling-A transition) → a99b5395; #10288 (W2A scanner+coverage) → 92881169 | gh-verified mergeCommits (see wave next_actions); follow-up lane gb1 pending |
-| W3 IM15/IM16 + UI | W3A/W3B/W3U | MERGED: #9943 → 63f3bc83; #9944 → 2d50943e; #10265 (dislocation explorer) → 281e21c6 | IM16 gaps recorded above |
+| W3 IM15/IM16 + UI | W3A/W3B (+ W3A-CONFIRM PASS @a7340535, W3B-REREVIEW PASS @37c10fc6), W3U | MERGED: #9943 → 63f3bc83; #9944 → 2d50943e; #10265 (dislocation explorer) → 281e21c6 | records `orch/fabric/reviews/INTL-GS-W3A.md`, `INTL-GS-W3B.md`, `INTL-GS-W3U.md`; IM16 gaps recorded above |
 | W4 IM17 engine+UI | W4A/W4B | MERGED: #9960 → 5c6fdb2e; #10258 (presenter; production tab not_built by design) → 949c6ada | no emission-permitted candidate source |
 | W5 IM18 engines + §14 closures | ORCH-5 → engine lanes | MERGED: #10274 → c784d045; #10276 → cd195298; #10275 → 6c13414f; #10286 → d444ae67; #10296 (mutant kills) → b3330f3c | W5 census 2026-10-31: 14 DONE / 6 PARTIAL / 1 GAP at base 6e721225; DEFERRED F1–F9 custody in the continuation handoff |
 | Design R14 | ORCH-D → Paper file 01M3P1TW5Y3XWQC37ADDS8K5AG | FROZEN + MERGED #9937 → 556d3333 (amended A1/A1.1/A1.2 2026-10-22) | design spec path above |
