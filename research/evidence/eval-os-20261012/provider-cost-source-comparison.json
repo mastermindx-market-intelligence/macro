@@ -1,0 +1,108 @@
+{
+  "scope": "Read-only algorithm and filesystem metadata comparison; no outcome reads or new latency benchmark",
+  "source_ids": {
+    "incumbent": "65aba5eba9764c2e9d8e3e0795c17157839ba8d4",
+    "base_main": "a8e054",
+    "current": "parent-owned working union; hashes below"
+  },
+  "files": {
+    "incumbent": {
+      "sha256": "e5a0639f8bd9f4f80050c77da3f9edb04d5d1b2abf022b41c70514e2c823fac4",
+      "functions": {
+        "_load_evidence_providers": {
+          "line": 353,
+          "calls": [
+            "_jsonl_candidate_count",
+            "_jsonl_candidate_count",
+            "compute_promotion_readiness",
+            "qledger.load_claims",
+            "qledger.load_grades"
+          ]
+        },
+        "_derive": {
+          "line": 515,
+          "calls": [
+            "build_with_registry"
+          ]
+        }
+      }
+    },
+    "base_main": {
+      "sha256": "b7c7c388d11b738e35e95580f60c11f11e99825b94afc6cae3a50bfaa48ff476",
+      "functions": {
+        "_derive": {
+          "line": 123,
+          "calls": [
+            "build_with_registry"
+          ]
+        }
+      }
+    },
+    "current": {
+      "sha256": "3e93df7d2e55cec05f01b52af873dbd6e42ac04dabfba9e495987c2600f3d551",
+      "functions": {
+        "_load_evidence_providers": {
+          "line": 384,
+          "calls": [
+            "ClaimsReadScope"
+          ]
+        },
+        "_load_evidence_providers_scoped": {
+          "line": 391,
+          "calls": [
+            "_claims_candidate_count",
+            "_jsonl_candidate_count",
+            "compute_promotion_readiness",
+            "qledger.load_claims",
+            "qledger.load_grades"
+          ]
+        },
+        "_derive": {
+          "line": 564,
+          "calls": [
+            "ClaimsReadScope"
+          ]
+        },
+        "_derive_scoped": {
+          "line": 571,
+          "calls": [
+            "_dependency_key",
+            "build_with_registry",
+            "_dependency_key"
+          ]
+        }
+      }
+    }
+  },
+  "store_metadata": [
+    {
+      "root": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/eval-os-a1-preflight-20260922-f75c61cdabe6f12c",
+      "path": "data/qledger/claims.jsonl",
+      "exists": false
+    },
+    {
+      "root": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/eval-os-a1-preflight-20260922-f75c61cdabe6f12c",
+      "path": "data/qledger/grades.jsonl",
+      "exists": false
+    },
+    {
+      "root": "/Users/chriswong/Documents/Cluade/macro-main",
+      "path": "data/qledger/claims.jsonl",
+      "bytes": 104467528,
+      "mtime_ns": 1791687721658923098,
+      "exists": true
+    },
+    {
+      "root": "/Users/chriswong/Documents/Cluade/macro-main",
+      "path": "data/qledger/grades.jsonl",
+      "bytes": 76734696,
+      "mtime_ns": 1791687721754660695,
+      "exists": true
+    }
+  ],
+  "limits": [
+    "The raw transport probe instruments five claims reads, not every physical store read: separate legacy candidate counts and grade readers are outside that wrapper. No total-I/O claim is made.",
+    "Synthetic probe has empty grades and one repeated asof; it does not establish mature production readiness cost or distribution.",
+    "Metadata from a local checkout does not establish deployed VPS store size or responsiveness."
+  ]
+}

@@ -182,6 +182,13 @@ def _hold_probe(guard: ModuleType, payload: dict[str, Any]) -> dict[str, Any] | 
     state = guard._load(guard._state_path(root, payload))
     if not isinstance(state, dict):
         return None
+    # A resumed bounded worker can retain an old 'unmerged' blocker. Let the
+    # canonical guard validate and return that same commission before this
+    # adapter performs any parent-owned PR/hold probes. This is delegation, not
+    # a stop grant; old guards without the capability retain their behavior.
+    completion_matches = getattr(guard, "_fabric_completion_matches", None)
+    if callable(completion_matches) and completion_matches(root, state):
+        return None
     last_blocker = str(state.get("last_blocker") or "")
 
     # Read the local branch before deciding whether GitHub deserves a probe. A Sol

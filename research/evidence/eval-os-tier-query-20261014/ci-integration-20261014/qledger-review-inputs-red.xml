@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="7.348" timestamp="2026-10-14T03:43:32.718361-07:00" hostname="m2studio"><testcase classname="tests.test_ci_pack" name="test_qledger_scope_keeps_runtime_phrase_book_without_unrelated_builder" time="3.507"><failure message="AssertionError: config.yml&#10;assert None&#10; +  where None = &lt;function _job_diff_match at 0x10ccc78a0&gt;(LegacyJob(job_id='qledger-cluster-honest-ci', definition={'if': '${{ false }}', 'gate': 'code', 'scope': 'exclusive', ...tests/test_qledger_validity.py', 'tests/test_w6_readiness_monitor.py'), fallback_paths=(), exclusive=True, gate='code'), ['config.yml'])&#10; +    where &lt;function _job_diff_match at 0x10ccc78a0&gt; = PACK._job_diff_match">def test_qledger_scope_keeps_runtime_phrase_book_without_unrelated_builder() -&gt; None:
+        """The tuple-joined seed is a real input even when AST inference misses it."""
+        job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+                   if job.job_id == "qledger-cluster-honest-ci")
+        for dependency in (
+            "data/china_official/phrase_book.yml",  # ci-trigger-closure: data
+            'config.yml',  # ci-trigger-closure: data
+            'tests/conftest.py',  # ci-trigger-closure: data
+            'research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json',  # ci-trigger-closure: data
+            'research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json',  # ci-trigger-closure: data
+            "engine/qledger_validity.py",  # ci-trigger-closure: data
+            "scripts/check_qledger_metric_validity.py",  # ci-trigger-closure: data
+            "tests/test_qledger_validity.py",  # ci-trigger-closure: data
+        ):
+&gt;           assert PACK._job_diff_match(job, [dependency]), dependency
+E           AssertionError: config.yml
+E           assert None
+E            +  where None = &lt;function _job_diff_match at 0x10ccc78a0&gt;(LegacyJob(job_id='qledger-cluster-honest-ci', definition={'if': '${{ false }}', 'gate': 'code', 'scope': 'exclusive', ...tests/test_qledger_validity.py', 'tests/test_w6_readiness_monitor.py'), fallback_paths=(), exclusive=True, gate='code'), ['config.yml'])
+E            +    where &lt;function _job_diff_match at 0x10ccc78a0&gt; = PACK._job_diff_match
+
+tests/test_ci_pack.py:4878: AssertionError</failure></testcase></testsuite></testsuites>
