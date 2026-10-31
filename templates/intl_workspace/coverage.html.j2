@@ -9,7 +9,6 @@
 {% set p = gs_panel.payload %}
 {% set surveil = intl_workspace.surveillance if intl_workspace is defined and intl_workspace.surveillance is defined else none %}
 {% set snap = surveil.snapshot if surveil and surveil.snapshot is defined else none %}
-{% set _unused_labels = {'equity_index_fx': ('Equity index + FX', '股指与汇率'), 'constituent_breadth': ('Constituent breadth', '成分股广度'), 'local_rates_credit': ('Local rates + credit', '本地利率与信用'), 'dollar_funding_external': ('Dollar funding + external', '美元融资与外部'), 'macro_policy': ('Macro + policy', '宏观与政策'), 'us_exposure_transmission': ('US exposure + transmission', '美国敞口与传导'), 'history_pit_rights': ('History + point-in-time rights', '历史与时点权利')} %}
 {% call gs.gs_panel_root(view='coverage', panel=gs_panel) %}
 <header class="intl-gs__pagehead" id="{{ gs_panel.context_id }}-coverage-title-wrap">
   {{ gs.gs_eyebrow(t('Global surveillance · Coverage', '全球监测 · 覆盖')) }}
