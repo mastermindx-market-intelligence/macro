@@ -1,0 +1,130 @@
+{# Additive EOD tech internals. Render ONLY on macro.html, as a collapsed
+   companion below the existing US regime surface. Numeric inputs are from
+   engine.tech_volatility_shock; the screenshot is NOT a data source. #}
+<div class="tvs-mount" id="tvs-mount">
+<style>
+.tvs-mount{grid-column:1/-1;width:min(100%,1120px);margin:20px auto 28px;font-family:inherit}
+.tvs-mount *{box-sizing:border-box}
+.tvs{color:#f5f7fc;background:#10131f;border:1px solid #2b354c;border-radius:16px;overflow:hidden;box-shadow:0 14px 38px rgba(0,0,0,.13)}
+.tvs summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 20px}
+.tvs summary::-webkit-details-marker{display:none}
+.tvs summary:focus-visible{outline:3px solid #7aa5ff;outline-offset:-3px}
+.tvs-kicker{font-size:10px;font-weight:750;letter-spacing:.17em;color:#779cf6;text-transform:uppercase}
+.tvs-brief{display:block;font-weight:760;font-size:17px;margin-top:3px}
+.tvs-summary-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.tvs-rel{font-size:20px;font-weight:780;font-variant-numeric:tabular-nums}
+.tvs-neg{color:#f26868}.tvs-pos{color:#6ed0a8}.tvs-muted{color:#a4aec4}
+.tvs-toggle{font-size:12px;color:#b1bdd5;white-space:nowrap}
+.tvs[open] .tvs-toggle::after{content:" Close \25B2"}
+.tvs:not([open]) .tvs-toggle::after{content:" Details \25BC"}
+.tvs-body{padding:0 20px 20px;border-top:1px solid #2b354c}
+.tvs-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:730;color:#9baac8}
+.tvs-ruler{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 0}
+.tvs-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.tvs-card{background:#161b29;border:1px solid #343b4c;border-left:3px solid #e15b5b;border-radius:10px;padding:16px}
+.tvs-card-head{font-size:22px;font-weight:800}
+.tvs-amount{font-size:clamp(30px,4vw,52px);line-height:1.3;font-weight:830;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.tvs-table{margin-top:10px;border-top:1px solid #303a4f}
+.tvs-line{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #252e41}
+.tvs-line span:first-child{font-size:11px;color:#97a6c3;text-transform:uppercase}
+.tvs-line strong{font-size:13px;font-variant-numeric:tabular-nums}
+.tvs-rank{margin-top:14px;font-size:12px;font-weight:780}
+.tvs-relative{margin-top:16px;text-align:center;padding:16px;background:#141c31;border:1px solid #30457e;border-left:3px solid #5584ef;border-radius:10px}
+.tvs-relative .tvs-amount{font-size:36px}
+.tvs-section-title{font-size:16px;font-weight:790;margin:24px 0 14px;border-bottom:1px solid #30394c;padding-bottom:10px}
+.tvs-session{margin:14px 0}
+.tvs-session-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline;font-weight:760;margin-bottom:7px}
+.tvs-bars{display:flex;height:40px;overflow:hidden;background:#242a38;border-radius:5px}
+.tvs-bar{display:flex;align-items:center;justify-content:center;min-width:0;font-size:11px;font-weight:750;white-space:nowrap}
+.tvs-bar span{overflow:hidden;text-overflow:ellipsis;padding:0 8px}
+.tvs-overnight{background:#d75050}.tvs-intraday{background:#873a44}
+.tvs-mixed{padding:11px 13px;background:#242a38;border-radius:5px;font-size:12px;color:#c6d0e2}
+.tvs-bottom{margin-top:22px;padding-top:14px;border-top:1px solid #343b50;font-size:14px;font-weight:810;text-align:center}
+.tvs-note{color:#94a1ba;font-size:11px;line-height:1.6;margin:10px 0 0}
+.tvs-notice{margin:16px 0;padding:12px 14px;background:#27222d;border:1px solid #624b56;border-radius:8px;color:#ecd5d6;font-size:12px}
+@media(max-width:640px){.tvs-mount{margin:14px 0}.tvs summary{padding:14px;align-items:flex-start}.tvs-summary-meta{gap:4px;flex-direction:column;align-items:flex-end}.tvs-rel{font-size:17px}.tvs-brief{font-size:15px}.tvs-body{padding:0 12px 16px}.tvs-grid{grid-template-columns:1fr;gap:10px}.tvs-amount{font-size:38px}.tvs-bar{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.tvs *, .tvs *::before, .tvs *::after{animation:none!important;transition:none!important}}
+</style>
+<details class="tvs" id="tech-volatility-shock">
+  <summary aria-label="Expand tech volatility shock market internals">
+    <span><span class="tvs-kicker">Quantitative Research / Market Internals</span>
+      <span class="tvs-brief">Tech volatility shock <span class="tvs-muted" style="font-size:11px;font-weight:500">· EOD</span></span></span>
+    <span class="tvs-summary-meta">
+      {% if tech_shock.relative_pp is not none %}
+        <strong class="tvs-rel {{ 'tvs-neg' if tech_shock.relative_pp < 0 else 'tvs-pos' if tech_shock.relative_pp > 0 else 'tvs-muted' }}">QQQ vs SPY {{ '%+.2f'|format(tech_shock.relative_pp) }} pp</strong>
+      {% else %}
+        <span class="tvs-muted" style="font-size:12px">Data unavailable</span>
+      {% endif %}
+      <span class="tvs-toggle" aria-hidden="true"></span>
+    </span>
+  </summary>
+  <div class="tvs-body">
+    <div class="tvs-ruler"><span class="tvs-label">SPY / QQQ · Same-session comparison</span>
+      <span class="tvs-muted" style="font-size:12px">As of {{ tech_shock.asof or 'unknown' }}</span></div>
+    {% if tech_shock.status != 'ok' %}
+      <div class="tvs-notice" role="status">
+        {{ 'Stale observation' if tech_shock.status == 'stale' else 'Partial observation' if tech_shock.status == 'partial' else 'Unverified source coverage' }}:
+        {{ tech_shock.reason or 'Some observations are unavailable.' }}
+        {% if tech_shock.lag_sessions is not none and tech_shock.lag_sessions > 0 %} {{ tech_shock.lag_sessions }} completed exchange session(s) behind.{% endif %}
+      </div>
+    {% endif %}
+    {% if tech_shock.indices %}
+      <div class="tvs-grid">
+        {% for row in tech_shock.indices %}
+          <div class="tvs-card">
+            <div class="tvs-card-head">{{ row.symbol }}</div>
+            <div class="tvs-amount {{ 'tvs-neg' if row.return_pct < 0 else 'tvs-pos' if row.return_pct > 0 else 'tvs-muted' }}">{{ '%+.2f'|format(row.return_pct) }}%</div>
+            <div class="tvs-table">
+              <div class="tvs-line"><span>Prior 60-session return z</span><strong>{{ '%+.2f'|format(row.z60) if row.z60 is not none else 'Unavailable' }}</strong></div>
+              <div class="tvs-line"><span>Full-day volume / 20d mean</span><strong>{{ '%.2f×'|format(row.volume_multiple) if row.volume_multiple is not none else 'Unavailable' }}</strong></div>
+            </div>
+            <div class="tvs-rank">
+              {% if row.rank_ytd is not none %}#{{ row.rank_ytd }} worst observed day of {{ row.year }} ({{ row.n_ytd }} eligible sessions)
+              {% else %}Year-to-date rank unavailable{% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="tvs-relative">
+        <div class="tvs-label" style="color:#7da3fd">QQQ relative to SPY</div>
+        <div class="tvs-amount {{ 'tvs-neg' if tech_shock.relative_pp < 0 else 'tvs-pos' if tech_shock.relative_pp > 0 else 'tvs-muted' }}">{{ '%+.2f'|format(tech_shock.relative_pp) }} pp</div>
+        <div class="tvs-muted" style="font-size:13px">Prior 60-session relative z: <strong>{{ '%+.2f'|format(tech_shock.relative_z60) if tech_shock.relative_z60 is not none else 'Unavailable' }}</strong></div>
+      </div>
+      <div class="tvs-section-title">When the selling hit <span class="tvs-muted" style="float:right;font-size:11px;font-weight:500">Overnight vs regular session</span></div>
+      {% for row in tech_shock.indices %}
+        <div class="tvs-session">
+          <div class="tvs-session-head"><span>{{ row.symbol }}</span><span class="tvs-muted" style="font-size:11px">Overnight {{ '%+.2f'|format(row.overnight_pct) }}% · Intraday {{ '%+.2f'|format(row.intraday_pct) }}%</span></div>
+          {% if row.overnight_share is not none %}
+            <div class="tvs-bars" role="img" aria-label="{{ row.symbol }} negative overnight contribution {{ row.overnight_share }} percent of summed loss leg magnitudes">
+              <div class="tvs-bar tvs-overnight" style="width:{{ row.overnight_share }}%"><span>Overnight</span></div>
+              <div class="tvs-bar tvs-intraday" style="width:{{ 100 - row.overnight_share }}%"><span>Intraday</span></div>
+            </div>
+          {% else %}
+            <div class="tvs-mixed">Mixed or positive leg: a loss-contribution bar would be misleading.</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <div class="tvs-bottom">
+        {% if tech_shock.session_read == 'overnight_dominant' %}Most of both ETFs' negative session legs occurred before the open.
+        {% elif tech_shock.session_read == 'intraday_dominant' %}Both ETFs' negative session legs were intraday-dominant.
+        {% else %}The two ETFs show mixed overnight and intraday pressure.{% endif %}
+      </div>
+    {% else %}
+      <div class="tvs-mixed">The shock comparison is unavailable until two complete, paired SPY/QQQ raw daily OHLC histories are present.</div>
+    {% endif %}
+    <p class="tvs-note">Source: existing Massive/Polygon unadjusted daily aggregates. Price O/H/L/C = regular NYSE trading session; reported volume = broader full market day. Overnight = prior regular close to current regular open (includes premarket); intraday = regular open to close. They compound, so rounded legs need not sum exactly to close-to-close performance. Z-scores compare today's return with the previous 60 sessions, excluding today; volume baseline excludes today. Historical ranks are observed sample ranks, not event probabilities. EOD context only, not a predictive trade alert.</p>
+  </div>
+</details>
+</div>
+<script>
+(function () {
+  'use strict';
+  // Existing #regime-radar owns the Macro decision surface. Move this compact
+  // drill-down immediately AFTER it, never above it or onto the stocks route.
+  var item = document.getElementById('tvs-mount');
+  var anchor = document.getElementById('regime-radar');
+  if (!item || !anchor || !anchor.parentNode) return;
+  var section = anchor.closest('section') || anchor;
+  if (section !== item && section.parentNode) section.insertAdjacentElement('afterend', item);
+})();
+</script>
