@@ -241,6 +241,11 @@ _PREVIEW_RE = re.compile(
     r"|\bto\s+watch\s+(?:this|next|the\s+coming|coming)\s+week\b"
     r"|\bto\s+watch\s+(?:this\s+week|today|next\s+week|tomorrow|on\s+\w+day)\b"
     r"|\bto\s+watch\b[^.]{0,40}\b(?:this|next|the\s+coming|coming)\s+week\b"
+    # A complete next-session stock-stories preview, not a product preview or
+    # a factual company event whose timing happens to be the next session.
+    r"|^\s*(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)['’]s"
+    r"\s+big\s+stock\s+stories\s*:\s*what['’]s\s+likely\s+to\s+move\s+the\s+market"
+    r"\s+in\s+the\s+next\s+trading\s+session[.!?]?\s*$"
     # SEO 'price prediction' spam ("PancakeSwap (CAKE) Price Prediction: 2025, 2026,
     # 2030") — a multi-year forecast advertorial, distinct from a real analyst
     # 'price target'. Always content-free; never legitimate single-event news.

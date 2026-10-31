@@ -82,3 +82,25 @@ def test_macro_release_stub_now_suppressed():
         f"expected 'macro_release_stub', got {reason!r} — "
         "title_aliases in RELEASE_REGISTRY may be missing this stub"
     )
+
+
+@pytest.mark.parametrize("title", [
+    "Thursday's big stock stories: What’s likely to move the market in the next trading session",
+    "MONDAY’S BIG STOCK STORIES: WHAT'S LIKELY TO MOVE THE MARKET IN THE NEXT TRADING SESSION.",
+    "  Tuesday's  big stock stories : What's likely to move the market in the next trading session  ",
+])
+def test_next_session_stock_stories_preview_is_rejected(title):
+    assert nc.low_value_reason(title) == "calendar_preview"
+    assert nc.ticker_editorial_reason(title, "cnbc.com") == "calendar_preview"
+
+
+@pytest.mark.parametrize("title", [
+    "Anthropic announces preview of a personal AI agent",
+    "Nvidia announces a preview of its new enterprise software",
+    "Nvidia's stock split takes effect in the next trading session",
+    "Thursday's big stock stories: Microsoft raises its quarterly dividend",
+    "Microsoft raises its dividend ahead of earnings",
+    "Nvidia secures export approval for its data center chips",
+])
+def test_next_session_screen_preserves_factual_company_announcements(title):
+    assert nc.ticker_editorial_reason(title, "cnbc.com") is None

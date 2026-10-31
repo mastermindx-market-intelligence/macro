@@ -17,7 +17,7 @@ from engine.qkernel import publisher_domain
 
 EDITORIAL_VIEW_VERSION = "ticker_news.editorial_view.v1"
 # Bump when admission/reference rules change, independently of the wire schema.
-EDITORIAL_RULES_VERSION = "ticker_news.editorial_rules.v1"
+EDITORIAL_RULES_VERSION = "ticker_news.editorial_rules.v2"
 VIEW_MODES = frozenset({"all", "news", "company"})
 
 _LEGAL_SUFFIX = re.compile(
@@ -49,6 +49,14 @@ _FORMATS = (
         r"|\((?:opinion|commentary)\)\s*$",
         re.I,
     )),
+)
+
+
+# This explicit portfolio interpretation frame needs corroborating publisher
+# and permitted section evidence; it is not a blanket Investing Club rule.
+_PORTFOLIO_COMMENTARY_FRAME = re.compile(
+    r"(?:^|[.:;!?—–]\s*|\s+-\s+)what\s+it\s+means\s+for\s+our\s+stocks[.!?]?\s*$",
+    re.I,
 )
 
 
@@ -134,6 +142,16 @@ def article_format(title: str, source: str, url: str = "") -> tuple[str, str | N
                     and publisher_domain(parsed.hostname or "") == "benzinga.com"
                     and section == "opinion"):
                 return "commentary", "publisher_opinion_section"
+        except ValueError:
+            pass
+    if source == "massive:cnbc.com" and _PORTFOLIO_COMMENTARY_FRAME.search(text):
+        try:
+            parsed = urlsplit(plain_text(url))
+            section = unquote(parsed.path).strip("/").split("/", 1)[0].casefold()
+            if (parsed.scheme.casefold() in {"http", "https"}
+                    and publisher_domain(parsed.hostname or "") == "cnbc.com"
+                    and section == "investingclub"):
+                return "commentary", "publisher_portfolio_commentary"
         except ValueError:
             pass
     return "unclassified", None
