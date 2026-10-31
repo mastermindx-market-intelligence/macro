@@ -308,6 +308,27 @@ def test_expected_vs_observed_neutral_ink():
         if "intl-transmission__exp" in selector or "intl-transmission__obs" in selector:
             used = set(re.findall(r"var\((--[A-Za-z0-9_-]+)", body))
             assert used <= {"--muted", "--text", "--panel2", "--line"}, (selector, used)
+    # R-02 pin (review r1): the mapping is exact, not merely neutral — expected =
+    # muted ink + a 1.5px dashed muted rule; observed = text ink + a 2px solid text
+    # rule (frozen §3 / §9.6 T2). Asserted on BOTH copies so a swap in either file
+    # goes red.
+    exp_obs_exact = {
+        ".intl-gs .intl-transmission__exp": "color:var(--muted);",
+        ".intl-gs .intl-transmission__obs": "color:var(--text);",
+        ".intl-gs .intl-transmission__exp-rule":
+            "stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 3;",
+        ".intl-gs .intl-transmission__obs-rule": "stroke:var(--text);stroke-width:2;",
+    }
+    for css_path in (CSS_PATH, ROOT / "site/intl_workspace_surveillance.css"):
+        css = css_path.read_text(encoding="utf-8")
+        assert css.count(BLOCK_START) == 1, css_path
+        start = css.index(BLOCK_START)
+        end = css.index(BLOCK_END) + len(BLOCK_END)
+        pinned = [(sel, body) for sel, body in _rules(css[start:end])
+                  if sel in exp_obs_exact]
+        assert len(pinned) == len(exp_obs_exact), (css_path, pinned)
+        for sel, body in pinned:
+            assert body == exp_obs_exact[sel], (css_path, sel, body)
     section = _section(_render())
     for banned in ("intl-gs__num--up", "intl-gs__num--down",
                    "intl-gs__chip--ok\"", "intl-gs__chip--warn\""):
