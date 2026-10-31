@@ -181,7 +181,9 @@
   {# V6/V7 measured values vs withdrawal #}
   {% if not _ew.fail %}
     {% set _sa = _n.get('source_as_of') %}{% set _vals = _n.get('values') %}
-    {% if _ew.kind == 'data_withdrawal' %}
+    {# lib: source_as_of and values must be explicit keys, including nullable withdrawals #}
+    {% if 'source_as_of' not in _n or 'values' not in _n %}{% set _ew.fail = true %}
+    {% elif _ew.kind == 'data_withdrawal' %}
       {% if _vals is not none %}{% set _ew.fail = true %}
       {% elif _sa is not none and (not _sa is string or _sa > _ew.event) %}{% set _ew.fail = true %}
       {% endif %}
@@ -257,8 +259,10 @@
   {% endif %}
   {% if _ew.fail %}{% set _ew.state = 'unreadable' %}{% endif %}
 {% else %}
-  {# no observation: scoped unavailability, never a market verdict #}
-  {% if _rotation is not mapping %}{% set _ew.state = 'unavailable' %}
+  {# no observation: scoped unavailability, never a market verdict; a present
+     non-object wrapper fails V1 and is unreadable, not absent (frozen §B.2) #}
+  {% if _ew_view is not none %}{% set _ew.state = 'unreadable' %}
+  {% elif _rotation is not mapping %}{% set _ew.state = 'unavailable' %}
   {% elif _rotation.get('coverage') == 'STALE' or (_rotation.get('as_of') or '') < _ew_session %}{% set _ew.state = 'stale' %}
   {% else %}{% set _ew.state = 'unavailable' %}{% endif %}
 {% endif %}

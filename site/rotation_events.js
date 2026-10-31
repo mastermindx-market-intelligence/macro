@@ -279,7 +279,12 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
         && typeof n.event_as_of === 'string' && DATE_RE.test(n.event_as_of)
         && utcIso(n.observed_at) && utcIso(n.not_after)
         && String(n.not_after).slice(0, 19) > String(n.observed_at).slice(0, 19)) {
-      if (n.kind === 'data_withdrawal') {
+      // lib: source_as_of and values must be explicit keys, including nullable withdrawals
+      var explicit = Object.prototype.hasOwnProperty.call(n, 'source_as_of')
+        && Object.prototype.hasOwnProperty.call(n, 'values');
+      if (!explicit) {
+        valid = false;
+      } else if (n.kind === 'data_withdrawal') {
         valid = n.values == null && (n.source_as_of == null
           || (typeof n.source_as_of === 'string' && n.source_as_of <= n.event_as_of));
       } else {
@@ -304,7 +309,8 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
     else if ((v.r > 0) !== (hz.r > 0) || (v.r === 0) !== (hz.r === 0)) state = 'conflicting';
     else if (n.kind === 'reversal') state = 'reversal';
     else state = 'observed';
-  } else if (has) {
+  } else if (has || view != null) {
+    // a present non-object wrapper fails V1: unreadable, not absent (frozen §B.2)
     state = 'unreadable';
   } else {
     state = 'unavailable';
@@ -329,12 +335,12 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
     whatEn = 'Evidence for ' + n.num + ' vs ' + n.den + ' was withdrawn on ' + dEn(n.event_as_of) + '.';
     whatZh = n.num + '对' + n.den + '的依据已于' + dZh(n.event_as_of) + '撤回。';
   } else if (state === 'stale' && has && valid) {
-    whatEn = 'Latest observation is from ' + dEn(n.event_as_of) + ', before ' + dEn(session) + '.';
-    whatZh = '最新观察来自' + dZh(n.event_as_of) + '，早于' + dZh(session) + '。';
+    whatEn = 'Latest observation is from ' + dEn(n.event_as_of) + ', before ' + (DATE_RE.test(session) ? dEn(session) : E(session)) + '.';
+    whatZh = '最新观察来自' + dZh(n.event_as_of) + '，早于' + (DATE_RE.test(session) ? dZh(session) : E(session)) + '。';
   } else if (state === 'stale') {
     var ecAs = (ec && typeof ec === 'object' && typeof ec.as_of === 'string') ? ec.as_of : '';
-    whatEn = 'Rotation data unavailable for ' + (DATE_RE.test(session) ? dEn(session) : session) + '; latest is ' + (DATE_RE.test(ecAs) ? dEn(ecAs) : ecAs) + '.';
-    whatZh = (DATE_RE.test(session) ? dZh(session) : session) + '轮动依据暂不可用；最新为' + (DATE_RE.test(ecAs) ? dZh(ecAs) : ecAs) + '。';
+    whatEn = 'Rotation data unavailable for ' + (DATE_RE.test(session) ? dEn(session) : E(session)) + '; latest is ' + (DATE_RE.test(ecAs) ? dEn(ecAs) : E(ecAs)) + '.';
+    whatZh = (DATE_RE.test(session) ? dZh(session) : E(session)) + '轮动依据暂不可用；最新为' + (DATE_RE.test(ecAs) ? dZh(ecAs) : E(ecAs)) + '。';
   } else if (state === 'unreadable') {
     whatEn = 'Rotation record failed checks and is not shown.'; whatZh = '轮动记录未通过校验，未予显示。';
   } else if (state === 'partial') {
@@ -349,11 +355,11 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
     if (view.availability && typeof view.availability === 'object' && view.availability.status === 'VERIFIED') {
       avEn = 'availability verified'; avZh = '可用时间已核实';
     }
-    built = '<span class="rc-ew-built">' + L2('Observed ' + String(n.observed_at).slice(0, 16).replace('T', ' ') + ' UTC', '观察于 ' + String(n.observed_at).slice(0, 16).replace('T', ' ') + ' UTC') + '</span>';
+    built = '<span class="rc-ew-built">' + L2(E('Observed ' + String(n.observed_at).slice(0, 16).replace('T', ' ') + ' UTC'), E('观察于 ' + String(n.observed_at).slice(0, 16).replace('T', ' ') + ' UTC')) + '</span>';
   } else {
     var rotAs = (ec && typeof ec === 'object' && typeof ec.as_of === 'string') ? ec.as_of : '';
-    whenEn = 'Source session ' + (DATE_RE.test(rotAs) ? dEn(rotAs) : rotAs || '—');
-    whenZh = '数据交易日' + (DATE_RE.test(rotAs) ? dZh(rotAs) : rotAs || '—');
+    whenEn = 'Source session ' + (DATE_RE.test(rotAs) ? dEn(rotAs) : E(rotAs) || '—');
+    whenZh = '数据交易日' + (DATE_RE.test(rotAs) ? dZh(rotAs) : E(rotAs) || '—');
   }
   var qEn = state === 'observed' ? 'Complete' : word[0], qZh = state === 'observed' ? '完整' : word[1];
   var out = '<section class="rc-ew" id="rc-ew" role="group" aria-labelledby="rc-ew-title" data-ew-state="' + state + '" data-ew-scope="tech_leadership" data-observation-id="' + E(oid) + '">'
@@ -389,34 +395,35 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
   if (has && valid) {
     var pv = (view.previous && typeof view.previous === 'object' && !Array.isArray(view.previous)) ? view.previous : null;
     var pvVals = pv && pv.values && typeof pv.values === 'object' && numOk(pv.values.numerator_return_pct) && numOk(pv.values.denominator_return_pct) && numOk(pv.values.ratio_return_pct) ? pv.values : null;
+    var srcAs = n.source_as_of || '—', obsAt = String(n.observed_at).slice(0, 16).replace('T', ' '), notAfter = String(n.not_after).slice(0, 16).replace('T', ' ');
     out += '<dl class="rc-ew-dl">'
       + '<div><dt>' + L2('Observation ID', '观察编号') + '</dt><dd class="rc-ew-id">' + E(oid) + '</dd></div>'
       + (typeof n.previous_observation_id === 'string' ? '<div><dt>' + L2('Previous ID', '前一编号') + '</dt><dd class="rc-ew-id">' + E(n.previous_observation_id) + '</dd></div>' : '')
-      + '<div><dt>' + L2('Definition', '定义') + '</dt><dd>' + L2('macro.rotation_observation.v1 · notification only · basis ' + (view.basis || 'dividend_adjusted_close'), 'macro.rotation_observation.v1 · 仅通知 · 基准 ' + (view.basis || 'dividend_adjusted_close')) + '</dd></div>'
+      + '<div><dt>' + L2('Definition', '定义') + '</dt><dd>' + L2('macro.rotation_observation.v1 · notification only · basis ' + E(view.basis || 'dividend_adjusted_close'), 'macro.rotation_observation.v1 · 仅通知 · 基准 ' + E(view.basis || 'dividend_adjusted_close')) + '</dd></div>'
       + '<div><dt>' + L2('Calendar', '日历') + '</dt><dd>' + L2('US cash-equity sessions', '美股现货交易日') + '</dd></div>'
       + '<div><dt>' + L2('Pair', '配对') + '</dt><dd>' + E(n.num + ' / ' + n.den + ' · ' + (typeof n.pair_id === 'string' ? n.pair_id : '') + ' · relative = (1+n)/(1+d) − 1') + '</dd></div>'
       + '<div><dt>' + L2('Close basis', '收盘基准') + '</dt><dd>' + L2('Dividend-adjusted daily close; adjusted prices can be revised when distributions are restated.', '股息调整后日收盘价；分红数据更正时调整价格可能被修订。') + '</dd></div>'
-      + '<div><dt>' + L2('Source timestamps', '来源时间戳') + '</dt><dd>' + E('source_as_of ' + (n.source_as_of || '—') + ' · event_as_of ' + n.event_as_of + ' · observed ' + String(n.observed_at).slice(0, 16).replace('T', ' ') + ' UTC · not_after ' + String(n.not_after).slice(0, 16).replace('T', ' ') + ' UTC (notification window closes)') + '</dd></div>';
+      + '<div><dt>' + L2('Source timestamps', '来源时间戳') + '</dt><dd>' + L2(E('source_as_of ' + srcAs + ' · event_as_of ' + n.event_as_of + ' · observed ' + obsAt + ' UTC · not_after ' + notAfter + ' UTC (notification window closes)'), E('数据源日期 ' + srcAs + ' · 事件日期 ' + n.event_as_of + ' · 观察于 ' + obsAt + ' UTC · 通知窗口截止 ' + notAfter + ' UTC')) + '</dd></div>';
     var cov = (view.coverage && typeof view.coverage === 'object') ? view.coverage : null;
     var missing = (cov && Array.isArray(cov.missing_pair_ids)) ? cov.missing_pair_ids.filter(function (x) { return typeof x === 'string'; }).join(', ') : '';
-    out += '<div><dt>' + L2('Coverage', '覆盖范围') + '</dt><dd>' + E((cov ? cov.evaluable_2s : '—') + ' of ' + (cov ? cov.registered_pairs : '—') + ' pairs evaluable; missing: ' + (missing || 'none')) + '</dd></div>';
+    out += '<div><dt>' + L2('Coverage', '覆盖范围') + '</dt><dd>' + L2(E((cov ? cov.evaluable_2s : '—') + ' of ' + (cov ? cov.registered_pairs : '—') + ' pairs evaluable; missing: ' + (missing || 'none')), E((cov ? cov.evaluable_2s : '—') + ' / ' + (cov ? cov.registered_pairs : '—') + ' 个配对可评估；缺失：' + (missing || '无'))) + '</dd></div>';
     if (pv) {
       out += '<div><dt>' + L2('Original vs corrected', '原始与更正后') + '</dt><dd>'
-        + L2('Original (' + pv.observation_id + '): ' + (pvVals ? 'n ' + pct2(pvVals.numerator_return_pct) + ' · d ' + pct2(pvVals.denominator_return_pct) + ' · r ' + pct2(pvVals.ratio_return_pct) : 'no values recorded'),
-             '原始（' + pv.observation_id + '）：' + (pvVals ? 'n ' + pct2(pvVals.numerator_return_pct) + ' · d ' + pct2(pvVals.denominator_return_pct) + ' · r ' + pct2(pvVals.ratio_return_pct) : '无记录数值'));
+        + L2('Original (' + E(pv.observation_id) + '): ' + (pvVals ? 'n ' + pct2(pvVals.numerator_return_pct) + ' · d ' + pct2(pvVals.denominator_return_pct) + ' · r ' + pct2(pvVals.ratio_return_pct) : 'no values recorded'),
+             '原始（' + E(pv.observation_id) + '）：' + (pvVals ? 'n ' + pct2(pvVals.numerator_return_pct) + ' · d ' + pct2(pvVals.denominator_return_pct) + ' · r ' + pct2(pvVals.ratio_return_pct) : '无记录数值')) + '<br>';
       if (state === 'withdrawn') out += L2('Current: Withdrawn — the record no longer asserts a measurement.', '当前：已撤回——本记录不再主张任何测量值。');
       else out += L2('Corrected: n ' + pct2(v.n) + ' · d ' + pct2(v.d) + ' · r ' + pct2(v.r), '更正后：n ' + pct2(v.n) + ' · d ' + pct2(v.d) + ' · r ' + pct2(v.r));
       out += '</dd></div>';
     }
     var lin = (Array.isArray(view.lineage_roots)) ? view.lineage_roots.filter(function (x) { return typeof x === 'string'; }).join(', ') : '';
-    out += '<div><dt>' + L2('Immutable reference', '不可变引用') + '</dt><dd>' + E('rotobs_ ids are content-addressed: the first 40 hex of SHA-256 over the record fingerprint and its predecessor.') + ' ' + E('Lineage roots: ' + (lin || 'none')) + '</dd></div>'
+    out += '<div><dt>' + L2('Immutable reference', '不可变引用') + '</dt><dd>' + L2(E('rotobs_ ids are content-addressed: the first 40 hex of SHA-256 over the record fingerprint and its predecessor. Lineage roots: ' + (lin || 'none')), E('rotobs_ 编号为内容寻址：记录指纹及其前驱的 SHA-256 前40位十六进制。来源链根：' + (lin || '无'))) + '</dd></div>'
       + '<div><dt>' + L2('Rights', '权利') + '</dt><dd>' + L2('Derived comparison from daily closes on the approved price route; raw prices are not republished.', '基于已核准价格数据源日收盘价的推导比较；不转载原始价格。') + '</dd></div>'
       + '<div><dt>' + L2('Stable link', '稳定链接') + '</dt><dd>' + E(oid) + ' · <a class="rc-ew-next" href="#rc-events-mount">' + L2('Sector Central', '行业中心') + '</a></dd></div>'
       + '</dl>';
   } else {
     var ecLine = 'No qualified observation for this session.';
     out += '<dl class="rc-ew-dl">'
-      + '<div><dt>' + L2('Rotation context', '轮动上下文') + '</dt><dd>' + E((ec && typeof ec === 'object') ? ('as_of ' + (ec.as_of || '—')) : 'unavailable') + '</dd></div>'
+      + '<div><dt>' + L2('Rotation context', '轮动上下文') + '</dt><dd>' + ((ec && typeof ec === 'object') ? L2(E('as_of ' + (ec.as_of || '—')), E('数据日期 ' + (ec.as_of || '—'))) : L2('unavailable', '暂不可用')) + '</dd></div>'
       + '<div><dt>' + L2('Observation', '观察记录') + '</dt><dd>' + L2(ecLine, '本交易日无合格观察记录。') + '</dd></div>'
       + '</dl>';
   }
@@ -548,7 +555,7 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
       +'.rc-ew-dl>div{display:flex;gap:4px 12px;flex-wrap:wrap;padding:5px 0;border-bottom:1px solid var(--line);}'
       +'.rc-ew-dl dt{flex:0 0 auto;color:var(--muted);font-weight:600;}'
       +'.rc-ew-dl dd{margin:0;min-width:0;flex:1 1 120px;color:var(--text);overflow-wrap:anywhere;}'
-      +'.rc-ew-id{user-select:all;}'
+      +'.rc-ew-id{user-select:all;font-family:var(--font-mono);}'
       +'@media (max-width:520px) {'
       +'  .rc-ew-horizons { flex-direction:column; }'
       +'  .rc-ew-hz { flex-basis:100%; }'

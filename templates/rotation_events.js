@@ -279,7 +279,12 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
         && typeof n.event_as_of === 'string' && DATE_RE.test(n.event_as_of)
         && utcIso(n.observed_at) && utcIso(n.not_after)
         && String(n.not_after).slice(0, 19) > String(n.observed_at).slice(0, 19)) {
-      if (n.kind === 'data_withdrawal') {
+      // lib: source_as_of and values must be explicit keys, including nullable withdrawals
+      var explicit = Object.prototype.hasOwnProperty.call(n, 'source_as_of')
+        && Object.prototype.hasOwnProperty.call(n, 'values');
+      if (!explicit) {
+        valid = false;
+      } else if (n.kind === 'data_withdrawal') {
         valid = n.values == null && (n.source_as_of == null
           || (typeof n.source_as_of === 'string' && n.source_as_of <= n.event_as_of));
       } else {
@@ -304,7 +309,8 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
     else if ((v.r > 0) !== (hz.r > 0) || (v.r === 0) !== (hz.r === 0)) state = 'conflicting';
     else if (n.kind === 'reversal') state = 'reversal';
     else state = 'observed';
-  } else if (has) {
+  } else if (has || view != null) {
+    // a present non-object wrapper fails V1: unreadable, not absent (frozen §B.2)
     state = 'unreadable';
   } else {
     state = 'unavailable';
@@ -549,7 +555,7 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
       +'.rc-ew-dl>div{display:flex;gap:4px 12px;flex-wrap:wrap;padding:5px 0;border-bottom:1px solid var(--line);}'
       +'.rc-ew-dl dt{flex:0 0 auto;color:var(--muted);font-weight:600;}'
       +'.rc-ew-dl dd{margin:0;min-width:0;flex:1 1 120px;color:var(--text);overflow-wrap:anywhere;}'
-      +'.rc-ew-id{user-select:all;}'
+      +'.rc-ew-id{user-select:all;font-family:var(--font-mono);}'
       +'@media (max-width:520px) {'
       +'  .rc-ew-horizons { flex-direction:column; }'
       +'  .rc-ew-hz { flex-basis:100%; }'

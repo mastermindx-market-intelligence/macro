@@ -241,3 +241,20 @@ test('repair wave C: bilingual study rows, separated history, escaped record fie
     assert.ok(h.includes('&lt;img'), 'payload rendered as text');
   }
 });
+
+test('review r1: explicit keys, non-object wrapper, monospace id', () => {
+  for (const key of ['values', 'source_as_of']) {
+    const w = fixture('withdrawn');
+    delete w.notification[key];
+    assert.equal(stateOf(fn(w, null, '2026-10-30', 'en', NOW)), 'unreadable', 'withdrawal without explicit ' + key);
+    const o = fixture('journey_b_both_fell');
+    delete o.notification[key];
+    assert.equal(stateOf(fn(o, null, o.notification.event_as_of, 'en', NOW)), 'unreadable', 'observation without explicit ' + key);
+  }
+  for (const bad of ['rotobs_x', ['a'], 7, true]) {
+    assert.equal(stateOf(fn(bad, null, '2026-10-30', 'en', NOW)), 'unreadable', 'present non-object wrapper ' + JSON.stringify(bad));
+  }
+  assert.equal(stateOf(fn(null, null, '2026-10-30', 'en', NOW)), 'unavailable', 'null wrapper stays absent');
+  assert.equal(stateOf(fn(undefined, null, '2026-10-30', 'en', NOW)), 'unavailable', 'missing wrapper stays absent');
+  assert.match(src, /\.rc-ew-id\{user-select:all;font-family:var\(--font-mono\);\}/, 'selectable monospace id');
+});

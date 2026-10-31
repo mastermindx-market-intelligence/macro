@@ -460,6 +460,37 @@ def test_record_fields_are_escaped_and_history_is_separated():
 EVIDENCE = ROOT / "research" / "evidence" / "ew_p4_descriptive_ui_20261031"
 
 
+@pytest.mark.parametrize("key", ["values", "source_as_of"])
+@pytest.mark.parametrize("name", ["withdrawn", "journey_b_both_fell"])
+def test_review_r1_explicit_source_as_of_and_values_keys(name, key):
+    fixture = deepcopy(_fixtures()[name])
+    del fixture["notification"][key]
+    with pytest.raises(ValueError):
+        lib_validate(fixture["notification"])
+    assert state_of(render(envelope(fixture))) == "unreadable"
+
+
+@pytest.mark.parametrize("bad", ["rotobs_x", ["a"], 7])
+def test_review_r1_present_non_object_wrapper_is_unreadable(bad):
+    assert state_of(render(envelope(bad))) == "unreadable"
+
+
+def test_review_r1_null_wrapper_stays_absent():
+    assert state_of(render(envelope(None, rotation={"latest_observation": None}))) == "unavailable"
+
+
+def test_review_r1_observation_id_is_selectable_monospace():
+    css = (ROOT / "templates" / "_risk_envelope_band.css.j2").read_text(encoding="utf-8")
+    assert "#dlg-risk .gde-ew-id {user-select:all; font-family:var(--font-mono);}" in css
+
+
+def test_review_r1_site_copy_is_byte_identical_to_template():
+    site = ROOT / "site" / "rotation_events.js"
+    if not site.exists():
+        pytest.skip("site/ not materialized in this sparse tree")
+    assert site.read_bytes() == (ROOT / "templates" / "rotation_events.js").read_bytes()
+
+
 def _git_blob_id(path: Path) -> str:
     data = path.read_bytes()
     return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
