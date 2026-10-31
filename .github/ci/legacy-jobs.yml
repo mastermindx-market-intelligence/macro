@@ -9754,10 +9754,17 @@ jobs:
           npx playwright install --with-deps chromium
       - name: canonical base for the frozen-file guard (fail closed)
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=international-dislocation-explorer::could not fetch origin/${{ github.base_ref || 'main' }}; tests/test_intl_gs_dislocations_view.py frozen-seam checks have NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a pass."
-            exit 1
-          fi
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from scripts.run_ci_pack import prepare_canonical_main
+
+          prepare_canonical_main(
+              Path.cwd(),
+              tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],
+              base_ref="${{ github.base_ref || 'main' }}",
+          )
+          PY
       - name: Dislocation explorer view contracts
         run: python -m pytest tests/test_intl_gs_dislocations_view.py -q
       - name: Dislocation explorer DOM and selection in Chromium

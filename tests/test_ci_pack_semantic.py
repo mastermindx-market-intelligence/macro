@@ -3872,6 +3872,65 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
         self.assertIn(f["canonical"], result.stdout)
         self.assert_head(f)
 
+    def test_dislocation_manifest_runs_bounded_canonical_main_before_full_browser_contract(self):
+        """Run W3U's ACTUAL manifest step on a shallow synthetic merge.
+
+        This verifies a finite pinned acquisition, not a command-text-only
+        claim. No test/Chromium step, job deadline, or frozen-file guard is
+        traded away to recover the old pack-3 timeout.
+        """
+        jobs = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))["jobs"]
+        job = jobs["international-dislocation-explorer"]
+        self.assertEqual(job["timeout-minutes"], 8)
+        self.assertEqual(job["scope"], "exclusive")
+        self.assertEqual(job["steps"][0]["with"]["fetch-depth"], 0)
+        steps = {item.get("name"): item for item in job["steps"]}
+        self.assertEqual(steps["Dislocation explorer view contracts"]["run"],
+                         "python -m pytest tests/test_intl_gs_dislocations_view.py -q")
+        self.assertEqual(steps["Dislocation explorer DOM and selection in Chromium"]["run"],
+                         "node --test tests/intl_gs_dislocations_browser.test.cjs")
+        name = "canonical base for the frozen-file guard (fail closed)"
+        run = steps[name]["run"]
+        self.assertEqual(run, next(item["run"] for item in
+            jobs["international-workspace-browser"]["steps"] if item.get("name") == name))
+        self.assertNotIn("git fetch origin", run)
+        self.assertIn("from scripts.run_ci_pack import prepare_canonical_main", run)
+
+        f = self.fixture()
+        environment = _cm_python_environment(self.parent, _cm_sys.executable)
+        environment.update({
+            "PYTHONPATH": str(ROOT),
+            # The actual tested tree always overrides inherited event identity.
+            "CI_TESTED_TREE_SHA": f["tested"],
+            "TESTED_TREE_SHA": "f" * 40,
+            "CI_BASE_SHA": f["parents"][0],
+            "TESTED_BASE_SHA": f["parents"][0],
+        })
+        command = PACK.render_command(run, base_ref="main", head_ref="feature")
+        completed = _cm_subprocess.run(
+            ["bash", "-e", "-o", "pipefail", "-c", command],
+            cwd=f["checkout"], env=environment, capture_output=True, text=True,
+            timeout=45,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+        self.assertEqual(_cm_git(f["checkout"], "rev-parse", "origin/main"), f["canonical"])
+        self.assertEqual(_cm_git(f["checkout"], "merge-base", "origin/main", "HEAD"),
+                         f["parents"][0])
+        self.assert_head(f)
+
+        # Execute W3U's real offline guard, not a replacement permissive stub.
+        frozen = ROOT / "tests/test_intl_gs_dislocations_view.py"
+        parsed = _cm_ast.parse(frozen.read_text(encoding="utf-8"), filename=str(frozen))
+        functions = [node for node in parsed.body
+                     if isinstance(node, _cm_ast.FunctionDef) and node.name == "_merge_base"]
+        self.assertEqual(len(functions), 1)
+        namespace = {"REPO": f["checkout"], "subprocess": _cm_subprocess,
+                     "re": _cm_re, "pytest": pytest}
+        exec(compile(_cm_ast.Module(body=functions, type_ignores=[]),
+                     str(frozen), "exec"), namespace)
+        self.assertEqual(namespace["_merge_base"](), f["parents"][0])
+        self.assert_head(f)
+
     def test_private_python_binding_preserves_venv_context_and_arguments(self):
         venv_root = self.parent / "driver's isolated venv"
         _cm_subprocess.run(
