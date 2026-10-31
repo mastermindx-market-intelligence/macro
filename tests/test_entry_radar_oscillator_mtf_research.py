@@ -251,6 +251,59 @@ class OscillatorSignals(unittest.TestCase):
                                supplied=supp, decision_cutoff_utc="2026-10-30T20:00:00Z")
         self.assertIsNone(ev[1]["signal"])
 
+    def test_missing_entire_owner_trading_session_is_refused(self):
+        cal = {**schedule('2026-10-30'), **schedule('2026-11-02'),
+               **schedule('2026-11-03')}
+        rows = run(calendar=cal, cutoff='2026-11-04T00:00:00Z')
+        rows = [row for row in rows if row['session_date'] != '2026-11-02']
+        expected = {date(2026,11,2): date(2026,10,30),
+                    date(2026,11,3): date(2026,11,2)}
+        with self.assertRaisesRegex(ValueError, 'missing owner predecessor session'):
+            oscillator_events(bars=rows, indicator='CANON_RSI_MACD',
+                              eligibility=eligible(rows),
+                              prior_session_by_day=expected,
+                              decision_cutoff_utc='2026-11-04T00:00:00Z')
+
+    def test_legitimate_weekend_contiguous_with_owner_prior_map(self):
+        cal = {**schedule('2026-10-30'), **schedule('2026-11-02')}
+        rows = run(calendar=cal, cutoff='2026-11-03T00:00:00Z')
+        result = oscillator_events(bars=rows, indicator='CANON_RSI_MACD',
+                    eligibility=eligible(rows),
+                    prior_session_by_day={date(2026,11,2): date(2026,10,30)},
+                    decision_cutoff_utc='2026-11-03T00:00:00Z')
+        self.assertFalse(any(x['state'] == 'SOURCE_OWNER_PREDECESSOR_UNKNOWN' for x in result))
+
+    def test_multi_session_without_owner_predecessor_abstains(self):
+        cal = {**schedule('2026-10-30'), **schedule('2026-11-02')}
+        rows = run(calendar=cal, cutoff='2026-11-03T00:00:00Z')
+        result = oscillator_events(bars=rows, indicator='SUPPLIED_LINES',
+                    eligibility=eligible(rows), supplied=self.supplied(),
+                    decision_cutoff_utc='2026-11-03T00:00:00Z')
+        after = [x for x in result if x['bar_end_utc'].startswith('2026-11-02')
+                 and x['state'] != 'SOURCE_STUB_EXCLUDED']
+        self.assertTrue(after)
+        self.assertTrue(all(x['state'] == 'SOURCE_OWNER_PREDECESSOR_UNKNOWN'
+                            and x['signal'] is None for x in after))
+
+    def test_missing_terminal_stub_between_sessions_refused(self):
+        cal = {**schedule('2026-10-30'), **schedule('2026-11-02')}
+        rows = run(calendar=cal, cutoff='2026-11-02T23:00:00Z')
+        rows = [row for row in rows if not (
+            row['session_date'] == '2026-10-30' and row['status'] == 'STUB_EXCLUDED')]
+        with self.assertRaisesRegex(ValueError, 'missing terminal session stub'):
+            oscillator_events(bars=rows, indicator='CANON_RSI_MACD', eligibility=eligible(rows),
+                              decision_cutoff_utc='2026-11-02T23:00:00Z')
+
+    def test_missing_last_full_bar_and_stub_cannot_bridge_next_session(self):
+        cal = {**schedule('2026-10-30'), **schedule('2026-11-02')}
+        rows = run(calendar=cal, cutoff='2026-11-02T23:00:00Z')
+        rows = [row for row in rows if not (
+            row['session_date'] == '2026-10-30' and
+            row['bar_start_utc'] >= '2026-10-30T17:30:00+00:00')]
+        with self.assertRaisesRegex(ValueError, 'missing terminal session stub'):
+            oscillator_events(bars=rows, indicator='CANON_RSI_MACD', eligibility=eligible(rows),
+                              decision_cutoff_utc='2026-11-02T23:00:00Z')
+
     def test_mixed_120m_180m_bars_refused(self):
         combined = self.rows + run(grain=180)
         with self.assertRaisesRegex(ValueError, "mix 120m and 180m"):
@@ -266,7 +319,7 @@ class OscillatorSignals(unittest.TestCase):
 
     def test_removed_middle_full_bar_cannot_create_false_crossover(self):
         missing_middle = [self.rows[0], self.rows[2], self.rows[3]]
-        with self.assertRaisesRegex(ValueError, "missing or overlapping RTH bar"):
+        with self.assertRaisesRegex(ValueError, "missing full RTH slots"):
             oscillator_events(bars=missing_middle, indicator="SUPPLIED_LINES",
                               eligibility=self.elig, supplied=self.supplied(),
                               decision_cutoff_utc="2026-10-30T20:00:00Z")
