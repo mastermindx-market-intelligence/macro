@@ -1984,6 +1984,11 @@ def public_report(report: dict) -> dict:
         allowed_status = {"SETTLED", "PENDING", "UNAVAILABLE_DATA"}
         observed_status = raw_settlement.get("status")
         failures = raw_settlement.get("failures")
+        # Validate BEFORE filtering to the public allowlist. A missing,
+        # malformed, or unknown failure entry must never disappear and
+        # turn an unverified SETTLED claim into a clean public one.
+        if observed_status == "SETTLED" and failures != []:
+            observed_status = "UNAVAILABLE_DATA"
         out["prophet_settlement"] = {
             "schema": "prophet.settlement_manifest/v1",
             "status": observed_status if isinstance(observed_status, str) and observed_status in allowed_status else "UNAVAILABLE_DATA",

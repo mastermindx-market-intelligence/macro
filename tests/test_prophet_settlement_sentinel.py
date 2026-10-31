@@ -140,3 +140,78 @@ def test_untrusted_public_settlement_status_fails_closed():
     })
     assert public["prophet_settlement"]["status"] == "UNAVAILABLE_DATA"
     assert public["prophet_settlement"]["failures"] == []
+
+
+def test_public_report_never_erases_settled_failures_into_false_green():
+    """The public allowlist must not turn malformed or future failure codes
+    into an empty list while preserving a supplied SETTLED claim.
+
+    The normal pure manifest emits a closed failures list; this mutation
+    pins the public boundary against missing, mixed or future-shaped
+    internal evidence without treating synthetic fixtures as production.
+    """
+    failures_cases = (
+        None,
+        "source_asof_stale",
+        {"reason": "source_asof_stale"},
+        ["source_asof_stale"],
+        ["SOURCE_FUTURE_UNKNOWN_SECRET"],
+        ["source_asof_stale", "SOURCE_FUTURE_UNKNOWN_SECRET"],
+        [None],
+        [42],
+    )
+    for failures in failures_cases:
+        private = {
+            "surfaces": {},
+            "prophet_settlement": {
+                "status": "SETTLED",
+                "owed_session": "2026-10-30",
+                "source_asof": "2026-10-30",
+                "failures": failures,
+                "private_plan": "PAID_SECRET_PLAN",
+            },
+        }
+        public = fs.public_report(private)
+        block = public["prophet_settlement"]
+        assert block["schema"] == "prophet.settlement_manifest/v1"
+        assert block["status"] == "UNAVAILABLE_DATA"
+        assert set(block) == {
+            "schema", "status", "owed_session", "source_asof", "failures"
+        }
+        assert "PAID_SECRET_PLAN" not in json.dumps(public)
+        assert "SOURCE_FUTURE_UNKNOWN_SECRET" not in json.dumps(public)
+
+    omitted = fs.public_report({
+        "surfaces": {},
+        "prophet_settlement": {
+            "status": "SETTLED",
+            "owed_session": "2026-10-30",
+            "source_asof": "2026-10-30",
+        },
+    })
+    assert omitted["prophet_settlement"]["status"] == "UNAVAILABLE_DATA"
+
+
+def test_public_report_retains_only_valid_empty_failures_settled_claim():
+    """The projection preserves the exact valid synthetic input shape, without
+    making a new independent reader/issuer approval judgment.
+    """
+    public = fs.public_report({
+        "surfaces": {},
+        "prophet_settlement": {
+            "status": "SETTLED",
+            "owed_session": "2026-10-30",
+            "source_asof": "2026-10-30",
+            "failures": [],
+            "artifact_hashes": {"private": "SECRET_INDEX_SHA"},
+        },
+    })
+    block = public["prophet_settlement"]
+    assert block == {
+        "schema": "prophet.settlement_manifest/v1",
+        "status": "SETTLED",
+        "owed_session": "2026-10-30",
+        "source_asof": "2026-10-30",
+        "failures": [],
+    }
+    assert "SECRET_INDEX_SHA" not in json.dumps(public)
