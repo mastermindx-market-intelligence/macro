@@ -266,16 +266,26 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapctl__label{text-transform:none;lette
 .intl-gs .intl-gs__marketname{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;min-width:0;}
 .intl-gs .intl-gs__marketlink{color:var(--ink-link);font-weight:600;}
 .intl-gs .intl-gs__marketcode{font-family:var(--font-mono);font-size:var(--fs-micro);color:var(--muted);overflow-wrap:anywhere;}
-.intl-gs .intl-gs__mrktsub{font-size:var(--fs-micro);color:var(--muted);white-space:nowrap;}
-.intl-gs .intl-gs__table--scanner th,.intl-gs .intl-gs__table--scanner td{white-space:nowrap;}
-.intl-gs .intl-gs__table--scanner [data-col="market"]{width:152px;}
-.intl-gs .intl-gs__table--scanner [data-col="local"],.intl-gs .intl-gs__table--scanner [data-col="fx"],.intl-gs .intl-gs__table--scanner [data-col="usd"]{width:72px;}
-.intl-gs .intl-gs__table--scanner [data-col="minibar"]{width:120px;padding-left:16px;}
-.intl-gs .intl-gs__table--scanner [data-col="common"]{width:64px;}
-.intl-gs .intl-gs__table--scanner [data-col="divergence"]{width:120px;padding-left:16px;}
-.intl-gs .intl-gs__table--scanner [data-col="usd20d"]{width:96px;}
-.intl-gs .intl-gs__table--scanner [data-col="tier"]{width:104px;}
-.intl-gs .intl-gs__table--scanner [data-col="stance"]{width:14%;min-width:112px;}
+.intl-gs .intl-gs__mrktsub{font-size:var(--fs-micro);color:var(--muted);white-space:normal;overflow-wrap:anywhere;}
+/* R-02 (review r2, seat adjudication 2026-10-30): fixed layout so all ten 10.1 columns
+   bind inside the clip wrap at 1440/1280/1024; labels/tier chips/reason wrap per 11.2,
+   values keep nowrap fixed slots, svg geometry scales inside its column. */
+.intl-gs .intl-gs__table--scanner{table-layout:fixed;}
+.intl-gs .intl-gs__table--scanner th,.intl-gs .intl-gs__table--scanner td{white-space:normal;padding-left:8px;padding-right:8px;}
+.intl-gs .intl-gs__table--scanner .intl-gs__num{white-space:nowrap;}
+.intl-gs .intl-gs__table--scanner .intl-gs__mrktsub{white-space:normal;}
+.intl-gs .intl-gs__table--scanner .intl-gs__statecell__reason{overflow-wrap:anywhere;}
+.intl-gs .intl-gs__table--scanner svg{max-width:100%;height:auto;}
+.intl-gs .intl-gs__table--scanner [data-leg="tier"] .intl-gs__chip,.intl-gs .intl-gs__table--scanner [data-col="stance"] .intl-gs__chip{white-space:normal;height:auto;min-height:20px;padding-top:3px;padding-bottom:3px;}
+.intl-gs .intl-gs__table--scanner [data-col="local"],.intl-gs .intl-gs__table--scanner [data-col="fx"]{width:74px;}
+.intl-gs .intl-gs__table--scanner [data-col="usd"]{width:74px;}
+.intl-gs .intl-gs__table--scanner [data-col="minibar"]{width:80px;}
+.intl-gs .intl-gs__table--scanner [data-col="common"]{width:70px;}
+.intl-gs .intl-gs__table--scanner [data-col="divergence"]{width:80px;}
+.intl-gs .intl-gs__table--scanner [data-col="usd20d"]{width:70px;}
+.intl-gs .intl-gs__table--scanner [data-col="tier"]{width:92px;}
+.intl-gs .intl-gs__table--scanner [data-col="market"]{width:90px;}
+.intl-gs .intl-gs__table--scanner [data-col="stance"]{width:84px;}
 .intl-gs .intl-gs__tablefoot{font-size:var(--fs-label);color:var(--muted);}
 .intl-gs .intl-gs__tiernote{font-size:var(--fs-micro);color:var(--muted);}
 .intl-gs .intl-gs__abstainline{margin:0;font-size:var(--fs-sm);color:var(--muted);}
@@ -337,6 +347,9 @@ html[data-lang="zh"] .intl-gs .intl-gs__covgrid__head{text-transform:none;letter
 /* ---- breakpoints (11): rails stack, pairs single column, mobile cards ---- */
 @media (max-width:1279px){.intl-gs .intl-gs__covlower{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}.intl-gs .intl-gs__covlegend{grid-column:1 / -1;}}
 @media (max-width:1099px){.intl-gs .intl-gs__bands4{grid-template-columns:1fr;}}
+/* R-02: between 1100-1319 the beside-rail wrap shrinks below the ten-column budget,
+   so the Q2 split stacks early (rail full-width below) and the table keeps room. */
+@media (min-width:1100px) and (max-width:1319px){.intl-gs .intl-gs__split{flex-direction:column;}.intl-gs .intl-gs__rail{width:100%;position:static;}}
 @media (max-width:900px){
   .intl-gs .intl-gs__scannerwrap{display:none;}
   .intl-gs .intl-gs__mcards{display:flex;flex-direction:column;gap:8px;}
