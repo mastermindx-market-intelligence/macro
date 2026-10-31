@@ -7443,11 +7443,12 @@ PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",
 }
 # This producer's own byte-determinism pin, captured at the lane's fork point;
-# re-pinned by the second repair (review F3 seat ruling): the range row's
-# mapping_rule_digest now pins the live RANGE_DISCLOSED_PATTERN bytes (masked-
-# envelope diff vs the previous pin: empty).
+# re-pinned by the second repair (review F3 seat ruling) and by the third
+# repair (review F3-1): the range row's mapping_rule_digest pins the live
+# RANGE_DISCLOSED_PATTERN bytes, whose determine alternant is now object-
+# bound (masked-envelope diff vs the previous pin: empty).
 PK08_AAPL_ENVELOPE_SHA256 = (
-    "9200ce0e91e7867e1186e5b96f0ecbdc01d3f56fddfb5d81ff07f13e905260b3"
+    "b57a48def3723b47b7d47c2a59052fed0a4181e34e21d6867360f9568844bd2c"
 )
 # §TESTS 1: the fixture's two nil balance-sheet occurrences (ledger scan).
 PK08_AAPL_NIL_IDS = {
@@ -7561,6 +7562,18 @@ _PK08_CONTING_NOT_ESTIMABLE_NOT_POSSIBLE = (
     "Contingencies The Company is a party to certain pending legal matters. "
     "For those matters, it is not possible to estimate the amount or range "
     "of loss."
+)
+# Third repair (review F3-1): the object-bound determine form, and the
+# object-blind sentence it must no longer value.
+_PK08_CONTING_DETERMINE_OUTCOME = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "Management believes it is not possible to determine the outcome of this "
+    "matter at this time."
+)
+_PK08_CONTING_DETERMINE_AMOUNT_OR_RANGE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to determine the amount or range "
+    "of loss that may result."
 )
 _PK08_CONTING_NOT_ESTIMABLE_CANNOT_BE_MADE = (
     "Contingencies The Company is a party to certain pending legal matters. "
@@ -8211,6 +8224,55 @@ def test_pk08_not_estimable_not_possible_form() -> None:
     assert span["document_id"] == PK08_TESTCO_DOC
     assert span["end_offset"] > span["start_offset"]
     assert _pk08_span_text(pack_input, span) == "is not possible to estimate"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_possible_to_determine_outcome_is_not_estimable_language() -> None:
+    # F3-1: "not possible to determine the outcome" is a statement about the
+    # matter's resolution, not about estimability of a loss amount or range —
+    # the object-bound determine arm must leave the row typed-absent, never
+    # value not_estimable from it.
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_DETERMINE_OUTCOME
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["text_value"] is None
+    assert disclosed["value"] is None
+    assert disclosed["quality_state"] == "missing"
+    assert disclosed["non_value_state"] == "missing"
+    assert disclosed["coverage_state"] == "unmapped"
+    assert disclosed["reason"] == "missing_dependency"
+    assert disclosed["evidence_kind"] == "text_span"
+    assert disclosed["source_span"] is None
+    assert any(
+        "pk08.loss_contingency_range_disclosed: narrative_span_not_located"
+        in line
+        for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_possible_to_determine_amount_or_range_form() -> None:
+    # F3-1: "not possible to determine the amount or range of loss" IS
+    # legitimate not-estimable language — the object-bound determine arm
+    # values it with the span ending at the amount object.
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_DETERMINE_AMOUNT_OR_RANGE
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["coverage_state"] == "source_trace_complete"
+    assert disclosed["reason"] is None
+    span = disclosed["source_span"]
+    assert span["document_id"] == PK08_TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    assert (
+        _pk08_span_text(pack_input, span)
+        == "is not possible to determine the amount"
+    )
     assert contract.validate_pack_result(result) == []
 
 
