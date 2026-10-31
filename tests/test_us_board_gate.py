@@ -1553,3 +1553,412 @@ def test_gated_shell_uses_gate_payload_not_the_today_fallback():
     html = _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
     assert 'var TODAY_SRC = null;' in html
     assert "SRC = SRC || TODAY_SRC;" in html
+
+
+# ── a name locked on one list stays out of every free surface (ruling R-14) ──
+# The board, the plan book and the panels split separately and their populations
+# overlap, so a name locked on one list could print on another. Which names are on
+# the paid list is part of what it sells. The shipped-shell tests above read whatever
+# the last bake holds; these hold an overlap on every run. BRD0-2 are the free board
+# preview and BRD3-7 are locked.
+_FREE_BOARD = ("BRD0", "BRD1", "BRD2")
+_LOCKED_BOARD = ("BRD3", "BRD4", "BRD5", "BRD6", "BRD7")
+
+
+def _printed(shell: str, ticker: str) -> list[str]:
+    """Each way the shell can name a ticker. A bare attribute check is not enough:
+    removing `data-ticker` while still printing the name is not a fix."""
+    marks = {
+        "data-ticker": f'data-ticker="{ticker}"',
+        "data-tkr": f'data-tkr="{ticker}"',
+        "span": f">{ticker}</span>",
+        "link": f'href="stock.html#{ticker}"',
+    }
+    return [kind for kind, mark in marks.items() if mark in shell]
+
+
+def _pool_rows(*tickers):
+    return [{"ticker": t, "name": f"{t} Company", "sector": "Technology", "pool_rank": i + 1,
+             "in_buy_lane": t.startswith("BRD"), "lane": "forming",
+             "headline_reason": "conviction_low", "lane_reasons": ["conviction_low"],
+             "prophet": None, "prophet_score_basis": None}
+            for i, t in enumerate(tickers)]
+
+
+def _passed_shelf(*tickers):
+    return {"considered": 40, "declined": 7, "open_now": 0, "groups": [
+        {"reason": "conviction_low", "en": "Conviction too low", "zh": "信念不足", "near": False,
+         "n": 7, "names": [{"ticker": t, "name": f"{t} Company", "why": ["unknown"]} for t in tickers]}]}
+
+
+def _overlap_vm():
+    """Every list holds a name locked on another list, and the first rows of each are
+    the ones a prefix slice would have printed for free."""
+    from engine.us_candidate_lanes import project_candidate_visibility
+    vm = _panel_vm()
+    su = vm["us_standouts"]
+    su["as_of"] = "2026-09-18"
+    su["leaders"] = [{**su["leaders"][0], "ticker": "BRD4", "name": "BRD4 Company"},
+                     {**su["leaders"][1], "ticker": "RANX5", "name": "Ran 5"},
+                     *su["leaders"][2:]]
+    su["delta"] = {"entries": [
+        {"ticker": "BRD3", "entered_board": True, "cur_verb": "buy"},
+        {"ticker": "BRD0", "entered_board": True, "cur_verb": "buy"},
+        {"ticker": "RANX6", "left_board": True, "prev_verb": "buy"},
+        {"ticker": "OFFLIST", "left_board": True, "prev_verb": "buy"}]}
+    vm["top_setups"]["buy"] = [{**vm["top_setups"]["buy"][0], "ticker": t, "name": f"{t} Company"}
+                               for t in ("BRD5", "BRD0")] + vm["top_setups"]["buy"]
+    vm["us_candidate_visibility"] = project_candidate_visibility({
+        "as_of": "2026-09-18", "buy": [{"ticker": r["ticker"]} for r in su["buy"]],
+        "candidate_pool": {"pool_definition": "us_candidate_pool_v1", "as_of": "2026-09-18",
+                           "eligible": 7, "rows": _pool_rows(
+                               "BRD3", "BRD0", "BRD4", "POOLA", "POOLB", "POOLC", "POOLD")}})
+    vm["us_prophet_refusals"] = _passed_shelf("BRD6", "BRD1", "OFFLIST2")
+    vm["us_board_outcomes"] = {"rows": [{"ticker": "BRD0"}]}
+    return vm
+
+
+@pytest.fixture
+def us_cfg(monkeypatch):
+    """The gate on, at the preview sizes this section's numbers assume."""
+    import scripts.build_site as bs
+    monkeypatch.setattr(bs, "_us_board_gate_cfg", lambda: {
+        "gated": True, "preview_rows": 3, "today_preview_rows": 6,
+        "panels": True, "panel_preview_rows": 3})
+    monkeypatch.setattr(bs, "_us_life_gate_cfg", lambda: True)
+    return bs
+
+
+def _free_us_html(bs, vm):
+    """The free page through the calls build_site's stocks-mode render makes, in order."""
+    cfg = bs._us_board_gate_cfg()
+    shell_su, gate, _board_locked = bs._split_us_board(vm["us_standouts"], cfg["preview_rows"], gated=True)
+    life_shell, life_gate, _plans = bs._split_us_prophet_board(
+        vm.get("us_prophet_book"), cfg["preview_rows"], gated=True,
+        withheld=bs._us_withheld_names(vm, cfg["panel_preview_rows"]))
+    repair = bs._us_life_repair_context(vm, life_shell, life_gate, cfg["preview_rows"])
+    pov, pgate, locked = bs._split_us_panels(vm, cfg["panel_preview_rows"], gated=True)
+    shell_su, repair = bs._us_apply_panel_withholding(vm, shell_su, repair, pov, cfg["preview_rows"])
+    html = _env().get_template("dashboard.html.j2").render(
+        **{**vm, **pov, "us_standouts": shell_su, "gate": gate, "pgate": pgate,
+           "us_prophet_book": life_shell, "life_gate": life_gate, **repair}, mode="stocks")
+    return html, pgate, locked
+
+
+def _free_us_shell(bs, vm):
+    html, pgate, locked = _free_us_html(bs, vm)
+    return _strip_scripts(html), pgate, locked
+
+
+def test_board_locked_name_stays_out_of_the_free_pool(us_cfg):
+    vm = _overlap_vm()
+    overrides, pgate, locked = _split_panels(vm)
+    assert [r["ticker"] for r in overrides["us_candidate_visibility"]["rows"]] == [
+        "BRD0", "POOLA", "POOLB"]
+    # The panel's counts stay true: three shown, the rest withheld, the same total.
+    assert pgate["candidate_pool"] == {"preview": 3, "locked": 4, "total": 7}
+    assert [r["ticker"] for r in locked["candidate_pool"]] == ["BRD3", "BRD4", "POOLC", "POOLD"]
+
+    html, _pgate, _locked = _free_us_shell(us_cfg, _overlap_vm())
+    for name in ("BRD3", "BRD4"):
+        assert f'data-ticker="{name}"' not in html
+        assert f"{name} Company" not in html
+    assert 'data-ticker="POOLA"' in html
+
+
+def test_free_pool_name_on_the_free_board_stays_printable(us_cfg):
+    vm = _overlap_vm()
+    overrides, _pgate, _locked = _split_panels(vm)
+    assert "BRD0" in [r["ticker"] for r in overrides["us_candidate_visibility"]["rows"]]
+    assert not set(_FREE_BOARD) & overrides["us_withheld_names"]
+
+
+def test_the_name_label_island_holds_only_the_leaders_the_shell_prints(us_cfg):
+    """A panel can print fewer rows than its preview, and the reordered list puts a
+    withheld name right behind the shell rows. A flat slice would ship that name's label."""
+    vm = _overlap_vm()
+    html, pgate, _locked = _free_us_html(us_cfg, vm)
+    island = json.loads(re.search(r'id="plv-names">(.*?)</script>', html, re.S).group(1))
+    assert pgate["leaders"]["preview"] < 3
+    assert not {"BRD4", "RANX5"} & set(island)
+
+
+def test_a_free_board_name_past_a_panel_preview_stays_printable(us_cfg):
+    """The board prints this name for free, so the panel's lock cannot take it off the
+    other free lists. A name locked on the board itself still leaves."""
+    vm = _overlap_vm()
+    vm["us_standouts"]["leaders"] = [
+        {"ticker": t, "name": t} for t in ("LDA", "LDB", "LDC", "BRD0", "LDD")]
+    hide = us_cfg._us_withheld_names(vm, 3)
+    assert "LDD" in hide and "BRD3" in hide
+    assert "BRD0" not in hide
+
+
+def test_withheld_pool_rows_still_hydrate_for_a_paid_reader(us_cfg):
+    vm = _overlap_vm()
+    _overrides, pgate, locked = _split_panels(vm)
+    blocks = us_cfg._render_us_panel_payload(_env(), pgate, locked, vm)
+    for name in ("BRD3", "BRD4", "POOLC", "POOLD"):
+        assert f'data-ticker="{name}"' in blocks["candidate_pool_html"]
+    assert blocks["candidate_pool_source"]["total"] == 7
+
+
+def test_board_locked_name_stays_out_of_the_free_leader_observations(us_cfg):
+    from tests.test_prophet_leader_observation_shelf import _projection
+    vm = _overlap_vm()
+    vm["us_standouts"]["buy"][3]["ticker"] = "BBB"
+    vm["us_leader_observations"] = _projection()
+    overrides, pgate, locked = _split_panels(vm)
+    assert [r["ticker"] for r in overrides["us_leader_observations"]["rows"]] == ["AAA", "CCC", "DDD"]
+    assert [r["ticker"] for r in locked["leader_observations"]] == ["BBB", "ZZZ"]
+    assert pgate["leader_observations"] == {"preview": 3, "locked": 2, "total": 5}
+
+
+def test_setups_residual_skips_the_whole_board_not_the_sliced_one(us_cfg):
+    vm = _overlap_vm()
+    overrides, _pgate, _locked = _split_panels(vm)
+    html, pgate, _locked = _free_us_shell(us_cfg, _overlap_vm())
+    assert 'data-tkr="BRD5"' not in html
+    assert overrides["us_board_tickers"] == sorted(r["ticker"] for r in vm["us_standouts"]["buy"])
+    # The residual's own display cap is 10, the same total a full render shows.
+    assert pgate["setups"] == {"preview": 3, "locked": 7, "total": 10}
+    assert 'data-tkr="TSX0"' in html
+
+
+def test_a_name_locked_on_one_panel_leaves_the_preview_of_another(us_cfg):
+    vm = _overlap_vm()
+    overrides, pgate, locked = _split_panels(vm)
+    # BRD4 is locked on the board and RANX5 past the preview of `ran`. The strip keeps
+    # the one clean row of its preview, and no row from past the preview replaces them,
+    # because those names are locked here.
+    assert [r["ticker"] for r in overrides["us_standouts_shell"]["leaders"]][:3] == [
+        "LEDX2", "BRD4", "RANX5"]
+    assert {"BRD4", "RANX5", "LEDX3"} <= {r["ticker"] for r in locked["leaders"]}
+    # The shell shows fewer rows, and the total stays what the list holds.
+    assert pgate["leaders"] == {"preview": 1, "locked": 10, "total": 11}
+    assert pgate["ran"] == {"preview": 3, "locked": 6, "total": 9}
+    # A shell row is not named in the withheld island, and a withheld row is.
+    assert "LEDX2" not in locked["plv_names"]
+    assert locked["plv_names"]["BRD4"] == "BRD4 Company"
+
+
+def test_rows_that_moved_are_not_printed_twice_after_hydration(us_cfg):
+    vm = _overlap_vm()
+    overrides, pgate, locked = _split_panels(vm)
+    shell_leaders = overrides["us_standouts_shell"]["leaders"][:pgate["leaders"]["preview"]]
+    names = [r["ticker"] for r in shell_leaders + locked["leaders"]]
+    assert len(names) == len(set(names)) == pgate["leaders"]["total"]
+    resid = overrides["top_setups"]["buy"] if "top_setups" in overrides else vm["top_setups"]["buy"]
+    board = set(overrides["us_board_tickers"])
+    setups = [r["ticker"] for r in resid if r["ticker"] not in board][:pgate["setups"]["total"]]
+    assert len(setups) == len(set(setups))
+
+
+def test_what_changed_prints_no_locked_name_and_keeps_its_counts(us_cfg):
+    vm = _overlap_vm()
+    shell, pgate, locked = _free_us_shell(us_cfg, vm)
+    rows = re.findall(r'class="nb-delta-tk">([^<]+)<', shell)
+    assert rows == ["BRD0", "OFFLIST"]
+    assert pgate["what_changed"] == {"locked": 2}
+    assert [e["ticker"] for e in locked["what_changed"]] == ["BRD3", "RANX6"]
+    # The source board was not touched: other pages read it.
+    assert [e["ticker"] for e in vm["us_standouts"]["delta"]["entries"]] == [
+        "BRD3", "BRD0", "RANX6", "OFFLIST"]
+    # The button and the tallies still count all four.
+    dlg = shell[shell.index('id="wcd-btn"'):]
+    assert ">4<" in dlg[:dlg.index("</button>")].replace(" ", "")
+    assert "2 more names here" in dlg
+
+
+def test_what_changed_rows_hydrate_from_the_payload(us_cfg):
+    vm = _overlap_vm()
+    _shell, pgate, locked = _free_us_shell(us_cfg, vm)
+    blocks = us_cfg._render_us_panel_payload(_env(), pgate, locked, vm)
+    assert re.findall(r'class="nb-delta-tk">([^<]+)<', blocks["what_changed_html"]) == ["BRD3", "RANX6"]
+    assert "entered board" in blocks["what_changed_html"]
+
+
+def test_passed_on_tonight_prints_no_locked_name_and_keeps_its_counts(us_cfg):
+    vm = _overlap_vm()
+    shell, pgate, locked = _free_us_shell(us_cfg, vm)
+    assert re.findall(r'class="pvr-tk"[^>]*>([^<]+)<', shell) == ["BRD1", "OFFLIST2"]
+    assert "BRD6 Company" not in shell
+    assert pgate["passed"] == {"locked": 1}
+    # Headline and group counts stay what the engine wrote; the names that left are counted.
+    assert "7 of 40" in shell
+    assert '<span class="pvr-n">7</span>' in shell
+    assert "1 more with full access" in shell
+    # The full shelf rides the payload, and the source dict stays whole.
+    blocks = us_cfg._render_us_panel_payload(_env(), pgate, locked, vm)
+    assert re.findall(r'class="pvr-tk"[^>]*>([^<]+)<', blocks["passed_html"]) == ["BRD6", "BRD1", "OFFLIST2"]
+    assert "more with full access" not in blocks["passed_html"]
+    assert [n["ticker"] for n in vm["us_prophet_refusals"]["groups"][0]["names"]] == [
+        "BRD6", "BRD1", "OFFLIST2"]
+
+
+def test_already_open_group_is_left_as_the_engine_wrote_it(us_cfg):
+    vm = _overlap_vm()
+    vm["us_prophet_refusals"]["groups"].append(
+        {"reason": "already_open", "en": "x", "zh": "x", "near": False, "n": 1,
+         "names": [{"ticker": "BRD7", "name": "BRD7 Company", "why": []}]})
+    overrides, pgate, _locked = _split_panels(vm)
+    groups = overrides["us_prophet_refusals"]["groups"]
+    assert groups[1] == vm["us_prophet_refusals"]["groups"][1]
+    assert pgate["passed"] == {"locked": 1}
+
+
+def test_screener_sample_prints_no_locked_name_and_its_copy_stays_true(us_cfg):
+    vm = _overlap_vm()
+    # With a plan on every free board name, the old sample reached into the locked rows.
+    vm["us_prophet_book"] = {"asof": "2026-09-18", "plans": [
+        {"asset": t, "state": "open"} for t in _FREE_BOARD]}
+    plan_tickers = set(_FREE_BOARD)
+    full_buy = vm["us_standouts"]["buy"]
+    assert [r["ticker"] for r in us_cfg._us_candidate_no_plan_sample(full_buy, plan_tickers)["sample"]] == [
+        "BRD3", "BRD4", "BRD5"]
+    sample = us_cfg._us_candidate_no_plan_sample(full_buy, plan_tickers, withheld=set(_LOCKED_BOARD))
+    assert [r["ticker"] for r in sample["sample"]] == list(_FREE_BOARD)
+    assert sample["all_no_plan"] is False
+
+
+def test_apply_helper_sets_the_sample_from_the_withheld_names(us_cfg):
+    vm = _overlap_vm()
+    vm["us_prophet_book"] = {"asof": "2026-09-18", "plans": [{"asset": t} for t in _FREE_BOARD]}
+    pov = {"us_withheld_names": set(_LOCKED_BOARD), "us_standouts_shell": {"ran": []}}
+    original = {"buy": [], "ran": ["x"]}
+    shell_su, repair = us_cfg._us_apply_panel_withholding(vm, original, {"kept": 1}, pov, 3)
+    assert shell_su == {"buy": [], "ran": []}
+    assert original == {"buy": [], "ran": ["x"]}
+    assert repair["kept"] == 1
+    assert [r["ticker"] for r in repair["cand_no_plan"]["sample"]] == list(_FREE_BOARD)
+    assert not pov
+
+
+def test_plan_preview_skips_a_board_locked_name_and_keeps_its_counts():
+    from scripts.build_site import _split_us_prophet_board
+    book = {"asof": "2026-09-18", "plans": [
+        {"asset": a} for a in ("BRD3", "BRD0", "PLNA", "BRD4", "PLNB", "PLNC")]}
+    shell, gate, locked = _split_us_prophet_board(book, 3, gated=True, withheld={"BRD3", "BRD4"})
+    assert [p["asset"] for p in shell["plans"]] == ["BRD0", "PLNA", "PLNB"]
+    assert [p["asset"] for p in locked] == ["BRD3", "BRD4", "PLNC"]
+    assert (gate["preview"], gate["locked"], gate["total"]) == (3, 3, 6)
+    assert len(book["plans"]) == 6
+    # With nothing withheld it stays the plain prefix slice.
+    shell, _gate, locked = _split_us_prophet_board(book, 3, gated=True)
+    assert [p["asset"] for p in shell["plans"]] == ["BRD3", "BRD0", "PLNA"]
+
+
+def test_plan_preview_skips_a_name_locked_on_a_panel(us_cfg):
+    vm = _panel_vm()
+    vm["us_prophet_book"] = {"asof": "2026-09-18", "plans": [
+        {"asset": a} for a in ("LEDX5", "LEDX0", "PLNA", "PLNB")]}
+    hide = us_cfg._us_withheld_names(vm, 3)
+    assert "LEDX5" in hide and "LEDX0" not in hide
+    shell, _gate, locked = us_cfg._split_us_prophet_board(
+        vm["us_prophet_book"], 3, gated=True, withheld=hide)
+    assert [p["asset"] for p in shell["plans"]] == ["LEDX0", "PLNA", "PLNB"]
+    assert [p["asset"] for p in locked] == ["LEDX5"]
+
+
+def test_being_in_the_plan_book_does_not_take_a_name_off_the_free_panels(us_cfg):
+    """The book holds most of the universe, closed records included. Counting it would
+    empty the leaders strip for a name whose row prints no plan field."""
+    vm = _panel_vm()
+    vm["us_prophet_book"] = {"asof": "2026-09-18", "plans": [
+        {"asset": a, "closed": c} for a, c in (
+            ("PLN0", False), ("PLN1", False), ("PLN2", False),
+            ("LEDX0", True), ("LEDX1", False))]}
+    assert not {"LEDX0", "LEDX1"} & us_cfg._us_withheld_names(vm, 3)
+    overrides, pgate, _locked = _split_panels(vm)
+    assert "us_standouts_shell" not in overrides
+    assert pgate["leaders"] == {"preview": 3, "locked": 8, "total": 11}
+
+
+def test_free_pool_row_never_holds_a_locked_open_plan(us_cfg):
+    """A pool row prints its name's open plans (id, status, dates), so a name whose open
+    plan is locked stays out of the free pool. A closed plan prints nothing there."""
+    from engine.us_candidate_lanes import project_candidate_visibility
+    vm = _panel_vm()
+    vm["us_prophet_book"] = {"asof": "2026-09-18", "plans": [
+        {"id": f"{a}-1", "asset": a, "closed": c, "lifecycle_state": "entered"} for a, c in (
+            ("PLN0", False), ("PLN1", False), ("PLN2", False),
+            ("POOLA", False), ("POOLB", True))]}
+    vm["us_candidate_visibility"] = project_candidate_visibility({
+        "as_of": "2026-09-18", "buy": [],
+        "candidate_pool": {"pool_definition": "us_candidate_pool_v1", "as_of": "2026-09-18",
+                           "eligible": 5, "rows": _pool_rows("POOLA", "POOLB", "POOLC", "POOLD", "POOLE")}})
+    assert us_cfg._us_open_plan_locked_names(vm, set()) == {"POOLA"}
+    overrides, pgate, locked = _split_panels(vm)
+    assert [r["ticker"] for r in overrides["us_candidate_visibility"]["rows"]] == ["POOLB", "POOLC", "POOLD"]
+    assert [r["ticker"] for r in locked["candidate_pool"]] == ["POOLA", "POOLE"]
+    assert pgate["candidate_pool"] == {"preview": 3, "locked": 2, "total": 5}
+    # The plan relation the render call sets prints only for rows in the shell.
+    state, by_ticker = us_cfg._plan_relations_for(vm["us_prophet_book"], False)
+    vm["plan_rel_by_ticker"] = by_ticker
+    vm["plan_rel"] = {"state": state, "plans": []}
+    shell, _pgate, _locked = _free_us_shell(us_cfg, vm)
+    assert 'data-plan-id="POOLA-1"' not in shell
+
+
+def test_a_short_panel_holding_a_withheld_name_still_grows_a_wall():
+    from scripts.build_site import _us_panel_split
+    rows = [{"ticker": "AAA"}, {"ticker": "BBB"}]
+    assert _us_panel_split(rows, 3) == (rows, [])
+    assert _us_panel_split(rows, 3, {"CCC"}) == (rows, [])
+    assert _us_panel_split(rows, 3, {"AAA"}) == ([rows[1]], [rows[0]])
+
+
+def test_no_free_surface_prints_a_locked_name(us_cfg):
+    """The whole-page version of the check: every name the paid lists hold."""
+    vm = _overlap_vm()
+    shell, pgate, locked = _free_us_shell(us_cfg, vm)
+    withheld = set(_LOCKED_BOARD)
+    for key in ("setups", "leaders", "ran"):
+        withheld |= {r["ticker"] for r in locked[key]}
+    assert {"BRD3", "BRD4", "BRD5", "BRD6", "RANX5", "RANX6"} <= withheld
+    leaks = {tk: _printed(shell, tk) for tk in sorted(withheld) if _printed(shell, tk)}
+    assert leaks == {}
+    for name in _FREE_BOARD:
+        assert _printed(shell, name), f"{name} is the free preview and must still print"
+    assert pgate
+
+
+def test_the_any_surface_check_can_see_a_leak(us_cfg):
+    vm = _overlap_vm()
+    html = _env().get_template("dashboard.html.j2").render(**{**vm, "gate": None, "pgate": None}, mode="stocks")
+    assert _printed(_strip_scripts(html), "BRD3"), "without the split the board prints every name"
+
+
+def test_a_night_with_no_overlap_changes_nothing_in_the_shell(us_cfg):
+    """Rows, order and copy stay as they were, so an ordinary bake does not move."""
+    vm = _panel_vm()
+    overrides, pgate, locked = _split_panels(vm)
+    assert set(overrides) == {"us_board_tickers", "us_withheld_names"}
+    assert "what_changed" not in pgate and "passed" not in pgate
+    assert [r["ticker"] for r in locked["leaders"]] == [f"LEDX{i}" for i in range(3, 11)]
+
+
+def test_nothing_gated_means_nothing_overridden():
+    vm = _overlap_vm()
+    assert _split_panels(vm, gated=False) == ({}, None, {})
+
+
+def test_both_render_passes_apply_the_withholding():
+    """The stocks render runs twice (first pass and the fresh board re-render), so the
+    one that ships must not fall back to splitting each list on its own."""
+    source = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
+    assert source.count('withheld=_us_withheld_names(vm, _us_gate_cfg["panel_preview_rows"]))') == 2
+    assert re.search(r"_split_us_panels\(\s*vm,[^\n]*\n\s*_us_shell_su, _us_life_repair = "
+                     r"_us_apply_panel_withholding\(\s*vm, _us_shell_su, _us_life_repair, _us_pov,", source)
+    assert re.search(r"_split_us_panels\(\s*vm,[^\n]*\n\s*_us_shell_su2, _us_life_repair2 = "
+                     r"_us_apply_panel_withholding\(\s*vm, _us_shell_su2, _us_life_repair2, _us_pov2,", source)
+
+
+def test_hydration_targets_the_new_payload_blocks():
+    template = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    assert "appendTo('#wcd-dlg .wcd-list', payload.what_changed_html);" in template
+    assert "hydratePassed(payload.passed_html);" in template
+    assert "current.parentNode.replaceChild(full, current);" in template
+    assert "full.open = current.open;" in template
+    source = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
+    assert '"what_changed", "passed")}' in source

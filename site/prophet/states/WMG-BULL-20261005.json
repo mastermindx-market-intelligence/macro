@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WMG-BULL-20261005",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 62.4,
-  "raw_confidence": 60.5,
-  "delta_vs_base": 2.4,
+  "management_confidence": 61.8,
+  "raw_confidence": 61.0,
+  "delta_vs_base": 1.8,
   "recommended_action": "hold",
   "human_state": "On Track",
   "components": {
     "validity": 100.0,
-    "progress": 31.5,
-    "pace": 42.4,
+    "progress": 33.1,
+    "pace": 42.6,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.538,
-    "dist_to_t1_r": 0.962,
-    "dist_to_t2_r": 2.462,
-    "horizon_pct_used": 51.1,
-    "p1": 0.359,
-    "p2": 0.1795,
+    "dist_to_stop_r": 1.573,
+    "dist_to_t1_r": 0.927,
+    "dist_to_t2_r": 2.427,
+    "horizon_pct_used": 53.3,
+    "p1": 0.3823,
+    "p2": 0.1911,
     "p3": null,
-    "move_r": 0.538,
+    "move_r": 0.573,
     "mfe_r": 0.823,
     "mae_r": -0.0
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-09",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 23,
-  "tau": 0.5111
+  "days_elapsed": 24,
+  "tau": 0.5333
 }
