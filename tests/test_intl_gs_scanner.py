@@ -682,6 +682,15 @@ def test_a16_no_section_title_rail_static():
                 body = re.search(re.escape(selector) + r"\{([^}]*)\}", block)
                 assert body and re.fullmatch(r"content:\s*none;?", body.group(1).strip()), selector
     assert not re.search(r"h2[^{{}]*::?(?:before|after)\s*\{[^}]*width", page)
+    # seat commission 2026-10-30 (ORCH-6 adjudication of review r2): the .act-h::before
+    # accent rail is deleted from templates/intl.html.j2 - deleted, never relocated.
+    # No rule whose selector ends in .act-h::before may remain in the template or in
+    # the rendered production /intl.html.
+    rendered = _production_html()
+    for source_name, source in (("template", page), ("rendered", rendered)):
+        for block in re.findall(r"<style[^>]*>(.*?)</style>", source, re.DOTALL):
+            for selector in re.findall(r"([^{}]+)\{", block):
+                assert not selector.strip().endswith(".act-h::before"), (source_name, selector)
     region = _w2a_css_region()
     assert not re.search(r"h2[^{]*::?(?:before|after)", region)
     # my region draws no bar of width or height <= 4px at all (A16 lane rule)
