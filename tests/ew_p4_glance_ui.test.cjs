@@ -199,3 +199,14 @@ test('the pre-existing rc-ec edge stripe is repaired, rc-ew uses even borders', 
   assert.ok(!rcEw.includes('rgb(') && !rcEw.includes('hsl('));
   assert.ok(rcEw.includes('.rc-ew-next:focus-visible,.rc-ew-study summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;}'));
 });
+
+test('repair wave B: separator, routes and a single both-fell sentence', () => {
+  const h = render('journey_b_both_fell', 'en');
+  assert.ok(h.includes(' · <span class="rc-ew-built">'), 'quality · built separator');
+  assert.ok(!h.includes('#rc-early-context'), 'no unregistered in-page route');
+  assert.ok(h.includes('href="#rc-events-mount"'), 'registered SC route');
+  assert.equal(h.split('Both fell; XLP fell less than XLK.').length - 1, 1, 'stated once');
+  // JSON.parse makes 2.0 === 2, so the JS glance cannot tell a float session
+  // count from an integer one; the Radar (Jinja) path enforces integers.
+  assert.equal(JSON.parse('{"s":2.0}').s, 2);
+});

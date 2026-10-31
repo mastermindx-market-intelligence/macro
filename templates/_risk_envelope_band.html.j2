@@ -192,7 +192,7 @@
         {% set _vn = _vals.get('numerator_return_pct') %}
         {% set _vd = _vals.get('denominator_return_pct') %}
         {% set _vr = _vals.get('ratio_return_pct') %}
-        {% if _ses is boolean or _ses is not number or _ses != 2 %}{% set _ew.fail = true %}
+        {% if _ses is boolean or _ses is not integer or _ses != 2 %}{% set _ew.fail = true %}
         {% elif not _vn is number or _vn is boolean or not (-1000000000000 < _vn < 1000000000000)
               or not _vd is number or _vd is boolean or not (-1000000000000 < _vd < 1000000000000)
               or not _vr is number or _vr is boolean or not (-1000000000000 < _vr < 1000000000000)
@@ -221,7 +221,7 @@
       {% if _wns.ok %}{% set _ew.win = _w %}{% set _ew.win_ok = true %}{% endif %}
     {% endif %}
     {% set _h = _ew_view.get('horizon_20s') %}
-    {% if _h is mapping and _h.get('sessions') is number and _h.get('sessions') is not boolean and _h.get('sessions') == 20 %}
+    {% if _h is mapping and _h.get('sessions') is integer and _h.get('sessions') is not boolean and _h.get('sessions') == 20 %}
       {% set _hns = namespace(ok=true) %}
       {% for _f in ('start', 'end') %}
         {% set _dv = _h.get(_f) %}
@@ -377,9 +377,9 @@
     <p class="gde-ew-head"><span class="gde-ew-scope" id="gde-ew-title"><span class="l-en">US Technology leadership</span><span class="l-zh">美国科技领涨</span></span> <span class="gde-ew-state"><span class="l-en">{{ _ew.word_en }}</span><span class="l-zh">{{ _ew.word_zh }}</span></span></p>
     <p class="gde-ew-what"><span class="l-en">{{ _ew.what_en }}</span><span class="l-zh">{{ _ew.what_zh }}</span></p>
     {% if _ew.state == 'corrected' %}<p class="gde-ew-note"><span class="l-en">Corrected; the original notice remains in history.</span><span class="l-zh">已更正；原通知仍保留在历史记录中。</span></p>{% endif %}
-    <p class="gde-ew-when"><span class="l-en">{{ _ew.when_en }} · {{ _ew.avail_note_en }} · Quality: {{ _ew.qual_en }}</span><span class="l-zh">{{ _ew.when_zh }} · {{ _ew.avail_note_zh }} · 质量：{{ _ew.qual_zh }}</span>{% if _ew.built_en %} <span class="gde-ew-built"><span class="l-en">{{ _ew.built_en|e }}</span><span class="l-zh">{{ _ew.built_zh|e }}</span></span>{% endif %}</p>
+    <p class="gde-ew-when"><span class="l-en">{{ _ew.when_en }} · {{ _ew.avail_note_en }} · Quality: {{ _ew.qual_en }}</span><span class="l-zh">{{ _ew.when_zh }} · {{ _ew.avail_note_zh }} · 质量：{{ _ew.qual_zh }}</span>{% if _ew.built_en %} · <span class="gde-ew-built"><span class="l-en">{{ _ew.built_en|e }}</span><span class="l-zh">{{ _ew.built_zh|e }}</span></span>{% endif %}</p>
     <p class="gde-ew-means"><span class="l-en">Watch only: this describes what happened, not what comes next.</span><span class="l-zh">仅供观察：描述已发生的变化，不代表后续走势。</span></p>
-    <a class="gde-ew-next" href="sector_central.html#moving"><span class="l-en">Review what changed</span><span class="l-zh">查看变化依据</span></a>
+    <a class="gde-ew-next" href="sector_central.html#rc-events-mount"><span class="l-en">Review what changed</span><span class="l-zh">查看变化依据</span></a>
   </div>
   <script type="application/json" id="gde-context-copy">{{ {'copy': _GDE_COPY, 'settled_stage': _stage}|tojson }}</script>
   <div class="gde-meta">
@@ -428,7 +428,7 @@
             {% set _rotation_label = _rotation_labels.get(_rotation.get('state')) if _rotation.get('usable') else none %}
             {% if _rotation_label %}
             <p class="gde-context-line"><span class="l-en">{{ _rotation_label[0] }} · {{ _rotation.get('as_of') }}.</span><span class="l-zh">{{ _rotation_label[1] }} · {{ _rotation.get('as_of') }}。</span></p>
-            {% else %}
+            {% elif _ew.state not in ('observed', 'reversal', 'corrected', 'partial', 'conflicting') %}
             <p class="gde-input-caveat"><span class="l-en">Rotation evidence is unavailable for this session. This does not establish a stable market.</span><span class="l-zh">本交易日的轮动依据不全，不能据此认定市场稳定。</span></p>
             {% endif %}
             <p class="gde-context-line"><span class="l-en">The macro backdrop and relative leadership describe different aspects of the market. Shared price or breadth inputs do not count as independent confirmation.</span><span class="l-zh">宏观背景与相对领涨结构描述市场的不同方面。共用的价格或广度数据不能重复计为独立确认。</span></p>
@@ -476,7 +476,7 @@
             {# ── EW-P4 D5/D6: what would undo it, and where to compare next. #}
             <p class="gde-disc-h"><span class="l-en">What would undo this</span><span class="l-zh">何种情况会推翻</span></p>
             <p class="gde-context-line"><span class="l-en">A later session that reverses the relative move, or a correction or withdrawal of this record. Corrections keep the original in history.</span><span class="l-zh">后续交易日出现反向相对变动，或本记录被更正或撤回。更正时保留原记录。</span></p>
-            <p class="gde-context-line"><span class="l-en">Next: </span><span class="l-zh">下一步：</span><a class="gde-ew-next" href="sector_central.html#moving"><span class="l-en">Compare horizons in Sector Central</span><span class="l-zh">在行业中心对比周期</span></a></p>
+            <p class="gde-context-line"><span class="l-en">Next: </span><span class="l-zh">下一步：</span><a class="gde-ew-next" href="sector_central.html#rc-events-mount"><span class="l-en">Compare horizons in Sector Central</span><span class="l-zh">在行业中心对比周期</span></a></p>
             {% endif %}
             {# ── EW-P4 §E study: on-demand record detail, native details/summary (keyboard + touch). #}
             <details class="gde-ew-study">
@@ -504,7 +504,7 @@
                 {% endif %}
                 <div><dt><span class="l-en">Immutable reference</span><span class="l-zh">不可变引用</span></dt><dd><span class="l-en">rotobs_ ids are content-addressed: the first 40 hex of SHA-256 over the record fingerprint and its predecessor. Lineage roots: {{ _ew.lineage | join(', ') | e if _ew.lineage else 'none' }}</span><span class="l-zh">rotobs_ 编号为内容寻址：记录指纹及其前驱的 SHA-256 前40位十六进制。来源链根：{{ _ew.lineage | join(', ') | e if _ew.lineage else '无' }}</span></dd></div>
                 <div><dt><span class="l-en">Rights</span><span class="l-zh">权利</span></dt><dd><span class="l-en">Derived comparison from daily closes on the approved price route; raw prices are not republished.</span><span class="l-zh">基于已核准价格数据源日收盘价的推导比较；不转载原始价格。</span></dd></div>
-                <div><dt><span class="l-en">Stable link</span><span class="l-zh">稳定链接</span></dt><dd><span class="tnum">{{ _ew.oid|e }}</span> · <a class="gde-ew-next" href="sector_central.html#moving"><span class="l-en">Sector Central</span><span class="l-zh">行业中心</span></a></dd></div>
+                <div><dt><span class="l-en">Stable link</span><span class="l-zh">稳定链接</span></dt><dd><span class="tnum">{{ _ew.oid|e }}</span> · <a class="gde-ew-next" href="sector_central.html#rc-events-mount"><span class="l-en">Sector Central</span><span class="l-zh">行业中心</span></a></dd></div>
               </dl>
               {% else %}
               <dl class="gde-ew-dl">
