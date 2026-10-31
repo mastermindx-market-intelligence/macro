@@ -2,7 +2,7 @@
  "schema": "us.prophet_entry_timing_w2_freeze/v1",
  "status": "FROZEN",
  "frozen_date": "2026-10-31",
- "freeze_commit": null,
+ "freeze_commit": "7cdea8919475900cc04404be5c7226dd67514cda",
  "registration": {
   "path": "research/prophet_v4/ENTRY_TIMING_W2_DESIGN_REGISTRATION_2026-10-31.md",
   "revision": 8,

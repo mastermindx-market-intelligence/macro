@@ -12,7 +12,7 @@ pinned EMPTY under the owner role; a later list applies from its own pin), the T
 (26 of 26 exact pairs hold the 120-session 3-day-bucket lookback through `t_disc − 1`: **T3 is in the P
 Holm family**, descriptive at R), and the R maturity session (**2026-11-19** = first session after the
 latest admissible T3 fill `t_disc + K + 1` plus H; observed T0/T1/T2 alone would give 2026-11-10). Freeze
-commit SHA: FREEZE_COMMIT_SHA_PENDING (written by the commit that follows the freeze record; the
+commit SHA: `7cdea8919475900cc04404be5c7226dd67514cda` (written by the commit that follows the freeze record; the
 `sha256_at_freeze` in the record is this file's digest at that freeze commit, before this line changed).
 No outcome, price, grade or paired-race surface has been read for the population it names. Authority:
 measurement design only. No trade, sizing, alert or capability authority follows from any result of this study.
