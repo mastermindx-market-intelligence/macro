@@ -2,7 +2,7 @@
 // INTL-GS-W2A (IM13) browser proof: the real intl.html through the W2A fixture
 // (production observation variant, abstain-all, specimen), in Chromium.
 // Mirrors tests/intl_gs_foundation_browser.test.cjs (same route/fixture idiom).
-const test = require('node:test');
+const {test, before} = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -11,6 +11,19 @@ const {chromium} = require('playwright');
 const root = path.resolve(__dirname, '..');
 
 const PAGES = {};
+
+// ORCH-6 browser fixture hardening (W2B fx4 lesson B11): fixtureHtml builds
+// each variant with a synchronous execFileSync python render inside
+// serveRoute, so the first page.goto's navigation timeout would also cover
+// the fixture build. Pre-warm all three variants in a node:test before hook,
+// outside any navigation timeout — the same one-line hoist main's
+// tests/intl_gs_dossier_browser.test.cjs already carries. No assertion,
+// timeout value or fixture content changes.
+before(() => {
+  fixtureHtml('prod');
+  fixtureHtml('abstain');
+  fixtureHtml('specimen');
+});
 
 function fixtureHtml(which) {
   if (PAGES[which]) return PAGES[which];
