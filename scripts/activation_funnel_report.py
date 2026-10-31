@@ -11,6 +11,11 @@ version, and the largest observed leak as a templated sentence. Same rows in, sa
 bytes out — there is no model, no wall clock, and no network unless --from-supabase
 is explicitly requested.
 
+The default preserves the legacy independent stage-activity counts. Use --ordered
+for a versioned observed-sequence report: explicit client occurrence times, strict
+action ordering within each recorded site/session, and disclosed timing gaps.
+Neither mode establishes causal, paid, or retention conversion.
+
 Input modes
 -----------
   --input rows.json          a JSON array of analytics_events rows (fixtures, exports)
@@ -166,9 +171,181 @@ def _largest_leak(counts: dict[str, int]) -> str:
             f"({pct}% continue, {drop} lost).")
 
 
+# This is an opt-in measurement over the existing events, not a new event or
+# identity authority. v1 remains unchanged for existing callers.
+ORDERED_REPORT_VERSION = "activation_funnel_report.ordered.v2"
+
+
+def _qualified_occurrence(row: dict) -> datetime | None:
+    """Use an explicit client timezone; never fabricate order from arrival time."""
+    raw = row.get("client_ts")
+    if not isinstance(raw, str) or not raw.strip():
+        return None
+    try:
+        value = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        if value.tzinfo is None or value.utcoffset() is None:
+            return None
+        return value.astimezone(timezone.utc)
+    except (ValueError, OverflowError):
+        return None
+
+
+def _ordered_stage(row: dict) -> int | None:
+    """Reuse the declared stages; saved counts require the collector's integer."""
+    if _is_value(row):
+        return 1
+    if _is_act(row):
+        return 2
+    if row.get("type") == "watchlist.saved":
+        meta = row.get("meta")
+        if (isinstance(meta, dict) and type(meta.get("symbol_count")) is int
+                and _is_save(row)):
+            return 3
+    return None
+
+
+def _ordered_counts(rows: list[dict], until: datetime) -> tuple[dict, dict, dict]:
+    """Count observed ordered prefixes, once per recorded (site, session_id).
+
+    Different stages at the same timestamp have unknown relative order. Advance
+    at most one stage per timestamp group; list order and UUID order are not
+    occurrence evidence. Earliest valid advancement finds an ordered subsequence
+    without requiring the first occurrence of every event to be useful.
+    """
+    groups: dict[tuple[str, str], list[dict]] = {}
+    diagnostics = {
+        "rows_without_recorded_session": 0,
+        "rows_with_unqualified_occurrence_time": 0,
+        "rows_with_occurrence_after_cutoff": 0,
+        "mixed_stage_timestamp_groups": 0,
+        "saved_rows_with_unqualified_count": 0,
+    }
+    for row in rows:
+        sid, site = row.get("session_id"), row.get("site")
+        if (not isinstance(sid, str) or not sid.strip()
+                or (site is not None and not isinstance(site, str))):
+            diagnostics["rows_without_recorded_session"] += 1
+            continue
+        groups.setdefault((site or "", sid), []).append(row)
+
+    activity = {name: 0 for name, _ in _STAGES}
+    ordered = dict(activity)
+    for session in groups.values():
+        activity["visit"] += 1
+        ordered["visit"] += 1  # Presence, not a claimed separate visit event.
+        active_stages: set[int] = set()
+        timeline: dict[datetime, set[int]] = {}
+        for row in session:
+            stage = _ordered_stage(row)
+            if row.get("type") == "watchlist.saved":
+                meta = row.get("meta")
+                if not isinstance(meta, dict) or type(meta.get("symbol_count")) is not int:
+                    diagnostics["saved_rows_with_unqualified_count"] += 1
+            if stage is None:
+                continue
+            active_stages.add(stage)
+            occurred = _qualified_occurrence(row)
+            if occurred is None:
+                diagnostics["rows_with_unqualified_occurrence_time"] += 1
+            elif occurred > until:
+                diagnostics["rows_with_occurrence_after_cutoff"] += 1
+            else:
+                timeline.setdefault(occurred, set()).add(stage)
+        for stage in active_stages:
+            activity[_STAGES[stage][0]] += 1
+        reached = 0
+        for occurred in sorted(timeline):
+            stages = timeline[occurred]
+            if len(stages) > 1:
+                diagnostics["mixed_stage_timestamp_groups"] += 1
+            if reached < 3 and reached + 1 in stages:
+                reached += 1
+        for stage in range(1, reached + 1):
+            ordered[_STAGES[stage][0]] += 1
+    return ordered, activity, diagnostics
+
+
+def _ordered_dropoff(counts: dict[str, int]) -> str:
+    eligible = []
+    for i in range(len(_STAGES) - 1):
+        a, b = _STAGES[i][0], _STAGES[i + 1][0]
+        if counts[a]:
+            eligible.append((counts[a] - counts[b], -i, a, b))
+    if not eligible:
+        return "No observed drop-off measurable: no stage has a denominator."
+    drop, _, a, b = max(eligible)
+    return (f"Largest observed drop-off: {a} -> {b}: {counts[a]} -> {counts[b]} "
+            f"recorded sessions; {drop} lack a qualifying next stage in the admitted rows. "
+            "This is not a causal attribution or a permanent-loss estimate.")
+
+
+def _build_ordered_report(admitted: list[dict], dropped: dict,
+                          since: datetime, until: datetime) -> dict:
+    counts, activity, diagnostics = _ordered_counts(admitted, until)
+    occurred = [ts for r in admitted if (ts := _qualified_occurrence(r))]
+    return {
+        "report": ORDERED_REPORT_VERSION,
+        "schema": SCHEMA_VERSION,
+        "filter_version": FILTER_VERSION,
+        "ingestion_cutoff": {"since": since.isoformat(), "until": until.isoformat()},
+        "occurrence_observed_max": max(occurred).isoformat() if occurred else None,
+        "rows_admitted": len(admitted),
+        "rows_dropped": dropped,
+        "stage_sessions": counts,
+        "activity_stage_sessions": activity,
+        "conversion": {
+            "intelligence_viewed_over_visit": _ratio(counts["intelligence_viewed"], counts["visit"]),
+            "personal_act_over_intelligence_viewed": _ratio(counts["personal_act"], counts["intelligence_viewed"]),
+            "watchlist_saved_over_personal_act": _ratio(counts["watchlist_saved"], counts["personal_act"]),
+        },
+        "largest_leak": _ordered_dropoff(counts),
+        "diagnostics": diagnostics,
+        "measurement": {
+            "unit": "recorded_site_session",
+            "session_key": ["site", "session_id"],
+            "cross_session_or_person_stitching": False,
+            "visit_definition": "any_admitted_row_with_recorded_session",
+            "order_clock": "client_ts_with_explicit_timezone",
+            "order_rule": "strictly_increasing_between_action_stages",
+            "clock_assurance": "client_reported_not_independently_verified",
+            "tie_rule": "no_inferred_order_within_a_timestamp_group",
+            "missing_occurrence_time": "activity_only_no_arrival_time_substitution",
+            "occurrence_upper_bound": until.isoformat(),
+            "coverage": "admitted_rows_only_no_complete_history_or_late_arrival_claim",
+            "interpretation": "observed_ordered_prefix_not_causal_paid_or_retention_conversion",
+            "estimate_kind": "supported_recorded_paths_not_all_actual_converters",
+        },
+    }
+
+
+def _ordered_markdown(rep: dict) -> str:
+    lines = [
+        f"# Observed ordered activation ({rep['report']})", "",
+        f"Ingestion window: {rep['ingestion_cutoff']['since']} to {rep['ingestion_cutoff']['until']}.",
+        "Unit: recorded site/session, not a resolved person or cross-device visit.",
+        "Order uses client timestamps with explicit timezones; tied times do not establish order.",
+        "Results cover admitted rows only, not complete journeys or causal attribution.", "",
+        "| Stage | Ordered prefix | Independent activity |", "|---|---:|---:|",
+    ]
+    for stage, _ in _STAGES:
+        lines.append(f"| {stage} | {rep['stage_sessions'][stage]} | {rep['activity_stage_sessions'][stage]} |")
+    lines += ["", "| Observed transition | Ratio |", "|---|---:|"]
+    for key, value in rep["conversion"].items():
+        lines.append(f"| {key} | {'null' if value is None else value} |")
+    lines += ["", rep["largest_leak"], "",
+              f"Timing/input diagnostics: {json.dumps(rep['diagnostics'], sort_keys=True)}", ""]
+    return "\n".join(lines)
+
+
+
 def build_report(rows: list[dict], since: datetime, until: datetime,
-                 internal_users: set[str], internal_visitors: set[str]) -> dict:
+                 internal_users: set[str], internal_visitors: set[str], *,
+                 ordered: bool = False) -> dict:
+    if ordered and until < since:
+        raise ValueError("until precedes since")
     admitted, dropped = _admit(rows, since, until, internal_users, internal_visitors)
+    if ordered:
+        return _build_ordered_report(admitted, dropped, since, until)
     per = _sessions_per_stage(admitted)
     counts = {stage: len(per[stage]) for stage, _ in _STAGES}
     occurred = [ts for r in admitted if (ts := _row_ts(r, "client_ts"))]
@@ -221,6 +398,8 @@ def _fetch_supabase(since: datetime, until: datetime) -> list[dict]:
 
 
 def _to_markdown(rep: dict) -> str:
+    if rep.get("report") == ORDERED_REPORT_VERSION:
+        return _ordered_markdown(rep)
     lines = [
         f"# Activation funnel report ({rep['report']})",
         "",
@@ -249,6 +428,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--until", required=True, help="ingestion cutoff end, ISO-8601 UTC")
     ap.add_argument("--internal-user", action="append", default=[])
     ap.add_argument("--internal-visitor", action="append", default=[])
+    ap.add_argument("--ordered", action="store_true",
+                    help="opt in to occurrence-ordered recorded-session counts; v1 remains default")
     ap.add_argument("--out", help="write JSON here (default stdout)")
     ap.add_argument("--markdown", help="also write a Markdown rendering here")
     args = ap.parse_args(argv)
@@ -266,7 +447,7 @@ def main(argv: list[str] | None = None) -> int:
         rows = _fetch_supabase(since, until)
 
     rep = build_report(rows, since, until,
-                       set(args.internal_user), set(args.internal_visitor))
+                       set(args.internal_user), set(args.internal_visitor), ordered=args.ordered)
     blob = json.dumps(rep, indent=2, sort_keys=True)
     if args.out:
         open(args.out, "w", encoding="utf-8").write(blob + "\n")
