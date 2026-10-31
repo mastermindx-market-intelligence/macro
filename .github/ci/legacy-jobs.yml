@@ -20425,6 +20425,11 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      # EW-P4.T1 descriptive observation glance (GD-EW-P4-B1): the node suite
+      # reads the production function and the shared fixtures.
+      - "templates/rotation_events.js"
+      - "tests/ew_p4_glance_ui.test.cjs"
+      - "tests/fixtures/ew_p4_observation/**"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20435,6 +20440,8 @@ jobs:
         run: pip install pytest pandas numpy scipy pyyaml pyarrow
       - name: ratio lens test suite
         run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_observation_state.py tests/test_rotation_observation_builder.py tests/test_rotation_role_retention.py tests/test_rotation_flow_pit.py -q
+      - name: ew-p4 glance node test
+        run: node --test tests/ew_p4_glance_ui.test.cjs
 
   leadership-rotation-contract:
     if: ${{ false }}
@@ -42279,6 +42286,15 @@ jobs:
       - "tests/test_mag7_tape_strip.py"
       - "tests/test_theme_tape.py"
       - "tests/test_us_board_priority_ui.py"
+      # EW-P4.T1 descriptive observation UI (GD-EW-P4-B1): the suite reads the
+      # band templates, the frozen lib contract it mirrors, the Sector Central
+      # glance source it shares CSS discipline with, and shared fixtures.
+      - "tests/test_ew_p4_descriptive_ui.py"
+      - "tests/fixtures/ew_p4_observation/**"
+      - "lib/rotation_observation_notification.py"
+      - "templates/_risk_envelope_band.html.j2"
+      - "templates/_risk_envelope_band.css.j2"
+      - "templates/rotation_events.js"
       # Templates the renders load by name.
       - "templates/_macro_sector_desk.html.j2"
       - "templates/dashboard.html.j2"
@@ -42479,7 +42495,8 @@ jobs:
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_vsb_surface.py
-          tests/test_macro_mtf_sort_key.py -q
+          tests/test_macro_mtf_sort_key.py
+          tests/test_ew_p4_descriptive_ui.py -q
 
   options-skew-engine:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free

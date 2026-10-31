@@ -64,10 +64,278 @@
 {% set _hz_ink = {'NONE': 'var(--ink-ok)', 'FRAGILE': 'var(--ink-warn)', 'TRANSMITTING': 'var(--ink-act)', 'BREAKDOWN': 'var(--ink-act)'}.get(_stage, 'var(--ink-3)') %}
 {% set _hazard = _GDE_COPY.hazard.get(_stage, _GDE_COPY.unknown) %}
 {% if not _ms.get('usable') %}{% set _ms_ink = 'var(--ink-3)' %}{% endif %}
+{# ── GD-EW-P4.T1 descriptive early-warning observation (consumer-only mirror).
+   Validates the optional risk_envelope.rotation_context.latest_observation view
+   wrapper against the frozen macro.rotation_observation.v1 contract (V1-V7, the
+   lib/rotation_observation_notification.py mirror) plus the stricter engine id
+   rule (rotobs_ + 40 lowercase hex), then applies the frozen state precedence.
+   Envelope verdicts (measured_state, hazard_summary, leadership) NEVER feed this
+   state: a quiet market must not hide a qualified observation; a fragile market
+   must not create one. #}
+{% set _EW_HEX = '0123456789abcdef' %}
+{% set _EW_DIGITS = '0123456789' %}
+{% set _EW_SYM_TAIL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.^=-' %}
+{% set _EW_SYM_HEAD = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' %}
+{% set _EW_STATE_WORDS = {
+  'observed': ('Observed', '已观察到'), 'reversal': ('Reversal', '方向反转'),
+  'corrected': ('Corrected', '已更正'), 'withdrawn': ('Withdrawn', '已撤回'),
+  'stale': ('Stale', '已过时'), 'unavailable': ('Unavailable', '暂不可用'),
+  'partial': ('Partial', '证据不完整'), 'conflicting': ('Conflicting horizons', '周期分歧'),
+  'unreadable': ('Unreadable', '无法读取'), 'loading': ('Checking', '核对中') } %}
+{% set _EW_MONTHS_EN = ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec') %}
+{% set _EW_MONTHS_ZH = ('1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月') %}
+{% set _ew_session = _re.get('source_session') if _re.get('source_session') is string else '' %}
+{% set _ew = namespace(has=false, fail=false, kind='', oid='', prev=none, num='', den='', pair='',
+                       event='', obs_at='', not_after='', n=none, d=none, r=none,
+                       win=none, win_ok=false, hz=none, hz_ok=false, hz_r=none,
+                       avail=none, cov=none, lineage=[], previous=none, basis='dividend_adjusted_close',
+                       state='unavailable', what_en='', what_zh='', legs=false,
+                       when_en='', when_zh='', built_en='', built_zh='',
+                       qual_en='', qual_zh='', avail_note_en='', avail_note_zh='',
+                       session_en='', session_zh='', event_en='', event_zh='',
+                       rot_en='', rot_zh='', r_s='', r_abs_s='') %}
+{% set _ew_view = _rotation.get('latest_observation') if _rotation is mapping else none %}
+{% if _ew_view is mapping %}{% set _ew.has = true %}{% endif %}
+{# short date rendering (Oct 30 / 10月30日); unparseable values fall back to the raw string #}
+{% if _ew_session|length == 10 and _ew_session[4:5] == '-' and _ew_session[7:8] == '-' %}
+  {% set _ew.session_en = _EW_MONTHS_EN[_ew_session[5:7]|int - 1] ~ ' ' ~ (_ew_session[8:10]|int) %}
+  {% set _ew.session_zh = _ew_session[5:7]|int ~ '月' ~ (_ew_session[8:10]|int) ~ '日' %}
+{% else %}{% set _ew.session_en = _ew_session %}{% set _ew.session_zh = _ew_session %}{% endif %}
+{% if _rotation is mapping and (_rotation.get('as_of') or '')|length == 10 and _rotation.get('as_of')[4:5] == '-' and _rotation.get('as_of')[7:8] == '-' %}
+  {% set _ew.rot_en = _EW_MONTHS_EN[_rotation.get('as_of')[5:7]|int - 1] ~ ' ' ~ (_rotation.get('as_of')[8:10]|int) %}
+  {% set _ew.rot_zh = _rotation.get('as_of')[5:7]|int ~ '月' ~ (_rotation.get('as_of')[8:10]|int) ~ '日' %}
+{% elif _rotation is mapping %}
+  {% set _ew.rot_en = _rotation.get('as_of') or '' %}{% set _ew.rot_zh = _rotation.get('as_of') or '' %}
+{% endif %}
+{% if _ew.has %}
+  {% set _n = _ew_view.get('notification') %}
+  {% set _ew.oid = _n.get('observation_id') if _n is mapping else '' %}
+  {# V1 identity triple #}
+  {% if _n is mapping and _n.get('source') == 'macro.rotation_observation.v1'
+        and _n.get('category') == 'sector_rotation_relative'
+        and _n.get('authority') == 'notification_only' %}
+  {% else %}{% set _ew.fail = true %}{% endif %}
+  {# V2 kind #}
+  {% if not _ew.fail %}{% set _ew.kind = _n.get('kind') %}
+    {% if _ew.kind not in ('observed_change', 'reversal', 'correction', 'data_withdrawal') %}{% set _ew.fail = true %}{% endif %}
+  {% endif %}
+  {# V3 ids — stricter than the lib: the engine mints rotobs_ + 40 lowercase hex #}
+  {% if not _ew.fail %}
+    {% set _idns = namespace(ok=false) %}
+    {% if _ew.oid is string and _ew.oid.startswith('rotobs_') and _ew.oid|length == 47 %}
+      {% set _idns.ok = true %}
+      {% for _ch in _ew.oid[7:] %}{% if _ch not in _EW_HEX %}{% set _idns.ok = false %}{% endif %}{% endfor %}
+    {% endif %}
+    {% if not _idns.ok %}{% set _ew.fail = true %}
+    {% else %}
+      {% set _pv = _n.get('previous_observation_id') %}
+      {% if _pv is none %}
+        {% if _ew.kind != 'observed_change' %}{% set _ew.fail = true %}{% endif %}
+      {% elif _pv is string and _pv.startswith('rotobs_') and _pv|length == 47 %}
+        {% set _pvns = namespace(ok=true) %}
+        {% for _ch in _pv[7:] %}{% if _ch not in _EW_HEX %}{% set _pvns.ok = false %}{% endif %}{% endfor %}
+        {% if not _pvns.ok or _pv == _ew.oid %}{% set _ew.fail = true %}{% else %}{% set _ew.prev = _pv %}{% endif %}
+      {% else %}{% set _ew.fail = true %}{% endif %}
+    {% endif %}
+  {% endif %}
+  {# V4 pair identity #}
+  {% if not _ew.fail %}
+    {% set _nm = _n.get('num') %}{% set _dn = _n.get('den') %}
+    {% set _symns = namespace(ok=true) %}
+    {% for _s in (_nm, _dn) %}
+      {% if _symns.ok %}
+        {% if _s is string and _s|length >= 1 and _s|length <= 20 and _s[0] in _EW_SYM_HEAD %}
+          {% for _ch in _s %}{% if _ch not in _EW_SYM_TAIL %}{% set _symns.ok = false %}{% endif %}{% endfor %}
+        {% else %}{% set _symns.ok = false %}{% endif %}
+      {% endif %}
+    {% endfor %}
+    {% if not _symns.ok or _nm == _dn %}{% set _ew.fail = true %}
+    {% else %}
+      {% set _ew.num = _nm %}{% set _ew.den = _dn %}
+      {% set _pid = _n.get('pair_id') %}
+      {% if _pid is string and _pid|length >= 1 and _pid|length <= 128 %}{% set _ew.pair = _pid %}
+      {% else %}{% set _ew.fail = true %}{% endif %}
+    {% endif %}
+  {% endif %}
+  {# V5 calendar grammar #}
+  {% if not _ew.fail %}
+    {% set _evd = _n.get('event_as_of') %}
+    {% set _dns = namespace(ok=false) %}
+    {% if _evd is string and _evd|length == 10 and _evd[4:5] == '-' and _evd[7:8] == '-' %}
+      {% set _dns.ok = true %}
+      {% for _ch in (_evd[0:4] ~ _evd[5:7] ~ _evd[8:10]) %}{% if _ch not in _EW_DIGITS %}{% set _dns.ok = false %}{% endif %}{% endfor %}
+    {% endif %}
+    {% if not _dns.ok %}{% set _ew.fail = true %}
+    {% else %}
+      {% set _ew.event = _evd %}
+      {% set _ew.event_en = _EW_MONTHS_EN[_evd[5:7]|int - 1] ~ ' ' ~ (_evd[8:10]|int) %}
+      {% set _ew.event_zh = _evd[5:7]|int ~ '月' ~ (_evd[8:10]|int) ~ '日' %}
+      {% set _oa = _n.get('observed_at') %}{% set _na = _n.get('not_after') %}
+      {% if _oa is string and _oa|length >= 20 and (_oa.endswith('+00:00') or _oa.endswith('Z'))
+            and _na is string and _na|length >= 20 and (_na.endswith('+00:00') or _na.endswith('Z'))
+            and _na[0:19] > _oa[0:19] %}
+        {% set _ew.obs_at = _oa %}{% set _ew.not_after = _na %}
+      {% else %}{% set _ew.fail = true %}{% endif %}
+    {% endif %}
+  {% endif %}
+  {# V6/V7 measured values vs withdrawal #}
+  {% if not _ew.fail %}
+    {% set _sa = _n.get('source_as_of') %}{% set _vals = _n.get('values') %}
+    {% if _ew.kind == 'data_withdrawal' %}
+      {% if _vals is not none %}{% set _ew.fail = true %}
+      {% elif _sa is not none and (not _sa is string or _sa > _ew.event) %}{% set _ew.fail = true %}
+      {% endif %}
+    {% else %}
+      {% if _sa != _ew.event or _vals is not mapping %}{% set _ew.fail = true %}
+      {% else %}
+        {% set _ses = _vals.get('sessions') %}
+        {% set _vn = _vals.get('numerator_return_pct') %}
+        {% set _vd = _vals.get('denominator_return_pct') %}
+        {% set _vr = _vals.get('ratio_return_pct') %}
+        {% if _ses is boolean or _ses is not number or _ses != 2 %}{% set _ew.fail = true %}
+        {% elif not _vn is number or _vn is boolean or not (-1000000000000 < _vn < 1000000000000)
+              or not _vd is number or _vd is boolean or not (-1000000000000 < _vd < 1000000000000)
+              or not _vr is number or _vr is boolean or not (-1000000000000 < _vr < 1000000000000)
+              or not (_vn > -100) or not (_vd > -100) %}
+          {% set _ew.fail = true %}
+        {% elif (((1 + _vn/100) / (1 + _vd/100) - 1) * 100 - _vr)|abs > 0.000001 %}{% set _ew.fail = true %}
+        {% else %}
+          {% set _ew.n = _vn %}{% set _ew.d = _vd %}{% set _ew.r = _vr %}
+          {% set _ew.r_s = ('+' if _vr > 0 else '') ~ '%.2f'|format(_vr) %}
+          {% set _ew.r_abs_s = '%.2f'|format(_vr|abs) %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+  {# V8 windows: malformed ones are ABSENT (partial), never a malformed observation #}
+  {% if not _ew.fail %}
+    {% set _w = _ew_view.get('window_2s') %}
+    {% if _w is mapping %}
+      {% set _wns = namespace(ok=true) %}
+      {% for _f in ('start', 'end') %}
+        {% set _dv = _w.get(_f) %}
+        {% if _dv is string and _dv|length == 10 and _dv[4:5] == '-' and _dv[7:8] == '-' %}
+          {% for _ch in (_dv[0:4] ~ _dv[5:7] ~ _dv[8:10]) %}{% if _ch not in _EW_DIGITS %}{% set _wns.ok = false %}{% endif %}{% endfor %}
+        {% else %}{% set _wns.ok = false %}{% endif %}
+      {% endfor %}
+      {% if _wns.ok %}{% set _ew.win = _w %}{% set _ew.win_ok = true %}{% endif %}
+    {% endif %}
+    {% set _h = _ew_view.get('horizon_20s') %}
+    {% if _h is mapping and _h.get('sessions') is number and _h.get('sessions') is not boolean and _h.get('sessions') == 20 %}
+      {% set _hns = namespace(ok=true) %}
+      {% for _f in ('start', 'end') %}
+        {% set _dv = _h.get(_f) %}
+        {% if _dv is string and _dv|length == 10 and _dv[4:5] == '-' and _dv[7:8] == '-' %}
+          {% for _ch in (_dv[0:4] ~ _dv[5:7] ~ _dv[8:10]) %}{% if _ch not in _EW_DIGITS %}{% set _hns.ok = false %}{% endif %}{% endfor %}
+        {% else %}{% set _hns.ok = false %}{% endif %}
+      {% endfor %}
+      {% set _hn = _h.get('numerator_return_pct') %}{% set _hd = _h.get('denominator_return_pct') %}{% set _hr = _h.get('ratio_return_pct') %}
+      {% if not _hns.ok
+            or not _hn is number or _hn is boolean or not (-1000000000000 < _hn < 1000000000000)
+            or not _hd is number or _hd is boolean or not (-1000000000000 < _hd < 1000000000000)
+            or not _hr is number or _hr is boolean or not (-1000000000000 < _hr < 1000000000000)
+            or not (_hd > -100) %}
+        {% set _hns.ok = false %}
+      {% elif (((1 + _hn/100) / (1 + _hd/100) - 1) * 100 - _hr)|abs > 0.000001 %}{% set _hns.ok = false %}
+      {% endif %}
+      {% if _hns.ok %}{% set _ew.hz = _h %}{% set _ew.hz_ok = true %}{% set _ew.hz_r = _hr %}{% endif %}
+    {% endif %}
+    {% set _ew.avail = _ew_view.get('availability') if _ew_view.get('availability') is mapping else none %}
+    {% set _ew.cov = _ew_view.get('coverage') if _ew_view.get('coverage') is mapping else none %}
+    {% set _ew.lineage = _ew_view.get('lineage_roots') if _ew_view.get('lineage_roots') is iterable and _ew_view.get('lineage_roots') is not string else [] %}
+    {% set _ew.previous = _ew_view.get('previous') if _ew_view.get('previous') is mapping else none %}
+    {% set _ew.basis = _ew_view.get('basis') or 'dividend_adjusted_close' %}
+    {# frozen §B state precedence #}
+    {% if _ew.event > _ew_session %}{% set _ew.state = 'unreadable' %}
+    {% elif _ew.kind == 'data_withdrawal' %}{% set _ew.state = 'withdrawn' %}
+    {% elif _ew.event < _ew_session %}{% set _ew.state = 'stale' %}
+    {% elif _ew.kind == 'correction' %}{% set _ew.state = 'corrected' %}
+    {% elif not _ew.win_ok or _ew.win.get('end') != _ew.event or not _ew.hz_ok %}{% set _ew.state = 'partial' %}
+    {% elif (_ew.r > 0) != (_ew.hz_r > 0) or (_ew.r == 0) != (_ew.hz_r == 0) %}{% set _ew.state = 'conflicting' %}
+    {% elif _ew.kind == 'reversal' %}{% set _ew.state = 'reversal' %}
+    {% else %}{% set _ew.state = 'observed' %}{% endif %}
+  {% endif %}
+  {% if _ew.fail %}{% set _ew.state = 'unreadable' %}{% endif %}
+{% else %}
+  {# no observation: scoped unavailability, never a market verdict #}
+  {% if _rotation is not mapping %}{% set _ew.state = 'unavailable' %}
+  {% elif _rotation.get('coverage') == 'STALE' or (_rotation.get('as_of') or '') < _ew_session %}{% set _ew.state = 'stale' %}
+  {% else %}{% set _ew.state = 'unavailable' %}{% endif %}
+{% endif %}
+{% set _ew_words = _EW_STATE_WORDS.get(_ew.state, _EW_STATE_WORDS.get('unavailable')) %}
+{% set _ew.word_en = _ew_words[0] %}{% set _ew.word_zh = _ew_words[1] %}
+{% if _ew.state in ('observed', 'reversal', 'corrected', 'conflicting') or (_ew.state == 'partial' and _ew.win_ok and _ew.win.get('end') == _ew.event) %}
+  {% set _ew.legs = true %}
+{% endif %}
+{% if _ew.legs %}
+  {% if _ew.r > 0 and _ew.n < 0 and _ew.d < 0 %}
+    {% set _ew.what_en = 'Both fell; ' ~ _ew.num ~ ' fell less than ' ~ _ew.den ~ '.' %}
+    {% set _ew.what_zh = '两者都下跌；' ~ _ew.num ~ '跌幅小于' ~ _ew.den ~ '。' %}
+  {% elif _ew.r < 0 and _ew.n > 0 and _ew.d > 0 %}
+    {% set _ew.what_en = 'Both rose; ' ~ _ew.num ~ ' rose less than ' ~ _ew.den ~ '.' %}
+    {% set _ew.what_zh = '两者都上涨；' ~ _ew.num ~ '涨幅小于' ~ _ew.den ~ '。' %}
+  {% elif _ew.r > 0 %}
+    {% set _ew.what_en = _ew.num ~ ' outperformed ' ~ _ew.den ~ ' by ' ~ _ew.r_s ~ '% over two sessions.' %}
+    {% set _ew.what_zh = '两个交易日内，' ~ _ew.num ~ '相对' ~ _ew.den ~ '跑赢' ~ _ew.r_s ~ '%。' %}
+  {% elif _ew.r < 0 %}
+    {% set _ew.what_en = _ew.num ~ ' trailed ' ~ _ew.den ~ ' by ' ~ _ew.r_abs_s ~ '% over two sessions.' %}
+    {% set _ew.what_zh = '两个交易日内，' ~ _ew.num ~ '相对' ~ _ew.den ~ '落后' ~ _ew.r_abs_s ~ '%。' %}
+  {% else %}
+    {% set _ew.what_en = _ew.num ~ ' and ' ~ _ew.den ~ ' moved together over two sessions.' %}
+    {% set _ew.what_zh = '两个交易日内，' ~ _ew.num ~ '与' ~ _ew.den ~ '同步变动。' %}
+  {% endif %}
+  {% if _ew.state == 'reversal' %}
+    {% set _ew.what_en = 'Reversal: ' ~ _ew.what_en %}{% set _ew.what_zh = '方向反转：' ~ _ew.what_zh %}
+  {% endif %}
+{% elif _ew.state == 'withdrawn' %}
+  {% set _ew.what_en = 'Evidence for ' ~ _ew.num ~ ' vs ' ~ _ew.den ~ ' was withdrawn on ' ~ _ew.event_en ~ '.' %}
+  {% set _ew.what_zh = _ew.num ~ '对' ~ _ew.den ~ '的依据已于' ~ _ew.event_zh ~ '撤回。' %}
+{% elif _ew.state == 'stale' and _ew.has and not _ew.fail %}
+  {% set _ew.what_en = 'Latest observation is from ' ~ _ew.event_en ~ ', before ' ~ _ew.session_en ~ '.' %}
+  {% set _ew.what_zh = '最新观察来自' ~ _ew.event_zh ~ '，早于' ~ _ew.session_zh ~ '。' %}
+{% elif _ew.state == 'stale' %}
+  {% set _ew.what_en = 'Rotation data unavailable for ' ~ _ew.session_en ~ '; latest is ' ~ _ew.rot_en ~ '.' %}
+  {% set _ew.what_zh = _ew.session_zh ~ '轮动依据暂不可用；最新为' ~ _ew.rot_zh ~ '。' %}
+{% elif _ew.state == 'unreadable' %}
+  {% set _ew.what_en = 'Rotation record failed checks and is not shown.' %}
+  {% set _ew.what_zh = '轮动记录未通过校验，未予显示。' %}
+{% elif _ew.state == 'partial' %}
+  {% set _ew.what_en = 'Partial evidence for ' ~ _ew.num ~ ' vs ' ~ _ew.den ~ '; ratio withheld.' %}
+  {% set _ew.what_zh = _ew.num ~ '对' ~ _ew.den ~ '证据不完整；比值暂不显示。' %}
+{% else %}
+  {% set _ew.what_en = 'Rotation data unavailable — not proof of stability.' %}
+  {% set _ew.what_zh = '轮动依据暂不可用，不代表市场稳定。' %}
+{% endif %}
+{# how-current + secondary clock/built line #}
+{% if _ew.has and not _ew.fail %}
+  {% set _ew.when_en = 'Source session ' ~ _ew.event_en %}
+  {% set _ew.when_zh = '数据交易日' ~ _ew.event_zh %}
+  {% if _ew.avail is mapping and _ew.avail.get('status') == 'VERIFIED' %}
+    {% set _ew.avail_note_en = 'availability verified' %}{% set _ew.avail_note_zh = '可用时间已核实' %}
+  {% else %}
+    {% set _ew.avail_note_en = 'First public availability not verified' %}{% set _ew.avail_note_zh = '首次公开可用时间尚未核实' %}
+  {% endif %}
+  {% set _ew.built_en = 'Observed ' ~ (_ew.obs_at[0:16]|replace('T', ' ')) ~ ' UTC' %}
+  {% set _ew.built_zh = '观察于 ' ~ (_ew.obs_at[0:16]|replace('T', ' ')) ~ ' UTC' %}
+{% else %}
+  {% set _ew.when_en = 'Source session ' ~ _ew.rot_en %}
+  {% set _ew.when_zh = '数据交易日' ~ _ew.rot_zh %}
+  {% set _ew.avail_note_en = 'First public availability not verified' %}{% set _ew.avail_note_zh = '首次公开可用时间尚未核实' %}
+  {% if _rotation is mapping and (_rotation.get('source_clock_receipt') or none) is mapping and _rotation.get('source_clock_receipt').get('generated_utc') %}
+    {% set _ew.built_en = 'Rotation clock ' ~ _rotation.get('source_clock_receipt').get('generated_utc') %}
+    {% set _ew.built_zh = '轮动时钟 ' ~ _rotation.get('source_clock_receipt').get('generated_utc') %}
+  {% endif %}
+{% endif %}
+{% if _ew.state == 'observed' %}
+  {% set _ew.qual_en = 'Complete' %}{% set _ew.qual_zh = '完整' %}
+{% else %}
+  {% set _ew.qual_en = _ew.word_en %}{% set _ew.qual_zh = _ew.word_zh %}
+{% endif %}
 <section class="riskdlg-context" id="risk-envelope-band" aria-labelledby="gde-title"
          data-bundle-id="{{ _re.get('bundle_id') or '' }}" data-settled-session="{{ _re.get('source_session') or '' }}" data-coherence="{{ _coh or '' }}">
   <div class="gde-head">
     <h3 id="gde-title"><span class="l-en">Market internals</span><span class="l-zh">市场内部</span></h3>
+    <span class="gde-scope"><span class="l-en">Broad US market</span><span class="l-zh">美国大盘</span></span>
     <span class="gde-coherence">
       {% if _coh == 'CONTRADICTORY' %}<span class="l-en">Signals diverge</span><span class="l-zh">信号分歧</span>
       {% elif _coh == 'ALIGNED' %}<span class="l-en">Signals align</span><span class="l-zh">信号一致</span>
@@ -103,6 +371,16 @@
   {% endfor %}
   {% if _causes.rows %}<p class="gde-causes"><span class="l-en">{% for row in _causes.rows %}{{ row[0] }}{% if not loop.last %} · {% endif %}{% endfor %}</span><span class="l-zh">{% for row in _causes.rows %}{{ row[1] }}{% if not loop.last %} · {% endif %}{% endfor %}</span></p>{% endif %}
   {% if _ms_detail.get('any_input_stale') or (_ns.ms and _ns.ms.coverage != 'FRESH') %}<p class="gde-input-caveat"><span class="l-en">{{ _GDE_COPY.older_trend[0] }}</span><span class="l-zh">{{ _GDE_COPY.older_trend[1] }}</span></p>{% endif %}
+  {# ── EW-P4.T1 glance: five-second descriptive read, visible without opening anything.
+     Describes what happened; never a forecast, odds, or sizing. #}
+  <div class="gde-ew" id="gde-ew" role="group" aria-labelledby="gde-ew-title" data-ew-state="{{ _ew.state }}" data-ew-scope="tech_leadership" data-observation-id="{{ _ew.oid|e if _ew.has else '' }}">
+    <p class="gde-ew-head"><span class="gde-ew-scope" id="gde-ew-title"><span class="l-en">US Technology leadership</span><span class="l-zh">美国科技领涨</span></span> <span class="gde-ew-state"><span class="l-en">{{ _ew.word_en }}</span><span class="l-zh">{{ _ew.word_zh }}</span></span></p>
+    <p class="gde-ew-what"><span class="l-en">{{ _ew.what_en }}</span><span class="l-zh">{{ _ew.what_zh }}</span></p>
+    {% if _ew.state == 'corrected' %}<p class="gde-ew-note"><span class="l-en">Corrected; the original notice remains in history.</span><span class="l-zh">已更正；原通知仍保留在历史记录中。</span></p>{% endif %}
+    <p class="gde-ew-when"><span class="l-en">{{ _ew.when_en }} · {{ _ew.avail_note_en }} · Quality: {{ _ew.qual_en }}</span><span class="l-zh">{{ _ew.when_zh }} · {{ _ew.avail_note_zh }} · 质量：{{ _ew.qual_zh }}</span>{% if _ew.built_en %} <span class="gde-ew-built"><span class="l-en">{{ _ew.built_en|e }}</span><span class="l-zh">{{ _ew.built_zh|e }}</span></span>{% endif %}</p>
+    <p class="gde-ew-means"><span class="l-en">Watch only: this describes what happened, not what comes next.</span><span class="l-zh">仅供观察：描述已发生的变化，不代表后续走势。</span></p>
+    <a class="gde-ew-next" href="sector_central.html#moving"><span class="l-en">Review what changed</span><span class="l-zh">查看变化依据</span></a>
+  </div>
   <script type="application/json" id="gde-context-copy">{{ {'copy': _GDE_COPY, 'settled_stage': _stage}|tojson }}</script>
   <div class="gde-meta">
     <span class="gde-stamp"><span class="l-en">Settled</span><span class="l-zh">收盘</span> {{ _re.get('source_session') or '—' }}</span>
@@ -133,6 +411,17 @@
   <details class="gde-disc">
     <summary><span class="l-en">Settled evidence · {{ _prov | length }} sources</span><span class="l-zh">收盘依据 · {{ _prov | length }} 个来源</span></summary>
     <div class="gde-disc-body">
+          {# ── EW-P4 D1: the two market reads, separately scoped and sourced, so the
+             rotation observation below never borrows their authority. #}
+          <div class="gde-ew-brief-h">
+            <h4 class="gde-disc-h"><span class="l-en">Market trend</span><span class="l-zh">市场趋势</span></h4>
+            <p class="gde-context-line"><span class="l-en">{% if _ms.get('usable') and _ms.get('verdict') in _labels %}{{ _ms_detail.get('state_label_en') or _trend[0] }}{% else %}Unavailable{% endif %} · Broad US market · Source: Market state · Session {{ _ns.ms.as_of if _ns.ms and _ns.ms.as_of else '—' }} · Quality: {{ _GDE_COPY.coverage.get(_ns.ms.coverage if _ns.ms else none, _GDE_COPY.coverage.MISSING)[0] if _ns.ms else _GDE_COPY.coverage.MISSING[0] }}</span><span class="l-zh">{% if _ms.get('usable') and _ms.get('verdict') in _labels %}{{ _ms_detail.get('state_label_zh') or _trend[1] }}{% else %}暂无读数{% endif %} · 美国大盘 · 来源：市场状态 · 数据交易日{{ _ns.ms.as_of if _ns.ms and _ns.ms.as_of else '—' }} · 质量：{{ _GDE_COPY.coverage.get(_ns.ms.coverage if _ns.ms else none, _GDE_COPY.coverage.MISSING)[1] if _ns.ms else _GDE_COPY.coverage.MISSING[1] }}</span></p>
+          </div>
+          <div class="gde-ew-brief-h">
+            <h4 class="gde-disc-h"><span class="l-en">Transition fragility</span><span class="l-zh">转折脆弱度</span></h4>
+            {% set _hz_prov = _prov | selectattr('role', 'equalto', 'hazard_evidence') | selectattr('hazard_stage', 'equalto', _stage) | list %}
+            <p class="gde-context-line"><span class="l-en">{{ _hazard[0] }} · Broad US market · Sources: {{ _hz_prov | map(attribute='label_en') | join(', ') or '—' }} · Session {{ (_hz_prov | first).as_of if _hz_prov else '—' }} · Quality: {{ _GDE_COPY.coverage.get(((_hz_prov | first).coverage if _hz_prov else none), _GDE_COPY.coverage.MISSING)[0] }}</span><span class="l-zh">{{ _hazard[1] }} · 美国大盘 · 来源：{{ _hz_prov | map(attribute='label_zh') | join('、') or '—' }} · 数据交易日{{ (_hz_prov | first).as_of if _hz_prov else '—' }} · 质量：{{ _GDE_COPY.coverage.get(((_hz_prov | first).coverage if _hz_prov else none), _GDE_COPY.coverage.MISSING)[1] }}</span></p>
+          </div>
           {% if _rotation or _confluence or _transition %}
           <div id="gde-rotation-context" data-context-session="{{ _rotation.get('as_of') or '' }}">
             <p class="gde-disc-h"><span class="l-en">Leadership and risk · settled evidence</span><span class="l-zh">领涨变化与风险 · 收盘依据</span></p>
@@ -153,6 +442,77 @@
             <p class="gde-context-line"><span class="l-en">Last recorded backdrop change: {{ _labels[_before.get('verdict')][0] }} → {{ _labels[_after.get('verdict')][0] }} · {{ _after.get('asof') or _after.get('as_of') or _after.get('source_session') or 'date unavailable' }}.</span><span class="l-zh">最近记录的宏观判读变化：{{ _labels[_before.get('verdict')][1] }} → {{ _labels[_after.get('verdict')][1] }} · {{ _after.get('asof') or _after.get('as_of') or _after.get('source_session') or '日期不详' }}。</span></p>
             {% endif %}
             <p class="gde-input-caveat"><span class="l-en">Relative strength can reflect a smaller decline. It does not establish fund inflows, institutional distribution, or a forecast of the next selloff.</span><span class="l-zh">相对强势也可能只是跌幅较小，并不证明资金流入、机构派发或预示下一轮抛售。</span></p>
+            {# ── EW-P4 D2: the two measured legs, only for a qualified, current observation. #}
+            {% if _ew.legs %}
+            <div class="gde-ew-tablewrap">
+              <table class="gde-ew-legs">
+                <caption><span class="l-en">2 sessions, {{ _EW_MONTHS_EN[_ew.win.get('start')[5:7]|int - 1] }} {{ _ew.win.get('start')[8:10]|int }} → {{ _ew.event_en }} · US cash sessions</span><span class="l-zh">2个交易日，{{ _ew.win.get('start')[5:7]|int }}月{{ _ew.win.get('start')[8:10]|int }}日 → {{ _ew.event_zh }} · 美股交易日</span></caption>
+                <tbody>
+                  <tr><th scope="row"><span class="l-en">Receiver (numerator)</span><span class="l-zh">接收方（分子）</span></th><td class="tnum">{{ _ew.num }}</td><td class="tnum">{{ '+' if _ew.n > 0 else '' }}{{ '%.2f'|format(_ew.n) }}%</td></tr>
+                  <tr><th scope="row"><span class="l-en">Donor (denominator)</span><span class="l-zh">出让方（分母）</span></th><td class="tnum">{{ _ew.den }}</td><td class="tnum">{{ '+' if _ew.d > 0 else '' }}{{ '%.2f'|format(_ew.d) }}%</td></tr>
+                  <tr><th scope="row"><span class="l-en">Relative ({{ _ew.num }} vs {{ _ew.den }})</span><span class="l-zh">相对（{{ _ew.num }} 对 {{ _ew.den }}）</span></th><td class="tnum">—</td><td class="tnum">{{ _ew.r_s }}%</td></tr>
+                </tbody>
+              </table>
+              {% if _ew.r > 0 and _ew.n < 0 and _ew.d < 0 %}
+              <p class="gde-ew-contextline"><span class="l-en">Both fell; {{ _ew.num }} fell less than {{ _ew.den }}.</span><span class="l-zh">两者都下跌；{{ _ew.num }}跌幅小于{{ _ew.den }}。</span></p>
+              {% elif _ew.r < 0 and _ew.n > 0 and _ew.d > 0 %}
+              <p class="gde-ew-contextline"><span class="l-en">Both rose; {{ _ew.num }} rose less than {{ _ew.den }}.</span><span class="l-zh">两者都上涨；{{ _ew.num }}涨幅小于{{ _ew.den }}。</span></p>
+              {% endif %}
+            </div>
+            {# ── EW-P4 D3: horizons with identical markup; never color-only meaning. #}
+            <div class="gde-ew-horizons">
+              <div class="gde-ew-hz"><span class="gde-ew-hz-k"><span class="l-en">2-session</span><span class="l-zh">2个交易日</span></span> <span class="gde-ew-hz-v tnum">{{ _ew.r_s }}%</span> <span class="gde-ew-hz-q"><span class="l-en">Measured</span><span class="l-zh">已测量</span></span></div>
+              <div class="gde-ew-hz">{% if _ew.hz_ok %}<span class="gde-ew-hz-k"><span class="l-en">20-session</span><span class="l-zh">20个交易日</span></span> <span class="gde-ew-hz-v tnum">{{ '+' if _ew.hz_r > 0 else '' }}{{ '%.2f'|format(_ew.hz_r) }}%</span> <span class="gde-ew-hz-q"><span class="l-en">Measured</span><span class="l-zh">已测量</span></span>{% else %}<span class="gde-ew-hz-k"><span class="l-en">20-session</span><span class="l-zh">20个交易日</span></span> <span class="gde-ew-hz-v tnum">—</span> <span class="gde-ew-hz-q"><span class="l-en">Not supplied</span><span class="l-zh">未提供</span></span>{% endif %}</div>
+            </div>
+            {% if _ew.state == 'conflicting' %}<p class="gde-ew-contextline"><span class="l-en">The two-session move conflicts with the 20-session trend.</span><span class="l-zh">两个交易日的变化与20个交易日趋势不一致。</span></p>{% endif %}
+            {# ── EW-P4 D4: what argues against this reading. #}
+            <p class="gde-disc-h"><span class="l-en">What argues against this</span><span class="l-zh">反方证据</span></p>
+            <ul class="gde-ew-against">
+              {% if _ew.n is number and _ew.n < 0 and _ew.d is number and _ew.d < 0 %}<li><span class="l-en">Relative shelter only: {{ _ew.num }} also fell.</span><span class="l-zh">仅为相对抗跌：{{ _ew.num }}同样下跌。</span></li>{% endif %}
+              {% if _ew.state == 'conflicting' %}<li><span class="l-en">The 20-session trend points the other way.</span><span class="l-zh">20个交易日趋势方向相反。</span></li>{% endif %}
+              {% if not _ew.hz_ok %}<li><span class="l-en">No 20-session comparison was supplied.</span><span class="l-zh">未提供20个交易日对比。</span></li>{% endif %}
+              <li><span class="l-en">Two sessions are a short window; one session can undo it.</span><span class="l-zh">两个交易日窗口很短，一个交易日即可逆转。</span></li>
+            </ul>
+            {# ── EW-P4 D5/D6: what would undo it, and where to compare next. #}
+            <p class="gde-disc-h"><span class="l-en">What would undo this</span><span class="l-zh">何种情况会推翻</span></p>
+            <p class="gde-context-line"><span class="l-en">A later session that reverses the relative move, or a correction or withdrawal of this record. Corrections keep the original in history.</span><span class="l-zh">后续交易日出现反向相对变动，或本记录被更正或撤回。更正时保留原记录。</span></p>
+            <p class="gde-context-line"><span class="l-en">Next: </span><span class="l-zh">下一步：</span><a class="gde-ew-next" href="sector_central.html#moving"><span class="l-en">Compare horizons in Sector Central</span><span class="l-zh">在行业中心对比周期</span></a></p>
+            {% endif %}
+            {# ── EW-P4 §E study: on-demand record detail, native details/summary (keyboard + touch). #}
+            <details class="gde-ew-study">
+              <summary><span class="l-en">Study this record</span><span class="l-zh">查看记录细节</span></summary>
+              {% if _ew.has and not _ew.fail %}
+              <dl class="gde-ew-dl">
+                <div><dt><span class="l-en">Observation ID</span><span class="l-zh">观察编号</span></dt><dd class="tnum gde-ew-id">{{ _ew.oid|e }}</dd></div>
+                {% if _ew.prev %}<div><dt><span class="l-en">Previous ID</span><span class="l-zh">前一编号</span></dt><dd class="tnum gde-ew-id">{{ _ew.prev|e }}</dd></div>{% endif %}
+                <div><dt><span class="l-en">Definition</span><span class="l-zh">定义</span></dt><dd><span class="l-en">macro.rotation_observation.v1 · notification only · basis {{ _ew.basis|e }}</span><span class="l-zh">macro.rotation_observation.v1 · 仅通知 · 基准 {{ _ew.basis|e }}</span></dd></div>
+                <div><dt><span class="l-en">Calendar</span><span class="l-zh">日历</span></dt><dd><span class="l-en">US cash-equity sessions</span><span class="l-zh">美股现货交易日</span></dd></div>
+                <div><dt><span class="l-en">Pair</span><span class="l-zh">配对</span></dt><dd class="tnum">{{ _ew.num }} / {{ _ew.den }} · relative = (1+n)/(1+d) − 1</dd></div>
+                <div><dt><span class="l-en">Close basis</span><span class="l-zh">收盘基准</span></dt><dd><span class="l-en">Dividend-adjusted daily close; adjusted prices can be revised when distributions are restated.</span><span class="l-zh">股息调整后日收盘价；分红数据更正时调整价格可能被修订。</span></dd></div>
+                <div><dt><span class="l-en">Source timestamps</span><span class="l-zh">来源时间戳</span></dt><dd class="tnum"><span class="l-en">source_as_of {{ _n.get('source_as_of') or '—' }} · event_as_of {{ _ew.event }} · observed {{ _ew.obs_at[0:16]|replace('T', ' ') }} UTC · not_after {{ _ew.not_after[0:16]|replace('T', ' ') }} UTC (notification window closes)</span><span class="l-zh">数据源日期 {{ _n.get('source_as_of') or '—' }} · 事件日期 {{ _ew.event }} · 观察于 {{ _ew.obs_at[0:16]|replace('T', ' ') }} UTC · 通知窗口截止 {{ _ew.not_after[0:16]|replace('T', ' ') }} UTC</span></dd></div>
+                <div><dt><span class="l-en">Coverage</span><span class="l-zh">覆盖范围</span></dt><dd><span class="l-en">{{ _ew.cov.get('evaluable_2s') if _ew.cov else '—' }} of {{ _ew.cov.get('registered_pairs') if _ew.cov else '—' }} pairs evaluable; missing: {{ ((_ew.cov.get('missing_pair_ids') or []) | join(', ') | e) if (_ew.cov and (_ew.cov.get('missing_pair_ids') or [])) else 'none' }}</span><span class="l-zh">{{ _ew.cov.get('evaluable_2s') if _ew.cov else '—' }} / {{ _ew.cov.get('registered_pairs') if _ew.cov else '—' }} 个配对可评估；缺失：{{ ((_ew.cov.get('missing_pair_ids') or []) | join(', ') | e) if (_ew.cov and (_ew.cov.get('missing_pair_ids') or [])) else '无' }}</span></dd></div>
+                {% if _ew.previous is mapping %}
+                <div><dt><span class="l-en">Original vs corrected</span><span class="l-zh">原始与更正后</span></dt><dd>
+                  {% set _pv = _ew.previous.get('values') or none %}
+                  {% set _pvok = _pv is mapping and _pv.get('numerator_return_pct') is number and _pv.get('numerator_return_pct') is not boolean and _pv.get('denominator_return_pct') is number and _pv.get('denominator_return_pct') is not boolean and _pv.get('ratio_return_pct') is number and _pv.get('ratio_return_pct') is not boolean %}
+                  <span class="l-en">Original ({{ _ew.previous.get('observation_id')|e }}): {{ ('n %+.2f%% · d %+.2f%% · r %+.2f%%'|format(_pv.get('numerator_return_pct'), _pv.get('denominator_return_pct'), _pv.get('ratio_return_pct'))) if _pvok else 'no values recorded' }}</span>
+                  <span class="l-zh">原始（{{ _ew.previous.get('observation_id')|e }}）：{{ ('n %+.2f%% · d %+.2f%% · r %+.2f%%'|format(_pv.get('numerator_return_pct'), _pv.get('denominator_return_pct'), _pv.get('ratio_return_pct'))) if _pvok else '无记录数值' }}</span>
+                  {% if _ew.state == 'withdrawn' %}<span class="l-en">Current: Withdrawn — the record no longer asserts a measurement.</span><span class="l-zh">当前：已撤回——本记录不再主张任何测量值。</span>
+                  {% elif _ew.n is number and _ew.d is number and _ew.r is number %}<span class="l-en">Corrected: {{ 'n %+.2f%% · d %+.2f%% · r %+.2f%%'|format(_ew.n, _ew.d, _ew.r) }}</span><span class="l-zh">更正后：{{ 'n %+.2f%% · d %+.2f%% · r %+.2f%%'|format(_ew.n, _ew.d, _ew.r) }}</span>
+                  {% else %}<span class="l-en">Corrected: no values recorded</span><span class="l-zh">更正后：无记录数值</span>{% endif %}
+                </dd></div>
+                {% endif %}
+                <div><dt><span class="l-en">Immutable reference</span><span class="l-zh">不可变引用</span></dt><dd><span class="l-en">rotobs_ ids are content-addressed: the first 40 hex of SHA-256 over the record fingerprint and its predecessor. Lineage roots: {{ _ew.lineage | join(', ') | e if _ew.lineage else 'none' }}</span><span class="l-zh">rotobs_ 编号为内容寻址：记录指纹及其前驱的 SHA-256 前40位十六进制。来源链根：{{ _ew.lineage | join(', ') | e if _ew.lineage else '无' }}</span></dd></div>
+                <div><dt><span class="l-en">Rights</span><span class="l-zh">权利</span></dt><dd><span class="l-en">Derived comparison from daily closes on the approved price route; raw prices are not republished.</span><span class="l-zh">基于已核准价格数据源日收盘价的推导比较；不转载原始价格。</span></dd></div>
+                <div><dt><span class="l-en">Stable link</span><span class="l-zh">稳定链接</span></dt><dd><span class="tnum">{{ _ew.oid|e }}</span> · <a class="gde-ew-next" href="sector_central.html#moving"><span class="l-en">Sector Central</span><span class="l-zh">行业中心</span></a></dd></div>
+              </dl>
+              {% else %}
+              <dl class="gde-ew-dl">
+                <div><dt><span class="l-en">Rotation context</span><span class="l-zh">轮动上下文</span></dt><dd class="tnum"><span class="l-en">as_of {{ (_rotation.get('as_of') or '—')|e }} · coverage {{ _rotation.get('coverage') or '—' }} · excluded_reason {{ (_rotation.get('excluded_reason') or '—')|e }} · clock {{ ((_rotation.get('source_clock_receipt') or {}).get('generated_utc') or '—')|e }}</span><span class="l-zh">数据日期 {{ (_rotation.get('as_of') or '—')|e }} · 覆盖 {{ _rotation.get('coverage') or '—' }} · 排除原因 {{ (_rotation.get('excluded_reason') or '—')|e }} · 时钟 {{ ((_rotation.get('source_clock_receipt') or {}).get('generated_utc') or '—')|e }}</span></dd></div>
+                <div><dt><span class="l-en">Observation</span><span class="l-zh">观察记录</span></dt><dd><span class="l-en">No qualified observation for this session.</span><span class="l-zh">本交易日无合格观察记录。</span></dd></div>
+              </dl>
+              {% endif %}
+            </details>
           </div>
           {% endif %}
           <div class="gde-tblwrap">
@@ -218,6 +578,7 @@
         <span class="gde-policy-count tnum">{{ _ps.get('policy_count') }} <span class="l-en">active</span><span class="l-zh">项生效</span></span>
         <span class="l-en">Separate from the market readings.</span>
         <span class="l-zh">与市场判读独立。</span>
+        <span class="gde-policy-caveat"><span class="l-en">This is not an all-clear.</span><span class="l-zh">这并不代表风险已经解除。</span></span>
         {% else %}
         <span class="l-en">Capital controls: {{ _ps.get('policy_count') }} active. Separate from the market readings.</span>
         <span class="l-zh">资金限制：{{ _ps.get('policy_count') }} 项生效。与市场判读独立。</span>

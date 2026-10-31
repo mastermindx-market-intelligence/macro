@@ -198,6 +198,235 @@ function earlyContextHtml(ev, lang, nowMs) {
 }
 /* EARLY_CONTEXT_FN_END */
 
+/* EW_GLANCE_FN_START */
+/* EW-P4.T1 (GD-EW-P4-B1): descriptive early-warning observation glance for Sector
+   Central — a pure consumer of rotation_events.json early_context.latest_observation.
+   The validation mirrors lib/rotation_observation_notification.py (V1-V7) plus the
+   stricter engine id rule (rotobs_ + 40 lowercase hex) and the frozen §B state
+   precedence; it renders the same glance/brief/study copy as the Risk Radar band.
+   Descriptive only: no forecast, odds, sizing or delivery language, ever. */
+function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
+  var ZH = lang === 'zh', DAY = 86400000, STALE_DAYS = 4;
+  var escFn = (typeof esc === 'function') ? esc : function (s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  };
+  function E(s) { return escFn(String(s == null ? '' : s).slice(0, 2048)); }
+  function L2(en, zh) { return '<span class="l-en">' + en + '</span><span class="l-zh">' + (zh == null ? en : zh) + '</span>'; }
+  var ID_RE = /^rotobs_[0-9a-f]{40}$/, SYM_RE = /^[A-Z0-9][A-Z0-9.^=-]{0,19}$/, DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  var ME = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var MZ = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  function utcIso(s) { return typeof s === 'string' && s.length >= 20 && (s.slice(-6) === '+00:00' || s.slice(-1) === 'Z'); }
+  function numOk(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) < 1e12; }
+  function ts(s) {
+    if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return NaN;
+    var v = Date.parse(s + 'T00:00:00Z');
+    return isFinite(v) && new Date(v).toISOString().slice(0, 10) === s ? v : NaN;
+  }
+  function pct2(x) { return (x > 0 ? '+' : '') + x.toFixed(2) + '%'; }
+  function dEn(d) { return ME[parseInt(d.slice(5, 7), 10) - 1] + ' ' + parseInt(d.slice(8, 10), 10); }
+  function dZh(d) { return parseInt(d.slice(5, 7), 10) + '月' + parseInt(d.slice(8, 10), 10) + '日'; }
+  function valsOk(v) {
+    if (!v || typeof v !== 'object' || Array.isArray(v)) return null;
+    if (v.sessions !== 2) return null;
+    var n = v.numerator_return_pct, d = v.denominator_return_pct, r = v.ratio_return_pct;
+    if (!numOk(n) || !numOk(d) || !numOk(r)) return null;
+    if (!(n > -100) || !(d > -100)) return null;
+    if (Math.abs(((1 + n / 100) / (1 + d / 100) - 1) * 100 - r) > 1e-6) return null;
+    return { n: n, d: d, r: r };
+  }
+  function winOk(w) {
+    if (!w || typeof w !== 'object' || Array.isArray(w)) return null;
+    if (typeof w.start !== 'string' || !DATE_RE.test(w.start)) return null;
+    if (typeof w.end !== 'string' || !DATE_RE.test(w.end)) return null;
+    return w;
+  }
+  function hzOk(h) {
+    if (!h || typeof h !== 'object' || Array.isArray(h)) return null;
+    if (h.sessions !== 20) return null;
+    if (typeof h.start !== 'string' || !DATE_RE.test(h.start)) return null;
+    if (typeof h.end !== 'string' || !DATE_RE.test(h.end)) return null;
+    var n = h.numerator_return_pct, d = h.denominator_return_pct, r = h.ratio_return_pct;
+    if (!numOk(n) || !numOk(d) || !numOk(r)) return null;
+    if (!(d > -100)) return null;
+    if (Math.abs(((1 + n / 100) / (1 + d / 100) - 1) * 100 - r) > 1e-6) return null;
+    return { r: r };
+  }
+  var WORDS = {
+    observed: ['Observed', '已观察到'], reversal: ['Reversal', '方向反转'],
+    corrected: ['Corrected', '已更正'], withdrawn: ['Withdrawn', '已撤回'],
+    stale: ['Stale', '已过时'], unavailable: ['Unavailable', '暂不可用'],
+    partial: ['Partial', '证据不完整'], conflicting: ['Conflicting horizons', '周期分歧'],
+    unreadable: ['Unreadable', '无法读取'], loading: ['Checking', '核对中']
+  };
+  var has = view != null && typeof view === 'object' && !Array.isArray(view);
+  var n = has ? view.notification : null;
+  var valid = false, v = null, oid = '';
+  if (n && typeof n === 'object' && !Array.isArray(n)
+      && n.source === 'macro.rotation_observation.v1'
+      && n.category === 'sector_rotation_relative'
+      && n.authority === 'notification_only'
+      && (n.kind === 'observed_change' || n.kind === 'reversal' || n.kind === 'correction' || n.kind === 'data_withdrawal')
+      && typeof n.observation_id === 'string' && ID_RE.test(n.observation_id)) {
+    oid = n.observation_id;
+    var prev = n.previous_observation_id;
+    var prevOk = prev == null ? n.kind === 'observed_change'
+      : (typeof prev === 'string' && ID_RE.test(prev) && prev !== n.observation_id);
+    if (prevOk
+        && typeof n.num === 'string' && SYM_RE.test(n.num)
+        && typeof n.den === 'string' && SYM_RE.test(n.den)
+        && n.num !== n.den
+        && typeof n.pair_id === 'string' && n.pair_id.length >= 1 && n.pair_id.length <= 128
+        && typeof n.event_as_of === 'string' && DATE_RE.test(n.event_as_of)
+        && utcIso(n.observed_at) && utcIso(n.not_after)
+        && String(n.not_after).slice(0, 19) > String(n.observed_at).slice(0, 19)) {
+      if (n.kind === 'data_withdrawal') {
+        valid = n.values == null && (n.source_as_of == null
+          || (typeof n.source_as_of === 'string' && n.source_as_of <= n.event_as_of));
+      } else {
+        v = valsOk(n.values);
+        valid = n.source_as_of === n.event_as_of && v !== null;
+      }
+    }
+  } else if (n && typeof n === 'object' && typeof n.observation_id === 'string') {
+    oid = n.observation_id;
+  }
+  var session = typeof asOf === 'string' ? asOf : '';
+  var win = null, hz = null, winEndOk = false, state;
+  if (has && valid) {
+    win = winOk(view.window_2s);
+    hz = hzOk(view.horizon_20s);
+    winEndOk = !!(win && win.end === n.event_as_of);
+    if (n.event_as_of > session) state = 'unreadable';
+    else if (n.kind === 'data_withdrawal') state = 'withdrawn';
+    else if (n.event_as_of < session) state = 'stale';
+    else if (n.kind === 'correction') state = 'corrected';
+    else if (!win || !winEndOk || !hz) state = 'partial';
+    else if ((v.r > 0) !== (hz.r > 0) || (v.r === 0) !== (hz.r === 0)) state = 'conflicting';
+    else if (n.kind === 'reversal') state = 'reversal';
+    else state = 'observed';
+  } else if (has) {
+    state = 'unreadable';
+  } else {
+    state = 'unavailable';
+    var ecOk = ec != null && typeof ec === 'object' && !Array.isArray(ec);
+    if (ecOk) {
+      var t = ts(ec.as_of), nowOk = typeof nowMs === 'number' && isFinite(nowMs) && nowMs >= 0;
+      if (isFinite(t) && nowOk && Math.floor((Math.floor(nowMs / DAY) * DAY - t) / DAY) >= STALE_DAYS) state = 'stale';
+    }
+  }
+  var word = WORDS[state] || WORDS.unavailable;
+  var legs = valid && state !== 'withdrawn' && state !== 'stale' && state !== 'unreadable'
+    && state !== 'unavailable' && win && winEndOk;
+  var whatEn = '', whatZh = '';
+  if (legs) {
+    if (v.r > 0 && v.n < 0 && v.d < 0) { whatEn = 'Both fell; ' + n.num + ' fell less than ' + n.den + '.'; whatZh = '两者都下跌；' + n.num + '跌幅小于' + n.den + '。'; }
+    else if (v.r < 0 && v.n > 0 && v.d > 0) { whatEn = 'Both rose; ' + n.num + ' rose less than ' + n.den + '.'; whatZh = '两者都上涨；' + n.num + '涨幅小于' + n.den + '。'; }
+    else if (v.r > 0) { whatEn = n.num + ' outperformed ' + n.den + ' by ' + pct2(v.r) + ' over two sessions.'; whatZh = '两个交易日内，' + n.num + '相对' + n.den + '跑赢' + pct2(v.r) + '。'; }
+    else if (v.r < 0) { whatEn = n.num + ' trailed ' + n.den + ' by ' + Math.abs(v.r).toFixed(2) + '% over two sessions.'; whatZh = '两个交易日内，' + n.num + '相对' + n.den + '落后' + Math.abs(v.r).toFixed(2) + '%。'; }
+    else { whatEn = n.num + ' and ' + n.den + ' moved together over two sessions.'; whatZh = '两个交易日内，' + n.num + '与' + n.den + '同步变动。'; }
+    if (state === 'reversal') { whatEn = 'Reversal: ' + whatEn; whatZh = '方向反转：' + whatZh; }
+  } else if (state === 'withdrawn') {
+    whatEn = 'Evidence for ' + n.num + ' vs ' + n.den + ' was withdrawn on ' + dEn(n.event_as_of) + '.';
+    whatZh = n.num + '对' + n.den + '的依据已于' + dZh(n.event_as_of) + '撤回。';
+  } else if (state === 'stale' && has && valid) {
+    whatEn = 'Latest observation is from ' + dEn(n.event_as_of) + ', before ' + dEn(session) + '.';
+    whatZh = '最新观察来自' + dZh(n.event_as_of) + '，早于' + dZh(session) + '。';
+  } else if (state === 'stale') {
+    var ecAs = (ec && typeof ec === 'object' && typeof ec.as_of === 'string') ? ec.as_of : '';
+    whatEn = 'Rotation data unavailable for ' + (DATE_RE.test(session) ? dEn(session) : session) + '; latest is ' + (DATE_RE.test(ecAs) ? dEn(ecAs) : ecAs) + '.';
+    whatZh = (DATE_RE.test(session) ? dZh(session) : session) + '轮动依据暂不可用；最新为' + (DATE_RE.test(ecAs) ? dZh(ecAs) : ecAs) + '。';
+  } else if (state === 'unreadable') {
+    whatEn = 'Rotation record failed checks and is not shown.'; whatZh = '轮动记录未通过校验，未予显示。';
+  } else if (state === 'partial') {
+    whatEn = 'Partial evidence for ' + n.num + ' vs ' + n.den + '; ratio withheld.'; whatZh = n.num + '对' + n.den + '证据不完整；比值暂不显示。';
+  } else {
+    whatEn = 'Rotation data unavailable — not proof of stability.'; whatZh = '轮动依据暂不可用，不代表市场稳定。';
+  }
+  var whenEn = '', whenZh = '', avEn = 'First public availability not verified', avZh = '首次公开可用时间尚未核实';
+  var built = '';
+  if (has && valid) {
+    whenEn = 'Source session ' + dEn(n.event_as_of); whenZh = '数据交易日' + dZh(n.event_as_of);
+    if (view.availability && typeof view.availability === 'object' && view.availability.status === 'VERIFIED') {
+      avEn = 'availability verified'; avZh = '可用时间已核实';
+    }
+    built = '<span class="rc-ew-built">' + L2('Observed ' + String(n.observed_at).slice(0, 16).replace('T', ' ') + ' UTC', '观察于 ' + String(n.observed_at).slice(0, 16).replace('T', ' ') + ' UTC') + '</span>';
+  } else {
+    var rotAs = (ec && typeof ec === 'object' && typeof ec.as_of === 'string') ? ec.as_of : '';
+    whenEn = 'Source session ' + (DATE_RE.test(rotAs) ? dEn(rotAs) : rotAs || '—');
+    whenZh = '数据交易日' + (DATE_RE.test(rotAs) ? dZh(rotAs) : rotAs || '—');
+  }
+  var qEn = state === 'observed' ? 'Complete' : word[0], qZh = state === 'observed' ? '完整' : word[1];
+  var out = '<section class="rc-ew" id="rc-ew" role="group" aria-labelledby="rc-ew-title" data-ew-state="' + state + '" data-ew-scope="tech_leadership" data-observation-id="' + E(oid) + '">'
+    + '<p class="rc-ew-head"><span class="rc-ew-scope" id="rc-ew-title">' + L2('US Technology leadership', '美国科技领涨') + '</span> <span class="rc-ew-state">' + L2(word[0], word[1]) + '</span></p>'
+    + '<p class="rc-ew-what">' + L2(whatEn, whatZh) + '</p>'
+    + (state === 'corrected' ? '<p class="rc-ew-note">' + L2('Corrected; the original notice remains in history.', '已更正；原通知仍保留在历史记录中。') + '</p>' : '')
+    + '<p class="rc-ew-when">' + L2(whenEn + ' · ' + avEn + ' · Quality: ' + qEn, whenZh + ' · ' + avZh + ' · 质量：' + qZh) + ' ' + built + '</p>'
+    + '<p class="rc-ew-means">' + L2('Watch only: this describes what happened, not what comes next.', '仅供观察：描述已发生的变化，不代表后续走势。') + '</p>'
+    + '<a class="rc-ew-next" href="#rc-early-context">' + L2('Review what changed', '查看变化依据') + '</a>';
+  if (legs) {
+    out += '<div class="rc-ew-tablewrap"><table class="rc-ew-legs">'
+      + '<caption>' + L2('2 sessions, ' + dEn(win.start) + ' → ' + dEn(win.end) + ' · US cash sessions', '2个交易日，' + dZh(win.start) + ' → ' + dZh(win.end) + ' · 美股交易日') + '</caption><tbody>'
+      + '<tr><th scope="row">' + L2('Receiver (numerator)', '接收方（分子）') + '</th><td>' + E(n.num) + '</td><td>' + E(pct2(v.n)) + '</td></tr>'
+      + '<tr><th scope="row">' + L2('Donor (denominator)', '出让方（分母）') + '</th><td>' + E(n.den) + '</td><td>' + E(pct2(v.d)) + '</td></tr>'
+      + '<tr><th scope="row">' + L2('Relative (' + n.num + ' vs ' + n.den + ')', '相对（' + n.num + ' 对 ' + n.den + '）') + '</th><td>—</td><td>' + E(pct2(v.r)) + '</td></tr>'
+      + '</tbody></table>';
+    if (v.r > 0 && v.n < 0 && v.d < 0) out += '<p class="rc-ew-contextline">' + L2('Both fell; ' + n.num + ' fell less than ' + n.den + '.', '两者都下跌；' + n.num + '跌幅小于' + n.den + '。') + '</p>';
+    else if (v.r < 0 && v.n > 0 && v.d > 0) out += '<p class="rc-ew-contextline">' + L2('Both rose; ' + n.num + ' rose less than ' + n.den + '.', '两者都上涨；' + n.num + '涨幅小于' + n.den + '。') + '</p>';
+    out += '</div>'
+      + '<div class="rc-ew-horizons">'
+      + '<div class="rc-ew-hz"><span class="rc-ew-hz-k">' + L2('2-session', '2个交易日') + '</span> <span class="rc-ew-hz-v">' + E(pct2(v.r)) + '</span> <span class="rc-ew-hz-q">' + L2('Measured', '已测量') + '</span></div>'
+      + (hz ? '<div class="rc-ew-hz"><span class="rc-ew-hz-k">' + L2('20-session', '20个交易日') + '</span> <span class="rc-ew-hz-v">' + E(pct2(hz.r)) + '</span> <span class="rc-ew-hz-q">' + L2('Measured', '已测量') + '</span></div>'
+           : '<div class="rc-ew-hz"><span class="rc-ew-hz-k">' + L2('20-session', '20个交易日') + '</span> <span class="rc-ew-hz-v">—</span> <span class="rc-ew-hz-q">' + L2('Not supplied', '未提供') + '</span></div>')
+      + '</div>';
+    if (state === 'conflicting') out += '<p class="rc-ew-contextline">' + L2('The two-session move conflicts with the 20-session trend.', '两个交易日的变化与20个交易日趋势不一致。') + '</p>';
+    out += '<p class="rc-ew-h">' + L2('What argues against this', '反方证据') + '</p><ul class="rc-ew-against">';
+    if (v.n < 0 && v.d < 0) out += '<li>' + L2('Relative shelter only: ' + n.num + ' also fell.', '仅为相对抗跌：' + n.num + '同样下跌。') + '</li>';
+    if (state === 'conflicting') out += '<li>' + L2('The 20-session trend points the other way.', '20个交易日趋势方向相反。') + '</li>';
+    if (!hz) out += '<li>' + L2('No 20-session comparison was supplied.', '未提供20个交易日对比。') + '</li>';
+    out += '<li>' + L2('Two sessions are a short window; one session can undo it.', '两个交易日窗口很短，一个交易日即可逆转。') + '</li></ul>'
+      + '<p class="rc-ew-h">' + L2('What would undo this', '何种情况会推翻') + '</p>'
+      + '<p class="rc-ew-contextline">' + L2('A later session that reverses the relative move, or a correction or withdrawal of this record. Corrections keep the original in history.', '后续交易日出现反向相对变动，或本记录被更正或撤回。更正时保留原记录。') + '</p>';
+  }
+  out += '<details class="rc-ew-study"><summary>' + L2('Study this record', '查看记录细节') + '</summary>';
+  if (has && valid) {
+    var pv = (view.previous && typeof view.previous === 'object' && !Array.isArray(view.previous)) ? view.previous : null;
+    var pvVals = pv && pv.values && typeof pv.values === 'object' && numOk(pv.values.numerator_return_pct) && numOk(pv.values.denominator_return_pct) && numOk(pv.values.ratio_return_pct) ? pv.values : null;
+    out += '<dl class="rc-ew-dl">'
+      + '<div><dt>' + L2('Observation ID', '观察编号') + '</dt><dd class="rc-ew-id">' + E(oid) + '</dd></div>'
+      + (typeof n.previous_observation_id === 'string' ? '<div><dt>' + L2('Previous ID', '前一编号') + '</dt><dd class="rc-ew-id">' + E(n.previous_observation_id) + '</dd></div>' : '')
+      + '<div><dt>' + L2('Definition', '定义') + '</dt><dd>' + L2('macro.rotation_observation.v1 · notification only · basis ' + (view.basis || 'dividend_adjusted_close'), 'macro.rotation_observation.v1 · 仅通知 · 基准 ' + (view.basis || 'dividend_adjusted_close')) + '</dd></div>'
+      + '<div><dt>' + L2('Calendar', '日历') + '</dt><dd>' + L2('US cash-equity sessions', '美股现货交易日') + '</dd></div>'
+      + '<div><dt>' + L2('Pair', '配对') + '</dt><dd>' + E(n.num + ' / ' + n.den + ' · ' + (typeof n.pair_id === 'string' ? n.pair_id : '') + ' · relative = (1+n)/(1+d) − 1') + '</dd></div>'
+      + '<div><dt>' + L2('Close basis', '收盘基准') + '</dt><dd>' + L2('Dividend-adjusted daily close; adjusted prices can be revised when distributions are restated.', '股息调整后日收盘价；分红数据更正时调整价格可能被修订。') + '</dd></div>'
+      + '<div><dt>' + L2('Source timestamps', '来源时间戳') + '</dt><dd>' + E('source_as_of ' + (n.source_as_of || '—') + ' · event_as_of ' + n.event_as_of + ' · observed ' + String(n.observed_at).slice(0, 16).replace('T', ' ') + ' UTC · not_after ' + String(n.not_after).slice(0, 16).replace('T', ' ') + ' UTC (notification window closes)') + '</dd></div>';
+    var cov = (view.coverage && typeof view.coverage === 'object') ? view.coverage : null;
+    var missing = (cov && Array.isArray(cov.missing_pair_ids)) ? cov.missing_pair_ids.filter(function (x) { return typeof x === 'string'; }).join(', ') : '';
+    out += '<div><dt>' + L2('Coverage', '覆盖范围') + '</dt><dd>' + E((cov ? cov.evaluable_2s : '—') + ' of ' + (cov ? cov.registered_pairs : '—') + ' pairs evaluable; missing: ' + (missing || 'none')) + '</dd></div>';
+    if (pv) {
+      out += '<div><dt>' + L2('Original vs corrected', '原始与更正后') + '</dt><dd>'
+        + L2('Original (' + pv.observation_id + '): ' + (pvVals ? 'n ' + pct2(pvVals.numerator_return_pct) + ' · d ' + pct2(pvVals.denominator_return_pct) + ' · r ' + pct2(pvVals.ratio_return_pct) : 'no values recorded'),
+             '原始（' + pv.observation_id + '）：' + (pvVals ? 'n ' + pct2(pvVals.numerator_return_pct) + ' · d ' + pct2(pvVals.denominator_return_pct) + ' · r ' + pct2(pvVals.ratio_return_pct) : '无记录数值'));
+      if (state === 'withdrawn') out += L2('Current: Withdrawn — the record no longer asserts a measurement.', '当前：已撤回——本记录不再主张任何测量值。');
+      else out += L2('Corrected: n ' + pct2(v.n) + ' · d ' + pct2(v.d) + ' · r ' + pct2(v.r), '更正后：n ' + pct2(v.n) + ' · d ' + pct2(v.d) + ' · r ' + pct2(v.r));
+      out += '</dd></div>';
+    }
+    var lin = (Array.isArray(view.lineage_roots)) ? view.lineage_roots.filter(function (x) { return typeof x === 'string'; }).join(', ') : '';
+    out += '<div><dt>' + L2('Immutable reference', '不可变引用') + '</dt><dd>' + E('rotobs_ ids are content-addressed: the first 40 hex of SHA-256 over the record fingerprint and its predecessor.') + ' ' + E('Lineage roots: ' + (lin || 'none')) + '</dd></div>'
+      + '<div><dt>' + L2('Rights', '权利') + '</dt><dd>' + L2('Derived comparison from daily closes on the approved price route; raw prices are not republished.', '基于已核准价格数据源日收盘价的推导比较；不转载原始价格。') + '</dd></div>'
+      + '<div><dt>' + L2('Stable link', '稳定链接') + '</dt><dd>' + E(oid) + ' · <a class="rc-ew-next" href="#rc-early-context">' + L2('Sector Central', '行业中心') + '</a></dd></div>'
+      + '</dl>';
+  } else {
+    var ecLine = 'No qualified observation for this session.';
+    out += '<dl class="rc-ew-dl">'
+      + '<div><dt>' + L2('Rotation context', '轮动上下文') + '</dt><dd>' + E((ec && typeof ec === 'object') ? ('as_of ' + (ec.as_of || '—')) : 'unavailable') + '</dd></div>'
+      + '<div><dt>' + L2('Observation', '观察记录') + '</dt><dd>' + L2(ecLine, '本交易日无合格观察记录。') + '</dd></div>'
+      + '</dl>';
+  }
+  out += '</details></section>';
+  return out;
+}
+/* EW_GLANCE_FN_END */
+
   /* ── styles (injected once, guarded by element id — subsector_rotation.js model).
      Carried over from the retired page's own <style> block; `#rc-events h2` becomes
      `#rc-events h3` because the heading demoted when the section moved inside
@@ -211,7 +440,7 @@ function earlyContextHtml(ev, lang, nowMs) {
       +'.rc-ec-pair{min-width:0;padding:12px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);}'
       +'.rc-ec-pair h5{font-size:12px;margin:0 0 5px;}.rc-ec-pair .rc-ec-pair-title{font-size:14px;}.rc-ec-label{font-size:12px;line-height:1.5;margin:6px 0 10px;}'
       +'.rc-ec-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 10px;}.rc-ec-values dt{font-size:10px;color:var(--muted);line-height:1.35;}.rc-ec-values dd{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;margin:5px 0 0;}'
-      +'.rc-ec-stale,.rc-ec-conflict{border-left:3px solid var(--warn);padding:6px 9px;color:var(--ink-warn,var(--warn));font-size:11px;line-height:1.5;}'
+      +'.rc-ec-stale,.rc-ec-conflict{border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--surface-warn-subtle);padding:6px 9px;color:var(--ink-warn,var(--warn));font-size:11px;line-height:1.5;}'
       +'.rc-ec-details,.rc-ec-packet{font-size:11px;line-height:1.5;}.rc-ec-details summary,.rc-ec-packet summary{cursor:pointer;padding:5px 0;}.rc-ec-details summary:focus-visible,.rc-ec-packet summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;}'
       +'.rc-ec-meta,.rc-ec-reasons,.rc-ec-row-note,.rc-ec-disclosure{font-size:10.5px;line-height:1.5;color:var(--muted);}.rc-ec-win-na,.rc-ec-row-na,.rc-ec-empty,.rc-ec-nopacket,.rc-ec-unavail{font-size:12px;line-height:1.5;}'
       +'#rc-events { margin:0 2px 22px; }'
@@ -283,6 +512,50 @@ function earlyContextHtml(ev, lang, nowMs) {
       +'  .rcf-lane { gap:6px 8px; }'
       +'  .rcf-state { flex-basis:100%; }'
       +'  .rcf-decay { margin-top:3px; }'
+      +'}'
+      /* ── EW-P4.T1 descriptive observation glance (.rc-ew*). Chairman 2026-10-18:
+         even borders on all four sides, token surfaces only, no edge stripe or
+         accent rail; state is text + ink color, never color alone. ── */
+      +'.rc-ew{margin:14px 0;padding:14px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--esurf-neutral-soft);overflow-wrap:anywhere;}'
+      +'.rc-ew[data-ew-state="stale"],.rc-ew[data-ew-state="unavailable"],.rc-ew[data-ew-state="unreadable"],.rc-ew[data-ew-state="withdrawn"],.rc-ew[data-ew-state="partial"],.rc-ew[data-ew-state="conflicting"]{background:var(--surface-warn-subtle);}'
+      +'.rc-ew-head{margin:0;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:15px;font-weight:800;}'
+      +'.rc-ew-scope{font-weight:800;}'
+      +'.rc-ew-state{font-weight:800;color:var(--text);}'
+      +'.rc-ew[data-ew-state="stale"] .rc-ew-state,.rc-ew[data-ew-state="unavailable"] .rc-ew-state,.rc-ew[data-ew-state="unreadable"] .rc-ew-state,.rc-ew[data-ew-state="withdrawn"] .rc-ew-state,.rc-ew[data-ew-state="partial"] .rc-ew-state,.rc-ew[data-ew-state="conflicting"] .rc-ew-state{color:var(--ink-warn,var(--warn));}'
+      +'.rc-ew[data-ew-state="corrected"] .rc-ew-state{color:var(--ink-info,var(--link));}'
+      +'.rc-ew-what{margin:6px 0 0;font-size:13px;line-height:1.5;}'
+      +'.rc-ew-note{margin:4px 0 0;font-size:11px;color:var(--ink-2,var(--text));}'
+      +'.rc-ew-when{margin:4px 0 0;font-size:11px;color:var(--muted);}'
+      +'.rc-ew-built{color:var(--muted);font-size:10.5px;}'
+      +'.rc-ew-means{margin:4px 0 0;font-size:11px;color:var(--muted);}'
+      +'.rc-ew-next{display:inline-block;margin-top:6px;font-size:11px;color:var(--link);}'
+      +'.rc-ew-next:focus-visible,.rc-ew-study summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;}'
+      +'.rc-ew-h{font-size:12px;font-weight:800;margin:12px 0 4px;}'
+      +'.rc-ew-tablewrap{margin-top:10px;max-width:100%;}'
+      +'.rc-ew-legs{width:100%;border-collapse:collapse;font-size:11px;}'
+      +'.rc-ew-legs caption{caption-side:top;text-align:left;padding:0 8px 4px;color:var(--muted);font-size:10.5px;}'
+      +'.rc-ew-legs th,.rc-ew-legs td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere;}'
+      +'.rc-ew-legs th{color:var(--muted);font-weight:600;}'
+      +'.rc-ew-legs td{color:var(--text);font-variant-numeric:tabular-nums;}'
+      +'.rc-ew-contextline{margin:6px 0 0;font-size:12px;line-height:1.5;}'
+      +'.rc-ew-horizons{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}'
+      +'.rc-ew-hz{flex:1 1 150px;min-width:0;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:8px 10px;font-size:11px;color:var(--muted);display:flex;gap:6px 10px;align-items:baseline;flex-wrap:wrap;}'
+      +'.rc-ew-hz-k{font-weight:700;color:var(--text);}'
+      +'.rc-ew-hz-v{font-size:14px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;}'
+      +'.rc-ew-hz-q{color:var(--muted);}'
+      +'.rc-ew-against{padding-left:16px;margin:0;font-size:11px;line-height:1.5;color:var(--ink-2,var(--text));}'
+      +'.rc-ew-study{margin-top:10px;font-size:11px;}'
+      +'.rc-ew-study summary{cursor:pointer;padding:5px 0;color:var(--muted);}'
+      +'.rc-ew-dl{margin:4px 0 0;}'
+      +'.rc-ew-dl>div{display:flex;gap:4px 12px;flex-wrap:wrap;padding:5px 0;border-bottom:1px solid var(--line);}'
+      +'.rc-ew-dl dt{flex:0 0 auto;color:var(--muted);font-weight:600;}'
+      +'.rc-ew-dl dd{margin:0;min-width:0;flex:1 1 120px;color:var(--text);overflow-wrap:anywhere;}'
+      +'.rc-ew-id{user-select:all;}'
+      +'@media (max-width:520px) {'
+      +'  .rc-ew-horizons { flex-direction:column; }'
+      +'  .rc-ew-hz { flex-basis:100%; }'
+      +'  .rc-ew-legs tr { display:block; border-bottom:1px solid var(--line); padding:4px 0; }'
+      +'  .rc-ew-legs th, .rc-ew-legs td { display:block; width:100%; box-sizing:border-box; border-bottom:none; padding:2px 8px; }'
       +'}';
     var s=document.createElement('style');
     s.id='rc-events-style';
@@ -671,14 +944,30 @@ function earlyContextHtml(ev, lang, nowMs) {
     el.innerHTML=html;
   }
 
+  /* ── EW-P4 loading shell for the observation glance: "Checking" — never a calm,
+     "normal" or "no change" word while evidence has not resolved. ── */
+  function ewLoadingHtml(){
+    return '<section class="rc-ew" id="rc-ew" role="group" aria-labelledby="rc-ew-title" data-ew-state="loading" data-ew-scope="tech_leadership" data-observation-id="">'
+      +'<p class="rc-ew-head"><span class="rc-ew-scope" id="rc-ew-title">'+L('US Technology leadership','美国科技领涨')+'</span> <span class="rc-ew-state">'+L('Checking','核对中')+'</span></p>'
+      +'<p class="rc-ew-what">'+L('Checking rotation evidence…','正在核对轮动依据…')+'</p>'
+      +'</section>';
+  }
+
   function load(){
     if(!mount()) return;
+    var earlyEl=document.getElementById('rc-early-context');
+    var ewLang=isZh()?'zh':'en';
+    if(earlyEl) earlyEl.innerHTML=ewLoadingHtml();
     Promise.all([
       fetch('marketdata/rotation_events.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
       fetch('marketdata/sector_fragmentation.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
     ]).then(function(res){
       var earlyEl=document.getElementById('rc-early-context');
-      if(earlyEl) earlyEl.innerHTML=earlyContextHtml(res[0],isZh()?'zh':'en',Date.now());
+      var ev=res[0];
+      var ec=(ev&&typeof ev==='object'&&!Array.isArray(ev)&&ev.early_context&&typeof ev.early_context==='object'&&!Array.isArray(ev.early_context))?ev.early_context:null;
+      var view=ec?ec.latest_observation:undefined;
+      var ewHtml=ewGlanceHtml(view,ec,(ev&&typeof ev.as_of==='string')?ev.as_of:null,ewLang,Date.now());
+      if(earlyEl) earlyEl.innerHTML=ewHtml+earlyContextHtml(res[0],isZh()?'zh':'en',Date.now());
       if(!res[0]&&!res[1]){
         var el=document.getElementById('rc-events-content');
         if(el) el.innerHTML='<p class="rc-quiet"><span class="l-en">Rotation-event data unavailable.</span><span class="l-zh">轮动事件数据暂不可用。</span></p>';
@@ -687,7 +976,12 @@ function earlyContextHtml(ev, lang, nowMs) {
       renderFlowLanes(res[0]);
       renderClosures(res[0]);
       render(res[0],res[1]);
-    }).catch(function(){/* fail-soft: leave the loading/quiet note in place */});
+    }).catch(function(){
+      /* fail-soft for the event rail; the observation glance still names its own
+         scoped unavailability instead of a silent blank. */
+      var el=document.getElementById('rc-early-context');
+      if(el) el.innerHTML=ewGlanceHtml(null,null,null,isZh()?'zh':'en',Date.now());
+    });
   }
 
   function boot(){
