@@ -363,6 +363,58 @@ def _deep_keys(obj, prefix=""):
             yield from _deep_keys(value, f"{prefix}[{index}]")
 
 
+def test_publication_receipt_discloses_global_scope_without_changing_pointer(monkeypatch) -> None:
+    """C19 WP17 N5: account-wide receipt must not imply a company-level claim."""
+    _patch_all_seams(monkeypatch)
+
+    # Healthy receipt is globally scoped even on a company's page. Copy cannot
+    # be absent on success: consumers otherwise mistake its pointer for ticker data.
+    healthy = integrated_answer._leg_publication_seam()
+    assert healthy["status"] == "ok"
+    assert healthy["copy"]["en"].startswith("Account-wide")
+    assert "not specific to this company" in healthy["copy"]["en"]
+    assert "账户级" in healthy["copy"]["zh"]
+    assert healthy["ref"]["route"] == "/api/forensics/v1/attested-history/latest"
+    assert set(healthy["payload"]) == {
+        "snapshot_id", "base_snapshot_id", "query_hash", "published_at",
+    }
+    assert healthy["ref"]["content_hash"] == integrated_answer._content_hash(healthy["payload"])
+
+    # A page requested for another ticker carries this *same* global receipt
+    # identity. Age-based downgrade must keep the global-scope disclosure.
+    page = _page(_client(monkeypatch), "NVDA")
+    leg = _leg_by_id(page, "publication_seam")
+    assert leg["status"] in {"ok", "stale"}
+    assert leg["copy"]["en"].startswith("Account-wide")
+    assert leg["ref"]["route"] == healthy["ref"]["route"]
+    assert leg["payload"] == healthy["payload"]
+    assert set(leg) == LEG_KEYS  # additive copy only; no new public schema keys
+
+    # A missing owner receipt must disclose the same account/global scope
+    # without surfacing a pointer, even though the page remains ticker-scoped.
+    def _missing_receipt():
+        raise RuntimeError("receipt unavailable")
+
+    monkeypatch.setattr(integrated_answer, "_receipt_identity", _missing_receipt)
+    absent = integrated_answer._leg_publication_seam()
+    assert absent["status"] == "absent"
+    assert absent["payload"] is None and absent["ref"] is None
+    assert absent["copy"]["en"].startswith("Account-wide")
+
+    # The shared copy helper must also cover stale/refused receipt states but
+    # leave unrelated successful leg copy behavior unchanged.
+    for state in ("stale", "refused"):
+        item = integrated_answer._leg_shell("publication_seam")
+        item["status"] = state
+        integrated_answer._apply_copy(item)
+        assert item["copy"]["en"].startswith("Account-wide")
+        assert "账户级" in item["copy"]["zh"]
+    unrelated = integrated_answer._leg_shell("event_workspace")
+    unrelated["status"] = "ok"
+    integrated_answer._apply_copy(unrelated)
+    assert unrelated["copy"] is None
+
+
 def test_private_public_leakage(monkeypatch) -> None:
     _patch_all_seams(monkeypatch)
     client = _client(monkeypatch)

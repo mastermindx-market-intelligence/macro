@@ -88,17 +88,23 @@ _COPY: dict[str, dict[str, dict[str, str]]] = {
         },
     },
     "publication_seam": {
+        # This is the account-wide attested-history receipt, NOT evidence about
+        # the requested company. Preserve the exact four-field pointer payload.
+        "ok": {
+            "en": "Account-wide publication receipt — not specific to this company.",
+            "zh": "这是账户级发布凭据，并非针对该公司的信息。",
+        },
         "absent": {
-            "en": "Account publication rules aren't loaded for this answer.",
-            "zh": "本答复尚未加载账户发布规则。",
+            "en": "Account-wide publication rules aren't loaded; this is not a company-specific finding.",
+            "zh": "账户级发布规则尚未加载；这并非针对该公司的结论。",
         },
         "stale": {
-            "en": "Publication rules may be older than this page — check the receipt.",
-            "zh": "发布规则可能早于本页，请查看来源说明。",
+            "en": "Account-wide publication rules may be older than this page — not company-specific; check the receipt.",
+            "zh": "账户级发布规则可能早于本页，并非针对该公司；请查看凭据。",
         },
         "refused": {
-            "en": "Some financial material is restricted on your account tier.",
-            "zh": "部分财务内容受账户权限限制。",
+            "en": "Account-wide access restricts some financial material; this is not a company-specific finding.",
+            "zh": "账户级权限限制了部分财务内容；这并非针对该公司的结论。",
         },
     },
     "event_workspace": {
@@ -293,7 +299,8 @@ def _leg_shell(leg_id: str) -> dict[str, Any]:
 def _apply_copy(leg: dict[str, Any]) -> None:
     status = leg["status"]
     if status == "ok":
-        leg["copy"] = None
+        # Only legs with explicit healthy-state copy (the global receipt) show it.
+        leg["copy"] = _COPY.get(leg["leg"], {}).get("ok")
         leg["degraded_reason"] = None
         return
     table = _COPY.get(leg["leg"], {})
