@@ -2205,7 +2205,14 @@ def _bulk_trade_quote_per_exp(
     cap_date = (target_date + timedelta(days=near_dte_cap_days)
                 if near_dte_cap_days is not None else None)
 
+    list_started = time.monotonic()
     exps = list_expirations(root)
+    log.info(
+        "thetadata: per-exp timing root=%s right=%s phase=list_expirations "
+        "elapsed_s=%.3f status=%s",
+        root, right, time.monotonic() - list_started,
+        "unavailable" if exps is None else "ok",
+    )
     if exps is None:
         log.warning(
             "thetadata: bulk_trade_quote per-exp fallback — list_expirations(%s) failed,"
@@ -2244,16 +2251,28 @@ def _bulk_trade_quote_per_exp(
         if et_str is not None:
             per_params["end_time"] = et_str
 
+        # _stream_lines is lazy: this phase includes transport/retries AND parsing.
+        # Time once per expiration, not per row; do not call it network-only time.
+        stream_started = time.monotonic()
+        stream_status = "error"
         try:
             rows = parse_rows(
                 _stream_lines(session, "/v3/option/history/trade_quote", per_params)
             )
             all_rows.extend(rows)
+            stream_status = "ok"
         except _StreamTruncated as e:
+            stream_status = "truncated"
             log.warning(
                 "thetadata: bulk_trade_quote per-exp fallback — exp %s failed, skipping: %s",
                 exp_iso, e)
             failed_count += 1
+        finally:
+            log.info(
+                "thetadata: per-exp timing root=%s right=%s expiration=%s "
+                "phase=stream_parse elapsed_s=%.3f status=%s",
+                root, right, exp_int, time.monotonic() - stream_started, stream_status,
+            )
 
     dte_label = f"<={near_dte_cap_days}" if near_dte_cap_days is not None else "all"
     log.info(
@@ -2266,4 +2285,15 @@ def _bulk_trade_quote_per_exp(
             " for %s %s, returning None", len(filtered), root, right)
         return None
 
-    return build_df(all_rows)
+    build_started = time.monotonic()
+    build_status = "error"
+    try:
+        frame = build_df(all_rows)
+        build_status = "ok"
+        return frame
+    finally:
+        log.info(
+            "thetadata: per-exp timing root=%s right=%s phase=build_frame "
+            "elapsed_s=%.3f status=%s",
+            root, right, time.monotonic() - build_started, build_status,
+        )
