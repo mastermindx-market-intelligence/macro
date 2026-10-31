@@ -14199,6 +14199,8 @@ jobs:
       - "tests/test_options_index_lock_identity.py"
       - "tests/test_qledger_publication.py"
       - "tests/test_qledger_publish_binding.py"
+      - "scripts/ci/qledger_carve.sh"
+      - "tests/test_qledger_carve.py"
       # Read closure of tests/test_crypto_publication_contract.py.
       # .github/workflows/** and scripts/ci/*.sh are already declared above.
       - "app/__init__.py"
@@ -14293,6 +14295,14 @@ jobs:
         run: python -m pytest tests/test_crypto_observations_contract.py -q
       - name: append-only base fence (real-incident replay, withhold, quiet-night property)
         run: python -m pytest tests/test_append_only_base_fence.py -q
+      # scripts/ci/qledger_carve.sh is the third policy the nightly commit→push steps
+      # source: it carves data/qledger/claims.jsonl (> GitHub's 100 MB GH001 blob
+      # ceiling since 2026-10-21) out of every wholesale nightly commit so the rest
+      # of the session's data lands (PR #10255; #9556 carved only `collect`). The
+      # suite replays the GH001 pre-receive rejection against real git repos and
+      # pins the per-path delta restore and always()-restore ordering.
+      - name: qledger carve (GH001 replay, per-path restore, lane wiring)
+        run: python -m pytest tests/test_qledger_carve.py -q
 
   quant-q06-sparse-cal:
     if: ${{ false }}
