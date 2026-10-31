@@ -2677,51 +2677,6 @@
       "notes": []
     },
     {
-      "page_id": "macro:consumer_cyclical_plnt",
-      "repo": "macro",
-      "route": "/consumer_cyclical_plnt.html",
-      "route_kind": "page",
-      "source_template": "templates/consumer_cyclical_plnt.html.j2",
-      "builder": [
-        "scripts/build_consumer_cyclical_plnt_page.py"
-      ],
-      "data_sources": [],
-      "access_shell": "anonymous",
-      "payload_tier": "public_shell_premium_payload",
-      "nav_family": "none",
-      "archetype": "instrument_analyzer",
-      "design_system": {
-        "compliant": false
-      },
-      "primary_user_question": "",
-      "owner": "unowned",
-      "lifecycle": "live",
-      "priority": "unclassified",
-      "generated": true,
-      "bilingual": true,
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "locales": [
-        "en",
-        "zh"
-      ],
-      "known_contracts": [
-        "site_access.v1:default_insider"
-      ],
-      "open_prs": [],
-      "source_evidence": [
-        "config/site_access.yml:1",
-        "scripts/build_consumer_cyclical_plnt_page.py:95",
-        "site/consumer_cyclical_plnt.html",
-        "templates/consumer_cyclical_plnt.html.j2"
-      ],
-      "notes": [
-        "template attributed by name match; no write_page() call site names it"
-      ]
-    },
-    {
       "page_id": "macro:country_cycles",
       "repo": "macro",
       "route": "/country_cycles.html",
