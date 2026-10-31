@@ -216,15 +216,15 @@ waves:
     status: in_progress
     depends_on: []
     next_action: >
-      Slice 1 is DELIVERED as draft Terminal PR 1189 (non-author ACCEPT at 0939414e;
-      follow-ups at head f2e30fd7 pending delta confirmation): proxy POST
+      Slice 1 is DELIVERED as Terminal PR 1189 (non-author ACCEPT confirmed at head
+      f2e30fd7; READY + merge-on-green ARMED 2026-10-31, CI pending): proxy POST
       /api/portfolio-changes, Today section posting the client-held previous state_digest
       and rendering the desk's change lines with honest first-visit, no-change, overflow
       (expand in place), free-tier teaser, unavailable and signed-out states, each ticker
       linking to /analysis. The first non-author review (at 206bc02b) returned REVISE;
       repairs for all eight findings landed at ac319630 and the re-review at 0939414e
-      returned ACCEPT. Next: consume the delta confirmation, mark ready + merge-on-green
-      on green CI, beta deploy observation, signed-in browser proof
+      returned ACCEPT and was confirmed at f2e30fd7. Next: the sweeper merges on green
+      (repair a trusted red on the same branch; never self-merge), beta deploy observation, signed-in browser proof
       recorded separately from acceptance. Contract dependency (not a wave): Macro PRs
       10199/10200/10203 edit the producers this slice consumes; re-run the slice tests
       against the merged producer before PRODUCTION_PROOF.
@@ -364,8 +364,8 @@ artifacts:
 next_action: >
   RECEIVER 2026-10-31: the Fable flagship seat (PR 10230, handoff
   WS-MARKET-OS-2026-10-31-fable-flagship-receiver) owns Market OS completion. Consume
-  the delta confirmation on Terminal PR 1189 (wave flagship-today-since-last-visit;
-  non-author ACCEPT at 0939414e, follow-ups at head f2e30fd7), repair on that branch, ready + merge-on-green after a non-author
+  Terminal PR 1189 through merge (wave flagship-today-since-last-visit; non-author
+  ACCEPT confirmed at head f2e30fd7, armed merge-on-green), repair on that branch, ready + merge-on-green after a non-author
   ACCEPT and green CI, then beta deploy observation and signed-in browser proof recorded
   separately from acceptance. Maintenance #6510 may proceed independently as a bounded
   Portfolio mode-tab count synchronization repair if a fresh collision census remains
