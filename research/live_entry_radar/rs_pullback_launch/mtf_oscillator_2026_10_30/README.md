@@ -26,14 +26,21 @@ research-only functions:
    owner-compatible adapter must preserve those existing refusals; it may
    not silently manufacture a boolean `source_admitted`.
 2. `oscillator_events(bars, indicator, eligibility, decision_cutoff_utc,
-   supplied=None)` classifies known full-bar oscillator crossovers using
+   supplied=None, prior_session_by_day=None)` classifies known full-bar
+   oscillator crossovers using
    a caller-supplied previous-session leader receipt.
    `eligibility[(symbol, bar_end_utc)]` supplies
    `is_leader`, `known_at_utc`, `asof_session`,
    `expected_prior_session` and `receipt_sha256`. The expected prior
    session comes from the existing exchange calendar owner; the candidate's
    `asof_session` must equal it. Unknown/stale/future leader source remains
-   `ELIGIBILITY_UNAVAILABLE`, not a negative trade label.
+   `ELIGIBILITY_UNAVAILABLE`, not a negative trade label. For *multi-session*
+   oscillator history, the optional owner-supplied `prior_session_by_day`
+   must map each observed session to its actual preceding exchange session.
+   Missing observed sessions then refuse the population; without this map,
+   additional sessions abstain as `SOURCE_OWNER_PREDECESSOR_UNKNOWN`.
+   These are consistency checks, not independent authentication of an owner
+   calendar or of the historical identity/basis receipts.
 
 ## Frozen indicator species
 
@@ -63,26 +70,39 @@ proof. Excluded stubs are calendar states, not price candles.
 
 `UNAVAILABLE`, `NOT_YET_OBSERVED`, `STUB_EXCLUDED` and
 `WARMUP_OR_OSCILLATOR_UNAVAILABLE` are explicit. Missing full windows
-reset oscillator continuity. Periodic date changes, ET DST and
-exceptional session close are evaluated from owner-supplied calendar
-boundaries, not assumed from a fixed UTC offset.
+reset oscillator continuity. Observed sessions must retain their complete
+series of full bars and trailing stub. Missing terminal full windows and
+stubs are refused; multi-day history must retain an owner-derived
+predecessor mapping or abstain instead of treating a missing whole day
+as a bullish signal. A recursively computed historical RSI-MACD or price-MACD
+result whose **earlier input was revised after the purported event known-at**
+is `SOURCE_HISTORICAL_REVISION_UNAVAILABLE`, not a fabricated historical
+`CROSS_OBSERVED` or `NO_CROSS`. These checks do not replace immutable
+per-event first-seen receipts from the incumbent source owner. Periodic date
+changes, ET DST and exceptional session close are evaluated from
+owner-supplied calendar boundaries, not a fixed UTC offset.
 
 ## Offline reproduction (no external connection)
 
 ```sh
-python -m pytest -q tests/test_entry_radar_oscillator_mtf_research.py
+python -m pytest -q tests/test_entry_radar_oscillator_mtf_research.py tests/test_rs_mtf_revision_prefix_qa.py tests/test_entry_radar_oscillator_owner_integration.py
 python -m compileall -q engine/entry_radar/replay/oscillator_mtf_research.py
 ```
 
-The latest isolated source qualification returned **34 passing
-synthetic tests**, with a local surrogate of the verified incumbent
-`engine.canon` implementation. Five further integration tests were
-added under `tests/test_entry_radar_oscillator_owner_integration.py`;
-they use the native `rs_pullback_launch_data._aggregate` and actual
-Phase-1 synthetic owner fixture (including future revisions, missing
-minutes, stale basis and prior daily eligibility). **Those five require
-the full Macro test environment and have not been locally executed**;
-hosted CI against actual canonical dependencies is still required.
+The latest isolated source qualification returned **44 passing synthetic
+tests** across the oscillator conformance and delayed-revision QA suites,
+with a local surrogate of the incumbent `engine.canon` implementation.
+Eight native-owner integration tests now live under
+`tests/test_entry_radar_oscillator_owner_integration.py`. They use the
+real `rs_pullback_launch_data._aggregate` and its existing
+`_metadata_errors` source refusal guard before reading synthetic minute
+slots, including negative first-seen, identity and basis witnesses.
+The earlier five integration tests passed in an isolated immutable
+M2 Studio checkout on the previous code head; **the eight-test current
+head has not yet completed native-source qualification**.
+All three suites are enrolled in the original existing `research-price-panel`
+CODE-gate CI manifest, with no additional workflow or new source authority;
+exact-head hosted CI must still be observed and independently reviewed.
 These are software falsifiers, not market trials, strategy win rates,
 a point-in-time data audit or Pine parity.
 
