@@ -198,12 +198,26 @@ def verifier_chromium_pin(root: Path, verifier: str) -> str | None:
     return match.group(1) if match else None
 
 
+def describe_browser(browser: dict) -> str:
+    """One receipt's browser block as text: build, binary, Playwright, host."""
+    text = f"{browser.get('engine', '?')} {browser.get('version', '?')}"
+    extra = []
+    executable = browser.get("executable")
+    if isinstance(executable, dict) and executable.get("name"):
+        extra.append(f"{executable['name']} sha256 {executable.get('sha256', '?')}")
+    if browser.get("playwright"):
+        extra.append(f"Playwright {browser['playwright']}")
+    if browser.get("platform"):
+        extra.append(f"{browser['platform']}/{browser.get('arch', '?')}")
+    return f"{text} ({', '.join(extra)})" if extra else text
+
+
 def environment_hint(root: Path) -> str:
     """Name the browser build and fonts a re-mint must reproduce."""
     receipts = load_browser_receipts(root)
     versions = sorted(
         {
-            f"{browser.get('engine', '?')} {browser.get('version', '?')}"
+            describe_browser(browser)
             for _rel, payload in receipts
             if isinstance(browser := payload.get("browser"), dict)
         }
@@ -219,8 +233,9 @@ def environment_hint(root: Path) -> str:
     pin = verifier_chromium_pin(root, verifier)
     if pin:
         parts.append(
-            f"{verifier} pins Chromium {pin} and refuses any other build "
-            "(pass --browser with that build's executable if Playwright "
+            f"{verifier} pins Chromium {pin}, its headless-shell binary, the "
+            "Playwright release and the host platform, and refuses anything else "
+            "(pass --browser with that build's chrome-headless-shell if Playwright "
             "resolves a different one)"
         )
     if manifests:

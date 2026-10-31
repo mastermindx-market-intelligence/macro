@@ -10,9 +10,11 @@ platform font. The verifier's CDP audit refuses a receipt if one still does.
 
 This tool regenerates the committed subsets and the stylesheet. It needs
 fontTools with brotli (``pip install fonttools brotli``); the repository's
-tests and the verifier never import it. Run it when the served text gains a
-codepoint the pinned subsets lack (the verifier names the leak), then re-mint
-both receipts:
+tests and the verifier never import it. The woff2 bytes depend on both, so
+``font-pin.json`` records the versions that produced them under ``toolchain``;
+rebuild with those versions or expect the file digests to move. Run it when
+the served text gains a codepoint the pinned subsets lack (the verifier names
+the leak), then re-mint both receipts:
 
     python3.11 scripts/build_p0b_font_pin.py \\
         --cjk-font NotoSansSC-Variable.ttf \\
@@ -122,6 +124,13 @@ def cmap(path: Path) -> set[int]:
 
     font = TTFont(path, lazy=True)
     return set(font.getBestCmap())
+
+
+def toolchain() -> dict[str, str]:
+    import brotli
+    import fontTools
+
+    return {"fonttools": fontTools.version, "brotli": brotli.__version__}
 
 
 def subset(source: Path, out: Path, unicodes: set[int], weight: int | None = None) -> None:
@@ -239,6 +248,7 @@ def build(args: argparse.Namespace) -> dict:
     manifest = {
         "schema": "mastermind.p0b_font_pin.v1",
         "generator": "scripts/build_p0b_font_pin.py",
+        "toolchain": toolchain(),
         "stylesheet": f"{ROUTE}/pin.css",
         "shadowed_families": [INTER, *UI_FAMILIES, *CJK_FAMILIES],
         "weights": list(WEIGHTS),

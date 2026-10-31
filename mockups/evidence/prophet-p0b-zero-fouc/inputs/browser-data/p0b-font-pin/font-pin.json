@@ -1,6 +1,10 @@
 {
   "schema": "mastermind.p0b_font_pin.v1",
   "generator": "scripts/build_p0b_font_pin.py",
+  "toolchain": {
+    "fonttools": "4.63.0",
+    "brotli": "1.2.0"
+  },
   "stylesheet": "/p0b-font-pin/pin.css",
   "shadowed_families": [
     "Inter",

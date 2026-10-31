@@ -2196,14 +2196,36 @@ def test_both_receipts_were_measured_by_one_browser_build() -> None:
 
 
 def test_verifier_refuses_any_chromium_but_the_receipts_build() -> None:
+    """The version string alone does not name a binary: the receipts also pin
+    the launched headless shell's sha256, the Playwright release and the host.
+    """
     source = _read(BROWSER_RECEIPT)
     pin = re.search(r'^const CHROMIUM_PIN = "([^"]+)";$', source, re.M)
-    assert pin
-    assert "browserVersion !== CHROMIUM_PIN" in source
+    playwright = re.search(r'^const PLAYWRIGHT_PIN = "([^"]+)";$', source, re.M)
+    host = re.search(r'^const HOST_PIN = \{platform: "([^"]+)", arch: "([^"]+)"\};$', source, re.M)
+    executable = re.search(
+        r'^const BROWSER_EXECUTABLE_PIN = \{\n  name: "([^"]+)",\n  sha256: "([0-9a-f]{64})",\n\};$',
+        source,
+        re.M,
+    )
+    assert pin and playwright and host and executable
+    for guard in (
+        "browserVersion !== CHROMIUM_PIN",
+        "browserExecutable.name !== BROWSER_EXECUTABLE_PIN.name",
+        "browserExecutable.sha256 !== BROWSER_EXECUTABLE_PIN.sha256",
+        "playwrightVersion !== PLAYWRIGHT_PIN",
+        "process.platform !== HOST_PIN.platform",
+        "process.arch !== HOST_PIN.arch",
+    ):
+        assert guard in source, guard
     for path in BROWSER_RECEIPTS.values():
         assert json.loads(_read(path))["browser"] == {
             "engine": "chromium",
             "version": pin.group(1),
+            "executable": {"name": executable.group(1), "sha256": executable.group(2)},
+            "playwright": playwright.group(1),
+            "platform": host.group(1),
+            "arch": host.group(2),
         }
 
 
@@ -2221,6 +2243,8 @@ def test_browser_receipts_were_measured_with_only_committed_fonts(market: str) -
     assert pin["stylesheet"] == manifest["stylesheet"] == "/p0b-font-pin/pin.css"
     assert pin["platform_fonts"] == []
     assert pin["audited_pages"] > 0
+    assert pin["audited_nodes"] > 0
+    assert "FONT_AUDIT.unanswered.size" in _read(BROWSER_RECEIPT)
     for name, digest in manifest["files"].items():
         assert _sha256(FONT_PIN / name) == digest
         assert receipt["loaded_assets"][str((FONT_PIN / name).relative_to(ROOT))] == digest
