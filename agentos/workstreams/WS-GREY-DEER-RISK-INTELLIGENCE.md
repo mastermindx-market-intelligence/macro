@@ -471,7 +471,7 @@ waves:
   - id: EW-P1
     title: EW-P1 nightly publication repair - GH001 diagnosis (T1, done) and QLedger oversize carve-out parity for the engine and collect-tail commit paths (T2); acceptance = two natural sessions landing engine data
     status: in_progress
-    # T1 DONE by the seat 2026-10-31: claims.jsonl 104,857,394 B (206 B under 100 MiB); engine script and commit-tail step carry no carve-out; run 40803269874 engine job 123688873047 + collect_tail job 123688869633 GH001; last landed engine data commit a050d2c71647 (10-21).
+    # T1 DONE by the seat 2026-10-31: claims.jsonl 104,857,394 B (206 B under 100 MiB); engine script and commit-tail step carry no carve-out; run 40803269874 engine job 123688873047 + collect_tail job 123688869633 GH001; last landed engine data commit ad6e5a824334 (10-21; a050d2c71647 22 min earlier last landed claims.jsonl).
     # T2 on ORCH-P1 (Opus orchestrator, fabric lanes): helper scripts/ci/qledger_oversize_carve.sh, one hunk in daily_engine_commit_outputs.sh, commit tail data extracted to scripts/ci/daily_collect_tail_commit.sh, tests registered. No QLedger publication (owner #10079). Disjoint from #10221's hunks.
     depends_on: [EW-P0]
   - id: EW-P2

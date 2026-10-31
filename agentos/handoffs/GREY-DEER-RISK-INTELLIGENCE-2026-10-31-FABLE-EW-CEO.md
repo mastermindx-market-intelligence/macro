@@ -15,7 +15,7 @@ state_before: >
   REQUEST AMENDMENTS review; its Sol web author session had ended. #10221 (risk-envelope pair check, head 3599ba67,
   Draft, red on an unregistered test) and #10104 (rotation observation continuity, head a324b7fc, Draft, ~800
   commits behind main, six merge conflicts) were orphaned Sol carriers. Nightly engine data commits have been lost
-  to GH001 every night since 2026-10-21 (last landed engine data commit a050d2c71647): data/qledger/claims.jsonl on
+  to GH001 every night since 2026-10-21 (last landed engine data commit ad6e5a824334, 01:18 -0700; a050d2c71647 22 minutes earlier was the last to land data/qledger/claims.jsonl): data/qledger/claims.jsonl on
   main is 104,857,394 B, 206 B under the 100 MiB single-file limit, and only the collect lane carries the reviewed
   carve-out (#9556); the engine commit path and the collect_tail commit step do not. The public risk envelope kept
   advancing through site-only renders while the durable mirror and rotation_context went stale (public 2026-10-30
@@ -38,7 +38,8 @@ verified:
     result: 104857394 (limit 104857600; collect-lane carve margin 1048576 in .github/workflows/daily.yml)
   - claim: The engine commit path and the collect_tail commit step carry no QLedger carve-out while the collect lane does.
     command: grep -n "qledger" scripts/ci/daily_engine_commit_outputs.sh; grep -n "qledger_limit\|qledger_carved\|commit tail data" .github/workflows/daily.yml
-    result: zero matches in the engine script; carve block only inside the collect job (~755-1050); commit tail data step (~2124) adds data/ and site/basketdata/ with no carve.
+    result: >-
+      5 matches in the engine script (lines 220-221 and 295-297 - qledger_before_rebase, push_qledger_guard, qledger_push_candidate), all push-guard plumbing since 1b08293becb8 and none of them carve-out logic (no oversize/104857600/margin handling); carve block only inside the collect job (~795-811, gates 922/986); commit tail data step (~2124, job collect_tail) adds data/ and site/basketdata/ with no carve.
   - claim: The 2026-10-29 nightly lost both commits to GH001.
     command: gh run view 40803269874 --json jobs --jq '.jobs[] | select(.name=="engine" or .name=="collect_tail") | {name,conclusion,id}'; gh run view --job 123688873047 --log | grep -n GH001
     result: engine job 123688873047 GH001 at 00:17:12Z; collect_tail job 123688869633 remote rejected a 146.50 MB QLedger file at 20:20:23Z.
@@ -46,7 +47,7 @@ verified:
     command: >-
       git log --format='%h %ad %s' --date=short -1 --grep='engine: regime update' origin/main
     result: >-
-      a050d2c71647 2026-10-21 engine: regime update 2026-10-21
+      ad6e5a824334 2026-10-21 engine: regime update 2026-10-21   (a050d2c71647, same date, is its ancestor 22 minutes earlier)
   - claim: #10104 conflicts with main in exactly six files.
     command: git merge-tree --write-tree origin/main a324b7fc1f15e18393482ab18c4d97e12ebcbabe
     result: CONFLICT in .github/ci/legacy-jobs.yml, app/deploy/update.sh, lib/user_prefs.py, tests/test_account_prefs.py, tests/test_alert_delivery_drain.py, tests/test_ci_pack.py; merge-base c9608be2.
