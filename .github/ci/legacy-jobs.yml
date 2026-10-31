@@ -8167,6 +8167,7 @@ jobs:
       - "tests/test_options_observed_qqq.py"
       - "scripts/repair_gex_history.py"
       - "tests/test_repair_gex_history.py"
+      - "tests/test_gex_archive_correction.py"
       - "lib/options_source_receipts.py"
       - "lib/options_reference_pages.py"
       - "tests/test_options_reference_pages.py"
@@ -8836,7 +8837,7 @@ jobs:
       - name: intraday greek + conditional scenario surface tests (IV solve, Greek parity, source clocks, price×time contours)
         run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py tests/test_options_scenario_admission.py -q
       - name: qualified joint exposure and legacy Hub publication compatibility
-        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_snapshot_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
+        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_snapshot_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_gex_archive_correction.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
         run: python -m pytest tests/test_options_payoff.py tests/test_options_plan_expiry.py tests/test_options_plan_quote_context.py -q
       # OEU M-XP(b)+(c): the two payloads the Terminal / Options workspace fetch. Both are
