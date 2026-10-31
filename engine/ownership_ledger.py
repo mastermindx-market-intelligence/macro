@@ -36,9 +36,12 @@ HONESTY:
 from __future__ import annotations
 
 import logging
+import os
+import stat
 from datetime import date
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 import pandas as pd
 
@@ -97,13 +100,31 @@ def _load_ledger(cohort: str, root: Path | None = None) -> pd.DataFrame:
 
 
 def _save_ledger(df: pd.DataFrame, cohort: str, root: Path | None = None) -> None:
-    """Write ledger parquet. Creates parent directories. Never raises."""
+    """Publish a complete parquet atomically; failures propagate to the cohort."""
+    p = _ledger_path(cohort, root)
+    p.parent.mkdir(parents=True, exist_ok=True)
     try:
-        p = _ledger_path(cohort, root)
-        p.parent.mkdir(parents=True, exist_ok=True)
-        df.to_parquet(p, index=False)
-    except Exception:  # noqa: BLE001
-        log.warning("save_ledger %s failed", cohort, exc_info=True)
+        mode = stat.S_IMODE(p.stat().st_mode)
+    except FileNotFoundError:
+        mode = None
+    staged = p.with_name(f".{p.name}.{uuid4().hex}.tmp")
+    # Exclusive creation retains normal umask behavior without changing the
+    # process-wide umask. Never truncate the published ledger while serializing.
+    fd = os.open(staged, os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                 mode if mode is not None else 0o666)
+    try:
+        try:
+            if mode is not None:
+                os.fchmod(fd, mode)
+        finally:
+            os.close(fd)
+        df.to_parquet(staged, index=False)
+        os.replace(staged, p)
+    finally:
+        try:
+            staged.unlink(missing_ok=True)
+        except OSError:
+            log.warning("ledger staging cleanup failed: %s", staged, exc_info=True)
 
 
 def _append_rows(cohort: str, new_rows: list[dict],
@@ -117,7 +138,7 @@ def _append_rows(cohort: str, new_rows: list[dict],
     one-way maturation without turning them into mutable backtests.
 
     Returns the number of newly registered rows; null-cell maturations do not
-    count as new rows.
+    count as new rows. Write failures propagate before a successful count.
     """
     if not new_rows:
         return 0
