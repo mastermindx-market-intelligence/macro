@@ -102,6 +102,22 @@ docket README. Nothing in this file is a completion claim beyond the rung each l
   Next: CI green → reviewDecision → READY → merge `--match-head-commit <head>` → deploy observation
   with flags OFF → steward rights message (source-linked, after merge) → Agent OS handoff record.
 
+- **2026-10-31 14:3xZ** — CI on 9ef63bec RED in two places. (1) ci-pack-11 `design-governance`:
+  `templates/catalyst_partner.html.j2` (inline `<style>` with `.cta:hover` / `a:focus-visible`) is a
+  material UI change with no committed evidence receipt. Seat-fixed in this commit: demo pack built
+  with `scripts/build_catalyst_partner_pack.py --demo` (synthetic fixture, DRAFT_HOLD), captured with
+  `scripts/capture_page_evidence.py` (site-dir, routes override, desktop+mobile × en+zh × light+dark,
+  force-states `cta_hover:hover(.cta)` + `cta_focus:focus(.cta)`; 24/24 cells captured, both themes
+  genuinely applied) → `mockups/evidence/catalyst-partner-pack/{EVIDENCE.yml,manifest.json,*.png}`;
+  `check_ui_visual_evidence.py` on the PR diff → rc 0. The partner template has no zh strings, so the
+  zh cells are byte-identical to en (same sha file); recorded honestly, not a parity claim.
+  (2) ci-pack-0 `fif-kernel-guards`: `tests/test_fif_a34_pack_proof_ledger.py::test_a34_ledger_is_fresh`
+  — MAIN-SIDE: the A34 ledger (#9901, cca91862) was generated before PK09's follow-up (#10298,
+  686ec075) added calibration tests (committed 41, fresh 45); reproduced on origin/main d467c360 in
+  the judge tree; this branch touches no FIF file. Owner = FIF seat (`A34 ledger #9901 regenerates
+  LAST`); not patched here. Dependency: once main carries a fresh ledger, merge origin/main into the
+  branch (new head, body once) → CI → READY → merge. Main's own run 41207165058 (a328e863) pending.
+
 ## 5. Never
 
 Push `sol/*` or `web/mmx-acq-*`; edit the adopted producer files' semantics; enable a catalyst flag; edit `config/theme_sources.yml`; stage `data/`/`site/`;
