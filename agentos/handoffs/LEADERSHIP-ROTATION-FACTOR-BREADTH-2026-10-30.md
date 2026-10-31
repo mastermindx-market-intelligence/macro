@@ -254,3 +254,12 @@ controller-launch evidence only and must be reconciled on its original root;
 a future follow-on source commit requires an independent delta review of its
 exact immutable head. Keep PR Draft/Hold pending exact-head CI, review,
 owner-authenticated rights/known-at/quotes, Paper and signed-in user path.
+
+
+## 2026-10-31 continuation: exact-head CI and P2d native-owner source gate
+
+- Head 940ec4cc057f5f4888410c28dc3187c399a06778 hosted CI 41152189611 completed SUCCESS (15 successful jobs, one skipped), fences 41152189583 SUCCESS. No independent acceptance or live/browser proof implied.
+- Prior broad Fabric review 46792c terminal rc76 REMOTE_CLEANUP_UNPROVEN ProcessCensusError, retry false, no usable review. Frozen 940ec4 delta review terminal rc0 delivered extraction-support-only scoped PASS, acceptance false; cannot be used as whole-PR review.
+- Grok Secretary's same-carrier thread 1793407794.558919 returned HOLD on ai_semiconductors, identifying missing original known-at/corrections, Data OS issuer/security identity, purpose grant, price/parent clocks. Child RESULT was adjudicated and SOL STOP delivered in the same thread. WATCH_UNAVAILABLE not falsely counted as running.
+- P2d `engine/sector_theme_native_owner_read.py` now checks incumbent rights-use verdict and PIT membership before the existing P2 research preview. Actual current-main rights kernel returned HELD source_use_owner_denied, zero membership reads, no rights/publisher effects. 294 isolated focused suite tests passed including new 16 native-owner tests. The code remains proposed on same draft source carrier; original membership clock, identity, parent quotes and exact source-use permission remain unverified.
+- P4-P8, Paper design, source-to-API/browser, W6 predictive science and protected release remain held. Next verify newly published source head/fences, obtain independent non-author review and authentic owner receipts, never imply source publication permission.

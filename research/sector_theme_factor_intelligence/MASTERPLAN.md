@@ -163,3 +163,8 @@ publication, score, alert or trade. The authenticated producer path
 must prove this ID (and quote/basis/source rights), not infer it.
 Frozen-head CI/review from 46792c6 is not exact-head proof of any
 new follow-on commit. This strengthens P3 only, does not start P4-P8.
+
+
+## 2026-10-31 P2d native owner binding (research-only)
+
+Added `engine/sector_theme_native_owner_read.py` to bind the pure P2 owner packet to the existing `engine.theme_graph.rights_use.current_use_verdict` and `engine.basket_membership_pit.members_asof`. It checks the exact house source, purpose `sector_theme_factor_research`, source SHA/generation, read_use phase and US scope, then re-reads and compares native PIT membership population and snapshot. A rights refusal stops before membership I/O. The caller cannot override the owner's decision. Source rights, original first-available membership/version corrections, Data OS security/issuer identity, actual market data and parent-clock provenance remain unqualified and must be independently authenticated by their incumbent owners; output is never customer-publishable, predictive, ranked, alerted or traded. Fifteen new hermetic native-binding test functions plus prior tests passed (294 total). Reading the actual current Macro main rights-use kernel yielded HELD source_use_owner_denied with zero membership calls, confirming there is no research-use grant. Grok Secretary identified a possible house-curated ai_semiconductors source but reported HOLD and an outstanding Chairman purpose ruling; no source license or right changed.
