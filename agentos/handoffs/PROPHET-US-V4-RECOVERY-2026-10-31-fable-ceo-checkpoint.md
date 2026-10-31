@@ -48,7 +48,7 @@ changed:
       concurrent-writer rebase, and after main added/changed qledger files), a
       hard-kill + always()-step restore, the park-failure withhold, a carved new
       file, trap chaining (one-line, multi-line, quoted), and the wiring pins.
-prs: [10255, 10267, 10277, 10283]
+prs: [10255, 10267, 10277, 10283, 10289]
 verified:
   - claim: The nightly outage root cause is GitHub's GH001 blob limit on data/qledger/claims.jsonl, not the builders.
     command: >
@@ -198,8 +198,47 @@ verified:
       signal_asof; k* = 0 so T2m UNIDENTIFIED; generation recorded_at within 2
       sessions for all units. Estimator = cluster bootstrap on t_disc (4000, seed
       20261031); FRAGILE blocks PROMOTE; tolerance (ii) rescaled to a -25 bps mean.
-      Round-4 review running on c38416ae. Known r5 fix: pass rate at true zero is
-      ~22%, not 29% (carried from r3's critical value).
+      Round 4 returned REVISE on c38416ae: P1 the session-cluster bootstrap ignores
+      dependence between overlapping holds and the floors count units, not periods;
+      P2 the lane-state rule differed between code and prose and the "59 BUY rows /
+      07-31 heal" evidence was an artifact of walking 2026-08..10 only; N1-N14.
+  - claim: W2 revision 5 (438b1ac45ec1) resolves round 4 with census v5; the r4 heal evidence is retracted.
+    command: >
+      python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions
+      <W1 r3 map> --commit-walk --document-walk (v5: all four monthly parquets,
+      first-parent arrival, one heal rule, uniform identity span, K on k(c_cur),
+      HEAD never read; dates, flags, arrival instants only).
+    result: >
+      1,087 -> 98 INCUMBENT_LED -> 989 pre-window gap -> 26 exact (lead median 0,
+      15 of 26 zero) / 44 interval / 0 cash / 918 censored / 1 UNKNOWN signal_asof;
+      21 units had a BUY row on the last window session that arrived one session too
+      late (not inside K); HEAD differs from first-arrival by 154 BUY rows, ALL from
+      the 09-14 (+50, healed 09-16) and 10-19 (+104, healed 10-21) heals, so both
+      sessions are GAPs; 07-31 is healthy on both bases (r4's "59 rows / 07-31" was
+      a July-walk artifact, exactly as round 4 said); recorded_at <= T0 fill instant
+      for 1,087/1,087; alias snapshot sha256 ff8a32df8e47... pinned; 0 strict primary
+      units and 0 strict pairs in R. r5 adds W2-ADJ-04 (one heal rule: healed session
+      = GAP), ADJ-05 (circular moving block bootstrap, l = 22 sessions, shared index
+      set; floors 300 units over >= 110 distinct discovery sessions / 100 pairs over
+      >= 44), ADJ-06 (-25 bps as a differential only; PROMOTE also needs T0's own
+      lower bound >= 0 and the timing point estimate >= 0); critical values restated
+      with design effects (policy SE ~43, crit ~+46 bps, pass-at-zero ~0.14; r4's 0.29
+      was wrong); tolerance (ii) differential at -50 bps; T3 gate availability-only;
+      anchor knowability; REJECT_FUTILITY terminal; trim once; R maturity from
+      observed t_exec; the frozen YAML block parses (49 keys). Round-5 review running
+      on 438b1ac4. The seat does not self-approve.
+  - claim: The retained A2 preflight patch has a reviewable carrier — Draft PR #10289, stacked on #10209.
+    command: >
+      git apply of the fabric result's patch onto da3a04518f13 (the exact #10209 head)
+      -> 1504ca7e; python3 -m pytest tests/test_prophet_settlement_preflight.py -q;
+      contract-delta (base da3a0451) then required a run: step -> 0cfffbab wires the
+      suite into the prophet-lab code gate and the ci.yml paths block.
+    result: >
+      27 passed locally. File SHAs match the fabric manifest. Draft, base
+      sol/web-prophet-v4-a2-producer-clock-20261030 (Sol's Draft/HOLD lane), not
+      armed, not reviewed, not accepted, not released; hosted CI not yet consumed.
+      The fabric operation prophet-v4-a2-source-issuer-preflight-20261031-01 stays
+      TERMINAL / NOT_ACCEPTED and is not re-run.
   - claim: PR #10255 round 2 (fresh bounded reviewer at 6454a74a) returned APPROVE-READY and the PR is armed merge-on-green.
     command: gh pr view 10255 --comments (the round-2 verdict comment); one GraphQL read of mergeStateStatus/labels.
     result: >
@@ -209,8 +248,8 @@ verified:
       ci-pack runs (10-31 ~10:xxZ read: #10277 d03acfd0, #10267 750dd2c2, #10255
       6454a74a all OPEN/UNSTABLE/armed).
 unverified:
-  - claim: W2 registration r4 (c38416ae) is ready to freeze.
-    what_would_verify: the round-4 independent review's APPROVE-READY-TO-FREEZE on that exact head; until then no freeze and no outcome read. T3 gate (union_admission reads completed closes only, asof-capable) is evaluated at freeze.
+  - claim: W2 registration r5 (438b1ac4) is ready to freeze.
+    what_would_verify: the round-5 independent review's APPROVE-READY-TO-FREEZE on that exact head; until then no freeze and no outcome read. T3 gate (union_admission reads completed closes only, asof-capable) is evaluated at freeze.
   - claim: PR #10267 (head 750dd2c2) hosted CI green and merged by the merge-on-green sweeper against that exact head.
     what_would_verify: the sweeper's merge commit on origin/main; mergeStateStatus read once via the bound PR status, not by polling.
   - claim: PR #10277 (head d03acfd0) and PR #10255 (head 6454a74a) merge through the sweeper against those exact heads.
@@ -270,16 +309,18 @@ next_actions:
     preregistration (#7751 A1), its prospective population, H10 MAE endpoint, cost
     floor, multiplicity treatment, fixed looks and refusal handling unchanged.
   - >
-    5. A2: consume the retained preflight patch of
-    prophet-v4-a2-source-issuer-preflight-20261031-01 (TERMINAL rc0, NOT_ACCEPTED)
-    through its existing carrier before any overlapping issuer work; do not
-    re-run it.
+    5. A2: the retained preflight patch now lives on Draft PR #10289 (head 0cfffbab,
+    stacked on #10209's head da3a0451). Consume its hosted CI once; commission one
+    independent non-author review of the preflight's refusal semantics (NOT_SETTLED
+    receipt, non-fatal alarm, no publication); it inherits #10209's HOLD and is never
+    armed or merged ahead of its base. Do not re-run the fabric operation.
   - >
-    6. Entry Timing W2 (Draft PR #10283, registration r4 at c38416ae, DRAFT -
-    UNFROZEN; census v4 committed): consume the round-4 review; apply any REVISE on
-    the branch as r5 (include the 22% pass-rate fix); only on APPROVE-READY-TO-FREEZE
-    run the freeze inputs (census v4 re-run, T3 gate, panel commit SHA per look, Data OS
-    exclusion list) and mirror a machine freeze; R can never promote; no outcome
+    6. Entry Timing W2 (Draft PR #10283, registration r5 at 438b1ac4, DRAFT -
+    UNFROZEN; census v5 committed): consume the round-5 review; apply any REVISE on
+    the branch as r6; only on APPROVE-READY-TO-FREEZE run the freeze inputs (census v5
+    re-run with the per-unit alias blob at c_disc, T3 availability gate on the panel
+    index, panel commit SHA per look, Data OS exclusion list, R maturity session from
+    observed t_exec) and mirror a machine freeze from the parsed YAML block; R can never promote; no outcome
     read before freeze; a separate registration, never a change to #7751 A1. B-17
     34-session window census (7,918 C0 episodes, none complete) stays null — no
     favorable subset.
@@ -364,8 +405,14 @@ commit walk — showed that HEAD's healed stamps overstate the practised lane, t
 exact R pair has a pre-window gap, and that the lane admitted on the discovery session
 itself in 15 of 26 exact pairs. Revision 4 (c38416ae) therefore registers the
 implementable policy contrast as the P-only primary under three recorded adjudications,
-with the timing contrast as a guard; round 4 is running. Still nothing merged, frozen
-or production-proven.
+with the timing contrast as a guard. Round 4 returned REVISE (dependence between
+overlapping holds; a code/prose lane-state mismatch whose "59 rows / 07-31" evidence was a
+July-walk artifact); census v5 confirmed the reviewer (154 HEAD-only BUY rows from the
+09-14 and 10-19 heals, 07-31 healthy) and revision 5 (438b1ac4) registers a block
+bootstrap with session floors, one heal rule, a T0 lower bound and a binding timing
+guard; round 5 is running. The A2 preflight patch gained a carrier (Draft #10289,
+stacked on #10209, 27 tests, unreviewed). Still nothing merged, frozen or
+production-proven.
 
 Canonical sources: completion brief and census at e757498822a2 (Draft #10242),
 recovery carrier #10174 (29cfb98b), program issue #6805 (comment 6539985230), shared
