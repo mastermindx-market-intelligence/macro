@@ -112,3 +112,22 @@ not in another task registry. The parent W1-W5 and separate W6 scientific scope 
   returned a transport 404; no Paper target, edit, screenshot or product proof exists.
 
 No node is promoted to `accepted` by this recovery evidence.
+
+
+## 2026-10-30 returned independent P3 audit and focused repair
+
+The frozen `a469f858…` P3-only Fabric audit
+`stfi-p3-consumer-audit-a469-20261030-r1` returned `CHANGES_REQUIRED`,
+not a whole-PR approval. Its source counterexamples cover unhashable frame
+population, duplicated physical windows under different horizon labels,
+caller-forged explanation tags, cross-parent timeline comparison, unverified
+issuer/quote counts and fingerprint/frame identity drift. The repaired P3
+comparison, timeline and multihorizon consumers add fail-closed validations;
+P3c also catches UTC normalization overflow in parseable extreme timestamps.
+
+Twelve new targeted regressions failed on the unrepaired P3 source; after repair
+all seven isolated suites passed **271** cases. This is evidence for the pure
+source boundary only. CI/fences on the new immutable repair head, separate
+independent review covering repairs/P1/P2, authentic GMI identity/rights/vintage,
+Paper design and a signed-in producer-to-user path remain required. P4-P8 and
+W6 scientific qualification retain their original HOLD/dependency contracts.

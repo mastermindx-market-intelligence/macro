@@ -234,3 +234,52 @@ def test_p3b_17_malformed_evidence_or_member_state_is_held_without_exception():
     b["frame"]["constituents"].pop("SEC_BBB")
     assert compose_regime_timeline([a, b])["reason"] == (
         "invalid_source_population")
+
+
+def test_p3b_recovery_switching_parent_invalidates_rs_history():
+    rows = list(pair())
+    rows[1]["comparison_basis"]["parent_id"] = "XLP"
+    result = compose_regime_timeline(rows)
+    assert result["status"] == "HELD"
+    assert result["reason"] == "different_group_or_incompatible_basis"
+    good = compose_regime_timeline(pair())
+    assert good["status"] == "RESEARCH_PREVIEW_ONLY"
+    assert good["time_basis"]["parent_id"] == "XLK"
+    assert all(obs["parent_id"] == "XLK" for obs in good["observations"])
+
+
+def test_p3b_recovery_caller_forged_population_counts_fail_closed():
+    for corruption, expected in (
+        (("unique_issuer_n", "many"), "invalid_unique_issuer_population"),
+        (("measured_return_n", 99), "invalid_measured_security_count"),
+    ):
+        field, forged = corruption
+        rows = list(pair())
+        if field == "measured_return_n":
+            rows[1]["frame"]["universe"][field] = forged
+        else:
+            rows[1][field] = forged
+        result = compose_regime_timeline(rows)
+        assert result["status"] == "HELD"
+        assert result["reason"] == expected
+
+
+def test_p3b_recovery_forged_security_issuer_map_fails_closed():
+    rows = list(pair())
+    rows[1]["issuer_by_security_id"]["SEC_BBB"] = {}
+    result = compose_regime_timeline(rows)
+    assert result["status"] == "HELD"
+    assert result["reason"] == "missing_or_invalid_security_issuer_mapping"
+
+
+def test_p3b_recovery_fp_members_must_match_frame():
+    rows = list(pair())
+    rows[1]["fingerprint"]["group"]["member_ids"] = ["SEC_AAA", "FAKE"]
+    assert compose_regime_timeline(rows)["reason"] == "invalid_source_population"
+
+
+def test_p3b_recovery_noncausal_membership_known_at_refused():
+    rows = list(pair())
+    rows[1]["frame"]["clock"]["membership_known_at"] = (
+        "2026-11-10T20:00:00+00:00")
+    assert compose_regime_timeline(rows)["reason"] == "noncausal_membership_availability"

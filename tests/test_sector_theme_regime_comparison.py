@@ -279,3 +279,56 @@ def test_p3a_20_unhashable_group_kind_fails_closed_not_exception():
         assert out["status"] == "HELD"
         assert out["reason"] == "unqualified_group_kind"
         assert out["groups"] == []
+
+
+def test_p3a_recovery_unhashable_frame_member_fails_closed():
+    for corrupt in ({"forged": "id"}, ["unhashable"]):
+        rows = preview_pairs()
+        rows["AI_INDUSTRIAL_INFRA"]["frame"]["universe"]["member_ids"][1] = corrupt
+        result = compose_regime_comparison(rows)
+        assert result["status"] == "HELD"
+        assert result["reason"] == "invalid_or_mismatched_group_population"
+        assert result["customer_publication"] is False
+
+
+def test_p3a_recovery_caller_forged_explanation_tag_refused():
+    rows = preview_pairs()
+    p = rows["AI_INDUSTRIAL_INFRA"]
+    fake = deepcopy(p["explanation"]["group_cards"][0])
+    fake["tag"] = "majority_nonpositive_participation_proven_by_bounds"
+    p["explanation"]["group_cards"].append(fake)
+    result = compose_regime_comparison(rows)
+    assert result["status"] == "HELD"
+    assert result["reason"] == "unverified_source_explanation_tags"
+
+
+def test_p3a_recovery_fp_cohort_revision_must_match_frame():
+    for field in ("cohort_id", "membership_revision"):
+        rows = preview_pairs()
+        rows["AI_INDUSTRIAL_INFRA"]["fingerprint"]["group"][field] = "forged"
+        result = compose_regime_comparison(rows)
+        assert result["status"] == "HELD"
+        assert result["reason"] == "group_id_or_membership_basis_mismatch"
+
+
+def test_p3a_recovery_missing_reason_no_alias_or_forged_counts():
+    rows = preview_pairs()
+    p = rows["AI_INDUSTRIAL_INFRA"]
+    p["frame"]["universe"]["missing_by_reason"] = {"missing_quote": 1}
+    result = compose_regime_comparison(rows)
+    assert result["status"] == "RESEARCH_PREVIEW_ONLY"
+    p["frame"]["universe"]["missing_by_reason"]["missing_quote"] = 99
+    assert result["groups"][0]["missing_by_reason"]["missing_quote"] == 1
+    for broken in ({"missing_quote": "many"}, ["bad"], {"bad": -1}):
+        rows = preview_pairs()
+        rows["AI_INDUSTRIAL_INFRA"]["frame"]["universe"]["missing_by_reason"] = broken
+        result = compose_regime_comparison(rows)
+        assert result["status"] == "HELD"
+        assert result["reason"] == "invalid_missing_reason_counts"
+
+
+def test_p3a_recovery_noncausal_membership_known_at_refused():
+    rows = preview_pairs()
+    rows["AI_INDUSTRIAL_INFRA"]["frame"]["clock"]["membership_known_at"] = (
+        "2026-10-30T20:00:00+00:00")
+    assert compose_regime_comparison(rows)["reason"] == "noncausal_membership_availability"

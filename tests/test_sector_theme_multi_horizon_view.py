@@ -208,3 +208,21 @@ def test_p3c_19_unhashable_horizon_key_is_held_not_exception():
     p = pairs()
     p[("bad",)] = p.pop("20d")
     held(p, "malformed_horizon_or_source")
+
+
+def test_p3c_recovery_two_labels_same_actual_window_not_two_horizons():
+    rows = pairs()
+    rows["20d"]["comparison_basis"]["period_start"] = (
+        rows["5d"]["comparison_basis"]["period_start"])
+    held(rows, "duplicate_source_window_for_distinct_horizons")
+    rows = pairs()
+    rows["20d"]["comparison_basis"]["period_start"] = (
+        "2026-10-24T13:00:00-07:00")
+    held(rows, "duplicate_source_window_for_distinct_horizons")
+
+
+def test_p3c_recovery_utc_overflow_date_refused_without_exception():
+    rows = pairs()
+    rows["5d"]["comparison_basis"]["period_start"] = (
+        "0001-01-01T00:00:00+14:00")
+    held(rows, "missing_or_noncausal_owner_window")

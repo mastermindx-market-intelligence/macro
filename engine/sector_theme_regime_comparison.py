@@ -11,7 +11,10 @@ from __future__ import annotations
 
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
+from datetime import datetime, timezone
 import math
+
+from engine.sector_theme_regime_explain import explain_regime_preview
 
 SCHEMA = "sector_theme_regime_comparison/v1"
 INPUT = "sector_theme_owner_preview/v1"
@@ -101,6 +104,18 @@ def _name(value: object) -> str | None:
             and value == value.strip() else None)
 
 
+def _time(raw: object) -> datetime | None:
+    if type(raw) is not str:
+        return None
+    try:
+        instant = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        if instant.utcoffset() is None:
+            return None
+        return instant.astimezone(timezone.utc)
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+
 def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
     """One source-aligned comparative scanner for research, NOT a ranked list.
 
@@ -148,13 +163,26 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
         if (frame["group"].get("group_id") != gid
                 or fp["group"].get("group_id") != gid
                 or frame["group"].get("membership_mode") != p["basis"]
-                or fp["group"].get("membership_mode") != p["basis"]):
+                or fp["group"].get("membership_mode") != p["basis"]
+                or any(
+                    _name(frame["group"].get(field)) is None
+                    or fp["group"].get(field) != frame["group"].get(field)
+                    for field in ("cohort_id", "membership_revision")
+                )):
             return _hold("group_id_or_membership_basis_mismatch")
         if (not isinstance(frame.get("clock"), Mapping)
                 or frame["clock"].get("horizon") != basis["horizon"]
                 or frame["clock"].get("period_end") != basis["period_end"]
                 or frame["clock"].get("decision_at") != basis["decision_at"]):
             return _hold("source_frame_clock_mismatch")
+        end, decision, known = (
+            _time(basis["period_end"]), _time(basis["decision_at"]),
+            _time(frame["clock"].get("membership_known_at")),
+        )
+        if (end is None or decision is None or known is None
+                or known > decision
+                or (p["basis"] == "PIT_AS_KNOWN" and known > end)):
+            return _hold("noncausal_membership_availability")
         if (not isinstance(fp.get("horizons"), Mapping)
                 or set(fp["horizons"]) != {basis["horizon"]}
                 or not isinstance(fp["horizons"][basis["horizon"]], Mapping)):
@@ -174,12 +202,15 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
         universe = frame.get("universe")
         if not isinstance(universe, Mapping):
             return _hold("invalid_or_mismatched_group_population")
+        frame_members = universe.get("member_ids")
         if (not isinstance(members, list)
                 or any(_name(x) is None for x in members)
                 or len(members) != len(set(members))
                 or len(members) != universe.get("expected_n")
-                or not isinstance(universe.get("member_ids"), list)
-                or set(members) != set(universe["member_ids"])):
+                or not isinstance(frame_members, list)
+                or any(_name(x) is None for x in frame_members)
+                or len(frame_members) != len(set(frame_members))
+                or set(members) != set(frame_members)):
             return _hold("invalid_or_mismatched_group_population")
         if (type(universe.get("measured_return_n")) is not int
                 or not 0 <= universe["measured_return_n"] <= len(members)):
@@ -192,6 +223,15 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
         if (type(p.get("unique_issuer_n")) is not int
                 or p["unique_issuer_n"] != len(set(issuer_map.values()))):
             return _hold("invalid_unique_issuer_population")
+        missing = universe.get("missing_by_reason", {})
+        if (not isinstance(missing, Mapping) or any(
+            _name(reason) is None or type(count) is not int or count < 0
+            for reason, count in missing.items()
+        )):
+            return _hold("invalid_missing_reason_counts")
+        parent_id = basis.get("parent_id")
+        if parent_id is not None and _name(parent_id) is None:
+            return _hold("malformed_parent_identity")
         for member in members:
             member_to_groups[member].add(gid)
             issuer_to_groups[issuer_map[member]].add(gid)
@@ -214,14 +254,29 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
         cards = descriptions.get("group_cards")
         if not isinstance(cards, list):
             return _hold("bad_explanation_cards")
-        # No arbitrary text from a model or raw feed. The text cards remain
-        # explicitly unqualified and source-scoped until the owner certifies them.
+        # Verify tags against the deterministic numeric evidence; caller prose
+        # never becomes a sector facet merely by carrying a benign-looking flag.
         if any(not isinstance(c, Mapping) or (
             c.get("source_status") != "unqualified_descriptive_preview"
             or c.get("forecast_probability") is not None
             or c.get("trade_recommendation") is not None
+            or _name(c.get("tag")) is None
+            or c.get("horizon") != basis["horizon"]
         ) for c in cards):
             return _hold("unsupported_narrative_claim")
+        try:
+            verified = explain_regime_preview(fp)
+        except (TypeError, ValueError, OverflowError, KeyError, AttributeError):
+            return _hold("invalid_numeric_explanation")
+        if verified.get("status") != "RESEARCH_PREVIEW_ONLY":
+            return _hold("invalid_numeric_explanation")
+        provided_tags = {c["tag"] for c in cards}
+        verified_tags = {
+            c["tag"] for c in verified["group_cards"]
+            if c.get("horizon") == basis["horizon"]
+        }
+        if provided_tags != verified_tags:
+            return _hold("unverified_source_explanation_tags")
         result_rows.append({
             "group_id": gid, "kind": kind,
             "parent_id": basis.get("parent_id"),
@@ -236,8 +291,8 @@ def compose_regime_comparison(previews: Mapping[str, Mapping]) -> dict:
             "rs_market": market_rs, "rs_parent": parent_rs,
             "positive_return_breadth": breadth,
             "above_ma50_breadth": above50,
-            "group_facets": sorted({c.get("tag") for c in cards if type(c.get("tag")) is str}),
-            "missing_by_reason": universe.get("missing_by_reason", {}),
+            "group_facets": sorted(verified_tags),
+            "missing_by_reason": dict(missing),
             "source_evidence_status": "unqualified_preview_not_customer_publishable",
         })
     overlap = [

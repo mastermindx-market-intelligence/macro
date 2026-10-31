@@ -39,11 +39,11 @@ def _clock(value: object) -> datetime | None:
         return None
     try:
         d = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if d.tzinfo is None or d.utcoffset() is None:
+            return None
+        return d.astimezone(timezone.utc)
     except (TypeError, ValueError, OverflowError):
         return None
-    if d.tzinfo is None or d.utcoffset() is None:
-        return None
-    return d.astimezone(timezone.utc)
 
 
 def compose_owner_multihorizon_preview(previews: object) -> dict:
@@ -60,6 +60,7 @@ def compose_owner_multihorizon_preview(previews: object) -> dict:
     provenance = None
     issuer_map = None
     member_known_at = None
+    observed_windows = set()
     for horizon, p in sorted(previews.items(), key=lambda item: str(item[0])):
         if type(horizon) is not str or not horizon or not isinstance(p, Mapping):
             return _held("malformed_horizon_or_source")
@@ -89,6 +90,9 @@ def compose_owner_multihorizon_preview(previews: object) -> dict:
         if (start is None or end is None or decision is None
                 or not start < end <= decision):
             return _held("missing_or_noncausal_owner_window")
+        if (start, end) in observed_windows:
+            return _held("duplicate_source_window_for_distinct_horizons")
+        observed_windows.add((start, end))
         if (not isinstance(frame.get("clock"), Mapping)
                 or frame["clock"].get("horizon") != horizon
                 or frame["clock"].get("period_end") != source_basis["period_end"]

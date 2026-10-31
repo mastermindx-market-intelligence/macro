@@ -68,16 +68,16 @@ unverified:
     canvas work. Predictive research separately requires frozen preregistration, chronological validation
     and prospective shadow evidence.
 unresolved:
-- P3 controller return unconfirmed; do not infer worker success or absence. Review excludes P1/P2 and
-  repair delta.
+- P3 audit terminal CHANGES_REQUIRED on frozen a469 P3 only; scoped repair verified in local focused
+  tests. Independent whole-PR/repaired-P2 review and exact-head CI remain unverified.
 - GMI identity/membership/rights unsealed; W3C capture unavailable. Paper direct transport 404, no target/edit.
 - Task-tree link proposed on this draft only; no accepted Agent OS wave/runtime transition. P4-P8 remain
   open.
 next_actions:
 - 'Read research/sector_theme_factor_intelligence/MASTERPLAN.md; inspect current PR #10213 head, CI/fences
   and actual owning-job result.'
-- Consume only stfi-p3-consumer-audit-a469-20261030-r1 / root stfi-20261030 / controller 18932; no proven
-  START/return, no duplicate or replay.
+- Reconcile returned P3 audit stfi-p3-consumer-audit-a469-20261030-r1 on root stfi-20261030;
+  preserve its CHANGES_REQUIRED result and no-replay constraint.
 - Obtain independent source review and authentic GMI/market receipts, then prove the existing signed-in
   consumer. Keep Draft/Hold.
 do_not_redo:
@@ -192,3 +192,34 @@ Historical unresolved records preserved from the recovery input:
 - GMI W3B current-generation identities/membership/rights remain unsealed; W3C SOURCE_UNAVAILABLE:CAPTURE_RIGHTS_UNAVAILABLE persists. Terminal 868's specific rejected integration effect remains held, with no cross-carrier retry.
 - Current Mastermind Paper inspect returned MCP transport 404. No exact file, board, snapshot, edit, screenshot or JSX was obtained. No alternate carrier used.
 - PLAN_NOT_ORG_LINKED: this draft's source checkpoint/task tree is not an accepted Agent OS wave transition. Parent workstream artifacts and W6 remain untouched; no Executive Job, lease or runtime ownership is invented.
+
+
+## 2026-10-30 follow-on: independent P3 return and contract repair
+
+- Original paid Fabric P3-only read-only audit `stfi-p3-consumer-audit-a469-20261030-r1`
+  / root `stfi-20261030` returned TERMINAL, rc=0, a retained 12,174-byte
+  reviewer report, `CHANGES_REQUIRED`, `accepted=false` and `retry_allowed=false`.
+  This is a genuine independent finding on frozen `a469f858…`, **not** acceptance
+  of #10213 or a whole-PR review. Original child/root remain unchanged.
+- Confirmed F1 fail-crash on unhashable frame member, F2 duplicate independent
+  horizon labels on one window, F3 caller-provided explanation tags unverified,
+  F4 mixed parent benchmarks across timeline, F5 forged issuer/measured counts,
+  F6 identity mismatch and mutable missing-reason map. F7 future membership
+  known-at defense and an additional P3c UTC normalization overflow were also
+  addressed; F8 vacuous optional caller group-id check is informational and
+  does not weaken actual recomputed frame identity. No new source rights claimed.
+- Added 12 discriminating `test_p3*_recovery_*` tests; **12 failed before**
+  repair on the exact original P3 blobs. After repairing only the three P3
+  consumers, all seven isolated focused suites passed **271 in 0.27s** with
+  the previously repaired P2 bridge. Original tests and factor semantics kept.
+- Comparison now fails closed on malformed identity/population, re-verifies
+  numeric facet tags, checks membership-known-at and snapshots missing-reason
+  counts. Timeline verifies parent continuity, native population/issuer counts,
+  fingerprint members and known-at. Multi-horizon refuses same physical window
+  under multiple labels and UTC-overflow inputs. All publication, ranking,
+  prediction, trading and alert authority remain hard-off.
+- These are local source/test receipts, not hosted CI at the forthcoming head,
+  non-author acceptance of the repair, or an authenticated source-to-browser
+  path. Preserve PR Draft/Hold; acquire exact-head CI/fences and independent
+  review, then genuine GMI owner rights/constituent/quote vintage and signed-in
+  consumer evidence before product acceptance.

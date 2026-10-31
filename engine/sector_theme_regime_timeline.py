@@ -20,7 +20,7 @@ from engine.leadership_rotation_context import breadth_change
 
 SCHEMA = "sector_theme_regime_timeline/v1"
 INPUT_SCHEMA = "sector_theme_owner_preview/v1"
-WINDOW = ("market", "benchmark_id", "price_basis", "session_basis", "horizon")
+WINDOW = ("market", "benchmark_id", "price_basis", "session_basis", "horizon", "parent_id")
 
 
 def _hold(reason: str) -> dict:
@@ -184,7 +184,9 @@ def compose_regime_timeline(previews: Sequence[Mapping]) -> dict:
                 or group.get("membership_mode") != row.get("basis")):
             return _hold("group_or_mode_mismatch")
         cur_basis = tuple(basis.get(k) for k in WINDOW)
-        if any(type(v) is not str or not v for v in cur_basis):
+        if (any(type(v) is not str or not v for v in cur_basis[:-1])
+                or (cur_basis[-1] is not None
+                    and (type(cur_basis[-1]) is not str or not cur_basis[-1]))):
             return _hold("unknown_benchmark_or_session_basis")
         gid = group["group_id"]
         if first_basis is None:
@@ -218,11 +220,32 @@ def compose_regime_timeline(previews: Sequence[Mapping]) -> dict:
                for member_row in frame["constituents"].values()):
             return _hold("malformed_constituent_state")
         members = frame["universe"].get("member_ids")
-        if (not isinstance(members, list) or any(type(mid) is not str or not mid for mid in members)
+        fp_members = group.get("member_ids")
+        if (not isinstance(members, list)
+                or any(type(mid) is not str or not mid for mid in members)
                 or len(members) != len(set(members))
                 or frame["universe"].get("expected_n") != len(members)
-                or set(frame["constituents"]) != set(members)):
+                or set(frame["constituents"]) != set(members)
+                or not isinstance(fp_members, list)
+                or any(type(mid) is not str or not mid for mid in fp_members)
+                or fp_members != members):
             return _hold("invalid_source_population")
+        measured_n = frame["universe"].get("measured_return_n")
+        if type(measured_n) is not int or not 0 <= measured_n <= len(members):
+            return _hold("invalid_measured_security_count")
+        issuer_map = row.get("issuer_by_security_id")
+        if (not isinstance(issuer_map, Mapping)
+                or set(issuer_map) != set(members)
+                or any(type(v) is not str or not v for v in issuer_map.values())):
+            return _hold("missing_or_invalid_security_issuer_mapping")
+        unique_issuer_n = row.get("unique_issuer_n")
+        if (type(unique_issuer_n) is not int
+                or unique_issuer_n != len(set(issuer_map.values()))):
+            return _hold("invalid_unique_issuer_population")
+        known = _time(frame["clock"].get("membership_known_at"))
+        if (known is None or known > cutoff
+                or (row["basis"] == "PIT_AS_KNOWN" and known > end)):
+            return _hold("noncausal_membership_availability")
         if not isinstance(at.get("participation"), Mapping):
             return _hold("missing_participation")
         if not isinstance(fp.get("authority"), Mapping) or any(
@@ -241,6 +264,7 @@ def compose_regime_timeline(previews: Sequence[Mapping]) -> dict:
             "period_start": basis["period_start"],
             "period_end": basis["period_end"],
             "horizon": basis["horizon"],
+            "parent_id": basis.get("parent_id"),
             "cohort_id": fp["group"]["cohort_id"],
             "membership_revision": fp["group"]["membership_revision"],
             "membership_basis": row["basis"],
@@ -330,7 +354,7 @@ def compose_regime_timeline(previews: Sequence[Mapping]) -> dict:
         "time_basis": {
             "market": first_basis[0], "benchmark_id": first_basis[1],
             "price_basis": first_basis[2], "session_basis": first_basis[3],
-            "horizon": first_basis[4],
+            "horizon": first_basis[4], "parent_id": first_basis[5],
         },
         "observations": records, "changes": changes,
         "original_issued_snapshots_authenticated": False,
