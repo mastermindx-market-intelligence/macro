@@ -43,24 +43,50 @@
  },
  "commit_walk": {
   "commits_walked": 275,
-  "buy_rows": 2164
+  "buy_rows": 2164,
+  "stamp_dates_seen": 53,
+  "healthy_stamp_dates_first_commit": 32
+ },
+ "document_walk": {
+  "commits_walked": 138,
+  "blobs": 54,
+  "receipts": 54
  },
  "freeze_basis": {
-  "basis": "W1 r3 receipt sessions + VendorAliasTable membership join; NYSE trading sessions; producer-health coverage",
+  "basis": "W1 r3 receipt sessions; VendorAliasTable membership join, security-first (symbol_binding_for per session); NYSE trading sessions; producer-health coverage",
+  "lane_state_basis": "first-commit blob per (stamp_date, ticker); coverage = first blob carrying the date",
+  "head_vs_first_commit_disagreement": {
+   "buy_rows_head_not_first": 59,
+   "buy_rows_first_not_head": 0,
+   "healthy_dates_head_not_first": [
+    "2026-07-31",
+    "2026-09-14",
+    "2026-10-19"
+   ],
+   "healthy_dates_first_not_head": []
+  },
   "alias_receipt": {
    "path": "data/reference/vendor_aliases.parquet",
    "sha256": "sha256:ff8a32df8e47d88149d8ac8d8ae54b9b117a3c44cd34cfcd57eebcf0de816306"
   },
+  "alias_knowledge_time": {
+   "membership_rows_latest_ingested_at": "2026-10-19T06:10:18",
+   "membership_securities_with_multiple_symbols": 3,
+   "note": "membership records carry no validity window; the join uses the current snapshot (knowledge time = its ingest), a disclosed look-ahead on identity labels only"
+  },
+  "identity_epoch_enforced_by_table_api": false,
   "k_sessions": 10,
+  "k_fixed_sessions": 2,
   "R": [
    "2026-08-26",
    "2026-10-23"
   ],
   "sessions_in_R": 42,
-  "healthy_stamp_dates_in_R": 26,
-  "gap_sessions_from_r_from": [
+  "healthy_sessions_in_R": 24,
+  "gap_sessions_in_R": [
    "2026-09-01",
    "2026-09-02",
+   "2026-09-14",
    "2026-09-15",
    "2026-09-18",
    "2026-09-28",
@@ -71,15 +97,11 @@
    "2026-10-13",
    "2026-10-15",
    "2026-10-16",
+   "2026-10-19",
    "2026-10-20",
    "2026-10-21",
    "2026-10-22",
-   "2026-10-23",
-   "2026-10-26",
-   "2026-10-27",
-   "2026-10-28",
-   "2026-10-29",
-   "2026-10-30"
+   "2026-10-23"
   ],
   "counts": {
    "opened": 1087,
@@ -88,43 +110,120 @@
    "t_disc_not_a_session": 0,
    "in_R": 1087,
    "incumbent_led": 98,
-   "t1_identified_exact": 31,
+   "incumbent_led_unknown_pre_gap": 989,
+   "incumbent_pre_identity_unknown": 0,
+   "t1_identified_exact": 26,
    "t1_identified_interval": 65,
    "t1_cash_window_covered": 0,
-   "t1_censored_gap_no_stamp": 892,
-   "t1_unknown_signal_asof": 1,
+   "t1_censored_gap_no_stamp": 873,
+   "t1_unknown_signal_asof": 25,
    "t1_unknown_identity": 0,
-   "zero_lag": 18,
-   "knowable_later_than_stamp": 96,
-   "knowable_missing": 0
+   "primary_exact_strict": 0,
+   "primary_exact_with_pre_gap": 26,
+   "exact_zero_lag": 15,
+   "exact_knowable_later_than_stamp": 26,
+   "exact_knowable_missing": 0,
+   "exact_disc_knowable_later_than_session": 26,
+   "exact_disc_knowable_missing": 0,
+   "exact_symbol_differs_from_ticker_at_observation": 0
   },
-  "identified_pairs": 96,
-  "identified_by_t_disc_month": {
-   "2026-08": 54,
-   "2026-09": 36,
-   "2026-10": 6
+  "stamp_facts": {
+   "healthy_stamp_dates_head": 35,
+   "healthy_stamp_dates_first_commit": 32,
+   "stamp_dates_total": 54,
+   "curated_rows_per_stamp_median": 2932.0,
+   "buy_rows_per_stamp_median": 61.0,
+   "last_healthy_stamp_date": "2026-10-14"
   },
-  "lag_sessions_earliest_possible": {
-   "median": 2.0,
+  "identified_exact_by_t_disc_month": {
+   "2026-08": 22,
+   "2026-09": 3,
+   "2026-10": 1
+  },
+  "lag_sessions_exact": {
+   "n": 26,
+   "median": 0.0,
+   "iqr": [
+    0.0,
+    2.0
+   ],
+   "distribution": {
+    "0": 15,
+    "1": 3,
+    "2": 2,
+    "3": 6
+   }
+  },
+  "lag_sessions_interval_observed_stamp": {
+   "n": 65,
+   "median": 8.0,
+   "iqr": [
+    6.0,
+    10.0
+   ],
+   "distribution": {
+    "2": 1,
+    "3": 4,
+    "5": 4,
+    "6": 19,
+    "7": 4,
+    "8": 4,
+    "9": 12,
+    "10": 17
+   }
+  },
+  "lag_sessions_interval_earliest_possible": {
+   "n": 65,
+   "median": 4.0,
    "iqr": [
     1.0,
     4.0
-   ]
+   ],
+   "distribution": {
+    "1": 24,
+    "4": 33,
+    "5": 8
+   }
   },
-  "lag_sessions_observed_stamp": {
-   "median": 6.0
+  "k_star_sessions_exact_basis": 0.0,
+  "t2m_identified": true,
+  "t1_knowability_shift_sessions_exact": {
+   "1": 26
   },
-  "k_star_candidate_sessions": 2.0,
-  "knowability_shift_sessions": {
-   "1": 70,
-   "2": 26
+  "t0_knowability_shift_sessions_exact": {
+   "1": 26
   },
-  "floor_30_met": true
+  "executable_lead_sessions_exact": {
+   "n": 26,
+   "median": 0.0,
+   "iqr": [
+    0.0,
+    2.0
+   ],
+   "distribution": {
+    "0": 15,
+    "1": 3,
+    "2": 2,
+    "3": 6
+   }
+  },
+  "executable_lead_sessions_exact_strict": null,
+  "generation_recorded_at_lag_sessions": {
+   "n": 1087,
+   "le_2": 1087,
+   "3_to_10": 0,
+   "gt_10": 0
+  },
+  "floor_30_exact_strict_met": false,
+  "floor_30_exact_met": false
  },
  "provenance": {
-  "command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <W1 receipt map> --commit-walk --k 10 --buffer-minutes 30 --r-from 2026-08-26 --r-to 2026-10-23",
+  "census_version": "v4",
+  "command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <W1 r3 receipt map> --commit-walk --document-walk --k 10 --buffer-minutes 30 --r-from 2026-08-26 --r-to 2026-10-23",
   "receipt_sessions_source": "turn_watch_receipt_sessions(data_root, git_ref='origin/main') from scripts/report_us_candidate_episode_waterfall.py at PR #10277 head d03acfd075d9 (54 receipts); re-derived at freeze, never hand-edited",
-  "columns_read": "candidates: stamp_date, ticker, tier, lane, eligible, buyable, featured, signal_asof (+ lane-only blobs over 275 origin/main commits); OPENED episode_id/source_receipt/payload.{ticker_at_observation,opened_session,security_id}; data/reference/vendor_aliases.parquet; data/yahoo/SPY.parquet DATE INDEX only",
+  "lane_state": "first-commit blob per (stamp_date, ticker) over 275 origin/main commits of the monthly candidates parquets; coverage = first blob carrying each stamp date; HEAD disagreement reported",
+  "identity_join": "security-first: candidate symbols from the membership alias records, each confirmed by VendorAliasTable.resolve('membership', symbol, on=session) == security_id",
+  "columns_read": "candidates: stamp_date, ticker, tier, lane, eligible, buyable, featured, signal_asof; OPENED episode_id/source_receipt/recorded_at/payload.{ticker_at_observation,opened_session,security_id,identity_epoch}; turn_watch documents (digest-verified) for receipt and commit time; data/reference/vendor_aliases.parquet; data/yahoo/SPY.parquet DATE INDEX only",
   "outcome_columns_read": "none",
   "generated": "2026-10-31"
  }
