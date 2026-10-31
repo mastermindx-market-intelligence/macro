@@ -36,8 +36,10 @@ def web(monkeypatch):
     catalyst_optin.configure(None)
 
 
-def test_session00_private_request_requires_signed_proof_and_explicit_consent(web):
+def test_session00_private_request_requires_signed_proof_and_explicit_consent(web, monkeypatch):
     client, service = web
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
     assert client.post("/api/catalyst/optin/request", json={}).status_code == 404
     # Structurally signed-looking only: the fake service below is not the
     # canonical HMAC verifier. Production must inject 00.ScanReceiptAuthority.
@@ -78,14 +80,39 @@ def test_bots_rejected_before_otp_verification_owner(web):
     assert not service.verifies
 
 
-def test_verify_requires_post_valid_otp_and_safe_unconfigured_gate(web):
+def test_verify_requires_post_valid_otp_and_safe_unconfigured_gate(web, monkeypatch):
     client, service = web
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
     assert client.post("/api/catalyst/optin/verify", json={
         "email": "investor@example.com", "otp": "123456", "public_ref": "opaque_testref_1234"}).json()["status"] == "verified"
     assert len(service.verifies) == 1
     catalyst_optin.configure(None)
     assert client.post("/api/catalyst/optin/verify", json={
         "email": "investor@example.com", "otp": "123456", "public_ref": "opaque_testref_1234"}).json()["detail"] == "CATALYST_INTEGRATION_NOT_READY"
+
+
+@pytest.mark.parametrize("public,optin", [(None, None), ("1", None), (None, "1"), ("1", "0"),
+                                          ("true", "1"), ("1", " 1")])
+def test_optin_request_and_verify_fail_closed_unless_both_switches_are_exactly_one(
+        web, monkeypatch, public, optin):
+    """Witness for the switch fixture repair: a missing or inexact switch stops before the service."""
+    client, service = web
+    for name, value in (("CATALYST_PUBLIC_ENABLED", public), ("CATALYST_OPTIN_ENABLED", optin)):
+        if value is None:
+            monkeypatch.delenv(name, raising=False)
+        else:
+            monkeypatch.setenv(name, value)
+    signed = "eyJ2IjoxLCJldmVudF9pZCI6ImV2ZW50LTEyMyJ9." + "b" * 43
+    with pytest.raises(FunnelGate) as e:
+        catalyst_optin.request_optin({"email": "investor@example.com", "scan_receipt": signed,
+                                      "consent_checked": True, "scope": catalyst_optin.SCOPE,
+                                      "form_elapsed_ms": 3000, "honeypot": ""})
+    assert (e.value.code, e.value.status) == ("CATALYST_OPTIN_DISABLED", 503)
+    reply = client.post("/api/catalyst/optin/verify", json={
+        "email": "investor@example.com", "otp": "123456", "public_ref": "opaque_testref_1234"})
+    assert reply.status_code == 503 and reply.json()["detail"] == "CATALYST_OPTIN_DISABLED"
+    assert not service.requests and not service.verifies
 
 
 def test_otp_adapter_verifies_real_gotrue_response_not_just_request_acceptance():

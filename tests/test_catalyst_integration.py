@@ -391,7 +391,8 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
                             scan=ScanReceiptAuthority(),
                             identity=otp, consent=pending,
                             suppression=SuppressionOwner(),
-                            revisions=revisions, sender=sender)
+                            revisions=revisions, sender=sender,
+                            confirm_gate=catalyst_optin._optin_enabled)
     catalyst_optin.configure(service)
     guard_allowed = {"yes": True}
     guard_calls = []
@@ -881,6 +882,30 @@ def test_staged_session03_primary_ui_and_fallback(monkeypatch):
     assert "The fixture records a revised result." in fallback.text
     assert "id='catalyst-results'" in fallback.text
     assert "id='catalyst-optin' hidden" in fallback.text
+
+
+@pytest.mark.parametrize("ux", [None, "0", "true", "yes"])
+def test_primary_route_without_ux_switch_stays_server_first_value(monkeypatch, ux):
+    """Witness: the staged Session 03 UI and its assets need the separate UX switch set to "1"."""
+    monkeypatch.delenv("CATALYST_PUBLIC_ENABLED", raising=False)
+    if ux is None:
+        monkeypatch.delenv("CATALYST_UX_ENABLED", raising=False)
+    else:
+        monkeypatch.setenv("CATALYST_UX_ENABLED", ux)
+    app = FastAPI()
+    app.include_router(ci.router)
+    client = TestClient(app)
+    assert client.get("/api/catalyst?tickers=NVDA,ZZZZ").status_code == 503
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    public = ci.sanitize_public_scan(packet(), ["NVDA", "ZZZZ"], now_utc=NOW)
+    monkeypatch.setattr(ci, "public_scan_with_receipt", lambda tickers, event_id=None: public)
+    page = client.get("/api/catalyst?tickers=NVDA,ZZZZ")
+    assert page.status_code == 200
+    assert "The fixture records a revised result." in page.text
+    assert "STAGED PREVIEW" not in page.text
+    assert 'src="/api/catalyst/assets/catalyst_scan.js"' not in page.text
+    for asset in ("catalyst_scan.js", "catalyst_scan.css", "theme.css"):
+        assert client.get("/api/catalyst/assets/" + asset).status_code == 503
 
 
 def test_staged_session03_event_share_scope_is_safe():

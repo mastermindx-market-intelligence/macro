@@ -156,7 +156,7 @@ def make():
     otp, store, suppression, revision, sender = Otp(), Store(), Suppression(), Revisions(), Sender()
     service = FunnelService(secret=SECRET, scan=Scan(), identity=otp, consent=store,
                             suppression=suppression, revisions=revision, sender=sender,
-                            rights_clock=lambda now: now)
+                            rights_clock=lambda now: now, confirm_gate=lambda: True)
     return service, otp, store, suppression, revision, sender
 
 
@@ -185,6 +185,19 @@ def fails(code, fn):
     with pytest.raises(FunnelGate) as e:
         fn()
     assert e.value.code == code
+
+
+@pytest.mark.parametrize("gate", [None, lambda: False, lambda: 1, lambda: "1", lambda: 1 / 0])
+def test_verify_fails_closed_unless_optin_confirm_gate_is_exactly_true(gate):
+    """Witness for the make() fixture repair: without an admitted opt-in gate no consent is written."""
+    otp, store, suppression, revision, sender = Otp(), Store(), Suppression(), Revisions(), Sender()
+    service = FunnelService(secret=SECRET, scan=Scan(), identity=otp, consent=store,
+                            suppression=suppression, revisions=revision, sender=sender,
+                            rights_clock=lambda now: now, confirm_gate=gate)
+    with pytest.raises(FunnelGate) as e:
+        verified(service)
+    assert (e.value.code, e.value.status) == ("CATALYST_OPTIN_DISABLED", 503)
+    assert not store.records and not sender.calls
 
 
 def test_anonymous_first_scan_stays_separate_from_registration():
