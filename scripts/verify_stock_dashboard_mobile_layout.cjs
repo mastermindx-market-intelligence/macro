@@ -513,6 +513,7 @@ async function auditPlatformFonts(page, label) {
     await cdp.send("DOM.enable");
     await cdp.send("CSS.enable");
     let missing = [];
+    let changed = false;
     let answered = 0;
     for (let attempt = 0; attempt < 3; attempt += 1) {
       // DOM events only cover nodes already sent to this session, so fetch the
@@ -542,8 +543,8 @@ async function auditPlatformFonts(page, label) {
       ));
       answered = results.filter(Boolean).length;
       missing = nodes.filter((_node, index) => !results[index]).map(describeAuditNode);
-      if (structuralEvents !== seen && !missing.length) missing = ["(the document changed during the walk)"];
-      if (missing.length) continue;
+      changed = structuralEvents !== seen;
+      if (missing.length || changed) continue;
       for (const {fonts} of results) {
         for (const font of fonts || []) {
           if (font.isCustomFont) {
@@ -559,10 +560,12 @@ async function auditPlatformFonts(page, label) {
     if (missing.length) {
       FONT_AUDIT.unanswered.set(label, `${missing.length} text node(s) unanswered after 3 walks: ` +
         `${missing.slice(0, 3).join(", ")}${missing.length > 3 ? ", ..." : ""}`);
+    } else if (changed) {
+      FONT_AUDIT.unanswered.set(label, "the document changed during each of 3 walks");
     } else if (!answered) {
       FONT_AUDIT.unanswered.set(label, "no text nodes to audit");
     }
-    if (!missing.length) FONT_AUDIT.nodes += answered;
+    if (!missing.length && !changed) FONT_AUDIT.nodes += answered;
     FONT_AUDIT.pages += 1;
   } finally {
     await cdp.detach().catch(() => null);

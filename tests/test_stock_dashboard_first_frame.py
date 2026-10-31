@@ -2250,7 +2250,11 @@ def test_browser_receipts_were_measured_with_only_committed_fonts(market: str) -
     # for a node an interaction removed mid-walk.
     for event in ("DOM.childNodeRemoved", "DOM.pseudoElementRemoved", "DOM.childNodeInserted"):
         assert f'"{event}"' in verifier
-    assert "structuralEvents !== seen" in verifier
+    # Two separate guards: the settle loop re-fetches until a quiet window, and a
+    # walk the document changed under is retried rather than counted.
+    assert "} while (structuralEvents !== seen && Date.now() < deadline);" in verifier
+    assert "changed = structuralEvents !== seen;" in verifier
+    assert "if (missing.length || changed) continue;" in verifier
     for name, digest in manifest["files"].items():
         assert _sha256(FONT_PIN / name) == digest
         assert receipt["loaded_assets"][str((FONT_PIN / name).relative_to(ROOT))] == digest
