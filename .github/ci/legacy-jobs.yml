@@ -9647,6 +9647,7 @@ jobs:
       - "scripts/build_intl_library.py"
       # publish_ohlc (reached via build_chart_data) reads the sealed-ssh known_hosts asset
       - "scripts/publish_ohlc.py"
+      - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "scripts/thematic_rotation_phase0.py"
       - "scripts/validate_regime_fwd.py"
