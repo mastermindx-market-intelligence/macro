@@ -42,37 +42,63 @@
   "note": "revision-2 screening basis: opened_session stand-in, ticker join, stamp-grid lags"
  },
  "commit_walk": {
-  "commits_walked": 275,
-  "buy_rows": 2164,
-  "stamp_dates_seen": 53,
-  "healthy_stamp_dates_first_commit": 32
+  "basis": "first-parent arrival on origin/main; lane state = first blob per stamp_date; a later BUY-set change = HEAL (GAP)",
+  "months_walked": [
+   "2026-07",
+   "2026-08",
+   "2026-09",
+   "2026-10"
+  ],
+  "commits_walked": 156,
+  "buy_rows_first_blob": 2069,
+  "stamp_dates_seen": 54,
+  "healthy_stamp_dates_first_commit": 33,
+  "healed_stamp_dates": {
+   "2026-09-14": {
+    "heal_commit": "4347812e120f",
+    "heal_committed": "2026-09-16T02:45:46-07:00",
+    "buy_added": 50,
+    "buy_removed": 0
+   },
+   "2026-10-19": {
+    "heal_commit": "a050d2c71647",
+    "heal_committed": "2026-10-21T00:56:35-07:00",
+    "buy_added": 104,
+    "buy_removed": 0
+   }
+  }
  },
  "document_walk": {
-  "commits_walked": 138,
+  "basis": "first-parent arrival on origin/main",
+  "commits_walked": 54,
   "blobs": 54,
   "receipts": 54
  },
  "freeze_basis": {
-  "basis": "W1 r3 receipt sessions; VendorAliasTable membership join, security-first (symbol_binding_for per session); NYSE trading sessions; producer-health coverage",
-  "lane_state_basis": "first-commit blob per (stamp_date, ticker); coverage = first blob carrying the date",
+  "basis": "W1 r3 receipt sessions; VendorAliasTable membership join, security-first (record-derived candidates confirmed by resolve() on every window session, all candidates of a multi-symbol security); NYSE trading sessions; producer-health coverage on first-arrival blobs",
+  "lane_state_basis": "first-arrival blob per stamp_date (first-parent origin/main); healed sessions are GAPs; HEAD never read",
   "head_vs_first_commit_disagreement": {
-   "buy_rows_head_not_first": 59,
+   "buy_rows_head_not_first": 154,
    "buy_rows_first_not_head": 0,
    "healthy_dates_head_not_first": [
-    "2026-07-31",
     "2026-09-14",
     "2026-10-19"
    ],
-   "healthy_dates_first_not_head": []
+   "healthy_dates_first_not_head": [],
+   "healed_stamp_dates": [
+    "2026-09-14",
+    "2026-10-19"
+   ]
   },
   "alias_receipt": {
    "path": "data/reference/vendor_aliases.parquet",
    "sha256": "sha256:ff8a32df8e47d88149d8ac8d8ae54b9b117a3c44cd34cfcd57eebcf0de816306"
   },
+  "alias_parquet_sha256": "ff8a32df8e47d88149d8ac8d8ae54b9b117a3c44cd34cfcd57eebcf0de816306",
   "alias_knowledge_time": {
    "membership_rows_latest_ingested_at": "2026-10-19T06:10:18",
    "membership_securities_with_multiple_symbols": 3,
-   "note": "membership records carry no validity window; the join uses the current snapshot (knowledge time = its ingest), a disclosed look-ahead on identity labels only"
+   "note": "membership records carry no validity window; the join uses the current snapshot (knowledge time = its ingest), a disclosed look-ahead on identity labels only; the snapshot sha is pinned per look"
   },
   "identity_epoch_enforced_by_table_api": false,
   "k_sessions": 10,
@@ -110,26 +136,30 @@
    "t_disc_not_a_session": 0,
    "in_R": 1087,
    "incumbent_led": 98,
+   "incumbent_led_unknown": 989,
    "incumbent_led_unknown_pre_gap": 989,
-   "incumbent_pre_identity_unknown": 0,
+   "incumbent_led_unknown_pre_identity": 0,
    "t1_identified_exact": 26,
-   "t1_identified_interval": 65,
+   "t1_identified_interval": 44,
    "t1_cash_window_covered": 0,
-   "t1_censored_gap_no_stamp": 873,
-   "t1_unknown_signal_asof": 25,
+   "t1_censored_gap_no_stamp": 918,
+   "t1_unknown_signal_asof": 1,
    "t1_unknown_identity": 0,
-   "primary_exact_strict": 0,
-   "primary_exact_with_pre_gap": 26,
+   "t1_buy_stamp_inside_k_but_knowable_outside": 21,
    "exact_zero_lag": 15,
-   "exact_knowable_later_than_stamp": 26,
    "exact_knowable_missing": 0,
-   "exact_disc_knowable_later_than_session": 26,
    "exact_disc_knowable_missing": 0,
-   "exact_symbol_differs_from_ticker_at_observation": 0
+   "exact_knowable_later_than_stamp": 26,
+   "exact_disc_knowable_later_than_session": 26,
+   "exact_symbol_differs_from_ticker_at_observation": 0,
+   "exact_multi_symbol_security": 0,
+   "recorded_at_missing": 0,
+   "recorded_at_le_t0_fill": 1087,
+   "recorded_at_gt_t0_fill": 0
   },
   "stamp_facts": {
    "healthy_stamp_dates_head": 35,
-   "healthy_stamp_dates_first_commit": 32,
+   "healthy_stamp_dates_first_commit": 33,
    "stamp_dates_total": 54,
    "curated_rows_per_stamp_median": 2932.0,
    "buy_rows_per_stamp_median": 61.0,
@@ -140,6 +170,9 @@
    "2026-09": 3,
    "2026-10": 1
   },
+  "distinct_t_disc_sessions_primary_strict": 0,
+  "distinct_t_disc_sessions_exact_strict": 0,
+  "primary_strict_units_per_session": null,
   "lag_sessions_exact": {
    "n": 26,
    "median": 0.0,
@@ -155,11 +188,11 @@
    }
   },
   "lag_sessions_interval_observed_stamp": {
-   "n": 65,
-   "median": 8.0,
+   "n": 44,
+   "median": 6.0,
    "iqr": [
     6.0,
-    10.0
+    8.0
    ],
    "distribution": {
     "2": 1,
@@ -168,25 +201,24 @@
     "6": 19,
     "7": 4,
     "8": 4,
-    "9": 12,
-    "10": 17
+    "9": 8
    }
   },
   "lag_sessions_interval_earliest_possible": {
-   "n": 65,
+   "n": 44,
    "median": 4.0,
    "iqr": [
     1.0,
     4.0
    ],
    "distribution": {
-    "1": 24,
-    "4": 33,
-    "5": 8
+    "1": 18,
+    "4": 23,
+    "5": 3
    }
   },
   "k_star_sessions_exact_basis": 0.0,
-  "t2m_identified": true,
+  "t2m_identified": false,
   "t1_knowability_shift_sessions_exact": {
    "1": 26
   },
@@ -207,24 +239,18 @@
     "3": 6
    }
   },
-  "executable_lead_sessions_exact_strict": null,
-  "generation_recorded_at_lag_sessions": {
-   "n": 1087,
-   "le_2": 1087,
-   "3_to_10": 0,
-   "gt_10": 0
-  },
-  "floor_30_exact_strict_met": false,
-  "floor_30_exact_met": false
+  "executable_lead_sessions_exact_strict": null
  },
  "provenance": {
-  "census_version": "v4",
+  "census_version": "v5",
   "command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <W1 r3 receipt map> --commit-walk --document-walk --k 10 --buffer-minutes 30 --r-from 2026-08-26 --r-to 2026-10-23",
   "receipt_sessions_source": "turn_watch_receipt_sessions(data_root, git_ref='origin/main') from scripts/report_us_candidate_episode_waterfall.py at PR #10277 head d03acfd075d9 (54 receipts); re-derived at freeze, never hand-edited",
-  "lane_state": "first-commit blob per (stamp_date, ticker) over 275 origin/main commits of the monthly candidates parquets; coverage = first blob carrying each stamp date; HEAD disagreement reported",
-  "identity_join": "security-first: candidate symbols from the membership alias records, each confirmed by VendorAliasTable.resolve('membership', symbol, on=session) == security_id",
+  "lane_state": "first-parent ARRIVAL on origin/main (156 commits of the four monthly candidates parquets 2026-07..10): the first blob carrying each stamp_date fixes its BUY rows, curated coverage and signal_asof; a later blob that changes that date's BUY set is a HEAL and the session is a GAP (09-14 +50 BUY rows healed 09-16; 10-19 +104 healed 10-21); HEAD never read for lane state; HEAD disagreement reported (154 BUY rows exist only in the two heals)",
+  "identity_join": "security-first: candidate symbols from the membership alias records, EVERY candidate confirmed by VendorAliasTable.resolve('membership', symbol, on=session) == security_id, tested on every healthy window session for every unit (uniform span); alias parquet sha256 pinned",
   "columns_read": "candidates: stamp_date, ticker, tier, lane, eligible, buyable, featured, signal_asof; OPENED episode_id/source_receipt/recorded_at/payload.{ticker_at_observation,opened_session,security_id,identity_epoch}; turn_watch documents (digest-verified) for receipt and commit time; data/reference/vendor_aliases.parquet; data/yahoo/SPY.parquet DATE INDEX only",
   "outcome_columns_read": "none",
-  "generated": "2026-10-31"
+  "generated": "2026-10-31",
+  "knowable_session": "first NYSE session whose 16:00 ET close is strictly after the first-parent arrival instant + 30 min; applied per stamp_date (BUY arm) and per receipt (discovery arm); T1 is executable inside K only when k(c_cur) <= t_disc + K",
+  "recorded_at_check": "OPENED recorded_at compared as an instant against the T0 fill instant (close of the session after k(c_disc)): 1087/1087 recorded at or before it"
  }
 }
