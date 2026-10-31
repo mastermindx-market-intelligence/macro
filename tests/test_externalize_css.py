@@ -60,6 +60,67 @@ def test_media_attribute_carried_to_link():
     assert 'media="print"' in out2 and out2.startswith('<link rel="stylesheet" media="print"')
 
 
+def test_explicit_nonblocking_css_externalization_only_for_marked_unconditional_block():
+    """The unoptimized source still paints; only the externalized sheet opts out."""
+    recorded = []
+    marked = f'<style id="rr-css" data-mmx-mobile-async>{_BIG}</style>'
+    out = externalize_css_text(marked, _href_for(recorded))
+    assert out == (
+        '<link rel="stylesheet" media="screen and (min-width: 769px), print" '
+        'onload="this.media=\'all\'" data-mmx-mobile-async '
+        'href="assets/css/blk1.css?v=abc">'
+    )
+    assert recorded == [(_BIG, 1, None)]
+    unmarked = externalize_css_text(f'<style id="rr-css">{_BIG}</style>', _href_for([]))
+    assert 'data-mmx-mobile-async' not in unmarked
+    assert 'onload=' not in unmarked and 'media="print"' not in unmarked
+    # A genuine print stylesheet must keep its ordinary print semantics.
+    printed = externalize_css_text(
+        f'<style media="print" data-mmx-mobile-async>{_BIG}</style>', _href_for([])
+    )
+    assert 'onload=' not in printed
+    assert 'media="print"' in printed
+    assert 'data-mmx-mobile-async' not in printed
+
+
+def test_actual_macro_release_radar_style_generates_mobile_only_async_link():
+    """Bind the real authored rr-css block through the existing two asset passes."""
+    import hashlib
+    import re
+    from lib.pages import optimize_assets_text, preload_css_text
+
+    template = (Path(__file__).resolve().parent.parent / "templates" /
+                "dashboard.html.j2").read_text(encoding="utf-8")
+    match = re.search(
+        r'<style id="rr-css" data-mmx-mobile-async>(.*?)</style>',
+        template, re.DOTALL,
+    )
+    assert match is not None and len(match.group(1).encode()) > MIN_BYTES
+    css_text = match.group(1)
+    stamp = hashlib.sha256(css_text.encode()).hexdigest()[:8]
+    href = f'assets/css/{stamp}.css'
+    records = []
+
+    def make_href(css, idx, media):
+        records.append((css, idx, media))
+        return href
+
+    page = ('<html><head><link rel="stylesheet" href="theme.css?v=1"></head>'
+            f'<body>{match.group(0)}</body></html>')
+    generated = externalize_css_text(page, make_href)
+    generated = optimize_assets_text(generated, lambda url: stamp if url == href else None)
+    generated = preload_css_text(generated, lambda url: [])
+    full = f'{href}?v={stamp}'
+    assert records == [(css_text, 1, None)]
+    assert (f'<link rel="stylesheet" media="screen and (min-width: 769px), print" '
+            f'onload="this.media=\'all\'" data-mmx-mobile-async href="{full}">') in generated
+    assert (f'<link rel="preload" as="style" '
+            f'media="screen and (min-width: 769px), print" href="{full}">') in generated
+    assert f'<link rel="preload" as="style" href="{full}">' not in generated
+    assert generated.count(full) == 2
+    assert preload_css_text(generated, lambda url: []) == generated
+
+
 def test_css_crosses_over_byte_for_byte():
     seen = []
     externalize_css_text(f"<style>{_BIG}</style>", _href_for(seen))
