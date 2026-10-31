@@ -3928,7 +3928,33 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
                      "re": _cm_re, "pytest": pytest}
         exec(compile(_cm_ast.Module(body=functions, type_ignores=[]),
                      str(frozen), "exec"), namespace)
-        self.assertEqual(namespace["_merge_base"](), f["parents"][0])
+        real_guard = namespace["_merge_base"]
+        self.assertEqual(real_guard(), f["parents"][0])
+        self.assert_head(f)
+
+        # Negative 1: the REAL W3U guard refuses absent origin/main offline.
+        _cm_git(f["checkout"], "update-ref", "-d", "refs/remotes/origin/main")
+        with self.assertRaisesRegex(pytest.fail.Exception, "origin/main does not resolve"):
+            real_guard()
+        self.assert_head(f)
+
+        # Negative 2: a locally present but DISCONNECTED main ref is not a
+        # canonical merge base. Use commit-tree with no parents, no remote fetch.
+        orphan = _cm_subprocess.run(
+            ["git", "-C", str(f["checkout"]), "-c", "user.name=W3U Fixture",
+             "-c", "user.email=w3u@example.invalid", "commit-tree",
+             "HEAD^{tree}"],
+            input="unrelated root\n", text=True, capture_output=True, check=True,
+        ).stdout.strip()
+        self.assertRegex(orphan, r"^[0-9a-f]{40}$")
+        _cm_git(f["checkout"], "update-ref", "refs/remotes/origin/main", orphan)
+        probe = _cm_subprocess.run(
+            ["git", "-C", str(f["checkout"]), "merge-base", "origin/main", "HEAD"],
+            capture_output=True, text=True,
+        )
+        self.assertEqual(probe.returncode, 1, probe.stdout + probe.stderr)
+        with self.assertRaisesRegex(pytest.fail.Exception, "no merge base"):
+            real_guard()
         self.assert_head(f)
 
     def test_private_python_binding_preserves_venv_context_and_arguments(self):
