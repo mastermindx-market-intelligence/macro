@@ -790,7 +790,7 @@
     var pts = x.points, hasPts = pts.length > 0;
     var visible = pts.slice(0, 2), extra = pts.slice(2), ptsHtml;
     if (!hasPts) {
-      ptsHtml = '<ul class="rep-points pend"><li>' + T('Summary pending — full report available to read.', '摘要生成中 —— 全文已可查看。') + '</li></ul>';
+      ptsHtml = '<ul class="rep-points pend"><li>' + T('No summary is available for this report. The full report is available to read.', '本篇暂无摘要。全文已可查看。') + '</li></ul>';
     } else {
       ptsHtml = '<ul class="rep-points">'
         + visible.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('')

@@ -1,7 +1,7 @@
 {
   "schema": "china_market_state.v1",
-  "as_of": "2026-10-30",
-  "generated_utc": "2026-10-30T13:43:59Z",
+  "as_of": "2026-10-31",
+  "generated_utc": "2026-10-31T13:02:44Z",
   "authority": {
     "tier": "context_only",
     "why": [
@@ -76,19 +76,19 @@
       "failed_up_seal_count": 5.0,
       "lianban_2plus": 0.0,
       "lianban_max": 1.0,
-      "universe_n": 1827.0,
-      "limit_up_breadth_pct": 0.7663,
-      "limit_down_breadth_pct": 0.6568
+      "universe_n": 1886.0,
+      "limit_up_breadth_pct": 0.7423,
+      "limit_down_breadth_pct": 0.6363
     },
     "name_summary": {
       "n_packets": 145,
       "chase_veto_count": 6,
-      "fillable_count": 141
+      "fillable_count": 143
     },
     "names_ref": "site/chinastatedata/microstructure.json#name_packets"
   },
   "policy": {
-    "as_of": "2026-10-30",
+    "as_of": "2026-10-31",
     "policy_impulse": "neutral",
     "transmission_channel": [],
     "recent_event_count": 10,
@@ -126,15 +126,15 @@
     ],
     "staleness": {
       "per_source_days": {
-        "lpr": 10,
-        "rrr": 541,
-        "fr007": 0,
-        "communiques": 185
+        "lpr": 11,
+        "rrr": 542,
+        "fr007": 1,
+        "communiques": 186
       }
     }
   },
   "rotation": {
-    "as_of": "2026-10-30",
+    "as_of": "2026-10-31",
     "sector_phase_distribution": {
       "Bottoming": 39,
       "Topping": 7,
@@ -158,7 +158,7 @@
       "LAGGARD: Agriculture ranked #29/31 (-26.3%) — among the weakest this leg"
     ],
     "ths_heat": {
-      "as_of": "2026-10-30",
+      "as_of": "2026-10-31",
       "basket_count": 237,
       "above_200d_pct": 0.0,
       "hot_baskets": [
@@ -216,6 +216,7 @@
     "pending_quad": NaN,
     "pending_days": 0,
     "confirming": [
+      "growth_pmi_mfg",
       "growth_cyclical_defensive",
       "growth_smallcap_largecap",
       "inflation_cpi_direction",
@@ -227,16 +228,16 @@
     ],
     "conditions": {
       "roro": {
-        "roro": -0.404,
-        "roro_raw": -0.429,
+        "roro": -0.386,
+        "roro_raw": -0.407,
         "roro_state": "risk-off",
-        "china_roro_copper_gold": 1.635,
+        "china_roro_copper_gold": 2.005,
         "china_roro_breadth": -0.138,
         "china_roro_southbound": -0.665,
         "china_roro_m1_m2": -0.598,
-        "china_roro_turnover": -1.341,
-        "china_roro_qvix": -0.12,
-        "china_roro_usdcnh": 0.323,
+        "china_roro_turnover": -1.145,
+        "china_roro_qvix": -0.363,
+        "china_roro_usdcnh": 0.196,
         "china_roro_margin": -0.405,
         "china_roro_ah_premium": -2.55,
         "legs": [
@@ -244,7 +245,7 @@
             "key": "copper_gold",
             "name_en": "Copper / Gold",
             "name_zh": "铜／金 比",
-            "value": 1.635,
+            "value": 2.005,
             "lean": "risk-on"
           },
           {
@@ -272,21 +273,21 @@
             "key": "turnover",
             "name_en": "Turnover band",
             "name_zh": "成交活跃度",
-            "value": -1.341,
+            "value": -1.145,
             "lean": "risk-off"
           },
           {
             "key": "qvix",
             "name_en": "QVIX fear (300)",
             "name_zh": "QVIX 恐慌（300）",
-            "value": -0.12,
+            "value": -0.363,
             "lean": "risk-off"
           },
           {
             "key": "usdcnh",
             "name_en": "Offshore yuan (20d)",
             "name_zh": "离岸人民币（20日）",
-            "value": 0.323,
+            "value": 0.196,
             "lean": "risk-on"
           },
           {
@@ -306,8 +307,8 @@
         ]
       },
       "recession": {
-        "score": 42.8,
-        "label": "elevated",
+        "score": 46.8,
+        "label": "high",
         "legs": [
           {
             "key": "credit_impulse",
@@ -333,8 +334,8 @@
             "label_zh": "制造业 PMI",
             "weight": 1.2,
             "active": true,
-            "value": 48.3,
-            "points": 14.5
+            "value": 61.7,
+            "points": 18.5
           },
           {
             "key": "m1_m2",
@@ -371,14 +372,14 @@
           45.0
         ],
         "fwd": {
-          "fwd_ret_3m": -0.8,
-          "fwd_maxdd_3m": -5.7
+          "fwd_ret_3m": 1.9,
+          "fwd_maxdd_3m": -4.5
         },
         "note": "calibrated vs 20y of forward A-share outcomes: NO forward-drawdown edge (A-shares mean-revert — high readings are flat-to-contrarian); bands are history-anchored percentiles. Descriptive context, never scored.",
         "note_zh": "已用20年A股前瞻数据校准：无前瞻回撤优势（A股均值回归 —— 高读数偏平/逆向）；区间为历史分位锚定。描述性背景，从不计入评分。"
       },
       "drawdown_risk": {
-        "score": 9.7,
+        "score": 17.2,
         "band": "low",
         "uncalibrated": false,
         "calibrated": true,
@@ -394,15 +395,15 @@
   "external": {
     "yield_curve": {
       "as_of": "2026-10-30",
-      "staleness_days": 0,
+      "staleness_days": 1,
       "cn_10y": 1.65,
       "cn_2y": 1.2457,
       "cn_slope_10_2": 0.4042999999999999,
-      "cn_us_10y_spread": null
+      "cn_us_10y_spread": -3.2900000000000005
     },
     "cgb_curve": {
       "as_of": "2026-10-30",
-      "staleness_days": 0,
+      "staleness_days": 1,
       "m3": 1.1643,
       "y1": 1.1714,
       "y5": 1.3532,
@@ -432,9 +433,9 @@
   },
   "evidence": [
     "macro: quad=Q3 (Stagflation) liquidity=contracting",
+    "macro_confirming: growth_pmi_mfg",
     "macro_confirming: growth_cyclical_defensive",
     "macro_confirming: growth_smallcap_largecap",
-    "macro_confirming: inflation_cpi_direction",
     "policy: impulse=neutral",
     "participation: regime=forced_deleveraging who_controls=mixed risk=fire_sale",
     "participation_evidence: turnover_z20=0.22",

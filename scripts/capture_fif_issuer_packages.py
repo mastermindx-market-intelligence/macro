@@ -17,6 +17,26 @@ Frozen rules implemented here (G_PACK spec R5/R7/R8):
     plus every ``--extra-accession`` that is itself a D0 row of that issuer.
   - An accession not present in D0 (or belonging to an issuer outside the
     ``--issuer`` selection) is refused with a typed message and exit != 0.
+* Contract-level admission rule (``admission_rule``): absent or
+  ``r5_two_latest`` is the frozen default above, byte-for-byte. A contract
+  may instead predeclare its admission rows as ``predeclared_split_rows``:
+  selection is then ONLY the issuer rows whose ``split_decision`` equals the
+  ``--split-decision`` id (10-K first, then filing_date descending, every
+  row an admission candidate — no capture-only extras, no year-ago
+  comparable). That rule requires a ``fif-held-out`` contract id, an
+  explicit ``--out-root`` that is not the g_src default root and no
+  ``--extra-accession``; every violation, an unknown ``admission_rule``
+  value, a ``--split-decision`` passed to a non-predeclared contract, and an
+  issuer with zero matching rows are refused with typed ``gsrc_refusal``
+  codes before any fetch.
+* Re-runs MERGE the per-issuer artifacts instead of truncating them (either
+  rule; observable only where the files pre-exist): rows captured in this
+  run replace same-accession rows in ``capture_index.json`` while all other
+  existing rows keep their order ahead of the new ones (the interrupt path
+  merges the same way), and ``request_log.jsonl`` opens in append mode with
+  ``seq`` continuing from the last record's ``seq`` + 1 — an unparsable last
+  line is refused with ``gsrc_refusal: request_log_unparsable`` rather than
+  silently restarting the numbering.
 * Capture clock: ``--captured-at`` (aware ISO-8601 UTC) is REQUIRED; a run
   without it is refused with ``gsrc_refusal: captured_at_required`` and the
   script never falls back to the wall clock. The manifest
@@ -75,7 +95,9 @@ Frozen rules implemented here (G_PACK spec R5/R7/R8):
   issuer ``request_log.jsonl`` and ``capture_index.json`` are written under the
   fixture output root: ``--out-root``, default
   ``tests/fixtures/fundamental_forensics/g_src`` under the repo root (every
-  pre-flag caller stays byte-identical in behaviour).
+  pre-flag caller stays byte-identical in behaviour); an empty ``--out-root``
+  is refused with ``gsrc_refusal: out_root_empty`` before any fetch or write,
+  and a relative one resolves against the repo root, never the caller's cwd.
 """
 from __future__ import annotations
 
@@ -148,6 +170,15 @@ _INCOME_RE = re.compile(r"OPERATIONS|INCOME|EARNINGS|RESULTS OF OPERATIONS")
 _BALANCE_RE = re.compile(r"BALANCE SHEET|FINANCIAL POSITION|FINANCIAL CONDITION")
 _CASH_RE = re.compile(r"CASH FLOW")
 ACCESSION_PATTERN_RE = re.compile(r"\d{10}-\d{2}-\d{6}")
+
+# Contract-level admission rules. A contract without ``admission_rule`` (the
+# frozen D0 default) or with ``r5_two_latest`` gets the R5 behaviour above,
+# byte-for-byte; ``predeclared_split_rows`` admits only rows the contract
+# predeclares under a numbered split decision (see ``select_predeclared_
+# split_rows``). Any other value is a typed refusal at the CLI edge.
+R5_TWO_LATEST_ADMISSION_RULE = "r5_two_latest"
+PREDECLARED_SPLIT_ADMISSION_RULE = "predeclared_split_rows"
+HELD_OUT_CONTRACT_ID_PREFIX = "fif-held-out"
 
 
 class SelectionError(ValueError):
@@ -299,6 +330,51 @@ def select_issuer_accessions(
             f"admission candidates of issuer {ticker} diverge from the R5 rule set",
             code="admission_candidates_not_rule_only",
         )
+    return order
+
+
+def select_predeclared_split_rows(
+    issuer_row: Mapping[str, Any],
+    split_decision: int,
+) -> list[SelectedAccession]:
+    """Predeclared split-row selection over one contract issuer row. Pure.
+
+    Admission candidates are ONLY the rows the contract itself predeclares
+    for ``split_decision`` (the numbered split-decision waves the held-out
+    contract records): every matching row, sorted 10-K first then by
+    ``filing_date`` descending. There is no capture-only set under this rule
+    — no year-ago comparable, no operator extra — and a matching row that is
+    incomplete or not a 10-K/10-Q is a typed ``SelectionError``, never a
+    silent skip. Rows of another (or no) split decision are not selected and
+    produce no entry of any kind. Zero matching rows return an empty list;
+    the CLI edge is the one that turns that into a typed refusal.
+    """
+    ticker = str(issuer_row.get("ticker") or "")
+    rows = [
+        row
+        for row in issuer_row.get("accessions") or []
+        if isinstance(row, Mapping)
+    ]
+    matching = [row for row in rows if row.get("split_decision") == split_decision]
+    for row in matching:
+        for field in ("accession", "form", "filing_date", "period_of_report"):
+            if not row.get(field):
+                raise SelectionError(
+                    f"predeclared row of issuer {ticker} is missing {field}",
+                    code="predeclared_row_incomplete",
+                )
+        if row["form"] not in ("10-K", "10-Q"):
+            raise SelectionError(
+                f"predeclared row of issuer {ticker} is not a 10-K/10-Q: "
+                f"{row['form']}",
+                code="predeclared_row_form_not_admissible",
+            )
+    order = sorted(
+        (_selected(row, "admission_candidate") for row in matching),
+        key=lambda item: (item.filing_date, item.accession),
+        reverse=True,
+    )
+    order.sort(key=lambda item: 0 if item.form == "10-K" else 1)
     return order
 
 
@@ -544,16 +620,56 @@ def _utc_stamp(moment: datetime) -> str:
 
 
 class IssuerRequestLog:
-    """One JSON line per request attempt, per issuer, under the fixture root."""
+    """One JSON line per request attempt, per issuer, under the fixture root.
+
+    An existing log is opened in APPEND mode and ``seq`` continues from the
+    last record's ``seq`` + 1, so a re-run of an issuer extends the log
+    instead of truncating it. An unparsable last line is a typed refusal
+    (``request_log_unparsable``), never a silent restart of the numbering.
+    A fresh log behaves exactly as before. ``count`` stays THIS instance's
+    record count, so capture summaries report this run's requests.
+    """
 
     def __init__(self, path: Path) -> None:
         self._path = path
         self._seq = 0
+        self._written = 0
         self._handle = None
 
     def open(self) -> None:
         self._path.parent.mkdir(parents=True, exist_ok=True)
-        self._handle = self._path.open("w", encoding="utf-8")
+        self._seq = self._resume_seq(self._path)
+        self._handle = self._path.open("a", encoding="utf-8")
+
+    @staticmethod
+    def _resume_seq(path: Path) -> int:
+        """0 for a fresh/empty log; last record's seq + 1 for an existing one."""
+        if not path.exists():
+            return 0
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except (OSError, UnicodeDecodeError) as exc:
+            raise SelectionError(
+                f"request log is not readable for continuation: {path}: {exc}",
+                code="request_log_unparsable",
+            ) from exc
+        if not lines:
+            return 0
+        try:
+            last = json.loads(lines[-1])
+        except json.JSONDecodeError as exc:
+            raise SelectionError(
+                f"request log last line is not a JSON record: {path}: "
+                f"{lines[-1][:120]}",
+                code="request_log_unparsable",
+            ) from exc
+        seq = last.get("seq") if isinstance(last, dict) else None
+        if not isinstance(seq, int) or isinstance(seq, bool):
+            raise SelectionError(
+                f"request log last line carries no integer seq: {path}",
+                code="request_log_unparsable",
+            )
+        return seq
 
     def record(
         self,
@@ -568,6 +684,7 @@ class IssuerRequestLog:
         if self._handle is None:
             raise RuntimeError("request log is not open")
         self._seq += 1
+        self._written += 1
         line = {
             "seq": self._seq,
             "url": url,
@@ -583,7 +700,7 @@ class IssuerRequestLog:
 
     @property
     def count(self) -> int:
-        return self._seq
+        return self._written
 
     def close(self) -> None:
         if self._handle is not None:
@@ -742,6 +859,40 @@ def build_submissions_index(
 def _write_bytes(path: Path, payload: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(payload)
+
+
+def load_capture_index_rows(path: Path) -> list[Any]:
+    """Existing capture_index rows for a merge; never a refusal.
+
+    A missing file, an unparseable one, or one that is not a JSON list
+    yields ``[]`` (a fresh index is then written, as before); this script's
+    own capture_index files are the only shape merged against.
+    """
+    if not path.exists():
+        return []
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return []
+    return list(payload) if isinstance(payload, list) else []
+
+
+def merge_capture_index_rows(
+    existing: Sequence[Any], rows: Sequence[Mapping[str, Any]]
+) -> list[Any]:
+    """Rows captured in this run replace same-accession rows; others keep order.
+
+    Existing rows whose accession this run captured are dropped in favour of
+    the new row; every other existing row keeps its position, ahead of the
+    new rows (which keep this run's plan order).
+    """
+    captured = {str(row["accession"]) for row in rows}
+    kept = [
+        row
+        for row in existing
+        if not (isinstance(row, Mapping) and str(row.get("accession")) in captured)
+    ]
+    return [*kept, *rows]
 
 
 def capture_package(
@@ -958,6 +1109,15 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
         help="additional D0 accession of a selected issuer (repeatable, capture-only)",
     )
     parser.add_argument(
+        "--split-decision",
+        type=int,
+        default=None,
+        help="split-decision id whose predeclared rows are the admission set "
+        "(requires a contract with admission_rule=predeclared_split_rows; "
+        "refused with gsrc_refusal: split_decision_requires_predeclared_rule "
+        "otherwise, before any fetch)",
+    )
+    parser.add_argument(
         "--captured-at",
         default=None,
         help="REQUIRED aware ISO-8601 UTC capture clock (no wall-clock fallback)",
@@ -971,7 +1131,9 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
         "--out-root",
         default=None,
         help="fixture output root for manifests/capture_index/request_log "
-        "(default: tests/fixtures/fundamental_forensics/g_src under the repo root)",
+        "(default: tests/fixtures/fundamental_forensics/g_src under the repo "
+        "root); empty is refused (gsrc_refusal: out_root_empty) and a relative "
+        "path resolves against the repo root, not the caller's cwd",
     )
     parser.add_argument(
         "--min-interval",
@@ -980,6 +1142,17 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
         help="minimum seconds between SEC requests (floor 1.0, this lane's share)",
     )
     return parser.parse_args(argv)
+
+
+def _default_out_root() -> Path:
+    """The g_src fixture default, resolved against the CURRENT repo root."""
+    return _ROOT / "tests" / "fixtures" / "fundamental_forensics" / "g_src"
+
+
+def _resolve_out_root(value: str) -> Path:
+    """An explicit --out-root: expanded, relative ones against the repo root."""
+    root = Path(value).expanduser()
+    return root if root.is_absolute() else _ROOT / root
 
 
 def _capture_clock(value: str | None) -> datetime:
@@ -1136,6 +1309,37 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"gsrc_refusal: contract_unreadable: {contract_path}: {exc}")
         return 2
 
+    # Contract-level admission rule. Read after load_contract; every branch
+    # here refuses BEFORE any issuer row is fetched against, any pacer or
+    # fetcher is constructed, or any request is made.
+    admission_rule = contract.get("admission_rule")
+    if admission_rule not in (
+        None,
+        R5_TWO_LATEST_ADMISSION_RULE,
+        PREDECLARED_SPLIT_ADMISSION_RULE,
+    ):
+        print(f"gsrc_refusal: admission_rule_unknown: {admission_rule!r}")
+        return 2
+    predeclared = admission_rule == PREDECLARED_SPLIT_ADMISSION_RULE
+    if predeclared:
+        if args.split_decision is None:
+            print("gsrc_refusal: split_decision_required")
+            return 2
+        if not str(contract.get("contract_id") or "").startswith(
+            HELD_OUT_CONTRACT_ID_PREFIX
+        ):
+            print("gsrc_refusal: predeclared_rows_require_held_out_contract")
+            return 2
+        if args.extra_accession:
+            print("gsrc_refusal: extra_accession_not_allowed_for_predeclared_rows")
+            return 2
+        if args.out_root is None or _resolve_out_root(args.out_root) == _default_out_root():
+            print("gsrc_refusal: predeclared_rows_require_held_out_out_root")
+            return 2
+    elif args.split_decision is not None:
+        print("gsrc_refusal: split_decision_requires_predeclared_rule")
+        return 2
+
     issuer_rows: dict[str, Mapping[str, Any]] = {}
     for row in contract.get("issuers") or []:
         if isinstance(row, Mapping) and row.get("ticker"):
@@ -1154,23 +1358,37 @@ def main(argv: Sequence[str] | None = None) -> int:
         if extra not in known_extras:
             print(f"gsrc_refusal: extra_accession_not_in_d0: {extra}")
             return 2
+    if args.out_root is not None and not args.out_root.strip():
+        print(f"gsrc_refusal: out_root_empty: {args.out_root!r}")
+        return 2
 
     stage_root = Path(args.stage_root).expanduser()
     out_root = (
-        Path(args.out_root).expanduser()
-        if args.out_root
-        else _ROOT / "tests" / "fixtures" / "fundamental_forensics" / "g_src"
+        _resolve_out_root(args.out_root) if args.out_root else _default_out_root()
     )
     pacer = SecRequestPacer(min_interval_seconds=args.min_interval)
 
     plan: dict[str, list[SelectedAccession]] = {}
     claimed: set[str] = set()
     for ticker in args.issuer:
-        extras = []
-        for extra in args.extra_accession:
-            if extra in {str(r.get("accession")) for r in issuer_rows[ticker].get("accessions") or []}:
-                extras.append(extra)
-        plan[ticker] = select_issuer_accessions(issuer_rows[ticker], extras)
+        if predeclared:
+            try:
+                selected_rows = select_predeclared_split_rows(
+                    issuer_rows[ticker], args.split_decision
+                )
+            except SelectionError as exc:
+                print(f"gsrc_refusal: {exc.code}: {exc}")
+                return 2
+            if not selected_rows:
+                print(f"gsrc_refusal: predeclared_rows_none_for_issuer: {ticker}")
+                return 2
+            plan[ticker] = selected_rows
+        else:
+            extras = []
+            for extra in args.extra_accession:
+                if extra in {str(r.get("accession")) for r in issuer_rows[ticker].get("accessions") or []}:
+                    extras.append(extra)
+            plan[ticker] = select_issuer_accessions(issuer_rows[ticker], extras)
         claimed.update(item.accession for item in plan[ticker])
     unclaimed = [extra for extra in args.extra_accession if extra not in claimed]
     if unclaimed:
@@ -1197,7 +1415,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         cik10 = canonical_cik(issuer_row["cik"])
         out_issuer_dir = out_root / cik10
         log = IssuerRequestLog(out_issuer_dir / "request_log.jsonl")
-        log.open()
+        try:
+            log.open()
+        except SelectionError as exc:
+            print(f"gsrc_refusal: {exc.code}: {exc}")
+            return 2
         fetch = PacedFetcher(pacer, user_agent, log)
         started_wall = datetime.now(timezone.utc)
         rows: list[dict[str, Any]] = []
@@ -1237,10 +1459,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         finally:
             if interrupted is not None:
                 rows.extend(_incomplete_rows(plan[ticker], rows, interrupted))
-            capture_index_payload = json.dumps(rows, indent=2) + "\n"
-            _write_bytes(
-                out_issuer_dir / "capture_index.json", capture_index_payload.encode("utf-8")
+            # Merge (either rule): this run's rows replace same-accession rows
+            # of a pre-existing index; other existing rows keep their order
+            # ahead of the new ones. The interrupt path merges identically.
+            index_path = out_issuer_dir / "capture_index.json"
+            merged_rows = merge_capture_index_rows(
+                load_capture_index_rows(index_path), rows
             )
+            capture_index_payload = json.dumps(merged_rows, indent=2) + "\n"
+            _write_bytes(index_path, capture_index_payload.encode("utf-8"))
             log.close()
         wall_seconds = (datetime.now(timezone.utc) - started_wall).total_seconds()
         counts = admission_counts(rows)

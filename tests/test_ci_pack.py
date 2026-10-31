@@ -4397,6 +4397,8 @@ CURATED_EXCLUSIVE = {
     "market-ontology-f09-petroleum-flow",
     # F04 exact import/read closure; all suites retained, no homepage fallback.
     "ontology-explorer",
+    # DR3: exact closure isolates the observation consumer; no packing ceiling change.
+    "rotation-observation-delivery",
 
     "catalyst-opportunity",  # Attention/API job owns its measured import/read closure.
     "forex-r26-consumer",  # R26 consumer suites retain their declared import/read closure.
@@ -4767,14 +4769,38 @@ CURATED_EXCLUSIVE = {
     # Pure International browser helpers have a closed source/test dependency
     # set; unrelated page changes must not select their Node-only PR check.
     "international-workspace-pure-js",
+    # IM12 E3 correction receipts: superseding revision receipt, dependent-result
+    # invalidation and saved-evidence preservation. scope: exclusive pins the
+    # measured import closure of the correction contract suite (no config read).
+    "international-global-correction",
     # Numerical records reuse the performance owner's measured import closure.
     "international-workspace-foundation",
+    # IM18 watch-condition lifecycle contract: the pure evaluator consumes
+    # IM12 observation and IM15 dislocation outputs; the curated scope pins
+    # its measured engine import closure (universe/theme-graph rights ride
+    # the dislocation import; no config file is read by the suite).
+    "international-global-watch",
     # IM11 data-contract suite: hermetic universe/rights-matrix derivation tests.
     "international-global-universe",
+    # IM18 replay contract: point-in-time as-known-at replay over the IM12
+    # observation and IM15 dislocation chains; the exclusive scope pins the
+    # measured suite closure (engine/test import chain plus configs and inits).
+    "international-global-replay",
+    # IM15 dislocation explorer UI (W3U): pytest + Chromium suites over the
+    # merged engine and the W2 seam; exact measured closure, no inference widening.
+    "international-dislocation-explorer",
     # IM17 transmission-evidence contract: edges, qualified transmission
     # events and the US relevance ordering; the frozen contagion models are
     # read by the test alone, so its curated scope must pin their closure.
     "international-transmission-evidence",
+    # IM17 W4B: the R14 §10.4 Transmission board view (presenter + template
+    # + CSS through the test-only builder); its curated scope pins the
+    # measured render-path import closure, so it must be pinned here too.
+    "international-transmission-board",
+    # INTL-GS §14 closures: graph-boundary label rule and the cross-surface
+    # observation-identity test; the curated scope pins the two suites'
+    # measured import/read closure.
+    "international-gs-closure",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
     # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
@@ -5059,6 +5085,10 @@ CURATED_EXCLUSIVE = {
     # Pure W3AR projection pins its complete import closure without selecting
     # unrelated render probes or acquiring scientific execution authority.
     "stock-identity-method-projection",
+    # AI Brief render-date countdown: an intentionally curated code-gated
+    # single-suite owner. Its explicit paths cover the static import closure
+    # and package ancestor init, without accepting unrelated render probes.
+    "aibrief-countdown-pr",
 }
 
 
