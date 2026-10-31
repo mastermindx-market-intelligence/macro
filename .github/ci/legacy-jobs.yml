@@ -10851,6 +10851,7 @@ jobs:
       - "scripts/fif_pack_quality_report.py"
       - "scripts/fif_recovery_drill.py"
       - "scripts/fif_specialist_packs.py"
+      - "scripts/fif_held_out_evaluate.py"
       - "engine/theme_graph/economic_context.py"
       - "engine/theme_graph/issuer_economic_context.py"
       - "engine/rates_command_basis.py"
