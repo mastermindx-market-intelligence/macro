@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LIF-BULL-20261013",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 68.4,
-  "raw_confidence": 65.7,
-  "delta_vs_base": 8.4,
+  "management_confidence": 65.9,
+  "raw_confidence": 62.9,
+  "delta_vs_base": 5.9,
   "recommended_action": "hold",
   "human_state": "On Track",
   "components": {
     "validity": 100.0,
-    "progress": 30.7,
-    "pace": 72.2,
+    "progress": 28.0,
+    "pace": 62.8,
     "retention": 50.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.521,
-    "dist_to_t1_r": 0.979,
-    "dist_to_t2_r": 2.479,
-    "horizon_pct_used": 35.6,
-    "p1": 0.3471,
-    "p2": 0.1735,
+    "dist_to_stop_r": 1.459,
+    "dist_to_t1_r": 1.041,
+    "dist_to_t2_r": 2.541,
+    "horizon_pct_used": 37.8,
+    "p1": 0.3058,
+    "p2": 0.1529,
     "p3": null,
-    "move_r": 0.521,
+    "move_r": 0.459,
     "mfe_r": 0.949,
     "mae_r": -0.243
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-20",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 16,
-  "tau": 0.3556
+  "days_elapsed": 17,
+  "tau": 0.3778
 }

@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-31T06:06:25.107243+00:00",
+  "generated_utc": "2026-10-31T14:01:51.069476+00:00",
   "as_of": "2026-10-31",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -9817,6 +9817,14 @@
         "detail": "Activist Campaigns"
       },
       {
+        "ticker": "NHP",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
+      },
+      {
         "ticker": "MPX",
         "category": "Delistings",
         "confidence": "high",
@@ -13306,11 +13314,11 @@
       },
       {
         "ticker": "QNCX",
-        "category": "Divestitures",
+        "category": "Strategic Reviews",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Divestitures"
+        "detail": "Strategic Reviews"
       },
       {
         "ticker": "NEOE3",
@@ -18505,14 +18513,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "HLTC",
-        "category": "Divestitures",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Divestitures"
-      },
-      {
         "ticker": "NCPLW",
         "category": "Delistings",
         "confidence": "high",
@@ -18825,7 +18825,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "PRIF-PL",
+        "ticker": "PRIF-PK",
         "category": "Issuer Tenders",
         "confidence": "high",
         "activist": false,
@@ -19689,6 +19689,14 @@
         "detail": "Delistings"
       },
       {
+        "ticker": "IRLA",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
+      },
+      {
         "ticker": "RPC",
         "category": "Acquisitions",
         "confidence": "high",
@@ -19729,7 +19737,7 @@
         "detail": "Divestitures"
       },
       {
-        "ticker": "TRPRF",
+        "ticker": "TRPPF",
         "category": "Divestitures",
         "confidence": "medium",
         "activist": false,
@@ -19833,7 +19841,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "CBGGF",
+        "ticker": "CBRGF",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -20057,7 +20065,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "AETND",
+        "ticker": "AETN",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -20479,14 +20487,6 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
-      },
-      {
-        "ticker": "CMLSQ",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
       },
       {
         "ticker": "FLYE",
@@ -22049,7 +22049,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "LGNZZ",
+        "ticker": "LGNYZ",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -22457,7 +22457,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "SKK",
+        "ticker": "RNTZ",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -22657,7 +22657,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "TDS-PU",
+        "ticker": "TDS-PV",
         "category": "Deal Terminations",
         "confidence": "high",
         "activist": false,
@@ -25905,14 +25905,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "BWOW",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "CPRT",
         "category": "Acquisitions",
         "confidence": "high",
@@ -25929,7 +25921,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "RWTQ",
+        "ticker": "RWTN",
         "category": "Divestitures",
         "confidence": "medium",
         "activist": false,
@@ -26233,7 +26225,7 @@
         "detail": "Divestitures"
       },
       {
-        "ticker": "BBLGW",
+        "ticker": "BBLG",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
