@@ -658,3 +658,69 @@ def test_cli_refusal_exits_with_code_2_and_does_not_write(
 def test_naive_now_raises_value_error(tmp_path: Path) -> None:
     with pytest.raises(ValueError):
         _make_inputs(tmp_path=tmp_path, now=datetime(2026, 10, 30, 12, 0))
+
+
+# ---------------------------------------------------------------------------
+# case 12 — revisions reader: bounded transient retry (live read 1, 2026-10-22)
+# ---------------------------------------------------------------------------
+
+
+def test_read_revisions_retries_transient_then_returns(tmp_path: Path) -> None:
+    from scripts import c19_wp31_production as prod
+
+    calls: list[tuple[list[str], int]] = []
+    slept: list[float] = []
+
+    def reader(ids: Any, *, max_hops: int) -> Any:
+        calls.append((list(ids), max_hops))
+        if len(calls) < 3:
+            raise RuntimeError("Company Intelligence public source unavailable")
+        return {i: [] for i in ids}
+
+    inputs = prod.ProductionInputs(
+        repo=tmp_path, now=_NOW, revisions_reader=reader,
+        reader_attempts=3, reader_backoff_seconds=0.5, sleeper=slept.append,
+    )
+    out = inputs.read_revisions(["X:2026Q1", "X:2026Q2"], max_hops=7)
+    assert out == {"X:2026Q1": [], "X:2026Q2": []}
+    # Every attempt is the SAME whole walk over the SAME ids.
+    assert calls == [(["X:2026Q1", "X:2026Q2"], 7)] * 3
+    assert slept == [0.5, 1.0]
+    assert inputs.counts["revisions_reader_attempts"] == 3
+    assert inputs.counts["revisions_reader_transient_failures"] == 2
+    # run_kwargs wires this wrapper (not the bare incumbent) as the runner's
+    # one reader call — checked on the source so no repo/network is touched.
+    src = Path(prod.__file__).read_text(encoding="utf-8")
+    assert "revisions_reader=self.read_revisions" in src
+
+
+def test_read_revisions_final_failure_propagates_unchanged(tmp_path: Path) -> None:
+    from scripts import c19_wp31_production as prod
+
+    class _Typed(Exception):
+        pass
+
+    n = {"calls": 0}
+
+    def reader(ids: Any, *, max_hops: int) -> Any:
+        n["calls"] += 1
+        raise _Typed("still down")
+
+    inputs = prod.ProductionInputs(
+        repo=tmp_path, now=_NOW, revisions_reader=reader,
+        reader_attempts=2, sleeper=lambda _s: None,
+    )
+    with pytest.raises(_Typed):
+        inputs.read_revisions(["X:2026Q1"])
+    assert n["calls"] == 2
+    assert inputs.counts["revisions_reader_attempts"] == 2
+    assert inputs.counts["revisions_reader_transient_failures"] == 1
+    # attempts < 1 still performs exactly one attempt and raises.
+    inputs2 = prod.ProductionInputs(
+        repo=tmp_path, now=_NOW, revisions_reader=reader, reader_attempts=0,
+        sleeper=lambda _s: None,
+    )
+    before = n["calls"]
+    with pytest.raises(_Typed):
+        inputs2.read_revisions(["X:2026Q1"])
+    assert n["calls"] == before + 1
