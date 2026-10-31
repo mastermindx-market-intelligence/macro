@@ -4955,6 +4955,11 @@ CURATED_EXCLUSIVE = {
     # (135 > 134 jobs, 5,604 > 5,600 s) probes. scope: exclusive pins it to its
     # measured 63-path closure; closure findings (); ceilings stay fixed.
     "grey-deer-pullback-forward",
+    # 2026-10-31 Grey Deer EW-P3 (amends #10219, EW-P3.T1): the forecast reader
+    # STUB suite is hermetic (tmp_path only) and imports stdlib, lib.nyse_calendar
+    # and engine.trial_ledger. scope: exclusive pins it to that declared 9-path
+    # closure (prereg section 11.4); ceilings stay fixed.
+    "grey-deer-ew-forecast-reader",
     # 2026-10-13 FIF X2-n saved-research notifications (seat R3): the three
     # hermetic suites reach engine.fundamental_forensics and the research-vault
     # store, so inference unioned the whole-tree fallback roots and selected the
