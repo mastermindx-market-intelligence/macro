@@ -4397,6 +4397,8 @@ CURATED_EXCLUSIVE = {
     "market-ontology-f09-petroleum-flow",
     # F04 exact import/read closure; all suites retained, no homepage fallback.
     "ontology-explorer",
+    # DR3: exact closure isolates the observation consumer; no packing ceiling change.
+    "rotation-observation-delivery",
 
     "catalyst-opportunity",  # Attention/API job owns its measured import/read closure.
     "forex-r26-consumer",  # R26 consumer suites retain their declared import/read closure.
@@ -5090,6 +5092,10 @@ CURATED_EXCLUSIVE = {
     # Pure W3AR projection pins its complete import closure without selecting
     # unrelated render probes or acquiring scientific execution authority.
     "stock-identity-method-projection",
+    # AI Brief render-date countdown: an intentionally curated code-gated
+    # single-suite owner. Its explicit paths cover the static import closure
+    # and package ancestor init, without accepting unrelated render probes.
+    "aibrief-countdown-pr",
 }
 
 
