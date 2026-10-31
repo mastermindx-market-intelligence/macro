@@ -10589,6 +10589,20 @@ jobs:
       # spacer: keep unchanged
       # spacer: keep unchanged
       # W2B (IM14) paths: insert below this line
+      - "lib/intl_gs_dossier_view.py"
+      - "templates/intl_workspace/dossier.html.j2"
+      - "templates/intl_workspace/_gs_dossier_macros.html.j2"
+      - "templates/intl_workspace/_gs_macros.html.j2"
+      - "templates/intl_workspace_surveillance.css"
+      - "engine/intl_global_acceptance_matrix.py"
+      - "engine/intl_global_dollar_credit.py"
+      - "engine/global_liquidity_transmission.py"
+      - "config/global_liquidity_transmission_v1.yml"
+      - "research/GLOBAL_LIQUIDITY_TRANSMISSION_STATE_METHODOLOGY_2026-08-22.md"
+      - "tests/test_intl_gs_dossier.py"
+      - "tests/intl_gs_dossier_fixture.py"
+      - "tests/intl_gs_dossier_browser.test.cjs"
+      - "tests/__init__.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -10630,6 +10644,10 @@ jobs:
       # spacer: keep unchanged
       # spacer: keep unchanged
       # W2B (IM14) test steps: insert below this line
+      - name: IM14 market dossier tests (W2B)
+        run: python -m pytest tests/test_intl_gs_dossier.py -q
+      - name: IM14 market dossier browser proof (W2B)
+        run: node --test tests/intl_gs_dossier_browser.test.cjs
 
   stock-dashboard-first-frame:
     if: ${{ false }}
@@ -10674,6 +10692,15 @@ jobs:
       - "mockups/evidence/prophet-p0b-zero-fouc/hk-composer-failed-light-390.png"
       - "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png"
       - "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png"
+      # The pinned font subsets, stylesheet and manifest the suite checks
+      # against each receipt's `font_pin`.
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/**"
+      # The suite imports the P0B receipt closure gate for its re-mint
+      # environment hint. These are that import's closure.
+      - "scripts/__init__.py"
+      - "scripts/check_p0b_receipt_closure.py"
+      - "scripts/worktree_sparse.py"
+      - "config/sparse_worktree.json"
       - "tests/test_stock_dashboard_first_frame.py"
     runs-on: ubuntu-latest
     steps:
@@ -12074,6 +12101,7 @@ jobs:
       - "tests/test_fif_a1_journey_ledger.py"
       - "tests/test_fif_excel_refresh_harness.py"
       - "tests/test_fif_gsrc_capture.py"
+      - "tests/test_fif_held_out_capture_predeclared.py"
       - "tests/test_fundamental_forensics_held_out_packages.py"
       - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_a43_responsive_keyboard_corpus.py"
@@ -12276,6 +12304,7 @@ jobs:
           tests/test_fif_a21_publish_observation.py
           tests/test_fif_a43_responsive_keyboard_corpus.py
           tests/test_fif_gsrc_capture.py
+          tests/test_fif_held_out_capture_predeclared.py
           tests/test_fundamental_forensics_held_out_packages.py
           tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
@@ -12998,6 +13027,7 @@ jobs:
     # d5d0be27, 26 files, no probe file in it); the probe ceilings stay fixed.
     paths:
       - "config/site_access.yml"
+      - "engine/__init__.py"
       - "engine/research_vault/__init__.py"
       - "engine/research_vault/catalog.py"
       - "engine/research_vault/sidecar.py"
@@ -41407,6 +41437,7 @@ jobs:
       - "tests/test_qbus_news_contract.py"
       - "tests/test_qbus_news_flow_store.py"
       - "tests/test_qbus_news_migration.py"
+      - "tests/test_qbus_news_propagation_estate.py"
       - "tests/test_qbus_news_receipts.py"
       - "tests/test_qbus_news_reducer.py"
       - "tests/test_qbus_news_store.py"
@@ -41696,6 +41727,7 @@ jobs:
           tests/test_qbus_news_contract.py
           tests/test_qbus_news_flow_store.py
           tests/test_qbus_news_migration.py
+          tests/test_qbus_news_propagation_estate.py
           tests/test_qbus_news_receipts.py
           tests/test_qbus_news_reducer.py
           tests/test_qbus_news_store.py
