@@ -488,7 +488,12 @@
         <b>{{ coverage.missing_rows }}</b> {{ t('have no qualifying stored row. Older rows remain in Browse All but carry no current rank authority.', '只没有符合条件的存储记录。较早记录保留在「浏览全部」中，但不具备当前排名权威。') }}</li>
     <li>{{ t('Off-exchange share computed for', '已计算场外占比的个股') }}
         <b>{{ coverage.n_with_participation }}</b> / <b>{{ coverage.n_total }}</b>
-        {{ t('names; the rest have no matching consolidated-volume record.', '只；其余个股无匹配的综合成交量记录。') }}</li>
+        {{ t('names; the rest have no usable same-day total-volume denominator.', '只；其余个股缺少可用的同日总成交量分母。') }}</li>
+    {% if coverage.n_invalid_current_participation %}
+    <li><b>{{ coverage.n_invalid_current_participation }}</b>
+        {{ t('current rows were withheld because saved total-market volume was smaller than FINRA off-exchange volume. Impossible percentages are never ranked.',
+             '只当前记录因已保存的全市场成交量小于FINRA场外成交量而被暂不展示。数学上不可能的占比绝不会参与排名。') }}</li>
+    {% endif %}
     <li>{{ t('Price was available for', '有价格数据的个股') }}
         <b>{{ coverage.n_with_price }}</b>
         {{ t('names —', '只——') }} <b>{{ coverage.n_no_price }}</b>

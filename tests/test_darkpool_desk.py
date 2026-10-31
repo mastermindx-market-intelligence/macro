@@ -975,3 +975,80 @@ def test_desk_ui_keeps_ticker_visible_while_scrolling():
     assert 'background:var(--panel);box-shadow:1px 0 0 var(--line)' in src
     assert '#dp-table th:first-child{z-index:2}' in src
     assert '#dp-table tr:not(.dp-empty):hover>td:first-child{background:var(--panel2)}' in src
+
+
+# ---------------------------------------------------------------------------
+# Consolidated-volume source priority + published trust invariant
+# ---------------------------------------------------------------------------
+
+def test_market_loader_prefers_later_basket_volume_and_falls_back_to_yahoo(tmp_path, monkeypatch):
+    from scripts import build_darkpool_desk as bdd
+
+    yahoo = tmp_path / "yahoo"
+    basket = tmp_path / "baskets" / "ohlcv"
+    yahoo.mkdir(parents=True)
+    basket.mkdir(parents=True)
+    dates = pd.DatetimeIndex([pd.Timestamp("2026-09-22"), pd.Timestamp("2026-09-23")])
+    pd.DataFrame({"close": [10.0, 11.0], "close_price": [10.0, 11.0], "volume": [100.0, 200.0]}, index=dates).to_parquet(yahoo / "AAA.parquet")
+    # The later nightly basket pull has the complete 9/22 volume but no 9/23 row.
+    pd.DataFrame({"open": [10.0], "high": [11.0], "low": [9.0], "close": [10.5], "volume": [1000.0]}, index=dates[:1]).to_parquet(basket / "AAA.parquet")
+    monkeypatch.setattr(bdd, "YAHOO_DIR", yahoo)
+    monkeypatch.setattr(bdd, "BASKET_OHLCV_DIR", basket)
+
+    vol, close = bdd._load_yahoo(["AAA"])
+    assert vol["AAA"].loc[pd.Timestamp("2026-09-22")] == 1000.0
+    assert vol["AAA"].loc[pd.Timestamp("2026-09-23")] == 200.0
+    # Price semantics remain on the existing Yahoo close basis.
+    assert close["AAA"].loc[pd.Timestamp("2026-09-22")] == 10.0
+
+
+def test_committed_darkpool_payload_never_publishes_participation_above_one():
+    import html as _html
+    import json as _json
+    import re as _re
+    from pathlib import Path as _Path
+
+    text = (_Path(__file__).resolve().parents[1] / "site" / "darkpool.html").read_text(encoding="utf-8")
+    match = _re.search(r'<script[^>]+id="dp-data"[^>]*>(.*?)</script>', text, _re.S)
+    assert match, "dark-pool desk payload missing"
+    rows = _json.loads(_html.unescape(match.group(1)))
+    impossible = [(r.get("ticker"), r.get("asof"), r.get("participation"))
+                  for r in rows if r.get("participation") is not None and r["participation"] > 1]
+    assert impossible == []
+
+    pane = _json.loads((_Path(__file__).resolve().parents[1] / "site" / "darkpool_eod.json").read_text(encoding="utf-8"))
+    pane_rows = list(pane.get("universe") or []) + list(pane.get("historical_rows") or [])
+    assert all(r.get("participation") is None or r["participation"] <= 1 for r in pane_rows)
+
+    context = _json.loads((_Path(__file__).resolve().parents[1] / "data" / "darkpool" / "context" / "latest.json").read_text(encoding="utf-8"))
+    assert all(r.get("participation") is None or r["participation"] <= 1
+               for r in context.get("standouts") or [])
+
+
+def test_builder_coverage_counts_invalid_current_participation():
+    from scripts import build_darkpool_desk as bdd
+
+    dates = pd.date_range("2026-09-18", periods=3, freq="B")
+    panel = pd.DataFrame({
+        "date": dates,
+        "ticker": ["AAA"] * 3,
+        "short_vol": [200.0, 200.0, 600.0],
+        "short_exempt": [0.0, 0.0, 0.0],
+        "total_vol": [400.0, 400.0, 1200.0],
+        "short_ratio": [0.5, 0.5, 0.5],
+    })
+    consolidated = {"AAA": pd.Series([1000.0, 1000.0, 1000.0], index=dates)}
+    close = {"AAA": pd.Series([10.0, 10.5, 11.0], index=dates)}
+    rows, coverage = bdd._compute_ticker_stats_v2(panel, consolidated, close, {})
+    assert len(rows) == 1
+    assert rows[0]["participation"] is None
+    assert coverage["n_invalid_participation_rows"] == 1
+    assert coverage["n_invalid_current_participation"] == 1
+
+
+def test_darkpool_template_discloses_invalid_denominator_guard():
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[1] / "templates" / "darkpool.html.j2").read_text(encoding="utf-8")
+    assert "coverage.n_invalid_current_participation" in src
+    assert "Impossible percentages are never ranked." in src
+    assert "数学上不可能的占比绝不会参与排名。" in src
