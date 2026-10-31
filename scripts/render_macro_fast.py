@@ -53,9 +53,11 @@ def main() -> int:
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
     tmpl = env.get_template("dashboard.html.j2")
 
+    from scripts.tech_shock_macro import render_macro_with_shock
     for mode, name in (("macro", "macro.html"), ("stocks", "us_stocks.html")):
         out = site / name
-        write_page(out, tmpl.render(**vm, mode=mode))
+        html = render_macro_with_shock(env, vm) if mode == "macro" else tmpl.render(**vm, mode=mode)
+        write_page(out, html)
         print(f"wrote {out} ({out.stat().st_size/1024:.0f} KB)")
     out = site / "news.html"
     write_page(out, env.get_template("news.html.j2").render(**vm))
