@@ -271,7 +271,7 @@ global.Date = Clock;
 assert.strictEqual(_rrDaysUntil('2026-10-29'), 6);
 assert.strictEqual(_rrCountdownLabels(_rrDaysUntil('2026-10-29')).en, '6 days away');
 assert.strictEqual(_rrDaysUntil('2026-10-22'), -1);
-assert.strictEqual(_rrCountdownLabels(-1).en, '1 days since release');
+assert.strictEqual(_rrCountdownLabels(-1).en, '1 day since release');
 now = NativeDate.parse('2026-10-24T03:59:00Z'); // Still Oct 23 Eastern
 assert.strictEqual(_rrDaysUntil('2026-10-29'), 6);
 now = NativeDate.parse('2026-10-24T04:00:00Z'); // Eastern midnight
@@ -373,3 +373,42 @@ async function drain(){ await new Promise(setImmediate); }
 })().catch(error=>{console.error(error);process.exitCode=1;});
 """
     _node(driver)
+
+
+def test_refreshed_forecast_reaches_selected_date_and_open_detail():
+    wire = _extract("    function wireCalendarCards(){", "    /* INT-01: stop propagation")
+    detail = _extract("    function _rrRefreshOpenDetail(){", "    /* main render */")
+    # Execute both consumers with an already-wired calendar and an open projection.
+    driver = r"""
+const assert = require('assert');
+let chip = null, selectedPaints = 0, details = [];
+const card = {_rrWired:true,
+  getAttribute:k=>k==='data-cal-date'?'2026-11-05':'CLAIMS',
+  querySelector:()=>chip, appendChild:n=>{chip=n;}
+};
+global.document = {
+  createElement:()=>({remove:()=>{chip=null;}}), querySelectorAll:()=>[card], querySelector:()=>card
+};
+let _rrInlineDate='2026-11-05', _rrInlineSignature='old';
+const item={release:'claims',release_type:'claims',release_date:_rrInlineDate,period:_rrInlineDate,benchmark:197};
+let _rrOpenItem=item, _rrItems=[{...item,period:'different',benchmark:999},{...item,benchmark:211}];
+const RR_TAB_STRIP={textContent:'tabs'}, RR_MODAL_INNER={innerHTML:'previous'};
+const _itemsForDate=d=>_rrItems.filter(i=>i.release_date===d);
+const _inlineItemsSignature=(d,items)=>JSON.stringify([d,items]);
+function selectInlineDate(d,c,immediate){
+  assert.strictEqual(c,card);assert.strictEqual(immediate,true);
+  _rrInlineSignature=_inlineItemsSignature(d,_itemsForDate(d));selectedPaints++;
+}
+function openModal(i,refreshing){assert.strictEqual(refreshing,true);details.push(i.benchmark);}
+""" + wire + detail + r"""
+wireCalendarCards(); _rrRefreshOpenDetail();
+assert(chip);assert.strictEqual(selectedPaints,1);assert.deepStrictEqual(details,[211]);
+wireCalendarCards();assert.strictEqual(selectedPaints,1,'identical selected date must retain its DOM');
+_rrItems=[];wireCalendarCards();_rrRefreshOpenDetail();
+assert.strictEqual(chip,null);assert.strictEqual(selectedPaints,2);
+assert.strictEqual(RR_TAB_STRIP.textContent,'');assert(RR_MODAL_INNER.innerHTML.includes('no longer'));
+_rrItems=[{...item,benchmark:219}];wireCalendarCards();_rrRefreshOpenDetail();
+assert(chip);assert.deepStrictEqual(details,[211,219]);
+"""
+    _node(driver)
+    assert "wireCalendarCards();\n      _rrRefreshOpenDetail();" in SOURCE
