@@ -33,6 +33,8 @@ come from synthetic fixtures in `tests/fixtures/ew_p4_observation/`.
 
 ## Census map and chosen hosts
 
+<!-- CENSUS MAP: inserted by orchestrator -->
+
 The read-only census (lane GD-EW-P4-C1, repo HEAD `b38935afc1a5`) mapped these facts:
 
 | Question | Finding | Consequence for the build |
@@ -47,6 +49,68 @@ The read-only census (lane GD-EW-P4-C1, repo HEAD `b38935afc1a5`) mapped these f
 | Q8 test harness | pytest + node `--test` + playwright probe; CI registration in `.github/ci/legacy-jobs.yml` | pytest registered in `dashboard-render-contract`, node test in `ratio-lens` |
 | Q9 `rotobs_` | Ids are minted only by `engine/rotation_events.py:2389–2395`; no site JSON exposes them | Consumer contract is forward-only (above) |
 | Q10 envelope feed | `site/riskdata/risk_envelope.json` carries `source_session`, `data_state`, `freshness`, `policy_summary`, `produced_at` | The "how current" line reads source session, availability and quality first; build time is secondary |
+
+## Consumer contract latest_observation (forward; no producer in this change)
+
+Frozen build packet §A, verbatim. The validation mirror V1–V8 is implemented identically in
+`templates/_risk_envelope_band.html.j2` and in `ewGlanceHtml()` in `templates/rotation_events.js`.
+
+```text
+§A Consumer contract `latest_observation` (one shape, both hosts).
+Location: Radar reads `risk_envelope.rotation_context.latest_observation`; Sector Central reads `<rotation_events.json>.early_context.latest_observation`. Missing/null => no observation.
+Shape (a "view wrapper" around the frozen notification payload):
+{
+  "schema": "rotation_observation_view/v1",
+  "notification": { exact macro.rotation_observation.v1 payload: source, category, authority, kind, observation_id, previous_observation_id, pair_id, num, den, event_as_of, source_as_of, observed_at, not_after, values{sessions, numerator_return_pct, denominator_return_pct, ratio_return_pct} | null },
+  "window_2s": {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"} | null,
+  "horizon_20s": {"sessions": 20, "start": "YYYY-MM-DD", "end": "YYYY-MM-DD", "numerator_return_pct": n, "denominator_return_pct": d, "ratio_return_pct": r} | null,
+  "basis": "dividend_adjusted_close",
+  "availability": {"status": "VERIFIED"|"UNKNOWN", "available_at": iso|null},
+  "coverage": {"registered_pairs": int, "evaluable_2s": int, "missing_pair_ids": [str]},
+  "lineage_roots": [str],
+  "previous": {"observation_id": str, "observed_at": iso, "values": {...same shape...} | null} | null
+}
+Validation MIRROR (implement identically in Jinja and JS; it mirrors lib/rotation_observation_notification.py:258-367 `validate()` plus one stricter id rule):
+ V1 notification is an object; source == "macro.rotation_observation.v1"; category == "sector_rotation_relative"; authority == "notification_only".
+ V2 kind in {observed_change, reversal, correction, data_withdrawal}.
+ V3 observation_id matches ^rotobs_[0-9a-f]{40}$ (stricter than lib, as the engine mints it: engine/rotation_events.py `"rotobs_" + digest(identity)[:40]`); previous_observation_id null or same pattern; previous required unless kind == observed_change; previous != observation_id.
+ V4 num, den match ^[A-Z0-9][A-Z0-9.^=-]{0,19}$ and num != den; pair_id non-empty string <= 128 chars.
+ V5 event_as_of matches ^\d{4}-\d{2}-\d{2}$; observed_at and not_after are UTC ISO strings (`+00:00` or `Z` suffix) and not_after[:19] > observed_at[:19] after normalizing `Z` to `+00:00`.
+ V6 measured kinds (all but data_withdrawal): source_as_of == event_as_of; values is an object with sessions === integer 2 (not boolean); the three returns are finite numbers (not boolean, not NaN, |x| < 1e12); numerator and denominator > -100; |((1+n/100)/(1+d/100)-1)*100 - r| <= 1e-6.
+ V7 data_withdrawal: values === null; source_as_of null or <= event_as_of.
+ V8 window_2s / horizon_20s, when present, must be well-formed (dates, sessions 20, finite returns, same identity check within 1e-6); a malformed one is treated as ABSENT (partial), not as a malformed observation.
+```
+
+- **Stricter id rule.** V3 requires `^rotobs_[0-9a-f]{40}$`, which is stricter than the lib's own id check.
+  It matches how the engine mints ids (`engine/rotation_events.py`: `"rotobs_" + digest(identity)[:40]`).
+  A lib-valid notification with another id form renders `unreadable`.
+- **Explicit keys (review r1).** Both mirrors also carry the lib's explicit-key rule
+  (`lib/rotation_observation_notification.py:306`): `source_as_of` and `values` must be present as keys,
+  even when null for a withdrawal. A notification missing either key renders `unreadable` in both hosts.
+- **Present non-object wrapper (review r1).** A `latest_observation` that is present but is not an object
+  (a string, a list, a number or a boolean) fails V1 and renders `unreadable`. It is not treated as absent. Only a
+  missing or null `latest_observation` is "no observation".
+
+## State precedence
+
+Frozen build packet §B, verbatim. Jinja and JS apply the same first-match order.
+
+```text
+§B State function (same precedence in Jinja and JS; first match wins). `session` = Radar: risk_envelope.source_session; Sector Central: rotation_events.json `as_of`.
+ 1 no latest_observation:
+   - rotation context missing/not an object -> `unavailable`
+   - Radar: rotation_context.coverage == "STALE" or rotation_context.as_of < session -> `stale` (uses rotation_context.as_of). Sector Central: early_context missing or the existing stale rule in earlyContextHtml (STALE_DAYS) fires -> `stale`.
+   - else -> `unavailable`
+ 2 present but fails V1-V7 -> `unreadable`
+ 3 event_as_of > session (future) -> `unreadable`
+ 4 kind data_withdrawal -> `withdrawn`
+ 5 event_as_of < session -> `stale` (show the observation date; glance shows NO return numbers)
+ 6 kind correction -> `corrected`
+ 7 window_2s absent/malformed, or window_2s.end != event_as_of, or horizon_20s absent/malformed -> `partial` (reasons list; if the window is absent or mismatched, WITHHOLD legs and ratio)
+ 8 horizon_20s present and sign(ratio 2s) != sign(ratio 20s) (zero counts as its own sign) -> `conflicting`
+ 9 kind reversal -> `reversal`; else -> `observed`
+ Envelope verdicts (measured_state, hazard_summary, leadership cohort) NEVER change this state: a quiet market must not hide a qualified observation; a fragile market must not create one.
+```
 
 ## Rubric row → assertion / shot
 
@@ -90,10 +154,11 @@ warning surface, never on the neutral surface.
 - **46 shots** in `research/evidence/ew_p4_descriptive_ui_20261031/shots/`, listed with sha256 in `research/evidence/ew_p4_descriptive_ui_20261031/receipt.json`.
 - Matrix: Radar stale, Radar observed and Sector Central observed × EN/ZH × dark/light × 1280/390/320 (36 shots); state shots at EN/dark/390: radar/conflicting, radar/corrected, radar/partial, radar/unavailable, radar/unreadable, radar/withdrawn, sc/corrected, sc/stale, sc/unreadable, sc/withdrawn.
 - Contact sheets: `contact-radar-observed.png`, `contact-radar-stale.png`, `contact-sc-observed.png`, `contact-sc-states.png`.
-- `source_revision` `b615ab7d9ef0fd943d1b0ae158a07dff8d68acb5` is the commit on this branch that the shots were rendered from (local Playwright Chromium, static harness, synthetic fixtures, every request served locally or aborted).
+- `source_revision` `5bb16bdbe145208c8e7a5d2395a579e2f2c01a07` is the commit on this branch that the shots were rendered from (local Playwright Chromium, static harness, synthetic fixtures, every request served locally or aborted).
 - `pr_source_equivalence` lists 19 render inputs with git blob ids at `source_revision` and on the branch (all equal). `test_receipt_shots_depict_the_source_under_test` re-checks those blob ids against the tested tree, every shot's sha256, the 36-cell matrix, no horizontal overflow and no page errors.
 - `production_authenticated: false`; capture mode `dialog_unclipped_static_harness` (#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls).
 - Every shot was opened and judged by the orchestrator (ORCH-P4b) in side-by-side strips per family. After repair wave C the set was re-rendered at the repair commit, and the shots whose content changed (Sector Central ZH study rows, correction and withdrawal history in both hosts, Sector Central stale) were opened and judged again.
+- **Review r1 re-render.** After the review r1 repairs the whole set was re-rendered at the repair commit, and every shot whose bytes changed was opened and judged again. The open study disclosures now show the observation id in the mono token face.
 
 ## Not claimed
 
@@ -123,3 +188,4 @@ warning surface, never on the neutral surface.
 - **Capture artifact.** The site-wide aurora backdrop in `templates/theme.css` is a fixed, full-viewport layer. Element shots taller than the 1000 px capture viewport show its lower edge as a faint step behind the translucent Sector Central surface (dark shots, about 1000 px down). A live browser keeps the layer pinned to the viewport, so no reader sees that step.
 - **Accepted limitation.** The Radar policy footer's state, count and sentence spans have no separators in the base markup, so the line reads as one run. That markup predates this change and is left as is.
 - **Accepted limitation.** Below the new glance, the pre-existing Sector Central events list still prints both its not-an-all-clear sentence and "No active rotation events — quiet state is a valid state", and the early-context card keeps its English status enums (`VERIFIED`, `UNKNOWN`) under ZH. Both predate this change.
+- **Review r1 repairs (F1–F5).** Independent lane gd-ew-p4-r1 (REQUEST_CHANGES on `dae8ba64`) found five gaps, all repaired. F1: `site/rotation_events.js` was not byte-copied after wave C; it is copied again, and a pytest now asserts byte identity. F2: both mirrors now require explicit `source_as_of` and `values` keys (lib:306). F3: a present non-object wrapper is `unreadable`, not `unavailable`. F4: the study id is set in `var(--font-mono)`. F5: this record now carries the §A contract, the §B precedence and the census marker. The r1 node test and seven of the ten r1 pytest cases fail on the pre-repair sources; the other three pin behaviour that was already correct.
