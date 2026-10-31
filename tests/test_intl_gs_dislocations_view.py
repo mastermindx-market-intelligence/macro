@@ -444,6 +444,30 @@ W2A_REGION = ("/* ==== W2A region (IM13 scanner + coverage): the W2A lane insert
               "its rules between this line and the next ==== */")
 
 
+def _v13_region_law(css: str, base: str) -> None:
+    """The W3U insert-only law against the merge base, in both merge phases.
+
+    PRE (base carries no W3U region — this PR against current main): the W3U
+    block is a pure insertion before the W2A region anchor, so the bytes
+    before it and the bytes from the W2A anchor to EOF equal the base's.
+    POST (base carries exactly one W3U region — this PR merged, or any later
+    PR on that main): only the prefix before the region and the region bytes
+    themselves are pinned; the bytes from the W2A region line to EOF belong
+    to the W2A/W2B lanes and are pinned by their own suites (F-POST-1).
+    """
+    if W3U_START not in base:
+        assert css[:css.index(W3U_START)] == base[:base.index(W2A_REGION)]
+        assert css[css.index(W3U_END) + len(W3U_END) + 1:] == \
+            base[base.index(W2A_REGION):]
+        return
+    assert base.count(W3U_START) == 1 and base.count(W3U_END) == 1
+    assert css[:css.index(W3U_START)] == base[:base.index(W3U_START)]
+    region = slice(css.index(W3U_START), css.index(W3U_END) + len(W3U_END))
+    base_region = slice(base.index(W3U_START),
+                        base.index(W3U_END) + len(W3U_END))
+    assert css[region] == base[base_region]
+
+
 def test_v13_css_region_law():
     css = CSS_PATH.read_text(encoding="utf-8")
     assert css.count(W3U_START) == 1 and css.count(W3U_END) == 1
@@ -456,8 +480,7 @@ def test_v13_css_region_law():
     base = subprocess.run(
         ["git", "show", f"{_merge_base()}:templates/intl_workspace_surveillance.css"],
         cwd=REPO, capture_output=True, text=True, check=True).stdout
-    assert css[:css.index(W3U_START)] == base[:base.index(W2A_REGION)]
-    assert css[css.index(W3U_END) + len(W3U_END) + 1:] == base[base.index(W2A_REGION):]
+    _v13_region_law(css, base)
     assert SITE_CSS_PATH.read_bytes() == CSS_PATH.read_bytes()
     region = _w3u_region(css)
     stripped = re.sub(r"/\*.*?\*/", "", region, flags=re.DOTALL)
@@ -483,6 +506,37 @@ def test_v13_css_region_law():
         assert prop not in ("border-left", "border-right", "border-inline-start",
                             "border-inline-end", "border-block-start",
                             "border-block-end"), decl
+
+
+def _flip_one_byte(text: str, index: int) -> str:
+    char = text[index]
+    return text[:index] + ("b" if char == "a" else "a") + text[index + 1:]
+
+
+def test_v13b_region_law_modes():
+    """F-POST-1: the region law is phase-aware, pure and in memory."""
+    css = CSS_PATH.read_text(encoding="utf-8")
+    start = css.index(W3U_START)
+    after = css.index(W3U_END) + len(W3U_END) + 1  # drop the newline as well
+    pre_base = css[:start] + css[after:]           # == the real merge-base css
+    # (i) PRE: this PR's css against the base without the W3U region passes.
+    _v13_region_law(css, pre_base)
+    # (ii) POST: base == css passes.
+    _v13_region_law(css, css)
+    # (iii) POST: a scratch edit inside the W2B region of css still passes —
+    # those bytes are the W2B lane's, pinned by its own suite.
+    w2b_line = css.index("\n", css.index("/* ==== W2B region")) + 1
+    scratch = css[:w2b_line] + "/* scratch w2b edit */\n" + css[w2b_line:]
+    _v13_region_law(scratch, css)
+    # (iv) POST: one byte changed inside the W3U region fails.
+    with pytest.raises(AssertionError):
+        _v13_region_law(_flip_one_byte(css, start + (after - start) // 2), css)
+    # (v) POST: one byte changed in the prefix fails.
+    with pytest.raises(AssertionError):
+        _v13_region_law(_flip_one_byte(css, start // 2), css)
+    # (vi) PRE: one byte changed in the prefix fails.
+    with pytest.raises(AssertionError):
+        _v13_region_law(_flip_one_byte(css, start // 2), pre_base)
 
 
 # ---------------------------------------------------------------- V14 hygiene
