@@ -176,7 +176,7 @@
         <div class="intl-gs__card intl-gs__sourcescard">
           {{ gs.gs_bandhead(t('Sources and lineage', '来源与血缘')) }}
           <dl class="intl-gs__sources">
-            <div><dt>{{ t('Observation evidence', '观测证据') }}</dt><dd><code class="intl-gs__token">{{ market.sources.evidence_ref or '—' }}</code></dd></div>
+            <div><dt>{{ t('Observation evidence', '观测证据') }}</dt><dd>{% if market.sources.evidence_ref %}{{ gs.gs_rights_slot() }} <span class="intl-gs__footnote">{{ t('Source reference withheld on the public page', '公开页面保留来源引用') }}</span>{% else %}<span class="intl-gs__num intl-gs__num--muted">—</span>{% endif %}</dd></div>
             <div><dt>{{ t('Snapshot published', '快照发布') }}</dt><dd>{% if market.sources.snapshot_clock %}<time class="intl-gs__num" datetime="{{ market.sources.snapshot_clock.datetime|e }}">{{ t(market.sources.snapshot_clock.en, market.sources.snapshot_clock.zh) }}</time>{% else %}<span class="intl-gs__num intl-gs__num--muted">—</span>{% endif %}</dd></div>
             <div><dt>{{ t('Capability evidence', '能力证据') }}</dt><dd><code class="intl-gs__token">{{ market.sources.capability_evidence_ref or '—' }}</code></dd></div>
             <div><dt>{{ t('Rights ref', '权利引用') }}</dt><dd><code class="intl-gs__token">{{ market.sources.capability_rights_ref or '—' }}</code></dd></div>
