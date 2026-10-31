@@ -92,7 +92,9 @@
                   'Q3': ('Stagflation', '滞胀'), 'Q4': ('Growth scare', '增长恐慌')} %}
     {% set _force = _qn.get(latest.get('quad')) %}
     <table>
-      <tr><th>{{ t('regime', '周期') }}</th><th>{{ t('periods', '次数') }}</th><th>{{ t('median length (days)', '存续中位数（天）') }}</th><th>{{ t('most common next', '最常见的下一周期') }}</th></tr>
+      <tr><th>{{ t('regime', '周期') }}</th><th>{{ t('periods', '次数') }}</th>
+        <th>{{ t('median length (weekdays)', '存续中位数（周一至周五计，天）') }}</th>
+        <th>{{ t('most common next', '最常见的下一周期') }}</th></tr>
       {% for row in lifespan_rows %}
       <tr><td>{{ td(row.name) }}{% if _force and row.name == _force[0] %}
         <span class="muted">{{ t('in force', '现行') }}</span>{% endif %}</td>
@@ -104,7 +106,8 @@
     {% set _pend = _qn.get(latest.pending_quad) %}
     <p class="muted">{{ t('A different regime is pending confirmation:', '另一周期待确认：') }}
       {{ t(_pend[0], _pend[1]) }} — {{ t('for', '已持续') }}
-      {{ latest.pending_days }}{{ t('d', '个交易日') }}</p>
+      {{ latest.pending_days }}
+      {{ t('weekday' if latest.pending_days == 1 else 'weekdays', '天（周一至周五计）') }}</p>
     {% endif %}
   </div>
 

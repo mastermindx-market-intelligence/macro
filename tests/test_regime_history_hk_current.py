@@ -15,7 +15,9 @@ W33 SPEC 2 (findings F4/F5/F11 of the W32D design packet):
 * ``scripts/build_hk.py:1334`` already stamps ``... UTC``, so the template's
   own literal made the committed page read ``2026-10-20 17:09 UTC UTC``.
 * ``quad_segments`` ends with the period still running, so the regime in force
-  takes its median from finished periods only.
+  takes its median from finished periods only, and its line counts those same
+  periods. ``n_segments`` is the total for all four regimes, which the median
+  was not taken over, so it stays in ``log.info``.
 * ``data/hk_regime/regime_history.parquet`` holds one row for every Monday to
   Friday in its span, 2026-10-30 inclusive: 5,372 rows, 5,372 weekdays, with
   12-25 and 1-1 present. A length is a count of weekdays, market holidays
@@ -175,9 +177,11 @@ def _open_segment_frame():
 def test_median_in_force_excludes_the_running_period(monkeypatch, tmp_path) -> None:
     html = _render(monkeypatch, tmp_path, _open_segment_frame())
     en, zh = _view(html, "zh"), _view(html, "en")
-    assert "100 weekdays old · median 25 · 9 periods in the sample" in en, en[-400:]
-    assert "中位数 25 · 9 个样本时段" in zh
+    assert "100 weekdays old · median 25 · 4 periods in the sample" in en, en[-400:]
+    assert "中位数 25 · 4 个样本时段" in zh
     assert "median 30" not in en
+    assert "9 periods" not in en, "9 is every regime, and 5 counts the running period"
+    assert "5 periods" not in en
 
 
 def test_table_row_of_the_regime_in_force_excludes_the_running_period(
@@ -193,12 +197,13 @@ def test_no_finished_period_prints_no_median(monkeypatch, tmp_path) -> None:
     html = _render(monkeypatch, tmp_path, _frame([("Q1", 5), ("Q2", 3)]))
     en, zh = _view(html, "zh"), _view(html, "en")
     assert "3 weekdays old" in en and "3 天（周一至周五计）" in zh
-    assert "3 weekdays old · 2 periods in the sample" in en
     panel = html.split("Regime lifespans")[1].split("</table>")[0]
     assert "None" not in panel
     assert "Regime in force" in en
-    in_force = en.split("Regime in force")[1]
-    assert "median" not in in_force.split("periods in the sample")[0]
+    in_force = en.split("Regime in force")[1].split("Generated")[0]
+    assert "median" not in in_force
+    assert "in the sample" not in in_force, "there is no sample behind no median"
+    assert "样本时段" not in zh
     assert "<td>1</td><td>—</td>" in _row(html, "Reflation")
 
 
@@ -211,11 +216,27 @@ def test_denominator_is_one_less_for_the_regime_in_force(monkeypatch, tmp_path) 
     assert _sample_of(q1) == 40, "a closed regime's sample equals its period count"
 
 
-def test_n_segments_total_renders(monkeypatch, tmp_path) -> None:
+def test_in_force_count_is_the_set_behind_its_median(monkeypatch, tmp_path) -> None:
+    """162 periods in all, 41 of Q2, 40 of them finished: the median is over 40."""
     html = _render(monkeypatch, tmp_path, _committed_shape_frame())
     en, zh = _view(html, "zh"), _view(html, "en")
-    assert "162 periods in the sample" in en
-    assert "162 个样本时段" in zh
+    assert "median 26 · 40 periods in the sample" in en, en[-400:]
+    assert "中位数 26 · 40 个样本时段" in zh, zh[-400:]
+    assert "162" not in en.split("Regime in force")[1]
+    assert "162" not in zh.split("现行周期")[1]
+    assert "41 periods in the sample" not in en
+    assert "<td>41</td><td>26</td>" in _row(html, "Reflation")
+    assert _sample_of(_row(html, "Reflation")) == 40
+
+
+def test_in_force_line_reads_singular_at_one(monkeypatch, tmp_path) -> None:
+    frame = _frame([("Q2", 5), ("Q1", 5), ("Q2", 1)])
+    html = _render(monkeypatch, tmp_path, frame)
+    en, zh = _view(html, "zh"), _view(html, "en")
+    assert "1 weekday old · median 5 · 1 period in the sample" in en, en[-400:]
+    assert "1 weekdays" not in en and "1 periods" not in en
+    assert "1 天（周一至周五计）" in zh
+    assert "中位数 5 · 1 个样本时段" in zh
 
 
 def test_degrades_to_todays_output_on_a_two_session_frame(monkeypatch, tmp_path) -> None:

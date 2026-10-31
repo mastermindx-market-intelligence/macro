@@ -14,6 +14,12 @@ denominator or names a confirmation threshold. ``pending_quad`` is a float NaN
 in the HK/CN artifacts and NaN is truthy, hence the tight
 ``in ['Q1','Q2','Q3','Q4']`` guard (``templates/china.html.j2:1811``).
 
+``pending_days`` adds one per row of a frame built on ``pd.bdate_range``
+(``engine/canada_inputs.py:63``, ``engine/regime.py:84``), and
+``data/canada_regime/regime_history.parquet`` holds every Monday to Friday in
+its span, 12-25 and 1-1 included. The count and the medians are weekdays, not
+trading days, so both labels say weekdays.
+
 Synthetic fixtures only: no ``data/`` or ``site/`` read, no builder call.
 
 Run: MM_DATA_GUARD=off PYTHONPATH=. python3 -m pytest \
@@ -60,8 +66,10 @@ LATEST = {"date": "2026-10-14", "quad": "Q3", "quad_name": "Stagflation",
 
 MARKERS = ("_qn", "_force", "_pend", "in force", "pending_quad", "pending_days",
            "generated_utc", "td(row.name)", "row.next", "row.n }}")
-NEW_EN = ("in force", "A different regime is pending confirmation", "for", "d")
-NEW_ZH = ("现行", "另一周期待确认", "已持续", "个交易日")
+NEW_EN = ("in force", "A different regime is pending confirmation", "for", "weekday",
+          "median length (weekdays)")
+NEW_ZH = ("现行", "另一周期待确认", "已持续", "天（周一至周五计）",
+          "存续中位数（周一至周五计，天）")
 BANNED = ("实时", "申报", "证伪", "validated", "已验证", "live", "forecast",
           "falsifier", "refuted", "z-score", "percentile rank", "probability",
           "概率", "当前", "最新", "独立")
@@ -79,8 +87,7 @@ def _render(latest: dict, rows: list | None = None) -> str:
 
 def _view(html: str, drop: str) -> str:
     """The reader's text in one language: the other language's spans and every
-    tag go away WITHOUT leaving a space, because the template puts none between
-    a value and the unit span that follows it (`1{{ t('d', ...) }}` -> `1d`)."""
+    tag go away WITHOUT leaving a space, so the spacing is the template's own."""
     out = re.sub(r'<span class="l-%s">.*?</span>' % drop, "", html)
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", out))
 
@@ -112,8 +119,30 @@ def test_marks_the_row_in_force_and_the_pending_flip() -> None:
     assert chunk, "no pending disclosure rendered"
     en, zh = _view(chunk, "zh"), _view(chunk, "en")
     assert "A different regime is pending confirmation" in en
-    assert "Growth scare" in en and "for 1d" in en, en
-    assert "另一周期待确认" in zh and "增长恐慌" in zh and "已持续 1个交易日" in zh, zh
+    assert "Growth scare" in en and "for 1 weekday" in en, en
+    assert "另一周期待确认" in zh and "增长恐慌" in zh
+    assert "已持续 1 天（周一至周五计）" in zh, zh
+
+
+def test_pending_count_is_labelled_weekdays_on_both_arms() -> None:
+    """The frame has a row for every Monday to Friday, market holidays included."""
+    chunk = _disclosure(_render(dict(LATEST)))
+    en, zh = _view(chunk, "zh"), _view(chunk, "en")
+    assert "1 weekdays" not in en and "1d" not in en and "trading" not in en
+    assert "交易日" not in zh
+    chunk = _disclosure(_render(dict(LATEST, pending_days=3)))
+    en, zh = _view(chunk, "zh"), _view(chunk, "en")
+    assert "for 3 weekdays" in en, en
+    assert "已持续 3 天（周一至周五计）" in zh, zh
+
+
+def test_median_column_states_its_unit() -> None:
+    html = _render(dict(LATEST))
+    en, zh = _view(html, "zh"), _view(html, "en")
+    assert "median length (weekdays)" in en
+    assert "存续中位数（周一至周五计，天）" in zh
+    assert "median length (days)" not in en
+    assert "存续中位数（天）" not in zh
 
 
 def test_nan_pending_quad_never_reaches_the_page() -> None:

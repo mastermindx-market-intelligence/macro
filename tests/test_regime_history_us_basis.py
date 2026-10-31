@@ -18,9 +18,9 @@ W33 SPEC 1 (findings F1/F2/F6 of the W32D design packet):
 * ``quad_segments`` ends with the period still running, whose length is only
   its age so far. The note and the progress atoms now read finished periods
   only: on the committed record the median for Reflation is 31 of 151, not 30
-  of 152. The four table rows still come from ``transition_stats`` through
-  ``scripts/build_site.py``, which this change does not touch, so that row
-  still prints 30.
+  of 152. The four table rows read the same periods through
+  ``playbook.finished_lifespan_rows``, so the row prints 31 of 151 too, and its
+  column says finished periods.
 
 Synthetic fixtures only: no ``data/`` or ``site/`` read and no builder call.
 
@@ -60,12 +60,12 @@ PROGRESS = {"age_days": 17, "median_days": 31, "pct_longer": 75.0,
             "median_remaining_days": 22, "phase": "early", "bar_pct": 19.8,
             "zone_early_pct": 23.3, "zone_mid_pct": 52.0, "n_history": 151}
 
-# --- the four rows site/history.html prints (F1: 127/152/72/91) -------------
+# --- the four rows site/history.html prints, finished periods only -----------
 LIFESPAN_ROWS = [
     {"name": "Goldilocks", "n": 127, "median": 29,
      "next": "Reflation 38%, Stagflation 27%",
      "next_zh": "再通胀 38%、滞胀 27%"},
-    {"name": "Reflation", "n": 152, "median": 30,
+    {"name": "Reflation", "n": 151, "median": 31,
      "next": "Goldilocks 47%, Stagflation 34%",
      "next_zh": "理想增长 47%、滞胀 34%"},
     {"name": "Stagflation", "n": 72, "median": 16,
@@ -102,7 +102,7 @@ def _latest(playbook: dict | None = "default") -> dict:
 
 
 def _render(latest: dict, rows: list | None = None) -> str:
-    """Render the page the way scripts/build_site.py:7923-7929 does."""
+    """Render the page the way scripts/build_site.py does."""
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")),
                       autoescape=False)
     env.globals.update(td=i18n.td, tr=i18n.tr)
@@ -197,6 +197,28 @@ def test_median_column_states_its_unit() -> None:
     assert "存续中位数（交易日）" not in zh
 
 
+def test_periods_column_says_finished() -> None:
+    """The running period is not in this column, so it must not read as every period."""
+    html = _render(_latest())
+    en, zh = _view(html, "zh"), _view(html, "en")
+    assert "finished periods" in en
+    assert "已结束次数" in zh
+    row = next(c for c in _panel(html).split("<tr>")
+               if '<span class="l-en">Reflation</span>' in c)
+    assert "<td>151</td><td>31</td>" in row, row[:200]
+
+
+def test_panel_reads_singular_at_one() -> None:
+    pb = {"regime_age_note": None, "regime_age_note_zh": None,
+          "progress": {**PROGRESS, "age_days": 1, "median_remaining_days": 1}}
+    html = _render(_latest(pb))
+    en, zh = _view(html, "zh"), _view(html, "en")
+    assert "1 weekday old" in en
+    assert "the median further length was 1 weekday" in en
+    assert "1 weekdays" not in en
+    assert "1 天（周一至周五计）" in zh
+
+
 def test_median_remaining_states_its_past_sample() -> None:
     """It is a fact about past runs, so it must not read as this run's future."""
     pb = {"regime_age_note": None, "regime_age_note_zh": None,
@@ -284,6 +306,10 @@ def test_progress_past_every_finished_period() -> None:
     assert got["median_remaining_days"] is None
     assert got["phase"] == "overdue"
     assert got["bar_pct"] == 100.0
+    assert got["phase_note"].endswith("take every warning flag seriously")
+    assert not re.search(r"\blive\b", got["phase_note"])
+    assert got["phase_note_zh"].endswith("认真对待每一个预警标志")
+    assert "视为有效" not in got["phase_note_zh"]
 
 
 def test_age_note_is_the_pinned_text_on_the_finished_median() -> None:
@@ -299,6 +325,45 @@ def test_age_note_is_the_pinned_text_on_the_finished_median() -> None:
 ])
 def test_age_note_is_absent_without_a_median_or_a_next(lengths, nxt) -> None:
     assert playbook.regime_age_note(_series(lengths), "Q2", 3, nxt) == (None, None)
+
+
+def test_age_note_reads_singular_at_one() -> None:
+    en, _ = playbook.regime_age_note(_alternating([21, 31, 41], 500), "Q2", 1, {"Q1": 1.0})
+    assert "stretch is 1 weekday old" in en, en
+
+
+def _rows(frame) -> dict:
+    return {row["name"]: row for row in playbook.finished_lifespan_rows(frame)}
+
+
+def test_table_row_of_the_regime_in_force_reads_finished_periods() -> None:
+    """The running period would make this row 9 periods with a median of 50."""
+    frame = _alternating(EIGHT, 500)
+    q2 = _rows(frame)["Reflation"]
+    assert q2["n"] == 8
+    assert q2["median"] == 45
+    assert (q2["next"], q2["next_zh"]) == ("Goldilocks 100%", "理想增长 100%")
+
+
+def test_table_row_agrees_with_the_note_and_the_bar_beside_it() -> None:
+    frame = _alternating(EIGHT, 35)
+    q2 = _rows(frame)["Reflation"]
+    got = playbook.regime_progress(frame, "Q2", 35)
+    assert (q2["n"], q2["median"]) == (got["n_history"], got["median_days"])
+    assert f"historical median: {q2['median']}" in playbook.regime_age_note(
+        frame, "Q2", 35, {"Q1": 1.0})[0]
+
+
+def test_table_row_of_a_closed_regime_counts_every_period() -> None:
+    q1 = _rows(_alternating(EIGHT, 35))["Goldilocks"]
+    assert (q1["n"], q1["median"]) == (8, 5)
+
+
+def test_table_row_with_no_finished_period_prints_a_dash() -> None:
+    rows = _rows(_series([("Q1", 5), ("Q2", 3)]))
+    assert (rows["Reflation"]["n"], rows["Reflation"]["median"]) == ("—", "—")
+    assert (rows["Goldilocks"]["n"], rows["Goldilocks"]["median"]) == (1, 5)
+    assert (rows["Stagflation"]["n"], rows["Stagflation"]["median"]) == ("—", "—")
 
 
 def test_build_playbook_reads_progress_and_note_through_the_helpers() -> None:
@@ -317,6 +382,7 @@ def test_added_lines_are_within_the_length_and_copy_laws() -> None:
     assert block, "the regime-age block is missing from history.html.j2"
     src = TEMPLATE.read_text(encoding="utf-8").splitlines()
     touched = list(block) + [ln for ln in src if "median length" in ln
+                             or "finished periods" in ln
                              or "Every regime period" in ln
                              or "本分类器中的每一个周期时段" in ln]
     assert len(touched) > len(block), "the header/help edits are missing"

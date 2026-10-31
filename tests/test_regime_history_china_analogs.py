@@ -117,6 +117,17 @@ def test_existing_h20_and_h60_columns_unchanged() -> None:
     assert text.index("+8.5%") < text.index("+1.6%"), "column order shifted"
 
 
+def test_median_column_states_its_unit() -> None:
+    """data/china_regime/regime_history.parquet has a row for every Monday to Friday
+    in its span, 12-25 and 1-1 included, so a length is a count of weekdays."""
+    html = _render(ANALOGS)
+    en, zh = _view(html, "zh"), _view(html, "en")
+    assert "median length (weekdays)" in en
+    assert "存续中位数（周一至周五计，天）" in zh
+    assert "median length (days)" not in en
+    assert "存续中位数（天）" not in zh
+
+
 def test_panel_degrades_with_no_analogs() -> None:
     html = _render([])
     assert "Historical analogs" not in html

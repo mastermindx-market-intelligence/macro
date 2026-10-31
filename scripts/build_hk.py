@@ -290,8 +290,8 @@ def _build_sector_pages(env) -> int:
 
 
 def _build_history(env, latest: dict, generated: str) -> None:
-    from engine.playbook import (QUAD_SHORT, closed_median, next_quads_line,
-                                 quad_segments, transition_stats)
+    from engine.playbook import (QUAD_SHORT, closed_durations, closed_median,
+                                 next_quads_line, quad_segments, transition_stats)
     hist = store.read("hk_regime", "regime_history")
     if hist is None or "quad" not in hist.columns:
         log.warning("hk history: no regime_history; skipping history page")
@@ -316,7 +316,7 @@ def _build_history(env, latest: dict, generated: str) -> None:
                     "start": str(seg.iloc[-1]["start"])[:10],
                     "age_days": int(cur["age_days"]),
                     "median_days": cur_median,
-                    "n_segments": int(trans.get("n_segments", 0))}
+                    "n_closed": len(closed_durations(hist["quad"], cur["quad"]))}
     rows = []
     for q in ("Q1", "Q2", "Q3", "Q4"):
         nxt = trans["matrix"].get(q, {})

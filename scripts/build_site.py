@@ -7914,22 +7914,13 @@ def main() -> int:
         log.error("experiments registry build failed: %s", e)
 
     # --- history page: the longer-window charts + lifespan base rates ----------
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
-    trans = transition_stats(hist["quad"])
-    lifespan_rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        lifespan_rows.append({"name": QUAD_SHORT[q],
-                              "n": trans["n_by_quad"].get(q, "—"),
-                              "median": trans["median_days"].get(q, "—"),
-                              "next": next_quads_line(nxt),
-                              "next_zh": next_quads_line(nxt, zh=True)})
+    from engine.playbook import finished_lifespan_rows
     hist_html = env.get_template("history.html.j2").render(
         latest=latest,
         generated_utc=generated,
         chart_regime=chart_regime(f, hist, days=1095),
         chart_axes=chart_axes(hist, days=1095),
-        lifespan_rows=lifespan_rows,
+        lifespan_rows=finished_lifespan_rows(hist["quad"]),
     )
     out2 = site / "history.html"
     write_page(out2, hist_html)

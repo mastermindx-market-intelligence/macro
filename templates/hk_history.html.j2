@@ -102,10 +102,12 @@
       <tr><td colspan="4" class="muted">{{ t('Regime in force:', '现行周期：') }}
         {{ td(regime_in_force.name) }} — {{ t('since', '始于') }}
         {{ regime_in_force.start }}, {{ regime_in_force.age_days }}
-        {{ t('weekdays old', '天（周一至周五计）') }}
+        {{ t('weekday old' if regime_in_force.age_days == 1 else 'weekdays old',
+             '天（周一至周五计）') }}
         {% if regime_in_force.median_days is not none %}· {{ t('median', '中位数') }}
-        {{ regime_in_force.median_days }} {% endif %}· {{ regime_in_force.n_segments }}
-        {{ t('periods in the sample', '个样本时段') }}</td></tr>
+        {{ regime_in_force.median_days }} · {{ regime_in_force.n_closed }}
+        {{ t('period in the sample' if regime_in_force.n_closed == 1
+             else 'periods in the sample', '个样本时段') }}{% endif %}</td></tr>
       {% endif %}
     </table>
   </div>
