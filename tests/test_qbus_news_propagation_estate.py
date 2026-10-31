@@ -491,6 +491,10 @@ def test_c_provider_removal_suppresses_every_current_read_model_and_sse_replay(
     ]
     assert carriers == [min(x_sequences)]
 
+    # The final provider removal is journaled as a removal row, never
+    # relabeled as an upsert: the raw change log's kind is audit truth.
+    assert max(feed.rows, key=lambda row: row.sequence).kind == "remove"
+
     # SSE replay from sequence 0 delivers a removal, never rev1 text.
     ticker_news, app = _api_app(monkeypatch, db)
     replay = _sse_frames(ticker_news, after_sequence=0, max_cycles=1)
