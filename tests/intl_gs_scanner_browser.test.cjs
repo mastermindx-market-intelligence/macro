@@ -75,19 +75,33 @@ test('A11 scanner deep link selects JP with the 1.5px info ring', async () => {
     await web.goto('https://intl.test/intl.html?view=scanner&market=JP');
     const panel = visiblePanel(web, 'scanner');
     await web.waitForSelector('section.intl-gs__view--scanner:not([hidden])');
-    const selected = panel.locator('[data-gs-market-row][data-gs-selected]');
+    const selected = panel.locator('table tr[data-gs-market-row][data-gs-selected]');
     assert.equal(await selected.count(), 1);
     assert.equal(await selected.getAttribute('data-gs-market-row'), 'JP');
-    const link = panel.locator('a[data-gs-select-market="JP"]');
+    const marks = await panel.locator('[data-gs-market-row][data-gs-selected]').evaluateAll(
+      nodes => Array.from(nodes).map(node => node.getAttribute('data-gs-market-row')));
+    assert.ok(marks.length >= 1 && marks.every(mark => mark === 'JP'), marks.join(','));
+    const link = panel.locator('a[data-gs-select-market="JP"]').first();
     assert.equal(await link.getAttribute('aria-current'), 'true');
     const style = await selected.evaluate(node => {
       const cs = getComputedStyle(node);
-      return {width: cs.outlineWidth, style: cs.outlineStyle, color: cs.outlineColor};
+      // Chromium reports a computed outline-width of 1.5px as '1px', so the
+      // declared ring is read from the CSSOM alongside the computed colour.
+      let declared = null;
+      for (const sheet of document.styleSheets) {
+        for (const rule of sheet.cssRules) {
+          if (rule.selectorText && rule.selectorText.includes('[data-gs-market-row][data-gs-selected]')) {
+            declared = /outline:\s*1\.5px/.test(rule.cssText) ? '1.5px' : rule.cssText;
+          }
+        }
+      }
+      return {width: cs.outlineWidth, style: cs.outlineStyle, color: cs.outlineColor, declared};
     });
-    assert.equal(style.width, '1.5px');
     assert.equal(style.style, 'solid');
     // dark theme --info resolves to rgb(91, 155, 240)
     assert.equal(style.color, 'rgb(91, 155, 240)');
+    assert.equal(style.declared, '1.5px');
+    assert.ok(['1px', '1.5px'].includes(style.width), style.width);
   });
 });
 
@@ -97,7 +111,7 @@ test('A11 clicking the KR select link moves both marks', async () => {
     const panel = visiblePanel(web, 'scanner');
     await web.waitForSelector('section.intl-gs__view--scanner:not([hidden])');
     await panel.locator('a[data-gs-select-market="KR"]').first().click();
-    const selected = panel.locator('[data-gs-market-row][data-gs-selected]');
+    const selected = panel.locator('table tr[data-gs-market-row][data-gs-selected]');
     assert.equal(await selected.count(), 1);
     assert.equal(await selected.getAttribute('data-gs-market-row'), 'KR');
     assert.equal(await panel.locator('a[data-gs-select-market="KR"]').first()
@@ -117,10 +131,19 @@ test('A11 coverage deep link selects JP and the ring follows', async () => {
     assert.equal(await selected.getAttribute('data-gs-market-row'), 'JP');
     const style = await selected.evaluate(node => {
       const cs = getComputedStyle(node);
-      return {width: cs.outlineWidth, style: cs.outlineStyle};
+      let declared = null;
+      for (const sheet of document.styleSheets) {
+        for (const rule of sheet.cssRules) {
+          if (rule.selectorText && rule.selectorText.includes('[data-gs-market-row][data-gs-selected]')) {
+            declared = /outline:\s*1\.5px/.test(rule.cssText) ? '1.5px' : rule.cssText;
+          }
+        }
+      }
+      return {width: cs.outlineWidth, style: cs.outlineStyle, color: cs.outlineColor, declared};
     });
-    assert.equal(style.width, '1.5px');
     assert.equal(style.style, 'solid');
+    assert.equal(style.color, 'rgb(91, 155, 240)');
+    assert.equal(style.declared, '1.5px');
   });
 });
 
@@ -152,7 +175,7 @@ test('A11 the +N markets and +N more disclosures reveal their rows', async () =>
     assert.equal(await nodata.getAttribute('open'), '');
     assert.ok(await list.isVisible());
     const label = await summary.innerText();
-    assert.match(label, /\+\d+ (markets|个市场)/);
+    assert.match(label.replace(/\s+/g, ' '), /\+\d+ ?(markets|个市场)/);
   });
   await withRoutedPage(async web => {
     await web.goto('https://intl.test/intl.html?view=coverage&market=JP');
@@ -166,7 +189,7 @@ test('A11 the +N markets and +N more disclosures reveal their rows', async () =>
     await summary.click();
     assert.equal(await more.getAttribute('open'), '');
     assert.ok(await hiddenRow.isVisible());
-    assert.match(await summary.innerText(), /\+\d+ (more|更多)/);
+    assert.match((await summary.innerText()).replace(/\s+/g, ' '), /\+\d+ ?(more|更多)/);
   });
 });
 
@@ -252,7 +275,7 @@ test('specimen page boots, chip visible, specimen rows present', async () => {
     const chip = web.locator('.intl-gs__chip--specimen').first();
     assert.ok(await chip.isVisible());
     const rows = await web.evaluate(() => Array.from(
-      document.querySelectorAll('section.intl-gs__view--scanner:not([hidden]) [data-gs-market-row]'),
+      document.querySelectorAll('section.intl-gs__view--scanner:not([hidden]) tr[data-gs-market-row]'),
       node => node.getAttribute('data-gs-market-row')));
     assert.deepEqual(rows, ['BR', 'TW', 'KR', 'MX', 'JP', 'AU', 'IN', 'ZA', 'PL']);
   });

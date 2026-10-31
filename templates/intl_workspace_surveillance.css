@@ -262,6 +262,90 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapctl__label{text-transform:none;lette
   .intl-gs__statematrix{grid-template-columns:1fr;}
 }
 /* ==== W2A region (IM13 scanner + coverage): the W2A lane inserts its rules between this line and the next ==== */
+/* ---- IM13 scanner table (spec R14 10.1): fixed slots, tabular numerals ---- */
+.intl-gs .intl-gs__marketname{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;min-width:0;}
+.intl-gs .intl-gs__marketlink{color:var(--ink-link);font-weight:600;}
+.intl-gs .intl-gs__marketcode{font-family:var(--font-mono);font-size:var(--fs-micro);color:var(--muted);overflow-wrap:anywhere;}
+.intl-gs .intl-gs__mrktsub{font-size:var(--fs-micro);color:var(--muted);white-space:nowrap;}
+.intl-gs .intl-gs__table--scanner th,.intl-gs .intl-gs__table--scanner td{white-space:nowrap;}
+.intl-gs .intl-gs__table--scanner [data-col="market"]{width:152px;}
+.intl-gs .intl-gs__table--scanner [data-col="local"],.intl-gs .intl-gs__table--scanner [data-col="fx"],.intl-gs .intl-gs__table--scanner [data-col="usd"]{width:72px;}
+.intl-gs .intl-gs__table--scanner [data-col="minibar"]{width:120px;padding-left:16px;}
+.intl-gs .intl-gs__table--scanner [data-col="common"]{width:64px;}
+.intl-gs .intl-gs__table--scanner [data-col="divergence"]{width:120px;padding-left:16px;}
+.intl-gs .intl-gs__table--scanner [data-col="usd20d"]{width:96px;}
+.intl-gs .intl-gs__table--scanner [data-col="tier"]{width:104px;}
+.intl-gs .intl-gs__table--scanner [data-col="stance"]{width:14%;min-width:112px;}
+.intl-gs .intl-gs__tablefoot{font-size:var(--fs-label);color:var(--muted);}
+.intl-gs .intl-gs__tiernote{font-size:var(--fs-micro);color:var(--muted);}
+.intl-gs .intl-gs__abstainline{margin:0;font-size:var(--fs-sm);color:var(--muted);}
+.intl-gs .intl-gs__minibarwrap{display:inline-flex;align-items:center;}
+
+/* ---- disclosures (workspace family idiom: details/summary, zero new JS) ---- */
+.intl-gs summary{list-style:none;cursor:pointer;}
+.intl-gs summary::-webkit-details-marker{display:none;}
+.intl-gs .intl-gs__disclosure{display:flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;border-radius:var(--r-btn,8px);border:1px solid var(--line);background:transparent;color:var(--text);font-family:var(--font-ui);font-size:var(--fs-sm);font-weight:600;}
+.intl-gs .intl-gs__disclosure:hover{background:var(--panel2);}
+.intl-gs .intl-gs__nodata{margin-top:8px;}
+.intl-gs .intl-gs__nodata__list{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:2px;font-size:var(--fs-label);color:var(--muted);}
+.intl-gs .intl-gs__nodata__row{border-bottom:1px solid var(--line);padding:6px 2px;}
+
+/* ---- Q3-Q6 band pairs ---- */
+.intl-gs .intl-gs__bands4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+
+/* ---- KPI slot additions (spec 8: integer pairs, market name beside value) ---- */
+.intl-gs .intl-gs__kpi__tier{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;max-width:100%;min-width:0;}
+.intl-gs .intl-gs__kpi__unitword{font-size:var(--fs-sm);color:var(--muted);font-weight:400;}
+.intl-gs .intl-gs__kpi__market{font-size:var(--fs-sm);color:var(--text);font-weight:600;}
+
+/* ---- 10.2/11.1 mobile market cards (div list only at <=900) ---- */
+.intl-gs .intl-gs__mcards{display:none;}
+.intl-gs .intl-gs__mcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,12px);padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-width:0;}
+.intl-gs .intl-gs__mcard__head{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.intl-gs .intl-gs__mcard__usd{display:flex;align-items:baseline;gap:8px;}
+.intl-gs .intl-gs__mcard__usd .intl-gs__num{font-size:var(--fs-h2);font-weight:700;}
+.intl-gs .intl-gs__mcard__row{display:flex;flex-wrap:wrap;gap:6px;font-size:var(--fs-label);color:var(--muted);align-items:baseline;}
+.intl-gs .intl-gs__mcard__label{font-size:var(--fs-micro);color:var(--muted);}
+.intl-gs .intl-gs__mcards-more{margin-top:8px;}
+
+/* ---- 10.6 coverage matrix (div grid; glyph precedes the clock) ---- */
+.intl-gs .intl-gs__covhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;}
+.intl-gs .intl-gs__covhead__legendlink{color:var(--ink-link);font-size:var(--fs-sm);}
+.intl-gs .intl-gs__covgrid{display:flex;flex-direction:column;min-width:0;}
+.intl-gs .intl-gs__covgrid__head,.intl-gs .intl-gs__covrow{display:grid;grid-template-columns:150px 150px repeat(6,minmax(96px,132px)) minmax(180px,1fr);align-items:center;}
+.intl-gs .intl-gs__covgrid__head{min-height:24px;border-bottom:1px solid var(--line);font-size:var(--fs-micro);font-weight:700;letter-spacing:0.06em;color:var(--muted);text-transform:uppercase;padding:0 0 6px;}
+html[data-lang="zh"] .intl-gs .intl-gs__covgrid__head{text-transform:none;letter-spacing:0.02em;}
+.intl-gs .intl-gs__covgroup__head{margin:12px 0 4px;border-bottom:1px solid var(--line);padding-bottom:4px;font-size:var(--fs-label);color:var(--muted);}
+.intl-gs .intl-gs__covrow{min-height:40px;border-bottom:1px solid var(--line);font-size:var(--fs-label);transition:background-color 120ms ease;}
+.intl-gs .intl-gs__covrow:hover{background:var(--panel2);}
+.intl-gs .intl-gs__covrow--aggregate{color:var(--muted);background:var(--panel2);}
+.intl-gs .intl-gs__covcell{display:inline-flex;align-items:center;gap:4px;min-width:0;padding:2px 4px;}
+.intl-gs .intl-gs__covcell--market{font-weight:600;color:var(--text);}
+.intl-gs .intl-gs__covcell--use{color:var(--muted);}
+.intl-gs .intl-gs__covcell__label{display:none;font-size:var(--fs-micro);color:var(--muted);}
+.intl-gs .intl-gs__covmore{margin:4px 0;}
+.intl-gs .intl-gs__covmore__rows{margin-top:4px;}
+
+/* ---- 10.6 lower row: legend 420 | question impact flex | recovery 420 ---- */
+.intl-gs .intl-gs__covlower{display:grid;grid-template-columns:420px minmax(0,1fr) 420px;gap:16px;align-items:start;}
+.intl-gs .intl-gs__covlegend__list,.intl-gs .intl-gs__covimpact__list,.intl-gs .intl-gs__covrecovery__list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:var(--fs-label);color:var(--text);}
+.intl-gs .intl-gs__covlegend__line,.intl-gs .intl-gs__covimpact__line{display:flex;align-items:center;gap:8px;}
+.intl-gs .intl-gs__covrecovery__line{display:flex;align-items:baseline;gap:8px;color:var(--muted);}
+.intl-gs .intl-gs__covrecovery__status{font-size:var(--fs-micro);}
+.intl-gs .intl-gs__marketscope{display:flex;flex-direction:column;gap:4px;}
+
+/* ---- breakpoints (11): rails stack, pairs single column, mobile cards ---- */
+@media (max-width:1279px){.intl-gs .intl-gs__covlower{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}.intl-gs .intl-gs__covlegend{grid-column:1 / -1;}}
+@media (max-width:1099px){.intl-gs .intl-gs__bands4{grid-template-columns:1fr;}}
+@media (max-width:900px){
+  .intl-gs .intl-gs__scannerwrap{display:none;}
+  .intl-gs .intl-gs__mcards{display:flex;flex-direction:column;gap:8px;}
+  .intl-gs .intl-gs__covgrid__head{display:none;}
+  .intl-gs .intl-gs__covrow{grid-template-columns:repeat(2,minmax(0,1fr));min-height:0;column-gap:12px;row-gap:4px;padding:8px 0;border-bottom:1px solid var(--line);align-items:baseline;}
+  .intl-gs .intl-gs__covcell--market,.intl-gs .intl-gs__covcell--use{grid-column:1 / -1;}
+  .intl-gs .intl-gs__covcell__label{display:inline;}
+  .intl-gs .intl-gs__covlower{grid-template-columns:minmax(0,1fr);}
+}
 /* ==== end W2A region ==== */
 /* spacer 1: keep unchanged; separates the two lane regions */
 /* spacer 2: keep unchanged */

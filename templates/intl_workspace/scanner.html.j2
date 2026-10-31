@@ -1,0 +1,168 @@
+{# INTL-GS W2A (IM13) global scanner view — spec R14 §10.0/§10.1/§10.2/§11.1.
+   One panel per (horizon, basis) context; the shell hides all but the active
+   one through the workspace controller. Numbers are qualified Wave 1
+   observation values/decompositions only; everything unsourced renders its
+   §7 state with the foundation's reason copy (L10). The specimen variant
+   wraps the whole body in the specimen scope (layout acceptance only). #}
+{% import "intl_workspace/_gs_macros.html.j2" as gs %}
+{% import "intl_workspace/_gs_scanner_macros.html.j2" as sm %}
+{% set p = gs_panel.payload %}
+{% set surveil = intl_workspace.surveillance if intl_workspace is defined and intl_workspace.surveillance is defined else none %}
+{% set snap = surveil.snapshot if surveil and surveil.snapshot is defined else none %}
+{% set basis_copy = {'local': ('Local', '本币'), 'usd_unhedged': ('USD · Unhedged', '美元 · 未对冲')} %}
+{% call gs.gs_panel_root(view='scanner', panel=gs_panel) %}
+{% if p.specimen %}<div class="intl-gs__specimen-scope"><p class="intl-gs__specimen-head">{{ gs.gs_specimen_chip() }}</p>{% endif %}
+<header class="intl-gs__pagehead" id="{{ gs_panel.context_id }}-scanner-title-wrap">
+  {{ gs.gs_eyebrow(t('Global surveillance · Scanner', '全球监测 · 扫描')) }}
+  <h1 class="intl-gs__pagehead__title" id="{{ gs_panel.context_id }}-scanner-title">{{ t('Global scanner', '全球扫描') }}</h1>
+  <p class="intl-gs__pagehead__lede">{{ t('What moved overnight, why it moved, and whether it reaches US assets.', '隔夜什么在动、为何而动，以及是否会传导至美国资产。') }}</p>
+</header>
+{{ gs.gs_questions() }}
+{% if snap %}{{ gs.gs_snapshot(snap, p.basis.id, p.horizon) }}{% endif %}
+
+<div class="intl-gs__band" data-band="q1">
+  {{ gs.gs_bandhead(t('What changed globally?', '全球发生了什么变化？'), qnum='Q1', sub=t('Breadth, size, session handoff', '广度、幅度、时段交接'), id=gs_panel.context_id ~ '-q1') }}
+  <div class="intl-gs__kpirow">
+    {{ sm.sm_kpi(p.kpi[0], t('Breadth · Up in USD', '广度 · 美元口径上涨')) }}
+    {{ sm.sm_kpi(p.kpi[1], t('Largest USD move', '最大美元口径变动')) }}
+    {{ sm.sm_kpi(p.kpi[2], t('EM FX common factor', '新兴市场汇率共同因子')) }}
+    {{ sm.sm_kpi(p.kpi[3], t('EM sovereign spread', '新兴市场主权利差')) }}
+  </div>
+  {{ gs.gs_handoff([
+    {'name': t('Asia close', '亚洲收盘'), 'chip_html': sm.sm_abstain_state('session_calendar_unadmitted', p.session_copy), 'clock': '—'},
+    {'name': t('Europe open', '欧洲开盘'), 'chip_html': sm.sm_abstain_state('session_calendar_unadmitted', p.session_copy), 'clock': '—'},
+    {'name': t('US pre-market', '美股盘前'), 'chip_html': sm.sm_abstain_state('session_calendar_unadmitted', p.session_copy), 'clock': '—'}]) }}
+</div>
+
+<div class="intl-gs__split">
+  <div class="intl-gs__split__main">
+    <div class="intl-gs__band" data-band="q2">
+      {{ gs.gs_bandhead(t('Local, FX, common or divergent?', '本地、汇率、共同还是背离？'), qnum='Q2', sub=t('Sorted by USD %, the active column', '按美元 % 排序（当前列）'), id=gs_panel.context_id ~ '-q2') }}
+      <div class="intl-gs__tablewrap intl-gs__scannerwrap">
+        <table class="intl-gs__table intl-gs__table--scanner">
+          <thead>
+            <tr>
+              <th data-col="market" class="intl-gs__col--market">{{ t('Market', '市场') }}</th>
+              <th data-col="local" class="is-num">{{ t('Local %', '本地 %') }}</th>
+              <th data-col="fx" class="is-num">{{ t('FX %', '汇率 %') }}</th>
+              <th data-col="usd" class="is-num is-active">{{ t('USD %', '美元 %') }}</th>
+              <th data-col="minibar" class="intl-gs__col--minibar">{{ t('Local · FX', '本地 | 汇率') }}</th>
+              <th data-col="common" class="is-num">{{ t('Common', '共同') }}</th>
+              <th data-col="divergence" class="intl-gs__col--divergence">{{ t('Divergence z', '背离 z') }}</th>
+              <th data-col="usd20d" class="intl-gs__col--spark">{{ t('USD 20D', '美元 20日') }}</th>
+              <th data-col="tier">{{ t('Tier', '层级') }}</th>
+              <th data-col="stance" class="intl-gs__col--stance">{{ t('Stance', '立场') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+          {%- if p.specimen %}
+            {%- for row in p.rows %}
+            <tr data-gs-market-row="{{ row.id }}"{% if row.selected %} class="is-selected"{% endif %}>
+              <td class="intl-gs__cell--market"><div class="intl-gs__marketname">{{ sm.sm_market_name(row, 'scanner') }} <code class="intl-gs__marketcode">{{ row.id }}</code></div>{{ sm.sm_market_sub(row.market_sub) }}</td>
+              <td class="is-num" data-leg="local">{{ sm.sm_specimen_leg(row.local) }}</td>
+              <td class="is-num" data-leg="fx">{{ sm.sm_specimen_leg(row.fx) }}</td>
+              <td class="is-num" data-leg="usd">{{ sm.sm_specimen_leg(row.usd) }}</td>
+              <td class="intl-gs__cell--minibar">{{ sm.sm_specimen_minibar(row) }}</td>
+              <td class="is-num" data-col="common">{% if row.common is not none %}<span class="intl-gs__num">{{ row.common }}%</span>{% else %}<span class="intl-gs__num intl-gs__num--muted">—</span>{% endif %}</td>
+              <td class="intl-gs__cell--divergence" data-col="divergence">{% if row.divz is not none %}{{ gs.gs_divergence(row.divz) }} <span class="intl-gs__num intl-gs__num--fig{% if row.divz > 0 %} intl-gs__num--up{% elif row.divz < 0 %} intl-gs__num--down{% endif %}">{{ gs.gs_signed(row.divz, 1, 'σ') }}</span>{% else %}<span class="intl-gs__num intl-gs__num--muted">—</span>{% endif %}</td>
+              <td class="intl-gs__cell--spark" data-col="usd20d">{% if row.spark %}{{ gs.gs_sparkline(row.spark) }}{% else %}<span class="intl-gs__num intl-gs__num--muted">—</span>{% endif %}</td>
+              <td data-leg="tier">{{ sm.sm_specimen_tier(row.tier) }}</td>
+              <td class="intl-gs__cell--stance" data-col="stance">{{ gs.gs_stance_chip(row.stance) }}</td>
+            </tr>
+            {%- endfor %}
+          {%- else %}
+            {%- for row in p.rows %}
+            <tr data-gs-market-row="{{ row.id }}">
+              <td class="intl-gs__cell--market"><div class="intl-gs__marketname">{{ sm.sm_market_name(row, 'scanner') }} <code class="intl-gs__marketcode">{{ row.id }}</code></div>{{ sm.sm_market_sub(row.market_sub) }}</td>
+              <td class="is-num" data-leg="local">{{ sm.sm_leg(row.local) }}</td>
+              <td class="is-num" data-leg="fx">{{ sm.sm_leg(row.fx) }}</td>
+              <td class="is-num" data-leg="usd">{{ sm.sm_leg(row.usd) }}</td>
+              <td class="intl-gs__cell--minibar" data-col="minibar">{{ sm.sm_minibar(row.fx) }}</td>
+              <td class="is-num" data-col="common">{{ sm.sm_abstain_chip_only(p.abstain.common) }}</td>
+              <td class="intl-gs__cell--divergence" data-col="divergence">{{ sm.sm_abstain_chip_only(p.abstain.divergence) }}</td>
+              <td class="intl-gs__cell--spark" data-col="usd20d">{{ sm.sm_abstain_chip_only(p.abstain.series) }}</td>
+              <td data-leg="tier">{{ sm.sm_tier(row.tier) }}</td>
+              <td class="intl-gs__cell--stance" data-col="stance">{{ sm.sm_abstain_chip_only(p.abstain.stance) }}</td>
+            </tr>
+            {%- endfor %}
+          {%- endif %}
+          </tbody>
+          <tfoot>
+            <tr><td colspan="10" class="intl-gs__tablefoot" data-role="tfoot">{{ p.counts.rows }} {{ t('markets', '个市场') }} · {{ p.counts.qualified }} {{ t('qualified', '已合格') }} · {{ p.counts.abstain }} {{ t('abstain', '弃权') }} · {{ p.counts.nodata }} {{ t('no data', '无数据') }}</td></tr>
+          </tfoot>
+        </table>
+      </div>
+      {%- if not p.rows %}
+      <p class="intl-gs__abstainline">{{ t('No market has an observation for this horizon; every market is listed under No data.', '该区间暂无任何市场的观测；全部市场列于“无数据”。') }}</p>
+      {%- endif %}
+      {%- if p.nodata.count %}
+      <details class="intl-gs__nodata" data-role="nodata">
+        <summary class="intl-gs__btn intl-gs__disclosure" tabindex="0"><span class="intl-gs__num">+{{ p.nodata.count }}</span> {{ t('markets · No data', '个市场 · 无数据') }}</summary>
+        <ul class="intl-gs__nodata__list">
+          {%- for market in p.nodata.markets %}
+          <li class="intl-gs__nodata__row" data-gs-nodata-market="{{ market.id }}">{{ t(market.name_en, market.name_zh) }} <code class="intl-gs__marketcode">{{ market.id }}</code> — {{ gs.gs_state_chip(market.state_display) }}{% if market.reason %} <span class="intl-gs__statecell__reason">{{ t(market.reason[0], market.reason[1]) }}</span>{% endif %}</li>
+          {%- endfor %}
+        </ul>
+      </details>
+      {%- endif %}
+      {%- if not p.specimen and p.rows|length > 5 %}
+      {#- §10.2/§11.1 mobile market cards: the div list renders only at ≤900;
+          the desktop table stays the ≥901 surface. Cards past the first five
+          sit inside the "Show all N" disclosure (details/summary — the
+          workspace family's own no-JS disclosure idiom; recorded deviation). -#}
+      <div class="intl-gs__mcards" data-role="mcards">
+        {%- for row in p.rows[:5] %}{{ sm.sm_mcard(row, p) }}{% endfor %}
+        {%- set rest = p.rows[5:] %}
+        {%- if rest %}
+        <details class="intl-gs__mcards-more" data-role="show-all">
+          <summary class="intl-gs__btn intl-gs__disclosure" tabindex="0">{{ t('Show all', '展开全部') }} <span class="intl-gs__num">{{ p.rows|length }}</span></summary>
+          {%- for row in rest %}{{ sm.sm_mcard(row, p) }}{% endfor %}
+        </details>
+        {%- endif %}
+      </div>
+      {%- elif p.specimen and p.rows|length > 5 %}
+      <div class="intl-gs__mcards" data-role="mcards">
+        {%- for row in p.rows[:5] %}{{ sm.sm_specimen_mcard(row) }}{% endfor %}
+        <details class="intl-gs__mcards-more" data-role="show-all">
+          <summary class="intl-gs__btn intl-gs__disclosure" tabindex="0">{{ t('Show all', '展开全部') }} <span class="intl-gs__num">{{ p.rows|length }}</span></summary>
+          {%- for row in p.rows[5:] %}{{ sm.sm_specimen_mcard(row) }}{% endfor %}
+        </details>
+      </div>
+      {%- endif %}
+    </div>
+  </div>
+  <aside class="intl-gs__rail" data-role="attention" aria-labelledby="{{ gs_panel.context_id }}-attention">
+    {{ gs.gs_bandhead(t('Attention order', '关注顺序'), id=gs_panel.context_id ~ '-attention', sub=t('Ranked by admitted attention signals', '按已准入的关注信号排序')) }}
+    <p class="intl-gs__abstainline">{{ sm.sm_abstain_state(p.abstain.attention.token, p.abstain.attention.reason) }}</p>
+  </aside>
+</div>
+
+<div class="intl-gs__bands4">
+  <div class="intl-gs__band intl-gs__band--q" data-band="q3">
+    {{ gs.gs_bandhead(t('Credit, funding, liquidity?', '信用、融资、流动性？'), qnum='Q3', id=gs_panel.context_id ~ '-q3') }}
+    <p class="intl-gs__abstainline">{{ sm.sm_abstain_state(p.abstain.bands[0].token, p.abstain.bands[0].reason) }}</p>
+  </div>
+  <div class="intl-gs__band intl-gs__band--q" data-band="q4">
+    {{ gs.gs_bandhead(t('Transmission into the US?', '如何传导至美国？'), qnum='Q4', id=gs_panel.context_id ~ '-q4') }}
+    <p class="intl-gs__abstainline">{{ sm.sm_abstain_state(p.abstain.bands[1].token, p.abstain.bands[1].reason) }}</p>
+  </div>
+  <div class="intl-gs__band intl-gs__band--q" data-band="q5">
+    {{ gs.gs_bandhead(t('Eligible US corroboration?', '合格的美国佐证？'), qnum='Q5', id=gs_panel.context_id ~ '-q5') }}
+    <p class="intl-gs__abstainline">{{ sm.sm_abstain_state(p.abstain.bands[2].token, p.abstain.bands[2].reason) }}</p>
+  </div>
+  <div class="intl-gs__band intl-gs__band--q" data-band="q6">
+    {{ gs.gs_bandhead(t('What resolves the thesis?', '什么能验证或推翻论点？'), qnum='Q6', id=gs_panel.context_id ~ '-q6') }}
+    <p class="intl-gs__abstainline">{{ sm.sm_abstain_state(p.abstain.bands[3].token, p.abstain.bands[3].reason) }}</p>
+  </div>
+</div>
+
+<p class="intl-gs__footnote">{{ t('Basis', '口径') }} {{ t(basis_copy[p.basis.id][0], basis_copy[p.basis.id][1]) }} · {{ t('Horizon', '区间') }} {{ t(p.horizon.en, p.horizon.zh) }}{%- if p.footnote.source %} · {{ t('Source', '数据源') }} <code class="intl-gs__marketcode">{{ p.footnote.source }}</code>{% else %} · {{ t(p.footnote.withheld_copy[0], p.footnote.withheld_copy[1]) }}{% endif %}{% if p.footnote.delay %} · {{ t(p.footnote.delay[0], p.footnote.delay[1]) }}{% endif %}.</p>
+{%- if p.market_scope %}
+<div class="intl-gs__marketscope" data-gs-market-scope data-role="market-scope">
+  {%- for market in p.market_scope %}
+  <p class="intl-gs__footnote" data-gs-market="{{ market.id }}"{% if loop.first %} data-gs-market-default{% endif %}>{{ t(market.name[0], market.name[1]) }} — {{ sm.sm_tier(market.tier) }}</p>
+  {%- endfor %}
+</div>
+{%- endif %}
+{% if p.specimen %}</div>{% endif %}
+{% endcall %}

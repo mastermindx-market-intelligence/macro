@@ -1,0 +1,82 @@
+{# INTL-GS W2A (IM13) coverage view — spec R14 §10.6/§7/§11.1, IM16 binding.
+   The matrix's columns/cells/legend totals come from the IM16 coverage board
+   (engine acceptance_matrix) through the view payload; states and integer
+   counts only — never a percentage, never a score. Clock numerals appear only
+   in index_close / fx_fix cells backed by a qualified usd_unhedged observation
+   of this horizon. The EZ aggregate row closes EMEA and is not counted. #}
+{% import "intl_workspace/_gs_macros.html.j2" as gs %}
+{% import "intl_workspace/_gs_scanner_macros.html.j2" as sm %}
+{% set p = gs_panel.payload %}
+{% set surveil = intl_workspace.surveillance if intl_workspace is defined and intl_workspace.surveillance is defined else none %}
+{% set snap = surveil.snapshot if surveil and surveil.snapshot is defined else none %}
+{% set _unused_labels = {'equity_index_fx': ('Equity index + FX', '股指与汇率'), 'constituent_breadth': ('Constituent breadth', '成分股广度'), 'local_rates_credit': ('Local rates + credit', '本地利率与信用'), 'dollar_funding_external': ('Dollar funding + external', '美元融资与外部'), 'macro_policy': ('Macro + policy', '宏观与政策'), 'us_exposure_transmission': ('US exposure + transmission', '美国敞口与传导'), 'history_pit_rights': ('History + point-in-time rights', '历史与时点权利')} %}
+{% call gs.gs_panel_root(view='coverage', panel=gs_panel) %}
+<header class="intl-gs__pagehead" id="{{ gs_panel.context_id }}-coverage-title-wrap">
+  {{ gs.gs_eyebrow(t('Global surveillance · Coverage', '全球监测 · 覆盖')) }}
+  <h1 class="intl-gs__pagehead__title" id="{{ gs_panel.context_id }}-coverage-title">{{ t('Coverage and data states', '覆盖与数据状态') }}</h1>
+  <p class="intl-gs__pagehead__lede">{{ t('What every answer stands on: which markets reported, how fresh each source is, and what we are allowed to show.', '每个答案所依赖的基础：哪些市场已报告、各数据源的新鲜度，以及我们被允许展示的内容。') }}</p>
+</header>
+{{ gs.gs_questions() }}
+{% if snap %}{{ gs.gs_snapshot(snap, p.basis.id, p.horizon) }}{% endif %}
+
+<div class="intl-gs__band" data-band="matrix" aria-labelledby="{{ gs_panel.context_id }}-matrix-title">
+  <div class="intl-gs__covhead">
+    <h2 class="intl-gs__bandhead__title" id="{{ gs_panel.context_id }}-matrix-title">{{ t('Coverage matrix', '覆盖矩阵') }} <span class="intl-gs__num intl-gs__covhead__cells">{{ p.matrix.cells_total }}</span> {{ t(p.matrix.cells_word[0], p.matrix.cells_word[1]) }}</h2>
+    <a class="intl-gs__covhead__legendlink" href="#{{ gs_panel.context_id }}-legend">{{ t('State legend', '状态图例') }}</a>
+    <p class="intl-gs__bandhead__sub">{{ t(p.matrix.sub[0], p.matrix.sub[1]) }}</p>
+  </div>
+  <div class="intl-gs__covgrid" data-role="covgrid">
+    <div class="intl-gs__covgrid__head" data-role="covhead">
+      <span class="intl-gs__covh intl-gs__covh--market">{{ t('Market', '市场') }}</span>
+      <span class="intl-gs__covh intl-gs__covh--session">{{ t('Session', '时段') }}</span>
+      {%- for column in p.matrix.columns %}
+      <span class="intl-gs__covh intl-gs__covh--data">{{ t(column.label[0], column.label[1]) }}</span>
+      {%- endfor %}
+      <span class="intl-gs__covh intl-gs__covh--use">{{ t('What the answer can use', '答案可用数据') }}</span>
+    </div>
+    {%- for group in p.matrix.groups %}
+    <div class="intl-gs__covgroup" data-cov-group="{{ group.key }}">
+      <p class="intl-gs__covgroup__head"><span class="intl-gs__eyebrow">{{ t(group.label[0], group.label[1]) }}</span> <span class="intl-gs__num">{{ group.count }}</span> {{ t(p.markets_word[0], p.markets_word[1]) }}</p>
+      {%- for row in group.visible %}{{ sm.cov_row(row, p) }}{% endfor %}
+      {%- if group.hidden %}
+      <details class="intl-gs__covmore" data-role="covmore">
+        <summary class="intl-gs__btn intl-gs__disclosure" tabindex="0"><span class="intl-gs__num">+{{ group.hidden|length }}</span> {{ t('more', '更多') }}</summary>
+        <div class="intl-gs__covmore__rows">
+          {%- for row in group.hidden %}{{ sm.cov_row(row, p) }}{% endfor %}
+        </div>
+      </details>
+      {%- endif %}
+      {%- if group.key == 'emea' and p.matrix.ez_row %}{{ sm.cov_row(p.matrix.ez_row, p) }}{% endif %}
+    </div>
+    {%- endfor %}
+  </div>
+</div>
+
+<div class="intl-gs__covlower">
+  <div class="intl-gs__panel intl-gs__covlegend" id="{{ gs_panel.context_id }}-legend" aria-labelledby="{{ gs_panel.context_id }}-legend-title">
+    <h2 class="intl-gs__bandhead__title" id="{{ gs_panel.context_id }}-legend-title">{{ t('Cell states', '单元格状态') }}</h2>
+    <ul class="intl-gs__covlegend__list">
+      {%- for line in p.legend %}
+      <li class="intl-gs__covlegend__line" data-legend-state="{{ line.display_state }}">{{ gs.gs_glyph(line.display_state) }} {{ gs.gs_state_chip(line.display_state) }} <span class="intl-gs__num">{{ line.count }}</span></li>
+      {%- endfor %}
+    </ul>
+    <p class="intl-gs__footnote">{{ t('Counts sum to the matrix total.', '计数合计等于矩阵总数。') }}</p>
+  </div>
+  <div class="intl-gs__panel intl-gs__covimpact" aria-labelledby="{{ gs_panel.context_id }}-impact-title">
+    <h2 class="intl-gs__bandhead__title" id="{{ gs_panel.context_id }}-impact-title">{{ t('What a gap does to each question', '缺口对每个问题的影响') }}</h2>
+    <ul class="intl-gs__covimpact__list">
+      {%- for line in p.impact %}
+      <li class="intl-gs__covimpact__line"><span class="intl-gs__qcard__n intl-gs__num">Q{{ line.q }}</span> {{ t(p.impact_word[0], p.impact_word[1]) }} <span class="intl-gs__num">{{ line.count }}</span> {{ t('markets', '个市场') }}</li>
+      {%- endfor %}
+    </ul>
+  </div>
+  <div class="intl-gs__panel intl-gs__covrecovery" aria-labelledby="{{ gs_panel.context_id }}-recovery-title">
+    <h2 class="intl-gs__bandhead__title" id="{{ gs_panel.context_id }}-recovery-title">{{ t('Rights reviews pending', '待决权利评审') }}</h2>
+    <ul class="intl-gs__covrecovery__list">
+      {%- for line in p.recovery %}
+      <li class="intl-gs__covrecovery__line"><code class="intl-gs__marketcode">{{ line.id }}</code> <span class="intl-gs__covrecovery__status">{{ line.status }}</span>{% if line.reason[0] != line.status %} — {{ line.reason[0] }}{% endif %}</li>
+      {%- endfor %}
+    </ul>
+  </div>
+</div>
+{% endcall %}

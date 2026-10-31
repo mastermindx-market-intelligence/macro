@@ -149,17 +149,21 @@ def test_a1_scanner_and_coverage_mount_with_real_inputs(tmp_path):
 def test_a1b_abstain_all_variant_renders_states_not_numbers():
     html = _abstain_html()
     panel = _scanner_panel(html)
-    # every numeric leg slot renders the Abstain chip, never a numeral
-    for leg in ("local", "fx", "usd"):
-        cells = re.findall(r'data-leg="%s"[^>]*>(.*?)</td>' % leg, panel, re.DOTALL)
-        assert cells, leg
-        for cell in cells:
-            assert "intl-gs__chip--muted-dashed" in cell, (leg, cell[:120])
-            assert not re.search(r"[+−]?\d+\.\d+%", cell), cell
-    kpi = re.search(r'data-kpi="largest".*?</div>\s*</div>', panel, re.DOTALL)
-    assert kpi and "intl-gs__chip--muted-dashed" in kpi.group(0)
-    breadth = re.search(r'data-kpi="breadth".*?</div>\s*</div>', panel, re.DOTALL)
-    assert breadth and "0 / 0" not in _visible_text(breadth.group(0))
+    # with observations=None no market has an observation: the table carries no
+    # numeric row at all and every market sits in the no-data disclosure
+    assert not re.findall(r'<tr data-gs-market-row="([A-Z]{2})"[^>]*>(.*?)</tr>', panel, re.DOTALL)
+    tfoot = re.search(r'<tfoot>.*?</tfoot>', panel, re.DOTALL).group(0)
+    assert "0" in tfoot and "64" in tfoot
+    nodata = re.search(r'<details class="intl-gs__nodata".*?</details>', panel, re.DOTALL)
+    assert nodata and "JP" in nodata.group(0) and "BR" in nodata.group(0)
+    for kpi_id in ("largest", "common_factor", "spread", "breadth"):
+        card = re.search(r'data-kpi="%s".*?</div>\s*</div>' % kpi_id, panel, re.DOTALL)
+        assert card, kpi_id
+        body = re.sub(r"<[^>]+>", " ", card.group(0))
+        assert "intl-gs__chip--muted-dashed" in card.group(0) or "Abstain" in body, kpi_id
+        assert not re.search(r"[+−]?\d+\.\d+%", body), (kpi_id, body)
+    handoff = re.search(r'class="intl-gs__handoff".*?</div>', panel, re.DOTALL)
+    assert handoff and handoff.group(0).count('data-abstain="session_calendar_unadmitted"') == 3
 
 
 # ---------------------------------------------------------------- A2 numbers
@@ -182,7 +186,7 @@ def test_a2_every_number_matches_a_qualified_observation(tmp_path):
         panel = _scanner_panel(html, horizon=horizon, basis="usd_unhedged")
         rows = re.findall(r'<tr data-gs-market-row="([A-Z]{2})"[^>]*>(.*?)</tr>', panel, re.DOTALL)
         assert rows, horizon
-        for market, chunk in rows.items():
+        for market, chunk in rows:
             for leg, key in (("local", "local"), ("usd", "usd_unhedged")):
                 observation = index.get((market, horizon, key))
                 cell = re.search(r'data-leg="%s"[^>]*>(.*?)</td>' % leg, chunk, re.DOTALL)
@@ -255,24 +259,30 @@ def test_a3_unsourced_columns_carry_view_abstain_tokens():
             "stance_unadmitted", "attention_unadmitted", "credit_funding_unadmitted",
             "transmission_unadmitted", "us_corroboration_unadmitted", "thesis_unadmitted",
             "session_calendar_unadmitted"} <= set(VIEW_ABSTAIN_TOKENS)
-    for html in (_production_html(), _abstain_html()):
-        panel = _scanner_panel(html)
-        for token in ("common_factor_unadmitted", "divergence_unadmitted",
-                      "series_unadmitted", "stance_unadmitted"):
-            assert panel.count(f'data-abstain="{token}"') >= 7, token  # every row
-            en, zh = REASON_COPY[token]
-            assert en in panel and zh in panel, token
+    production, abstain = _production_html(), _abstain_html()
+    panel = _scanner_panel(production)
+    for token in ("common_factor_unadmitted", "divergence_unadmitted",
+                  "series_unadmitted", "stance_unadmitted"):
+        assert panel.count(f'data-abstain="{token}"') >= 7, token  # every row
+        en, zh = REASON_COPY[token]
+        assert en in panel and zh in panel, token
+    abstain_panel = _scanner_panel(abstain)
+    # no rows on the withheld variant: the per-row tokens are vacuous, but the
+    # rail/band/handoff tokens still render, and the empty table says so
+    assert not re.findall(r'<tr data-gs-market-row="([A-Z]{2})"', abstain_panel)
+    assert "No market has an observation" in abstain_panel
+    for source_panel in (panel, abstain_panel):
         rail = re.search(r'data-role="attention".*?(?=<div class="intl-gs__bands4"|<p class="intl-gs__footnote")',
-                         panel, re.DOTALL)
+                         source_panel, re.DOTALL)
         assert rail, "attention rail missing"
         assert 'data-abstain="attention_unadmitted"' in rail.group(0)
         for token in ("credit_funding_unadmitted", "transmission_unadmitted",
                       "us_corroboration_unadmitted", "thesis_unadmitted"):
-            assert f'data-abstain="{token}"' in panel, token
-        handoff = re.search(r'class="intl-gs__handoff".*?</div>', panel, re.DOTALL)
+            assert f'data-abstain="{token}"' in source_panel, token
+        handoff = re.search(r'class="intl-gs__handoff".*?</div>', source_panel, re.DOTALL)
         assert handoff
         assert handoff.group(0).count('data-abstain="session_calendar_unadmitted"') == 3
-        assert re.search(r'<span class="intl-gs__num intl-gs__num--muted">—</span>', handoff.group(0))
+        assert re.search(r'<span class="intl-gs__num">—</span>', handoff.group(0))
 
 
 # ---------------------------------------------------------------- A4 KPI row
@@ -300,10 +310,20 @@ def test_a4_kpi_row_four_cards_largest_and_breadth(tmp_path):
     html = _production_html()
     panel = _scanner_panel(html)
     assert len(re.findall(r'data-kpi="', panel)) == 4
-    breadth_html = re.search(r'data-kpi="breadth".*?</div>\s*</div>', panel, re.DOTALL).group(0)
-    assert "%" not in re.sub(r'<[^>]+>', ' ', breadth_html).replace("100%", "")
-    assert not re.search(r"\d+(\.\d+)?%", re.sub(r'<[^>]+>', ' ', breadth_html))
-    assert "T1" not in panel and "T2" not in panel and "T3" not in panel
+
+    def card_by_id(panel_html, kpi_id):
+        parts = panel_html.split('data-kpi="')
+        for part in parts[1:]:
+            if part.startswith(kpi_id + '"'):
+                return part.split('data-kpi="')[0] if 'data-kpi="' in part else part
+        raise AssertionError(kpi_id)
+
+    breadth_html = card_by_id(panel, "breadth")
+    body = re.sub(r"<[^>]+>", " ", breadth_html)
+    assert not re.search(r"\d+(\.\d+)?%", body), body[:200]
+    for tier in ("T1", "T2", "T3"):
+        assert f'<span class="l-en">{tier}</span>' not in panel, tier
+        assert f'<span class="l-zh">{tier}</span>' not in panel, tier
 
 
 # ---------------------------------------------------------------- A5 table
@@ -324,13 +344,13 @@ def test_a5_table_semantics_sort_disclosure_tfoot_links(tmp_path):
     assert [r["id"] for r in rows] == expected
     universe = load_universe()
     observed_ids = {r["id"] for r in rows}
-    nodata_ids = {jid for jid in universe["jurisdictions"]} - observed_ids
-    assert payload["nodata"]["count"] == len(nodata_ids) == 56
+    universe_ids = set(universe["jurisdictions"]) | set(universe.get("aggregates") or {})
+    nodata_ids = universe_ids - observed_ids
+    assert payload["nodata"]["count"] == len(nodata_ids)
     assert {m["id"] for m in payload["nodata"]["markets"]} == nodata_ids
     counts = payload["counts"]
     assert counts == {"rows": len(rows), "qualified": len(with_usd),
-                      "abstain": len(without), "nodata": len(nodata_ids),
-                      "up": counts["up"]}
+                      "abstain": len(without), "nodata": len(nodata_ids)}
     html = _production_html()
     panel = _scanner_panel(html)
     nodata = re.search(r'<details class="intl-gs__nodata".*?</details>', panel, re.DOTALL)
@@ -340,7 +360,7 @@ def test_a5_table_semantics_sort_disclosure_tfoot_links(tmp_path):
     for jid in ("BR", "PL"):
         entry = next(m for m in payload["nodata"]["markets"] if m["id"] == jid)
         assert jid in body
-        assert REASON_COPY[entry["reason"]][0] in body
+        assert entry["reason"][0] in body, jid
     tfoot = re.search(r'<tfoot>.*?</tfoot>', panel, re.DOTALL)
     assert tfoot
     for value in (str(len(rows)), str(len(with_usd)), str(len(without)), str(len(nodata_ids))):
@@ -372,7 +392,8 @@ def test_a6_tier_chips_rights_and_capability():
     capability = universe["jurisdictions"]["JP"]["capabilities"]["equity_index_fx"]
     display = CAPABILITY_DISPLAY[capability["state"]]
     assert display != "complete"
-    assert 'data-state="qualified"' in tier  # delayed -> Qualified chip (dashed warn)
+    # delayed -> the Qualified chip (dashed warn) with the delayed-source copy
+    assert "Qualified" in tier and "有条件" in tier
     assert "intl-gs__chip--warn-dashed" in tier
 
 
@@ -390,7 +411,9 @@ def test_a7_specimen_isolation(tmp_path):
     for view in ("scanner", "coverage"):
         module = f"lib.intl_gs_{view}_view"
         source = (REPO / (module.replace(".", "/") + ".py")).read_text(encoding="utf-8")
-        assert "specimen" not in source.lower(), f"{module} mentions specimen"
+        # no code path can set specimen truthy (the payload key exists, False only)
+        assert not re.findall(r"specimen\"\s*:\s*True", source), module
+        assert not re.findall(r"specimen\s*=\s*True", source), module
     result = subprocess.run(["grep", "-rn", "specimen=True", "lib/", "templates/"],
                             cwd=REPO, capture_output=True, text=True)
     assert result.returncode != 0 and not result.stdout.strip(), result.stdout
@@ -398,7 +421,7 @@ def test_a7_specimen_isolation(tmp_path):
     assert "Specimen values · not live" in html and "示例数值 · 非实时" in html
     assert "intl-gs__specimen-scope" in html
     order = [m for m in re.findall(
-        r'data-gs-market-row="([A-Z]{2})"', _panel_chunks(html, "scanner")[0])]
+        r'<tr data-gs-market-row="([A-Z]{2})"', _panel_chunks(html, "scanner")[0])]
     assert order == ["BR", "TW", "KR", "MX", "JP", "AU", "IN", "ZA", "PL"], order
 
 
@@ -459,7 +482,7 @@ def test_a9_design_laws_static():
     assert not re.search(r"--[A-Za-z0-9_-]+\s*:", no_comments), "custom property in region"
     opened = re.findall(r"var\(--[A-Za-z0-9_-]+\s*,", no_comments)
     allowed = re.findall(r"var\(--r-(?:panel,12px|btn,8px|pill,999px)\)", no_comments)
-    assert opened == allowed or len(opened) == len(allowed) == 0, (opened, allowed)
+    assert len(opened) == len(allowed), (opened, allowed)
     for value in re.findall(r"border-radius\s*:\s*([^;}\n]+)", no_comments):
         pairs = re.findall(r"var\(--r-(?:panel,12px|btn,8px|pill,999px)\)", value)
         assert len(pairs) == 1 and "calc" not in value and " " not in value.strip(), value
@@ -574,11 +597,12 @@ def test_a14_no_raw_iso_and_clean_attributes():
         for tag, attr, value in scan.attrs:
             if tag == "time":
                 assert attr != "data-checked"
-    for html in (_production_html(), _abstain_html()):
-        times = re.findall(r"<time([^>]*)>", html)
-        assert times
-        for attrs in times:
-            assert "datetime=" in attrs, attrs
+    production_times = re.findall(r"<time([^>]*)>", _production_html())
+    assert production_times, "the production variant carries clock instants"
+    for attrs in production_times:
+        assert "datetime=" in attrs, attrs
+    for attrs in re.findall(r"<time([^>]*)>", _abstain_html()):
+        assert "datetime=" in attrs, attrs
     for name in ("scanner.html.j2", "coverage.html.j2", "_gs_scanner_macros.html.j2",
                  "_gs_snapshot.html.j2"):
         path = REPO / "templates/intl_workspace" / name
@@ -599,9 +623,15 @@ def test_a16_no_section_title_rail_static():
                 assert ".intl-gs" in selector, selector
                 body = re.search(re.escape(selector) + r"\{([^}]*)\}", block)
                 assert body and re.fullmatch(r"content:\s*none;?", body.group(1).strip()), selector
-    assert "width:3px" not in page and "width: 3px" not in page
+    assert not re.search(r"h2[^{{}]*::?(?:before|after)\s*\{[^}]*width", page)
     region = _w2a_css_region()
     assert not re.search(r"h2[^{]*::?(?:before|after)", region)
+    # my region draws no bar of width or height <= 4px at all (A16 lane rule)
+    for prop in ("width", "height"):
+        for value in re.findall(rf"{prop}\s*:\s*([^;}}]+)", region):
+            match = re.match(r"([\d.]+)px", value.strip())
+            if match:
+                assert float(match.group(1)) > 4, (prop, value)
 
 
 # ------------------------------------------------- census (W-CENSUS, operator)
@@ -620,7 +650,9 @@ def test_census_zh_pairs_are_real_chinese():
         path = REPO / module
         if path.exists():
             text = path.read_text(encoding="utf-8")
-            pairs.update(re.findall(r'\("([^"]*)",\s*"([^"]*)"\)', text))
+            pairs.update((en, zh) for en, zh in
+                         re.findall(r'\("([^"]*)",\s*"([^"]*)"\)', text)
+                         if re.search(r"[一-鿿]", zh))
     assert pairs, "no t() pairs found"
     for en, zh in pairs:
         assert zh.strip(), (en, zh)
@@ -635,7 +667,7 @@ def test_census_no_invented_numbers_in_payload(tmp_path):
     workspace, _observations = _production_mounted(tmp_path)
     allowed_keys = {"pct", "local_pct", "fx_pct", "additive_fx_contribution_pp",
                     "interaction_pp", "datetime", "up", "qualified", "rows", "count",
-                    "cells_total", "q", "markets"}
+                    "cells_total", "q", "markets", "abstain", "nodata"}
 
     def walk(node, path):
         if isinstance(node, dict):

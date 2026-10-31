@@ -57,6 +57,70 @@ def _coverage_panel(html, horizon="1m", basis="usd_unhedged"):
     raise AssertionError("no coverage panel")
 
 
+
+from html.parser import HTMLParser  # noqa: E402
+
+
+class _CovCells(HTMLParser):
+    """Collects every .intl-gs__covcell with its attributes and inner HTML
+    (nested language spans make regex parsing unreliable)."""
+
+    def __init__(self):
+        super().__init__()
+        self.cells = []
+        self.rows = {}
+        self._depth = 0
+        self._current = None
+        self._chunks = []
+
+    def handle_starttag(self, tag, attrs):
+        pairs = dict(attrs)
+        classes = (pairs.get("class") or "").split()
+        if self._current is None:
+            if tag == "div" and "intl-gs__covrow" in classes:
+                self.rows[pairs.get("data-gs-cov-row")] = pairs
+            if tag == "span" and "intl-gs__covcell" in classes and "data-col" in pairs:
+                self._current = {"col": pairs.get("data-col"),
+                                 "state": pairs.get("data-gs-state"),
+                                 "for": pairs.get("data-gs-cell-for"),
+                                 "row": pairs.get("data-gs-cov-row"),
+                                 "title": pairs.get("title")}
+                self._chunks = []
+                self._depth = 1
+                return
+        else:
+            self._depth += 1
+            self._chunks.append(self.get_starttag_text())
+            if tag == "span" and "intl-gs__covcell" in classes and "data-col" in pairs:
+                self._current = {"col": pairs.get("data-col"),
+                                 "state": pairs.get("data-gs-state"),
+                                 "for": pairs.get("data-gs-cell-for"),
+                                 "row": pairs.get("data-gs-cov-row"),
+                                 "title": pairs.get("title")}
+                self._chunks = []
+                self._depth = 1
+
+    def handle_endtag(self, tag):
+        if self._current is not None:
+            self._depth -= 1
+            if self._depth == 0:
+                self.cells.append((self._current, "".join(self._chunks)))
+                self._current = None
+                self._chunks = []
+            else:
+                self._chunks.append("</%s>" % tag)
+
+    def handle_data(self, data):
+        if self._current is not None:
+            self._chunks.append(data)
+
+
+def _cov_cells(html):
+    parser = _CovCells()
+    parser.feed(html)
+    return parser.cells
+
+
 def _visible_text(html):
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html))
 
@@ -105,23 +169,26 @@ def test_a8c_no_percentage_no_score_anywhere(tmp_path):
 
 def test_a8d_clock_only_when_a_qualified_observation_backs_the_cell(tmp_path):
     payload, observations = _payload(tmp_path)
-    qualified_clocks = {}
+    qualified = set()
     for observation in observations["bases"]["usd_unhedged"]:
         identity = observation["identity"]
         if identity["horizon"] == "1m" and observation["state"] == "qualified":
-            qualified_clocks[identity["market_id"]] = observation["clocks"]["observation"]["at"]
-    panel = _coverage_panel(FX.render_production_page())
-    for row_id, chunk in re.findall(r'data-gs-cov-row="([A-Z]{2}|EZ)"[^>]*>(.*?)(?=data-gs-cov-row|</details>|<div class="intl-gs__covlower)', panel, re.DOTALL):
-        cells = re.findall(r'data-col="([a-z0-9_]+)"[^>]*data-gs-state="([a-z]+)"[^>]*>(.*?)</span>', chunk, re.DOTALL)
-        for col, state, inner in cells:
-            if col not in ("index_close", "fx_fix"):
-                assert "<time" not in inner, (row_id, col)
-            elif row_id == "EZ":
-                assert "<time" not in inner and "Aggregate" in (re.search(r'title="([^"]*)"', inner) or ["", ""])[-1]
-            elif row_id in qualified_clocks:
-                assert "<time" in inner, (row_id, col)
-            else:
-                assert "<time" not in inner, (row_id, col)
+            qualified.add(identity["market_id"])
+    cells = _cov_cells(_coverage_panel(FX.render_production_page()))
+    assert cells, "no coverage cells parsed"
+    clock_cells = {(cell["for"], cell["col"]) for cell, _inner in cells if cell["for"]}
+    for cell, inner in cells:
+        row_id, col = cell["for"], cell["col"]
+        if row_id is None or row_id == "EZ":
+            continue
+        if col not in ("index_close", "fx_fix"):
+            assert "<time" not in inner, (row_id, col)
+        else:
+            has_clock = "<time" in inner
+            assert has_clock == (row_id in qualified), (row_id, col, has_clock)
+    for market in qualified:
+        for col in ("index_close", "fx_fix"):
+            assert (market, col) in clock_cells, (market, col)
 
 
 def test_a8e_ez_aggregate_row_and_no_data_markets(tmp_path):
@@ -130,14 +197,12 @@ def test_a8e_ez_aggregate_row_and_no_data_markets(tmp_path):
     assert "EZ" not in BOARD["cells"]
     ez = matrix["ez_row"]
     assert ez["id"] == "EZ" and ez["kind"] == "aggregate"
-    assert all(cell["excluded"] for cell in ez["cells"])
+    assert all(cell["excluded"] for cell in ez["cells"].values())
     panel = _coverage_panel(FX.render_production_page())
-    ez_html = re.search(r'data-gs-cov-row="EZ".*?(?=data-gs-cov-row|<div class="intl-gs__covlower|$)', panel, re.DOTALL)
-    assert ez_html
-    for col in BOARD["columns"]:
-        cell = re.search(r'data-col="%s"[^>]*>(.*?)</span>' % col, ez_html.group(0), re.DOTALL)
-        assert cell, col
-        assert "<time" not in cell.group(0) and "—" in cell.group(0)
+    ez_cells = {cell["col"]: inner for cell, inner in _cov_cells(panel) if cell["for"] == "EZ"}
+    assert set(ez_cells) == set(BOARD["columns"]), sorted(ez_cells)
+    for col, inner in ez_cells.items():
+        assert "<time" not in inner and "—" in inner, col
     emea = re.search(r'data-cov-group="emea".*?(?=data-cov-group="americas")', panel, re.DOTALL)
     assert emea and 'data-gs-cov-row="EZ"' in emea.group(0), "EZ must close the EMEA group"
 
@@ -179,7 +244,7 @@ def test_a8g_recovery_log_lists_unconfirmed_rows(tmp_path):
     for line in payload["recovery"]:
         row = expected[line["id"]]
         if row.get("next_action"):
-            assert row["next_action"] in (line["copy"][0], line["copy"])
+            assert row["next_action"] == line["reason"][0]
     panel = _coverage_panel(FX.render_production_page())
     for line_id in list(ids)[:4]:
         assert line_id in panel
@@ -204,9 +269,8 @@ def test_a12_matrix_bound_to_the_im16_coverage_board(tmp_path):
             assert rendered["state"] == CAPABILITY_DISPLAY[cell["state"]], (jid, col)
             assert rendered["reason_token"] == cell["reason"], (jid, col)
     panel = _coverage_panel(FX.render_production_page())
-    rendered = re.findall(r'data-col="([a-z0-9_]+)"[^>]*data-gs-state="([a-z]+)"[^>]*data-gs-cell-for="([A-Z]{2})"', panel)
-    assert rendered, "cells must carry data-gs-cell-for so the test can map them"
-    lookup = {(jid, col): state for col, state, jid in rendered}
+    lookup = {(cell["for"], cell["col"]): cell["state"]
+              for cell, _inner in _cov_cells(panel) if cell["for"]}
     for jid, board_row in BOARD["cells"].items():
         for col, cell in board_row.items():
             assert lookup[(jid, col)] == CAPABILITY_DISPLAY[cell["state"]], (jid, col)
@@ -216,7 +280,7 @@ def test_a12b_cds_and_funding_columns_show_the_engine_state(tmp_path):
     payload, _observations = _payload(tmp_path)
     # expectation computed from the engine, never typed
     for col in ("cds_5y", "usd_funding"):
-        states = {CAPABILITY_DISPLAY[row["cells"][col]["state"]] for row in payload["matrix"]["rows"]}
+        states = {row["cells"][col]["state"] for row in payload["matrix"]["rows"]}
         board_states = {CAPABILITY_DISPLAY[cell[col]["state"]] for cell in BOARD["cells"].values()}
         assert states == board_states, col
         assert "complete" not in states and "qualified" not in states, col

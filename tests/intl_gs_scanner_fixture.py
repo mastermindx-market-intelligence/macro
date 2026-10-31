@@ -135,8 +135,12 @@ def render_abstain_page():
 def _specimen_panel():
     """The spec §10.1 specimen rows as a scanner panel payload. Layout
     acceptance only (§16.3 S1/S2); fabricated specimen numbers live in THIS
-    function and never in lib/ or templates/."""
-    from lib.intl_gs_display import horizon_label
+    function and never in lib/ or templates/. Abstain copy strings come from
+    the foundation vocabulary (imported, never copied)."""
+    from lib.intl_gs_display import horizon_label, reason_copy
+
+    def _abstain(token):
+        return {"token": token, "reason": reason_copy(token)}
     en, zh = horizon_label("1m")
 
     def leg(value):
@@ -148,35 +152,35 @@ def _specimen_panel():
          "divz": -2.6, "spark": [12, 11, 13, 12, 10, 9, 11, 12, 14, 13, 11, 10, 12, 13, 12, 10, 9, 11, 12, 11],
          "tier": {"kind": "specimen", "label": ("T1", "T1"), "note": ("Delayed 15m", "延迟15分钟"),
                   "state": "complete"}, "stance": "get_ready",
-         "market_sub": ("B3 · BRL · close 21 Oct", "B3 · BRL · 10月21日收盘")},
+         "market_sub": {"index_id": "B3", "currency": "BRL", "clock": {"datetime": "2026-10-21", "en": "21 Oct 2026", "zh": "2026年10月21日"}}},
         {"id": "TW", "name_en": "Taiwan", "name_zh": "台湾", "selected": False,
          "local": leg(2.4), "fx": leg(0.3), "usd": leg(2.7), "common": 48,
          "divz": 1.9, "spark": [8, 9, 10, 9, 11, 12, 11, 10, 12, 13, 12, 11, 13, 14, 13, 12, 13, 14, 13, 14],
          "tier": {"kind": "specimen", "label": ("Proxy", "代理"), "note": None, "state": "complete"},
-         "stance": "watch", "market_sub": ("TWSE · TWD · close 21 Oct", "TWSE · TWD · 10月21日收盘")},
+         "stance": "watch", "market_sub": {"index_id": "TWSE", "currency": "TWD", "clock": {"datetime": "2026-10-21", "en": "21 Oct 2026", "zh": "2026年10月21日"}}},
         {"id": "KR", "name_en": "Korea", "name_zh": "韩国", "selected": False,
          "local": leg(-1.1), "fx": leg(-0.6), "usd": leg(-1.7), "common": 71,
          "divz": -0.6, "spark": [10, 11, 10, 12, 11, 12, 13, 12, 11, 10, 11, 12, 11, 10, 11, 12, 13, 12, 11, 10],
          "tier": {"kind": "specimen", "label": ("T2", "T2"), "note": None, "state": "complete"},
-         "stance": "watch", "market_sub": ("KRX · KRW · close 21 Oct", "KRX · KRW · 10月21日收盘")},
+         "stance": "watch", "market_sub": {"index_id": "KRX", "currency": "KRW", "clock": {"datetime": "2026-10-21", "en": "21 Oct 2026", "zh": "2026年10月21日"}}},
         {"id": "MX", "name_en": "Mexico", "name_zh": "墨西哥", "selected": False,
          "local": leg(-0.7), "fx": leg(-1.5), "usd": leg(-2.2), "common": 41,
          "divz": -1.1, "spark": [13, 12, 13, 11, 12, 11, 10, 11, 12, 11, 10, 9, 10, 11, 10, 11, 12, 11, 10, 9],
          "tier": {"kind": "specimen", "label": ("T3", "T3"), "note": ("Delayed 15m", "延迟15分钟"),
                   "state": "complete"}, "stance": "watch",
-         "market_sub": ("BMV · MXN · close 20 Oct", "BMV · MXN · 10月20日收盘")},
+         "market_sub": {"index_id": "BMV", "currency": "MXN", "clock": {"datetime": "2026-10-21", "en": "20 Oct 2026", "zh": "2026年10月20日"}}},
         {"id": "JP", "name_en": "Japan", "name_zh": "日本", "selected": False,
          "local": leg(1.8), "fx": leg(-0.9), "usd": leg(0.9), "common": 62,
          "divz": 0.4, "spark": [11, 12, 11, 12, 13, 12, 13, 14, 13, 12, 13, 12, 13, 14, 13, 12, 13, 14, 13, 12],
          "tier": {"kind": "specimen", "label": ("Full · Licensed", "完整 · 已授权"), "note": None,
                   "state": "complete"}, "stance": "watch",
-         "market_sub": ("JPX · JPY · close 21 Oct", "JPX · JPY · 10月21日收盘")},
+         "market_sub": {"index_id": "JPX", "currency": "JPY", "clock": {"datetime": "2026-10-21", "en": "21 Oct 2026", "zh": "2026年10月21日"}}},
         {"id": "AU", "name_en": "Australia", "name_zh": "澳大利亚", "selected": False,
          "local": leg(0.6), "fx": leg(0.2), "usd": leg(0.8), "common": 55,
          "divz": 0.3, "spark": [12, 12, 13, 12, 11, 12, 13, 12, 11, 12, 13, 12, 11, 12, 13, 12, 11, 12, 11, 12],
          "tier": {"kind": "specimen", "label": ("Full · Licensed", "完整 · 已授权"), "note": None,
                   "state": "complete"}, "stance": "stand_aside",
-         "market_sub": ("ASX · AUD · close 21 Oct", "ASX · AUD · 10月21日收盘")},
+         "market_sub": {"index_id": "ASX", "currency": "AUD", "clock": {"datetime": "2026-10-21", "en": "21 Oct 2026", "zh": "2026年10月21日"}}},
         {"id": "IN", "name_en": "India", "name_zh": "印度", "selected": False,
          "local": {"state": "qualified", "pct": 0.4, "reasons": [], "specimen": True},
          "fx": {"state": "qualified", "pct": -0.2, "reasons": [], "specimen": True},
@@ -184,7 +188,7 @@ def _specimen_panel():
          "common": 22, "divz": 0.2,
          "spark": [11, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 10, 11, 12, 11, 12, 11, 12, 11],
          "tier": {"kind": "specimen", "label": ("Qualified", "有条件"), "note": None, "state": "qualified"},
-         "stance": "stand_aside", "market_sub": ("NSE · INR · close 21 Oct", "NSE · INR · 10月21日收盘")},
+         "stance": "stand_aside", "market_sub": {"index_id": "NSE", "currency": "INR", "clock": {"datetime": "2026-10-21", "en": "21 Oct 2026", "zh": "2026年10月21日"}}},
         {"id": "ZA", "name_en": "South Africa", "name_zh": "南非", "selected": False,
          "local": {"state": "stale", "pct": 0.3, "reasons": [], "specimen": True},
          "fx": {"state": "stale", "pct": -0.4, "reasons": [], "specimen": True},
@@ -192,7 +196,7 @@ def _specimen_panel():
          "common": 35, "divz": 0.1,
          "spark": [12, 11, 12, 13, 12, 11, 10, 11, 10, 9, 10, 11, 10, 9, 8, 9, 10, 9, 8, 9],
          "tier": {"kind": "specimen", "label": ("Stale · 2d", "过期 · 2天"), "note": None, "state": "stale"},
-         "stance": "stand_aside", "market_sub": ("JSE · ZAR · close 20 Oct", "JSE · ZAR · 10月20日收盘")},
+         "stance": "stand_aside", "market_sub": {"index_id": "JSE", "currency": "ZAR", "clock": {"datetime": "2026-10-21", "en": "20 Oct 2026", "zh": "2026年10月20日"}}},
         {"id": "PL", "name_en": "Poland", "name_zh": "波兰", "selected": False,
          "local": {"state": "abstain", "pct": None, "reasons": [], "specimen": True,
                    "specimen_reason": ("Unscored · insufficient history", "未评分 · 历史数据不足")},
@@ -203,7 +207,7 @@ def _specimen_panel():
          "common": None, "divz": None, "spark": None,
          "tier": {"kind": "specimen", "label": ("Abstain", "弃权"), "note": None, "state": "abstain"},
          "stance": "stand_aside",
-         "market_sub": ("GPW · PLN · close 20 Oct", "GPW · PLN · 10月20日收盘")},
+         "market_sub": {"index_id": "GPW", "currency": "PLN", "clock": {"datetime": "2026-10-21", "en": "20 Oct 2026", "zh": "2026年10月20日"}}},
     ]
     payload = {
         "specimen": True,
@@ -223,12 +227,30 @@ def _specimen_panel():
              "clock": ("21 Oct 08:00 UTC", "10月21日 08:00 UTC"),
              "tier": {"kind": "specimen", "label": ("Full · Licensed", "完整 · 已授权"), "note": None,
                       "state": "complete"}},
-            {"id": "common_factor", "kind": "abstain", "token": "common_factor_unadmitted"},
-            {"id": "spread", "kind": "abstain", "token": "credit_funding_unadmitted"},
+            {"id": "common_factor", "kind": "abstain", "token": "common_factor_unadmitted",
+             "reason": reason_copy("common_factor_unadmitted")},
+            {"id": "spread", "kind": "abstain", "token": "credit_funding_unadmitted",
+             "reason": reason_copy("credit_funding_unadmitted")},
         ],
         "rows": rows,
         "nodata": {"count": 0, "markets": []},
-        "footnote_source": ("Specimen values · not live", "示例数值 · 非实时"),
+        "session_copy": reason_copy("session_calendar_unadmitted"),
+        "abstain": {
+            "common": _abstain("common_factor_unadmitted"),
+            "divergence": _abstain("divergence_unadmitted"),
+            "series": _abstain("series_unadmitted"),
+            "stance": _abstain("stance_unadmitted"),
+            "attention": _abstain("attention_unadmitted"),
+            "bands": [{"q": q, **_abstain(token)}
+                      for q, token in ((3, "credit_funding_unadmitted"),
+                                       (4, "transmission_unadmitted"),
+                                       (5, "us_corroboration_unadmitted"),
+                                       (6, "thesis_unadmitted"))],
+        },
+        "market_scope": [],
+        "footnote": {"source": None,
+                     "withheld_copy": ("Specimen values · not live", "示例数值 · 非实时"),
+                     "delay": None},
     }
     return dict(view="scanner", context_id="im-gs-scanner-specimen",
                 context={"horizon": "1m", "currency_basis": "usd_unhedged",
