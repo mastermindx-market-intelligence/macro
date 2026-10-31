@@ -5,6 +5,7 @@ model: fable
 ended_because: ci_handoff
 decisions:
   - DEC:NEWS-ESTATE-B1-JOINS
+  - DEC:NEWS-ESTATE-D2-CONSUMER-FRESHNESS
 discoveries: []
 mission: >
   Chairman directive 2026-10-31 (PROCEED): complete the News Intelligence Estate end to end
@@ -33,7 +34,12 @@ changed:
       Takeover recorded; landmines refreshed (R2 fence lifted, #10136 added as Sol live,
       #10244 as the reviewed masterplan source); W1/W2 wave state and next actions updated.
   - path: agentos/handoffs/NEWS-INTELLIGENCE-ESTATE-2026-10-31-FABLE-TAKEOVER.md
-    what: This handoff.
+    what: This handoff (updated 2026-10-31 after the ORCH-2 return and the #10254 merge).
+  - path: agentos/decisions/DEC-NEWS-ESTATE-D2-CONSUMER-FRESHNESS.md
+    what: >
+      The D2 consumer ruling: the vendored Macro file is the first consumer; producer carries
+      source_asof/retained flag/report keys; consumer exposes freshness and a vendored_snapshot
+      or legacy_fallback evidence grade; adapter is PROPOSAL only.
 verified:
   - claim: All seven Wave-1 PRs are Draft, unreviewed, and untouched since 2026-10-22; Sol live on #9612/#10136.
     command: one GraphQL query with aliases over mastermindx-market-intelligence/macro PRs 10043 10044 10046 10048 10049 10056 10063 9612 10136 (2026-10-31 06:4xZ)
@@ -44,18 +50,27 @@ verified:
   - claim: Two Opus orchestrators were admitted by the routing guard and are running.
     command: Agent(subagent_type=orchestrator, model=opus, ROUTE orchestration, fable-mode directive, exact SECTION labels) x2 at 06:5xZ
     result: "ORCH-1 FACTUAL-LANDING (six Wave-1 PRs, repairs, independent glm-5.3 review lanes) and ORCH-2 CONSUMER-D2 (Mastermind boundary freshness + macro producer source_asof) RUNNING."
+  - claim: Seat records PR #10254 merged at its exact head.
+    command: gh pr merge 10254 --squash --match-head-commit dbfcfd3266c9c01c97cac91b4d51d34b0c8bccf7 (2026-10-31; ci-plan/ci-authority/fence-pack/contract-delta/ci-gate all SUCCESS; only the standing-red ci-authority/codex/merge-queue-pilot failed; reviewDecision null)
+    result: "MERGED e4f28c44dbfc98b38865f338e69bda9c72200985."
+  - claim: ORCH-2 delivered two Fabric-reviewed draft PRs touching only owned files.
+    command: GraphQL read + gh pr diff --name-only on macro #10280 and Mastermind #1897 (2026-10-31)
+    result: "#10280 head 4dd74f0b825b MERGEABLE, 5 owned files, CI queued; #1897 head 5cc144ad9d71 MERGEABLE/BLOCKED (draft), 7 owned files, CI queued; both bodies written once."
 unverified:
   - claim: #10044's suite passes once registered; #10043's tests pass on a current base.
     why: ORCH-1 lanes run them; the seat judges by the returned artifact before any ready/merge.
 unresolved:
   - what: Sol's 10-31 masterplan docs are on PR #10244 only, not on main.
     owner: Sol CEO (its own carrier); this seat consumes the PR head and never pushes to it.
-  - what: B4 #10063 quantitative frontier adjudication, sampler _share_ok startup defect, routing of the 40 pending cases without redrawing.
-    owner: this seat via ORCH-3 QUANT when a native orchestrator slot frees (cap 2).
+  - what: B4 #10063 quantitative frontier adjudication, sampler _share_ok startup behaviour, routing of the 40 pending cases without redrawing.
+    owner: this seat via ORCH-3 QUANT, RUNNING since 2026-10-31 after the ORCH-2 slot freed.
+  - what: D2 PRs macro #10280 and Mastermind #1897 await CI; MMREV-03 (bundled intelligence file lacks the news leg source_asof) is a producer follow-on.
+    owner: this seat merges each --match-head-commit after CI and reviewDecision; MMREV-03 goes to the next Macro producer lane.
   - what: First product proof of a corrected-event journey (Journey 6) through the Terminal authenticated R2 rail; E1 reconciliation of terminal #1081/#1129/#1130.
     owner: this seat via ORCH-4 PRODUCT after ORCH-1 lands.
 next_actions:
-  - "Consume ORCH-1 and ORCH-2 returns by artifact (diff, test output, review verdict); read reviewDecision and HOLD state; gh pr ready then merge --squash --match-head-commit <sha40> per PR; record one Agent OS line per landed PR."
+  - "Merge macro #10280 (--match-head-commit 4dd74f0b825baa9eec8ecb2322ce585c050f121c) then Mastermind #1897 (--match-head-commit 5cc144ad9d71415ccc2de6daa9870553fd659a7c) once CI is green and reviewDecision is read; sequence #10280 against Sol #10136 per the recipe in the #10280 body."
+  - "Consume ORCH-1 and ORCH-3 returns by artifact (diff, test output, review verdict); read reviewDecision and HOLD state; gh pr ready then merge --squash --match-head-commit <sha40> per PR; record one Agent OS line per landed PR."
   - "Spawn ORCH-3 QUANT and ORCH-4 PRODUCT as slots free; never re-spawn ORCH-1/ORCH-2 (message by id)."
 do_not_redo:
   - "Sol's census/masterplan at #10244 e16dbdda392f is accepted input; never re-census. Wave-1 PRs are reused in place; never recreated."
@@ -72,4 +87,5 @@ The seat's durable state is this handoff plus the workstream and DEC:NEWS-ESTATE
 the scratchpad holds SEAT_CONTEXT.md and the two commissions. Seat acts this wave: records,
 adjudication of returns by artifact, ready/merge with --match-head-commit after an
 independent review verdict and the seat's own reviewDecision read. Delivery ladder reached
-at this record: ORCH-1 and ORCH-2 RUNNING; nothing in Wave 1 is merged yet.
+at this record (2026-10-31, second write): seat records #10254 MERGED; ORCH-2 DELIVERED two draft
+PRs (CI pending, not merged); ORCH-1 and ORCH-3 RUNNING; nothing in Wave 1 is merged yet.
