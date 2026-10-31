@@ -1,0 +1,116 @@
+{
+  "schema": "eval_os.a1_named_generation_diff.v1",
+  "started_at": "2026-10-24T20:16:59.520059+00:00",
+  "qualified_source": "5aae3c5e97dcdcf85d0745062fe9424f1ed7c0c7",
+  "owner_artifact": "site/qledger/track_record.json",
+  "panel_calls": 0,
+  "metadata_generation_calls": 2,
+  "retry": false,
+  "named_source_matches_before": {
+    "scripts/grade_qledger.py": true,
+    "engine/qledger.py": true,
+    "engine/qledger_store.py": true,
+    "engine/qledger_evidence_clock.py": true,
+    "admin/intelligence_os.py": true
+  },
+  "status": "completed",
+  "recorded_provenance_valid": true,
+  "recorded_at": "2026-10-24T14:21:01.885566+00:00",
+  "evaluation_date": "2026-10-24",
+  "family_count": 24,
+  "named_generation_match": false,
+  "current_generation_stable": true,
+  "owner_artifact_stable": true,
+  "owner_content_digest": "0e38baca29d10abb5af9a3613dd8de9ea6176dd6334273ca67ca818fe599e9a0",
+  "owner_content_stable": true,
+  "recorded_generation_digest": "7663705f67603d3ee044993afd5ee32473a361a34f4b4c9b43b14511dcf08c1f",
+  "current_generation_digest": "a6e9bda8c666f165b2551e2dced5756654812e7b2af349f87e0141138ad18e1c",
+  "missing_recorded_keys": [],
+  "unexpected_recorded_key_count": 0,
+  "component_match": {
+    "portability": true,
+    "host_scope_digest": false,
+    "selected_claims": false,
+    "grades": false,
+    "qual_ladder": false,
+    "control_policy_digest": true,
+    "clocks": false,
+    "owner_code": false,
+    "families": true,
+    "evaluation_date": true,
+    "duel_baseline_digest": true,
+    "qualified_scope": true,
+    "all_inputs_qualification": true,
+    "excluded_scope": true
+  },
+  "selected_claims_metadata_differences": [
+    "device",
+    "inode",
+    "bytes",
+    "mtime_ns",
+    "ctime_ns"
+  ],
+  "grades_metadata_differences": [
+    "device",
+    "inode",
+    "bytes",
+    "mtime_ns",
+    "ctime_ns"
+  ],
+  "qual_ladder": {
+    "present_match": true,
+    "sha256_match": true,
+    "host_metadata_match": false
+  },
+  "owner_code": {
+    "scripts/grade_qledger.py": {
+      "present_match": true,
+      "sha256_match": true,
+      "host_metadata_match": false
+    },
+    "engine/qledger.py": {
+      "present_match": true,
+      "sha256_match": true,
+      "host_metadata_match": false
+    }
+  },
+  "current_source_qualification": "unavailable",
+  "all_inputs_qualification": "unavailable",
+  "named_source_matches_after": {
+    "scripts/grade_qledger.py": true,
+    "engine/qledger.py": true,
+    "engine/qledger_store.py": true,
+    "engine/qledger_evidence_clock.py": true,
+    "admin/intelligence_os.py": true
+  },
+  "named_source_stable": true,
+  "wall_seconds": 3.34452,
+  "finished_at": "2026-10-24T20:17:02.864641+00:00",
+  "limits": [
+    "One owner receipt, not four unique snapshots.",
+    "Named metadata comparison only; does not establish causes or current/all-input freshness.",
+    "No grading, price load, readiness publication, panel replay, native activation or service change.",
+    "Named source qualification is not a complete loaded-byte attestation."
+  ],
+  "observer_sha256": "32d250d5168c6d65c0675f0c2cf9994d9cd8af49c79827e1e7b4c5010daf424b",
+  "clock_component_count": 48,
+  "clock_components_with_difference": {
+    "demand_chain": {
+      "first_registration": {
+        "present_match": true,
+        "sha256_match": true,
+        "host_metadata_match": false
+      }
+    },
+    "stock_desk": {
+      "first_registration": {
+        "present_match": true,
+        "sha256_match": true,
+        "host_metadata_match": false
+      }
+    }
+  },
+  "private_receipt_sha256": "7d0c0cede993cd82c144fd8a7d64e49521e1239b93cd31e94af4eae0a95ecec8",
+  "clock_component_interpretation": "48 recorded/current components compared; equality can include absent-on-both sides. Only differing components are expanded here."
+}
+

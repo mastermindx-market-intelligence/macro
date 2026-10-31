@@ -1,0 +1,55 @@
+{
+  "schema": "eval_os.restored_root_reader_receipt_excerpt.v1",
+  "source_artifact": "integration/followon-landing-20261024/production-5aae3c5-20261024/released-reader-20261024.stdout.json",
+  "observer": "restored original Codex root; independent operation",
+  "observed_at": "2026-10-24T20:18:11.673360+00:00",
+  "qualified_source": "5aae3c5e97dcdcf85d0745062fe9424f1ed7c0c7",
+  "scope": "One isolated invocation of installed HTTP-miss reader, not authenticated HTTP or live admin cache; aggregate census only; no raw outputs, grades, sealed-study reads, mutation, forced owner, cutover or service restart.",
+  "complete": false,
+  "installed_head_before": "d35940bec519917dba711430efb5a112c5b5015c",
+  "installed_head_after": "d35940bec519917dba711430efb5a112c5b5015c",
+  "source_hashes": {
+    "engine/intelligence_registry.py": "f0fabfca6112fa51087450ae8d5e246a2e88c606b235d2ae200cfcac0d6bcfc9",
+    "scripts/build_intelligence_registry.py": "70cf6a37e840a5a7b2c3e3f90be343a2a04bbd1b86a595167595b425b6b2e025",
+    "engine/postmortem.py": "305922800d483572ec709224edb30c2685404b1da543cdf81257701a4ccfdcc5",
+    "scripts/build_output_health.py": "42a6f850ba02351165a563b0341faa8649e4458d5d5a50b8e3498e6e6044fe11",
+    "engine/qledger_validity.py": "8076620b1db88e314d617cb80bf6525789d9fd2f532a21263ee8f6d3df20bb23",
+    "scripts/check_qledger_metric_validity.py": "d3775ad1da581d74102870b8676e56d03d4b0ab4a6533107e5f527850882f13b",
+    "scripts/agentos.py": "eb9b9b628118bfec4a3f2e1a31fa9246798611cfda3093947aee46f27b430025",
+    "engine/neuralweb/response_eval.py": "b48ecd32469104f610620b48a2c80d57c86c2e62e31334cd9373b54b5c0a0fce",
+    "engine/neuralweb/native_facts.py": "0bea7716427aced73459f7d5d547ad06781adf6e1afbf0bb5eb82a2ad49f8be5",
+    "engine/neuralweb/brain_gateway.py": "f2b649764cd6662408124c246b5ad585c5dd0d35308710754d3b898abe89f833",
+    "lib/mastermind_response_log.py": "1cf4f6afdcdf3084e6122b642aa09a1547bfa746a746d753c71bab5493980c79",
+    "app/deploy/update.sh": "6225e1160511480f04389d619204a5a7a7d702bb91ae5c50feed0a157d4c94b3",
+    "admin/intelligence_execution.py": "b9dad66079908a8db55ef1d1240c42c42a0b91b9c3188c78b227d3ab436c5cc2",
+    "admin/server.py": "123950edd7be06feaecfe60580dc72d3a189854ae9fab4c803b887e4cf5e5bbd",
+    "engine/qledger_store.py": "3a1d30cbd20a09bc428d069fcd9548f17ff94763ffcfdd83041d6c11edd6e3db",
+    "admin/intelligence_os.py": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873"
+  },
+  "changed_sources": [],
+  "source_stable": true,
+  "epoch_stable": true,
+  "existing_reader_child_count": 0,
+  "remaining_reader_child_count": 0,
+  "wall_seconds": 45.23952232114971,
+  "child_peak_rss_kib": 121668,
+  "parent_peak_rss_kib": 18792,
+  "ok": false,
+  "error_code": "evidence_deadline_exceeded",
+  "census": null,
+  "coherence_status": null,
+  "disposition": "OBSERVED_UNAVAILABLE_OR_CHANGED",
+  "safety_profile": {
+    "address_space_bytes": 1073741824,
+    "wall_seconds": 45,
+    "result_bytes": 16777216,
+    "cleanup_seconds": 2,
+    "is_slo": false
+  },
+  "interpretation": [
+    "This separate observed wrapper timeout is not a retry of the principal's successful panel derivation",
+    "Neither operation establishes repeated latency, SLO, authenticated HTTP or resident cache behavior",
+    "Actual source-only diagnosis and T08.S1 continuation remain with their live writer; no additional production invocation commissioned by this audit"
+  ]
+}
+

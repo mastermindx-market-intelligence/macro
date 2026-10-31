@@ -1,0 +1,34 @@
+{
+  "schema": "eval_os.wave_correction_validation.v1",
+  "observed_at": "2026-10-24T19:10:19.063276+00:00",
+  "command": [
+    "python3",
+    "/Users/chriswong/gwcap/agentos-mirror/macro/scripts/agentos.py",
+    "validate",
+    "--root",
+    "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/census-20261024-pro/wave-correction/validation-store",
+    "--quiet"
+  ],
+  "returncode": 0,
+  "summary": "agentos: 1964 records (108 workstreams, 523 decisions, 562 discoveries, 771 handoffs) — 0 error(s), 1087 warning(s)",
+  "record_paths": [
+    "agentos/workstreams/WS-EVAL-OS-MEASUREMENT-LAW.md",
+    "agentos/workstreams/WS-EVAL-OS-EVIDENCE-VIEW.md",
+    "agentos/workstreams/WS-EVAL-OS-OUTPUT-HEALTH.md",
+    "agentos/workstreams/WS-EVAL-OS-T1-ENGINE-REGISTRY.md",
+    "agentos/decisions/DEC-EVAL-OS-WAVE-AUTHORITY-AND-LEADERSHIP-CONTINUITY-20261024.md",
+    "agentos/handoffs/EVAL-OS-MEASUREMENT-LAW-2026-10-24-PRO.md"
+  ],
+  "workstreams": 4,
+  "total_waves": 13,
+  "statuses": {
+    "done": 9,
+    "in_progress": 2,
+    "todo": 2
+  },
+  "original_nine_done_preserved": true,
+  "A1_no_W4_dependency": true,
+  "all_local_wave_dependencies_resolve": true,
+  "source_delta_sha256": "3746954030997295d1443e59b1bc1113f6d070a36420b749f3e87a09adedb6de",
+  "scope": "Schema and authored graph validation on a copied record store. Artifact joins still resolve against the unmodified mirror; this is not product acceptance."
+}
