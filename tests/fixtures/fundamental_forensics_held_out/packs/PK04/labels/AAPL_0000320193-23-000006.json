@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000320193-23-000006",
+    "expected_period_end": "2022-12-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "7992000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_positive",
+    "pack_id": "PK04",
+    "polarity": "positive",
+    "reason": "aapl-20221231.htm | us-gaap:ContractWithCustomerLiabilityCurrent @ i9f680698d6e34328803c57ac5fdca655_I20221231 | 'Deferred revenue 7,992 7,912' | Current deferred revenue at 2022-12-31; condensed consolidated balance sheet current liabilities, in millions.",
+    "section_family": "contract_liability",
+    "split": "held_out",
+    "target_id": "contract_liability_current",
+    "target_kind": "extract",
+    "trial_id": "PK04|0000320193-23-000006|extract|contract_liability_current"
+  },
+  {
+    "accession": "0000320193-23-000006",
+    "expected_period_end": "2022-12-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "117154000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_positive",
+    "pack_id": "PK04",
+    "polarity": "positive",
+    "reason": "aapl-20221231.htm | us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax @ i6cd230119dbf41e6bcd550ed334e42ec_D20220925-20221231 | 'Total net sales 117,154 123,945' | Total net sales for the three months ended 2022-12-31; condensed consolidated statement of operations, in millions.",
+    "section_family": "revenue",
+    "split": "held_out",
+    "target_id": "revenue",
+    "target_kind": "extract",
+    "trial_id": "PK04|0000320193-23-000006|extract|revenue"
+  }
+]
