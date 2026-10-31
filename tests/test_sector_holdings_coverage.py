@@ -92,8 +92,8 @@ def _assert_contract(feed):
             assert row["ticker"] not in tickers
             tickers.add(row["ticker"])
             w = row["weight_pct"]
-            assert isinstance(w, (int, float)) and math.isfinite(w)
-            assert 0 <= w <= 100
+            assert isinstance(w, (int, float)) and not isinstance(w, bool)
+            assert math.isfinite(w) and 0 <= w <= 100
             assert row["rank"] == i + 1
             if prev is not None:
                 assert w <= prev  # weights non-increasing down the list
@@ -103,6 +103,9 @@ def _assert_contract(feed):
         assert list(c["count"]) == ["listed", "total"]
         assert c["count"]["listed"] == len(listed)
         assert c["count"]["total"] == f["n_holdings_total"]
+        assert isinstance(c["weight_pct"], (int, float))
+        assert not isinstance(c["weight_pct"], bool)
+        assert math.isfinite(c["weight_pct"])
         assert c["weight_pct"] <= 100.0001
         if listed:
             assert abs(c["weight_pct"] - round(sum(r["weight_pct"] for r in listed), 2)) <= 0.01
@@ -279,6 +282,102 @@ def test_emitter_is_additive_and_never_fatal(tmp_path):
     import scripts.build_sector_central as sc
     assert callable(sc.main)
     assert callable(shc.emit_holdings_coverage_additive)
+
+
+@pytest.mark.parametrize(
+    ("weights", "emitted"),
+    [
+        ([101], 101.0),
+        ([60, 50, 1], 111.0),
+        ([33.335, 33.335, 33.33], 100.01),
+    ],
+    ids=["individual-overflow", "aggregate-overflow", "row-rounding-overflow"],
+)
+def test_invalid_weight_contract_preserves_existing_output(tmp_path, weights, emitted):
+    snap = _frame([(f"T{i}", pct) for i, pct in enumerate(weights)])
+    feed = build_holdings_coverage({"XLK": snap}, funds=["XLK"])
+    assert feed["funds"][0]["coverage"]["weight_pct"] == emitted
+    with pytest.raises(AssertionError):
+        _assert_contract(feed)  # native reader contract rejects the produced feed
+
+    out = tmp_path / "sector_holdings_coverage.json"
+    sentinel = b"trusted-previous-feed\x00\xff"
+    out.write_bytes(sentinel)
+    with pytest.raises(ValueError, match="holdings coverage: XLK invalid"):
+        shc.write_holdings_coverage(out, feed)
+    assert out.read_bytes() == sentinel
+
+
+@pytest.mark.parametrize("field", ["listed", "aggregate"])
+def test_boolean_weight_contract_rejects_before_touching_output(tmp_path, field):
+    feed = build_holdings_coverage(
+        {"XLK": _frame([("NVDA", 1.0)])}, funds=["XLK"])
+    fund = feed["funds"][0]
+    if field == "listed":
+        fund["listed"][0]["weight_pct"] = True
+    else:
+        fund["coverage"]["weight_pct"] = True
+    with pytest.raises(AssertionError):
+        _assert_contract(feed)  # Terminal rejects JSON true, not a number
+
+    out = tmp_path / "sector_holdings_coverage.json"
+    sentinel = b"trusted-previous-feed\x00\xff"
+    out.write_bytes(sentinel)
+    with pytest.raises(ValueError, match="holdings coverage: XLK invalid"):
+        shc.write_holdings_coverage(out, feed)
+    assert out.read_bytes() == sentinel
+
+    absent = tmp_path / "absent-dir" / "sector_holdings_coverage.json"
+    with pytest.raises(ValueError, match="holdings coverage: XLK invalid"):
+        shc.write_holdings_coverage(absent, feed)
+    assert not absent.exists()
+    assert not absent.parent.exists()
+
+
+def test_valid_exact_100_weight_feed_is_published(tmp_path):
+    snap = _frame([("NVDA", 60), ("AAPL", 39), ("MSFT", 1)])
+    feed = build_holdings_coverage({"XLK": snap}, funds=["XLK"])
+    _assert_contract(feed)
+    assert feed["funds"][0]["coverage"]["weight_pct"] == 100.0
+    out = tmp_path / "exact-100.json"
+    shc.write_holdings_coverage(out, feed)
+    assert json.loads(out.read_text(encoding="utf-8")) == feed
+
+
+@pytest.mark.parametrize("entry", ["additive-hook", "cli"])
+def test_entry_paths_reject_invalid_feed_without_overwrite_and_recover(
+        tmp_path, monkeypatch, caplog, entry):
+    bad = _frame([("NVDA", 60), ("AAPL", 50), ("MSFT", 1)])
+    good = _frame([("NVDA", 60), ("AAPL", 39), ("MSFT", 1)])
+    out = (tmp_path / "sector_holdings_coverage.json" if entry == "additive-hook"
+           else tmp_path / "explicit-cli-out.json")
+    sentinel = b"trusted-original-\x00\xff"
+    out.write_bytes(sentinel)
+    caplog.set_level("WARNING")
+    if entry == "additive-hook":
+        assert emit_holdings_coverage_additive(
+            tmp_path, snapshots_loader=lambda: {"XLK": bad}) is None
+        assert "holdings coverage: feed skipped" in caplog.text
+    else:
+        monkeypatch.setattr(
+            shc, "load_snapshots",
+            lambda funds: {fund: (bad if fund == "XLK" else None) for fund in funds})
+        assert main(["--out", str(out)]) == 1
+        assert "holdings coverage: emit failed" in caplog.text
+    assert out.read_bytes() == sentinel
+
+    if entry == "additive-hook":
+        assert emit_holdings_coverage_additive(
+            tmp_path, snapshots_loader=lambda: {"XLK": good}) == out
+    else:
+        monkeypatch.setattr(
+            shc, "load_snapshots",
+            lambda funds: {fund: (good if fund == "XLK" else None) for fund in funds})
+        assert main(["--out", str(out)]) == 0
+    feed = json.loads(out.read_text(encoding="utf-8"))
+    _assert_contract(feed)
+    assert next(f for f in feed["funds"] if f["fund"] == "XLK")[
+        "coverage"]["weight_pct"] == 100.0
 
 
 def test_ci_manifest_declares_the_job():
@@ -646,4 +745,3 @@ def test_a_refused_destination_keeps_the_hook_and_cli_failure_contracts(
     assert main(["--out", str(link)]) == 1
     assert link.is_symlink()
     assert _names(tmp_path) == ["sector_holdings_coverage.json"]
-

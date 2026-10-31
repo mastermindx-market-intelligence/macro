@@ -34,6 +34,7 @@ import argparse
 import errno
 import json
 import logging
+import math
 import os
 import re
 import stat
@@ -233,17 +234,41 @@ def _fsync_parent_dir(directory: Path) -> None:
         os.close(fd)
 
 
+def _validate_weight_contract(feed: Mapping) -> None:
+    """Reject weights the Terminal's strict reader would reject, before touching output."""
+    for fund in feed["funds"]:
+        listed = fund["listed"]
+        for row in listed:
+            pct = row["weight_pct"]
+            if (isinstance(pct, bool) or not isinstance(pct, (int, float))
+                    or not math.isfinite(pct) or not 0 <= pct <= 100):
+                raise ValueError(
+                    f"holdings coverage: {fund['fund']} invalid listed weight "
+                    f"{row['ticker']}={pct}")
+        coverage_pct = fund["coverage"]["weight_pct"]
+        listed_sum = round(sum(row["weight_pct"] for row in listed), 2)
+        if (isinstance(coverage_pct, bool)
+                or not isinstance(coverage_pct, (int, float))
+                or not math.isfinite(coverage_pct)
+                or not 0 <= coverage_pct <= 100.0001
+                or abs(coverage_pct - listed_sum) > 0.01):
+            raise ValueError(
+                f"holdings coverage: {fund['fund']} invalid aggregate weight "
+                f"{coverage_pct} (listed sum {listed_sum})")
+
+
 def write_holdings_coverage(path: Path, feed: dict) -> None:
     """Publish the feed atomically: the destination is replaced in one step or
     not at all, so an interrupted write can never leave the last good feed
     truncated or half-written. The bytes are exactly the ones the Terminal
     reader expects — compact JSON, no trailing newline.
+
+    The weight-contract gate (#10193) runs first and exactly once, before any
+    output mutation: a feed the Terminal's strict reader would reject never
+    reaches the filesystem, so the previously published feed, its mode and its
+    directory are all left exactly as they were.
     """
-    # The weight-contract gate (#10193) is not on this base yet; when it lands
-    # this call site runs it before ANY output mutation. Never a second copy.
-    validator = globals().get("_validate_weight_contract")
-    if validator is not None:
-        validator(feed)
+    _validate_weight_contract(feed)
     path = Path(path)
     # Serialize before the parent exists: a serialization error must not create
     # a directory or leave an output behind.

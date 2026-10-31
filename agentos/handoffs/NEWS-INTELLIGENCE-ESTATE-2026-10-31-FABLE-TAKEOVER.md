@@ -5,6 +5,7 @@ model: fable
 ended_because: ci_handoff
 decisions:
   - DEC:NEWS-ESTATE-B1-JOINS
+  - DEC:NEWS-ESTATE-D2-CONSUMER-FRESHNESS
 discoveries: []
 mission: >
   Chairman directive 2026-10-31 (PROCEED): complete the News Intelligence Estate end to end
@@ -33,7 +34,14 @@ changed:
       Takeover recorded; landmines refreshed (R2 fence lifted, #10136 added as Sol live,
       #10244 as the reviewed masterplan source); W1/W2 wave state and next actions updated.
   - path: agentos/handoffs/NEWS-INTELLIGENCE-ESTATE-2026-10-31-FABLE-TAKEOVER.md
-    what: This handoff.
+    what: >
+      This handoff (third write, 2026-10-31 ~17:0xZ: Wave-1 landings, D2 merges, the Opus
+      orchestrator halt and the seat-direct ORCH-3 fabric lanes).
+  - path: agentos/decisions/DEC-NEWS-ESTATE-D2-CONSUMER-FRESHNESS.md
+    what: >
+      The D2 consumer ruling: the vendored Macro file is the first consumer; producer carries
+      source_asof/retained flag/report keys; consumer exposes freshness and a vendored_snapshot
+      or legacy_fallback evidence grade; adapter is PROPOSAL only.
 verified:
   - claim: All seven Wave-1 PRs are Draft, unreviewed, and untouched since 2026-10-22; Sol live on #9612/#10136.
     command: one GraphQL query with aliases over mastermindx-market-intelligence/macro PRs 10043 10044 10046 10048 10049 10056 10063 9612 10136 (2026-10-31 06:4xZ)
@@ -44,22 +52,47 @@ verified:
   - claim: Two Opus orchestrators were admitted by the routing guard and are running.
     command: Agent(subagent_type=orchestrator, model=opus, ROUTE orchestration, fable-mode directive, exact SECTION labels) x2 at 06:5xZ
     result: "ORCH-1 FACTUAL-LANDING (six Wave-1 PRs, repairs, independent glm-5.3 review lanes) and ORCH-2 CONSUMER-D2 (Mastermind boundary freshness + macro producer source_asof) RUNNING."
+  - claim: Seat records PR #10254 merged at its exact head.
+    command: gh pr merge 10254 --squash --match-head-commit dbfcfd3266c9c01c97cac91b4d51d34b0c8bccf7 (2026-10-31; ci-plan/ci-authority/fence-pack/contract-delta/ci-gate all SUCCESS; only the standing-red ci-authority/codex/merge-queue-pilot failed; reviewDecision null)
+    result: "MERGED e4f28c44dbfc98b38865f338e69bda9c72200985."
+  - claim: ORCH-2 delivered two Fabric-reviewed draft PRs touching only owned files.
+    command: GraphQL read + gh pr diff --name-only on macro #10280 and Mastermind #1897 (2026-10-31)
+    result: "#10280 head 4dd74f0b825b MERGEABLE, 5 owned files, CI queued; #1897 head 5cc144ad9d71 MERGEABLE/BLOCKED (draft), 7 owned files, CI queued; both bodies written once."
+  - claim: Five of the six ORCH-1 Wave-1 PRs are MERGED on main at their reviewed heads.
+    command: gh pr ready + gh pr merge --squash --match-head-commit <sha40> per PR after one GraphQL read (reviewDecision null, no HOLD label, only the standing-red ci-authority/codex/merge-queue-pilot failed), 2026-10-31 16:1xZ
+    result: "#10043 P1D head 3127aa75 -> e0566cb74e94 (lane review RV-10043 PASS-WITH-GAPS); #10046 A1 head 2a92fe62 -> 603d98a5bbe2 (r3 PASS); #10048 D1 head 6ec97882 -> a8c4c78b50d; #10049 B1 head 769b24a0 -> 8ecd470152ee; #10056 A5 head c30bd8f9 -> 6135e2c3c64c (r2 PASS-WITH-GAPS). #10044 A3 head ef7a628b (RV-10044 PASS) -> 87d7158af405 (16:56Z, ci-pack-0 green, no hold label, reviewDecision null). All six ORCH-1 Wave-1 PRs are MERGED."
+  - claim: Both D2 consumer PRs on macro are MERGED; the Mastermind half is not.
+    command: same GraphQL read + merge --match-head-commit, 2026-10-31 16:1xZ
+    result: "macro #10280 head 4dd74f0b -> 5b3c2e05498c (16:11Z); records #10281 head 82cd85cc -> f8cb6f8abe26 (16:12Z). Mastermind #1897 head 8bac8a4b is BEHIND master with pytest shard 0 pending: update-branch, re-read reviewDecision, then merge."
+  - claim: ORCH-1 and ORCH-2 (native Opus orchestrators) were halted by an Opus rate limit and cannot be resumed before 2026-11-01 09:10Z; ORCH-3 QUANT runs seat-direct on the fabric.
+    command: Agent task outputs (429 on resume) 2026-10-31 ~16:3xZ; $K/ext/remote_sub.sh launches with POOL_PARENT_RUN_ID=orch3-seat-direct-20261031
+    result: "claim-r1 (glm-5.3 review C2, ubuntu0) RETURNED PASS: branch lane/news-orch3-claim-r1 head 9f96188b39bc97c19d05ac23ec924a4aab1f8ea3, one owned file research/news_intelligence_estate_20261021/QUANT_CLAIM_MATRIX.md, QUANT CLAIM VERDICT: DEFENSIBLE_NEGATIVE (no committed system score against v2_match under the registered section-11 gate). prov-r2 (glm-5.3 review C2), samp-r2 (glm-5.3-flash build C1) and route-r2 (glm-5.3 review C2) admitted on ubuntu3 16:46-16:47Z (ECONOMIC_POLICY allowed, LEASE_OK) and RUNNING."
+  - claim: ubuntu3 lane host was below its 75G staging reserve (45G free) and was reclaimed in-session under the existing GC law.
+    command: read-only census of ~/lanes/wt then git worktree remove of proven-landed trees only (HEAD ancestor of origin/main or equal to its pushed origin lane branch, clean, no attached process); branch refs kept; git worktree prune; log at scratchpad orch/quant/ubuntu3_reclaim_20261031.log
+    result: "29 trees removed (16 gmi-* exact-on-origin, 11 grok-w1-*/gd-ew-p1-4/intl-gs-rec6-r1 in origin/main, news-orch1-10043-r1/10044-r1 ancestors of their origin branch); kept every dirty intl-gs-* tree and ne-b4-gated-v3-20261022-r2/r3 (benchmark body evidence); free 45G -> 128G; samp-r1 had been refused host_disk_below_staging_reserve."
 unverified:
-  - claim: #10044's suite passes once registered; #10043's tests pass on a current base.
-    why: ORCH-1 lanes run them; the seat judges by the returned artifact before any ready/merge.
+  - claim: The three running ORCH-3 lanes (prov-r2, samp-r2, route-r2) return PASS artifacts.
+    why: RUNNING on ubuntu3 since 16:47Z; the seat judges each by git fetch of its head and diff --stat against 6135e2c3 before any integration.
 unresolved:
   - what: Sol's 10-31 masterplan docs are on PR #10244 only, not on main.
     owner: Sol CEO (its own carrier); this seat consumes the PR head and never pushes to it.
-  - what: B4 #10063 quantitative frontier adjudication, sampler _share_ok startup defect, routing of the 40 pending cases without redrawing.
-    owner: this seat via ORCH-3 QUANT when a native orchestrator slot frees (cap 2).
+  - what: B4 #10063 quantitative frontier adjudication (provenance label, 40-case routing under the v2 taxonomy, sampler _share_ok startup test); #10063 itself stays untouched until the seat recommends its disposition.
+    owner: this seat, seat-direct fabric lanes prov-r2 / route-r2 / samp-r2 RUNNING on ubuntu3; claim-r1 returned. Integration branch claude/news-quant-b4-adjudication-20261031 in the ORCH-3 judge tree, one draft PR to main after a glm-5.3 review lane over the four returns.
+  - what: Mastermind #1897 (D2 consumer half) awaits pytest shard 0 and is BEHIND master. MMREV-03 (bundled intelligence file lacks the news leg source_asof) is a producer follow-on; tests/test_news_llm.py (P1D) is not registered in any CI run line; the A3 fold was not lane-re-reviewed after its CI registration.
+    owner: this seat merges each --match-head-commit after CI and reviewDecision; MMREV-03 and the test registration go to the next Macro producer lane.
+  - what: ORCH-1 FACTUAL-LANDING and ORCH-2 CONSUMER-D2 returns were consumed; the orchestrators themselves are halted (Opus 429) and must not be re-spawned; any remaining ORCH-1 lane evidence lives in the merged PR bodies and the lane logs under $K/ext/state/remote_sub/.
+    owner: this seat.
   - what: First product proof of a corrected-event journey (Journey 6) through the Terminal authenticated R2 rail; E1 reconciliation of terminal #1081/#1129/#1130.
     owner: this seat via ORCH-4 PRODUCT after ORCH-1 lands.
 next_actions:
-  - "Consume ORCH-1 and ORCH-2 returns by artifact (diff, test output, review verdict); read reviewDecision and HOLD state; gh pr ready then merge --squash --match-head-commit <sha40> per PR; record one Agent OS line per landed PR."
-  - "Spawn ORCH-3 QUANT and ORCH-4 PRODUCT as slots free; never re-spawn ORCH-1/ORCH-2 (message by id)."
+  - "Mastermind #1897: update-branch when pytest shard 0 settles, re-read reviewDecision, merge at the refreshed head (macro #10280 is already on main, so the producer side of D2 is ahead of the consumer)."
+  - "Judge prov-r2 / samp-r2 / route-r2 by artifact (fetch head sha40 into the judge tree, diff --stat 6135e2c3 = owned files only, read the file, check sentinels and the strict-separation line); one glm-5.3 review lane over the four returns; integrate on claude/news-quant-b4-adjudication-20261031; one draft PR to main; recommend #10063 disposition (never push to it)."
+  - "Drive ORCH-4 PRODUCT seat-direct on the fabric: terminal census + E1 reconcile (#1081/#1129/#1130) first, then Journey 6 corrected-event proof on the authenticated R2 rail; judge tree minted from the terminal primary, never the primary itself."
+  - "Never re-spawn ORCH-1/ORCH-2 (halted) and never relaunch run-ids news-orch3-{claim-r1,prov-r1,prov-r2,route-r1,route-r2,samp-r1,samp-r2}; bump -rN for any rerun."
 do_not_redo:
   - "Sol's census/masterplan at #10244 e16dbdda392f is accepted input; never re-census. Wave-1 PRs are reused in place; never recreated."
-  - "Never re-spawn ORCH-DELIVERY/ORCH-FACTS (10-22, returns lost) or ORCH-1/ORCH-2 (10-31); never relaunch a used fabric run-id."
+  - "Never re-spawn ORCH-DELIVERY/ORCH-FACTS (10-22, returns lost) or ORCH-1/ORCH-2 (10-31, consumed then halted by Opus 429); never relaunch a used fabric run-id."
+  - "The quant claim matrix (lane/news-orch3-claim-r1 head 9f96188b) is accepted by artifact: DEFENSIBLE_NEGATIVE stands until a committed section-11 eval receipt exists; do not re-derive it."
 danger_areas:
   - "Sol CEO's #9612, #10136 and sol/* branches are read-only; Tiingo commercial permission is settled and never reopened."
   - "Strict case separation: 600 registration / v2 74 scorable / v3 135 drawn / 40 routing-pending / zero prospective; no redraw, no gold, no cluster-id independence, no sentiment or LLM confidence as trading authority."
@@ -72,4 +105,17 @@ The seat's durable state is this handoff plus the workstream and DEC:NEWS-ESTATE
 the scratchpad holds SEAT_CONTEXT.md and the two commissions. Seat acts this wave: records,
 adjudication of returns by artifact, ready/merge with --match-head-commit after an
 independent review verdict and the seat's own reviewDecision read. Delivery ladder reached
-at this record: ORCH-1 and ORCH-2 RUNNING; nothing in Wave 1 is merged yet.
+at this record (2026-10-31, third write, ~17:0xZ): MERGED on macro main — Wave 1 #10043
+e0566cb7, #10046 603d98a5, #10048 a8c4c78b, #10049 8ecd4701, #10056 6135e2c3; D2 producer
+#10280 5b3c2e05; records #10254 e4f28c44 and #10281 f8cb6f8a. Wave 1 #10044 A3 87d7158a (16:56Z).
+Not merged: Mastermind #1897 (BEHIND, shard pending). Nothing is PRODUCTION_PROOF or
+ACCEPTED yet. ORCH-1/ORCH-2 are consumed and halted (Opus 429); ORCH-3 QUANT is seat-direct
+on the fabric (claim-r1 RETURNED, prov-r2/samp-r2/route-r2 RUNNING on ubuntu3); ORCH-4
+PRODUCT has not started.
+
+ORCH-3 taxonomy deviation (recorded, not a redraw): the 40 NEW gated_v3 cases are routed
+with the existing v2 taxonomy MATCH / NO_EVENT / OTHER_EVENT / WRONG_ISSUER from
+results_w2/audit/v2_routing_verdicts.json, not the commission's MATCH/NO_MATCH/AMBIGUOUS/
+NEEDS_BODY, so that v2 and v3 verdicts share one vocabulary; verdicts stay
+`authority: context_only`, nothing is labeled or scored, and cases already in gated_v2
+keep their v2 verdict.

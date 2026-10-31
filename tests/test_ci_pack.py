@@ -4784,6 +4784,9 @@ CURATED_EXCLUSIVE = {
     # observation and IM15 dislocation chains; the exclusive scope pins the
     # measured suite closure (engine/test import chain plus configs and inits).
     "international-global-replay",
+    # IM15 dislocation explorer UI (W3U): pytest + Chromium suites over the
+    # merged engine and the W2 seam; exact measured closure, no inference widening.
+    "international-dislocation-explorer",
     # IM17 transmission-evidence contract: edges, qualified transmission
     # events and the US relevance ordering; the frozen contagion models are
     # read by the test alone, so its curated scope must pin their closure.
@@ -5080,6 +5083,10 @@ CURATED_EXCLUSIVE = {
     # Pure W3AR projection pins its complete import closure without selecting
     # unrelated render probes or acquiring scientific execution authority.
     "stock-identity-method-projection",
+    # AI Brief render-date countdown: an intentionally curated code-gated
+    # single-suite owner. Its explicit paths cover the static import closure
+    # and package ancestor init, without accepting unrelated render probes.
+    "aibrief-countdown-pr",
 }
 
 

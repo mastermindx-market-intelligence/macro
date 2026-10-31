@@ -1449,7 +1449,7 @@ html[data-theme="light"] {
     </div>
 
     <div style="font-size:12px;color:var(--muted);margin-top:8px">
-      {{ t('Contradictions are context only. They do not change scores or rankings. See Committee View for graded signals.', '矛盾仅作背景参考，不改变评分或排名。如需已评级信号，请查看委员会视图。') }}
+      {{ t('Contradictions are context only. They do not change scores or rankings.', '矛盾仅作背景参考，不改变评分或排名。') }}
     </div>
   </div>
 
@@ -1462,8 +1462,6 @@ html[data-theme="light"] {
       <b>{{ t('As of', '截至') }}:</b> {{ vm.asof }}
       &nbsp;·&nbsp;
       <b>{{ t('14-day transitions', '14天转换数') }}:</b> {{ vm.n_transitions_14d }}
-      &nbsp;·&nbsp;
-      <a href="committee.html">{{ t('Committee View', '委员会视图') }}</a>
       &nbsp;·&nbsp;
       <span style="font-style:italic">{{ t('Ledger starts 2026-07-05 (history dots reflect this window)', '账本自2026-07-05起（历史点反映此窗口）') }}</span>
     </div>

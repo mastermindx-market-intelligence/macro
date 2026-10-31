@@ -3292,6 +3292,151 @@ def test_pk09_mw_dated_remediation_before_period_end_is_absent() -> None:
     assert contract.validate_pack_result(on_date) == []
 
 
+# Review F5-3/F5-4/F6-1..F6-3 (follow-up bundle, 2026-10-31): mapping
+# parity and cap re-enforcement on the v7 finalize flips, plus the undated
+# reads the reviews asked to pin. The synthetic fixture's period of report
+# stays June 30, 2026.
+
+
+def test_pk09_flip_remediation_span_mapping_rule_id_matches_stock_resolver() -> None:
+    # F6-1: a false→true flip envelope's hand-minted remediation_span row
+    # carries the same mapping identity the stock text_span resolver
+    # stamps — compared against a non-flip envelope from the same input
+    # family whose row the stock resolver minted itself.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it has been remediated "
+        "as of September 30, 2026.</div>"
+    )
+    pack_input = _pk09_input(
+        packages=(_synthetic_package("10-K", body),), entity=SYNTHETIC_ENTITY
+    )
+    framework = pack_base.produce_pack_result(pk09_controls.PRODUCER, pack_input)
+    assert _row(framework, "material_weakness_present")["text_value"] == "false"
+    assert _row(framework, "remediation_span")["quality_state"] == "not_evaluable"
+    flip = produce_pack("PK09", pack_input)
+    assert _row(flip, "material_weakness_present")["text_value"] == "true"
+    flipped = _row(flip, "remediation_span")
+    assert flipped["quality_state"] == "valued"
+    # The stock comparison row: same input family, no flip (the weakness is
+    # present on both passes), so the conditional gate let the framework's
+    # own resolver mint the row.
+    stock_env = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>A material weakness has existed since fiscal 2024 and has "
+        "not been remediated.</div>",
+    )
+    stock = _row(stock_env, "remediation_span")
+    assert stock["quality_state"] == "valued"
+    assert flipped["mapping_rule_id"] == stock["mapping_rule_id"]
+    assert flipped["mapping_rule_digest"] == stock["mapping_rule_digest"]
+    assert flipped["mapping_rule_id"] == (
+        f"{pk09_controls.SPEC.pack_id}.remediation_span.text_span/v1"
+    )
+    assert contract.validate_pack_result(flip) == []
+    assert contract.validate_pack_result(stock_env) == []
+
+
+def test_pk09_deactivate_path_respects_limitation_cap() -> None:
+    # F6-3: the true→false flip appends its limitation line only below the
+    # framework's production cap — a 32-entry list does not grow to 33 and
+    # the finalized envelope still validates.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>A material weakness existed as of March 31, 2026 and it has "
+        "been remediated as of May 30, 2026.</div>"
+    )
+    pack_input = _pk09_input(
+        packages=(_synthetic_package("10-K", body),), entity=SYNTHETIC_ENTITY
+    )
+    fresh = produce_pack("PK09", pack_input)
+    assert _row(fresh, "material_weakness_present")["text_value"] == "false"
+    assert any(
+        line.startswith("pk09.remediation_span: non-valued")
+        for line in fresh["limitations"]
+    )
+    padded = pack_base.produce_pack_result(pk09_controls.PRODUCER, pack_input)
+    assert _row(padded, "material_weakness_present")["text_value"] == "true"
+    cap = pk09_controls._LIMITATION_CAP
+    padded["limitations"] = [
+        *padded["limitations"],
+        *(f"pk09.cap-probe.{index}" for index in range(cap - len(padded["limitations"]))),
+    ]
+    assert len(padded["limitations"]) == cap
+    finalized = pk09_controls.PRODUCER.finalize_result(padded, pack_input)
+    assert len(finalized["limitations"]) == cap
+    assert _row(finalized, "material_weakness_present")["text_value"] == "false"
+    assert not any(
+        line.startswith("pk09.remediation_span: non-valued")
+        for line in finalized["limitations"]
+    )
+    assert contract.validate_pack_result(finalized) == []
+
+
+def test_pk09_mw_anaphoric_undated_remediation_keeps_v7_value() -> None:
+    # F5-3: an anaphoric remediation clause carrying no date of its own
+    # keeps the v7 value — the v6 undated read treats a dateless,
+    # unmarked remediation as an absence. Value and reason code are
+    # pinned so a future change to this read is visible.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>A material weakness existed as of June 30, 2026 and it was "
+        "remediated.</div>"
+    )
+    pack_input = _pk09_input(
+        packages=(_synthetic_package("10-K", body),), entity=SYNTHETIC_ENTITY
+    )
+    result = produce_pack("PK09", pack_input)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert weakness["reason"] is None
+    # The gated row follows the boolean, as on every non-presence.
+    gated = _row(result, "remediation_span")
+    assert gated["quality_state"] == "not_evaluable"
+    assert gated["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+    # No date parsed: the v7 finalize pass is a no-op, so the shipped
+    # envelope equals the framework's own undated read.
+    assert result == pack_base.produce_pack_result(
+        pk09_controls.PRODUCER, pack_input
+    )
+
+
+def test_pk09_mw_fiscal_period_phrases_stay_undated() -> None:
+    # F5-4: fiscal-period remediation phrases match no remediation-date
+    # form, so no year is ever guessed and no date is parsed — each
+    # sentence keeps the v7 value (the undated absence) and the finalize
+    # pass leaves the framework envelope untouched.
+    for tail in (
+        "in the fourth quarter.",
+        "during fiscal 2026.",
+        "in the first quarter of fiscal 2027.",
+        "in July.",
+    ):
+        body = (
+            "<div>Item 9A. Controls and Procedures</div>"
+            "<div>A material weakness existed as of June 30, 2026 and it "
+            f"was remediated {tail}</div>"
+        )
+        pack_input = _pk09_input(
+            packages=(_synthetic_package("10-K", body),), entity=SYNTHETIC_ENTITY
+        )
+        result = produce_pack("PK09", pack_input)
+        weakness = _row(result, "material_weakness_present")
+        assert weakness["quality_state"] == "valued", tail
+        assert weakness["text_value"] == "false", tail
+        assert weakness["reason"] is None, tail
+        assert contract.validate_pack_result(result) == [], tail
+        # No parsed remediation date: the envelope is exactly the
+        # framework's undated read — never a guessed year, never today's
+        # date.
+        assert result == pack_base.produce_pack_result(
+            pk09_controls.PRODUCER, pack_input
+        ), tail
+
+
 # 32. PK09 invariance and CLI -------------------------------------------------
 
 
@@ -8348,12 +8493,15 @@ PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",
 }
 # This producer's own byte-determinism pin, captured at the lane's fork point;
-# re-pinned by the second repair (review F3 seat ruling) and by the third
-# repair (review F3-1): the range row's mapping_rule_digest pins the live
-# RANGE_DISCLOSED_PATTERN bytes, whose determine alternant is now object-
-# bound (masked-envelope diff vs the previous pin: empty).
+# re-pinned by the second repair (review F3 seat ruling), the third repair
+# (review F3-1: the determine alternant became object-bound), the fourth
+# repair (review F3-2/F4-2: the determine object now ends on a word boundary)
+# and the fifth repair (review F5-1/F5-2/F5-5; F5-3 ruled in: the determine
+# object alternation admits the plural forms) — the range row's
+# mapping_rule_digest pins the live RANGE_DISCLOSED_PATTERN bytes
+# (masked-envelope diff vs the previous pin: empty).
 PK08_AAPL_ENVELOPE_SHA256 = (
-    "b57a48def3723b47b7d47c2a59052fed0a4181e34e21d6867360f9568844bd2c"
+    "9c9f651ce1220c0701c97dc141e41acbfb6c584e34bbc10d3d5af84c781642ee"
 )
 # §TESTS 1: the fixture's two nil balance-sheet occurrences (ledger scan).
 PK08_AAPL_NIL_IDS = {
@@ -8479,6 +8627,37 @@ _PK08_CONTING_DETERMINE_AMOUNT_OR_RANGE = (
     "Contingencies The Company is a party to certain pending legal matters. "
     "For those matters, it is not possible to determine the amount or range "
     "of loss that may result."
+)
+# Fourth repair (review F3-2/F4-2): the determine object ends on a word
+# boundary — "the losses" no longer records a span cut mid-word at "loss".
+_PK08_CONTING_DETERMINE_LOSSES = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it was not possible to determine the losses that "
+    "may result."
+)
+# Fifth repair (review F5-1/F5-2/F5-5; F5-3 ruled in): the determine object
+# alternation admits the plural forms — each plural values not_estimable with
+# the span ending at the plural itself.
+_PK08_CONTING_DETERMINE_AMOUNTS = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to determine the amounts."
+)
+_PK08_CONTING_DETERMINE_EXPOSURES = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to determine its exposures."
+)
+_PK08_CONTING_DETERMINE_LIABILITIES = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to determine the liabilities."
+)
+_PK08_CONTING_DETERMINE_RANGES_OF_LOSS = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to determine the ranges of loss."
+)
+# F5-3 ruling: "lossess" is a misspelling, not a plural — out-of-vocabulary.
+_PK08_CONTING_DETERMINE_LOSSESS = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to determine the lossess."
 )
 _PK08_CONTING_NOT_ESTIMABLE_CANNOT_BE_MADE = (
     "Contingencies The Company is a party to certain pending legal matters. "
@@ -9177,6 +9356,107 @@ def test_pk08_not_possible_to_determine_amount_or_range_form() -> None:
     assert (
         _pk08_span_text(pack_input, span)
         == "is not possible to determine the amount"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_determine_losses_span_ends_on_word_boundary() -> None:
+    # F3-2 (review F4-2): the determine object alternation ends on a word
+    # boundary — "was not possible to determine the losses" values
+    # not_estimable with the span ending at "losses"; without the boundary
+    # the alternation's "loss" (listed before "losses") stopped the span
+    # mid-word.
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_DETERMINE_LOSSES
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["coverage_state"] == "source_trace_complete"
+    assert disclosed["reason"] is None
+    span = disclosed["source_span"]
+    assert span["document_id"] == PK08_TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    span_text = _pk08_span_text(pack_input, span)
+    assert span_text.endswith("losses")
+    assert span_text == "was not possible to determine the losses"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_determine_plural_objects_are_not_estimable() -> None:
+    # F5-1/F5-2/F5-5 (fifth review): the F3-2 word boundary rejected the
+    # plural objects — "the amounts" and "its exposures" had been
+    # not_estimable on F3-2's parent (the span cut mid-word at the singular)
+    # and became typed absent on F3-2, while "the liabilities" was absent
+    # even before F3-2. The alternation now admits the plural forms: each
+    # object values not_estimable with the span ending at the plural itself,
+    # and "the ranges of loss" stops at "ranges" rather than bridging the
+    # gap onward to "loss".
+    for prose, expected_span in (
+        (
+            _PK08_CONTING_DETERMINE_AMOUNTS,
+            "is not possible to determine the amounts",
+        ),
+        (
+            _PK08_CONTING_DETERMINE_EXPOSURES,
+            "is not possible to determine its exposures",
+        ),
+        (
+            _PK08_CONTING_DETERMINE_LIABILITIES,
+            "is not possible to determine the liabilities",
+        ),
+        (
+            _PK08_CONTING_DETERMINE_RANGES_OF_LOSS,
+            "is not possible to determine the ranges",
+        ),
+    ):
+        pack_input = _pk08_testco_input(contingencies_prose=prose)
+        result = produce_pack("PK08", pack_input)
+        disclosed = _row(result, "loss_contingency_range_disclosed")
+        assert disclosed["text_value"] == "not_estimable", prose
+        assert disclosed["quality_state"] == "valued", prose
+        assert disclosed["non_value_state"] is None, prose
+        assert disclosed["coverage_state"] == "source_trace_complete", prose
+        assert disclosed["reason"] is None, prose
+        span = disclosed["source_span"]
+        assert span["document_id"] == PK08_TESTCO_DOC, prose
+        assert span["end_offset"] > span["start_offset"], prose
+        assert _pk08_span_text(pack_input, span) == expected_span, prose
+        assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_determine_misspelled_object_stays_absent() -> None:
+    # F5-3 ruling (fifth review): plural objects are in-vocabulary, but a
+    # misspelling such as "lossess" is out-of-vocabulary and stays typed
+    # absent — the current code records that absence as reason
+    # missing_dependency with the pk08 limitation line
+    # narrative_span_not_located. The vocabulary control ("the amounts"
+    # values not_estimable) is what fails on 9d690e176a27, where the F3-2
+    # boundary typed the plural absent (F5-1).
+    control_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_DETERMINE_AMOUNTS
+    )
+    control_result = produce_pack("PK08", control_input)
+    control = _row(control_result, "loss_contingency_range_disclosed")
+    assert control["text_value"] == "not_estimable"
+    assert control["quality_state"] == "valued"
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_DETERMINE_LOSSESS
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["text_value"] is None
+    assert disclosed["value"] is None
+    assert disclosed["quality_state"] == "missing"
+    assert disclosed["non_value_state"] == "missing"
+    assert disclosed["coverage_state"] == "unmapped"
+    assert disclosed["reason"] == "missing_dependency"
+    assert disclosed["source_span"] is None
+    assert any(
+        "pk08.loss_contingency_range_disclosed: narrative_span_not_located"
+        in line
+        for line in result["limitations"]
     )
     assert contract.validate_pack_result(result) == []
 

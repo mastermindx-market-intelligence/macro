@@ -229,9 +229,9 @@ def _display(original: dict, corrected: dict) -> dict:
     clock = _clock_of(corrected, "source_publication")
     clock_at = clock.get("at") if clock is not None else None
     shown = None
-    if clock_at:
-        try:
-            shown = format_clock(clock_at)
+    if isinstance(clock_at, str) and clock_at.strip():
+        try:  # strip as the clocks themselves do, then show or withhold
+            shown = format_clock(clock_at.strip())
         except ValueError:  # never echo an unparseable clock into markup
             shown = None
     numeric = None
@@ -241,16 +241,18 @@ def _display(original: dict, corrected: dict) -> dict:
             numeric = (path, old, new)
             break
     if numeric is None:
-        if shown is None:  # unreachable through the abstain gate
-            return {"en": f"Corrected · {universe_id} {horizon}",
-                    "zh": f"已更正 · {universe_id} {horizon}"}
+        if shown is None:  # defensive: clockless stays inside the vocabulary
+            return {"en": f"Corrected {universe_id} {horizon}",
+                    "zh": f"已更正 {universe_id} {horizon}"}
         return {"en": f"Corrected {shown['en']} · {universe_id} {horizon}",
                 "zh": f"已更正 {shown['zh']} · {universe_id} {horizon}"}
     path, old, new = numeric
     label_en, label_zh = FIELD_LABELS[path]
     if shown is None:
-        return {"en": f"Corrected {label_en} {old:.2f}% → {new:.2f}%",
-                "zh": f"已更正 {label_zh} {old:.2f}% → {new:.2f}%"}
+        return {"en": f"Corrected {universe_id} {horizon} "
+                      f"{label_en} {old:.2f}% → {new:.2f}%",
+                "zh": f"已更正 {universe_id} {horizon} "
+                      f"{label_zh} {old:.2f}% → {new:.2f}%"}
     return {
         "en": (f"Corrected {shown['en']} · {universe_id} {horizon} "
                f"{label_en} {old:.2f}% → {new:.2f}%"),
