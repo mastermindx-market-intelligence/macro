@@ -1,0 +1,41 @@
+{
+  "run": 40081206102,
+  "attempt": 1,
+  "subject": "8d1c97a91579ecf0bbc0800f10dd23a13421503c",
+  "tested": "a69e97ea70a231c25ab9a3bc6ff356799bc8d060",
+  "base": "ebe0667595b749b4579439249da0cc3f258d8971",
+  "artifact": 12557250227,
+  "ZIPdigest": "sha256:cdd714deb43a109bc1da3ec640e239f0344226c6f0b580ca56e9b8330f633e5a",
+  "ZIPdigest_verified": true,
+  "canonical_final_validated": true,
+  "jobs": 135,
+  "semantic_step_outcomes": {
+    "passed": 391,
+    "failed": 1,
+    "not_run_prior_failure": 14
+  },
+  "verdict": {
+    "clear": false,
+    "blocking_units": 15,
+    "infrastructure_blocking": false
+  },
+  "failed_steps": [
+    {
+      "job": "ci-control-plane-contracts",
+      "classification": "unknown",
+      "detail": "exact-base runner budget expired; original timed_out outcome; descendant settlement unknown",
+      "failure_signature": {
+        "atoms": [
+          "pytest:failed:tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure:reason=b721e31013543e65deed1a18ead860f8639e87f919182d8ab6820d12818e115e"
+        ],
+        "sha256": "a101d24e8b85d70cc9f65eacaf93e36e625fd01483e07d01d4fc8d48ff778ef7"
+      },
+      "outcome": "failed",
+      "proof_id": "hosted-runner packing contract",
+      "step_spec_sha256": "dd8be65339e381c859528d15675eb202bd2a71bebdf7f406cee1cbba69067b62"
+    }
+  ],
+  "contract_delta": "Known two missing qledger identity declarations; locally repaired and exact hosted-source closure qualified, no waiver.",
+  "all_plan_job_execution_step_identities_verified": true,
+  "expected_units": 406
+}

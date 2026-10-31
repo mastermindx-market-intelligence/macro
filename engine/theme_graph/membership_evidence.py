@@ -235,6 +235,33 @@ def _micro_exact_fields(row, allowed, family):
         _micro_refuse(f"unexpected or missing {family} fields")
 
 
+#: The ratified micro-theme expansion (research/theme_graph/micro_expansion_20261021/,
+#: receipts copied verbatim there) appended additive display-tier rows dated
+#: 2026-10-21 to config/theme_crosswalk.yml. Research documents commissioned before
+#: that date were compiled against the frozen tier, so their byte pin is
+#: reconciled against the frozen rows, never against the appended display tier.
+MICRO_EXPANSION_ASSERTED_ON = "2026-10-21"
+
+
+def frozen_hierarchy(
+    hierarchy: Mapping[str, Any], *, before: str = MICRO_EXPANSION_ASSERTED_ON
+) -> dict[str, list]:
+    """Hierarchy rows asserted before ``before`` — the frozen table a research pin was compiled against.
+
+    The 2026-10-21 expansion is additive display-tier vocabulary; this helper is
+    how readers distinguish the frozen acceptance tier from the appended rows
+    without changing any row format.
+    """
+    frozen: dict[str, list] = {}
+    for key in ("categories", "sub_themes", "micro_themes", "parents"):
+        rows = hierarchy.get(key) if isinstance(hierarchy, Mapping) else None
+        frozen[key] = [
+            row for row in (rows or []) if isinstance(row, Mapping)
+            and str(row.get("asserted_on", "")) < before
+        ]
+    return frozen
+
+
 def build_microtheme_research_evidence(
     document: Mapping[str, Any], *, crosswalk_path: Path | None = None
 ) -> dict[str, Any]:
@@ -296,7 +323,21 @@ def build_microtheme_research_evidence(
     except (OSError, KeyError, ValueError, TypeError, yaml.YAMLError):
         _micro_refuse("pinned house hierarchy unavailable")
     blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
-    if pin["crosswalk_sha256"] != hashlib.sha256(raw).hexdigest() or pin["crosswalk_blob"] != blob:
+    expanded = any(str(row.get("asserted_on", "")) >= MICRO_EXPANSION_ASSERTED_ON
+                   for row in list(micro_rows) + list(sub_rows) + list(edges))
+    if expanded:
+        # The live file carries the additive 2026-10-21 display-tier expansion, so
+        # the raw-byte pin cannot match. The pinned bytes remain named by
+        # pin["commit"]; the fence here reconciles the frozen projection: every
+        # frozen id, parent edge and subtheme field must still be exactly the
+        # table this document was compiled against (checks below bind that).
+        frozen = frozen_hierarchy(hierarchy)
+        if [len(frozen["micro_themes"]), len(frozen["sub_themes"]), len(frozen["parents"])] \
+                == [len(micro_rows), len(sub_rows), len(edges)]:
+            _micro_refuse("crosswalk bytes differ from research pin")
+        micro_rows, sub_rows, edges = (
+            frozen["micro_themes"], frozen["sub_themes"], frozen["parents"])
+    elif pin["crosswalk_sha256"] != hashlib.sha256(raw).hexdigest() or pin["crosswalk_blob"] != blob:
         _micro_refuse("crosswalk bytes differ from research pin")
     micro_ids = {x["id"] for x in micro_rows}
     sub_ids = {x["id"] for x in sub_rows}

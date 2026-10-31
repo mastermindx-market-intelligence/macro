@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-10-14T10:35:22.993529+00:00",
+  "tool_sha256": "20a06cc441ba99aff8687537e92d044be185665c923c3729b8aa79d91dd3125a",
+  "positive_cases": [
+    {
+      "source": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+      "matches_recorded": "05a75a-expected-served-assets.json",
+      "all_four_assets_and_html_identical": true
+    },
+    {
+      "source": "f095dfe19364e8ba3f3d9251c9765a6491e996d4",
+      "matches_recorded": "faed-expected-served-assets.json",
+      "all_four_assets_and_html_identical": true
+    }
+  ],
+  "symbolic_revision_refused_before_write": true,
+  "existing_evidence_preserved": true,
+  "unreviewed_server_ast_refused_before_write": true,
+  "scope": "Offline source projection and refusal selfchecks; not production verification."
+}

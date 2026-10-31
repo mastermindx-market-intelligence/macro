@@ -1,0 +1,38 @@
+{
+  "recorded_at": "2026-10-14T15:48:05.359372+00:00",
+  "source_binding": {
+    "source_commit": "9b4bd85aa4f0a5c56bb0f025954aa743a2fe8c68",
+    "file": "scripts/merge_on_green.py",
+    "sha256": "9c10f82b6db23136e33d1bcfe774f2f9593c0fce404fdf65afaf4be1f922d032",
+    "packet_sha256": "b09c0db1df7079aec77f38d0c271000cfdbe1d0eea3cf343169ec69cfac16295"
+  },
+  "cases": [
+    {
+      "case": "semantic-blocked",
+      "verdict": "blocked",
+      "calls": [
+        "mark_blocked"
+      ],
+      "freshness_calls": 0
+    },
+    {
+      "case": "semantic-clear-contract-red",
+      "verdict": "blocked",
+      "calls": [
+        "mark_blocked"
+      ],
+      "freshness_calls": 0
+    },
+    {
+      "case": "clear-stale-control",
+      "verdict": "re-proving",
+      "calls": [
+        "reprove"
+      ],
+      "freshness_calls": 1
+    }
+  ],
+  "network_or_branch_effects": false,
+  "scope": "Synthetic control-flow proof only. Actual current CI state comes from separate GitHub observations. Capacity is not reached for blocked semantic proof; only clean-stale control reaches incumbent reprove.",
+  "all_passed": true
+}

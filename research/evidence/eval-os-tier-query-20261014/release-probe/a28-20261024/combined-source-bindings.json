@@ -1,0 +1,24 @@
+{
+  "parent": "82c1f751171f15d2efc76fba994bd7f5449e97e1",
+  "candidate_tree": "cf1a7329b40f59db1cfe51cecc52bc0064fe0325",
+  "changed_paths": [
+    "scripts/build_intelligence_registry.py",
+    "scripts/build_output_health.py",
+    "tests/test_check_intelligence_registry.py",
+    "tests/test_intelligence_registry.py",
+    "tests/test_output_health.py",
+    "tests/test_qledger_native_binding.py"
+  ],
+  "T4_and_T1_exact_reviewed_blobs": true,
+  "protected_unchanged_blobs": {
+    ".github/ci/legacy-jobs.yml": "85c5985ab6def5ed344a3536b6359a39cabf59ce",
+    ".github/workflows/ci.yml": "51ed931e7f5c576a1a51b3999733f3fbbe4c9386",
+    "engine/qledger_store.py": "19a685f1445756ffd4f41c139bee0c18d1dcb964",
+    "engine/qledger_store_protocol.py": "ad60f468fa406b5b5b6a1a3ff302a0ba6a25b5a5",
+    "engine/qledger_store_native.py": "389a82802059e776999b7e6dda9ec50d71291b46",
+    "admin/intelligence_os.py": "8b755a6cf87b8a765e558b126e31e6a3f21d4b9c",
+    "app/deploy/update.sh": "3b0c4c1f475cfdd34fbbdbe89cb0d4cfe01d349f"
+  },
+  "CI_semantics": "Manifest and workflow exact parent blobs: all355jobs, commands, dependencies, selectors, weights, limits unchanged. No packing rerun needed because no job/selector/manifest change.",
+  "test_counting": "Retained t1-final25 includes closure single test; closure rerun does not increase unique count. Native-empty adds one, giving26 unique. Combined178 is a new composed run; no claim its union with retained26 is204 because at least current-horizon case overlaps."
+}

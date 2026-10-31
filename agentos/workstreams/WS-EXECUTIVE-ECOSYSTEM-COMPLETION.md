@@ -30,11 +30,14 @@ waves:
     title: Continuity — this workstream, dated handoffs, seat memory, P4 frontier refresh
     status: in_progress
     next_action: >
-      Record the October21 directly assigned Astra integration and accepted Sol returns in
-      the existing Mastermind ledger/programme and this workstream. The October19 handoff is
-      retained history; #1637 already merged and installed80f, Gate B already passed. Preserve
-      original host-operation custody and explicit refusals. Next durable delta is qualified
-      original #1362 integration plus resolved host readiness/acceptance prerequisites.
+      CURRENT October 22 — preserve the directly resumed programme root 01a15741 and consume
+      the existing native-evidence run through the same-run Fabric status/result interfaces.
+      Controller 35577 is usable only while its original backend binding is recognized. The AgentOS
+      chronology request has an unresolved modifying effect and must not be replayed.
+      Record verified source returns, review and release results in the existing checkpoint;
+      records and controller delivery do not establish worker START or programme completion.
+      Gate B and installed 80f remain accepted; current Control/readiness, original reviews,
+      authenticated consumer composition and H1-H8 obligations remain open.
   - id: R1
     title: Resolve installed80f credential qualification and current Control-start custody, then the reserved readiness and sealed acceptance operation
     status: in_progress
@@ -246,21 +249,87 @@ do_not_redo:
   - The Control Room off-TCP fix commission (Opus sub-orchestrator ab51377778db486f1, 2026-10-19 04:3xZ) — continue by message only, never re-spawn or duplicate while it runs or awaits consumption.
   - Mastermind PR 1626 (comment/docs follow-up to PR 1623, head 00aad308, one read-only review 2026-10-19, verdict MERGE FINAL, 347 tests) — never re-review or add commits; merge it once.
 next_action: >
-  Current integrator Astra/root01a15741 consumes four verified Sol6.1/high slices under Chris's
-  direct October21 assignment. Complete original #1362 integration at dd9f1bbc through its
-  changed-risk review and exact-head CI; original local staged work remains preserved. Fabric
-  review returned rc78 canonical_source_unreadable before provider work, so no review verdict;
-  same-path admission diagnosis owns that dependency, without retry or provider failover.
-  Resolve R1 current Control-start requestID and lawful credential qualification before asking
-  the reserved new canary decision.80f installation and Gate B are accepted and must not repeat.
-  App signed-out browser behavior passes; sealed OS Executive/Studio transport composition and
-  authenticated Web/native result consumption remain. Preserve #1515 occupied/refused edits,
-  Macro9941/9340 updater custody, #633 unknown effect and original runtime roots. Then qualify
-  one normal and one interrupted Chairman journey across H1-H8, with original-parent result
-  consumption and durable Agent OS outcome. MISSION_COMPLETE remains false.
+  The currently assigned ChatGPT coordinator continues Chris's October 22 request under the
+  existing root 01a15741-5e68-7803-8eb4-ccac74a6c04b. Observe native-evidence run
+  mmos-native-evidence-20261022-impl-v1 through its same-run Fabric status/result interfaces;
+  use controller 35577 only while its original backend binding is recognized. Consume any actual
+  retained candidate, check its scope against current source, verify it in the acquired Mastermind
+  workspace, obtain independent review and complete normal source delivery. Preserve AgentOS run
+  mmos-handoff-chronology-impl-20261022 as EFFECT_UNKNOWN: the response was lost, no PID
+  returned, and same-carrier NOT_FOUND does not prove absence or permit another request.
+  Continue original #1362 only after its exact canonical-source refusal is reconciled;
+  preserve #1686's refused result custody and #1515's occupied/refused edits. Preserve
+  Macro #9941/#9340 updater custody, #633's Auth0 DCR EFFECT_UNKNOWN and the original runtime roots. Resolve
+  current Control-start attribution and lawful credential qualification before the reserved
+  new canary decision. The 80f installation and Gate B must not repeat. Qualify sealed app/Content
+  composition, actual original-parent result consumption and all H1-H8 journeys after their
+  own prerequisites. The current coordinator owns the next permitted action; no automatic
+  wake, source-record authority or MISSION_COMPLETE claim is created.
 ---
 
 ## Context
+
+**Attended recovery (October 22; observed through 09:30 UTC).** Chris asked the current
+ChatGPT session to resume the paused Astra programme and carry it to completion. The original
+root `01a15741-5e68-7803-8eb4-ccac74a6c04b`, accepted work and exact effect holds are preserved.
+The current source procedure is protected Mastermind
+`230e9a301ed774e79410829f1b5c049226fa59f1`; the acquired AgentOS implementation workspace
+uses Macro `8182ec04c37adb44a698f1c1296f45b4d9ae960a`. This is a continuation of the whole
+programme, not a replacement Executive Job. The latest durable evidence is the existing
+[October 22 continuation](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1621#issuecomment-6336817397)
+and `/Volumes/Mastermind/evidence/mmos-commission-01a15741/CURRENT.md`.
+
+The installed workspace owner returned two APPLIED receipts. Native source is at
+`/Volumes/Mastermind/agent-workspaces/web/mmos-native-evidence-20261022`, branch
+`sol/web-mmos-native-evidence-20261022`, at the Mastermind pin. AgentOS source is at
+`/Volumes/Mastermind/agent-workspaces/macro/web/mmos-handoff-chronology-20261022`, branch
+`sol/web-mmos-handoff-chronology-20261022`, at the Macro pin. Both had clean status and
+verified common Git owners/merge bases in terminal verification process 38667. The Macro
+acquisition's first timeout was terminal NOT_APPLIED with rollback; one bounded same-owner
+recovery succeeded. Do not replace these workspaces or repeat that settled diagnosis.
+
+Native coordinator `/root/recovery_reasoning` froze the evidence-only candidate contract.
+The parent proxied one paid Fabric request, `mmos-native-evidence-20261022-impl-v1`, with
+facade parent `mmos-native-evidence-20261022` and the original root. Its controller 35577
+shows one ubuntu3/MiniMax launch attempt; status at 09:30 UTC was ACTIVE_OR_WAITING with
+no available result and no verified worker START/root lineage. Controller delivery is not
+provider execution or acceptance. The four permitted paths are the existing macOS workflow,
+its contract test, `app/mastermind_os/scripts/native_candidate_evidence.py` and
+`tests/test_native_candidate_evidence.py`. The intended archive/receipt is unsigned evidence;
+it must keep live acceptance, release authorization and installed-journey qualification false.
+A candidate is conditional on an actual retained return and current integration-scope check;
+the acquired heads are starting points, not proof of current-main compatibility. A copied PID
+is not a portable recovery capability. If its original backend binding is unavailable, retain
+the same run and use permitted status/result reconciliation. Record the actual receiver's
+consumption and acceptance; do not attribute either to an archived historical parent.
+
+Native coordinator `/root/continuity_supervision` issued AgentOS request
+`mmos-handoff-chronology-impl-20261022` once, with facade parent
+`mmos-handoff-chronology-coordinator-20261022` and the original root. Its connector response
+was lost after 838.9 seconds and no PID/receipt returned. Parent status returned NOT_FOUND with
+`execution_absence_proven:false` and `retry_allowed:false`. Preserve EFFECT_UNKNOWN on
+this carrier and the assigned `scripts/agentos.py` / `tests/test_agentos_compile.py`
+surfaces. No replacement worker, direct competing patch or anti-replay probe is permitted.
+The current facade exposes no lookup for the missing attempted-request/PID binding.
+The next useful evidence is an attributable original-operation completion or independently
+retained disposition from the same facade generation/process owner; no reachable resolver
+identity or automatic wake is asserted. This hold does not freeze independent source work.
+The accepted chronology contract retains all newest-known-day peers plus records with
+unknown chronology; lexical order is presentation only. Existing source already has the
+correctly escaped regex, so the audit's earlier regex diagnosis must not be reapplied.
+
+Bridge adjudication consumed the original 111-byte rc78 result, SHA256
+`971eb7390dfc2e761cff7a49518de344335a26f014291097e5218e3fca592a58`:
+`canonical_source_unreadable` before provider review. This is no review verdict for
+#1362's unchanged `dd9f1bbc61a5413b09d98edea7ff81f0f72427b1` candidate.
+Merged #1682 diagnostics cannot backfill that original host predicate or authorize a retry.
+PR #1686 and `qwen-diag-review-01a15e40-v1` retain the explicit
+`original_remote_read / directory_owner_or_mode` refusal; no alternative reader or
+directory repair is authorized. Macro #9941/#9340 updater custody, #633's Auth0 DCR EFFECT_UNKNOWN and
+original runtime-root dispositions also remain held. Current Control attribution, readiness identity mismatch,
+the reserved new-canary decision, sealed app/Content composition and H1-H8 remain open.
+The native-child connector stalls do not establish a parent-connector or fabric-wide outage.
+`MISSION_COMPLETE=false`; historical release instructions below remain dated evidence.
 
 **Current commission (October21).** Chris directly assigned Astra root
 `01a15741-5e68-7803-8eb4-ccac74a6c04b` the complete masterplan at Mastermind

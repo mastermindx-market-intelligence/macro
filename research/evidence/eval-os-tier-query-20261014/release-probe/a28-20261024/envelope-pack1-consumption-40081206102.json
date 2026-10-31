@@ -1,0 +1,296 @@
+{
+  "run": 40081206102,
+  "attempt": 1,
+  "artifact": 12556058771,
+  "ZIPdigest_verified": true,
+  "canonical_reconciliation_consumed": true,
+  "jobs": [
+    {
+      "logical_job_id": "ci-control-plane-contracts",
+      "pack_index": 1,
+      "job_exec_sha256": "e0f4ff62b4b06c89a449561d0a967c09fba6798285bc91492b97fed0cf3e64a9",
+      "infrastructure": {
+        "outcome": "passed"
+      },
+      "steps": [
+        {
+          "proof_id": "ci-plan/ci-pack/ci-gate workflow structure contract",
+          "step_spec_sha256": "c17723c286976891af354f41aff41f12543a1b15ad1c2058b7bf4c846067ff0a",
+          "outcome": "passed",
+          "failure_signature": null,
+          "classification": "passed"
+        },
+        {
+          "proof_id": "hosted-runner packing contract",
+          "step_spec_sha256": "dd8be65339e381c859528d15675eb202bd2a71bebdf7f406cee1cbba69067b62",
+          "outcome": "failed",
+          "failure_signature": {
+            "atoms": [
+              "pytest:failed:tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure:reason=b721e31013543e65deed1a18ead860f8639e87f919182d8ab6820d12818e115e"
+            ],
+            "sha256": "a101d24e8b85d70cc9f65eacaf93e36e625fd01483e07d01d4fc8d48ff778ef7"
+          },
+          "detail": "exact-base runner budget expired; original timed_out outcome; descendant settlement unknown",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "merge-gate reliability report contract",
+          "step_spec_sha256": "59ac9544621bca999e205b5bd692c1dcb5a8f520f637424cfb59155cfab74745",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "transitional self-hosted runner policy and canary contracts",
+          "step_spec_sha256": "741b9801ba1c65f945d16bd4811112f9f133e8bb4c6c9a0ff9a730fd3666f2f6",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "nightly backstop selftest (scripts/nightly_backstop.py)",
+          "step_spec_sha256": "3ba4beac591884db8169ac0c931a134ff922620c09be1b41e56f42c2f114ddd3",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "nightly backstop dispatch rule (must never fire over a live run)",
+          "step_spec_sha256": "eb953de03e2819aac95a3859ea2aa6c03da33dd07d3e9cc087aeb2f2cf02b0e7",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "audit_unrun_tests selftest",
+          "step_spec_sha256": "024b9029b284d3135f1f5896de4008f5781f21c7c3ae20195d1ea4d7b9d3d11a",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "no suite may be named by zero run: steps (baseline-gated)",
+          "step_spec_sha256": "2eb60823af6d79cb634254809e5f7704855833c5a18a0f8b131242eedeec15f3",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "unrun-census discovery unit tests",
+          "step_spec_sha256": "9f02fe3a0412cf3984a092cbb802c6697f753f39051474fd6ae44b272920eb97",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "differential contract-delta gate contract",
+          "step_spec_sha256": "85d2f026c0d2e9d39cb55ab936786f29db4b3f4ceba8aeaa50ab784993d74d2a",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "check_skip_only_suites selftest",
+          "step_spec_sha256": "664594606e39caf31e0fd3c621cf585acc993d8a28cefedcfd367e2d42cde31a",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "no suite may skip in every job that names it",
+          "step_spec_sha256": "b4710756665aa58aa70713bc0e97fa69d066705a8866886d262461351aeda57f",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "skip-only detector unit tests",
+          "step_spec_sha256": "af0feb1970d67d1c8740b82270e04d617286ba685f5cbfa061e14e5fbd7d5891",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "check_ci_trigger_closure selftest",
+          "step_spec_sha256": "c564111b0ffcee745aa17afa35d5105ed6fa0825e24c3eca411b0d4b27f314ab",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "every guarded suite's subjects must reach its own trigger paths",
+          "step_spec_sha256": "d0290a52ad7ad0e2ffd89002c1cd3d2922219ecbaf9318c055d9434c57fa9a14",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        },
+        {
+          "proof_id": "trigger-closure guard unit tests",
+          "step_spec_sha256": "241ebaf82a64cf8d1ecf5a682615d7063ac436ddfe1636ff2344d0d537f2ee01",
+          "outcome": "not_run_prior_failure",
+          "failure_signature": null,
+          "detail": "an earlier semantic step did not pass",
+          "classification": "unknown"
+        }
+      ]
+    }
+  ],
+  "raw_fragment": {
+    "base_sha": "ebe0667595b749b4579439249da0cc3f258d8971",
+    "event": "pull_request",
+    "infrastructure": [],
+    "jobs": [
+      {
+        "infrastructure": {
+          "outcome": "passed"
+        },
+        "job_exec_sha256": "e0f4ff62b4b06c89a449561d0a967c09fba6798285bc91492b97fed0cf3e64a9",
+        "logical_job_id": "ci-control-plane-contracts",
+        "steps": [
+          {
+            "failure_signature": null,
+            "outcome": "passed",
+            "proof_id": "ci-plan/ci-pack/ci-gate workflow structure contract",
+            "step_spec_sha256": "c17723c286976891af354f41aff41f12543a1b15ad1c2058b7bf4c846067ff0a"
+          },
+          {
+            "base_replay": {
+              "detail": "exact-base runner budget expired; original timed_out outcome; descendant settlement unknown",
+              "outcome": "timed_out",
+              "tested_tree_sha": "ebe0667595b749b4579439249da0cc3f258d8971"
+            },
+            "detail": "exited 1",
+            "failure_signature": {
+              "atoms": [
+                "pytest:failed:tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure:reason=b721e31013543e65deed1a18ead860f8639e87f919182d8ab6820d12818e115e"
+              ],
+              "sha256": "a101d24e8b85d70cc9f65eacaf93e36e625fd01483e07d01d4fc8d48ff778ef7"
+            },
+            "outcome": "failed",
+            "proof_id": "hosted-runner packing contract",
+            "step_spec_sha256": "dd8be65339e381c859528d15675eb202bd2a71bebdf7f406cee1cbba69067b62"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "merge-gate reliability report contract",
+            "step_spec_sha256": "59ac9544621bca999e205b5bd692c1dcb5a8f520f637424cfb59155cfab74745"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "transitional self-hosted runner policy and canary contracts",
+            "step_spec_sha256": "741b9801ba1c65f945d16bd4811112f9f133e8bb4c6c9a0ff9a730fd3666f2f6"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "nightly backstop selftest (scripts/nightly_backstop.py)",
+            "step_spec_sha256": "3ba4beac591884db8169ac0c931a134ff922620c09be1b41e56f42c2f114ddd3"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "nightly backstop dispatch rule (must never fire over a live run)",
+            "step_spec_sha256": "eb953de03e2819aac95a3859ea2aa6c03da33dd07d3e9cc087aeb2f2cf02b0e7"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "audit_unrun_tests selftest",
+            "step_spec_sha256": "024b9029b284d3135f1f5896de4008f5781f21c7c3ae20195d1ea4d7b9d3d11a"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "no suite may be named by zero run: steps (baseline-gated)",
+            "step_spec_sha256": "2eb60823af6d79cb634254809e5f7704855833c5a18a0f8b131242eedeec15f3"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "unrun-census discovery unit tests",
+            "step_spec_sha256": "9f02fe3a0412cf3984a092cbb802c6697f753f39051474fd6ae44b272920eb97"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "differential contract-delta gate contract",
+            "step_spec_sha256": "85d2f026c0d2e9d39cb55ab936786f29db4b3f4ceba8aeaa50ab784993d74d2a"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "check_skip_only_suites selftest",
+            "step_spec_sha256": "664594606e39caf31e0fd3c621cf585acc993d8a28cefedcfd367e2d42cde31a"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "no suite may skip in every job that names it",
+            "step_spec_sha256": "b4710756665aa58aa70713bc0e97fa69d066705a8866886d262461351aeda57f"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "skip-only detector unit tests",
+            "step_spec_sha256": "af0feb1970d67d1c8740b82270e04d617286ba685f5cbfa061e14e5fbd7d5891"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "check_ci_trigger_closure selftest",
+            "step_spec_sha256": "c564111b0ffcee745aa17afa35d5105ed6fa0825e24c3eca411b0d4b27f314ab"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "every guarded suite's subjects must reach its own trigger paths",
+            "step_spec_sha256": "d0290a52ad7ad0e2ffd89002c1cd3d2922219ecbaf9318c055d9434c57fa9a14"
+          },
+          {
+            "detail": "an earlier semantic step did not pass",
+            "failure_signature": null,
+            "outcome": "not_run_prior_failure",
+            "proof_id": "trigger-closure guard unit tests",
+            "step_spec_sha256": "241ebaf82a64cf8d1ecf5a682615d7063ac436ddfe1636ff2344d0d537f2ee01"
+          }
+        ]
+      }
+    ],
+    "pack_index": 1,
+    "plan_sha256": "a93e7d394d6ccce84d08654218b664724d65c8c48a5ce3d74cf74f954d11cadc",
+    "role": "pr_head",
+    "schema": "ci.semantic_fragment.v1",
+    "subject_head_sha": "8d1c97a91579ecf0bbc0800f10dd23a13421503c",
+    "tested_tree_sha": "a69e97ea70a231c25ab9a3bc6ff356799bc8d060",
+    "workflow": "ci",
+    "workflow_run_id": "40081206102"
+  }
+}

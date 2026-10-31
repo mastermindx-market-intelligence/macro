@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import textwrap
@@ -2958,3 +2959,77 @@ def test_gh001_new_explicit_retry_operation_clears_terminal_receipt(tmp_path):
     )
     assert r.returncode == 0, r.stderr
     assert r.stdout.split("\0") == ["0", "", "", "0", "1", ""]
+
+
+def _ohlc_delivery_step():
+    document = yaml.safe_load(
+        (REPO_ROOT / ".github" / "workflows" / "daily.yml").read_text()
+    )
+    return next(
+        step for step in document["jobs"]["engine"]["steps"]
+        if "python -m scripts.publish_ohlc publish" in step.get("run", "")
+    )
+
+
+@pytest.mark.parametrize("publisher_status", [0, 31])
+def test_ohlc_delivery_workflow_cleans_key_and_preserves_publisher_status(
+    tmp_path, publisher_status
+):
+    """Execute the actual step with a local publisher stub; never contact a host."""
+    import json
+    import sys
+
+    step = _ohlc_delivery_step()
+    assert step["if"] == "always()"
+    assert step["timeout-minutes"] == 20
+    assert step["env"] == {"OHLC_DEPLOY_KEY": "${{ secrets.VPS_DEPLOY_KEY }}"}
+    package = tmp_path / "scripts"
+    package.mkdir()
+    (package / "__init__.py").write_text("")
+    (package / "publish_ohlc.py").write_text(
+        "import json, os, pathlib, stat, sys\n"
+        "args = sys.argv[1:]\n"
+        "assert args[0] == 'publish'\n"
+        "key = pathlib.Path(args[args.index('--ssh-key') + 1])\n"
+        "assert stat.S_IMODE(key.stat().st_mode) == 0o600\n"
+        "assert key.read_text() == 'synthetic-key-canary\\n'\n"
+        "assert 'OHLC_DEPLOY_KEY' not in os.environ\n"
+        "pathlib.Path('publisher-call.json').write_text(json.dumps(args))\n"
+        f"sys.exit({publisher_status})\n"
+    )
+    runner_temp = tmp_path / "runner-temp"
+    runner_temp.mkdir()
+    # Use this test's interpreter; the remainder is the unmodified workflow shell.
+    body = step["run"].replace(
+        "python -m scripts.publish_ohlc", f"{shlex.quote(sys.executable)} -m scripts.publish_ohlc"
+    )
+    result = subprocess.run(
+        ["bash", "-c", body], cwd=tmp_path, capture_output=True, text=True,
+        env={
+            **os.environ,
+            "OHLC_DEPLOY_KEY": "synthetic-key-canary",
+            "RUNNER_TEMP": str(runner_temp),
+            "GITHUB_RUN_ID": "123",
+            "GITHUB_RUN_ATTEMPT": "2",
+        },
+        check=False,
+    )
+    assert result.returncode == publisher_status, result.stderr
+    args = json.loads((tmp_path / "publisher-call.json").read_text())
+    assert args[args.index("--manifest") + 1] == "site/_tmp/ohlc-complete.json"
+    assert args[args.index("--payload-dir") + 1] == "site/ohlc"
+    assert args[args.index("--evidence-dir") + 1].endswith("/macro-ohlc-delivery/123-2")
+    assert not list(runner_temp.iterdir())
+    assert "synthetic-key-canary" not in result.stdout + result.stderr
+
+
+def test_ohlc_delivery_workflow_missing_key_is_visible_before_publish(tmp_path):
+    step = _ohlc_delivery_step()
+    result = subprocess.run(
+        ["bash", "-c", step["run"]], cwd=tmp_path,
+        env={**os.environ, "OHLC_DEPLOY_KEY": "", "RUNNER_TEMP": str(tmp_path)},
+        capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == 1
+    assert "::error::OHLC origin delivery" in result.stdout
+    assert not list(tmp_path.iterdir())

@@ -1,9 +1,9 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-10-21T13:18:49.921354+00:00",
+  "generated_at": "2026-10-30T14:58:34.656801+00:00",
   "n_ledgers": 35,
-  "n_closed": 26,
-  "n_grader_starved": 9,
+  "n_closed": 27,
+  "n_grader_starved": 8,
   "n_log_only": 0,
   "ledgers": [
     {
@@ -14,9 +14,9 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 118457,
-      "n_graded": 212549,
-      "last_graded_at": "2026-10-21T13:13:21.731612+00:00",
+      "n_logged": 118455,
+      "n_graded": 217778,
+      "last_graded_at": "2026-10-30T14:54:04.611468+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -28,9 +28,9 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 212549,
-      "n_graded": 212549,
-      "last_graded_at": "2026-10-21T13:13:21.731612+00:00",
+      "n_logged": 217778,
+      "n_graded": 217778,
+      "last_graded_at": "2026-10-30T14:54:04.611468+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -42,8 +42,8 @@
       "graders": [
         "engine/board_ledger.py"
       ],
-      "n_logged": 1237,
-      "n_graded": 780,
+      "n_logged": 1302,
+      "n_graded": 864,
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -98,8 +98,8 @@
       "graders": [
         "engine/china_standout_track.py"
       ],
-      "n_logged": 5642,
-      "n_graded": 3301,
+      "n_logged": 6178,
+      "n_graded": 4154,
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -127,7 +127,7 @@
         "engine/china_sector_cycles_grader.py",
         "scripts/grade_promises.py"
       ],
-      "n_logged": 3445,
+      "n_logged": 3710,
       "n_graded": 5081,
       "last_graded_at": "2026-07-02T18:59:33.219372+00:00",
       "tune_step": "N",
@@ -155,11 +155,11 @@
       "graders": [
         "scripts/grade_breadth_divergence.py"
       ],
-      "n_logged": 665,
-      "n_graded": 320,
+      "n_logged": 671,
+      "n_graded": 354,
       "last_graded_at": null,
       "tune_step": "N",
-      "verdict": "GRADER-STARVED"
+      "verdict": "CLOSED"
     },
     {
       "key": "risk_radar_forward_log",
@@ -183,8 +183,8 @@
       "graders": [
         "engine/risk_radar_intl_audit.py"
       ],
-      "n_logged": 43,
-      "n_graded": 25,
+      "n_logged": 48,
+      "n_graded": 32,
       "last_graded_at": null,
       "tune_step": "Y",
       "verdict": "CLOSED"
@@ -197,8 +197,8 @@
       "graders": [
         "engine/risk_radar_intl_audit.py"
       ],
-      "n_logged": 48,
-      "n_graded": 30,
+      "n_logged": 53,
+      "n_graded": 36,
       "last_graded_at": null,
       "tune_step": "Y",
       "verdict": "CLOSED"
@@ -329,7 +329,7 @@
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "GRADER-STARVED",
-      "n_owed_ungraded": 0
+      "n_owed_ungraded": 10
     },
     {
       "key": "market_state_forward_log",
@@ -424,8 +424,8 @@
         "scripts/grade_policy_calendar.py"
       ],
       "n_logged": 1286,
-      "n_graded": 1109,
-      "last_graded_at": "2026-10-20",
+      "n_graded": 1171,
+      "last_graded_at": "2026-10-30",
       "tune_step": "N",
       "verdict": "CLOSED"
     },

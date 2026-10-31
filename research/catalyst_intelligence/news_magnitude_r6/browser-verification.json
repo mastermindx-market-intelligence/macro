@@ -1,0 +1,216 @@
+{
+  "generated_at": "2026-10-20T00:24:45.894Z",
+  "browser": "155.0.8059.80",
+  "reduced_motion": "reduce",
+  "scope": "Synthetic captured-engine replay; no native runtime or source-admission proof",
+  "checks": [
+    "Synthetic designation is persistent; advanced records are initially collapsed.",
+    "Primary action opens actual earlier/current owner records with repaired neutral copy.",
+    "Missing peers remove all return arithmetic while current news and inherited entry remain visible.",
+    "Missing history preserves the current case without displaying comparison flags.",
+    "Missing current news is explicit; available peer/entry context is retained.",
+    "Separate owner status and peer strength do not override entry availability or imply an undocumented chronology.",
+    "A missing current snapshot labels its time as the requested assessment cut.",
+    "Evidence navigation preserves each selected condition, URL, expanded records, availability and downloaded JSON.",
+    "All four conditions fit at 320, 390, 768 and 1440 pixels in both themes.",
+    "Mobile native selection and theme switching work.",
+    "A direct scenario URL renders the matching actual capture.",
+    "Selected JSON download matches the current scenario.",
+    "No browser runtime or console errors."
+  ],
+  "layouts": [
+    {
+      "name": "source_revision",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "name": "peers_missing",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "name": "history_missing",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "name": "current_unavailable",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "name": "source_revision",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "name": "peers_missing",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "name": "history_missing",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "name": "current_unavailable",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "name": "source_revision",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "name": "peers_missing",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "name": "history_missing",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "name": "current_unavailable",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "name": "source_revision",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "name": "peers_missing",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "name": "history_missing",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "name": "current_unavailable",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "name": "source_revision",
+      "theme": "light",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "name": "peers_missing",
+      "theme": "light",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "name": "history_missing",
+      "theme": "light",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "name": "current_unavailable",
+      "theme": "light",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "name": "source_revision",
+      "theme": "light",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "name": "peers_missing",
+      "theme": "light",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "name": "history_missing",
+      "theme": "light",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "name": "current_unavailable",
+      "theme": "light",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "name": "source_revision",
+      "theme": "light",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "name": "peers_missing",
+      "theme": "light",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "name": "history_missing",
+      "theme": "light",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "name": "current_unavailable",
+      "theme": "light",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "name": "source_revision",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "name": "peers_missing",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "name": "history_missing",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "name": "current_unavailable",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false
+    }
+  ],
+  "errors": []
+}

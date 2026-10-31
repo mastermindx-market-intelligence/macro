@@ -168,6 +168,7 @@ jobs:
     timeout-minutes: 300
     outputs:
       government_revenue_projection_needed: ${{ steps.pushdata.outputs.published }}
+      government_revenue_source_sha: ${{ steps.pushdata.outputs.source_sha }}
       # ── CAPITAL-STRUCTURE HANDOFF CONTRACT (2026-08-06 job split) ──────────
       # The capital-structure chain moved to its own `capital_structure` job. Its
       # INPUT — the source ledger `run collectors` (sec_capital_structure) just
@@ -961,8 +962,12 @@ jobs:
             # attempt rather than fail open. Every other fence outcome returns 0.
             if ! push_append_only_fence origin/main; then push_backoff; continue; fi
             if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
+              GOVREV_PUSH_SOURCE_SHA=$(git rev-parse HEAD)
               if push_do; then
                 echo "pushed market data on attempt $PUSH_ATTEMPT"
+                # No caller binding is emitted if the checkout drifted across push.
+                [ "$(git rev-parse HEAD)" = "$GOVREV_PUSH_SOURCE_SHA" ] || exit 75
+                printf 'source_sha=%s\n' "$GOVREV_PUSH_SOURCE_SHA" >> "$GITHUB_OUTPUT"
                 echo "published=true" >> "$GITHUB_OUTPUT"
                 push_won
                 exit 0
@@ -1691,6 +1696,7 @@ jobs:
       actions: read
     uses: ./.github/workflows/government-revenue-live.yml
     with:
+      source_sha: ${{ needs.collect.outputs.government_revenue_source_sha }}
       projection_only: true
 
   # collect_tail: the slow post-adapter accrual band, split out of `collect`
@@ -2461,6 +2467,8 @@ jobs:
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
         run: |
           python -m scripts.build_sp500_heatmap --refresh-caps-only || echo "::warning title=sp500 heatmap cap refresh::rc!=0 (non-fatal — previous cache/fallbacks remain)"
+          # Reuse this existing stocks-reference credential binding before stock-library build.
+          python -m scripts.capture_stock_liquidity_currency || echo "::warning::F08 dated currency remains unqualified; prior retained receipt preserved"
       - name: Leader-pullback coverage (§6.9 R4 publisher — MUST precede build_prophet)
         # Publishes site/anticipationdata/us_leader_pullback.json: the engine.us_leader_pullback
         # organ's per-name state over the graded universe, evaluated on a run-wide PIT
@@ -2543,6 +2551,7 @@ jobs:
       - name: timings band — engine-core (W2)
         run: python3 scripts/nightly_timings.py mark --band engine-core || echo "::warning::timings band mark failed (non-fatal)"
       - name: run regime engine + build dashboard + daily brief (resilient)
+        id: regime_dashboard
         if: steps.leader_accepted_source.outputs.ready == 'true'
         # Self-diagnosing + deploy-resilient: each builder runs isolated; a failure
         # is surfaced as a ::error:: annotation (readable on the run page + via the
@@ -2596,12 +2605,16 @@ jobs:
         run: python -m scripts.close_pass_reconcile
 
       - name: publish Filing Forensics private state
+        id: native_private_publish
         # Publish only after the full workbench build returned. The publisher validates
         # gzip/schema, writes the existing PRIVATE Research Vault bucket, reads it back,
         # and byte-verifies it. Failure is loud but retains the last-good private object;
         # no premium state is ever staged by the broad site/data commit below.
         continue-on-error: true
         env:
+          NATIVE_DIVERGENCE_PAYLOAD_SHA256: ${{ steps.regime_dashboard.outputs.native_divergence_payload_sha256 }}
+          NATIVE_DIVERGENCE_SOURCE_SHA256: ${{ steps.regime_dashboard.outputs.native_divergence_source_sha256 }}
+          NATIVE_DIVERGENCE_PRODUCER_COMMIT: ${{ steps.regime_dashboard.outputs.native_divergence_producer_commit }}
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
@@ -2609,7 +2622,23 @@ jobs:
           R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
           R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
           R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
-        run: python -m scripts.build_fundamental_forensics --publish-only
+        run: |
+          set +e
+          python -m scripts.build_fundamental_forensics --publish-only
+          forensics_rc=$?
+          python -m scripts.publish_native_divergence_capture
+          capture_rc=$?
+          if [ "$capture_rc" -ne 0 ]; then echo "::warning title=native divergence::private capture unresolved; retain original journal"; fi
+          exit "$forensics_rc"
+      - name: retain this run's native divergence journal (metadata only)
+        if: ${{ always() && steps.native_private_publish.outputs.native_divergence_journal != '' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-divergence-journal-${{ github.run_id }}-${{ github.run_attempt }}-engine
+          path: ${{ steps.native_private_publish.outputs.native_divergence_journal }}
+          if-no-files-found: warn
+          retention-days: 14
       - name: backfill regime stamps (nw-macro-rail R5)
         # Calls engine.qledger.backfill_regime_stamps() — stamps regime columns onto qledger
         # rows that have as_of within regime_vector.parquet coverage.  Near-term yield ≈ 2 rows
@@ -5182,6 +5211,30 @@ jobs:
         # published there. An engine checkout never holds that store, so listing it here only ever
         # produced a nightly publish_r2 refusal warning (under the _DATA_DIR_MIN_FILES floor).
         run: python -m scripts.publish_r2 --dirs ohlc,intlohlc,canadaohlc,subsectorohlc,subsectorohlc_russell,subsectorohlc_nasdaq,stockdata,intlstockdata,canadastockdata,intraday,feeds,stock_personality,oddsmatrix,odds_ohlcv,seasonalitydata/entities || echo "::warning::R2 publish failed (non-fatal)"
+      - name: publish complete US OHLC generation to the existing site origin
+        if: always()
+        timeout-minutes: 20
+        env:
+          OHLC_DEPLOY_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        # The producer receipt binds this main-branch run before output-commit
+        # rebasing. The publisher verifies it, the pinned SSH host and the
+        # receiver's predecessor fence; missing/partial output is a visible failure.
+        run: |
+          set -euo pipefail
+          umask 077
+          if [ -z "${OHLC_DEPLOY_KEY:-}" ]; then
+            echo "::error::OHLC origin delivery requires the existing VPS deploy key"
+            exit 1
+          fi
+          key_file=$(mktemp "${RUNNER_TEMP}/ohlc-deploy-key.XXXXXX")
+          trap 'rm -f -- "$key_file"' EXIT
+          printf '%s\n' "$OHLC_DEPLOY_KEY" > "$key_file"
+          unset OHLC_DEPLOY_KEY
+          python -m scripts.publish_ohlc publish \
+            --manifest site/_tmp/ohlc-complete.json \
+            --payload-dir site/ohlc \
+            --evidence-dir "${HOME}/.local/state/macro-ohlc-delivery/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --ssh-key "$key_file"
       - name: verify R2 data plane freshness (loud tripwire — the publish above is non-fatal)
         # The publish step swallows every failure (incl. the exit-0 no-op when the R2_*
         # secrets are absent/expired), so the live site would serve stale per-ticker data
@@ -5538,6 +5591,13 @@ jobs:
         env:
           COLLECT_LANE: nightly
         run: python -m scripts.build_thematic_state --mode GRAPH_SHADOW_STATE
+      - name: GMI activity membership state (M2 fold — off-render, non-fatal)
+        # GMI M2: activity-history fold in the sole producer; writes data/theme_graph/activity_membership_state.v1.json only.
+        timeout-minutes: 5
+        continue-on-error: true
+        env:
+          COLLECT_LANE: nightly
+        run: python -m scripts.build_thematic_state --mode ACTIVITY_MEMBERSHIP_STATE
       - name: commit oracle Time Machine feed + ratio lens
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
@@ -5551,6 +5611,7 @@ jobs:
           # --quiet`, so tolerating the file's absence is safe.
           git add data/oracle/washout_counterread_ledger.jsonl 2>/dev/null || true
           git add data/theme_graph/shadow_theme_state.v1.json 2>/dev/null || true
+          git add data/theme_graph/activity_membership_state.v1.json 2>/dev/null || true
           if git diff --cached --quiet; then echo "no oracle Time Machine or ratio lens changes"; exit 0; fi
           git commit -m "oracle-tm: nightly Time Machine feed + ratio lens refresh $(date -u +%F)"
           # best-effort push (own files -> rebases clean; no other job writes site/oracledata/)

@@ -277,15 +277,15 @@ def test_emitter_is_additive_and_never_fatal(tmp_path):
     assert callable(shc.emit_holdings_coverage_additive)
 
 
-def test_ci_manifest_declares_the_job_first():
+def test_ci_manifest_declares_the_job():
     import yaml
 
     doc = yaml.safe_load(
         (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8"))
     jobs = doc["jobs"]
-    first = list(jobs)[0]
-    assert first == "options-r1-sector-holdings-coverage"
-    job = jobs[first]
+    # This job requires its stable identity and declared gate/path/step,
+    # not the first registry position.
+    job = jobs["options-r1-sector-holdings-coverage"]
     assert job["gate"] == "code"
     paths = job["paths"]
     assert "scripts/build_sector_holdings_coverage.py" in paths

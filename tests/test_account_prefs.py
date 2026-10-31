@@ -32,6 +32,15 @@ USER = {"id": "9c1f-user", "email": "reader@example.com",
         "user_metadata": {"display_name": "Ada", "lang": "en"}}
 
 
+def test_browser_pending_preferences_account_and_snapshot_fences():
+    """Actual controller/consumer code, with storage and provider I/O mocked."""
+    import subprocess
+
+    subprocess.run(["node", "--test", str(Path(__file__).resolve().parent / "js" /
+                                       "onboarding_pending_prefs.test.cjs")], check=True,
+                   capture_output=True, text=True)
+
+
 class _Resp:
     def __init__(self, body=b"{}"):
         self._body = body
@@ -298,7 +307,7 @@ def test_get_prefs_readback(auth, store):
     assert out["ok"] is True
     assert out["prefs"]["tz"] == "Asia/Hong_Kong"
     assert "alert_email_optin" in out["unset"]
-    assert out["categories_available"] == ["holdings_material_change", "thesis_window", "fif_saved_issuer"]
+    assert out["categories_available"] == ["holdings_material_change", "thesis_window", "fif_saved_issuer", "options_exposure_node"]
 
 
 def test_get_prefs_route_is_registered():

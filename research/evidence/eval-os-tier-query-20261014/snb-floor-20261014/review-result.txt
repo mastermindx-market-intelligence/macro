@@ -1,0 +1,43 @@
+# C1 Review Verdict: SNB Floor/Rate Case (eval-snb-source-review-01a1333d-c1)
+
+**Verdict: ACCEPT — no material defects found.** Case meets all five acceptance criteria; admission additions are pure appends and do not modify other case/runtime logic.
+
+---
+
+## Acceptance checks
+
+| # | Criterion | Evidence | Status |
+|---|---|---|---|
+| 1 | CHF per EUR convention | MD L7 `ending its minimum of CHF 1.20 per euro`; adjudication L13 `The quotation is CHF per euro`; `expected_properties[quotation]` aligned; `gold_standard_sentence` opens `The CHF-per-euro floor is withdrawn`. The 1.20 floor is correctly interpreted as ≥1.20 CHF per 1 EUR (not inverted). | ✓ |
+| 2 | −50 bp deposit cut + threshold qualifier | MD L8 `by 0.5 percentage points to -0.75%` (0.5 pp ≡ 50 bp; new = −0.75%, so prior = −0.25%, derivable in-supplied); MD L8 explicit `above the exemption threshold`; adjudication L13 echoes both; `expected_properties[rate_units]` covers unit conversion and scope; `gold_standard_sentence` carries `falls 50bp from -0.25% to -0.75% … on balances above the exemption`. | ✓ |
+| 3 | Old/new Libor intervals + width | MD L9 `was [-0.75%, +0.25%] and became [-1.25%, -0.25%]`. Old width = +0.25 − (−0.75) = 1.00 pp; new width = −0.25 − (−1.25) = 1.00 pp. Both endpoints fall 50 bp. Adjudication L13, `expected_properties[band_width]`, `gold_standard_sentence`, and `known_failure_modes[3]` (narrower-interval trap) all align. | ✓ |
+| 4 | Answer packet excludes adjudication | `packet_digest_fixture` matches `historical_text_digest(meta)` byte-for-byte; that helper only emits the `[event_date] fact text` block, never `adjudication_excerpt.text`. The supplied adjudication, expected_properties, known_failure_modes, gold_standard_sentence, hashes, PDF URL, and dossier metadata are **not** in the packet — only the three input-fact lines (MD L7–9) appear under the FROZEN header. | ✓ |
+| 5 | Admission additions do not modify other case/runtime logic | All four diff hunks are append-only: (a) `.github/ci/legacy-jobs.yml` adds the new MD/JSON file paths to pre-existing lists in nine places; (b) `engine/neuralweb/response_eval.py` adds `"snb_floor_rate_2015-01-15"` to `_HISTORICAL_TEXT_CASE_IDS` and `"research/SNB_FLOOR_RATE_CASE_2015_01_15.md"` to `_HISTORICAL_TEXT_SOURCES` (both are `frozenset` literals, additive only); (c) `research/INTELLIGENCE_OS_T6_TEXT_REPLAY.md` appends a documentation section; (e) `tests/test_response_eval.py` appends one string to `HISTORICAL_TEXT_CASES`. No existing line, branch, predicate, or set membership is altered. | ✓ |
+
+---
+
+## Structural integrity of the benchmark JSON
+
+- `schema == "response_eval.historical_text_case.v1"`, `replay_scope == "supplied_adjudication_text"`, `doctrine_scope == "current_doctrine_replay"`, `historical_source_availability == "unverified"`, `session_label == "date only"` — all match the validator's allowed set.
+- `cutoff_date 2015-01-15 ≤ adjudication_date 2026-10-14`; sole `input_facts[0].event_date 2015-01-15 ≤ cutoff_date`.
+- `input_facts` length = 1 (within 1–32). `source.path` is a member of the updated `_HISTORICAL_TEXT_SOURCES`. Source size appears well under 65536 bytes; no symlink risk assumed.
+- `source_lines [7, 9]` and `[13, 13]` are consistent with the MD line numbering implied by section headers and blank lines; expected excerpts and SHA-256 fields are present and shaped correctly (cannot recompute without the on-disk bytes, but no anomaly visible).
+- Em-dash character (U+2014) is consistent between `historical_text_digest` source, MD prose, and `packet_digest_fixture`.
+
+---
+
+## Failure-mode / property coverage check
+
+`known_failure_modes` maps 1:1 onto `expected_properties` (quotation ⇄ reciprocal inversion; rate_units ⇄ 0.5 pp / unit / scope confusion; band_width ⇄ narrower-interval trap; commitment_limits ⇄ imported market reaction or total-intervention-cease). No leak path: none of these arrays/strings enter `historical_text_digest`, so they reach only the judge.
+
+---
+
+## Minor notes (no severity)
+
+- The supplied text states the *new* deposit rate and the cut size, not the prior rate. The `−0.25%` prior is derivable (new − cut = prior) and is required by `expected_properties[rate_units]` and `gold_standard_sentence`. The supplied packet contains enough information for the answerer to compute it; this is not an admission defect.
+- `replay_scope == "supplied_adjudication_text"` reads as a misnomer (the answerer only receives input_facts), but matches the validator and the literal `replay_scope` semantics used elsewhere; no defect, just naming.
+- No PIT custody, live-model, returns, or trading-authority claims are introduced; the MD's "No realized market outcome is supplied" and the `commitment_limits` property keep the scope bounded.
+
+---
+
+**Compact conclusion:** The case is factually correct (CHF/EUR, -0.25%→-0.75% on balances above exemption, 100 bp-wide Libor interval shifted −50 bp at both ends), the answer packet is leak-free of adjudication/scoring metadata, and admission is purely additive across all four files. No correction required.

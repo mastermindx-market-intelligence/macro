@@ -1,0 +1,66 @@
+{
+  "candidate_boundary_utc": "2026-10-22T04:00:00+00:00",
+  "existing_matching_receipts": [
+    {
+      "frequency": "4hour",
+      "observed_at_utc": "2026-10-22T02:49:05.200350+00:00",
+      "path": "receipts/forex-bars/2026-10-22/93e3ef8404b94227-559d5bab079dfe3717badcc2.json",
+      "post_boundary": false,
+      "raw_sha256": "559d5bab079dfe3717badcc237bfe7c978ecfa6cdb02114796b4f03aeb07d6bc",
+      "receipt_id": "b9a473cc9cf008e915a8eeabf6bb538a5e12873b2e780101b04a9f7a4d75e283"
+    },
+    {
+      "frequency": "1min",
+      "observed_at_utc": "2026-10-22T02:49:03.661042+00:00",
+      "path": "receipts/forex-bars/2026-10-22/48782d45acfd24d6-5307dc5ac46fcee569b0b892.json",
+      "post_boundary": false,
+      "raw_sha256": "5307dc5ac46fcee569b0b892a09f211a991722e7acbc890682605effc1c9b1de",
+      "receipt_id": "3d3d7256f357a60a1764be794ee31f562b0a88c9d83dd920df65915608d05afa"
+    }
+  ],
+  "existing_owner": "scripts.tiingo_ingest.collect",
+  "frequencies_to_capture": [
+    "1min",
+    "4hour"
+  ],
+  "new_api_requests": 0,
+  "observed_at_utc": "2026-10-22T04:41:06.309009+00:00",
+  "original_open_capture_receipts": [
+    "3d3d7256f357a60a1764be794ee31f562b0a88c9d83dd920df65915608d05afa",
+    "b9a473cc9cf008e915a8eeabf6bb538a5e12873b2e780101b04a9f7a4d75e283"
+  ],
+  "plan": {
+    "complete_history_proven": false,
+    "execution_authorized": false,
+    "execution_progress": "NOT_OBSERVED",
+    "items": [
+      {
+        "ordinal": 0,
+        "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-22&resampleFreq=1min&startDate=2026-10-22",
+        "source": "forex-bars",
+        "symbol": "eurusd"
+      },
+      {
+        "ordinal": 1,
+        "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-22&resampleFreq=4hour&startDate=2026-10-22",
+        "source": "forex-bars",
+        "symbol": "eurusd"
+      }
+    ],
+    "network": false,
+    "next_offset": null,
+    "offset": 0,
+    "plan_sha256": "96353712a898d1a4e3b7846763e00794cb558c70ed62471a509e1f9debf2a1bc",
+    "schema": "mastermind.tiingo.offline_plan.v1",
+    "source_counts": {
+      "forex-bars": 2
+    },
+    "tasks": 2,
+    "total_tasks": 2
+  },
+  "post_boundary_frequencies_covered": [],
+  "purpose": "One prospective observation after previously successful open-interval capture; preserve both vintages; not a failure retry or schedule",
+  "request_budget": 2,
+  "retry_authorized": false,
+  "schema": "forex_r26.post_boundary_capture_preflight.v1"
+}

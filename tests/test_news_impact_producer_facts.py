@@ -633,3 +633,246 @@ def test_two_runs_write_byte_identical_outputs(tmp_path):
     run_rows(tmp_path, list(reversed(rows)), name="two")
     for name in pf.OUTPUT_NAMES:
         assert (tmp_path / "one" / name).read_bytes() == (tmp_path / "two" / name).read_bytes(), name
+
+
+# --------------------------------------------------------------------------- R6 canonical amount terms / directional evidence
+# Explicit correction records below use the existing fact-log owner; stage-two
+# novelty assignment is not being claimed as a native correction acquisition path.
+
+
+def _r6_correction_projection(tmp_path, events, *, mutate_leaf=None, links=None):
+    import copy
+
+    for event in events:
+        assert_valid(event)
+    _, produced, _, _ = run_rows(tmp_path, [row(e, f"r6_{i}") for i, e in enumerate(events)])
+    records = by_fact(produced)
+    log = thesis.FactLog(records=()).to_dict()
+    leaves = {}
+    latest = {}
+    for event in events:
+        rec = copy.deepcopy(records[event["fact_id"]])
+        rec.pop("log_seq", None)
+        key = thesis.canonical_json(rec["fact_key"])
+        if key in latest:
+            rec.update(record_kind="fact_revision", cluster_grain="fact_revision",
+                       novelty="corrected_fact", supersedes_fact_id=latest[key],
+                       reports_fact_id=None)
+        if links and event["fact_id"] in links:
+            rec["linked_fact_ids"] = links[event["fact_id"]]
+        latest[key] = event["fact_id"]
+        log = thesis.append_records(log, [rec])
+        leaves[event["fact_id"]] = pf.leaf_payload(event, pf.fact_slot(event), Counter())
+    if mutate_leaf:
+        mutate_leaf(leaves)
+    owners = thesis.OwnerSnapshot(leaf_payloads=leaves)
+    views = thesis.project(log, owners, events[-1]["observed_at"],
+                           prior_as_of_utc=events[0]["observed_at"],
+                           prior_owners=thesis.OwnerSnapshot(leaf_payloads={
+                               events[0]["fact_id"]: leaves[events[0]["fact_id"]]
+                           }))
+    return views, log, leaves
+
+
+def _r6_condition(view):
+    return next(w for w in view["weakening_conditions"]
+                if w["code"] == "source_correction_reduces_magnitude")
+
+
+def test_r6_preserves_each_canonical_quantity_and_its_evidence_without_aliasing():
+    import copy
+
+    event = t1(remaining_authorization=qpoint(80_000_000, "total"))
+    event["remaining_authorization"]["unit"] = "EUR"
+    event["remaining_authorization"]["currency"] = "EUR"
+    assert_valid(event)
+    before = copy.deepcopy(event)
+    leaf = pf.leaf_payload(event, pf.fact_slot(event), Counter())
+    assert leaf["currency"] == "USD"  # legacy display field, not comparison authority
+    assert leaf["quantity_terms"] == {
+        "incremental": event["incremental_amount"],
+        "remaining": event["remaining_authorization"],
+    }
+    leaf["quantity_terms"]["remaining"]["evidence"]["claimed_quote"] = "changed locally"
+    assert event == before
+    assert thesis.quantity_fingerprint(leaf, pf.T1) == thesis.quantity_fingerprint(
+        {"incremental": 50_000_000, "remaining": 80_000_000}, pf.T1)
+
+
+@pytest.mark.parametrize("builder,field,basis", [
+    (t1, "incremental_amount", "incremental"),
+    (t1, "remaining_authorization", "total"),
+    (t1, "executed_amount", "total"),
+    (t2, "stated_amount", "total"),
+])
+def test_r6_exact_lower_amount_qualifies_through_real_leaf_adapter(tmp_path, builder, field, basis):
+    first = builder("r6_old", 1, **{field: qpoint(80_000_000, basis)})
+    later = builder("r6_new", 2, doc=DOC_B, **{field: qpoint(70_000_000, basis, doc=DOC_B)})
+    views, log, leaves = _r6_correction_projection(tmp_path, [first, later])
+    view = next(v for v in views if v["original_proposition_fact_id"] == first["fact_id"])
+    assert _r6_condition(view) == {
+        "code": "source_correction_reduces_magnitude", "armed": True,
+        "evidence_fact_ids": [later["fact_id"]],
+    }
+    assert {"source_correction", "changed_numeric_terms"} <= set(view["material_delta_triggers"])
+    assert view["prophet_flags"] == FLAGS and view["authority"] == "context_only"
+    assert "28 September" not in json.dumps(view["display"])
+    assert "remaining authorization" not in view["display"]["plain_status"]
+    assert "source correction" in view["display"]["plain_status"].lower()
+
+
+@pytest.mark.parametrize("value", [80_000_000, 90_000_000])
+def test_r6_equal_or_increased_amount_does_not_qualify(tmp_path, value):
+    first = t1("r6_old", 1, incremental_amount=qpoint(80_000_000, "incremental"))
+    later = t1("r6_new", 2, incremental_amount=qpoint(value, "incremental"))
+    views, _, _ = _r6_correction_projection(tmp_path, [first, later])
+    assert _r6_condition(views[0])["armed"] is False
+    assert _r6_condition(views[0])["evidence_fact_ids"] == []
+    assert "source_correction" in views[0]["material_delta_triggers"]
+
+
+@pytest.mark.parametrize("change", [
+    "legacy_only", "missing_current", "missing_prior", "wrong_predecessor",
+    "bool", "nan", "infinite", "negative", "string", "over_limit",
+    "leaf_conflict", "leaf_bool", "currency", "unit", "scaled_unit",
+    "basis", "period", "period_absent", "invalid_calendar", "reversed_period",
+    "bound", "negated", "leaf_negated", "range", "missing_evidence",
+    "missing_currency", "horizon", "basis_run_rate", "basis_per_share",
+    "basis_percent", "period_multi_year", "period_half_year",
+    "period_nine_months", "extra_period_end", "template_old",
+    "template_new", "template_absent",
+])
+def test_r6_unqualified_pairs_preserve_correction_without_direction(tmp_path, change):
+    import copy
+
+    first = t1("r6_old", 1, incremental_amount=qpoint(80_000_000, "incremental"))
+    later = t1("r6_new", 2, incremental_amount=qpoint(70_000_000, "incremental"))
+
+    def mutate(leaves):
+        old = leaves[first["fact_id"]]
+        current = leaves[later["fact_id"]]
+        quantity = current["quantity_terms"]["incremental"]
+        old_quantity = old["quantity_terms"]["incremental"]
+        if change == "legacy_only":
+            old.pop("quantity_terms"); current.pop("quantity_terms")
+        elif change == "missing_current":
+            leaves.pop(later["fact_id"])
+        elif change == "missing_prior":
+            # Preserve the first leaf for the comparison snapshot, but no terms.
+            old.clear()
+        elif change == "wrong_predecessor":
+            unrelated = copy.deepcopy(old)
+            leaves[fid("unrelated")] = unrelated
+            old.clear()
+        elif change in {"bool", "nan", "infinite", "negative", "string", "over_limit"}:
+            value = {"bool": True, "nan": float("nan"), "infinite": float("inf"),
+                     "negative": -1, "string": "70000000", "over_limit": 10**16}[change]
+            quantity["value"] = value
+            if change not in {"nan", "infinite"}:
+                current["incremental"] = value
+        elif change == "leaf_conflict":
+            current["incremental"] = 90_000_000
+        elif change == "leaf_bool":
+            current["incremental"] = True
+        elif change == "currency":
+            quantity["currency"] = "EUR"; quantity["unit"] = "EUR"
+        elif change == "unit":
+            quantity["unit"] = "USD millions"
+        elif change == "scaled_unit":
+            quantity["unit"] = old_quantity["unit"] = "USD millions"
+        elif change == "basis":
+            quantity["basis"] = "total"
+        elif change == "period":
+            quantity["period"]["year"] = 2028
+        elif change == "period_absent":
+            quantity["period"] = old_quantity["period"] = absence("period")
+        elif change == "invalid_calendar":
+            quantity["period"]["calendar_end"] = old_quantity["period"]["calendar_end"] = "2027-02-30"
+        elif change == "reversed_period":
+            quantity["period"]["end_year"] = old_quantity["period"]["end_year"] = 2026
+        elif change == "bound":
+            quantity["bound"] = old_quantity["bound"] = "up_to"
+        elif change == "negated":
+            quantity["negated"] = True
+        elif change == "leaf_negated":
+            current["negated"] = True
+        elif change == "range":
+            quantity.pop("value"); quantity.pop("bound")
+            quantity.update(form="range", low=60_000_000, high=70_000_000)
+            current["incremental"] = {"low": 60_000_000, "high": 70_000_000}
+        elif change == "missing_evidence":
+            quantity.pop("evidence")
+        elif change == "missing_currency":
+            quantity.pop("currency")
+        elif change == "horizon":
+            current["horizon_token"] = "FY2028"
+        elif change.startswith("basis_"):
+            quantity["basis"] = old_quantity["basis"] = change.removeprefix("basis_")
+        elif change.startswith("period_"):
+            quantity["period"]["period_kind"] = old_quantity["period"]["period_kind"] = change.removeprefix("period_")
+        elif change == "extra_period_end":
+            quantity["period"]["end_year"] = old_quantity["period"]["end_year"] = 2027
+        elif change == "template_old":
+            old["template"] = pf.T2
+        elif change == "template_new":
+            current["template"] = pf.T2
+        elif change == "template_absent":
+            current.pop("template")
+
+    if change in {"nan", "infinite"}:
+        with pytest.raises(ValueError, match="Out of range float values"):
+            _r6_correction_projection(tmp_path, [first, later], mutate_leaf=mutate)
+        return
+    views, _, _ = _r6_correction_projection(tmp_path, [first, later], mutate_leaf=mutate)
+    condition = _r6_condition(views[0])
+    assert condition["armed"] is False and condition["evidence_fact_ids"] == []
+    assert {"source_correction", "changed_numeric_terms"} <= set(views[0]["material_delta_triggers"])
+
+
+def test_r6_superseded_reduction_does_not_support_current_condition(tmp_path):
+    events = [
+        t1("r6_initial", 1, incremental_amount=qpoint(80_000_000, "incremental")),
+        t1("r6_lower", 2, incremental_amount=qpoint(60_000_000, "incremental")),
+        t1("r6_recovery", 3, incremental_amount=qpoint(70_000_000, "incremental")),
+    ]
+    views, _, _ = _r6_correction_projection(tmp_path, events)
+    assert _r6_condition(views[0]) == {
+        "code": "source_correction_reduces_magnitude", "armed": False, "evidence_fact_ids": [],
+    }
+    assert views[0]["live_fact_ids"] == [events[-1]["fact_id"]]
+    assert "source_correction" in views[0]["material_delta_triggers"]
+
+
+def test_r6_only_live_reducing_corrections_are_attributed(tmp_path):
+    first = t1("r6_auth", 1, incremental_amount=qpoint(80_000_000, "incremental"))
+    execution = t1("r6_exec", 2, primary_amount_role="executed",
+                   incremental_amount=qabsent("incremental_amount"),
+                   executed_amount=qpoint(20_000_000, "total"))
+    reduction = t1("r6_auth_lower", 3, incremental_amount=qpoint(70_000_000, "incremental"))
+    increase = t1("r6_exec_higher", 4, primary_amount_role="executed",
+                  incremental_amount=qabsent("incremental_amount"),
+                  executed_amount=qpoint(30_000_000, "total"))
+    links = {event["fact_id"]: [first["fact_id"]] for event in (execution, increase)}
+    views, _, _ = _r6_correction_projection(tmp_path, [first, execution, reduction, increase], links=links)
+    view = next(v for v in views if v["original_proposition_fact_id"] == first["fact_id"])
+    assert _r6_condition(view)["evidence_fact_ids"] == [reduction["fact_id"]]
+    assert _r6_condition(view)["armed"] is True
+
+
+def test_r6_nonmonetary_quantity_remains_direction_unqualified(tmp_path):
+    first = t3("r6_qold", 1, stated_quantity=qpoint(80, "total"))
+    later = t3("r6_qnew", 2, stated_quantity=qpoint(70, "total"))
+    views, _, _ = _r6_correction_projection(tmp_path, [first, later])
+    assert _r6_condition(views[0])["armed"] is False
+
+
+def test_r6_matching_concrete_quarter_can_qualify(tmp_path):
+    first = t2("r6_qtr_old", 1, stated_amount=qpoint(80_000_000, "total"))
+    later = t2("r6_qtr_new", 2, stated_amount=qpoint(70_000_000, "total"))
+    for event in (first, later):
+        period = {"year": 2027, "quarter": 1, "calendar_end": "2027-03-31", "period_kind": "quarter"}
+        event["fiscal_period"] = dict(period)
+        event["stated_amount"]["period"] = dict(period)
+    views, _, _ = _r6_correction_projection(tmp_path, [first, later])
+    assert _r6_condition(views[0])["armed"] is True
+    assert _r6_condition(views[0])["evidence_fact_ids"] == [later["fact_id"]]

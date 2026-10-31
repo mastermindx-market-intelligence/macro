@@ -164,3 +164,53 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - Seat branch rotated to `claude/ssd-intl-gs-seat-r5-8e4e57e69f466313` from main 1c99ae69 (same SSD tree).
 - Proven rungs: #9920 PRODUCTION_PROOF · #9923/#9924/#9937/#9939/#9943/#9944/#9952 MERGED · **#9960 MERGED (5c6fdb2e)** ·
   ORCH-2 RUNNING · ORCH-4 holding W4B · ORCH-1/ORCH-D/ORCH-3 COMPLETED.
+
+## Checkpoint 2026-10-22 14:3xZ — W2 foundation LANDED (#9949 → e6debbb0); R14 amended A1/A1.1/A1.2; four-lane burst launched
+
+- **#9949 Wave 2 foundation MERGED** by the seat at exact head b54f351806383325c54316805ce836dd1a96f918 → main
+  e6debbb05b47b518f0a39f4dbf9d26f95f9c7fa7 (2026-10-22T14:29:15Z). Repair chain after review r6 PASS at dcbcf989
+  went CI red: FX5 6d6accad + 0f7d22b1 (A1 derived tokens, ratchet 80 → 0 blocking; pack-5 fix = fetch-depth 0 +
+  fail-closed `git fetch origin <base>` step + merge-base comparison in test_frozen_files_unchanged_vs_origin_main)
+  → FX6 0dafc6cd (A1.1 radius fallbacks) → F1 b5968661 (spec §15 contrast numbers measured 7.12 / 7.20 / 5.61) →
+  FX7 b54f3518 (pack-1: added international-workspace-browser to EXPECTED_FETCH_DEPTH_ZERO_CONSUMERS in
+  tests/test_run_ci_pack_fetch_fallback.py). Reviews: r7 FIX_REQUIRED at 0f7d22b1 (F1 spec text, F2 light series),
+  r8 PASS at b5968661 (whole chain), r9 PASS at b54f3518 (delta). pack-2 red at b54f3518 was an environmental
+  apt-mirror timeout in ontology-explorer (main green on the same job); failed jobs re-run → green; final rollup
+  27 checks, only the standing non-gating ci-authority/codex/merge-queue-pilot X. Landing: scoped `.intl-gs` token
+  block + shared macros `templates/intl_workspace/_gs_macros.html.j2` + `tests/test_intl_gs_foundation.py` + NEW
+  CI job international-workspace-browser + 48 evidence crops.
+- Accepted visual deltas: panel radius 14→12, button 10→8, series-3 sky→`--ok`, tier ink violet→link ink, heat =
+  fill-opacity steps .14/.26/.42 of `--up/--down` (ZH red-up by construction via theme.css L277); light series-1/2/4
+  = theme light `--info/--q2/--orange`.
+- Open gaps carried to later lanes: ZH font inside `.intl-gs` falls back to the UI stack (W2A/W3 to decide via the
+  theme stack, never a scoped `--font-zh`); specimen horizon control shows raw `6m 12m ytd` → W2A VD5 fix
+  (`1Y/1年`, `6M/6个月`, `YTD/年初至今`); page-level `h2::before` rail in templates/intl.html.j2 sits outside
+  `.intl-gs` → W2A under the no-accent-stripe rule; `test_ancestor_init_census_does_not_grow` census is exactly
+  344/344 (no headroom); `--r-card/--r-ctl` pending DS-PR-0.
+
+### Seat rulings 2026-10-22 (verbatim text in DEC:INTL-GS-R14-DESIGN-FREEZE amendments)
+- A1 — the `.intl-gs` §5.3 token block is now pure theme derivations; `--sp-*`, `--returns-*`, `--font-zh`, the
+  light override and the four ZH blocks were deleted (design-governance ratchet 80 → 0 blocking).
+- A1.1 — every radius declaration carries the estate fallback pair `var(--r-panel,12px)` / `var(--r-btn,8px)` /
+  `var(--r-pill,999px)` until DS-PR-0 lands `--r-card/--r-ctl` at :root.
+- A1.2 — light series-1/2/4 inks are the theme's light `--info/--q2/--orange` (chart strokes/fills, not text; §15
+  contrast applies to legend text).
+- Grant law — all four burst operator lanes delegate C0/C1 leaves to fabric WORKERS under ONE shared root child
+  grant (child-limit 16, ttl 7200 s), issuable once per root d7c4f490 for the programme's life.
+- Hierarchy directive (Chairman 2026-10-22) — Fable Meta-CEO → Opus suborchestrator → fabric operator → fabric
+  worker; Fable/Opus native tokens are scarce; the seat sets the standard through orchestration only.
+
+- **Burst launched 14:3xZ** on the signal "W2 ON MAIN e6debbb0… + ISSUE GRANT": ORCH-4 (Opus suborchestrator
+  a93f43c8031ad627a) fires W4B (templates/intl_workspace/transmission.html.j2, IM17 UI) then W3U
+  (templates/intl_workspace/dislocations.html.j2, R14 board 9); ORCH-2 (a700b1ec0d7c6f480) fires W2A
+  (intl-gs-w2a-r1) and W2B (intl-gs-w2b-r1). All four are fabric OPERATOR lanes (glm-5.3 domain_orchestration).
+  Each lane returns one draft PR; the seat reviews verdict files, arms one watcher per PR and merges pinned to the
+  full sha.
+- Next seat acts: consume W4B/W3U/W2A/W2B returns → verdict files → watcher → ready → merge full-sha each; then the
+  §14 acceptance matrix (21 tests) and the served-journey proof on mastermind-x.com/intl.html; Wave 5 after Wave 4
+  merges (Opus cap 2: ORCH-2, ORCH-4; Wave 5 orchestrator only after one completes). Standing: never re-spawn an
+  orchestrator; never relaunch a used lane run id; DEC:INTL-GS-FRED-GOVERNMENT-SERIES-RIGHTS stays PROPOSED (asked
+  once, never re-ask); #8754 never touch; #9596 never push.
+- Proven rungs: #9920 PRODUCTION_PROOF · #9923/#9924/#9937/#9939/#9943/#9944/#9952/#9960/#9973 MERGED ·
+  **#9949 W2 foundation MERGED (e6debbb0)** · DEC:INTL-GS-R14-DESIGN-FREEZE amended A1/A1.1/A1.2 · ORCH-2/ORCH-4
+  RUNNING the burst (W4B/W3U/W2A/W2B) · ORCH-1/ORCH-D/ORCH-3 COMPLETED.
