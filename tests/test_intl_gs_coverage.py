@@ -149,7 +149,8 @@ def test_a8b_builder_asserts_legend_sum(tmp_path):
     original = view._legend_lines
     def broken(by_state_total, cell_total):
         lines = original(by_state_total, cell_total)
-        return lines[1:]  # drop the first state line
+        # drop the first line that carries a count (a count-0 line is a no-op)
+        return [line for line in lines if line["display_state"] != "qualified"]
     view._legend_lines = broken
     try:
         import pytest as _pytest
