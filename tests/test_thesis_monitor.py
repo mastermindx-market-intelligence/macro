@@ -19,6 +19,46 @@ import pytest
 from engine import thesis_monitor as tm
 
 
+@pytest.mark.parametrize("kind, field", [
+    ("text_accel_negative", "language_accel"),
+    ("breadth_rolls_negative", "revision_breadth"),
+])
+@pytest.mark.parametrize("value", [
+    float("nan"), float("inf"), float("-inf"), "nan", "inf", "-inf",
+    "bad", True, False, {}, [], pytest.param(10**1000, id="overflowing-integer"),
+])
+def test_invalid_numeric_condition_is_unverifiable(kind, field, value):
+    status = tm._evaluate_criterion(
+        {"kind": kind}, {field: value}, None,
+        [{"criterion_kind": kind, "asof": "2026-01-01", "condition_met": True}],
+        current_asof="2026-01-02",
+    )
+    assert status == "UNVERIFIABLE"
+    assert tm._aggregate_criteria_status(["INTACT", status]) == "UNVERIFIABLE"
+
+
+@pytest.mark.parametrize("kind, field", [
+    ("text_accel_negative", "language_accel"),
+    ("breadth_rolls_negative", "revision_breadth"),
+])
+@pytest.mark.parametrize("value, negative", [(-0.5, True), ("-0.5", True), (0, False), ("0.5", False)])
+@pytest.mark.parametrize("prior_met", [False, True])
+def test_finite_condition_preserves_threshold_and_prior_count(kind, field, value, negative, prior_met):
+    updates = [{"criterion_kind": kind, "asof": "2026-01-01", "condition_met": prior_met}]
+    expected = ("BROKEN" if prior_met else "WEAKENING") if negative else "INTACT"
+    assert tm._evaluate_criterion(
+        {"kind": kind}, {field: value}, None, updates, current_asof="2026-01-02"
+    ) == expected
+
+
+@pytest.mark.parametrize("value, expected", [(float("nan"), "UNVERIFIABLE"), (None, "WEAKENING"), (1, "INTACT")])
+def test_numeric_qualification_preserves_convergence_precedence(value, expected):
+    assert tm._evaluate_criterion(
+        {"kind": "text_accel_negative"}, {"language_accel": -0.5},
+        {"language_accel": value}, [], current_asof="2026-01-02"
+    ) == expected
+
+
 # ── helpers ──────────────────────────────────────────────────────────────────
 
 def _write_log(tmp_path: Path, rows: list[dict]) -> None:
