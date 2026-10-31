@@ -321,6 +321,46 @@ def _archive_with_ids() -> tuple[list[dict], dict]:
     return _archive(), _ids()
 
 
+def test_supersession_tie_ascending_observation_id_wins_both_orders():
+    """F1: an exact _visible_from tie goes to the ascending observation_id."""
+    first = _observation("JP", 0, tag="tieA")
+    second = _observation("JP", 0, tag="tieB")     # same slot, same instant
+    assert slot_key(first) == slot_key(second)
+    assert first["observation_id"] != second["observation_id"]
+    assert (first["clocks"]["ingestion"]["at"]
+            == second["clocks"]["ingestion"]["at"])
+    winner_id = min(first["observation_id"], second["observation_id"])
+    loser_id = max(first["observation_id"], second["observation_id"])
+    for archive in ([first, second], [second, first]):
+        known = as_known_at(archive, NOW)
+        same_slot = [record for record in known["visible"]
+                     if slot_key(record) == slot_key(first)]
+        assert [record["observation_id"] for record in same_slot] == [winner_id]
+        assert known["superseded"] == [
+            {"observation_id": loser_id, "superseded_by": winner_id}]
+
+
+def test_superseded_entries_sorted_by_observation_id():
+    """F2: two slots superseding at once — the list is ordered by observation_id."""
+    jp_a, jp_b = _observation("JP", 0, tag="p1"), _observation("JP", 0, tag="p2")
+    kr_a, kr_b = _observation("KR", 0, tag="q1"), _observation("KR", 0, tag="q2")
+    assert slot_key(jp_a) == slot_key(jp_b) != slot_key(kr_a) == slot_key(kr_b)
+    jp_winner, jp_loser = (min(jp_a["observation_id"], jp_b["observation_id"]),
+                           max(jp_a["observation_id"], jp_b["observation_id"]))
+    kr_winner, kr_loser = (min(kr_a["observation_id"], kr_b["observation_id"]),
+                           max(kr_a["observation_id"], kr_b["observation_id"]))
+    entries = [{"observation_id": jp_loser, "superseded_by": jp_winner},
+               {"observation_id": kr_loser, "superseded_by": kr_winner}]
+    # The fixture must order differently under the two sort keys, or it could
+    # not tell a superseded_by-sorted list from the contract's order.
+    assert (sorted(entries, key=lambda entry: entry["observation_id"])
+            != sorted(entries, key=lambda entry: entry["superseded_by"]))
+    known = as_known_at([jp_a, jp_b, kr_a, kr_b], NOW)
+    assert len(known["superseded"]) == 2
+    assert known["superseded"] == sorted(
+        entries, key=lambda entry: entry["observation_id"])
+
+
 # 4 the contract's T1..T5 -------------------------------------------------------------
 
 
@@ -619,6 +659,32 @@ def test_step_output_keys_and_id_grammar():
         sorted(record["observation_id"] for record in as_known_at(
             archive, RAIL[0])["visible"])).encode()).hexdigest()
     assert step["roster_digest"] == expected_roster
+
+
+def test_step_id_hashes_the_seven_named_fields():
+    """F3: step_id is the digest of exactly the contract's payload, computed
+    and withheld alike (mirroring the roster_digest exact-formula assert)."""
+    archive, _ = _archive_with_ids()
+    subject_slot = slot_key(_subject_v1())
+    computed = replay_step(archive, step_at=RAIL[0],
+                           subject_slot=subject_slot,
+                           kind="own_history_return")
+    withheld = replay_step(archive, step_at="2026-10-07T00:00:00Z",
+                           subject_slot=subject_slot,
+                           kind="own_history_return")
+    assert computed["state"] == "computed"
+    assert withheld["state"] == "withheld" and withheld["receipt"] is None
+    for step in (computed, withheld):
+        expected = "rstep:sha256:" + hashlib.sha256(_canonical({
+            "contract_version": CONTRACT_VERSION,
+            "step_at": step["step_at"],
+            "subject_slot": step["subject_slot"],
+            "kind": step["kind"],
+            "roster_digest": step["roster_digest"],
+            "dislocation_id": (step["receipt"]["dislocation_id"]
+                               if step["receipt"] is not None else None),
+            "state": step["state"]}).encode()).hexdigest()
+        assert step["step_id"] == expected
 
 
 def test_replay_output_shape_and_at_step_vs_now_rows():
