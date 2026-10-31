@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-06-30T01:50:45Z",
+ "accession": "0001104659-26-079021",
+ "cik": "0001340677",
+ "doc_byte_length": 4584819,
+ "doc_sha256": "4c986617985f88ae022d4eaacab2644536e8346091ad7449ef55a44764e51518",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-06-30",
+ "form": "40-F",
+ "period_of_report": "2026-03-31",
+ "primary_document": "svm-20260331xex99d1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 148770,
+  "byte_start": 148356,
+  "normalized": "In order to develop the El Domo Project, Adventus entered into a precious metals purchase agreement dated January 17, 2022 (the “PMPA”) with Wheaton Precious Metals International Ltd. (“Wheaton”). The PMPA provides Adventus with access to an upfront cash consideration of $175.5 million and a $5.0 million equity commitment.",
+  "normalized_sha256": "37198e266e6c6ce4bb66a6ae57464722dfb690cd4f75fa5728ce4685d11b4332",
+  "raw": "In order to develop the El Domo Project, Adventus entered into a precious metals purchase agreement dated January 17, 2022 (the &#8220;<b style=\"font-weight:bold;\">PMPA</b>&#8221;) with Wheaton Precious Metals International Ltd. (&#8220;<b style=\"font-weight:bold;\">Wheaton</b>&#8221;). The PMPA provides Adventus with access to an upfront cash consideration of $175.5 million and a $5.0 million equity commitment.",
+  "raw_sha256": "3ce708d2beaee39d33486e56f50873fa139ba0e2085e14cb1b855975e41c008f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1340677/000110465926079021/svm-20260331xex99d1.htm",
+ "xbrl_contexts": []
+}
