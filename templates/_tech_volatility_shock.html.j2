@@ -82,7 +82,7 @@ html[data-lang="zh"] .tvs:not([open]) .tvs-toggle::after{content:" 详情 \25BC"
             </div>
             <div class="tvs-rank">
               {% if row.rank_ytd is not none %}<span class="l-en">#{{ row.rank_ytd }} worst observed day of {{ row.year }} ({{ row.n_ytd }} eligible sessions)</span><span class="l-zh">{{ row.year }}年观测跌幅倒数第{{ row.rank_ytd }}名（{{ row.n_ytd }}个有效交易日）</span>
-              {% else %}<span class="l-en">Year-to-date rank unavailable</span><span class="l-zh">年内排名不可用</span>{% endif %>
+              {% else %}<span class="l-en">Year-to-date rank unavailable</span><span class="l-zh">年内排名不可用</span>{% endif %}
             </div>
           </div>
         {% endfor %}
