@@ -1,6 +1,6 @@
 {
   "schema": "altdata_track_record.v1",
-  "as_of": "2026-10-30",
+  "as_of": "2026-10-31",
   "scored_total": 495,
   "open": 205,
   "unscored_soft": 0,
@@ -60,7 +60,7 @@
       "lean": "overweight",
       "conviction": "low",
       "outcome": "hit",
-      "realized": 0.179,
+      "realized": 0.1786,
       "check_by": "2026-10-30"
     },
     {
@@ -78,7 +78,7 @@
       "lean": "overweight",
       "conviction": "low",
       "outcome": "miss",
-      "realized": -0.1941,
+      "realized": -0.1965,
       "check_by": "2026-10-30"
     },
     {
