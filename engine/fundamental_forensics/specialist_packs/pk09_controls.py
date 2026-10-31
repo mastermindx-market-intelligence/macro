@@ -10,6 +10,7 @@ switches from the Item 9A section to the Item 4 section on quarterly forms.
 from __future__ import annotations
 
 from hashlib import sha256
+import re
 from typing import Any, Mapping
 
 from . import narrative
@@ -56,16 +57,93 @@ ICFR_REPORT = narrative.SectionSpec(
 # only capitalized occurrence and B.7's valued expectation is unreachable.
 # The window is narrowed to 15 so the heading matches while an immediately
 # following "communicated" is still rejected.
+# B.3 pattern revision v2 (review F1/F2, 2026-10-20): every arm is anchored
+# to its management-conclusion phrase, so a remediated-acquisition "not
+# effective" earlier in the section can no longer win by leftmost hit; the
+# material-weakness arm is tied to a nearby unnegated management conclusion.
+# B.3 pattern revision v3 (review F1-a, 2026-10-20): the material-weakness
+# arm resolves inside ONE "."-bounded sentence: it fires only when the window
+# from the anchor verb to the noun carries no negation token (the v2 60-char
+# sub-window left a dead zone inside the 80-char arm window), when no
+# negating or remediating predicate follows the noun within 60 characters,
+# and when no negator sits immediately before the anchor verb. A stated
+# effective/ineffective conclusion anywhere in the same sentence governs
+# over the mention; that precedence is resolved by _icfr_conclusion_value.
 ICFR_CONCLUSION = (
-    r"internal control over financial reporting (?:was|is) "
+    r"internal control over financial reporting (?:was|is|were) "
     r"(?P<effective>effective)"
-    r"|(?P<ineffective>not effective|ineffective)"
-    r"|(?P<material_weakness>material weakness)"
+    r"|internal control over financial reporting (?:was|is|were) "
+    r"(?P<ineffective>not effective|ineffective)"
+    r"|(?P<material_weakness>(?<!not )(?<!not yet )(?<!never )(?<!no )"
+    r"(?<!did not )(?<!have not )(?<!has not )(?<!without )"
+    r"(?:concluded|conclude|determined|identified)"
+    r"(?![^.]{0,80}?\b(?:no|not|never|without|absence of|free of)\b"
+    r"[^.]{0,80}?material weakness)"
+    r"[^.]{0,80}?material weakness"
+    r"(?![^.]{0,60}?\b(?:does not exist|did not exist|has been remediated|"
+    r"was remediated|were remediated|were not|was not|is not)\b))"
 )
+# B.3 pattern revision v2 (review F1/F2, 2026-10-20): the ineffective arm
+# carries the same disclosure-controls anchor as the effective arm.
 DISCLOSURE_CONTROLS = (
     r"disclosure controls and procedures[^.]{0,400}?(?:were|are) "
     r"(?P<effective>effective)"
-    r"|(?P<ineffective>not effective|ineffective)"
+    r"|disclosure controls and procedures[^.]{0,400}?(?:were|are) "
+    r"(?P<ineffective>not effective|ineffective)"
+)
+# B.3 pattern revision v2 (review F1/F2, 2026-10-20): the boolean fires only
+# on an affirmative identification or existence; negated mentions ("no
+# material weakness", "did not identify any material weakness", "without a
+# material weakness") and bare remediation prose no longer flip it to true.
+# B.3 pattern revision v3 (review F1-b, 2026-10-20): the lookbehind guard in
+# front of the identifying verb also refuses "never", "no", "did not",
+# "have not", "has not" and "without" immediately before it (v2 guarded
+# only "not"/"not yet", so "We never identified a material weakness"
+# resolved true); _material_weakness_value extends the guard to a negator
+# anywhere earlier in the same "."-bounded sentence.
+# B.3 pattern revision v4 (review F1-2, 2026-10-20): the sentence-bounded
+# look-back above over-negated — any earlier negator in the sentence, even
+# one in a relative clause that had already closed, flipped an affirmative
+# identification to a confident false. The look-back is now clause-bounded
+# (see _material_weakness_value), and the existence arms accept the
+# affirmative existential forms "there was/were/is/are (a|an|one|one or
+# more) material weakness(es)" and "material weakness(es) exists/existed";
+# their forward guard reads only the predicate of the SAME clause, so a
+# relative "which has not been remediated" no longer refuses the mention.
+# B.3 pattern revision v5 (review F1-A/F1-B/F1-C/F2-A/F2-B, 2026-10-20):
+# the negation look-back below is case-insensitive and the bare-existence
+# arm carries the same "(?<![Nn]o )" lookbehind as arm 2 (a sentence-
+# initial "No material weakness existed" is a negated existence), the
+# existential copula "there was/were/is/are" is an anchor verb of that
+# look-back ("We do not believe there was a material weakness" is
+# false), the bare existence arm anchors on the whole word
+# exist/exists/existed and refuses a following "remediated" (a
+# prior-year remediated mention is not a presence), the existence
+# guard's forward scan stops at a coordinating "and"/"but" ("There was
+# a material weakness and it has not been remediated" is true), and the
+# clause-boundary set below gains the subordinators because/since/due
+# to/as a result of/resulting from plus "and"/"but" followed (within 3
+# tokens) by a subject restart, so the negation of an earlier predicate
+# ("was not effective ... because a material weakness ... existed") no
+# longer reaches the existence verb.
+_MW_EXISTENCE_GUARD = (
+    r"(?!(?:(?![,;]|\bwhich\b|\bthat\b|\band\b|\bbut\b)[^.]){0,60}?"
+    r"\b(?:does not exist|did not exist|has been remediated|"
+    r"was remediated|were remediated|were not|was not|is not|"
+    r"no|not|never|without)\b)"
+)
+MATERIAL_WEAKNESS_IDENTIFIED = (
+    r"(?<!not )(?<!not yet )(?<!never )(?<!no )(?<!did not )"
+    r"(?<!have not )(?<!has not )(?<!without )"
+    r"identif(?:y|ied)(?![^.]{0,40}?(?:no|not|without)\b)"
+    r"[^.]{0,40}?material weakness"
+    r"|(?<![Nn]o )material weakness(?:es)?"
+    r"(?![^.]{0,80}?(?:no|not|without|remediated)\b)"
+    r"[^.]{0,80}?\bexist(?:s|ed)?\b"
+    r"|[Tt]here (?:was|were|is|are)(?: a| an| one| one or more)?"
+    r" material weakness(?:es)?" + _MW_EXISTENCE_GUARD +
+    r"|(?<![Nn]o )material weakness(?:es)? (?:exists?|existed)"
+    + _MW_EXISTENCE_GUARD
 )
 ICFR_CHANGE = (
     r"(?:no changes|changes) in (?:the Company.s |our )?"
@@ -126,8 +204,9 @@ _FIELD_MAPPINGS = {
     ),
     "material_weakness_present": TextSpanMapping(
         # ITEM9A ONLY: the auditor's report carries the phrase as boilerplate.
+        # B.3 pattern revision v3 (review F1-b, 2026-10-20).
         section=ITEM9A,
-        pattern="material weakness",
+        pattern=MATERIAL_WEAKNESS_IDENTIFIED,
         kind="boolean",
         absent_value=False,
     ),
@@ -204,6 +283,162 @@ def _cam_value(
     if cut >= 0:
         window = window[: cut + 1]
     return window, (match.end(), match.end() + len(window))
+
+
+# B.3 v3 (review F1-a): the stated-conclusion clause shared by the mapping
+# pattern's first two arms; the resolver below searches it inside one
+# "."-bounded sentence so either side of a material-weakness mention counts.
+_ICFR_STATED_CONCLUSION = re.compile(
+    r"internal control over financial reporting (?:was|is|were) "
+    r"(?P<effective>effective)"
+    r"|internal control over financial reporting (?:was|is|were) "
+    r"(?P<ineffective>not effective|ineffective)"
+)
+# B.3 v3 (review F1-b): the identifying verb whose lead the presence
+# resolver scans for a negation token.
+# B.3 v4 (review F1-1): the verb set gains "identifies", and the negation
+# scan below starts at the clause boundary, not the sentence boundary.
+# B.3 v5 (review F1-B): the existential copula "there was/were/is/are"
+# is an anchor too, so the clause look-back runs for the existential
+# arm's matches as well.
+_MW_IDENTIFYING_VERB = re.compile(
+    r"identif(?:y|ied|ies)|exists?|existed|[Tt]here (?:was|were|is|are)"
+)
+# B.3 v5 (reviews F1-A/F1-B): the negator match is case-insensitive (a
+# sentence-initial "No" negates), and "do not"/"does not" are listed
+# alongside the bare "not" they already matched through.
+_MW_NEGATION_BEFORE = re.compile(
+    r"\b(?:never|no|not|without|absence of|free of|did not|do not|"
+    r"does not|have not|has not)\b",
+    re.IGNORECASE,
+)
+# B.3 v4 (review F1-1): a clause boundary inside a "."-bounded sentence —
+# a semicolon, a colon, an em/en dash, or a comma followed (within 3
+# tokens) by a subject restart.
+# B.3 v5 (review F2-A/F2-B): the subordinators "because", "since",
+# "due to", "as a result of" and "resulting from" are boundaries in
+# their own right, and "and"/"but" followed (within 3 tokens) by the
+# same subject restart is one too — a negation attached to the
+# predicate of an earlier clause ("was not effective") never reaches
+# the verb of the clause they introduce.
+_MW_CLAUSE_BOUNDARY = re.compile(
+    r"[;:—–]|,\s*(?:\S+\s+){0,2}?(?:management|we|the company|"
+    r"our management|the audit committee|it)\b"
+    r"|\b(?:because|since|due to|as a result of|resulting from)\b"
+    r"|\b(?:and|but)\s+(?:\S+\s+){0,2}?(?:management|we|the company|"
+    r"our management|the audit committee|it)\b"
+)
+
+
+def _sentence_bounds(text: str, start: int, end: int) -> tuple[int, int]:
+    """Char range of the "."-bounded sentence containing [start, end)."""
+    lo = text.rfind(".", 0, start) + 1
+    dot = text.find(".", end)
+    hi = len(text) if dot == -1 else dot
+    return lo, hi
+
+
+def _icfr_conclusion_value(
+    nt: Any, section_span: tuple[int, int], match: Any
+) -> tuple[str, tuple[int, int]]:
+    """B.3 v3 sentence-bounded resolution (review F1-a).
+
+    Rule: within the "."-bounded sentence that produced the mapping match,
+    a stated conclusion clause — "internal control over financial reporting
+    was/is/were effective / not effective / ineffective" — governs over a
+    material-weakness mention on either side of it. One sentence-bounded
+    search collects the stated-conclusion arms together with the mapping
+    match (the material-weakness arm, already guarded by the pattern) and
+    resolves effective/ineffective before material_weakness: only a
+    sentence carrying no stated conclusion may hold the material_weakness
+    literal.
+    """
+    text = nt.text
+    lo, hi = _sentence_bounds(text, match.start(), match.end())
+    stated = _ICFR_STATED_CONCLUSION.search(text, lo, hi)
+    if stated is not None:
+        literal = (
+            "effective" if stated.group("effective") is not None else "ineffective"
+        )
+        return literal, (stated.start(), stated.end())
+    return "material_weakness", (match.start(), match.end())
+
+
+def _mw_clause_start(text: str, sentence_lo: int, verb_start: int) -> int:
+    """Scan start for the negation look-back: the nearest clause boundary.
+
+    B.3 v4 (review F1-1): candidates are the sentence start and every
+    semicolon, colon, em/en dash, or comma followed (within 3 tokens) by a
+    subject restart (``management|we|the company|our management|the audit
+    committee|it``) that lies before the verb; the latest one wins. A
+    negator before that boundary belongs to a clause that already closed
+    and never reaches the verb.
+
+    B.3 v5 (review F2-A/F2-B): the boundary set additionally counts the
+    subordinators ``because|since|due to|as a result of|resulting from``
+    in their own right and ``and``/``but`` followed (within 3 tokens) by
+    the same subject restart, so a negation tied to the predicate of an
+    earlier clause ("was not effective ... because a material weakness
+    ... existed") no longer reaches the verb.
+    """
+    start = sentence_lo
+    for boundary in _MW_CLAUSE_BOUNDARY.finditer(text, sentence_lo, verb_start):
+        start = boundary.end()
+    return start
+
+
+def _material_weakness_value(
+    nt: Any, section_span: tuple[int, int], match: Any
+) -> tuple[str, tuple[int, int]]:
+    """B.3 v5 clause-bounded resolution (reviews F1-b, F1-1/F1-2, then
+    F1-A/F1-B/F1-C/F2-A/F2-B).
+
+    Clause-boundary rule: the boolean is true only for an affirmative
+    identification or existence, and a negation token ("no", "not",
+    "never", "without", "absence of", "free of", "did not", "do not",
+    "does not", "have not", "has not" — matched case-insensitively, so a
+    sentence-initial "No" negates) negates the identification only when
+    it lies in the SAME CLAUSE as the anchor verb ("identify",
+    "identified", "identifies", "exist", "exists", "existed", or the
+    existential copula "there was/were/is/are"). The look-back starts at
+    the nearest clause boundary before the verb — the sentence start, a
+    ";", a ":", an em/en dash, a comma followed (within 3 tokens) by a
+    subject restart (management, we, the company, our management, the
+    audit committee, it), a subordinator (because, since, due to, as a
+    result of, resulting from), or "and"/"but" followed (within 3
+    tokens) by that subject restart — and never earlier; the mapping
+    pattern's own 40-char verb-to-noun window stays as an additional cap
+    on the identification. A negator inside a relative or participial
+    clause that ends before the subject restart, one before a ";", and
+    one tied to an earlier predicate before a subordinator ("was not
+    effective ... because a material weakness ... existed") therefore do
+    not reach the verb, while "We never identified a material weakness"
+    and "Management did not identify any material weakness" stay false.
+
+    Existential rule: an affirmative existence is a presence. The mapping
+    pattern's existence arms accept "there was/were/is/are (a|an|one|one
+    or more) material weakness(es)" and "material weakness(es)
+    exists/existed"; their forward negation/remediation guard reads only
+    the predicate of the SAME clause — the scan stops at a ",", a ";", a
+    relative-pronoun "which"/"that", or a coordinating "and"/"but" — so
+    "There was a material weakness, which has not been remediated" and
+    "There was a material weakness and it has not been remediated"
+    resolve true. The bare "material weakness ... exist/exists/existed"
+    arm anchors on the whole word and refuses a "remediated" inside its
+    80-char window, so a prior-year remediated mention ("a material
+    weakness that existed in the prior year was remediated") carries no
+    affirmative existential match, while "There was no material
+    weakness", "a material weakness does not exist" and the arm's "No
+    material weakness existed" opening stay false.
+    """
+    text = nt.text
+    verb = _MW_IDENTIFYING_VERB.search(text, match.start(), match.end())
+    if verb is not None:
+        lo, _ = _sentence_bounds(text, match.start(), match.end())
+        clause_start = _mw_clause_start(text, lo, verb.start())
+        if _MW_NEGATION_BEFORE.search(text, clause_start, verb.start()):
+            return "false", (match.start(), match.end())
+    return "true", (match.start(), match.end())
 
 
 # --- conditional-field guards (B.3) ------------------------------------------
@@ -380,6 +615,8 @@ HOOKS = NarrativeHooks(
     text_value_overrides={
         "auditor_firm": _auditor_firm_value,
         "critical_audit_matters": _cam_value,
+        "icfr_management_conclusion": _icfr_conclusion_value,
+        "material_weakness_present": _material_weakness_value,
     },
     check_evaluator=_evaluate_check,
     extra_receipts=_extra_receipts,
