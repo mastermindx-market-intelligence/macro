@@ -16,6 +16,7 @@ from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))  # repo-root pin (tests/test_check_script_import_pinning.py)
 PREREG_RELPATH = "research/grey_deer/ew_completion_20261031/EW_FORECAST_PREREG_v1_2026-10-31.md"
 ISSUE_LOG_RELPATH = "data/grey_deer_ew_forecast/issue_log.jsonl"
 ISSUE_CONTRACT = "grey_deer_ew_forecast_issue.v1"
@@ -37,9 +38,6 @@ REFUSALS = (
 
 MERGE_LINE_RE = re.compile(r"^EW_P3_MERGE_DATE_UTC: (UNRECORDED|\d{4}-\d{2}-\d{2})$", re.M)
 START_LINE_RE = re.compile(r"^EW_P3_PROSPECTIVE_START: (UNRECORDED|\d{4}-\d{2}-\d{2})$", re.M)
-
-if __name__ == "__main__" and __package__ in (None, ""):  # run by file path
-    sys.path.insert(0, str(REPO_ROOT))
 
 from lib import nyse_calendar as cal  # noqa: E402
 
