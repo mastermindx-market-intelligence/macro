@@ -58,7 +58,7 @@ verified:
     command: "git -C mastermind-terminal archive 69e8e9f0 terminal/components/PortfolioBriefPanel.tsx terminal/app/api/portfolio-brief/route.ts terminal/components/workspaces/TodayWorkspace.tsx ; grep -n changes|previous|state_digest"
     result: "PortfolioBriefPanel reads /api/portfolio-brief only (200 brief / 403 teaser / 503 unavailable); Today reads /api/shared-shell/today, /api/watchlist and research attention; zero matches for changes, previous or state_digest."
   - claim: The first slice is PATH-disjoint from the eight MarketOntology B lanes and from the 40 most recently updated open Terminal PRs (36 with complete file lists); it is NOT contract-independent of the B lanes.
-    command: "gh api graphql (one aliased query over Macro PRs 10199,10200,10203,10207,10211,10214,10217,10220 files; one query over the 40 most recently updated of 163 open Terminal PRs with files(first:40))"
+    command: "gh api graphql (one aliased query over Macro PRs 10199,10200,10203,10207,10211,10214,10217,10220 files; one query over the 40 most recently updated of 163 open Terminal PRs with files(first:100) — the complete/truncated counts below are from the records reviewer's own files(first:100) read of 2026-10-31, which this seat adopted)"
     result: "B lanes touch only engine/*.py, tests/*.py and .github/ci/legacy-jobs.yml; 10199 and 10200 edit engine/portfolio_changes.py and 10200 and 10203 edit engine/portfolio_brief.py (the producers this slice consumes). None of the 36 complete Terminal file lists contains today, portfolio or sharedShell; 1183, 761, 804 and 796 were truncated and the remaining 123 open Terminal PRs were not read."
   - claim: Macro producer census r4 is accepted and finds the portfolio brief built but not proven.
     command: "fabric_task.py status/result marketos-census-macro-producers-20261031-r4"
@@ -72,6 +72,12 @@ verified:
   - claim: The new section renders at 1440/390/320 in both themes and both languages with honest states and no overflow.
     command: "CAPTURE_SOURCE_HEAD=98140880 node terminal/docs/pr-crops/shared-shell-today-since-last-visit-20261031/today/capture.mjs"
     result: "17 cells, 0 page errors, 0 overflow; harness asserts the stored digest is posted verbatim (null on first visit), the marker advances only after a 200, three lines with /analysis?symbol=NVDA and XOM links, no invented line in first-visit or quiet cells, one retry in the unavailable cell; receipt capture-receipt.json hashes source, harness, report and PNGs."
+  - claim: Slice 1 received a non-author REVISE on 2026-10-31 and every finding was repaired on the same branch.
+    command: "native Opus ROUTE review MODE READ_ONLY over PR 1189 at 206bc02b ; git log --oneline -2 ; npx vitest run lib/__tests__/portfolioChangesProxy.test.ts lib/__tests__/todaySinceLastVisit.test.tsx lib/__tests__/readingWorkspaces.test.tsx ; npx tsc --noEmit ; npx eslint <changed files>"
+    result: "VERDICT REVISE (2 major: the 'N further changes on Portfolio' overflow copy was false, and the cached brief's population sentence could describe a different set than the change lines; 4 minor: fixtures not producer-shaped, eight unpinned cases, no request body cap, digest not in the lib/ownerStorage.ts envelope; 2 nits: ticker regex 12 vs the desk's 48, empty bordered wrapper on an ended section). Repairs at ac319630: six lines then an in-place 'Show N more changes' / '显示另外 N 项变化' expansion; changes.population parsed and the brief's disclosure shown only when brief.population.mode names the same set; producer-shaped fixtures; 10 added tests; 413 previous_too_large over 256 KiB before parse and before any upstream call; one envelope key mmx.today.since.v1 with account:<uuid> slots, cleared for that owner on 401; TICKER up to 48; sinceJob on the section itself. vitest 22/22 + 11/11 + readingWorkspaces 25/25 (Node 26 with --localstorage-file); tsc clean; eslint clean. Pushed as head 0939414e (crops commit) on PR 1189; re-review requested from the same non-author reviewer."
+  - claim: The repaired section renders at 1440/390/320 in both themes and both languages, including the overflow state.
+    command: "CAPTURE_SOURCE_HEAD=ac319630 node terminal/docs/pr-crops/shared-shell-today-since-last-visit-20261031/today/capture.mjs"
+    result: "19 cells, 21 PNGs (overflow captured collapsed with the control and after expansion), 0 page errors, 0 overflow; harness asserts four producer-shaped lines with the NVDA/NVDA/XOM Analysis links and the population sentence in ready cells, six then eight lines in overflow cells, the absence of the retired routing copy, and that a second owner's envelope slot stays byte-identical; receipt re-recorded at ac319630."
   - claim: Terminal shell census is accepted.
     command: "fabric_task.py status marketos-census-terminal-shell-20261031"
     result: "state TERMINAL, acceptance_state ACCEPTED (reviewer)."
@@ -80,8 +86,10 @@ unverified:
     what_would_verify: "A browser session signed into beta.mastermind-x.com (Claude in Chrome with 1Password, or the designated TEST identity in the built-in browser pane); anonymous probes only reach the sign-in wall."
   - claim: The production gateway routes /api/portfolio/brief and /api/portfolio/changes answer 401 because of auth, not because a front proxy answers 401 before routing.
     what_would_verify: "A signed-in request, or a probe of a known-missing path on the same gateway answering 404 (the records reviewer did not reproduce this control)."
-  - claim: Slice 1 passes independent non-author review.
-    what_would_verify: "The reviewer's VERDICT on Terminal PR 1189 (native Opus ROUTE review, read-only, launched 2026-10-31 after the fabric refusals) and any repair commits it requires."
+  - claim: Slice 1 passes independent non-author review at head 0939414e.
+    what_would_verify: "The reviewer's second VERDICT on Terminal PR 1189 (same native Opus read-only reviewer, re-review requested 2026-10-31 after the repairs at ac319630); the first verdict at 206bc02b was REVISE and is recorded above."
+  - claim: The production gateway www.mastermind-x.com serves /api/portfolio/* at all right now.
+    what_would_verify: "On 2026-10-31 ~07:5xZ both /api/portfolio/brief and a known-missing control path answered 502 from the gateway; the 404 control is not reproducible while the gateway answers 502. A later probe that returns 401 on the brief and 404 on the control path."
 unresolved:
   - "Primary Terminal checkout /Users/chriswong/Documents/GitHub/mastermind-terminal reports a bad tree object d70b2aeb9b1403f249005efa3dc0571e20c277b6 and a gc.log that blocks automatic repack. Host administration, not touched by this seat; object reads at the tip still succeed."
   - "Fabric adapter mints worktrees only for ~/lanes/repos/macro; Terminal lanes self-clone the repository at the pinned SHA inside the lane host."
@@ -89,17 +97,17 @@ unresolved:
   - "Contract dependency: Macro PRs 10199 and 10200 edit engine/portfolio_changes.py and 10200 and 10203 edit engine/portfolio_brief.py. The Terminal client pins only the portfolio_changes.v1 fields it reads (schema, first_visit, changes[].kind/en/zh/ticker/sector, state_digest.names, cursor.note_en/zh) and renders any other shape as unavailable without touching the stored marker; a renamed field would degrade honestly, not break. Re-run the slice tests against the merged producer before PRODUCTION_PROOF."
   - "The fabric placement refusal (R22 demotions, R30, bailian window) is a capacity state owned by the Capacity/Model Router, not this seat; re-check pick.py --explain before commissioning slice 2."
 next_actions:
-  - "Current receiver (this seat, or whoever next holds WS:MARKET-OS) consumes the independent review of Terminal PR 1189 (head 206bc02b; owned paths terminal/app/api/portfolio-changes/route.ts, terminal/components/workspaces/TodaySinceLastVisit.tsx, terminal/components/workspaces/TodayWorkspace.tsx (mount), terminal/components/workspaces/TodayWorkspace.module.css, terminal/lib/shared-shell/useReadingScope.ts (optional init), terminal/lib/__tests__/portfolioChangesProxy.test.ts, terminal/lib/__tests__/todaySinceLastVisit.test.tsx, terminal/docs/pr-crops/shared-shell-today-since-last-visit-20261031/**); repairs findings on the same branch; marks the PR ready and arms merge-on-green only after a non-author ACCEPT and green CI; never self-merges."
+  - "Current receiver (this seat, or whoever next holds WS:MARKET-OS) consumes the re-review of Terminal PR 1189 (head 0939414e, source ac319630; owned paths terminal/app/api/portfolio-changes/route.ts, terminal/components/workspaces/TodaySinceLastVisit.tsx, terminal/components/workspaces/TodayWorkspace.tsx (mount), terminal/components/workspaces/TodayWorkspace.module.css, terminal/lib/shared-shell/useReadingScope.ts (optional init), terminal/lib/__tests__/portfolioChangesProxy.test.ts, terminal/lib/__tests__/todaySinceLastVisit.test.tsx, terminal/lib/__tests__/readingWorkspaces.test.tsx (mock line only), terminal/docs/pr-crops/shared-shell-today-since-last-visit-20261031/**); repairs any further findings on the same branch; marks the PR ready and arms merge-on-green only after a non-author ACCEPT and green CI; never self-merges."
   - "After merge: beta deploy observation, signed-in browser proof on beta Today (human sign-in gate named once), then record PRODUCTION_PROOF separately from ACCEPTANCE."
   - "Slice 2 candidates from census r4 (public vol regime and breadth JSON) only as accepted artifacts; the portfolio brief stays PARTIAL/BUILT_NOT_PROVEN until its own production proof."
-  - "Records: land PR 10239 after its own non-author review (REVISE findings of 2026-10-31 addressed in this revision)."
+  - "Records: land PR 10239 after its own non-author review (r2 addressed the nine REVISE findings; r3 addresses N1-N3 and records the slice review, repairs and the observed gateway 502)."
 do_not_redo:
   - "A1A and A1B (accepted in production under DEC:MARKET-OS-A1A-ACCEPTED-IN-PRODUCTION and DEC:MARKET-OS-A1B-ACCEPTED-IN-PRODUCTION)."
   - "Shared Shell foundation: macro 7949, terminal 859, 1144, 1173, and research carriers 10115 (all merged)."
   - "Charter audit run marketos-charter-independent-audit-20261030 (reconciled and accepted); Terminal census marketos-census-terminal-shell-20261031 (accepted)."
   - "Macro producers engine/portfolio_brief.py and engine/portfolio_changes.py and routes /api/portfolio/brief and /api/portfolio/changes; B lanes 10199, 10200, 10203 own their current repairs."
   - "MarketOntology census handoff of 2026-10-24 and its merged carrier 10165."
-  - "Slice 1 implementation at Terminal 206bc02b (PR 1189): proxy, section, mount, tests and crops exist; repair on that branch, do not rebuild."
+  - "Slice 1 implementation at Terminal 0939414e (PR 1189; first review's eight findings repaired at ac319630): proxy, section, mount, tests and crops exist; repair on that branch, do not rebuild."
   - "Macro producer census r4 (accepted) and the fabric placement diagnosis of 2026-10-31."
 danger_areas:
   - "TWO-ORGANISMS law: the previous state_digest lives only in the client (per owner key); never persist it to data/, never log it, never log composed change lines."
@@ -150,9 +158,11 @@ repairing.
 Implemented directly by the seat after the fabric refused placement (no worker STARTed,
 lawful tools and custody held, no conflicting owner, no EFFECT_UNKNOWN). Terminal branch
 `claude/marketos-today-since-last-visit-20261031`, commits 98140880 (source + tests) and
-206bc02b (crops), draft PR 1189 against master 69e8e9f0. Ladder reached: DELIVERED
-(draft PR open, local checks green). Not reached: CI, review, MERGED, PRODUCTION_PROOF,
-ACCEPTANCE.
+206bc02b (crops), draft PR 1189 against master 69e8e9f0. The non-author review at
+206bc02b returned REVISE (two major, four minor, two nits — all listed in the claims);
+every finding was repaired at ac319630 and the crops recaptured at 0939414e, the current
+head. Ladder reached: DELIVERED (draft PR open, local checks green, re-review requested).
+Not reached: review ACCEPT, CI, MERGED, PRODUCTION_PROOF, ACCEPTANCE.
 
 ## Highest-risk dependencies
 
@@ -165,5 +175,5 @@ ACCEPTANCE.
    degrades to "unavailable" on any unexpected shape and keeps its marker, but the
    slice tests must be re-run against the merged producer before production proof.
 5. Fabric placement is currently refused for review and build classes; independent
-   review ran as a native Opus read-only reviewer, which is admitted for audit/review
-   only, never for labor.
+   review was launched as a native Opus read-only reviewer, which is admitted for
+   audit/review only, never for labor.
