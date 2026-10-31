@@ -548,6 +548,79 @@ def test_a9_design_laws_static():
         assert not re.findall(r'="\{\{\s*t\(', text), name
 
 
+# ------------------------------------------------ A18 fx6 leak guard (ORCH-6)
+
+
+def _selector_compounds(selector):
+    """Split one complex selector into compound segments, respecting attribute
+    brackets (combinators: descent, >, +, ~)."""
+    masked = re.sub(r"\[[^\]]*\]", lambda m: m.group(0).replace(" ", "\x00"), selector)
+    parts = [p.strip() for p in re.split(r"(?:\s*[>+~]\s*|\s+)", masked) if p.strip()]
+    return [p.replace("\x00", " ") for p in parts]
+
+
+def test_a18_w2a_region_no_foundation_selector_leaks():
+    """fx6 leak guard (ORCH-6 adjudication 2026-10-31): every selector in the
+    W2A region is scoped to this lane's own views. The rightmost compound must
+    carry a lane-only class — a class token no rule OUTSIDE the W2A region uses,
+    i.e. absent from the foundation + merged sibling regions, which are
+    byte-identical to origin/main's stylesheet — or sit under a lane-only
+    ancestor class. Bare element selectors (summary, th, td, svg, details, ...)
+    and foundation classes (.intl-gs__split, .intl-gs__rail, .intl-gs__kpi__tier,
+    .intl-gs__marketscope, ...) are leaks otherwise: shell.html.j2 wraps every
+    sibling view in the same `.intl-gs` root, so an unscoped compound restyles
+    dislocations/transmission/dossier/inspector/history/... markup (the css:633
+    rail-stacking leak CI-red of run 41223549652 was exactly this)."""
+    css = (REPO / "templates/intl_workspace_surveillance.css").read_text(encoding="utf-8")
+    region = _w2a_css_region()
+    rest = css.replace(region, "")
+    strip = lambda text: re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+    # Classes the foundation + merged sibling regions style = shared vocabulary.
+    shared = set()
+    for sel in re.findall(r"([^{}]+)\{", strip(rest)):
+        shared.update(re.findall(r"\.([A-Za-z0-9_-]+)", sel))
+    # The adjudication's named foundation vocabulary, pinned so a future
+    # foundation rule removal cannot silently widen this lane's scope.
+    shared |= {"intl-gs", "intl-gs__split", "intl-gs__split__main", "intl-gs__rail",
+               "intl-gs__kpirow", "intl-gs__chip", "intl-gs__btn", "intl-gs__table",
+               "intl-gs__num", "intl-gs__panel", "intl-gs__kpi", "intl-gs__kpi__tier",
+               "intl-gs__marketscope", "intl-gs__statecell", "intl-gs__statecell__reason",
+               "intl-gs__view", "intl-gs__band", "intl-gs__tablewrap"}
+    leaks = []
+    for sel in re.findall(r"([^{}]+)\{", strip(region)):
+        sel = sel.strip()
+        if not sel or sel.startswith("@") or re.fullmatch(r"\d+%|from|to", sel):
+            continue
+        for one in sel.split(","):
+            one = one.strip()
+            if not one or one.startswith("@"):
+                continue
+            compounds = _selector_compounds(one)
+            right = compounds[-1] if compounds else one
+            lane_classes = [c for c in re.findall(r"\.([A-Za-z0-9_-]+)", right)
+                            if c not in shared]
+            lane_ancestor = any(c not in shared
+                                for comp in compounds[:-1]
+                                for c in re.findall(r"\.([A-Za-z0-9_-]+)", comp))
+            if lane_classes or lane_ancestor:
+                continue
+            leaks.append(one)
+    assert not leaks, (
+        "W2A region selectors leak onto foundation/sibling markup (rightmost "
+        "compound is a bare element or a shared class with no lane-only scope): "
+        f"{leaks}")
+    # The scoping anchors must be live, not vacuous: the mount renders the
+    # view-root class around this lane's panels (foundation gs_panel_root), and
+    # every <summary> this lane renders carries the disclosure class.
+    for view, template in (("scanner", "scanner.html.j2"), ("coverage", "coverage.html.j2")):
+        text = (REPO / "templates/intl_workspace" / template).read_text(encoding="utf-8")
+        assert f"gs_panel_root(view='{view}'" in text, f"{template} must open the {view} panel root"
+    for template in ("scanner.html.j2", "coverage.html.j2"):
+        text = (REPO / "templates/intl_workspace" / template).read_text(encoding="utf-8")
+        for summary in re.findall(r"<summary[^>]*>", text):
+            assert "intl-gs__disclosure" in summary, (template, summary)
+
+
 # ---------------------------------------------------------------- A10 ZH
 
 
