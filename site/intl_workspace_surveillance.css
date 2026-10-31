@@ -262,10 +262,13 @@ html[data-lang="zh"] .intl-gs .intl-gs__snapctl__label{text-transform:none;lette
   .intl-gs__statematrix{grid-template-columns:1fr;}
 }
 /* ==== W3U region (IM15 dislocation explorer) ==== */
-/* INTL-GS-W3U (R14 §10.3/§9.7, rulings R1–R6): one insert-only region between
-   spacer 2 and spacer 3. A1 token law: no custom property, no colour literal,
-   radii exactly the three estate pairs; the rail's width/position geometry is
-   W2's shell (ruling R5 — 360px at 1100–1279 is not overridden here). */
+/* INTL-GS-W3U (R14 §10.3/§9.7, rulings R1–R6): one insert-only region sitting
+   immediately before the W2A region (DEVIATION css_region_position: the frozen
+   W2 x7 merge-anchor test pins the spacer-2/3 window and the file tail, so the
+   commissioned slot is unshippable; recorded in the PR body). A1 token law: no
+   custom property, no colour literal, radii exactly the three estate pairs; the
+   rail's width/position geometry is W2's shell (ruling R5 — 360px at
+   1100–1279 is not overridden here). */
 .intl-gs .intl-dislocations__explorer{gap:16px;}
 .intl-gs .intl-dislocations__left{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;}
 .intl-gs .intl-dislocations__rail{gap:16px;padding:16px 20px 20px;border-radius:var(--r-panel,12px);}

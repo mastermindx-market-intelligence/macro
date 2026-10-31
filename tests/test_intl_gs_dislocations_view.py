@@ -733,6 +733,116 @@ def test_v23_horizon_selection(builder, fixture):
                                  observations=fixture.build_set(horizon="ytd")) is None
 
 
+# ------------------------------------------- V24 direction→ink (review R-01)
+
+def _signed_text(value: float, dp: int = 2) -> str:
+    """The exact numeral text gs_signed emits (typed sign, U+2212 minus)."""
+    sign = "+" if value > 0 else ("−" if value < 0 else "")
+    return f"{sign}{abs(value):.{dp}f}"
+
+
+def test_v24_direction_to_ink_binding_for_z_numerals(builder, fixture):
+    """R14 §6 signed ink, pinned after review R-01 (surviving mutant RM-2).
+
+    Every direction-bound numeral — the ranking Z cell, the printed residual
+    value beside the bar, and the inspector Z — must carry the foundation ink
+    class for its receipt direction (above→up, below→down), never a swapped
+    one; and the ink must travel exclusively through the foundation classes so
+    the ZH red-up inversion comes from theme.css's --up/--down swap alone.
+    """
+    payload = builder.build_payload(universe=fixture.universe(),
+                                    workspace=fixture.workspace(),
+                                    observations=fixture.build_set(
+                                        scenario="restricted"))
+    ranked = [row for row in payload["rows"] if row["index"] is not None]
+    assert ranked, "fixture must carry ranked rows"
+    assert {"above", "below"} <= {row["direction"] for row in ranked}, \
+        "pin needs at least one above and one below ranked row"
+    html = fixture.render_page(variant="production", scenario="restricted")
+    section = _dislocations_section(html)
+    ink_for = {"above": "up", "below": "down"}
+    for row in ranked:
+        ink = ink_for.get(row["direction"], "muted")
+        numeral = (f'<span class="intl-gs__num intl-gs__num--{ink}">'
+                   f'{_signed_text(row["z"])}</span>')
+        row_html = re.search(rf'<tr data-i="{row["index"]}">.*?</tr>',
+                             section, re.DOTALL)
+        assert row_html, f"ranked row {row['market_id']} missing"
+        for label in ("Z", "RESIDUAL"):
+            cell = re.search(rf'<td[^>]*data-label="{label}"[^>]*>.*?</td>',
+                             row_html.group(0), re.DOTALL)
+            assert cell, f"{label} cell missing for {row['market_id']}"
+            assert numeral in cell.group(0), \
+                f"{label} numeral for {row['market_id']} (direction " \
+                f"{row['direction']}) does not carry {ink} ink"
+        # inspector Z (rail pane for this index; slice to the next pane/aside)
+        start = section.index(f'intl-dislocations__insp" data-i="{row["index"]}"')
+        nxt = section.find('intl-dislocations__insp" data-i=', start + 1)
+        inspector = section[start:nxt if nxt != -1 else section.index("</aside>")]
+        assert numeral in inspector, \
+            f"inspector Z for {row['market_id']} does not carry {ink} ink"
+    # the ZH inversion pathway, pinned by construction:
+    css = CSS_PATH.read_text(encoding="utf-8")
+    assert ".intl-gs__num--up{color:var(--ink-up);}" in css.replace(" ", "")
+    assert ".intl-gs__num--down{color:var(--ink-down);}" in css.replace(" ", "")
+    for selector, _body in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+        if "data-lang" in selector:
+            assert "num--up" not in selector and "num--down" not in selector, \
+                f"per-language ink override: {selector}"
+    theme = (REPO / "templates/theme.css").read_text(encoding="utf-8")
+    assert re.search(r"--ink-up:[^;}]*var\(--up\)", theme), \
+        "--ink-up no longer derives from --up"
+    assert re.search(r"--ink-down:[^;}]*var\(--down\)", theme), \
+        "--ink-down no longer derives from --down"
+    zh_block = re.search(r'html\[data-lang="zh"\]\s*\{([^}]*)\}', theme)
+    assert zh_block, "theme.css zh block missing"
+    assert "--up:" in zh_block.group(1) and "--down:" in zh_block.group(1), \
+        "theme.css zh block no longer swaps --up/--down (ZH red-up)"
+
+
+# ------------------------------------------- V25 bandhead (review R-02)
+
+def test_v25_first_band_head_title_and_horizon_label(builder, fixture):
+    """FROZEN SPEC 2 ROOT clause, pinned after review R-02.
+
+    The first band head (the gs_panel_root aria-labelledby target) is titled
+    "Dislocation explorer"/"错位探索" and carries the horizon label alongside
+    qnum Q2, the computed_at clock and — specimen variant only — the specimen
+    chip; the head never repeats the qnum inside its title.
+    """
+    for variant, expect_chip in (("specimen", True), ("production", False)):
+        html = fixture.render_page(variant=variant, scenario="restricted")
+        section = _dislocations_section(html)
+        assert 'aria-labelledby="im-gs-dislocations-dislocations-title"' \
+            in section
+        heads = re.findall(r'<div class="intl-gs__bandhead">(.*?)</div>',
+                           section, re.DOTALL)
+        head = next((h for h in heads
+                     if 'id="im-gs-dislocations-dislocations-title"' in h), None)
+        assert head, "first band head (title id) missing"
+        title = re.search(
+            r'<h2 class="intl-gs__bandhead__title"[^>]*>(.*?)</h2>',
+            head, re.DOTALL)
+        assert title, "band head h2 missing"
+        assert "<span class=\"l-en\">Dislocation explorer</span>" in title.group(1)
+        assert "<span class=\"l-zh\">错位探索</span>" in title.group(1)
+        assert "dislocation map" not in title.group(1) \
+            and "错位图" not in title.group(1), \
+            "the head must not repeat the qnum inside its title (R-02)"
+        assert re.search(r'<span class="intl-gs__eyebrow">.*>\s*Q2\s*<',
+                         head, re.DOTALL), "qnum eyebrow missing"
+        assert '<span class="intl-gs__bandhead__sub">' in head, \
+            "horizon label (band head sub) missing"
+        horizon_label = builder.build_payload(
+            universe=fixture.universe(), workspace=fixture.workspace(),
+            observations=fixture.build_set(scenario="restricted"))["horizon_label"]
+        assert f">{horizon_label['en']}<" in head
+        assert f">{horizon_label['zh']}<" in head
+        assert re.search(r'<span class="intl-gs__bandhead__clock', head), \
+            "computed_at clock missing from the band head"
+        assert ("intl-gs__chip--specimen" in section) is expect_chip, variant
+
+
 # ---------------------------------------------------------------- helpers
 
 def _dislocations_section(html: str) -> str:

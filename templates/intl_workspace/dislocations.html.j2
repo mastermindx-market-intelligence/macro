@@ -30,7 +30,7 @@
   <div class="intl-gs__split intl-dislocations__explorer">
     <div class="intl-gs__split__main intl-dislocations__left">
       <section class="intl-gs__panel intl-dislocations__scatterpanel">
-        {{ gs.gs_bandhead(t(c.scatter_title.en, c.scatter_title.zh), qnum=t(c.qnum.en, c.qnum.zh), id=gs_panel.context_id ~ '-dislocations-title', clock=(t(p.computed_at_display.en, p.computed_at_display.zh) if p.computed_at_display else '')) }}
+        {{ gs.gs_bandhead(t(c.title.en, c.title.zh), qnum=t(c.qnum.en, c.qnum.zh), sub=t(p.horizon_label.en, p.horizon_label.zh), id=gs_panel.context_id ~ '-dislocations-title', clock=(t(p.computed_at_display.en, p.computed_at_display.zh) if p.computed_at_display else '')) }}
         {% if p.specimen %}{{ gs.gs_specimen_chip() }}{% endif %}
         <svg class="intl-dislocations__scatter" viewBox="0 0 640 420" role="img" aria-label="{{ c.scatter_aria.en }} · {{ c.scatter_aria.zh }}">
           <g class="intl-dislocations__grid">
