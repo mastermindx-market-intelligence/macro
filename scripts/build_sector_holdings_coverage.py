@@ -171,14 +171,15 @@ def _validate_weight_contract(feed: Mapping) -> None:
         listed = fund["listed"]
         for row in listed:
             pct = row["weight_pct"]
-            if (not isinstance(pct, (int, float)) or not math.isfinite(pct)
-                    or not 0 <= pct <= 100):
+            if (isinstance(pct, bool) or not isinstance(pct, (int, float))
+                    or not math.isfinite(pct) or not 0 <= pct <= 100):
                 raise ValueError(
                     f"holdings coverage: {fund['fund']} invalid listed weight "
                     f"{row['ticker']}={pct}")
         coverage_pct = fund["coverage"]["weight_pct"]
         listed_sum = round(sum(row["weight_pct"] for row in listed), 2)
-        if (not isinstance(coverage_pct, (int, float))
+        if (isinstance(coverage_pct, bool)
+                or not isinstance(coverage_pct, (int, float))
                 or not math.isfinite(coverage_pct)
                 or not 0 <= coverage_pct <= 100.0001
                 or abs(coverage_pct - listed_sum) > 0.01):

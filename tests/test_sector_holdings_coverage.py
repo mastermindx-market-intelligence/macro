@@ -88,8 +88,8 @@ def _assert_contract(feed):
             assert row["ticker"] not in tickers
             tickers.add(row["ticker"])
             w = row["weight_pct"]
-            assert isinstance(w, (int, float)) and math.isfinite(w)
-            assert 0 <= w <= 100
+            assert isinstance(w, (int, float)) and not isinstance(w, bool)
+            assert math.isfinite(w) and 0 <= w <= 100
             assert row["rank"] == i + 1
             if prev is not None:
                 assert w <= prev  # weights non-increasing down the list
@@ -99,6 +99,9 @@ def _assert_contract(feed):
         assert list(c["count"]) == ["listed", "total"]
         assert c["count"]["listed"] == len(listed)
         assert c["count"]["total"] == f["n_holdings_total"]
+        assert isinstance(c["weight_pct"], (int, float))
+        assert not isinstance(c["weight_pct"], bool)
+        assert math.isfinite(c["weight_pct"])
         assert c["weight_pct"] <= 100.0001
         if listed:
             assert abs(c["weight_pct"] - round(sum(r["weight_pct"] for r in listed), 2)) <= 0.01
@@ -299,6 +302,32 @@ def test_invalid_weight_contract_preserves_existing_output(tmp_path, weights, em
     with pytest.raises(ValueError, match="holdings coverage: XLK invalid"):
         shc.write_holdings_coverage(out, feed)
     assert out.read_bytes() == sentinel
+
+
+@pytest.mark.parametrize("field", ["listed", "aggregate"])
+def test_boolean_weight_contract_rejects_before_touching_output(tmp_path, field):
+    feed = build_holdings_coverage(
+        {"XLK": _frame([("NVDA", 1.0)])}, funds=["XLK"])
+    fund = feed["funds"][0]
+    if field == "listed":
+        fund["listed"][0]["weight_pct"] = True
+    else:
+        fund["coverage"]["weight_pct"] = True
+    with pytest.raises(AssertionError):
+        _assert_contract(feed)  # Terminal rejects JSON true, not a number
+
+    out = tmp_path / "sector_holdings_coverage.json"
+    sentinel = b"trusted-previous-feed\x00\xff"
+    out.write_bytes(sentinel)
+    with pytest.raises(ValueError, match="holdings coverage: XLK invalid"):
+        shc.write_holdings_coverage(out, feed)
+    assert out.read_bytes() == sentinel
+
+    absent = tmp_path / "absent-dir" / "sector_holdings_coverage.json"
+    with pytest.raises(ValueError, match="holdings coverage: XLK invalid"):
+        shc.write_holdings_coverage(absent, feed)
+    assert not absent.exists()
+    assert not absent.parent.exists()
 
 
 def test_valid_exact_100_weight_feed_is_published(tmp_path):
