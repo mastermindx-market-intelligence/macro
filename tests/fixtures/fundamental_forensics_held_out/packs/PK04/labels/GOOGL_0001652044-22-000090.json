@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0001652044-22-000090",
+    "expected_period_end": "2022-09-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "69092000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "GOOGL",
+    "label_class": "extract_positive",
+    "pack_id": "PK04",
+    "polarity": "positive",
+    "reason": "goog-20220930.htm | us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax @ id06797dd0bac4d6d92b124f17785fb4b_D20220701-20220930 | 'Total revenues $ 65,118 $ 69,092' | Total revenues for the three months ended 2022-09-30; consolidated statements of income, in millions.",
+    "section_family": "revenue",
+    "split": "held_out",
+    "target_id": "revenue",
+    "target_kind": "extract",
+    "trial_id": "PK04|0001652044-22-000090|extract|revenue"
+  },
+  {
+    "accession": "0001652044-22-000090",
+    "expected_period_end": "2022-09-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "39539000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "GOOGL",
+    "label_class": "extract_positive",
+    "pack_id": "PK04",
+    "polarity": "positive",
+    "reason": "goog-20220930.htm | us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax @ i4b073d5e6a86482994331496d57f5924_D20220701-20220930 (ProductOrServiceAxis=goog:GoogleSearchOtherMember) | 'Google Search & other $ 37,926 $ 39,539' | Largest disaggregated revenue member for the quarter: Google Search & other (product/service axis; larger than any geography member); revenue note disaggregated revenues, in millions.",
+    "section_family": "revenue",
+    "split": "held_out",
+    "target_id": "revenue_disaggregated",
+    "target_kind": "extract",
+    "trial_id": "PK04|0001652044-22-000090|extract|revenue_disaggregated"
+  }
+]
