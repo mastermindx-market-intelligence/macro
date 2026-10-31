@@ -3,45 +3,45 @@
    engine.tech_volatility_shock; the screenshot is NOT a data source. #}
 <div class="tvs-mount" id="tvs-mount">
 <style>
-.tvs-mount{grid-column:1/-1;width:min(100%,1120px);margin:20px auto 28px;font-family:inherit}
+.tvs-mount{grid-column:1/-1;width:min(100%,1120px);margin:20px auto 28px;font-family:var(--font-ui)}
 .tvs-mount *{box-sizing:border-box}
-.tvs{color:#f5f7fc;background:#10131f;border:1px solid #2b354c;border-radius:16px;overflow:hidden;box-shadow:0 14px 38px rgba(0,0,0,.13)}
+.tvs{color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);overflow:hidden;box-shadow:var(--card-shadow)}
 .tvs summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 20px}
 .tvs summary::-webkit-details-marker{display:none}
-.tvs summary:focus-visible{outline:3px solid #7aa5ff;outline-offset:-3px}
-.tvs-kicker{font-size:10px;font-weight:750;letter-spacing:.17em;color:#779cf6;text-transform:uppercase}
+.tvs summary:focus-visible{outline:3px solid var(--info);outline-offset:-3px}
+.tvs-kicker{font-size:10px;font-weight:750;letter-spacing:.17em;color:var(--link);text-transform:uppercase}
 .tvs-brief{display:block;font-weight:760;font-size:17px;margin-top:3px}
 .tvs-summary-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
 .tvs-rel{font-size:20px;font-weight:780;font-variant-numeric:tabular-nums}
-.tvs-neg{color:#f26868}.tvs-pos{color:#6ed0a8}.tvs-muted{color:#a4aec4}
-.tvs-toggle{font-size:12px;color:#b1bdd5;white-space:nowrap}
+.tvs-neg{color:var(--down)}.tvs-pos{color:var(--up)}.tvs-muted{color:var(--muted)}
+.tvs-toggle{font-size:12px;color:var(--muted);white-space:nowrap}
 .tvs[open] .tvs-toggle::after{content:" Close \25B2"}
 .tvs:not([open]) .tvs-toggle::after{content:" Details \25BC"}
-.tvs-body{padding:0 20px 20px;border-top:1px solid #2b354c}
-.tvs-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:730;color:#9baac8}
+.tvs-body{padding:0 20px 20px;border-top:1px solid var(--line)}
+.tvs-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:730;color:var(--muted)}
 .tvs-ruler{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 0}
 .tvs-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.tvs-card{background:#161b29;border:1px solid #343b4c;border-left:3px solid #e15b5b;border-radius:10px;padding:16px}
+.tvs-card{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--down);border-radius:var(--r-card,12px);padding:16px}
 .tvs-card-head{font-size:22px;font-weight:800}
 .tvs-amount{font-size:clamp(30px,4vw,52px);line-height:1.3;font-weight:830;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.tvs-table{margin-top:10px;border-top:1px solid #303a4f}
-.tvs-line{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #252e41}
-.tvs-line span:first-child{font-size:11px;color:#97a6c3;text-transform:uppercase}
+.tvs-table{margin-top:10px;border-top:1px solid var(--line)}
+.tvs-line{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line-quiet)}
+.tvs-line span:first-child{font-size:11px;color:var(--muted);text-transform:uppercase}
 .tvs-line strong{font-size:13px;font-variant-numeric:tabular-nums}
 .tvs-rank{margin-top:14px;font-size:12px;font-weight:780}
-.tvs-relative{margin-top:16px;text-align:center;padding:16px;background:#141c31;border:1px solid #30457e;border-left:3px solid #5584ef;border-radius:10px}
+.tvs-relative{margin-top:16px;text-align:center;padding:16px;background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--info);border-radius:var(--r-card,12px)}
 .tvs-relative .tvs-amount{font-size:36px}
-.tvs-section-title{font-size:16px;font-weight:790;margin:24px 0 14px;border-bottom:1px solid #30394c;padding-bottom:10px}
+.tvs-section-title{font-size:16px;font-weight:790;margin:24px 0 14px;border-bottom:1px solid var(--line);padding-bottom:10px}
 .tvs-session{margin:14px 0}
 .tvs-session-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline;font-weight:760;margin-bottom:7px}
-.tvs-bars{display:flex;height:40px;overflow:hidden;background:#242a38;border-radius:5px}
+.tvs-bars{display:flex;height:40px;overflow:hidden;background:var(--panel2);border-radius:var(--r-ctl,8px)}
 .tvs-bar{display:flex;align-items:center;justify-content:center;min-width:0;font-size:11px;font-weight:750;white-space:nowrap}
 .tvs-bar span{overflow:hidden;text-overflow:ellipsis;padding:0 8px}
-.tvs-overnight{background:#d75050}.tvs-intraday{background:#873a44}
-.tvs-mixed{padding:11px 13px;background:#242a38;border-radius:5px;font-size:12px;color:#c6d0e2}
-.tvs-bottom{margin-top:22px;padding-top:14px;border-top:1px solid #343b50;font-size:14px;font-weight:810;text-align:center}
-.tvs-note{color:#94a1ba;font-size:11px;line-height:1.6;margin:10px 0 0}
-.tvs-notice{margin:16px 0;padding:12px 14px;background:#27222d;border:1px solid #624b56;border-radius:8px;color:#ecd5d6;font-size:12px}
+.tvs-overnight{background:var(--down)}.tvs-intraday{background:var(--q3)}
+.tvs-mixed{padding:11px 13px;background:var(--panel2);border-radius:var(--r-ctl,8px);font-size:12px;color:var(--text)}
+.tvs-bottom{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;font-weight:810;text-align:center}
+.tvs-note{color:var(--muted);font-size:11px;line-height:1.6;margin:10px 0 0}
+.tvs-notice{margin:16px 0;padding:12px 14px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-ctl,8px);color:var(--text);font-size:12px}
 @media(max-width:640px){.tvs-mount{margin:14px 0}.tvs summary{padding:14px;align-items:flex-start}.tvs-summary-meta{gap:4px;flex-direction:column;align-items:flex-end}.tvs-rel{font-size:17px}.tvs-brief{font-size:15px}.tvs-body{padding:0 12px 16px}.tvs-grid{grid-template-columns:1fr;gap:10px}.tvs-amount{font-size:38px}.tvs-bar{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.tvs *, .tvs *::before, .tvs *::after{animation:none!important;transition:none!important}}
 </style>
