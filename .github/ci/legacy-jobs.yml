@@ -9803,13 +9803,15 @@ jobs:
       - "scripts/thematic_rotation_phase0.py"
       - "scripts/validate_regime_fwd.py"
       - "site/factordata/basket_washout_state.json"
-    # Budget 8 -> 15 (2026-10-31, macro #10257 ci run 41216684968 attempts 1+2):
-    # on a PULL REQUEST the fail-closed "canonical base" step fetches origin/main
-    # in ~4 min on a hosted runner (16:11->16:15Z, 17:23->17:27Z), pytest takes
-    # 146-179 s and the Chromium suite 2-3 min, so the job was cut at exactly 8:00
-    # with every executed test green; on main the base fetch is trivial, so the
-    # 8-minute figure was only ever proven there. 15 keeps the fail-closed fetch
-    # and the suites unchanged and covers the measured PR-side infrastructure time.
+    # Budget 8 -> 15 (2026-10-31, macro #10333 ci run 41221939325 attempts 1+2, jobs
+    # 124598642578 / 124621444781): on a PULL REQUEST the fail-closed "canonical base"
+    # step fetches origin/main in ~4 min on a hosted runner (17:27->17:31Z, 19:02->19:07Z),
+    # pytest takes ~3.5 min (26 passed) and the Chromium suite 2-3 min, so the job is cut
+    # at exactly 8:00 with every executed test green and the other nine jobs of its pack
+    # settle "infrastructure unknown" without running. On main the base fetch is trivial,
+    # so 8 was only ever proven there. 15 keeps the fail-closed fetch and both suites
+    # unchanged and covers the measured PR-side infrastructure time. Same repair as
+    # macro #10257 (unmerged at the time of writing); whichever lands second is a no-op.
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -44622,7 +44624,7 @@ jobs:
       - name: news impact contract freeze and owner payload conformance
         run: python -m pytest tests/test_news_impact_contracts.py -q
       - name: news impact phase 1 leaf (validator, sampler, cluster, issuer, hostile corpus)
-        run: python -m pytest tests/test_news_impact_validate.py tests/test_news_impact_hostile.py tests/test_news_impact_sampler.py tests/test_news_impact_cluster.py tests/test_news_impact_issuer.py -q
+        run: python -m pytest tests/test_news_impact_validate.py tests/test_news_impact_hostile.py tests/test_news_impact_sampler.py tests/test_news_impact_sampler_startup.py tests/test_news_impact_cluster.py tests/test_news_impact_issuer.py -q
       - name: news impact W3 (transfer, observation, cascade, mechanisms, eval receipt/grade, thesis, prophet adapter, agreement, producer, section 11 registration)
         run: python -m pytest tests/test_news_impact_transfer.py tests/test_news_impact_observation.py tests/test_news_impact_cascade.py tests/test_news_impact_mechanisms.py tests/test_news_impact_eval_receipt.py tests/test_news_impact_eval_grade.py tests/test_news_impact_thesis.py tests/test_news_impact_prophet_adapter.py tests/test_news_impact_agreement.py tests/test_news_impact_producer.py tests/test_news_impact_producer_facts.py tests/test_news_impact_section11.py -q
       - name: news impact w2 benchmark (tape draw, edgar body)
