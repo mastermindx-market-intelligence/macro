@@ -571,10 +571,11 @@ def test_the_production_reference_binds_and_resolves_a_store_symbol():
     table = capture.resolve_alias_table(_REPO_ROOT, required=True)
     assert table.receipt["sha256"].startswith("sha256:")
     frame = pd.read_parquet(_REPO_ROOT / relative)
-    store = frame[(frame["vendor"] == "store") & frame["valid_to"].isna()]
-    assert not store.empty, "the production reference carries at least one open store alias"
-    probe = store.iloc[0]
     on = date(2026, 10, 30)
+    store = frame[(frame["vendor"] == "store") & frame["valid_to"].isna()
+                  & (frame["valid_from"].isna() | (pd.to_datetime(frame["valid_from"]).dt.date <= on))]
+    assert not store.empty, "the production reference carries at least one store alias open on the probe date"
+    probe = store.iloc[0]
     symbol = table.vendor_symbol_for("store", str(probe["security_id"]), on)
     assert symbol == str(probe["vendor_symbol"])
     assert table.resolve("store", symbol, on) == str(probe["security_id"])
