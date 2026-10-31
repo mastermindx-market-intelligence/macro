@@ -143,3 +143,41 @@ Secretary closed the original review request with STOP; any next review must
 have a fresh scoped request/identity, not silently reuse the old worker.
 Real production R2→snapshot→page, express render preservation, bilingual
 browser paths and protected merge/deployment remain separate gates.
+
+## 2026-10-31 third review & CI source repair (post-feda59ce)
+
+Fresh non-author MastermindX1 review on `feda59ce` returned
+**REQUEST_CHANGES**, identifying an *inserted* Sunday/NYSE-holiday raw daily bar
+as a distinct case from a **missing** NYSE session. Even with the old 20-row
+adjacent-session-hole check, a non-session row could replace one prior actual
+session, corrupt the 20d volume denominator (0.35× versus the qualified 2.07×
+fixture) and leak into prior-return z/rank. **Repair:** refuse the entire
+SPY/QQQ readout with typed `NON_SESSION_HISTORY` if either raw daily history
+contains any row not identified as an NYSE session. This is deliberately
+fail-visible, not filtering or silently substituting historical prices. Tests
+inject both Sunday (2026-10-25) and observed Labor Day (2026-09-07), plus a
+QQQ-only non-session row. Existing valid-weekend/holiday *gaps* and missing
+trading-session guards remain intact.
+
+CI `41178112097` at `feda59ce` failed: `contract-delta` and
+`ci-pack-1` each found that `lib/nyse_calendar.py` was a source dependency
+of the targeted feature suite but absent from that suite's PR trigger
+paths. The workflow adds the actual dependency path without suppressing the
+closure check. `ci-pack-6` failed because the new inline CSS had no
+committed governed visual evidence. The fix uses the **existing**
+`mastermind.page_evidence_receipt.v1` → `mastermind.p0_evidence.v2`
+format and unmodified `capture_page_evidence.py`, not a new evidence plane:
+`mockups/evidence/tech-volatility-shock-20261031/`.
+The exact M2 Chromium capture has 8 required rest cells at
+1440×900/390×844 × EN/ZH × dark/light plus 8 authentic
+`focus(.tvs summary)` interaction captures, with actual PNG bytes,
+manifest hashes, observed theme/locale and capture tool digest. The source
+fixture deliberately opens the normally collapsed panel to reveal all cards
+and uses **synthetic** SPY/QQQ numbers: this is visual evidence only, not
+production price, deployment or end-to-end market-data proof.
+
+New exact-head `ci`, `fences` and `tech-volatility-shock` must finish
+green, then request a **new** independent non-author review of that exact
+head. Former reviewer comments on prior commits remain historical
+`REQUEST_CHANGES`, not acceptance. Protected merge and actual production
+browser/raw-R2 acceptance remain outstanding.

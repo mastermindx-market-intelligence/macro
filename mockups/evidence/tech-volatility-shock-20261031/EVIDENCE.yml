@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_tech_volatility_shock.html.j2
+manifest: mockups/evidence/tech-volatility-shock-20261031/manifest.json

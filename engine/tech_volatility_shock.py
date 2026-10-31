@@ -130,6 +130,17 @@ def snapshot_from_bars(
     spy, qqq = _clean(spy_raw), _clean(qqq_raw)
     if spy is None or qqq is None:
         return _missing("Regular-session raw OHLC not available for both ETFs.", code="RAW_OHLC_MISSING")
+    # The raw vendor series is supposed to contain ONLY NYSE sessions. A
+    # synthetic/erroneous Sunday or holiday row silently displaces an actual
+    # session in .tail(20), and can poison 60-session z-scores and YTD rank.
+    # Reject the whole malformed observation rather than inventing a corrected
+    # bar or publishing any derived metric from non-session input.
+    if any(not nyse_calendar.is_session(ts.date())
+           for bars in (spy, qqq) for ts in bars.index):
+        return _missing(
+            "Raw SPY/QQQ history contains a non-exchange-session daily bar.",
+            code="NON_SESSION_HISTORY",
+        )
     date = spy.index[-1]
     if qqq.index[-1] != date:
         return _missing("SPY and QQQ daily bars have different as-of sessions.", code="ASOF_MISMATCH")

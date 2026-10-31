@@ -162,3 +162,32 @@ def test_missing_and_session_reason_codes_are_specific_and_stable():
     assert snapshot_from_bars(spy, qqq, now=early)["reason_code"] == "SESSION_UNSETTLED"
     lag = datetime(2026, 11, 3, 2, 0, tzinfo=timezone.utc)
     assert snapshot_from_bars(spy, qqq, now=lag)["reason_code"] == "SESSION_STALE"
+
+
+def test_non_session_historical_row_rejected_before_volume_and_z_statistics():
+    """Extra Sunday/holiday rows are NOT 20 legitimate NYSE sessions."""
+    spy, qqq = _frames()
+    valid = snapshot_from_bars(spy, qqq, now=NOW)
+    assert valid["indices"][0]["volume_multiple"] == 2.07
+    for invalid in ("2026-10-25", "2026-09-07"):
+        date = pd.Timestamp(invalid)
+        assert not nyse_calendar.is_session(date.date())
+        injected = spy.copy()
+        # Preserve all real NYSE bars and add an enormous vendor anomaly.
+        injected.loc[date] = [101.0, 100.0, 100_000_000.0]
+        injected = injected.sort_index()
+        snap = snapshot_from_bars(injected, qqq, now=NOW)
+        assert snap["status"] == "unavailable"
+        assert snap["reason_code"] == "NON_SESSION_HISTORY"
+        assert snap["indices"] == []
+        assert snap["relative_z60"] is None
+        assert snap["relative_pp"] is None
+
+
+def test_non_session_in_qqq_history_also_refuses_joint_comparison():
+    spy, qqq = _frames()
+    injected = qqq.copy()
+    injected.loc[pd.Timestamp("2026-10-25")] = [100.0, 101.0, 100_000_000]
+    snap = snapshot_from_bars(spy, injected.sort_index(), now=NOW)
+    assert snap["status"] == "unavailable"
+    assert snap["reason_code"] == "NON_SESSION_HISTORY"

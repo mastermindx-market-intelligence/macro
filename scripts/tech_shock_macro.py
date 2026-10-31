@@ -32,6 +32,7 @@ REASON_ZH = {
     "RAW_OHLC_MISSING": "SPY 和 QQQ 的原始常规时段开盘价或收盘价不可用。",
     "ASOF_MISMATCH": "SPY 和 QQQ 最新日线对应的交易日不一致。",
     "NON_SESSION_DATE": "最新价格日期不是纽交所交易日。",
+    "NON_SESSION_HISTORY": "SPY 或 QQQ 的历史日线包含非纽交所交易日的数据，已拒绝不合格统计值。",
     "SESSION_UNSETTLED": "最新交易日尚未经过收盘数据确认截止时间。",
     "PREVIOUS_CLOSE_MISSING": "SPY 或 QQQ 缺少前一常规交易日的收盘价。",
     "INVALID_PRICE_SPY": "SPY 当日或前一交易日的必要价格无效。",

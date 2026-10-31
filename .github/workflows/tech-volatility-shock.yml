@@ -9,6 +9,7 @@ on:
     branches: [main]
     paths:
       - "engine/tech_volatility_shock.py"
+      - "lib/nyse_calendar.py"
       - "scripts/tech_shock_macro.py"
       - "scripts/build_site.py"
       - "scripts/render_macro_fast.py"

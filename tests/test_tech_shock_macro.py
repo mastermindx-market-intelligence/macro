@@ -196,6 +196,8 @@ def test_localized_status_codes_preserve_distinct_reasons():
          "最新交易日尚未经过收盘数据确认截止时间。"),
         ("HISTORY_INCOMPLETE", "Some historical statistics or volume baselines unavailable.",
          "部分历史统计值或成交量基准不可用。"),
+        ("NON_SESSION_HISTORY", "Raw SPY/QQQ history contains a non-exchange-session daily bar.",
+         "SPY 或 QQQ 的历史日线包含非纽交所交易日的数据，已拒绝不合格统计值。"),
     )
     for code, english, chinese in cases:
         snap = _missing(english, code=code)
