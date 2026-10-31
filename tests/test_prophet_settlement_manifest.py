@@ -952,3 +952,44 @@ def test_failure_vocabulary_is_closed_and_fully_exercised():
         seen.update(out["failures"])
         assert expected <= set(out["failures"]), (over, out["failures"])
     assert seen == set(MAN.FAILURE_CODES)
+
+
+def test_clock_causality_rejects_gross_impossibilities():
+    """A complete synthetic bundle cannot settle when its immutable clocks
+    contradict the source/compute/publish/read chain by days or years.
+    Cross-host skew within the preexisting 2h05 fixture stays accepted.
+    """
+    cases = (
+        {"computed_at": "2099-01-01T00:00:00Z"},
+        {"reader_observed_at": "2026-10-29T10:00:00Z"},
+        {"computed_at": "2026-10-29T00:00:00Z"},
+        {"health_kw": {"published_at": "2026-09-30T22:05:00Z"}},
+        {"health_kw": {"published_at": "2099-01-01T00:00:00Z"}},
+        {"index_kw": {"source_asof": "2099-01-01"}},
+    )
+    for kwargs in cases:
+        out = manifest_call(**kwargs)
+        assert out["status"] == "PENDING", kwargs
+        assert "clock_chain_incoherent" in out["failures"], (kwargs, out)
+        assert list(out) == list(MAN.MANIFEST_FIELDS)
+    # The existing documented 125-minute cross-host skew remains permitted.
+    assert manifest_call(reader_observed_at="2026-10-30T20:00:00Z")["status"] == "SETTLED"
+
+
+def test_structural_validator_never_mints_settled_authority():
+    """The anonymous public boundary can only validate a complete already
+    projected internal claim, not infer an accepted identity itself."""
+    settled = manifest_call()
+    assert MAN.settled_envelope_is_structural(settled)
+    for mutation in (
+        {"schema": "prophet.settlement_manifest/v2"},
+        {"failures": None},
+        {"computed_at": "2099-01-01T00:00:00Z"},
+        {"source_asof": "2099-01-01"},
+        {"reader_visible_asof": "2026-10-29"},
+        {"artifact_hashes": None},
+    ):
+        candidate = dict(settled, **mutation)
+        assert not MAN.settled_envelope_is_structural(candidate), mutation
+    assert not MAN.settled_envelope_is_structural(dict(settled, paid_secret="DO_NOT_PUBLISH"))
+    assert not MAN.settled_envelope_is_structural("SETTLED")

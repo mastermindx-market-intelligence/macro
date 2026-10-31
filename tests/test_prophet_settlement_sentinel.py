@@ -192,20 +192,32 @@ def test_public_report_never_erases_settled_failures_into_false_green():
     assert omitted["prophet_settlement"]["status"] == "UNAVAILABLE_DATA"
 
 
-def test_public_report_retains_only_valid_empty_failures_settled_claim():
-    """The projection preserves the exact valid synthetic input shape, without
-    making a new independent reader/issuer approval judgment.
-    """
-    public = fs.public_report({
-        "surfaces": {},
-        "prophet_settlement": {
-            "status": "SETTLED",
-            "owed_session": "2026-10-30",
-            "source_asof": "2026-10-30",
-            "failures": [],
-            "artifact_hashes": {"private": "SECRET_INDEX_SHA"},
+def _complete_settled_fixture():
+    """Full synthetic internal projection shape; never a real issuer receipt."""
+    return {
+        "schema": "prophet.settlement_manifest/v1",
+        "status": "SETTLED",
+        "owed_session": "2026-10-30",
+        "source_asof": "2026-10-30",
+        "reader_visible_asof": "2026-10-30",
+        "computed_at": "2026-10-30T21:58:41Z",
+        "published_at": "2026-10-30T22:05:00Z",
+        "checked_at": "2026-10-30T22:11:03Z",
+        "checkpoint": "a" * 40,
+        "artifact_hashes": {
+            "board": "a" * 64,
+            "candidate_store": "b" * 64,
+            "index": "c" * 64,
+            "theme_state": "d" * 64,
         },
-    })
+        "failures": [],
+    }
+
+
+def test_public_report_retains_only_valid_empty_failures_settled_claim():
+    """Only a complete, closed synthetic internal claim retains SETTLED."""
+    raw = _complete_settled_fixture()
+    public = fs.public_report({"surfaces": {}, "prophet_settlement": raw})
     block = public["prophet_settlement"]
     assert block == {
         "schema": "prophet.settlement_manifest/v1",
@@ -214,4 +226,95 @@ def test_public_report_retains_only_valid_empty_failures_settled_claim():
         "source_asof": "2026-10-30",
         "failures": [],
     }
-    assert "SECRET_INDEX_SHA" not in json.dumps(public)
+    assert "a" * 64 not in json.dumps(public)
+    assert "b" * 64 not in json.dumps(public)
+
+
+def test_public_boundary_rejects_non_dict_and_unknown_top_level_secrets():
+    """Public status is default-deny even for synthetic malformed top-level
+    and settlement values; no plan, token or path may leak."""
+    for raw in (
+        [{"plan": "PAID_PRIVATE_PLAN", "path": "/etc/secret"}],
+        "PRIVATE_TOKEN",
+        None,
+        42,
+    ):
+        doc = fs.public_report({
+            "generated_at": NOW.isoformat(),
+            "surfaces": {},
+            "secret_top_level": "PAID_TOP_SECRET",
+            "prophet_settlement": raw,
+        })
+        assert doc["prophet_settlement"] == {
+            "schema": "prophet.settlement_manifest/v1",
+            "status": "UNAVAILABLE_DATA",
+            "owed_session": None, "source_asof": None, "failures": [],
+        }
+        blob = json.dumps(doc)
+        for bait in ("PAID_PRIVATE_PLAN", "/etc/secret", "PRIVATE_TOKEN", "PAID_TOP_SECRET"):
+            assert bait not in blob
+    assert "prophet_settlement" not in fs.public_report({"surfaces": {}})
+
+
+def test_public_boundary_rejects_false_settled_schema_dates_clocks_and_extensions():
+    valid = _complete_settled_fixture()
+    changed = (
+        {"schema": "prophet.settlement_manifest/v2"},
+        {"schema": None},
+        {"source_asof": "2026-10-30_PRIVATE_TOKEN"},
+        {"owed_session": "2026-10-30_PRIVATE_TOKEN"},
+        {"computed_at": None},
+        {"computed_at": "2099-01-01T00:00:00Z"},
+        {"published_at": "2026-09-01T22:05:00Z"},
+        {"checked_at": "2026-10-29T21:00:00Z"},
+        {"reader_visible_asof": "2099-01-01"},
+        {"source_delayed": True},
+        {"source_unknown": True},
+        {"source_mixed_vintage": True},
+        {"private_plan": "PAID_PRIVATE_PLAN"},
+        {"artifact_hashes": {"index": "c" * 64}},
+    )
+    for mutation in changed:
+        doc = fs.public_report({
+            "surfaces": {},
+            "prophet_settlement": dict(valid, **mutation),
+            "unknown_top_level": "PAID_TOP_SECRET",
+        })
+        assert doc["prophet_settlement"]["status"] == "UNAVAILABLE_DATA", mutation
+        assert "PAID_PRIVATE_PLAN" not in json.dumps(doc), mutation
+        assert "PAID_TOP_SECRET" not in json.dumps(doc), mutation
+        assert "_PRIVATE_TOKEN" not in json.dumps(doc), mutation
+
+
+def test_public_boundary_rejects_fake_empty_failure_list_equality():
+    """A list-like comparison or custom equality is not exact [] evidence."""
+    from collections import UserList
+
+    class AlwaysEmpty:
+        def __eq__(self, other):
+            return other == []
+
+    valid = _complete_settled_fixture()
+    for bogus in (UserList([]), AlwaysEmpty()):
+        doc = fs.public_report({
+            "surfaces": {},
+            "prophet_settlement": dict(valid, failures=bogus),
+        })
+        assert doc["prophet_settlement"]["status"] == "UNAVAILABLE_DATA"
+        assert doc["prophet_settlement"]["failures"] == []
+
+
+def test_public_boundary_preserves_incumbent_health_keys_only():
+    raw = {
+        "generated_at": NOW.isoformat(),
+        "ok": True,
+        "surfaces": {"prophet_us": {"status": "ok", "facts": {"secret": "PAID_PLAN"}}},
+        "heartbeat": {"last_pass_utc": NOW.isoformat()},
+        "unknown_private_owner": "PAID_OWNER_SECRET",
+    }
+    out = fs.public_report(raw)
+    assert out["generated_at"] == raw["generated_at"]
+    assert out["ok"] is True
+    assert out["heartbeat"] == raw["heartbeat"]
+    assert out["surfaces"] == {"prophet_us": {"status": "ok"}}
+    assert "unknown_private_owner" not in out

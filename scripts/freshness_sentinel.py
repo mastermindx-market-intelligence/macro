@@ -1970,37 +1970,58 @@ def public_report(report: dict) -> dict:
     Shallow-copies down to the per-surface dicts only, which is exactly as deep
     as the key being removed — the callers publish and discard.
     """
-    out = dict(report)
+    # Anonymous Caddy output must be default-deny at the TOP level too.
+    # The normal evaluator/runtime owns exactly these public keys; a newly
+    # introduced private annotation must not be published just because it
+    # appears beside generated_at. The settlement block is handled below.
+    public_keys = (
+        "generated_at", "ok", "stale_surfaces", "indeterminate_surfaces",
+        "active_breach", "blind_surfaces", "alerting", "sla", "heartbeat",
+    )
+    out = {key: report[key] for key in public_keys if key in report}
+    raw_surfaces = report.get("surfaces")
     out["surfaces"] = {
-        sid: {k: v for k, v in c.items() if k != "facts"} if isinstance(c, dict) else c
-        for sid, c in (report.get("surfaces") or {}).items()
-    }
+        sid: {k: v for k, v in c.items() if k != "facts"}
+        for sid, c in raw_surfaces.items()
+        if isinstance(sid, str) and isinstance(c, dict)
+    } if isinstance(raw_surfaces, dict) else {}
     # This file is public. A2 never ships private source/plan payloads or raw
     # artifact hashes to an unauthenticated reader. New internal fields stay
     # omitted unless explicitly listed here as safe health metadata.
-    raw_settlement = report.get("prophet_settlement")
-    if isinstance(raw_settlement, dict):
-        from scripts.prophet_settlement_manifest import FAILURE_CODES
-        allowed_status = {"SETTLED", "PENDING", "UNAVAILABLE_DATA"}
-        observed_status = raw_settlement.get("status")
+    if "prophet_settlement" in report:
+        from scripts.prophet_settlement_manifest import (
+            FAILURE_CODES, SETTLEMENT_SCHEMA, _parse_session,
+            settled_envelope_is_structural,
+        )
+        raw = report.get("prophet_settlement")
+        # A list/string (possibly containing paid plans) is not a public
+        # settlement object. Never shallow-copy an unrecognized value.
+        raw_settlement = raw if type(raw) is dict else {}
         failures = raw_settlement.get("failures")
-        # Validate BEFORE filtering to the public allowlist. A missing,
-        # malformed, or unknown failure entry must never disappear and
-        # turn an unverified SETTLED claim into a clean public one.
-        if observed_status == "SETTLED" and failures != []:
+        raw_status = raw_settlement.get("status")
+        known = (
+            raw_settlement.get("schema") == SETTLEMENT_SCHEMA
+            and type(raw_status) is str
+            and raw_status in {"SETTLED", "PENDING", "UNAVAILABLE_DATA"}
+        )
+        observed_status = raw_status if known else "UNAVAILABLE_DATA"
+        if observed_status == "SETTLED" and not settled_envelope_is_structural(raw_settlement):
+            # The genuine projector issues a complete, closed internal
+            # envelope. A missing/unknown schema, impossible clock, private
+            # extension, false empty-list equality, or contradictory vintage
+            # cannot be re-certified merely by dropping those fields.
             observed_status = "UNAVAILABLE_DATA"
+        owed = raw_settlement.get("owed_session")
+        source = raw_settlement.get("source_asof")
         out["prophet_settlement"] = {
-            "schema": "prophet.settlement_manifest/v1",
-            "status": observed_status if isinstance(observed_status, str) and observed_status in allowed_status else "UNAVAILABLE_DATA",
-            "owed_session": raw_settlement.get("owed_session")
-            if isinstance(raw_settlement.get("owed_session"), str) else None,
-            "source_asof": raw_settlement.get("source_asof")
-            if isinstance(raw_settlement.get("source_asof"), str) else None,
+            "schema": SETTLEMENT_SCHEMA,
+            "status": observed_status,
+            "owed_session": owed if _parse_session(owed) is not None else None,
+            "source_asof": source if _parse_session(source) is not None else None,
             "failures": [
                 token for token in failures[:16]
-                if isinstance(token, str)
-                and token in FAILURE_CODES
-            ] if isinstance(failures, list) else [],
+                if type(token) is str and token in FAILURE_CODES
+            ] if type(failures) is list else [],
         }
     return out
 

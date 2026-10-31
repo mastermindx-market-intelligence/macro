@@ -112,7 +112,7 @@ import hashlib
 import json
 import re
 from collections.abc import Mapping
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 
 __all__ = [
     "SETTLEMENT_SCHEMA",
@@ -123,6 +123,7 @@ __all__ = [
     "STATUS_UNAVAILABLE_DATA",
     "FAILURE_CODES",
     "MANIFEST_FIELDS",
+    "settled_envelope_is_structural",
     "VINTAGE_FLAGS",
     "REQUIRED_BUNDLE_ARTIFACT_KEYS",
     "project_settlement_manifest",
@@ -192,6 +193,7 @@ FAILURE_READER_PROOF_MALFORMED = "reader_proof_malformed"
 FAILURE_BUNDLE_ID_MISMATCH = "bundle_id_mismatch"
 FAILURE_BUNDLE_INDEX_DIGEST_MISMATCH = "bundle_index_digest_mismatch"
 FAILURE_BUNDLE_ID_CHECKPOINT_CONFLATED = "bundle_id_checkpoint_conflated"
+FAILURE_CLOCK_CHAIN_INCOHERENT = "clock_chain_incoherent"
 
 FAILURE_CODES = frozenset(
     {
@@ -229,6 +231,7 @@ FAILURE_CODES = frozenset(
         FAILURE_BUNDLE_ID_MISMATCH,
         FAILURE_BUNDLE_INDEX_DIGEST_MISMATCH,
         FAILURE_BUNDLE_ID_CHECKPOINT_CONFLATED,
+        FAILURE_CLOCK_CHAIN_INCOHERENT,
     }
 )
 
@@ -282,6 +285,85 @@ def _utc_stamp_failure(value: object) -> str | None:
     if parsed.tzinfo is None or parsed.utcoffset() != _UTC_OFFSET:
         return FAILURE_READER_CLOCK_NOT_UTC
     return None
+
+
+# The existing cross-host skew regression tolerates 2h05 between publisher and
+# reader. Three hours preserves that known observation while refusing gross
+# contradictions (days, months or a 2099 computation observed in 2026).
+# This is a tolerance for ordering evidence, NOT an invented clock or a license
+# to infer that an unavailable source session actually settled.
+CLOCK_CAUSALITY_SKEW = timedelta(hours=3)
+
+
+def _clock_chain_incoherent(
+    source_asof: date | None,
+    computed_at: str | None,
+    published_at: str | None,
+    checked_at: str | None,
+) -> bool:
+    """Reject impossible source/compute/publish/read order, respecting bounded skew.
+
+    A source session is DATE-grained, not an invented exact midnight tick.
+    Its midnight UTC is used only as a conservative lower bound with 3h
+    tolerance; no upper duration limit is imposed on legitimately delayed
+    publication or a later real reader observation.
+    """
+    stamps = (computed_at, published_at, checked_at)
+    if any(_utc_stamp_failure(x) is not None for x in stamps):
+        # Invalid/missing evidence already has its own typed failure.
+        return False
+    computed, published, read = (
+        datetime.fromisoformat(x.replace("Z", "+00:00")) for x in stamps
+    )
+    if computed > published + CLOCK_CAUSALITY_SKEW:
+        return True
+    if computed > read + CLOCK_CAUSALITY_SKEW:
+        return True
+    if published > read + CLOCK_CAUSALITY_SKEW:
+        return True
+    if source_asof is not None:
+        earliest = datetime.combine(source_asof, time.min, tzinfo=timezone.utc)
+        if any(clock < earliest - CLOCK_CAUSALITY_SKEW
+               for clock in (computed, published, read)):
+            return True
+    return False
+
+
+def settled_envelope_is_structural(value: object) -> bool:
+    """Validate only the shape of a supplied internal SETTLED envelope.
+
+    Used at the anonymous public-projection boundary so a malformed internal
+    claim cannot be re-labeled as trusted v1/SETTLED while private fields
+    disappear. This never mints an issuer or reader attestation, never
+    replaces the pure projection's real four-asset bundle gates, and performs
+    no I/O. The genuine projector always emits exactly MANIFEST_FIELDS.
+    """
+    if type(value) is not dict or set(value) != set(MANIFEST_FIELDS):
+        return False
+    if value.get("schema") != SETTLEMENT_SCHEMA or value.get("status") != STATUS_SETTLED:
+        return False
+    # Equality with [] is NOT type proof (UserList and custom objects can
+    # compare equal to an empty list). We require the actual built-in list.
+    if type(value.get("failures")) is not list or value["failures"]:
+        return False
+    owed = _parse_session(value.get("owed_session"))
+    source = _parse_session(value.get("source_asof"))
+    visible = _parse_session(value.get("reader_visible_asof"))
+    if owed is None or source is None or visible != source or source < owed:
+        return False
+    if any(_utc_stamp_failure(value.get(key)) is not None
+           for key in ("computed_at", "published_at", "checked_at")):
+        return False
+    if _clock_chain_incoherent(source, value["computed_at"],
+                               value["published_at"], value["checked_at"]):
+        return False
+    if not isinstance(value.get("checkpoint"), str) or not value["checkpoint"]:
+        return False
+    assets = value.get("artifact_hashes")
+    if type(assets) is not dict or set(assets) != _REQUIRED_BUNDLE_KEYS:
+        return False
+    return all(type(v) is str and _SHA256_RE.fullmatch(v)
+               for v in assets.values())
 
 
 def _load_served_index(raw: bytes) -> dict | None:
@@ -446,6 +528,14 @@ def project_settlement_manifest(
         manifest_computed_at = computed_at
     else:
         failures.add(FAILURE_COMPUTED_AT_UNQUALIFIED)
+
+    # The clocks may differ by bounded cross-host skew, but a computation
+    # years after its reader, publication long before its source session,
+    # or a reader preceding that source date is causally impossible. This
+    # is a JUDGED PENDING condition, never proof of settlement.
+    if _clock_chain_incoherent(health_source_date, manifest_computed_at,
+                               published_text, checked_at):
+        failures.add(FAILURE_CLOCK_CHAIN_INCOHERENT)
 
     # ── §18.2 accepted build bundle: the full raw-asset map, bound ──────────
     # The bundle is proven as a WHOLE or not at all: the reader-side map must
