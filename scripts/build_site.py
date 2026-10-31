@@ -29,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from collectors.sponsors import flows_table  # noqa: E402
 from engine.i18n import prettify as _prettify, t as T  # noqa: E402
 from engine.inputs import build_features  # noqa: E402
+from engine.prophet_opportunity_presentation import present_us_candidate  # noqa: E402
 from engine.market_gamma import view as market_gamma_view  # noqa: E402 — SHARED deriver: FE banner + contract (engine/run.py) call the SAME function so they can't drift
 # P-MP1-SHELL §8a (MP-1-prophet-board.md, b1 ruling): the SAME Q7 bucket table
 # engine/us_board_rank.py already ships for the entry/actionability axis — imported
@@ -5748,7 +5749,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     def _table_row(n):
         flat = _us_board_row_flat(n)
         try:
-            presenter = env.get_template("_prophet_setup_detail.html.j2").module.table_action
+            presenter = env.get_template("_prophet_setup_detail.html.j2").module.opportunity_table_action
             flat["setup_detail"] = str(presenter(
                 n, (us_standouts or {}).get("as_of"),
                 plan_rel=_plan_relation_for_row(plan_relations, n)))
@@ -5806,7 +5807,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
         # the already protected payload instead of baking them into anonymous HTML.
         try:
             today_cards_html = env.get_template("_us_board_cards.html.j2").render(
-                items=today_rows, sg_any=sg_any, bs_adj=bs_adj, xu_allfeat=xu_allfeat,
+                items=today_rows, opportunity_prefix="today-paid", sg_any=sg_any, bs_adj=bs_adj, xu_allfeat=xu_allfeat,
                 trg_map=trg_map, rw_en=rw_en, rw_zh=rw_zh,
                 setup_as_of=(us_standouts or {}).get("as_of"),
                 plan_rel={"state": plan_relations[0] if plan_relations else "none",
@@ -5824,7 +5825,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
         items = _us_board_group_items(locked_rows, sg_any, gate["stage_counts"])
         try:
             cards_html = env.get_template("_us_board_cards.html.j2").render(
-                items=items, sg_any=sg_any, bs_adj=bs_adj, xu_allfeat=xu_allfeat,
+                items=items, opportunity_prefix="screener-paid", sg_any=sg_any, bs_adj=bs_adj, xu_allfeat=xu_allfeat,
                 trg_map=trg_map, rw_en=rw_en, rw_zh=rw_zh,
                 setup_as_of=(us_standouts or {}).get("as_of"),
                 plan_rel={"state": plan_relations[0] if plan_relations else "none",
@@ -6262,6 +6263,7 @@ def main() -> int:
     # and tests (tests/test_p_mp1_shell_stance_projection.py), never a second
     # template-side mapping (MP-1 §8a: "never a second mapping").
     env.globals["us_stance_projection"] = us_stance_projection
+    env.globals["present_us_candidate"] = present_us_candidate
     confirming, contradicting = component_chips(latest)
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
 

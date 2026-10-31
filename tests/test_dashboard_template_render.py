@@ -48,6 +48,8 @@ def _env() -> jinja2.Environment:
     from scripts.build_site import us_stance_projection  # noqa: PLC0415
     from engine.macro_news import CHANNEL_LABEL  # noqa: PLC0415
     env.globals["us_stance_projection"] = us_stance_projection
+    from engine.prophet_opportunity_presentation import present_us_candidate
+    env.globals["present_us_candidate"] = present_us_candidate
     env.globals["CHANNEL_LABEL"] = CHANNEL_LABEL
     return env
 
@@ -792,7 +794,7 @@ def test_trigger_chip_renders_for_carded_overlap_ticker():
     vm = _vm_with_setups([_setup_row(ticker="ACME", name="Acme Corp",
                                      sector="Information Technology")])
     html = _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
-    assert 'class="pv-trg"' in html            # chip rendered (fired = no -soon class)
+    assert 'class="po-trigger"' in html            # chip rendered (fired = no -soon class)
     assert ">Triggered<" in html               # EN chip label (l-en span)
     assert ">已触发<" in html                   # ZH chip label (l-zh span)
     assert _ts_row("ACME") not in html          # no ts-row dupe
@@ -804,7 +806,7 @@ def test_trigger_chip_imminent_variant_is_dashed():
     vm = _vm_with_setups([_setup_row(ticker="ACME",
                                      signal={"tier_cascade": "T3", "provisional": True})])
     html = _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
-    assert "pv-trg-soon" in html
+    assert 'class="po-trigger po-trigger-soon"' in html
     assert ">Imminent<" in html and ">即将触发<" in html
     # provisional caveat reaches the chip tip (Tier 2), in plain words
     assert "about 1 in 10 of these vanish" in html

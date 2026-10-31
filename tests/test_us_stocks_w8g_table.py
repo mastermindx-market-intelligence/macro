@@ -16,7 +16,7 @@ import re
 from pathlib import Path
 
 import pytest
-from jinja2 import DictLoader, Environment
+from tests.test_dashboard_template_render import _env
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = (ROOT / "templates" / "dashboard.html.j2").read_text()
@@ -67,10 +67,11 @@ def _render_us_data_block(us_standouts):
         '{%- macro t(en, zh="") -%}{{ en }}{%- endmacro -%}\n'
         '{%- macro td(x) -%}{{ x }}{%- endmacro -%}\n'
     )
-    full = macros + "{% set _su = us_standouts %}\n" + snippet
-
-    env = Environment(loader=DictLoader({"t": full}), autoescape=False)
-    tmpl = env.get_template("t")
+    # Include the actual detail import just outside the JSON island. The production
+    # environment provides its same-row presenter; an empty DictLoader cannot.
+    full = (macros + "{% set _su = us_standouts %}\n"
+            '{% import "_prophet_setup_detail.html.j2" as psd_table %}\n' + snippet)
+    tmpl = _env().from_string(full)
     return tmpl.render(us_standouts=us_standouts)
 
 

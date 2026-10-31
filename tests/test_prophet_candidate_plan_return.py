@@ -889,3 +889,305 @@ fire(closeBtn());
 assert.equal(document.activeElement, origin.trigger);
 assert.equal(scrollState.y, before.scroll, 'Close must retain the original candidate scroll');
 """, pre=_PRE["table"])
+
+
+# Selected-card study uses the same actual detail and Plan-return owners.
+_CMP_PRE = """
+build({mode: 'candidates', view: 'grid'});
+const second = candidate('board', 'SECOND', 'OTHER-BULL-20260811');
+const third = candidate('board', 'THIRD', 'OTHER-BULL-20260811');
+const fourth = candidate('board', 'FOURTH', 'OTHER-BULL-20260811');
+candGrid.append(second.row, third.row, fourth.row);
+"""
+_CMP_START = """
+await flush();
+const origin = origins.board;
+const pick = row => row.querySelector('.pvs-study-pick');
+const bar = document.querySelector('[data-pvs-study-for="us-cand-grid"]');
+assert.ok(bar && pick(origin.row), 'study controls must be on the actual source cards');
+assert.equal(bar.hidden, true, 'no empty comparison toolbar at rest');
+const go = bar.querySelector('.pvs-study-start');
+const back = bar.querySelector('.pvs-study-back');
+const clear = bar.querySelector('.pvs-study-clear');
+"""
+
+
+def test_explicit_selection_keeps_original_nodes_order_and_three_card_capacity():
+    _run(_CMP_START + """
+assert.equal(go.disabled, true);
+const order = Array.from(candGrid.children);
+fire(pick(third.row)); await flush();
+assert.equal(go.disabled, true);
+fire(pick(origin.row)); await flush();
+assert.equal(go.disabled, false);
+fire(pick(second.row)); await flush();
+assert.equal(pick(fourth.row).disabled, true);
+fire(pick(fourth.row)); await flush(); // reject even a synthetic disabled-button event
+assert.equal(pick(fourth.row).getAttribute('aria-pressed'), 'false');
+fire(go); await flush();
+assert.equal(candGrid.classList.contains('pvs-study-active'), true);
+assert.deepEqual(Array.from(candGrid.children), order, 'never reorder or copy publisher cards');
+assert.ok(fourth.row.classList.contains('pvs-study-omit'));
+assert.equal(origin.row.classList.contains('pvs-study-omit'), false);
+assert.ok(bar.textContent.includes('Compare the published facts'));
+assert.ok(bar.textContent.includes('对比已发布的信息'));
+fire(back); await flush();
+assert.equal(candGrid.classList.contains('pvs-study-active'), false);
+assert.equal(pick(origin.row).getAttribute('aria-pressed'), 'true', 'return retains chosen originals');
+assert.equal(document.activeElement, go);
+assert.equal(scrollState.y, 1200);
+fire(clear); await flush();
+assert.equal(pick(origin.row).getAttribute('aria-pressed'), 'false');
+assert.equal(go.disabled, true);
+""", _CMP_PRE)
+
+
+def test_study_keeps_the_native_detail_and_exact_plan_return():
+    _run(_CMP_START + """
+fire(pick(origin.row)); fire(pick(second.row)); fire(go); await flush();
+fire(origin.trigger); await flush();
+assert.equal(dialogEl().querySelector('.pv-setup-body'), origin.body);
+fire(origin.link); await flush();
+assert.equal(mode(), 'plans');
+assert.equal(pick(origin.row).getAttribute('aria-pressed'), 'true');
+assert.equal(window.PVSetupReturn.run(), true);
+await flush();
+assert.equal(mode(), 'candidates');
+assert.equal(candGrid.classList.contains('pvs-study-active'), true);
+assert.equal(dialogEl().querySelector('.pv-setup-body'), origin.body);
+fire(closeBtn()); await flush();
+assert.equal(document.activeElement, origin.trigger);
+assert.equal(pick(origin.row).getAttribute('aria-pressed'), 'true');
+""", _CMP_PRE)
+
+
+@pytest.mark.parametrize('mutation', [
+    "origin.row.remove();",
+    "origin.row.querySelector('.pv-setup-stock-link').setAttribute('href', 'stock.html#REPLACED');",
+    "origin.row.setAttribute('data-ticker', 'RECYCLED');",
+    "panel.setAttribute('data-board-asof', '2026-10-15');",
+    "origin.row.setAttribute('hidden', '');",
+    "origin.row.classList.add('mx-tier-hidden');",
+    "fire(srcBtn('plan'));",
+])
+def test_stale_or_unrelated_sources_clear_without_resurrection(mutation):
+    _run(_CMP_START + """
+fire(pick(origin.row)); fire(pick(second.row)); fire(go); await flush();
+""" + mutation + """
+await flush();
+assert.equal(candGrid.classList.contains('pvs-study-active'), false);
+assert.equal(pick(second.row).getAttribute('aria-pressed'), 'false');
+assert.equal(go.disabled, true);
+""", _CMP_PRE)
+
+
+def test_language_preserves_selection_but_access_and_hydration_clear_it():
+    _run(_CMP_START + """
+fire(pick(origin.row)); fire(pick(second.row)); fire(go); await flush();
+(document.listeners.langchange || []).forEach(fn => fn({})); await flush();
+assert.equal(candGrid.classList.contains('pvs-study-active'), true);
+(window.listeners['mmx-access-tier'] || []).forEach(fn => fn({})); await flush();
+assert.equal(candGrid.classList.contains('pvs-study-active'), false);
+assert.equal(go.disabled, true);
+fire(pick(origin.row)); fire(pick(second.row)); fire(go); await flush();
+(document.listeners['candidate-pool-hydrated'] || []).forEach(fn => fn({})); await flush();
+assert.equal(go.disabled, true);
+assert.equal(candGrid.classList.contains('pvs-study-active'), false);
+""", _CMP_PRE)
+
+
+def test_invalidated_selection_also_closes_its_open_native_detail():
+    _run(_CMP_START + """
+fire(pick(origin.row)); fire(pick(second.row)); fire(go); await flush();
+fire(origin.trigger); await flush();
+origin.row.querySelector('.pv-setup-stock-link').setAttribute('href', 'stock.html#OTHER');
+await flush();
+assert.equal(dialogEl().open, false, 'a changed identity cannot retain the old detail');
+assert.equal(go.disabled, true);
+""", _CMP_PRE)
+
+
+@pytest.mark.parametrize('key', ['data-today-source-sha256','data-today-pair-id','data-today-selection-receipt','data-today-roster-size','data-today-served','data-today-native-state'])
+def test_today_native_envelope_changes_invalidate_the_display_selection(key):
+    _run("""
+await flush();
+const grid=document.getElementById('us-today-grid');
+const original=origins.today.row, other=grid.querySelector('[data-ticker="SECOND"]');
+const ui=document.querySelector('[data-pvs-study-for="us-today-grid"]');
+fire(original.querySelector('.pvs-study-pick'));fire(other.querySelector('.pvs-study-pick'));
+fire(ui.querySelector('.pvs-study-start'));await flush();
+assert.equal(grid.classList.contains('pvs-study-active'),true);
+document.getElementById('us-today').setAttribute(""" + repr(key) + """, 'changed');
+await flush();
+assert.equal(grid.classList.contains('pvs-study-active'),false);
+assert.equal(original.querySelector('.pvs-study-pick').getAttribute('aria-pressed'),'false');
+""", """
+build({mode:'today',view:'grid'});
+document.getElementById('us-today-grid').append(candidate('today','SECOND','OTHER-BULL-20260811').row);
+""")
+
+
+# Terminal handoff uses the real capture router + open function. URL construction,
+# loading, and iframe presentation are boundary doubles; native top-layer/focus
+# behavior also requires the separate Chromium proof.
+def _terminal_sources() -> str:
+    theme = (ROOT / 'templates/theme.js').read_text(encoding='utf-8')
+    start = theme.index('  function openTerminal(')
+    end = theme.index('  function closeTerminal(', start)
+    router_start = theme.index("  document.addEventListener('click', function (e) {\n    if (!mmTerminalOn()")
+    router_end = theme.index('  }, true);', router_start) + len('  }, true);')
+    return r"""
+let terminalEnabled = true, pendingTerminal = null;
+const terminalCalls = [];
+const mmTerminalOn = () => terminalEnabled;
+const terminalUrl = t => 'https://terminal.test/terminal?sym=' + t;
+const terminalEmbedUrl = t => terminalUrl(t) + '&embed=dashboard';
+const terminalExistingUrl = (url, embed) => url + (embed ? '&embed=dashboard' : '');
+const MM_TERMINAL_ORIGIN = 'https://terminal.test';
+const loadTerminalOverlay = done => { pendingTerminal = done; };
+const terminalTarget = a => a && a.hasAttribute('href') ? {ticker:'NATIVE', url:''} : null;
+window.MDXTerminalOverlay = {open(config) {
+  assert.equal(dialogEl().open, false, 'native modal still covers the Terminal');
+  terminalCalls.push({config, focus:document.activeElement});
+}};
+const priorClickHandlers = (document.listeners.click || []).length;
+""" + theme[start:end] + theme[router_start:router_end] + r"""
+const terminalClick = document.listeners.click[priorClickHandlers];
+function clickTerminal(anchor, overrides) {
+  const e = Object.assign({target:anchor, button:0, defaultPrevented:false,
+    preventDefault() {this.defaultPrevented=true;}, stopPropagation() {this.stopped=true;}}, overrides || {});
+  terminalClick(e); return e;
+}
+"""
+
+
+@pytest.mark.parametrize('kind,pre', [
+    ('pool', _PRE['grid']), ('board', _PRE['grid']),
+    ('today', _PRE['today']), ('table', _PRE['table']),
+])
+def test_terminal_releases_modal_before_loader_and_keeps_exact_source(kind, pre):
+    _run(_terminal_sources() + "const origin = origins['" + kind + "']; const kindIsTable = " + str(kind == "table").lower() + ";\n" + r"""
+fire(origin.trigger); await flush();
+const link = dialogEl().querySelector('.pvs-native-link');
+const href = link.getAttribute('href'), originalBody = origin.body;
+const before = {mode:mode(), view:window.USStockTable._getView(), scroll:scrollState.y};
+const e = clickTerminal(link);
+assert.equal(e.defaultPrevented, true);
+assert.equal(e.stopped, true);
+assert.equal(dialogEl().open, false, 'release must precede asynchronous loader');
+assert.equal(document.documentElement.classList.contains('pv-setup-lock'), false);
+assert.equal(document.activeElement, origin.trigger);
+if (kindIsTable) assert.equal(origin.details.querySelector('.pvs-body-source').content.contains(originalBody), true);
+else assert.equal(originalBody.isConnected, true);
+assert.equal(dialogEl().contains(originalBody), false);
+assert.equal(link.hasAttribute('href'), false, 'closed dialog is no longer a navigation owner');
+pendingTerminal(true); await flush();
+assert.equal(terminalCalls.length, 1);
+assert.equal(terminalCalls[0].config.trigger, origin.trigger);
+assert.equal(terminalCalls[0].focus, origin.trigger, 'overlay captures original return focus');
+assert.equal(mode(), before.mode);
+assert.equal(window.USStockTable._getView(), before.view);
+assert.equal(scrollState.y, before.scroll);
+fire(origin.trigger); await flush();
+assert.equal(dialogEl().querySelector('.pv-setup-body'), originalBody);
+assert.equal(dialogEl().querySelector('.pvs-native-link').getAttribute('href'), href);
+""", pre)
+
+
+def test_terminal_from_plan_retains_candidate_return_after_overlay():
+    _run(_jump('board') + _terminal_sources() + r"""
+fire(plans.BOAR.trigger); await flush();
+clickTerminal(dialogEl().querySelector('.pvs-native-link')); pendingTerminal(true); await flush();
+assert.equal(terminalCalls[0].config.trigger, plans.BOAR.trigger);
+assert.equal(window.PVSetupReturn.available(), true, 'Terminal overlay must not discard candidate return');
+assert.equal(window.PVSetupReturn.run(), true); await flush();
+assert.equal(mode(), 'candidates');
+assert.equal(dialogEl().querySelector('.pv-setup-body'), origin.body);
+""")
+
+
+@pytest.mark.parametrize('override', [
+    '{metaKey:true}', '{ctrlKey:true}', '{shiftKey:true}', '{altKey:true}',
+    '{button:1}', '{defaultPrevented:true}',
+])
+def test_terminal_modified_click_leaves_native_dialog_and_link_alone(override):
+    _run(_terminal_sources() + r"""
+const origin=origins.board; fire(origin.trigger); await flush();
+const link=dialogEl().querySelector('.pvs-native-link'), href=link.getAttribute('href');
+clickTerminal(link, """ + override + r""");
+assert.equal(dialogEl().open,true);
+assert.equal(link.getAttribute('href'),href);
+assert.equal(pendingTerminal,null);
+""")
+
+
+def test_terminal_unrelated_trigger_and_disabled_routing_do_not_release_setup():
+    _run(_terminal_sources() + r"""
+fire(origins.board.trigger); await flush();
+const outside=mk('a',null,{href:'stock.html#OTHER'}); body.append(outside);
+assert.equal(window.PVSetupReturn.releaseForTerminal(outside),outside);
+assert.equal(dialogEl().open,true);
+terminalEnabled=false;
+clickTerminal(dialogEl().querySelector('.pvs-native-link'));
+assert.equal(dialogEl().open,true);
+assert.equal(pendingTerminal,null);
+""")
+
+
+def test_opportunity_card_comparison_uses_action_footer_and_stays_quiet_until_selected():
+    _run("""
+await flush();
+const row = origins.board.row;
+const pick = row.querySelector('.pvs-study-pick');
+assert.ok(pick);
+assert.equal(pick.parentElement, row.querySelector('.po-footer'));
+const bar = document.querySelector('[data-pvs-study-for="us-cand-grid"]');
+assert.equal(bar.hidden, true);
+fire(pick); await flush();
+assert.equal(bar.hidden, false);
+assert.equal(pick.getAttribute('aria-pressed'), 'true');
+assert.equal(bar.querySelector('.pvs-study-start').disabled, true);
+fire(pick); await flush();
+assert.equal(bar.hidden, true);
+""", _CMP_PRE + """
+const footer = document.createElement('footer');
+footer.className = 'po-footer';
+origins.board.row.append(footer);
+""")
+
+
+@pytest.mark.parametrize("viewing", [False, True])
+def test_clear_study_restores_visible_card_focus_and_origin_scroll(viewing):
+    _run(_CMP_START + """
+fire(pick(second.row)); fire(pick(origin.row)); await flush();
+const before = {x: window.scrollX, y: window.scrollY};
+""" + ("fire(go); await flush(); window.scrollTo({left: 12, top: 4200});" if viewing else "") + """
+clear.focus();
+assert.equal(document.activeElement, clear);
+fire(clear); await flush();
+assert.equal(bar.hidden, true);
+assert.ok(document.activeElement === pick(second.row), 'Clear must not strand keyboard focus in the hidden toolbar');
+assert.ok(document.activeElement.getClientRects().length, 'focus returns to a visible original card');
+assert.equal(pick(second.row).getAttribute('aria-pressed'), 'false');
+assert.equal(candGrid.classList.contains('pvs-study-active'), false);
+assert.equal(scrollState.y, before.y, 'Clear restores the pre-comparison reading position');
+assert.equal(scrollState.x, before.x);
+""", _CMP_PRE)
+
+
+@pytest.mark.parametrize("mutation", [
+    "panel.setAttribute('data-board-asof', '2026-10-15');",
+    "origin.row.classList.add('mx-tier-hidden'); second.row.classList.add('mx-tier-hidden');",
+    "origin.row.remove(); second.row.remove();",
+])
+def test_clear_study_does_not_restore_replaced_or_withheld_sources(mutation):
+    _run(_CMP_START + """
+fire(pick(origin.row)); fire(pick(second.row)); fire(go); await flush();
+window.scrollTo({left: 12, top: 4200});
+const elsewhere = document.createElement('button'); body.append(elsewhere); elsewhere.focus();
+""" + mutation + """
+fire(clear); await flush();
+assert.ok(document.activeElement === elsewhere, 'stale selection must not steal focus');
+assert.equal(scrollState.y, 4200, 'stale selection must not restore an old scroll position');
+assert.equal(bar.hidden, true);
+""", _CMP_PRE)

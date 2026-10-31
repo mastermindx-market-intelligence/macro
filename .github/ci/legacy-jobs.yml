@@ -17223,6 +17223,7 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "engine/prophet_opportunity_presentation.py"
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -21966,6 +21967,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/prophet_opportunity_presentation.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -25492,6 +25494,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/prophet_opportunity_presentation.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -32298,6 +32301,18 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/prophet_plan_presentation.py"
+      - "tests/test_prophet_plan_presentation.py"
+      - "engine/prophet_opportunity_presentation.py"
+      - "templates/_prophet_opportunity_card.html.j2"
+      - "templates/_prophet_opportunity.css.j2"
+      - "tests/test_prophet_opportunity_card.py"
+      - "tests/test_prophet_opportunity_presentation.py"
+      - "tests/test_prophet_opportunity_integration.py"
+      - "tests/test_prophet_table_opportunity_parity.py"
+      - "tests/test_prophet_memory_handoff.py"
+      - "tests/test_prophet_setup_list_navigation.py"
+      - "tests/test_prophet_setup_sections.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -33415,7 +33430,7 @@ jobs:
       # an existing merge-binding CODE gate, not only by the data-gated
       # anticipation lane. No new job/runner/control plane is introduced.
       - name: Prophet source, lifecycle and presentation contracts (one native process)
-        run: python -m pytest tests/test_prophet_card_shared.py tests/test_us_prophet_original_card_layout.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
+        run: python -m pytest tests/test_prophet_card_shared.py tests/test_us_prophet_original_card_layout.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py tests/test_prophet_plan_presentation.py tests/test_prophet_opportunity_card.py tests/test_prophet_opportunity_presentation.py tests/test_prophet_opportunity_integration.py tests/test_prophet_table_opportunity_parity.py tests/test_prophet_memory_handoff.py tests/test_prophet_setup_list_navigation.py tests/test_prophet_setup_sections.py -q
       - name: Prophet R7 Wave A watchlist save outcomes and saved/tonight columns (A2)
         run: python -m pytest tests/test_prophet_r7_wave_a_watchlist.py -q
       - name: Prophet detector, organ and disposition contracts (one native process)
@@ -33772,6 +33787,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/prophet_opportunity_presentation.py"
+      - "tests/test_prophet_opportunity_integration.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -45147,6 +45164,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/prophet_opportunity_presentation.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"

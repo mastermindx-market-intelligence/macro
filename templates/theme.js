@@ -328,6 +328,10 @@
     if (!mmTerminalOn()) return false;
     var directUrl = requestedUrl ? terminalExistingUrl(requestedUrl, false) : terminalUrl(t);
     var embedUrl = requestedUrl ? terminalExistingUrl(requestedUrl, true) : terminalEmbedUrl(t);
+    // End the source dialog's native top layer before Terminal captures return focus.
+    if (window.PVSetupReturn && typeof window.PVSetupReturn.releaseForTerminal === 'function') {
+      trigger = window.PVSetupReturn.releaseForTerminal(trigger);
+    }
     loadTerminalOverlay(function (loaded) {
       if (loaded === false || !window.MDXTerminalOverlay) {
         var _ss = window.MMXSharedShell;
@@ -6336,12 +6340,155 @@
      change, loss of access, any unrelated navigation, a second journey, or removal
      of the exact Plan target. */
   var journey = null, journeyBtn = null, journeyPass = null, journeyCheckQueued = false;
+  /* LKU-0 — Previous/Next across the exact currently visible rows of the ONE list the
+     reader opened from, while this dialog is open. Not a store, router, fetcher or
+     selection owner: one transient, in-memory snapshot of live source nodes, re-checked
+     at every click and on relevant mutations. A changed list, order, access or published
+     generation hides the controls instead of admitting new rows; same-source quote text
+     ticks need not invalidate. The snapshot lives for one dialog episode only. */
+  var browse = null, browseBar = null, browsePrev = null, browseNext = null, browsePos = null;
   function node(tag, cls, text) {
     var x = document.createElement(tag); if (cls) x.className = cls;
     if (text !== undefined) x.textContent = text; return x;
   }
   function bilingual(parent, en, zh) {
     parent.append(node('span', 'l-en', en), node('span', 'l-zh', zh)); return parent;
+  }
+  /* Explicit study selection is display state over the original published nodes.
+     It is neither another Today selector nor an assessment/comparability receipt. */
+  var study = null, studyUIs = [], studyQueued = false;
+  var studyTodayKeys = ['data-today-source-sha256','data-today-pair-id','data-today-selection-receipt','data-today-roster-size','data-today-served','data-today-native-state'];
+  function studyClass(el, name, on) {
+    if (el.classList.contains(name) !== on) el.classList[on ? 'add' : 'remove'](name);
+  }
+  function studyStamp(row) {
+    var today = row.closest('#us-today');
+    return sourceStamp(row) + '|' + (today ? studyTodayKeys.map(function (k) { return today.getAttribute(k) || ''; }).join('|') : '');
+  }
+  function studyEntry(row, grid) {
+    var details = row.querySelector('.pv-setup-inline'), href = journeyNative(row);
+    if (!details || !href || !/^stock\.html#[^\s]+$/.test(href)) return null;
+    return {row:row, grid:grid, details:details, href:href, stamp:studyStamp(row), ticker:row.getAttribute('data-ticker') || ''};
+  }
+  function studyUsable(entry, reachable) {
+    return !!entry && entry.row.isConnected && entry.grid.isConnected && entry.grid.contains(entry.row) &&
+      entry.row.closest('#us-today-grid,#us-cand-grid') === entry.grid &&
+      entry.row.querySelector('.pv-setup-inline') === entry.details &&
+      journeyNative(entry.row) === entry.href && studyStamp(entry.row) === entry.stamp &&
+      (entry.row.getAttribute('data-ticker') || '') === entry.ticker &&
+      !entry.row.closest('[hidden],[aria-hidden="true"],.mx-tier-hidden,.mx-tier-blurred') &&
+      (!reachable || entry.row.getClientRects().length > 0);
+  }
+  function studyChosen(row) { return !!study && study.entries.some(function (x) { return x.row === row; }); }
+  function renderStudy() {
+    studyUIs.forEach(function (ui) {
+      var own = study && study.grid === ui.grid, count = own ? study.entries.length : 0, viewing = !!(own && study.viewing);
+      var en = count + ' of 3 selected' + (count === 3 ? ' · Remove one to choose another' : ' · Choose 2–3 setups');
+      var zh = '已选 ' + count + ' / 3' + (count === 3 ? ' · 取消一张后可选择其他卡片' : ' · 选择 2–3 个形态');
+      if (ui.bar.hidden !== (count === 0)) ui.bar.hidden = count === 0;
+      if (ui.count.textContent !== en + zh) { ui.count.replaceChildren(); bilingual(ui.count, en, zh); }
+      ui.start.disabled = count < 2; ui.clear.disabled = count === 0;
+      if (ui.start.hidden !== viewing) ui.start.hidden = viewing;
+      if (ui.back.hidden !== !viewing) ui.back.hidden = !viewing;
+      if (ui.note.hidden !== !viewing) ui.note.hidden = !viewing;
+      studyClass(ui.grid, 'pvs-study-active', viewing);
+      Array.from(ui.grid.children).forEach(function (row) {
+        studyClass(row, 'pvs-study-chosen', studyChosen(row));
+        studyClass(row, 'pvs-study-omit', viewing && !studyChosen(row));
+      });
+      ui.cards.forEach(function (card) {
+        var chosen = studyChosen(card.row), label = chosen ? 'Selected' : 'Compare';
+        var zhLabel = chosen ? '已选择' : '对比';
+        if (card.button.textContent !== label + zhLabel) { card.button.replaceChildren(); bilingual(card.button, label, zhLabel); }
+        var pressed = chosen ? 'true' : 'false';
+        if (card.button.getAttribute('aria-pressed') !== pressed) card.button.setAttribute('aria-pressed', pressed);
+        card.button.disabled = !studyUsable(studyEntry(card.row, ui.grid), false) || (count === 3 && !chosen);
+      });
+    });
+  }
+  function clearStudy(restoreFocus) {
+    var previous = study;
+    study = null; renderStudy();
+    // Only the reader's Clear action returns them to the original selected card.
+    // Source/access invalidation must never restore an obsolete browsing context.
+    if (!restoreFocus || !previous || previous.entries.some(function (entry) { return !studyUsable(entry, false); })) return;
+    var entry = previous.entries.find(function (candidate) { return studyUsable(candidate, true); });
+    var button = entry && entry.row.querySelector('.pvs-study-pick');
+    if (!button || button.disabled || !button.isConnected || !button.getClientRects().length) return;
+    button.focus({preventScroll:true});
+    if (previous.viewing) window.scrollTo({left:previous.x, top:previous.y, behavior:'instant'});
+  }
+  function checkStudy() {
+    if (study && study.entries.some(function (entry) { return !studyUsable(entry, false); })) {
+      if (active && (studyChosen(active.row) || (journey && active.row === journey.planCard))) dismiss(true);
+      clearJourney(); clearStudy();
+    }
+  }
+  function toggleStudy(row, grid) {
+    checkStudy();
+    var entry = studyEntry(row, grid);
+    if (!studyUsable(entry, true)) return;
+    if (!study || study.grid !== grid) { clearStudy(); study = {grid:grid, entries:[], viewing:false}; }
+    var at = study.entries.findIndex(function (x) { return x.row === row; });
+    if (at >= 0) study.entries.splice(at, 1);
+    else if (study.entries.length < 3) study.entries.push(entry);
+    if (study.entries.length < 2) study.viewing = false;
+    renderStudy();
+  }
+  function mountStudy() {
+    // A hydration may copy markup into a new grid. Only newly bound live nodes count.
+    studyUIs = studyUIs.filter(function (ui) {
+      if (ui.grid.isConnected && ui.bar.isConnected) return true;
+      ui.bar.remove(); return false;
+    });
+    ['us-today-grid','us-cand-grid'].forEach(function (id) {
+      var grid = document.getElementById(id);
+      if (!grid || !grid.closest('#us-standouts')) return;
+      var rows = Array.from(grid.querySelectorAll('.pvcard.pv-has-setup'));
+      var ui = studyUIs.find(function (x) { return x.grid === grid; });
+      if (!ui && !rows.some(function (row) { return studyUsable(studyEntry(row, grid), false); })) return;
+      if (!ui) {
+        var bar = node('div', 'pvs-study-bar'), copy = node('div', 'pvs-study-copy'), actions = node('div', 'pvs-study-actions');
+        bar.setAttribute('data-pvs-study-for', id);
+        var count = node('p', 'pvs-study-count'); count.setAttribute('role', 'status'); count.setAttribute('aria-live', 'polite');
+        var title = bilingual(node('strong'), 'Compare setups', '对比形态');
+        var note = node('div', 'pvs-study-note');
+        note.append(bilingual(node('strong'), 'Compare the published facts', '对比已发布的信息'),
+          bilingual(node('p'), 'Read each setup with its own dates and cautions. Strategy and holding periods are not supplied here; these cards do not estimate relative returns.',
+            '请结合各形态的日期与风险提示阅读。此处未提供策略及持有周期，也不估算相对收益。'));
+        var start = bilingual(node('button', 'gbtn pvs-study-start'), 'Compare selected', '对比所选形态');
+        var back = bilingual(node('button', 'gbtn pvs-study-back'), 'Return to all cards', '返回全部卡片');
+        var clear = bilingual(node('button', 'gbtn pvs-study-clear'), 'Clear selection', '清除选择');
+        [start, back, clear].forEach(function (btn) { btn.type = 'button'; });
+        copy.append(title, count); actions.append(start, back, clear); bar.append(copy, actions, note); grid.before(bar);
+        ui = {grid:grid, bar:bar, count:count, start:start, back:back, clear:clear, note:note, cards:[]}; studyUIs.push(ui);
+        start.addEventListener('click', function () {
+          checkStudy();
+          if (!study || study.grid !== grid || study.entries.length < 2 || study.entries.some(function (e) { return !studyUsable(e, true); })) return;
+          study.x = window.scrollX; study.y = window.scrollY; study.viewing = true; renderStudy(); back.focus({preventScroll:true});
+        });
+        back.addEventListener('click', function () {
+          checkStudy(); if (!study || study.grid !== grid) return;
+          study.viewing = false; renderStudy();
+          window.scrollTo({left:study.x, top:study.y, behavior:'instant'}); start.focus({preventScroll:true});
+        });
+        clear.addEventListener('click', function () { clearStudy(true); });
+      }
+      ui.cards = ui.cards.filter(function (card) { return grid.contains(card.row) && card.row.contains(card.button); });
+      rows.forEach(function (row) {
+        if (ui.cards.some(function (card) { return card.row === row; })) return;
+        if (!studyUsable(studyEntry(row, grid), false)) return;
+        var copied = row.querySelector('.pvs-study-pick'); if (copied) copied.remove();
+        var button = node('button', 'gbtn pvs-study-pick'); button.type = 'button';
+        (row.querySelector('.po-footer') || row.querySelector('.pv-bd') || row).append(button); ui.cards.push({row:row, button:button});
+        button.addEventListener('click', function (e) { e.preventDefault(); toggleStudy(row, grid); });
+      });
+    });
+    renderStudy();
+  }
+  function queueStudyCheck() {
+    if (studyQueued) return; studyQueued = true;
+    Promise.resolve().then(function () { studyQueued = false; checkStudy(); mountStudy(); });
   }
   function build() {
     if (dialog) return;
@@ -6356,7 +6503,20 @@
     var body = node('div', 'pvs-dialog-content'), foot = node('footer', 'pvs-dialog-foot');
     var link = bilingual(node('a', 'pvs-native-link'), 'Open stock page ↗', '打开个股页面 ↗');
     foot.append(link, bilingual(node('span'), 'Close to return to the same row', '关闭后返回同一行'));
-    dialog.append(head, body, foot); document.body.append(dialog);
+    browseBar = node('nav', 'pvs-browse-bar'); browseBar.hidden = true;
+    browseBar.setAttribute('aria-label', 'Browse candidates · 浏览候选');
+    browsePrev = bilingual(node('button', 'gbtn pvs-browse-btn'), '‹ Previous', '上一张 ‹');
+    browsePrev.type = 'button';
+    browsePrev.setAttribute('data-pvs-browse', 'previous');
+    browsePrev.addEventListener('click', function () { browseStep(-1, browsePrev); });
+    browseNext = bilingual(node('button', 'gbtn pvs-browse-btn'), 'Next ›', '下一张 ›');
+    browseNext.type = 'button';
+    browseNext.setAttribute('data-pvs-browse', 'next');
+    browseNext.addEventListener('click', function () { browseStep(1, browseNext); });
+    browsePos = node('span', 'pvs-browse-position');
+    browsePos.setAttribute('role', 'status'); browsePos.setAttribute('aria-live', 'polite');
+    browseBar.append(browsePrev, browsePos, browseNext);
+    dialog.append(head, body, browseBar, foot); document.body.append(dialog);
     dialog.addEventListener('cancel', function (e) { e.preventDefault(); dismiss(true); });
     dialog.addEventListener('click', function (e) {
       if (e.target !== dialog) return;
@@ -6378,6 +6538,7 @@
   function release(restoreFocus) {
     var old = active; active = null;
     if (!old) return;
+    clearSections();                       // generated navigation/ids/hidden state leave with the dialog
     // Restore only to the original live node. A replaced source is never resurrected.
     old.moved.forEach(function (pair) {
       if (old.row.isConnected && old.row.contains(old.details) && pair.owner.isConnected &&
@@ -6400,6 +6561,7 @@
     // End native modal inertness before restoring focus to the source row.
     if (dialog && dialog.open) dialog.close();
     release(restoreFocus);
+    clearBrowse();                        // one dialog episode, one view snapshot
   }
   // Copy only the already-painted publisher geometry, not markup strings or live quote overlays.
   // This bounded display guard is not a data sanitizer service or a new chart engine.
@@ -6502,6 +6664,211 @@
       if (journey && !journeyUsable(journey, false)) clearJourney();
     });
   }
+  /* ── LKU-0: Previous/Next inside the reader's current view ── */
+  function browseScopeOf(row) {
+    var grid = row.closest('#us-today-grid,#us-cand-grid');
+    if (grid && grid.isConnected) return {root: grid, kind: 'grid'};
+    var tbody = row.closest('#us-stocktable-wrap tbody');
+    if (tbody && tbody.isConnected) return {root: tbody, kind: 'table'};
+    var list = row.closest('#us-candidate-pool .ucp-list');
+    if (list && list.isConnected) return {root: list, kind: 'pool'};
+    return null;
+  }
+  /* Serviceability mirrors the open owner's own guards exactly, so a row offered to the
+     reader is one the existing owner can still open: live, reachable, entitled, native
+     identity intact, same published generation. Plan records never browse. */
+  function browseEntry(row) {
+    if (!row || !row.isConnected || !row.getClientRects().length) return null;
+    if (row.closest('[hidden],[aria-hidden="true"],.mx-tier-hidden,.mx-tier-blurred')) return null;
+    if (row.dataset.recordOnly === '1') return null;
+    var details = row.querySelector('.pv-setup-inline');
+    var trigger = details ? details.querySelector(':scope > summary') : null;
+    var href = journeyNative(row);
+    if (!details || !trigger || !trigger.getClientRects().length) return null;
+    if (!href || !/^stock\.html#[^\s]*$/.test(href)) return null;
+    if (details.classList.contains('pv-setup-table')) {
+      var panel = row.closest('#us-standouts');
+      if (!panel || (details.dataset.setupAsof || '') !== (panel.dataset.boardAsof || '')) return null;
+      var bound = details.dataset.setupTicker;
+      if (!bound || href !== 'stock.html#' + bound) return null;
+    }
+    var holder = details.querySelector(':scope > template.pvs-body-source');
+    var source = holder ? holder.content.querySelector('.pv-setup-body') : details.querySelector(':scope > .pv-setup-body');
+    /* The row this dialog is holding is the one exception: its body is legitimately
+       away in the dialog, and the active owner above already guarantees that row's
+       exact source continuously. Every other row must still own its own body. */
+    if (details.classList.contains('pv-setup-table') && !source &&
+        !(active && active.row === row)) return null;
+    return {row: row, details: details, trigger: trigger, href: href,
+      body: source || (active && active.details === details && active.moved.length === 1 ? active.moved[0].node : null),
+      ticker: details.dataset.setupTicker || row.dataset.ticker || '', stamp: studyStamp(row)};
+  }
+  /* Exact nodes in existing DOM order: only rows of the one originating list that are
+     serviceable right now. No join, fetch, recreation or selection-owner change. */
+  function browseEnumerate(scope) {
+    if (!scope || !scope.root.isConnected) return [];
+    var rows = [];
+    for (var kids = scope.root.children, i = 0; i < kids.length; i++) {
+      var k = kids[i];
+      if (scope.kind === 'table' ? k.localName === 'tr'
+          : k.classList.contains(scope.kind === 'pool' ? 'ucp-row' : 'pvcard')) {
+        var e = browseEntry(k);
+        if (e) rows.push(e);
+      }
+    }
+    return rows;
+  }
+  /* The snapshot survives only while the view is the same population in the same
+     order, each row at its same generation, native identity and access. */
+  function browseUsable() {
+    if (!browse || !browse.scope || !browse.scope.root.isConnected) return false;
+    var rows = browseEnumerate(browse.scope);
+    if (rows.length !== browse.entries.length) return false;
+    for (var i = 0; i < rows.length; i++) {
+      if (rows[i].row !== browse.entries[i].row || rows[i].details !== browse.entries[i].details ||
+          rows[i].trigger !== browse.entries[i].trigger || rows[i].body !== browse.entries[i].body ||
+          rows[i].href !== browse.entries[i].href || rows[i].ticker !== browse.entries[i].ticker || rows[i].stamp !== browse.entries[i].stamp) return false;
+    }
+    return true;
+  }
+  function renderBrowse() {
+    if (!browseBar) return;
+    var at = browse && active ? browse.entries.findIndex(function (e) { return e.row === active.row; }) : -1;
+    var on = !!browse && at >= 0 && browse.entries.length > 1;
+    if (browseBar.hidden !== !on) browseBar.hidden = !on;
+    if (!on) return;
+    var m = browse.entries.length;
+    var en = (at + 1) + ' of ' + m + ' in your view';
+    var zh = '视图中第 ' + (at + 1) + ' / ' + m + ' 张';
+    if (browsePos.textContent !== en + zh) { browsePos.replaceChildren(); bilingual(browsePos, en, zh); }
+    if (browsePrev.disabled !== (at === 0)) browsePrev.disabled = at === 0;
+    if (browseNext.disabled !== (at === m - 1)) browseNext.disabled = at === m - 1;
+  }
+  function checkBrowse() {
+    if (browse && !browseUsable()) browse = null;   // never keep a stale index
+    renderBrowse();
+  }
+  function mountBrowse(wasOpen) {
+    if (!active) { clearBrowse(); return; }
+    var scope = browseScopeOf(active.row);
+    if (!scope) { clearBrowse(); return; }
+    if (wasOpen && browse && browse.scope.root === scope.root && browseUsable() &&
+        browse.entries.some(function (e) { return e.row === active.row; })) { renderBrowse(); return; }
+    browse = {scope: scope, entries: browseEnumerate(scope), x: window.scrollX, y: window.scrollY};
+    renderBrowse();
+  }
+  function clearBrowse() {
+    browse = null;
+    if (browseBar && !browseBar.hidden) browseBar.hidden = true;
+  }
+  function browseStep(dir, btn) {
+    checkBrowse();                       // re-check at each click
+    if (!browse || !active) return;
+    var at = browse.entries.findIndex(function (e) { return e.row === active.row; });
+    if (at < 0) { renderBrowse(); return; }
+    var to = at + dir;
+    if (to < 0 || to >= browse.entries.length) return;    // the ends do not wrap
+    var e = browse.entries[to];
+    if (open(e.trigger, e.details, e.row) !== true) { checkBrowse(); return; }
+    if (browse && active) { active.x = browse.x; active.y = browse.y; }   // one episode, one scroll
+    renderBrowse();
+    if (btn && !btn.disabled && dialog.contains(btn) && btn.getClientRects().length) btn.focus({preventScroll: true});
+  }
+  /* ── Setup sections inside the already-open candidate detail (Paper LKU-0 / 8OM-0) ──
+     The template has already grouped the SAME supplied content into structure / evidence /
+     research / sources bodies marked data-pvs-section. Only AFTER the native dialog opens
+     does this owner add one labelled tablist with connected tabs/panels over those existing
+     groups; without JS every group stays visible inline. Bodies without the markers — Plan
+     records, legacy and other callers — get nothing at all. Generated ids, roles, hidden
+     state and the bar itself are removed on release so the exact original nodes return home
+     intact. Nothing here supplies, infers or fetches data, assessments, plans or permission. */
+  var SECTION_NAMES = ['structure', 'evidence', 'research', 'sources'];
+  var SECTION_LABELS = {structure: ['Structure & timing', '结构与时机'], evidence: ['Evidence', '证据'],
+    research: ['Context', '背景'], sources: ['Sources', '来源']};
+  var sections = null, sectionSeq = 0;
+  /* Outermost known groups only, in the template's published order; a group that is already
+     hidden is not content the reader can see, so it never becomes a panel. */
+  function sectionPanels(owner) {
+    var panels = [];
+    SECTION_NAMES.forEach(function (name) {
+      var el = owner.querySelector('[data-pvs-section="' + name + '"]');
+      if (el && owner.contains(el) && !el.hasAttribute('hidden') &&
+          !panels.some(function (p) { return p === el || p.contains(el); })) panels.push(el);
+    });
+    return panels;
+  }
+  function mountSections() {
+    clearSections();
+    if (!active || active.moved.length !== 1) return;
+    var body = active.moved[0].node;
+    if (!body.classList || !body.classList.contains('pv-setup-body')) return;   // Plan/legacy bodies stay whole
+    var panels = sectionPanels(body);
+    if (panels.length < 2) return;               // an unmarked or single-group body needs no navigation
+    var bar = node('div', 'pvs-section-tabs');
+    bar.setAttribute('role', 'tablist');
+    bar.setAttribute('aria-label', 'Setup sections · 形态分区');
+    var refs = [], base = 'pvs-sec-' + (++sectionSeq);   // unique per dialog mount, never reused
+    panels.forEach(function (panel) {
+      var name = panel.getAttribute('data-pvs-section'), label = SECTION_LABELS[name] || [name, name];
+      if (name === 'evidence') {
+        var cautionCount = panel.querySelectorAll('.pvs-opportunity-cautions li').length;
+        if (cautionCount) label = ['Evidence · ' + cautionCount + (cautionCount === 1 ? ' caution' : ' cautions'),
+          '证据 · ' + cautionCount + ' 项注意'];
+      }
+      var tab = bilingual(node('button', 'pvs-section-tab'), label[0], label[1]);
+      tab.type = 'button';
+      tab.setAttribute('role', 'tab');
+      tab.id = base + '-' + name;
+      tab.setAttribute('aria-controls', base + '-' + name + '-panel');
+      var was = {id: panel.getAttribute('id'), role: panel.getAttribute('role'),
+        labelledby: panel.getAttribute('aria-labelledby'), index: panel.getAttribute('tabindex')};
+      panel.id = base + '-' + name + '-panel';
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', tab.id);
+      panel.setAttribute('tabindex', '0');
+      var ref = {tab: tab, panel: panel, was: was};
+      refs.push(ref);
+      bar.append(tab);
+      tab.addEventListener('click', function () { selectSection(refs.indexOf(ref), true); });
+    });
+    function selectSection(index, focusTab) {
+      if (!sections || sections.bar !== bar || !active || active.moved[0].node !== body) return;
+      refs.forEach(function (ref, i) {
+        var on = i === index;
+        ref.tab.setAttribute('aria-selected', on ? 'true' : 'false');
+        ref.tab.setAttribute('tabindex', on ? '0' : '-1');   // one roving stop on the tablist
+        if (on) ref.panel.removeAttribute('hidden');
+        else ref.panel.setAttribute('hidden', '');
+      });
+      if (focusTab && refs[index]) refs[index].tab.focus({preventScroll: true});
+    }
+    bar.addEventListener('keydown', function (e) {
+      var at = 0;
+      refs.forEach(function (r, i) { if (r.tab.getAttribute('aria-selected') === 'true') at = i; });
+      var to = e.key === 'ArrowRight' ? at + 1 : e.key === 'ArrowLeft' ? at - 1 :
+               e.key === 'Home' ? 0 : e.key === 'End' ? refs.length - 1 : null;
+      if (to === null) return;                 // other keys, and arrows elsewhere, stay untouched
+      e.preventDefault();
+      selectSection(Math.max(0, Math.min(refs.length - 1, to)), true);
+    });
+    sections = {bar: bar, refs: refs};
+    var grid = body.querySelector(':scope > .pvs-grid');   // below the identity and the source clock
+    (grid && grid.parentNode === body ? grid : panels[0]).before(bar);
+    selectSection(0, false);                 // Structure first — every candidate, every open
+  }
+  function clearSections() {
+    if (!sections) return;
+    var gone = sections; sections = null;
+    gone.bar.remove();
+    gone.refs.forEach(function (ref) {
+      var panel = ref.panel, was = ref.was;   // restore exactly what the source published
+      if (was.id === null) panel.removeAttribute('id'); else panel.setAttribute('id', was.id);
+      if (was.role === null) panel.removeAttribute('role'); else panel.setAttribute('role', was.role);
+      if (was.labelledby === null) panel.removeAttribute('aria-labelledby'); else panel.setAttribute('aria-labelledby', was.labelledby);
+      if (was.index === null) panel.removeAttribute('tabindex'); else panel.setAttribute('tabindex', was.index);
+      panel.removeAttribute('hidden');        // inline fallback shows every group again
+    });
+  }
   function returnToCandidate() {
     if (!journey || !journeyUsable(journey, false)) { clearJourney(); return false; }
     var j = journey, want = j.mode || 'candidates';
@@ -6543,6 +6910,7 @@
     var holder = details.querySelector(':scope > template.pvs-body-source');
     var source = holder ? holder.content.querySelector('.pv-setup-body') : details.querySelector(':scope > .pv-setup-body');
     if (details.classList.contains('pv-setup-table') && !source) return;
+    var wasOpen = !!(dialog && dialog.open);
     build(); if (active) release(false);
     var nodes = source ? [source] : Array.from(details.children).filter(function (n) { return n.localName !== 'summary'; });
     var slot = source && source.querySelector('[data-pvs-chart]');
@@ -6582,6 +6950,8 @@
     nodes.forEach(function (n) { var home = n.parentNode, mark = document.createComment('pv-setup-home'); n.before(mark); active.moved.push({node:n,mark:mark,home:home,owner:holder || details}); target.append(n); });
     document.documentElement.classList.add('pv-setup-lock');
     if (!dialog.open) dialog.showModal(); dialog.scrollTop = 0; dialog.querySelector('.pvs-close').focus({preventScroll:true});
+    mountSections();                      // sections exist only while the native dialog holds the body
+    mountBrowse(wasOpen);
     mountJourney();
     return true;
   }
@@ -6597,23 +6967,32 @@
   /* Hydration replaces the current board, and an auth/tier turn can take
      entitlement away with it: both end any journey. A language turn does not — the
      action carries its own EN/ZH pair — but the open detail still returns to its row. */
-  document.addEventListener('candidate-pool-hydrated', function () { dismiss(true); clearJourney(); }, true);
+  document.addEventListener('candidate-pool-hydrated', function () { dismiss(true); clearJourney(); clearStudy(); queueStudyCheck(); }, true);
   document.addEventListener('langchange', function () { dismiss(true); });
-  window.addEventListener('mdx-auth', function () { dismiss(true); clearJourney(); });
-  window.addEventListener('mmx-access-tier', function () { dismiss(true); clearJourney(); });
+  window.addEventListener('mdx-auth', function () { dismiss(true); clearJourney(); clearStudy(); queueStudyCheck(); });
+  window.addEventListener('mmx-access-tier', function () { dismiss(true); clearJourney(); clearStudy(); queueStudyCheck(); });
   new MutationObserver(function () {
+    if (study || studyUIs.length) queueStudyCheck();
     if (journey) queueJourneyCheck();
+    if (browse) checkBrowse();
     if (!active) return;
     if (!active.row.isConnected || !active.details.isConnected || !active.row.getClientRects().length ||
         sourceStamp(active.row) !== active.sourceStamp ||
         !active.row.contains(active.details) ||
         active.moved.some(function (p) { return !p.owner.isConnected || !p.home.contains(p.mark) ||
           !(p.owner === active.details || active.details.contains(p.owner)); })) dismiss(true);
-  }).observe(document.documentElement, {childList:true, subtree:true, attributes:true, attributeFilter:['hidden','aria-hidden','class','id','href','data-setup-ticker','data-ticker','data-prophet-src','data-source-digest','data-as-of','data-board-asof']});
+  }).observe(document.documentElement, {childList:true, subtree:true, attributes:true, attributeFilter:['hidden','aria-hidden','class','id','href','data-setup-ticker','data-ticker','data-prophet-src','data-source-digest','data-as-of','data-board-asof'].concat(studyTodayKeys)});
   /* The plan-link owner in dashboard.html.j2 is the only caller: it snapshots while
      this owner still holds the live candidate source (before its own .pvs-close),
      and only claims the journey after USProphetLife.selectPlan confirmed the target. */
   window.PVSetupReturn = {
+    releaseForTerminal: function (trigger) {
+      if (!active || !dialog || !dialog.open || !trigger || !dialog.contains(trigger)) return trigger;
+      dismiss(true);
+      // The overlay returns to the original live source (or the owner's safe fallback).
+      // Its round trip does not spend the candidate-to-Plan return or comparison selection.
+      return document.activeElement;
+    },
     snapshot: function (origin) {
       if (active && !active.row.closest('#us-plan-block,#us-life-grid')) {
         journeyPass = 'plans';                // armed for this journey's own Plans hop
@@ -6646,8 +7025,10 @@
       return true;
     },
     abandon: function () { clearJourney(); },
-    clear: function () { clearJourney(); },
+    clear: function () { clearJourney(); clearStudy(); },
     available: function () { return !!journey && journeyUsable(journey, false); },
     run: function () { return returnToCandidate(); }
   };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountStudy);
+  else if (document.readyState === 'interactive' || document.readyState === 'complete') mountStudy();
 })();

@@ -1,0 +1,34 @@
+{# One shared fold of the existing published board cautions for grid and table.
+   No selection, scoring, new inference or independent data lookup. #}
+{% macro fold(n, out) -%}
+        {% set c = n.conviction %}
+        {% set es = n.entry_signal %}
+        {% set _vs = c.vol_squeeze if c else none %}
+        {% set _vs_fired = _vs and _vs.state in ['FIRED_UP','EXPANSION'] %}
+        {% set _entry_ok = not (es and es.get('status') in ['extended','topping','exit','avoid','blocked']) %}
+        {% if c %}{% for cau in (c.cautions or []) %}{% if cau != 'accounting watch' %}{% set _z = c.cautions_zh[loop.index0] if (c.cautions_zh and c.cautions_zh|length > loop.index0) else cau %}{% set out.rows = out.rows + [(cau, _z)] %}{% endif %}{% endfor %}{% endif %}
+        {% if (_vs_fired or n.get('alpha_entry') == 'extended') and _entry_ok %}{% set out.rows = out.rows + [("Already moving. Don't chase above the buy zone.", '已在异动。不要在买区上方追高。')] %}{% endif %}
+        {% if n.get('ext_z') is not none and n.ext_z > 2.0 %}{% set out.rows = out.rows + [('Stretched unusually far above its trend line, so chasing is risky.', '远高于趋势线，追高风险较大。')] %}{% endif %}
+        {% if n.get('antichase_shadow_blocked') %}{% set out.rows = out.rows + [('Parabolic tail. Treat any entry here as a chase.', '处于抛物线尾部。此处入场应视同追高。')] %}{% endif %}
+        {# ── COPY FENCE: the two rows ABOVE are the ext_z anti-chase read (px/SMA200
+             z-scored).  The "Blow-off risk" chip built in the marks row BELOW is a
+             SEPARATE, separately-measured construction (12-session ROC at its own
+             trailing p99 inside a burst-mover uptrend, engine/roc_blowoff.py), and the
+             battery's PM4 redundancy read puts max |rho| between them at 0.43 — so both
+             can legitimately fire on one card.  Because they can co-render, the blow-off
+             chip must NEVER use the bare word "Extended": that word already belongs to
+             the ext_z family here and in engine/stock_score.py's conviction verdict, and
+             two different measurements wearing one word is how a card starts arguing with
+             itself.  "Blow-off risk" / 冲顶风险 is the label; the numbers in its hover are
+             ITS OWN measured rates, never the ext_z ones. #}
+        {% set _es_chip = n.get('earnings_soon') %}
+        {% if _es_chip and _es_chip.get('days_to') is not none %}{% set out.rows = out.rows + [(_es_chip.get('chip_en') or ('Earnings in ' ~ _es_chip.days_to ~ 'd'), _es_chip.get('chip_zh') or ('财报还有' ~ _es_chip.days_to ~ '天'))] %}{% endif %}
+        {% if n.get('sector_stance') and n.sector_stance in ('Reduce','Cautious') %}{% set out.rows = out.rows + [('Sector stance is ' ~ n.sector_stance|lower ~ '. This is a single-stock trigger, not a sector call.', '板块态度为' ~ (n.sector_stance_zh or n.sector_stance) ~ '。个股信号，非板块判断。')] %}{% endif %}
+        {% if n.get('hold') and n.hold.get('state') == 'broken' %}{% set out.rows = out.rows + [('Base broken: price hit the level that voids the thesis.', '筑底破位：价格已触及使论点失效的水平。')] %}{% endif %}
+        {# OEU M-PRO: display-tier options context, folded into the SAME ⚠ popover as every
+           other caution (no new chip, no layout change). Rows are pre-derived (en, zh) pairs
+           attached by build_site._attach_board_display_chips via lib/options_context.py; the
+           fence lives there — nothing here touches verb, stage, zone or edge. Names without
+           options coverage carry no key and the card renders exactly as before. #}
+        {% for _o in (n.get('options_flags') or []) %}{% set out.rows = out.rows + [(_o[0], _o[1])] %}{% endfor %}
+{%- endmacro %}
