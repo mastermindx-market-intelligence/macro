@@ -33,7 +33,7 @@ owns_paths:
 waves:
   - id: A1-INT
     title: Integrate the verified Session00/01/02 catalyst loop onto main
-    status: active
+    status: in_progress
     next_action: >
       Merge lane/mx-cat-a1-base (55dc7cab = Session00 head ed1ceabd + verified Stage-A v2
       six-file patch + verified Stage-B consent repair) onto fresh main; resolve the three
@@ -42,7 +42,7 @@ waves:
       tests/test_ci_pack.py green; producer-owned bytes unchanged.
   - id: A2-WITNESS
     title: Anonymous-journey witnesses A01/A02/A04/A05/A07
-    status: active
+    status: in_progress
     depends_on: [A1-INT]
     next_action: >
       Hermetic tests written by a non-author lane: supported-plus-unsupported ticker, four
@@ -51,7 +51,7 @@ waves:
       reported honestly, never faked.
   - id: B-NEG
     title: Consent negatives B01–B04
-    status: active
+    status: in_progress
     depends_on: [A1-INT]
     next_action: >
       Append-only negatives in the enrolled lifecycle/optin suites: no grant without a signed,
@@ -60,7 +60,7 @@ waves:
       exception are distinct non-sent states, never auto-replayed.
   - id: C1-PACK
     title: Editorial asset factory adopted from Session04 with a producer→pack adapter
-    status: active
+    status: in_progress
     next_action: >
       Adopt the four #8683 source files by exact blob (6b4e3b88); adapt to catalyst.public_event/v1
       with rights gating (link-only without rehost right, PackRejected without grant), correction
@@ -68,7 +68,7 @@ waves:
       catalyst-loop-integrated on the A1 head.
   - id: RIGHTS-REQ
     title: Exact SEC EDGAR document-rights classification request for the GMI/source steward
-    status: active
+    status: in_progress
     next_action: >
       Record (not a grant): exact document identity the producer binds, today's default-deny
       behavior, the exact registry entry shape a steward would add, opaque attribution keys the
@@ -76,7 +76,7 @@ waves:
       attestation does not cover SEC EDGAR.
   - id: SHIP
     title: One draft PR to main, independent review, merge, deploy observation
-    status: proposed
+    status: todo
     depends_on: [A1-INT, A2-WITNESS, B-NEG, C1-PACK]
     next_action: >
       Seat integrates the judged lane heads into its claude/ branch, opens ONE draft PR to main,
