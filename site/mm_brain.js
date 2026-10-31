@@ -38,10 +38,10 @@
   /* Optional native presentation assets come from THIS widget's origin, including
      when Terminal embeds it. No model URL, CDN or executable markup is accepted. */
   var visualAssetBase = new URL('./', (DOC.currentScript && DOC.currentScript.src) || DOC.baseURI).href;
-  var visualScriptVersion = '2e3ce3a5';
-  var visualStyleVersion = 'b9f2e195';
+  var visualScriptVersion = '1005e0b0';
+  var visualStyleVersion = '897c1b53';
   var visualAssetPromise = null;
-  var presentationVersion = '88e1f94b';
+  var presentationVersion = 'b252d819';
   var presentationPromise = null;
   function loadPresentationAssets() {
     if (window.MMBrainPresentation) return Promise.resolve(window.MMBrainPresentation);

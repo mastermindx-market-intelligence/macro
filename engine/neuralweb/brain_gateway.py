@@ -10511,7 +10511,12 @@ def _prepare_inline_visual(result: dict, observations: list, identity: str, char
     request = result["visual_request"]
     # Numeric examples require explicit teaching intent in the user's own request.
     if isinstance(request, dict) and request.get("basis") == "illustrative":
-        teaching = bool(re.search(r"\b(example|illustrative|hypothetical|synthetic|fictional|sample|toy)\b|举例|示例|示意|假设|虚构", message, re.I))
+        teaching = bool(
+            re.search(r"\b(example|illustrative|hypothetical|synthetic|fictional|sample|toy)\b|举例|示例|示意|假设|虚构", message, re.I)
+            or (request.get("template") == "candlestick"
+                and re.search(r"\b(draw|sketch|diagram|illustrate|illustration)\b|绘制|画一", message, re.I)
+                and re.search(r"\b(pivot|setup|pattern|bullish|bearish)\b|形态|转折", message, re.I))
+        )
         rows = request.get("rows", [])
         has_numbers = isinstance(rows, list) and any(type(c) in (int, float) for r in rows if isinstance(r, list) for c in r)
         asks_observed = bool(re.search(r"\b(current|latest|today|live|actual|historical|history|yesterday|past|since|last|previous|reported|observed|real)\b|真实|最新|当前|今天|历史|实时|昨天|上周|上月|去年|过去|截至|自从|\b(?:19|20)\d{2}\b", message, re.I))

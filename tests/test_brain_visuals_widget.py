@@ -7,7 +7,7 @@ from pathlib import Path
 from playwright.sync_api import expect
 
 from tests.test_brain_history_widget import page  # noqa: F401 (existing auth/history fixture)
-from tests.test_brain_visuals_browser import sample
+from tests.test_brain_visuals_browser import sample, candle_sample
 
 ROOT = Path(__file__).resolve().parents[1]
 TID = '11111111-1111-1111-1111-111111111111'
@@ -126,3 +126,14 @@ def test_missing_css_never_silently_mounts_a_second_unstyled_visual(page):
     history(page,sample(identity='second'))
     expect(page.locator('[data-pending-visual]')).to_contain_text('could not load')
     expect(page.locator('.mmb-v')).to_have_count(0)
+
+
+def test_candle_pivot_visual_restores_from_existing_private_history(page):
+    assets(page)
+    history(page, candle_sample())
+    expect(page.locator('figure[data-template=candlestick]')).to_have_count(1)
+    expect(page.locator('rect[data-pivot-index="2"]')).to_have_count(1)
+    expect(page.locator('line[data-level="entry"]')).to_have_count(1)
+    expect(page.locator('line[data-level="stop"]')).to_have_count(1)
+    page.evaluate("window.__principal='B';window.__onAuth({id:'user-B'})")
+    expect(page.locator('figure[data-template=candlestick]')).to_have_count(0)
