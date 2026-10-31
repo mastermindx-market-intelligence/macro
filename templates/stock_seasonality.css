@@ -344,6 +344,7 @@ html[data-lang="zh"] .sx-card > h2, html[data-lang="zh"] .sx-sect > h2 { letter-
   border-color: transparent; background: transparent;
   -webkit-backdrop-filter: none; backdrop-filter: none;
   box-shadow: none; border-radius: 7px;
+  min-height: 36px;
   padding: 6px 12px; font: 500 12.5px/1 var(--sx-data);
   letter-spacing: -.005em; color: var(--sx-text-2);
   transition: color .16s ease, background .16s ease;
@@ -522,6 +523,7 @@ html[data-lang="zh"] .sx-quick-lab { letter-spacing: 0; }
 /* Tickers, so the display face — never the mono. */
 .sx-quick button {
   font: 600 11.5px/1 var(--sx-display); letter-spacing: 0;
+  min-height: 36px;
   padding: 5px 9px; border-radius: 6px;
   background: transparent; border-color: var(--sx-hair);
   color: var(--sx-text-2); box-shadow: none;
@@ -532,6 +534,11 @@ html[data-lang="zh"] .sx-quick-lab { letter-spacing: 0; }
   transform: none; box-shadow: none; color: var(--text);
   background: color-mix(in srgb, var(--sx-ink) 15%, transparent);
   border-color: color-mix(in srgb, var(--sx-ink) 42%, var(--line));
+}
+.sx-quick button[aria-current="page"] {
+  color: var(--text); font-weight: 700;
+  background: var(--panel2);
+  border-color: var(--sx-ink);
 }
 
 /* ── notices (honest states) ────────────────────────────────────────────── */
