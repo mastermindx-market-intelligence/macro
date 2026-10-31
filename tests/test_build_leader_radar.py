@@ -38,6 +38,7 @@ Coverage:
 from __future__ import annotations
 
 import json
+import re
 import sys
 import tempfile
 from datetime import date, datetime, timedelta, timezone
@@ -1685,6 +1686,187 @@ class TestAnalystBannerRender:
         assert "crowding signal that reads it stays blank" not in html
 
 
+class TestLeaderLineageFact:
+    """Per-name prior-leadership summary inside the recovery row (lr.lineage_roster).
+
+    Display only: the closed runs of schema leader_lineage.v1, tallied by
+    break class. Rendered only for a name with at least one prior closed run;
+    the raw FAILED_BREAK term never prints (it is not a bullish label).
+    """
+
+    def _render(self, payload: dict) -> str:
+        from jinja2 import Environment, FileSystemLoader
+        tpl_root = Path(__file__).resolve().parent.parent / "templates"
+        env = Environment(loader=FileSystemLoader(str(tpl_root)), autoescape=False)
+        return env.get_template("leader_radar.html.j2").render(leader_radar=payload)
+
+    @staticmethod
+    def _recovery_row(ticker: str, drawdown: float = -0.22) -> dict:
+        return {"ticker": ticker, "state": "PRICE_RECOVERED_RS_LAGGING",
+                "episode": {"max_drawdown": drawdown, "peak_on": "2026-01-02",
+                            "below_200_sessions": 30, "failed_repairs": 0}}
+
+    @staticmethod
+    def _episode(ticker: str, closed_on=None, break_class: str = "FAILED_BREAK",
+                 qualified: str = "2015-01-29") -> dict:
+        return {"ticker": ticker, "episode_id": "ep-" + ticker, "prior_episode_id": None,
+                "leadership_qualified_at": qualified, "phase": "FAILED",
+                "break_class": break_class, "correction_trough_on": "2015-08-24",
+                "reclaim_50d_on": "2015-10-22", "reclaim_200d_on": "2015-11-04",
+                "closed_on": closed_on, "close_reason": "re_admitted_new_episode"}
+
+    def _lineage(self, episodes: list, schema: str = "leader_lineage.v1") -> dict:
+        return {"schema": schema, "era": "leader-lineage-descriptive-2026-10-11",
+                "as_of": "2026-10-16", "definition_sha256": "0" * 12,
+                "evidence_mode": "RECONSTRUCTED_CURRENT_VINTAGE",
+                "authority": {"may_rank": False, "may_gate": False, "may_size": False,
+                              "may_trade": False, "may_alert": False},
+                "episodes": episodes, "counts": {}}
+
+    def _payload(self, rows: list, lineage=None) -> dict:
+        roster = {"schema": "leader_recovery_roster.v1", "counts": {}, "rows": rows}
+        payload = {"schema": "leader_radar.v1", "as_of": "2026-10-16T00:00:00+00:00",
+                   "stale": False, "coverage": {}, "regime": {}, "rows": [],
+                   "handoff_pairs": [], "rerating_watch": [], "early_entry": [],
+                   "handoff_context": [], "recovery_roster": roster}
+        if lineage is not None:
+            payload["lineage_roster"] = lineage
+        return payload
+
+    def _row_slice(self, html: str, ticker: str) -> str:
+        i = html.index('data-ticker="%s"' % ticker)
+        j = html.index("lr-rec-more", i)
+        return html[i:j]
+
+    def _fact(self, html: str, ticker: str) -> str:
+        sl = self._row_slice(html, ticker)
+        i = sl.index('<span class="lr-rec-fact lr-rec-lineage">')
+        return sl[i:sl.index("<details", i)]
+
+    def test_run_without_a_date_prints_no_since(self):
+        """A closed run with no qualification date counts, with no empty 'since'."""
+        eps = [self._episode("AAPL", closed_on="2017-02-01", qualified="")]
+        html = self._render(self._payload([self._recovery_row("AAPL")], self._lineage(eps)))
+        fact = self._fact(html, "AAPL")
+        assert "<time" not in fact
+        assert "since" not in fact
+
+    def test_closed_runs_only_count_and_since(self):
+        """3 closed runs count; the open run's earlier date is not the count nor 'since'."""
+        eps = [
+            self._episode("AAPL", closed_on="2017-02-01", qualified="2015-01-29"),
+            self._episode("AAPL", closed_on="2019-06-14", qualified="2016-03-10",
+                          break_class="REPAIRED_TREND"),
+            self._episode("AAPL", closed_on="2021-11-02", qualified="2018-09-20"),
+            self._episode("AAPL", closed_on=None, qualified="2011-05-04"),
+        ]
+        html = self._render(self._payload([self._recovery_row("AAPL")],
+                                          self._lineage(eps)))
+        fact = self._fact(html, "AAPL")
+        assert re.findall(r"<b>([^<]*)</b>", fact)[0] == "3"
+        assert "since" in fact
+        assert '<time datetime="2015-01-29">2015-01-29</time>' in fact
+        assert "2011-05-04" not in fact
+
+    def test_break_class_tallies_are_positional(self):
+        """failed=2, repaired=1, other=1 in that order; UNRESOLVED lands in other."""
+        eps = [
+            self._episode("AAPL", closed_on="2017-02-01", qualified="2015-01-29",
+                          break_class="FAILED_BREAK"),
+            self._episode("AAPL", closed_on="2018-03-06", qualified="2016-08-11",
+                          break_class="FAILED_BREAK"),
+            self._episode("AAPL", closed_on="2019-04-18", qualified="2017-05-23",
+                          break_class="REPAIRED_TREND"),
+            self._episode("AAPL", closed_on="2020-06-30", qualified="2018-01-09",
+                          break_class="UNRESOLVED"),
+        ]
+        html = self._render(self._payload([self._recovery_row("AAPL")],
+                                          self._lineage(eps)))
+        fact = self._fact(html, "AAPL")
+        assert re.findall(r"<b>([^<]*)</b>", fact) == ["4", "2", "1", "1"]
+        assert "failed repairs:" in fact and "修复失败" in fact
+        assert "repaired:" in fact and "已修复" in fact
+        assert "other endings:" in fact and "其他结局" in fact
+
+    def test_structural_break_counts_as_other(self):
+        """STRUCTURAL_BREAK is an other ending; failed repairs still prints at 0."""
+        eps = [
+            self._episode("AAPL", closed_on="2017-02-01", qualified="2015-01-29",
+                          break_class="STRUCTURAL_BREAK"),
+            self._episode("AAPL", closed_on="2018-03-06", qualified="2016-08-11",
+                          break_class="UNRESOLVED"),
+        ]
+        html = self._render(self._payload([self._recovery_row("AAPL")],
+                                          self._lineage(eps)))
+        fact = self._fact(html, "AAPL")
+        assert re.findall(r"<b>([^<]*)</b>", fact) == ["2", "0", "0", "2"]
+        assert "failed repairs:" in fact and "修复失败" in fact
+
+    def test_open_run_only_hidden(self):
+        """A name with only its current open run shows no lineage fact at all."""
+        eps = [self._episode("AAPL", closed_on=None, qualified="2011-05-04")]
+        html = self._render(self._payload([self._recovery_row("AAPL")],
+                                          self._lineage(eps)))
+        assert "lr-rec-lineage" not in self._row_slice(html, "AAPL")
+
+    def test_lineage_absent_none_or_wrong_schema_hidden(self):
+        """Missing/None/other-schema lineage_roster renders no fact, panel intact."""
+        row = [self._recovery_row("AAPL")]
+        closed = [self._episode("AAPL", closed_on="2017-02-01")]
+        html = self._render(self._payload(row))                        # key omitted
+        assert "lr-rec-lineage" not in html
+        assert "Deep corrections and recovery" in html
+        payload = self._payload(row)
+        payload["lineage_roster"] = None                               # layer failed
+        html = self._render(payload)
+        assert "lr-rec-lineage" not in html
+        assert 'data-ticker="AAPL"' in html
+        html = self._render(self._payload(                             # other schema
+            row, self._lineage(closed, schema="leader_lineage.v0")))
+        assert "lr-rec-lineage" not in html
+        assert "Deep corrections and recovery" in html
+
+    def test_other_zero_hides_other_endings(self):
+        """other=0 prints no 'other endings' segment; zero tallies stay visible."""
+        eps = [
+            self._episode("AAPL", closed_on="2017-02-01", qualified="2015-01-29",
+                          break_class="FAILED_BREAK"),
+            self._episode("AAPL", closed_on="2018-03-06", qualified="2016-08-11",
+                          break_class="REPAIRED_TREND"),
+        ]
+        html = self._render(self._payload([self._recovery_row("AAPL")],
+                                          self._lineage(eps)))
+        fact = self._fact(html, "AAPL")
+        assert "other endings:" not in fact and "其他结局" not in fact
+        assert re.findall(r"<b>([^<]*)</b>", fact) == ["2", "1", "1"]
+        assert "failed repairs:" in fact
+
+    def test_runs_do_not_leak_across_tickers(self):
+        """MSFT's closed runs render on MSFT's row only; AAPL's row stays clean."""
+        eps = [self._episode("MSFT", closed_on="2017-02-01", qualified="2015-01-29",
+                             break_class="FAILED_BREAK")]
+        rows = [self._recovery_row("MSFT", -0.30), self._recovery_row("AAPL", -0.22)]
+        html = self._render(self._payload(rows, self._lineage(eps)))
+        assert "lr-rec-lineage" in self._fact(html, "MSFT")
+        assert "lr-rec-lineage" not in self._row_slice(html, "AAPL")
+
+    def test_source_ships_both_languages_and_no_failed_break_term(self):
+        """Markup carries EN and zh; the lineage fact never prints 'failed break'."""
+        src = (Path(__file__).resolve().parent.parent / "templates"
+               / "leader_radar.html.j2").read_text(encoding="utf-8")
+        assert "failed repairs" in src and "修复失败" in src
+        assert "Prior leadership runs" in src and "此前领导期" in src
+        eps = [
+            self._episode("AAPL", closed_on="2017-02-01", qualified="2015-01-29",
+                          break_class="FAILED_BREAK"),
+            self._episode("AAPL", closed_on="2018-03-06", qualified="2016-08-11"),
+        ]
+        html = self._render(self._payload([self._recovery_row("AAPL")],
+                                          self._lineage(eps)))
+        fact = self._fact(html, "AAPL")
+        assert "failed break" not in fact.lower()
+
+
 # ── _merge_history_frame (frozen-store dtype fix, 2026-07-16) ─────────────────
 # state_history.parquet froze at its 2026-07-11 seed: the store side read back
 # as object (datetime.date) and got to_datetime'd, the new side stayed raw
@@ -3316,3 +3498,13 @@ class TestW19ECardEarningsRender:
         for m in _re.finditer(r'class="evidence-line"', html):
             end = html.index("</div>", m.start())
             assert "90-day estimate" not in html[m.start():end]
+
+
+def test_ticker_links_open_the_stock_page():
+    """us_stocks.html#TICKER only lands on the top of the board: that page has no row id for a
+    ticker and its one hash handler flashes an existing element. stock.html#TICKER opens the name."""
+    src = (Path(__file__).resolve().parents[1] / "templates" / "leader_radar.html.j2").read_text(encoding="utf-8")
+    assert "us_stocks.html#" not in src
+    assert src.count("stock.html#") == 17
+    assert 'class="rs-highs-ticker" href="stock.html#{{ item.ticker|e }}"' in src
+    assert '<a href="stock.html#\' + ticker' in src  # the one link built in script
