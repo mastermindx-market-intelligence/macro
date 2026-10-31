@@ -263,7 +263,7 @@
         {{ help("The WEEKLY (investor) cycle is the bigger rhythm — ~16-26 weeks, containing several daily cycles. It sets the tide the daily cycles swim in; early weeks = more upside room, late weeks = treat rallies cautiously.", "周线（投资者）周期是更大的节奏 — 约 16-26 周，包含数个日线周期。它决定了日线周期所处的大势；早期周次=上行空间更大，晚期周次=对反弹保持谨慎。") }}</div>{% endif %}
       {% if cp.translation %}<div class="muted">{{ t(cp.translation, cp.translation_zh) }}</div>{% endif %}
     </div>
-    {% if s.cycle.failed_cycle %}<p class="neg" style="margin:6px 0 0">⚠ {{ t('Failed cycle: price is below the low that started this cycle — historically the larger trend is rolling over in ~80% of such cases.', '周期失败：价格已跌破启动本周期的低点 — 历史上约 80% 的此类情形中，更大的趋势正在转向。') }}</p>{% endif %}
+    {% if s.cycle.failed_cycle %}<p class="neg" style="margin:6px 0 0">⚠ {{ t('Failed cycle: price is below the low that started this cycle. How often the larger trend then rolls over has not been measured here.', '周期失败：价格已跌破启动本周期的低点。此后更大趋势掉头向下的频率，本站尚未测算。') }}</p>{% endif %}
     <details style="margin-top:8px"><summary>{{ t('full reasoning', '完整推理') }}</summary>
       <p class="muted" style="margin:6px 0">{{ t(s.ladder.why, s.ladder.why_zh) }} {{ t('Next:', '下一步：') }} {{ t(s.ladder.next, s.ladder.next_zh) }}</p>
     </details>
