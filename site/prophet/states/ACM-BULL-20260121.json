@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ACM-BULL-20260121",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 8.0,
@@ -13,18 +13,18 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 41.3,
-    "overlay": 47.0
+    "retention": 44.2,
+    "overlay": 49.9
   },
   "geometry": {
-    "dist_to_stop_r": -1.383,
+    "dist_to_stop_r": -1.257,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 137.8,
-    "p1": -0.2551,
-    "p2": -0.1276,
+    "horizon_pct_used": 142.2,
+    "p1": -0.1714,
+    "p2": -0.0857,
     "p3": null,
-    "move_r": -0.383,
+    "move_r": -0.257,
     "mfe_r": 0.0,
     "mae_r": -0.492
   },
@@ -45,16 +45,8 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 62,
-  "tau": 1.3778,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 64,
+  "tau": 1.4222,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

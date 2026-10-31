@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VST-BULL-20260903",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 33.9,
-  "raw_confidence": 33.1,
-  "delta_vs_base": -26.1,
+  "management_confidence": 30.5,
+  "raw_confidence": 29.2,
+  "delta_vs_base": -29.5,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 40.7,
+    "validity": 30.9,
     "progress": 0.0,
-    "pace": 16.7,
+    "pace": 14.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.514,
+    "dist_to_stop_r": 0.419,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 122.2,
-    "p1": -0.3239,
-    "p2": -0.162,
+    "horizon_pct_used": 126.7,
+    "p1": -0.3874,
+    "p2": -0.1937,
     "p3": null,
-    "move_r": -0.486,
+    "move_r": -0.581,
     "mfe_r": 0.926,
     "mae_r": -0.634
   },
@@ -45,16 +45,8 @@
   "_first_trigger_ts": "2026-09-05",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 55,
-  "tau": 1.2222,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 57,
+  "tau": 1.2667,
   "closed": true,
   "outcome": "EXPIRED"
 }

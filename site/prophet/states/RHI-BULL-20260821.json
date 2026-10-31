@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "RHI-BULL-20260821",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 36.2,
@@ -10,21 +10,21 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 100.0,
-    "progress": 5.5,
+    "validity": 93.6,
+    "progress": 0.0,
     "pace": 0.0,
-    "retention": 100.0,
-    "overlay": 59.0
+    "retention": 0.0,
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.053,
-    "dist_to_t1_r": 1.447,
-    "dist_to_t2_r": 2.947,
-    "horizon_pct_used": 153.3,
-    "p1": 0.035,
-    "p2": 0.0175,
+    "dist_to_stop_r": 0.952,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 157.8,
+    "p1": -0.0319,
+    "p2": -0.0159,
     "p3": null,
-    "move_r": 0.053,
+    "move_r": -0.048,
     "mfe_r": 0.053,
     "mae_r": -0.557
   },
@@ -45,16 +45,8 @@
   "_first_trigger_ts": "2026-08-31",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 69,
-  "tau": 1.5333,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 71,
+  "tau": 1.5778,
   "closed": true,
   "outcome": "EXPIRED"
 }

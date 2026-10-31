@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000070858-23-000176",
+    "expected_period_end": "2023-06-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "9348000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK06",
+    "polarity": "positive",
+    "reason": "bac-20230630.htm | us-gaap:OperatingLeaseRightOfUseAsset @ c-25 | Right-of-use asset $ 9,348 $ 9,755 | Lessee right-of-use assets at 2023-06-30, millions.",
+    "section_family": "lease_liability",
+    "split": "held_out",
+    "target_id": "rou_assets_operating",
+    "target_kind": "extract",
+    "trial_id": "PK06|0000070858-23-000176|extract|rou_assets_operating"
+  },
+  {
+    "accession": "0000070858-23-000176",
+    "expected_period_end": "2023-06-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "9973000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK06",
+    "polarity": "positive",
+    "reason": "bac-20230630.htm | us-gaap:OperatingLeaseLiability @ c-25 | Right-of-use asset $ 9,348 $ 9,755 Lease liabilities 9,973 10,359 | Lessee operating lease liabilities at 2023-06-30, millions.",
+    "section_family": "lease_liability",
+    "split": "held_out",
+    "target_id": "operating_lease_liability_total",
+    "target_kind": "extract",
+    "trial_id": "PK06|0000070858-23-000176|extract|operating_lease_liability_total"
+  }
+]

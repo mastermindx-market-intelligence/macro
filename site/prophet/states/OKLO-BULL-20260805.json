@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "OKLO-BULL-20260805",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": -1.071,
+    "dist_to_stop_r": -1.196,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 177.8,
-    "p1": -1.3805,
-    "p2": -0.6903,
+    "horizon_pct_used": 182.2,
+    "p1": -1.4642,
+    "p2": -0.7321,
     "p3": null,
-    "move_r": -2.071,
+    "move_r": -2.196,
     "mfe_r": 0.224,
-    "mae_r": -2.086
+    "mae_r": -2.196
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,21 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.9600007629394511,
-  "_mae": -18.27000068664551,
+  "_mae": -19.240000000000002,
   "_max_p1": 0.14916291955399172,
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 80,
-  "tau": 1.7778,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 82,
+  "tau": 1.8222,
   "closed": true,
   "outcome": "INVALIDATED"
 }

@@ -1054,3 +1054,225 @@ class TestIntradayFlowHistoryProjection:
         assert payload["leaders"][0]["market"]["rvol_tod_close"] is None
         assert payload["leaders"][0]["outcomes"]["fwd_ret_1d"] is None
         json.dumps(payload, allow_nan=False)
+
+
+# ── R04-B1: read-failed boards must publish as read_failed, not no_data ──────
+
+import json  # noqa: E402
+
+_PULSE_PATH = "live/flow_pulse.json"
+
+
+def _read_pulse(site: Path) -> dict:
+    return json.loads((site / _PULSE_PATH).read_text(encoding="utf-8"))
+
+
+def _bar_dicts(count: int, base_ts_iso: str) -> list[dict]:
+    """Helper: count hourly bars in ET afternoon; matches the sibling test idiom."""
+    return [
+        {
+            "ts": base_ts_iso,
+            "open": 1.0, "high": 2.0, "low": 0.5, "close": 1.5, "volume": 100.0,
+        }
+        for _ in range(count)
+    ]
+
+
+# T1 — expected RED at base: provider exception is published as no_data.
+def test_fastpath_provider_exception_is_not_zero_activity(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    def today_bars_raising(ticker: str, data_root: Path) -> list[dict]:
+        raise RuntimeError(f"provider down for {ticker}")
+
+    def today_bars_empty(ticker: str, data_root: Path) -> list[dict]:
+        return []
+
+    # Case A: both raise.
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB"])
+    monkeypatch.setattr(_bif, "_today_bars", today_bars_raising)
+    site_a = tmp_path / "site_a"
+    _bif._run_fastpath({}, tmp_path, site_a)
+    pulse_a = _read_pulse(site_a)
+    assert pulse_a["mode"] == "read_failed"
+    assert pulse_a["n_failed"] == 2
+    rows_a = {r["ticker"]: r for r in pulse_a["tickers"]}
+    assert set(rows_a) == {"AAA", "BBB"}
+    assert rows_a["AAA"]["bars_today"] is None
+    assert rows_a["AAA"]["error"] == "RuntimeError"
+    assert rows_a["BBB"]["bars_today"] is None
+    assert rows_a["BBB"]["error"] == "RuntimeError"
+
+    # Case B: both return [] — a genuine quiet board.
+    monkeypatch.setattr(_bif, "_today_bars", today_bars_empty)
+    site_b = tmp_path / "site_b"
+    _bif._run_fastpath({}, tmp_path, site_b)
+    pulse_b = _read_pulse(site_b)
+    assert pulse_b["mode"] == "no_data"
+    assert pulse_b["n_failed"] == 0
+    rows_b = {r["ticker"]: r for r in pulse_b["tickers"]}
+    assert set(rows_b) == {"AAA", "BBB"}
+    assert rows_b["AAA"]["bars_today"] == 0
+    assert "error" not in rows_b["AAA"]
+    assert rows_b["BBB"]["bars_today"] == 0
+    assert "error" not in rows_b["BBB"]
+
+
+# T2 — expected RED at base: absent parquet file is published as no_data.
+def test_fastpath_absent_parquet_is_a_failed_read(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    intraday_dir = tmp_path / "empty_intraday"
+    intraday_dir.mkdir()
+    monkeypatch.setenv("MACRO_INTRADAY_DIR", str(intraday_dir))
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB"])
+    site = tmp_path / "site"
+    _bif._run_fastpath({}, tmp_path, site)
+    pulse = _read_pulse(site)
+    assert pulse["mode"] == "read_failed"
+    rows = {r["ticker"]: r for r in pulse["tickers"]}
+    for tk in ("AAA", "BBB"):
+        assert rows[tk]["bars_today"] is None
+        assert rows[tk]["error"] == "IntradayBarsAbsent"
+
+
+# T3 — expected RED at base: unreadable parquet is published as no_data.
+def test_fastpath_unreadable_parquet_is_a_failed_read(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    intraday_dir = tmp_path / "intraday_junk"
+    intraday_dir.mkdir()
+    (intraday_dir / "AAA.parquet").write_bytes(b"this is not a parquet file at all")
+    monkeypatch.setenv("MACRO_INTRADAY_DIR", str(intraday_dir))
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA"])
+    site = tmp_path / "site"
+    _bif._run_fastpath({}, tmp_path, site)
+    pulse = _read_pulse(site)
+    assert pulse["mode"] == "read_failed"
+    rows = {r["ticker"]: r for r in pulse["tickers"]}
+    assert rows["AAA"]["bars_today"] is None
+    assert rows["AAA"]["error"] == "IntradayBarsUnreadable"
+
+
+# T4 — expected RED at base: frame with no clock column is published as no_data.
+def test_fastpath_frame_without_clock_is_a_failed_read(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    intraday_dir = tmp_path / "intraday_noclock"
+    intraday_dir.mkdir()
+    (intraday_dir / "AAA.parquet").touch()
+    monkeypatch.setenv("MACRO_INTRADAY_DIR", str(intraday_dir))
+    frame = pd.DataFrame(
+        {
+            "open": [1.0, 1.5],
+            "high": [2.0, 2.5],
+            "low": [0.5, 1.0],
+            "close": [1.5, 2.0],
+            "volume": [100.0, 200.0],
+        }
+    )  # RangeIndex; no timestamp/t/datetime/time column.
+    monkeypatch.setattr(_bif.pd, "read_parquet", lambda _: frame.copy())
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA"])
+    site = tmp_path / "site"
+    _bif._run_fastpath({}, tmp_path, site)
+    pulse = _read_pulse(site)
+    assert pulse["mode"] == "read_failed"
+    rows = {r["ticker"]: r for r in pulse["tickers"]}
+    assert rows["AAA"]["bars_today"] is None
+    assert rows["AAA"]["error"] == "IntradayBarsNoClock"
+
+
+# T5 — GREEN control: mixed board stays fastpath; n_failed counts failures.
+def test_fastpath_mixed_board_stays_fastpath_with_failures_counted(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    def today_bars(ticker: str, data_root: Path) -> list[dict]:
+        if ticker == "BBB":
+            raise RuntimeError("boom")
+        return _bar_dicts(2, "2026-10-13T13:00:00+00:00")
+
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB"])
+    monkeypatch.setattr(_bif, "_today_bars", today_bars)
+    site = tmp_path / "site"
+    _bif._run_fastpath({}, tmp_path, site)
+    pulse = _read_pulse(site)
+    assert pulse["mode"] == "fastpath"
+    rows = {r["ticker"]: r for r in pulse["tickers"]}
+    assert rows["AAA"]["bars_today"] == 2
+    assert "error" not in rows["AAA"]
+    assert rows["BBB"]["bars_today"] is None
+    assert rows["BBB"]["error"] == "RuntimeError"
+    # The only RED at base: this n_failed assertion.
+    assert pulse.get("n_failed") == 1
+
+
+# T6 — GREEN control: quiet board whose reads succeeded is no_data.
+def test_fastpath_quiet_board_read_ok_is_no_data(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    intraday_dir = tmp_path / "intraday_quiet"
+    intraday_dir.mkdir()
+    (intraday_dir / "AAA.parquet").touch()
+    monkeypatch.setenv("MACRO_INTRADAY_DIR", str(intraday_dir))
+    yesterday = pd.Timestamp.now(tz="America/New_York").normalize() - pd.Timedelta(days=1)
+    index = pd.DatetimeIndex(
+        [
+            (yesterday + pd.Timedelta(hours=10)).tz_convert("UTC"),
+            (yesterday + pd.Timedelta(hours=11)).tz_convert("UTC"),
+        ],
+        name="ts",
+    )
+    frame = pd.DataFrame(
+        {
+            "open": [1.0, 1.5],
+            "high": [2.0, 2.5],
+            "low": [0.5, 1.0],
+            "close": [1.5, 2.0],
+            "volume": [100.0, 200.0],
+        },
+        index=index,
+    )
+    monkeypatch.setattr(_bif.pd, "read_parquet", lambda _: frame.copy())
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA"])
+    site = tmp_path / "site"
+    _bif._run_fastpath({}, tmp_path, site)
+    pulse = _read_pulse(site)
+    assert pulse["mode"] == "no_data"
+    rows = {r["ticker"]: r for r in pulse["tickers"]}
+    assert rows["AAA"]["bars_today"] == 0
+    assert "error" not in rows["AAA"]
+
+
+# T7 — GREEN control: nightly/baseline loader callers stay lenient.
+def test_nightly_loader_callers_stay_lenient(tmp_path: Path):
+    # _load_intraday_bars is the default-strict=False function: with an empty
+    # intraday dir, an absent file returns None (no raise).
+    assert _bif._load_intraday_bars("AAA", tmp_path) is None
+    # Nightly/baseline callers must not raise either.
+    assert _bif._adv20_and_curve("AAA", tmp_path) == (None, None)
+    assert _bif._atr14("AAA", tmp_path) is None
+
+
+# T8 — expected RED at base: read_failed board never overwrites lastgood.
+def test_read_failed_board_never_overwrites_lastgood(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+):
+    def today_bars_raising(ticker: str, data_root: Path) -> list[dict]:
+        raise RuntimeError(f"provider down for {ticker}")
+
+    site = tmp_path / "site"
+    live = site / "live"
+    live.mkdir(parents=True)
+    marker = '{"marker":"PRESERVE_ME_DO_NOT_OVERWRITE"}'
+    (live / _bif._LASTGOOD_FILENAME).write_text(marker, encoding="utf-8")
+
+    monkeypatch.setattr(_bif, "_resolve_universe", lambda cfg, data_root: ["AAA", "BBB"])
+    monkeypatch.setattr(_bif, "_today_bars", today_bars_raising)
+    _bif._run_fastpath({}, tmp_path, site)
+    pulse = _read_pulse(site)
+
+    # The mode assertion is the RED at base.
+    assert pulse["mode"] == "read_failed"
+    # Lastgood bytes are unchanged: read_failed never overwrites lastgood.
+    lastgood = (live / _bif._LASTGOOD_FILENAME).read_text(encoding="utf-8")
+    assert lastgood == marker

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TTMI-BULL-20260909",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": -0.672,
+    "dist_to_stop_r": -0.57,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 106.7,
-    "p1": -1.1149,
-    "p2": -0.5574,
+    "horizon_pct_used": 111.1,
+    "p1": -1.0467,
+    "p2": -0.5234,
     "p3": null,
-    "move_r": -1.672,
+    "move_r": -1.57,
     "mfe_r": 0.243,
     "mae_r": -1.897
   },
@@ -45,16 +45,8 @@
   "_first_trigger_ts": "2026-09-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 48,
-  "tau": 1.0667,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 50,
+  "tau": 1.1111,
   "closed": true,
   "outcome": "INVALIDATED"
 }

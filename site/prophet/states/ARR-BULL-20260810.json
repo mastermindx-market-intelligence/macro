@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ARR-BULL-20260810",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.6,
@@ -13,20 +13,20 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 46.2,
-    "overlay": 53.0
+    "retention": 45.7,
+    "overlay": 46.9
   },
   "geometry": {
-    "dist_to_stop_r": -2.589,
+    "dist_to_stop_r": -2.991,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 171.1,
-    "p1": -2.3925,
-    "p2": -1.1963,
+    "horizon_pct_used": 175.6,
+    "p1": -2.6604,
+    "p2": -1.3302,
     "p3": null,
-    "move_r": -3.589,
+    "move_r": -3.991,
     "mfe_r": 0.0,
-    "mae_r": -3.893
+    "mae_r": -3.991
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,21 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -4.164999694824218,
+  "_mae": -4.270000190734862,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 77,
-  "tau": 1.7111,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 79,
+  "tau": 1.7556,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DIOD-BULL-20260813",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 21.0,
-  "raw_confidence": 20.9,
-  "delta_vs_base": -39.0,
+  "management_confidence": 20.6,
+  "raw_confidence": 20.2,
+  "delta_vs_base": -39.4,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 17.4,
+    "validity": 15.1,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.274,
+    "dist_to_stop_r": 0.248,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 162.2,
-    "p1": -0.4843,
-    "p2": -0.2422,
+    "horizon_pct_used": 166.7,
+    "p1": -0.5015,
+    "p2": -0.2507,
     "p3": null,
-    "move_r": -0.726,
+    "move_r": -0.752,
     "mfe_r": 0.004,
-    "mae_r": -0.726
+    "mae_r": -0.752
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,21 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.13999786376953693,
-  "_mae": -26.530000305175776,
+  "_mae": -27.470002746582026,
   "_max_p1": 0.002555638257932401,
   "_first_trigger_ts": "2026-10-07",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 73,
-  "tau": 1.6222,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 75,
+  "tau": 1.6667,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

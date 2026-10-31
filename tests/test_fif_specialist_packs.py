@@ -2751,6 +2751,692 @@ def test_pk09_material_weakness_probe() -> None:
     assert contract.validate_pack_result(result) == []
 
 
+def _pk09_synthetic(form: str, body: str) -> dict:
+    return produce_pack(
+        "PK09",
+        _pk09_input(
+            packages=(_synthetic_package(form, body),), entity=SYNTHETIC_ENTITY
+        ),
+    )
+
+
+# Review F1/F2 (B.3 pattern revision v2): the conclusion arms are anchored to
+# their management-conclusion phrases and the material-weakness boolean only
+# fires on an affirmative identification.
+
+
+def test_pk09_remediated_acquisition_sentence_does_not_flip_the_conclusion() -> None:
+    # Reviewer's failing Item 9A: the acquired business's controls were "not
+    # effective" before management's effective conclusion and the negated
+    # "no material weakness" sentence.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Our evaluation included controls at a business acquired during the period, which were initially determined to be not effective as of the acquisition date and have since been remediated.</div>"
+        "<div>Based on that evaluation, management concluded that the Company's internal control over financial reporting was effective as of June 30, 2026 and that no material weakness was identified.</div>"
+        "<div>Our disclosure controls and procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert (
+        _row(result, "icfr_management_conclusion")["text_value"] == "effective"
+    )
+    assert _row(result, "disclosure_controls_effective")["text_value"] == (
+        "effective"
+    )
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_negated_material_weakness_is_false() -> None:
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that no material weakness was identified."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"  # valued absence, not a hit
+    # The negated sentence does not mint a material-weakness conclusion either.
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "missing"
+    assert conclusion["reason"] == "narrative_span_not_located"
+    assert contract.validate_pack_result(result) == []
+
+
+# Review F1-a/F1-b/F2-a (B.3 pattern revision v3): a stated ICFR conclusion
+# governs over a material-weakness mention in the same sentence, a negated or
+# remediated mention never mints the material_weakness literal, and a negated
+# identification is a valued absence. The reviewer's sentences are carried
+# byte-for-byte.
+
+
+def test_pk09_remediated_then_effective_is_effective() -> None:
+    # F1-a-1: the remediated mention is refused and the second sentence's
+    # stated effective conclusion resolves the field.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that the material weakness related to "
+        "revenue recognition has been remediated as of June 30, 2026. "
+        "Management concluded that our internal control over financial "
+        "reporting was effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_no_deficiency_constituted_weakness_is_not_material_weakness() -> None:
+    # F1-a-2: the v2 guard's 60-char dead zone let "no ... constituted a
+    # material weakness" through; the negation now scans the whole window.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that no significant deficiencies or "
+        "control deficiencies constituted a material weakness in our "
+        "internal control over financial reporting.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "missing"
+    assert conclusion["reason"] == "narrative_span_not_located"
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_weakness_does_not_exist_is_not_material_weakness() -> None:
+    # F1-a-3: the negator follows the noun.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that a material weakness does not exist."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "missing"
+    assert conclusion["reason"] == "narrative_span_not_located"
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_effective_governs_same_sentence_weakness_mention() -> None:
+    # F1-a-4: a stated effective conclusion governs over a material-weakness
+    # mention in the same sentence, on either side of it.
+    remediated = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that our internal control over financial "
+        "reporting was effective; the material weakness noted above was "
+        "remediated.</div>",
+    )
+    conclusion = _row(remediated, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    # The mention passes the pattern guards; the sentence-bounded resolver
+    # still lets the stated conclusion govern (the precedence rule itself).
+    existed = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that a material weakness existed during "
+        "the fourth quarter of fiscal 2025; our internal control over "
+        "financial reporting was effective as of June 30, 2026.</div>",
+    )
+    conclusion = _row(existed, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert _row(existed, "material_weakness_present")["text_value"] == "true"
+    assert contract.validate_pack_result(existed) == []
+
+
+def test_pk09_never_identified_material_weakness_is_false() -> None:
+    # F1-b: "never" before the identifying verb is a negation.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>We never identified a material weakness in our internal "
+        "control over financial reporting as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    # The negated identification does not mint a conclusion either.
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "missing"
+    assert conclusion["reason"] == "narrative_span_not_located"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_identified_material_weakness_is_true() -> None:
+    # F2-a: the affirmative identification still fires true, and the negated
+    # verb-first identification is a valued absence — the main producer's
+    # bare phrase resolved both mentions to true.
+    affirmative = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management identified a material weakness in the "
+        "Company&#8217;s revenue recognition process as of June 30, 2026."
+        "</div>",
+    )
+    weakness = _row(affirmative, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(affirmative) == []
+    negated = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>The Company did not identify any material weakness in its "
+        "internal control over financial reporting as of June 30, 2026.</div>",
+    )
+    weakness = _row(negated, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(negated) == []
+
+
+def test_pk09_adverse_conclusion_is_ineffective() -> None:
+    # F2-a: the stated "not effective" conclusion governs over the earlier
+    # material-weakness mention in the same sentence — the main producer's
+    # bare phrase resolved this Item 9A to material_weakness.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that, because of the material weakness "
+        "described below, the Company&#8217;s internal control over "
+        "financial reporting was not effective as of December 31, 2025.</div>"
+        "<div>Management identified a material weakness in the "
+        "Company&#8217;s revenue recognition process as of December 31, 2025."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "ineffective"
+    assert _row(result, "material_weakness_present")["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_disclosure_controls_not_effective_anchored() -> None:
+    ineffective = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Our disclosure controls and procedures were not effective as of "
+        "June 30, 2026.</div>",
+    )
+    row = _row(ineffective, "disclosure_controls_effective")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "ineffective"
+    # A "not effective" fragment outside the disclosure-controls phrase no
+    # longer satisfies the unanchored arm.
+    unrelated = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Controls at an acquired business were not effective during the "
+        "integration period.</div>",
+    )
+    row = _row(unrelated, "disclosure_controls_effective")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "narrative_span_not_located"
+    assert contract.validate_pack_result(unrelated) == []
+
+
+# Review F1-1/F1-2 (B.3 pattern revision v4): the material-weakness
+# negation look-back is clause-bounded and an affirmative existence is a
+# presence. The reviewer's sentences are carried byte-for-byte.
+
+
+def test_pk09_negated_relative_clause_then_identified_is_true() -> None:
+    # F1-1 (1): the negator sits in a relative clause that closes before
+    # the subject restart; the sentence-wide look-back of v3 read it as
+    # negating the affirmative identification.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Based on our evaluation, which did not identify any "
+        "deficiencies in entity-level controls, management identified a "
+        "material weakness in revenue recognition as of June 30, 2026."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_negated_clause_before_semicolon_then_identified_is_true() -> None:
+    # F1-1 (2): the negator sits in the clause before the semicolon; the
+    # identification after it is its own clause.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management's evaluation did not include controls of the "
+        "acquired business; management identified a material weakness in "
+        "revenue recognition as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_existential_weakness_not_remediated_is_true() -> None:
+    # F1-2 (3): an affirmative existence is a presence; the relative
+    # clause's "not been remediated" is outside the existential's clause,
+    # and the v3 arm's noun-then-"exists" shape never matched this
+    # sentence at all.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness, which has not been remediated."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_same_clause_negation_still_false() -> None:
+    # The comma before "and" is not a subject restart, so the clause rule
+    # did not over-widen: the negation stays in the identifying clause.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management did not identify any material weakness, and our "
+        "controls were effective.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+# Review F1-A/F1-B/F1-C/F2-A/F2-B (B.3 pattern revision v5): the negation
+# look-back is case-insensitive and copula-anchored, the bare existence arm
+# anchors on the whole word and refuses remediation, and the clause
+# boundary set gains coordinating and subordinating conjunctions. The
+# reviewer's sentences are carried byte-for-byte.
+
+
+def test_pk09_sentence_initial_no_weakness_existed_is_false() -> None:
+    # F1-A: the sentence-initial "No" negates the existence; arm 4 now
+    # carries the same "(?<!No )" lookbehind as arm 2, and the look-back
+    # matches negators case-insensitively.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>No material weakness existed as of December 31, 2025.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_do_not_believe_there_was_weakness_is_false() -> None:
+    # F1-B: "there was" anchors the clause look-back, so the "do not"
+    # before the copula negates the existence.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>We do not believe there was a material weakness in our "
+        "internal control over financial reporting.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_prior_year_existed_then_remediated_is_false() -> None:
+    # F1-C: the bare existence arm anchors on the whole word and refuses a
+    # following "remediated", so a prior-year remediated mention carries no
+    # affirmative match and takes the absent value.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>A material weakness that existed in the prior year was "
+        "remediated.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_existential_conjunction_not_remediated_is_true() -> None:
+    # F2-A: the existence guard stops at the coordinating "and", so the
+    # new clause's "not been remediated" does not negate the existence.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it has not been "
+        "remediated.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_not_effective_because_weakness_existed_is_true() -> None:
+    # F2-B: "because" is a clause boundary, so the "not" of "not
+    # effective" (a different predicate) no longer reaches the existence
+    # verb; the stated conclusion stays ineffective.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that our internal control over financial "
+        "reporting was not effective as of June 30, 2026 because a material "
+        "weakness related to revenue recognition existed as of that "
+        "date.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "ineffective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_weakness_existed_as_of_date_is_true() -> None:
+    # Control: an affirmative existence with no negator stays true under
+    # the whole-word anchor.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>A material weakness related to inventory existed as of "
+        "December 31, 2025.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+# Review F4-1..F4-4 (B.3 pattern revision v6): remediation-timing
+# semantics — the weakness is present as of the balance date unless the
+# sentence says it was remediated on or before that date. The reviewer's
+# sentences are carried byte-for-byte.
+
+
+def test_pk09_mw_remediated_in_coordinated_clause_is_absent() -> None:
+    # F4-1/F4-3: a coordinated remediation clause ("... but it has been
+    # remediated as of <balance date>") negates presence; the v5 guard's
+    # stop at "and"/"but" let both sentences resolve true.
+    existential = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness but it has been remediated "
+        "as of June 30, 2026.</div>",
+    )
+    weakness = _row(existential, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(existential) == []
+    bare = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>A material weakness existed during the period but was "
+        "remediated as of June 30, 2026.</div>",
+    )
+    weakness = _row(bare, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(bare) == []
+
+
+def test_pk09_mw_remediated_after_as_of_date_is_present() -> None:
+    # F4-2: the remediation lands after the as-of date ("subsequently
+    # remediated in the first quarter of fiscal 2027"); v5's arm-2
+    # "remediated" refusal rejected the sentence outright, so the field
+    # took the absent value instead of the presence.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>A material weakness that existed as of June 30, 2026 was "
+        "subsequently remediated in the first quarter of fiscal 2027."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_mw_has_existed_and_not_remediated_is_present() -> None:
+    # F4-4: "has existed since fiscal 2024 and has not been remediated"
+    # is a presence; v5's arm-2 refusal read the coordinated clause's
+    # "not" as negating the existence.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>A material weakness has existed since fiscal 2024 and has "
+        "not been remediated.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+# Review F5-1/F5-5 (B.3 pattern revision v7): a remediation carrying its
+# own date is compared against the filing's period of report — the
+# synthetic fixture's period end is June 30, 2026 — instead of defaulting
+# to "remediated on or before the balance date" when the weakness clause
+# holds no as-of date. The reviewer's sentences are carried byte-for-byte.
+
+
+def test_pk09_mw_dated_remediation_after_period_end_is_present() -> None:
+    # F5-1: "as of September 30, 2026", "in July 2026" (month-year read
+    # at the month's last day) and "during the quarter ended September
+    # 30, 2026" all land after the June 30, 2026 period of report; v6
+    # fell through to "remediated" (absent) because the weakness clause
+    # carries no as-of date and the month-year form did not parse.
+    as_of = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it has been remediated "
+        "as of September 30, 2026.</div>",
+    )
+    weakness = _row(as_of, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(as_of) == []
+    month_year = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it was remediated "
+        "in July 2026.</div>",
+    )
+    weakness = _row(month_year, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(month_year) == []
+    quarter = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it was remediated "
+        "during the quarter ended September 30, 2026.</div>",
+    )
+    weakness = _row(quarter, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(quarter) == []
+
+
+def test_pk09_mw_dated_remediation_before_period_end_is_absent() -> None:
+    # F5-1 controls: "in May 2026" and "on March 31, 2026" precede the
+    # June 30, 2026 period of report, so the remediation holds as of the
+    # balance date and the weakness is absent through the dated
+    # comparison, not the v6 dateless default.
+    month_year = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it was remediated "
+        "in May 2026.</div>",
+    )
+    weakness = _row(month_year, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(month_year) == []
+    on_date = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it was remediated "
+        "on March 31, 2026.</div>",
+    )
+    weakness = _row(on_date, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(on_date) == []
+
+
+# Review F5-3/F5-4/F6-1..F6-3 (follow-up bundle, 2026-10-31): mapping
+# parity and cap re-enforcement on the v7 finalize flips, plus the undated
+# reads the reviews asked to pin. The synthetic fixture's period of report
+# stays June 30, 2026.
+
+
+def test_pk09_flip_remediation_span_mapping_rule_id_matches_stock_resolver() -> None:
+    # F6-1: a false→true flip envelope's hand-minted remediation_span row
+    # carries the same mapping identity the stock text_span resolver
+    # stamps — compared against a non-flip envelope from the same input
+    # family whose row the stock resolver minted itself.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness and it has been remediated "
+        "as of September 30, 2026.</div>"
+    )
+    pack_input = _pk09_input(
+        packages=(_synthetic_package("10-K", body),), entity=SYNTHETIC_ENTITY
+    )
+    framework = pack_base.produce_pack_result(pk09_controls.PRODUCER, pack_input)
+    assert _row(framework, "material_weakness_present")["text_value"] == "false"
+    assert _row(framework, "remediation_span")["quality_state"] == "not_evaluable"
+    flip = produce_pack("PK09", pack_input)
+    assert _row(flip, "material_weakness_present")["text_value"] == "true"
+    flipped = _row(flip, "remediation_span")
+    assert flipped["quality_state"] == "valued"
+    # The stock comparison row: same input family, no flip (the weakness is
+    # present on both passes), so the conditional gate let the framework's
+    # own resolver mint the row.
+    stock_env = _pk09_synthetic(
+        "10-K",
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>A material weakness has existed since fiscal 2024 and has "
+        "not been remediated.</div>",
+    )
+    stock = _row(stock_env, "remediation_span")
+    assert stock["quality_state"] == "valued"
+    assert flipped["mapping_rule_id"] == stock["mapping_rule_id"]
+    assert flipped["mapping_rule_digest"] == stock["mapping_rule_digest"]
+    assert flipped["mapping_rule_id"] == (
+        f"{pk09_controls.SPEC.pack_id}.remediation_span.text_span/v1"
+    )
+    assert contract.validate_pack_result(flip) == []
+    assert contract.validate_pack_result(stock_env) == []
+
+
+def test_pk09_deactivate_path_respects_limitation_cap() -> None:
+    # F6-3: the true→false flip appends its limitation line only below the
+    # framework's production cap — a 32-entry list does not grow to 33 and
+    # the finalized envelope still validates.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>A material weakness existed as of March 31, 2026 and it has "
+        "been remediated as of May 30, 2026.</div>"
+    )
+    pack_input = _pk09_input(
+        packages=(_synthetic_package("10-K", body),), entity=SYNTHETIC_ENTITY
+    )
+    fresh = produce_pack("PK09", pack_input)
+    assert _row(fresh, "material_weakness_present")["text_value"] == "false"
+    assert any(
+        line.startswith("pk09.remediation_span: non-valued")
+        for line in fresh["limitations"]
+    )
+    padded = pack_base.produce_pack_result(pk09_controls.PRODUCER, pack_input)
+    assert _row(padded, "material_weakness_present")["text_value"] == "true"
+    cap = pk09_controls._LIMITATION_CAP
+    padded["limitations"] = [
+        *padded["limitations"],
+        *(f"pk09.cap-probe.{index}" for index in range(cap - len(padded["limitations"]))),
+    ]
+    assert len(padded["limitations"]) == cap
+    finalized = pk09_controls.PRODUCER.finalize_result(padded, pack_input)
+    assert len(finalized["limitations"]) == cap
+    assert _row(finalized, "material_weakness_present")["text_value"] == "false"
+    assert not any(
+        line.startswith("pk09.remediation_span: non-valued")
+        for line in finalized["limitations"]
+    )
+    assert contract.validate_pack_result(finalized) == []
+
+
+def test_pk09_mw_anaphoric_undated_remediation_keeps_v7_value() -> None:
+    # F5-3: an anaphoric remediation clause carrying no date of its own
+    # keeps the v7 value — the v6 undated read treats a dateless,
+    # unmarked remediation as an absence. Value and reason code are
+    # pinned so a future change to this read is visible.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>A material weakness existed as of June 30, 2026 and it was "
+        "remediated.</div>"
+    )
+    pack_input = _pk09_input(
+        packages=(_synthetic_package("10-K", body),), entity=SYNTHETIC_ENTITY
+    )
+    result = produce_pack("PK09", pack_input)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert weakness["reason"] is None
+    # The gated row follows the boolean, as on every non-presence.
+    gated = _row(result, "remediation_span")
+    assert gated["quality_state"] == "not_evaluable"
+    assert gated["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+    # No date parsed: the v7 finalize pass is a no-op, so the shipped
+    # envelope equals the framework's own undated read.
+    assert result == pack_base.produce_pack_result(
+        pk09_controls.PRODUCER, pack_input
+    )
+
+
+def test_pk09_mw_fiscal_period_phrases_stay_undated() -> None:
+    # F5-4: fiscal-period remediation phrases match no remediation-date
+    # form, so no year is ever guessed and no date is parsed — each
+    # sentence keeps the v7 value (the undated absence) and the finalize
+    # pass leaves the framework envelope untouched.
+    for tail in (
+        "in the fourth quarter.",
+        "during fiscal 2026.",
+        "in the first quarter of fiscal 2027.",
+        "in July.",
+    ):
+        body = (
+            "<div>Item 9A. Controls and Procedures</div>"
+            "<div>A material weakness existed as of June 30, 2026 and it "
+            f"was remediated {tail}</div>"
+        )
+        pack_input = _pk09_input(
+            packages=(_synthetic_package("10-K", body),), entity=SYNTHETIC_ENTITY
+        )
+        result = produce_pack("PK09", pack_input)
+        weakness = _row(result, "material_weakness_present")
+        assert weakness["quality_state"] == "valued", tail
+        assert weakness["text_value"] == "false", tail
+        assert weakness["reason"] is None, tail
+        assert contract.validate_pack_result(result) == [], tail
+        # No parsed remediation date: the envelope is exactly the
+        # framework's undated read — never a guessed year, never today's
+        # date.
+        assert result == pack_base.produce_pack_result(
+            pk09_controls.PRODUCER, pack_input
+        ), tail
+
+
 # 32. PK09 invariance and CLI -------------------------------------------------
 
 
@@ -3698,7 +4384,7 @@ BASE_AAPL_ENVELOPE_SHA256 = {
     "PK02": "9f621f9e750b1c9df6731eae1f9e0c8c2094006214d37b29066c08ea7e51d981",
     "PK11": "f425680270c2a267d8dca5f44e6a1e3c2ac708b124e2d2a7723c0674056d9b2f",
     "PK12": "da96915b1d81f0f4417e6cb4d5acbc551f5fbfcc5975dc37091adfec9be5cceb",
-    "PK09": "451380196c80b7685e1103acbf1950a65c57ec460188738dec66d006421d474e",
+    "PK09": "69ad83052dcb482b8f96b9b070174f419222d23c0ca5981534c62734a3b4d062",
 }
 _BASE_PACK_METRICS = {
     "PK06": "leases",
@@ -3991,7 +4677,371 @@ def test_pk10_deafa14a_only_is_still_not_supplied() -> None:
     )
     assert result["applicability"]["state"] == "not_evaluable"
     assert result["applicability"]["reason"] == "proxy_package_not_supplied"
-    assert "proxy_forms_seen=DEFA14A" in result["receipts"]
+    assert "proxy_forms_seen=none" in result["receipts"]
+    assert contract.validate_pack_result(result) == []
+
+
+def _pk10_package(
+    form: str, body: str, accession: str, por: str
+) -> GoldenFilingPackage:
+    """A synthetic proxy package with an explicit accession and period, so a
+    DEF 14A / DEFA14A pair can differ on both (the shared builder is fixed)."""
+    package = _synthetic_package(form, body)
+    return replace(
+        package,
+        manifest={**package.manifest, "accession": accession, "period_of_report": por},
+    )
+
+
+def test_pk10_def14a_governs_over_a_later_defa14a() -> None:
+    # Review F1: only DEF 14A is an admitted form, so a later one-line
+    # DEFA14A soliciting letter never becomes the governing document and no
+    # absence is asserted over it.
+    def14a = _pk10_package(
+        "DEF 14A", _PK10_PROXY_BODY, "0000000099-26-000001", "2026-03-01"
+    )
+    defa14a = _pk10_package(
+        "DEFA14A",
+        "<div>Test Co filed additional soliciting material. Please vote.</div>",
+        "0000000099-26-000002",
+        "2026-04-10",
+    )
+    result = produce_pack(
+        "PK10",
+        _pk10_input(packages=(def14a, defa14a), entity=SYNTHETIC_ENTITY),
+    )
+    assert result["applicability"]["state"] == "applicable"
+    assert "form=DEF 14A" in result["receipts"]
+    assert "form=DEFA14A" not in result["receipts"]
+    for field_id in PK10_TEXT_SPAN_FIELDS:
+        assert _row(result, field_id)["source_span"]["accession"] == (
+            "0000000099-26-000001"
+        )
+    assert _row(result, "say_on_pay_frequency")["text_value"] == "annual"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_defa14a_alone_is_not_a_governing_proxy() -> None:
+    # Review F1: a DEFA14A-only package list keeps the frozen not-supplied
+    # path — never applicable with not_disclosed rows over a soliciting
+    # letter.
+    result = produce_pack(
+        "PK10",
+        _pk10_input(
+            packages=(
+                _pk10_package(
+                    "DEFA14A",
+                    "<div>Test Co filed additional soliciting material."
+                    " Please vote.</div>",
+                    "0000000099-26-000002",
+                    "2026-04-10",
+                ),
+            ),
+            entity=SYNTHETIC_ENTITY,
+        ),
+    )
+    assert result["applicability"]["state"] == "not_evaluable"
+    assert result["applicability"]["reason"] == "proxy_package_not_supplied"
+    assert result["coverage"]["disclosure_coverage_state"] == "not_supplied"
+    for row in result["fields"]:
+        assert row["quality_state"] == "not_evaluable"
+        assert row["reason"] == "proxy_package_not_supplied"
+        assert row["text_value"] is None and row["source_span"] is None
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_say_on_pay_triennial_beats_leftmost_annual_meeting() -> None:
+    # Review F2, the reviewer's text: the annual-meeting preamble must not
+    # satisfy the annual arm; the vote-frequency sentence governs.
+    body = (
+        "<div>Proxy statement for the 2026 annual meeting of stockholders."
+        "</div>"
+        "<div>The Board recommends that the say-on-pay vote is held every"
+        " three years.</div>"
+    )
+    result = _pk10_supplied_result(body)
+    row = _row(result, "say_on_pay_frequency")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_say_on_pay_biennial() -> None:
+    body = (
+        "<div>Our advisory vote on executive compensation is held every two"
+        " years.</div>"
+    )
+    result = _pk10_supplied_result(body)
+    row = _row(result, "say_on_pay_frequency")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "biennial"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_annual_meeting_alone_is_not_a_frequency() -> None:
+    # Review F2: "annual meeting"/"annual report" alone never satisfies the
+    # annual arm; with no frequency sentence the row stays the valued
+    # absence not_disclosed (the existing absent path).
+    body = (
+        "<div>Proxy statement for the 2026 annual meeting of stockholders."
+        "</div>"
+        "<div>The annual report is incorporated by reference.</div>"
+    )
+    result = _pk10_supplied_result(body)
+    row = _row(result, "say_on_pay_frequency")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def _pk10_frequency_row(body: str) -> tuple[dict, GoldenFilingPackage, dict]:
+    """Produce the supplied PK10 result for one synthetic DEF 14A body and
+    return its say_on_pay_frequency row, the package (the row's source_span
+    cites raw byte offsets into the package's primary member) and the full
+    result for the contract check."""
+    package = _synthetic_package("DEF 14A", body)
+    result = produce_pack(
+        "PK10",
+        _pk10_input(packages=(package,), entity=SYNTHETIC_ENTITY),
+    )
+    return _row(result, "say_on_pay_frequency"), package, result
+
+
+def _pk10_matched_span(package: GoldenFilingPackage, row: dict) -> str:
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    return package.members["doc.htm"][
+        span["start_offset"] : span["end_offset"]
+    ].decode("utf-8")
+
+
+def test_pk10_triennial_rather_than_annually() -> None:
+    # Review F1 (second repair), S1: the sentence states a triennial
+    # frequency; the contrastive "rather than annually" must not let the
+    # annual arm's gap skip past the stated frequency.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held every three years rather"
+        " than annually.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held every three years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_triennial_rather_than_every_year() -> None:
+    # Review F1 (second repair), S2: same sentence shape with "every year"
+    # as the contrasted annual phrase.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held every three years rather"
+        " than every year.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held every three years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_board_recommended_triennial_frequency() -> None:
+    # Review F1 (second repair), S3: the "frequency of" anchor with both a
+    # stated triennial frequency and a contrasted "every year" in the same
+    # sentence.
+    row, package, result = _pk10_frequency_row(
+        "<div>The Board recommended a frequency of every three years"
+        " rather than every year, and shareholders agreed.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert _pk10_matched_span(package, row) == (
+        "frequency of every three years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_annual_rather_than_triennial_stays_annual() -> None:
+    # Review F1 (second repair), control: the asymmetric sentence keeps
+    # resolving annual — the stated "every year" governs, and the arm
+    # reorder plus the tempered gaps never let triennial steal it.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held every year rather than"
+        " every three years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held every year"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_rejected_alternative_is_not_evidence() -> None:
+    # Review F1-A (third repair), (ii): the stated frequency is annual; the
+    # rejected "every three years" alternative is not evidence, and the
+    # rejection verb never appears in the matched span.
+    row, package, result = _pk10_frequency_row(
+        "<div>Shareholders approved annual say-on-pay votes, rejecting the"
+        " every three years alternative.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert _pk10_matched_span(package, row) == "annual say-on-pay"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_annual_incentive_collocation_is_not_a_frequency() -> None:
+    # Review F1-B (third repair), (O1): "annual" heading the "annual
+    # incentive plan" collocation is not a frequency; the stated "every
+    # three years" on the far side of the anchor governs.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote on our annual incentive plan will be held"
+        " every three years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote on our annual incentive plan will be held every"
+        " three years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_frequency_before_anchor_resolves() -> None:
+    # Review F2 (third repair), (iii): the frequency may precede the anchor
+    # in the same sentence; the hyphenated "every-three-years" is matched
+    # but discarded — it modifies the peer-group "review", not the vote.
+    row, package, result = _pk10_frequency_row(
+        "<div>We hold an annual say-on-pay vote, consistent with the"
+        " every-three-years review of our peer group.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert _pk10_matched_span(package, row) == "annual say-on-pay"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_biennial_rather_than_annually() -> None:
+    # Third repair NOTE: the biennial transcript — the contrasted
+    # "annually" is discarded, the stated "every two years" governs.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held every two years rather"
+        " than annually.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "biennial"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held every two years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_annually_rather_than_biennial() -> None:
+    # Third repair NOTE: the mirrored transcript — the contrasted "every
+    # two years" is discarded, the stated "annually" governs.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held annually rather than every"
+        " two years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held annually"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_two_surviving_frequencies_is_not_disclosed() -> None:
+    # Third repair: two distinct frequencies survive one anchored sentence
+    # with no contrast marker separating them — the pack's existing
+    # anchor-present-no-resolvable-frequency emission, the valued
+    # not_disclosed asserted over the whole document.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote is held annually and every three"
+        " years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    # The valued absence is asserted over the whole document, exactly as the
+    # no-anchor absence: the span runs from the first byte through the last
+    # narrative character (the trailing close tags collapse to one space).
+    assert span["start_offset"] == 0
+    assert span["end_offset"] > span["start_offset"]
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert "The say-on-pay vote is held annually and every three years." in covered
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_bare_duration_after_review_is_not_a_cadence() -> None:
+    # Fourth repair, review F1 (x1): "covering three years" states the
+    # duration of the peer-group review, not the vote's cadence — the
+    # non-vote-noun discard only looks after the phrase, so a preceding
+    # "review" never saves the bare duration. With the bare form gone from
+    # the phrase table the anchored sentence keeps no frequency.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote follows a peer-group review covering three"
+        " years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    # The valued absence is asserted over the whole document, exactly as the
+    # no-anchor absence and the two-frequency tie-break.
+    assert span["start_offset"] == 0
+    assert span["end_offset"] > span["start_offset"]
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert (
+        "The say-on-pay vote follows a peer-group review covering three"
+        " years." in covered
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_deadline_within_three_years_is_not_a_cadence() -> None:
+    # Fourth repair, review F1 (x2): "within three years of the prior vote"
+    # is a deadline, not a cadence — no discard window can rescue a bare
+    # duration, so the phrase table must not offer it.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote must be held within three years of the"
+        " prior vote.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    assert span["start_offset"] == 0
+    assert span["end_offset"] > span["start_offset"]
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert (
+        "The say-on-pay vote must be held within three years of the prior"
+        " vote." in covered
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_tenure_duration_does_not_mask_annual() -> None:
+    # Fourth repair, review F2 (x3): the director-tenure duration shares the
+    # ";"-joined sentence with the anchor; read as a second frequency it
+    # tripped the two-distinct-frequencies tie-break into a false absence.
+    # Bare durations are no longer frequencies, so the stated annual cadence
+    # resolves and the span never reaches the tenure clause.
+    row, package, result = _pk10_frequency_row(
+        "<div>Directors are elected for three years; the say-on-pay vote is"
+        " held annually.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    matched = _pk10_matched_span(package, row)
+    assert "say-on-pay vote is held annually" in matched
+    assert "elected for three years" not in matched
     assert contract.validate_pack_result(result) == []
 
 
@@ -4047,7 +5097,7 @@ BASE_PACK_ENVELOPE_SHA256 = {
         "b26d48b769b9be642b5deaeafbe2f853b5d6155eb2f079f4953642c417062629"
     ),
     "PK09": (
-        "abbb6196b01df079ff3ef4ed68ae8b349bf762761f2b424c0bd4625fe90ede8e"
+        "2187281554bab6b0a6f55beb79c71d55097d8a00a431c3d0c28a8c12a16de3fc"
     ),
     "PK11": (
         "9660c82e6d14e70e9302b2dc2cdf2468da416886422892d5201cea0ff88a744d"
@@ -4994,7 +6044,7 @@ PK05_BASE_PACK_ENVELOPE_SHA256 = {
     "PK03": "17a26aa6d276414927f9c68ddbd37595e79bc6120a289abcb254f83f4095057d",
     "PK04": "e4746fbf9126b233d759caeb235dfec72d1895b20b6a6b13a20dd6d16802d5dd",
     "PK06": "2126d42b4a608ad2a9f8e9a48b8692fe8c11c8ed187d5beb33e27df68182df17",
-    "PK09": "44639f4371eab872ea3bb40ded519b46bab7fb4a49ef9a5508b1f38afec63447",
+    "PK09": "23f8812b86ab91d92be553ca7e39bac0db6facbac4cc0eb05c62ccb19b7e5ff6",
     "PK10": "217702f0bb51ac1686a796422e72118655584064fd8b6585eb8f5aa640c230e1",
     "PK11": "1e8d160a7fb3402fd82c698333cd2d87ad3622fca5d70437800c692c3fb63620",
     "PK12": "d6bfa668b1a77819f0a2e8ff1d77fd75e8cacce96dbeba49b430d861fca9591d",
@@ -6781,7 +7831,7 @@ PK07_BASE_PACK_ENVELOPE_SHA256 = {
     "PK04": "281d84d196751caca6ac23a217004766fb1483e2d5fc729309eb1bc30f64dc8f",
     "PK05": "3628a5ddde284650978617bcd7ae7ff922dd32ac0bbb8ab6e8f35ad2545967ac",
     "PK06": "84f9aad2836afa5b397253ff27807345d6245edf8f765b60b6e21d68449890f5",
-    "PK09": "e2b2ec35ad31446eecf4a64da503661e5157f4ec73f42c888f89a4b11a9e7831",
+    "PK09": "b1ce551426abeb83041f1bd9abcfe5e228cdb85096198de7346f3d235e1f8724",
     "PK10": "2ef05add8be8db7f9cb32a6fd55b47eab26fafdc2e603a2b7cbae9e074b234d0",
     "PK11": "140b630622b5e1ab49dd1743ad8eafb91be8872e7a20e9cfc72d2d59ffddaefc",
     "PK12": "4915af8ff2a916dd788d219de2329c6fc7703df5dfc3ac7a4e8dc7265f4ab48b",
@@ -7437,17 +8487,21 @@ PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK05": "ac0cf6c6d5fb655b622d57317c376602ac357a7e3c075b60c8ef4fa7e6679740",
     "PK06": "1f78880eba88a185421ccc943e8e227bf7d264e5fea6ac8af1c96d75a793e229",
     "PK07": "0ff8a0e0ed118c716d3417e3765a131e94054fa57ab8eb9a2b0ade02fb89a153",
-    "PK09": "14214c76ec6da3de6ebdd280b5f1a4f1348f7bdffd73145dc42271b23f8c8454",
+    "PK09": "07cb38090c2ef76a29e49301e9192547e7dfbdf8324c25586e1604a524aebb5e",
     "PK10": "655d3ff540c539e2f2b2a20104f286d68baaa6a18990e1ec46d52cc7cd6f32ba",
     "PK11": "58e1c524a82210daffc392c855309c73b5d4ca55732c100c3a3a6babe7d41ba4",
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",
 }
 # This producer's own byte-determinism pin, captured at the lane's fork point;
-# re-pinned by the second repair (review F3 seat ruling): the range row's
-# mapping_rule_digest now pins the live RANGE_DISCLOSED_PATTERN bytes (masked-
-# envelope diff vs the previous pin: empty).
+# re-pinned by the second repair (review F3 seat ruling), the third repair
+# (review F3-1: the determine alternant became object-bound), the fourth
+# repair (review F3-2/F4-2: the determine object now ends on a word boundary)
+# and the fifth repair (review F5-1/F5-2/F5-5; F5-3 ruled in: the determine
+# object alternation admits the plural forms) — the range row's
+# mapping_rule_digest pins the live RANGE_DISCLOSED_PATTERN bytes
+# (masked-envelope diff vs the previous pin: empty).
 PK08_AAPL_ENVELOPE_SHA256 = (
-    "9200ce0e91e7867e1186e5b96f0ecbdc01d3f56fddfb5d81ff07f13e905260b3"
+    "9c9f651ce1220c0701c97dc141e41acbfb6c584e34bbc10d3d5af84c781642ee"
 )
 # §TESTS 1: the fixture's two nil balance-sheet occurrences (ledger scan).
 PK08_AAPL_NIL_IDS = {
@@ -7561,6 +8615,49 @@ _PK08_CONTING_NOT_ESTIMABLE_NOT_POSSIBLE = (
     "Contingencies The Company is a party to certain pending legal matters. "
     "For those matters, it is not possible to estimate the amount or range "
     "of loss."
+)
+# Third repair (review F3-1): the object-bound determine form, and the
+# object-blind sentence it must no longer value.
+_PK08_CONTING_DETERMINE_OUTCOME = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "Management believes it is not possible to determine the outcome of this "
+    "matter at this time."
+)
+_PK08_CONTING_DETERMINE_AMOUNT_OR_RANGE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to determine the amount or range "
+    "of loss that may result."
+)
+# Fourth repair (review F3-2/F4-2): the determine object ends on a word
+# boundary — "the losses" no longer records a span cut mid-word at "loss".
+_PK08_CONTING_DETERMINE_LOSSES = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it was not possible to determine the losses that "
+    "may result."
+)
+# Fifth repair (review F5-1/F5-2/F5-5; F5-3 ruled in): the determine object
+# alternation admits the plural forms — each plural values not_estimable with
+# the span ending at the plural itself.
+_PK08_CONTING_DETERMINE_AMOUNTS = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to determine the amounts."
+)
+_PK08_CONTING_DETERMINE_EXPOSURES = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to determine its exposures."
+)
+_PK08_CONTING_DETERMINE_LIABILITIES = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to determine the liabilities."
+)
+_PK08_CONTING_DETERMINE_RANGES_OF_LOSS = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to determine the ranges of loss."
+)
+# F5-3 ruling: "lossess" is a misspelling, not a plural — out-of-vocabulary.
+_PK08_CONTING_DETERMINE_LOSSESS = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to determine the lossess."
 )
 _PK08_CONTING_NOT_ESTIMABLE_CANNOT_BE_MADE = (
     "Contingencies The Company is a party to certain pending legal matters. "
@@ -8211,6 +9308,156 @@ def test_pk08_not_estimable_not_possible_form() -> None:
     assert span["document_id"] == PK08_TESTCO_DOC
     assert span["end_offset"] > span["start_offset"]
     assert _pk08_span_text(pack_input, span) == "is not possible to estimate"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_possible_to_determine_outcome_is_not_estimable_language() -> None:
+    # F3-1: "not possible to determine the outcome" is a statement about the
+    # matter's resolution, not about estimability of a loss amount or range —
+    # the object-bound determine arm must leave the row typed-absent, never
+    # value not_estimable from it.
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_DETERMINE_OUTCOME
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["text_value"] is None
+    assert disclosed["value"] is None
+    assert disclosed["quality_state"] == "missing"
+    assert disclosed["non_value_state"] == "missing"
+    assert disclosed["coverage_state"] == "unmapped"
+    assert disclosed["reason"] == "missing_dependency"
+    assert disclosed["evidence_kind"] == "text_span"
+    assert disclosed["source_span"] is None
+    assert any(
+        "pk08.loss_contingency_range_disclosed: narrative_span_not_located"
+        in line
+        for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_possible_to_determine_amount_or_range_form() -> None:
+    # F3-1: "not possible to determine the amount or range of loss" IS
+    # legitimate not-estimable language — the object-bound determine arm
+    # values it with the span ending at the amount object.
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_DETERMINE_AMOUNT_OR_RANGE
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["coverage_state"] == "source_trace_complete"
+    assert disclosed["reason"] is None
+    span = disclosed["source_span"]
+    assert span["document_id"] == PK08_TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    assert (
+        _pk08_span_text(pack_input, span)
+        == "is not possible to determine the amount"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_determine_losses_span_ends_on_word_boundary() -> None:
+    # F3-2 (review F4-2): the determine object alternation ends on a word
+    # boundary — "was not possible to determine the losses" values
+    # not_estimable with the span ending at "losses"; without the boundary
+    # the alternation's "loss" (listed before "losses") stopped the span
+    # mid-word.
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_DETERMINE_LOSSES
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["coverage_state"] == "source_trace_complete"
+    assert disclosed["reason"] is None
+    span = disclosed["source_span"]
+    assert span["document_id"] == PK08_TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    span_text = _pk08_span_text(pack_input, span)
+    assert span_text.endswith("losses")
+    assert span_text == "was not possible to determine the losses"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_determine_plural_objects_are_not_estimable() -> None:
+    # F5-1/F5-2/F5-5 (fifth review): the F3-2 word boundary rejected the
+    # plural objects — "the amounts" and "its exposures" had been
+    # not_estimable on F3-2's parent (the span cut mid-word at the singular)
+    # and became typed absent on F3-2, while "the liabilities" was absent
+    # even before F3-2. The alternation now admits the plural forms: each
+    # object values not_estimable with the span ending at the plural itself,
+    # and "the ranges of loss" stops at "ranges" rather than bridging the
+    # gap onward to "loss".
+    for prose, expected_span in (
+        (
+            _PK08_CONTING_DETERMINE_AMOUNTS,
+            "is not possible to determine the amounts",
+        ),
+        (
+            _PK08_CONTING_DETERMINE_EXPOSURES,
+            "is not possible to determine its exposures",
+        ),
+        (
+            _PK08_CONTING_DETERMINE_LIABILITIES,
+            "is not possible to determine the liabilities",
+        ),
+        (
+            _PK08_CONTING_DETERMINE_RANGES_OF_LOSS,
+            "is not possible to determine the ranges",
+        ),
+    ):
+        pack_input = _pk08_testco_input(contingencies_prose=prose)
+        result = produce_pack("PK08", pack_input)
+        disclosed = _row(result, "loss_contingency_range_disclosed")
+        assert disclosed["text_value"] == "not_estimable", prose
+        assert disclosed["quality_state"] == "valued", prose
+        assert disclosed["non_value_state"] is None, prose
+        assert disclosed["coverage_state"] == "source_trace_complete", prose
+        assert disclosed["reason"] is None, prose
+        span = disclosed["source_span"]
+        assert span["document_id"] == PK08_TESTCO_DOC, prose
+        assert span["end_offset"] > span["start_offset"], prose
+        assert _pk08_span_text(pack_input, span) == expected_span, prose
+        assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_determine_misspelled_object_stays_absent() -> None:
+    # F5-3 ruling (fifth review): plural objects are in-vocabulary, but a
+    # misspelling such as "lossess" is out-of-vocabulary and stays typed
+    # absent — the current code records that absence as reason
+    # missing_dependency with the pk08 limitation line
+    # narrative_span_not_located. The vocabulary control ("the amounts"
+    # values not_estimable) is what fails on 9d690e176a27, where the F3-2
+    # boundary typed the plural absent (F5-1).
+    control_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_DETERMINE_AMOUNTS
+    )
+    control_result = produce_pack("PK08", control_input)
+    control = _row(control_result, "loss_contingency_range_disclosed")
+    assert control["text_value"] == "not_estimable"
+    assert control["quality_state"] == "valued"
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_DETERMINE_LOSSESS
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["text_value"] is None
+    assert disclosed["value"] is None
+    assert disclosed["quality_state"] == "missing"
+    assert disclosed["non_value_state"] == "missing"
+    assert disclosed["coverage_state"] == "unmapped"
+    assert disclosed["reason"] == "missing_dependency"
+    assert disclosed["source_span"] is None
+    assert any(
+        "pk08.loss_contingency_range_disclosed: narrative_span_not_located"
+        in line
+        for line in result["limitations"]
+    )
     assert contract.validate_pack_result(result) == []
 
 

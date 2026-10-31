@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TKO-BULL-20260810",
-  "asof": "2026-10-29",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 9.9,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -50.1,
+  "asof": "2026-10-31",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 25.4,
+  "raw_confidence": 26.0,
+  "delta_vs_base": -34.6,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 0.0,
+    "validity": 32.2,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": -0.064,
+    "dist_to_stop_r": 0.432,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 177.8,
-    "p1": -0.7092,
-    "p2": -0.3546,
+    "horizon_pct_used": 182.2,
+    "p1": -0.3787,
+    "p2": -0.1894,
     "p3": null,
-    "move_r": -1.064,
+    "move_r": -0.568,
     "mfe_r": 0.801,
     "mae_r": -1.109
   },
@@ -45,16 +45,8 @@
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 80,
-  "tau": 1.7778,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 82,
+  "tau": 1.8222,
   "closed": true,
   "outcome": "EXPIRED"
 }

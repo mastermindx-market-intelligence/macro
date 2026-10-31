@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BIIB-BULL-20260731",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 48.7,
-  "raw_confidence": 48.0,
-  "delta_vs_base": -11.3,
+  "management_confidence": 50.2,
+  "raw_confidence": 52.0,
+  "delta_vs_base": -9.8,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 53.6,
+    "progress": 56.3,
     "pace": 0.0,
-    "retention": 93.3,
-    "overlay": 53.0
+    "retention": 99.5,
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": 2.092,
-    "dist_to_t1_r": 0.408,
-    "dist_to_t2_r": 1.908,
-    "horizon_pct_used": 177.8,
-    "p1": 0.7278,
-    "p2": 0.3639,
+    "dist_to_stop_r": 2.165,
+    "dist_to_t1_r": 0.335,
+    "dist_to_t2_r": 1.835,
+    "horizon_pct_used": 182.2,
+    "p1": 0.7767,
+    "p2": 0.3883,
     "p3": null,
-    "move_r": 1.092,
+    "move_r": 1.165,
     "mfe_r": 1.171,
     "mae_r": 0.0
   },
@@ -45,16 +45,8 @@
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 80,
-  "tau": 1.7778,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 82,
+  "tau": 1.8222,
   "closed": true,
   "outcome": "EXPIRED"
 }

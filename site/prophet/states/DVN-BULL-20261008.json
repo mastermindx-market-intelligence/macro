@@ -1,31 +1,31 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DVN-BULL-20261008",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 61.1,
-  "raw_confidence": 59.8,
-  "delta_vs_base": 1.1,
-  "recommended_action": null,
+  "management_confidence": 60.3,
+  "raw_confidence": 60.4,
+  "delta_vs_base": 0.3,
+  "recommended_action": "hold",
   "human_state": "Needs Follow-Through",
   "components": {
     "validity": 100.0,
-    "progress": 11.0,
-    "pace": 72.3,
+    "progress": 15.0,
+    "pace": 66.9,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.132,
-    "dist_to_t1_r": 1.368,
-    "dist_to_t2_r": 2.868,
-    "horizon_pct_used": 26.8,
-    "p1": 0.0881,
-    "p2": 0.044,
+    "dist_to_stop_r": 1.2,
+    "dist_to_t1_r": 1.3,
+    "dist_to_t2_r": 2.8,
+    "horizon_pct_used": 30.4,
+    "p1": 0.1336,
+    "p2": 0.0668,
     "p3": null,
-    "move_r": 0.132,
-    "mfe_r": 0.132,
+    "move_r": 0.2,
+    "mfe_r": 0.2,
     "mae_r": -0.08
   },
   "rr_ratio": 1.5,
@@ -36,23 +36,15 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-23; a stale price frame carries no current action authority",
+    "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 1.4699993896484358,
+  "_mfe": 2.2300015258789045,
   "_mae": -0.8900012207031267,
-  "_max_p1": 0.08805027790646519,
+  "_max_p1": 0.13357301742311503,
   "_first_trigger_ts": "2026-10-21",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 15,
-  "tau": 0.2679,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 17,
+  "tau": 0.3036
 }

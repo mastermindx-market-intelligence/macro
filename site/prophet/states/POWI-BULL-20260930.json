@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "POWI-BULL-20260930",
-  "asof": "2026-10-29",
-  "phase": "triggered_pre_t1",
-  "detection_phase": "triggered_pre_t1",
-  "management_confidence": 23.8,
-  "raw_confidence": 24.0,
-  "delta_vs_base": -36.2,
+  "asof": "2026-10-31",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 10.4,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -49.6,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 4.0,
+    "validity": 0.0,
     "progress": 0.0,
-    "pace": 4.3,
-    "retention": 50.0,
-    "overlay": 56.0
+    "pace": 0.0,
+    "retention": 0.0,
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.136,
+    "dist_to_stop_r": -0.423,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 64.4,
-    "p1": -0.5759,
-    "p2": -0.2879,
+    "horizon_pct_used": 68.9,
+    "p1": -0.9486,
+    "p2": -0.4743,
     "p3": null,
-    "move_r": -0.864,
+    "move_r": -1.423,
     "mfe_r": 0.477,
-    "mae_r": -1.258
+    "mae_r": -1.423
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,21 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 2.659999084472659,
-  "_mae": -7.020001220703122,
+  "_mae": -7.939999389648435,
   "_max_p1": 0.31780156325838205,
   "_first_trigger_ts": "2026-10-02",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 29,
-  "tau": 0.6444,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 31,
+  "tau": 0.6889,
   "closed": true,
   "outcome": "INVALIDATED"
 }

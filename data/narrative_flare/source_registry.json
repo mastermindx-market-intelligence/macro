@@ -1,16 +1,16 @@
 {
   "hn": {
-    "calls": 1866,
-    "hits": 1506,
-    "cred": 0.805125,
-    "last_resolved": "2026-10-25",
+    "calls": 1920,
+    "hits": 1550,
+    "cred": 0.805397,
+    "last_resolved": "2026-10-30",
     "accruing": true
   },
   "polygon": {
-    "calls": 21463,
-    "hits": 12540,
-    "cred": 0.584164,
-    "last_resolved": "2026-10-25",
+    "calls": 22075,
+    "hits": 12898,
+    "cred": 0.584186,
+    "last_resolved": "2026-10-30",
     "accruing": true
   }
 }

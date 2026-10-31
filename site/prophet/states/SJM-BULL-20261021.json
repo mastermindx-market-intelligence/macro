@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SJM-BULL-20261021",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
-  "management_confidence": 67.0,
-  "raw_confidence": 66.6,
-  "delta_vs_base": 7.0,
-  "recommended_action": null,
-  "human_state": "Awaiting Trigger",
+  "management_confidence": 66.4,
+  "raw_confidence": 65.9,
+  "delta_vs_base": 6.4,
+  "recommended_action": "wait",
+  "human_state": "Approaching Trigger",
   "components": {
-    "validity": 99.9,
+    "validity": 99.5,
     "progress": 0.0,
-    "pace": 93.5,
+    "pace": 85.8,
     "retention": 50.0,
-    "overlay": 47.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.999,
+    "dist_to_stop_r": 0.996,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 13.3,
-    "p1": -0.0005,
-    "p2": -0.0003,
+    "horizon_pct_used": 17.8,
+    "p1": -0.0026,
+    "p2": -0.0013,
     "p3": null,
-    "move_r": -0.001,
-    "mfe_r": 0.0,
-    "mae_r": -0.001
+    "move_r": -0.004,
+    "mfe_r": 0.019,
+    "mae_r": -0.004
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -36,23 +36,15 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-23; a stale price frame carries no current action authority",
+    "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 0.0,
-  "_mae": -0.0200042724609375,
-  "_max_p1": 0.0,
+  "_mfe": 0.5050048828125,
+  "_mae": -0.100006103515625,
+  "_max_p1": 0.012933919395889363,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 6,
-  "tau": 0.1333,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 8,
+  "tau": 0.1778
 }

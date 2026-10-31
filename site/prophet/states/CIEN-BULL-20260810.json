@@ -1,12 +1,12 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CIEN-BULL-20260810",
-  "asof": "2026-10-29",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 10.0,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -50.0,
+  "asof": "2026-10-31",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 18.5,
+  "raw_confidence": 20.0,
+  "delta_vs_base": -41.5,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": -0.002,
+    "dist_to_stop_r": 0.002,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 162.2,
-    "p1": -0.6677,
-    "p2": -0.3339,
+    "horizon_pct_used": 166.7,
+    "p1": -0.6653,
+    "p2": -0.3326,
     "p3": null,
-    "move_r": -1.002,
+    "move_r": -0.998,
     "mfe_r": 0.01,
     "mae_r": -1.011
   },
@@ -45,16 +45,8 @@
   "_first_trigger_ts": "2026-10-08",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 73,
-  "tau": 1.6222,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 75,
+  "tau": 1.6667,
   "closed": true,
   "outcome": "NO_ENTRY"
 }
