@@ -1,0 +1,80 @@
+{
+  "journey_b_both_fell": {
+    "state": "observed",
+    "en_contains": "Both fell; XLP fell less than XLK.",
+    "zh_contains": "两者都下跌；XLP跌幅小于XLK。",
+    "lib_valid": true
+  },
+  "observed_rise": {
+    "state": "observed",
+    "en_contains": "XLP outperformed XLK by +1.71% over two sessions.",
+    "zh_contains": "两个交易日内，XLP相对XLK跑赢+1.71%。",
+    "lib_valid": true
+  },
+  "reversal": {
+    "state": "reversal",
+    "en_contains": "Reversal: Both rose; XLP rose less than XLK.",
+    "zh_contains": "方向反转：两者都上涨；XLP涨幅小于XLK。",
+    "lib_valid": true
+  },
+  "conflict_20s": {
+    "state": "conflicting",
+    "en_contains": "Conflicting horizons",
+    "zh_contains": "周期分歧",
+    "lib_valid": true
+  },
+  "partial_missing_20s": {
+    "state": "partial",
+    "en_contains": "Both fell; XLP fell less than XLK.",
+    "zh_contains": "证据不完整",
+    "lib_valid": true
+  },
+  "partial_window_mismatch": {
+    "state": "partial",
+    "en_contains": "Partial evidence for XLP vs XLK; ratio withheld.",
+    "zh_contains": "XLP对XLK证据不完整；比值暂不显示。",
+    "lib_valid": true
+  },
+  "stale_obs": {
+    "state": "stale",
+    "en_contains": "Latest observation is from Oct 28, before Oct 30.",
+    "zh_contains": "最新观察来自10月28日，早于10月30日。",
+    "lib_valid": true
+  },
+  "withdrawn": {
+    "state": "withdrawn",
+    "en_contains": "Evidence for XLP vs XLK was withdrawn on Oct 30.",
+    "zh_contains": "XLP对XLK的依据已于10月30日撤回。",
+    "lib_valid": true
+  },
+  "corrected": {
+    "state": "corrected",
+    "en_contains": "Corrected; the original notice remains in history.",
+    "zh_contains": "已更正；原通知仍保留在历史记录中。",
+    "lib_valid": true
+  },
+  "malformed_ratio": {
+    "state": "unreadable",
+    "en_contains": "Rotation record failed checks and is not shown.",
+    "zh_contains": "轮动记录未通过校验，未予显示。",
+    "lib_valid": false
+  },
+  "malformed_future": {
+    "state": "unreadable",
+    "en_contains": "Rotation record failed checks and is not shown.",
+    "zh_contains": "轮动记录未通过校验，未予显示。",
+    "lib_valid": true
+  },
+  "malformed_id": {
+    "state": "unreadable",
+    "en_contains": "Rotation record failed checks and is not shown.",
+    "zh_contains": "轮动记录未通过校验，未予显示。",
+    "lib_valid": true
+  },
+  "journey_c_envelope_1d253e1d": {
+    "state": "stale",
+    "en_contains": "Rotation data unavailable for Oct 30; latest is Oct 20.",
+    "zh_contains": "10月30日轮动依据暂不可用；最新为10月20日。",
+    "lib_valid": false
+  }
+}
