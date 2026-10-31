@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CBOE-BULL-20260722",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 45.2,
@@ -11,26 +11,26 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 43.8,
+    "progress": 43.7,
     "pace": 0.0,
-    "retention": 91.3,
-    "overlay": 59.0
+    "retention": 91.2,
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.834,
-    "dist_to_t1_r": 0.666,
-    "dist_to_t2_r": 2.166,
-    "horizon_pct_used": 215.6,
-    "p1": 0.5559,
-    "p2": 0.278,
+    "dist_to_stop_r": 1.833,
+    "dist_to_t1_r": 0.667,
+    "dist_to_t2_r": 2.167,
+    "horizon_pct_used": 217.8,
+    "p1": 0.5553,
+    "p2": 0.2777,
     "p3": null,
-    "move_r": 0.834,
+    "move_r": 0.833,
     "mfe_r": 0.914,
     "mae_r": -0.473
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 97,
-  "tau": 2.1556,
+  "days_elapsed": 98,
+  "tau": 2.1778,
   "closed": true,
   "outcome": "EXPIRED"
 }
