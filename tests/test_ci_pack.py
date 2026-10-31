@@ -5087,6 +5087,10 @@ CURATED_EXCLUSIVE = {
     # gate:code exclusive CI home with a measured transitive source closure.
     # Keep the curated contract aligned; do not loosen pack ceilings.
     "catalyst-loop-integrated",
+    # AI Brief render-date countdown: an intentionally curated code-gated
+    # single-suite owner. Its explicit paths cover the static import closure
+    # and package ancestor init, without accepting unrelated render probes.
+    "aibrief-countdown-pr",
 }
 
 
