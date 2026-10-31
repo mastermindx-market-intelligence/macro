@@ -131,7 +131,32 @@ def _write_atomic(out: Path, payload: Mapping[str, Any]) -> None:
                 os.unlink(tmp_path)
 
 
-def _print_summary(out: Path, result: Mapping[str, Any], counts: Mapping[str, int]) -> None:
+def _not_evaluable_detail(episodes: Sequence[Mapping[str, Any]]) -> dict[str, dict[str, int]]:
+    """NOT_EVALUABLE count by (episode reason, S-leg reason) — reason tokens only.
+
+    Reads exactly ``status``, ``not_evaluable_reason`` and ``s.reason`` of each
+    episode (the same ``"unspecified"`` fallback as ``c19_wp31_stats``), so the
+    S-leg cause behind ``pit_unrecoverable`` survives into the report.  No label
+    or value field is read.
+    """
+    detail: dict[str, dict[str, int]] = {}
+    for ep in episodes:
+        if ep.get("status") != "NOT_EVALUABLE":
+            continue
+        reason = str(ep.get("not_evaluable_reason") or "unspecified")
+        s_reason = str((ep.get("s") or {}).get("reason") or "none")
+        bucket = detail.setdefault(reason, {})
+        bucket[s_reason] = bucket.get(s_reason, 0) + 1
+    return {r: dict(sorted(detail[r].items())) for r in sorted(detail)}
+
+
+def _print_summary(
+    out: Path,
+    result: Mapping[str, Any],
+    counts: Mapping[str, int],
+    *,
+    detail: Mapping[str, Mapping[str, int]] | None = None,
+) -> None:
     report = result.get("report") or {}
     n_episodes = result.get("episode_count", 0)
     label_pending = result.get("label_pending", 0)
@@ -147,6 +172,9 @@ def _print_summary(out: Path, result: Mapping[str, Any], counts: Mapping[str, in
     print(f"report.look={look}")
     for key in sorted(counts):
         print(f"adapter_counts.{key}={counts[key]}")
+    for reason in sorted(detail or {}):
+        for s_reason in sorted(detail[reason]):
+            print(f"not_evaluable_detail.{reason}.{s_reason}={detail[reason][s_reason]}")
     print(f"out={out}")
 
 
@@ -188,6 +216,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"c19_wp31_evaluate: refused ({exc.gate}): {exc}", file=sys.stderr)
             return 2
 
+        detail = _not_evaluable_detail(result.get("episodes") or [])
         out_payload = {
             "report": result["report"],
             "gates": result["gates"],
@@ -195,9 +224,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             "episode_count": result["episode_count"],
             "exhibit_failures": len(result["exhibit_failures"] or []),
             "adapter_counts": dict(inputs.counts),
+            "not_evaluable_detail": detail,
         }
         _write_atomic(args.out, out_payload)
-        _print_summary(args.out, result, inputs.counts)
+        _print_summary(args.out, result, inputs.counts, detail=detail)
         return 0
     finally:
         with contextlib.suppress(Exception):
