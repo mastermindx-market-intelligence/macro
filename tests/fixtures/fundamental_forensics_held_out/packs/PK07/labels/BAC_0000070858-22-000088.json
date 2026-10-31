@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000070858-22-000088",
+    "expected_period_end": "2022-03-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "69022000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK07",
+    "polarity": "positive",
+    "reason": "bac-20220331.htm | us-gaap:Goodwill @i441c295e81014afb909b71e78d4b65bd_I20220331 | Goodwill 69,022 69,022 | Consolidated balance-sheet Goodwill at 2022-03-31 (current-quarter column), in millions (scale 6 applied).",
+    "section_family": "goodwill_intangibles",
+    "split": "held_out",
+    "target_id": "goodwill",
+    "target_kind": "extract",
+    "trial_id": "PK07|0000070858-22-000088|extract|goodwill"
+  },
+  {
+    "accession": "0000070858-22-000088",
+    "expected_period_end": "2022-03-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "2100000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK07",
+    "polarity": "positive",
+    "reason": "bac-20220331.htm | us-gaap:IntangibleAssetsNetExcludingGoodwill @i441c295e81014afb909b71e78d4b65bd_I20220331 | At March 31, 2022 and December 31, 2021, the net carrying value of intangible assets was $ 2.1 billion and $ 2.2 billion. | Net carrying value of intangible assets at 2022-03-31; disclosed in the Goodwill and Intangible Assets note (BAC's 10-Q balance sheet has no intangible-asset face line) with the value tagged in billions, tagged at the quarter context, scale 9; includes $1.6 billion of substantially indefinite-lived trade names.",
+    "section_family": "goodwill_intangibles",
+    "split": "held_out",
+    "target_id": "intangible_assets_net",
+    "target_kind": "extract",
+    "trial_id": "PK07|0000070858-22-000088|extract|intangible_assets_net"
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0001652044-21-000057",
+    "expected_period_end": "2021-09-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "23973000000",
+    "fiscal_year": 2021,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "GOOGL",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "goog-20210930.htm | us-gaap:OperatingIncomeLoss @ i16533a5403e04b0988f474bbaa026627_D20210701-20210930 (StatementBusinessSegmentsAxis=goog:GoogleServicesSegmentMember; ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember) | 'Google Services $ 14,453 $ 23,973 $ 35,540 $ 65,862' | Segment operating income for the largest segment, Google Services, for the three months ended September 30, 2021; segment note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_profit_or_loss",
+    "target_kind": "extract",
+    "trial_id": "PK03|0001652044-21-000057|extract|segment_profit_or_loss"
+  },
+  {
+    "accession": "0001652044-21-000057",
+    "expected_period_end": "2021-09-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "59884000000",
+    "fiscal_year": 2021,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "GOOGL",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "goog-20210930.htm | us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax @ i3c97039ee02242dc95e770b760128856_D20210701-20210930 (StatementBusinessSegmentsAxis=goog:GoogleServicesSegmentMember) | 'Google Services total 42,573 59,884 115,762 168,129' | Largest reportable segment by revenues for the three months ended September 30, 2021: Google Services (vs Google Cloud 4,990; Other Bets 182); segment note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_revenue",
+    "target_kind": "extract",
+    "trial_id": "PK03|0001652044-21-000057|extract|segment_revenue"
+  }
+]
