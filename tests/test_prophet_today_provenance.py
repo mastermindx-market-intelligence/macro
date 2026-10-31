@@ -532,21 +532,42 @@ def test_assessment_owner_failure_leaves_binding_available_without_a_fabricated_
 
 
 def test_consumer_refuses_a_cross_bound_owner_result_per_candidate(tmp_path, monkeypatch):
+    # Seam port (native batch contract v2): the multi-candidate Today read now
+    # resolves its eligible bindings through ONE plural native request, so the
+    # cross-bound seam is observed on ``build_native_factual_assessment_results``
+    # while the singular entry must stay untouched. Every prior assertion is
+    # kept, plus the exact observed binding order and the once-only plural
+    # invocation with zero singular owner calls.
     source, _candidate = _native_today_multi(tmp_path, monkeypatch)
     calls = []
-    real = b3_owner.build_native_factual_assessment_result
+    plural_calls = []
+    singular_calls = []
+    real = b3_owner.build_native_factual_assessment_results
+    real_singular = b3_owner.build_native_factual_assessment_result
 
-    def swapped(snapshot, *, candidate_source_event_id, candidate_source_receipt):
-        calls.append(candidate_source_event_id)
-        other = (_source_key("BETA") if candidate_source_event_id == _source_key("ALFA")
-                 else _source_key("ALFA"))
-        relation = _native_relation(snapshot, other)
-        return real(snapshot, candidate_source_event_id=other,
-                    candidate_source_receipt=relation["source_receipt"])
+    def swapped(snapshot, *, bindings):
+        plural_calls.append(tuple(binding[0] for binding in bindings))
+        results = []
+        for candidate_source_event_id, _receipt in bindings:
+            calls.append(candidate_source_event_id)
+            other = (_source_key("BETA") if candidate_source_event_id == _source_key("ALFA")
+                     else _source_key("ALFA"))
+            relation = _native_relation(snapshot, other)
+            results.append(real_singular(
+                snapshot, candidate_source_event_id=other,
+                candidate_source_receipt=relation["source_receipt"]))
+        return tuple(results)
 
-    monkeypatch.setattr(b3_owner, "build_native_factual_assessment_result", swapped)
+    def counted_singular(snapshot, **kwargs):
+        singular_calls.append(kwargs["candidate_source_event_id"])
+        return real_singular(snapshot, **kwargs)
+
+    monkeypatch.setattr(b3_owner, "build_native_factual_assessment_results", swapped)
+    monkeypatch.setattr(b3_owner, "build_native_factual_assessment_result", counted_singular)
     result = _read_today(tmp_path, source)
     assert calls == [_source_key("ALFA"), _source_key("BETA")]
+    assert plural_calls == [(_source_key("ALFA"), _source_key("BETA"))]
+    assert singular_calls == []
     for item in result["candidates"]:
         assert item["status"] == "AVAILABLE"
         assert item["candidate_input"] is not None
@@ -960,3 +981,209 @@ def test_native_source_core_details_report_a_pending_original_relation(tmp_path,
         raw, binding=binding, doc=doc, generation=snapshot.generation, snapshot=snapshot,
         source_rows=source_rows, generated_at="2026-11-27T18:08:00Z")
     assert plain_candidates == core_candidates
+
+
+# ---------------------------------------------------------------------------
+# Today's bounded native request batch. Today alone chooses batch mode; the
+# fixed Plan shared core keeps the original singular mode. At the pinned read
+# and owner clocks a batch read is byte-identical per candidate to the original
+# singular reads, so every response-shape assertion above keeps holding.
+# ---------------------------------------------------------------------------
+
+
+def test_today_batch_mode_uses_the_plural_entry_once_in_row_order(
+    tmp_path, monkeypatch
+):
+    source, _candidate = _native_today_multi(tmp_path, monkeypatch)
+    writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
+                     recorded_at="2026-11-27T18:06:00Z", correction_path=None)
+    plural_calls = []
+    singular_calls = []
+    real_plural = b3_owner.build_native_factual_assessment_results
+    real_singular = b3_owner.build_native_factual_assessment_result
+
+    def counted_plural(snapshot, *, bindings):
+        plural_calls.append(tuple(binding[0] for binding in bindings))
+        return real_plural(snapshot, bindings=bindings)
+
+    def counted_singular(snapshot, **kwargs):
+        singular_calls.append(kwargs["candidate_source_event_id"])
+        return real_singular(snapshot, **kwargs)
+
+    monkeypatch.setattr(b3_owner, "build_native_factual_assessment_results", counted_plural)
+    monkeypatch.setattr(b3_owner, "build_native_factual_assessment_result", counted_singular)
+    result = _read_today(tmp_path, source)
+    # Several available bindings: exactly one plural request, in exact row
+    # order, and the singular owner entry is never used.
+    assert plural_calls == [(_source_key("ALFA"), _source_key("BETA"))]
+    assert singular_calls == []
+    assert [item["candidate_input"]["display"]["ticker"]
+            for item in result["candidates"]] == ["ALFA", "BETA"]
+    for item in result["candidates"]:
+        assert item["status"] == "AVAILABLE"
+        assert item["reason_codes"] == ["PLAN_NATIVE_OWNER_READ_UNAVAILABLE",
+                                        "EVIDENCE_NATIVE_OWNER_READ_UNAVAILABLE",
+                                        "QUOTE_NATIVE_OWNER_READ_UNAVAILABLE",
+                                        "B4_NATIVE_OWNER_READ_UNAVAILABLE"]
+
+
+def test_today_single_available_binding_keeps_the_singular_owner_path(
+    tmp_path, monkeypatch
+):
+    source, _candidate = _native_today(tmp_path, monkeypatch)
+    writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
+                     recorded_at="2026-11-27T18:06:00Z", correction_path=None)
+    plural_calls = []
+    real_plural = b3_owner.build_native_factual_assessment_results
+
+    def counted_plural(snapshot, *, bindings):
+        plural_calls.append(bindings)
+        return real_plural(snapshot, bindings=bindings)
+
+    monkeypatch.setattr(b3_owner, "build_native_factual_assessment_results", counted_plural)
+    item = _read_today(tmp_path, source)["candidates"][0]
+    assert item["status"] == "AVAILABLE"
+    assert item["reason_codes"] == ["PLAN_NATIVE_OWNER_READ_UNAVAILABLE",
+                                    "EVIDENCE_NATIVE_OWNER_READ_UNAVAILABLE",
+                                    "QUOTE_NATIVE_OWNER_READ_UNAVAILABLE",
+                                    "B4_NATIVE_OWNER_READ_UNAVAILABLE"]
+    assert plural_calls == []
+
+
+def test_today_batch_read_is_exact_byte_equal_to_the_singular_core_read(
+    tmp_path, monkeypatch
+):
+    source, _candidate = _native_today_multi(tmp_path, monkeypatch)
+    writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
+                     recorded_at="2026-11-27T18:06:00Z", correction_path=None)
+    raw = source.read_bytes()
+    binding = producer.today_selection_source_binding(raw)
+    doc = json.loads(raw)
+    source_rows, _receipts = context_owner.read_today_candidate_source_rows(tmp_path)
+    snapshot = load_candidate_episode_store_snapshot(_episode_root(tmp_path))
+    singular_candidates, singular_reads = producer._today_native_source_candidates(
+        raw, binding=binding, doc=doc, generation=snapshot.generation, snapshot=snapshot,
+        source_rows=source_rows, generated_at="2026-11-27T18:08:00Z")
+    batch_candidates, batch_reads = producer._today_native_source_candidates(
+        raw, binding=binding, doc=doc, generation=snapshot.generation, snapshot=snapshot,
+        source_rows=source_rows, generated_at="2026-11-27T18:08:00Z", native_batch=True)
+    # At the same frozen clocks the batch read is exactly the singular read:
+    # same per-row resolution, same reason codes, same genuine assessments.
+    assert batch_candidates == singular_candidates
+    assert batch_reads == singular_reads
+    read = _read_today(tmp_path, source)
+    for core_item, shipped in zip(batch_candidates, read["candidates"], strict=True):
+        assert core_item["candidate_input"] == shipped["candidate_input"]
+        assert core_item["reason_codes"] == shipped["reason_codes"]
+
+
+def test_today_multi_read_validates_exactly_once_plus_one_batch(
+    tmp_path, monkeypatch
+):
+    import engine.us_candidate_episode as b1_owner
+
+    source, _candidate = _native_today_multi(tmp_path, monkeypatch)
+    writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
+                     recorded_at="2026-11-27T18:06:00Z", correction_path=None)
+    counts = {"snapshot_load": 0, "batch": 0}
+    real_b1 = b1_owner.validate_candidate_episode_generation
+    real_b3 = b3_owner.validate_candidate_episode_generation
+
+    def counted_b1(path, **kwargs):
+        counts["snapshot_load"] += 1
+        return real_b1(path, **kwargs)
+
+    def counted_b3(path, **kwargs):
+        counts["batch"] += 1
+        return real_b3(path, **kwargs)
+
+    monkeypatch.setattr(b1_owner, "validate_candidate_episode_generation", counted_b1)
+    monkeypatch.setattr(b3_owner, "validate_candidate_episode_generation", counted_b3)
+    result = _read_today(tmp_path, source)
+    assert result["status"] == "PARTIAL"
+    # One complete native validation for the request's own snapshot load plus
+    # the owner's start/end batch validation: 2 per batch, never per binding.
+    assert counts == {"snapshot_load": 1, "batch": 2}
+
+
+def test_today_generation_wide_owner_failure_exposes_no_partial_batch(
+    tmp_path, monkeypatch
+):
+    source, _candidate = _native_today_multi(tmp_path, monkeypatch)
+    writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
+                     recorded_at="2026-11-27T18:06:00Z", correction_path=None)
+
+    def refused_batch(snapshot, *, bindings):
+        raise b3_owner.CandidateStateContractError("native batch refused")
+
+    monkeypatch.setattr(b3_owner, "build_native_factual_assessment_results", refused_batch)
+    result = _read_today(tmp_path, source)
+    # A generation-wide plural refusal exposes no partial batch: every eligible
+    # candidate binding stays available with a typed unavailable assessment,
+    # and the response shape is unchanged.
+    assert result["status"] == "PARTIAL"
+    for item in result["candidates"]:
+        assert item["status"] == "AVAILABLE"
+        assert item["candidate_input"] is not None
+        assert item["reason_codes"][0] == "ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE"
+        assert item["daily_brief"]["presentation"]["assessment"] is None
+        assert item["daily_brief"]["owners"]["assessment"] is None
+
+
+def test_today_multi_presented_assessments_never_alias_each_other(
+    tmp_path, monkeypatch
+):
+    source, _candidate = _native_today_multi(tmp_path, monkeypatch)
+    writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
+                     recorded_at="2026-11-27T18:06:00Z", correction_path=None)
+    first = _read_today(tmp_path, source)
+    briefs = [item["daily_brief"] for item in first["candidates"]]
+    assert briefs[0]["owners"]["assessment"] is not briefs[1]["owners"]["assessment"]
+    assert (briefs[0]["owners"]["assessment"]["source_receipt"]
+            != briefs[1]["owners"]["assessment"]["source_receipt"])
+    assert (first["candidates"][0]["candidate_input"]["episode_id"]
+            != first["candidates"][1]["candidate_input"]["episode_id"])
+    presented = briefs[0]["presentation"]["assessment"]
+    presented["model_thesis"] = "INVENTED"
+    second = _read_today(tmp_path, source)
+    assert second["candidates"][1]["daily_brief"]["owners"]["assessment"] == (
+        briefs[1]["owners"]["assessment"])
+    assert second["candidates"][0]["daily_brief"]["presentation"]["assessment"][
+        "model_thesis"] == "UNAVAILABLE"
+
+
+def test_plan_shared_core_keeps_the_original_singular_mode_by_default(
+    tmp_path, monkeypatch
+):
+    source, _candidate = _native_today_multi(tmp_path, monkeypatch)
+    writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
+                     recorded_at="2026-11-27T18:06:00Z", correction_path=None)
+    raw = source.read_bytes()
+    binding = producer.today_selection_source_binding(raw)
+    doc = json.loads(raw)
+    source_rows, _receipts = context_owner.read_today_candidate_source_rows(tmp_path)
+    snapshot = load_candidate_episode_store_snapshot(_episode_root(tmp_path))
+    plural_calls = []
+    singular_calls = []
+    real_plural = b3_owner.build_native_factual_assessment_results
+    real_singular = b3_owner.build_native_factual_assessment_result
+
+    def counted_plural(snapshot, *, bindings):
+        plural_calls.append(bindings)
+        return real_plural(snapshot, bindings=bindings)
+
+    def counted_singular(snapshot, **kwargs):
+        singular_calls.append(kwargs["candidate_source_event_id"])
+        return real_singular(snapshot, **kwargs)
+
+    monkeypatch.setattr(b3_owner, "build_native_factual_assessment_results", counted_plural)
+    monkeypatch.setattr(b3_owner, "build_native_factual_assessment_result", counted_singular)
+    candidates, reads = producer._today_native_source_candidates(
+        raw, binding=binding, doc=doc, generation=snapshot.generation, snapshot=snapshot,
+        source_rows=source_rows, generated_at="2026-11-27T18:08:00Z")
+    # Original mode: one genuine singular read per available candidate, in row
+    # order, and no plural request at all - the fixed Plan keeps this mode.
+    assert singular_calls == [_source_key("ALFA"), _source_key("BETA")]
+    assert plural_calls == []
+    assert all(read is not None and read[1] is not None for read in reads)
+    assert [item["selection_index"] for item in candidates] == [0, 1]
