@@ -30058,6 +30058,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/pulse.json"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "engine/government_revenue/public_agreement.py"
