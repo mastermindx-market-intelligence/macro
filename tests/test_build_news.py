@@ -158,7 +158,6 @@ def test_by_ticker_retained_path_stamps_source_asof_from_retained_file(monkeypat
     assert payload["source_asof_basis"] == "financial_news.fetched_at"
     # `asof` keeps its meaning: the build date, not the fetch stamp.
     assert payload["asof"] == vm["built_date"]
-    assert payload["asof"] == datetime.now(timezone.utc).date().isoformat()
     assert payload["schema"] == "news_flow.v1"
     assert payload["is_context_only"] is True
     assert "NVDA" in payload["tickers"]
@@ -193,4 +192,55 @@ def test_by_ticker_fresh_path_is_not_retained(monkeypatch, tmp_path):
     assert payload["retained_from_previous_build"] is False
     assert "retained_reason" not in payload
     assert payload["source_asof_basis"] == "financial_news.fetched_at"
+    assert "NVDA" in payload["tickers"]
+
+
+@pytest.mark.parametrize("existing_text", [
+    # E1: strictly healthier but undatable (no fetched_at) -> never kept
+    json.dumps({"schema": "financial_news.v1", "is_context_only": True,
+                "providers": {"polygon": True, "finnhub": True, "quiver": False,
+                              "gdelt": True},
+                "counts": {"raw": 3, "tagged": 3, "tickers_covered": 5},
+                "by_ticker": {"AMD": [{"title": "AMD undated headline",
+                                       "url": "https://www.reuters.com/amd",
+                                       "source": "Reuters", "seendate": "",
+                                       "sentiment": None, "summary": ""}]}}),
+    # E2: unreadable previous artifact -> guard read fails -> candidate written
+    "{not valid json",
+], ids=["existing_without_fetched_at", "existing_corrupt_json"])
+def test_by_ticker_unusable_existing_feed_is_not_retained(monkeypatch, tmp_path,
+                                                          existing_text):
+    """T2b: an existing financial.json the guard cannot date or cannot parse is
+    never retained — the candidate is written, source_asof is the candidate's
+    fetched_at, retained_from_previous_build is False, retained_reason absent."""
+    fetched_at = "2026-10-31T05:00:00+00:00"
+    candidate = {
+        "schema": "financial_news.v1", "is_context_only": True,
+        "fetched_at": fetched_at,
+        "providers": {"polygon": False, "finnhub": False, "quiver": False,
+                      "gdelt": True},
+        "counts": {"raw": 1, "tagged": 1, "tickers_covered": 1},
+        "market": [{"title": "Issuer observation", "domain": "reuters.com",
+                    "quality": 60, "seendate": fetched_at}],
+        "mag7": {}, "sectors": {}, "baskets": {},
+        "by_ticker": {"NVDA": [{"title": "NVDA candidate headline",
+                                "url": "https://www.reuters.com/nvda",
+                                "source": "Reuters", "seendate": fetched_at,
+                                "sentiment": None, "summary": ""}]},
+        "rejected": [],
+    }
+    _offline_fin_build(monkeypatch, tmp_path, candidate)
+    news_dir = tmp_path / "site" / "news"
+    news_dir.mkdir(parents=True)
+    (news_dir / "financial.json").write_text(existing_text)
+
+    build_news.build(write=True)
+
+    payload = json.loads((news_dir / "by_ticker.json").read_text())
+    fin_disk = json.loads((news_dir / "financial.json").read_text())
+    assert fin_disk["fetched_at"] == fetched_at
+    assert "refresh_skipped_reason" not in fin_disk
+    assert payload["source_asof"] == fetched_at
+    assert payload["retained_from_previous_build"] is False
+    assert "retained_reason" not in payload
     assert "NVDA" in payload["tickers"]

@@ -54,7 +54,7 @@ contract of `by_ticker.json`.
 | `source_asof_basis` | `str` | Always `"financial_news.fetched_at"` — names the clock `source_asof` comes from, so consumers can refuse payloads whose basis they do not understand. | `scripts/build_news.py` `build()` |
 | `retained_from_previous_build` | `bool` | `True` only when the never-darken guard kept the previous build's `financial.json` (existing feed was fresh <36 h and strictly healthier) instead of writing the candidate feed. | `scripts/build_news.py` `build()` |
 | `retained_reason` | `str` | Present **only when** `retained_from_previous_build` is `True`; omitted entirely on the fresh path. Identical to the `refresh_skipped_reason` stamped into `financial.json` by the same guard. | `scripts/build_news.py` `build()` |
-| `top[].item_id` | `str` | The canonical R1 report key `source:source_item_id` — for Polygon/Massive rows `massive:<publisher-domain>:<polygon-id>`. Absent for every other provider. | `engine/financial_news.py` `_polygon_articles` → `mastermind_by_ticker` |
+| `top[].item_id` | `str` | The canonical R1 report key `source:source_item_id` — for Polygon/Massive rows `massive:<publisher-domain>:<polygon-id>`, read off the revision `engine.qbus_news_contract.normalize_massive_news` mints for the same payload. Present only where that contract accepts the payload; absent on any contract refusal and for every other provider. | `engine/financial_news.py` `_polygon_articles` → `mastermind_by_ticker` |
 | `top[].published_utc` | `str` | The **provider's own publish clock** as an aware-UTC ISO string: Polygon `published_utc`, or the Finnhub epoch. Absent when the provider states none or states a timestamp with no timezone (a timezone is never assumed). | `engine/financial_news.py` `_polygon_articles` / `_finnhub_news` → `mastermind_by_ticker` |
 
 ## Reading rules (plain statements)
@@ -64,7 +64,8 @@ contract of `by_ticker.json`.
   previous build's feed keeps an old `source_asof` under a new `asof` — that is
   the honest state, and `retained_from_previous_build: true` is the flag for it.
 - `top[].item_id` is the R1 report key `source:source_item_id` (Polygon/Massive
-  rows only). It is **NOT** the qbus `item_id` column — that column is the
+  rows only, and only where `normalize_massive_news` accepts the payload — so
+  presence means the contract would mint that same identity). It is **NOT** the qbus `item_id` column — that column is the
   `_id` event hash minted by `news_common.event_id(title, domain)`. The two
   namespaces never join; treat any join between them as a defect.
 - `published_utc` is the provider clock (Polygon `published_utc`, Finnhub

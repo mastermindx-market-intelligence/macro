@@ -187,8 +187,9 @@ def _normalise(title: str, url: str, domain: str, seendate: str, source: str,
 
     Freshness-honesty additions (public keys, so _public() keeps them):
       • _item_id — the canonical R1 report key `source:source_item_id` when the
-        provider has one (Polygon/Massive only). Absent otherwise; never minted
-        for providers without a canonical namespace.
+        provider has one (Polygon/Massive only, and only where
+        qbus_news_contract.normalize_massive_news accepts the payload). Absent
+        otherwise; never minted for providers without a canonical namespace.
       • _published_utc — the provider's own publish clock as an aware-UTC ISO
         string. Absent when the provider states none (or a naive timestamp).
     """
@@ -296,15 +297,17 @@ def _polygon_articles(results: list[dict], now: datetime) -> list[dict]:
                 break
         pub = (a.get("publisher") or {})
         dom = _domain_of(pub.get("homepage_url") or a.get("article_url", ""))
-        # R1 report key — the SAME source:source_item_id identity that
-        # engine.qbus_news_contract.normalize_massive_news mints for this payload
-        # (and qbus_news_cluster uses as story_id). Reuse the contract's own
-        # functions; any refusal (bad publisher homepage / id) means no item_id.
+        # R1 report key `source:source_item_id`, read off the revision that
+        # engine.qbus_news_contract.normalize_massive_news itself mints for this
+        # payload — identical by construction, and present ONLY where the
+        # contract accepts the payload. Any refusal (publisher homepage, id,
+        # clock, tickers, url) or unexpected error omits the key; the headline
+        # is still published, so the optional key can never darken the feed.
         item_id = ""
         try:
-            item_id = ("massive:" + _qnc.massive_publisher_domain(a)
-                       + ":" + _qnc._source_id(a.get("id")))
-        except _qnc.NewsContractError:
+            _rev = _qnc.normalize_massive_news(a, received_at=now)
+            item_id = f"{_rev.source}:{_rev.source_item_id}"
+        except Exception:  # noqa: BLE001 — optional key; never darken the feed
             item_id = ""
         # Provider publish clock: aware values become UTC ISO; naive values are
         # omitted — a timezone is never assumed.

@@ -760,7 +760,8 @@ def test_polygon_rows_carry_r1_report_key_and_published_utc():
     """T3: Polygon headlines carry the canonical R1 report key
     (massive:<publisher-domain>:<source-item-id> — the identity
     normalize_massive_news mints for the same payload) and the provider's
-    aware-UTC publish clock. Contract refusals or a naive clock omit the key;
+    aware-UTC publish clock. Any contract refusal (including a naive clock)
+    omits the key, so presence implies the contract accepted the payload;
     Finnhub rows get the clock but NEVER an item_id (no canonical namespace)."""
     from engine import qbus_news_contract as qnc
 
@@ -794,11 +795,15 @@ def test_polygon_rows_carry_r1_report_key_and_published_utc():
     (h3,) = fn._polygon_articles([ftp_home], _NOW)
     assert "item_id" not in h3
 
-    # naive published_utc -> a timezone is never assumed -> key omitted
+    # naive published_utc -> a timezone is never assumed -> the clock is
+    # omitted, and because the contract refuses a naive clock the key is too
+    # (MACROREV-01: no key is minted for a payload the contract would refuse).
     naive = dict(payload, published_utc="2026-10-30T14:05:00")
+    with pytest.raises(qnc.NewsContractError):
+        qnc.normalize_massive_news(naive, received_at=_NOW)
     (h4,) = fn._polygon_articles([naive], _NOW)
     assert "published_utc" not in h4
-    assert h4["item_id"] == "massive:reuters.com:abc123"
+    assert "item_id" not in h4
 
     # Finnhub-style row: provider clock only — no canonical R1 namespace exists
     # for Finnhub, so minting an item_id would create a new id namespace.
