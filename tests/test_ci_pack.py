@@ -4784,6 +4784,9 @@ CURATED_EXCLUSIVE = {
     # observation and IM15 dislocation chains; the exclusive scope pins the
     # measured suite closure (engine/test import chain plus configs and inits).
     "international-global-replay",
+    # IM15 dislocation explorer UI (W3U): pytest + Chromium suites over the
+    # merged engine and the W2 seam; exact measured closure, no inference widening.
+    "international-dislocation-explorer",
     # IM17 transmission-evidence contract: edges, qualified transmission
     # events and the US relevance ordering; the frozen contagion models are
     # read by the test alone, so its curated scope must pin their closure.

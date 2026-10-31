@@ -100,6 +100,32 @@ def _git_show(path):
         return None
 
 
+def _merge_base_css():
+    """CSS at merge-base(origin/main, HEAD), or None when this checkout cannot
+    see history (a pack CI checkout is fetch-depth 1) — the append-only check
+    then skips with a message, exactly as it skipped when the frozen lane base
+    sha did not resolve there. INTL-GS-W3U-FIX (2026-10-31): the append-only
+    anchor is the merge base, not the frozen pre-W4B sha e6debbb, because main
+    now carries later insert-only regions (the W3U dislocation region sits
+    between this block and the W2A anchor) and (css - block) == frozen css
+    cannot hold byte for byte in any full clone once it does."""
+    rev = subprocess.run(
+        ["git", "rev-parse", "--verify", "--quiet", "origin/main^{commit}"],
+        cwd=ROOT, capture_output=True, text=True)
+    if rev.returncode != 0:
+        return None
+    merged = subprocess.run(
+        ["git", "merge-base", "origin/main", "HEAD"],
+        cwd=ROOT, capture_output=True, text=True)
+    sha = merged.stdout.strip()
+    if merged.returncode != 0 or not re.fullmatch(r"[0-9a-f]{40}", sha):
+        return None
+    out = subprocess.run(
+        ["git", "show", f"{sha}:templates/intl_workspace_surveillance.css"],
+        cwd=ROOT, capture_output=True)
+    return out.stdout if out.returncode == 0 else None
+
+
 # --------------------------------------------------------------------------
 # V1 — the production site stays not_built without a builder
 # --------------------------------------------------------------------------
@@ -500,17 +526,25 @@ def test_native_radio_switch_contract():
 
 def test_css_block_scoped_literal_free_and_stripe_free():
     css, block = _css_block()
-    base_css = _git_show("templates/intl_workspace_surveillance.css")
+    # INTL-GS-W3U-FIX (2026-10-31): the append-only law is unchanged — one
+    # block inserted, nothing edited, moved or deleted, sitting before the W2A
+    # region so the file still ends with the W2B end anchor the W2 foundation
+    # suite pins — expressed against the merge base instead of a frozen
+    # pre-W4B sha: the prefix before the block and the block bytes are
+    # byte-identical to the base, and the block ends before the W2A region
+    # (F-POST-2: the tail from the W2A region line to EOF belongs to the
+    # W2A/W2B lanes and is pinned by their own suites, so it is not pinned
+    # here any more).
+    base_css = _merge_base_css()
     if base_css is None:
-        pytest.skip("git or base object unavailable; append-only check skipped with this message")
-    without_block = css.replace(block + "\n", "", 1)
-    if block in without_block:
-        without_block = without_block.replace(block, "", 1)
-    assert without_block.encode("utf-8") == base_css, \
-        "removing the W4B block must reproduce the base file byte for byte " \
-        "(one block inserted, nothing edited, moved or deleted; it sits " \
-        "before the W2A region so the file still ends with the W2B end " \
-        "anchor the W2 foundation suite pins)"
+        pytest.skip("git or merge base unavailable; append-only check skipped with this message")
+    base_text = base_css.decode("utf-8")
+    assert base_text.count(BLOCK_START) == 1 and base_text.count(BLOCK_END) == 1
+    w2a_anchor = "/* ==== W2A region"
+    assert css[:css.index(BLOCK_START)] == base_text[:base_text.index(BLOCK_START)]
+    assert block == base_text[base_text.index(BLOCK_START):
+                              base_text.index(BLOCK_END) + len(BLOCK_END)]
+    assert css.index(BLOCK_END) < css.index(w2a_anchor)
 
     for selector, _body in _rules(block):
         selector = re.sub(r":(?:is|where|not)\([^)]*\)", "", selector)
