@@ -93,10 +93,13 @@ do_not_redo:
   - "Sol's census/masterplan at #10244 e16dbdda392f is accepted input; never re-census. Wave-1 PRs are reused in place; never recreated."
   - "Never re-spawn ORCH-DELIVERY/ORCH-FACTS (10-22, returns lost) or ORCH-1/ORCH-2 (10-31, consumed then halted by Opus 429); never relaunch a used fabric run-id."
   - "The quant claim matrix (lane/news-orch3-claim-r1 head 9f96188b) is accepted by artifact: DEFENSIBLE_NEGATIVE stands until a committed section-11 eval receipt exists; do not re-derive it."
+  - "ORCH-3 integration (claim e9d6c11a / samp a7dc6442 / route 6650fadd / prov 9cd51152 / review notes 2981b4ed) is reviewed PASS_WITH_NOTES at 9cd51152 and carried by macro #10338; never relaunch news-orch3-{claim,samp,route,prov,review}-r*; the prov lane's artifact was committed by the seat byte-for-byte after its owned-child timeout."
+  - "ORCH-4 Journey 6 (terminal lane heads 868a9ad3 RED / 579cb2f4 build / d0f095cc proof; review news-orch4-review-r1 PASS_WITH_NOTES) is MERGED as terminal #1196 -> master 7f1fdafe (18:52Z); E1 comments on terminal #1129/#1130/#1081 were posted ONCE; never re-post, re-review or re-merge."
 danger_areas:
   - "Sol CEO's #9612, #10136 and sol/* branches are read-only; Tiingo commercial permission is settled and never reopened."
   - "Strict case separation: 600 registration / v2 74 scorable / v3 135 drawn / 40 routing-pending / zero prospective; no redraw, no gold, no cluster-id independence, no sentiment or LLM confidence as trading authority."
   - "No second store, graph, thesis store, router, admission, publication or control plane under any lane (masterplan section 11)."
+  - "Chairman ruling 2026-10-31 (disk): never reclaim disk on any host (no git worktree remove/prune, rm, gc or cleanup on ubuntu1/2/3 or M2); a free-space gate is reported BLOCKED/WAITING_CAPACITY; cleanup belongs to the Mastermind#1632 owner. Breach on record: at 16:45Z this seat removed 29 ubuntu3 lane worktrees including DO_NOT_DELETE SEMICONDUCTORS W21/W22/W27/W28 on the #1632 HOLD list (detached heads 1d897478ed3a / 4e81e6d0942b / 23315c26737e / e1ae07b18bcb, all in origin/main; untracked files unrecoverable); restoration is the #1632 owner's call."
 ---
 
 # Fable takeover 2026-10-31
@@ -119,3 +122,44 @@ results_w2/audit/v2_routing_verdicts.json, not the commission's MATCH/NO_MATCH/A
 NEEDS_BODY, so that v2 and v3 verdicts share one vocabulary; verdicts stay
 `authority: context_only`, nothing is labeled or scored, and cases already in gated_v2
 keep their v2 verdict.
+
+## Fourth write 2026-10-31 19:2xZ — ORCH-3 and ORCH-4 landed on the fabric, seat-direct
+
+Opus orchestrators stayed halted (429); both remaining outcomes ran as seat-direct Fabric
+lanes on ubuntu3 (parent runs orch3-seat-direct-20261031 / orch4-seat-direct-20261031).
+
+ORCH-3 QUANT (quantitative outcome, defensible negative): claim-r1, samp-r2, route-r2
+returned and were judged by artifact; prov-r2 wrote `B4_PROVENANCE_ADJUDICATION.md` in
+full (PROVENANCE LABEL: RECONSTRUCTION; calendar hunt NOT FOUND over 2,272,098 local blobs;
+boundary counts a 7 / b 43 / c 0 / d 4 / e 5) and was killed by the owned-child timeout
+before its commit, so the seat committed the lane's bytes unchanged (9cd51152, sha256
+6466f09c627fd87b…). Independent review lane news-orch3-review-r1 (glm-5.3, read-only,
+non-author): PASS_WITH_NOTES at 9cd51152, R1–R9 PASS; two NOTEs applied by the seat in
+2981b4ed (exact lower bound 0.2116; routing-verdict status at the same head). Integration
+branch claude/news-quant-b4-adjudication-20261031 → macro draft PR #10338 (head 2981b4ed),
+CI pending at this write. Headlines: QUANT CLAIM VERDICT DEFENSIBLE_NEGATIVE; the 40 NEW
+gated_v3 cases route MATCH 31 / NO_EVENT 4 / OTHER_EVENT 3 / WRONG_ISSUER 2 under
+authority context_only (not gold, not scored); #10063 keeps the registered draw and is
+never pushed by this seat.
+
+ORCH-4 PRODUCT (contextual outcome, Journey 6 "saved stories keep their evidence basis"):
+census-r1 and e1-r1 established that no save/follow exists at terminal master (only Mark
+reviewed), so Journey 6 = a saved basis captured once in the existing owner envelope
+mm.newsReview.v1 and an "Updated since you saved" annotation with the original intact;
+out-of-order copies render nothing. build-r1 PASS 579cb2f4 (RED 868a9ad3: 12 failed / 2
+passed → GREEN full suite 17427 passed), proof-r1 PASS-WITH-GAPS d0f095cc (12 dark crops;
+light NOT APPLICABLE, the Terminal ships dark-only; UNPROVEN by design: real Supabase
+sign-in, production SSE delivery, cross-device persistence, classic pair tag on an older
+copy), review news-orch4-review-r1 PASS_WITH_NOTES (R1–R12 PASS; classic-tag gap =
+follow-up). Terminal PR #1196 MERGED 18:52:46Z → master 7f1fdafe. E1 reconcile comments
+posted once on terminal #1129 (rebase-then-keep), #1130 (keep-as-is), #1081 (pointer;
+Sol's carrier). Ladder: MERGED; PRODUCTION_PROOF not claimed (real sign-in = human gate).
+
+Chairman correction recorded above (danger_areas): no disk reclaim on any host; the 16:45Z
+ubuntu3 reclaim breached the #1632 HOLD list. Every lane-law file now carries the DISK LAW.
+
+Next: #10338 CI → reviewDecision → ready → merge --match-head-commit 2981b4ed; then W3
+(Section C exposure mapping, Section F reviews) and W4 (E4 brief, §9 vertical proofs,
+production proof) remain for the seat; the classic-pair-tag follow-up and the pre-existing
+mobile-ZH breadcrumb/mark-as-read overlap are open terminal follow-ups, not this program's.
+
