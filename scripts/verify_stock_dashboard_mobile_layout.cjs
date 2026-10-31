@@ -478,37 +478,72 @@ const FONT_AUDIT = {pages: 0, nodes: 0, platform: new Map(), custom: new Set(), 
 
 // CSS.getPlatformFontsForNode names the font that rendered each element's own
 // text, including generated content. A non-custom font is a host font leaking
-// into the receipt; main() refuses to write one. A query that errors (a node id
-// gone stale under a re-render) has not answered, so the page is walked again
-// from a fresh document; nodes still unanswered after three walks, or a page
-// with no text at all, also refuse the receipt.
+// into the receipt; main() refuses to write one. Each walk starts only after
+// FONT_AUDIT_QUIET_MS with no structural DOM event (a node or pseudo-element
+// inserted or removed, text changed), so a page still re-rendering after an
+// interaction is not walked mid-change on a slower host. A walk counts only if
+// every query answered and the document did not change while it ran; three
+// walks that never get there, or a page with no text at all, refuse the receipt.
+const FONT_AUDIT_QUIET_MS = 250;
+const FONT_AUDIT_SETTLE_CAP_MS = 5000;
+const FONT_AUDIT_STRUCTURAL_EVENTS = [
+  "DOM.childNodeInserted", "DOM.childNodeRemoved", "DOM.characterDataModified",
+  "DOM.pseudoElementAdded", "DOM.pseudoElementRemoved",
+  "DOM.shadowRootPushed", "DOM.shadowRootPopped", "DOM.documentUpdated",
+];
+
+function describeAuditNode(node) {
+  const attributes = node.attributes || [];
+  let id = "";
+  let classes = "";
+  for (let index = 0; index < attributes.length; index += 2) {
+    if (attributes[index] === "id") id = `#${attributes[index + 1]}`;
+    if (attributes[index] === "class") classes = attributes[index + 1].trim().split(/\s+/).map((name) => `.${name}`).join("");
+  }
+  const text = (node.children || []).filter((child) => child.nodeType === 3)
+    .map((child) => child.nodeValue).join("").replace(/\s+/g, " ").trim().slice(0, 40);
+  return `${node.nodeName.toLowerCase()}${id}${classes}${text ? ` "${text}"` : ""}`;
+}
+
 async function auditPlatformFonts(page, label) {
   const cdp = await page.context().newCDPSession(page);
+  let structuralEvents = 0;
+  for (const event of FONT_AUDIT_STRUCTURAL_EVENTS) cdp.on(event, () => { structuralEvents += 1; });
   try {
     await cdp.send("DOM.enable");
     await cdp.send("CSS.enable");
-    let unanswered = 0;
+    let missing = [];
     let answered = 0;
     for (let attempt = 0; attempt < 3; attempt += 1) {
-      const {root} = await cdp.send("DOM.getDocument", {depth: -1, pierce: true});
-      const nodeIds = [];
+      // DOM events only cover nodes already sent to this session, so fetch the
+      // whole document, then fetch again until one quiet window passes after it.
+      const deadline = Date.now() + FONT_AUDIT_SETTLE_CAP_MS;
+      let root;
+      let seen;
+      do {
+        seen = structuralEvents;
+        ({root} = await cdp.send("DOM.getDocument", {depth: -1, pierce: true}));
+        await new Promise((resolve) => setTimeout(resolve, FONT_AUDIT_QUIET_MS));
+      } while (structuralEvents !== seen && Date.now() < deadline);
+      const nodes = [];
       (function walk(node) {
         if (node.nodeType === 1 && (node.children || []).some((child) =>
-          child.nodeType === 3 && child.nodeValue.trim())) nodeIds.push(node.nodeId);
+          child.nodeType === 3 && child.nodeValue.trim())) nodes.push(node);
         for (const pseudo of node.pseudoElements || []) {
-          nodeIds.push(pseudo.nodeId);
+          nodes.push(pseudo);
           walk(pseudo);
         }
         for (const child of node.children || []) walk(child);
         for (const shadow of node.shadowRoots || []) walk(shadow);
         if (node.contentDocument) walk(node.contentDocument);
       })(root);
-      const results = await Promise.all(nodeIds.map((nodeId) =>
-        cdp.send("CSS.getPlatformFontsForNode", {nodeId}).then((result) => result, () => null)
+      const results = await Promise.all(nodes.map((node) =>
+        cdp.send("CSS.getPlatformFontsForNode", {nodeId: node.nodeId}).then((result) => result, () => null)
       ));
       answered = results.filter(Boolean).length;
-      unanswered = results.length - answered;
-      if (unanswered) continue;
+      missing = nodes.filter((_node, index) => !results[index]).map(describeAuditNode);
+      if (structuralEvents !== seen && !missing.length) missing = ["(the document changed during the walk)"];
+      if (missing.length) continue;
       for (const {fonts} of results) {
         for (const font of fonts || []) {
           if (font.isCustomFont) {
@@ -521,9 +556,13 @@ async function auditPlatformFonts(page, label) {
       }
       break;
     }
-    if (unanswered) FONT_AUDIT.unanswered.set(label, `${unanswered} text node(s) unanswered after 3 walks`);
-    else if (!answered) FONT_AUDIT.unanswered.set(label, "no text nodes to audit");
-    if (!unanswered) FONT_AUDIT.nodes += answered;
+    if (missing.length) {
+      FONT_AUDIT.unanswered.set(label, `${missing.length} text node(s) unanswered after 3 walks: ` +
+        `${missing.slice(0, 3).join(", ")}${missing.length > 3 ? ", ..." : ""}`);
+    } else if (!answered) {
+      FONT_AUDIT.unanswered.set(label, "no text nodes to audit");
+    }
+    if (!missing.length) FONT_AUDIT.nodes += answered;
     FONT_AUDIT.pages += 1;
   } finally {
     await cdp.detach().catch(() => null);

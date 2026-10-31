@@ -2244,7 +2244,13 @@ def test_browser_receipts_were_measured_with_only_committed_fonts(market: str) -
     assert pin["platform_fonts"] == []
     assert pin["audited_pages"] > 0
     assert pin["audited_nodes"] > 0
-    assert "FONT_AUDIT.unanswered.size" in _read(BROWSER_RECEIPT)
+    verifier = _read(BROWSER_RECEIPT)
+    assert "FONT_AUDIT.unanswered.size" in verifier
+    # A walk waits out structural DOM churn, so a slower host is not refused
+    # for a node an interaction removed mid-walk.
+    for event in ("DOM.childNodeRemoved", "DOM.pseudoElementRemoved", "DOM.childNodeInserted"):
+        assert f'"{event}"' in verifier
+    assert "structuralEvents !== seen" in verifier
     for name, digest in manifest["files"].items():
         assert _sha256(FONT_PIN / name) == digest
         assert receipt["loaded_assets"][str((FONT_PIN / name).relative_to(ROOT))] == digest
