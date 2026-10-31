@@ -2,7 +2,7 @@
 // INTL-GS-W2B (IM14 market dossier) browser proof: the REAL dossier view via
 // the fixture site (production + abstain-all + specimen), in Chromium.
 // Mirrors tests/intl_gs_foundation_browser.test.cjs (same route/fixture idiom).
-const test = require('node:test');
+const {test, before} = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -33,6 +33,12 @@ function serveRoute(route, pathname) {
   return route.fulfill({contentType: types[path.extname(file)] || 'text/html',
     body: fs.readFileSync(file)});
 }
+
+// T-ADJ 2 (fx4): build the fixture site BEFORE any chromium.launch. serveRoute
+// calls site() lazily, so the first page.goto's 30 s navigation timeout would
+// otherwise also cover the 12-31 s python fixture build (B11 timed out on
+// exactly this in CI run 41196463908, 30000 ms on both attempts).
+before(() => site());
 
 async function withRoutedPage(fn, query) {
   const browser = await chromium.launch({headless: true,
