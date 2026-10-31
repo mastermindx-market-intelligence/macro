@@ -696,3 +696,347 @@ def test_read_parquet_native_probe_immune_to_read_parquet_monkeypatch(
     else:
         assert "to_pandas_kwargs" not in seen[0]
     assert list(out["close"]) == [10.0, 11.0]
+
+
+# ── qualify_snapshot_members: snapshot-source qualification (additive slice) ──
+# Pure fixtures only — no network, no wall clock (all instants are fixed aware
+# datetimes). These tests use the REAL parse_polygon_snapshot for the parser-
+# shaped rows so a parser contract change fails here, not in production.
+
+import copy
+
+from engine import live_quotes as lq
+
+QUAL_KEYS = {"last_by_symbol", "source_asof_by_symbol", "excluded_by_symbol",
+             "eligible_n", "qualified_n", "qualification_coverage_pct",
+             "oldest_source_asof", "newest_source_asof"}
+
+RECEIPT = _utc(2026, 10, 30, 14, 0)          # snapshot received at the host
+ASOF_Q = _utc(2026, 10, 30, 14, 5)           # query instant (>= receipt)
+SESSION_START = _utc(2026, 10, 30, 13, 30)   # 09:30 ET (EDT, UTC-4)
+SESSION_END = _utc(2026, 10, 30, 20, 0)      # 16:00 ET — half-open upper edge
+T_TRADE = _utc(2026, 10, 30, 13, 59)         # a real in-session print
+T_STALE = _utc(2026, 10, 30, 13, 35)         # in session, 30 min old at ASOF_Q
+T_PREV_SESSION = _utc(2026, 10, 29, 20, 0)   # yesterday's close
+
+
+def _kw(**over):
+    base = dict(observed_at=RECEIPT, asof=ASOF_Q,
+                session_start=SESSION_START, session_end=SESSION_END)
+    base.update(over)
+    return base
+
+
+def _iso(dt):
+    return dt.astimezone(timezone.utc).isoformat()
+
+
+def _ident(sym):
+    return {"schema": "native_quote_identity.v1", "vendor": "polygon",
+            "vendor_symbol": sym, "response_field": "tickers[].ticker"}
+
+
+def _q(price=101.0, ts="2026-10-30T13:59:00+00:00", sym="AAPL", basis="trade",
+       synthetic=False, ident=None, **over):
+    """One parser-shaped quote record (engine.live_quotes.parse_polygon_snapshot)."""
+    rec = {
+        "price": price, "quote_ts": ts, "quote_ts_synthetic": synthetic,
+        "source": "polygon", "price_basis": basis, "delay_min": 1.0,
+        "native_quote_identity": _ident(sym) if ident is None else ident,
+        "prev_close": None, "currency": "USD", "day_volume": None,
+        "day_high": None, "day_low": None,
+    }
+    rec.update(over)
+    return rec
+
+
+def _poly_trade(price, when):
+    s = int(when.timestamp())
+    return {"lastTrade": {"p": price, "t": s * 1_000_000_000},
+            "min": {"c": price - 1.0, "t": s * 1_000},
+            "day": {"c": price - 2.0}, "prevDay": {"c": price - 3.0},
+            "updated": s * 1_000_000_000}
+
+
+def _poly_minute(price, when):
+    s = int(when.timestamp())
+    return {"min": {"c": price, "t": s * 1_000}, "updated": s * 1_000_000_000}
+
+
+def test_qualify_accepts_real_parser_trade_and_minute_quotes():
+    payload = {"tickers": [{**_poly_trade(101.25, T_TRADE), "ticker": "AAPL"},
+                           {**_poly_minute(51.5, T_TRADE), "ticker": "MSFT"}]}
+    quotes = lq.parse_polygon_snapshot(payload, now=RECEIPT)
+    assert quotes["AAPL"]["price_basis"] == "trade"
+    assert quotes["MSFT"]["price_basis"] == "minute"
+    assert quotes["AAPL"]["quote_ts_synthetic"] is False
+    assert quotes["MSFT"]["quote_ts_synthetic"] is False
+    res = lb.qualify_snapshot_members(quotes, ["AAPL", "MSFT"], **_kw())
+    assert res["qualified_n"] == 2 and res["eligible_n"] == 2
+    assert res["last_by_symbol"] == {"AAPL": 101.25, "MSFT": 51.5}
+    assert res["source_asof_by_symbol"] == {"AAPL": _iso(T_TRADE), "MSFT": _iso(T_TRADE)}
+    assert res["excluded_by_symbol"] == {}
+    assert res["qualification_coverage_pct"] == pytest.approx(100.0)
+    assert res["oldest_source_asof"] == res["newest_source_asof"] == _iso(T_TRADE)
+
+
+def test_qualify_rejects_real_parser_day_prev_and_timeless_trade_synthetic_clocks():
+    s = int(T_TRADE.timestamp())
+    payload = {"tickers": [
+        {"ticker": "DAYY", "day": {"c": 52.0}, "updated": s * 1_000_000_000},
+        {"ticker": "PRVV", "prevDay": {"c": 50.0}, "updated": s * 1_000_000_000},
+        {"ticker": "NOTR", "lastTrade": {"p": 101.0}, "updated": s * 1_000_000_000},
+    ]}
+    quotes = lq.parse_polygon_snapshot(payload, now=RECEIPT)
+    for sym in ("DAYY", "PRVV", "NOTR"):
+        assert quotes[sym]["quote_ts_synthetic"] is True
+        assert quotes[sym]["quote_ts"] == _iso(T_TRADE)   # stamped the synthetic clock
+    res = lb.qualify_snapshot_members(quotes, ["DAYY", "PRVV", "NOTR"], **_kw())
+    assert res["qualified_n"] == 0
+    # contract's require ORDER: day/prev fall on the basis check first (still
+    # a non-live basis), while the timeless trade reaches the synthetic-clock
+    # check; all three are excluded either way
+    assert res["excluded_by_symbol"] == {
+        "DAYY": "unsupported_price_basis", "PRVV": "unsupported_price_basis",
+        "NOTR": "synthetic_quote_ts"}
+    assert res["last_by_symbol"] == {}
+    assert res["oldest_source_asof"] is None and res["newest_source_asof"] is None
+    assert res["qualification_coverage_pct"] == pytest.approx(0.0)
+
+
+def test_qualify_one_fresh_name_cannot_launder_a_stale_group():
+    quotes = {
+        "AAA": _q(sym="AAA", price=10.0, ts=_iso(T_STALE)),
+        "BBB": _q(sym="BBB", price=20.0, ts=_iso(T_STALE)),
+        "CCC": _q(sym="CCC", price=30.0),
+        "ZZZ": _q(sym="ZZZ", price=40.0),        # fresh but OUT of the cohort
+    }
+    res = lb.qualify_snapshot_members(quotes, ["AAA", "BBB", "CCC"], **_kw())
+    assert res["last_by_symbol"] == {"CCC": 30.0}
+    assert res["qualified_n"] == 1 and res["eligible_n"] == 3
+    assert res["excluded_by_symbol"] == {"AAA": "stale_quote", "BBB": "stale_quote"}
+    assert res["qualification_coverage_pct"] == pytest.approx(100.0 / 3)
+    # only ADMITTED rows set the admitted source clock — the stale prints and
+    # the fresh out-of-cohort ticker refresh nothing
+    assert res["oldest_source_asof"] == res["newest_source_asof"] == _iso(T_TRADE)
+    assert all("ZZZ" not in res[k] for k in QUAL_KEYS if isinstance(res[k], dict))
+
+
+def test_qualify_genuine_flat_admitted_and_stale_flat_excluded_for_compute_tier():
+    th = {"FLAT": _th(100, 90, 80, 120, 70), "UP": _th(100, 90, 80, 120, 70)}
+    quotes = {"FLAT": _q(sym="FLAT", price=100.0), "UP": _q(sym="UP", price=105.0)}
+    res = lb.qualify_snapshot_members(quotes, ["FLAT", "UP"], **_kw())
+    t = lb.compute_tier("mid", "S&P 400", {"en": "Mid cap", "zh": "中盘"}, th,
+                        res["last_by_symbol"])
+    assert res["qualified_n"] == 2 and t["n"] == 2
+    assert t["unch"] == 1 and t["adv"] == 1 and t["dec"] == 0
+    # the same flat print, stale on the source clock, is NOT admitted:
+    # compute_tier never sees it, so a stale halt cannot masquerade as a live
+    # unchanged name (never coerced to unchanged/zero)
+    quotes["FLAT"] = _q(sym="FLAT", price=100.0, ts=_iso(T_STALE))
+    res = lb.qualify_snapshot_members(quotes, ["FLAT", "UP"], **_kw())
+    assert res["excluded_by_symbol"] == {"FLAT": "stale_quote"}
+    assert res["last_by_symbol"] == {"UP": 105.0}
+    t = lb.compute_tier("mid", "S&P 400", {"en": "Mid cap", "zh": "中盘"}, th,
+                        res["last_by_symbol"])
+    assert t["n"] == 1 and t["unch"] == 0 and t["adv"] == 1
+
+
+def test_qualify_missing_vs_invalid_price_classes():
+    quotes = {
+        "NANP": _q(sym="NANP", price=float("nan")),
+        "INFP": _q(sym="INFP", price=float("inf")),
+        "BOOLP": _q(sym="BOOLP", price=True),
+        "ZERO": _q(sym="ZERO", price=0),
+        "NEG": _q(sym="NEG", price=-3.0),
+    }
+    res = lb.qualify_snapshot_members(
+        quotes, ["GONE", "NANP", "INFP", "BOOLP", "ZERO", "NEG"], **_kw())
+    assert res["excluded_by_symbol"]["GONE"] == "missing_quote"
+    for sym in ("NANP", "INFP", "BOOLP", "ZERO", "NEG"):
+        assert res["excluded_by_symbol"][sym] == "invalid_price"
+    assert res["last_by_symbol"] == {} and res["qualified_n"] == 0
+
+
+def test_qualify_source_identity_basis_and_malformed_rejections():
+    quotes = {
+        "YHOO": _q(sym="YHOO", source="yahoo"),
+        "SWAP": _q(sym="SWAP", ident=_ident("AAPL")),   # identity names another print
+        "NOID": _q(sym="NOID", ident={}),               # identity missing entirely
+        "BADSC": _q(sym="BADSC", ident={**_ident("BADSC"),
+                                        "schema": "native_quote_identity.v2"}),
+        "PREV": _q(sym="PREV", basis="prev"),
+        "JUNK": "not-a-mapping",
+    }
+    res = lb.qualify_snapshot_members(quotes, list(quotes), **_kw())
+    assert res["excluded_by_symbol"] == {
+        "YHOO": "unknown_source", "SWAP": "identity_mismatch",
+        "NOID": "identity_mismatch", "BADSC": "identity_mismatch",
+        "PREV": "unsupported_price_basis", "JUNK": "malformed_quote"}
+    assert res["qualified_n"] == 0
+
+
+def test_qualify_unknown_or_malformed_source_clock_and_non_bool_synthetic():
+    absent = _q(sym="ABSENT")
+    del absent["quote_ts_synthetic"]                # flag missing entirely
+    quotes = {
+        "NOTS": _q(sym="NOTS", ts="not-a-timestamp"),
+        "NUMS": _q(sym="NUMS", ts=1794439940000),   # epoch int, not an ISO string
+        "NAIV": _q(sym="NAIV", ts="2026-10-30T13:59:00"),   # no tz -> unknown instant
+        "ZEROB": _q(sym="ZEROB", synthetic=0),      # falsy but NOT literally False
+        "NONEB": _q(sym="NONEB", synthetic=None),
+        "ABSENT": absent,
+    }
+    res = lb.qualify_snapshot_members(quotes, list(quotes), **_kw())
+    for sym in ("NOTS", "NUMS", "NAIV"):
+        assert res["excluded_by_symbol"][sym] == "invalid_quote_ts"
+    for sym in ("ZEROB", "NONEB", "ABSENT"):
+        assert res["excluded_by_symbol"][sym] == "synthetic_quote_ts"
+    assert res["qualified_n"] == 0
+
+
+def test_qualify_quote_ahead_of_receipt_is_rejected_not_used():
+    quotes = {"FUT": _q(sym="FUT", ts=_iso(RECEIPT + timedelta(minutes=1)))}
+    res = lb.qualify_snapshot_members(quotes, ["FUT"], **_kw())
+    assert res["excluded_by_symbol"] == {"FUT": "quote_ts_after_receipt"}
+    assert res["last_by_symbol"] == {}
+
+
+def test_qualify_timezone_offsets_normalize_to_utc():
+    quotes = {"AAPL": _q(ts="2026-10-30T19:29:00+05:30")}   # == 13:59:00 UTC
+    res = lb.qualify_snapshot_members(quotes, ["AAPL"], **_kw())
+    assert res["qualified_n"] == 1
+    assert res["source_asof_by_symbol"] == {"AAPL": "2026-10-30T13:59:00+00:00"}
+    assert res["oldest_source_asof"] == res["newest_source_asof"] == "2026-10-30T13:59:00+00:00"
+
+
+def test_qualify_session_is_half_open_and_cross_session_prints_rejected():
+    # a window fully in the receiver's past so the SESSION check (never the
+    # receipt check) is what fires on the edges
+    w_start, w_end = _utc(2026, 10, 30, 12, 0), _utc(2026, 10, 30, 13, 0)
+    kw = _kw(session_start=w_start, session_end=w_end, max_source_age_min=130)
+    res = lb.qualify_snapshot_members(
+        {"OPEN": _q(sym="OPEN", ts=_iso(w_start))}, ["OPEN"], **kw)
+    assert res["qualified_n"] == 1                          # start edge is INSIDE
+    res = lb.qualify_snapshot_members(
+        {"END": _q(sym="END", ts=_iso(w_end))}, ["END"], **kw)
+    assert res["excluded_by_symbol"] == {"END": "out_of_session"}   # end edge OUTSIDE
+    # yesterday's close is rejected by the SESSION check (checked before age)
+    res = lb.qualify_snapshot_members(
+        {"YDAY": _q(sym="YDAY", ts=_iso(T_PREV_SESSION))}, ["YDAY"], **kw)
+    assert res["excluded_by_symbol"] == {"YDAY": "out_of_session"}
+
+
+def test_qualify_max_age_exact_admitted_just_older_rejected():
+    edge = _iso(ASOF_Q - timedelta(minutes=25))             # exactly the SLA age
+    over = _iso(ASOF_Q - timedelta(seconds=25 * 60 + 1))    # one second past it
+    res = lb.qualify_snapshot_members(
+        {"EDGE": _q(sym="EDGE", ts=edge), "OVER": _q(sym="OVER", ts=over)},
+        ["EDGE", "OVER"], max_source_age_min=25, **_kw())
+    assert res["last_by_symbol"] == {"EDGE": 101.0}
+    assert res["excluded_by_symbol"] == {"OVER": "stale_quote"}
+
+
+def test_qualify_dot_dash_collision_never_last_wins_and_single_dotted_joins():
+    dot = _q(sym="BRK.B", price=111.0)
+    dash = _q(sym="BRK-B", price=222.0)                     # last-wins would take this
+    res = lb.qualify_snapshot_members({"BRK.B": dot, "BRK-B": dash},
+                                      ["BRK-B"], **_kw())
+    assert res["excluded_by_symbol"] == {"BRK-B": "vendor_key_collision"}
+    assert res["last_by_symbol"] == {} and res["qualified_n"] == 0
+    # one dotted key alone resolves to the dash member, identity still matching
+    res = lb.qualify_snapshot_members({"BRK.B": dot}, ["BRK-B"], **_kw())
+    assert res["last_by_symbol"] == {"BRK-B": 111.0}
+    assert res["source_asof_by_symbol"] == {"BRK-B": _iso(T_TRADE)}
+
+
+def test_qualify_empty_cohort_has_none_coverage_and_clocks():
+    res = lb.qualify_snapshot_members({"AAPL": _q()}, [], **_kw())
+    assert res["eligible_n"] == 0 and res["qualified_n"] == 0
+    assert res["qualification_coverage_pct"] is None
+    assert res["oldest_source_asof"] is None and res["newest_source_asof"] is None
+
+
+def test_qualify_does_not_mutate_inputs():
+    quotes = {"AAPL": _q(), "STALE": _q(sym="STALE", ts=_iso(T_STALE)),
+              "BRK.B": _q(sym="BRK.B", price=111.0)}
+    members = ["AAPL", "STALE", "BRK-B"]
+    before_quotes = copy.deepcopy(quotes)
+    before_members = list(members)
+    aapl_ref = quotes["AAPL"]
+    lb.qualify_snapshot_members(quotes, members, **_kw())
+    assert quotes == before_quotes and members == before_members
+    assert quotes["AAPL"] is aapl_ref                       # records untouched in place
+
+
+def test_qualify_structural_validation_rejects_bad_inputs():
+    good = {"AAPL": _q()}
+    with pytest.raises(ValueError):
+        lb.qualify_snapshot_members(["nope"], ["AAPL"], **_kw())       # quotes not a mapping
+    with pytest.raises(ValueError):
+        lb.qualify_snapshot_members(good, "AAPL", **_kw())             # members is one string
+    with pytest.raises(ValueError):
+        lb.qualify_snapshot_members(good, 123, **_kw())                # members not a sequence
+    with pytest.raises(ValueError):
+        lb.qualify_snapshot_members(good, ["AAPL", "AAPL"], **_kw())   # duplicate member
+    with pytest.raises(ValueError):
+        lb.qualify_snapshot_members(good, ["brk.b"], **_kw())          # non-canonical
+    with pytest.raises(ValueError):
+        lb.qualify_snapshot_members(good, [" AAPL "], **_kw())         # non-canonical
+    for name in ("observed_at", "asof", "session_start", "session_end"):
+        bad = _kw()
+        bad[name] = bad[name].replace(tzinfo=None)                     # naive
+        with pytest.raises(ValueError):
+            lb.qualify_snapshot_members(good, ["AAPL"], **bad)
+    bad = _kw()
+    bad["asof"] = "2026-10-30"                                         # not a datetime
+    with pytest.raises(ValueError):
+        lb.qualify_snapshot_members(good, ["AAPL"], **bad)
+    with pytest.raises(ValueError):                                    # start >= end
+        lb.qualify_snapshot_members(good, ["AAPL"], observed_at=RECEIPT, asof=ASOF_Q,
+                                    session_start=SESSION_END, session_end=SESSION_START)
+    with pytest.raises(ValueError):                                    # receipt after query
+        lb.qualify_snapshot_members(good, ["AAPL"], observed_at=ASOF_Q, asof=RECEIPT,
+                                    session_start=SESSION_START, session_end=SESSION_END)
+    for bad_age in (True, 0, -1, float("nan"), float("inf"), "10"):
+        with pytest.raises(ValueError):
+            lb.qualify_snapshot_members(good, ["AAPL"],
+                                        max_source_age_min=bad_age, **_kw())
+
+
+def test_qualify_slots_in_without_changing_the_existing_payload_schema():
+    payload = {"tickers": [{**_poly_trade(101.25, T_TRADE), "ticker": "AAPL"}]}
+    quotes = lq.parse_polygon_snapshot(payload, now=RECEIPT)
+    res = lb.qualify_snapshot_members(quotes, ["AAPL"], **_kw())
+    assert set(res.keys()) == QUAL_KEYS                    # additive result shape
+    assert "usable" not in res and "verdict" not in res and "measured" not in res
+    t = lb.compute_tier("large", "S&P 500", {"en": "L", "zh": "大"},
+                        {"AAPL": _th(100, 90, 80, 120, 70)}, res["last_by_symbol"])
+    p = lb.build_payload([t], asof="2026-10-30T14:00:00Z", delay_min=6, session="rth")
+    assert set(p.keys()) == TOP_KEYS and p["schema"] == "live.breadth.v1"
+    assert set(t.keys()) == TIER_KEYS and t["n"] == 1
+
+
+def test_qualify_future_receipt_refused_across_repeated_local_hour():
+    from zoneinfo import ZoneInfo
+
+    # Identical local labels; the later fold is one actual hour after the cutoff.
+    first = datetime(2026, 11, 1, 1, 30, tzinfo=ZoneInfo("America/New_York"), fold=0)
+    later = first.replace(fold=1)
+    with pytest.raises(ValueError, match="observed_at"):
+        lb.qualify_snapshot_members({}, [], **_kw(observed_at=later, asof=first))
+
+
+def test_qualify_unrepresentable_row_does_not_erase_a_valid_peer():
+    quotes = {"AAPL": _q(), "B": _q(sym="B", price=10**400),
+              "C": _q(sym="C", ts="0001-01-01T00:00:00+14:00")}
+    r = lb.qualify_snapshot_members(quotes, list(quotes), **_kw())
+    assert r["last_by_symbol"] == {"AAPL": 101.0}
+    assert r["excluded_by_symbol"] == {"B": "invalid_price", "C": "invalid_quote_ts"}
+
+
+def test_qualify_empty_member_and_unrepresentable_global_age_are_invalid():
+    with pytest.raises(ValueError, match="canonical"):
+        lb.qualify_snapshot_members({}, [""], **_kw())
+    with pytest.raises(ValueError, match="max_source_age_min"):
+        lb.qualify_snapshot_members({}, [], max_source_age_min=10**400, **_kw())
