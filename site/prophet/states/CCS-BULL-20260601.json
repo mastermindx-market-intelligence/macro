@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CCS-BULL-20260601",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 22.9,
@@ -10,27 +10,27 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 12.8,
+    "validity": 14.2,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 47.0
+    "overlay": 46.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.23,
+    "dist_to_stop_r": 0.241,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 208.9,
-    "p1": -0.5133,
-    "p2": -0.2566,
+    "horizon_pct_used": 211.1,
+    "p1": -0.5061,
+    "p2": -0.2531,
     "p3": null,
-    "move_r": -0.77,
+    "move_r": -0.759,
     "mfe_r": 0.021,
     "mae_r": -0.77
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Nearing Invalidation",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 94,
-  "tau": 2.0889,
+  "days_elapsed": 95,
+  "tau": 2.1111,
   "closed": true,
   "outcome": "EXPIRED"
 }
