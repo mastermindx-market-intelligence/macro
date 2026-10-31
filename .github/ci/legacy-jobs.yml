@@ -40422,6 +40422,7 @@ jobs:
       - "tests/test_qbus_news_contract.py"
       - "tests/test_qbus_news_flow_store.py"
       - "tests/test_qbus_news_migration.py"
+      - "tests/test_qbus_news_propagation_estate.py"
       - "tests/test_qbus_news_receipts.py"
       - "tests/test_qbus_news_reducer.py"
       - "tests/test_qbus_news_store.py"
@@ -40711,6 +40712,7 @@ jobs:
           tests/test_qbus_news_contract.py
           tests/test_qbus_news_flow_store.py
           tests/test_qbus_news_migration.py
+          tests/test_qbus_news_propagation_estate.py
           tests/test_qbus_news_receipts.py
           tests/test_qbus_news_reducer.py
           tests/test_qbus_news_store.py
