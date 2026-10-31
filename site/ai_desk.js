@@ -27,6 +27,26 @@
     "fade-fear": { cls: "fade", en: "fade fear", zh: "淡化恐慌" }
   };
 
+  function lvlZh(v) {
+    return v === "high" ? "高" : (v === "medium" ? "中" : (v === "low" ? "低" :
+      String(v == null ? "" : v)));
+  }
+  function leanLabel(l) {
+    return LEAN[l] ? bi(LEAN[l].en, LEAN[l].zh) : esc(l);
+  }
+  function outcomeLabel(o) {
+    if (o === "hit") return bi("held", "成立");
+    if (o === "miss") return bi("did not hold", "未成立");
+    return esc(o);
+  }
+  function regimeZh(r) {
+    var ZH = { Goldilocks: "理想增长", Reflation: "再通胀",
+      Stagflation: "滞胀", "Growth-scare/Deflation": "增长恐慌／通缩",
+      "Growth-scare": "增长恐慌", Deflation: "通缩" };
+    return Object.prototype.hasOwnProperty.call(ZH, r) ?
+      ZH[r] : String(r == null ? "" : r);
+  }
+
   function checkText(c) {
     if (!c) return bi("not machine-scorable", "无法机械打分");
     if (c.kind === "rel_return") {
@@ -48,7 +68,8 @@
     var h = '<div class="thesis">';
     h += '<div class="thesis-head"><span class="thesis-subj">' + esc(t.subject) + "</span>";
     h += '<span class="chip ' + L.cls + '">' + bi(L.en, L.zh) + "</span>";
-    h += '<span class="chip conv">' + bi("conviction " + esc(t.conviction), "信心 " + esc(t.conviction)) + "</span>";
+    if (t.conviction) h += '<span class="chip conv">' +
+      bi("conviction " + t.conviction, "信心 " + lvlZh(t.conviction)) + "</span>";
     h += '<span class="chip conv">' + esc(t.horizon_d) + "d</span></div>";
     if (t.thesis) h += '<div class="body">' + esc(t.thesis) + "</div>";
     if (t.evidence && t.evidence.length) {
@@ -63,6 +84,51 @@
       (t.check_by ? " · " + bi("check by ", "检验日 ") + esc(t.check_by) : "") + "</div></div>";
     h += "</div>";
     return h;
+  }
+
+  function regimeLine(tr) {
+    var CANON = ["Goldilocks", "Reflation", "Stagflation", "Growth-scare/Deflation"];
+    var br = (tr && tr.by_regime) || {};
+    var names = [];
+    var sum = 0;
+    var k;
+    for (k in br) {
+      if (!Object.prototype.hasOwnProperty.call(br, k)) continue;
+      if (!br[k] || !(br[k].n > 0)) continue;
+      names.push(k);
+      sum += br[k].n;
+    }
+    if (!names.length) return "";
+    names.sort(function (a, b) {
+      if (br[b].n !== br[a].n) return br[b].n - br[a].n;
+      return a < b ? -1 : (a > b ? 1 : 0);
+    });
+    var untagged = ((tr.overall && tr.overall.n) || 0) - sum;
+    var missing = [];
+    CANON.forEach(function (n) { if (names.indexOf(n) < 0) missing.push(n); });
+    var en = [];
+    var zh = [];
+    names.forEach(function (n) {
+      var hits = br[n].hits == null ? 0 : br[n].hits;
+      en.push(n + " " + br[n].n + " (" + hits + " held)");
+      zh.push(regimeZh(n) + " " + br[n].n + "（" + hits + " 成立）");
+    });
+    if (untagged > 0) {
+      en.push("no regime tag " + untagged);
+      zh.push("无周期标记 " + untagged);
+    }
+    if (missing.length) {
+      var list = "";
+      missing.forEach(function (n, i) {
+        list += (i ? (i === missing.length - 1 ? " or " : ", ") : "") + n;
+      });
+      en.push("none yet in " + list);
+      zh.push("尚无已打分：" + missing.map(regimeZh).join("、"));
+    }
+    return '<p class="muted sm" style="margin:8px 0 0">' +
+      bi("Graded calls by regime when logged: " + en.join(" · "),
+         "按记录时周期划分的已打分：" +
+         zh.join(" · ")) + "</p>";
   }
 
   function trackBadge(tr) {
@@ -87,7 +153,8 @@
     ["high", "medium", "low"].forEach(function (c) {
       var b = (tr.by_conviction || {})[c];
       if (b && b.n) h += '<div class="tr-cell"><div class="v">' + (b.hit_rate * 100).toFixed(0) +
-        '%</div><div class="l">' + esc(c) + " (" + b.hits + "/" + b.n + ")</div></div>";
+        '%</div><div class="l">' + bi(c + " conviction", lvlZh(c) + "信心") +
+        " (" + b.hits + "/" + b.n + ")</div></div>";
     });
     var kindLabels = { rel_return: ["relative-return calls", "相对收益类"],
       level: ["price-level calls", "价位类"] };
@@ -104,6 +171,7 @@
     if (tr.expired > 0) h += '<div class="tr-cell"><div class="v">' + esc(tr.expired) +
       '</div><div class="l">' + bi("expired", "已过期") + "</div></div>";
     h += "</div>";
+    h += regimeLine(tr);
     if (tr.calibration_note) h += '<p class="muted sm" style="margin:8px 0 0">' +
       bi(tr.calibration_note, tr.calibration_note_zh) + "</p>";
     if (tr.recent && tr.recent.length) {
@@ -114,8 +182,9 @@
         bi("Realized", "实际") + "</th><th>" + bi("Check by", "检验日") + "</th></tr>";
       tr.recent.forEach(function (r) {
         var oc = r.outcome === "hit" ? "out-hit" : (r.outcome === "miss" ? "out-miss" : "out-open");
-        h += "<tr><td>" + esc(r.subject) + "</td><td>" + esc(r.lean) + "</td><td>" +
-          esc(r.conviction) + '</td><td class="' + oc + '">' + esc(r.outcome) + "</td><td>" +
+        h += "<tr><td>" + esc(r.subject) + "</td><td>" + leanLabel(r.lean) + "</td><td>" +
+          bi(r.conviction, lvlZh(r.conviction)) + '</td><td class="' + oc + '">' +
+          outcomeLabel(r.outcome) + "</td><td>" +
           (r.realized != null ? pct(r.realized) : "—") + "</td><td>" +
           esc(r.check_by || "—") + "</td></tr>";
       });
@@ -140,7 +209,7 @@
         h += '<div class="sm" style="margin-top:4px">';
         s.candidates.forEach(function (c) {
           if (!c || c.lean === "none" || !c.subject) return;
-          h += "• " + esc(c.subject) + " " + esc(c.lean) +
+          h += "• " + esc(c.subject) + " " + leanLabel(c.lean) +
             (c.strength ? " (" + esc(c.strength) + ")" : "") + "<br>";
         });
         h += "</div>";
@@ -149,6 +218,19 @@
       h += "</div>";
     });
     return h + "</details></div>";
+  }
+
+  function verdictLabel(key, v) {
+    var K = { flow: ["flow lens: ", "资金流视角："],
+      regime_snap: ["regime snap: ", "周期快照："] };
+    var V = { display_only: ["display only", "仅展示"],
+      coincident: ["coincident, not leading", "同步而非领先"],
+      leading: ["leading", "领先"] };
+    var raw = String(v == null ? "" : v).replace(/_/g, " ");
+    var gen = String(key == null ? "" : key).replace(/_/g, " ") + ": ";
+    var k = Object.prototype.hasOwnProperty.call(K, key) ? K[key] : [gen, gen];
+    var val = Object.prototype.hasOwnProperty.call(V, v) ? V[v] : [raw, raw];
+    return bi(k[0] + val[0], k[1] + val[1]);
   }
 
   function render(d) {
@@ -166,10 +248,11 @@
         esc(d.regime_context) + "</div>";
       var sv = d.source_verdicts || {};
       var bits = [];
-      if (sv.flow) bits.push("flow: " + esc(sv.flow));
-      if (sv.regime_snap) bits.push("regime-snap: " + esc(sv.regime_snap));
+      if (sv.flow) bits.push(verdictLabel("flow", sv.flow));
+      if (sv.regime_snap) bits.push(verdictLabel("regime_snap", sv.regime_snap));
+      var c = d.confidence || "low";
       html += '<p class="muted sm mono" style="margin:8px 0 0">' +
-        bi("confidence ", "信心 ") + esc(d.confidence || "low") +
+        bi("confidence " + c, "信心 " + lvlZh(c)) +
         (bits.length ? " · " + bits.join(" · ") : "") + "</p></div>";
     }
     var theses = d.theses || [];
