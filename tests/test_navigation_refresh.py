@@ -384,6 +384,28 @@ def test_mobile_navigation_is_a_full_height_accordion_with_full_width_search() -
     assert "window.innerWidth > 900" in THEME_JS
 
 
+def test_mobile_back_to_top_status_is_deferred_until_pageshow() -> None:
+    """The back-to-top chip cannot force a synchronous layout during nav boot.
+
+    Mobile chrome injects its stylesheet and hamburger before the first visible
+    frame. Reading scrollY immediately afterward flushed layout; pageshow also
+    handles the restored-scroll position when returning through the bfcache.
+    Scroll remains handled independently for the visible open navigation menu.
+    """
+    from rjsmin import jsmin
+
+    for source in (THEME_JS, SITE_THEME_JS):
+        compact = jsmin(source, keep_bang_comments=True)
+        begin = compact.index("function initMobileNav(){")
+        end = compact.index("function initAdaptiveNav(){", begin)
+        nav_boot = compact[begin:end]
+        assert "window.addEventListener('scroll',paintTotop,{passive:true});" in nav_boot
+        assert "window.addEventListener('pageshow',paintTotop);" in nav_boot
+        assert "paintTotop();" not in nav_boot, (
+            "the nav initializer must not synchronously read scrollY after its DOM writes"
+        )
+
+
 def test_mobile_ticker_input_does_not_trigger_ios_focus_zoom() -> None:
     mobile_rules = media_block_containing(
         REFRESH_CSS, "@media (max-width: 900px)", ".ticker-search .ticker-input"
