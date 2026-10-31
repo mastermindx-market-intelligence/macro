@@ -11635,6 +11635,7 @@ jobs:
       - "tests/test_fif_a1_journey_ledger.py"
       - "tests/test_fif_excel_refresh_harness.py"
       - "tests/test_fif_gsrc_capture.py"
+      - "tests/test_fundamental_forensics_held_out_packages.py"
       - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_a43_responsive_keyboard_corpus.py"
       - "mockups/evidence/fundamental_forensics_p2/**"
@@ -11835,6 +11836,7 @@ jobs:
           tests/test_fif_a21_publish_observation.py
           tests/test_fif_a43_responsive_keyboard_corpus.py
           tests/test_fif_gsrc_capture.py
+          tests/test_fundamental_forensics_held_out_packages.py
           tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
