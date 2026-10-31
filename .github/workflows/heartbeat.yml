@@ -30,8 +30,6 @@ jobs:
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - name: pipeline heartbeat (fails if stale / broadly broken)
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           # fallback transport for _notify() — the Watchlist webhook is the one channel that
           # is actually provisioned, so heartbeat FAILs reach a human (send_discord prefers
