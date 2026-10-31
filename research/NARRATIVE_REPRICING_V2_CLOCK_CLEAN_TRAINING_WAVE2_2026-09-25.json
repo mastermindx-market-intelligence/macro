@@ -1,0 +1,74 @@
+{
+  "schema": "research.narrative_repricing_v2_clock_clean_training_wave2.v1",
+  "generated_at": "2026-09-25T12:00:00Z",
+  "operation": "geopolitical-relief-event-study-20260924-sol-001",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8012,
+    "branch": "sol/geopolitical-relief-event-study-20260924",
+    "source_base_head": "0472a27f8e997585d84ddeb16b81ecfefbd82cb4"
+  },
+  "authority": {
+    "research_only": true,
+    "production_inert": true,
+    "may_rank": false,
+    "may_alert": false,
+    "may_trade": false
+  },
+  "construction": {
+    "source_only_before_outcome_access": true,
+    "inherited_measurement_rule": "research/NARRATIVE_REPRICING_V2_EVALUATION_SPLIT_2026-09-25.json",
+    "response_feature": "SMH return minus QQQ return from +5 minutes to +35 minutes",
+    "causal_proxy": "USO",
+    "no_threshold_selection_in_wave2": true,
+    "note": "These clocks were verified from Newsquawk headline publication timestamps before minute outcomes were fetched. Follow-up confirmations remain labeled as such rather than laundered into first-disclosure events."
+  },
+  "primary_training_events": [
+    {
+      "event_id": "2026-06-15-us-official-signed-mou-hormuz-open",
+      "available_at": "2026-06-15T15:36:00Z",
+      "direction": "relief",
+      "family": "us_iran_hormuz_deescalation",
+      "event_role": "official_confirmation_with_material_execution_details",
+      "expected_causal_direction": "down",
+      "source_class": "newsquawk_senior_us_official",
+      "clock_quality": "exact_live_feed_utc",
+      "source_title": "Senior US official says US has signed MoU with Iran; deal provides immediate opening of Hormuz and lifting US blockade",
+      "source_url": "https://www.newsquawk.com/headlines/senior-us-official-says-us-has-signed-mou-with-iran-us-president-trump-and-vp-vance-signed-the-mou-and-so-did-the-iran-parliamentary-speaker-ghalibaf-15-06-2026",
+      "outcome_inspection": "uninspected_at_freeze"
+    },
+    {
+      "event_id": "2026-06-17-trump-hormuz-open-next-day-or-two",
+      "available_at": "2026-06-17T10:47:00Z",
+      "direction": "relief",
+      "family": "us_iran_hormuz_deescalation",
+      "event_role": "official_followup_confirmation",
+      "expected_causal_direction": "down",
+      "source_class": "newsquawk_trump_quote",
+      "clock_quality": "exact_live_feed_utc",
+      "source_title": "Trump says Strait of Hormuz will be open in the next day or two, already partially open, and oil prices are coming down",
+      "source_url": "https://www.newsquawk.com/headlines/us-president-trump-says-he-is-to-discuss-iran-deal-details-at-the-press-conference-today-strait-of-hormuz-will-be-open-in-the-next-day-or-two-it-is-already-partially-open-and-will-open-in-full",
+      "outcome_inspection": "uninspected_at_freeze"
+    }
+  ],
+  "control_events": [
+    {
+      "event_id": "2026-07-30-mediators-working-no-tangible-results",
+      "available_at": "2026-07-30T09:14:00Z",
+      "direction": "relief",
+      "family": "us_iran_ceasefire_mediation",
+      "event_role": "low_signal_unconfirmed_mediation_control",
+      "expected_causal_direction": "down",
+      "source_class": "newsquawk_al_arabiya_relay",
+      "clock_quality": "exact_live_feed_utc",
+      "source_title": "Mediators working to reach ceasefire agreement; no tangible results yet",
+      "source_url": "https://www.newsquawk.com/headlines/mediators-are-working-to-reach-a-ceasefire-agreement-between-iran-and-the-us-not-yet-yielded-tangible-results-to-halt-the-escalation-al-arabiya-reports-citing-sources",
+      "outcome_inspection": "uninspected_at_freeze"
+    }
+  ],
+  "contamination_notes": [
+    "The underlying June 14 framework was already public before the June 15 official confirmation; June 15 is therefore not labeled first disclosure.",
+    "June 17 is a later official follow-up and must be analyzed in a confirmation stratum rather than counted as independent evidence of initial discovery.",
+    "The July 30 event is deliberately retained as a weak/unconfirmed control because the source itself says there were no tangible results."
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "schema": "research.cross_session_source_corpus_amendment.v1",
+  "generated_date": "2026-09-26",
+  "state": "SOURCE_ONLY_AMENDMENT / DEVELOPMENT_ONLY / OUTCOME_UNINSPECTED / PRODUCTION_INERT / NO_TRADING_AUTHORITY",
+  "operation": "geopolitical-relief-event-study-20260924-sol-001",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8012,
+    "branch": "sol/geopolitical-relief-event-study-20260924",
+    "parent_head": "6061132029db4641a8d4f47edce940f175c43f0b",
+    "protected_master_pin": "a31f49f4056943124cc0e7e42349e46feee444c7",
+    "skillpack_index_blob": "94d1af402598894372858793a5b1931019c5fa77"
+  },
+  "amendment_law": {
+    "parent_census": "research/CROSS_SESSION_SOURCE_TIMING_CENSUS_RAW_V0_2026-09-25.json",
+    "parent_census_mutated": false,
+    "reason": "Preserve the already-frozen retrieval-incomplete census. New source discoveries are appended as explicit amendments rather than rewriting the original freeze.",
+    "outcome_selection_used": false,
+    "market_outcomes_inspected": false,
+    "population_inference_allowed": false
+  },
+  "prospective_boundary": {
+    "protocol": "research/CROSS_SESSION_TRANSFER_PROSPECTIVE_PROTOCOL_2026-09-26.md",
+    "protocol_commit": "0f9d4d88cf78b06ab9985d32be9df5c2bc929fd2",
+    "protocol_commit_time_utc": "2026-09-26T11:16:23Z",
+    "rule": "available_at <= protocol commit time is development/history and cannot enter the prospective cohort"
+  },
+  "events": [
+    {
+      "event_id": "2026-09-26-wsj-trump-reportedly-rejects-seven-day-hormuz-plan",
+      "available_at": "2026-09-26T00:26:00Z",
+      "available_at_basis": "Wall Street Journal RSS/publication timestamp indexed as Sep 25 2026 20:26 ET; converted to 00:26 UTC on Sep 26.",
+      "direction": "denial_or_breakdown",
+      "family": "us_iran_hormuz_deescalation",
+      "event_role": "reported_rejection_of_deescalation_proposal",
+      "source_quality_state": "SOURCE_CONFOUNDED",
+      "origin_authority": "unnamed_us_officials_reported_by_wall_street_journal",
+      "dissemination_channel": "wall_street_journal_report",
+      "clock_quality": "exact_publication_clock_from_wsj_rss_index",
+      "corroboration_state": "secondary_outlets corroborate that WSJ published the rejection report; no public US-government confirmation identified in the bounded source check",
+      "conflict_state": "Iran was still publicly awaiting an official US response; contemporaneous reporting also described mediated discussions as ongoing/positive, so the report is not promoted to a clean official-policy event.",
+      "prospective_eligible": false,
+      "prospective_exclusion_reason": "public before prospective protocol commit",
+      "outcome_context_exposed": false,
+      "previously_inspected": false,
+      "source_receipts": [
+        {
+          "outlet": "Wall Street Journal",
+          "title": "Trump Rejects Iran Ceasefire, Expects Renewed Bombing After Midterms",
+          "published_clock": "2026-09-25 20:26 ET",
+          "evidence": "WSJ RSS index / syndicated metadata"
+        },
+        {
+          "outlet": "Al Jazeera",
+          "date": "2026-09-26",
+          "evidence": "reports the WSJ rejection claim while noting no public US response and ongoing mediated talks"
+        },
+        {
+          "outlet": "Reuters syndication",
+          "date": "2026-09-26",
+          "evidence": "reports Iran awaiting official US response after the WSJ rejection report"
+        }
+      ],
+      "measurement_status": "SOURCE_ONLY — no U.S., oil, semiconductor, HSI, or HK-intraday outcome read is authorized by this amendment"
+    },
+    {
+      "event_id": "2026-09-26-saudi-coalition-intercepts-houthi-attack",
+      "available_at": "2026-09-26T01:00:00Z",
+      "available_at_basis": "Saudi-led coalition spokesperson Turki al-Maliki posted the first interception statement at 04:00 Saudi time (UTC+3); Arab News preserved that source clock. Follow-up missile statements arrived about 30 and 50 minutes later.",
+      "direction": "implementation_escalation",
+      "family": "houthi_saudi_red_sea_escalation",
+      "event_role": "official_interception_of_houthi_missile_drone_attack",
+      "source_quality_state": "SOURCE_RESOLVED",
+      "origin_authority": "saudi_led_coalition_spokesperson_turki_al_maliki",
+      "dissemination_channel": "official_coalition_x_posts",
+      "clock_quality": "exact_official_post_clock_via_contemporaneous_local_report",
+      "corroboration_state": "Reuters and multiple regional outlets independently report the same official coalition statements and the two-drone/two-ballistic-missile sequence.",
+      "conflict_state": "none_identified_in_bounded_source_check",
+      "narrative_family_eligibility": "physical_security_or_escalation_in_active_red_sea_saudi_houthi_risk_channel",
+      "prospective_eligible": false,
+      "prospective_v1_eligible": false,
+      "prospective_v1_1_eligible": false,
+      "prospective_exclusion_reason": "first public disclosure 2026-09-26T01:00:00Z predates both V1 (11:16:23Z) and V1.1 (21:41:01Z) protocol freezes",
+      "outcome_context_exposed": false,
+      "previously_inspected": false,
+      "source_receipts": [
+        {
+          "outlet": "Arab News",
+          "published_date": "2026-09-26",
+          "source_clock": "04:00 Saudi time / 01:00 UTC",
+          "evidence": "contemporaneous report quotes coalition spokesperson's first X post announcing two drones toward Riyadh were intercepted; later posts added ballistic missiles toward Khamis Mushait"
+        },
+        {
+          "outlet": "Reuters syndication",
+          "published_date": "2026-09-26",
+          "evidence": "reports the Saudi-led coalition intercepted two ballistic missiles and two drones and attributes the announcements to coalition social-media posts"
+        }
+      ],
+      "measurement_status": "SOURCE_ONLY — no U.S., oil, semiconductor, HSI, HK-intraday, or other market outcome has been read for this event"
+    }
+  ],
+  "bounded_post_boundary_search": {
+    "status": "NO_QUALIFYING_POST_V1_1_EVENT_IDENTIFIED",
+    "as_of_date": "2026-09-27",
+    "v1_1_boundary_utc": "2026-09-26T21:41:01Z",
+    "note": "A bounded source-only sweep across Iran/Hormuz, Red Sea/Houthi, Russia/Ukraine, Gaza/Israel and Taiwan/China identified no material source-resolved event with first disclosure after the V1.1 boundary. The Saudi/Houthi interception resolved in this amendment first disclosed at 01:00 UTC on Sep 26 and is development/history only. This is not a completeness or population no-event claim."
+  },
+  "continuation_receipt": {
+    "protected_master_pin": "4c6b206d3fb7fbc6d077faf61ae361bedf259925",
+    "skillpack_index_blob": "94d1af402598894372858793a5b1931019c5fa77",
+    "appended_at_pr_head": "e4375607725bc04e0e80132fe87cd06557d0d2ab",
+    "note": "This continuation appends source-only evidence without mutating the frozen parent census or prospective geometry."
+  }
+}
