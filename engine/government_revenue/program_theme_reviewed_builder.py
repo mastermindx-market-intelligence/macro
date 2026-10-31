@@ -213,7 +213,10 @@ no candidate rejection, source retrieval, or authority remint occurs here.
    from .defense_participation_context import load_commercial_space_context
    context=load_commercial_space_context(root,review['commercial_space_context'],as_of=as_of)
    result['optional_context']={k:context[k] for k in ('state','reason') if k in context}
-   d.append_commercial_space_context(display,context)
+   if context['state']=='verified_native_published_context':
+    context=t.bind_group_context(canonical,context)
+    display['theme_content_id']=canonical['content_id']
+    d.append_commercial_space_context(display,context)
   display['content_id']=d.disclosure_content_id(display);d.validate_public_theme_disclosure(display)
   return result
  except (OSError,ValueError,TypeError,KeyError,StopIteration):

@@ -260,7 +260,7 @@ def load_commercial_space_context(root, binding, *, as_of):
         pulse_date = date.fromisoformat(pulse['as_of'])
         close_date = date.fromisoformat(observation['effective_as_of'])
         if (baskets['as_of'] != observation['effective_as_of']
-                or max(pulse_date, close_date) > cutoff.date()
+                or max(pulse_date, close_date) > min(cutoff, verified).date()
                 or _instant(pulse['generated_at']) > min(cutoff, verified)
                 or pulse_date > _instant(pulse['generated_at']).date()):
             raise ValueError('commercial_space_clock_invalid')

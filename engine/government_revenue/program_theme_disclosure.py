@@ -380,18 +380,12 @@ def disclosure_content_id(payload):
  return 'gptd1-'+sha256(t._json({k:v for k,v in payload.items() if k!='content_id'}).encode()).hexdigest()[:24]
 
 
-def append_commercial_space_context(display, context):
- """Append independently verified native basket context; never promote a rail.
-
- Only the offline builder calls this with the published-owner reader's result.
- Existing assignments, financial owners and scientific states remain unchanged.
- """
- if context.get('state')!='verified_native_published_context':return display
- row=next(r for r in display['themes'] if r['theme_id']=='space')
+def commercial_space_public_parts(context):
+ """Deterministic source-free text/citations shared by build and pair validation."""
  state='stale' if context['freshness']=='stale' else 'dated descriptive'
  missing=', '.join(context['close_missing']) or 'none'
  missing_zh='、'.join(context['close_missing']) or '无'
- row['known_en']+=(' Commercial-space basket context (space_economy; '+state+'): '
+ en=(' Commercial-space basket context (space_economy; '+state+'): '
   f"pulse coverage {context['pulse_covered']}/{context['pulse_members']} at {context['pulse_as_of']} "
   f"(owner generated {context['pulse_generated_at']}); exact-close coverage "
   f"{context['close_observed']}/{context['close_configured']} at {context['close_as_of']} "
@@ -404,7 +398,7 @@ def append_commercial_space_context(display, context):
   f"Current roster version {context['membership_version']}, curated {context['curated']}; "
   'history is back-projected, not a point-in-time track record. This is a commercial-space '
   'basket, not a government-space portfolio, quartet membership, program exposure or issuer economics.')
- row['known_zh']+=(' 商业航天篮子背景（space_economy；'+('已过时' if context['freshness']=='stale' else '有日期的描述背景')+'）：'
+ zh=(' 商业航天篮子背景（space_economy；'+('已过时' if context['freshness']=='stale' else '有日期的描述背景')+'）：'
   f"脉冲覆盖{context['pulse_covered']}/{context['pulse_members']}，截至{context['pulse_as_of']}"
   f"（来源生成时间{context['pulse_generated_at']}）；精确收盘覆盖{context['close_observed']}/"
   f"{context['close_configured']}，截至{context['close_as_of']}（缺失：{missing_zh}）。"
@@ -417,20 +411,24 @@ def append_commercial_space_context(display, context):
   f"当前成员版本{context['membership_version']}，整理日期{context['curated']}；"
   '历史按当前成员回溯，并非时点有效的业绩记录。该篮子属于商业航天，'
   '不代表政府航天组合、四家公司成员关系、项目敞口或发行人财务。')
- pointers={'data/baskets/membership.json':'/baskets/space_economy',
-           'site/basketdata/pulse.json':'/space_economy',
-           'site/basketdata/baskets.json':'/baskets'}
- titles={'data/baskets/membership.json':'Space Economy membership',
-         'site/basketdata/pulse.json':'Space Economy pulse',
-         'site/basketdata/baskets.json':'Space Economy exact-close coverage'}
- for path,digest in context['source_sha256'].items():
-  ref=dict(row_id='space_economy:'+path+':'+digest,pointer=pointers[path])
-  source=_source('commercial_space_context',ref,{},titles[path],
+ sources=[]
+ for ref in t.group_context_references(context):
+  path,pointer,contract,title=t.GROUP_SOURCES[ref['owner_key']]
+  source=_source(ref['owner_key'],ref,{},title,
     'https://github.com/mastermindx-market-intelligence/macro/blob/'+context['source_commit']+'/'+path)
   source['house_known_at']=context['verified_at']
   # Membership and basket publications lack a native availability timestamp.
   # Never substitute the local verification time into source availability.
-  row['sources'].append(source)
+  sources.append(source)
+ return en,zh,sources
+
+
+def append_commercial_space_context(display, context):
+ """Append the canonical-bound observation; never promote a rail or issuer."""
+ t.validate_group_context(context,as_of=display['as_of'])
+ row=next(r for r in display['themes'] if r['theme_id']=='space')
+ en,zh,sources=commercial_space_public_parts(context)
+ row['known_en']+=en;row['known_zh']+=zh;row['sources']+=sources
  display['content_id']=disclosure_content_id(display)
  validate_public_theme_disclosure(display)
  return display

@@ -6,7 +6,10 @@
       "const": "government_program_theme_context.v1"
     },
     "schema_version": {
-      "const": "1.0.0"
+      "enum": [
+        "1.0.0",
+        "1.1.0"
+      ]
     },
     "content_id": {
       "type": "string",
@@ -38,72 +41,131 @@
         "pattern": "^[a-zA-Z0-9_.:-]{1,128}$"
       },
       "additionalProperties": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "owner_kind": {
-            "enum": [
-              "program_ontology",
-              "program_dossier",
-              "identity_atlas",
-              "fms",
-              "budget",
-              "defense_economics",
-              "company_intelligence"
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "owner_kind": {
+                "enum": [
+                  "program_ontology",
+                  "program_dossier",
+                  "identity_atlas",
+                  "fms",
+                  "budget",
+                  "defense_economics",
+                  "company_intelligence"
+                ]
+              },
+              "contract": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "content_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "available_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "admission_ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "rights_state": {
+                "const": "qualified_public_display"
+              },
+              "source_available_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "house_observed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "owner_kind",
+              "contract",
+              "sha256",
+              "content_id",
+              "available_at",
+              "admission_ref",
+              "rights_state",
+              "source_available_at",
+              "house_observed_at"
             ]
           },
-          "contract": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 512
-          },
-          "sha256": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
-          },
-          "content_id": {
-            "type": [
-              "string",
-              "null"
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "owner_kind": {
+                "const": "group_reads"
+              },
+              "contract": {
+                "enum": [
+                  "group_pulse.v1",
+                  "basket_current_snapshot"
+                ]
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "content_id": {
+                "type": "null"
+              },
+              "available_at": {
+                "type": "null"
+              },
+              "admission_ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "rights_state": {
+                "const": "qualified_public_display"
+              },
+              "source_available_at": {
+                "type": "null"
+              },
+              "house_observed_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "rights_ref": {
+                "const": "DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023"
+              }
+            },
+            "required": [
+              "owner_kind",
+              "contract",
+              "sha256",
+              "content_id",
+              "available_at",
+              "admission_ref",
+              "rights_state",
+              "source_available_at",
+              "house_observed_at",
+              "rights_ref"
             ]
-          },
-          "available_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "admission_ref": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 512
-          },
-          "rights_state": {
-            "const": "qualified_public_display"
-          },
-          "source_available_at": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "format": "date-time"
-          },
-          "house_observed_at": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "format": "date-time"
           }
-        },
-        "required": [
-          "owner_kind",
-          "contract",
-          "sha256",
-          "content_id",
-          "available_at",
-          "admission_ref",
-          "rights_state",
-          "source_available_at",
-          "house_observed_at"
         ]
       }
     },
@@ -488,6 +550,165 @@
           "research_state"
         ]
       }
+    },
+    "commercial_space_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "const": "verified_native_published_context"
+        },
+        "basket_id": {
+          "const": "space_economy"
+        },
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "pulse_generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "pulse_as_of": {
+          "type": "string",
+          "format": "date"
+        },
+        "pulse_covered": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pulse_members": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "activity_n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "activity_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "close_as_of": {
+          "type": "string",
+          "format": "date"
+        },
+        "close_observed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "close_configured": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "close_missing": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 1000,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z0-9.:-]{1,32}$"
+          }
+        },
+        "membership_version": {
+          "type": "string",
+          "format": "date"
+        },
+        "curated": {
+          "type": "string",
+          "format": "date"
+        },
+        "freshness": {
+          "enum": [
+            "partial",
+            "stale"
+          ]
+        },
+        "rights_ref": {
+          "const": "DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023"
+        },
+        "references": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "owner_key": {
+                "enum": [
+                  "commercial_space_membership",
+                  "commercial_space_pulse",
+                  "commercial_space_baskets"
+                ]
+              },
+              "pointer": {
+                "type": "string",
+                "maxLength": 512
+              },
+              "row_id": {
+                "type": "string",
+                "maxLength": 512
+              }
+            },
+            "required": [
+              "owner_key",
+              "pointer",
+              "row_id"
+            ]
+          }
+        },
+        "source_sha256": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "data/baskets/membership.json": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "site/basketdata/pulse.json": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "site/basketdata/baskets.json": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": [
+            "data/baskets/membership.json",
+            "site/basketdata/pulse.json",
+            "site/basketdata/baskets.json"
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "basket_id",
+        "source_commit",
+        "verified_at",
+        "pulse_generated_at",
+        "pulse_as_of",
+        "pulse_covered",
+        "pulse_members",
+        "activity_n",
+        "activity_share",
+        "close_as_of",
+        "close_observed",
+        "close_configured",
+        "close_missing",
+        "membership_version",
+        "curated",
+        "freshness",
+        "rights_ref",
+        "references",
+        "source_sha256"
+      ]
     }
   },
   "required": [
@@ -502,5 +723,28 @@
   ],
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "government_program_theme_context.v1.schema.json",
-  "description": "Derived sibling composed by the existing Program Dossier owner. References only: no copied financial facts or invented acquisition identity."
+  "description": "Derived sibling composed by the existing Program Dossier owner. References only: no copied financial facts or invented acquisition identity.",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "1.1.0"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "commercial_space_context"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "commercial_space_context"
+          ]
+        }
+      }
+    }
+  ]
 }

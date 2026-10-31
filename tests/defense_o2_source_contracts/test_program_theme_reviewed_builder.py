@@ -136,7 +136,11 @@ def test_builder_consumes_direct_commercial_space_without_quartet_substitution(t
  r['commercial_space_context']=space_context_bundle(tmp_path);path.write_text(json.dumps(r))
  after=b.build_public_theme_candidate(tmp_path,generated_at=SPACE_NOW,as_of=SPACE_NOW)
  assert after['optional_context']['state']=='verified_native_published_context'
- assert after['reference_snapshot']==before['reference_snapshot']
+ assert after['reference_snapshot']['themes']==before['reference_snapshot']['themes']
+ assert {k:v for k,v in after['reference_snapshot']['owner_bindings'].items() if k not in t.GROUP_SOURCES}==before['reference_snapshot']['owner_bindings']
+ assert after['reference_snapshot']['schema_version']=='1.1.0'
+ from engine.government_revenue.program_theme_publication import validate_precomputed_theme_pair
+ assert validate_precomputed_theme_pair(after['reference_snapshot'],after['public_disclosure'])
  for old,new in zip(before['public_disclosure']['themes'],after['public_disclosure']['themes']):
   assert old['rail_states']==new['rail_states'] and old['research_state']==new['research_state']
   if old['theme_id']!='space':assert old==new
@@ -149,7 +153,7 @@ def test_builder_consumes_direct_commercial_space_without_quartet_substitution(t
  assert '15个已覆盖成员中6个' in space['known_zh'] and '来源报告占比40.0%' in space['known_zh']
  assert 'back-projected' in space['known_en'] and 'not a government-space portfolio' in space['known_en']
  assert '商业航天' in space['known_zh'] and '脉冲覆盖15/15' in space['known_zh'] and '精确收盘覆盖14/15' in space['known_zh']
- sources=[s for s in space['sources'] if s['owner_key']=='commercial_space_context']
+ sources=[s for s in space['sources'] if s['owner_key'] in t.GROUP_SOURCES]
  assert len(sources)==3 and all(s['issuer_id'] is None and s['security_id'] is None and s['source_available_at'] is None for s in sources)
  assert all(s['house_known_at']==SPACE_NOW and s['url'].startswith('https://github.com/mastermindx-market-intelligence/macro/blob/'+'a'*40+'/') for s in sources)
  assert all(r['research_state']=='EVIDENCE_INSUFFICIENT' for r in after['public_disclosure']['themes'])
@@ -211,7 +215,7 @@ def test_optional_context_keeps_distinct_dates_and_localized_empty_missing(tmp_p
  assert 'exact-close coverage 15/15 at 2026-10-15' in row['known_en']
  assert '缺失：无' in row['known_zh'] and 'none' not in row['known_zh']
  assert 'recomputing' not in row['known_en'] and '重新计算' not in row['known_zh']
- assert {s['title'] for s in row['sources'] if s['owner_key']=='commercial_space_context'}=={'Space Economy membership','Space Economy pulse','Space Economy exact-close coverage'}
+ assert {s['title'] for s in row['sources'] if s['owner_key'] in t.GROUP_SOURCES}=={'Space Economy membership','Space Economy pulse','Space Economy exact-close coverage'}
 
 
 def test_native_zero_activity_is_reported_zero_with_covered_denominator(tmp_path):

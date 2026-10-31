@@ -123,3 +123,81 @@ def test_real_generation_qualified_reference_replay_keeps_native_fact_and_event(
  changed['content_id']=defense_economics_content_id(changed)
  corrected=t.OwnerSnapshot(old.owner_kind,json.dumps(changed).encode(),NOW,old.admission_ref,old.rights_state)
  assert rb.reference_fingerprint(ref,'economics',corrected,NOW)!=expected
+
+
+def bound_space_pair(root):
+ from test_program_theme_reviewed_builder import reviewed,space_context_bundle,SPACE_NOW
+ review,path=reviewed(root);review['commercial_space_context']=space_context_bundle(root)
+ path.write_text(json.dumps(review))
+ out=builder._publish_reviewed_program_themes(root,generated_at=SPACE_NOW,as_of=SPACE_NOW)
+ assert out['optional_context']['state']=='verified_native_published_context'
+ return out['reference_snapshot'],out['public_disclosure']
+
+
+def rehash_pair(reference,public):
+ reference['content_id']=t.content_id(reference)
+ public['theme_content_id']=reference['content_id'];public['content_id']=d.disclosure_content_id(public)
+
+
+def test_native_context_full_publisher_pair_and_entitled_api_are_closed(tmp_path,monkeypatch):
+ r,p=bound_space_pair(tmp_path)
+ assert publication.validate_precomputed_theme_pair(r,p)
+ assert r['schema_version']=='1.1.0' and len(r['commercial_space_context']['references'])==3
+ for key,(path,pointer,contract,title) in t.GROUP_SOURCES.items():
+  owner=r['owner_bindings'][key]
+  assert owner['admission_ref']==path and owner['rights_ref']==t.GROUP_RIGHTS_REF
+  assert owner['available_at'] is None and owner['source_available_at'] is None
+  assert owner['rights_state']=='qualified_public_display'
+ monkeypatch.setattr(api,'_THEME_REFERENCE_PATHS',(tmp_path/'data/government_revenue/program_theme_context.json',tmp_path/'site/government-revenue-data/program-theme-context.json'))
+ monkeypatch.setattr(api,'_THEME_PUBLIC_PATHS',(tmp_path/'data/government_revenue/program_theme_public_disclosure.json',tmp_path/'site/government-revenue-data/theme-context.json'))
+ monkeypatch.setattr(t.OwnerSnapshot,'payload',lambda *a,**k:pytest.fail('API must not join financial/native owners'))
+ from engine.government_revenue import defense_participation_context as native
+ from engine import group_pulse
+ monkeypatch.setattr(native,'load_commercial_space_context',lambda *a,**k:pytest.fail('API must not load group files'))
+ monkeypatch.setattr(group_pulse,'validate_pulse',lambda *a,**k:pytest.fail('API must not replay group validation'))
+ app=FastAPI();app.include_router(api.router);app.dependency_overrides[api.require_site_full_user]=lambda:{'sub':'local-entitled-fixture'}
+ with TestClient(app) as client:response=client.get('/api/government-revenue/theme-context')
+ assert response.status_code==200 and response.json()==p
+ assert '6/15 covered members (40.0% reported share)' in response.json()['themes'][2]['known_en']
+ assert 'owner_bindings' not in response.json()
+ assert all(row['research_state']=='EVIDENCE_INSUFFICIENT' for row in response.json()['themes'])
+
+
+@pytest.mark.parametrize('fault',['activity_copy','canonical_values','source_url','source_commit','owner_hash','owner_availability','legacy_availability','house_clock','missing_tuple','wrong_theme','rights','freshness_promotion','financial_locator','source_availability','canonical_future_clock'])
+def test_rehashed_contradictory_native_pair_is_rejected(tmp_path,fault):
+ r,p=bound_space_pair(tmp_path);row=p['themes'][2]
+ source=next(s for s in row['sources'] if s['owner_key']=='commercial_space_pulse')
+ if fault=='activity_copy':row['known_en']=row['known_en'].replace('6/15 covered members','6/14 covered members')
+ elif fault=='canonical_values':r['commercial_space_context'].update(activity_n=0,activity_share=0.0)
+ elif fault=='source_url':source['url']='https://example.com/space'
+ elif fault=='source_commit':r['commercial_space_context']['source_commit']='b'*40
+ elif fault=='owner_hash':r['owner_bindings']['commercial_space_pulse']['sha256']='a'*64
+ elif fault=='owner_availability':r['owner_bindings']['commercial_space_pulse']['available_at']=r['commercial_space_context']['verified_at']
+ elif fault=='legacy_availability':r['owner_bindings']['fms']['available_at']=None
+ elif fault=='house_clock':source['house_known_at']='2999-01-01T00:00:00Z'
+ elif fault=='missing_tuple':r['commercial_space_context']['references'].pop()
+ elif fault=='wrong_theme':p['themes'][0]['sources'].append(deepcopy(source))
+ elif fault=='rights':r['owner_bindings']['commercial_space_pulse']['rights_ref']='unqualified'
+ elif fault=='financial_locator':r['owner_bindings']['commercial_space_pulse']['admission_ref']=r['owner_bindings']['quartet_economics']['admission_ref']
+ elif fault=='source_availability':source['source_available_at']=r['commercial_space_context']['verified_at']
+ elif fault=='canonical_future_clock':r['commercial_space_context']['pulse_generated_at']='2999-01-01T00:00:00Z'
+ elif fault=='freshness_promotion':
+  old_en,old_zh,_=d.commercial_space_public_parts(r['commercial_space_context'])
+  r['commercial_space_context']['freshness']='partial'
+  new_en,new_zh,_=d.commercial_space_public_parts(r['commercial_space_context'])
+  row['known_en']=row['known_en'][:-len(old_en)]+new_en
+  row['known_zh']=row['known_zh'][:-len(old_zh)]+new_zh
+ rehash_pair(r,p)
+ with pytest.raises(ValueError):publication.validate_precomputed_theme_pair(r,p)
+ # Hashes bind consistency, not coherent replacement of BOTH trusted artifacts.
+
+
+def test_entitled_api_rejects_rehashed_native_activity_contradiction(tmp_path,monkeypatch):
+ r,p=bound_space_pair(tmp_path);r['commercial_space_context'].update(activity_n=0,activity_share=0.0);rehash_pair(r,p)
+ for path in ('data/government_revenue/program_theme_context.json','site/government-revenue-data/program-theme-context.json'):(tmp_path/path).write_text(builder._canonical_json(r))
+ for path in ('data/government_revenue/program_theme_public_disclosure.json','site/government-revenue-data/theme-context.json'):(tmp_path/path).write_text(builder._canonical_json(p))
+ monkeypatch.setattr(api,'_THEME_REFERENCE_PATHS',(tmp_path/'data/government_revenue/program_theme_context.json',tmp_path/'site/government-revenue-data/program-theme-context.json'))
+ monkeypatch.setattr(api,'_THEME_PUBLIC_PATHS',(tmp_path/'data/government_revenue/program_theme_public_disclosure.json',tmp_path/'site/government-revenue-data/theme-context.json'))
+ app=FastAPI();app.include_router(api.router);app.dependency_overrides[api.require_site_full_user]=lambda:{'sub':'local-entitled-fixture'}
+ with TestClient(app) as client:response=client.get('/api/government-revenue/theme-context')
+ assert response.status_code==503
