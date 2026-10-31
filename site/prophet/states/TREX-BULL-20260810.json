@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TREX-BULL-20260810",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 36.8,
@@ -11,21 +11,21 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 2.6,
+    "progress": 6.6,
     "pace": 0.0,
-    "retention": 30.3,
-    "overlay": 53.0
+    "retention": 100.0,
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.019,
-    "dist_to_t1_r": 1.481,
-    "dist_to_t2_r": 2.981,
-    "horizon_pct_used": 171.1,
-    "p1": 0.0127,
-    "p2": 0.0064,
+    "dist_to_stop_r": 1.068,
+    "dist_to_t1_r": 1.432,
+    "dist_to_t2_r": 2.932,
+    "horizon_pct_used": 175.6,
+    "p1": 0.045,
+    "p2": 0.0225,
     "p3": null,
-    "move_r": 0.019,
-    "mfe_r": 0.063,
+    "move_r": 0.068,
+    "mfe_r": 0.068,
     "mae_r": -0.471
   },
   "rr_ratio": 1.5,
@@ -39,22 +39,14 @@
     "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 0.9899996948242205,
+  "_mfe": 1.0599993896484392,
   "_mae": -7.390001373291014,
-  "_max_p1": 0.042064996593338455,
+  "_max_p1": 0.04503927723171614,
   "_first_trigger_ts": "2026-10-23",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 77,
-  "tau": 1.7111,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 79,
+  "tau": 1.7556,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "STRL-BULL-20260917",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 12.2,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": -1.142,
+    "dist_to_stop_r": -1.265,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 91.1,
-    "p1": -1.4281,
-    "p2": -0.714,
+    "horizon_pct_used": 95.6,
+    "p1": -1.5101,
+    "p2": -0.7551,
     "p3": null,
-    "move_r": -2.142,
+    "move_r": -2.265,
     "mfe_r": 0.59,
-    "mae_r": -2.142
+    "mae_r": -2.265
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,21 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 44.990002441406205,
-  "_mae": -163.4000122070313,
+  "_mae": -172.78999633789067,
   "_max_p1": 0.3932005107621589,
   "_first_trigger_ts": "2026-10-02",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 41,
-  "tau": 0.9111,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 43,
+  "tau": 0.9556,
   "closed": true,
   "outcome": "INVALIDATED"
 }

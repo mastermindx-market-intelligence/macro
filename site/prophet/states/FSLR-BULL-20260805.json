@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FSLR-BULL-20260805",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 9.6,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": -0.119,
+    "dist_to_stop_r": -0.079,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 177.8,
-    "p1": -0.7461,
-    "p2": -0.3731,
+    "horizon_pct_used": 182.2,
+    "p1": -0.7194,
+    "p2": -0.3597,
     "p3": null,
-    "move_r": -1.119,
+    "move_r": -1.079,
     "mfe_r": 0.0,
     "mae_r": -1.148
   },
@@ -45,16 +45,8 @@
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 80,
-  "tau": 1.7778,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 82,
+  "tau": 1.8222,
   "closed": true,
   "outcome": "INVALIDATED"
 }

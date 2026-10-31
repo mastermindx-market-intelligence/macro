@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WMG-BULL-20261005",
-  "asof": "2026-10-29",
+  "asof": "2026-10-31",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 65.2,
-  "raw_confidence": 63.0,
-  "delta_vs_base": 5.2,
-  "recommended_action": null,
+  "management_confidence": 61.8,
+  "raw_confidence": 61.0,
+  "delta_vs_base": 1.8,
+  "recommended_action": "hold",
   "human_state": "On Track",
   "components": {
     "validity": 100.0,
-    "progress": 35.5,
-    "pace": 50.6,
+    "progress": 33.1,
+    "pace": 42.6,
     "retention": 50.0,
-    "overlay": 53.0
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.629,
-    "dist_to_t1_r": 0.871,
-    "dist_to_t2_r": 2.371,
-    "horizon_pct_used": 48.9,
-    "p1": 0.4196,
-    "p2": 0.2098,
+    "dist_to_stop_r": 1.573,
+    "dist_to_t1_r": 0.927,
+    "dist_to_t2_r": 2.427,
+    "horizon_pct_used": 53.3,
+    "p1": 0.3823,
+    "p2": 0.1911,
     "p3": null,
-    "move_r": 0.629,
+    "move_r": 0.573,
     "mfe_r": 0.823,
     "mae_r": -0.0
   },
@@ -36,7 +36,7 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-23; a stale price frame carries no current action authority",
+    "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 3.530000534057617,
@@ -45,14 +45,6 @@
   "_first_trigger_ts": "2026-10-09",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 22,
-  "tau": 0.4889,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-29",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 24,
+  "tau": 0.5333
 }
