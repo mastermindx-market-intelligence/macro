@@ -35,6 +35,9 @@ EXPECTED_FETCH_DEPTH_ZERO_CONSUMERS = {
     # W2F #9949 (2026-10-22): the frozen-file guard in tests/test_intl_gs_foundation.py
     # compares against origin/<base_ref>, which this job fetches in its own fail-closed step.
     "international-workspace-browser",
+    # W3U: the frozen-seam guard in tests/test_intl_gs_dislocations_view.py
+    # compares against origin/<base_ref>, fetched by this job's fail-closed step.
+    "international-dislocation-explorer",
 }
 
 

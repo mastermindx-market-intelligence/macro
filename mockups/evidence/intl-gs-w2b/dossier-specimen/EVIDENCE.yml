@@ -1,0 +1,13 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - lib/intl_gs_dossier_view.py
+  - templates/intl_workspace/dossier.html.j2
+  - templates/intl_workspace/_gs_dossier_macros.html.j2
+  - templates/intl_workspace/_gs_macros.html.j2
+  - templates/intl_workspace_surveillance.css
+  - site/intl_workspace_surveillance.css
+  - .github/ci/legacy-jobs.yml
+  - tests/test_intl_gs_dossier.py
+  - tests/intl_gs_dossier_fixture.py
+  - tests/intl_gs_dossier_browser.test.cjs
+manifest: mockups/evidence/intl-gs-w2b/dossier-specimen/manifest.json
