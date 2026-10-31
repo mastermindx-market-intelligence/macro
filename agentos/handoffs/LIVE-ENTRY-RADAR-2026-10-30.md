@@ -118,6 +118,16 @@ verified:
 - claim: Existing legacy CI owns bounded daily-onset changes.
   command: python3 -m pytest -q tests/test_ci_pack.py::test_manifest_job_local_delta_is_bounded_to_changed_job tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered tests/test_ci_pack.py::test_declared_scope_must_cover_paths_the_job_itself_reads
   result: 3 passed,exit0,PID9486,3.36s; hosted CI on revised head still owed.
+- claim: Hosted CI failure on e32dea4 diagnosed and owner manifest closure widened.
+  command: GitHub.fetch_workflow_run_jobs for41177181732; GitHub.fetch_workflow_job_logs
+    for jobs124467662725 and124469515880; read failing contract-delta and ci-pack-0 assertions.
+  result: Original contract-delta report enumerated 12 new missing transitive files from
+    research-price-panel's exclusive paths,0 inherited; ci-pack-0 test had844 passed,
+    1 skipped,1 failed; check run was FAILURE, fences41177181715 SUCCESS.
+- claim: Repaired exclusive import scope passes actual source-owner conformance.
+  command: python3 -m pytest -q tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure tests/test_ci_pack.py::test_manifest_job_local_delta_is_bounded_to_changed_job tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered
+  result: 3 passed139.69s, PID77304, exit0;12 exact paths added to same
+    research-price-panel job, no job/engine/runtime permission added.
 unverified:
 - claim: Second increment source publication and exact-head hosted CI/non-author review.
   what_would_verify: Read back the commit containing this cumulative checkpoint and native source digests,
@@ -148,6 +158,9 @@ unresolved:
   native file read returned empty, so no independent parent byte verification. Research and artifact childrenSTOPconfirmed,no
   watchers; no automatic continuation.
 next_actions:
+- Verify current-head hosted ci and fences on the 12-path research-price-panel repair;
+  independently review code with a lawful actual non-author reviewer. No blocked Fabric
+  review or source-audit rerun.
 - Verify the published source-inert daily RS-onset feature consumer on current PR head, exact CI and independently reviewed code; do not promote ranking/source permissions.
 - Reconcile required hosted CI on the new documentation successor head after source candidate/handoff
   edits, then obtain genuine independent non-author review for the current source owner. Never self-approve
@@ -214,3 +227,7 @@ Source admission remains NOT_ADMITTED; no Fabric review or original-X research i
 The protected original first-green/rejection modules were not modified. Before releasing this
 revision verify new remote head, exact-head CI/fences and independent non-author review; if
 required evidence is absent keep DRAFT and continue disjoint authorized lanes only.
+
+## 2026-10-31 source continuation: hosted CI scope correction
+
+The signed source/test delta on prior head e32dea4 was locally green but hosted CI run 41177181732 failed. This was a real CI-selection defect: the existing research-price-panel exclusive path declaration omitted 12 transitive dependencies added when P3.2 reused leadership_rotation_context. The existing contract-delta and ci-control-plane tests caught this correctly. This continuation adds the exact12 dependency paths **only to the same CI job scope** and locally proves the repair with 3 full-closure tests (PID77304, exit0,139.69s). No new collector, event/identity/ranking policy, market data source, trade or Paper effect. Paper direct read-only inspect encountered transport429, no canvas changes. Reviewer and source-audit Fabric requests from prior turns remained explicitly blocked and were not retried. Live-source P2 and native P1.4 remain not admitted, full product unproven. The current PR retains a sole source writer; after normal push and exact remote readback, consume new-hosted CI. Do not carry green from unrelated historical head.
