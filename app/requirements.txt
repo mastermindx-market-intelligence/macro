@@ -20,6 +20,8 @@ PyYAML>=6.0,<7.0
 # through the shared sector contracts before returning any record. These are
 # hard API startup dependencies, not worker-only packages.
 jsonschema==4.26.0
+# Today reuses the existing workspace reader, whose module loads Jinja.
+Jinja2>=3.1,<4.0
 referencing>=0.30,<1.0
 # The native Today reader imports stock_score -> i18n on a paid request.
 # MarkupSafe is required by that actual serving closure on a fresh API install.

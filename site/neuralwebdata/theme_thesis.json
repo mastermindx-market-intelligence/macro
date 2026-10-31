@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
-  "as_of": "2026-10-20",
-  "generated_at": "2026-10-20T08:10:14Z",
+  "as_of": "2026-10-21",
+  "generated_at": "2026-10-21T08:16:32Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -21,17 +21,17 @@
     ]
   },
   "n_theses": 18,
-  "n_falsifier_fired": 4,
-  "n_theses_with_fired": 3,
-  "n_ok": 15,
+  "n_falsifier_fired": 5,
+  "n_theses_with_fired": 4,
+  "n_ok": 14,
   "stale_legs": [],
   "theses": [
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-18",
+      "as_of": "2026-10-21",
       "thesis_id": "ai_semiconductors.v1",
-      "content_hash": "sha256:29a6cd42309bf8f7346cb122d258cc2d32daea9759e64ce0e072a8d27551a374",
-      "prev_content_hash": "sha256:4f4a5897ee2ccd31bd16daec1c6c208307adaf5e4ca4bb469e46291ba1238720",
+      "content_hash": "sha256:066dc3638dbf6a39f20cd0cca1ab868bea23f98dde2145db7abea073eecedab4",
+      "prev_content_hash": "sha256:29a6cd42309bf8f7346cb122d258cc2d32daea9759e64ce0e072a8d27551a374",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -106,12 +106,12 @@
                 "condition_met": false
               },
               {
-                "as_of": "2026-10-18",
-                "value": 0.461,
+                "as_of": "2026-10-21",
+                "value": 0.486,
                 "condition_met": false
               }
             ],
-            "corrections_superseded": 0
+            "corrections_superseded": 1
           }
         },
         {
@@ -150,10 +150,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-18",
+      "as_of": "2026-10-21",
       "thesis_id": "memory_storage.v1",
-      "content_hash": "sha256:dcf07fb7d5c5c0529a71f0a9bd33f0641444d91bbe3d94ee0de22105ab14484b",
-      "prev_content_hash": "sha256:662ecab72d1de55710676bdfd13978a59ffa74c7dc8db0a32c58a267b332298d",
+      "content_hash": "sha256:a8b762ba51f8b614a00fc020dcbf8ee897d6e808ec3cf8b1d29c7eb85c606a2f",
+      "prev_content_hash": "sha256:dcf07fb7d5c5c0529a71f0a9bd33f0641444d91bbe3d94ee0de22105ab14484b",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -214,17 +214,17 @@
             "source_artifact": "data/foresight/log.jsonl",
             "observations": [
               {
-                "as_of": "2026-10-11",
-                "value": 0.775,
+                "as_of": "2026-10-18",
+                "value": 0.744,
                 "condition_met": false
               },
               {
-                "as_of": "2026-10-18",
+                "as_of": "2026-10-21",
                 "value": 0.744,
                 "condition_met": false
               }
             ],
-            "corrections_superseded": 1
+            "corrections_superseded": 0
           }
         },
         {
@@ -232,7 +232,7 @@
           "rule_en": "If tightness for memory_storage falls below 0.0, bottleneck has eased — supply caught up with demand in the near-term window.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'tightness' lt 0.0 → value=0.01"
+          "detail": "threshold check: 'tightness' lt 0.0 → value=0.12"
         },
         {
           "id": "mem_f3",
@@ -252,10 +252,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-17",
+      "as_of": "2026-10-21",
       "thesis_id": "semicap_equipment.v1",
-      "content_hash": "sha256:4e3d20879f12744126cc4f9070c260e37b2c7705657e29f2ac42aaa1921532be",
-      "prev_content_hash": "sha256:b078a1f87fe628736874c44a33ba3fa72df3e6d4e13140ed4be93a280732a5ec",
+      "content_hash": "sha256:d7e0ca491e7d21b8b90e177199f1bea810f83d483ad66a6335ecaef5ff3c7de9",
+      "prev_content_hash": "sha256:4e3d20879f12744126cc4f9070c260e37b2c7705657e29f2ac42aaa1921532be",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -310,14 +310,14 @@
           "rule_en": "If revision_breadth for semicap_equipment turns negative, foundry capex guidance is being cut and WFE order book is deteriorating.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.75"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.8"
         },
         {
           "id": "wfe_f2",
           "rule_en": "If tightness score falls below -0.1, the near-term supply/demand balance in WFE has shifted negative — excess equipment inventory probable.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'tightness' lt -0.1 → value=-0.09"
+          "detail": "threshold check: 'tightness' lt -0.1 → value=0.05"
         },
         {
           "id": "wfe_f3",
@@ -337,10 +337,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-18",
+      "as_of": "2026-10-21",
       "thesis_id": "data_center_power.v1",
-      "content_hash": "sha256:4b038547ded72aadda949457d75348cee9c0e4c34f76dac6d47279271cd11a69",
-      "prev_content_hash": "sha256:7f84da8cc8f6404068ed9c1c5ed748874b9f1ee3b4c7f54bc8085d0642dd83ee",
+      "content_hash": "sha256:62c7b1e563f6dff2b026be22d31099daadd3c07b790338e8422b948b49a210fc",
+      "prev_content_hash": "sha256:4b038547ded72aadda949457d75348cee9c0e4c34f76dac6d47279271cd11a69",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -399,14 +399,14 @@
           "rule_en": "If revision_breadth for data_center_power falls below 0.2, earnings estimate broadening has peaked and the near-term trade is mature.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.2 → value=0.583"
+          "detail": "threshold check: 'revision_breadth' lt 0.2 → value=0.587"
         },
         {
           "id": "dcp_f2",
           "rule_en": "If tightness falls below 0.5, the supply constraint is easing — transformer lead times are compressing and the scarcity premium is fading.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'tightness' lt 0.5 → value=0.56"
+          "detail": "threshold check: 'tightness' lt 0.5 → value=0.55"
         },
         {
           "id": "dcp_f3",
@@ -503,10 +503,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-21",
       "thesis_id": "robotics_automation.v1",
-      "content_hash": "sha256:41264b905730f58485f513ea1ef5706b10a8c3088c1d8e58df3d2766979d016b",
-      "prev_content_hash": "sha256:88e1c4c3c4dd1b2853c0d89694bc29c1528fd0efd1363ee8fba54569a195bee7",
+      "content_hash": "sha256:0407dca8f839b1507cdbff046b9eef8e425e89594b4f7d692398d96015efa59b",
+      "prev_content_hash": "sha256:41264b905730f58485f513ea1ef5706b10a8c3088c1d8e58df3d2766979d016b",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -572,7 +572,7 @@
           "rule_en": "If reshoring basket score falls below 30 or moves to 'avoid' label, the industrial-capex driver underpinning automation demand is weakening.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=58.0"
+          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=62.0"
         },
         {
           "id": "robo_f3",
@@ -592,10 +592,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-18",
+      "as_of": "2026-10-21",
       "thesis_id": "fintech_payments.v1",
-      "content_hash": "sha256:a1b3c74f05f60e1207e790f36fc3385523305addcbe61f5f9973dd7b6960040c",
-      "prev_content_hash": "sha256:8365ea5136139ccee24610a970b40c6de4ae745a39c1d4fcba72c8cf605f7160",
+      "content_hash": "sha256:68ca022aff5248d783c52fbfa67ea814416a8f922781ac7187b63a0438541e95",
+      "prev_content_hash": "sha256:a1b3c74f05f60e1207e790f36fc3385523305addcbe61f5f9973dd7b6960040c",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -649,7 +649,7 @@
           "rule_en": "If revision_breadth for fintech_payments falls negative, earnings consensus is cutting; stablecoin disruption may be larger than the on-ramp toll revenue offset.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.048"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.092"
         },
         {
           "id": "finpay_f2",
@@ -758,10 +758,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-03",
+      "as_of": "2026-10-21",
       "thesis_id": "grid_electrification.v1",
-      "content_hash": "sha256:59305792d6013abf93aba1bc19a4f8f53c21ac5ea33c9d12e1f1af2334913354",
-      "prev_content_hash": "sha256:446aca287ea1cfef0e430009bf565ac45d42f9fb859e989a65f39d8b2fdeb4e1",
+      "content_hash": "sha256:f3d25e1eccba4dc7174812ae98752a8e8b7b98617d86b0d8805ab556f904cfdf",
+      "prev_content_hash": "sha256:59305792d6013abf93aba1bc19a4f8f53c21ac5ea33c9d12e1f1af2334913354",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -826,7 +826,7 @@
           "rule_en": "If glut_score rises above 0.0 (positive, indicating supply surplus), the equipment scarcity thesis has reversed.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'glut_score' gt 0.0 → value=-0.53"
+          "detail": "threshold check: 'glut_score' gt 0.0 → value=-0.45"
         },
         {
           "id": "grid_f3",
@@ -930,10 +930,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-17",
+      "as_of": "2026-10-21",
       "thesis_id": "defense_aerospace.v1",
-      "content_hash": "sha256:7bda0c8208d1e5c55ae9299ef8c9bc03f1370fc68910e1c860a2d7da8fad96bd",
-      "prev_content_hash": "sha256:d6a62458d9bb70f556e9a16754c6f641a89c0970ccf5df1bcb4f014db3fd0287",
+      "content_hash": "sha256:91524073845bcfc5a8dffee01d8a6fee14d88ee6c031f5240bd18e1b2eea0b03",
+      "prev_content_hash": "sha256:7bda0c8208d1e5c55ae9299ef8c9bc03f1370fc68910e1c860a2d7da8fad96bd",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -991,7 +991,7 @@
           "rule_en": "If revision_breadth for defense_aerospace falls below 0.0, budget headwinds or program cancellations are spreading through earnings revisions.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.059"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.053"
         },
         {
           "id": "def_f2",
@@ -1018,10 +1018,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-18",
+      "as_of": "2026-10-21",
       "thesis_id": "glp1_obesity.v1",
-      "content_hash": "sha256:a4baff1a440c4df8c3fdf15419c353fdc168c9aa9849d0293314a1ef1fdfa250",
-      "prev_content_hash": "sha256:6515d9dd8300108334bd8907c653b02d27b4d84e3c0a5a7dfb8a444df81193ac",
+      "content_hash": "sha256:f57df5aa58389a377473de075f378f614af9cc1729576a0abdd9ba1da955513c",
+      "prev_content_hash": "sha256:a4baff1a440c4df8c3fdf15419c353fdc168c9aa9849d0293314a1ef1fdfa250",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1083,7 +1083,7 @@
           "rule_en": "If revision_breadth for glp1_obesity falls below 0.0, earnings estimates are being cut broadly — manufacturing ramp is not meeting demand curve.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.076"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.183"
         },
         {
           "id": "glp1_f2",
@@ -1110,10 +1110,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-17",
+      "as_of": "2026-10-21",
       "thesis_id": "medical_devices.v1",
-      "content_hash": "sha256:b30aebce2fde8731b5306b6e4d181072c2119452ef74668032e8624b0eb4db11",
-      "prev_content_hash": "sha256:cca9be6b0232f1cdcc0357ffaa2c3ca070a88122b6c38495bfa6444299c2c64b",
+      "content_hash": "sha256:154d5f40b5a41c07b46d289329d43c7189a1a627b9db7f26045336f12006b2d1",
+      "prev_content_hash": "sha256:b30aebce2fde8731b5306b6e4d181072c2119452ef74668032e8624b0eb4db11",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1167,7 +1167,7 @@
           "rule_en": "If revision_breadth for medical_devices falls below 0.0, hospital capex cycles are overriding the installed-base recurring revenue thesis.\n",
           "state": "FIRED",
           "fired": true,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=-0.3"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=-0.195"
         },
         {
           "id": "meddev_f2",
@@ -1187,10 +1187,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-18",
+      "as_of": "2026-10-21",
       "thesis_id": "diagnostics_lifesci.v1",
-      "content_hash": "sha256:c8928112c43fe406741f143bd5f5357e7e64b133af7f7ec6c054f8ac515c75e0",
-      "prev_content_hash": "sha256:86aec3c88eaae6451c1a2345057f56ae1b6ad2e89eadb2cbfb23ca8e1ba9b67d",
+      "content_hash": "sha256:1d5a7cf44af5ce6563f1c0e29dd596f72c17ad26070e712d0c09998ccd0c7dea",
+      "prev_content_hash": "sha256:c8928112c43fe406741f143bd5f5357e7e64b133af7f7ec6c054f8ac515c75e0",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1242,9 +1242,9 @@
         {
           "id": "diag_f1",
           "rule_en": "If revision_breadth for diagnostics_lifesci remains below 0.1 for two consecutive months, biopharma R&D capex recovery is not yet flowing through to tools demand.\n",
-          "state": "ARMED",
-          "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.298"
+          "state": "FIRED",
+          "fired": true,
+          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.047"
         },
         {
           "id": "diag_f2",
@@ -1255,19 +1255,19 @@
         }
       ],
       "falsifier_summary": {
-        "n_fired": 0,
-        "n_armed": 1,
+        "n_fired": 1,
+        "n_armed": 0,
         "n_data_missing": 0,
         "n_qualitative": 1,
-        "any_fired": false
+        "any_fired": true
       }
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-15",
+      "as_of": "2026-10-21",
       "thesis_id": "rare_earth_critical_min.v1",
-      "content_hash": "sha256:6caa1c3d0acb59e96cf51ec88252970385805a526e0802b5f26b7d059b64b53f",
-      "prev_content_hash": "sha256:8a5d4c1059e40a7d0417d098215e27cab59fa5ab17f72c45f7300d7d8353de48",
+      "content_hash": "sha256:c39ba6327318e20aff8cfd91a1b173daa5a21b5a3d36f32f3a7bd5bdc7c9a9e4",
+      "prev_content_hash": "sha256:6caa1c3d0acb59e96cf51ec88252970385805a526e0802b5f26b7d059b64b53f",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1321,7 +1321,7 @@
           "rule_en": "If revision_breadth for rare_earth_critical_min falls negative, government offtake commitments are not yet driving earnings estimate upgrades — policy support may be insufficient.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.619"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.667"
         },
         {
           "id": "ree_f2",
@@ -1341,10 +1341,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-18",
+      "as_of": "2026-10-21",
       "thesis_id": "copper_steel_electrify.v1",
-      "content_hash": "sha256:ce466ff8ae75da06616bd27834a51f58f67af929864ce321a6d83ea1fedb5e2f",
-      "prev_content_hash": "sha256:588d69f793c0725c5203e182a214acb0ac3615098fbab3e466e1336de9f0f3cd",
+      "content_hash": "sha256:332b775f100913e3e88b0561e8d4a44aa44cdd00c80c002e70f34b393732cfbd",
+      "prev_content_hash": "sha256:ce466ff8ae75da06616bd27834a51f58f67af929864ce321a6d83ea1fedb5e2f",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1405,7 +1405,7 @@
           "rule_en": "If glut_score rises above 0.3 (surplus signal), near-term copper supply is exceeding demand — structural deficit may be years away, not priced on a 12-18 month horizon.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'glut_score' gt 0.3 → value=-0.56"
+          "detail": "threshold check: 'glut_score' gt 0.3 → value=-0.2"
         }
       ],
       "falsifier_summary": {
@@ -1418,10 +1418,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-17",
+      "as_of": "2026-10-21",
       "thesis_id": "ag_fertilizer.v1",
-      "content_hash": "sha256:dd78138989f8beae81135dd19cc2d3a86256c3e5f2f14b2e7652055c30965f1e",
-      "prev_content_hash": "sha256:140735208c38d2b45072afdc220bdd941247e7b359cfa8cc049a5bbdc73a7b88",
+      "content_hash": "sha256:b835c6d480b2aa6eda17ad6733ef87c5b12d5cce69ed0eba7de5f9bf7da02de9",
+      "prev_content_hash": "sha256:dd78138989f8beae81135dd19cc2d3a86256c3e5f2f14b2e7652055c30965f1e",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1475,7 +1475,7 @@
           "rule_en": "If revision_breadth for ag_fertilizer falls negative, crop commodity prices are declining faster than fertilizer input cost savings — farmer economics are deteriorating.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.416"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.444"
         },
         {
           "id": "ag_f2",
@@ -1495,10 +1495,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-10-17",
+      "as_of": "2026-10-21",
       "thesis_id": "space_satellite.v1",
-      "content_hash": "sha256:4b7bd4c4d4e0866fac7e8081be628e48d5d289f18cb57a9a84af9c26e02333b1",
-      "prev_content_hash": "sha256:b08c841e042ba5b90ed44a154cb829381d8e496c9d6b9bf7961f7fb96537168f",
+      "content_hash": "sha256:4f8ff432f1190500761c84439041ac5fe46106ce421907a81049da0a2609bb3d",
+      "prev_content_hash": "sha256:4b7bd4c4d4e0866fac7e8081be628e48d5d289f18cb57a9a84af9c26e02333b1",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1552,7 +1552,7 @@
           "rule_en": "If revision_breadth for space_satellite falls below 0.0, earnings estimates are cutting — commercial ramp is not meeting expectations.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.167"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.2"
         },
         {
           "id": "sat_f2",
@@ -1573,7 +1573,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-20T08:10:14Z",
-  "inputs_hash": "sha256:7799c5274a8e5704cd96135a51167158c1b60c26de4ebd2dbd0c4071ef4a41ca",
+  "produced_at": "2026-10-21T08:16:32Z",
+  "inputs_hash": "sha256:3eb5ba79e62959b510549607cceacc54767b89007e779aa7379f5e87119a028c",
   "tier": "display"
 }

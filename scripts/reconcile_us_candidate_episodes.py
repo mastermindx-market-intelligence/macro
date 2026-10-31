@@ -654,7 +654,19 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    """CLI entrypoint. The durable writer stamps its own wall clock.
+
+    A caller-supplied ``--recorded-at`` is a report/replay override only: a
+    durable nightly run (``--nightly`` without ``--replay``) that supplies a
+    clock is refused before any read or write, so a committed generation always
+    carries the writer's own write-time clock.
+    """
     args = _parser().parse_args(argv)
+    if args.nightly and not args.replay and args.recorded_at is not None:
+        raise ReconcileRefused(
+            "durable write refused: --recorded-at is a report/replay override; "
+            "the durable writer stamps its own wall clock"
+        )
     receipt = reconcile(repo_root=args.repo_root, nightly=args.nightly, replay=args.replay,
                         recorded_at=args.recorded_at, correction_path=args.corrections)
     print(canonical_json(receipt))
@@ -662,4 +674,9 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except ReconcileRefused as exc:
+        # B01 review F1: a refusal is one operator-readable line, never a traceback.
+        sys.stderr.write(f"reconcile refused: {exc}\n")
+        raise SystemExit(2)

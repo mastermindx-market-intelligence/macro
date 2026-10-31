@@ -1,0 +1,147 @@
+{
+  "recorded_at": "2026-10-22T09:15:56.939368+00:00",
+  "operation": "catalyst-opportunity-macro-e2e-20261017",
+  "branch": "sol/web-catalyst-opportunity-macro-e2e-20261017",
+  "parent_head": "71a2aec6283a9cc5ec3289edad2c1e2238814b9e",
+  "adopted_merge_tree": "91b11ee531482cc28df8efaa4ae1e68dba1d0fa0",
+  "adopted_merge_parents": [
+    "790990a28c3350ea3e05895e2bffaa9d21c0fd46",
+    "6ac99f2398ea56c7ff304c5afa04b5e1183ff805"
+  ],
+  "source_publication": "pending typed commit and push; this receipt cannot assert its own future commit",
+  "manifest_proof": {
+    "only_additive_paths": true,
+    "added_path_count": 30,
+    "added_paths": {
+      "bea-gvc-current-descriptive-consumer": [
+        "app/catalyst_opportunity.py",
+        "engine/catalyst_opportunity/projection.py",
+        "engine/catalyst_opportunity/__init__.py",
+        "engine/catalyst_opportunity/reader.py",
+        "site/basketdata/sector_pulse.json"
+      ],
+      "c19-wp32-integrated-answer-correction-denial-pins": [
+        "app/catalyst_opportunity.py",
+        "engine/catalyst_opportunity/projection.py",
+        "engine/catalyst_opportunity/__init__.py",
+        "engine/catalyst_opportunity/reader.py",
+        "site/basketdata/sector_pulse.json"
+      ],
+      "c19-wp22-dhi-traversal": [
+        "app/catalyst_opportunity.py",
+        "engine/catalyst_opportunity/projection.py",
+        "engine/catalyst_opportunity/__init__.py",
+        "engine/catalyst_opportunity/reader.py",
+        "site/basketdata/sector_pulse.json"
+      ],
+      "flow-surface": [
+        "engine/catalyst_opportunity/__init__.py"
+      ],
+      "fif-kernel-guards": [
+        "engine/catalyst_opportunity/__init__.py"
+      ],
+      "biocatalyst-serving": [
+        "engine/catalyst_opportunity/__init__.py"
+      ],
+      "biocatalyst-history": [
+        "engine/catalyst_opportunity/__init__.py"
+      ],
+      "catalyst-opportunity": [
+        "scripts/build_macro_suite_pages.py",
+        "scripts/check_research_vault_source_freshness.py",
+        "scripts/compile_capital_structure_events.py",
+        "scripts/stock_liquidity_profile.py",
+        "tests/__init__.py"
+      ],
+      "crypto-assistant-context": [
+        "engine/catalyst_opportunity/__init__.py"
+      ],
+      "defense-rail-laws": [
+        "engine/catalyst_opportunity/__init__.py"
+      ],
+      "unrun-government-revenue-candidate-projection": [
+        "engine/catalyst_opportunity/__init__.py"
+      ],
+      "unrun-government-revenue-grader": [
+        "engine/catalyst_opportunity/__init__.py"
+      ],
+      "research-price-panel": [
+        "engine/catalyst_opportunity/__init__.py"
+      ],
+      "ticker-news-qbus": [
+        "engine/catalyst_opportunity/__init__.py"
+      ]
+    },
+    "all_other_manifest_values_preserved": true
+  },
+  "contract_delta_phase": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_contract_delta.py",
+      "--base",
+      "790990a28c3350ea3e05895e2bffaa9d21c0fd46"
+    ],
+    "base": "790990a28c3350ea3e05895e2bffaa9d21c0fd46",
+    "adopted_github_merge": "71a2aec6283a9cc5ec3289edad2c1e2238814b9e",
+    "exit_code": 0,
+    "elapsed_seconds": 685.75,
+    "log_sha256": "81aeac1b79c7a2d0a78628c6e1837ff6bd3d5784dc8d66b2f05bd22fa68cb96d",
+    "source_sha256": {
+      ".github/ci/legacy-jobs.yml": "bf86e5c22886dee10af57671f04fdfcd1a5307e6e4363f4d353b181dd9dd0e8b",
+      "tests/test_ci_pack.py": "4241e9e72f60d2aa1c3fc15e4c1939bff2b27ebf8bfe627ec9c82d848be3b30e"
+    }
+  },
+  "final_guard_phase": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+      "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+      "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+      "-q"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 200.27,
+    "log_sha256": "864bcdde67eaed4646033ebff49058174fde51beceec23c75b80afd47df2581e",
+    "source_sha256": {
+      ".github/ci/legacy-jobs.yml": "21e269aa2dfd88a2ee065c38825885af4c30f4c1b0e89590885091ad706efc10",
+      "tests/test_ci_pack.py": "86794e7514f5dc6230003d40418d82c39bbef4b8b5968dd2925c4ed32576cd9f"
+    }
+  },
+  "remaining_checks": [
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/agentos.py",
+        "validate",
+        "--paths",
+        "agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-10-17-catalyst-defense-frontier.md",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "agentos: 1 records (0 workstreams, 0 decisions, 0 discoveries, 1 handoffs) \u2014 0 error(s), 0 warning(s)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "21e269aa2dfd88a2ee065c38825885af4c30f4c1b0e89590885091ad706efc10",
+    "tests/test_ci_pack.py": "86794e7514f5dc6230003d40418d82c39bbef4b8b5968dd2925c4ed32576cd9f",
+    "agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-10-17-catalyst-defense-frontier.md": "445d4655d30dbcb0d22016fd0be3da974d62e2666f9b93ad19c5981d04d19fa1"
+  },
+  "scope_limits": [
+    "Full contract-delta is bound to its intermediate source hashes. Final additional initializer paths and curated registration are bound to the four passing guard tests.",
+    "No source access/evidence review verdict or deployed product acceptance is claimed."
+  ]
+}

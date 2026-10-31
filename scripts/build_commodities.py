@@ -410,6 +410,27 @@ def backtest(close: pd.Series, alloc: pd.Series) -> dict:
 # --------------------------------------------------------------------------- #
 # view-model
 # --------------------------------------------------------------------------- #
+def _petroleum_flow_read(as_of: str) -> dict:
+    """Read existing weekly stores only; independent of the inventory panel.
+
+    Publication is a display boundary: no collection, scoring, allocation, or
+    machine-state publication. A missing/malformed series stays unknown.
+    """
+    from engine.commodity_supply_context import petroleum_flow_context
+
+    series = {}
+    for name in ("crude_production", "refinery_inputs",
+                 "gasoline_supplied", "distillate_supplied"):
+        try:
+            frame = store.read("eia", name)
+            series[name] = (frame[name] if frame is not None
+                            and not frame.empty and name in frame.columns else None)
+        except Exception as exc:  # optional source must not prevent the page build
+            log.warning("petroleum flow source %s unavailable (%s)", name, type(exc).__name__)
+            series[name] = None
+    return petroleum_flow_context(series, as_of=as_of)
+
+
 def _oil_supply_read(as_of: str | None = None) -> dict | None:
     """Read the existing EIA owner once for both display surfaces; never score it."""
     from lib import store
@@ -1649,7 +1670,8 @@ def main() -> int:
                     annotated += 1
 
     as_of = results["gold"].index.max().strftime("%b %d, %Y")
-    built = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    build_time = datetime.now(timezone.utc)
+    built = build_time.strftime("%Y-%m-%d %H:%M UTC")
     span = calib.get("meta", {}).get("split", "")
     cal_span = (f"{results['gold'].index.min().date()}..{results['gold'].index.max().date()}")
 
@@ -1704,6 +1726,7 @@ def main() -> int:
     critical_minerals = load_critical_minerals_context(
         config.ROOT / "data" / "neuralweb" / "critical_minerals_supply.json"
     )
+    petroleum_flow = _petroleum_flow_read(build_time.date().isoformat())
     try:
         html = env.get_template("commodities.html.j2").render(
             C=C, as_of=as_of, built=built, cal_span=cal_span, complex=cx,
@@ -1712,7 +1735,7 @@ def main() -> int:
             catalysts=catalysts_resolved,
             vm=vm, idx_ew_spark=idx_ew_spark, oil_episode=oil_episode,
             conviction_labels=CONVICTION_LABELS, coverage=coverage,
-            critical_minerals=critical_minerals,
+            critical_minerals=critical_minerals, petroleum_flow=petroleum_flow,
             commodity_workspace=_decision_workspace(
                 index_snap, _build_date.isoformat(),
                 next((a.get("supply") for a in assets if a["key"] == "oil"), None)))

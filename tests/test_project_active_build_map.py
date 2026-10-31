@@ -515,6 +515,33 @@ def test_json_stdout_wins_over_dry_run(tmp_path, monkeypatch, capsys):
     assert payload["schema"] == "project_active_builds.v1"
 
 
+@pytest.mark.parametrize("additional_args", [[], ["--dry-run"]])
+def test_json_stdout_live_collection_failure_is_nonzero_and_never_clobbers(
+    tmp_path, monkeypatch, capsys, additional_args
+):
+    """An unavailable GitHub read cannot masquerade as a valid empty JSON response."""
+    json_out = tmp_path / "project.json"
+    md_out = tmp_path / "project.md"
+    json_out.write_text("prior-json", encoding="utf-8")
+    md_out.write_text("prior-markdown", encoding="utf-8")
+    monkeypatch.setattr(project_map, "collect_source_snapshot", lambda **_kwargs: None)
+
+    exit_code = project_map.main(
+        [
+            "--json-stdout", "--json-out", str(json_out),
+            "--md-out", str(md_out), *additional_args,
+        ]
+    )
+    captured = capsys.readouterr()
+
+    assert exit_code == 3
+    assert captured.out == ""
+    assert "ERROR: project active build map live GitHub collection was incomplete" in captured.err
+    assert "no JSON document was produced on stdout" in captured.err
+    assert json_out.read_text(encoding="utf-8") == "prior-json"
+    assert md_out.read_text(encoding="utf-8") == "prior-markdown"
+
+
 def test_json_stdout_failure_path_prints_nothing_to_stdout(tmp_path, capsys):
     missing_snapshot = tmp_path / "does-not-exist.json"
 

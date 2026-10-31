@@ -1170,6 +1170,18 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     if payload is None:
+        if args.json_stdout:
+            # The Control Room consumes this machine-only mode and treats a
+            # nonzero exit as a collection error. Never report rc=0 with empty
+            # stdout: that would obscure the source failure as invalid JSON.
+            print(
+                "ERROR: project active build map live GitHub collection was incomplete; "
+                "no JSON document was produced on stdout.",
+                file=sys.stderr,
+            )
+            return 3
+        # Preserve the existing no-clobber success contract for scheduled
+        # write mode: a failed live read must not replace existing artifacts.
         print(
             "WARNING: project active build map generation skipped because live GitHub "
             "collection was incomplete. Existing output files untouched.",

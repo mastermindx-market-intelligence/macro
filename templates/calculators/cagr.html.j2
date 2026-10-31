@@ -56,6 +56,14 @@
 <div class="calc-actions">
   <button class="gbtn" id="copy-result" type="button">{{ t('Copy result', '复制结果') }}</button>
   <span class="copied" id="copied" role="status">{{ t('Copied', '已复制') }}</span>
+  <span id="copy-fail" role="status" hidden style="font-family:var(--font-ui); font-size:13.5px;">{{ t('Copy failed — clipboard access was blocked. Select the text below and copy it manually.', '复制失败——剪贴板访问被拒绝。请选中下方文本手动复制。') }}</span>
+</div>
+<div id="copy-manual" hidden>
+  <label class="ci ci-wide" for="copy-manual-text" style="flex-direction:row; align-items:center; gap:10px;">
+    <span class="ci-l" style="white-space:nowrap;">{{ t('Result text — select and copy', '结果文本——选中并复制') }}</span>
+    <input id="copy-manual-text" readonly>
+  </label>
+  <button class="gbtn" id="copy-manual-select" type="button" style="margin-top:8px;">{{ t('Select all', '全选') }}</button>
 </div>
 {% endblock %}
 
@@ -164,7 +172,9 @@
     var outMain=$("out-main"), outUnit=$("out-unit"), outPlain=$("out-plain"),
         outGain=$("out-gain"), outYears=$("out-years"),
         rowDtGain=$("row-dt-gain"),
-        seg=$("mode-seg"), copyBtn=$("copy-result"), copied=$("copied");
+        seg=$("mode-seg"), copyBtn=$("copy-result"), copied=$("copied"),
+        failMsg=$("copy-fail"), manualBox=$("copy-manual"),
+        manualField=$("copy-manual-text"), manualSelect=$("copy-manual-select");
     var rowV1=$("row-v1"), rowCagr=$("row-cagr");
 
     function setMode(m){
@@ -237,12 +247,63 @@
           " at " + last.cagrRate.toFixed(2) + "% for " + last.n.toFixed(1) + " years — mastermind-x.com";
       }
     }
+
+    // ── copy-result feedback (truthful) ────────────────────────────────────────
+    // Success ("Copied"/已复制) is shown ONLY when the copy actually succeeded:
+    // either the modern clipboard promise resolved, or execCommand("copy")
+    // explicitly returned true. Any rejection/throw/false shows a persistent
+    // localized failure note plus a readonly field holding the exact copy text.
+    var copiedTimer=null;
+    function resetCopyFeedback(){
+      copied.classList.remove("show");
+      failMsg.hidden = true;
+      manualBox.hidden = true;
+      manualField.value = "";
+      if(copiedTimer){ clearTimeout(copiedTimer); copiedTimer=null; }
+    }
+    function showCopySuccess(){
+      failMsg.hidden = true;
+      manualBox.hidden = true;
+      manualField.value = "";
+      copied.classList.add("show");
+      if(copiedTimer) clearTimeout(copiedTimer);
+      copiedTimer = setTimeout(function(){ copied.classList.remove("show"); }, 1600);
+    }
+    function showCopyFailure(line){
+      copied.classList.remove("show");
+      manualField.value = line;   // exact copyLine output for manual recovery
+      failMsg.hidden = false;     // persistent until the next copy attempt
+      manualBox.hidden = false;
+    }
+    function legacyCopy(line){
+      var ta=document.createElement("textarea");
+      ta.value=line;
+      ta.setAttribute("readonly","");
+      ta.style.position="fixed"; ta.style.left="-9999px";
+      document.body.appendChild(ta); ta.select();
+      var ok=false;
+      try{ ok = document.execCommand("copy") === true; }catch(e){ ok=false; }
+      document.body.removeChild(ta);
+      return ok;
+    }
     copyBtn.addEventListener("click", function(){
       var line=copyLine(); if(!line) return;
-      var done=function(){ copied.classList.add("show"); setTimeout(function(){copied.classList.remove("show");},1600); };
-      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(line).then(done,done); }
-      else { var ta=document.createElement("textarea"); ta.value=line; document.body.appendChild(ta); ta.select();
-        try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); done(); }
+      resetCopyFeedback();  // fresh state for this attempt
+      if(navigator.clipboard && typeof navigator.clipboard.writeText === "function"){
+        var p;
+        try{ p = navigator.clipboard.writeText(line); }
+        catch(e){ showCopyFailure(line); return; } // sync throw: no success, no retry
+        p.then(showCopySuccess, function(){ showCopyFailure(line); });
+        // no hidden retry: a rejected promise never falls through to execCommand
+      } else if(legacyCopy(line)){
+        showCopySuccess();
+      } else {
+        showCopyFailure(line);
+      }
+    });
+    // Manual selection is an explicit user action: focus/select only on click.
+    manualSelect.addEventListener("click", function(){
+      manualField.focus(); manualField.select();
     });
 
     ["v0","v1","years","cagr-rate","date-start","date-end"].forEach(function(id){

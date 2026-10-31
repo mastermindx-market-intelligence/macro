@@ -1,0 +1,9 @@
+{
+  "tested": "a69e97ea70a231c25ab9a3bc6ff356799bc8d060",
+  "candidate": "bbbca0d82b4708a61f2bb92524bcf12e07622cec",
+  "only_two_input_patch": true,
+  "canonical_full_curated_closure_findings": {},
+  "elapsed_seconds": 146.062,
+  "jobs": 355,
+  "basis": "Exact original hosted tested source plus only the candidate two-input diff; no new merge ancestry/carrier effect."
+}

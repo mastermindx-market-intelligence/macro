@@ -1,0 +1,53 @@
+{
+  "observed_at": "2026-10-15T13:45:42.184525+00:00",
+  "purpose": "Distinct native API serving-process readiness for later T11 release; no final-source, numeric execution or adoption claim",
+  "installed_head": {
+    "returncode": 0,
+    "stdout": "227b0d8f902426791f2ed193f945fd8a42688abc"
+  },
+  "services": {
+    "macro-api": {
+      "returncode": 0,
+      "stdout": "MainPID=2796447\nExecMainStartTimestamp=Thu 2026-10-15 13:30:21 UTC\nWorkingDirectory=/opt/macro\nActiveState=active\nSubState=running\nFragmentPath=/etc/systemd/system/macro-api.service\nNeedDaemonReload=no",
+      "process_cwd": "/opt/macro"
+    },
+    "macro-admin": {
+      "returncode": 0,
+      "stdout": "MainPID=0\nExecMainStartTimestamp=\nWorkingDirectory=\nActiveState=inactive\nSubState=dead\nFragmentPath=\nNeedDaemonReload=no"
+    },
+    "admin": {
+      "observed_at": "2026-10-15T13:46:10.723020+00:00",
+      "returncode": 0,
+      "stdout": "MainPID=2753549\nExecMainStartTimestamp=Thu 2026-10-15 12:21:37 UTC\nWorkingDirectory=/opt/macro\nActiveState=active\nSubState=running\nFragmentPath=/etc/systemd/system/admin.service\nNeedDaemonReload=no"
+    }
+  },
+  "native_files": {
+    "engine/neuralweb/brain_gateway.py": {
+      "exists": true,
+      "sha256": "78f4d3b320d25ff1b6b86c933fbac725fb0fe1784fe3ec7c4874564a08e926bf"
+    },
+    "engine/neuralweb/native_facts.py": {
+      "exists": true,
+      "sha256": "511fae9dfc545a717ba4abb0431bc3e0c3afda263e19e480b96ff857c1268307"
+    },
+    "engine/neuralweb/response_eval.py": {
+      "exists": true,
+      "sha256": "1aed5203a6193e12e8e62bd71f00ba6c5fd4feb649402c33aac43101045ad16b"
+    },
+    "lib/mastermind_response_log.py": {
+      "exists": true,
+      "sha256": "32d741abe98cbab4d07bed875cf775e91898b42a13263d973b14a90d06413952"
+    }
+  },
+  "installed_updater_sha256": "9943a824deef6c7f1a346c9f48ff4b64447e888c186fc4f676d368f103036e9d",
+  "native_changed_paths_trigger_api_restart": {
+    "engine/neuralweb/brain_gateway.py": true,
+    "engine/neuralweb/native_facts.py": true,
+    "engine/neuralweb/response_eval.py": false,
+    "lib/mastermind_response_log.py": true
+  },
+  "any_current_followon_native_change_triggers_restart": true,
+  "no_mutation": true,
+  "no_environment_or_corpus_read": true,
+  "service_name_correction": "macro-admin is not the deployed admin unit; the canonical unit is admin. The absent alias is not an outage."
+}

@@ -741,7 +741,13 @@ def write_page(path: Path | str, html: str, *, encoding: str | None = None) -> P
     """Write a site HTML page with the data-base shim injected (depth-aware,
     idempotent). ALL builders must write site/**/*.html through this — a raw
     write_text drops the shim whenever the builder runs standalone."""
+    from lib.shared_shell import inject_shared_shell_text
+
     p = Path(path)
-    p.write_text(inject_text(html, dbase_prefix(p)), encoding=encoding)
+    prefix = dbase_prefix(p)
+    rendered = inject_text(html, prefix)
+    rendered = inject_shared_shell_text(rendered, prefix, site_dir=_site_root(),
+                                        response_kind="coming_soon" if p.name == "coming-soon.html" else "content")
+    p.write_text(rendered, encoding=encoding)
     _ensure_shim_asset()
     return p

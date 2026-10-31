@@ -1,0 +1,50 @@
+{
+  "schema": "prophet.management_state/v1",
+  "id": "SJM-BULL-20261021",
+  "asof": "2026-10-30",
+  "phase": "pre_trigger",
+  "detection_phase": "pre_trigger",
+  "management_confidence": 66.8,
+  "raw_confidence": 67.0,
+  "delta_vs_base": 6.8,
+  "recommended_action": "wait",
+  "human_state": "Approaching Trigger",
+  "components": {
+    "validity": 100.0,
+    "progress": 2.6,
+    "pace": 91.1,
+    "retention": 50.0,
+    "overlay": 53.0
+  },
+  "geometry": {
+    "dist_to_stop_r": 1.019,
+    "dist_to_t1_r": 1.481,
+    "dist_to_t2_r": 2.981,
+    "horizon_pct_used": 15.6,
+    "p1": 0.0129,
+    "p2": 0.0065,
+    "p3": null,
+    "move_r": 0.019,
+    "mfe_r": 0.019,
+    "mae_r": -0.001
+  },
+  "rr_ratio": 1.5,
+  "rr_grade": "ACCEPTABLE",
+  "change_reason": "",
+  "confidence_ceiling": 92,
+  "authority": "trade-management-only-NOT-pick-rank",
+  "authority_tier": "display",
+  "reliability": {
+    "management_confidence": "display \u2014 no forward ledger has passed yet",
+    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
+  },
+  "_mfe": 0.5050048828125,
+  "_mae": -0.0200042724609375,
+  "_max_p1": 0.012933919395889363,
+  "_first_trigger_ts": null,
+  "_first_t1_ts": null,
+  "_first_t2_ts": null,
+  "days_elapsed": 7,
+  "tau": 0.1556
+}

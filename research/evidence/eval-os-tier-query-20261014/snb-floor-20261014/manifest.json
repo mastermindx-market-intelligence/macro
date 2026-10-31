@@ -1,0 +1,66 @@
+{
+  "schema": "eval_os.retained_evidence_manifest.v1",
+  "records": [
+    {
+      "file": "retrieval.json",
+      "sha256": "0ab67bc67036ad87577f9947507ecb0f6eb0157f26d7a624d26c18a3bbafddba",
+      "bytes": 898
+    },
+    {
+      "file": "source-adjudication.json",
+      "sha256": "7b7ab3e426ce2ba1ceaada684a61216be96694dbea55bd593b6875b1deff685e",
+      "bytes": 2599
+    },
+    {
+      "file": "registration-red.xml",
+      "sha256": "464dc3676440fd5303e1165a67e7df9a18a725329bd7f2d5e2dd84265c1b7bae",
+      "bytes": 3194
+    },
+    {
+      "file": "green.xml",
+      "sha256": "1861f8a4de9d651b773e946c981e38085f628beef10ab342b745037bf3b09323",
+      "bytes": 16967
+    },
+    {
+      "file": "scope-tests.xml",
+      "sha256": "a29e84458df2fe491f9ce48485153efe8327dfd1a84afa64847cafa9b33af6e4",
+      "bytes": 606
+    },
+    {
+      "file": "scope-validation.json",
+      "sha256": "0f8f249fb236dde1911545e03be062e5da4d3506959e794284d7287e20bff851",
+      "bytes": 13898
+    },
+    {
+      "file": "qualify_scope.py",
+      "sha256": "70291cf8834255dfb7a437d3625d5fdcb7f8b1bd3677df6ee2d126da58cb861b",
+      "bytes": 2523
+    },
+    {
+      "file": "resume_scope.py",
+      "sha256": "6ff3809fb073fde84795d0535415ab7894bbdc4ec20fd64bda63c65ed02b89ee",
+      "bytes": 2758
+    },
+    {
+      "file": "review-packet.txt",
+      "sha256": "739232d04c5ca328f7eb07ce380a2ad2c0a6f2e5501432a8a738a6a1db7c280d",
+      "bytes": 26413
+    },
+    {
+      "file": "review-result.txt",
+      "sha256": "a8dad5aae86c71c6b3c305d292fd6a542f2d765d4e99a4fb32f399a26a188716",
+      "bytes": 5145
+    },
+    {
+      "file": "review-adjudication.json",
+      "sha256": "966e0cf2dadf316bd8de572cfbdf41c598cc3d360ac4155ee13b2bc738ad2f46",
+      "bytes": 1448
+    },
+    {
+      "file": "review-acceptance.json",
+      "sha256": "bdf4b6c129223882dd2ccbf830c86f858c0e0f7ab23bb0e353843a698c214d3f",
+      "bytes": 391
+    }
+  ],
+  "scope": "New SNB supplied-text case a353:121 harness controls,3 focused controls reused after interruption, unfinished closure/packing resumed once and passed; independent packet review accepted with report-count corrections. No real model/PIT/adoption."
+}

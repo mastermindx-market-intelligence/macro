@@ -40,7 +40,7 @@ def _unavailable(code: str) -> dict[str, Any]:
 def _project_selected(admission: native.Admission, request: native.Request, selected: dict) -> dict[str, Any]:
     """Internal rendering of a same-request native read, not an admission API."""
     if (type(selected) is not dict
-            or selected.get("schema") != NATIVE_SCHEMA
+            or selected.get("schema") not in {NATIVE_SCHEMA, "company_intelligence.private_disclosed_supplier/v1"}
             or selected.get("authority") != "context_only"
             or selected.get("reference") != admission.reference.payload()
             or selected.get("edition") != admission.edition.payload()
@@ -48,12 +48,14 @@ def _project_selected(admission: native.Admission, request: native.Request, sele
         return _unavailable("NATIVE_PROJECTION_CONTRACT_MISMATCH")
     fact = selected.get("fact")
     timing = selected.get("source_timing")
+    supplier = admission.reference.schema == native.SUPPLIER_FACT_SCHEMA
     if (type(fact) is not dict or not REQUIRED_FIELDS <= fact.keys()
             or type(timing) is not dict
             or set(timing) != {"published_date", "published_at",
-                              "publication_precision", "known_at"}):
+                              "publication_precision", "known_at"} | ({"sec_source"} if supplier else set())):
         return _unavailable("NATIVE_PROJECTION_CONTRACT_MISMATCH")
-    if (fact["kind"] != "product_integration" or fact["lifecycle"] != "planned"
+    if ((fact["kind"], fact["lifecycle"]) !=
+            (("disclosed_supplier", "reported_use") if supplier else ("product_integration", "planned"))
             or fact["amount"] is not None or fact["economic_share"] is not None):
         return _unavailable("ECONOMIC_SPECIES_NOT_MAPPED")
     context = {
@@ -89,6 +91,43 @@ def _project_selected(admission: native.Admission, request: native.Request, sele
             "historical_identity_inferred": False,
         },
     }
+    if supplier:
+        # read_disclosure has verified both native identities, source/span
+        # linkage, immutable revisions and the exact purpose admission. This
+        # is one role input; it never composes a propagation hypothesis itself.
+        q = selected.get("supplier_binding")
+        if (selected["schema"] != "company_intelligence.private_disclosed_supplier/v1"
+                or type(q) is not dict or q.get("direction") != "object_supplies_subject"
+                or q.get("identity_mode") != "current"
+                or any(type(q.get(k)) is not str or re.fullmatch(r"[0-9a-f]{64}", q[k]) is None
+                       for k in ("current_subject_identity", "current_object_identity"))):
+            return _unavailable("NATIVE_PROJECTION_CONTRACT_MISMATCH")
+        # These are the current receipt digests used by this native qualification,
+        # separate from immutable fact decision hashes. A K3 join must match both.
+        context["provenance"]["current_identity_sha256s"] = {
+            "subject": q["current_subject_identity"], "object": q["current_object_identity"]}
+        s = timing["sec_source"]
+        context["timing"].update(sec_accepted_at=s["accepted_at"], retained_retrieved_at=s["retrieved_at"],
+            retained_recorded_at=s["recorded_at"], pinned_snapshot_at=s["snapshot_at"],
+            identity_observed_at=q["identity_observed_at"], native_fact_adopted_at=admission.known_at)
+        context["relationship"]["direction"] = "object_supplies_subject"
+        context["mapping"] = {"state": "qualified_disclosed_role_input", "legacy_theme_graph_edge": None,
+            "propagation_hypothesis": None, "reason": None, "k3_input": {
+                "leg_id": "sec_supplier:" + admission.reference.sha256,
+                "graph": "graph_1", "construct": "disclosed_customer_supplier", "role": "supplier",
+                "role_evidence_class": "disclosed_role_specific", "claim_strength": "disclosed",
+                "owner_ref": {"owner_program": "gmi-theme-graph", "artifact": "native_disclosure:" + admission.reference.sha256,
+                              "artifact_schema": SCHEMA},
+                "evidence_refs": ["native_fact:sha256:" + admission.reference.sha256,
+                                  "native_edition:sha256:" + admission.edition.sha256],
+                "asof": native.datetime.now(native.timezone.utc).date().isoformat(),
+                "known_at": admission.known_at, "usability_state": "usable"}}
+        context["source_attribution"] = {"source": "SEC public issuer filing", "archive_url": s["archive_url"],
+            "accession": s["accession"], "document_id": s["document_id"]}
+        context["authority"] = {key: False for key in ("rank", "gate", "size", "trade", "prediction")}
+        context["limitations"]["current_status_from_selected_filing_established"] = False
+        context["limitations"]["historical_system_availability_established"] = False
+        context["limitations"]["source_body_export_authorized"] = False
     return {"schema": SCHEMA, "status": "available", "reason": None,
             "context": deepcopy(context), "authority": "context_only"}
 

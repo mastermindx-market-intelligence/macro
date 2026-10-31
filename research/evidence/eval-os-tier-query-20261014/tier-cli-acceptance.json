@@ -1,0 +1,19 @@
+{
+  "schema": "eval_os.t12_cli_consumer_acceptance.v1",
+  "reviewer": "Sol product coordinator01a13340-cd35-7e31-89a3-3647244a5b3f",
+  "parent_recorded_review": "PASS/no blocking findings; reviewed canonical loader reuse, typed SynapseUnavailable, path validation before I/O, legacy modes and no admission inference.",
+  "source_sha256": {
+    "scripts/build_intelligence_registry.py": "fb0b68a40cce4960ba472fac0fc36f1daead9a6d5a19ea5d0bffe2df364afd41",
+    "tests/test_check_intelligence_registry.py": "ef28586d689206f44b40c9e9ee03c7f7dd8679461f9da1e43a8e6882801d51dd"
+  },
+  "tests": {
+    "targeted_cli": 7,
+    "full_affected_guard_file": 53,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "full_guard_seconds": 131.66
+  },
+  "hosting": "existing code-gated intelligence-registry job; no new CI owner",
+  "scope": "Pure tier query and existing CLI consumption; structured issue emission/full T12 and hosted/shipping proof remain open"
+}

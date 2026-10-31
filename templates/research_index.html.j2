@@ -8,7 +8,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Institutional Research Archive — {{ total }} desk reports | MastermindX Research Vault</title>
-<meta name="description" content="A browsable archive of institutional desk research on MastermindX — buy-side and sell-side reports from {{ groups|length }} institutions, indexed by desk. Read summaries; full PDFs on Pro.">
+<meta name="description"
+      content="{{ total }} institutional desk reports on MastermindX, indexed by institution.">
 <link rel="canonical" href="{{ canonical }}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MastermindX">
@@ -58,6 +59,7 @@ html[data-theme="light"] .rx-eyebrow{ color:var(--rv); }
   <span class="rx-eyebrow">{{ t('MastermindX Research Vault', 'MastermindX 研报库') }}</span>
   <h1>{{ t('Institutional research archive', '机构研报存档') }}</h1>
   <p class="rx-sub">{{ t('Every desk report in the vault — buy-side and sell-side institutional research, indexed by institution. Read the summaries here; the full PDFs are on Pro.', '库内全部机构研报 —— 买方与卖方研究，按机构索引。此处可读摘要，PDF 全文为 Pro 专享。') }}</p>
+  {% if as_of %}<p class="rx-sub">{{ t('Archive as of ' ~ as_of, '存档截至 ' ~ as_of) }}</p>{% endif %}
   <a class="rx-cta" href="../research_vault.html">{{ t('Open the Research Vault', '进入研报库') }} →</a>
 
   {% for g in groups %}

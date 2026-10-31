@@ -28,7 +28,7 @@ UNIVERSE
 --------
 engine.options_universe.gex_symbols() UNIONED with ETF_ANCHORS + INDEX_ROOTS.
 ETF anchors: SPY QQQ IWM DIA XLK XLF XLE XLI XLU XLV XLY XLP XLB XLC XLRE SMH SOXX
-             XBI KRE ARKK
+             XBI KRE ARKK GLD SLV TLT HYG
 Index roots: SPX, SPXW  (SPXW confirmed as distinct PM-settled weekly root — measured 2026-07-04)
 
 RESUMABILITY
@@ -106,6 +106,7 @@ ETF_ANCHORS = [
     "SPY", "QQQ", "IWM", "DIA",
     "XLK", "XLF", "XLE", "XLI", "XLU", "XLV", "XLY", "XLP", "XLB", "XLC", "XLRE",
     "SMH", "SOXX", "XBI", "KRE", "ARKK",
+    "GLD", "SLV", "TLT", "HYG",
 ]
 # SPXW confirmed as a distinct root in /v3/option/list/symbols (measured 2026-07-04).
 # Included alongside SPX for full PM-settled weekly + AM-settled coverage.
@@ -283,6 +284,8 @@ def _pull_root_year(root: str, year: int, start: date, end: date, *,
     chunk-summary line per root-year per endpoint (rows, elapsed) for backfill log
     readability.
     """
+    from lib.options_source_receipts import dated_greek_request_options
+    greek_options = dated_greek_request_options(root)  # validate before any source call
     from collectors import thetadata as td
 
     log.info("pull_root_year: %s %d (%s → %s)", root, year, start, end)
@@ -345,7 +348,7 @@ def _pull_root_year(root: str, year: int, start: date, end: date, *,
     # avoids a re-backfill when T1 GEX/vanna/charm consumers come online.
     # Columns: delta/theta/vega/rho/epsilon/lambda (1st), gamma/vanna/charm/vomma/veta/vera (2nd),
     #          speed/zomma/color/ultima (3rd), implied_vol, iv_error, underlying_price.
-    greeks = td.bulk_greeks(root, 0, start, end, order=3)
+    greeks = td.bulk_greeks(root, 0, start, end, order=3, **greek_options)
     if greeks is None:
         log.warning("pull_root_year: %s %d — bulk_greeks returned None", root, year)
         return False
@@ -552,6 +555,14 @@ def main() -> int:
     if args.probe:
         _run_probe()
         return 0
+
+    # Fail before store preparation or the health probe. This does not enable
+    # the opt-in; absent configuration keeps every existing request unchanged.
+    from lib.options_source_receipts import dated_greek_request_options
+    try:
+        dated_greek_request_options("SPY")
+    except ValueError as exc:
+        ap.error(str(exc))
 
     # AD-1T1 §D/RF3 (R3): this process must lock-and-write the SAME store the
     # daily incremental lane resolves — the hub-ops-wt hazard is a backfill

@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-10-19T12:26:59.369604+00:00",
+  "owner_R": "38ddfcb127103869c1ad601e519650407a982f14",
+  "application_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "entry_program_sha256": "818797bd741729dc10a556317632454ba7079a899d81207d698897ea5ec9ebb3",
+  "canonical_arguments": [
+    "--target",
+    "beta",
+    "--bootstrap",
+    "--target-sha",
+    "e45bde2cac07ac3b29285ff70c40d68900fad62c"
+  ],
+  "single_invocation": true,
+  "log": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-R-bootstrap.log",
+  "completed_at": "2026-10-19T12:35:28.017137+00:00",
+  "exit": 1,
+  "log_sha256": "65d6b84033ae21acc3be762ddcaefebc210f796ddc060cb73a3d7b89461a3feb",
+  "log_bytes": 11446,
+  "entry_fence_emitted": true
+}

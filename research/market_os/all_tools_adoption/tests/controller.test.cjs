@@ -1,0 +1,79 @@
+const test=require('node:test'),assert=require('node:assert/strict');
+const Nav=require(process.env.ALL_TOOLS_SOURCE || '../src/all-tools.js');const {createPage}=require('./dom.cjs');
+function setup(o){const p=createPage(o);p.a=p.anchor();p.b=p.anchor({href:'reports.html',en:'Research Reports',zh:'研究报告',group:'Research',groupZh:'研究'});p.instance=Nav.mount(p.host);return p;}
+for(const path of ['/macro.html','/sector_central.html','/reports.html'])test('same component mounts in pilot '+path,()=>{const p=setup({path});assert.ok(p.instance);assert.equal(p.trigger.parentElement,p.controls);assert.equal(p.trigger.hidden,false);});
+for(const path of ['/index.html','/pricing.html','/sectors/macro.html','/watchlist.html'])test('no unrelated/public route adoption '+path,()=>{const p=setup({path});assert.equal(p.instance,null);assert.equal(p.trigger.hidden,true);});
+test('no dialog support leaves original source navigation intact',()=>{const p=setup({supported:false});assert.equal(p.instance,null);assert.equal(p.root.querySelectorAll('a[href]').length,2);});
+test('opening copies resolved source links without mutating them',()=>{const p=setup();const before=p.root.textContent;p.instance.open();p.all.fire('click');assert.equal(p.root.textContent,before);assert.equal(p.list.querySelectorAll('a').length,2);assert.equal(p.count.textContent,'2 destinations');});
+test('new incumbent source entries are picked up without another route list',()=>{const p=setup();p.anchor({href:'new_feature.html',en:'New feature'});p.instance.open();p.all.fire('click');assert.equal(p.list.querySelectorAll('a').length,3);});
+test('disabled source entry never appears',()=>{const p=setup();p.a.setAttribute('aria-disabled','true');p.instance.open();assert.equal(p.list.querySelectorAll('a').length,1);});
+test('duplicates are collapsed by exact href and not translated label',()=>{const p=setup();p.anchor({href:'macro.html',en:'Alternate title'});p.instance.open();p.all.fire('click');assert.equal(p.list.querySelectorAll('a').length,2);});
+test('desktop opens search without a viewport jump',()=>{const p=setup();p.instance.open();assert.equal(p.d.activeElement,p.query);assert.deepEqual(p.query.focusOptions,{preventScroll:true});});
+test('phone opens heading without forcing the virtual keyboard',()=>{const p=setup({phone:true});p.instance.open();assert.equal(p.d.activeElement,p.title);});
+test('Escape returns the original focus and releases only own scroll class',()=>{const p=setup();p.trigger.focus();p.d.documentElement.classList.add('another-feature');p.instance.open();const e=p.dialog.fire('cancel');assert.equal(e.prevented,true);assert.equal(p.d.activeElement,p.trigger);assert.equal(p.d.documentElement.classList.contains('mmx-tools-open'),false);assert.equal(p.d.documentElement.classList.contains('another-feature'),true);});
+test('one menu instance and one opener survive duplicate mount attempts',()=>{const p=setup();assert.equal(Nav.mount(p.host),p.instance);assert.equal(p.controls.children.filter(x=>x.hasAttribute('data-tools-open')).length,1);});
+test('composing Chinese does not render the unfinished query',()=>{const p=setup();p.instance.open();p.query.fire('compositionstart');p.query.value='研究';p.query.fire('input');assert.match(p.list.textContent,/Market Dashboard/);assert.doesNotMatch(p.list.textContent,/Research Reports/);p.query.fire('compositionend');assert.match(p.list.textContent,/Research Reports/);assert.doesNotMatch(p.list.textContent,/Market Dashboard/);});
+test('query searches other groups without forcing a category change',()=>{const p=setup();p.instance.open();const b=p.categories.querySelectorAll('button').find(x=>x.dataset.toolsGroup==='United States');p.categories.fire('click',{target:b});p.query.value='research';p.query.fire('input');assert.equal(p.list.querySelectorAll('a').length,1);});
+test('no match is tool-specific and query cannot inject nodes',()=>{const p=setup();p.instance.open();p.query.value='<img onerror=bad>';p.query.fire('input');assert.match(p.list.textContent,/No matching tools/);assert.equal(p.list.querySelectorAll('img').length,0);});
+test('directory is an in-place full view, not a page transition',()=>{const p=setup();p.instance.open();p.all.fire('click');assert.equal(p.dialog.open,true);assert.equal(p.d.defaultView.location.pathname,'/macro.html');assert.equal(p.list.querySelectorAll('a').length,2);});
+test('withdrawn target is stopped at click without substituting a tool',()=>{const p=setup();p.instance.open();const a=p.list.querySelector('a');p.a.remove();const e=p.list.fire('click',{target:a});assert.equal(e.prevented,true);assert.equal(a.hasAttribute('href'),false);assert.match(p.status.textContent,/destination changed/);});
+test('changed href is not allowed to navigate to the old or new target silently',()=>{const p=setup();p.instance.open();const a=p.list.querySelector('a');p.a.href='china.html';assert.equal(p.list.fire('click',{target:a}).prevented,true);});
+test('valid links retain normal modifier-key semantics',()=>{const p=setup();p.instance.open();const a=p.list.querySelector('a');assert.equal(p.list.fire('click',{target:a,ctrlKey:true}).prevented,false);assert.equal(a.target,'');});
+test('cross-product source target and badge remain separate from portfolio',()=>{const p=setup();p.anchor({href:'https://bot.mastermind-x.com',en:'Mastermind Bot',zh:'模拟账户',target:'_blank',badge:'PRO',group:'Research'});p.instance.open();p.all.fire('click');const a=p.list.querySelectorAll('a').find(a=>a.href==='https://bot.mastermind-x.com/');assert.equal(a.target,'_blank');assert.match(a.rel,/noopener/);assert.match(a.textContent,/PRO/);});
+test('source labels are copied as text, not interpreted as markup',()=>{const p=setup();p.anchor({href:'test.html',en:'<svg onload=bad>',zh:'<img>'});p.instance.open();assert.match(p.list.textContent,/<svg onload=bad>/);assert.equal(p.list.querySelectorAll('img').length,0);});
+test('ordinary language switch keeps current query and hrefs',()=>{const p=setup();p.instance.open();p.query.value='research';p.query.fire('input');p.d.documentElement.setAttribute('data-lang','zh');p.d.fire('langchange');assert.equal(p.query.value,'research');assert.equal(p.list.querySelector('a').href,'https://www.mastermind-x.com/reports.html');assert.match(p.list.textContent,/研究报告/);});
+test('reopen clears search but does not change any source selection',()=>{const p=setup();p.instance.open();p.query.value='research';p.query.fire('input');p.instance.close();p.instance.open();assert.equal(p.query.value,'');assert.equal(p.list.querySelectorAll('a').length,1);});
+test('an already visible foreign modal is not overlaid',()=>{const p=setup();const other=p.d.createElement('dialog');p.d.body.appendChild(other);other.showModal();assert.equal(p.instance.open(),false);assert.equal(other.open,true);});
+test('inactive aria-modal markup does not strand the menu closed',()=>{const p=setup();const other=p.d.createElement('div');other.setAttribute('aria-modal','true');other.hidden=true;p.d.body.appendChild(other);assert.equal(p.instance.open(),true);});
+test('delayed close from the old opening does not disturb a new opening',()=>{const p=setup();p.instance.open();p.instance.close();p.instance.open();p.dialog.fire('close');assert.equal(p.dialog.open,true);assert.equal(p.d.documentElement.classList.contains('mmx-tools-open'),true);});
+test('empty resolved navigation is not reported as a complete directory',()=>{const p=setup();p.a.remove();p.b.remove();p.instance.open();assert.match(p.count.textContent,/not ready/);assert.equal(p.list.querySelectorAll('a').length,0);});
+test('disabled source group cannot leak a child into the menu',()=>{const p=setup();p.a.closest('.nav-dd').setAttribute('data-nav-disabled','true');p.instance.open();assert.doesNotMatch(p.list.textContent,/Market Dashboard/);assert.match(p.list.textContent,/Research Reports/);});
+test('language repaint preserves focused category',()=>{const p=setup();p.instance.open();const b=p.categories.querySelectorAll('button')[1];b.focus();const key=b.dataset.toolsGroup;p.d.documentElement.setAttribute('data-lang','zh');p.d.fire('langchange');assert.equal(p.d.activeElement.isConnected,true);assert.equal(p.d.activeElement.dataset.toolsGroup,key);});
+test('source withdrawal is reflected before context-menu navigation',()=>{const p=createPage();let observer,stopped=0;p.d.defaultView.MutationObserver=class{constructor(cb){observer=cb;}observe(){}disconnect(){stopped++;}};p.a=p.anchor();p.instance=Nav.mount(p.host);p.instance.open();const a=p.list.querySelector('a');p.a.remove();assert.equal(typeof observer,'function');observer();assert.equal(a.hasAttribute('href'),false);p.instance.close();assert.ok(stopped>0);});
+test('an empty live source opens an explanation, not a dead button',()=>{const p=setup();p.a.remove();p.b.remove();p.instance.open();assert.equal(p.dialog.open,true);assert.match(p.list.textContent,/not ready|not available/i);assert.doesNotMatch(p.list.textContent,/No matching/);});
+test('invalid host sibling is never treated as the common product header',()=>{const p=createPage();p.anchor();p.nav.className='public-nav';assert.equal(Nav.mount(p.host),null);});
+test('source section names survive so a large research group is not a flat wall',()=>{const p=setup();const menu=p.b.parentElement,section=p.d.createElement('section');section.className='nav-mega-section';const heading=p.d.createElement('h2');heading.className='nav-mega-h';heading.textContent='Core research';section.appendChild(heading);menu.appendChild(section);section.appendChild(p.b);p.instance.open();p.all.fire('click');assert.match(p.list.textContent,/Core research/);});
+test('opening prepares the current source group rather than unrelated countries',()=>{const p=setup();for(let i=0;i<15;i++)p.anchor({href:'cn-'+i+'.html',en:'China '+i,group:'China'});p.instance.open();assert.doesNotMatch(p.list.textContent,/China 0/);assert.match(p.list.textContent,/Market Dashboard/);});
+test('research page starts with its own source group while all destinations remain reachable',()=>{const p=setup({path:'/reports.html'});p.instance.open();assert.match(p.list.textContent,/Research Reports/);assert.doesNotMatch(p.list.textContent,/Market Dashboard/);p.all.fire('click');assert.match(p.list.textContent,/Market Dashboard/);});
+test('a source link changing its tab behavior is disabled until refreshed',()=>{const p=createPage();let observe;p.d.defaultView.MutationObserver=class{constructor(cb){observe=cb;}observe(){}disconnect(){}};p.a=p.anchor();p.instance=Nav.mount(p.host);p.instance.open();const a=p.list.querySelector('a');p.a.target='_blank';observe();assert.equal(a.hasAttribute('href'),false);});
+test('the renderer does not create more than one active source-driven menu in a document',()=>{const p=setup(),second=p.host.cloneNode(true);p.d.body.appendChild(p.nav.cloneNode(true));p.d.body.appendChild(second);second.appendChild(p.trigger.cloneNode(true));const dialog=second.querySelector('dialog');dialog.showModal=()=>{};assert.equal(Nav.mount(second),null);});
+test('missing required component markup preserves original navigation without throwing',()=>{const p=createPage();p.anchor();p.query.remove();assert.equal(Nav.mount(p.host),null);assert.equal(p.trigger.hidden,true);});
+test('source blueprint shapes survive but executable SVG nodes do not',()=>{const p=setup();const svg=p.d.createElement('svg');svg.setAttribute('viewBox','0 0 48 48');const path=p.d.createElement('path');path.setAttribute('d','M1 1L2 2');path.setAttribute('onclick','bad()');svg.appendChild(path);svg.appendChild(p.d.createElement('script'));svg.appendChild(p.d.createElement('image'));p.a.appendChild(svg);p.instance.open();const icon=p.list.querySelector('svg');assert.equal(icon.querySelector('path').getAttribute('d'),'M1 1L2 2');assert.equal(icon.querySelector('path').hasAttribute('onclick'),false);assert.equal(icon.querySelector('script'),null);assert.equal(icon.querySelector('image'),null);});
+test('closed native dropdown presentation is not confused with withdrawn access',()=>{const p=setup();p.a.parentElement.setAttribute('inert','');p.a.parentElement.setAttribute('aria-hidden','true');p.instance.open();assert.match(p.list.textContent,/Market Dashboard/);});
+test('explicitly hidden non-panel source sections are not projected',()=>{const p=setup();const section=p.d.createElement('section');section.hidden=true;p.a.parentElement.appendChild(section);section.appendChild(p.a);p.instance.open();assert.doesNotMatch(p.list.textContent,/Market Dashboard/);});
+test('new-tab destination explains that behavior accessibly',()=>{const p=setup();p.a.target='_blank';p.instance.open();const a=p.list.querySelector('a');assert.match(a.getAttribute('aria-label')||a.textContent,/new tab/);});
+
+function sourceTopic(p, anchor, en, zh) {
+ const menu=anchor.parentElement, section=p.d.createElement('section');
+ section.className='nav-mega-section';
+ const heading=p.d.createElement('h2');heading.className='nav-mega-h';
+ for(const [lang,value] of [['en',en],['zh',zh]]){
+  const label=p.d.createElement('span');label.className='l-'+lang;label.textContent=value;heading.appendChild(label);
+ }
+ section.appendChild(heading);menu.appendChild(section);section.appendChild(anchor);
+}
+test('source section topic reaches rendered results without a copied taxonomy',()=>{
+ const p=setup();sourceTopic(p,p.b,'Capital & regimes','资本与周期');
+ p.instance.open();p.query.value='capital regimes';p.query.fire('input');
+ assert.equal(p.list.querySelectorAll('a').length,1);
+ assert.equal(p.list.querySelector('a').href,'https://www.mastermind-x.com/reports.html');
+ assert.match(p.list.textContent,/Capital & regimes/);
+ p.d.documentElement.setAttribute('data-lang','zh');p.d.fire('langchange');
+ assert.equal(p.query.value,'capital regimes');assert.match(p.list.textContent,/资本与周期/);
+});
+test('Chinese topic composition keeps the unfinished query out of results',()=>{
+ const p=setup();sourceTopic(p,p.b,'Capital & regimes','资本与周期');
+ p.instance.open();p.query.fire('compositionstart');p.query.value='资本';p.query.fire('input');
+ assert.match(p.list.textContent,/Market Dashboard/);
+ p.query.fire('compositionend');assert.equal(p.list.querySelectorAll('a').length,1);
+ assert.equal(p.list.querySelector('a').href,'https://www.mastermind-x.com/reports.html');
+});
+test('topic redraw cannot revive a withdrawn destination',()=>{
+ const p=setup();sourceTopic(p,p.b,'Capital & regimes','资本与周期');
+ p.instance.open();p.query.value='capital';p.query.fire('input');p.b.remove();
+ p.query.value='regimes';p.query.fire('input');const link=p.list.querySelector('a');
+ assert.ok(link);assert.equal(link.hasAttribute('href'),false);
+ assert.equal(link.getAttribute('aria-disabled'),'true');
+ assert.equal(p.list.fire('click',{target:link}).prevented,true);
+ assert.equal(p.d.defaultView.location.pathname,'/macro.html');
+});

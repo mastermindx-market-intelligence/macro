@@ -3,8 +3,8 @@
  "is_context_only": true,
  "display_only": true,
  "authority_tier": "display",
- "as_of": "2026-10-20",
- "generated_utc": "2026-10-20T04:20:39.896321+00:00",
+ "as_of": "2026-10-21",
+ "generated_utc": "2026-10-21T04:45:31.422209+00:00",
  "spec": "research/PERSONALITY_SIGNAL_SUITE_MASTERPLAN_BY_FABLE.md §W3",
  "gate_open": true,
  "uniform_rung": "2W",
@@ -19,35 +19,35 @@
    "2W": 346
   },
   "classes": {
-   "both": 26,
-   "fired_uniform_only": 96,
-   "fired_tailored_only": 72,
-   "neither": 1435
+   "both": 0,
+   "fired_uniform_only": 1,
+   "fired_tailored_only": 68,
+   "neither": 1560
   },
-  "disagreements": 168,
-  "agree_by_construction": 26
+  "disagreements": 69,
+  "agree_by_construction": 0
  },
  "ledger": {
-  "fire_rows": 7557,
-  "appended_today": 194,
-  "graded": 116,
-  "grades_advanced_today": 0
+  "fire_rows": 7626,
+  "appended_today": 69,
+  "graded": 385,
+  "grades_advanced_today": 271
  },
  "timing": {
   "uniform": {
-   "n_graded": 95,
-   "n_timing_labeled": 95,
-   "confirmed_reset": 63,
-   "called_low": 0,
-   "early": 32,
-   "median_fwd63": 2.97
+   "n_graded": 256,
+   "n_timing_labeled": 256,
+   "confirmed_reset": 174,
+   "called_low": 8,
+   "early": 74,
+   "median_fwd63": -1.87
   },
   "tailored": {
-   "n_graded": 63,
-   "n_timing_labeled": 63,
-   "confirmed_reset": 21,
-   "called_low": 0,
-   "early": 42,
+   "n_graded": 203,
+   "n_timing_labeled": 203,
+   "confirmed_reset": 65,
+   "called_low": 42,
+   "early": 96,
    "median_fwd63": -9.37
   }
  },

@@ -1,0 +1,13 @@
+{
+  "run_id": "eval-t6-blind-six-01a1333d-c2",
+  "root_id": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "request_rc": 75,
+  "request_stdout": "NONE reason=no_pool_available",
+  "subsequent_same_adapter_status": "NOT_FOUND",
+  "worker_started": false,
+  "result_available": false,
+  "acceptance": null,
+  "effect": "proven prelaunch capacity refusal; no replacement or alternate carrier",
+  "semantic_model_observation": "not performed",
+  "packet_sha256": "e1e7e2e85ca6827f3deccfc229e5381bbcc0d92afa955588435b7b67fde3995b"
+}

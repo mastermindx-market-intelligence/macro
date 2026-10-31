@@ -1,0 +1,21 @@
+{
+  "source": "675f3c549c8649935b8a2829bf624265a8d2a10f",
+  "rawSha256": "3cd1a41e91a680718e463685732e3200cbe1e94e361a377c88c81b5166308fa7",
+  "normalizedSha256": "7b551d4c7a601e75d4f1dc018750acf15ac95e9734c17db542997f7c29a8a2b1",
+  "rawBytes": 400990,
+  "normalizedBytes": 379282,
+  "canonicalAssetInputs": {
+    "live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+    "live_config.js": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+    "logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+    "navigation-refresh.css": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+    "shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "shared_shell_bridge.js": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+    "stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+    "theme.css": "29ec9caa2e2b8496a39ae2731eb228805bd28e8ad680bd7b0a549bbe3adc5f4e",
+    "theme.js": "0d0e539655372cce40043ef2e89820a9fd87b137dcd08e0fc60276678a12e4c6"
+  },
+  "newCssAssets": [],
+  "explicitOpenState": true,
+  "shellLocationListener": true
+}

@@ -1,0 +1,30 @@
+{
+  "observed_at": "2026-10-20T01:30:57.603343+00:00",
+  "commands": {
+    "nsenter_help": {
+      "exit": 0,
+      "stdout": "\nUsage:\n nsenter [options] [<program> [<argument>...]]\n\nRun a program with namespaces of other processes.\n\nOptions:\n -a, --all              enter all namespaces\n -t, --target <pid>     target process to get namespaces from\n -m, --mount[=<file>]   enter mount namespace\n -u, --uts[=<file>]     enter UTS namespace (hostname etc)\n -i, --ipc[=<file>]     enter System V IPC namespace\n -n, --net[=<file>]     enter network namespace\n -p, --pid[=<file>]     enter pid namespace\n -C, --cgroup[=<file>]  enter cgroup namespace\n -U, --user[=<file>]    enter user namespace\n -T, --time[=<file>]    enter time namespace\n -S, --setuid[=<uid>]   set uid in entered namespace\n -G, --setgid[=<gid>]   set gid in entered namespace\n     --preserve-credentials do not touch uids or gids\n -r, --root[=<dir>]     set the root directory\n -w, --wd[=<dir>]       set the working directory\n -W, --wdns <dir>       set the working directory in namespace\n -e, --env              inherit environment variables from target process\n -F, --no-fork          do not fork before exec'ing <program>\n -Z, --follow-context   set SELinux context according to --target PID\n\n -h, --help             display this help\n -V, --version          display version\n\nFor more details see nsenter(1).\n",
+      "stderr": ""
+    },
+    "setpriv_help": {
+      "exit": 0,
+      "stdout": "\nUsage:\n setpriv [options] <program> [<argument>...]\n\nRun a program with different privilege settings.\n\nOptions:\n -d, --dump                  show current state (and do not exec)\n --nnp, --no-new-privs       disallow granting new privileges\n --ambient-caps <caps,...>   set ambient capabilities\n --inh-caps <caps,...>       set inheritable capabilities\n --bounding-set <caps>       set capability bounding set\n --ruid <uid|user>           set real uid\n --euid <uid|user>           set effective uid\n --rgid <gid|user>           set real gid\n --egid <gid|group>          set effective gid\n --reuid <uid|user>          set real and effective uid\n --regid <gid|group>         set real and effective gid\n --clear-groups              clear supplementary groups\n --keep-groups               keep supplementary groups\n --init-groups               initialize supplementary groups\n --groups <group,...>        set supplementary groups by UID or name\n --securebits <bits>         set securebits\n --pdeathsig keep|clear|<signame>\n                             set or clear parent death signal\n --selinux-label <label>     set SELinux label\n --apparmor-profile <pr>     set AppArmor profile\n --reset-env                 clear all environment and initialize\n                               HOME, SHELL, USER, LOGNAME and PATH\n\n -h, --help                  display this help\n -V, --version               display version\n\n This tool can be dangerous.  Read the manpage, and be careful.\n\nFor more details see setpriv(1).\n",
+      "stderr": ""
+    },
+    "nsenter_version": {
+      "exit": 0,
+      "stdout": "nsenter from util-linux 2.39.3\n",
+      "stderr": ""
+    },
+    "setpriv_version": {
+      "exit": 0,
+      "stdout": "setpriv from util-linux 2.39.3\n",
+      "stderr": ""
+    },
+    "beta_identity": {
+      "exit": 0,
+      "stdout": "uid=987(terminal-beta) gid=981(terminal-beta) groups=981(terminal-beta)\n",
+      "stderr": ""
+    }
+  }
+}

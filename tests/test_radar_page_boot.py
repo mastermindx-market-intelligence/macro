@@ -23,3 +23,15 @@ def test_committed_radar_page_carries_the_deferred_asset_shape() -> None:
     html = (ROOT / "site" / "radar.html").read_text(encoding="utf-8")
     panel_tag = html[html.index('<script src="radar_panel.js'):].split("</script>", 1)[0]
     assert " defer" in panel_tag
+
+
+def test_radar_noscript_copy_is_lexically_clean() -> None:
+    """The no-JS fallback names the radar's read, never a 实时/live one."""
+    html = (ROOT / "templates" / "radar.html.j2").read_text(encoding="utf-8")
+    start = html.index("<noscript>")
+    block = html[start:html.index("</noscript>", start)]
+
+    for banned in ("live read", "实时"):
+        assert banned not in block
+    for required in ("radar's read", "雷达解读"):
+        assert required in block
