@@ -877,3 +877,312 @@ def test_delivery_receipts_keep_first_touch_without_email_or_user_identity():
     assert out["state"] == "PROVIDER_ACCEPTED" and out["partner_id"] == "partnerA"
     assert out["utm_source"] == "newsletter" and EMAIL not in json.dumps(out)
     assert UID not in json.dumps(out)
+
+
+# ---------------------------------------------------------------------------
+# B-NEG-r1 appended negative witnesses (docket rows B01-B04). Append-only:
+# every line above is byte-untouched; helpers below are local to this block
+# and reuse only the fakes and constants already defined in this file.
+# ---------------------------------------------------------------------------
+
+STRANGER = "stranger@example.invalid"  # reserved synthetic domain, never a real inbox
+SECOND_UID = "dd35ac9d-0638-4be7-a4a8-6c4d59543b34"  # existing synthetic fixture identity
+SECOND_EMAIL = "second@example.com"  # existing synthetic fixture address
+
+
+def _b_refusal(fn):
+    """Run one attempt; a refusal yields (code, status, message), anything else NOT_REFUSED."""
+    try:
+        body = fn()
+    except FunnelGate as exc:
+        return exc.code, exc.status, str(exc)
+    return "NOT_REFUSED", None, json.dumps(body)
+
+
+def _b_make(confirm_gate=None):
+    """Same fakes and keyword set as make(), with the confirm gate the caller passes."""
+    otp, store, suppression, revision, sender = Otp(), Store(), Suppression(), Revisions(), Sender()
+    service = FunnelService(secret=SECRET, scan=Scan(), identity=otp, consent=store,
+                            suppression=suppression, revisions=revision, sender=sender,
+                            rights_clock=lambda now: now, confirm_gate=confirm_gate)
+    return service, otp, store, suppression, revision, sender
+
+
+class _BWithdrawableScan:
+    """ScanAuthority wrapper that answers honestly until source rights are withdrawn."""
+
+    def __init__(self, inner):
+        self.inner, self.withdrawn = inner, False
+
+    def require_public_scan(self, receipt):
+        if self.withdrawn:
+            raise FunnelGate("SCAN_PROOF_SUPERSEDED", 403)
+        return self.inner.require_public_scan(receipt)
+
+
+class _BLedgerSender:
+    """DeliveryAuthority behind the incumbent mailer's unique idem-key email_log ledger."""
+
+    def __init__(self, inner):
+        self.inner, self.claimed = inner, set()
+        self.invocations, self.sends = [], []
+
+    def permitted(self):
+        return self.inner.permitted()
+
+    def deliver(self, record, revision, key):
+        self.invocations.append(key)  # every producer attempt, claimed or not
+        if key in self.claimed:
+            return "duplicate"  # exactly-once ledger refuses a second claim on the key
+        self.claimed.add(key)
+        self.sends.append((record.user_id, revision.ticker, key))
+        return self.inner.deliver(record, revision, key)
+
+
+def _b_two_users(store):
+    """Grow the consenting roster to the file's two existing synthetic identities."""
+    base = next(iter(store.records.values()))
+    store.records[(SECOND_UID, "event-123")] = replace(
+        base, user_id=SECOND_UID, email=SECOND_EMAIL)
+
+
+def test_b01_unchecked_consent_box_sends_no_otp_and_writes_no_grant():
+    """Catches: an unchecked consent box still mails an OTP or stores a pending intent or grant."""
+    service, otp, store, *_ = make()
+    attempts = []
+    for addr in (EMAIL, STRANGER):
+        attempts.append(_b_refusal(lambda: service.request(
+            email=addr, checked=False, scan_receipt="scan-public-verified", touch={}, now=NOW)))
+    assert attempts[0] == attempts[1]  # unknown address refused identically to a known one
+    assert attempts[0][0] == "EXPLICIT_CONSENT_REQUIRED" and attempts[0][1] == 400
+    for addr in (EMAIL, STRANGER):
+        assert addr not in attempts[0][2]  # no address echoes back in the refusal
+    assert otp.requests == [] and store.pending == {} and store.records == {}
+
+
+def test_b01_tampered_scan_receipt_refuses_request_without_otp_intent_or_grant():
+    """Catches: an unsigned or tampered scan receipt is accepted and an OTP is mailed anyway."""
+    service, otp, store, *_ = make()
+    for bad_receipt in ("scan-public-verifiedX",  # one flipped character
+                        '{"event_id":"event-123","tickers":["NVDA"]}',  # unsigned descriptor
+                        "scan-public-verified.but.resigned"):  # spliced second signature
+        known = _b_refusal(lambda: service.request(
+            email=EMAIL, checked=True, scan_receipt=bad_receipt, touch={}, now=NOW))
+        unknown = _b_refusal(lambda: service.request(
+            email=STRANGER, checked=True, scan_receipt=bad_receipt, touch={}, now=NOW))
+        assert known == unknown  # refusal must not depend on the address being known
+        assert known[0] == "SCAN_PROOF_REQUIRED" and known[1] == 400
+        assert EMAIL not in known[2] and STRANGER not in known[2]
+    assert otp.requests == [] and store.pending == {} and store.records == {}
+
+
+def test_b01_replayed_receipt_second_use_never_grants_twice():
+    """Catches: replaying one issued receipt and intent to a second subject grants again or re-verifies identity."""
+    service, otp, store, *_ = make()
+    first = consented(service)
+    assert service.verify(email=EMAIL, otp="123456", public_ref=first["public_ref"],
+                          now=NOW)["status"] == "verified"
+    assert len(store.records) == 1 and len(otp.requests) == 1 and len(otp.checks) == 1
+    stranger_intent = consented(service, email=STRANGER)  # a receipt issued to someone else
+    replay = _b_refusal(lambda: service.verify(
+        email=STRANGER, otp="123456", public_ref=first["public_ref"], now=NOW))
+    cross = _b_refusal(lambda: service.verify(
+        email=EMAIL, otp="123456", public_ref=stranger_intent["public_ref"], now=NOW))
+    assert replay == cross  # a stranger replaying mine == me replaying a stranger's
+    assert replay[0] == "INVALID_VERIFICATION_INTENT" and replay[1] == 400
+    assert EMAIL not in replay[2] and STRANGER not in replay[2]
+    assert len(otp.checks) == 1  # the refused replay consumed no further OTP proof
+    assert service.verify(email=EMAIL, otp="123456", public_ref=first["public_ref"],
+                          now=NOW)["status"] == "already_verified"
+    assert len(store.records) == 1  # still exactly one grant; the stranger never got one
+    assert all(STRANGER not in row.email for row in store.records.values())
+
+
+def test_b01_never_requested_address_at_verify_refused_without_enumeration():
+    """Catches: verify for a never-requested address or unissued ref succeeds or reveals which address holds it."""
+    service, otp, store, *_ = make()
+    issued = consented(service)["public_ref"]
+    unissued = "opaque_never_issued_ref"  # valid shape, never handed to anyone
+    attempts = {}
+    for label, addr, ref in (("known_addr_unissued_ref", EMAIL, unissued),
+                             ("unknown_addr_issued_ref", STRANGER, issued),
+                             ("unknown_addr_unissued_ref", STRANGER, unissued)):
+        attempts[label] = _b_refusal(lambda: service.verify(
+            email=addr, otp="123456", public_ref=ref, now=NOW))
+    assert attempts["known_addr_unissued_ref"] == attempts["unknown_addr_issued_ref"]
+    assert attempts["unknown_addr_issued_ref"] == attempts["unknown_addr_unissued_ref"]
+    assert attempts["known_addr_unissued_ref"][0] == "INVALID_VERIFICATION_INTENT"
+    assert attempts["known_addr_unissued_ref"][1] == 400
+    for addr in (EMAIL, STRANGER):
+        assert addr not in attempts["unknown_addr_issued_ref"][2]
+    assert otp.checks == [] and store.records == {}  # no OTP proof, no grant row
+
+
+def test_b02_optin_gate_off_between_otp_and_confirm_writes_no_grant():
+    """Catches: switching the opt-in gate off after the OTP was issued still confirms a durable grant."""
+    switch = [True]
+    service, otp, store, *_ = _b_make(confirm_gate=lambda: switch[0])
+    pending = consented(service)  # gate is ON while the OTP goes out
+    assert otp.requests == [EMAIL]
+    switch[0] = False  # operator flips the feature off mid-flight
+    refusal = _b_refusal(lambda: service.verify(
+        email=EMAIL, otp="123456", public_ref=pending["public_ref"], now=NOW))
+    assert refusal[0] == "CATALYST_OPTIN_DISABLED" and refusal[1] == 503
+    assert "verified" not in refusal[0] and EMAIL not in refusal[2]
+    assert otp.checks == [(EMAIL, "123456")]  # the OTP was consumed, yet...
+    assert store.records == {}  # ...no durable grant for the event exists
+    assert pending["public_ref"] in store.pending  # the intent never became a grant
+
+
+def test_b02_source_rights_revoked_after_otp_proof_before_confirm_writes_no_grant():
+    """Catches: a source-rights withdrawal landing after the OTP proof still writes the consent grant."""
+    service, otp, store, *_ = make()
+    wrapper = _BWithdrawableScan(service.scan)
+    service.scan = wrapper
+    pending = consented(service)
+    original_verify = otp.verify_otp
+
+    def verify_then_source_withdrawn(email, code):
+        who = original_verify(email, code)
+        wrapper.withdrawn = True  # rights die between identity proof and confirm
+        return who
+
+    otp.verify_otp = verify_then_source_withdrawn
+    refusal = _b_refusal(lambda: service.verify(
+        email=EMAIL, otp="123456", public_ref=pending["public_ref"], now=NOW))
+    assert refusal[0] == "SCAN_PROOF_SUPERSEDED" and refusal[1] == 403
+    assert EMAIL not in refusal[2]
+    assert otp.checks == [(EMAIL, "123456")]  # identity was proven; the grant still never happened
+    assert store.records == {}
+
+
+def test_b02_unsubscribe_still_works_while_optin_off_and_no_send_follows():
+    """Catches: an opt-in shutoff blocks unsubscribe, or a later batch still mails the revoked grant."""
+    switch = [True]
+    service, *_ = _b_make(confirm_gate=lambda: switch[0])
+    verified(service)  # existing durable grant
+    switch[0] = False  # marketing / opt-in turned off
+    out = service.revoke(user_id=UID, event_id="event-123", now=NOW)
+    assert out["status"] == "unsubscribed" and out["changed"] == "yes"
+    assert EMAIL not in json.dumps(out) and UID not in json.dumps(out)
+    rows = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in rows] == ["SUPPRESSED"]
+    assert service.sender.calls == []  # no new send follows the unsubscribe
+
+
+def test_b03_grant_revoked_mid_batch_suppresses_rest_and_never_resends_delivered():
+    """Catches: a grant revoked mid-batch still gets mailed, or a rerun re-mails the already-delivered user."""
+    service, _, store, *_ = make()
+    service.sender = ledger = _BLedgerSender(service.sender)
+    verified(service)
+    _b_two_users(store)
+    original_interested, revoked = store.interested, []
+
+    def roster_then_revoke_second(event_id, limit):
+        roster = original_interested(event_id, limit)
+        if not revoked:  # consent for the second user dies after roster selection
+            assert store.revoke(SECOND_UID, "event-123", NOW.isoformat())
+            revoked.append(True)
+        return roster
+
+    store.interested = roster_then_revoke_second
+    first = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in first] == ["PROVIDER_ACCEPTED", "SUPPRESSED"]
+    assert [send[0] for send in ledger.sends] == [UID]  # only the still-consenting user
+    assert ledger.sends[0][2] == "catalyst:event-123:2:NVDA:" + UID
+    second = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in second] == ["ALREADY_CLAIMED", "SUPPRESSED"]
+    assert len(ledger.sends) == 1  # nobody was re-mailed by the rerun
+
+
+def test_b03_delivery_outputs_and_mail_bodies_disclose_no_recipients_or_counts():
+    """Catches: delivery receipts or the mailed body leak another recipient's address, identity or list size."""
+    service, _, store, *_ = make()
+    verified(service)
+    _b_two_users(store)
+    rows = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert len(rows) == 2  # both consented, both dispatched
+    dumped = [json.dumps(row) for row in rows]
+    for secret in (EMAIL, SECOND_EMAIL, UID, SECOND_UID):
+        assert all(secret not in row for row in dumped)
+    assert dumped[0] != dumped[1]  # only opaque per-user refs distinguish the rows
+    assert set(rows[0]) == {"user_ref", "state", "event_id", "generation",
+                            "partner_id", "utm_source"}  # no roster or count field exists
+    subject, body, plain = format_revision(update(), "https://mastermind-x.com/unsubscribe.html")
+    for secret in (EMAIL, SECOND_EMAIL, UID, SECOND_UID):
+        assert secret not in subject and secret not in body and secret not in plain
+    assert "recipient" not in body.lower() and "subscribers" not in body.lower()
+
+
+def test_b04_outage_before_and_after_sender_map_to_distinct_never_sent_states():
+    """Catches: a pre-dispatch outage and a sender exception after invocation collapse into one state or are called sent."""
+    # (A) outage BEFORE the sender is invoked: the consent owner dies at the per-recipient re-read.
+    service, _, store, *_ = make()
+    verified(service)
+    _b_two_users(store)
+    store.current = lambda user_id, event_id: (_ for _ in ()).throw(
+        ConnectionError("consent rpc down / private rows withheld"))
+    before = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in before] == ["CONSENT_OWNER_UNAVAILABLE"]
+    assert service.sender.calls == []  # transport was never reached
+    # (B) outage AFTER the sender was invoked: the transport raises once invoked.
+    service2, _, store2, *_ = make()
+    verified(service2)
+    _b_two_users(store2)
+    raw_deliver = service2.sender.deliver
+
+    def invoked_then_raise(record, revision, key):
+        raw_deliver(record, revision, key)  # the invocation itself is observable...
+        raise RuntimeError("smtp socket died mid-request")
+
+    service2.sender.deliver = invoked_then_raise
+    after = service2.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in after] == ["EFFECT_UNKNOWN"]
+    assert len(service2.sender.calls) == 1  # ...exactly one transport attempt, then freeze
+    assert before[0]["state"] != after[0]["state"]  # two DISTINCT recorded states
+    assert "PROVIDER_ACCEPTED" not in {before[0]["state"], after[0]["state"]}
+    for row in before + after:
+        assert EMAIL not in json.dumps(row) and SECOND_EMAIL not in json.dumps(row)
+
+
+def test_b04_effect_unknown_delivery_is_not_auto_replayed():
+    """Catches: an EFFECT_UNKNOWN dispatch is automatically re-dispatched by the next deliver of the same revision."""
+    service, *_rest, sender = make()
+    service.sender = ledger = _BLedgerSender(sender)
+    sender.status = "effect_unknown"
+    verified(service)
+    first = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in first] == ["EFFECT_UNKNOWN"]
+    assert len(ledger.sends) == 1
+    second = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in second] == ["ALREADY_CLAIMED"]  # the ledger key holds
+    assert len(ledger.sends) == 1  # NO new send was made for that key
+    assert ledger.sends[0][2] == "catalyst:event-123:2:NVDA:" + UID
+    assert all(row["state"] != "PROVIDER_ACCEPTED" for row in first + second)
+
+
+def test_b04_repeated_same_ticker_revision_never_dispatches_twice():
+    """Catches: a repeated identical revision for the same ticker dispatches a second email under a fresh key."""
+    service, *_rest, sender = make()
+    service.sender = ledger = _BLedgerSender(sender)
+    verified(service)
+    first = service.deliver(update(), now=NOW + timedelta(hours=2))
+    second = service.deliver(update(), now=NOW + timedelta(hours=2))
+    assert [row["state"] for row in first] == ["PROVIDER_ACCEPTED"]
+    assert [row["state"] for row in second] == ["ALREADY_CLAIMED"]
+    assert len(ledger.sends) == 1  # exactly one real dispatch ever
+    assert ledger.invocations == ["catalyst:event-123:2:NVDA:" + UID] * 2  # same key both times
+
+
+@pytest.mark.xfail(strict=True, reason="FINDING B04-DEDUP: engine/marketing/catalyst_lifecycle.py:800 "
+                                       "idem key embeds the ticker, so one event+generation across two "
+                                       "tickers one user follows dispatches twice, not once")
+def test_b04_one_dispatch_per_user_per_event_generation_across_tickers():
+    """Catches: one event and generation spanning two tickers the user follows mails that user twice."""
+    service, *_rest, sender = make()
+    service.sender = ledger = _BLedgerSender(sender)
+    verified(service)  # consent covers NVDA + AMD for event-123, generation 2
+    for ticker in ("NVDA", "AMD"):  # same event, same generation, two followed tickers
+        service.deliver(update(ticker=ticker), now=NOW + timedelta(hours=2))
+    assert len(ledger.sends) == 1  # docket: ONE dispatch per user per event+generation
+    assert all(send[2].rsplit(":", 1)[0] == "catalyst:event-123:2" for send in ledger.sends)

@@ -422,3 +422,71 @@ def test_00_private_delivery_seam_needs_an_authoritative_revision_loader():
         assert error.value.code == "REVISION_OWNER_NOT_READY"
     finally:
         catalyst_optin.configure(None)
+
+
+# ---------------------------------------------------------------------------
+# B-NEG-r1 appended negative witnesses (docket rows B01, B02a at the HTTP
+# seam). Append-only: every line above is byte-untouched; the helper below is
+# local to this block and reuses the web fixture's patched abuse guard.
+# ---------------------------------------------------------------------------
+
+B_STRANGER = "who-is-this@example.invalid"  # reserved synthetic domain, never a real inbox
+
+
+class BRefusingVerifyService:
+    """Configured service whose consent owner refuses every verify with one typed code."""
+
+    def __init__(self):
+        self.verifies = []
+
+    def verify(self, **kw):
+        self.verifies.append(kw)
+        raise FunnelGate("INVALID_VERIFICATION_INTENT", 400)
+
+
+def test_b01_http_verify_refusals_do_not_enumerate_accounts_or_leak_identity(web, monkeypatch):
+    """Catches: the verify route's refusal status or body differs for a known versus unknown address or echoes it."""
+    client, _ = web
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
+    refusing = BRefusingVerifyService()
+    catalyst_optin.configure(refusing)
+    try:
+        known = {"email": "investor@example.com", "otp": "123456",
+                 "public_ref": "opaque_testref_1234"}
+        unknown = dict(known, email=B_STRANGER)
+        replies = [client.post("/api/catalyst/optin/verify", json=body)
+                   for body in (known, unknown)]
+        assert [reply.status_code for reply in replies] == [400, 400]
+        assert replies[0].text == replies[1].text  # identical refusal: no existence signal
+        for text in (replies[0].text, replies[1].text):
+            assert "investor@example.com" not in text and B_STRANGER not in text
+            assert "subscribed" not in text.lower()
+        assert len(refusing.verifies) == 2  # the route itself added no early divergence
+    finally:
+        catalyst_optin.configure(None)
+
+
+def test_b02_optin_switch_off_between_request_and_verify_refuses_verify(web, monkeypatch):
+    """Catches: turning an opt-in switch off after the request still lets verify confirm and claim success."""
+    client, service = web
+    monkeypatch.setenv("CATALYST_PUBLIC_ENABLED", "1")
+    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
+    signed = "eyJ2IjoxLCJldmVudF9pZCI6ImV2ZW50LTEyMyJ9." + "b" * 43
+    accepted = catalyst_optin.request_optin(
+        {"email": "investor@example.com", "scan_receipt": signed, "consent_checked": True,
+         "scope": catalyst_optin.SCOPE, "form_elapsed_ms": 3000, "honeypot": ""})
+    assert accepted["status"] == "VERIFICATION_REQUIRED" and len(service.requests) == 1
+    body = {"email": "investor@example.com", "otp": "123456", "public_ref": "opaque_testref_1234"}
+    monkeypatch.delenv("CATALYST_OPTIN_ENABLED", raising=False)  # operator flips it off
+    reply = client.post("/api/catalyst/optin/verify", json=body)
+    assert reply.status_code == 503
+    assert reply.json()["detail"] == "CATALYST_OPTIN_DISABLED"  # unavailable, never success
+    assert "verified" not in reply.text.lower()
+    assert "investor@example.com" not in reply.text
+    assert service.verifies == []  # refused BEFORE any verification or consent write attempt
+    monkeypatch.setenv("CATALYST_OPTIN_ENABLED", "1")
+    monkeypatch.delenv("CATALYST_PUBLIC_ENABLED", raising=False)  # the other switch equally
+    again = client.post("/api/catalyst/optin/verify", json=body)
+    assert again.status_code == 503 and again.json()["detail"] == "CATALYST_OPTIN_DISABLED"
+    assert service.verifies == []
