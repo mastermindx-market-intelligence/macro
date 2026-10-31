@@ -103,6 +103,67 @@ def test_decline_on_breakdown() -> None:
     assert st["state"] in ("DECLINE", "ROLLING OVER"), st["state"]
 
 
+_FAILED_WHY = (
+    "Failed cycle — price broke below the low that started this cycle. "
+    "How often the larger trend then rolls over has not been measured here."
+)
+_FAILED_WHY_ZH = (
+    "失败周期——价格跌破了启动本周期的低点。"
+    "此后更大趋势掉头向下的频率，本站尚未测算。"
+)
+_OLD_FAILED_WHY = "which historically means the larger trend is rolling over (~80% of cases)."
+_OLD_FAILED_WHY_ZH = "历史上这通常意味着更大的趋势正在掉头向下（约 80% 的情形）。"
+
+
+def _assert_failed_cycle_why(lad: dict) -> None:
+    """The DECLINE failed-cycle strings name the broken start-low and cite no rate."""
+    why, why_zh = lad["why"], lad["why_zh"]
+    assert "80" not in why and "80" not in why_zh
+    assert "low" in why and "低点" in why_zh
+    assert _FAILED_WHY in why and _FAILED_WHY_ZH in why_zh
+    assert _OLD_FAILED_WHY not in why and _OLD_FAILED_WHY_ZH not in why_zh
+    assert "historically" not in why.lower()
+    assert "约 80" not in why_zh
+
+
+def test_failed_cycle_ladder_why_names_the_low_without_a_rate() -> None:
+    """Drive the failed-cycle DECLINE branch and the sector-page block.
+
+    The ladder path is the below-MA10 snapshot this file already builds, with
+    the failed-cycle flag that branch requires, plus the price break
+    ``test_failed_cycle_flag`` already uses. The old ~80% sentence must fail.
+    """
+    cyc, mtf = _below_ma10_turn_signaled_snapshot()
+    assert cyc["above_ma10"] is False
+    cyc["failed_cycle"] = True
+    lad = ladder_state(cyc, mtf)
+    assert lad["state"] == "DECLINE", lad["state"]
+    assert lad["why"] == _FAILED_WHY
+    assert lad["why_zh"] == _FAILED_WHY_ZH
+    assert lad["next"] == "Stand aside until a new daily cycle low forms and confirms."
+    assert lad["next_zh"] == "观望，直至新的日线周期低点形成并确认。"
+    _assert_failed_cycle_why(lad)
+
+    series = synth_cycles(period=40)
+    series.iloc[-3:] = series.min() * 0.95
+    broken = cycle_state(series)
+    assert broken["failed_cycle"] is True
+    assert broken["above_ma10"] is False
+    lived = ladder_state(broken, mtf_snapshot(series))
+    assert lived["state"] == "DECLINE", lived["state"]
+    _assert_failed_cycle_why(lived)
+
+    src = (Path(__file__).resolve().parent.parent / "templates" / "sector.html.j2").read_text()
+    block = next(line for line in src.splitlines() if "s.cycle.failed_cycle" in line)
+    assert "{% if s.cycle.failed_cycle %}" in block
+    assert '<p class="neg" style="margin:6px 0 0">⚠ ' in block
+    assert "80%" not in block and "约 80" not in block
+    assert ("Failed cycle: price is below the low that started this cycle. "
+            "How often the larger trend then rolls over has not been measured here.") in block
+    assert "周期失败：价格已跌破启动本周期的低点。此后更大趋势掉头向下的频率，本站尚未测算。" in block
+    assert "historically the larger trend is rolling over" not in block
+
+
 def test_signal_age_detects_recent_cross() -> None:
     """A series engineered to flip its state in the last few bars should report
     a small, non-capped age and name the state it switched away from."""
@@ -797,6 +858,7 @@ def test_below_ma10_no_3d_key_does_not_gate_on_curl() -> None:
 if __name__ == "__main__":
     for fn in [test_trough_spacing, test_translation_right, test_translation_left,
                test_failed_cycle_flag, test_ladder_states_sane, test_decline_on_breakdown,
+               test_failed_cycle_ladder_why_names_the_low_without_a_rate,
                test_signal_age_detects_recent_cross, test_signal_age_contract_holds,
                test_signal_age_thin_history, test_signal_age_fields_prose,
                test_analyze_attaches_age, test_eq_proximity_peaks_near_the_low,

@@ -12,7 +12,7 @@ Methodology (graddhy.com, thefinancialtap.com — see DECISIONS):
   Right-translated = bullish structure; left-translated usually means the
   larger cycle has topped.
 - Failed cycle: price breaks below the low that BIRTHED the current cycle —
-  the single most reliable bearish tell in the framework (~80% per source).
+  a bearish tell in the framework.
 
 Multi-timeframe indicators: daily, 3-day and weekly MACD(12,26,9), RSI(14),
 RSI(5) and StochRSI(14) with cross detection plus *approaching-cross*
@@ -1025,11 +1025,11 @@ def ladder_state(cyc: dict, mtf: dict, early: dict | None = None,
 
     if cyc["failed_cycle"] and not cyc["above_ma10"]:
         state = "DECLINE"
-        why = ("Failed cycle — price broke below the low that started this cycle, "
-               "which historically means the larger trend is rolling over (~80% of cases).")
+        why = ("Failed cycle — price broke below the low that started this cycle. "
+               "How often the larger trend then rolls over has not been measured here.")
         nxt = "Stand aside until a new daily cycle low forms and confirms."
-        why_zh = ("失败周期——价格跌破了启动本周期的低点，"
-                  "历史上这通常意味着更大的趋势正在掉头向下（约 80% 的情形）。")
+        why_zh = ("失败周期——价格跌破了启动本周期的低点。"
+                  "此后更大趋势掉头向下的频率，本站尚未测算。")
         nxt_zh = "观望，直至新的日线周期低点形成并确认。"
     elif cand_confirmed and (d.get("macd_cross_up") or d.get("macd_pos")
                              or d.get("macd_approaching_up")):
