@@ -52,3 +52,22 @@ Missing literals do not establish that the company has no revenue or customers. 
 ## Refresh only the evidence needed next
 
 For A1, compare #8678, #8700 and #7870 plus the six integration paths. For B1, add #8682's two-file patch and the authorized staging consent owner. For C1/C2, add #8683 plus the one finalist's current channel policy. For D1, take Website's latest authorized test-mode receipt, not every billing PR. No need to re-download old screenshot sets, rerun accepted publication inventories, or recontact the same editor. Store only dates, immutable refs, nonidentifying counts and receipts; keep operational records where they belong.
+
+## Verified patch preflight: no new source work needed to recover either return
+
+**New proof from this planning session (31 October).** Read the two original GitHub comment bodies via the GitHub API. Extracted both exact patches, matched their published full SHA-256, fetched each target file at its respective immutable base and verified its complete Git blob ID before testing. `git apply --check` passed in each disposable file snapshot. Only inside those disposable directories, applied the patch and verified all eight resulting Git blob IDs against the authors' advertised postimage prefixes. No source PR or worktree was modified by the replay. No application code was executed; this does not re-qualify the 184 or 403 earlier tests, simulate integration with current main, or grant permission to publish.
+
+**Stage A has a transport footer.** The UTF-8 `diff` fence in [#8678 comment 6116163942](https://github.com/mastermindx-market-intelligence/macro/pull/8678#issuecomment-6116163942) contains **31,304 bytes / 565 lines**, digest `06a05d1a0932de0bf22d458084707d519212f219b40427c6d1569ab1b4d00923`, not the author's 31,234-byte patch. The final two lines are a blank line and a device-execution annotation outside the diff. Retain the first 563 complete lines with their line endings; verify SHA-256 `026669c76c3b117a4194ef729f2f1d448075cabd5cb1eb5d4e461320d8b17868` **before** considering application. Do not normalize whitespace, silently trim an arbitrary future file, or trust `git apply --numstat` alone: the raw fence parses, even though its hash differs. A future mismatch means stop and reconcile original bytes, not keep deleting lines. Stage B's [#8682 comment 6107702794](https://github.com/mastermindx-market-intelligence/macro/pull/8682#issuecomment-6107702794) `diff` fence matched **all 7,587 bytes / 130 lines** exactly as posted, checksum `18f4d4c32c9de39ef59266cff592b98817919232d33d2859b086fac2a804717e`.
+
+| Stage | Target file in original source | Full recomputed Git blob after disposable replay |
+|---|---|---|
+| A | `app/catalyst_integration.py` | `e2ae4f2e7a09bfc62a693add655484d576593964` |
+| A | `app/catalyst_scan_ui.js` | `e2e107534ce5e9b21d38afdeb5e86858f375b238` |
+| A | `engine/marketing/catalyst_admission.py` | `283076aa6247108748db14250db78ca95dc4e0d7` |
+| A | `templates/catalyst_scan.js` | `bad2fca375ecea2440ace45b13eb4606efaddb00` |
+| A | `tests/test_catalyst_admission.py` | `cee96765ae6ed8ced7a3fa7991c885a92485416d` |
+| A | `tests/test_catalyst_integration.py` | `7146cf6cab7aabd9734b35cf4951514549e97c00` |
+| B | `app/catalyst_optin.py` | `1336cd53df709c52084058807568b6a2d7ec6aed` |
+| B | `engine/marketing/catalyst_lifecycle.py` | `077edbb51ec6b4b833cd9598a55fcd677456e981` |
+
+**Decision:** Recoverability and exact-base applicability are no longer open questions on these two source returns. The next engineer's job is rightful adoption, semantic composition with current dependencies and real-path acceptance—not reconstructing a patch from prose.
