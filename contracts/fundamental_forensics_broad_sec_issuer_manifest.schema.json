@@ -152,6 +152,66 @@
       "items": {"type": "string"}
     },
     "previous_manifest_id": {"type": ["string", "null"]},
+    "filing_corrections": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "correction_id",
+          "rule_id",
+          "decision_id",
+          "accession_number",
+          "field",
+          "prior_value",
+          "current_value",
+          "prior_comparison_key",
+          "current_comparison_key",
+          "classification",
+          "source_timezone",
+          "applied_offset_seconds",
+          "offset_kind",
+          "prior_manifest_id",
+          "prior_component_sha256",
+          "current_component_sha256",
+          "admitting_source_set_sha256",
+          "non_time_facts_sha256"
+        ],
+        "properties": {
+          "correction_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "rule_id": {"const": "FF-1-SEC-ACCEPTANCE-SOURCE-CORRECTION-LINEAGE"},
+          "decision_id": {"const": "DEC:FF-1-SEC-ACCEPTANCE-SOURCE-CORRECTION-LINEAGE"},
+          "accession_number": {"type": "string", "pattern": "^[0-9]{10}-[0-9]{2}-[0-9]{6}$"},
+          "field": {"enum": ["acceptance_datetime"]},
+          "prior_value": {"type": "string", "minLength": 20},
+          "current_value": {"type": "string", "minLength": 20},
+          "prior_comparison_key": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {"type": "string"}
+          },
+          "current_comparison_key": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {"type": "string"}
+          },
+          "classification": {"const": "sec_acceptance_timezone_restatement"},
+          "source_timezone": {"const": "America/New_York"},
+          "applied_offset_seconds": {"enum": [14400, 18000]},
+          "offset_kind": {"enum": ["EDT", "EST"]},
+          "prior_manifest_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "prior_component_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "current_component_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "admitting_source_set_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "non_time_facts_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    },
     "recorded_at": {"type": "string", "minLength": 20},
     "sec_accepted_at": {"type": ["string", "null"]},
     "filed_on": {"type": ["string", "null"]}
