@@ -27,11 +27,17 @@ counts only). Its receipt is written to the caller-supplied runner-local path
 bound here are bytes that already exist in the evidence. In the nightly step it
 runs as an alarm, never a gate: a refusal never flips the checkpoint contract.
 
-Refusal classes (closed vocabulary): inventory missing/population changed, path
-not normalized/missing, symlink, bytes changed after freeze, index clock
-missing/unqualified, split checkpoint (delta TSV vs inventory vs live
-disagreement), and GMI accepted-reference missing/pending/unqualified, with
-incumbent owner refusal reasons passed through under a ``GMI_`` prefix.
+Refusal classes (closed vocabulary): inventory missing/unreadable/malformed or
+population changed, source snapshot missing/unbound/unqualified path, durable
+snapshot missing (including a corrupt gzip body), path not normalized/missing,
+symlink, bytes changed after freeze, candidate store empty, index clock
+missing/unqualified, index/board binding mismatch, split checkpoint (delta TSV
+vs inventory vs live disagreement), and GMI family unreadable / receipt not
+supplied / unreadable / invalid / not available / state identity mismatch /
+theme state not qualified, with incumbent owner refusal reasons passed through
+under a ``GMI_`` prefix. A ``VALID_EMPTY`` owner receipt is an accepted
+reference (a validly published empty theme state), an empty candidate store is
+not.
 """
 from __future__ import annotations
 
@@ -39,6 +45,7 @@ import argparse
 import datetime as dt
 import gzip
 import hashlib
+import zlib
 import json
 import os
 import re
@@ -241,7 +248,7 @@ def _bind_board(root: Path, source_snapshot_path: Path, source_blob_path: Path,
     if snapshot_ok and durable_path.is_file() and not durable_path.is_symlink():
         try:
             durable_raw = gzip.decompress(durable_path.read_bytes())
-        except (OSError, EOFError):
+        except (OSError, EOFError, zlib.error):   # round-2 N1: a corrupt deflate body is a typed loss
             durable_raw = None
     if blob_bytes is None or durable_raw != blob_bytes:
         reasons.append("DURABLE_SOURCE_SNAPSHOT_MISSING")
@@ -392,15 +399,20 @@ def _bind_gmi_theme_state(root: Path, gmi_receipt_path: Path | None):
                     reader.validate_read_receipt_at_use(receipt, publication_plan=plan)
                 except (ValueError, TypeError, KeyError, AttributeError, OSError):
                     reasons.append("GMI_RECEIPT_INVALID")
-                detail["receipt_status"] = receipt.get("status")
-                detail["receipt_reason_codes"] = receipt.get("reason_codes")
                 if "GMI_RECEIPT_INVALID" not in reasons:
-                    if receipt.get("status") not in ("DESCRIPTIVE", "VALID_EMPTY"):
+                    # round-2 N2: only a receipt the owner validator accepted is echoed, and only its
+                    # typed fields (a str status, a list of str codes) — never unvalidated content.
+                    status = receipt.get("status")
+                    codes = receipt.get("reason_codes")
+                    codes = [c for c in codes if isinstance(c, str)] if isinstance(codes, list) else []
+                    detail["receipt_status"] = status if isinstance(status, str) else None
+                    detail["receipt_reason_codes"] = codes
+                    # VALID_EMPTY is the owner's valid publication of an empty theme state: it is an
+                    # accepted reference (round-2 N6 adjudication), unlike an empty candidate store,
+                    # which is a settlement population of nothing and refuses CANDIDATE_STORE_EMPTY.
+                    if status not in ("DESCRIPTIVE", "VALID_EMPTY"):
                         reasons.append("GMI_RECEIPT_NOT_AVAILABLE")
-                    elif any(
-                        code in receipt.get("reason_codes") or []
-                        for code in GMI_UNQUALIFIED_CODES
-                    ):
+                    elif any((code in codes) for code in GMI_UNQUALIFIED_CODES):   # round-2 N3
                         reasons.append("GMI_THEME_STATE_NOT_QUALIFIED")
                     elif (receipt.get("publication") or {}).get("generation_id") != (
                         detail.get("generation_id")

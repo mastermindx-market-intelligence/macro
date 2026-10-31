@@ -9,6 +9,7 @@ from __future__ import annotations
 import gzip
 import hashlib
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -25,6 +26,7 @@ from scripts.prophet_settlement_preflight import (
     InfrastructureError,
     STATUS_QUALIFIED,
     STATUS_REFUSED,
+    write_receipt,
     run_preflight,
     write_receipt,
 )
@@ -256,6 +258,25 @@ def test_missing_frozen_blob_is_refused(tmp_path) -> None:
     assert "DURABLE_SOURCE_SNAPSHOT_MISSING" in receipt["reason_codes"]
     assert receipt["artifact_hashes"]["board"] is None
     assert receipt["bundle_id"] is None
+
+
+def test_corrupt_durable_gzip_body_is_a_typed_loss_not_a_crash(tmp_path) -> None:
+    """round-2 N1: a gzip header over a corrupt deflate body raises zlib.error, not OSError."""
+    root = tmp_path / "repo"
+    root.mkdir()
+    board_sha, snapshot_rel = _populate_prophet(root)
+    evidence = _freeze_evidence(tmp_path, root)
+    good = (root / snapshot_rel).read_bytes()
+    (root / snapshot_rel).write_bytes(good[:10] + b"\xff\xff\xff\xff" + good[14:])
+    with pytest.raises(Exception) as caught:
+        gzip.decompress((root / snapshot_rel).read_bytes())
+    assert not isinstance(caught.value, (OSError, EOFError)), type(caught.value)
+
+    receipt = _preflight(root, evidence)
+
+    assert receipt["status"] == STATUS_REFUSED
+    assert "DURABLE_SOURCE_SNAPSHOT_MISSING" in receipt["reason_codes"]
+    assert receipt["artifact_hashes"]["board"] is None
 
 
 def test_durable_source_snapshot_loss_is_refused(tmp_path) -> None:
@@ -506,6 +527,19 @@ def test_unreadable_or_invalid_gmi_receipt_is_refused(tmp_path, production_world
     fabricated.write_text(json.dumps({"schema": "gmi", "status": "DESCRIPTIVE"}), encoding="utf-8")
     invalid = _preflight(root, evidence, gmi_receipt_path=fabricated)
     assert invalid["reason_codes"] == ["GMI_RECEIPT_INVALID"]
+
+    # round-2 N2: an invalid receipt's content is never echoed — a NaN status and a non-list
+    # reason_codes must not reach the writer (allow_nan=False) and must leave the typed fields unset.
+    odd = tmp_path / "receipt-odd.json"
+    odd.write_text('{"schema": "gmi", "status": NaN, "reason_codes": {"x": NaN}}', encoding="utf-8")
+    weird = _preflight(root, evidence, gmi_receipt_path=odd)
+    assert weird["reason_codes"] == ["GMI_RECEIPT_INVALID"]
+    gmi_detail = weird["leg_detail"]["gmi_theme_state"]["detail"]
+    assert gmi_detail["receipt_status"] is None and gmi_detail["receipt_reason_codes"] is None
+    out = tmp_path / "runner" / "odd-receipt.json"
+    out.parent.mkdir()
+    write_receipt(weird, out)
+    assert json.loads(out.read_text(encoding="utf-8"))["reason_codes"] == ["GMI_RECEIPT_INVALID"]
     assert invalid["artifact_hashes"]["theme_state"] is None
 
 
@@ -1080,7 +1114,7 @@ def test_receipt_is_refused_anywhere_inside_the_repository(tmp_path) -> None:
     assert (tmp_path / "outside.json").is_file()
 
 
-def test_nightly_inventory_write_failure_never_flips_the_checkpoint() -> None:
+def test_nightly_inventory_write_failure_never_flips_the_checkpoint(tmp_path, monkeypatch) -> None:
     """M4: the alarm-only inventory write is wrapped; manifest_rc cannot come from it."""
     source = _nightly_source()
     heredoc = _python_heredocs(source)[2]
@@ -1089,3 +1123,14 @@ def test_nightly_inventory_write_failure_never_flips_the_checkpoint() -> None:
     assert "try:" in tail and "except OSError" in tail
     assert "::warning title=prophet full-population inventory" in tail
     assert "sys.exit" not in tail and "raise" not in tail
+    # round-2 N5: run the extracted block itself against an unwritable target — it must print the
+    # warning and return normally (the shell's manifest_rc then stays 0).
+    import io, contextlib
+    blocker = tmp_path / "not-a-dir"
+    blocker.write_text("x", encoding="utf-8")
+    monkeypatch.setenv("PROPHET_INVENTORY", str(blocker / "inventory.json"))
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out):
+        exec(compile(tail, "nightly-inventory-block", "exec"), {"os": os, "json": json, "Path": Path, "after": {"k": 1}})
+    assert "::warning title=prophet full-population inventory" in out.getvalue()
+    assert not (blocker / "inventory.json").exists()
