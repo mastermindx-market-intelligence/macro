@@ -10265,7 +10265,9 @@ jobs:
         # `_r2_client()`, and every R2 path this suite exercises either deletes
         # the R2 credential env vars or injects a fake client object directly —
         # the real boto3 import is never reached.
-        run: pip install pytest pandas numpy pyarrow fastapi httpx pyyaml requests jinja2 playwright
+        # W2's frozen estimator imports scipy.stats at collection time; the
+        # isolated prophet-lab CI environment must include scipy explicitly.
+        run: pip install pytest pandas numpy scipy pyarrow fastapi httpx pyyaml requests jinja2 playwright
       - name: Prophet Operator Lab — projection, real-reader chain, transport, timeparse, commissioning-prep
         run: >
           python -m pytest
