@@ -1,4 +1,4 @@
-"""Entry Timing W2 — T1 feasibility census (v6). Dates, tickers, lane/tier flags and commit
+"""Entry Timing W2 — T1 feasibility census (v7). Dates, tickers, lane/tier flags and commit
 times ONLY. Reads no price, grade, outcome, excess or paired-race column; the SPY parquet is
 opened for its DATE INDEX only (the NYSE session calendar).
 
@@ -103,7 +103,7 @@ def screening(c: pd.DataFrame, opened: list[dict]) -> dict:
 
 
 def _candidate_months() -> list[str]:
-    out = subprocess.run(["git", "log", "origin/main", "--first-parent", "--name-only", "--format=", "--",
+    out = subprocess.run(["git", "log", pinned_main(), "--first-parent", "--name-only", "--format=", "--",
                           "data/us_prophet_rank/candidates/"], capture_output=True, text=True, check=True).stdout.split()
     return sorted({Path(x).stem for x in out if x.endswith(".parquet") and Path(x).stem.startswith("2026-")})
 
@@ -124,7 +124,7 @@ def commit_walk(months: list[str] | None, sessions: list[str], buffer_minutes: i
     n_commits = 0
     for m in months:
         rel = f"data/us_prophet_rank/candidates/{m}.parquet"
-        log = subprocess.run(["git", "log", "origin/main", "--first-parent", "--reverse", "--format=%H %cI", "--", rel],
+        log = subprocess.run(["git", "log", pinned_main(), "--first-parent", "--reverse", "--format=%H %cI", "--", rel],
                              capture_output=True, text=True, check=True).stdout.split()
         for sha, ctime in zip(log[0::2], log[1::2]):
             n_commits += 1
@@ -173,7 +173,7 @@ def commit_walk(months: list[str] | None, sessions: list[str], buffer_minutes: i
             shift[si[ks] - si[sd]] = shift.get(si[ks] - si[sd], 0) + 1
     buy_first = sorted((sd, t) for sd, ts in buy_at_first.items() for t in ts)
     return {"basis": "first-parent origin/main commit clock, corrected by the server check-suite witness when --server-arrival; lane state = first blob per stamp_date; a later BUY-set change = HEAL (GAP)",
-            "origin_main_sha": subprocess.run(["git", "rev-parse", "origin/main"], capture_output=True, text=True, check=True).stdout.strip(),
+            "origin_main_sha": pinned_main(),
             "server_arrival": srv, "skipped_blobs": list(SKIPPED_BLOBS),
             "stamp_dates_in_two_monthly_files": sorted(sd for sd, ms in month_of.items() if len(ms) > 1),
             "knowable_shift_sessions_all_stamp_dates": {str(k): v for k, v in sorted(shift.items())},
@@ -189,6 +189,17 @@ USE_SERVER_ARRIVAL = False
 
 SERVER_ARRIVAL: dict[str, str] = {}   # sha -> ISO instant (filled by server_arrival())
 SKIPPED_BLOBS: list[str] = []
+SKIPPED_DOCS: list[str] = []
+OFF_MAIN_WITNESS: set[str] = set()     # commits that also carry a check suite on another branch
+MAIN_SHA: str | None = None            # origin/main resolved ONCE at startup; every walk reads this commit
+
+
+def pinned_main() -> str:
+    """Resolve origin/main once per process (the ref is shared across worktrees and moves)."""
+    global MAIN_SHA
+    if MAIN_SHA is None:
+        MAIN_SHA = subprocess.run(["git", "rev-parse", "origin/main"], capture_output=True, text=True, check=True).stdout.strip()
+    return MAIN_SHA
 
 
 def server_arrival(shas: list[str]) -> dict:
@@ -199,7 +210,7 @@ def server_arrival(shas: list[str]) -> dict:
     for i in range(0, len(shas), 100):
         batch = shas[i:i + 100]
         q = "query{repository(owner:\"%s\",name:\"%s\"){" % (owner, name)
-        q += " ".join('c%d: object(oid:"%s"){... on Commit{oid committedDate checkSuites(first:20){nodes{createdAt}}}}' % (j, sha) for j, sha in enumerate(batch))
+        q += " ".join('c%d: object(oid:"%s"){... on Commit{oid committedDate checkSuites(first:50){nodes{createdAt branch{name}}}}}' % (j, sha) for j, sha in enumerate(batch))
         q += "}}"
         r = subprocess.run(["gh", "api", "graphql", "-f", f"query={q}"], capture_output=True, text=True)
         if r.returncode != 0:
@@ -208,13 +219,17 @@ def server_arrival(shas: list[str]) -> dict:
         data = json.loads(r.stdout)["data"]["repository"]
         for j, sha in enumerate(batch):
             node = data.get(f"c{j}") or {}
-            times = [n["createdAt"] for n in (node.get("checkSuites") or {}).get("nodes", []) if n.get("createdAt")]
+            nodes = (node.get("checkSuites") or {}).get("nodes", [])
+            times = [n["createdAt"] for n in nodes if n.get("createdAt") and (n.get("branch") or {}).get("name") == "main"]
+            if any(n.get("createdAt") and (n.get("branch") or {}).get("name") != "main" for n in nodes):
+                OFF_MAIN_WITNESS.add(sha)
             if times:
                 SERVER_ARRIVAL[sha] = min(times)
                 found += 1
             else:
                 missing.append(sha)
-    return {"commits": len(shas), "with_server_witness": found, "without": len(missing)}
+    return {"commits": len(shas), "with_server_witness_on_main": found, "without": len(missing),
+            "with_a_suite_on_another_branch": len(OFF_MAIN_WITNESS & set(shas)), "witness_rule": "earliest check-suite createdAt whose branch is main"}
 
 
 def _knowable(ctime: str, sessions: list[str], buffer_minutes: int, sha: str | None = None):
@@ -238,7 +253,7 @@ def document_walk(sessions: list[str], buffer_minutes: int) -> dict:
     sys.path.insert(0, ".")
     from hashlib import sha256
     from engine.us_candidate_episode_intake import canonical_json  # noqa: E402
-    log = subprocess.run(["git", "log", "origin/main", "--first-parent", "--reverse", "--format=%H %cI", "--", TURN_WATCH_DIR],
+    log = subprocess.run(["git", "log", pinned_main(), "--first-parent", "--reverse", "--format=%H %cI", "--", TURN_WATCH_DIR],
                          capture_output=True, text=True, check=True).stdout.split()
     earliest: dict[str, tuple[str, str, str]] = {}
     seen: set[str] = set()
@@ -253,11 +268,14 @@ def document_walk(sessions: list[str], buffer_minutes: int) -> dict:
             try:
                 doc = json.loads(raw)
             except (json.JSONDecodeError, UnicodeDecodeError):
+                SKIPPED_DOCS.append(f"{blob[:12]}:undecodable")
                 continue
             if not isinstance(doc, dict) or not isinstance(doc.get("content_sha256"), str) or not isinstance(doc.get("data_session"), str):
+                SKIPPED_DOCS.append(f"{blob[:12]}:shape")
                 continue
             expected = sha256(canonical_json({k: v for k, v in doc.items() if k != "content_sha256"}).encode("utf-8")).hexdigest()
             if expected != doc["content_sha256"]:
+                SKIPPED_DOCS.append(f"{blob[:12]}:digest")
                 continue
             receipt = f"sha256:{doc['content_sha256']}"
             if receipt not in earliest:
@@ -272,7 +290,7 @@ def document_walk(sessions: list[str], buffer_minutes: int) -> dict:
         if ks in si and ds in si:
             shift[si[ks] - si[ds]] = shift.get(si[ks] - si[ds], 0) + 1
     return {"basis": "first-parent origin/main commit clock, corrected by the server check-suite witness when --server-arrival",
-            "server_arrival": srv, "knowable_shift_sessions_all_receipts": {str(k): v for k, v in sorted(shift.items())},
+            "origin_main_sha": pinned_main(), "skipped_docs": list(SKIPPED_DOCS), "server_arrival": srv, "knowable_shift_sessions_all_receipts": {str(k): v for k, v in sorted(shift.items())},
             "commits_walked": len(log) // 2, "blobs": len(seen), "receipts": len(earliest), "knowable": knowable}
 
 
@@ -377,6 +395,7 @@ def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk
         pre = sessions[max(0, i0 - k): i0]
         sid = o["security_id"]
         led, pre_gap, pre_unknown = False, False, False
+        late_unit = False   # m4: the late-knowable counter counts units once, not rows
         for d in pre:
             if d not in healthy:
                 pre_gap = True
@@ -411,7 +430,8 @@ def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk
                     unknown = "signal_asof"
                     break
                 if walk is not None and (knowable_stamp.get(d) is None or knowable_stamp[d] > k_limit):
-                    counts["t1_buy_stamp_inside_k_but_knowable_outside"] += 1
+                    counts["t1_buy_stamp_inside_k_but_knowable_outside"] += (not late_unit)
+                    late_unit = True
                     late_hit_lag[si[d] - i0] = late_hit_lag.get(si[d] - i0, 0) + 1
                     continue   # not executable inside K: a later in-window row may still be
                 t_cur, t_sym = d, hit[0]

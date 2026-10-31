@@ -43,11 +43,13 @@
  },
  "commit_walk": {
   "basis": "first-parent origin/main commit clock, corrected by the server check-suite witness when --server-arrival; lane state = first blob per stamp_date; a later BUY-set change = HEAL (GAP)",
-  "origin_main_sha": "761e814eda8460d09ad6c53adc8ee495b4283cf1",
+  "origin_main_sha": "a7eef2ce9737f35e26cb31eec9d9412fb98535dd",
   "server_arrival": {
    "commits": 44,
-   "with_server_witness": 31,
-   "without": 13
+   "with_server_witness_on_main": 31,
+   "without": 13,
+   "with_a_suite_on_another_branch": 0,
+   "witness_rule": "earliest check-suite createdAt whose branch is main"
   },
   "skipped_blobs": [],
   "stamp_dates_in_two_monthly_files": [],
@@ -95,49 +97,7 @@
     "knowable_session": "2026-08-24",
     "server_witness": true
    },
-   "2026-08-18": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
-   "2026-08-12": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
-   "2026-08-07": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
-   "2026-08-14": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
    "2026-08-19": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
-   "2026-08-20": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
-   "2026-08-05": {
-    "commit": "69268b06502c",
-    "arrived_et": "2026-08-23T19:25:44-04:00",
-    "knowable_session": "2026-08-24",
-    "server_witness": true
-   },
-   "2026-08-06": {
     "commit": "69268b06502c",
     "arrived_et": "2026-08-23T19:25:44-04:00",
     "knowable_session": "2026-08-24",
@@ -149,7 +109,49 @@
     "knowable_session": "2026-08-24",
     "server_witness": true
    },
+   "2026-08-07": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-20": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
    "2026-08-21": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-18": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-05": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-12": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-14": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-06": {
     "commit": "69268b06502c",
     "arrived_et": "2026-08-23T19:25:44-04:00",
     "knowable_session": "2026-08-24",
@@ -417,10 +419,14 @@
  },
  "document_walk": {
   "basis": "first-parent origin/main commit clock, corrected by the server check-suite witness when --server-arrival",
+  "origin_main_sha": "a7eef2ce9737f35e26cb31eec9d9412fb98535dd",
+  "skipped_docs": [],
   "server_arrival": {
    "commits": 54,
-   "with_server_witness": 23,
-   "without": 31
+   "with_server_witness_on_main": 23,
+   "without": 31,
+   "with_a_suite_on_another_branch": 0,
+   "witness_rule": "earliest check-suite createdAt whose branch is main"
   },
   "knowable_shift_sessions_all_receipts": {
    "1": 37,
@@ -888,7 +894,7 @@
    "t1_censored_gap_no_stamp": 918,
    "t1_unknown_signal_asof": 1,
    "t1_unknown_identity": 0,
-   "t1_buy_stamp_inside_k_but_knowable_outside": 23,
+   "t1_buy_stamp_inside_k_but_knowable_outside": 21,
    "t1_identified_exact_gap_after_admission": 26,
    "exact_zero_lag": 15,
    "exact_knowable_missing": 0,
@@ -974,7 +980,7 @@
    "1": 1076,
    "2": 11
   },
-  "origin_main_sha": "761e814eda8460d09ad6c53adc8ee495b4283cf1",
+  "origin_main_sha": "a7eef2ce9737f35e26cb31eec9d9412fb98535dd",
   "t2m_identified": false,
   "t1_knowability_shift_sessions_exact": {
    "1": 26
@@ -999,17 +1005,23 @@
   "executable_lead_sessions_exact_strict": null
  },
  "provenance": {
-  "census_version": "v6",
+  "census_version": "v7",
   "command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <W1 r3 receipt map> --commit-walk --document-walk --server-arrival --k 10 --buffer-minutes 30 --r-from 2026-08-26 --r-to 2026-10-23",
   "receipt_sessions_source": "turn_watch_receipt_sessions(data_root, git_ref='origin/main') from scripts/report_us_candidate_episode_waterfall.py at PR #10277 head d03acfd075d9 (54 receipts); re-derived at freeze, never hand-edited",
-  "lane_state": "first-parent ARRIVAL on origin/main pinned at 761e814eda84 (156 commits of the four monthly candidates parquets 2026-07..10): the first blob carrying each stamp_date fixes its BUY rows, curated coverage and signal_asof; a later blob that changes that date's BUY set is a HEAL and the session is a GAP (09-14 +50 BUY rows healed 09-16; 10-19 +104 healed 10-21); HEAD never read for lane state; HEAD disagreement reported (154 BUY rows exist only in the two heals)",
+  "lane_state": "first-parent ARRIVAL on origin/main pinned at a7eef2ce9737 (resolved once at start-up and passed to every git read of both walks) (156 commits of the four monthly candidates parquets 2026-07..10): the first blob carrying each stamp_date fixes its BUY rows, curated coverage and signal_asof; a later blob that changes that date's BUY set is a HEAL and the session is a GAP (09-14 +50 BUY rows healed 09-16; 10-19 +104 healed 10-21); HEAD never read for lane state; HEAD disagreement reported (154 BUY rows exist only in the two heals)",
   "identity_join": "security-first: candidate symbols from the membership alias records, EVERY candidate confirmed by VendorAliasTable.resolve('membership', symbol, on=session) == security_id, tested on every healthy window session for every unit (uniform span); alias parquet sha256 pinned",
   "columns_read": "candidates: stamp_date, ticker, tier, lane, eligible, buyable, featured, signal_asof; OPENED episode_id/source_receipt/recorded_at/payload.{ticker_at_observation,opened_session,security_id,identity_epoch}; turn_watch documents (digest-verified) for receipt and commit time; data/reference/vendor_aliases.parquet; data/yahoo/SPY.parquet DATE INDEX only",
   "outcome_columns_read": "none",
   "generated": "2026-10-31",
   "knowable_session": "first NYSE session whose 16:00 ET close is strictly after the first-parent arrival instant + 30 min; applied per stamp_date (BUY arm) and per receipt (discovery arm); T1 is executable inside K only when k(c_cur) <= t_disc + K",
   "recorded_at_check": "OPENED recorded_at compared as an instant against the T0 fill instant (close of the session after k(c_disc)): 1087/1087 recorded at or before it",
-  "arrival_clock": "first-parent commit instant corrected to max(commit, earliest GitHub check-suite createdAt for the commit) via batched GraphQL (--server-arrival); witness present for 31/44 stamp commits and 23/54 document commits, every witness within 2 minutes after the commit clock, no knowable session changed; commits without a witness keep the commit clock and are flagged server_witness=false",
-  "v6_changes": "round-5 M1 server witness; M2 window scan continues past a late-knowable BUY row (late_hit_stamp_lag_sessions exported); M3 strict sets require a fully covered window (t1_identified_exact_gap_after_admission); M5 origin_main_sha pinned; m2 k_star from executable lead (stamp lag also reported); m4 knowable maps and shift distributions exported for all stamp dates, receipts and R units; m5 skipped_blobs counter (0) and temp-file cleanup; n1 per_stamp_medians_basis labelled HEAD; LATE_DISCOVERY_ARRIVAL count (11)"
+  "arrival_clock": "first-parent commit instant corrected to max(commit, earliest GitHub check-suite createdAt for the commit) via batched GraphQL (--server-arrival); witness present for 31/44 stamp commits and 23/54 document commits, every witness within 2 minutes after the commit clock, no knowable session changed; commits without a witness keep the commit clock and are flagged server_witness=false | v7: the witness is the earliest check suite whose branch is main (0 of the 98 walked commits carry a suite on another branch)",
+  "v6_changes": "round-5 M1 server witness; M2 window scan continues past a late-knowable BUY row (late_hit_stamp_lag_sessions exported); M3 strict sets require a fully covered window (t1_identified_exact_gap_after_admission); M5 origin_main_sha pinned; m2 k_star from executable lead (stamp lag also reported); m4 knowable maps and shift distributions exported for all stamp dates, receipts and R units; m5 skipped_blobs counter (0) and temp-file cleanup; n1 per_stamp_medians_basis labelled HEAD; LATE_DISCOVERY_ARRIVAL count (11)",
+  "v7_changes": [
+   "origin/main resolved once at start-up (MAIN_SHA) and passed to every git log / ls-tree of both walks; recorded in commit_walk, document_walk and freeze_basis (round-6 M2)",
+   "server witness restricted to check suites on branch main; with_server_witness_on_main + with_a_suite_on_another_branch exported (round-6 m5)",
+   "t1_buy_stamp_inside_k_but_knowable_outside counts distinct units (21), late_hit_stamp_lag_sessions still counts rows (23) (round-6 m4)",
+   "document walk records skipped blobs (undecodable / shape / digest) in skipped_docs (round-6 m7)"
+  ]
  }
 }
