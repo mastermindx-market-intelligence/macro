@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-06-17T20:15:44Z",
+ "accession": "0001437749-26-020976",
+ "cik": "0001874315",
+ "doc_byte_length": 42690,
+ "doc_sha256": "51a743a6e516626daa032fb0b95fcf52dea09512cd0f3626d7898889fc1ff882",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-06-17",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-31",
+ "primary_document": "satl20260131_10ka.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 6848,
+  "byte_start": 6831,
+  "normalized": "(Amendment No. 1)",
+  "normalized_sha256": "d8ba42c08467b381caa53adfe8b30719231789485f4e355a2a34e3c3097f5f10",
+  "raw": "(Amendment No. 1)",
+  "raw_sha256": "d8ba42c08467b381caa53adfe8b30719231789485f4e355a2a34e3c3097f5f10"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1874315/000143774926020976/satl20260131_10ka.htm",
+ "xbrl_contexts": []
+}

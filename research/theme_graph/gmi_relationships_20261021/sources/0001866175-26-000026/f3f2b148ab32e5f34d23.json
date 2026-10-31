@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-25T21:53:43Z",
+ "accession": "0001866175-26-000026",
+ "cik": "0001866175",
+ "doc_byte_length": 4341503,
+ "doc_sha256": "a5d01bd384222e652ef5586ea6381c3cdd85c57b128d1146ddcce4a20a655125",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "crgy-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2213698,
+  "byte_start": 2212459,
+  "normalized": "Enterprise Products Partners L.P.11.7%**",
+  "normalized_sha256": "373d64683c67b879634749b7e8d11443c47575408e79d1ac63065ed6be95099d",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#cff0fc;padding:2px 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">Enterprise Products Partners L.P.</span></td><td colspan=\"3\" style=\"background-color:#cff0fc;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-120\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-686\">11.7</ix:nonFraction>%</span></td><td colspan=\"3\" style=\"background-color:#cff0fc;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#cff0fc;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">*</span></td><td colspan=\"3\" style=\"background-color:#cff0fc;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#cff0fc;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">*</span></td></tr>",
+  "raw_sha256": "f3f2b148ab32e5f34d2326eb0752476df9dcc7b20e407eda7b8fd589155cc783"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1866175/000186617526000026/crgy-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 57029,
+   "byte_start": 56331,
+   "context_ref": "c-120",
+   "raw": "<xbrli:context id=\"c-120\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001866175</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">crgy:EnterpriseProductsPartnersL.P.Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "e176d7b9c550dbe0bfcd0677324fdd0718c206c97ac2abb68a5d40e52d95f2bf"
+  }
+ ]
+}

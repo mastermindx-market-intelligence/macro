@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-06-15T21:09:27Z",
+ "accession": "0001628280-26-043303",
+ "cik": "0001807794",
+ "doc_byte_length": 1712551,
+ "doc_sha256": "d4896817099c692f1d1d25678807cb8ef76df37ab45e96915cdab183cb1c6955",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-06-15",
+ "form": "10-K",
+ "period_of_report": "2026-05-02",
+ "primary_document": "crdo-20260502.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1044999,
+  "byte_start": 1043560,
+  "normalized": "Customer B32 %**",
+  "normalized_sha256": "7f78c460e96ec77f02fb524373e34403fecc55af900d2fca4a74243efe2e638b",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Helvetica',sans-serif;font-size:10pt;font-weight:400;line-height:100%\">Customer B</span></td><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Helvetica',sans-serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-51\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-374\">32</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Helvetica',sans-serif;font-size:10pt;font-weight:400;line-height:100%\">%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Helvetica',sans-serif;font-size:10pt;font-weight:400;line-height:100%\">*</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Helvetica',sans-serif;font-size:10pt;font-weight:400;line-height:100%\">*</span></td></tr>",
+  "raw_sha256": "4f628391f768b23847def66984156d9b362fbd015e2805c2fd0858a43f7e4fb1"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1807794/000162828026043303/crdo-20260502.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 24959,
+   "byte_start": 24299,
+   "context_ref": "c-51",
+   "raw": "<xbrli:context id=\"c-51\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001807794</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">crdo:CustomerBMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-05-04</xbrli:startDate><xbrli:endDate>2026-05-02</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "7886f7c4c4f63d3b7b871a251e7b0407d09bb77b933bdf19103519c08156a94e"
+  }
+ ]
+}

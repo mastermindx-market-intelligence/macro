@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-25T21:42:19Z",
+ "accession": "0001045810-26-000021",
+ "cik": "0001045810",
+ "doc_byte_length": 1967931,
+ "doc_sha256": "da9d303996fc11fe1e7d64c463bc3b338521fbf1291eacda3e269d446abfaa36",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2026-01-25",
+ "primary_document": "nvda-20260125.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 243745,
+  "byte_start": 243378,
+  "normalized": "While currently our supply chain is mainly concentrated in Asia, we are expanding into the U.S. and Latin America. We utilize foundries, such as Taiwan Semiconductor Manufacturing Company Limited, or TSMC, and Samsung Electronics Co., Ltd., or Samsung, to produce our semiconductor wafers. We purchase memory from SK Hynix Inc., Micron Technology, Inc., and Samsung.",
+  "normalized_sha256": "82bb55bb6556fefa6999563d5f4715a12cb3ca27d5f1667d91bd86cb1d3bb4d6",
+  "raw": " While currently our supply chain is mainly concentrated in Asia, we are expanding into the U.S. and Latin America. We utilize foundries, such as Taiwan Semiconductor Manufacturing Company Limited, or TSMC, and Samsung Electronics Co., Ltd., or Samsung, to produce our semiconductor wafers. We purchase memory from SK Hynix Inc., Micron Technology, Inc., and Samsung.",
+  "raw_sha256": "735da9f6a3fbc766c9c91dd6150660a8802da60bf69a9eaca8599d58935ac047"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+ "xbrl_contexts": []
+}

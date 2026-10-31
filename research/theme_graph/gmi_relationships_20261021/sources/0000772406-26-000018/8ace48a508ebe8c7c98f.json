@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 276047,
+  "byte_start": 275553,
+  "normalized": "In 2021, in an effort to alleviate some of our future expected supply constraints, the Company entered into a Capacity Reservation and Wafer Supply Commitment Agreement with GlobalFoundries on July 28, 2021 to reserve capacity and set wafer pricing for products purchased pursuant to the agreement through 2026. In February 2025, this agreement was amended to reflect an agreed change in the number of wafers to be shipped on a quarterly basis during calendar years 2025 and 2026.",
+  "normalized_sha256": "42abe947c662b6ace0147d0e92c2413ea3f496347fb4ec14f9e5f4432f217ae1",
+  "raw": "              In 2021, in an effort to alleviate some of our future expected supply constraints, the Company entered into a Capacity Reservation and Wafer Supply Commitment Agreement with GlobalFoundries on July 28, 2021 to reserve capacity and set wafer pricing for products purchased pursuant to the agreement through 2026. In February 2025, this agreement was amended to reflect an agreed change in the number of wafers to be shipped on a quarterly basis during calendar years 2025 and 2026.",
+  "raw_sha256": "8ace48a508ebe8c7c98fa0da586bcb4859850da354578baa0b9f6d6975b0a104"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": []
+}

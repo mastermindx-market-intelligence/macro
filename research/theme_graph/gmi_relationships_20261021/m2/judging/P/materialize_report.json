@@ -1,0 +1,248 @@
+{
+ "assessments": 0,
+ "candidates_total": 120,
+ "codes": {
+  "DUPLICATE_SPAN_BYTES": 1,
+  "ISSUER_ALREADY_EXTRACTED": 10,
+  "MAGNITUDE_BENCHMARK_UNSUPPORTED": 3,
+  "MAGNITUDE_PARSE_AMBIGUOUS": 2,
+  "MAGNITUDE_XBRL_AVAILABLE": 1
+ },
+ "counters": {
+  "duplicate_span_bytes": 1,
+  "excerpt_self_check_failed": 0,
+  "sources_reused": 70,
+  "sources_written": 0,
+  "subject_name_from_sec_name": 0
+ },
+ "coverage_by_state": {
+  "assessed": 10,
+  "no_supported_result": 1
+ },
+ "dirname": "P",
+ "edges": [
+  {
+   "object_issuer_id": "ISS:US-XNAS-GFS",
+   "species": "contract_manufacturing",
+   "subject_issuer_id": "ISS:US-XNAS-CRUS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-TSM",
+   "species": "contract_manufacturing",
+   "subject_issuer_id": "ISS:US-XNAS-CRUS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-FN",
+   "species": "contract_manufacturing",
+   "subject_issuer_id": "ISS:US-XNAS-NVDA"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-TSM",
+   "species": "contract_manufacturing",
+   "subject_issuer_id": "ISS:US-XNAS-NVDA"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AMKR",
+   "species": "contract_manufacturing",
+   "subject_issuer_id": "ISS:US-XNAS-QCOM"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-TSM",
+   "species": "contract_manufacturing",
+   "subject_issuer_id": "ISS:US-XNAS-QCOM"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-ARW",
+   "species": "distribution",
+   "subject_issuer_id": "ISS:US-XNAS-MCHP"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AAPL",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-CRUS"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-MU",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNAS-NVDA"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-TECK",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-FNV"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNAS-AAPL",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-MP"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-DOW",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-MP"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-GM",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-MP"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-JPM",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-NEM"
+  },
+  {
+   "object_issuer_id": "ISS:US-XNYS-AG",
+   "species": "supplier_customer",
+   "subject_issuer_id": "ISS:US-XNYS-WPM"
+  }
+ ],
+ "inputs": {
+  "P/candidates.jsonl": "a7eaa37892e13393967004e43a5dec413ba8fb1665fbafa087ab6524575388f1",
+  "P/fetch_ledger.jsonl": "eb9f2c16a23cd2f37ce3802b193b1096f973cdad86c1df2732596d796226f0a4",
+  "P/harvest_report.json": "57530515982d90c764aca5e4f4c1e11bd8b345533ae2195211cfa1b954996c88",
+  "P/packs/index.json": "e95f43ca5afbe3ac455424961f77a40eea89f9fb1483b19a17000538a4d7229c",
+  "research/theme_graph/coverage_20261019/UNIVERSE_MANIFEST.json": "5977c20a3bfde6280f9835d403579469d2c1252c5deb341f419c89125ca5fbd4",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/curated_aliases_v1.json": "413ea9e26b08a1b2d59099bc86456d9cad1ea0347cfb33bb1f42b11a1b4b8c76",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/filing_census_v1.json": "d5deb2764e67e25789452f11b2a4793b8c00eef5431474ad42bfde5a60affaa9",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/leaves_v1.json": "8e505316da9ccc1285227eec080a52e5e182f28780401dfa1817dd6c5313adef",
+  "research/theme_graph/gmi_relationships_20261021/m2_inputs/resolver_us_issuers_v1.json": "a18924867fa53f58c0e01ac873d5bc2a8d610a01b69ad333ea6dfb51183303cd"
+ },
+ "judged": 120,
+ "leaf": "P",
+ "non_edge_reason": {
+  "ANONYMOUS_ALIAS": 3,
+  "CN_SECURITY_LEVEL_ONLY": 5,
+  "OUT_OF_CORE_MARKET": 2,
+  "PRIVATE_COMPANY": 2,
+  "UNRESOLVED_COUNTERPARTY": 32
+ },
+ "observations": 89,
+ "outcomes": {
+  "admitted": 70,
+  "no_relationship": 34,
+  "refused": 6,
+  "skipped": 10
+ },
+ "rows_by_species": {
+  "contract_manufacturing": 34,
+  "distribution": 6,
+  "licensing": 4,
+  "supplier_customer": 45
+ },
+ "schema": "gmi_rel_m2.materialize_report/v1",
+ "unresolved_names": [
+  {
+   "count": 3,
+   "name": "Orezone Gold Corporation"
+  },
+  {
+   "count": 2,
+   "name": "GM"
+  },
+  {
+   "count": 2,
+   "name": "Groq, Inc."
+  },
+  {
+   "count": 1,
+   "name": "Advanced Semiconductor Engineering"
+  },
+  {
+   "count": 1,
+   "name": "Artemis"
+  },
+  {
+   "count": 1,
+   "name": "BMC Minerals Ltd."
+  },
+  {
+   "count": 1,
+   "name": "Glencore AG"
+  },
+  {
+   "count": 1,
+   "name": "Global Foundries"
+  },
+  {
+   "count": 1,
+   "name": "Hon Hai Precision Industry Co., Ltd."
+  },
+  {
+   "count": 1,
+   "name": "MMC"
+  },
+  {
+   "count": 1,
+   "name": "Mercator Minerals Ltd."
+  },
+  {
+   "count": 1,
+   "name": "Mitsubishi Materials Corporation"
+  },
+  {
+   "count": 1,
+   "name": "Panoro Minerals Ltd."
+  },
+  {
+   "count": 1,
+   "name": "Royal Bank of Canada"
+  },
+  {
+   "count": 1,
+   "name": "SK Hynix Inc."
+  },
+  {
+   "count": 1,
+   "name": "STATSChipPAC"
+  },
+  {
+   "count": 1,
+   "name": "Samsung Electronics Co., Ltd."
+  },
+  {
+   "count": 1,
+   "name": "Shenghe Resources (Singapore) International Trading PTE LTD."
+  },
+  {
+   "count": 1,
+   "name": "Shenghe Resources (Singapore) International Trading PTE. LTD."
+  },
+  {
+   "count": 1,
+   "name": "Shenghe Resources (Singapore) International Trading Pte. Ltd."
+  },
+  {
+   "count": 1,
+   "name": "Siliconware Precision Industries"
+  },
+  {
+   "count": 1,
+   "name": "Southern Peaks Mining LP"
+  },
+  {
+   "count": 1,
+   "name": "Southern Peaks Mining Limited"
+  },
+  {
+   "count": 1,
+   "name": "Standard Chartered"
+  },
+  {
+   "count": 1,
+   "name": "Sumitomo Corporation of Americas"
+  },
+  {
+   "count": 1,
+   "name": "Wistron Corporation"
+  },
+  {
+   "count": 1,
+   "name": "the New South Wales Minister of Planning"
+  },
+  {
+   "count": 1,
+   "name": "the U.S. Government"
+  }
+ ]
+}

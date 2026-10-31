@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-10T21:08:36Z",
+ "accession": "0001038074-26-000005",
+ "cik": "0001038074",
+ "doc_byte_length": 1674294,
+ "doc_sha256": "9e341102c42a9d25e6b7507e3d306292400c077473fc161e3272f9cb4f397ac4",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-10",
+ "form": "10-K",
+ "period_of_report": "2026-01-03",
+ "primary_document": "slab-20260103.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1209156,
+  "byte_start": 1208001,
+  "normalized": "Arrow Electronics28 %27",
+  "normalized_sha256": "c16713ab653785dfc8a1ad1b7cf3d230811511df4ac2e952ea14f6726892c7a4",
+  "raw": "Arrow Electronics</span></td><td colspan=\"2\" style=\"background-color:#cceeff;border-top:0.75pt solid #000000;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-89\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-600\">28</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;border-top:0.75pt solid #000000;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\">%</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cceeff;border-top:0.75pt solid #000000;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-90\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-601\">27",
+  "raw_sha256": "eacfa4cbeb4a26f133cd84ba14beadacdad5128fde2565d51a0274baccea221a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1038074/000103807426000005/slab-20260103.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 43041,
+   "byte_start": 42374,
+   "context_ref": "c-90",
+   "raw": "<xbrli:context id=\"c-90\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001038074</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">slab:ArrowElectronicsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">slab:DistributorsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-12-31</xbrli:startDate><xbrli:endDate>2024-12-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "63ee89fa3e301a3ee71c392cf889c61e302dfbda4014d2858c4122a2c2d27c40"
+  }
+ ]
+}

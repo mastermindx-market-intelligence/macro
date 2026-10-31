@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-21T20:10:55Z",
+ "accession": "0001104659-26-046005",
+ "cik": "0001090012",
+ "doc_byte_length": 3120110,
+ "doc_sha256": "05778a18a84a9082c66313a437f437b7ba304db84db4df05ddc82706ff52eb47",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-21",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-31",
+ "primary_document": "tmb-20251231x10ka.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 123841,
+  "byte_start": 123293,
+  "normalized": "Devon Energy Corporation (the “Company,” “Devon,” “our,” “us” or “we”) is filing this Amendment No. 1 on Form 10-K/A (this “Amendment”) to our Annual Report on Form 10-K for the fiscal year ended December 31, 2025 (the “Original Filing”), which was filed with the U.S. Securities and Exchange Commission (the “SEC”) on February 18, 2026. This Amendment is being filed to include the information required by Items 10 through 14 of Part III of Form 10-K.",
+  "normalized_sha256": "d10dd5cf38f7f7f07d85b9826a93b0d8114baf15c8a48643381a2429e7da1e5d",
+  "raw": "Devon Energy Corporation (the &#8220;Company,&#8221; &#8220;Devon,&#8221; &#8220;our,&#8221; &#8220;us&#8221; or &#8220;we&#8221;) is filing this Amendment No. 1 on Form 10-K/A (this &#8220;Amendment&#8221;) to our Annual Report on Form 10-K for the fiscal year ended December 31, 2025 (the &#8220;Original Filing&#8221;), which was filed with the U.S. Securities and Exchange Commission (the &#8220;SEC&#8221;) on February 18, 2026. This Amendment is being filed to include the information required by Items 10 through 14 of Part III of Form 10-K.",
+  "raw_sha256": "7d18745c689469e3d519db2301da26a7321b6c732b62f87e164fa3bcfcc7f5a2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1090012/000110465926046005/tmb-20251231x10ka.htm",
+ "xbrl_contexts": []
+}

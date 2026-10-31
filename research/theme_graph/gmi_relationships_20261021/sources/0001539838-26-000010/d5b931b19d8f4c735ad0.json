@@ -1,0 +1,52 @@
+{
+ "accepted_at": "2026-02-25T21:13:39Z",
+ "accession": "0001539838-26-000010",
+ "cik": "0001539838",
+ "doc_byte_length": 3465238,
+ "doc_sha256": "d0d60fbe5813cb16822f652608a4fa5a97a71456fc589207c7c55b8050bc4394",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "fang-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2071326,
+  "byte_start": 2069473,
+  "normalized": "The Company is subject to risk resulting from the concentration of its crude oil and natural gas sales and receivables with several significant purchasers. For the year ended December 31, 2025, four purchasers each accounted for more than 10% of our revenue: Medallion Midstream (16%), Shell Trading (USA) Company (“Shell”) (13%), Enterprise Crude Oil LLC (“Enterprise”) (12%) and Vitol Inc. (“Vitol”) (11%). For the year ended December 31, 2024, four purchasers each accounted for more than 10% of the Company’s revenue: Vitol (17%), Enterprise (15%), Shell (13%) and DK Trading & Supply LLC (“DK”) (11%).",
+  "normalized_sha256": "1df76cf391ae00b8f2a99f99e92cc836ce27a745d528c1c230fbf43b99a3a2d8",
+  "raw": "The Company is subject to risk resulting from the concentration of its crude oil and natural gas sales and receivables with several significant purchasers. For the year ended December 31, 2025, four purchasers each accounted for more than 10% of our revenue: Medallion Midstream (<ix:nonFraction unitRef=\"number\" contextRef=\"c-139\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-629\">16</ix:nonFraction>%), Shell Trading (USA) Company (&#8220;Shell&#8221;) (<ix:nonFraction unitRef=\"number\" contextRef=\"c-140\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-630\">13</ix:nonFraction>%), Enterprise Crude Oil LLC (&#8220;Enterprise&#8221;) (<ix:nonFraction unitRef=\"number\" contextRef=\"c-141\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-631\">12</ix:nonFraction>%) and Vitol Inc. (&#8220;Vitol&#8221;) (<ix:nonFraction unitRef=\"number\" contextRef=\"c-142\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-632\">11</ix:nonFraction>%). For the year ended December&#160;31, 2024, four purchasers each accounted for more than 10% of the Company&#8217;s revenue: Vitol (<ix:nonFraction unitRef=\"number\" contextRef=\"c-143\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-633\">17</ix:nonFraction>%), Enterprise (<ix:nonFraction unitRef=\"number\" contextRef=\"c-144\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-634\">15</ix:nonFraction>%), Shell (<ix:nonFraction unitRef=\"number\" contextRef=\"c-145\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-635\">13</ix:nonFraction>%) and DK Trading &amp; Supply LLC (&#8220;DK&#8221;) (<ix:nonFraction unitRef=\"number\" contextRef=\"c-146\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-636\">11</ix:nonFraction>%).",
+  "raw_sha256": "d5b931b19d8f4c735ad0fc5ba7437d322836c4b70674fc8bdc71d3d208712eb3"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1539838/000153983826000010/fang-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 64899,
+   "byte_start": 64229,
+   "context_ref": "c-139",
+   "raw": "<xbrli:context id=\"c-139\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001539838</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">fang:MedallionMidstreamMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "0b4927a44e8a5825708870f29805056515edba9b5cf2208b60b2525c49e1a96e"
+  },
+  {
+   "byte_end": 65573,
+   "byte_start": 64899,
+   "context_ref": "c-140",
+   "raw": "<xbrli:context id=\"c-140\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001539838</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">fang:ShellTradingUSACompanyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "9cb3000ee609c8c5a83deaa7666c1f5cafcbd5aef7cd0d34b4318658827293e8"
+  },
+  {
+   "byte_end": 66246,
+   "byte_start": 65573,
+   "context_ref": "c-141",
+   "raw": "<xbrli:context id=\"c-141\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001539838</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">fang:EnterpriseCrudeOilLLCMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "7e31ae5e44ab476efb2601b18fb6494d0ff9eb3a4a943ce2735f8fdbfbb0fb16"
+  },
+  {
+   "byte_end": 66907,
+   "byte_start": 66246,
+   "context_ref": "c-142",
+   "raw": "<xbrli:context id=\"c-142\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001539838</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">fang:VitolInc.Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "f567750e431086ce86af793d57231ef10709ab54a154a0e162bdb9c1f9885803"
+  }
+ ]
+}

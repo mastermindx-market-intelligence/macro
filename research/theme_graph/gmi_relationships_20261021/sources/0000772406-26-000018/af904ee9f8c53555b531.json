@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 278159,
+  "byte_start": 277770,
+  "normalized": "If this were to occur, we may experience delays in product launches or supply shortages for certain products, which could cause an unanticipated decline in our sales and damage our existing customer relationships and our ability to establish new customer relationships. In addition, if GlobalFoundries experiences financial difficulties or goes into bankruptcy, it could be difficult or",
+  "normalized_sha256": "f138d486bd6d3861cb911c47277e8fd633b2ceea30ceac93794774df34af935d",
+  "raw": "  If this were to occur, we may experience delays in product launches or supply shortages for certain products, which could cause an unanticipated decline in our sales and damage our existing customer relationships and our ability to establish new customer relationships. In addition, if GlobalFoundries experiences financial difficulties or goes into bankruptcy, it could be difficult or ",
+  "raw_sha256": "af904ee9f8c53555b53172f1e915b1a457e3eb93aa6fa9f45776d1d5219782b4"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": []
+}

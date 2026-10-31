@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-04-13T18:25:07Z",
+ "accession": "0001493152-26-016338",
+ "cik": "0000771266",
+ "doc_byte_length": 1805474,
+ "doc_sha256": "7b69216bb04f67b346c897eb5e3a1d8ab835422646f33a0d8e8dca3597c3a549",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-13",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "form10-k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1463434,
+  "byte_start": 1461754,
+  "normalized": "Collins Aerospace 9% 11 %",
+  "normalized_sha256": "570dc35add09e85fb67442124f247d2a292b479dd24f7e095c71258666b2599d",
+  "raw": "<tr style=\"vertical-align: bottom; background-color: rgb(204,238,255)\">\n    <td style=\"text-align: left\">Collins Aerospace</td><td style=\"font-weight: bold\">&#160;</td>\n    <td style=\"font-weight: bold; text-align: left\">&#160;</td><td id=\"xdx_98C_eus-gaap--ConcentrationRiskPercentage1_dp_c20241229__20251227__us-gaap--ConcentrationRiskByBenchmarkAxis__us-gaap--SalesRevenueNetMember__us-gaap--ConcentrationRiskByTypeAxis__us-gaap--CustomerConcentrationRiskMember__srt--MajorCustomersAxis__custom--CollinsAerospaceMember_zACsjgjalXnb\" style=\"font-weight: bold; text-align: right\"><ix:nonFraction name=\"us-gaap:ConcentrationRiskPercentage1\" contextRef=\"From2024-12-292025-12-27_us-gaap_SalesRevenueNetMember_us-gaap_CustomerConcentrationRiskMember_custom_CollinsAerospaceMember\" id=\"Fact001490\" format=\"ixt:numdotdecimal\" decimals=\"INF\" scale=\"-2\" unitRef=\"Pure\">9</ix:nonFraction></td><td style=\"font-weight: bold; text-align: left\">%</td><td>&#160;</td>\n    <td style=\"text-align: left\">&#160;</td><td id=\"xdx_987_eus-gaap--ConcentrationRiskPercentage1_dp_c20231231__20241228__us-gaap--ConcentrationRiskByBenchmarkAxis__us-gaap--SalesRevenueNetMember__us-gaap--ConcentrationRiskByTypeAxis__us-gaap--CustomerConcentrationRiskMember__srt--MajorCustomersAxis__custom--CollinsAerospaceMember_zWFNGl3PYBv\" style=\"text-align: right\"><ix:nonFraction name=\"us-gaap:ConcentrationRiskPercentage1\" contextRef=\"From2023-12-312024-12-28_us-gaap_SalesRevenueNetMember_us-gaap_CustomerConcentrationRiskMember_custom_CollinsAerospaceMember\" id=\"Fact001491\" format=\"ixt:numdotdecimal\" decimals=\"INF\" scale=\"-2\" unitRef=\"Pure\">11</ix:nonFraction></td>\n    <td style=\"text-align: left\">%</td></tr>",
+  "raw_sha256": "1889abd3e55e1cc0ebf2c721db9bb8b53074376bfb5749e48b456e8f12bb4937"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/771266/000149315226016338/form10-k.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 161378,
+   "byte_start": 160480,
+   "context_ref": "From2024-12-292025-12-27_us-gaap_SalesRevenueNetMember_us-gaap_CustomerConcentrationRiskMember_custom_CollinsAerospaceMember",
+   "raw": "<xbrli:context id=\"From2024-12-292025-12-27_us-gaap_SalesRevenueNetMember_us-gaap_CustomerConcentrationRiskMember_custom_CollinsAerospaceMember\">\n      <xbrli:entity>\n        <xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000771266</xbrli:identifier>\n        <xbrli:segment>\n          <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember>\n          <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember>\n          <xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">KOPN:CollinsAerospaceMember</xbrldi:explicitMember>\n        </xbrli:segment>\n      </xbrli:entity>\n      <xbrli:period>\n        <xbrli:startDate>2024-12-29</xbrli:startDate>\n        <xbrli:endDate>2025-12-27</xbrli:endDate>\n      </xbrli:period>\n    </xbrli:context>",
+   "raw_sha256": "03f49aef7ec870c505fdee78b581a5b6245a2ca0638512c0fdfef59d9a140bc5"
+  },
+  {
+   "byte_end": 162281,
+   "byte_start": 161383,
+   "context_ref": "From2023-12-312024-12-28_us-gaap_SalesRevenueNetMember_us-gaap_CustomerConcentrationRiskMember_custom_CollinsAerospaceMember",
+   "raw": "<xbrli:context id=\"From2023-12-312024-12-28_us-gaap_SalesRevenueNetMember_us-gaap_CustomerConcentrationRiskMember_custom_CollinsAerospaceMember\">\n      <xbrli:entity>\n        <xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000771266</xbrli:identifier>\n        <xbrli:segment>\n          <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember>\n          <xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember>\n          <xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">KOPN:CollinsAerospaceMember</xbrldi:explicitMember>\n        </xbrli:segment>\n      </xbrli:entity>\n      <xbrli:period>\n        <xbrli:startDate>2023-12-31</xbrli:startDate>\n        <xbrli:endDate>2024-12-28</xbrli:endDate>\n      </xbrli:period>\n    </xbrli:context>",
+   "raw_sha256": "d2c699c28806da5122d988c114c65d813c828e04d062ba33d248377c35c0e2c7"
+  }
+ ]
+}

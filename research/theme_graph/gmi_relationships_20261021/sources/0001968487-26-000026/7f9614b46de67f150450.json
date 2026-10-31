@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-07-30T20:15:52Z",
+ "accession": "0001968487-26-000026",
+ "cik": "0001968487",
+ "doc_byte_length": 8484612,
+ "doc_sha256": "83a3ff19bcc31c89ed98d6ea2d3d5ec825ebd528f52bbd6668f5e64031384b79",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-30",
+ "form": "10-K",
+ "period_of_report": "2026-05-31",
+ "primary_document": "ws-20260531.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3263842,
+  "byte_start": 3262900,
+  "normalized": "Customer B 14",
+  "normalized_sha256": "b42ad4b9459400f3e6250213ba6498e8196c92fdfdfe7c768572358c67f7eef3",
+  "raw": "Customer B</span></p></td>\n           <td style=\"padding-top:0.01in;white-space:nowrap;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;text-align:left;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:left;\"><span style=\"font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n           <td style=\"padding-top:0.01in;white-space:pre-wrap;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;text-align:center;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:right;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_91025453-4c29-44c9-b95f-0ea9e18ea72f\" contextRef=\"C_d73c96c6-c741-4bb6-8aa4-b94289bfa132\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">14",
+  "raw_sha256": "7f9614b46de67f150450c8cb6c62fd6a9adbb7a82335801661a563f3f764d5f9"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1968487/000196848726000026/ws-20260531.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 152263,
+   "byte_start": 151545,
+   "context_ref": "C_d73c96c6-c741-4bb6-8aa4-b94289bfa132",
+   "raw": "<xbrli:context id=\"C_d73c96c6-c741-4bb6-8aa4-b94289bfa132\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001968487</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:ProductConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">ws:LargestAutomotiveCustomers-CustomerBMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-06-01</xbrli:startDate><xbrli:endDate>2026-05-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "5f1a2a6dd3b814ba063edd451815704e9c12fd31df554aaced0e999a2506fb01"
+  }
+ ]
+}

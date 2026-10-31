@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1327442,
+  "byte_start": 1325852,
+  "normalized": "The balance of this reservation fee is $6.7 million as of March 28, 2026, and is recorded in \"Other current assets\" on the consolidated balance sheets within the short-term or long-term classification, as appropriate. In addition, the Company pre-paid GlobalFoundries $195 million for future wafer purchases, which are credited back to the Company as a portion of the price of wafers purchased, which began in the Company's second fiscal quarter of 2024. The balance of the prepayment is $14.7 million at March 28, 2026, and is currently recorded in \"Prepaid wafers\" on the consolidated balance sheets.",
+  "normalized_sha256": "32433d85802149520fb198e1603df82ba12081fca8900a8a9a70563e414634b4",
+  "raw": "  The balance of this reservation fee is $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-4\" decimals=\"-5\" name=\"crus:UnamortizedCapacityReservationFees\" scale=\"6\" id=\"f-950\">6.7</ix:nonFraction>&#160;million as of March&#160;28, 2026, and is recorded in \"</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-style:italic;font-weight:400;line-height:120%\">Other current assets</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">\" on the consolidated balance sheets within the short-term or long-term classification, as appropriate.  In addition, the Company pre-paid GlobalFoundries $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-195\" decimals=\"-6\" name=\"crus:PaymentsForPurchaseCommitmentsPrepaidWafers\" scale=\"6\" id=\"f-951\">195</ix:nonFraction>&#160;million for future wafer purchases, which are credited back to the Company as a portion of the price of wafers purchased, which began in the Company's second fiscal quarter of 2024.  The balance of the prepayment is $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-4\" decimals=\"-5\" name=\"crus:PurchaseCommitmentsPrepaidWafers\" scale=\"6\" id=\"f-952\">14.7</ix:nonFraction>&#160;million at March&#160;28, 2026, and is currently recorded in \"</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-style:italic;font-weight:400;line-height:120%\">Prepaid wafers</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">\" on the consolidated balance sheets.",
+  "raw_sha256": "491dba35f3301322f02d17ba6d426825b8234624bc603b54c061981847498618"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": []
+}
