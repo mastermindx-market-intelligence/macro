@@ -36,3 +36,12 @@ them unchanged. A seal's `sealed_by` line carries the lane id named in that
 lane's packet; the admitted run that performed the work is recorded in the
 pull request that merged the labels. The isolation test requires a seal beside
 every label file. Packs without a `labels/` directory are not yet labelled.
+
+## Packages wave 2 (2026-10-31)
+
+Second labeling wave under split decision 2 (`DEC:FIF-Q0-SPLIT-DECISION-2-SECOND-LABELING-WAVE-20261031`):
+45 accessions, nine per issuer (CAT, BAC, AAPL, SNOW, GOOGL; FY2020–FY2023 10-K/10-Q as
+predeclared in `held_out_contract.json`), captured by lane `fif-heldout-cap2-20261031-r4`
+on host `ubuntu2` into `~/lanes/stage/fif-heldout` (new accession directories beside the
+wave-one ones). Digest-only `package_manifest.json` per package; each per-CIK
+`capture_index.json` / `request_log.jsonl` was merged by the capture script, not rewritten.
