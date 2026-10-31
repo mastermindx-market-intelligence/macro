@@ -25,7 +25,14 @@ def reader(source):
     def native(symbol, start, end, cutoff):
         if symbol != "SYNTHETIC:stock":
             raise ValueError("source identity not in owner bundle")
-        return _aggregate(source["minutes"], "stock", source["streams"]["stock"],
+        # Preserve the *existing owner's* first-seen / identity / basis
+        # refusals before invoking its existing minute aggregator. This
+        # synthetic reader adapter does not grant any real market admission.
+        metadata = source["streams"]["stock"]
+        refusals = _metadata_errors(metadata, clock(cutoff), SESSION)
+        if refusals:
+            return {"availability": "unavailable", "refusals": refusals}
+        return _aggregate(source["minutes"], "stock", metadata,
                           clock(start), clock(end), clock(cutoff))
     return native
 
@@ -54,6 +61,30 @@ class NativeOwnerSeam(unittest.TestCase):
                 self.assertEqual(bars[-1]["stub_minutes"], 30)
                 self.assertTrue(all(x["source_sha256"] for x in bars[:-1]))
                 self.assertTrue(all(not x["source_admitted"] for x in bars))
+
+    def test_inferred_first_seen_rejected_through_same_owner_preflight(self):
+        source = bundle()
+        source["streams"]["stock"]["availability_basis"] = "inferred"
+        self.assertEqual(build_input_panel(source)["frames"][0]["availability"], "unavailable")
+        bars = windows(source)
+        self.assertEqual(bars[0]["status"], "UNAVAILABLE")
+        self.assertIn("FIRST_SEEN_NOT_OBSERVED", bars[0]["refusals"])
+
+    def test_future_metadata_basis_rejected_through_owner_preflight(self):
+        source = bundle()
+        source["streams"]["stock"]["basis"]["known_at"] = "2026-10-07T00:00:00Z"
+        self.assertEqual(build_input_panel(source)["frames"][0]["availability"], "unavailable")
+        bars = windows(source)
+        self.assertEqual(bars[0]["status"], "UNAVAILABLE")
+        self.assertIn("BASIS_NOT_BOUND_AT_DECISION", bars[0]["refusals"])
+
+    def test_wrong_identity_rejected_through_owner_preflight(self):
+        source = bundle()
+        source["streams"]["stock"]["identity"]["security_id"] = "DIFFERENT"
+        self.assertEqual(build_input_panel(source)["frames"][0]["availability"], "unavailable")
+        bars = windows(source)
+        self.assertEqual(bars[0]["status"], "UNAVAILABLE")
+        self.assertIn("IDENTITY_NOT_BOUND_AT_DECISION", bars[0]["refusals"])
 
     def test_missing_owner_minute_rejects_first_120m_bar(self):
         source = bundle()
