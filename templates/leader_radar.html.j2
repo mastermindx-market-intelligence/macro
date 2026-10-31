@@ -935,7 +935,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
       <span class="lr-ff-item"><b class="num">{{ ns.cnt_none }}</b> {{ t('no signal','无信号') }}</span>
       {% if ns.failed_rows | length > 0 %}
       <span class="lr-ff-chips">
-        {% for r in ns.failed_rows[:8] %}<a class="lr-ff-chip" href="us_stocks.html#{{ r.ticker }}">{{ r.ticker }}</a>{% endfor %}
+        {% for r in ns.failed_rows[:8] %}<a class="lr-ff-chip" href="stock.html#{{ r.ticker }}">{{ r.ticker }}</a>{% endfor %}
         {% if ns.failed_rows | length > 8 %}<span class="lr-ff-chip" style="background:none;color:var(--text-dim);">+{{ ns.failed_rows | length - 8 }}</span>{% endif %}
       </span>
       {% endif %}
@@ -977,7 +977,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
       {% if _hs|length > 0 %}
       <div class="rs-highs-tickers">
       {% for item in _hs[:18] %}
-        <a class="rs-highs-ticker" href="us_stocks.html#{{ item.ticker|e }}" aria-label="View {{ item.ticker|e }} on US stocks board">
+        <a class="rs-highs-ticker" href="stock.html#{{ item.ticker|e }}" aria-label="Open the {{ item.ticker|e }} stock page">
           {{ item.ticker|e }}{% if item.rs_leads_price %}<span class="rs-highs-leads">{{ t('RS first','强度领先') }}</span>{% endif %}{{ _rs_entry_stance(item) }}
         </a>
       {% endfor %}
@@ -1002,7 +1002,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
       {% if _recent|length > 0 %}
       <div class="rs-highs-tickers">
         {% for item in _recent[:30] %}
-        <a class="rs-highs-ticker" href="us_stocks.html#{{ item.ticker|e }}" data-tip-en="Last RS high {{ item.last_high_as_of|e }} — review entry state, do not chase" data-tip-zh="最近 RS 新高 {{ item.last_high_as_of|e }} — 先看入场状态，不要追高">
+        <a class="rs-highs-ticker" href="stock.html#{{ item.ticker|e }}" data-tip-en="Last RS high {{ item.last_high_as_of|e }} — review entry state, do not chase" data-tip-zh="最近 RS 新高 {{ item.last_high_as_of|e }} — 先看入场状态，不要追高">
           {{ item.ticker|e }}
           <span class="rs-highs-ticker-date">{{ item.last_high_as_of|e }}</span>
           {{ _rs_entry_stance(item) }}
@@ -1038,6 +1038,14 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
 {% set _rec_ordered = (_rec_rows|selectattr('episode.max_drawdown', 'number')|sort(attribute='episode.max_drawdown')|list) + (_rec_rows|rejectattr('episode.max_drawdown', 'number')|list) %}
 {% set _rec_n = _rec_ordered|length %}
 {% set _rec_unavail = _rec.counts.UNAVAILABLE if _rec.counts is defined and _rec.counts and _rec.counts.UNAVAILABLE is defined and _rec.counts.UNAVAILABLE else 0 %}
+{% set _lin = lr.lineage_roster if lr.lineage_roster is defined and lr.lineage_roster else {} -%}
+{% set _lin_prior = {} -%}
+{% if _lin.schema is defined and _lin.schema == 'leader_lineage.v1' -%}
+{%- for _le in (_lin.episodes or []) %}{% if _le.closed_on -%}
+{%- set _ = _lin_prior.setdefault(_le.ticker, []).append(_le) -%}
+{%- endif -%}
+{%- endfor -%}
+{%- endif %}
 <section class="lr-rec-panel glass" aria-label="Deep corrections and recovery">
   <div class="section-header">
     <span class="section-title">{{ t('Deep corrections and recovery', '深度回调与修复') }}</span>
@@ -1070,7 +1078,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
   {% set _dates = [_ep.opened_on, _ep.trough_on, _ep.repair_started_on, _ep.last_failure_on, _ep.recovered_on]|select('string')|list %}
   {% set _last = _dates|max if _dates else '' %}
     <div class="lr-rec-row" data-ticker="{{ item.ticker|e }}" data-state="{{ _st }}" data-stage="{{ _REC_STAGE.get(_st, 'none') }}" data-depth="{{ ('%.4f'|format((_dd|abs) * 100)) if _dd is not none else '' }}" data-below200="{{ _b200 }}" data-last="{{ _last }}">
-      <a class="rs-highs-ticker" href="us_stocks.html#{{ item.ticker|e }}" aria-label="View {{ item.ticker|e }} on US stocks board">{{ item.ticker|e }}</a>
+      <a class="rs-highs-ticker" href="stock.html#{{ item.ticker|e }}" aria-label="Open the {{ item.ticker|e }} stock page">{{ item.ticker|e }}</a>
       <div class="lr-rec-state">
         <span class="lr-rec-label"><span class="lr-rec-dot" aria-hidden="true"></span>{{ t(_REC_PLAIN_EN.get(_st, 'Recovery evidence unavailable'), _REC_PLAIN_ZH.get(_st, '修复证据不可用')) }}</span>
         <span class="lr-rec-stance">{{ t(_REC_STANCE_EN.get(_st, "Watch, don't chase"), _REC_STANCE_ZH.get(_st, '观察，不追高')) }}</span>
@@ -1096,6 +1104,26 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
         <span class="lr-rec-fact">{{ t('Relative strength back:', '相对强度恢复：') }} <b>{{ t('yes', '是') if (_ep.rs_recovered is defined and _ep.rs_recovered) else t('not yet', '尚未') }}</b></span>
         {% if _ep.repair_started_on is defined and _ep.repair_started_on %}<span class="lr-rec-fact">{{ t('Repair since', '修复始于') }} <b><time datetime="{{ _ep.repair_started_on }}">{{ _ep.repair_started_on }}</time></b></span>{% endif %}
         {% if _ep.recovered_on is defined and _ep.recovered_on %}<span class="lr-rec-fact">{{ t('Recovered', '恢复于') }} <b><time datetime="{{ _ep.recovered_on }}">{{ _ep.recovered_on }}</time></b></span>{% endif %}
+        {% set _linrow = _lin_prior.get(item.ticker) %}
+        {%- if _linrow %}{% set _lin_n = _linrow|length %}
+        {%- set _lin_fb = _linrow|selectattr('break_class', 'eq', 'FAILED_BREAK')|list|length %}
+        {%- set _lin_rp = _linrow|selectattr('break_class', 'eq', 'REPAIRED_TREND')|list|length %}
+        {%- set _lin_q = _linrow|selectattr('leadership_qualified_at')
+            |map(attribute='leadership_qualified_at')|list %}
+        {%- set _lin_oth = _lin_n - _lin_fb - _lin_rp %}
+        {%- set _lin_since = _lin_q|min if _lin_q else '' %}
+        {%- set _lin_lab = t('Prior leadership runs:', '此前领导期：') %}
+        {%- set _lin_seg = t('since', '段，自') -%}
+        <span class="lr-rec-fact lr-rec-lineage">{{ _lin_lab }} <b>{{ _lin_n }}</b>
+        {%- if _lin_since %} {{ _lin_seg }} <time datetime="{{ _lin_since }}">{{
+          _lin_since }}</time>{% endif %}
+        {{- ' · ' ~ t('failed repairs:', '修复失败：') }} <b>{{ _lin_fb }}</b>
+        {{- ' · ' ~ t('repaired:', '已修复：') }} <b>{{ _lin_rp }}</b>
+        {%- if _lin_oth > 0 %}
+        {{- ' · ' ~ t('other endings:', '其他结局：') }} <b>{{ _lin_oth }}</b>
+        {%- endif -%}
+        </span>
+        {%- endif %}
       </div>
       <details class="lr-rec-more">
         <summary>{{ t('History and estimates', '历史与预期观察') }}</summary>
@@ -1257,7 +1285,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
         <div class="tn-shelf-label"><span class="tns-dot" style="background:var(--col-ignition);"></span>{{ t('Worth a look', '值得关注') }} <span class="tns-sub">— {{ t('staged, not extended', '蓄势·未过热') }}</span></div>
         <div class="tonight-grid">
         {% for item in nsf.look %}
-        <a class="move-card{% if item.fired %} is-fire{% endif %}" href="us_stocks.html#{{ item.ticker }}"{% if not item.fired %} style="--mv-c:{{ _STATE_COL[item.state] if item.state in _STATE_COL else 'var(--text-muted)' }};"{% endif %}>
+        <a class="move-card{% if item.fired %} is-fire{% endif %}" href="stock.html#{{ item.ticker }}"{% if not item.fired %} style="--mv-c:{{ _STATE_COL[item.state] if item.state in _STATE_COL else 'var(--text-muted)' }};"{% endif %}>
           {% if item.fired %}<span class="move-glyph">⚡</span>{% endif %}
           <span class="move-tkr">{{ item.ticker }}</span>
           {% if not item.fired %}<span class="move-ar">→</span>{% endif %}
@@ -1274,7 +1302,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
         <div class="tn-shelf-label"><span class="tns-dot" style="background:var(--col-crowded);"></span>{{ t("Already moved — don't chase", '已经启动——勿追高') }} <span class="tns-sub">— {{ t('wait for the first base', '等待首个整理平台') }}</span></div>
         <div class="tonight-grid">
         {% for item in nsf.late %}
-        <a class="move-card is-late" href="us_stocks.html#{{ item.ticker }}">
+        <a class="move-card is-late" href="stock.html#{{ item.ticker }}">
           <span class="move-glyph">⚠</span>
           <span class="move-tkr">{{ item.ticker }}</span>
           <span class="move-badge">{% if item.fired %}{{ t('Fired · late', '已触发·偏晚') }}{% else %}<span class="l-en">{{ _STATE_PLAIN_EN[item.state] if item.state in _STATE_PLAIN_EN else item.state }}</span><span class="l-zh">{{ _STATE_PLAIN_ZH[item.state] if item.state in _STATE_PLAIN_ZH else item.state }}</span>{% endif %}</span>
@@ -1290,7 +1318,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
         <div class="tn-shelf-label"><span class="tns-dot" style="background:var(--col-suppressed);"></span>{{ t('Turnaround attempts', '反转尝试') }} <span class="tns-sub">— {{ t('long downtrend still intact — watch only', '长期下行未改——仅观察') }}</span></div>
         <div class="tonight-grid">
         {% for item in nsf.turn %}
-        <a class="move-card is-turn" href="us_stocks.html#{{ item.ticker }}">
+        <a class="move-card is-turn" href="stock.html#{{ item.ticker }}">
           <span class="move-tkr">{{ item.ticker }}</span>
           <span class="move-ar">→</span>
           <span class="move-badge"><span class="l-en">{{ _STATE_PLAIN_EN[item.state] if item.state in _STATE_PLAIN_EN else item.state }}</span><span class="l-zh">{{ _STATE_PLAIN_ZH[item.state] if item.state in _STATE_PLAIN_ZH else item.state }}</span></span>
@@ -1305,7 +1333,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
       <div class="tn-shelf">
         <div class="tonight-grid">
         {% for item in nsf.crowded %}
-        <a class="move-card is-crowded" href="us_stocks.html#{{ item.ticker }}">
+        <a class="move-card is-crowded" href="stock.html#{{ item.ticker }}">
           <span class="move-tkr">{{ item.ticker }}</span>
           <span class="move-ar">→</span>
           <span class="move-badge">{{ t('Crowded · protect gains', '过度拥挤·保护盈利') }}</span>
@@ -1324,7 +1352,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
       <span class="tn-label">{{ t('One signal away', '差一个信号') }}</span>
       {% for item in _nt %}
       {% if loop.index <= 8 %}
-      <a class="tn-chip" href="us_stocks.html#{{ item.ticker }}">
+      <a class="tn-chip" href="stock.html#{{ item.ticker }}">
         <span class="tn-tkr">{{ item.ticker }}</span>
         {% for chip_key in item.missing_chips if item.missing_chips is defined and item.missing_chips is not none %}
         {% if loop.index == 1 %}<span class="tn-miss"><span class="l-en js-chip-en" data-chip-key="{{ chip_key }}">{{ chip_key | replace('_',' ') | title }}</span><span class="l-zh js-chip-zh" data-chip-key="{{ chip_key }}">{{ chip_key | replace('_',' ') | title }}</span></span>{% endif %}
@@ -1399,7 +1427,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
              if ctx.days_to_earnings is number and ctx.days_to_earnings >= 0 else '' }}"
            data-val-pctile="{{ _cw_val_pctile if _cw_val_pctile is not none else '' }}">
         <div class="card-top">
-          <a class="card-ticker" href="us_stocks.html#{{ r.ticker }}" onclick="event.stopPropagation()" style="color:inherit;">{{ r.ticker }}</a>
+          <a class="card-ticker" href="stock.html#{{ r.ticker }}" onclick="event.stopPropagation()" style="color:inherit;">{{ r.ticker }}</a>
           <div class="card-right">
             {% if r.days_in_state is defined and r.days_in_state is not none %}
             <div class="card-days"><span class="l-en">{{ r.days_in_state }}s tracked</span><span class="l-zh">已追踪{{ r.days_in_state }}个交易日</span></div>
@@ -1527,7 +1555,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
                if ctx.days_to_earnings is number and ctx.days_to_earnings >= 0 else '' }}"
              data-val-pctile="{{ _val_pctile if _val_pctile is not none else '' }}">
           <div class="card-top">
-            <a class="card-ticker" href="us_stocks.html#{{ r.ticker }}" onclick="event.stopPropagation()" style="color:inherit;">{{ r.ticker }}</a>
+            <a class="card-ticker" href="stock.html#{{ r.ticker }}" onclick="event.stopPropagation()" style="color:inherit;">{{ r.ticker }}</a>
             <div class="card-right">
               {% if r.days_in_state is defined and r.days_in_state is not none %}
               <div class="card-days"><span class="l-en">{{ r.days_in_state }}s tracked</span><span class="l-zh">已追踪{{ r.days_in_state }}个交易日</span></div>
@@ -1634,7 +1662,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
                  if ctx.days_to_earnings is number and ctx.days_to_earnings >= 0 else '' }}"
                data-val-pctile="{{ _s_val_pctile if _s_val_pctile is not none else '' }}">
             <div class="card-top">
-              <a class="card-ticker" href="us_stocks.html#{{ r.ticker }}" onclick="event.stopPropagation()" style="color:inherit;">{{ r.ticker }}</a>
+              <a class="card-ticker" href="stock.html#{{ r.ticker }}" onclick="event.stopPropagation()" style="color:inherit;">{{ r.ticker }}</a>
               <div class="card-right">
                 {% if r.days_in_state is defined and r.days_in_state is not none %}
                 <div class="card-days"><span class="l-en">{{ r.days_in_state }}s tracked</span><span class="l-zh">已追踪{{ r.days_in_state }}个交易日</span></div>
@@ -1694,7 +1722,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
         <span class="rerating-ticker">{{ pair.extended_basket if pair.extended_basket is defined else '—' }}</span>
         {% set basing = pair.basing_names if pair.basing_names is defined and pair.basing_names is not none else [] %}
         {% for bn in basing %}
-        <a href="us_stocks.html#{{ bn.ticker }}" class="rerate-chip" style="font-size:0.72rem;">{{ bn.ticker }}</a>
+        <a href="stock.html#{{ bn.ticker }}" class="rerate-chip" style="font-size:0.72rem;">{{ bn.ticker }}</a>
         {% endfor %}
         {% if pair.extension_pctile is defined and pair.extension_pctile is not none %}
         {# Plain percentile: "9 of 10 past readings" idiom instead of bare Np #}
@@ -1812,7 +1840,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
       {% set rs = rr.state if rr.state is defined and rr.state is not none else 'NONE' %}
       {% set _has_pos = (rc.revision_positive is sameas true) or (rc.revision_breadth_60 is sameas true) or (rc.multiple_compressed is sameas true) %}
       <div class="rerating-row{% if not _has_pos %} rr-dim{% endif %}">
-        <a class="rerating-ticker" href="us_stocks.html#{{ rr.ticker }}" style="text-decoration:none;">{{ rr.ticker }}</a>
+        <a class="rerating-ticker" href="stock.html#{{ rr.ticker }}" style="text-decoration:none;">{{ rr.ticker }}</a>
         <span class="rerating-stage-chip {% if rs == 'BREAKAWAY' %}s-breakaway{% elif rs == 'QUIET_ACCUMULATION' %}s-quiet{% elif rs == 'SUPPRESSED' %}s-suppressed{% elif rs == 'LEADERSHIP' %}s-leadership{% elif rs == 'CROWDED' %}s-crowded{% else %}s-none{% endif %}">
           {% if rs == 'BREAKAWAY' %}{{ t('Breaking away', '突破启动') }}
           {% elif rs == 'QUIET_ACCUMULATION' %}{{ t('Quiet build', '静默筑底') }}
@@ -1867,7 +1895,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
       {% for item in _fh %}
       <tr>
         <td style="white-space:nowrap;">{{ item.date[:10] if item.date is defined and item.date is not none else '—' }}</td>
-        <td><a href="us_stocks.html#{{ item.ticker }}" style="color:inherit;text-decoration:none;">{{ item.ticker if item.ticker is defined else '—' }}</a></td>
+        <td><a href="stock.html#{{ item.ticker }}" style="color:inherit;text-decoration:none;">{{ item.ticker if item.ticker is defined else '—' }}</a></td>
         <td>
           {% if item.fire_type is defined and item.fire_type == 'precipice' %}{{ t('Pre-launch watch', '起飞前观察') }}
           {% elif item.fire_type is defined and item.fire_type == 'onset' %}{{ t('Breakout entry', '突破入场') }}
@@ -1959,7 +1987,7 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
         {# Chip class by state #}
         {% set chip_cls = 'green' if grp_key == 'BREAKAWAY' else ('blue' if grp_key == 'CATALYST_WINDOW' else 'gray') %}
         <tr>
-          <td><a class="ticker-link" href="us_stocks.html#{{ r.ticker }}" style="text-decoration:none;">{{ r.ticker }}</a>
+          <td><a class="ticker-link" href="stock.html#{{ r.ticker }}" style="text-decoration:none;">{{ r.ticker }}</a>
             {% if r.fire_precipice is defined and r.fire_precipice %}<span class="fire-badge" style="font-size:0.6rem;padding:1px 5px;margin-left:4px;">&#x26A1;</span>{% endif %}
           </td>
           <td>
@@ -2283,7 +2311,7 @@ function openCardReceipt(ticker, stage, chips, macdBars, sparkHist, daysInState,
   const stageCls = stage === 'CATALYST_WINDOW' ? 'ignition' : stage === 'SUPPRESSED' ? 'suppressed' : '';
 
   document.getElementById('card-popover-title').innerHTML =
-    '<a href="us_stocks.html#' + ticker + '" style="color:inherit;text-decoration:none;">' + ticker + '</a>' +
+    '<a href="stock.html#' + ticker + '" style="color:inherit;text-decoration:none;">' + ticker + '</a>' +
     ' · ' + stageLabel;
 
   const pos = Object.entries(chips).filter(([k,v]) => v === true && !INTERNAL_CHIPS.has(k));
