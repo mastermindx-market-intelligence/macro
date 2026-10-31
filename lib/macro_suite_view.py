@@ -20,6 +20,7 @@ Pure: no I/O, no clock read, no network. ``page_built_at`` is supplied.
 from __future__ import annotations
 
 import math
+import re
 from datetime import date, datetime, timedelta
 
 from typing import Any, Mapping, Sequence
@@ -643,17 +644,104 @@ def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
 
 # --- component metrics --------------------------------------------------------
 
+# --- component metrics --------------------------------------------------------
+
+# GLT T21 (S6): A normalized index never carries a currency unit. The two
+# conditions are joined with OR so any normalized value (z-score, index,
+# score_0_100, ratio, stddev, ratio_0_1) is recognised, regardless of which
+# side of the metric the producer happens to publish on. The raw-unit regex
+# below is the closed list of currency-shaped strings the presenter checks.
+_NORMALIZED_VALUE_TYPES = frozenset({"z_score", "index", "score_0_100", "ratio"})
+_NORMALIZED_UNITS = frozenset({
+    "stddev", "z_score_pts", "z_score", "index", "share_0_to_1", "ratio_0_1",
+})
+_CURRENCY_UNIT_RE = re.compile(r"(USD|EUR|JPY|\$|\bbn\b|billion)", re.I)
+
+
+def _is_normalized_metric(value_type, unit) -> bool:
+    """S6 discriminator: a metric is normalized if its value_type OR its unit
+    declares the value is on an index/score/share axis. Anything else
+    (currency_bn, percent, business_days, etc.) is treated as a raw level."""
+    if value_type in _NORMALIZED_VALUE_TYPES:
+        return True
+    if unit in _NORMALIZED_UNITS:
+        return True
+    return False
+
+
+def _strip_currency_unit(value_type, unit, normalized: bool) -> dict[str, str] | None:
+    """When the metric is normalized but the producer emitted a currency
+    string in its raw unit field, the view row never carries a currency label.
+    Otherwise we return the reviewed ``unit`` pair exactly as ``label()`` does."""
+    if normalized and isinstance(unit, str) and _CURRENCY_UNIT_RE.search(unit):
+        return None
+    return L.label("unit", unit)
+
+
+def _fx_translation_view(metric: Mapping[str, Any]) -> dict[str, Any] | None:
+    """S6 USD-translation view-row fields. Only fires when the metric's basis
+    is ``fx_translation_not_fresh_money`` (the producer-engineered refusal
+    described in S4). A USD translation is NEVER fresh money; the value the
+    presenter computes is the bilingual pair label, never a translated number."""
+    basis = metric.get("basis")
+    if basis != "fx_translation_not_fresh_money":
+        return None
+    source_refs = list(metric.get("source_refs") or [])
+    pair_raw = next((s for s in source_refs if isinstance(s, str) and s.startswith("yahoo:")), None)
+    pair_label_en, pair_label_zh = _pair("FX pair", "汇率对")
+    fixing_absence = _pair(
+        "Fixing date: not published by the source.",
+        "定盘日期：数据源未公布。")
+    if pair_raw == "yahoo:EURUSD=X":
+        pair_label_en, pair_label_zh = ("the euro–dollar exchange rate", "欧元兑美元汇率")
+    elif pair_raw == "yahoo:USDJPY=X":
+        pair_label_en, pair_label_zh = ("the dollar–yen exchange rate", "美元兑日元汇率")
+    return {
+        "pair": pair_raw,
+        "pair_label": _pair(pair_label_en, pair_label_zh),
+        "fixing_date": None,
+        "fixing_absence": fixing_absence,
+        "is_fresh_money": False,
+    }
+
+
+def _translation_basis_pair(basis: Any, metric: Mapping[str, Any]) -> dict[str, str] | None:
+    """S6: when a metric carries an FX-translation basis AND its source refs
+    name one of the two reviewed pairs, replace the generic basis label with
+    the composed bilingual sentence. Any other pair keeps the default label."""
+    if basis != "fx_translation_not_fresh_money":
+        return L.label("basis", basis)
+    source_refs = list(metric.get("source_refs") or [])
+    pair_raw = next((s for s in source_refs if isinstance(s, str) and s.startswith("yahoo:")), None)
+    if pair_raw == "yahoo:EURUSD=X":
+        return _pair(
+            "Translated at the euro–dollar exchange rate — not new central-bank money. "
+            "Fixing date: not published by the source.",
+            "按欧元兑美元汇率折算——非央行新增资金。定盘日期：数据源未公布。")
+    if pair_raw == "yahoo:USDJPY=X":
+        return _pair(
+            "Translated at the dollar–yen exchange rate — not new central-bank money. "
+            "Fixing date: not published by the source.",
+            "按美元兑日元汇率折算——非央行新增资金。定盘日期：数据源未公布。")
+    return L.label("basis", basis)
+
+
 def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> list[dict[str, Any]]:
     rows = []
     for metric in (snapshot.get("metrics") or {}).get("items") or []:
         value = metric.get("value")
+        value_type = metric.get("value_type")
+        unit = metric.get("unit")
+        basis = metric.get("basis")
+        normalized = _is_normalized_metric(value_type, unit)
+        fx_translation = _fx_translation_view(metric)
         rows.append({
             "metric_id": metric.get("metric_id"),
             "label": L.label("metric", metric.get("metric_id")),
             "value": L.value_pair(value),
             "absence": None if value is not None else _absence(metric.get("null_reason")),
-            "unit": L.label("unit", metric.get("unit")),
-            "basis": L.label("basis", metric.get("basis")),
+            "unit": _strip_currency_unit(value_type, unit, normalized),
+            "basis": _translation_basis_pair(basis, metric),
             "direction": L.label("direction", metric.get("direction_semantics")),
             "freshness": L.label("freshness", metric.get("freshness")),
             "freshness_tone": L.tone("freshness", metric.get("freshness")),
@@ -675,6 +763,10 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
             "clocks": _clock_rows(metric),
             "reference_period": L.date_or_none(metric.get("reference_period")),
             "source_refs": list(metric.get("source_refs") or []),
+            # S6 view-row fields (snapshot schema is closed; these live only
+            # on the view row, never on the composed metric).
+            "normalized": normalized,
+            "fx_translation": fx_translation,
         })
     return rows
 

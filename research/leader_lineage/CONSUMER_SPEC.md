@@ -1,9 +1,14 @@
 # Leader lineage — integrated consumer specification (read-only; Leader Radar / Terminal / Prophet)
 
-**Status:** specification only. No consumer is wired in phase 1. Each consumer change is its own PR by
-the surface's owner, after #8750 is on `origin/main` and the Leader Pivot owner (#8649) has admitted
-the read path. Nothing in this document creates an endpoint, a ledger, a rank, a gate, a size, a trade
-or an alert. Source of the descriptor: `engine/leader_lineage.py` (`SPEC_V1.md`).
+**Status:** read path ADMITTED on 2026-10-17 for the Leader Radar payload (§2) and its observation
+history only — see `ADMISSION_2026-10-17.md`. The admitting authority was the temporary owner of the
+lineage read-path admission, appointed by Chairman Chris through the RS LEADER Meta-CEO seat; that
+appointment replaced the earlier gate "the Leader Pivot owner (#8649) has admitted the read path"
+(#8649 merged on 2026-10-17 and is unchanged). The §2 chip and roster are wired in the builder
+default-off behind `leader_radar.lineage_enabled` and are activated by a separate one-line PR. The page
+section (§3), Terminal (§4) and Prophet (§5) are not wired; each is its own PR by the surface's owner.
+Nothing in this document creates an endpoint, a ledger, a rank, a gate, a size, a trade or an alert.
+Source of the descriptor: `engine/leader_lineage.py` (`SPEC_V1.md`).
 
 ## 1. Shared rules for every consumer
 

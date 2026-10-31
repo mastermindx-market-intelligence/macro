@@ -2262,3 +2262,27 @@ def test_search_preserves_space_while_typing_a_multiword_query(tmp_path: Path) -
     out=_run_runtime(tmp_path,payload,workspace,1785672000000,candidate_rows=[],history_flow=True,history_query="Alpha ")
     assert out["historyFlow"]["before"]["query"] == "Alpha "
     assert out["historyFlow"]["back"]["query"] == "Alpha"
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("detail", [True, False])
+def test_workspace_source_navigation_skips_post_only_transaction_receipt(tmp_path: Path, lang: str, detail: bool) -> None:
+    from copy import deepcopy
+    transaction = "https://api.usaspending.gov/api/v2/transactions/?page=1"
+    award = "https://api.usaspending.gov/api/v2/awards/CONT_AWD_N0002418C2305_9700_-NONE-_-NONE-/"
+    receipts = [{"url": transaction, "publisher": "USAspending.gov", "record_id": "award:exact", "content_sha256": "a" * 64}]
+    if detail:
+        receipts.append({"url": award, "publisher": "USAspending.gov", "record_id": "award:exact", "content_sha256": "b" * 64})
+    event = _d11_agency_event("govws-exact", "Department of Defense", evidence={"source_class": "official_fact", "receipts": receipts})
+    workspace = {"schema_version": "government_procurement_workspace.v2", "bundle_id": "grw2-" + "a" * 24, "total": 1, "events": [event], "freshness": {"status": "ok"}, "coverage": {}, "limitations": []}
+    payload = {"companies": [], "market": {}, "freshness": {"status": "ok"}, "opportunity_intelligence": {"market": {}}, "procurement_workspace": workspace}
+    before = deepcopy(workspace)
+    out = _run_runtime(tmp_path, payload, workspace, 1785672000000, lang=lang)
+    html = out["inspectorHtml"]
+    assert 'href="' + transaction.replace("&", "&amp;") + '"' not in html
+    if detail:
+        assert html.count('href="' + award + '"') == 2  # primary action and source section
+    else:
+        assert ("This governed event has no public record URL" if lang == "en" else "该受治理事件没有公开记录链接") in html
+    assert workspace == before  # saved POST receipt remains evidence, not a browser action

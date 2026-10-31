@@ -1456,3 +1456,79 @@ def test_a_phone_card_lists_its_table_rows_cells_in_column_order() -> None:
     lines = [p.one("strong").text().rstrip(":") for p in card.find("p") if p.find("strong")]
     assert len(tr.find("span", "fi-exposure-chip")) == len(heads) == 8
     assert lines == heads
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# W20-A Spec 1 — the not-connected shell keeps the committed, data-free lists.
+# ──────────────────────────────────────────────────────────────────────────
+
+def _w20a_scene(lang: str, read_url: "str | None", routes: dict | None = None) -> dict:
+    scene: dict = {
+        "lang": lang,
+        "sectionHtml": {
+            "rerating-map": (
+                '<ul class="fi-falsifiers" data-fi-mount="falsifiers-static">'
+                '<li class="fi-falsifier" data-falsifier-id="syn-fin-case-alpha">'
+                'Not yet evaluable · syn-fin-case-alpha</li></ul>'),
+            "company-exposure": (
+                '<ul class="fi-hint-roster">'
+                '<li class="fi-hint-row" data-record-id="fin-research-v-2025">'
+                'fin-research-v-2025</li></ul>'),
+        },
+    }
+    if read_url is not None:
+        scene["readUrl"] = read_url
+    if routes is not None:
+        scene["routes"] = routes
+    return scene
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_w20a_not_connected_keeps_committed_hint_and_watching_visible(lang: str) -> None:
+    snap = _run(_w20a_scene(lang, ""))["first"]
+    assert snap["fetchCalls"] == []  # empty URL must never reach fetchJson
+    assert snap["noticeEn"] == "Not yet connected to the evidence service."
+    assert snap["noticeZh"] == "尚未接入证据服务。"
+    hidden_ids = [h["id"] for h in snap["displayNone"]]
+    for sid in ("what-changed", "system-map", "subtheme-atlas",
+                "macro-matrix", "constraint-map"):
+        assert sid in hidden_ids, f"{sid} must stay hidden"
+    for sid in ("rerating-map", "company-exposure"):
+        assert sid not in hidden_ids, f"{sid} keeps its own display"
+    hidden_classes = [h["className"] for h in snap["displayNone"]]
+    for cls in ("fi-falsifiers", "fi-hint-roster", "fi-section-head"):
+        assert cls not in hidden_classes, f"{cls} must not be hidden"
+    hidden_mounts = {h["mount"] for h in snap["displayNone"]}
+    for mount in ("slice-select", "rerating-steps", "rerating-bridge", "falsifiers",
+                  "conflict-list", "exposure-thead", "exposure-thead-more",
+                  "exposure-rows", "exposure-rows-more", "exposure-more",
+                  "exposure-cards", "exposure-cards-more"):
+        assert mount in hidden_mounts, f"empty mount {mount} must be hidden"
+    dom = _dom(snap)
+    assert dom.one("li", "fi-falsifier", data_falsifier_id="syn-fin-case-alpha")
+    assert dom.one("li", "fi-hint-row", data_record_id="fin-research-v-2025")
+
+
+@needs_node
+def test_w20a_other_notice_kinds_still_hide_everything() -> None:
+    routes_503 = {"__default__": {"status": 503, "body": '{"detail":"down"}',
+                                  "contentType": "application/json"}}
+    routes_401 = {"__default__": {"status": 401, "body": '{"detail":"auth"}',
+                                  "contentType": "application/json"}}
+    for routes in (routes_503, routes_401):
+        snap = _run(_w20a_scene("en", None, routes))["first"]
+        hidden_ids = [h["id"] for h in snap["displayNone"]]
+        assert "rerating-map" in hidden_ids and "company-exposure" in hidden_ids
+        hidden_classes = [h["className"] for h in snap["displayNone"]]
+        assert "fi-falsifiers" not in hidden_classes  # hidden with its parent section
+        assert "fi-hint-roster" not in hidden_classes
+
+
+@needs_node
+def test_w20a_stub_url_default_is_unchanged() -> None:
+    # A scenario without readUrl still fetches the stub exactly once, as before.
+    snap = _run(_w20a_scene("en", None, {"__default__": {"status": 503,
+                                                          "body": '{"detail":"down"}',
+                                                          "contentType": "application/json"}}))
+    assert snap["first"]["fetchCalls"] == ["/__fi_stub__"]

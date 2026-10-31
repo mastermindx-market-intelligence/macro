@@ -69,6 +69,15 @@ from engine.fundamental_forensics.statement_graph import (
 
 ROOT = Path(__file__).resolve().parents[1]
 
+# FIP1 is a synthetic industrial issuer with no shipped coverage record; the
+# hermetic production-path tests inject its SIC (R1-SIC/R2).
+_FIP1_CIK = "0000999999"
+_INDUSTRIAL_SIC = "3571"
+
+
+def _fip1_issuer_sic_resolver(cik: str) -> str | None:
+    return _INDUSTRIAL_SIC if cik == _FIP1_CIK else None
+
 # The policy-approved standard taxonomy namespace the fabricated primary
 # documents declare (the same URI the golden fixture family carries).
 _TAXONOMY_URI = "http://fasb.org/us-gaap/2025"
@@ -723,7 +732,9 @@ def test_e2e_published_generation_round_trips_the_lineage_role(e2e):
 
 def test_e2e_latest_known_serves_the_newest_edge_of_the_v2_chain(e2e):
     result = execute_financial_query(
-        body=_request(selection="latest_known_as_of"), provider=e2e.provider
+        body=_request(selection="latest_known_as_of"),
+        provider=e2e.provider,
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     cell = result.envelope["receipt"]["nodes"][0]
     assert cell["state"] == "value"
@@ -741,7 +752,9 @@ def test_e2e_latest_known_serves_the_newest_edge_of_the_v2_chain(e2e):
 
 def test_e2e_as_reported_serves_the_oldest_edge_of_the_v2_chain(e2e):
     result = execute_financial_query(
-        body=_request(selection="as_reported"), provider=e2e.provider
+        body=_request(selection="as_reported"),
+        provider=e2e.provider,
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     cell = result.envelope["receipt"]["nodes"][0]
     assert cell["state"] == "value"
@@ -773,10 +786,12 @@ def test_e2e_query_hash_is_identical_with_and_without_lineage():
     result_with = execute_financial_query(
         body=_request(period=period),
         provider=ProductionFinancialQueryProvider(store_with),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     result_without = execute_financial_query(
         body=_request(period=period),
         provider=ProductionFinancialQueryProvider(store_without),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     cell_with = result_with.envelope["receipt"]["nodes"][0]
     cell_without = result_without.envelope["receipt"]["nodes"][0]
@@ -789,11 +804,15 @@ def test_e2e_query_hash_is_identical_with_and_without_lineage():
     # Contrast: the FY2022 chain cell DOES change (lineage unifies vintages),
     # which is the evidence working — never the hash of an unchanged cell.
     chained = execute_financial_query(
-        body=_request(), provider=ProductionFinancialQueryProvider(store_with)
+        body=_request(),
+        provider=ProductionFinancialQueryProvider(store_with),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     assert chained.envelope["receipt"]["nodes"][0]["state"] == "value"
     unchained = execute_financial_query(
-        body=_request(), provider=ProductionFinancialQueryProvider(store_without)
+        body=_request(),
+        provider=ProductionFinancialQueryProvider(store_without),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     assert unchained.envelope["receipt"]["nodes"][0]["state"] == "not_evaluable"
 
@@ -821,6 +840,7 @@ def test_f10_regression_receipt_clock_after_generation_admission_yields_zero_lin
                 source_snapshot_at="2025-06-30T00:00:00Z",
             ),
             provider=provider,
+            issuer_sic_resolver=_fip1_issuer_sic_resolver,
         )
         cell = result.envelope["receipt"]["nodes"][0]
         assert cell["state"] != "value"
@@ -841,6 +861,7 @@ def test_q9_probes_keep_the_clock_law_on_the_production_path(e2e):
             source_snapshot_at=_E2E_SOURCE_ALL,
         ),
         provider=e2e.provider,
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
     )
     assert lawful.envelope["receipt"]["nodes"][0]["state"] == "value"
     assert _confirmations(lawful)

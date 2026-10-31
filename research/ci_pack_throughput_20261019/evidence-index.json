@@ -1,0 +1,71 @@
+{
+  "local_raw_evidence": [
+    {
+      "path": "/Volumes/Mastermind/ci-pack-throughput-20261019/runs.json",
+      "sha256": "bc41a93aca9c5b1309af2e5eeef7a18795d2cbc4e9887b39d432a714427d09c4",
+      "bytes": 47866
+    },
+    {
+      "path": "/Volumes/Mastermind/ci-pack-throughput-20261019/baseline-stages.json",
+      "sha256": "184fcba4dfd8bfd2e2fbce5dacfb5eee5557b35849e609d634a07695fa65b67a",
+      "bytes": 1389055
+    },
+    {
+      "path": "/Volumes/Mastermind/ci-pack-throughput-20261019/plan-artifacts-index.json",
+      "sha256": "70d472f558549432e7bea3eee1a051b1ce61ed3a5bd4fc0d84d3a5585143a10e",
+      "bytes": 1279
+    },
+    {
+      "path": "/Volumes/Mastermind/ci-pack-throughput-20261019/plan-log-summaries.json",
+      "sha256": "703e89147268f8b0fffade30954a876ad2d47c1973d9fa328dbc829275fdfc86",
+      "bytes": 12272
+    },
+    {
+      "path": "/Volumes/Mastermind/ci-pack-throughput-20261019/pack-logs-index.json",
+      "sha256": "dbd69010921bb7d8ce5edcd8bf1e4889998d6508760f710e025a783cc0db8d47",
+      "bytes": 2144
+    },
+    {
+      "path": "/Volumes/Mastermind/ci-pack-throughput-20261019/logical-step-timings.json",
+      "sha256": "d4ad3b4a57c0e31e365531cc7e5fc970c3b3a3847541fab8cce237fe86ae8cff",
+      "bytes": 316271
+    },
+    {
+      "path": "/Volumes/Mastermind/ci-pack-throughput-20261019/concurrency.json",
+      "sha256": "bac2fab490e6c306effd440b884657a7902e2c924abd217f273f20d7738173a9",
+      "bytes": 3091
+    },
+    {
+      "path": "/Volumes/Mastermind/ci-pack-throughput-20261019/authority-corpus-before.log",
+      "sha256": "bbe8eb8ef2a65723ea69c658ffc863b1d5dfbc937a202a8f439aab65e99cafa1",
+      "bytes": 30197
+    },
+    {
+      "path": "/Volumes/Mastermind/ci-pack-throughput-20261019/dedup-red.log",
+      "sha256": "21d2cb4b7426c6af999285b05c42bbbbc189745c77659f9cdc44e7ed568e68e8",
+      "bytes": 30778
+    },
+    {
+      "path": "/Volumes/Mastermind/ci-pack-throughput-20261019/dedup-green.log",
+      "sha256": "38272b9fa200ed985654fa495c0df33f8988c2c9263b9e6339cf279bffea0ec9",
+      "bytes": 115
+    },
+    {
+      "path": "/Volumes/Mastermind/ci-pack-throughput-20261019/planner-profile.log",
+      "sha256": "f055c14c10787ebfbbb99b353eae414ddbbce3e0a4cfe6a342d00561d8962cb9",
+      "bytes": 3212
+    },
+    {
+      "path": "/Volumes/Mastermind/ci-pack-throughput-20261019/test-ci-pack-before.log",
+      "sha256": "9bc01b46da65851959e850eef7d5dc5ffd23915045838e3e8fbcd44243591b05",
+      "bytes": 30672
+    },
+    {
+      "path": "/Volumes/Mastermind/ci-pack-throughput-20261019/data-marker-experiment.log",
+      "sha256": "a01a4704fde6fbe83596b555a97c2a3f2f521c6dd33521f06ea2907a943f6460",
+      "bytes": 10063
+    }
+  ],
+  "census_worker_verdict": "NOT_ACCEPTED: returned estimated/extrapolated metrics and inconsistent arithmetic despite deterministic input. Parent metrics recomputed directly; do not cite worker aggregates as evidence.",
+  "census_run_id": "ci-pack-20261019-01a153e8-census"
+}

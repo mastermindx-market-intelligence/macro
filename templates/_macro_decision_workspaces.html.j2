@@ -47,6 +47,35 @@
             </div>
           {% endfor %}
           </dl>
+          {% if domain == 'bonds' %}
+            {% set mech = view.get('mechanism_evidence') %}
+            {% set mech = mech if mech is mapping else {} %}
+            {% set fed = mech.get('fed_path') if mech.get('fed_path') is mapping else {} %}
+            {% set ns = namespace(rows=[]) %}
+            {% for v, fmt, en, zh in [
+              (fed.get('policy_rate'), '%.2f%%', 'Policy rate', '政策利率'),
+              (fed.get('implied_bp_12m'), '%+.0f bp', 'Market-implied rate change, 12 months',
+               '未来12个月市场隐含利率变动'),
+              (mech.get('real_10y'), '%.2f%%', 'Real 10-year yield', '10年期实际收益率'),
+              (mech.get('term_premium'), '%.2f%%', 'Term premium', '期限溢价'),
+              (mech.get('curve_slope_10y3m'), '%+.2f pp', '10y minus 3m slope', '10年期减3个月利差')] %}
+              {% if v is number and v is not sameas true and v is not sameas false
+                    and -1.7976931348623157e308 <= v <= 1.7976931348623157e308 %}
+                {% set ns.rows = ns.rows + [(fmt|format(v), en, zh)] %}
+              {% endif %}
+            {% endfor %}
+            {% if ns.rows %}
+            <h4 class="compass-title">{{ t('Levels behind these labels', '标签背后的数值') }}</h4>
+            <dl data-mechanism-levels="bonds">
+            {% for text, en, zh in ns.rows %}
+              <div class="liq-row">
+                <dt class="stat-key">{{ t(en, zh) }}</dt>
+                <dd style="margin:0">{{ text }}</dd>
+              </div>
+            {% endfor %}
+            </dl>
+            {% endif %}
+          {% endif -%}
           {% if domain == 'forex' %}
             {% set mechanism = view.get('mechanism_evidence') if view.get('mechanism_evidence') is mapping else {} %}
             <h4 class="compass-title">{{ t('Scenario evidence', '情景证据') }}</h4>

@@ -1,0 +1,21 @@
+........................................................................ [ 19%]
+........................................................................ [ 38%]
+........................................................................ [ 57%]
+........................................................................ [ 77%]
+........................................................................ [ 96%]
+.............                                                            [100%]
+=============================== warnings summary ===============================
+tests/test_eval_os_adversarial_acceptance.py: 14 warnings
+  tests/test_eval_os_adversarial_acceptance.py:65: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    @pytest.mark.parametrize("output_class", list(CLASS_PAYLOADS))
+
+tests/test_eval_os_adversarial_acceptance.py::test_ready_matched_owner_does_not_grant_panel_validation_or_write_authority
+  tests/test_eval_os_adversarial_acceptance.py:100: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_ready_matched_owner_does_not_grant_panel_validation_or_write_authority(tmp_path, record_property, monkeypatch):
+
+tests/test_eval_os_adversarial_acceptance.py: 16 warnings
+  tests/test_eval_os_adversarial_acceptance.py:184: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    @pytest.mark.parametrize("case_id", _MEASUREMENT_IDS)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+373 passed, 31 warnings in 25.71s

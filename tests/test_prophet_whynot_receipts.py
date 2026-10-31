@@ -44,6 +44,7 @@ sys.path.insert(0, str(ROOT))
 
 from engine.prophet_bridge import (  # noqa: E402
     ADMITTED_STATUSES,
+    FORMATION_POSTDATES_EVENT_RE,
     REFUSAL_COPY,
     REFUSAL_NAMES_CAP,
     REFUSAL_NEAR,
@@ -51,6 +52,7 @@ from engine.prophet_bridge import (  # noqa: E402
     REFUSAL_STATUS_MAP,
     SELECTION_ERA,
     _KNOWN_REFUSED_STATUSES,
+    _resolve_candidate_signal_dates,
     refusal_receipts,
     select_candidates,
 )
@@ -58,6 +60,7 @@ from engine.prophet_bridge import (  # noqa: E402
 DASH = (ROOT / "templates" / "dashboard.html.j2").read_text()
 BUILD_SITE = (ROOT / "scripts" / "build_site.py").read_text()
 BUILD_PROPHET = (ROOT / "scripts" / "build_prophet.py").read_text()
+BRIDGE_SOURCE = (ROOT / "engine" / "prophet_bridge.py").read_text()
 
 
 # --------------------------------------------------------------------------- #
@@ -216,6 +219,235 @@ def test_open_key_normalisation_never_truncates_a_hyphenated_ticker():
 
 
 # --------------------------------------------------------------------------- #
+# 1b. The cleared-row split — `base_after_event` / `validation_failed` vs
+#     `plan_not_built`
+# --------------------------------------------------------------------------- #
+
+def _failure(ticker: str, *, stage: str = "clock_provenance") -> dict:
+    """One ``intake_stats["validation_failures"]`` entry, the stored shape."""
+    return {"ticker": ticker, "id": f"pp-{ticker.lower()}", "stage": stage,
+            "errors": ["clock mismatch"]}
+
+
+def _real_newbase_error() -> str:
+    """The formation-postdates error, formatted by the site that actually emits it.
+
+    The receipt split reads this string back out of the intake record through
+    ``FORMATION_POSTDATES_EVENT_RE``, so the fixture must be the REAL template's own
+    output — calling ``_resolve_candidate_signal_dates`` (a T1 row whose base formed
+    after its fired event) rather than hand-typing the sentence means wording, quoting
+    or field-order drift in the engine changes this string with it.
+    """
+    _, errors = _resolve_candidate_signal_dates(
+        {"signal": {"tier_cascade": "T1",
+                    "tier_event_date": "2026-09-18",
+                    "tier_observed_date": "2026-10-20"}},
+        formation_date="2026-10-02",
+        price_basis_date="2026-10-20",
+    )
+    assert len(errors) == 1, errors
+    return errors[0]
+
+
+def _newbase_failure(ticker: str, *, errors: list[str] | None = None,
+                     stage: str = "clock_provenance") -> dict:
+    """One ``validation_failures`` entry carrying the new-base clock-provenance error."""
+    return {"ticker": ticker, "id": f"pp-{ticker.lower()}", "stage": stage,
+            "errors": [_real_newbase_error()] if errors is None else errors}
+
+
+def test_cleared_row_in_the_failure_record_headlines_validation_failed():
+    """A name that cleared every gate but whose plan build FAILED its own data check
+    must not read as 'every check passed' — the intake's own record re-words it,
+    and the two cleared cohorts stay distinct denominators.
+    """
+    cx = refusal_receipts(
+        _board(_row("DATAF"), _row("QUIET")),
+        originated_tickers=set(),
+        validation_failures=[_failure("DATAF")],
+    )
+    assert _why(cx, "DATAF") == ["validation_failed"]
+    group = next(g for g in cx["groups"] if g["reason"] == "validation_failed")
+    assert group["reason"] == "validation_failed"
+    assert group["en"] == "Passed the board's checks — tonight's plan data didn't verify"
+    assert group["zh"] == "通过了榜单检查 — 但今晚的计划数据未能核验"
+    assert group["near"] is False        # the SYSTEM failed, not the stock
+    assert group["n"] == 1               # the TRUE count, never the drawn cap
+    # the other cleared cohort keeps its own honest line
+    assert _headline(cx, "QUIET") == "plan_not_built"
+    assert cx["unmapped"] == 0
+
+
+def test_cleared_row_absent_from_the_failure_record_keeps_plan_not_built():
+    """Regression: the split never re-words the cohort the intake said nothing about."""
+    cx = refusal_receipts(_board(_row("QUIET")), originated_tickers=set(),
+                          validation_failures=[])
+    assert _headline(cx, "QUIET") == "plan_not_built"
+
+
+def test_an_open_plan_outranks_the_failure_record():
+    """Precedence (a): an open plan is not a refusal of any kind, even when the
+    ticker also sits in the failure record."""
+    cx = refusal_receipts(
+        _board(_row("LIVE")),
+        open_keys=("LIVE-BULL",),
+        originated_tickers=set(),
+        validation_failures=[_failure("LIVE")],
+    )
+    assert _headline(cx, "LIVE") == "already_open"
+    assert cx["open_now"] == 1
+
+
+def test_an_originated_row_earns_no_receipt_even_if_the_record_names_it():
+    """A row in the originated set was planned tonight; a failure entry naming the
+    same ticker must not put a shelf line under a planned name."""
+    cx = refusal_receipts(
+        _board(_row("DONE"), _row("DATAF")),
+        originated_tickers={"DONE"},
+        validation_failures=[_failure("DONE"), _failure("DATAF")],
+    )
+    tickers = [n["ticker"] for g in cx["groups"] for n in g["names"]]
+    assert tickers == ["DATAF"]
+    assert _headline(cx, "DATAF") == "validation_failed"
+    assert cx["planned"] == 1
+
+
+# ---- the NAMED clock-provenance cohort (2026-10-21 census §10, option 8.2c) ----
+
+def test_the_real_error_template_matches_the_receipt_regex():
+    """The regex the split reads MUST match the string the engine actually emits.
+
+    The error comes from ``_resolve_candidate_signal_dates`` itself (see
+    ``_real_newbase_error``), so this pins the regex against the REAL template's
+    output — not a hand-typed copy of it — and the source-fragment check keeps a
+    reworded template from silently riding the regex cut from the old wording.
+    """
+    assert FORMATION_POSTDATES_EVENT_RE.match(_real_newbase_error())
+    # the f-string shape the regex was cut from is still what the source says
+    assert ("formation_date {formation_date!r} postdates tier_event_date"
+            in BRIDGE_SOURCE)
+
+
+def test_newbase_failure_headlines_base_after_event():
+    """A name that cleared every gate whose ONLY recorded failure is the base having
+    re-formed after the signal fired gets the NAMED line — true AND the reason —
+    while the other cleared cohorts keep their own honest lines."""
+    cx = refusal_receipts(
+        _board(_row("NEWB"), _row("QUIET")),
+        originated_tickers=set(),
+        validation_failures=[_newbase_failure("NEWB")],
+    )
+    assert _why(cx, "NEWB") == ["base_after_event"]
+    group = next(g for g in cx["groups"] if g["reason"] == "base_after_event")
+    assert group["en"] == ("Passed the board's checks — its base re-formed "
+                           "after the signal fired")
+    assert group["zh"] == "通过了榜单检查 — 但基底在信号触发后重新形成"
+    assert group["near"] is False        # the clock is missing, not one fix away
+    assert group["n"] == 1
+    assert _headline(cx, "QUIET") == "plan_not_built"
+    assert cx["unmapped"] == 0
+
+
+def test_other_clock_failure_keeps_the_generic_line():
+    """A clock_provenance entry whose error is NOT the formation-postdates string —
+    here a wrapper publication-clock error — falls back to ``validation_failed``."""
+    cx = refusal_receipts(
+        _board(_row("WRAP")),
+        originated_tickers=set(),
+        validation_failures=[_newbase_failure(
+            "WRAP", errors=["publication clock is behind the price clock"])],
+    )
+    assert _why(cx, "WRAP") == ["validation_failed"]
+
+
+def test_mixed_errors_in_one_entry_keep_the_generic_line():
+    """One matching + one non-matching error in the SAME entry: EVERY error must be
+    the formation string before the named code applies — a compound failure is the
+    generic cohort, not the named one."""
+    cx = refusal_receipts(
+        _board(_row("MIX")),
+        originated_tickers=set(),
+        validation_failures=[_newbase_failure("MIX", errors=[
+            _real_newbase_error(),
+            "tier_observed_date '2026-10-20' does not match price_basis_date '2026-10-19'",
+        ])],
+    )
+    assert _why(cx, "MIX") == ["validation_failed"]
+
+
+def test_other_stage_never_headlines_base_after_event():
+    """Only the clock_provenance stage carries the named code: an entry_price
+    failure producing the same error shape keeps the generic line."""
+    cx = refusal_receipts(
+        _board(_row("PRICE")),
+        originated_tickers=set(),
+        validation_failures=[_newbase_failure("PRICE", stage="entry_price")],
+    )
+    assert _why(cx, "PRICE") == ["validation_failed"]
+
+
+def test_an_open_plan_outranks_the_newbase_record():
+    """Precedence (a): an open plan is not a refusal of any kind, even when the
+    failure record names the ticker with the new-base pattern."""
+    cx = refusal_receipts(
+        _board(_row("LIVE")),
+        open_keys=("LIVE-BULL",),
+        originated_tickers=set(),
+        validation_failures=[_newbase_failure("LIVE")],
+    )
+    assert _headline(cx, "LIVE") == "already_open"
+    assert cx["open_now"] == 1
+
+
+def test_an_originated_row_earns_no_receipt_from_the_newbase_record():
+    """A planned name stays planned: a new-base entry naming it must not put a shelf
+    line under a name the run originated tonight."""
+    cx = refusal_receipts(
+        _board(_row("DONE"), _row("NEWB")),
+        originated_tickers={"DONE"},
+        validation_failures=[_newbase_failure("DONE"), _newbase_failure("NEWB")],
+    )
+    tickers = [n["ticker"] for g in cx["groups"] for n in g["names"]]
+    assert tickers == ["NEWB"]
+    assert _headline(cx, "NEWB") == "base_after_event"
+    assert cx["planned"] == 1
+
+
+def test_absent_failure_record_leaves_the_prior_output_untouched():
+    """``validation_failures=None`` is the historical call: byte-identical receipts,
+    on a split board and on the suite's every-status board."""
+    board = _board(_row("OPEN", score=90), _row("QUIET", score=80),
+                   _row("WAIT", status="buy_soon"))
+    before = refusal_receipts(board, open_keys=("OPEN-BULL",),
+                              originated_tickers=set())
+    after = refusal_receipts(board, open_keys=("OPEN-BULL",),
+                             originated_tickers=set(), validation_failures=None)
+    assert after == before
+    every = _every_status_board()
+    assert refusal_receipts(every, validation_failures=None) == refusal_receipts(every)
+    # the named cohort is invisible without the record, too: a row that WOULD read
+    # `base_after_event` keeps the historical `plan_not_built` line byte-for-byte.
+    named = _board(_row("OPEN", score=90), _row("NEWB", score=80))
+    assert refusal_receipts(named, open_keys=("OPEN-BULL",),
+                            originated_tickers=set(),
+                            validation_failures=None) == \
+        refusal_receipts(named, open_keys=("OPEN-BULL",), originated_tickers=set())
+
+
+def test_validation_failed_is_ordered_and_excluded_from_near():
+    """REFUSAL_ORDER seats the cleared-row ladder `already_open` → `base_after_event`
+    → `validation_failed` → `not_ready`; NEITHER system-blame code is a NEAR code —
+    the near rail means 'one thing stands between it and a plan' and here the thing
+    that failed is the system's own data, not the stock."""
+    order = list(REFUSAL_ORDER)
+    assert order.index("already_open") + 1 == order.index("base_after_event")
+    assert order.index("base_after_event") + 1 == order.index("validation_failed")
+    assert order.index("validation_failed") + 1 == order.index("not_ready")
+    assert "base_after_event" not in REFUSAL_NEAR
+    assert "validation_failed" not in REFUSAL_NEAR
+
+
+# --------------------------------------------------------------------------- #
 # 2. Exhaustiveness — the copy table is complete and bilingual
 # --------------------------------------------------------------------------- #
 
@@ -244,6 +476,25 @@ def test_template_copy_mirrors_the_engine_copy_exactly():
     MIRROR, and this is the pin that keeps it one."""
     mod = _env().get_template("_prophet_receipts.html.j2").module
     assert {k: tuple(v) for k, v in mod.pvr_copy.items()} == REFUSAL_COPY
+
+
+def test_candidate_pool_copy_words_shared_codes_identically():
+    """The candidate pool's ``_why`` map is the THIRD copy surface: every code it
+    shares with REFUSAL_COPY must carry the byte-identical EN/ZH pair, so the shelf
+    and the pool can never word the same refusal differently.  Parsed from the
+    template source (an underscore-prefixed ``{% set %}`` is not a module attr)."""
+    template = (ROOT / "templates" / "_us_candidate_pool_rows.html.j2").read_text(
+        encoding="utf-8")
+    block = template.split("_why = {", 1)[1].split("\n{% set _reason", 1)[0]
+    pool = {}
+    for key, values in re.findall(r"'([^']+)':\s*\((.*?)\)\s*(?:,|\n})", block):
+        copy = re.findall(r"'([^']*)'|\"([^\"]*)\"", values)
+        copy = [value for pair in copy for value in pair if value]
+        pool[key] = tuple(copy[:2])
+    shared = [code for code in REFUSAL_ORDER if code in pool]
+    assert shared, "the pool must still word the refusal codes it renders"
+    for code in shared:
+        assert pool[code] == REFUSAL_COPY[code], code
 
 
 # --------------------------------------------------------------------------- #

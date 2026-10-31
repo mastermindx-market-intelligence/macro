@@ -256,11 +256,21 @@ def grade_flag(flag: dict, theme_log_rows: list[dict], spy: pd.Series | None,
             continue
 
         n_arrived += 1
-        flag_ts = pd.Timestamp(flag_date)
         arrival_ts = pd.Timestamp(arrival)
         # POSITIVE = we flagged BEFORE the crowd (we led).
         # lead_days = arrival_date − flag_date: flag on Apr-1, crowd Apr-20 → +19 (led).
-        lead_days = int((arrival_ts - flag_ts).days)
+        # Missing / empty / unparseable flag asof parses to NaT and int(NaT.days)
+        # raised ValueError, breaking the "never crashes" promise of
+        # compute_earliness_grades (:399). The crossing is still real; only the
+        # lead is unknowable → honest null lead_days plus a note (never 0, which
+        # would fake a concurrent grade).
+        try:
+            flag_ts = pd.Timestamp(flag_date)
+            lead_days = None if pd.isna(flag_ts) else int((arrival_ts - flag_ts).days)
+        except (TypeError, ValueError):
+            lead_days = None
+        if lead_days is None:
+            caveats.append("no usable flag asof — lead_days unavailable")
 
         # Price excess in pre-arrival and post-arrival windows (WINDOW_DAYS each)
         pre_start = arrival_ts - pd.Timedelta(days=_WINDOW_DAYS)
@@ -282,7 +292,9 @@ def grade_flag(flag: dict, theme_log_rows: list[dict], spy: pd.Series | None,
             "lead_days": lead_days,
             "pre_arrival_excess_pct": round(100.0 * pre_exc, 2) if pre_exc is not None else None,
             "post_arrival_excess_pct": round(100.0 * post_exc, 2) if post_exc is not None else None,
-            "note": "led" if lead_days > 0 else ("concurrent" if lead_days == 0 else "lagged"),
+            "note": ("unusable_asof" if lead_days is None
+                     else "led" if lead_days > 0
+                     else ("concurrent" if lead_days == 0 else "lagged")),
         }
 
     return {

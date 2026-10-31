@@ -1,5 +1,5 @@
 {
- "asof": "2026-10-14",
+ "asof": "2026-10-30",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -22,14 +22,14 @@
  "n": 253,
  "n_failed": 0,
  "fail_pct": 0.0,
- "n_flags": 19,
+ "n_flags": 3,
  "universes": [
   {
    "name": "stocks",
    "n": 253,
    "n_failed": 0,
    "fail_pct": 0.0,
-   "n_flags": 19,
+   "n_flags": 3,
    "skipped": false,
    "note": "",
    "failed": [],
@@ -40,224 +40,53 @@
      "detail": "last bar 2026-08-24 \u2014 delisted (config/delisted_symbols.yml, last session 2026-08-14), not alarmed"
     },
     {
-     "name": "BALL",
-     "kind": "missing",
-     "detail": "in the top-N union, no data/stocks parquet on disk"
-    },
-    {
-     "name": "CMCSA",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
-    },
-    {
-     "name": "CTVA",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
-    },
-    {
      "name": "EA",
      "kind": "stale_live",
-     "detail": "last bar 2026-08-04 (71d stale)"
-    },
-    {
-     "name": "EIX",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
-    },
-    {
-     "name": "ICE",
-     "kind": "missing",
-     "detail": "in the top-N union, no data/stocks parquet on disk"
-    },
-    {
-     "name": "VYLR",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
+     "detail": "last bar 2026-08-04 (87d stale)"
     },
     {
      "name": "WBD",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
-    },
-    {
-     "name": "WDC",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
-    },
-    {
-     "name": "WEC",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
-    },
-    {
-     "name": "WELL",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
-    },
-    {
-     "name": "WFC",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
-    },
-    {
-     "name": "WM",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
-    },
-    {
-     "name": "WMB",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
-    },
-    {
-     "name": "WMT",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
-    },
-    {
-     "name": "WY",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
-    },
-    {
-     "name": "XEL",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
-    },
-    {
-     "name": "XOM",
-     "kind": "stale_live",
-     "detail": "last bar 2026-10-06 (8d stale)"
+     "kind": "stale_dead",
+     "detail": "last bar 2026-10-06 \u2014 delisted (config/delisted_symbols.yml, last session 2026-10-05), not alarmed"
     }
    ]
   }
  ],
- "expected_session": "2026-10-14",
+ "expected_session": "2026-10-29",
  "threshold_calendar_days": 7,
  "totals": {
-  "fresh": 234,
-  "stale_live": 16,
-  "stale_dead": 1,
-  "missing": 2,
+  "fresh": 250,
+  "stale_live": 1,
+  "stale_dead": 2,
+  "missing": 0,
   "unreadable": 0
  },
  "stale_live": [
   {
    "ticker": "EA",
    "last_bar": "2026-08-04",
-   "lag_days": 71,
+   "lag_days": 87,
    "in_union": false
-  },
-  {
-   "ticker": "CMCSA",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": true
-  },
-  {
-   "ticker": "CTVA",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": false
-  },
-  {
-   "ticker": "EIX",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": false
-  },
-  {
-   "ticker": "VYLR",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": true
-  },
-  {
-   "ticker": "WBD",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": false
-  },
-  {
-   "ticker": "WDC",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": false
-  },
-  {
-   "ticker": "WEC",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": true
-  },
-  {
-   "ticker": "WELL",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": true
-  },
-  {
-   "ticker": "WFC",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": true
-  },
-  {
-   "ticker": "WM",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": false
-  },
-  {
-   "ticker": "WMB",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": true
-  },
-  {
-   "ticker": "WMT",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": true
-  },
-  {
-   "ticker": "WY",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": false
-  },
-  {
-   "ticker": "XEL",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": true
-  },
-  {
-   "ticker": "XOM",
-   "last_bar": "2026-10-06",
-   "lag_days": 8,
-   "in_union": true
   }
  ],
  "stale_dead": [
   {
    "ticker": "AVB",
    "last_bar": "2026-08-24",
-   "lag_days": 51,
+   "lag_days": 67,
+   "in_union": false,
+   "delisted_ledger": true,
+   "contradiction": true
+  },
+  {
+   "ticker": "WBD",
+   "last_bar": "2026-10-06",
+   "lag_days": 24,
    "in_union": false,
    "delisted_ledger": true,
    "contradiction": true
   }
  ],
- "missing": [
-  {
-   "ticker": "BALL",
-   "in_union": true
-  },
-  {
-   "ticker": "ICE",
-   "in_union": true
-  }
- ],
+ "missing": [],
  "unreadable": []
 }

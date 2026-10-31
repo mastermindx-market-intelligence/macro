@@ -1,0 +1,64 @@
+{
+  "schema": "grey_deer.later_protected_source_delta.v1",
+  "programme": "MAS-258",
+  "recorded_at": "2026-10-21T12:23:07Z",
+  "rehearsed_commit": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+  "later_protected_tip": "7ab47f0b62d9a22ff16a13f6b99b96b681874a93",
+  "comparison_url": "https://github.com/mastermindx-market-intelligence/Mastermind/compare/87d4af0a152eefa3c5f441f5600fae9133b3deaa...7ab47f0b62d9a22ff16a13f6b99b96b681874a93",
+  "status": "ahead",
+  "ahead_by": 2,
+  "behind_by": 0,
+  "total_commits": 2,
+  "commits": [
+    {
+      "sha": "3905e79ed7996c52a42d78838ebc9df16ed2818a",
+      "message": "Add read-only preflight for Codex Fabric Stop bindings (#1664)\n\n* Add read-only preflight for Codex Fabric Stop bindings\n\n* fix(harness): separate identity and directory mode checks\n\n---------\n\nCo-authored-by: chriswong6031-creator <chriswong6031@gmail.com>"
+    },
+    {
+      "sha": "7ab47f0b62d9a22ff16a13f6b99b96b681874a93",
+      "message": "Supply scoped Agent OS context to Codex session recovery (#1666)\n\n* Add scoped Agent OS context for Codex session recovery\n\n* fix(session-bridge): preserve context budget under identity scan\n\n* docs(session-bridge): bind the reviewed Mastermind context owner\n\n---------\n\nCo-authored-by: chriswong6031-creator <chriswong6031@gmail.com>"
+    }
+  ],
+  "files": [
+    {
+      "path": "integrations/session_bridge/AGENTOS_SESSION_START.md",
+      "status": "added",
+      "blob": "929df3ddde639f49274e3e6b0cb34e366861f631",
+      "changes": 70
+    },
+    {
+      "path": "integrations/session_bridge/STOP_RETURN.md",
+      "status": "modified",
+      "blob": "f3a5b4c9423fab49ae60e97c954cd7d8d0d01a22",
+      "changes": 34
+    },
+    {
+      "path": "integrations/session_bridge/agentos_session_start.py",
+      "status": "added",
+      "blob": "17ce638eebff2042a2fa47ef26b5488a9b693246",
+      "changes": 158
+    },
+    {
+      "path": "integrations/session_bridge/fabric_stop_preflight.py",
+      "status": "added",
+      "blob": "1aa7f2a27790063fd5b4ddc73f4f839fb9be66c8",
+      "changes": 197
+    },
+    {
+      "path": "tests/test_agentos_session_start.py",
+      "status": "added",
+      "blob": "4071c24b18ef26ad74a04c6134ddd4391dda13b8",
+      "changes": 171
+    },
+    {
+      "path": "tests/test_fabric_stop_preflight.py",
+      "status": "added",
+      "blob": "8a893488f0287f19f3e84cf023ae11af97999e2f",
+      "changes": 161
+    }
+  ],
+  "no_application_provider_or_release_helper_path_changed": true,
+  "qualification_scope": "The full archive and actual health probe remain bound to 87d4af0; this six-file session-bridge/docs/test delta is not full-release qualification of 7ab47f0.",
+  "next_release": "Rebind the exact protected target and qualify relevant composition/effects when the health/security dependency is resolved. The wrapper must refuse an older target that differs from current origin/master.",
+  "source_repair_or_production_authority_added": false
+}

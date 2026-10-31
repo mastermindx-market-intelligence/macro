@@ -1,0 +1,54 @@
+{
+  "schema": "eval_os.science_semantic_review.v1",
+  "status": "ACCEPTED_NARROW_T12_SOURCE_PRODUCER_CONSUMER",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "source_head": "372c37366ebf29ea84120ea93df1f1333fbc54e6",
+  "source_sha256": {
+    "engine/qledger_validity.py": "8076620b1db88e314d617cb80bf6525789d9fd2f532a21263ee8f6d3df20bb23",
+    "tests/test_qledger_validity.py": "36e3b7af1d191c4771d5029aa556555630437762570b162ec0b6bcdd2c5e11d5",
+    "scripts/agentos.py": "11dcf8d06976cff11041ff012af3dcb335e3f10e961edcf9e913bbef65120d6a",
+    "agentos/schema/discovery.schema.yml": "a50c54880e446858d7faf0659ba7a40ce5ad9e8eecae139e15b499f9469a4749",
+    "engine/intelligence_registry.py": "73f171baba1eee069eca1ed8ec9a3eeccdeed246ffcf35ea9ca10b763a781630"
+  },
+  "original_validity_functions_AST_unchanged": true,
+  "appended_functions": [
+    "project_research_findings"
+  ],
+  "blocking_findings": [],
+  "accepted": [
+    "Explicit intended-report per-family metric sets; no permissive absentfamily scope",
+    "Named owner audit reused unchanged; no duplicate evaluator/math",
+    "Onlytwoinvalidmetrics getT0integrity; unsupportedmetrics/families/offhorizonNOTE unresolved",
+    "Exact unique directT1 ledger/rule2/desk/producerowner identity; ambiguity/exclusion/duplicate refused",
+    "Ownerdetail copied with intended-report snapshot framing; no temporal/numerical delta or publication assertion",
+    "Caller supplies evidence/source identity and discoveryadmission; helper doesnotcertify livebytes/rights",
+    "Actual source test proves build_registry DeskScan\u2192producer\u2192existingdraft\u2192YAMLparse\u2192check_discovery with noIO/missingfalsifierrefusal",
+    "Tier suggestion independent ofdiffrequiredtier andauthority; no pass/grant/routing/priority/store"
+  ],
+  "completion_ruling": {
+    "narrow_original_T12_source_interface": "ACCEPTED: documented read-only required-tier query plus named QLedger metric-integrity finding\u2192sixfield existing DSC stdout draft\u2192validator. Exact reviewed producer/test bytes and actual66PASS affectedfile receipt consumed. No general empirical-study, publication or routing claim.",
+    "not_proved": [
+      "Actualadmitted discoverypublication/AgentOSadoption",
+      "General empiricalT2/T3/T4finding producers",
+      "Undefined authority-tierpolicies",
+      "Financialvalidation/taskqualification",
+      "Routing/priority/execution whichinterfaceforbids"
+    ]
+  },
+  "test_execution": {
+    "owner": "root exec30643 exited0 (parent-observed)",
+    "receipt_xml": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/science/producer-regression.xml",
+    "receipt_xml_sha256": "afb626b708e6ee88724ed588afc43e1c892d6da4707ea802f67d5d25c78ba545",
+    "receipt_txt": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/science/producer-regression.txt",
+    "receipt_txt_sha256": "7cd70acc9b834f2f3c3acf4e1bc57ef64523b46d721f58d39196336fa984b3f7",
+    "tests": 66,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 15.9,
+    "source_identity_match": true,
+    "science_rerun": false
+  },
+  "source_edits": false,
+  "Fabric": "Priorleaf eval-t12-producer-01a13340-a1 prelaunchNOT_FOUND/routerineligible retained, no retries."
+}

@@ -833,3 +833,291 @@ def test_multiple_testing_note_caveats_fwer_vintage_and_tested_denominator():
     assert mt["n_horizons_tested"] == 3
     # The note must name the tested-not-declared choice, not just echo keys.
     assert "shrink the multiplicity penalty" in note
+
+
+# Registered CSV ingestion is a harness capability; these remain fixtures only.
+def _registered_panel_bytes(n=90):
+    from datetime import date, timedelta
+    y, shock, _ = lp.demo_series(n=n, horizons=2, seed=91)
+    rows = ["period,y,shock,known_at"]
+    for i, (outcome, event) in enumerate(zip(y, shock)):
+        day = date(2026, 1, 1) + timedelta(days=i)
+        rows.append(f"{day.isoformat()},{float(outcome)!r},{float(event)!r},{day.isoformat()}T23:00:00Z")
+    return ("\n".join(rows) + "\n").encode()
+
+
+def test_registered_panel_parser_preserves_exact_bytes_and_clocks():
+    import hashlib
+    from datetime import datetime, timezone
+    from scripts.run_local_projections import parse_panel
+    raw = b"period,y,shock,known_at\r\n2026-01-01,1.25,-2,2026-01-02T07:00:00+08:00\r\n"
+    panel = parse_panel(raw, datetime(2026, 1, 3, tzinfo=timezone.utc))
+    assert panel == {"period": ["2026-01-01"], "y": [1.25], "shock": [-2.0],
+                     "known_at": ["2026-01-01T23:00:00+00:00"],
+                     "cutoff": "2026-01-03T00:00:00+00:00",
+                     "input_sha256": hashlib.sha256(raw).hexdigest()}
+
+
+@pytest.mark.parametrize("raw", [
+    b"period,y,y,known_at\n2026-01-01,1,2,2026-01-02T00:00:00Z\n",
+    b"period,y,shock,known_at\n2026-01-01,nan,2,2026-01-02T00:00:00Z\n",
+    b"period,y,shock,known_at\n2026-01-01,1,inf,2026-01-02T00:00:00Z\n",
+    b"period,y,shock,known_at\n2026-01-01,1,2,2026-01-02T00:00:00\n",
+    b"period,y,shock,known_at\n2026-01-01,1,2,2026-02-02T00:00:00Z\n",
+    b"period,y,shock,known_at\n2026-01-01,1,2,2025-12-31T23:59:59Z\n",
+    b"period,y,shock,known_at\n2026-01-02,1,2,2026-01-02T23:00:00Z\n2026-01-01,2,3,2026-01-02T00:00:00Z\n",
+    b"period,y,shock,known_at\n2026-01-01,1,2,2026-01-02T00:00:00Z\n2026-01-01,2,3,2026-01-02T00:00:00Z\n",
+    b'period,y,shock,known_at\n2026-01-01,"1,2,2026-01-02T00:00:00Z\n',
+    b"period,y,shock,known_at\n2026-01-01,1,2,2026-01-02T00:00:00Z,extra\n",
+    b"period,y,shock,known_at\n\n",
+    b"period,y,shock,known_at\n",
+    b"\xff", b"period,y,shock,known_at\n\x00", b"x" * (8 * 1024 * 1024 + 1),
+], ids=["duplicate-header", "nan", "infinity", "naive-clock", "future-clock",
+         "clock-before-period", "unordered", "duplicate-period", "malformed-csv",
+         "extra-field", "blank-row", "empty", "encoding", "nul", "oversize"])
+def test_registered_panel_refuses_invalid_input_before_registration(raw):
+    from datetime import datetime, timezone
+    from scripts.run_local_projections import PanelInputError, run_panel
+    class NoWrites:
+        def log_trial(self, *args, **kwargs):
+            pytest.fail("invalid input spent a trial")
+    with pytest.raises(PanelInputError):
+        run_panel(raw, cutoff=datetime(2026, 1, 4, tzinfo=timezone.utc),
+                  family="fixture-only", ledger=NoWrites(), horizons=2, lags=1)
+
+
+def test_registered_panel_registers_exact_config_before_estimator(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+    from engine.trial_ledger import TrialLedger
+    import scripts.run_local_projections as harness
+    path = tmp_path / "fixture-ledger.jsonl"
+    path.write_text("")
+    ledger = TrialLedger(path)
+    actual = lp.impulse_response
+    observed = []
+    def estimate(y, shock, **kwargs):
+        cold = TrialLedger(path)
+        assert cold.literal_n("fixture-only") == 1
+        assert kwargs["family"] == "fixture-only" and kwargs["ledger"] is ledger
+        observed.append(True)
+        return actual(y, shock, **kwargs)
+    monkeypatch.setattr(harness.lp, "impulse_response", estimate)
+    raw = _registered_panel_bytes()
+    envelope = harness.run_panel(raw, cutoff=datetime(2026, 5, 1, tzinfo=timezone.utc),
+                                 family="fixture-only", ledger=ledger, horizons=2, lags=1)
+    assert observed == [True]
+    assert envelope["schema"] == "mastermind.local_projection_run/v1"
+    assert envelope["input"]["input_sha256"] == __import__("hashlib").sha256(raw).hexdigest()
+    assert envelope["result"]["multiple_testing"]["effective_n"] == 1
+    assert envelope["authority"] == {"research_only": True, "causal": False,
+                                     "signal": False, "sizing": False, "execution": False,
+                                     "publication": False}
+    assert "source-supplied" in envelope["limitations"]
+    before = path.read_bytes()
+    harness.run_panel(raw, cutoff=datetime(2026, 5, 1, tzinfo=timezone.utc),
+                      family="fixture-only", ledger=ledger, horizons=2, lags=1)
+    assert path.read_bytes() == before  # identical configuration does not spend twice
+
+
+def test_registered_panel_registration_failure_never_estimates(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+    import scripts.run_local_projections as harness
+    from engine.trial_ledger import TrialLedger
+    path = tmp_path / "fixture-ledger.jsonl"
+    path.write_text("")
+    ledger = TrialLedger(path)
+    def failed_registration(*args, **kwargs):
+        raise OSError("retained storage failure")
+    monkeypatch.setattr(ledger, "log_trial", failed_registration)
+    monkeypatch.setattr(harness.lp, "impulse_response", lambda *a, **k: pytest.fail("estimated after failed registration"))
+    with pytest.raises(OSError, match="retained storage failure"):
+        harness.run_panel(_registered_panel_bytes(), cutoff=datetime(2026, 5, 1, tzinfo=timezone.utc),
+                          family="fixture-only", ledger=ledger, horizons=2, lags=1)
+
+
+@pytest.mark.parametrize("setting,value", [("horizons", True), ("horizons", -1),
+    ("horizons", 61), ("lags", 0), ("embargo", 0), ("min_obs", 2)])
+def test_registered_panel_invalid_settings_spend_no_trial(tmp_path, setting, value):
+    from datetime import datetime, timezone
+    from engine.trial_ledger import TrialLedger
+    from scripts.run_local_projections import PanelInputError, run_panel
+    path = tmp_path / "fixture-ledger.jsonl"
+    path.write_text("")
+    with pytest.raises(PanelInputError):
+        run_panel(_registered_panel_bytes(), cutoff=datetime(2026, 5, 1, tzinfo=timezone.utc),
+                  family="fixture-only", ledger=TrialLedger(path), **{setting: value})
+    assert path.read_bytes() == b""
+
+
+def test_registered_panel_cli_requires_explicit_existing_store(tmp_path, capsys):
+    from scripts.run_local_projections import main
+    source = tmp_path / "panel.csv"
+    source.write_bytes(_registered_panel_bytes())
+    missing = tmp_path / "unapproved-new-ledger.jsonl"
+    assert main(["--input", str(source), "--cutoff", "2026-05-01T00:00:00Z",
+                 "--family", "fixture-only", "--ledger", str(missing)]) == 2
+    assert not missing.exists()
+    captured = capsys.readouterr()
+    assert captured.out == "" and "existing approved trial ledger" in captured.err
+
+
+def test_registered_panel_naive_cutoff_and_corrupt_ledger_refuse(tmp_path):
+    from datetime import datetime, timezone
+    from engine.trial_ledger import TrialLedger
+    from scripts.run_local_projections import PanelInputError, run_panel
+    path = tmp_path / "fixture-ledger.jsonl"
+    path.write_text("not-json\n")
+    original = path.read_bytes()
+    for cutoff in (datetime(2026, 5, 1), datetime(2026, 5, 1, tzinfo=timezone.utc)):
+        with pytest.raises(PanelInputError):
+            run_panel(_registered_panel_bytes(), cutoff=cutoff, family="fixture-only",
+                      ledger=TrialLedger(path), horizons=2, lags=1)
+    assert path.read_bytes() == original
+
+
+def test_registered_panel_cli_consumes_fixture_without_publishing(tmp_path, capsys):
+    import json
+    from scripts.run_local_projections import main
+    source = tmp_path / "fixture-panel.csv"
+    source.write_bytes(_registered_panel_bytes())
+    ledger = tmp_path / "fixture-ledger.jsonl"
+    ledger.write_text("")
+    assert main(["--input", str(source), "--cutoff", "2026-05-01T00:00:00Z",
+                 "--family", "fixture-only", "--ledger", str(ledger),
+                 "--horizons", "2", "--lags", "1"]) == 0
+    capture = capsys.readouterr()
+    envelope = json.loads(capture.out)
+    assert capture.err == ""
+    assert len(envelope["result"]["irf"]) == 3
+    assert envelope["registration"]["effective_n"] == 1
+    assert envelope["authority"]["publication"] is False
+    assert sorted(p.name for p in tmp_path.iterdir()) == [
+        ".fixture-ledger.jsonl.lock", "fixture-ledger.jsonl", "fixture-panel.csv"]
+
+
+def test_registered_panel_preserves_typed_abstention(tmp_path):
+    from datetime import datetime, timezone
+    from engine.trial_ledger import TrialLedger
+    from scripts.run_local_projections import run_panel
+    path = tmp_path / "fixture-ledger.jsonl"
+    path.write_text("")
+    envelope = run_panel(_registered_panel_bytes(), cutoff=datetime(2026, 5, 1, tzinfo=timezone.utc),
+                         family="fixture-only", ledger=TrialLedger(path), horizons=2,
+                         lags=1, min_obs=200)
+    result = envelope["result"]
+    assert all(row["abstained"] and row["reason"] for row in result["irf"])
+    assert result["null"]["any_horizon_rejects"] is False
+    assert result["null"]["rejecting_horizons"] == []
+    assert envelope["authority"]["signal"] is False
+
+
+def test_registered_panel_configuration_changes_accumulate_search_count(tmp_path):
+    from datetime import datetime, timezone
+    from engine.trial_ledger import TrialLedger
+    from scripts.run_local_projections import run_panel
+    path = tmp_path / "fixture-ledger.jsonl"
+    path.write_text("")
+    ledger = TrialLedger(path)
+    raw = _registered_panel_bytes()
+    for lags in (1, 2):
+        envelope = run_panel(raw, cutoff=datetime(2026, 5, 1, tzinfo=timezone.utc),
+                             family="fixture-only", ledger=ledger, horizons=2, lags=lags)
+    assert TrialLedger(path).literal_n("fixture-only") == 2
+    assert envelope["result"]["multiple_testing"]["effective_n"] == 2
+    assert envelope["registration"]["new_trial_logged"] is True
+
+
+@pytest.mark.parametrize("period,known", [
+    ("２０２６-０１-０１", "2026-01-02T00:00:00Z"),
+    ("2026-01-01", "２０２６-０１-０２T00:00:00Z"),
+    ("2026-01-01", "9999-12-31T23:00:00-23:00"),
+])
+def test_registered_panel_invalid_iso_and_utc_overflow_are_typed(period, known):
+    from datetime import datetime, timezone
+    from scripts.run_local_projections import PanelInputError, parse_panel
+    raw = f"period,y,shock,known_at\n{period},1,2,{known}\n".encode()
+    with pytest.raises(PanelInputError):
+        parse_panel(raw, datetime(2026, 5, 1, tzinfo=timezone.utc))
+
+
+def test_registered_panel_row_limit_does_not_filter(monkeypatch):
+    from datetime import datetime, timezone
+    import scripts.run_local_projections as harness
+    monkeypatch.setattr(harness, "_MAX_ROWS", 2)
+    with pytest.raises(harness.PanelInputError, match="more than 2 data rows"):
+        harness.parse_panel(_registered_panel_bytes(3), datetime(2026, 5, 1, tzinfo=timezone.utc))
+
+
+def test_registered_panel_requires_immutable_source_bytes():
+    from datetime import datetime, timezone
+    from scripts.run_local_projections import PanelInputError, parse_panel
+    with pytest.raises(PanelInputError, match="raw must be bytes"):
+        parse_panel(bytearray(_registered_panel_bytes()),
+                    datetime(2026, 5, 1, tzinfo=timezone.utc))
+
+
+# Frozen ALFRED source-panel custody and asof guards (no estimator in these cases).
+import math
+import pandas as pd
+import pytest
+from scripts.local_projection_alfred_panel import assemble_panel
+
+
+def _alfred_frames():
+    cpi = pd.DataFrame([
+        ("1997-12-01", "1998-01-14", 100.),
+        ("1998-01-01", "1998-02-13", 101.),
+        ("1998-01-01", "1998-03-13", 900.),
+        ("1998-02-01", "1998-03-13", 102.),
+        ("1998-02-01", "1998-04-13", 999.),
+    ], columns=["period", "realtime_start", "value"])
+    payroll = pd.DataFrame([
+        ("1998-01-01", "1998-02-06", 1000.),
+        ("1998-01-01", "1998-03-06", 9000.),
+        ("1998-02-01", "1998-03-06", 1005.),
+        ("1998-02-01", "1998-04-03", 9000.),
+    ], columns=cpi.columns)
+    return cpi, payroll
+
+
+def _alfred_run(cpi, payroll):
+    return assemble_panel(cpi, payroll, "1998-01-01", "1998-02-01")
+
+
+def test_alfred_asof_excludes_later_revisions_and_preserves_input():
+    cpi, payroll = _alfred_frames()
+    before = (cpi.copy(deep=True), payroll.copy(deep=True))
+    raw, meta = _alfred_run(cpi, payroll)
+    rows = raw.decode().splitlines()
+    assert len(rows) == 3
+    first = rows[1].split(",")
+    assert first[0] == "1998-02-13"
+    assert float(first[1]) == pytest.approx(math.log(1000))
+    assert float(first[2]) == pytest.approx(100*math.log(101/100))
+    assert first[3] == "1998-02-15T00:00:00+00:00"
+    assert meta["rows"][0]["payroll_vintage"] == "1998-02-06"
+    pd.testing.assert_frame_equal(cpi, before[0])
+    pd.testing.assert_frame_equal(payroll, before[1])
+
+
+@pytest.mark.parametrize("change", ["missing", "late", "duplicate", "nan", "zero", "future_payroll"])
+def test_alfred_invalid_prerequisite_refuses_whole_panel(change):
+    cpi, payroll = _alfred_frames()
+    if change == "missing": cpi = cpi[cpi.period != "1998-02-01"]
+    elif change == "late": cpi.loc[cpi.period == "1998-01-01", "realtime_start"] = "1998-05-13"
+    elif change == "duplicate": cpi = pd.concat([cpi,cpi.iloc[[0]]])
+    elif change == "nan": cpi.loc[1,"value"] = float("nan")
+    elif change == "zero": payroll.loc[0,"value"] = 0.
+    elif change == "future_payroll": payroll.loc[payroll.period == "1998-01-01","realtime_start"] = "1998-05-01"
+    with pytest.raises(ValueError): _alfred_run(cpi,payroll)
+
+
+def test_alfred_intraday_source_precision_is_not_silently_invented():
+    cpi,payroll = _alfred_frames()
+    cpi.loc[1,"realtime_start"] = "1998-02-13T08:30:00"
+    with pytest.raises(ValueError): _alfred_run(cpi,payroll)
+
+
+def test_alfred_every_frozen_month_is_required():
+    cpi,payroll = _alfred_frames()
+    with pytest.raises(ValueError): assemble_panel(cpi,payroll,"1998-01-01","1998-03-01")

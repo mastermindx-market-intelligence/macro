@@ -60,7 +60,17 @@ def fake_ledger(monkeypatch):
 
 def test_shipping_ledger_holds_the_resolved_delistings():
     rows = ds.ledger()
-    assert set(rows) == {"CTRA", "TPH", "AVB", "LEG", "FBRX", "TWO"}
+    assert set(rows) == {"CTRA", "TPH", "AVB", "LEG", "FBRX", "TWO",
+                         "ATAI", "DBRG", "QRVO", "WBD", "WBS"}
+    # 2026-10 acquisition exits (seat 2fc05761): each last session is the session
+    # before its 25-NSE date; QRVO's spans a weekend.
+    for t, last, gone in (("ATAI", "2026-09-10", "2026-09-11"),
+                          ("DBRG", "2026-09-29", "2026-09-30"),
+                          ("QRVO", "2026-10-02", "2026-10-05"),
+                          ("WBD", "2026-10-05", "2026-10-06"),
+                          ("WBS", "2026-08-19", "2026-08-20")):
+        assert (rows[t]["last_session"], rows[t]["delisted_on"]) == (last, gone), t
+        assert rows[t]["successor_ticker"] is None, t
     assert rows["CTRA"]["delisted_on"] == "2026-05-07"
     assert rows["CTRA"]["acquirer"] == "Devon Energy"
     assert rows["TPH"]["delisted_on"] == "2026-05-14"

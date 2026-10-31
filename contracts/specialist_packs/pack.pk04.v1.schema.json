@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk04.v1.schema.json",
   "title": "Specialist pack PK04 v1 catalogue",
-  "description": "Revenue recognition and contract balances. Result instances validate against specialist_pack_result.v1. The field catalogue is unspecified at contract v1; the pack implementation populates fields and checks and sets catalogue_state to specified.",
+  "description": "Revenue recognition and contract balances. Result instances validate against specialist_pack_result.v1. The field, check and reason-code catalogue is frozen by the FIF K1/K2 seat spec; pack results remain display-only context (attested: false) until a Q1 held-out evaluation under Q0.",
   "pack_schema_id": "pack.pk04/v1",
   "pack_id": "PK04",
   "name": "Revenue recognition and contract balances",
@@ -15,10 +15,222 @@
     "typed absences",
     "production source trace"
   ],
-  "catalogue_state": "unspecified",
-  "fields": [],
-  "checks": [],
-  "reason_codes": [],
+  "catalogue_state": "specified",
+  "fields": [
+    {
+      "field_id": "revenue",
+      "name": "Revenue (core, consumed)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": true
+    },
+    {
+      "field_id": "contract_liability_current",
+      "name": "Contract liability, current",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "contract_liability_noncurrent",
+      "name": "Contract liability, noncurrent",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "contract_liability_rollforward_opening",
+      "name": "Contract liability rollforward, opening balance",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "contract_liability_rollforward_recognized",
+      "name": "Contract liability rollforward, revenue recognized",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "contract_liability_rollforward_additions",
+      "name": "Contract liability rollforward, additions",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "contract_liability_rollforward_closing",
+      "name": "Contract liability rollforward, closing balance",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "rpo_total",
+      "name": "Remaining performance obligations, total (PK04-owned)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "rpo_percentage_next_12m",
+      "name": "Share of remaining performance obligations expected within 12 months",
+      "type": "ratio",
+      "unit": "ratio",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "rpo_timing",
+      "name": "Expected timing of remaining performance obligation satisfaction",
+      "type": "duration_iso8601",
+      "unit": null,
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "revenue_disaggregated",
+      "name": "Revenue disaggregated by product/service and geography members (PK04-owned axes)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "revenue_policy_text_block",
+      "name": "Revenue recognition policy text block",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "contract_liability_rollforward",
+      "kind": "rollforward",
+      "operands": [
+        "contract_liability_rollforward_opening",
+        "contract_liability_rollforward_additions",
+        "contract_liability_rollforward_recognized",
+        "contract_liability_rollforward_closing"
+      ]
+    },
+    {
+      "check_id": "rpo_vs_deferred_scope",
+      "kind": "cross_statement",
+      "operands": [
+        "rpo_total",
+        "contract_liability_current",
+        "contract_liability_noncurrent"
+      ]
+    },
+    {
+      "check_id": "disaggregation_sums_to_revenue",
+      "kind": "sum_identity",
+      "operands": [
+        "revenue_disaggregated",
+        "revenue"
+      ]
+    }
+  ],
+  "reason_codes": [
+    {
+      "code": "applicability_rule_satisfied",
+      "parameter": null,
+      "meaning": "the pack's versioned applicability rule (`applicability.rule_id`) evaluated true"
+    },
+    {
+      "code": "form_outside_pack_forms",
+      "parameter": null,
+      "meaning": "the admitted form is outside the pack's Q0-frozen forms"
+    },
+    {
+      "code": "missing_standard_fact",
+      "parameter": "concept",
+      "meaning": "the standard concept named by the parameter has no admitted fact for the period"
+    },
+    {
+      "code": "extension_concept_unaliased",
+      "parameter": "prefix",
+      "meaning": "the value exists only under an extension prefix with no frozen alias"
+    },
+    {
+      "code": "disallowed_dimension",
+      "parameter": null,
+      "meaning": "the only facts carry a dimension the field does not admit"
+    },
+    {
+      "code": "missing_dependency",
+      "parameter": null,
+      "meaning": "a formula/check operand is not valued (R-K3: never an implied zero)"
+    },
+    {
+      "code": "unit_mismatch",
+      "parameter": null,
+      "meaning": "operands differ in unit/currency/period basis"
+    },
+    {
+      "code": "numeric_value_in_narrative_only",
+      "parameter": null,
+      "meaning": "the number appears only inside narrative text; R-K4' forbids extracting it"
+    },
+    {
+      "code": "issuer_class_unknown",
+      "parameter": null,
+      "meaning": "the SIC needed to resolve applicability is unbound"
+    },
+    {
+      "code": "bank_interest_not_contract_revenue",
+      "parameter": null,
+      "meaning": "(K1K2) bank interest is not ASC 606 contract revenue"
+    }
+  ],
   "type": "object",
   "additionalProperties": false
 }

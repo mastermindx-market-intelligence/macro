@@ -1,0 +1,9 @@
+{
+  "observed_at_utc": "2026-10-21T13:47:15.210520+00:00",
+  "source": "forex-top",
+  "receipt_scan_count": 0,
+  "truncated": false,
+  "matching_receipts": [],
+  "max_requests": 1,
+  "plan_sha256": "4fccfc737e56e95d6c58817168aba0e6a7eeca3fde4dad9ff485eb19fb08cb93"
+}

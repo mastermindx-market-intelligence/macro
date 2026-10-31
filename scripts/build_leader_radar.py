@@ -2095,7 +2095,7 @@ def _build_fire_history(
     fire_log_df: pd.DataFrame,
     data_root: Path,
 ) -> list[dict]:
-    """Return last 20 fire_log rows joined with grade data if available.
+    """Return last 20 fire_log rows plus up to 20 older matured rows, grade-joined.
 
     Reads data/pick_lab/grades.jsonl via engine.pick_lab.ledger (consume, never
     re-implement).  Key: (engine_id, ticker, fire_date).  Primary horizon row
@@ -2116,7 +2116,7 @@ def _build_fire_history(
         # Normalize date column
         fl = fire_log_df.copy()
         fl["date"] = pd.to_datetime(fl["date"])
-        fl = fl.sort_values("date", ascending=False).head(20)
+        fl = fl.sort_values("date", ascending=False)
     except Exception:  # noqa: BLE001
         return []
 
@@ -2196,7 +2196,17 @@ def _build_fire_history(
             "ret_excess_spy": ret_excess_spy,
             "status": status,
         })
-    return result
+    recent = result[:20]
+    seen = {(e["date"], e["ticker"], e["fire_type"]) for e in recent}
+    extra: list[dict] = []
+    for e in result[20:]:
+        if len(extra) >= 20 or e["status"] != "matured":
+            continue
+        key = (e["date"], e["ticker"], e["fire_type"])
+        if key not in seen:
+            seen.add(key)
+            extra.append(e)
+    return recent + extra
 
 
 def _rs_high_watch_unavailable(as_of, reason: str) -> dict:
@@ -2271,6 +2281,9 @@ def _additive_layer_clock(ohlcv_map: dict, today: date) -> tuple[date, dict]:
     meta["rows_behind_clock"] = sum(d < clock for d in last_dates)
     meta["lag_sessions"] = len(_nyse_sessions_between(clock + timedelta(days=1), today))
     return clock, meta
+
+
+_LINEAGE_HISTORY_SESSIONS: int | None = None  # None = full calendar; measured 2026-10-17 on the 174-issuer universe
 
 
 def _with_additive_clock(roster: dict, clock: date, meta: dict, *, incumbent_as_of: str) -> dict:
@@ -2887,6 +2900,41 @@ def build(
                                          "thesis_state": "UNKNOWN"}
         _row.setdefault("display_chips", {})["leader_recovery"] = _recovery
 
+    # ── Leader lineage (display-only, additive; default off) ──────────────────
+    # Mirrors the recovery lens: compute the WHOLE layer (descriptors, chips,
+    # roster) before attaching anything, so a failure leaves the incumbent
+    # payload byte-identical. No rank, gate, size, trade, alert, ordering or
+    # promotion input reads any lineage field.
+    _lineage_roster_payload = None   # set only when the whole layer succeeded
+    if lr_cfg.get("lineage_enabled") is True:
+        try:
+            from engine.leader_lineage import describe_lineage_universe, lineage_chip, lineage_roster
+            _t_lin = time.monotonic()
+            _lin_cal = [d for d in _recovery_calendar if d <= additive_clock]
+            if _LINEAGE_HISTORY_SESSIONS is not None:
+                _lin_cal = _lin_cal[-_LINEAGE_HISTORY_SESSIONS:]
+            _lin_tickers = [r["ticker"] for r in rows]
+            _lin_closes = {t: ohlcv_map[t]["close"] for t in _lin_tickers if ohlcv_map.get(t) is not None}
+            _lin_refs = {t: f"data/baskets/ohlcv/{t}.parquet + data/yahoo/SPY.parquet" for t in _lin_tickers}
+            _lin_descs, _lin_cov = describe_lineage_universe(
+                _lin_closes, spy, as_of=additive_clock, sessions=_lin_cal,
+                tickers=_lin_tickers, source_refs=_lin_refs)
+            _lin_chips = {t: lineage_chip(_lin_descs[t]) for t in _lin_tickers}
+            _lin_roster = _with_additive_clock(
+                lineage_roster(_lin_descs, _lin_cov, as_of=as_of),
+                additive_clock, additive_clock_meta, incumbent_as_of=as_of)
+            for _row in rows:                       # attach only after EVERYTHING above succeeded
+                _row.setdefault("display_chips", {})["leader_lineage"] = _lin_chips[_row["ticker"]]
+            _lineage_roster_payload = _lin_roster
+            log.info("build_leader_radar: leader lineage: %d issuers in %.2fs",
+                     len(_lin_tickers), time.monotonic() - _t_lin)
+        except Exception as _lin_exc:  # noqa: BLE001
+            for _row in rows:                       # no partial attach survives
+                (_row.get("display_chips") or {}).pop("leader_lineage", None)
+            _lineage_roster_payload = None
+            log.warning("build_leader_radar: leader lineage unavailable: %s", _lin_exc)
+            print(f"::warning title=leader_lineage::lineage layer FAILED — incumbent payload unchanged: "
+                  f"{type(_lin_exc).__name__}: {_lin_exc}", flush=True)
 
     # Writes merge onto the UNCAPPED frames (state_df_full / fire_log_df_full):
     # the PIT cap is a read-side view, and _merge_history_frame already drops
@@ -2914,6 +2962,17 @@ def build(
                     print(f"::warning title=leader_radar::recovery observation enrichment "
                           f"FAILED — incumbent state_history written unchanged: "
                           f"{type(_obs_exc).__name__}: {_obs_exc}", flush=True)
+                # Isolated the same way: a lineage-seal failure must never freeze
+                # the incumbent state_history advance.
+                try:
+                    from engine.leader_recovery_observations import merge_lineage_observations
+                    updated = merge_lineage_observations(
+                        state_df_full, updated, rows, as_of=additive_clock, observed_at=built_at,
+                        enabled=(lr_cfg.get("lineage_enabled") is True and _lineage_roster_payload is not None))
+                except Exception as _lin_obs_exc:  # noqa: BLE001
+                    log.warning("build_leader_radar: lineage observations skipped: %s", _lin_obs_exc)
+                    print(f"::warning title=leader_lineage::lineage observation enrichment FAILED — incumbent "
+                          f"state_history written unchanged: {type(_lin_obs_exc).__name__}: {_lin_obs_exc}", flush=True)
                 _write_state_history(updated, data_root)
                 log.info("build_leader_radar: state_history: %d total rows", len(updated))
             except Exception as e:  # noqa: BLE001
@@ -3154,6 +3213,17 @@ def build(
         "near_trigger": near_trigger,
         "fire_history": fire_history,
     }
+
+    # Additive key placement: lineage_roster sits immediately after
+    # recovery_roster; every other key keeps its order. Flag-off and failure
+    # paths leave the payload dict literally untouched.
+    if _lineage_roster_payload is not None:
+        _p: dict[str, Any] = {}
+        for _k, _v in payload.items():
+            _p[_k] = _v
+            if _k == "recovery_roster":
+                _p["lineage_roster"] = _lineage_roster_payload
+        payload = _p
 
     out_path = out_dir / "radar.json"
 

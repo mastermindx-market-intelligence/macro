@@ -174,3 +174,23 @@ def normalize_tier(value: object) -> str:
     if raw in aliases:
         return aliases[raw]
     return aliases.get(_slug(raw), raw)
+
+
+def tier_rank() -> tuple[str, ...] | None:
+    """Canonical precedence from the native plans catalog; unavailable fails closed.
+
+    Consumers must normalize incoming tiers separately. No consumer-owned rank
+    table or invented paid alias may override the catalog.
+    """
+    try:
+        import yaml  # noqa: PLC0415
+        with (ROOT / "config" / "plans.yml").open() as fh:
+            rank = (yaml.safe_load(fh) or {}).get("tier_rank")
+        if not isinstance(rank, list) or not rank or any(not isinstance(t, str) or not t.strip() for t in rank):
+            return None
+        canonical = tuple(normalize_tier(t) for t in rank)
+        if canonical[0] != "free" or len(set(canonical)) != len(canonical):
+            return None
+        return canonical
+    except Exception:  # noqa: BLE001 — unavailable catalog never widens delivery
+        return None

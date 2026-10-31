@@ -1,0 +1,29 @@
+{
+  "schema": "eval_os.retained_evidence_manifest.v1",
+  "records": [
+    {
+      "file": "hosted-jobs-0704.json.gz",
+      "sha256": "1cda4e8c6ab7de541135859ec94c1384e563762fba6a947f4d6eade1120e66fc",
+      "bytes": 2525,
+      "encoding": "gzip",
+      "decoded_sha256": "f586d88578a71577fe15a5a314f243e3ee4f5e9b21e0b523125d32698e9ae223",
+      "decoded_bytes": 50368
+    },
+    {
+      "file": "hosted-artifacts-0704.json",
+      "sha256": "0b5cd2dd02c0b1deecdeab6d679d7f4d9f5351a258376df9779502374c1b9c5b",
+      "bytes": 1552
+    },
+    {
+      "file": "hosted-plan-38695328397.zip",
+      "sha256": "983194bf0684d9e78bc4d047f7732b0f6b6d82d15f118e339d0317556bf22d4d",
+      "bytes": 34513
+    },
+    {
+      "file": "hosted-plan-identity-0707.json",
+      "sha256": "a0c189655d21076e16966b46617ca0679ce805aa6fabe2c559efecee0724bd0e",
+      "bytes": 2157
+    }
+  ],
+  "scope": "Original plan artifact and current-head job metadata only; terminal binding checks, merge and production acceptance remain open."
+}

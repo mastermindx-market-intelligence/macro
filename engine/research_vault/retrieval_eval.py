@@ -374,3 +374,219 @@ def _mean(values: list[float]) -> float | None:
     if not values:
         return None
     return sum(values) / len(values)
+
+# The original excerpt benchmark above is retained unchanged. This extension
+# measures private, independently labelled full-document cases; it grants no
+# rights, source authenticity, retrieval threshold, or investment authority.
+FULL_DOCUMENT_BENCHMARK_SCHEMA = "research_vault.full_document_benchmark.v1"
+_FULL_STRATA = frozenset({"tail_only", "paraphrase", "institution_disagreement", "correction", "no_text", "truly_absent"})
+_FULL_TUPLE = ("report_id", "source_pdf_sha256", "extracted_text_sha256")
+
+
+def _full_sha(value: Any) -> bool:
+    return (isinstance(value, str) and len(value) == 64
+            and all(c in "0123456789abcdef" for c in value))
+
+
+def _full_identity(value: Any) -> tuple[str, str, str]:
+    if not isinstance(value, dict) or not isinstance(value.get("report_id"), str) or not value["report_id"]:
+        raise ValueError("source report_id required")
+    if not all(_full_sha(value.get(k)) for k in _FULL_TUPLE[1:]):
+        raise ValueError("exact source PDF and extracted text digests required")
+    return tuple(value[k] for k in _FULL_TUPLE)
+
+
+def validate_full_document_benchmark(benchmark: Any) -> dict[str, Any]:
+    """Validate immutable labels, scope and family/lineage partitioning.
+
+    Labels do not contain bodies. Admissible source bodies are separate private
+    input, and a digest is a consistency binding, not proof of source authenticity.
+    Candidate/protocol hashes must be frozen before holdout; their temporal
+    authenticity is adjudicated by the existing evaluation owner.
+    """
+    if not isinstance(benchmark, dict) or benchmark.get("schema") != FULL_DOCUMENT_BENCHMARK_SCHEMA:
+        raise ValueError("wrong full-document benchmark schema")
+    for field in ("protocol_sha256", "candidate_frozen_sha256"):
+        if not _full_sha(benchmark.get(field)):
+            raise ValueError(field + " required")
+    cases = benchmark.get("cases")
+    if not isinstance(cases, list) or not cases:
+        raise ValueError("nonempty cases required")
+    ids, partition = set(), {}
+    for case in cases:
+        if not isinstance(case, dict) or not isinstance(case.get("id"), str) or not case["id"] or case["id"] in ids:
+            raise ValueError("unique case id required")
+        ids.add(case["id"])
+        if not isinstance(case.get("query"), str) or not case["query"].strip():
+            raise ValueError("nonempty query required for replay")
+        if case.get("stratum") not in _FULL_STRATA or case.get("split") not in {"development", "holdout"}:
+            raise ValueError("explicit stratum and split required")
+        if case.get("fill_state") not in FILL_STATES or type(case.get("abstain_expected")) is not bool:
+            raise ValueError("explicit fill and abstention label required")
+        scope = case.get("searched_scope")
+        if not isinstance(scope, list) or not scope:
+            raise ValueError("searched scope required, including negative cases")
+        scope_ids = set()
+        for source in scope:
+            identity = _full_identity(source)
+            if identity in scope_ids:
+                raise ValueError("duplicate source revision in scope")
+            scope_ids.add(identity)
+            # Every source declares BOTH grouping axes; unknown lineage cannot
+            # silently pass as an independent family in final evaluation.
+            for axis in ("family_id", "lineage_id"):
+                group = source.get(axis)
+                if not isinstance(group, str) or not group:
+                    raise ValueError(axis + " required")
+                key = (axis, group)
+                if key in partition and partition[key] != case["split"]:
+                    raise ValueError("related source family/lineage crosses split")
+                partition[key] = case["split"]
+        if case["split"] == "holdout" and any(source.get("grouping_qualified") is not True for source in scope):
+            raise ValueError("holdout requires independently qualified family/lineage grouping")
+        expected = case.get("expected_doc_ids")
+        if not isinstance(expected, list) or any(not isinstance(x, str) or not x for x in expected) or len(set(expected)) != len(expected):
+            raise ValueError("unique expected document ids required")
+        if not set(expected).issubset({i[0] for i in scope_ids}):
+            raise ValueError("expected document outside searched scope")
+        spans = case.get("gold_spans")
+        if not isinstance(spans, list):
+            raise ValueError("gold spans required")
+        if case["abstain_expected"]:
+            wanted_state = case.get("expected_evidence_state")
+            if wanted_state not in {"UNAVAILABLE", "NOT_FOUND"}:
+                raise ValueError("explicit expected negative evidence state required")
+            if (case["stratum"] == "no_text" and wanted_state != "UNAVAILABLE"
+                    or case["stratum"] == "truly_absent" and wanted_state != "NOT_FOUND"):
+                raise ValueError("negative evidence state contradicts labeled stratum")
+        if case["abstain_expected"] and (expected or spans):
+            raise ValueError("negative label cannot contain positive evidence")
+        if case["fill_state"] == "READY" and not case["abstain_expected"] and (not expected or not spans):
+            raise ValueError("READY positive case requires documents and literal gold spans")
+        if case["fill_state"] == "READY" and not case["abstain_expected"] and {span.get("report_id") for span in spans if isinstance(span, dict)} != set(expected):
+            raise ValueError("every expected document requires a gold span")
+        for span in spans:
+            if _full_identity(span) not in scope_ids or span["report_id"] not in expected:
+                raise ValueError("gold span outside exact searched revision")
+            if (type(span.get("start_byte")) is not int or type(span.get("end_byte")) is not int
+                    or span["start_byte"] < 0 or span["end_byte"] <= span["start_byte"]
+                    or not _full_sha(span.get("passage_text_sha256"))):
+                raise ValueError("literal UTF8 byte span/digest required")
+    return benchmark
+
+
+def _full_literal(passage: Any, source_texts: dict[tuple[str, str, str], str]) -> bool:
+    try:
+        identity = _full_identity(passage)
+    except ValueError:
+        return False
+    source, text = source_texts.get(identity), passage.get("text")
+    if not isinstance(source, str) or not isinstance(text, str) or not text:
+        return False
+    raw = source.encode("utf-8")
+    start, end = passage.get("start_byte"), passage.get("end_byte")
+    return (hashlib.sha256(raw).hexdigest() == identity[2]
+            and type(start) is int and type(end) is int
+            and 0 <= start < end <= len(raw)
+            and raw[start:end] == text.encode("utf-8")
+            and hashlib.sha256(text.encode("utf-8")).hexdigest() == passage.get("passage_text_sha256"))
+
+
+def score_full_document(
+    benchmark: dict[str, Any], results_by_case: dict[str, Any] | None,
+    *, source_texts: dict[tuple[str, str, str], str], k: int = 10,
+) -> dict[str, Any]:
+    """Score retrieval, exact identity and literal support independently.
+
+    source_texts maps exact (report_id, PDF SHA, text SHA) to privately retained
+    canonical extracted text. Result passages use the existing Read evidence
+    fields. Gold literals are checked against those bytes before measuring.
+    READY timeout/missing/unavailable/empty/nonanswers all remain in denominator.
+    No candidate tuning or reranker adoption is performed here.
+    """
+    validate_full_document_benchmark(benchmark)
+    if type(k) is not int or k < 1:
+        raise ValueError("k must be positive integer")
+    results = results_by_case if isinstance(results_by_case, dict) else {}
+    rows, pending = [], 0
+    for case in benchmark["cases"]:
+        if case["fill_state"] != "READY":
+            pending += 1
+            continue
+        for gold in case["gold_spans"]:
+            identity = _full_identity(gold)
+            source = source_texts.get(identity)
+            if not isinstance(source, str):
+                raise ValueError("gold source body unavailable; label not qualified")
+            raw = source.encode("utf-8")
+            if (hashlib.sha256(raw).hexdigest() != identity[2]
+                    or gold["end_byte"] > len(raw)
+                    or hashlib.sha256(raw[gold["start_byte"]:gold["end_byte"]]).hexdigest() != gold["passage_text_sha256"]):
+                raise ValueError("gold literal source span/revision mismatch")
+            try:
+                raw[gold["start_byte"]:gold["end_byte"]].decode("utf-8", errors="strict")
+            except UnicodeDecodeError as exc:
+                raise ValueError("gold literal span splits UTF8 scalar boundary") from exc
+        result = results.get(case["id"])
+        result = result if isinstance(result, dict) else {}
+        status = result.get("status", "OK" if result else "MISSING")
+        usable = status == "OK"
+        ranked = _ranked(result)[:k] if usable else []
+        ranked = list(dict.fromkeys(x for x in ranked if isinstance(x, str) and x))
+        expected = set(case["expected_doc_ids"])
+        hits = len(expected & set(ranked))
+        recall = hits / len(expected) if expected else None
+        precision = hits / len(ranked) if ranked else 0.0
+        evidence = result.get("evidence")
+        passages = evidence.get("passages", []) if isinstance(evidence, dict) else []
+        passages = passages if isinstance(passages, list) else []
+        found = usable and _evidence_state(result) in _FOUND_STATES
+        scope = {_full_identity(s) for s in case["searched_scope"]}
+        gold_identities = {_full_identity(g) for g in case["gold_spans"]}
+        identity_hits, supported_gold, supported_passages = set(), set(), 0
+        for passage in passages if found else []:
+            try:
+                identity = _full_identity(passage)
+            except ValueError:
+                continue
+            matching = [g for g in case["gold_spans"] if _full_identity(g) == identity]
+            if identity not in scope or not matching:
+                continue
+            identity_hits.add(identity)
+            if not _full_literal(passage, source_texts):
+                continue
+            covered = {index for index, g in enumerate(case["gold_spans"])
+                       if _full_identity(g) == identity and passage["start_byte"] <= g["start_byte"]
+                       and passage["end_byte"] >= g["end_byte"]}
+            if covered:
+                supported_gold.update(covered)
+                supported_passages += 1
+        identity_hit = bool(gold_identities) and identity_hits == gold_identities
+        literal_hit = bool(case["gold_spans"]) and len(supported_gold) == len(case["gold_spans"])
+        clean_abstain = (usable and result.get("abstained") is True and not ranked and not passages
+                         and _evidence_state(result) == case.get("expected_evidence_state"))
+        correct = clean_abstain if case["abstain_expected"] else bool(expected and hits == len(expected) and literal_hit)
+        rows.append({"id": case["id"], "stratum": case["stratum"], "split": case["split"],
+                     "status": status, "abstain_expected": case["abstain_expected"],
+                     "recall_at_k": recall, "precision_at_k": precision,
+                     "exact_evidence_identity": int(identity_hit), "literal_support": int(literal_hit),
+                     "correct": int(correct), "abstention_correct": int(clean_abstain),
+                     "returned_passages": len(passages), "supported_passages": supported_passages,
+                     "gold_span_recall": len(supported_gold) / len(case["gold_spans"]) if case["gold_spans"] else None,
+                     "latency_ms": result.get("latency_ms"), "model_tokens": result.get("model_tokens")})
+    def rates(group):
+        positive = [r for r in group if not r["abstain_expected"]]
+        negative = [r for r in group if r["abstain_expected"]]
+        return {"ready_denominator": len(group), "positive_denominator": len(positive),
+                "negative_denominator": len(negative),
+                "evidence_precision": (sum(r["supported_passages"] for r in group) / sum(r["returned_passages"] for r in group) if sum(r["returned_passages"] for r in group) else None),
+                "case_accuracy": _mean([r["correct"] for r in group]),
+                "recall_at_k": _mean([r["recall_at_k"] for r in positive]),
+                "precision_at_k": _mean([r["precision_at_k"] for r in positive]),
+                "exact_evidence_identity_rate": _mean([r["exact_evidence_identity"] for r in positive]),
+                "literal_support_rate": _mean([r["literal_support"] for r in positive]),
+                "abstention_accuracy": _mean([r["abstention_correct"] for r in negative])}
+    return {"schema": "research_vault.full_document_evaluation.v1", **rates(rows),
+            "excluded_pending": pending, "per_stratum": {s: rates([r for r in rows if r["stratum"] == s]) for s in sorted(_FULL_STRATA)},
+            "cases": rows, "failure_catalogue": [r for r in rows if not r["correct"]],
+            "thresholds": None, "authority": "evaluation_only"}

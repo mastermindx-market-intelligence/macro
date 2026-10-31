@@ -1,0 +1,15 @@
+{
+  "started_at": "2026-10-19T13:11:20.131117+00:00",
+  "finished_at": "2026-10-19T13:11:25.571289+00:00",
+  "argv": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_terminal_beta_build_output_custody.py::test_generated_0664_output_completes_original_bootstrap_and_resume",
+    "--maxfail=1"
+  ],
+  "exit": 1,
+  "owner_sha256": "6d05d3d5745e0e0a29262c89ba61cf881c2605201cce5b0fc85a52bde0e42ec8",
+  "log_sha256": "9fdd1c0a9af35ac3a70473356c7f3dcec1ae7457f88cbc6bd2578b06004460ca"
+}

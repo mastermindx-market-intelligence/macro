@@ -1,0 +1,70 @@
+{
+  "state": "REVIEWED_NATIVE_CONSUMER_DATA_READY_FOR_PROTECTED_RELEASE",
+  "reviewed_at": "2026-10-19T13:56:46.335525+00:00",
+  "canonical_generation": "df085ec3392c1f8d1c33b6e2",
+  "canonical_manifest_sha256": "0525ea0ff463cf877e6ec9567d57d882a00e1b6e2365acb490f8307f8a687131",
+  "unchanged_reference_count": 51,
+  "requalified_existing_ontology_references": [
+    "nato_fms_demand/funding_stage/1",
+    "shipbuilding/exposure/0",
+    "shipbuilding/next_event/0"
+  ],
+  "new_documentary_references": 2,
+  "financial_content_id": "dfe1-e79e83b04b1be937e0517318",
+  "theme_content_id": "gptd1-349d1e9707060943360a3a79",
+  "fms_preserved_sha256": "ab807e6e1639360621b93205241c68800a65d0d4b227e8726592e1b6be5ed6c4",
+  "research_state": "EVIDENCE_INSUFFICIENT",
+  "research_promotions": 0,
+  "independent_review": false,
+  "limits": "Source and native consumer validation only. Independent source reviews retain their original scope; current adoption is parent adjudication. Normal protected merge, installation, entitled API and browser acceptance remain separate.",
+  "source_base": "1b91bb76ea7dc662d87d428d5ab1cd021d33e663",
+  "fresh_main": "04cc542a51d86596390d9e5db224d46b50d8c973",
+  "source_dependency_pr": 9742,
+  "source_publication_pr": 9499,
+  "canonical_reference_count_before": 45,
+  "reference_count_after": 53,
+  "unchanged_reference_count_note": "51 retained locally reviewed references, including the six newly qualified RMS segment facts; 45 references existed in the previous canonical review.",
+  "native_api_readback": {
+    "state": "NATIVE_API_FUNCTIONS_RETURN_EXACT_QUALIFIED_CONSUMER_DATA",
+    "financial_content_id": "dfe1-e79e83b04b1be937e0517318",
+    "theme_content_id": "gptd1-349d1e9707060943360a3a79",
+    "profiles": 4,
+    "themes": 6,
+    "exact_twin_pairs": 4,
+    "rms_fact_values": {
+      "fleet_rms_sales": 4354.0,
+      "fleet_rms_sales_prior": 3995.0,
+      "fleet_rms_operating_profit": 437.0,
+      "fleet_rms_operating_profit_prior": -172.0,
+      "fleet_rms_margin": 10.0,
+      "fleet_rms_margin_prior": -4.3
+    },
+    "authentication_test": false,
+    "production_test": false,
+    "initial_setup_failure": "First local API invocation retained default /opt/macro and returned503 missing-local-fixture; corrected via supported MACRO_REPO to owned worktree, no production or source change."
+  },
+  "files_sha256": {
+    "config/government_revenue/program_theme_assignments.v1.json": "bdfc7e9b3e572d4bbada22e4dac81ec88c298357c8f447db93a978742010c043",
+    "data/government_revenue/defense_economics.json": "44e2454a97a3fd41f313632a73e6d54f4c6e51a83984be7d5791d9e402d2264d",
+    "data/government_revenue/program_ontology.json": "c29fbbddeda9b7e62622364f6b9d0bc386f434f6d40f3a865268cb38b215dfe8",
+    "data/government_revenue/program_theme_context.json": "9089db1bc61755728f51f7650bd38c6b1bd093b58d7862aca91687e2a46d22ca",
+    "data/government_revenue/program_theme_public_disclosure.json": "ec0f5f758e54d628a43e17d458ae87c9e70977f677c277e8e19b87f628d91640",
+    "site/government-revenue-data/defense-economics.json": "44e2454a97a3fd41f313632a73e6d54f4c6e51a83984be7d5791d9e402d2264d",
+    "site/government-revenue-data/program-ontology.json": "c29fbbddeda9b7e62622364f6b9d0bc386f434f6d40f3a865268cb38b215dfe8",
+    "site/government-revenue-data/program-theme-context.json": "9089db1bc61755728f51f7650bd38c6b1bd093b58d7862aca91687e2a46d22ca",
+    "site/government-revenue-data/theme-context.json": "ec0f5f758e54d628a43e17d458ae87c9e70977f677c277e8e19b87f628d91640"
+  },
+  "source_reviews": {
+    "RMS_REVIEW_ACCEPTANCE.json": {
+      "state": "ACCEPTED_INDEPENDENT_STATIC_CODE_REVIEW_ONLY",
+      "run": "defense-fleet-rms-source-review-01a13300-a",
+      "author": "nativeCodex/OpenAI",
+      "reviewer": "admittedMiniMax/ubuntu3",
+      "scope": "Changed additive RMS identity/clock, numeric sign/unit/period, receipt projection and incumbent preservation"
+    },
+    "AMDT3_TRUST_REVIEW_ACCEPTANCE.json": {
+      "state": "SCOPED_INDEPENDENT_REVIEW_ACCEPTED_AFTER_REPAIR_AND_RECONCILIATION",
+      "reviewer": "Qwen3.8max/Bailianubuntu1;notproductionauthorMiniMax/OpenAI"
+    }
+  }
+}

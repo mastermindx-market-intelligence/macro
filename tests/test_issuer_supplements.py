@@ -76,3 +76,103 @@ def test_first_observation_preserved_for_same_supplement_and_duplicate_event_ref
     with pytest.raises(ValueError,match='duplicate'):append_issuer_supplements(base,[q,q])
     broken=deepcopy(q);broken['source']['source_document']['event_id']='evt_cik0000101829_2026q2_results'
     with pytest.raises(ValueError,match='event'):append_issuer_supplements(base,[broken])
+
+
+# Literal retained parser fragment, not the complete SEC body or its SHA.
+RMS_URL = "https://www.sec.gov/Archives/edgar/data/936468/000162828026049277/ex991q22026.htm"
+RMS_EVENT = "evt_cik0000936468_2026q2_results"
+RMS_CAPTURE = "2026-10-16T04:14:04Z"
+RMS_FILING = {"cik":"0000936468", "accession":"0001628280-26-049277", "form":"8-K", "filing_date":"2026-07-23", "acceptance_datetime":"2026-07-23T10:30:57Z", "report_date":"2026-07-23"}
+
+
+def rms_held(mutate=lambda value:value, **overrides):
+    body = mutate((FIXTURES / "LMT.RMS.fragment.html").read_text())
+    args = dict(kind="LMT_RMS", body=body, url=RMS_URL, filing=deepcopy(RMS_FILING), event_id=RMS_EVENT, period="2026Q2", observed_at=RMS_CAPTURE, source_available_at=RMS_CAPTURE, expected_sha256=sha256(body.encode()).hexdigest())
+    args.update(overrides)
+    return build_issuer_supplement(**args)
+
+
+def test_rms_reports_quarter_cells_with_negative_prior_without_replacing_original_release(tmp_path):
+    supplement = rms_held()
+    base = make_workspace("LMT")
+    before = deepcopy(base)
+    row = append_issuer_supplements(base, [supplement])
+    assert row["sources"][:-1] == before["sources"]
+    assert row["facts"][:-6] == before["facts"]
+    assert row["lifecycle"] == before["lifecycle"] and base == before
+    assert supplement["source"]["document_id"] != before["sources"][0]["document_id"]
+    facts = {fact["metric"]: fact for fact in supplement["facts"]}
+    expected = {"fleet_rms_sales":4354, "fleet_rms_sales_prior":3995, "fleet_rms_operating_profit":437, "fleet_rms_operating_profit_prior":-172, "fleet_rms_margin":10.0, "fleet_rms_margin_prior":-4.3}
+    assert {key:value["value"] for key,value in facts.items()} == expected
+    assert facts["fleet_rms_sales"]["unit"] == "USD_million"
+    assert facts["fleet_rms_margin_prior"]["unit"] == "percent"
+    assert facts["fleet_rms_sales_prior"]["period"] == "2025Q2"
+    assert all(f["basis"] == "issuer_reported_segment:Rotary and Mission Systems:reported" for f in facts.values())
+    from engine.government_revenue.defense_economics_producer import build_defense_economics_payload
+    workspaces = {ws["event_id"]:ws for ws in [row,make_workspace("RTX"),make_workspace("NOC"),make_workspace("LHX")]}
+    write_workspace_generation(tmp_path/"data/company_intelligence",workspaces)
+    current = build_defense_economics_payload(tmp_path,generated_at="2026-10-18T01:00:00Z")
+    lmt = next(profile for profile in current["profiles"] if profile["issuer_id"]=="cik:0000936468")
+    projected = {fact["fact_id"].rsplit(":",1)[-1]:fact for fact in lmt["axes"]["economics"]["facts"]}
+    assert {key:projected[key]["value"] for key in expected} == expected
+    assert projected["defense_segment_sales"]["value"] == 4101  # incumbent MFC stays distinct
+    assert all(projected[key]["owner_ref"] != projected["defense_segment_sales"]["owner_ref"] for key in expected)
+    assert lmt["program_workshare"] is None and lmt["shareholder_capture"]["state"]=="not_asserted"
+    old = build_defense_economics_payload(tmp_path,generated_at="2026-10-18T01:00:00Z",as_of="2026-10-15T00:00:00Z")
+    assert all("fleet_rms_" not in fact["fact_id"] for profile in old["profiles"] for fact in profile["axes"]["economics"]["facts"])
+
+
+@pytest.mark.parametrize("overrides", [
+    {"event_id":"evt_cik0000202058_2026q2_results"}, {"period":"2025Q2"},
+    {"url":RMS_URL.replace("www.sec.gov","sec.example.com")},
+    {"url":RMS_URL.replace("936468/","202058/")},
+    {"url":RMS_URL+"?different=1"}, {"expected_sha256":"0"*64},
+    {"source_available_at":RMS_FILING["acceptance_datetime"]},
+    {"filing":{**RMS_FILING,"form":"8-K/A"}},
+])
+def test_rms_closed_identity_hash_and_conservative_clock_refuse(overrides):
+    with pytest.raises(ValueError):rms_held(**overrides)
+
+
+@pytest.mark.parametrize("old,new", [("millions","thousands"),("Quarters Ended","Six Months Ended"),("Operating profit (loss)","Adjusted profit")])
+def test_rms_missing_unit_quarter_or_reported_row_refuses(old,new):
+    # Visible retained literals can span HTML tags; change their literal text nodes.
+    body=(FIXTURES/"LMT.RMS.fragment.html").read_text()
+    assert old in body
+    with pytest.raises(ValueError):rms_held(mutate=lambda value:value.replace(old,new))
+
+
+@pytest.mark.parametrize("old,new", [("(4.3","4.3"),("%)","%")])
+def test_rms_split_percent_cannot_drop_either_negative_parenthesis(old,new):
+    with pytest.raises(ValueError):rms_held(mutate=lambda value:value.replace(old,new))
+
+
+def test_rms_preserves_first_capture_and_refuses_workspace_period_or_projected_sign_tampering():
+    supplement=rms_held()
+    later=rms_held(observed_at="2026-10-17T04:14:04Z",source_available_at="2026-10-17T04:14:04Z",prior=supplement["source"])
+    assert later["source"]["source_clock"]==supplement["source"]["source_clock"]
+    wrong=make_workspace("LMT");wrong["fiscal_period"]["year"]=2025
+    with pytest.raises(ValueError):append_issuer_supplements(wrong,[supplement])
+    from engine.government_revenue.defense_economics_producer import _project_fact
+    margin=deepcopy(next(f for f in supplement["facts"] if f["metric"]=="fleet_rms_margin_prior"))
+    margin["value"]=4.3
+    with pytest.raises(ValueError,match="literal"):
+        _project_fact(margin,make_workspace("LMT"),supplement["source"],owner_ref="test-only")
+
+
+def test_rms_null_receipt_is_a_qualified_refusal():
+    from engine.company_intelligence.rms_segment_profile import receipt_value
+    with pytest.raises(ValueError):receipt_value(None,"fleet_rms_margin_prior")
+
+
+def test_rms_subsecond_retrieval_never_becomes_visible_before_actual_capture(tmp_path):
+    captured="2026-10-16T04:14:04.500000Z"
+    supplement=rms_held(observed_at=captured,source_available_at=captured)
+    assert supplement["source"]["source_clock"]=={
+        "observed_at":"2026-10-16T04:14:05Z","available_at":"2026-10-16T04:14:05Z"}
+    from engine.government_revenue.defense_economics_producer import build_defense_economics_payload
+    rows=[append_issuer_supplements(make_workspace("LMT"),[supplement])]
+    rows.extend(make_workspace(t) for t in ("RTX","NOC","LHX"))
+    write_workspace_generation(tmp_path/"data/company_intelligence",{row["event_id"]:row for row in rows})
+    result=build_defense_economics_payload(tmp_path,generated_at="2026-10-18T01:00:00Z",as_of="2026-10-16T04:14:04.900000Z")
+    assert all("fleet_rms_" not in fact["fact_id"] for profile in result["profiles"] for fact in profile["axes"]["economics"]["facts"])

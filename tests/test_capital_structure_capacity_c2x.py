@@ -868,7 +868,7 @@ def test_c2x_the_frozen_three_parameter_evaluate_capacity_is_untouched() -> None
         "rules",
     ]
     parameters = inspect.signature(explain_capacity).parameters
-    assert list(parameters) == ["state", "scenario", "rules", "pack", "transactions"]
+    assert list(parameters) == ["state", "scenario", "rules", "pack", "transactions", "listing"]
     assert parameters["transactions"].kind is inspect.Parameter.KEYWORD_ONLY
     assert parameters["transactions"].default is None
     state, scenario, rules = C1.build(**state_kwargs(SALE, resolutions=[usd(SHELF_KEY, "0")]))

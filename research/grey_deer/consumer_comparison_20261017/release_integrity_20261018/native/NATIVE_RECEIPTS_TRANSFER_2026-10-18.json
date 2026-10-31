@@ -1,0 +1,53 @@
+{
+  "schema": "risk_radar.native_evidence_transfer.v1",
+  "copied_at_utc": "2026-10-18T08:07:49.979509+00:00",
+  "files": [
+    {
+      "path": "release_integrity_20261018/native/rr-helper-native-pytest-receipt-20261018.json",
+      "bytes": 944,
+      "sha256": "79da6408f34522135aa3b8e02bc654c870dac5aaf78c0b0a3601fee464a77f17"
+    },
+    {
+      "path": "release_integrity_20261018/native/rr-helper-native-pytest-receipt-20261018-run2.json",
+      "bytes": 1423,
+      "sha256": "aa1d081fcb7457b3e1fe788e73f81506ae52ef9d74a0703df48bc83c19c9ec23"
+    },
+    {
+      "path": "release_integrity_20261018/native/rr-helper-native-pytest-receipt-20261018-run3.json",
+      "bytes": 1571,
+      "sha256": "f8341af197fc430ae23725af7741c822122d4a171c26b781b3a0bbbb5d0ade6e"
+    },
+    {
+      "path": "release_integrity_20261018/native/rr-helper-native-pytest-20261018-run2.xml",
+      "bytes": 9711,
+      "sha256": "37530f1334d7e60c570d1a78bbdee19d214433e918711fd8e7d016bb5f0c7c9e"
+    },
+    {
+      "path": "release_integrity_20261018/native/rr-helper-native-pytest-20261018-run3.xml",
+      "bytes": 6986,
+      "sha256": "293e6784b784b8c25214ae61fb7c7533bf8a7560fe9e8760a2037dc67c24b9de"
+    },
+    {
+      "path": "release_integrity_20261018/native/rr-helper-native-macro-dependency-20261018.json",
+      "bytes": 729,
+      "sha256": "c28eaee15f62b66acdf526450b1b8a41ab13f862384e8406478606752830e5d2"
+    },
+    {
+      "path": "release_integrity_20261018/native/rr-helper-source-pr-20261018.json",
+      "bytes": 696,
+      "sha256": "f20168f31382af3068757d8d4e0b32698132ee4018669e5567c149802f264893"
+    },
+    {
+      "path": "release_integrity_20261018/native/rr-helper-source-pr-state-20261018.json",
+      "bytes": 3661,
+      "sha256": "228a97f220ecf2769f4a1643f0c85f819fa6265c4409de364563015cd2a3c00a"
+    },
+    {
+      "path": "MASTERmind_SOURCE_CUSTODY_REFRESH_2026-10-18_0746.json",
+      "bytes": 507878,
+      "sha256": "6bae39fae868ab14ec20a7f33ba44547e0af685e9095b058e80ea07b6f407f2e"
+    }
+  ],
+  "raw_logs_copied": false,
+  "runtime_mutated": false
+}

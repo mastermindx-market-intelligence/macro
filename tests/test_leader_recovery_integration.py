@@ -416,3 +416,388 @@ def test_recovery_panel_order_is_navigation_not_authority():
     for banned in ("validated", "falsifier", "refuted", "z-score", "percentile", "score", "buy", "sell"):
         assert not re.search(rf"\b{re.escape(banned)}\b", visible), banned
     assert "证伪" not in visible
+
+
+# ---------------------------------------------------------------------------
+# LINEAGE-C (2026-10-17): CONSUMER_SPEC §2's chip + roster are wired into the
+# builder behind `leader_radar.lineage_enabled` (default off), and the
+# first-observed lineage seals ride the incumbent state_history rows beside the
+# recovery seals. These tests pin the admission's invariants: flag-off is
+# unchanged, flag-on is additive and display-only, seals follow the shipped
+# recovery contract, and every lineage failure leaves the incumbent payload and
+# state_history intact.
+# ---------------------------------------------------------------------------
+
+import hashlib
+import logging
+from contextlib import ExitStack
+from copy import deepcopy
+
+import yaml
+
+from engine.leader_lineage import AUTHORITY, lineage_chip
+from engine.leader_recovery_observations import COLUMNS, LINEAGE_COLUMNS, LINEAGE_SCHEMA
+from tests.test_build_leader_radar import _make_ohlcv
+
+_LIN_SEED = 20261017
+_LIN_LOGGER = "scripts.build_leader_radar"
+_LIN_STATE_HISTORY = "data/leader_radar/state_history.parquet"
+# Enumerated explicitly (no directory walk): the incumbent data/ stores the
+# Leader Radar builder owns, plus the price inputs it reads.
+_LIN_DATA_FILES = (
+    "data/leader_radar/state_history.parquet",
+    "data/leader_radar/fire_log.parquet",
+    "data/baskets/ohlcv/AAPL.parquet",
+    "data/baskets/ohlcv/MSFT.parquet",
+    "data/yahoo/SPY.parquet",
+)
+_LIN_ATTACH_WARNING = (
+    "::warning title=leader_lineage::lineage layer FAILED — incumbent "
+    "payload unchanged: "
+)
+_LIN_MERGE_WARNING = (
+    "::warning title=leader_lineage::lineage observation enrichment FAILED — incumbent "
+    "state_history written unchanged: "
+)
+
+
+def _lin_cfg(**extra):
+    return {"storage": {"data_dir": "data", "site_dir": "site"},
+            "leader_radar": {"enabled": True, "basket_keys": ["mag7"], "dow30": [], **extra}}
+
+
+def _lin_root(base, name, tickers=("AAPL", "MSFT")):
+    """A deterministic fixture root. `_build_fixture_root` draws breadth from the
+    GLOBAL numpy RNG, so two unseeded roots differ and a cross-root byte
+    comparison would measure the fixture rather than the flag. The RNG state is
+    restored so no other test in this module is affected."""
+    root = Path(base) / name
+    root.mkdir(parents=True, exist_ok=True)
+    state = np.random.get_state()
+    try:
+        np.random.seed(_LIN_SEED)
+        _build_fixture_root(root, list(tickers))
+    finally:
+        np.random.set_state(state)
+    return root
+
+
+def _lin_build(root, cfg, *, lane="express", extra=()):
+    with ExitStack() as stack:
+        stack.enter_context(patch("lib.config.ROOT", root))
+        stack.enter_context(patch("lib.config.data_dir", lambda: root / "data"))
+        stack.enter_context(patch("lib.config.load", lambda: cfg))
+        stack.enter_context(patch.dict(os.environ, {"COLLECT_LANE": lane}))
+        for ctx in extra:
+            stack.enter_context(ctx)
+        return build(data_root=root / "data", site_root=root / "site")
+
+
+def _stamps_out(payload):
+    """A payload with its wall-clock stamps removed: `built_at`, `elapsed_s` and
+    `freshness.built_at` are exactly the three keys the LR-EXP byte-stability
+    carry treats as build-time dependent, and nothing else in the artifact is."""
+    out = json.loads(json.dumps(payload, default=str))
+    out.pop("built_at", None)
+    out.pop("elapsed_s", None)
+    fresh = out.get("freshness")
+    if isinstance(fresh, dict):
+        fresh.pop("built_at", None)
+    return out
+
+
+def _lin_disk(root):
+    return json.loads((root / "site" / "leaderradar" / "radar.json").read_text())
+
+
+def _lin_history(root):
+    frame = pd.read_parquet(root / _LIN_STATE_HISTORY)
+    frame["day"] = pd.to_datetime(frame["date"]).dt.date.astype(str)
+    return frame
+
+
+def _lin_col(frame, col):
+    """NA-safe column snapshot (parquet 'string' columns hold pd.NA, whose
+    equality is pd.NA rather than True, so a raw list compare would not work)."""
+    if col not in frame.columns:
+        return [None] * len(frame)
+    return [None if pd.isna(value) else value for value in frame[col].tolist()]
+
+
+def _lin_hashes(root):
+    return {rel: (hashlib.sha256((root / rel).read_bytes()).hexdigest()
+                  if (root / rel).exists() else None) for rel in _LIN_DATA_FILES}
+
+
+def _lin_chips(payload):
+    for key in ("rows", "early_entry"):
+        for row in payload.get(key) or []:
+            yield row.get("display_chips") or {}
+
+
+def _strip_lineage(payload):
+    """The flag-on artifact reduced to its flag-off shape (deep copy)."""
+    out = deepcopy(payload)
+    out.pop("lineage_roster")
+    for chips in _lin_chips(out):
+        chips.pop("leader_lineage", None)
+    return out
+
+
+def test_lc1_config_lineage_flag_exists_and_is_boolean():
+    """The flag is shipped, and its TYPE is the contract: the activation PR flips
+    the value, so this test must keep passing on both sides of that flip."""
+    cfg = yaml.safe_load((_REPO / "config.yml").read_text())
+    assert "lineage_enabled" in cfg["leader_radar"]
+    assert type(cfg["leader_radar"]["lineage_enabled"]) is bool
+
+
+def test_lc2_flag_off_leaves_the_express_payload_unchanged(tmp_path):
+    """Absent, `False` and the STRING 'true' are all off: only the literal `true`
+    activates, and the lineage engine is never even called."""
+    calls = []
+
+    def _never(*args, **kwargs):
+        calls.append((args, kwargs))
+        raise AssertionError("lineage ran with the flag off")
+
+    keys, stamps = [], []
+    for i, variant in enumerate(("absent", False, "true")):
+        extra = {} if variant == "absent" else {"lineage_enabled": variant}
+        root = _lin_root(tmp_path, f"off{i}")
+        payload = _lin_build(
+            root, _lin_cfg(**extra),
+            extra=[patch("engine.leader_lineage.describe_lineage_universe", side_effect=_never)])
+        disk = _lin_disk(root)
+        assert "lineage_roster" not in payload and "lineage_roster" not in disk
+        for chips in list(_lin_chips(payload)) + list(_lin_chips(disk)):
+            assert "leader_lineage" not in chips
+        keys.append(list(disk.keys()))
+        stamps.append(_stamps_out(disk))
+    assert calls == []
+    assert keys[0] == keys[1] == keys[2]
+    assert stamps[0] == stamps[1] == stamps[2]
+
+
+def test_lc3_flag_off_nightly_seals_no_lineage_columns(tmp_path):
+    """Recovery capture alone keeps sealing exactly what it seals today."""
+    root = _lin_root(tmp_path, "off-nightly")
+    _lin_build(root, _lin_cfg(recovery_capture_enabled=True), lane="nightly")
+    frame = _lin_history(root)
+    assert len(frame) == 2
+    for col in LINEAGE_COLUMNS:
+        assert col not in frame.columns
+    assert frame[list(COLUMNS)].notna().all().all()
+    assert all(json.loads(raw)["schema"] == "leader_recovery_observation.v1"
+               for raw in frame[COLUMNS[1]].tolist())
+
+
+def test_lc4_flag_on_express_is_additive_and_display_only(tmp_path, caplog):
+    off_root = _lin_root(tmp_path, "on-off")
+    off = _lin_build(off_root, _lin_cfg())
+    root = _lin_root(tmp_path, "on-on")
+    before = _lin_hashes(root)
+    with caplog.at_level(logging.INFO, logger=_LIN_LOGGER):
+        res = _lin_build(root, _lin_cfg(lineage_enabled=True))
+    disk = _lin_disk(root)
+    rows = res["rows"]
+    assert len(rows) == 2
+    clock = res["recovery_roster"]["additive_clock"]["as_of"]
+    for row in rows:
+        chip = row["display_chips"]["leader_lineage"]
+        assert chip["schema"] == "leader_lineage.v1"
+        assert chip["as_of"] == clock
+        assert chip["authority"] == {key: False for key in AUTHORITY}
+        assert set(chip["authority"]) == set(AUTHORITY)
+    # the artifact on disk is the returned payload (json round-trip)
+    assert disk == json.loads(json.dumps(res, default=str))
+    # additive key placement: right after recovery_roster, nothing else moves
+    off_keys = list(off.keys())
+    cut = off_keys.index("recovery_roster") + 1
+    assert list(res.keys()) == off_keys[:cut] + ["lineage_roster"] + off_keys[cut:]
+    assert list(disk.keys()) == list(res.keys())
+    roster = res["lineage_roster"]
+    assert not any(roster["authority"].values())
+    assert set(roster["authority"]) == set(AUTHORITY)
+    assert roster["additive_clock"] == res["recovery_roster"]["additive_clock"]
+    assert roster["as_of"] == res["as_of"]
+    coverage, counts = roster["coverage"], roster["counts"]
+    assert coverage["issuers"] == len(rows) == 2
+    states = [row["display_chips"]["leader_lineage"]["state"] for row in rows]
+    # counts covers every lineage state, so it sums to the issuer census.
+    assert sum(counts.values()) == len(rows) == coverage["issuers"]
+    assert all(counts[state] >= 1 for state in states)
+    # a fresh authority per chip: mutating one row cannot reach another
+    rows[0]["display_chips"]["leader_lineage"]["authority"]["may_rank"] = True
+    assert rows[1]["display_chips"]["leader_lineage"]["authority"]["may_rank"] is False
+    assert not any(disk["rows"][0]["display_chips"]["leader_lineage"]["authority"].values())
+    assert any("leader lineage: 2 issuers in" in record.getMessage() for record in caplog.records)
+    # express writes no data/: every incumbent store and price input is untouched
+    assert _lin_hashes(root) == before
+
+
+def test_lc5_flag_on_nightly_seals_first_observed_lineage(tmp_path):
+    root = _lin_root(tmp_path, "seal")
+    res = _lin_build(root, _lin_cfg(recovery_capture_enabled=True, lineage_enabled=True),
+                     lane="nightly")
+    clock = res["recovery_roster"]["additive_clock"]["as_of"]
+    frame = _lin_history(root)
+    sealed = frame[frame["day"] == clock]
+    assert len(frame) == len(sealed) == 2
+    assert sealed[list(LINEAGE_COLUMNS)].notna().all().all()
+    assert sealed[list(COLUMNS)].notna().all().all()
+    for col in list(COLUMNS) + list(LINEAGE_COLUMNS):
+        assert str(frame[col].dtype) == "string"
+    for _, row in sealed.iterrows():
+        raw = row[LINEAGE_COLUMNS[1]]
+        payload = json.loads(raw)
+        assert payload["schema"] == LINEAGE_SCHEMA
+        assert payload["ticker"] == row["ticker"]
+        assert payload["as_of"] == clock
+        assert payload["source_first_seen_proven"] is False
+        assert payload["observed_at"] == row[LINEAGE_COLUMNS[0]]
+        assert row[LINEAGE_COLUMNS[2]] == hashlib.sha256(raw.encode()).hexdigest()
+
+
+def test_lc6_late_lineage_activation_leaves_recovery_seals_untouched(tmp_path):
+    root = _lin_root(tmp_path, "late")
+    cfg = _lin_cfg(recovery_capture_enabled=True)
+    first = _lin_build(root, cfg, lane="nightly")
+    clock = first["recovery_roster"]["additive_clock"]["as_of"]
+    frame1 = _lin_history(root)
+    snap = {col: _lin_col(frame1, col) for col in COLUMNS}
+    dtypes = {col: str(frame1[col].dtype) for col in COLUMNS}
+    native_at_clock = len(frame1[frame1["day"] == clock])
+    cfg["leader_radar"]["lineage_enabled"] = True
+    second = _lin_build(root, cfg, lane="nightly")
+    assert second["recovery_roster"]["additive_clock"]["as_of"] == clock
+    frame2 = _lin_history(root)
+    assert len(frame2) == len(frame1)                      # no row added for the session
+    assert len(frame2[frame2["day"] == clock]) == native_at_clock
+    for col in COLUMNS:
+        assert _lin_col(frame2, col) == snap[col]          # recovery byte-identical
+        assert str(frame2[col].dtype) == dtypes[col]
+    sealed = frame2[frame2["day"] == clock]
+    assert sealed[list(LINEAGE_COLUMNS)].notna().all().all()
+    assert all(json.loads(raw)["schema"] == LINEAGE_SCHEMA
+               for raw in sealed[LINEAGE_COLUMNS[1]].tolist())
+
+
+def test_lc7_lineage_seals_never_overwrite_and_disarm_deletes_nothing(tmp_path):
+    root = _lin_root(tmp_path, "rerun")
+    cfg = _lin_cfg(recovery_capture_enabled=True, lineage_enabled=True)
+    _lin_build(root, cfg, lane="nightly")
+    first = {col: _lin_col(_lin_history(root), col) for col in LINEAGE_COLUMNS}
+    assert all(value is not None for values in first.values() for value in values)
+    _lin_build(root, cfg, lane="nightly")
+    second = {col: _lin_col(_lin_history(root), col) for col in LINEAGE_COLUMNS}
+    assert second == first
+    cfg["leader_radar"]["lineage_enabled"] = False
+    _lin_build(root, cfg, lane="nightly")
+    third = {col: _lin_col(_lin_history(root), col) for col in LINEAGE_COLUMNS}
+    assert third == first
+
+
+def test_lc8_lagged_cut_seals_the_existing_native_row_and_mints_nothing(tmp_path, capsys):
+    root = _lin_root(tmp_path, "lag")
+    cfg = _lin_cfg(recovery_capture_enabled=False)
+    aligned = _lin_build(root, cfg, lane="nightly")
+    issuer_last = aligned["as_of"]
+    native_before = len(_lin_history(root).query("day == @issuer_last"))
+    assert native_before == 2
+    _make_ohlcv(401, seed=99)[["close"]].to_parquet(root / "data/yahoo/SPY.parquet")
+    cfg["leader_radar"]["recovery_capture_enabled"] = True
+    cfg["leader_radar"]["lineage_enabled"] = True
+    capsys.readouterr()
+    lagged = _lin_build(root, cfg, lane="nightly")
+    out = capsys.readouterr().out
+    spy_last = lagged["as_of"]
+    assert spy_last > issuer_last
+    assert lagged["recovery_roster"]["additive_clock"]["as_of"] == issuer_last
+    assert lagged["lineage_roster"]["additive_clock"]["as_of"] == issuer_last
+    lines = out.splitlines()
+    assert not any("lineage observation enrichment FAILED" in line for line in lines)
+    assert not any("lineage layer FAILED" in line for line in lines)
+    frame = _lin_history(root)
+    sealed = frame[frame["day"] == issuer_last]
+    assert len(sealed) == native_before                    # a lagged cut mints no row
+    assert sorted(sealed["ticker"].tolist()) == ["AAPL", "MSFT"]
+    assert sealed[list(LINEAGE_COLUMNS)].notna().all().all()
+    assert all(json.loads(raw)["as_of"] == issuer_last
+               for raw in sealed[LINEAGE_COLUMNS[1]].tolist())
+    assert frame[frame["day"] == spy_last][list(LINEAGE_COLUMNS)].isna().all().all()
+
+
+def test_lc9_lineage_attach_failure_leaves_the_incumbent_payload_intact(tmp_path, capsys):
+    bad_root = _lin_root(tmp_path, "attach-fail")
+    cfg = _lin_cfg(recovery_capture_enabled=True, lineage_enabled=True)
+    capsys.readouterr()
+    failed = _lin_build(bad_root, cfg, lane="nightly",
+                        extra=[patch("engine.leader_lineage.describe_lineage_universe",
+                                     side_effect=RuntimeError("boom"))])
+    out = capsys.readouterr().out
+    assert any(line.startswith(_LIN_ATTACH_WARNING + "RuntimeError: boom")
+               for line in out.splitlines())
+    assert "lineage_roster" not in failed
+    for chips in list(_lin_chips(failed)) + list(_lin_chips(_lin_disk(bad_root))):
+        assert "leader_lineage" not in chips
+    frame = _lin_history(bad_root)
+    for col in LINEAGE_COLUMNS:
+        assert col not in frame.columns or frame[col].isna().all()
+    assert frame[list(COLUMNS)].notna().all().all()        # recovery still sealed
+    off_root = _lin_root(tmp_path, "attach-fail-off")
+    off = _lin_build(off_root, _lin_cfg(recovery_capture_enabled=True), lane="nightly")
+    assert list(failed.keys()) == list(off.keys())
+    assert _stamps_out(failed) == _stamps_out(off)
+
+
+def test_lc9b_partial_chip_failure_attaches_nothing(tmp_path):
+    """The layer computes EVERY chip before it attaches any, so a chip that fails
+    halfway leaves no partial attach behind."""
+    root = _lin_root(tmp_path, "chip-fail")
+    original = lineage_chip
+    calls = {"n": 0}
+
+    def _flaky(descriptor):
+        calls["n"] += 1
+        if calls["n"] == 2:
+            raise RuntimeError("chip boom")
+        return original(descriptor)
+
+    payload = _lin_build(root, _lin_cfg(lineage_enabled=True),
+                         extra=[patch("engine.leader_lineage.lineage_chip", side_effect=_flaky)])
+    assert calls["n"] == 2
+    assert "lineage_roster" not in payload
+    for chips in list(_lin_chips(payload)) + list(_lin_chips(_lin_disk(root))):
+        assert "leader_lineage" not in chips
+
+
+def test_lc10_lineage_seal_merge_failure_leaves_state_history_intact(tmp_path, capsys):
+    root = _lin_root(tmp_path, "merge-fail")
+    cfg = _lin_cfg(recovery_capture_enabled=True, lineage_enabled=True)
+    capsys.readouterr()
+    res = _lin_build(root, cfg, lane="nightly",
+                     extra=[patch("engine.leader_recovery_observations.merge_lineage_observations",
+                                  side_effect=RuntimeError("seal boom"))])
+    out = capsys.readouterr().out
+    assert any(line.startswith(_LIN_MERGE_WARNING + "RuntimeError: seal boom")
+               for line in out.splitlines())
+    frame = _lin_history(root)
+    assert len(frame) == 2                                 # today's rows still written
+    for col in LINEAGE_COLUMNS:
+        assert col not in frame.columns
+    assert frame[list(COLUMNS)].notna().all().all()        # recovery seals intact
+    assert "lineage_roster" in res                         # the attach did succeed
+    assert _lin_disk(root)["lineage_roster"] == json.loads(
+        json.dumps(res["lineage_roster"], default=str))
+
+
+def test_lc11_page_html_is_unchanged_by_the_lineage_layer(tmp_path):
+    root = _lin_root(tmp_path, "html")
+    _lin_build(root, _lin_cfg(lineage_enabled=True))
+    on = _lin_disk(root)
+    assert "lineage_roster" in on
+    assert any("leader_lineage" in chips for chips in _lin_chips(on))
+    stripped = _strip_lineage(on)
+    assert _render(on) == _render(stripped)
+    assert "leader_lineage" not in _render(on)

@@ -24,8 +24,10 @@ owns_paths:
   - engine/classification_axes/
   - contracts/classification_axes/
 decisions:
+  - DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19
   - DEC:GMI-INVESTABLE-ECONOMY-RECOVERY-ACCEPTANCE
   - DEC:GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING
+  - DEC:GMI-MICRO-EXPANSION-2026-10-21-ADDITIVE-FROZEN-68
   - DEC:GMI-F04-BOUNDED-CHILD-ROUTING-2026-08-28
   - DEC:GMI-THEME-FABRIC-C0-CONVERGENCE
   - DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK
@@ -33,6 +35,9 @@ decisions:
   - DEC:GMI-SUB-THEME-POPULATION-KEEP-ADD
 artifacts:
   - research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md
+  - research/theme_graph/coverage_20261019/COVERAGE_REPORT.md
+  - research/theme_graph/diagnostic_20261019/STRATA_DESIGN.md
+  - contracts/theme_graph/activity_membership_history.v1.schema.json
   - research/theme_graph/THEME_GRAPH_END_TO_END_COMPLETION_FREEZE_2026-08-27.md
   - research/theme_graph/CEO_W3_CONTINUATION_DIRECTIVE_2026-08-14.md
   - research/prophet_v4/V4_D2_ONTOLOGY_AND_PROBATION_HANDOFF.md
@@ -54,6 +59,8 @@ discoveries:
   - DSC:GMI-THEME-GRAPH-STORE-NON-STRICT-READ-MASKS-CORRUPTION
   - DSC:GMI-CROSSWALK-ROW-DELETION-NEVER-CLOSES-PARENT-OF
   - DSC:GMI-THEME-GRAPH-SUITES-RUN-ONLY-IN-THE-DATA-HEALTH-LANE
+  - DSC:GMI-NEURAL-WEB-THEME-STATE-REGISTRY-UNCHANGED-THROUGH-STEP-7
+  - DSC:GMI-PRINCIPAL-ACTIVITY-COVERAGE-IS-ZERO-ON-2026-10-19
 waves:
   - id: W0
     title: Graph scaffolding
@@ -290,6 +297,69 @@ waves:
       consumption coordinated with the MarketOntology owner (no wiring without a new DEC), a
       hierarchy browse page through the design lane, and a human ratifier for the 27
       RELATION_WITHDRAW events that would retire the direct theme->micro_theme rows.
+  - id: RECOVERY-S2
+    title: "Recovery step 2: native issuer economic-context source repair (#9423)"
+    status: done
+    pr: 9423
+    next_action: >
+      DO_NOT_REDO. Squash 072822093ccd on main. Private economic-context API delivery with
+      the C01 grain; no vendor-membership laundering (gate 2). Nothing left in this wave.
+  - id: RECOVERY-S3
+    title: "Recovery step 3: activity membership admission (#9645) and PIT history fold (#9644)"
+    status: done
+    pr: [9645, 9644]
+    next_action: >
+      DO_NOT_REDO. Squashes d47f5b14d246 (A1 admission: candidates land PROPOSED, never
+      ratified by code) and b04a9d898b0d (A2: contracts/theme_graph/
+      activity_membership_history.v1.schema.json plus the ACTIVITY_HISTORY_* fold in
+      engine/theme_graph/materialize.py). The fold is a pure function no nightly job calls;
+      wiring it into the build and the edges.v1 projection are owed to the ThemeState
+      producer owner (DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19).
+  - id: RECOVERY-S4
+    title: "Recovery step 4: generation-specific ThemeState applicability readers (#9670)"
+    status: done
+    pr: 9670
+    next_action: >
+      DO_NOT_REDO. Squash cea783c92a86: engine/theme_graph/theme_state_owner_readers.py
+      StateQualificationReader and the diagnostic-only publication_applicability in
+      engine/theme_graph/theme_state.py. Read-only; the current shadow generation reads
+      D2E_UNSEALED. Reader custody/auth, shadow-writer wiring and the t9 pin amendment are
+      owed to the D2E/ThemeState owners, not to this wave.
+  - id: RECOVERY-S5
+    title: "Recovery step 5: API parity on the C01 grain (#9652)"
+    status: done
+    pr: 9652
+    next_action: >
+      DO_NOT_REDO. Squash 82e854321c8c. Terminal consumption stays behind the #868
+      integration safety hold (Sol/Chairman); EFFECT_NONE retained, never bypassed.
+  - id: RECOVERY-S6
+    title: "Recovery step 6: cohort delivery contract (#9641)"
+    status: done
+    pr: 9641
+    next_action: >
+      DO_NOT_REDO. Squash e5d6f40157e2. Read-only cohort context; no selection or ranking
+      authority.
+  - id: RECOVERY-S7
+    title: "Recovery step 7: measured coverage proof (#9745), diagnostic strata (7d) and operating-proof tests (7e)"
+    status: done
+    pr: [9745, 9754, 9753]
+    next_action: >
+      DO_NOT_REDO once merged. #9745 (scripts/gmi_coverage_proof.py, tests/
+      test_gmi_coverage_proof.py, research/theme_graph/coverage_20261019/) measures the
+      §7 thresholds: denominator honesty PASS, principal activity FAIL 0/[1926,1931] U.S.
+      and 0/[1,1019] China, taxonomy FAIL on owner_reviewed
+      (DSC:GMI-PRINCIPAL-ACTIVITY-COVERAGE-IS-ZERO-ON-2026-10-19). 7d holds research/
+      theme_graph/diagnostic_20261019/; 7e holds tests/test_gmi_operating_proof.py with each
+      property PASS or xfail(strict) naming its owner. Re-measure by re-running the proof
+      script; never by editing the report.
+  - id: RECOVERY-S8
+    title: "Recovery step 8: descriptive-product acceptance records and Neural Web reconciliation"
+    status: done
+    pr: 9757
+    next_action: >
+      DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19 records the per-threshold verdicts
+      and owner acts; DSC:GMI-NEURAL-WEB-THEME-STATE-REGISTRY-UNCHANGED-THROUGH-STEP-7
+      records that no third ThemeState producer/store exists. MISSION_COMPLETE=false.
 
 landmines:
   - >-
@@ -340,24 +410,38 @@ landmines:
     plus the job-level if: always() && needs.et_gate.outputs.run != 'false' idiom
     (DSC:DAILY-ENGINE-RESULT-IS-FAILURE-AFTER-ITS-COMMIT).
 next_action: >
-  Continue the current Meta-CEO commission under native session
-  01a1468f-b66c-707c-80cc-b66b7553b0cd and incumbent owner contracts. Original accepted
-  D2E P2/P3 is not an unfinished task. The 2026-10-16 recovery record and supplemental
-  acceptance decision govern the expanded capability/coverage map without replacing
-  original D2/W3 or F04 ownership. First finish the existing #9423 economic-context
-  source repair at cedae32cf414f98c01406367d07e1aef511059f0: 435 local checks pass;
-  natural CI 38970664912 and all 12 packs/ci-gate passed, and independent integration
-  review is accepted. Source-review hold released in receipt 6232895176; Ready and
-  merge-on-green enrollment were read back with native auto-merge null. Consume the
-  existing controller's current-main freshness, baseline, capacity and expected-head
-  verdict, then verify source landing and production through the incumbent owners.
-  Enrollment is not pickup, merge or deployment. In parallel, extend incumbent activity admission/current-state contracts
-  with authentic native evidence, and retain F04/E20 installation and actual API/Terminal
-  proof as separate gates. Preserve the explicit #8793 and Terminal #868 denied effects,
-  API524 EFFECT_UNKNOWN on its original carrier, immutable C01 generation 040b and all
-  current-use rights. An old session label alone does not establish a live writer.
-  All original U.S./China and wider descriptive coverage obligations remain visible;
-  one issuer journey is the first proof, not mission completion. MISSION_COMPLETE=false.
+  2026-10-21 Chairman completion commission is RUNNING under seat 6f14c2da (live checkpoint:
+  agentos/handoffs/GMI-THEME-GRAPH-2026-10-21-completion-commission.md). Micro expansion
+  ratified additively (303 micros, DEC:GMI-MICRO-EXPANSION-2026-10-21-ADDITIVE-FROZEN-68);
+  integration PR #10017 merged (cf6fd11f) and proven by main baseline 39736520949; every
+  ORCH-PIPE wave merged (last #10025 -> e6f6088e) with M3 recorded NOT MET on the frozen
+  proof; the coverage proof reads the activity ledger by default (#10029); the first M1
+  activity witness is receipt-bound on main (#10026 -> 61f82f58) and MEMBER_OF waits on a
+  Chairman graph_membership_use ruling; ORCH-REL still runs (#9986); ORCH-DESIGN delivered
+  draft #10054 and is in seat-requested repair round 2; UI and verification orchestrators
+  follow the design acceptance. The prior remainder below still
+  states the incumbent-owner acts. Recovery steps 2 through 8 of research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md
+  §9 are merged and recorded (waves RECOVERY-S2..S8); the seat lane is complete and
+  DO_NOT_REDO. The descriptive product is accepted as a MEASURED, OPEN record
+  (DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19): only denominator honesty is
+  closed; principal activity is 0 on both markets and the taxonomy has no owner review.
+  Each remainder is an incumbent-owner act, in this order: (1) ThemeState producer owner
+  wires the A2 activity-membership history fold into the nightly build under its own
+  narrow --mode in an off-render job and emits the edges.v1 projection, after which the
+  first nightly measures freshness and corrections for real; (2) the named GMI curator
+  ratifies PROPOSED activity memberships one evidenced row at a time (gate 5) and the
+  taxonomy owner records a disposition per micro; (3) Data OS supplies China issuer
+  resolution and listed counts and U.S. identity qualification; (4) #7870 adds the C01
+  rights row in config/theme_sources.yml; (5) the D2E owner seals the current shadow
+  generation and takes reader custody/auth with the t9 pin amendment; (6) the Terminal
+  #868 hold is released by its holding authority before any actual-explanation proof.
+  W3B/W3C current-generation owner binding and D2E sealing remain the original open
+  development frontier. Predictive candidates (micro RS proxy L13, transmission,
+  opportunity) go to the existing evaluator, F04 MarketOntology and K3-D owners; no
+  promotion from this acceptance. Preserve the explicit #8793 and Terminal #868 denied
+  effects, API524 EFFECT_UNKNOWN on its original carrier, immutable C01 generation 040b
+  and all current-use rights. Re-measure coverage by re-running
+  scripts/gmi_coverage_proof.py, never by editing a report. MISSION_COMPLETE=false.
 
 ---
 

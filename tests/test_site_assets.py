@@ -233,7 +233,7 @@ def test_unbaked_theme_js_is_still_valid_javascript() -> None:
     one feature it configures.
     """
     src = (TEMPLATES / "theme.js").read_text()
-    assert f"|| {TOKEN};" in src, "the Supabase token is no longer a valid `|| null` tail"
+    assert f"var _bakedSupabaseCfg = {TOKEN};" in src, "the Supabase token must remain a valid null expression"
     assert f"= {MM_BRAIN_VER_TOKEN};" in src, (
         "the mm_brain version token is no longer a valid empty-string literal"
     )
@@ -289,7 +289,7 @@ console.log(JSON.stringify({cfg:ctx.window.SUPABASE_CFG,brain:ctx.window.brain,
     assert result["cfg"] == {"url":"https://proxy.example", "anonKey":'public-key-with-quote-"-and-slash-\\', "ref":"project-ref"}
     assert result["brain"] == hashlib.sha256(brain).hexdigest()[:8]
     assert result["same"] and result["closed"]
-    assert result["api"] == ["close", "isOpen", "open"]
+    assert result["api"] == ["close", "isOpen", "open", "terminalDestination", "terminalHandoff"]
     assert result["listeners"] == ["message", "keydown", "popstate"]
     assert result["events"] == [{"name":"mdx-terminal-overlay-ready", "cfg":result["cfg"]}]
 

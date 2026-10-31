@@ -35,6 +35,15 @@ _READ_SCOPES: ContextVar[tuple[tuple[Path, Any, Any], ...]] = ContextVar(
 )
 
 
+def has_process_local_claims_selection() -> bool:
+    """Whether a fresh interpreter would lose a caller's selected binding/scope.
+
+    This is an inspection only; it neither transfers private snapshots nor
+    changes production selection. A process boundary must refuse such callers.
+    """
+    return bool(_SYNTHETIC_BINDINGS.get() or _READ_SCOPES.get())
+
+
 def _claims_key(path: Path) -> Path | None:
     # Lexical only: no resolve, stat, discovery or filesystem read. Preserve
     # legacy duck-typed transport specimens that are not filesystem paths.

@@ -1,0 +1,74 @@
+{
+  "schema": "options.p052_source_arrival_verification/v1",
+  "classification": "SOURCE_ONLY_HERMETIC_NO_LIVE_EFFECT",
+  "original_root": "01a10340-ddc1-7e41-9b42-9c8543c28c3d",
+  "assigning_parent": "01a16c6c-f91e-7bd2-9b0e-734172a3dd7d",
+  "compatibility_base": "9a2610c13e362a6be41f17057c15ae6ed7c18122",
+  "owned_files": [
+    {
+      "path": "engine/options_scenario_source_arrival.py",
+      "sha256": "d0ec26c76722823272a49feb0cd7cbd8be4b80891a4eb31c2ad014ca5a36fc28"
+    },
+    {
+      "path": "tests/test_options_scenario_source_arrival.py",
+      "sha256": "f4b74ad9f0becc5c909f2124eeed96a94944b4c6ac447231906558a4f9aea87a"
+    },
+    {
+      "path": "docs/OPTIONS_P052_SOURCE_ARRIVAL_2026-10-24.md",
+      "sha256": "2a3c93fce0a41b5418c6ccbab9defb95da823754f47df7354caa3974ea40347c"
+    }
+  ],
+  "corrected_test_assumptions": [
+    "Scoped os.open spy before unrelated autouse fixture teardown",
+    "Built explicit projection-clock fixture rather than assuming incumbent minimal GEX fixture has projection fields"
+  ],
+  "implementation_selfcheck": "Temporary inode held through publish; named leaf rechecked; collisions/replacement preserve other leaves. Existing descriptor and pure retention verifier reused. No source authenticity or atomic producer generation claim.",
+  "fabric": {
+    "run_id": "fable-p052-arrival-helper-20261024",
+    "normal_router": "qwen/m1",
+    "request_utc": "2026-10-24T06:53:38Z",
+    "prior_cooldown_expired_utc": "2026-10-24T06:53:10Z",
+    "launch_attempts": 1,
+    "rc": 1,
+    "result_bytes": 497,
+    "result": "Ryan429 cooldown1800s/QWEN_FINAL_RESPONSE_UNCONFIRMED",
+    "consumed": true,
+    "accepted": false,
+    "replacement": false,
+    "source_author": "authorized direct coordinator integration"
+  },
+  "untouched": [
+    "B app/bindings/retention/SQL/CI manifest",
+    "native producer/installed services",
+    "Research Vault/private objects/credentials/ACL",
+    "runtime source/capture flags",
+    "publicHub/latest fallback",
+    "optionalmoves refs/refusal",
+    "IW2 Plan1166",
+    "combined Terminal1159"
+  ],
+  "next_effect": "B/native owners qualify actual existing private copy and receiving account/path/privacy after accepted source release; admit one bounded intentional exact GEX copy, use this helper then existing current-user capture/read/CAS; verify same saved revision exact bytes. No transfer/deploy/activation permission is conferred.",
+  "baseline_checks": {
+    "command": "binding-venv/bin/python -m pytest tests/test_options_scenario_source_arrival.py tests/test_options_scenario_capture.py tests/test_options_hub_retention.py -q --disable-warnings --maxfail=1",
+    "passed": 83,
+    "failed": 0,
+    "new_arrival_cases": 30,
+    "incumbent_capture_retention_cases": 53,
+    "duration_seconds": 4.5,
+    "warnings": 113,
+    "log": "pytest.log",
+    "scope": "Exact synthetic original bytes -> no-overwrite arrival -> existing capture -> controlled private objects; negative source/path/overwrite/race/pre-write/post-link uncertainty cases.",
+    "source_commit": "722fcd562406a08965c6fe8852fd1e973036fe05"
+  },
+  "scoped_repair": {
+    "finding": "Name replacement between temporary stat and os.link can publish a different inode/symlink. Final-leaf nofollow stat now requires owned inode, regular file and expected byte length before success. Mismatch is uncertain; preserve final.",
+    "regression_before": "2 failed (DID NOT RAISE SourceArrivalUncertain), 30 deselected; same-size other inode and symlink variants",
+    "regression_log": "link-race-red.log",
+    "affected_command": "binding-venv/bin/python -m pytest tests/test_options_scenario_source_arrival.py -q --disable-warnings",
+    "affected_passed": 32,
+    "affected_failed": 0,
+    "affected_log": "arrival-race-repair-green.log",
+    "unchanged_incumbent_evidence": "Prior53 capture/retention cases reused; no broad rerun.",
+    "limitation": "Legitimate receiving directory and service-account permissions still require qualification; no hostile-ACL guarantee."
+  }
+}

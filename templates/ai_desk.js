@@ -69,8 +69,9 @@
     var h = '<div class="panel"><h2>' + bi("Desk track record", "交易台战绩") + "</h2>";
     if (!tr || !tr.overall || tr.scored_total === 0 || tr.overall.n === 0) {
       h += '<p class="muted sm" style="margin:4px 0 0">' +
-        esc((tr && tr.calibration_note) ||
-          "No theses scored yet — the track record begins once the first check-by dates pass.") +
+        bi((tr && tr.calibration_note) ||
+          "No theses scored yet — the track record begins once the first check-by dates pass.",
+          (tr && tr.calibration_note_zh) || "尚无已打分的倾向 — 首个检验日过后开始记录战绩。") +
         "</p>";
       if (tr) h += '<p class="muted sm" style="margin:6px 0 0">' +
         bi("open: ", "进行中：") + esc(tr.open || 0) + " · " +
@@ -88,19 +89,35 @@
       if (b && b.n) h += '<div class="tr-cell"><div class="v">' + (b.hit_rate * 100).toFixed(0) +
         '%</div><div class="l">' + esc(c) + " (" + b.hits + "/" + b.n + ")</div></div>";
     });
+    var kindLabels = { rel_return: ["relative-return calls", "相对收益类"],
+      level: ["price-level calls", "价位类"] };
+    ["rel_return", "level"].forEach(function (k) {
+      var b = (tr.by_kind || {})[k];
+      if (!b || !b.n) return;
+      h += '<div class="tr-cell"><div class="v">' +
+        (b.hit_rate != null ? (b.hit_rate * 100).toFixed(0) + "%" : "—") +
+        '</div><div class="l">' + bi(kindLabels[k][0], kindLabels[k][1]) +
+        " (" + b.hits + "/" + b.n + ")</div></div>";
+    });
+    if (tr.open != null) h += '<div class="tr-cell"><div class="v">' + esc(tr.open) +
+      '</div><div class="l">' + bi("open", "进行中") + "</div></div>";
+    if (tr.expired > 0) h += '<div class="tr-cell"><div class="v">' + esc(tr.expired) +
+      '</div><div class="l">' + bi("expired", "已过期") + "</div></div>";
     h += "</div>";
-    if (tr.calibration_note) h += '<p class="muted sm" style="margin:8px 0 0">' + esc(tr.calibration_note) + "</p>";
+    if (tr.calibration_note) h += '<p class="muted sm" style="margin:8px 0 0">' +
+      bi(tr.calibration_note, tr.calibration_note_zh) + "</p>";
     if (tr.recent && tr.recent.length) {
       h += '<details class="panel-acc" style="margin-top:10px"><summary>' +
         bi("Recent graded calls", "近期已打分") + "</summary><table class=\"rec\"><tr><th>" +
         bi("Subject", "标的") + "</th><th>" + bi("Lean", "倾向") + "</th><th>" +
         bi("Conviction", "信心") + "</th><th>" + bi("Outcome", "结果") + "</th><th>" +
-        bi("Realized", "实际") + "</th></tr>";
+        bi("Realized", "实际") + "</th><th>" + bi("Check by", "检验日") + "</th></tr>";
       tr.recent.forEach(function (r) {
         var oc = r.outcome === "hit" ? "out-hit" : (r.outcome === "miss" ? "out-miss" : "out-open");
         h += "<tr><td>" + esc(r.subject) + "</td><td>" + esc(r.lean) + "</td><td>" +
           esc(r.conviction) + '</td><td class="' + oc + '">' + esc(r.outcome) + "</td><td>" +
-          (r.realized != null ? pct(r.realized) : "—") + "</td></tr>";
+          (r.realized != null ? pct(r.realized) : "—") + "</td><td>" +
+          esc(r.check_by || "—") + "</td></tr>";
       });
       h += "</table></details>";
     }
@@ -136,6 +153,13 @@
 
   function render(d) {
     var html = "";
+    var gen = typeof d.generated_at === "string" && d.generated_at ?
+      String(d.generated_at).slice(0, 16).replace("T", " ") + " UTC" : "";
+    var asof = typeof d.state_asof === "string" && d.state_asof ? d.state_asof : "";
+    var when = [];
+    if (gen) when.push(bi("Note generated ", "笔记生成于 ") + esc(gen));
+    if (asof) when.push(bi("detector state as of ", "状态截至 ") + esc(asof));
+    if (when.length) html += '<p class="muted sm mono">' + when.join(" · ") + "</p>";
     html += trackBadge(d.track_record);
     if (d.regime_context) {
       html += '<div class="panel"><h2>' + bi("Regime context", "周期背景") + "</h2><div>" +
@@ -163,8 +187,7 @@
 
   function degraded(msg) {
     root.innerHTML = '<div class="panel muted sm">' +
-      bi("AI desk note unavailable right now — it regenerates daily after the close.",
-        "AI 交易台笔记暂不可用 — 每个交易日收盘后更新。") +
+      bi("AI desk note unavailable right now.", "AI 交易台笔记暂不可用。") +
       (msg ? ' <span class="mono">(' + esc(msg) + ")</span>" : "") + "</div>";
   }
 

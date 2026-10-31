@@ -1,0 +1,30 @@
+{
+  "archived_context_core_joint": 74,
+  "archived_watches": 57,
+  "watch_status_counts": {
+    "FILLED": 50,
+    "INCOMPLETE": 6,
+    "SKIPPED": 1
+  },
+  "first_watch_filled": 50,
+  "membership_counts": {
+    "both": 41,
+    "left_only": 33,
+    "right_only": 9
+  },
+  "reason_counts": {
+    "SAME_SIGNAL_DIFFERENT_ENDPOINT": 39,
+    "LATER_CROSS_WITHIN_WATCH": 20,
+    "CONTEXT_CROSS_OUTSIDE_ACTIVE_WATCH": 13,
+    "FIRST_WATCH_CROSS_OUTSIDE_JOINT_CONTEXT": 9,
+    "SAME_SIGNAL_SAME_ENDPOINT": 2
+  },
+  "common_endpoint_differences": 39,
+  "context_positive": 67,
+  "watch_positive": 43,
+  "watch_entry_horizon_positive": 44,
+  "watch_entry_horizon_available": 50,
+  "watch_mean_return": 0.1005960774954829,
+  "watch_mean_entry_horizon_return": 0.11245554787593098,
+  "explanation": "Study A requires JOINT on signal date and exits signal+126. Study B arms in JOINT, waits for its first cross, and exits arm+126; the context may change while waiting."
+}

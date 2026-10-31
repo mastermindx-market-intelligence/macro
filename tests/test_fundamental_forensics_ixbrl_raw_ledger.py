@@ -47,19 +47,39 @@ _CIK = "0000320193"
 _A1_DOCUMENT_ID = "sec_document_d23a609841f9a32489dd7abc952d39622540f8a24905612bda1d43e5577860b8"
 _A2_DOCUMENT_ID = "sec_document_29a36fa46a0bc5309f17bd254c3061f20c4b3de7e05898a2fec9ee58f89e8760"
 
-_AAPL_QUERY_RESPONSE_SHA = "58972cb88f82483e86acc9d9fc3b1cbce046f466ff8665ae214909d90ab078b0"
-_AAPL_QUERY_HASH = "f8f6dc3134592c817001738cbdefb09ee1b71798ef24a8e64dc75685a6f9c7a1"
+_AAPL_QUERY_RESPONSE_SHA = "fbae153c5fccd26b747be10239fe4b5fcd0e30113604597d16b01bf31b875c48"
+_AAPL_QUERY_HASH = "a4b04952c3df3e50936d4229b018f0a7f7035edb24139ba936aa58f913515920"
 _LEDGER_SHA = "ba149bd55d929d843f353e91bbf68147791fb8b4a20c258426ea2eb7527019d8"
 _A1_STATEMENT_SHA = "25e5562e81cb80bd42d0feb544c212c4471e11736601aaee418a60981a457184"
 _A2_STATEMENT_SHA = "b98602a299996ff7ea58b842364031547df795d1458b51134eef0e37159b7918"
-_HASH_AS_REPORTED_T1_T2 = "358d44741632d74ff76dd8771bb78b34295a08d62d2a0a8566a6abe5feac1442"
-_HASH_LATEST_KNOWN_T1_T2 = "191c49a37998052f17eec78113b5bd8bf0dcaaa52239c406cdb4c27cda5ad1a7"
-_HASH_LATEST_KNOWN_T3 = "83df03e99f570bacfab94fc9373861f14c1895c9aa9435b7dd7249a13c1e67fa"
-_HASH_LATEST_RESTATED_T3 = "c1095c7994c67f11ed602d15c2956bc24271cdce4d39d7869ed642713a6ed549"
-_HASH_MIXED_T3 = "5513f17260f98d261920d658be25bf319ace90a0580ad8f2e94931c518c5a20b"
-_RICH_PACKET_ID = "fip_49718dcaf4c6855592b6ba0a"
-_RICH_CONTENT_SHA = "49718dcaf4c6855592b6ba0a160851c608b4733b44f8ac9a6cf7d907df7565e5"
-_RICH_RESPONSE_SHA = "310f6579ab0014e6af16a3341f005078eab3fdcc70ebe67ec83cf138b9e6c23a"
+# The five FIP1 query hashes were re-captured at the FIF G0-r1p3 re-pin
+# commit e94ba62aa89 with the same hermetic industrial resolver the FIP1 packet-service
+# tests inject: the values are byte-equal to that already-pinned family
+# (tests/test_fundamental_forensics_financial_packet_service.py:78,
+# tests/test_fundamental_forensics_financial_revision_service.py:70) over the
+# same scenario, per the G0-r1p3 seat ruling on same-input families.
+_HASH_AS_REPORTED_T1_T2 = "58d438ec81d287f81e6981cf01ac6d16d57cf50689cc826cad39962742efa821"
+_HASH_LATEST_KNOWN_T1_T2 = "f275a7e02aff6e1119f1275365549e1fa9aa2d3f45dbc3cd0f4ba5fdb76f1d37"
+_HASH_LATEST_KNOWN_T3 = "2f8d30baf2d49aef0cc6936613eca1f9aa980e10ed56da135a75dd4238349915"
+_HASH_LATEST_RESTATED_T3 = "531309e192ac923e466365b05380a197f67d6df01c1d5fd9062a0e93aaf20b9f"
+_HASH_MIXED_T3 = "26a7ed7d95f861d3352c3a7e5fb6a0f52833ccf69947b10ca9da1f9662c44133"
+# The rich packet keeps the production default (no injected resolver): FIP1
+# has no shipped coverage record, so gross_margin (class-restricted under the
+# G0 catalog) reads NOT_EVALUABLE(issuer_class_unknown) and the packet's
+# digest layer moved with the catalog; re-captured at the same commit e94ba62aa89.
+_RICH_PACKET_ID = "fip_5d77c1349de4f829db2c422a"
+_RICH_CONTENT_SHA = "5d77c1349de4f829db2c422a3000049cb12b6f0c16dbcd57686a0c0cd41c0af0"
+_RICH_RESPONSE_SHA = "a9c5a8657e7c5cb7e6789cd6d2ea4f78a1c14100c33a00d959856d7375045ca8"
+
+# FIP1 is a synthetic industrial issuer with no shipped coverage record, so
+# the five-hash family injects its SIC hermetically (same shape as the FIP1
+# packet-service tests); the fixture ledger's entity id is its CIK.
+_FIP1_CIK = "0000999999"
+_INDUSTRIAL_SIC = "3571"
+
+
+def _fip1_issuer_sic_resolver(cik: str) -> str | None:
+    return _INDUSTRIAL_SIC if cik == _FIP1_CIK else None
 
 VISIBLE_SOURCE = "2026-08-01T00:00:00Z"
 VISIBLE_RECORDED = "2026-08-23T12:00:00Z"
@@ -96,12 +116,6 @@ A1_ASSETS_COMPARATIVE = {
     "label": "2025-09-27",
 }
 
-_FROZEN_FIF1 = (
-    "contracts/financial_intelligence_packet.schema.json",
-    "engine/fundamental_forensics/financial_intelligence_packet.py",
-    "engine/fundamental_forensics/synthetic_filing_package.py",
-    "tests/fixtures/fundamental_forensics/expected_financial_intelligence_packet_v1.json",
-)
 # FIF-3A4 (DEC:FIF-3A4R-CROSS-FILING-LINEAGE-ACCEPTED-ON-MAIN, protocol §10)
 # commissions exactly one product change to ``query.py``: effective-root
 # unification in ``_select_source_group`` from cutoff-visible lineage evidence.
@@ -111,12 +125,35 @@ _FROZEN_FIF1 = (
 # asserted directly and independently by ``_LEDGER_SHA``, ``_AAPL_QUERY_HASH``
 # and ``_AAPL_QUERY_RESPONSE_SHA`` in this file, and by the FIF-3A4 battery in
 # ``tests/test_fundamental_forensics_cross_filing_lineage.py``.
-# ``raw_ledger.py`` and ``metric_registry.py`` remain byte-frozen: A4 must not
-# touch occurrence identity, ``logical_key``, ``_duplicates_agree``,
-# ``FactEventType`` membership, or the metric catalog.
+#
+# FIF G0 shared-kernel integrator (seat ruling 2026-10-13, frozen spec
+# e7b0286c) releases two more of these self-restraint freezes for the
+# authorized G0 change: ``engine/fundamental_forensics/financial_intelligence_packet.py``
+# (G0 wired the optional issuer-SIC resolver seam through the production
+# entity construction) leaves ``_FROZEN_FIF1``, and
+# ``engine/fundamental_forensics/metric_registry.py`` (G0 extended the metric
+# catalog contract with issuer-class applicability) leaves ``_FROZEN_KERNEL``.
+# The golden fixture ``expected_financial_intelligence_packet_v1.json`` also
+# leaves ``_FROZEN_FIF1`` for the P2-E G-c re-capture: its protection is
+# asserted directly by the golden battery (schema + content addressing +
+# canonical rebuild equality in
+# tests/test_fundamental_forensics_financial_intelligence_packet.py:540-546 and
+# law11 cross-process byte equality :444-449) and by the packet_id regression
+# witness in tests/test_fundamental_forensics_financial_packet_service.py:200.
+# What those freezes protected is still asserted directly and independently:
+# packet schema validity and content addressing by the golden battery, catalog
+# digests by ``_PIN``/``PINNED_*`` captures in
+# tests/test_fundamental_forensics_metric_qualification.py, and this file's
+# ``_AAPL_QUERY_HASH`` / ``_AAPL_QUERY_RESPONSE_SHA`` / ``_LEDGER_SHA`` pins.
+# ``raw_ledger.py`` remains byte-frozen (G0 does not touch occurrence
+# identity, ``logical_key``, ``_duplicates_agree``, or ``FactEventType``
+# membership), and so do the packet schema and the synthetic fixture package.
+_FROZEN_FIF1 = (
+    "contracts/financial_intelligence_packet.schema.json",
+    "engine/fundamental_forensics/synthetic_filing_package.py",
+)
 _FROZEN_KERNEL = (
     "engine/fundamental_forensics/raw_ledger.py",
-    "engine/fundamental_forensics/metric_registry.py",
 )
 
 _EXPECTED_PRIVATE_HEADERS = {
@@ -792,7 +829,9 @@ def test_five_5983_query_hashes_and_fif2c_pins() -> None:
             },
             separators=(",", ":"),
         ).encode("utf-8")
-        return execute_financial_query(body=body, provider=_P()).envelope["receipt"]["query_hash"]
+        return execute_financial_query(
+            body=body, provider=_P(), issuer_sic_resolver=_fip1_issuer_sic_resolver
+        ).envelope["receipt"]["query_hash"]
 
     fy_metrics = ["revenue", "gross_margin"]
     fy = [{"kind": "duration", "start": "2023-01-01", "end": "2023-12-31", "label": "FY2023"}]
@@ -878,3 +917,26 @@ def test_http_aapl_query_is_private_200() -> None:
     assert payload["authority"] == {"class": "context_only", "display_only": True}
     cell = _root_cell(payload, "revenue", start="2024-09-29", end="2025-09-27")
     assert cell["value"] == "416161000000"
+
+
+# ---------------------------------------------------------------------------
+# Golden statement pins run on the committed byte-copy of the 1.0.0 registry.
+# Appended at the end of the module so no pinned line moves. The live-registry
+# statement bytes are pinned in test_fundamental_forensics_financial_statement_api.py,
+# which also proves the 1.0.0 registry re-derives the pins in this module.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(autouse=True, scope="module")
+def _golden_statement_pins_on_registry_v1_0_0():
+    import engine.fundamental_forensics.statement_service as statement_service
+    from engine.fundamental_forensics.financial_intelligence_packet import load_core_registry
+
+    registry_root = ROOT / "tests" / "fixtures" / "fundamental_forensics_registry_v1_0_0"
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(
+            statement_service,
+            "load_core_registry",
+            lambda _repo_root: load_core_registry(registry_root),
+        )
+        yield

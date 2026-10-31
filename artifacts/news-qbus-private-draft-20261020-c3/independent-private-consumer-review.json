@@ -1,0 +1,155 @@
+{
+  "receipt_version": 1,
+  "kind": "independent_source_review",
+  "updated_at_utc": "2026-10-20T17:29:47Z",
+  "reviewer": "/root/news_delivery_ruling",
+  "implementation_author": "/root/news_consumer_admission",
+  "parent_owner": "/root",
+  "project": "Integrate News Intelligence",
+  "root": "news-shared-integration-20261020-c3",
+  "repository": "mastermindx-market-intelligence/macro",
+  "base_commit": "c73fa2c3d08e777221fe1ee73f3b87dd479f1fb8",
+  "source_verdict": "APPROVE",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "parent_mission_complete": false,
+  "record_status": "FINAL_SOURCE_REVIEW_TEST_BINDING_COMPLETE",
+  "procedure_pin": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "branch": "master",
+    "commit": "b96dd69efb0588c3a678ee09ddd5408fa5a40b12",
+    "schema": "mastermind.sol_skillpack.v1",
+    "version": "1.0.1",
+    "minimum_bootstrap_major": 1,
+    "compatibility_verified": true,
+    "scope": "Local review evidence preparation for parent-owned Git carrier; no organizational or runtime state effects."
+  },
+  "product_sha256": {
+    "engine/press/qbus_news.py": "b4e75e83697ec4b629313dfd593830fc41040326c3da2e9b4c168dc684540947",
+    "engine/press/writer.py": "895fea2a5f135562bf8e61d3393eca1cb0e665c77808d44937eafd0ddd648be6",
+    "scripts/run_press.py": "46e7761acbfb0f8cd8fe10c8ac51f18d196a651a0ccc023b8dcf77a1208171d2"
+  },
+  "reviewed_test_sha256_before_usage_correction": "3c1cf0c479c37678079420f315c52c8f944ba297aec6146d04971a4c49afc5d2",
+  "patch_chain": [
+    {
+      "order": 1,
+      "path": "private-qbus-news-draft.patch",
+      "sha256": "10512e8096a4cd1c183037aeb0cd432ad6ff4984a5b87756a9d242d903fe3a15"
+    },
+    {
+      "order": 2,
+      "path": "private-qbus-news-draft-after10512.patch",
+      "sha256": "79b927e2c524dddd00943b558e4dce5a30ca52395d2cfeb08325596912643f8c"
+    },
+    {
+      "order": 3,
+      "path": "private-qbus-news-draft-after79b.patch",
+      "sha256": "2c9de3eb45ddb28087865269aa9fafa0472a3016587167e93d9f84e77378acff"
+    },
+    {
+      "order": 4,
+      "path": "private-qbus-news-draft-after2c9.patch",
+      "sha256": "0f147fe6833b961e9a6cd9389047820affec26e69852baaf1805660e88c36278"
+    }
+  ],
+  "superseded_patch": {
+    "sha256": "8b92f5961bad05dbbb23d50eb71633b998233201b42ef2fa338c5cebcd1b117d",
+    "replaced_by": "2c9de3eb45ddb28087865269aa9fafa0472a3016587167e93d9f84e77378acff",
+    "transfer_status": "Parent and author report never transferred/applied.",
+    "reason": "Folded exact SQLite sidecar allowance and before/after read-only logical-dump proof into the pending third delta."
+  },
+  "findings": [
+    {
+      "id": "URL_TRUST",
+      "disposition": "FIXED",
+      "source": "engine/press/qbus_news.py::_safe_source_url, prepare_slot",
+      "ruling": "Only strict HTTP(S) source URL projection enters fact.url and allowed_links; rejected raw URLs remain private bundle provenance. Existing planner links retain incumbent treatment."
+    },
+    {
+      "id": "REQUEST_ADMISSION",
+      "disposition": "FIXED",
+      "source": "engine/press/writer.py::_PrivateAdmissionCancelled, write",
+      "ruling": "Fresh checks after provider construction and immediately before messages.create. Exact private BaseException sentinel bypasses canonical provider-error classification and is explicitly caught by writer; actual client errors keep incumbent accounting."
+    },
+    {
+      "id": "MALFORMED_PRIVATE_IDENTITY",
+      "disposition": "FIXED",
+      "source": "engine/press/qbus_news.py::private_slot, is_private_stage",
+      "ruling": "Original collection validation precedes held-rail probes. Scalar-safe detector preserves standalone and dictionary-key private markers; outer and nested forms remain refused."
+    },
+    {
+      "id": "DEFAULTS_AND_RETRIES",
+      "disposition": "ACCEPTED_BOUNDED",
+      "source": "scripts/run_press.py::run_private_news_staging, _stage_preplanned_slots",
+      "ruling": "Hooks default to None. Private entry point keeps max_regenerations=0, singleton usable provider and admitted token cap. Source preparation uses original slot; helper retry tests do not establish broader private retry support."
+    },
+    {
+      "id": "SQLITE_FIXTURE",
+      "disposition": "ACCEPTED",
+      "source": "tests/test_press_run.py::test_private_qbus_stage_grounds_actual_writer_and_retains_corrected_revision",
+      "ruling": "Permits only the exact canonical DB -wal/-shm paths, still requires private output and rejects other new paths, compares complete mode=ro iterdump tuples with explicit connection closure."
+    },
+    {
+      "id": "SUCCESS_USAGE_SHAPE",
+      "disposition": "FIXED_SOURCE_REVIEWED",
+      "source": "scripts/run_press.py::_stage_preplanned_slots, _stage_item",
+      "ruling": "Final test reads the sole successful attempt's provider_usage, requires reported positive billable_total_tokens, and equals the run's writer_state.tokens_used. Terminal serializer already preserves usage/cap under attempts[0]; no product or serializer change."
+    }
+  ],
+  "independent_evidence": [
+    {
+      "check": "Exact candidate writer + canonical c73 make_call",
+      "result": "8 refusal cases: four exception messages at each of two check positions; zero requests, Press calls/failures/tokens, health attempts, usage records, pool success/cooling, or dead-provider changes; sentinel contained.",
+      "limits": "Prompt/model/provider construction and telemetry sinks isolated; no network provider invoked."
+    },
+    {
+      "check": "Actual provider errors against base writer",
+      "result": "6 default/admitted cases matched base observed outputs/accounting; unrelated KeyboardInterrupt and SystemExit propagation preserved.",
+      "limits": "Isolated exact-source discriminator; repository suite execution remains parent-owned."
+    },
+    {
+      "check": "Private marker repair",
+      "result": "sources/seed_refs dictionary keys detected in outer record and nested slot; five malformed scalar collection fields return safely.",
+      "limits": "Direct detector probes; final run_emit regressions source-reviewed, not independently executed."
+    },
+    {
+      "check": "Final test carrier readback",
+      "result": "Real writer and canonical make_call retained; fake messages.create and telemetry only. Source denial and actual provider transport failure distinguished; validator thresholds unchanged.",
+      "limits": "Successful fixture uses 1200 output-token budget and synthetic supported first-party facts."
+    },
+    {
+      "check": "Final per-attempt usage test correction",
+      "result": "Exact after2c9 patch0f147fe6 and final test SHA5827148f independently read and hashed; one successful attempt, positive reported usage and charge equality asserted.",
+      "limits": "Source review only; managed 252/1 run is parent-owned."
+    }
+  ],
+  "canonical_adapter_source": {
+    "path": "engine/llm_auth.py",
+    "commit": "c73fa2c3d08e777221fe1ee73f3b87dd479f1fb8",
+    "git_blob": "7294dec2759716416059155ba727392064ab99aa",
+    "sha256": "7060d1cabfeaec6ea3c26655a0d4deb41375e2b0f132474642cbefdf2ebb434e"
+  },
+  "parent_owned_evidence": {
+    "managed_tests": {
+      "owner": "/root",
+      "status": "PASS",
+      "reported_completed_at_utc": "2026-10-20T17:24:35Z",
+      "passed": 252,
+      "skipped": 1,
+      "skipped_status": "Parent reports existing skip.",
+      "scope": "Parent-reported managed four-suite run after final test-only correction.",
+      "live_provider_invoked": false,
+      "independently_executed_by_reviewer": false
+    },
+    "ci": "Parent reports canonical closure derivation passed and changed only existing ticker-news-qbus command/dependencies/closure. Manifest-only diff has not yet been independently reviewed; actual final-head CI remains parent-owned.",
+    "runtime": "Live private location, canonical source availability, licensed rights, real provider invocation and publication/release acceptance remain unproven by this review.",
+    "integration_merge": "Parent reports primary PR9846 merged as 1298ed4281362329c682a1f7c038b932e4ccbb64; not independently reverified for this private review receipt."
+  },
+  "unresolved": [
+    "Parent must bind actual final-carrier CI and complete release acceptance.",
+    "Parent must qualify private runtime placement/source rights/real provider behavior before live private-consumer claims."
+  ],
+  "primary_next_action": "Parent commits the final reviewed source and this receipt, binds final CI, and qualifies the live private-consumer path under existing permissions.",
+  "parallel_work": "Parent-owned canonical CI closure and publication; reviewer will inspect the manifest-only diff when supplied.",
+  "custody": "Only review/ receipt files are reviewer-owned. Product/test edits, Git publication, CI, deployment and organizational closeout remain parent/author-owned.",
+  "reviewed_test_sha256": "5827148fc6e899c191a5a8dca562103f3df909498eb749e164dba1c1ae367cc3"
+}

@@ -1,0 +1,11 @@
+{
+  "observed_at_utc": "2026-10-18T08:28:04.970897+00:00",
+  "reason": "Required test gate failed in exact-head CI39109519443; no queue entry or waiver.",
+  "pr": {
+    "autoMergeRequest": null,
+    "headRefOid": "797c760f3e18eb6993579f56986103de9d9fdcb4",
+    "isDraft": true,
+    "number": 1610,
+    "state": "OPEN"
+  }
+}

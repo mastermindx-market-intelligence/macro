@@ -1,0 +1,184 @@
+{
+  "runner": "stdlib AST loader; exact standalone fixture test bodies, no pytest/app imports",
+  "test_source_sha256": "8a5a275be5243201428c80636b531b778e43dd4503e1037d8e927306dd63a8aa",
+  "helper_sha256": "bd8358508b65beb737c32c424eeaa702912ebb75c99ece8c3c056f6cb6962aba",
+  "app_import_tests_executed": false,
+  "network_or_production_calls": false,
+  "cases": [
+    {
+      "test": "test_integrity_stops_service_before_source_copy",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.654
+    },
+    {
+      "test": "test_integrity_restores_unlisted_and_receiver_deleted_paths",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.712
+    },
+    {
+      "test": "test_integrity_snapshot_failure_cannot_authorize_source_mutation",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 0.93
+    },
+    {
+      "test": "test_integrity_failed_restored_health_is_not_complete",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 3.26
+    },
+    {
+      "test": "test_integrity_refused_init_preserves_foreign_marker",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.599
+    },
+    {
+      "test": "test_integrity_excluded_descendants_survive_rollback",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.426
+    },
+    {
+      "test": "test_deploy_writes_expected_marker_before_restart",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.33
+    },
+    {
+      "test": "test_activation_gate_order_and_canonical_lock_are_explicit",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 0.0
+    },
+    {
+      "test": "test_deploy_refuses_unresolved_pre_v2_settlement_state",
+      "parameters": {
+        "artifact": "paper_transaction.json"
+      },
+      "status": "passed",
+      "seconds": 0.729
+    },
+    {
+      "test": "test_deploy_refuses_unresolved_pre_v2_settlement_state",
+      "parameters": {
+        "artifact": "settlement_receipts/old.json"
+      },
+      "status": "passed",
+      "seconds": 0.728
+    },
+    {
+      "test": "test_activation_rejects_account_or_fills_byte_mutation",
+      "parameters": {
+        "mutation_flag": "FAKE_MUTATE_ACCOUNT_ON_RESTART"
+      },
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/rr_run_deploy_fixture_tests_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 420, in test_activation_rejects_account_or_fills_byte_mutation\n    assert not (tmp_path / \"live-data\" / \"portfolio_forward_evaluation\" / \"start.json\").exists()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+      "seconds": 2.268
+    },
+    {
+      "test": "test_activation_rejects_account_or_fills_byte_mutation",
+      "parameters": {
+        "mutation_flag": "FAKE_MUTATE_FILLS_ON_RESTART"
+      },
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/rr_run_deploy_fixture_tests_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 420, in test_activation_rejects_account_or_fills_byte_mutation\n    assert not (tmp_path / \"live-data\" / \"portfolio_forward_evaluation\" / \"start.json\").exists()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+      "seconds": 2.068
+    },
+    {
+      "test": "test_activation_rejects_missing_authority_file",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 2.017
+    },
+    {
+      "test": "test_failed_deploy_restores_marker_before_rollback_restart",
+      "parameters": {},
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/rr_run_deploy_fixture_tests_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 448, in test_failed_deploy_restores_marker_before_rollback_restart\n    assert not (tmp_path / \"live-data\" / \"portfolio_forward_evaluation\" / \"start.json\").exists()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+      "seconds": 2.665
+    },
+    {
+      "test": "test_partial_rsync_failure_restores_old_tree_and_restarts",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.348
+    },
+    {
+      "test": "test_marker_write_failure_uses_post_backup_rollback",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.381
+    },
+    {
+      "test": "test_restart_failure_restores_marker_and_attempts_rollback_restart",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.711
+    },
+    {
+      "test": "test_deploy_rejects_health_when_scheduler_is_not_running",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 2.691
+    },
+    {
+      "test": "test_partial_copy_rolls_back_shared_runtime_packages",
+      "parameters": {
+        "preexisting": false,
+        "package": "common"
+      },
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/rr_run_deploy_fixture_tests_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 535, in test_partial_copy_rolls_back_shared_runtime_packages\n    assert \"rsync did not complete\" in result.stdout\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+      "seconds": 0.017
+    },
+    {
+      "test": "test_partial_copy_rolls_back_shared_runtime_packages",
+      "parameters": {
+        "preexisting": false,
+        "package": "integrations"
+      },
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/rr_run_deploy_fixture_tests_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 535, in test_partial_copy_rolls_back_shared_runtime_packages\n    assert \"rsync did not complete\" in result.stdout\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+      "seconds": 0.017
+    },
+    {
+      "test": "test_partial_copy_rolls_back_shared_runtime_packages",
+      "parameters": {
+        "preexisting": true,
+        "package": "common"
+      },
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/rr_run_deploy_fixture_tests_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 535, in test_partial_copy_rolls_back_shared_runtime_packages\n    assert \"rsync did not complete\" in result.stdout\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+      "seconds": 0.016
+    },
+    {
+      "test": "test_partial_copy_rolls_back_shared_runtime_packages",
+      "parameters": {
+        "preexisting": true,
+        "package": "integrations"
+      },
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/rr_run_deploy_fixture_tests_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 535, in test_partial_copy_rolls_back_shared_runtime_packages\n    assert \"rsync did not complete\" in result.stdout\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+      "seconds": 0.018
+    }
+  ],
+  "passed": 15,
+  "failed": 7
+}

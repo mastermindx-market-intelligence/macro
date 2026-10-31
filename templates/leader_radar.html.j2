@@ -1124,6 +1124,22 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
           {% if _x.availability is defined and _x.availability == 'SOURCE_DATED_OBSERVATIONS' %}
           <p class="lr-rec-note">{{ t('Source dated ' ~ _xdate ~ (', ' ~ _xage ~ ' sessions before the radar clock' if _xage is not none else '') ~ '. Direction of the snapshot readings: ' ~ _REC_DIR_EN.get(_xdir, 'unknown') ~ '.', '来源日期 ' ~ _xdate ~ ('，早于雷达时钟 ' ~ _xage ~ ' 个交易日' if _xage is not none else '') ~ '。快照读数方向：' ~ _REC_DIR_ZH.get(_xdir, '未知') ~ '。') }}</p>
           <p class="lr-rec-note">{{ t('Snapshot observations, not actual reported revenue growth or a thesis verdict.', '快照观察，不是实际公布的营收增长或论点判断。') }}</p>
+          {% set _xr = _x.readings if _x.readings is defined and _x.readings else {} %}
+          {% set _xrspec = [['covering_analysts', 'Covering analysts:', '覆盖分析师：', 'int'],
+            ['eps_estimate_change_30d', '30-day estimate change:', '30日预期变化：', 'pct'],
+            ['eps_estimate_change_90d', '90-day estimate change:', '90日预期变化：', 'pct']] %}
+          {% set _xfacts = [] %}
+          {% for _xk, _xen, _xzh, _xfmt in _xrspec %}
+          {% set _xv = _xr[_xk].value if _xr[_xk] is defined else none %}
+          {% if _xv is number %}
+          {% set _xvs = _xv | int if _xfmt == 'int' else '%+.2f' | format(_xv) ~ '%' %}
+          {% set _ = _xfacts.append([t(_xen, _xzh), _xvs]) %}
+          {% endif %}
+          {% endfor %}
+          {% if _xfacts %}
+          <div class="lr-rec-facts">{% for _xf in _xfacts %}
+          <span class="lr-rec-fact">{{ _xf[0] }} <b>{{ _xf[1] }}</b></span>{% endfor %}</div>
+          {% endif %}
           {% else %}
           <p class="lr-rec-note">{{ t('Estimate observations unavailable: ' ~ _REC_XREASON_EN.get(_xreason, 'not available') ~ '.', '预期观察不可用：' ~ _REC_XREASON_ZH.get(_xreason, '不可用') ~ '。') }}</p>
           {% endif %}
@@ -1379,6 +1395,8 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
            data-macd-bars="{{ tf2d.macd_bars_to_cross if tf2d.macd_bars_to_cross is defined and tf2d.macd_bars_to_cross is not none else '' }}"
            data-chips='{{ chips | tojson }}'
            data-fwd-pe="{{ _cw_fwd_pe if _cw_fwd_pe is not none else '' }}"
+           data-dte="{{ ctx.days_to_earnings
+             if ctx.days_to_earnings is number and ctx.days_to_earnings >= 0 else '' }}"
            data-val-pctile="{{ _cw_val_pctile if _cw_val_pctile is not none else '' }}">
         <div class="card-top">
           <a class="card-ticker" href="us_stocks.html#{{ r.ticker }}" onclick="event.stopPropagation()" style="color:inherit;">{{ r.ticker }}</a>
@@ -1396,6 +1414,18 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
           <span class="ev-label">{% if ns2.k_pos >= [ns2.k_pos + 2, 6] | min %}{{ t('All signals in', '信号齐备') }}{% elif _cw_ratio >= 0.6 %}{{ t('Strengthening', '增强中') }}{% else %}{{ t('Building', '酝酿中') }}{% endif %}</span>
         </div>
         <div class="evidence-line" data-chips='{{ chips | tojson }}' data-stage="CATALYST_WINDOW"></div>
+        {% if ctx.days_to_earnings is number and ctx.days_to_earnings >= 0 %}
+        {% set _dte_n = ctx.days_to_earnings | int %}
+        {% set _dz = '今日业绩披露' if _dte_n == 0 else '距业绩披露 ' ~ _dte_n ~ ' 日' %}
+        {% set _de = 'earnings today' if _dte_n == 0 else 'earnings in ' ~ _dte_n ~ ' days' %}
+        {% if _dte_n == 1 %}{% set _de = 'earnings in 1 day' %}{% endif %}
+        <div class="timing-chip">{{ t(_de, _dz) }}</div>{% endif %}
+        {% set _dc = r.display_chips if r.display_chips is defined and r.display_chips else {} %}
+        {% if _dc.revision_momentum_90d is sameas true %}
+        <div class="timing-chip">{{ t('90-day estimate up', '90日预期上调') }}</div>
+        {% elif _dc.revision_momentum_90d is sameas false %}
+        <div class="timing-chip">{{ t('90-day estimate down', '90日预期下调') }}</div>
+        {% endif %}
         {% if ns2.macd_cross %}
         <div class="timing-chip near">
           {{ t('MACD crossing ↑', 'MACD即将上穿') }}{% if ns2.macd_bars is not none %} · ~{{ ns2.macd_bars | int }} {{ t('days', '天') }}{% endif %}
@@ -1493,6 +1523,8 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
              data-macd-bars="{{ macd_bars if macd_bars is not none else '' }}"
              data-chips='{{ chips | tojson }}'
              data-fwd-pe="{{ _fwd_pe if _fwd_pe is not none else '' }}"
+             data-dte="{{ ctx.days_to_earnings
+               if ctx.days_to_earnings is number and ctx.days_to_earnings >= 0 else '' }}"
              data-val-pctile="{{ _val_pctile if _val_pctile is not none else '' }}">
           <div class="card-top">
             <a class="card-ticker" href="us_stocks.html#{{ r.ticker }}" onclick="event.stopPropagation()" style="color:inherit;">{{ r.ticker }}</a>
@@ -1511,6 +1543,18 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
             <span class="ev-label">{% if _card_k >= _qa_n %}{{ t('All signals in', '信号齐备') }}{% elif _qa_ratio >= 0.6 %}{{ t('Strengthening', '增强中') }}{% else %}{{ t('Building', '酝酿中') }}{% endif %}</span>
           </div>
           <div class="evidence-line" data-chips='{{ chips | tojson }}' data-stage="QUIET_ACCUMULATION"></div>
+          {% if ctx.days_to_earnings is number and ctx.days_to_earnings >= 0 %}
+          {% set _dte_n = ctx.days_to_earnings | int %}
+          {% set _dz = '今日业绩披露' if _dte_n == 0 else '距业绩披露 ' ~ _dte_n ~ ' 日' %}
+          {% set _de = 'earnings today' if _dte_n == 0 else 'earnings in ' ~ _dte_n ~ ' days' %}
+          {% if _dte_n == 1 %}{% set _de = 'earnings in 1 day' %}{% endif %}
+          <div class="timing-chip">{{ t(_de, _dz) }}</div>{% endif %}
+          {% set _dc = r.display_chips if r.display_chips is defined and r.display_chips else {} %}
+          {% if _dc.revision_momentum_90d is sameas true %}
+          <div class="timing-chip">{{ t('90-day estimate up', '90日预期上调') }}</div>
+          {% elif _dc.revision_momentum_90d is sameas false %}
+          <div class="timing-chip">{{ t('90-day estimate down', '90日预期下调') }}</div>
+          {% endif %}
           {% if macd_near %}
           <div class="timing-chip near">
             {{ t('MACD crossing ↑', 'MACD即将上穿') }}{% if macd_bars is not none %} · ~{{ macd_bars | int }} {{ t('days', '天') }}{% endif %}
@@ -1586,6 +1630,8 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
                data-days="{{ r.days_in_state if r.days_in_state is defined and r.days_in_state is not none else '' }}"
                data-chips='{{ chips | tojson }}'
                data-fwd-pe="{{ _s_fwd_pe if _s_fwd_pe is not none else '' }}"
+               data-dte="{{ ctx.days_to_earnings
+                 if ctx.days_to_earnings is number and ctx.days_to_earnings >= 0 else '' }}"
                data-val-pctile="{{ _s_val_pctile if _s_val_pctile is not none else '' }}">
             <div class="card-top">
               <a class="card-ticker" href="us_stocks.html#{{ r.ticker }}" onclick="event.stopPropagation()" style="color:inherit;">{{ r.ticker }}</a>
@@ -1604,6 +1650,12 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
               <span class="ev-label">{% if _s_card_k >= _supp_n %}{{ t('All signals in', '信号齐备') }}{% elif _supp_ratio >= 0.6 %}{{ t('Strengthening', '增强中') }}{% else %}{{ t('Building', '酝酿中') }}{% endif %}</span>
             </div>
             <div class="evidence-line" data-chips='{{ chips | tojson }}' data-stage="SUPPRESSED"></div>
+            {% if ctx.days_to_earnings is number and ctx.days_to_earnings >= 0 %}
+            {% set _dte_n = ctx.days_to_earnings | int %}
+            {% set _dz = '今日业绩披露' if _dte_n == 0 else '距业绩披露 ' ~ _dte_n ~ ' 日' %}
+            {% set _de = 'earnings today' if _dte_n == 0 else 'earnings in ' ~ _dte_n ~ ' days' %}
+            {% if _dte_n == 1 %}{% set _de = 'earnings in 1 day' %}{% endif %}
+            <div class="timing-chip">{{ t(_de, _dz) }}</div>{% endif %}
           </div>
           {% set ns_supp_shown.n = ns_supp_shown.n + 1 %}
         {% endif %}
@@ -1791,6 +1843,10 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
 
 {# ── FIRE RECEIPTS panel ── #}
 {% set _fh = lr.fire_history if lr.fire_history is defined and lr.fire_history is not none else [] %}
+{% set _fh_matured = _fh | selectattr('status', 'equalto', 'matured') | list | length %}
+{% set _fhc_en = 'Fires with a 21-session result vs the market: ' ~ _fh_matured ~ '.' %}
+{% set _fhc_zh = '已有 ' ~ _fh_matured ~ ' 次触发完成21个交易日对照。' %}
+{% set _fb = 'A fire badge means the engine logged the event — not that an outcome is expected. ' %}
 {% if _fh | length > 0 %}
 <section class="fire-receipts-section">
   <div class="section-header">
@@ -1830,7 +1886,12 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
       </tbody>
     </table>
     <div class="fire-receipts-footer">
+      {% if _fh_matured > 0 %}
+      {{ t('Fires are logged and graded automatically after 21 sessions. ' ~ _fhc_en,
+           '触发自动记录，21个交易日后自动评分。' ~ _fhc_zh) }}
+      {% else %}
       {{ t('Fires are logged and graded automatically after 21 sessions; sample too small for a track record yet.', '触发自动记录，21个交易日后自动评分；样本尚少，未成往绩。') }}
+      {% endif %}
     </div>
   </div>
 </section>
@@ -2013,7 +2074,11 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
         <span>{{ t('Signal classification & base rates', '信号分类与基础成功率') }}</span><span class="car">&#9658;</span>
       </div>
       <div class="pb-bd">
+        {% if _fh_matured > 0 %}
+        <p>{{ t(_fb ~ _fhc_en, '触发标记意味着引擎记录了该事件，而非预期某种结果。' ~ _fhc_zh) }}</p>
+        {% else %}
         <p>{{ t('A fire badge means the engine logged the event — not that an outcome is expected. Fires are logged and graded automatically after 21 sessions; sample too small for a track record yet.', '触发标记意味着引擎记录了该事件，而非预期某种结果。触发自动记录，21个交易日后自动评分；样本尚少，未成往绩。') }}</p>
+        {% endif %}
         <div style="margin-top:8px;"><strong>{{ t('Lead signals (appear before price):', '领先信号（先于价格出现）：') }}</strong> <span class="l-en"><code>rs_line_nh</code>, <code>revision_positive</code>, <code>obv_divergence</code>, <code>insider_cluster</code></span><span class="l-zh">相对强度先于股价创新高、盈利预期转正、底部买盘悄然积累、内部人增持</span></div>
         <div><strong>{{ t('Confirm signals (coincide with price):', '确认信号（与价格同步）：') }}</strong> <span class="l-en">a volume gap up, a breakout building, quiet accumulation, momentum turning up</span><span class="l-zh">放量跳空上行、突破酝酿中、成交量温和吸筹、2日MACD上穿</span></div>
         <div><strong>{{ t('Lag signals (appear after price):', '滞后信号（价格后出现）：') }}</strong> <span class="l-en"><code>analyst_saturated</code>, <code>call_skew_rich</code></span><span class="l-zh">分析师一致看多、看涨期权被追捧</span></div>
@@ -2196,11 +2261,13 @@ function openCardReceiptFromEl(el) {
   const daysInState = el.dataset.days       ? parseInt(el.dataset.days, 10)     : null;
   const fwdPe       = el.dataset.fwdPe      ? parseFloat(el.dataset.fwdPe)      : null;
   const valPctile   = el.dataset.valPctile  ? parseFloat(el.dataset.valPctile)  : null;
-  openCardReceipt(ticker, stage, chips, macdBars, null, daysInState, fwdPe, valPctile);
+  const dte         = el.dataset.dte         ? parseInt(el.dataset.dte, 10)      : null;
+  openCardReceipt(ticker, stage, chips, macdBars, null, daysInState, fwdPe, valPctile, dte);
 }
 
 /* ── Card receipt popover ── */
-function openCardReceipt(ticker, stage, chips, macdBars, sparkHist, daysInState, fwdPe, valPctile) {
+function openCardReceipt(ticker, stage, chips, macdBars, sparkHist, daysInState,
+                         fwdPe, valPctile, dte) {
   const zh = isZH();
   const STAGE_PLAIN = {
     CATALYST_WINDOW:    zh ? '点火窗口' : 'Ignition window',
@@ -2262,6 +2329,11 @@ function openCardReceipt(ticker, stage, chips, macdBars, sparkHist, daysInState,
         : 'Valuation higher than ' + pct + '% of its own 5-year history') +
       '</div>';
   }
+  const dteTxt = (dte == null || isNaN(dte) || dte < 0) ? ''
+    : dte === 0 ? (zh ? '今日业绩披露' : 'Earnings today')
+    : dte === 1 ? (zh ? '距业绩披露 1 日' : 'Earnings in 1 day')
+    : (zh ? '距业绩披露 ' + dte + ' 日' : 'Earnings in ' + dte + ' days');
+  if (dteTxt) html += '<div class="receipt-context-line">' + dteTxt + '</div>';
 
   document.getElementById('card-popover-body').innerHTML = html;
   openPopover('card-popover');

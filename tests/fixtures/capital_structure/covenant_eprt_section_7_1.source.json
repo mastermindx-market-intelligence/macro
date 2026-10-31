@@ -1,0 +1,102 @@
+{
+  "manifest": {
+    "document": {
+      "byte_length": 1580113,
+      "canonical_url": "https://www.sec.gov/Archives/edgar/data/1728951/0001728951-26-000066.txt#document=2",
+      "content_sha256": "a931fb81fbb8367ad702ea5ef25db5ec9076fe78c47938cd98f3f672122da7df",
+      "document_name": "ex101-8thamendcreditagreem.htm",
+      "document_role": "exhibit",
+      "document_type": "EX-10.1",
+      "document_version": 1,
+      "media_type": "text/html",
+      "parent_manifest_id": "manifest:cs:18f98db38bf51788cac851aec7c9771d0ee52e5c769ba1d5b8d932d547027f05",
+      "root_locator": "sha256:a931fb81fbb8367ad702ea5ef25db5ec9076fe78c47938cd98f3f672122da7df",
+      "sequence": "2"
+    },
+    "evidence_id": "evidence:cs:e53ffa3ed5782be4ee9dd5e12991563503b0eb93388ec7c8081ca69fb4f4cb29",
+    "evidence_key_format": 1,
+    "evidence_occurrence": {
+      "byte_end": 1610174,
+      "byte_start": 30061,
+      "parent_content_sha256": "1759f0ed709af8fd8b6da5cf1090f72de751d9cc68142b7f98d028989d540dfd"
+    },
+    "filing": {
+      "accepted_at": "2026-09-16T21:15:56+00:00",
+      "accession": "0001728951-26-000066",
+      "collection_scope": "issuer_reconciliation",
+      "file_number": "001-38530",
+      "file_number_provenance": {
+        "candidate_values": [
+          "001-38530"
+        ],
+        "sources": [
+          "sec_header_file_number"
+        ],
+        "state": "observed",
+        "value": "001-38530"
+      },
+      "filing_date": "2026-09-16",
+      "form": "8-K"
+    },
+    "first_known_at": "2026-09-18T02:02:56.869809+00:00",
+    "issuer": {
+      "aliases": [
+        "ESSENTIAL PROPERTIES REALTY TRUST, INC."
+      ],
+      "cik": "1728951",
+      "issuer_id": "sec:cik:0001728951",
+      "ticker": "EPRT"
+    },
+    "manifest_id": "manifest:cs:d026fe59d2e382edfa365f3853863484da0db79c542b3181c154cb2eb15d1954",
+    "parser": {
+      "corruption_state": "clean",
+      "eligibility": "eligible",
+      "parser_version": "sec-source-inspector/1.0.0"
+    },
+    "privacy": {
+      "classification": "public",
+      "contains_personal_data": true
+    },
+    "retrieval": {
+      "first_seen_at": "2026-09-18T02:02:56.869809+00:00",
+      "retrieved_at": "2026-09-18T02:02:56.869809+00:00",
+      "transport_status": "retrieved"
+    },
+    "rights": {
+      "attribution_required": true,
+      "license_note": "United States SEC EDGAR public filing",
+      "redistribution_class": "public_source_link"
+    },
+    "schema": "capital_structure.source_manifest/v1",
+    "source_id": "0001728951-26-000066:2:ex101-8thamendcreditagreem.htm",
+    "source_system": "sec_edgar",
+    "spans": [
+      {
+        "locator": "bytes:0-1580113",
+        "locator_type": "document",
+        "span_id": "root:a931fb81fbb8367ad702ea5ef25db5ec9076fe78c47938cd98f3f672122da7df",
+        "text_sha256": "a931fb81fbb8367ad702ea5ef25db5ec9076fe78c47938cd98f3f672122da7df"
+      }
+    ],
+    "storage": {
+      "backend": "r2",
+      "content_addressed": true,
+      "object_key": "capital_structure/sec/sha256/a9/a931fb81fbb8367ad702ea5ef25db5ec9076fe78c47938cd98f3f672122da7df",
+      "retention_state": "retained",
+      "store_id": "r2_research"
+    }
+  },
+  "read_at": "2026-10-19T19:39:56.657639+00:00",
+  "sha256_verified": true,
+  "extraction_error": {
+    "type": "CovenantSpanUnbound",
+    "message": "covenant section header could not be located in the retained text"
+  },
+  "writes": false,
+  "excerpt": {
+    "byte_start": 1225809,
+    "byte_end": 1232069,
+    "sha256": "f82e0b345c86237c74387fa1703790b60f7dbdb97a6c729a9755a417297736ca",
+    "note": "Exact contiguous excerpt; full retained source tested separately. Fixture manifest is derived and does not claim this excerpt is a native stored document."
+  }
+}

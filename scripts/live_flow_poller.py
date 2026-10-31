@@ -1619,6 +1619,11 @@ def _load_day_state(session_date: str) -> dict:
         raw["root_ticker_receipts"] = _valid_source_receipts(
             raw.get("root_ticker_receipts", {})
         )
+        if "options_statistics" in raw:
+            from engine.options_statistics_state import statistics_snapshot
+            statistics_snapshot(raw["options_statistics"])
+            if raw["options_statistics"]["session_date"] != session_date:
+                raise RuntimeError("statistics session does not match day_state")
         raw.setdefault("pending_learning_events", [])
         raw.setdefault("cycle_watermarks", {})
         return raw
@@ -1704,6 +1709,12 @@ def _save_day_state(session_date: str, state: dict) -> Path:
                                      for k, v in state.get("notability_history", {}).items()}
         raw["seen_sequences"]     = {_state_key(k): v
                                      for k, v in state.get("seen_sequences", {}).items()}
+        if state.get("options_statistics") is not None:
+            from engine.options_statistics_state import statistics_snapshot
+            statistics_snapshot(state["options_statistics"])
+            if state["options_statistics"]["session_date"] != session_date:
+                raise RuntimeError("statistics session does not match day_state")
+            raw["options_statistics"] = state["options_statistics"]
         # Tide accumulators — all string-keyed, serialise directly
         for tide_key in ("market_tide_minutes", "sector_tide", "dte_tide",
                          "root_minutes", "root_strikes", "root_expiries",
@@ -2831,6 +2842,8 @@ def run_cycle(
     contract_vol: dict      = dict(day_state.get("contract_vol", {}))
     notab_hist: dict        = dict(day_state.get("notability_history", {}))
     seen_sequences: dict    = dict(day_state.get("seen_sequences", {}))
+    options_statistics = day_state.get("options_statistics")
+    statistics_enabled = cfg.get("observed_statistics_enabled") is True
 
     # Tide accumulator state — carry forward across cycles
     market_tide_minutes: dict = dict(day_state.get("market_tide_minutes", {}))
@@ -2952,6 +2965,7 @@ def run_cycle(
             "notability_history": notab_hist,
             "root_gross_today": root_gross,
             "seen_sequences":   seen_sequences,
+            **({"options_statistics": options_statistics} if options_statistics is not None else {}),
             # FIX: tide accumulators were missing — each root was starting fresh and the
             # last root's result was overwriting all prior roots' data (drop-all bug).
             "market_tide_minutes": market_tide_minutes,
@@ -2985,13 +2999,22 @@ def run_cycle(
                 etf_anchors=list(etf_anchors_set),
                 prev_close=prev_close,
                 oi_vintage=oi_vintage,
+                **({"statistics_root": root} if statistics_enabled else {}),
             )
         except Exception as e:  # noqa: BLE001
             log.warning("poller: engine failed for %s: %s", root, e)
             continue
 
-        # Merge state
+        # Validate the complete prospective statistics state before ANY merge.
+        # A missing field must not advance the sequence highwater alone.
         state_out = result.get("state", {})
+        if statistics_enabled:
+            from engine.options_statistics_state import statistics_snapshot
+            if state_out.get("options_statistics") is None:
+                raise RuntimeError("enabled statistics missing from engine state")
+            statistics_snapshot(state_out["options_statistics"])
+            options_statistics = state_out["options_statistics"]
+        # Merge state
         emitted_ids     = state_out.get("emitted_ids", emitted_ids)
         contract_vol    = state_out.get("contract_vol", contract_vol)
         notab_hist      = state_out.get("notability_history", notab_hist)
@@ -3265,6 +3288,7 @@ def run_cycle(
         "notability_history": notab_hist,
         "root_gross_today":   root_gross,
         "seen_sequences":     seen_sequences,
+        **({"options_statistics": options_statistics} if options_statistics is not None else {}),
         # Tide accumulators
         "market_tide_minutes": market_tide_minutes,
         "sector_tide":         sector_tide,
@@ -3285,6 +3309,12 @@ def run_cycle(
         "root_ticker_receipts": root_ticker_receipts,
     }
 
+    if statistics_enabled:
+        from engine.options_statistics_state import statistics_snapshot
+        meta_payload["observed_statistics"] = statistics_snapshot(options_statistics)
+        meta_payload["observed_statistics"]["cycle_requested_roots"] = list(roots)
+        # Complete configured roster and per-root acquisition health remain the
+        # incumbent meta.root_catalog, attached before publication by main().
     return feed_payload, heat_payload, meta_payload, updated_state, tide_day_state
 
 

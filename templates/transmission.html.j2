@@ -463,7 +463,10 @@ html[data-theme="light"] .cm-cos-list{background:transparent}
       var back = document.getElementById("tx-from-back");
       if (!box || !back) return;
       var href = "ontology.html";
-      if (rev) href += "?rev=" + encodeURIComponent(rev);
+      var backQuery = new URLSearchParams();
+      if (from === "dollar_spike_em_multinational") backQuery.set("chain", from);
+      if (rev) backQuery.set("rev", rev);
+      if (backQuery.toString()) href += "?" + backQuery.toString();
       if (focus) href += "#ox-leg-" + encodeURIComponent(focus);
       back.href = href;
       box.hidden = false;

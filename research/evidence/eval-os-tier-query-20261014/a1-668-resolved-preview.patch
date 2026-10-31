@@ -1,0 +1,318 @@
+diff --git a/.github/ci/legacy-jobs.yml b/.github/ci/legacy-jobs.yml
+index bf8f83ace7ee..8643adc0328c 100644
+--- a/.github/ci/legacy-jobs.yml
++++ b/.github/ci/legacy-jobs.yml
+@@ -4242,11 +4242,10 @@ jobs:
+       - "engine/qbus_news_universe.py"
+       - scripts/publish_company_disclosure.py
+       - engine/company_intelligence/issuer_disclosure_preflight.py
+-<<<<<<< b4ff0d721ab8f40cd7aa50d469167537f43ca3cd
+       # Recorded-readiness import closure required by the Intelligence OS consumer.
+       - "engine/k3e_eval1_forward.py"
+       - "engine/pick_forward_dist.py"
+-=======
++
+       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+       - "site/government-revenue-data/research-state.json"
+       - "site/government-revenue-data/defense-economics.json"
+@@ -4254,7 +4253,6 @@ jobs:
+       - "site/government-revenue-data/sbir-progression.json"
+       - "site/government-revenue-data/theme-context.json"
+       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+->>>>>>> 668374308a3298a68541e253573fafa16b4f9818
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+@@ -6716,12 +6714,11 @@ jobs:
+       - "site/prophet/index.json"
+       - "site/turn_watch/turn_watch.json"
+       - "site/vol/regime.json"
+-<<<<<<< b4ff0d721ab8f40cd7aa50d469167537f43ca3cd
+       # Recorded-readiness import closure required by the Intelligence OS consumer.
+       - "engine/k3e_eval1_forward.py"
+       - "engine/pick_forward_dist.py"
+       - "engine/seasonality/multiplicity.py"
+-=======
++
+       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+       - "engine/company_intelligence/defense_cash_profiles.py"
+       - "engine/company_intelligence/defense_space_profiles.py"
+@@ -6748,7 +6745,6 @@ jobs:
+       - "engine/government_revenue/research_state.py"
+       - "engine/government_revenue/sbir_progression.py"
+       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+->>>>>>> 668374308a3298a68541e253573fafa16b4f9818
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+@@ -8859,6 +8855,46 @@ jobs:
+       - "engine/neuralweb/market_memory_retained_context_cohort.py"
+       - "engine/neuralweb/market_memory_retained_use.py"
+       - "research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md"
++      # Exact new current-main dependencies reached by the A1 consumer.
++      - "admin/research_diagnostic_tokens.py"
++      - "collectors/dod_budget_live.py"
++      - "collectors/sbir_awards.py"
++      - "config/government_revenue/program_theme_assignments.v1.json"
++      - "engine/company_intelligence/defense_cash_profiles.py"
++      - "engine/company_intelligence/defense_profiles.py"
++      - "engine/company_intelligence/defense_space_profiles.py"
++      - "engine/company_intelligence/gd_profile.py"
++      - "engine/company_intelligence/issuer_supplements.py"
++      - "engine/government_revenue/budget_allocation_context.py"
++      - "engine/government_revenue/candidate_grader.py"
++      - "engine/government_revenue/defense_economics.py"
++      - "engine/government_revenue/defense_interpretation.py"
++      - "engine/government_revenue/program_dossier.py"
++      - "engine/government_revenue/program_ontology.py"
++      - "engine/government_revenue/program_theme_context.py"
++      - "engine/government_revenue/program_theme_disclosure.py"
++      - "engine/government_revenue/program_theme_publication.py"
++      - "engine/government_revenue/research_state.py"
++      - "engine/government_revenue/sbir_progression.py"
++      - "engine/oracle/compounds.py"
++      - "engine/oracle/graph.py"
++      - "engine/research_codegen/__init__.py"
++      - "engine/research_codegen/accounting_contract.py"
++      - "engine/research_codegen/admission.py"
++      - "engine/research_codegen/bridge.py"
++      - "engine/research_codegen/contracts.py"
++      - "engine/research_codegen/evaluation.py"
++      - "engine/research_codegen/input_contract.py"
++      - "engine/research_codegen/output_contract.py"
++      - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
++      - "research/signal_engine/confluence.py"
++      - "scripts/oracle_reversion_screen.py"
++      - "scripts/oracle_screen.py"
++      - "site/government-revenue-data/defense-economics.json"
++      - "site/government-revenue-data/program-theme-context.json"
++      - "site/government-revenue-data/research-state.json"
++      - "site/government-revenue-data/sbir-progression.json"
++      - "site/government-revenue-data/theme-context.json"
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+@@ -17079,11 +17115,10 @@ jobs:
+       - "site/neuralwebdata/theme_state.json"
+       - scripts/publish_company_disclosure.py
+       - engine/company_intelligence/issuer_disclosure_preflight.py
+-<<<<<<< b4ff0d721ab8f40cd7aa50d469167537f43ca3cd
+       # Recorded-readiness import closure required by the Intelligence OS consumer.
+       - "engine/k3e_eval1_forward.py"
+       - "engine/pick_forward_dist.py"
+-=======
++
+       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+       - "site/government-revenue-data/research-state.json"
+       - "site/government-revenue-data/defense-economics.json"
+@@ -17091,7 +17126,6 @@ jobs:
+       - "site/government-revenue-data/sbir-progression.json"
+       - "site/government-revenue-data/theme-context.json"
+       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+->>>>>>> 668374308a3298a68541e253573fafa16b4f9818
+     timeout-minutes: 8
+     runs-on: ubuntu-latest
+     steps:
+@@ -17626,11 +17660,10 @@ jobs:
+       - "site/neuralwebdata/theme_state.json"
+       - scripts/publish_company_disclosure.py
+       - engine/company_intelligence/issuer_disclosure_preflight.py
+-<<<<<<< b4ff0d721ab8f40cd7aa50d469167537f43ca3cd
+       # Recorded-readiness import closure required by the Intelligence OS consumer.
+       - "engine/k3e_eval1_forward.py"
+       - "engine/pick_forward_dist.py"
+-=======
++
+       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+       - "site/government-revenue-data/research-state.json"
+       - "site/government-revenue-data/defense-economics.json"
+@@ -17638,7 +17671,6 @@ jobs:
+       - "site/government-revenue-data/sbir-progression.json"
+       - "site/government-revenue-data/theme-context.json"
+       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+->>>>>>> 668374308a3298a68541e253573fafa16b4f9818
+     timeout-minutes: 12
+     runs-on: ubuntu-latest
+     steps:
+@@ -19935,12 +19967,11 @@ jobs:
+       - templates/methodology.html.j2
+       - templates/support.html.j2
+       - tests/test_crypto_assistant_context.py
+-<<<<<<< b4ff0d721ab8f40cd7aa50d469167537f43ca3cd
+       # Recorded-readiness import closure required by the Intelligence OS consumer.
+       - engine/k3e_eval1_forward.py
+       - engine/pick_forward_dist.py
+       - engine/seasonality/multiplicity.py
+-=======
++
+       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+       - "collectors/dod_budget_live.py"
+       - "collectors/sbir_awards.py"
+@@ -19966,7 +19997,6 @@ jobs:
+       - "site/government-revenue-data/research-state.json"
+       - "site/government-revenue-data/sbir-progression.json"
+       - "site/government-revenue-data/theme-context.json"
+->>>>>>> 668374308a3298a68541e253573fafa16b4f9818
+     timeout-minutes: 8
+     runs-on: ubuntu-latest
+     steps:
+@@ -21952,16 +21982,14 @@ jobs:
+       - "engine/options_signal_episode_contract.py"
+       - scripts/publish_company_disclosure.py
+       - engine/company_intelligence/issuer_disclosure_preflight.py
+-<<<<<<< b4ff0d721ab8f40cd7aa50d469167537f43ca3cd
+       # Recorded-readiness import closure required by the Intelligence OS consumer.
+       - "engine/k3e_eval1_forward.py"
+       - "engine/pick_forward_dist.py"
+-=======
++
+       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+       - "engine/group_pulse.py"
+       - "site/basketdata/pulse.json"
+       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+->>>>>>> 668374308a3298a68541e253573fafa16b4f9818
+     timeout-minutes: 15
+     runs-on: ubuntu-latest
+     steps:
+@@ -27117,16 +27145,14 @@ jobs:
+       - "engine/options_signal_episode_contract.py"
+       - scripts/publish_company_disclosure.py
+       - engine/company_intelligence/issuer_disclosure_preflight.py
+-<<<<<<< b4ff0d721ab8f40cd7aa50d469167537f43ca3cd
+       # Recorded-readiness import closure required by the Intelligence OS consumer.
+       - "engine/k3e_eval1_forward.py"
+       - "engine/pick_forward_dist.py"
+-=======
++
+       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+       - "engine/group_pulse.py"
+       - "site/basketdata/pulse.json"
+       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+->>>>>>> 668374308a3298a68541e253573fafa16b4f9818
+     timeout-minutes: 15
+     runs-on: ubuntu-latest
+     steps:
+@@ -30612,12 +30638,11 @@ jobs:
+       - engine/company_intelligence/issuer_disclosure_publication.py
+       - scripts/publish_company_disclosure.py
+       - engine/company_intelligence/issuer_disclosure_preflight.py
+-<<<<<<< b4ff0d721ab8f40cd7aa50d469167537f43ca3cd
+       # Recorded-readiness import closure required by the Intelligence OS consumer.
+       - "engine/k3e_eval1_forward.py"
+       - "engine/pick_forward_dist.py"
+       - "engine/seasonality/multiplicity.py"
+-=======
++
+       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
+       - "engine/company_intelligence/defense_cash_profiles.py"
+       - "engine/company_intelligence/defense_space_profiles.py"
+@@ -30644,7 +30669,6 @@ jobs:
+       - "engine/government_revenue/research_state.py"
+       - "engine/government_revenue/sbir_progression.py"
+       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+->>>>>>> 668374308a3298a68541e253573fafa16b4f9818
+     timeout-minutes: 12
+     runs-on: ubuntu-latest
+     steps:
+diff --git a/admin/static/styles.css b/admin/static/styles.css
+index f7319f528fc4..469bfe60cdba 100644
+--- a/admin/static/styles.css
++++ b/admin/static/styles.css
+@@ -6463,7 +6463,6 @@ button.admin-notice { cursor:pointer; }
+   .cs-review-pager { justify-content:space-between; gap:8px; }
+ }
+ 
+-<<<<<<< b4ff0d721ab8f40cd7aa50d469167537f43ca3cd
+ /* Intelligence OS experience: governed canonical tokens, two material treatments.
+    Token values come only from templates/theme.css via /assets/theme-tokens.css. */
+ html[data-theme="light"] {
+@@ -6555,7 +6554,7 @@ html[data-lang="zh"] #view .l-en { display: none; }
+ @media (prefers-reduced-motion: reduce) {
+   .ios-evidence-band { transition: none; }
+ }
+-=======
++
+ /* Research diagnostics: canonical tokens, section-local language and art direction. */
+ .rf-diagnostics { margin:var(--sp-5,20px) 0; padding:var(--sp-4,16px); border-radius:var(--r-card,12px); background:var(--bg); color:var(--text); }
+ .rf-diagnostics .rf-diagnostic-toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--sp-3,12px); margin-bottom:var(--sp-4,16px); }
+@@ -6574,4 +6573,3 @@ html[data-lang="zh"] #view .l-en { display: none; }
+ .rf-diagnostics .rf-identity { display:block; overflow-wrap:anywhere; font-family:var(--font-mono); font-size:var(--fs-xs,12px); }
+ 
+ .experiments-table-scroll { max-width:100%; overflow-x:auto; }
+->>>>>>> 668374308a3298a68541e253573fafa16b4f9818
+diff --git a/app/deploy/update.sh b/app/deploy/update.sh
+index d89e9375c6d6..a38e90105f31 100755
+--- a/app/deploy/update.sh
++++ b/app/deploy/update.sh
+@@ -1501,19 +1501,15 @@ fi
+ # must reload this separate issuer process as well as macro-api. The admin unit
+ # generation forces the initial adoption even when the installed updater began
+ # this cycle with the previous trigger. No entitlement rows are changed here.
+-<<<<<<< b4ff0d721ab8f40cd7aa50d469167537f43ca3cd
+ # The A1 evidence panel adds the canonical qledger read stack to this existing
+ # admin restart boundary. Keep its lazy scoring/config tail out of load-time
+ # imports. Calendar reads also cache lib/exchange_holidays.py on current main.
+-# The current-main transaction stays before unrelated W2C attestation.
+-if [ "$ADMIN_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(admin/.*|templates/theme\.css|app/billing\.py|config/plans\.yml|lib/(ai_costs|mastermind_response_log|project_runtime_state|tiers|cn_calendar|hk_calendar|nyse_calendar|exchange_holidays)\.py|lib/dataos/(__init__|identity|nulls|price|price_views|quality|read_contract|registry|temporal)\.py|engine/(codex_provider|llm_auth|macro_thesis|prophet_integrity|intelligence_registry|output_health|qledger|qledger_store|qledger_validity|qledger_desk_adapter|qledger_evidence_clock|session_anchor|ticker_shape)\.py|engine/codex_lane/runner\.py|engine/chronicle/(impact|schema)\.py|engine/neuralweb/(key_pool|ask_brain|support_map|orchestrator_log|trade_memory)\.py|engine/metabolism/(throttle|budget_gate)\.py|engine/marketing/(__init__|accounts|ad_allocator|ad_arena|ad_central|ad_stats|approval_desk|authority|cadence_resolver|charter|claims|cmo|cold_read|copywriter|departments|economics|events|ledgers|market_clock|media_publish|opportunity_bus|outbox|personas|publication|rejections|blind_identity|health_monitor|labels|learned_rules|reply_critics|reply_discovery|reply_drafter|reply_export|reply_producer|reply_queue|reply_voice|rewrite|sentinel|social_publisher|state|story_lock|wire_routing)\.py|engine/press/(__init__|desk_planner)\.py|scripts/(marketing_publisher|build_intelligence_registry|build_output_health|grade_qledger)\.py)$'; then
+-=======
+-# Research diagnostics add a request-time validator import in admin/experiments.py.
+-# Its exact module-level closure is cached by this persistent interpreter. Keep
++# The current-main transaction stays before unrelated W2C attestation. Research
++# diagnostics add a request-time validator import in admin/experiments.py; its
++# exact module-level closure is cached by this persistent interpreter. Keep
+ # transport and deep execution/evaluator imports outside this serving closure;
+ # queue/registry data and canonical theme tokens are read afresh, not imported.
+-if [ "$ADMIN_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(admin/.*|app/billing\.py|config/plans\.yml|lib/(ai_costs|mastermind_response_log|project_runtime_state|tiers)\.py|lib/dataos/(__init__|identity|nulls|price|price_views|quality|read_contract|registry|temporal)\.py|engine/(codex_provider|llm_auth|macro_thesis|prophet_integrity|intelligence_registry|output_health)\.py|engine/research_codegen/(__init__|accounting_contract|admission|bridge|contracts|evaluation|input_contract|output_contract)\.py|engine/codex_lane/runner\.py|engine/chronicle/(impact|schema)\.py|engine/neuralweb/(key_pool|ask_brain|support_map|orchestrator_log|trade_memory)\.py|engine/metabolism/(throttle|budget_gate)\.py|engine/marketing/(__init__|accounts|ad_allocator|ad_arena|ad_central|ad_stats|approval_desk|authority|cadence_resolver|charter|claims|cmo|cold_read|copywriter|departments|economics|events|ledgers|market_clock|media_publish|opportunity_bus|outbox|personas|publication|rejections|blind_identity|health_monitor|labels|learned_rules|reply_critics|reply_discovery|reply_drafter|reply_export|reply_producer|reply_queue|reply_voice|rewrite|sentinel|social_publisher|state|story_lock|wire_routing)\.py|engine/press/(__init__|desk_planner)\.py|scripts/(marketing_publisher|build_intelligence_registry|build_output_health)\.py)$'; then
+->>>>>>> 668374308a3298a68541e253573fafa16b4f9818
++if [ "$ADMIN_UNIT_UPDATED" -eq 1 ] || echo "$CHANGED" | grep -qE '^(admin/.*|templates/theme\.css|app/billing\.py|config/plans\.yml|lib/(ai_costs|mastermind_response_log|project_runtime_state|cn_calendar|hk_calendar|nyse_calendar|exchange_holidays|tiers)\.py|lib/dataos/(__init__|identity|nulls|price|price_views|quality|read_contract|registry|temporal)\.py|engine/(codex_provider|llm_auth|macro_thesis|prophet_integrity|intelligence_registry|output_health|qledger|qledger_store|qledger_validity|qledger_desk_adapter|qledger_evidence_clock|session_anchor|ticker_shape)\.py|engine/research_codegen/(__init__|accounting_contract|admission|bridge|contracts|evaluation|input_contract|output_contract)\.py|engine/codex_lane/runner\.py|engine/chronicle/(impact|schema)\.py|engine/neuralweb/(key_pool|ask_brain|support_map|orchestrator_log|trade_memory)\.py|engine/metabolism/(throttle|budget_gate)\.py|engine/marketing/(__init__|accounts|ad_allocator|ad_arena|ad_central|ad_stats|approval_desk|authority|cadence_resolver|charter|claims|cmo|cold_read|copywriter|departments|economics|events|ledgers|market_clock|media_publish|opportunity_bus|outbox|personas|publication|rejections|blind_identity|health_monitor|labels|learned_rules|reply_critics|reply_discovery|reply_drafter|reply_export|reply_producer|reply_queue|reply_voice|rewrite|sentinel|social_publisher|state|story_lock|wire_routing)\.py|engine/press/(__init__|desk_planner)\.py|scripts/(marketing_publisher|build_intelligence_registry|build_output_health|grade_qledger)\.py)$'; then
+ 	systemctl is-enabled admin >/dev/null 2>&1 && systemctl restart admin || true
+ fi
+ 
+diff --git a/tests/test_admin_server.py b/tests/test_admin_server.py
+index 17f848d16bc8..c54e6cd1f39d 100644
+--- a/tests/test_admin_server.py
++++ b/tests/test_admin_server.py
+@@ -646,7 +646,6 @@ def test_semantic_failure_response_is_not_cached(monkeypatch):
+         httpd.shutdown(); httpd.server_close()
+ 
+ 
+-<<<<<<< b4ff0d721ab8f40cd7aa50d469167537f43ca3cd
+ def test_governed_theme_projection_is_narrow_versioned_and_public(monkeypatch):
+     from admin import server
+     monkeypatch.setattr(server.settings,"auth_enabled",lambda:True)
+@@ -788,7 +787,7 @@ def test_owner_snapshot_publication_invalidates_serialized_panel_and_detail(monk
+             assert json.loads(body)['generation']==2 and header['X-Admin-Cache']=='MISS'
+         assert len(calls)==4
+     finally:httpd.shutdown();httpd.server_close();_clear_response_cache()
+-=======
++
+ def test_diagnostic_tokens_are_fixed_path_readonly_and_revalidate(monkeypatch):
+     from admin import research_diagnostic_tokens
+     httpd, port = _server()
+@@ -814,4 +813,3 @@ def test_diagnostic_tokens_are_fixed_path_readonly_and_revalidate(monkeypatch):
+             assert json.loads(error.read()) == {"error": "diagnostic presentation unavailable"}
+     finally:
+         httpd.shutdown(); httpd.server_close()
+->>>>>>> 668374308a3298a68541e253573fafa16b4f9818
+diff --git a/tests/test_deploy_update_self_heal.py b/tests/test_deploy_update_self_heal.py
+index 0148be21fe14..50a5c265cb07 100644
+--- a/tests/test_deploy_update_self_heal.py
++++ b/tests/test_deploy_update_self_heal.py
+@@ -674,11 +674,16 @@ ADMIN_MUST_NOT_RESTART = [
+     "engine/research_codegen/transport.py",
+     "engine/experiments_registry.py",
+     "data/research_factory/review/queue.json",
+-    "templates/theme.css",
++    # Research diagnostics read tokens afresh, but A1's derived token response
++    # is process-pinned; templates/theme.css belongs in ADMIN_MUST_RESTART.
+     "templates/index.html.j2",
+ ]
+ 
+ 
++def test_admin_restart_expectations_are_disjoint():
++    assert not (set(ADMIN_MUST_RESTART) & set(ADMIN_MUST_NOT_RESTART))
++
++
+ @pytest.mark.parametrize("path", ADMIN_MUST_RESTART)
+ def test_import_cached_module_triggers_admin_restart(path):
+     assert (ROOT / path).exists(), f"stale test fixture: {path} no longer exists"

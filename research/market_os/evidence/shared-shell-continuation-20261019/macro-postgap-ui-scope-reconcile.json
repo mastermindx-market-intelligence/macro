@@ -1,0 +1,42 @@
+{
+  "started_at": "2026-10-20T00:46:26.634968+00:00",
+  "prior_validation_sha256": "540c8ad264620db5b050d72c2f8abac9ea174979a5a80e36dc88dafa0b94f98d",
+  "reason": "Only UI guard refused because its existing mockups evidence directory was excluded by sparse definition; restore that documented scope and rerun that guard only",
+  "index_tree_before": "586960f5b84d6d7a1e662d95f99941242ee7edaf",
+  "steps": [
+    {
+      "name": "mockups_scope",
+      "argv": [
+        "python3",
+        "scripts/worktree_sparse.py",
+        "add",
+        "mockups"
+      ],
+      "exit": 0,
+      "seconds": 53.7,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/postgap-validation-mockups_scope-r2.log",
+      "sha256": "ad48e96188fc9278fdfb5df4643551875fb7e4846c97bc675320cf0641155a15",
+      "output": "worktree-sparse: materialized mockups\n"
+    },
+    {
+      "name": "ui_evidence",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-postgap-merged-ui.diff"
+      ],
+      "exit": 0,
+      "seconds": 1.473,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/postgap-validation-ui_evidence-r2.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output": ""
+    }
+  ],
+  "index_tree_after": "586960f5b84d6d7a1e662d95f99941242ee7edaf",
+  "unstaged_after": "",
+  "unmerged_after": "",
+  "mockups_in_sparse_scope": true,
+  "pass": true,
+  "finished_at": "2026-10-20T00:47:25.897317+00:00"
+}

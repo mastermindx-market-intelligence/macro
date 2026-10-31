@@ -1,0 +1,108 @@
+{
+  "observed_at": "2026-10-18T07:47:47.195921+00:00",
+  "status": "test-only native rsync peer portability correction frozen; native rerun pending",
+  "native_base_reported_by_parent": "d65414e89ad3b930d84d614196a91d3cce8ba589",
+  "candidate": [
+    {
+      "path": "release_review/candidate/scripts/deploy_code_to_vps.sh",
+      "bytes": 20370,
+      "sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8"
+    },
+    {
+      "path": "release_review/candidate/tests/test_deploy_provenance.py",
+      "bytes": 40161,
+      "sha256": "d9dd66255444a70ba2160d30a2b62e540bcbc6620736030152cbef50c7ab7f59"
+    }
+  ],
+  "delta_from_previous_pair": [
+    "tests/test_deploy_provenance.py"
+  ],
+  "first_party_changed_paths": [
+    "scripts/deploy_code_to_vps.sh",
+    "tests/test_deploy_provenance.py"
+  ],
+  "new_first_party_support_files": [],
+  "unchanged_originals": [
+    {
+      "path": "release_review/source/scripts/deploy_code_to_vps.sh",
+      "bytes": 14934,
+      "sha256": "c158fc903121b8c4ad680049ded16000913393039944c6eec3a23d44ca376204"
+    },
+    {
+      "path": "release_review/source/tests/test_deploy_provenance.py",
+      "bytes": 19097,
+      "sha256": "1bc5bf5e1980cb97fb8051d062e90e60536432b03782ff008cb31066f950bd3c"
+    }
+  ],
+  "validation": {
+    "current_focused_driver": "stdlib AST loader; exact existing standalone fixture test bodies, no pytest/app imports",
+    "current_focused_passed": 2,
+    "current_focused_failed": 0,
+    "current_focused_receipts": [
+      {
+        "path": "release_review/HELPER_RSYNC_PEER_FORWARD_CONTROL_2026-10-18.json",
+        "bytes": 552,
+        "sha256": "8d169856fc7cac92b95f02c26630dff4d9c8799261722a8a8b4d4df5c193e240"
+      },
+      {
+        "path": "release_review/HELPER_RSYNC_PEER_RESTORE_CONTROL_2026-10-18.json",
+        "bytes": 557,
+        "sha256": "405cbc3ebc2b948686d22267750b72ecfdb564d675c085429db76fa08183a4c0"
+      }
+    ],
+    "current_all_test_function_asts": "unchanged from pre-native pair",
+    "helper_unchanged": true,
+    "previous_full_standalone_result": {
+      "passed": 44,
+      "failed": 0,
+      "helper_sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+      "test_source_sha256": "a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a",
+      "receipt": {
+        "path": "release_review/pre_native_candidate/HELPER_CANDIDATE_REVIEWED_VERIFICATION_2026-10-18.json",
+        "bytes": 8506,
+        "sha256": "dbfe8dc9ec6b5f70d060883b7e34e0ca285e09c6ae7f35dcb1372546d046a003"
+      }
+    },
+    "rsync_version": "rsync  version 3.2.7  protocol version 31",
+    "native_owning_pytest_rerun": "pending; parent owns"
+  },
+  "first_party_modules_imported": false,
+  "native_pytest_run_by_subagent": false,
+  "network_or_production_calls": false,
+  "source_wrapper_changed": false,
+  "source_tag_helper_changed": false,
+  "source_forward_module_changed": false,
+  "remaining_limits_report": "release_review/HELPER_NATIVE_RSYNC_PEER_FIX_2026-10-18.md",
+  "prior_full_manifest": {
+    "path": "release_review/pre_native_candidate/HELPER_CANDIDATE_MANIFEST_2026-10-18.json",
+    "bytes": 4688,
+    "sha256": "213b6df3bf7e60732414cedf34b1eb88a932ec641b607f1966a4813bd5ce6569"
+  },
+  "artifacts": [
+    {
+      "path": "release_review/HELPER_NATIVE_RSYNC_PEER_FIX_2026-10-18.diff",
+      "bytes": 1986,
+      "sha256": "6f18ebba77f2487be2dba7e11fa4deae12c4eecb17615ed821933816d5bc94df"
+    },
+    {
+      "path": "release_review/HELPER_NATIVE_RSYNC_PEER_FIX_2026-10-18.md",
+      "bytes": 3598,
+      "sha256": "6ee07bc30e39f5ac4510b8d7c54f048b1593e6c7866c88457e6ac7a5180fdf26"
+    },
+    {
+      "path": "release_review/helper_fixture_driver_20261018.py",
+      "bytes": 3434,
+      "sha256": "380ea13a8dcda1ef7a25eb888a5223e43ae1ab8bc36276509917303e9864be44"
+    },
+    {
+      "path": "release_review/pre_native_candidate/scripts/deploy_code_to_vps.sh",
+      "bytes": 20370,
+      "sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8"
+    },
+    {
+      "path": "release_review/pre_native_candidate/tests/test_deploy_provenance.py",
+      "bytes": 39649,
+      "sha256": "a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a"
+    }
+  ]
+}

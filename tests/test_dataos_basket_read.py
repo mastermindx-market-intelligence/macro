@@ -10,6 +10,7 @@ Run: python3 -m pytest tests/test_dataos_basket_read.py -q
 from __future__ import annotations
 
 import dataclasses
+import json
 import subprocess
 import sys
 from datetime import date, datetime, timezone
@@ -280,7 +281,8 @@ def test_u04_reader_echo_mismatch_is_refused(over) -> None:
 
 @pytest.mark.parametrize(
     "pair", [(True, "current_membership"), (False, "pit_snapshot"),
-             (1, "pit_snapshot"), (True, "something_else")])
+             (1, "pit_snapshot"), (True, "something_else"),
+             (True, "membership_unreadable")])
 def test_u04_unlawful_pit_basis_pairs_are_malformed(pair) -> None:
     with pytest.raises(BasketReadRefusal) as exc:
         _read(membership=dict(pit=pair[0], basis=pair[1]))
@@ -487,7 +489,7 @@ def test_u04_population_delta_refuses_across_boundaries(over, code) -> None:
 
 
 def test_u04_refusal_vocabulary_is_closed() -> None:
-    assert len(BasketRefusalCode) == 20
+    assert len(BasketRefusalCode) == 21
     assert all(code.value == code.name for code in BasketRefusalCode)
     assert issubclass(BasketReadRefusal, ReadContractError)
     exc = BasketReadRefusal(BasketRefusalCode.UNKNOWN_SUITE, "declined")
@@ -514,6 +516,8 @@ def test_u04_engine_vocabulary_is_pinned() -> None:
     assert pit._BASIS_PIT == "pit_snapshot"
     assert pit._BASIS_CURRENT == "current_membership"
     assert pit._BASIS_UNKNOWN == "unknown_basket"
+    assert pit._BASIS_UNREADABLE == "membership_unreadable"
+    assert basket_read._BASIS_UNREADABLE == pit._BASIS_UNREADABLE
     assert set(basket_read._SUITE_TZ_MIC) == {
         pit.SUITE_US, pit.SUITE_CURATED, pit.SUITE_THS}
 
@@ -536,6 +540,77 @@ def test_u04_default_reader_is_members_asof(monkeypatch) -> None:
                 price_read=_reconstruct_read(), resolve=_Resolver(),
                 expected_population=PopulationKind.CURATED_CAPPED)
     assert calls == [("BK1", "2026-01-04", "baskets_china_ths")]
+
+
+@pytest.mark.parametrize("mode", ["RECONSTRUCT", "CURRENT"])
+def test_u04_unreadable_store_is_refused_through_the_default_reader(mode, tmp_path, monkeypatch) -> None:
+    """Q02-F1: corrupt PIT bytes reach read_basket via the DEFAULT reader and are
+    refused MEMBERSHIP_UNREADABLE in every mode — corruption is never measured as
+    absence or as current membership."""
+    pytest.importorskip("pandas")
+    from engine import basket_membership_pit as pit
+    from lib import config
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    suite = "baskets_china_ths"
+    history = tmp_path / suite / "membership_history.parquet"
+    history.parent.mkdir(parents=True, exist_ok=True)
+    history.write_bytes(b"broken")
+    assert pit.history_path(suite) == history  # binds the file the reader reads
+    if mode == "RECONSTRUCT":
+        request = ReadRequest(ReadMode.RECONSTRUCT, _contract(), cutoff=CUTOFF,
+                              clock="ingested_at")
+        price_read, session_day = _reconstruct_read(), None
+    else:
+        request = ReadRequest(ReadMode.CURRENT, _contract())
+        price_read, session_day = _current_read(), DAY
+    # No membership_reader injected: the module default (the real members_asof)
+    # must be the one that answers, and its unreadable answer must refuse here.
+    with pytest.raises(BasketReadRefusal) as exc:
+        read_basket(request, basket_id="BK1", suite=suite,
+                    price_read=price_read, resolve=_Resolver(),
+                    expected_population=PopulationKind.CURATED_CAPPED,
+                    session_day=session_day)
+    assert exc.value.code is BasketRefusalCode.MEMBERSHIP_UNREADABLE
+
+
+def test_u04_absent_store_keeps_the_flagged_current_fallback(tmp_path, monkeypatch) -> None:
+    """Control (Q02-F1): an ABSENT store keeps its unchanged fallback — current
+    membership applied backward, pit=False — which a RECONSTRUCT refuses as
+    LOOKAHEAD_MEMBERSHIP, never as MEMBERSHIP_UNREADABLE."""
+    pytest.importorskip("pandas")
+    from lib import config
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    suite = "baskets_china_ths"
+    assert not (tmp_path / suite / "membership_history.parquet").exists()
+    membership = tmp_path / suite / "membership.json"
+    membership.parent.mkdir(parents=True, exist_ok=True)
+    membership.write_text(json.dumps({
+        "version": 1, "seed_date": "2021-06-15", "curated": False,
+        "baskets": {"BK1": {"name": "BK1", "name_zh": "BK1", "category": "theme",
+                            "members": [{"ticker": "600036", "added": "2021-06-15",
+                                         "removed": None, "name_zh": "zh-600036",
+                                         "rationale": "u04"}]}},
+    }), encoding="utf-8")
+    request = ReadRequest(ReadMode.RECONSTRUCT, _contract(), cutoff=CUTOFF,
+                          clock="ingested_at")
+    with pytest.raises(BasketReadRefusal) as exc:
+        read_basket(request, basket_id="BK1", suite=suite,
+                    price_read=_reconstruct_read(), resolve=_Resolver(),
+                    expected_population=PopulationKind.CURATED_CAPPED)
+    assert exc.value.code is BasketRefusalCode.LOOKAHEAD_MEMBERSHIP
+    assert exc.value.code is not BasketRefusalCode.MEMBERSHIP_UNREADABLE
+
+
+@pytest.mark.parametrize("mode", ["RECONSTRUCT", "CURRENT"])
+def test_u04_injected_unreadable_membership_is_refused_in_every_mode(mode) -> None:
+    """An injected reader answering membership_unreadable (with NO members) is
+    refused MEMBERSHIP_UNREADABLE in BOTH modes; members=[] discriminates the
+    ordering — after the empty check this would say EMPTY_MEMBERSHIP instead."""
+    with pytest.raises(BasketReadRefusal) as exc:
+        _read(mode=mode, membership=dict(pit=False, basis="membership_unreadable",
+                                         members=[], snapshot_date=None,
+                                         source_shape=None))
+    assert exc.value.code is BasketRefusalCode.MEMBERSHIP_UNREADABLE
 
 
 def test_u04_import_is_stdlib_only() -> None:

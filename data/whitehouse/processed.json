@@ -1781,6 +1781,36 @@
       "at": "2026-10-17T04:24:45.170076+00:00",
       "activated": true,
       "importance": 78
+    },
+    "https://www.whitehouse.gov/?p=52972": {
+      "id": "wh-2026-10-19-advancing-womens-health-to-improve-outcomes-in-all-phases-of-life",
+      "at": "2026-10-19T15:35:45.417541+00:00",
+      "activated": false,
+      "importance": 30
+    },
+    "https://www.whitehouse.gov/?p=52971": {
+      "id": "wh-2026-10-19-fact-sheet-president-donald-j-trump-and-first-lady-melania-trump-advance-womens-",
+      "at": "2026-10-19T15:35:47.216922+00:00",
+      "activated": false,
+      "importance": 35
+    },
+    "https://www.whitehouse.gov/?p=53000": {
+      "id": "wh-2026-10-19-president-trump-delivers-historic-wins-for-kansas-workers-families-farmers-and-r",
+      "at": "2026-10-19T21:04:19.489431+00:00",
+      "activated": false,
+      "importance": 30
+    },
+    "https://www.whitehouse.gov/?p=52977": {
+      "id": "wh-2026-10-19-first-lady-melania-trump-champions-new-u-s-womens-health-initiative",
+      "at": "2026-10-19T21:04:20.805518+00:00",
+      "activated": false,
+      "importance": 8
+    },
+    "https://www.whitehouse.gov/?p=53037": {
+      "id": "wh-2026-10-20-presidential-message-on-national-forest-products-week-5753",
+      "at": "2026-10-20T06:01:05.114105+00:00",
+      "activated": false,
+      "importance": 30
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

@@ -1,0 +1,177 @@
+{
+  "observed_at": "2026-10-14T05:33:57.788666+00:00",
+  "head": "488c1f8d4647962b7e5903a697f1b8259b909521",
+  "worktree_clean": true,
+  "tier_cli": {
+    "display": {
+      "sha256": "2342b91490a3afc7095cb8877a8f5c446e5c2f94a6e328021e89a29952c237d6",
+      "query": {
+        "changed_paths": [
+          "admin/server.py"
+        ],
+        "engines": [
+          {
+            "authority": "display",
+            "authority_evidence": {
+              "artifact_ids": [
+                "operator-action-ledger"
+              ],
+              "completeness_detail": [],
+              "completeness_flag": false,
+              "rule": "d",
+              "surfaces": [],
+              "unchecked_artifacts": [],
+              "unevidenced_artifacts": [],
+              "unresolvable_artifacts": []
+            },
+            "engine_id": "admin/server.py::nw-rails",
+            "owner_program": "nw-rails",
+            "path": "admin/server.py",
+            "reason": null,
+            "required_tier": "T1"
+          }
+        ],
+        "evaluation_status": "not_assessed",
+        "maximum_supported_tier": "T1",
+        "policy_source": "research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md#7-evaluation-tiers-and-the-agent-os-interface-parts-xviii-xxiii",
+        "required_tier": "T1",
+        "schema": "intelligence_registry.required_tier.v1",
+        "scope": "exact_registered_producer_paths",
+        "status": "resolved",
+        "unresolved": []
+      },
+      "unreadable_inputs": [],
+      "source_report_keys": [
+        "cell_ids",
+        "inputs_complete",
+        "n_desk_scans",
+        "overlay",
+        "sources",
+        "unreadable_by_plane",
+        "unreadable_inputs",
+        "unresolved_desk_producers"
+      ]
+    },
+    "gate-size": {
+      "sha256": "08efc033257b31cf0f98541fddb4fa49f625656a18bcb68d3b27a48c452f2f03",
+      "query": {
+        "changed_paths": [
+          "scripts/backtest_vol_overlay.py"
+        ],
+        "engines": [
+          {
+            "authority": "gate_size",
+            "authority_evidence": {
+              "artifact_ids": [
+                "vol-regime-basket-overlay-gate"
+              ],
+              "completeness_detail": [],
+              "completeness_flag": false,
+              "rule": "a",
+              "surfaces": [],
+              "unchecked_artifacts": [],
+              "unevidenced_artifacts": [
+                "vol-regime-basket-overlay-gate"
+              ],
+              "unresolvable_artifacts": []
+            },
+            "engine_id": "scripts/backtest_vol_overlay.py::options-alpha",
+            "owner_program": "options-alpha",
+            "path": "scripts/backtest_vol_overlay.py",
+            "reason": null,
+            "required_tier": "T3"
+          }
+        ],
+        "evaluation_status": "not_assessed",
+        "maximum_supported_tier": "T3",
+        "policy_source": "research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md#7-evaluation-tiers-and-the-agent-os-interface-parts-xviii-xxiii",
+        "required_tier": "T3",
+        "schema": "intelligence_registry.required_tier.v1",
+        "scope": "exact_registered_producer_paths",
+        "status": "resolved",
+        "unresolved": []
+      },
+      "unreadable_inputs": [],
+      "source_report_keys": [
+        "cell_ids",
+        "inputs_complete",
+        "n_desk_scans",
+        "overlay",
+        "sources",
+        "unreadable_by_plane",
+        "unreadable_inputs",
+        "unresolved_desk_producers"
+      ]
+    },
+    "unsupported": {
+      "sha256": "70aa34fd35e4cdf5a5343da1035d2ec4ef1f86e615f0d23f0db8a88520755b97",
+      "query": {
+        "changed_paths": [
+          "engine/ai_desk.py"
+        ],
+        "engines": [
+          {
+            "authority": "engine_input",
+            "authority_evidence": {
+              "artifact_ids": [
+                "ai-desk-theses"
+              ],
+              "completeness_detail": [],
+              "completeness_flag": false,
+              "rule": "c",
+              "surfaces": [],
+              "unchecked_artifacts": [],
+              "unevidenced_artifacts": [
+                "ai-desk-theses"
+              ],
+              "unresolvable_artifacts": []
+            },
+            "engine_id": "engine/ai_desk.py::qualitative-intelligence",
+            "owner_program": "qualitative-intelligence",
+            "path": "engine/ai_desk.py",
+            "reason": "authority_policy_undefined",
+            "required_tier": null
+          }
+        ],
+        "evaluation_status": "not_assessed",
+        "maximum_supported_tier": null,
+        "policy_source": "research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md#7-evaluation-tiers-and-the-agent-os-interface-parts-xviii-xxiii",
+        "required_tier": null,
+        "schema": "intelligence_registry.required_tier.v1",
+        "scope": "exact_registered_producer_paths",
+        "status": "unresolved",
+        "unresolved": [
+          {
+            "engine_id": "engine/ai_desk.py::qualitative-intelligence",
+            "path": "engine/ai_desk.py",
+            "reason": "authority_policy_undefined"
+          }
+        ]
+      },
+      "unreadable_inputs": [],
+      "source_report_keys": [
+        "cell_ids",
+        "inputs_complete",
+        "n_desk_scans",
+        "overlay",
+        "sources",
+        "unreadable_by_plane",
+        "unreadable_inputs",
+        "unresolved_desk_producers"
+      ]
+    }
+  },
+  "source_findings_cli": {
+    "sha256": "82264d20e9f4a9a146ab2e2728e5638ff8540340cf7a0cd2083e461dd2b0fb8c",
+    "limit_artifacts": [
+      "operator-action-ledger",
+      "breadth-breadth"
+    ],
+    "n_outputs": 649,
+    "observations": 3120,
+    "groups": 380,
+    "all_unclassified": true,
+    "unclassified_is_not_a_pass": true
+  },
+  "scope": "Actual local canonical registry and existing CLI consumer observations, no synthetic registry. Sparse local two-output read limit; not fleet health, empirical evaluation, hosted CI, installed production or release acceptance."
+}

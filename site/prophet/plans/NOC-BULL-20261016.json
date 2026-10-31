@@ -1,0 +1,4191 @@
+{
+  "schema": "prophet.trade_plan/v1",
+  "id": "NOC-BULL-20261016",
+  "asof": "2026-10-20",
+  "recorded_at": "2026-10-20",
+  "asset": "NOC",
+  "direction": "BULL",
+  "thesis": "NOC \u2014 conviction 75/100 (neutral) Entry grade: light. Drivers: entry. Cautions: Earnings are due. The result can override the setup, so size down.; Its Industrials (Equal-Weight) basket is below its long-term trend. Size down: the tape is rewarding leaders, and this basket is not one.. Trust tier: Event edge: insider buying (lone FDR survivor) + earnings-surprise PEAD context + revisions \u2014 a confluence read, not a standalone alpha. DISPLAY-ONLY: machine-generated from factor scores; no forward return guarantee; display-tier artifact.",
+  "thesis_zh": "NOC \u2014 \u786e\u4fe1\u5ea6 75/100\uff08\u4e2d\u6027\uff09 \u5165\u573a\u8bc4\u7ea7: light\u3002 \u9a71\u52a8\u56e0\u7d20: entry\u3002 \u6ce8\u610f\u4e8b\u9879: \u8d22\u62a5\u5373\u5c06\u516c\u5e03\u3002\u4e1a\u7ee9\u7ed3\u679c\u53ef\u80fd\u538b\u8fc7\u6280\u672f\u5f62\u6001\uff0c\u5b9c\u51cf\u5c0f\u4ed3\u4f4d\u3002; \u6240\u5c5e \u5de5\u4e1a\uff08\u7b49\u6743\uff09 \u7bee\u5b50\u5df2\u8dcc\u7834\u957f\u671f\u8d8b\u52bf\u3002\u51cf\u5c0f\u4ed3\u4f4d\uff1a\u5f53\u524d\u884c\u60c5\u5956\u52b1\u9886\u5148\u677f\u5757\uff0c\u8be5\u7bee\u5b50\u5e76\u4e0d\u5728\u5176\u4e2d\u3002\u3002 \u53ef\u4fe1\u5ea6: \u4e8b\u4ef6\u9a71\u52a8\u4f18\u52bf\uff1a\u5185\u90e8\u4eba\u4e70\u5165\uff08\u552f\u4e00\u901a\u8fc7 FDR \u7684\u56e0\u5b50\uff09\uff0b\u76c8\u5229\u8d85\u9884\u671f PEAD \u80cc\u666f\uff0b\u8bc4\u7ea7\u8c03\u6574 \u2014 \u7efc\u5408\u53c2\u8003\uff0c\u975e\u72ec\u7acb\u8d85\u989d\u6536\u76ca\u3002 \u4ec5\u4f9b\u5c55\u793a\uff1a\u7531\u56e0\u5b50\u5206\u6570\u673a\u5668\u751f\u6210\uff1b\u65e0\u524d\u77bb\u6536\u76ca\u4fdd\u8bc1\uff1b\u5c55\u793a\u5c42\u7ea7\u8f93\u51fa\u3002",
+  "source_engines": [
+    "us_standouts_buy_lane",
+    "neural_web"
+  ],
+  "trigger": 515.8,
+  "entry": 510.6,
+  "invalidation": 459.26,
+  "targets": [
+    587.61,
+    664.62
+  ],
+  "horizon_days": 45,
+  "min_hold_days": 10,
+  "tranche": 1,
+  "option_contract": null,
+  "stage_tilt": {
+    "leash": 1.0,
+    "eligible": false,
+    "stage_at_entry": 4,
+    "ec_sent": 23.0,
+    "ec_call_date": "2026-07-21",
+    "ec_source_state": "available",
+    "ec_source_path": "data/earnings_calls/history.parquet",
+    "ec_source_tier": "r2_history",
+    "ec_source_generation": {
+      "generation_id": "764277dc34d68683a080ec41",
+      "published_at": "2026-10-20T06:46:27.018849+00:00",
+      "rows": 50982
+    },
+    "ec_source_reason": null,
+    "bear_gate": false,
+    "provisional": true,
+    "demoted": false,
+    "basis": "PSQ 2026-07-20 quality re-grade; provisional \u2014 forward-shadow checked (~2026-12)"
+  },
+  "management_ref": "prophet/state/NOC-BULL-20261016.json",
+  "authority_tier": "display",
+  "reliability": {
+    "plan": "display \u2014 us_standouts buy-lane originated; display-only until forward ledger gate passes",
+    "option_premium": "null \u2014 symbol not in ThetaData store"
+  },
+  "formation_date": "2026-10-16",
+  "signal_date": "2026-10-19",
+  "confirmed_date": null,
+  "observed_date": "2026-10-19",
+  "signal_tier": "T2",
+  "signal_date_basis": "tier_event_date",
+  "signal_provisional": false,
+  "source_marker_date": "2026-10-16",
+  "price_basis_date": "2026-10-19",
+  "entry_date": "2026-10-19",
+  "what_to_do_now": [
+    "Accumulate into the $497.80\u2013$510.60 zone. Do not pay above $515.80 \u2014 above that you are chasing the bar, not entering it.",
+    "Keep the first tranche small; there is no need to rush. Exit on a close below $459.26.",
+    "If the zone fills, scale in gradually toward T1 ($587.61)."
+  ],
+  "what_to_do_now_zh": [
+    "\u5728 $497.80\u2013$510.60 \u533a\u95f4\u5185\u5206\u6279\u5efa\u4ed3\u3002\u4e0d\u8981\u5728 $515.80 \u4e4b\u4e0a\u4e70\u5165\u2014\u2014\u9ad8\u4e8e\u8be5\u4f4d\u5c5e\u4e8e\u8ffd\u4ef7\uff0c\u800c\u975e\u5165\u573a\u3002",
+    "\u9996\u7b14\u4fdd\u6301\u5c0f\u4ed3\u4f4d\uff0c\u65e0\u9700\u6025\u4e8e\u5165\u573a\u3002\u6536\u76d8\u8dcc\u7834 $459.26 \u5373\u79bb\u573a\u3002",
+    "\u82e5\u533a\u95f4\u88ab\u89e6\u53ca\uff0c\u53ef\u9010\u6b65\u52a0\u4ed3\u81f3 T1\uff08$587.61\uff09\u3002"
+  ],
+  "profit_plan": [
+    {
+      "level": 587.61,
+      "label": "T1",
+      "action": "Scale out 40%, trail stop to entry",
+      "status": "ACTIVE"
+    },
+    {
+      "level": 664.62,
+      "label": "T2",
+      "action": "Close remaining 60%, exit full position",
+      "status": "PENDING"
+    }
+  ],
+  "profit_plan_zh": [
+    {
+      "level": 587.61,
+      "label": "T1",
+      "action": "\u51cf\u4ed3 40%\uff0c\u5c06\u6b62\u635f\u4e0a\u79fb\u81f3\u5165\u573a\u4f4d",
+      "status": "ACTIVE"
+    },
+    {
+      "level": 664.62,
+      "label": "T2",
+      "action": "\u5e73\u4ed3\u5269\u4f59 60%\uff0c\u5168\u90e8\u79bb\u573a",
+      "status": "PENDING"
+    }
+  ],
+  "_signal_date": "2026-10-19",
+  "_priority_score": 47.5,
+  "_conviction_score": 75,
+  "_act_level": 3,
+  "_r_unit": 51.34,
+  "_gate_go": false,
+  "admission_class": "confirmation",
+  "entry_status": "partial",
+  "selection_era": "anticipation-v1-2026-08-08",
+  "entry_basis": {
+    "basis_date": "2026-10-19",
+    "basis_source": "staleness_price_through",
+    "run_asof": "2026-10-20",
+    "lag": 1,
+    "lag_basis": "sessions",
+    "max_lag": 3,
+    "state": "current",
+    "signal_basis_date": "2026-10-16",
+    "signal_lag_sessions": 1,
+    "era": "anticipation-v1-2026-08-08"
+  },
+  "entry_zone": {
+    "schema": "prophet.entry_zone/v1",
+    "low": 497.8,
+    "high": 510.6,
+    "chase_above": 515.8,
+    "pct_from_entry": -1.25,
+    "zone_class": "accumulate",
+    "stance": "accumulate",
+    "basis": "the build-in band anchored at the cycle low, from the entry ladder",
+    "basis_zh": "\u4ee5\u672c\u8f6e\u4f4e\u70b9\u4e3a\u951a\u7684\u5206\u6279\u5efa\u4ed3\u533a\u95f4\uff0c\u6765\u81ea\u5165\u573a\u9636\u68af",
+    "price_basis_date": "2026-10-19",
+    "expiry_sessions": 10,
+    "expiry_date": "2026-11-02",
+    "conversion_class": "washout",
+    "conversion_evidence": "the board reads this as a name coming off a low",
+    "conversion_evidence_zh": "\u770b\u677f\u628a\u5b83\u5f52\u5165\u4f4e\u4f4d\u56de\u5347\u7684\u4e00\u7c7b",
+    "converts_on_expiry": true,
+    "extension": {
+      "daily_stoch_k": 94.96,
+      "htf_stoch_k": 56.86,
+      "daily_extended": true,
+      "htf_extended": false,
+      "both_extended": false,
+      "threshold": 80.0,
+      "htf_timeframe": 3,
+      "source": "price_store_stoch_rsi",
+      "reason": null,
+      "asof": "2026-10-19"
+    },
+    "leader_pullback": {
+      "leader_pullback": false,
+      "state": "NONE",
+      "pullback_high": null,
+      "days_in_state": 126.0,
+      "construction_era": "leader-pullback-v0-2026-08-08",
+      "state_asof": "2026-10-19",
+      "context_states": [
+        "PULLBACK",
+        "RESET_TURN"
+      ],
+      "source": "us_leader_pullback",
+      "reason": "organ state NONE is not an open controlled pullback"
+    },
+    "era": "anticipation-v1-2026-08-08"
+  },
+  "early_turn": {
+    "fired": false,
+    "reason": "signature incomplete: cross_up, hist_curling",
+    "timeframes": [],
+    "washout_state": "FALLING",
+    "leader_pullback_source": "us_leader_pullback",
+    "union_fired": false,
+    "union_legs": [
+      "relaxed_cross"
+    ],
+    "union_texture": {},
+    "basket_context_chip": "FALLING"
+  },
+  "source_origin": {
+    "schema": "prophet.plan_source_origin/v1",
+    "owner_ref": "scripts/build_stock_library.py::main",
+    "receipt_kind": "EXACT_DISPLAYED_SOURCE",
+    "source_binding": {
+      "source_sha256": "sha256:b16040c9b350b1a7dc00485ffb8cf094818e14699facad6453d442fa7539d363",
+      "pair_id": "6e3401b0ff2c47199c7d47544ee1d583",
+      "market_session": "2026-10-19",
+      "ordered_rows": [
+        {
+          "selection_index": 0,
+          "row_receipt": "sha256:d5e1dc92262a49dcc6675cd321390388404618aa1219f5c8a2bcb39cc7ad3a9e"
+        },
+        {
+          "selection_index": 1,
+          "row_receipt": "sha256:086afd0de444ebaa34327faca3a2f0690a850a763f5fbcc82a2784d1a4066aad"
+        },
+        {
+          "selection_index": 2,
+          "row_receipt": "sha256:1cd1bf763651714b9e7db37dcdcebbe3417e2e490679d301fe38efbc969d5130"
+        },
+        {
+          "selection_index": 3,
+          "row_receipt": "sha256:207da06f2d107ffe745c38eab55319c1c8f518fecb5acefe1be7235904e28de3"
+        },
+        {
+          "selection_index": 4,
+          "row_receipt": "sha256:a432bba7326fdecfbb5153bfaab8ab9095523311f2be542520df0502a953cca0"
+        },
+        {
+          "selection_index": 5,
+          "row_receipt": "sha256:0e258735ccaaec1b0d4d4f9efb6b02a6a1bec5e05b85b728c373839b496eb09a"
+        },
+        {
+          "selection_index": 6,
+          "row_receipt": "sha256:542c28ad7f544fb2864d05fb63eabd5df670aca9e123aa358756397760d770e0"
+        },
+        {
+          "selection_index": 7,
+          "row_receipt": "sha256:703408bcc0cafae43d89b4b721bef2c8f1fcf4f6e65a4f6af53fe3cd1b7d7fbb"
+        },
+        {
+          "selection_index": 8,
+          "row_receipt": "sha256:e576494a54abef1908a01b812fb4123582378dce2e43725f22a7a037a2157bd2"
+        },
+        {
+          "selection_index": 9,
+          "row_receipt": "sha256:912003936afda80ce937c59f0a78f7d31ee6f631c47454bde44ec868ef1f3ed8"
+        },
+        {
+          "selection_index": 10,
+          "row_receipt": "sha256:0cdf214a8159074c3fc895d507c61714e477c85910460623293abbc77c8d4000"
+        },
+        {
+          "selection_index": 11,
+          "row_receipt": "sha256:ffd70be0e50c94538ebbb9919b1f09629370287033f959c81eec2a71c369bc3d"
+        },
+        {
+          "selection_index": 12,
+          "row_receipt": "sha256:2d9ca158e8bc9b61d7de3bb33195b2e1589f82abc1a4b8d3bd6ccee6f6c88c31"
+        },
+        {
+          "selection_index": 13,
+          "row_receipt": "sha256:f336e6786652826395b327113943884cbcc7f837192551a3d45cacff48461fd3"
+        },
+        {
+          "selection_index": 14,
+          "row_receipt": "sha256:f692406265c6a77405f932d585630bb1bb25c559199066749ca552c5c3615698"
+        },
+        {
+          "selection_index": 15,
+          "row_receipt": "sha256:b7b55addb5cd2cfdebd69ad308f124e1c76065b0e9a489a24e813088f5e1e98b"
+        },
+        {
+          "selection_index": 16,
+          "row_receipt": "sha256:a44e198ec8900d6091ea45167eddf874794233feb4ecea257000b175582d492a"
+        },
+        {
+          "selection_index": 17,
+          "row_receipt": "sha256:5d4f0b8c29c9dfae95a385296b640c5af19bd460d2e1087a1b5071c1227aaf6c"
+        },
+        {
+          "selection_index": 18,
+          "row_receipt": "sha256:6ea2af2f063af39cd341eea4e2551c37224984c81a629496e3635ee6ef3867eb"
+        },
+        {
+          "selection_index": 19,
+          "row_receipt": "sha256:2913a8d29abe95709e6c51f49ce1db45b33f74f447a7f831d46ab7f7810ab6b4"
+        },
+        {
+          "selection_index": 20,
+          "row_receipt": "sha256:36159ea46ca951bdb5609a52d11d726c0b2912cee88dd5a5f827666bd515edfc"
+        },
+        {
+          "selection_index": 21,
+          "row_receipt": "sha256:de8614922f473ce94004e9387a4a0034d9412b8db6d7ce06e02d0f23587e2eb4"
+        },
+        {
+          "selection_index": 22,
+          "row_receipt": "sha256:32467ae1a6f486811a841bc5ec040fc1ef36a068c301aa74605f70fbdd6b4f04"
+        },
+        {
+          "selection_index": 23,
+          "row_receipt": "sha256:fb003796630caa05a1d9e68f8204674d3f012aef6d1f09a305a4b669b183f69e"
+        },
+        {
+          "selection_index": 24,
+          "row_receipt": "sha256:f741df2cedfdbf72b7cb62ca87cc663dafaaeadd430a6f1f5e956bded5a8747b"
+        },
+        {
+          "selection_index": 25,
+          "row_receipt": "sha256:765703896b55e16cd7a97f055f896561bd3f8bb4bb54b16cd1ff8ffd5211b19a"
+        },
+        {
+          "selection_index": 26,
+          "row_receipt": "sha256:3197375e033c2aade71b347e3329f919f59573189297b80d6a96e91ba90f73d8"
+        },
+        {
+          "selection_index": 27,
+          "row_receipt": "sha256:8e43b234d8cf0e5e839160d4460861b13f9e5615f2311628e5b7a4117718da76"
+        },
+        {
+          "selection_index": 28,
+          "row_receipt": "sha256:52821a0d93a0087f0976f353627ebf0ee72264d691710b597616eaba8654d456"
+        },
+        {
+          "selection_index": 29,
+          "row_receipt": "sha256:4cc02aec0d9565d16b17d9fdfcc693c98bb5c7d86fc97277d16d83d1b70d4209"
+        },
+        {
+          "selection_index": 30,
+          "row_receipt": "sha256:7e4df75326706f8da2f996358eb97eea072ea54a325ecea09189f09b09b5a79a"
+        },
+        {
+          "selection_index": 31,
+          "row_receipt": "sha256:e385597bfa4b927ced43f0d5b2041d9836cd26e4031324c6d8f7971accc4e588"
+        },
+        {
+          "selection_index": 32,
+          "row_receipt": "sha256:9601d3fd71b84d916fbb8522b31dfa24435d2e6fb6f1d59fe72489e31c5d6616"
+        },
+        {
+          "selection_index": 33,
+          "row_receipt": "sha256:3878b6f3cf62b7bc4d12a63f1eea1f8861c394e05ec4e8a098e798355df5606b"
+        },
+        {
+          "selection_index": 34,
+          "row_receipt": "sha256:0ac5f1aa430dd838cd1b94fbfe7c0dfb7547cb103edf182651846c2d8d6473bc"
+        },
+        {
+          "selection_index": 35,
+          "row_receipt": "sha256:88bb2e577c6ec36caded0ef32f1817190189563926315fb594a3c411067e2696"
+        },
+        {
+          "selection_index": 36,
+          "row_receipt": "sha256:e51740861f63a7cf49b9b7c0f618adc5ec12cdefeb88c85a334d6d6ec8d46f63"
+        },
+        {
+          "selection_index": 37,
+          "row_receipt": "sha256:28a431a69c145c21dcdf82602b41bd6f268d31a51719ea01d651c30e3b43df14"
+        },
+        {
+          "selection_index": 38,
+          "row_receipt": "sha256:1a4edfad77b0ed9e797bc73b7929b63db9302b59e66e234b71cbb90b13c785a8"
+        },
+        {
+          "selection_index": 39,
+          "row_receipt": "sha256:ff34fde889ad036158ff108e8e799ecae5ebc3e4c9f79c8f2170ba9e90f3963c"
+        },
+        {
+          "selection_index": 40,
+          "row_receipt": "sha256:4d28469208b1f163453378ae24187a5973ff25b24d7d6a97db2a18e738be4c1b"
+        },
+        {
+          "selection_index": 41,
+          "row_receipt": "sha256:7e174b0f8afdd5f9f51c9d38d0010fa0549471732e7ac5cb970d62230eb74a20"
+        },
+        {
+          "selection_index": 42,
+          "row_receipt": "sha256:9f34f2f80dc8771f47a7ced8264232573c4a9b9868f16d62ea8928ac2dbcde9a"
+        },
+        {
+          "selection_index": 43,
+          "row_receipt": "sha256:453a75febb4c7a935de08e420253461d86f6abde13a40082a2bd747525690a87"
+        },
+        {
+          "selection_index": 44,
+          "row_receipt": "sha256:6e98c0fcb611e249f7a11c84e76ab05d33fa2bdde6d5eeda594ce287f8011153"
+        },
+        {
+          "selection_index": 45,
+          "row_receipt": "sha256:535c87ebb8ac17e1bda9e6d8f4b4ecbbc9f51e7a09335640e27a845ef5b74ce0"
+        },
+        {
+          "selection_index": 46,
+          "row_receipt": "sha256:bda15fe09907bda1209c3e30085ed2c588b050fe326938587ec6f8222981f1f3"
+        },
+        {
+          "selection_index": 47,
+          "row_receipt": "sha256:6cae18b88ebbc5e33d03355156954e63542c1c7722ccd2ed1f14d456ff18ef28"
+        },
+        {
+          "selection_index": 48,
+          "row_receipt": "sha256:f306ba934214ea5308155ad10a4989687b1976f1641471461c3dc8e6b3d3f7a6"
+        },
+        {
+          "selection_index": 49,
+          "row_receipt": "sha256:bfa15ef66990b7edfc67fc35de0ac142e371fe8e71904f27dcd457233454f4ec"
+        },
+        {
+          "selection_index": 50,
+          "row_receipt": "sha256:306777b0c97976b3eb4da2d3dbcb40685cfba71e133caa0e09bb87d7698c2d25"
+        },
+        {
+          "selection_index": 51,
+          "row_receipt": "sha256:ecb86a16326d28ba8bdfa1019e8cfdaa7271cf70712429662aa84bc945521175"
+        },
+        {
+          "selection_index": 52,
+          "row_receipt": "sha256:b49d299ce9c6da9c96770a7717487f79181fcf5c2958de7d704d8bef1223aef1"
+        },
+        {
+          "selection_index": 53,
+          "row_receipt": "sha256:9ae5d037fd877657a77f1b3fce23da414f62d0ca4c9c52e6587afaa53211474d"
+        },
+        {
+          "selection_index": 54,
+          "row_receipt": "sha256:29007d6964e32ce45b9d6d4d784378217f0aa09945ead15666233c601cbc0d6d"
+        },
+        {
+          "selection_index": 55,
+          "row_receipt": "sha256:8a5117bff2d92647ef466198b090b9b5f6e46f390a2ed5711a7842ce434e5ad7"
+        },
+        {
+          "selection_index": 56,
+          "row_receipt": "sha256:8e06a21478453d1ebaf5c448116d1ef7c8202c26e2da6bcb581247f452043bef"
+        },
+        {
+          "selection_index": 57,
+          "row_receipt": "sha256:47eaa7685075bc012740efca3e0b7ccd809b170071a28dc832ff7658dcfb30fa"
+        },
+        {
+          "selection_index": 58,
+          "row_receipt": "sha256:a8dfa3ac85a7dfa21a434eefc54a6cce519999080afb9da41a6ad04abf68702b"
+        },
+        {
+          "selection_index": 59,
+          "row_receipt": "sha256:2a641fc8c8331846ad2f8817a8b1d13ac1949bb5e35109ad2bd89d3c2665426a"
+        },
+        {
+          "selection_index": 60,
+          "row_receipt": "sha256:f4cfd1762ec305c6f364ea8dc032973d3d83be3c19ce480934dcd01c7305d87f"
+        },
+        {
+          "selection_index": 61,
+          "row_receipt": "sha256:d51f0d26e51d8077cf023d7e2f4cd91019707b35a9acb7c24d88d484e75672a0"
+        },
+        {
+          "selection_index": 62,
+          "row_receipt": "sha256:bf3589c817bce73a3a5a67593f8216d78d284cc75defe5c202bb97e499de53ce"
+        },
+        {
+          "selection_index": 63,
+          "row_receipt": "sha256:4aba9457d3c5aae80ee939dc4fae67c26e0822fa214a4b57a6555aa20baf9acf"
+        },
+        {
+          "selection_index": 64,
+          "row_receipt": "sha256:b270debeb12cd5392efbec49820ae328228dcf4c29b1f189291b6a4310b42a23"
+        },
+        {
+          "selection_index": 65,
+          "row_receipt": "sha256:a67506b30208c52b9193a15f1f3d008fa6c25259b33e9de0bc2777b3e9be93bb"
+        },
+        {
+          "selection_index": 66,
+          "row_receipt": "sha256:e2bb771ba3a23d38f7f6c09caab66aefe1430f5b55b3a4292cf3900008de57fe"
+        },
+        {
+          "selection_index": 67,
+          "row_receipt": "sha256:bdea9dc123e43a18446fbdb9226aac64addc6b8dcd98cc69f853a81f2aef5d7d"
+        },
+        {
+          "selection_index": 68,
+          "row_receipt": "sha256:8e91c2da4bf853ec3249a33a621bc7c0b9e7f085f669ca082a1c868eaa1333af"
+        },
+        {
+          "selection_index": 69,
+          "row_receipt": "sha256:08c8dc5674b56d881197f442cf64fcfcc5aa57ca09193f62ac01ea7c4a608d80"
+        },
+        {
+          "selection_index": 70,
+          "row_receipt": "sha256:e2c8db841be8aaa741aaf7fe71f2de0df37764dcec6eef3aafdd46e23d78306a"
+        },
+        {
+          "selection_index": 71,
+          "row_receipt": "sha256:3796472be88115acf8851ca6f46c1d967bfc337d8dbe9487a005f90e589f020c"
+        },
+        {
+          "selection_index": 72,
+          "row_receipt": "sha256:cc92eb0f515bd07f96f660745262e1010fd7c843824a057f229986559ba967f6"
+        },
+        {
+          "selection_index": 73,
+          "row_receipt": "sha256:401f09ea62c6ce47e7ae65b53c8cded248dd415e4f4d899e8fd59f8e1cd30bfc"
+        },
+        {
+          "selection_index": 74,
+          "row_receipt": "sha256:3950bbd8e15ab571ac3ce757d11546b14320044b5b54f26df2fe1adecda21040"
+        },
+        {
+          "selection_index": 75,
+          "row_receipt": "sha256:6386f1efe7cc0d4a82154ca45552ebd8a495838978c61d1b5b6a224f8c7828b8"
+        },
+        {
+          "selection_index": 76,
+          "row_receipt": "sha256:cb1fb2b333d605d8a4b86adc23cf1a39f978abe0bfa162b31c4fdeac915ac3a3"
+        },
+        {
+          "selection_index": 77,
+          "row_receipt": "sha256:8f1f59c32201fd3ff337a894c7c6a6d3005fb968622d0bd99d708b676345e24d"
+        },
+        {
+          "selection_index": 78,
+          "row_receipt": "sha256:11ed960c18d4d58bf0969574613643d854ccfd704f5e91e411c2001497318fda"
+        },
+        {
+          "selection_index": 79,
+          "row_receipt": "sha256:3c7b6ce54782267468270908f0faee358ee86e48c5edd6dc7b8bdc1bd83d86dc"
+        },
+        {
+          "selection_index": 80,
+          "row_receipt": "sha256:ae35cd96b8a9dd4287d9d13330e02a81553f4ef6db51d3757a722b5b162563fe"
+        },
+        {
+          "selection_index": 81,
+          "row_receipt": "sha256:93d6403a53a018f99b7d443b31548a9ba8758663243095aeec08e1ab752f7aa2"
+        },
+        {
+          "selection_index": 82,
+          "row_receipt": "sha256:b49886cc40e6505f455a96807bd9bb7373473b0766027d4ebc1a0ece7794777d"
+        },
+        {
+          "selection_index": 83,
+          "row_receipt": "sha256:711bc3c3f7bbfd6f6f8f5b639fb7e27051576c2dcc88c98bc5d6e3a56db495b5"
+        },
+        {
+          "selection_index": 84,
+          "row_receipt": "sha256:3d381c32e4aa3aa9d16dc546a13d7f9773da12a4fe5e775c4eb1ad9dc3b52eb7"
+        },
+        {
+          "selection_index": 85,
+          "row_receipt": "sha256:6d765972fe7bc322d9669427c9384fa1098f47775a4ab5ae342b437798de55bb"
+        },
+        {
+          "selection_index": 86,
+          "row_receipt": "sha256:400352a2bf116b57795a02d8574425deee97386e1b2482b717a682bf7a951e94"
+        },
+        {
+          "selection_index": 87,
+          "row_receipt": "sha256:d4b734941034e856f1506c378e4df53227e633daf9f2e79bfeb6f24cfae34e58"
+        },
+        {
+          "selection_index": 88,
+          "row_receipt": "sha256:4d1d31225c87082baad2c436a2c7b26a5716d29c83511bb001c9804618eedc69"
+        },
+        {
+          "selection_index": 89,
+          "row_receipt": "sha256:84e15ab73acbb8e324c9d4868320decd2b3b29d3e98c3a8152ccb98f45838151"
+        },
+        {
+          "selection_index": 90,
+          "row_receipt": "sha256:89c89b8e720ea0a6037a7351ca6eb685d998fc0a03e0fe62bc87382809daf9c3"
+        },
+        {
+          "selection_index": 91,
+          "row_receipt": "sha256:27197c5ef85224b343b3edcc2c3a7cebfb3af220a4d711d16e0bb4a841105063"
+        },
+        {
+          "selection_index": 92,
+          "row_receipt": "sha256:1e84b421a5cf5b3106f6e4a7942c3aadb95f3ca4427a4c4de9af4095e9092bb8"
+        },
+        {
+          "selection_index": 93,
+          "row_receipt": "sha256:7c546ef6c7d7e51f34b8d3648093dbb6f2831eb88f722e4368dc98cb2f601578"
+        },
+        {
+          "selection_index": 94,
+          "row_receipt": "sha256:bfc8328e193e66759f9a85af160e06789520e00d6399fa00288d9c7cf0e4e0ca"
+        },
+        {
+          "selection_index": 95,
+          "row_receipt": "sha256:0b48bcb47c3880846a3ec442019fa159b062c0e89fb31757e8d7f95dfec053d0"
+        },
+        {
+          "selection_index": 96,
+          "row_receipt": "sha256:8e9f77bfadb5b906858149cc6744589c1911278ea38b5bde86b2561280904670"
+        },
+        {
+          "selection_index": 97,
+          "row_receipt": "sha256:f0df6a2ca5c7d1836e3bba76ff84855206e09682f16f539472c042f78390705f"
+        },
+        {
+          "selection_index": 98,
+          "row_receipt": "sha256:6732197b2968a093b7b26774d4f387cf84f9adf995c9b2c512053bf2552b5514"
+        },
+        {
+          "selection_index": 99,
+          "row_receipt": "sha256:aee797249529ac85abda3225297702ff0c6c81a09990baf4a3a2a516281d7d6f"
+        },
+        {
+          "selection_index": 100,
+          "row_receipt": "sha256:66b3bc271208dd36c51c796f475f5154fa2027d3075e7fce4f03424aea5dea9d"
+        },
+        {
+          "selection_index": 101,
+          "row_receipt": "sha256:ae58810048c3fc5be2f6ada6f2287c9754b467886e53ba6f806538740fb99d50"
+        },
+        {
+          "selection_index": 102,
+          "row_receipt": "sha256:d23059f4890df1cb00b2a26c449066240a1480a3dc33602f8bafd88c278f4670"
+        },
+        {
+          "selection_index": 103,
+          "row_receipt": "sha256:cc9ea033a00351bdc16d38efb7fd0b477b5a283368fdbb412d1bb22614f0c41a"
+        }
+      ],
+      "selection_receipt": "sha256:322b3555f03e027f92431460b71100fe6ee6c5aaa29efb1cd6e6c0e6f12bf8b2",
+      "schema": "prophet.today_selection_source_binding/v1",
+      "receipt_kind": "EXACT_DISPLAYED_SOURCE"
+    },
+    "selection_index": 15,
+    "row_receipt": "sha256:b7b55addb5cd2cfdebd69ad308f124e1c76065b0e9a489a24e813088f5e1e98b"
+  },
+  "government_revenue_annotation": {
+    "contract": "government_revenue.prophet_annotation.v1",
+    "schema_version": "1.0.0",
+    "label": {
+      "en": "shadow context",
+      "zh": "\u5f71\u5b50\u80cc\u666f"
+    },
+    "allowed_behavior": "annotate_only",
+    "authority": {
+      "tier": "display",
+      "context_only": true,
+      "can_rank": false,
+      "can_size": false,
+      "can_gate": false,
+      "can_originate_signal": false,
+      "can_add_candidates": false,
+      "can_escalate": false
+    },
+    "annotations": [
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-0563443a3265cbbe87e52991",
+        "observation_id": "gro1-e7ee8c7e2ca53c1c7c1ee19c",
+        "candidate_family": "award_ceiling_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-7f3f0b08a64f7d3a6e16d435",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "award_value_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-05-12T00:00:00+00:00",
+          "known_at": "2026-08-12T23:50:04.442107+00:00",
+          "amount_id": null,
+          "amount_value": 5883486.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4",
+            "56f25c6729a79cf14aec56ebb7122deb7acbc59bbad54cc12ae1149f55cbe708"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-7f3f0b08a64f7d3a6e16d435"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-3be22546a4a9a6b9a46a7469:award_detail:8047c1c95f7abdad:89dcf6de33556121",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:8047c1c95f7abdad:c677e7d4c5db7fa5"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-12T23:50:04.442107+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-91ab058aff26500b4379803d",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-080a4e03482c4d98ba21d614",
+        "observation_id": "gro1-ee51357a0b4b2e27d9966c86",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-23f3519f8b20638d0b6fb145",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-05-22T00:00:00+00:00",
+          "known_at": "2026-08-22T23:18:03.375950+00:00",
+          "amount_id": null,
+          "amount_value": 168093.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "31d2a00200b78b04afe455e9b8b102f284b51d14b42e37eba061b3537b190fdc",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-23f3519f8b20638d0b6fb145"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-2c31488783b1917259106aab:award_detail:8047c1c95f7abdad:31d2a00200b78b04",
+            "usaspending:usaspending-3be22546a4a9a6b9a46a7469:award_detail:8047c1c95f7abdad:89dcf6de33556121"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-22T23:18:03.375950+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-3754eab784b7bfd05d4afd93",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-12f557441ff7eb9e5a117b1a",
+        "observation_id": "gro1-c86f718162c47f9374c30b91",
+        "candidate_family": "award_ceiling_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-0f77c71e52c3593ae70fad99",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "award_value_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-06-26T00:00:00+00:00",
+          "known_at": "2026-09-26T12:55:12.542459+00:00",
+          "amount_id": null,
+          "amount_value": 4729855.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "0d3f0a02341153804204955fff27feb57d57f6bab29d0d494ceb6de80a243dad",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-0f77c71e52c3593ae70fad99"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-1f12d760e8802d72d643ecb3:award_detail:8047c1c95f7abdad:5d24a023e53f5275",
+            "usaspending:usaspending-97eeb5dd8d3ac9caa30ad5d9:award_detail:8047c1c95f7abdad:0d3f0a0234115380"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-09-26T12:55:12.542459+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-940e89adc5035ffe5f822f87",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-16926b4c6be0c45d9437f1e1",
+        "observation_id": "gro1-72a7811994009b2daebfe83f",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-5d6b13014db622c9d9a415c8",
+          "record_id": "award:generated:CONT_AWD_FA881018C0006_9700_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-05-27T00:00:00+00:00",
+          "known_at": "2026-08-21T23:22:35.575358+00:00",
+          "amount_id": null,
+          "amount_value": 1642635.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4",
+            "56f25c6729a79cf14aec56ebb7122deb7acbc59bbad54cc12ae1149f55cbe708"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_FA881018C0006_9700_-NONE-_-NONE-",
+            "govws-5d6b13014db622c9d9a415c8"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-25413685766f3f311d882e8d:award_detail:76dcd96f15709a53:c622421ae4ead5e7",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:76dcd96f15709a53:de7b48119f77f4e6"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-21T23:22:35.575358+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-abf42b4322b477b44268c16e",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-1b10be6acba805a11de72c0a",
+        "observation_id": "gro1-2c45c1885302dcd144aabfc7",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-38f759b0c6c781c90c6da8c9",
+          "record_id": "award:generated:CONT_AWD_FA881018C0006_9700_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-06-11T00:00:00+00:00",
+          "known_at": "2026-09-12T00:55:26.904836+00:00",
+          "amount_id": null,
+          "amount_value": 19311363.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "235a17aab375a2c95c15bd26853914325c9b485ce30e92af3c2d4a76ee976be7",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_FA881018C0006_9700_-NONE-_-NONE-",
+            "govws-38f759b0c6c781c90c6da8c9"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-1e772c22c2c429d6330092ac:actions:81651cdc444d0dde:235a17aab375a2c9",
+            "usaspending:usaspending-1e772c22c2c429d6330092ac:award_detail:76dcd96f15709a53:f0a4e3ed2cfd68de"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-09-12T00:55:26.904836+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-dd828980ca898577b530a944",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-22235255ad0a691ee30da38a",
+        "observation_id": "gro1-8ea1f2308081d8df7917965e",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-a37be85f513277072e308459",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-06-22T00:00:00+00:00",
+          "known_at": "2026-09-22T12:43:56.210728+00:00",
+          "amount_id": null,
+          "amount_value": 1462500.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4",
+            "56f25c6729a79cf14aec56ebb7122deb7acbc59bbad54cc12ae1149f55cbe708"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-a37be85f513277072e308459"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-1f12d760e8802d72d643ecb3:actions:80022f67f4919c65:7bbcd8ae2235b250",
+            "usaspending:usaspending-1f12d760e8802d72d643ecb3:award_detail:8047c1c95f7abdad:5d24a023e53f5275"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-09-22T12:43:56.210728+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-464b9678e88f95d4f08ade28",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-2ffdce56097091249f641009",
+        "observation_id": "gro1-d45d54cd9cf88f42b657dae9",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-7000ad7b9216a0747134d0bf",
+          "record_id": "award:generated:CONT_AWD_FA881018C0006_9700_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-06-12T00:00:00+00:00",
+          "known_at": "2026-09-12T00:55:26.904836+00:00",
+          "amount_id": null,
+          "amount_value": 19311363.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4",
+            "56f25c6729a79cf14aec56ebb7122deb7acbc59bbad54cc12ae1149f55cbe708"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_FA881018C0006_9700_-NONE-_-NONE-",
+            "govws-7000ad7b9216a0747134d0bf"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-1e772c22c2c429d6330092ac:award_detail:76dcd96f15709a53:f0a4e3ed2cfd68de",
+            "usaspending:usaspending-25413685766f3f311d882e8d:award_detail:76dcd96f15709a53:c622421ae4ead5e7"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-09-12T00:55:26.904836+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-1cc58cc711dca0106256f325",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-4a659d78495f20f7a5c36421",
+        "observation_id": "gro1-636b41d98d4bb976030fd997",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-c4fb54904b0583d7a48c7c81",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-06-04T00:00:00+00:00",
+          "known_at": "2026-09-04T17:42:58.811976+00:00",
+          "amount_id": null,
+          "amount_value": 2023441.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "471e57ccc072807c0c23cf99fb51638bdfe7fa1e9245834e995d82bb43c9a8ec",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-c4fb54904b0583d7a48c7c81"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-1b75b2a017f4f2a1d5375c61:award_detail:8047c1c95f7abdad:da9625779e045511",
+            "usaspending:usaspending-c1521636e6ad1377b7ee17cb:award_detail:8047c1c95f7abdad:471e57ccc072807c"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-09-04T17:42:58.811976+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-6d69bbe96dab6c71979105f2",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-589b9c224ea30fef511045aa",
+        "observation_id": "gro1-7ded09cb7c2b2f129cbdf344",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-19c9426b6959f5633497fe55",
+          "record_id": "award:generated:CONT_AWD_NNM07AA75C_8000_-NONE-_-NONE-",
+          "event_type": "deobligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-08-21T00:00:00+00:00",
+          "known_at": "2026-08-24T23:23:41.328901+00:00",
+          "amount_id": null,
+          "amount_value": -4254000.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_negative"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4",
+            "56f25c6729a79cf14aec56ebb7122deb7acbc59bbad54cc12ae1149f55cbe708"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_NNM07AA75C_8000_-NONE-_-NONE-",
+            "govws-19c9426b6959f5633497fe55"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-0be443200c5e60297e0c492b:actions:7789029442e9b79f:e4beb2b6488e82d2",
+            "usaspending:usaspending-0be443200c5e60297e0c492b:award_detail:68257c70541db039:61c9ea713bec5565"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-24T23:23:41.328901+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-cb421fec6a08095b979706a2",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-5f9fdd6db0eef26b6928b7d8",
+        "observation_id": "gro1-1cd2102a276d94f4bc01e35d",
+        "candidate_family": "award_ceiling_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-d7dd4b95f3abf2b66d1d7b6c",
+          "record_id": "award:generated:CONT_AWD_NNM07AA75C_8000_-NONE-_-NONE-",
+          "event_type": "award_value_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-08-18T00:00:00+00:00",
+          "known_at": "2026-08-20T23:42:00.149314+00:00",
+          "amount_id": null,
+          "amount_value": -13822614.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "542c00529fd7cb1e2657b94b7fe8205c33a48ef1d02f79f74f3fe393399978e1",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_NNM07AA75C_8000_-NONE-_-NONE-",
+            "govws-d7dd4b95f3abf2b66d1d7b6c"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-13cd67345e212a886ecc3060:award_detail:68257c70541db039:a1915c046d076858",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:68257c70541db039:542c00529fd7cb1e"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-20T23:42:00.149314+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-6ba2eb503447c3a31c4908cc",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-6530765a722d97b7bf623b98",
+        "observation_id": "gro1-6d5748e42407bc792c50b64b",
+        "candidate_family": "award_ceiling_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-c615d0b8d6ad246b47df101f",
+          "record_id": "award:generated:CONT_AWD_NNM07AA75C_8000_-NONE-_-NONE-",
+          "event_type": "award_value_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-08-21T00:00:00+00:00",
+          "known_at": "2026-08-24T23:23:41.328901+00:00",
+          "amount_id": null,
+          "amount_value": -2262022.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4",
+            "56f25c6729a79cf14aec56ebb7122deb7acbc59bbad54cc12ae1149f55cbe708"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_NNM07AA75C_8000_-NONE-_-NONE-",
+            "govws-c615d0b8d6ad246b47df101f"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-0be443200c5e60297e0c492b:award_detail:68257c70541db039:61c9ea713bec5565",
+            "usaspending:usaspending-13cd67345e212a886ecc3060:award_detail:68257c70541db039:a1915c046d076858"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-24T23:23:41.328901+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-60e60330fdb08d844477e195",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-6748e7b4afff13ee98607a20",
+        "observation_id": "gro1-9c26efc5e0d80616c6c3cf78",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-733ae4fae13a7aebfb82450b",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-05-29T00:00:00+00:00",
+          "known_at": "2026-08-30T00:58:57.313119+00:00",
+          "amount_id": null,
+          "amount_value": -2023441.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_negative"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "31d2a00200b78b04afe455e9b8b102f284b51d14b42e37eba061b3537b190fdc",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-733ae4fae13a7aebfb82450b"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-1b75b2a017f4f2a1d5375c61:award_detail:8047c1c95f7abdad:da9625779e045511",
+            "usaspending:usaspending-2c31488783b1917259106aab:award_detail:8047c1c95f7abdad:31d2a00200b78b04"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-30T00:58:57.313119+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-173d825f631491fae633d0a9",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-712c27d0c0d3956382ea62da",
+        "observation_id": "gro1-98dcf479901bb698f419e227",
+        "candidate_family": "award_ceiling_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-073809aced6dc753381c3236",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "award_value_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-05-22T00:00:00+00:00",
+          "known_at": "2026-08-22T23:18:03.375950+00:00",
+          "amount_id": null,
+          "amount_value": 168093.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "31d2a00200b78b04afe455e9b8b102f284b51d14b42e37eba061b3537b190fdc",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-073809aced6dc753381c3236"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-2c31488783b1917259106aab:award_detail:8047c1c95f7abdad:31d2a00200b78b04",
+            "usaspending:usaspending-3be22546a4a9a6b9a46a7469:award_detail:8047c1c95f7abdad:89dcf6de33556121"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-22T23:18:03.375950+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-94a214a7f6e7c1e7f375c26d",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-7269d198621d5270d447d3ee",
+        "observation_id": "gro1-ce0a6dd612d931ef66c544d3",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-74bd0dc25ce3c12dfc39ffe9",
+          "record_id": "award:generated:CONT_AWD_NNM07AA75C_8000_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-09-02T00:00:00+00:00",
+          "known_at": "2026-09-04T17:42:58.811976+00:00",
+          "amount_id": null,
+          "amount_value": 3000000.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4",
+            "56f25c6729a79cf14aec56ebb7122deb7acbc59bbad54cc12ae1149f55cbe708"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_NNM07AA75C_8000_-NONE-_-NONE-",
+            "govws-74bd0dc25ce3c12dfc39ffe9"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-c1521636e6ad1377b7ee17cb:actions:7789029442e9b79f:a85182e78cbd9472",
+            "usaspending:usaspending-c1521636e6ad1377b7ee17cb:award_detail:68257c70541db039:86704557702ae127"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-09-04T17:42:58.811976+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-1369fc567b6e3ac6bda84b1c",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-747f019243ab96d46e0cdb6d",
+        "observation_id": "gro1-e9681f74eaf8e4af2c28fbe7",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-b72f636421ccbff0af4b1d97",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-05-12T00:00:00+00:00",
+          "known_at": "2026-08-12T23:50:04.442107+00:00",
+          "amount_id": null,
+          "amount_value": 5883486.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4",
+            "56f25c6729a79cf14aec56ebb7122deb7acbc59bbad54cc12ae1149f55cbe708"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-b72f636421ccbff0af4b1d97"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-3be22546a4a9a6b9a46a7469:award_detail:8047c1c95f7abdad:89dcf6de33556121",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:8047c1c95f7abdad:c677e7d4c5db7fa5"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-12T23:50:04.442107+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-2d6b9d33fe9c773912e346dc",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-a09d7500890fb5b1511a22bd",
+        "observation_id": "gro1-75a1cc129b200947f65f0523",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-8090a09afcbb9550eb7762e8",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-06-22T00:00:00+00:00",
+          "known_at": "2026-09-22T12:43:56.210728+00:00",
+          "amount_id": null,
+          "amount_value": 1462500.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "471e57ccc072807c0c23cf99fb51638bdfe7fa1e9245834e995d82bb43c9a8ec",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-8090a09afcbb9550eb7762e8"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-1f12d760e8802d72d643ecb3:award_detail:8047c1c95f7abdad:5d24a023e53f5275",
+            "usaspending:usaspending-c1521636e6ad1377b7ee17cb:award_detail:8047c1c95f7abdad:471e57ccc072807c"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-09-22T12:43:56.210728+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-a5bab49c1d219386292e9aeb",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-a86edd68642bedb66cdd6ceb",
+        "observation_id": "gro1-9649e815430cd9109b5a8cdf",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-415a5cf6527b3c83a63d29e7",
+          "record_id": "award:generated:CONT_AWD_FA881018C0006_9700_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-05-21T00:00:00+00:00",
+          "known_at": "2026-08-21T23:22:35.575358+00:00",
+          "amount_id": null,
+          "amount_value": 1642635.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4",
+            "56f25c6729a79cf14aec56ebb7122deb7acbc59bbad54cc12ae1149f55cbe708"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_FA881018C0006_9700_-NONE-_-NONE-",
+            "govws-415a5cf6527b3c83a63d29e7"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-25413685766f3f311d882e8d:actions:81651cdc444d0dde:cb5d9d0405c9f230",
+            "usaspending:usaspending-25413685766f3f311d882e8d:award_detail:76dcd96f15709a53:c622421ae4ead5e7"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-21T23:22:35.575358+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-2d448eacf25a3f5a0abc1214",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-adc023cbcabe4ef5b5ec6ae7",
+        "observation_id": "gro1-243c7ac0d63997f3afee8784",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-6a862272bc29a8f5796d12b3",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "deobligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-05-29T00:00:00+00:00",
+          "known_at": "2026-08-30T00:58:57.313119+00:00",
+          "amount_id": null,
+          "amount_value": -2023441.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_negative"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "129bd4f6f7b9132ad777f553094caeefd6250c524c11daec53934e25869682ab",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-6a862272bc29a8f5796d12b3"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-1b75b2a017f4f2a1d5375c61:actions:80022f67f4919c65:129bd4f6f7b9132a",
+            "usaspending:usaspending-1b75b2a017f4f2a1d5375c61:award_detail:8047c1c95f7abdad:da9625779e045511"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-30T00:58:57.313119+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-e27e73a3c63851900ac1bb85",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-adea9995be8208947fce5368",
+        "observation_id": "gro1-944b807e608067ae42034773",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-f50932571d19a2b42f7fb9e6",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-05-12T00:00:00+00:00",
+          "known_at": "2026-08-12T23:50:04.442107+00:00",
+          "amount_id": null,
+          "amount_value": 5883486.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "24268f2ac0caf3aa94e2f2f8ae8ea7d81a8744fbc7030eb380a632717927484f",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-f50932571d19a2b42f7fb9e6"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-3be22546a4a9a6b9a46a7469:actions:80022f67f4919c65:24268f2ac0caf3aa",
+            "usaspending:usaspending-3be22546a4a9a6b9a46a7469:award_detail:8047c1c95f7abdad:89dcf6de33556121"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-12T23:50:04.442107+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-8d120f03ef1af2d398e2dc7a",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-b6bcc234eedda034f27272c2",
+        "observation_id": "gro1-09580ce00c5482d89df9d964",
+        "candidate_family": "award_ceiling_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-aca8455be3676898e07ff5da",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "award_value_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-05-29T00:00:00+00:00",
+          "known_at": "2026-08-30T00:58:57.313119+00:00",
+          "amount_id": null,
+          "amount_value": -2023441.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "31d2a00200b78b04afe455e9b8b102f284b51d14b42e37eba061b3537b190fdc",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-aca8455be3676898e07ff5da"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-1b75b2a017f4f2a1d5375c61:award_detail:8047c1c95f7abdad:da9625779e045511",
+            "usaspending:usaspending-2c31488783b1917259106aab:award_detail:8047c1c95f7abdad:31d2a00200b78b04"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-30T00:58:57.313119+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-7de187a74b61254bfd1d7c5f",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-bbdbdc57484d0a9c7d77076f",
+        "observation_id": "gro1-a6a9030df8261d3133f147ad",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-91d15ea8a2018f7c463403a0",
+          "record_id": "award:generated:CONT_AWD_NNM07AA75C_8000_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-09-02T00:00:00+00:00",
+          "known_at": "2026-09-04T17:42:58.811976+00:00",
+          "amount_id": null,
+          "amount_value": 3000000.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "032d9f3ee8696eddfc290649c3ff5e69050f7a7d0885c36db2bc9642291ac6d8",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_NNM07AA75C_8000_-NONE-_-NONE-",
+            "govws-91d15ea8a2018f7c463403a0"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-690dfe075169b79292286af4:award_detail:68257c70541db039:032d9f3ee8696edd",
+            "usaspending:usaspending-c1521636e6ad1377b7ee17cb:award_detail:68257c70541db039:86704557702ae127"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-09-04T17:42:58.811976+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-6e4c6c5348870bf610f7cb75",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-bebeedbc37655e7e8fbff67b",
+        "observation_id": "gro1-baf4fc13bd0faa5fc30ca188",
+        "candidate_family": "award_ceiling_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-b9bc084c7b74c3ee38ecc804",
+          "record_id": "award:generated:CONT_AWD_FA881018C0006_9700_-NONE-_-NONE-",
+          "event_type": "award_value_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-05-27T00:00:00+00:00",
+          "known_at": "2026-08-21T23:22:35.575358+00:00",
+          "amount_id": null,
+          "amount_value": 1642635.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4",
+            "56f25c6729a79cf14aec56ebb7122deb7acbc59bbad54cc12ae1149f55cbe708"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_FA881018C0006_9700_-NONE-_-NONE-",
+            "govws-b9bc084c7b74c3ee38ecc804"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-25413685766f3f311d882e8d:award_detail:76dcd96f15709a53:c622421ae4ead5e7",
+            "usaspending:usaspending-69a2ef237340867dd9fb9bcf:award_detail:76dcd96f15709a53:de7b48119f77f4e6"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-21T23:22:35.575358+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-4cd945e761d88c2ce698a019",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-ccf75ca0ea4e3025144aa847",
+        "observation_id": "gro1-1545062dcc11ea396eea0e31",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-0d12d242dbe7ba3930674701",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-06-26T00:00:00+00:00",
+          "known_at": "2026-09-26T12:55:12.542459+00:00",
+          "amount_id": null,
+          "amount_value": 5800000.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "0d3f0a02341153804204955fff27feb57d57f6bab29d0d494ceb6de80a243dad",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-0d12d242dbe7ba3930674701"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-97eeb5dd8d3ac9caa30ad5d9:actions:80022f67f4919c65:b5fcc54d9a60a5fa",
+            "usaspending:usaspending-97eeb5dd8d3ac9caa30ad5d9:award_detail:8047c1c95f7abdad:0d3f0a0234115380"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-09-26T12:55:12.542459+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-2ae7bfc5edc8edb61c3d2ee8",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-e5c0fd490eb509d507fe7b11",
+        "observation_id": "gro1-e403283efb2d04dbcc109994",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-4735b41229ad8b790ac29b84",
+          "record_id": "award:generated:CONT_AWD_NNM07AA75C_8000_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-08-21T00:00:00+00:00",
+          "known_at": "2026-08-24T23:23:41.328901+00:00",
+          "amount_id": null,
+          "amount_value": -4254000.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_negative"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4",
+            "56f25c6729a79cf14aec56ebb7122deb7acbc59bbad54cc12ae1149f55cbe708"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_NNM07AA75C_8000_-NONE-_-NONE-",
+            "govws-4735b41229ad8b790ac29b84"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-0be443200c5e60297e0c492b:award_detail:68257c70541db039:61c9ea713bec5565",
+            "usaspending:usaspending-13cd67345e212a886ecc3060:award_detail:68257c70541db039:a1915c046d076858"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-24T23:23:41.328901+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-051e4f5bcc4fd69ea77d4856",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-e677cff88a1439744fa6244b",
+        "observation_id": "gro1-87d03b9c7dac6668d8240ca6",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-d4d6d2526e8f4e0da6590c72",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "reported_obligation_balance_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-06-26T00:00:00+00:00",
+          "known_at": "2026-09-26T12:55:12.542459+00:00",
+          "amount_id": null,
+          "amount_value": 5800000.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "0d3f0a02341153804204955fff27feb57d57f6bab29d0d494ceb6de80a243dad",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-d4d6d2526e8f4e0da6590c72"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-1f12d760e8802d72d643ecb3:award_detail:8047c1c95f7abdad:5d24a023e53f5275",
+            "usaspending:usaspending-97eeb5dd8d3ac9caa30ad5d9:award_detail:8047c1c95f7abdad:0d3f0a0234115380"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-09-26T12:55:12.542459+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-b57725775bb56d84b5677062",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-e7c92cece15bd7afb5d1435b",
+        "observation_id": "gro1-5037d879eb0ca1253d299a7d",
+        "candidate_family": "award_ceiling_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-2cabf2dfe2bea443f2886e18",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "award_value_changed",
+          "source_rail": "usaspending_award_snapshot",
+          "effective_at": "2026-06-22T00:00:00+00:00",
+          "known_at": "2026-09-22T12:43:56.210728+00:00",
+          "amount_id": null,
+          "amount_value": 1462500.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "471e57ccc072807c0c23cf99fb51638bdfe7fa1e9245834e995d82bb43c9a8ec",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-2cabf2dfe2bea443f2886e18"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-1f12d760e8802d72d643ecb3:award_detail:8047c1c95f7abdad:5d24a023e53f5275",
+            "usaspending:usaspending-c1521636e6ad1377b7ee17cb:award_detail:8047c1c95f7abdad:471e57ccc072807c"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-09-22T12:43:56.210728+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-f219a086d53860c4f77c8ce2",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-ef5257cbb862c37affdd7c0c",
+        "observation_id": "gro1-1e697b9fec594cc8031cb4ce",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-570974407ee9032ee441030b",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-06-04T00:00:00+00:00",
+          "known_at": "2026-09-04T17:42:58.811976+00:00",
+          "amount_id": null,
+          "amount_value": 2023441.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "471e57ccc072807c0c23cf99fb51638bdfe7fa1e9245834e995d82bb43c9a8ec",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-570974407ee9032ee441030b"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-c1521636e6ad1377b7ee17cb:actions:80022f67f4919c65:a465040eb30af62a",
+            "usaspending:usaspending-c1521636e6ad1377b7ee17cb:award_detail:8047c1c95f7abdad:471e57ccc072807c"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-09-04T17:42:58.811976+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-8c7e250d583288084f41d16a",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      },
+      {
+        "contract": "government_revenue.prophet_annotation.v1",
+        "schema_version": "1.0.0",
+        "candidate_id": "grc1-f7fade52cda1c51962e4e16b",
+        "observation_id": "gro1-7872361068224906019c89de",
+        "candidate_family": "award_obligation_change",
+        "candidate_state": "awaiting_crosscheck",
+        "ticker": "NOC",
+        "issuer": {
+          "company_name": "Northrop Grumman",
+          "ticker": "NOC",
+          "issuer_company_id": "central:NOC",
+          "relation_semantic": "reviewed",
+          "resolution_state": "reviewed",
+          "graph_id": "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1",
+          "graph_digest": "ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7"
+        },
+        "procurement_event": {
+          "event_id": "govws-8bfc120d1b24cc27783e6894",
+          "record_id": "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+          "event_type": "obligation",
+          "source_rail": "usaspending_award_action",
+          "effective_at": "2026-05-22T00:00:00+00:00",
+          "known_at": "2026-08-22T23:18:03.375950+00:00",
+          "amount_id": null,
+          "amount_value": 168093.0,
+          "amount_units": "usd",
+          "transmission_direction": "possible_positive"
+        },
+        "evidence_refs": {
+          "artifact_content_ids": [
+            "0204475e4a954f18c83e91f61ce95960178e2ccd01d9a0039b7eb5a205df5c52",
+            "12df4a34eb63b0e1e1669682a2da08361e861f72e44389cea039665a40588a8e",
+            "137b3266cf9a5a60b193db9b8dd69c553a9c72058cb69088e0f4f1ee05083313",
+            "2d9c2db8672e2fc3010b96232c1bd14943235c3bcbebe8bfb28b8b312092b16f",
+            "2ea7968042b0eeb39a270687a64e8cd1447b9e4aa6fddfcf848a18a179fd6b96",
+            "31d2a00200b78b04afe455e9b8b102f284b51d14b42e37eba061b3537b190fdc",
+            "3e4c3d95854454f738bda023cff83e265b1cfc51267c94cb95d6f876d3a1dad6",
+            "40eb7dc328f17f717096c7860eaa7c98a0a0bb669a5a48b0373390cd27012434",
+            "5140b854c25fa47753b66c0010f2436a15f50556b9e237228e9c0f9c8e215b90",
+            "519f1727df04c27a811281112c6b15ce0f8c92e68990ea112328edefda78575f",
+            "528a974852844e280fa62b2ccc74a5453c2462fbff551f6a31b9dcc4fe84c29d",
+            "550b52c2c8b1ccafd809f8aec46e6ff8e8e16d06d084337967f4422ea17598f4"
+          ],
+          "event_refs": [
+            "award:generated:CONT_AWD_N0001918C1037_9700_-NONE-_-NONE-",
+            "govws-8bfc120d1b24cc27783e6894"
+          ],
+          "ownership_path_refs": [
+            "issuer-identity:noc:northrop-grumman-corp-de",
+            "ownership:noc:northrop-grumman-systems-corp"
+          ],
+          "resolution_evidence_refs": [
+            "evidence:noc-sec-10k",
+            "evidence:noc-sec-ex21",
+            "evidence:noc-usaspending-d8qqpfnyjd63",
+            "evidence:noc-usaspending-de6hn4vgm3r1",
+            "evidence:noc-usaspending-djuceank2kp4",
+            "evidence:noc-usaspending-e4x3blzpppx3",
+            "evidence:noc-usaspending-eh8ukz6tml75",
+            "evidence:noc-usaspending-ehbbtwlfsmw1",
+            "evidence:noc-usaspending-f9paekaaxgb6",
+            "evidence:noc-usaspending-fnbamfz3gd53",
+            "evidence:noc-usaspending-fvsezfpcq316",
+            "evidence:noc-usaspending-g7lefnan9j74"
+          ],
+          "receipt_refs": [
+            "usaspending:usaspending-2c31488783b1917259106aab:actions:80022f67f4919c65:7bf02b4247a4d4e3",
+            "usaspending:usaspending-2c31488783b1917259106aab:award_detail:8047c1c95f7abdad:31d2a00200b78b04"
+          ]
+        },
+        "generation": {
+          "queue_content_id": "grcq1-340b999e391ef21286cadc41",
+          "queue_known_at": "2026-10-15T01:51:37.472913+00:00",
+          "queue_as_of": "2026-10-16T23:59:59.999999+00:00",
+          "queue_source_generation_ids": [
+            "grw2-120d87bf4021f8d3610168df",
+            "recipient-graph:reviewed:2026-10-13:defense-archetypes-v1"
+          ],
+          "queue_source_content_ids": [
+            "candidate-issuance-correction-manifest-sha256:9430d91b9ab7214b85a307d2e60d490a48dec431e276c448f26bec1e82a06b08",
+            "graph-sha256:ae94a74d331b99daaf721f2b0fe1fc1df7eab46d7e5afb4836b3592c44d7dbf7",
+            "grw2-120d87bf4021f8d3610168df",
+            "latest-sha256:69d56d3363c31f5a1c6d5db1d8b56b31ab8b59a90d3322f755ffcc4e3e4a9c90"
+          ],
+          "shadow_packet_id": null
+        },
+        "known_at": "2026-10-13T05:36:47.904824+00:00",
+        "freshness": {
+          "status": "ok",
+          "award_events_status": "ok",
+          "recipient_graph_status": "ready",
+          "event_known_at": "2026-08-22T23:18:03.375950+00:00",
+          "graph_known_at": "2026-10-13T05:36:47.904824+00:00"
+        },
+        "coverage": {
+          "scope": "receipt-bound forward-only USAspending award-event ledger; exact reviewed issuer linkage only",
+          "exact_link_status": "exact_linked",
+          "is_complete": false,
+          "shadow_leg_names": [],
+          "shadow_present_leg_names": []
+        },
+        "contradictions": [],
+        "shadow_context": null,
+        "label": {
+          "en": "shadow context",
+          "zh": "\u5f71\u5b50\u80cc\u666f"
+        },
+        "allowed_behavior": "annotate_only",
+        "authority": {
+          "tier": "display",
+          "context_only": true,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_originate_signal": false,
+          "can_add_candidates": false,
+          "can_escalate": false
+        },
+        "limitations": [
+          "Government Revenue annotation is display/context only; Prophet alone selects, ranks, sizes, gates, and executes.",
+          "Observed award amounts are not recognized revenue and do not establish revenue timing or margin impact.",
+          "Readings that disagree are shown side by side and are never averaged into one figure."
+        ],
+        "annotation_id": "grpa1-03d6000c18c87a8627b0f417",
+        "shadow_context_reason_code": "no_shadow_packet_builder_supplied"
+      }
+    ]
+  },
+  "context_engines": [
+    "government_revenue_foresight"
+  ]
+}

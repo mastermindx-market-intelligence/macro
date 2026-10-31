@@ -681,10 +681,18 @@ def _canada_board_ledger(setups: dict | None, latest: dict) -> list[dict]:
 
     Fail-open-LOUD: any failure yields a visible health row rather than a silent pass —
     the board's scoreboard must never fail invisibly."""
-    rows = (setups or {}).get("buy") or []
-    if not rows:
-        return [{"en": "Board ledger (no ranked names to log)", "zh": "榜单账本（无可记录个股）",
-                 "status": "SKIP", "rows": 0, "last": "—"}]
+    # Zero-official-buy liveness (masterplan §10.4): a MISSING board object keeps
+    # today's SKIP return, but a real board whose official buy subset is empty must
+    # NOT bail out here — only the ledger append is withheld below (zero official
+    # buys stay append-free); the scorecard attach, grade, track_ledger emit and
+    # zero-authority shadow write all still run, so full-pool research capture and
+    # the honestly-empty track panel survive a zero-buy session.
+    _skip_row = {"en": "Board ledger (no ranked names to log)",
+                 "zh": "榜单账本（无可记录个股）",
+                 "status": "SKIP", "rows": 0, "last": "—"}
+    if setups is None or not isinstance(setups, dict):
+        return [_skip_row]
+    rows = setups.get("buy") or []
     asof = _board_asof(latest)
     from scripts.build_canada_library import _ENTRY_STATE, CA_BOARD_DEFINITION
     calls = []
@@ -745,10 +753,14 @@ def _canada_board_ledger(setups: dict | None, latest: dict) -> list[dict]:
             "knife_demoted": (w.get("watch_reason") == "knife"),
             "board_definition": CA_BOARD_DEFINITION,
         })
-    health: list[dict] = []
+    health: list[dict] = [] if rows else [_skip_row]
     try:
         from engine import board_ledger
-        if _ledger_advance_enabled():
+        if not rows:
+            log.info("CA board ledger: zero official buys for %s — append skipped "
+                     "(%d watch calls); scorecard/grade/track/shadow still run",
+                     asof, len(calls))
+        elif _ledger_advance_enabled():
             n = board_ledger.append_board(calls, market="CA", asof=asof)
             if n <= 0:
                 health.append({"en": "Board ledger (append wrote 0 rows — see build log)",

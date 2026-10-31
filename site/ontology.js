@@ -18,13 +18,50 @@
 (function () {
   "use strict";
 
-  var API = "/api/ontology/explorer/v1";
+  var DEFAULT_CHAIN = "oil_inflation_duration_derate";
+  var CHAINS = [DEFAULT_CHAIN, "dollar_spike_em_multinational"];
+  var requestedChains = new URLSearchParams(window.location.search).getAll("chain");
+  var selectedChain = requestedChains.length ? requestedChains[0] : DEFAULT_CHAIN;
+  var acceptedChain = requestedChains.length <= 1 && CHAINS.includes(selectedChain);
+  var API = "/api/ontology/explorer/v1" + (requestedChains.length ? "?chain=" + encodeURIComponent(selectedChain) : "");
   var OPS = { gt: "\u003e", lt: "\u003c", gte: "\u2265", lte: "\u2264",
     eq: "=", ne: "\u2260" };
   var root = document.getElementById("ox-root");
   if (!root) return;
+  document.querySelectorAll("[data-ontology-chain]").forEach(function (link) {
+    if (acceptedChain && link.getAttribute("data-ontology-chain") === selectedChain) link.setAttribute("aria-current", "page");
+  });
   var LEG_DETAIL_ID = "ox-steps";
   var legDetail = null;
+  var readingEpoch = 0;
+  var activeRequest = null;
+  var portfolioReading = null;
+  var scenarioReading = null;
+  var canonicalOwner = null;
+  try { canonicalOwner = window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user(); }
+  catch (e) { canonicalOwner = null; }
+  canonicalOwner = canonicalOwner && canonicalOwner.id || null;
+
+  function invalidateReading() {
+    readingEpoch += 1;
+    if (activeRequest) activeRequest.abort();
+    activeRequest = null;
+    portfolioReading = null;
+    scenarioReading = null;
+    var theme = document.getElementById("ox-theme");
+    if (theme) theme.dispatchEvent(new CustomEvent("ontology-source-changed"));
+    var scenario = document.getElementById("ox-scenario");
+    if (scenario) scenario.dispatchEvent(new CustomEvent("ontology-source-changed"));
+    var portfolio = document.getElementById("ox-portfolio");
+    if (portfolio) portfolio.dispatchEvent(new CustomEvent("ontology-source-changed"));
+    selectedPathRef = null;
+    returnFocusRef = null;
+    returnScrollX = returnScrollY = null;
+    brainContextRevision += 1;
+    var company = document.getElementById("ox-company");
+    if (company) company.dispatchEvent(new CustomEvent("ontology-source-changed"));
+  }
+
   /* Selected-path context is transient page state, not a fifth F04 object and
      not browser persistence. It binds the current chain/leg to the existing
      Mastermind Brain and remembers the exact control that should regain focus. */
@@ -185,18 +222,26 @@
     return false;
   }
 
-  function withAuth(headers) {
+  async function withAuth(headers) {
     headers = headers || {};
-    if (!(window.MDXAuth && window.MDXAuth.client)) return Promise.resolve(headers);
-    return window.MDXAuth.client()
-      .then(function (client) { return client.auth.getSession(); })
-      .then(function (result) {
-        var token = result && result.data && result.data.session
-          && result.data.session.access_token;
-        if (token) headers.Authorization = "Bearer " + token;
-        return headers;
-      })
-      .catch(function () { return headers; });
+    if (!(window.MDXAuth && window.MDXAuth.client)) return { headers: headers, identity: null };
+    var client = await window.MDXAuth.client();
+    var result = await client.auth.getSession();
+    var session = result && result.data && result.data.session;
+    var user = window.MDXAuth.user && window.MDXAuth.user();
+    if (!session || !session.user || !user || typeof user.id !== "string" || !user.id
+        || user.id !== session.user.id || typeof session.access_token !== "string" || !session.access_token) {
+      return { headers: headers, identity: null };
+    }
+    headers.Authorization = "Bearer " + session.access_token;
+    return { headers: headers, identity: { id: user.id, token: session.access_token } };
+  }
+
+  async function sameReadingOwner(identity) {
+    // Authenticated responses must still belong to the same canonical account.
+    if (!identity) return false;
+    var latest = await withAuth({});
+    return !!latest.identity && latest.identity.id === identity.id && latest.identity.token === identity.token;
   }
 
   /* aria-busy must be cleared on every terminal state, success or failure. A
@@ -260,6 +305,13 @@
   }
 
   function gateForFailure(code) {
+    if (code === "chain_not_admitted") {
+      gate("This path is not available here", "此处尚不支持该路径",
+        "Choose one of the supported paths above. Another path's reading will not be substituted.",
+        "请选择上方支持的路径。不会用其他路径的读数替代。",
+        null, null, null, code);
+      return;
+    }
     if (code === "source_incoherent") {
       gate("The current sources disagree", "当前来源相互矛盾",
         "The owner artifacts could not be trusted together, so no partial or earlier reading is shown as current.",
@@ -323,7 +375,7 @@
     blocker.appendChild(blockerLabel);
     var blockerValue = el("strong");
     if (snapshot.first_blocking_leg) {
-      blockerValue.appendChild(bi(snapshot.first_blocking_leg.title));
+      blockerValue.appendChild(bi(pathLegTitle(snapshot, snapshot.first_blocking_leg)));
     } else {
       blockerValue.appendChild(say("No current blocker", "当前无阻断环节"));
     }
@@ -408,7 +460,7 @@
       var body = el("div", "st-body");
       body.appendChild(el("div", "st-idx", String(leg.index).padStart(2, "0")));
       var name = el("div", "st-name");
-      name.appendChild(bi(leg.title));
+      name.appendChild(bi(pathLegTitle(snapshot, leg)));
       body.appendChild(name);
       var verdict = el("div", "st-verdict");
       verdict.appendChild(legVerdict(leg));
@@ -791,6 +843,26 @@
     return p;
   }
 
+  function researchReadingLink() {
+    var d = detail("Compare theme evidence", "比较主题证据");
+    d.classList.add("ox-detail--flush");
+    d.id = "ox-research-reading";
+    var a = el("a", "ox-action");
+    a.href = "state_of_themes.html#research-reading-order";
+    a.appendChild(say("Open the theme reading order", "打开主题阅读顺序"));
+    d.appendChild(a);
+    var basis = el("p", "ox-note");
+    basis.appendChild(say("The Theme Tracker orders its own recorded evidence by date, then daily count and name. Its dates are separate from this path's reading.",
+      "主题追踪页按自身证据的记录日期、当日条数和名称排序。其日期与本路径读数分开。"));
+    d.appendChild(basis);
+    var held = el("p", "ox-note");
+    held.setAttribute("data-opportunity-abstention", "uncalibrated");
+    held.appendChild(say("Calibrated opportunity estimates are unavailable. This reading order does not establish impact, direction, confidence or what is already priced in.",
+      "经校准的机会估计尚不可用。此阅读顺序不说明影响幅度、方向、把握程度或价格已消化程度。"));
+    d.appendChild(held);
+    return d;
+  }
+
   function renderNextAction(snapshot) {
     var action = snapshot.next_action;
     var box = card("Next", "下一步", "watch");
@@ -817,6 +889,7 @@
         "将展开下方的逐环节读数。"));
       box.appendChild(hint);
       box.appendChild(transmissionLink(snapshot));
+      box.appendChild(researchReadingLink());
       return box;
     }
 
@@ -829,6 +902,7 @@
       + "publish, not only this one.",
       "传导链总览页面涵盖所有者发布的全部路径，而不仅是本条。"));
     box.appendChild(note);
+    box.appendChild(researchReadingLink());
     return box;
   }
 
@@ -840,6 +914,23 @@
     return d;
   }
 
+  function pathLegTitle(snapshot, leg) {
+    if (snapshot.source?.chain === 'dollar_spike_em_multinational') {
+      if (leg.node_id === 'em_derate') return {en: 'FXI versus SPY: EM proxy', zh: 'FXI 相对 SPY：新兴市场代理'};
+      if (leg.node_id === 'dollar_spike') return {en: 'Dollar trend and positioning', zh: '美元趋势与持仓分位'};
+    }
+    return leg.title;
+  }
+  function pathLegQualification(snapshot, leg) {
+    if (snapshot.source?.chain !== 'dollar_spike_em_multinational') return null;
+    if (leg.node_id === 'em_derate') return {
+      en: 'The native predicate uses FXI (China large-cap) relative to SPY over 63 observations as an EM proxy. It does not measure all emerging markets or multinational earnings.',
+      zh: '原生条件使用 FXI（中国大型股）相对 SPY 的63个观测间隔表现作为新兴市场代理，并非全部新兴市场或跨国企业盈利的测量。'};
+    if (leg.node_id === 'dollar_spike') return {
+      en: 'This condition measures dollar trend and positioning. High real rates are a declared mechanism, not an observed cause in this predicate.',
+      zh: '此条件测量美元趋势与持仓分位。高实际利率是声明的机制，并非该条件中已观测到的原因。'};
+    return null;
+  }
   function renderLegDetail(snapshot) {
     var d = detail("Inspect each step: readings, timing and what we are watching",
       "查看各环节：读数、时间窗口与我们正在观察的条件");
@@ -851,8 +942,10 @@
          control — while still allowing focus() to land on it. */
       box.tabIndex = -1;
       var h = el("h3");
-      h.appendChild(bi(leg.title));
+      h.appendChild(bi(pathLegTitle(snapshot, leg)));
       box.appendChild(h);
+      var qualification = pathLegQualification(snapshot, leg);
+      if (qualification) { var note = el('p', 'ox-note'); note.appendChild(bi(qualification)); box.appendChild(note); }
       var kv = el("dl", "ox-kv");
       (leg.receipts || []).forEach(function (receipt) {
         /* Receipts are facts about a single reading. Their fields are ALL
@@ -990,9 +1083,11 @@
       ? units[receipt.metric] : "";
     var en = value ? "Observed: " + value + unit : "Observed: not published";
     var zh = value ? "读数：" + value + unit : "读数：未发布";
+    var named = { up: "向上", strengthening: "走强", "EM equities": "新兴市场股票" };
+    if (Object.prototype.hasOwnProperty.call(named, value)) zh = "读数：" + named[value];
     if (threshold) {
-      en += " · Requires: " + (op ? op + " " : "") + threshold + unit;
-      zh += " · 要求：" + (op ? op + " " : "") + threshold + unit;
+      en += " · Requires: " + (receipt.op === "in_contains" ? "includes " : op ? op + " " : "") + threshold + unit;
+      zh += " · 要求：" + (receipt.op === "in_contains" ? "包含 " : op ? op + " " : "") + (named[threshold] || threshold) + unit;
     }
     if (receipt.passed === true) {
       en += " · Met"; zh += " · 已满足";
@@ -1117,23 +1212,88 @@
     var screens = snapshot.exposure_screens || [];
     if (!screens.length) return null;
     var d = detail("What this path bears on", "该路径涉及什么");
+    d.setAttribute("data-exposure-membership", "true");
     var lead = el("p", "ox-note");
     lead.appendChild(say(
-      "The owners flag these as the exposures this path would run through. They are "
-      + "descriptions of where the mechanism lands, not a list of names, a screen you "
-      + "can run, or a suggestion to act.",
-      "所有者将以下项标注为该路径可能传导至的敞口类别。它们是机制落点的描述，"
-      + "并非标的名单、可直接运行的筛选器，也不构成任何操作建议。"));
+      "These are the owner's exposure screens. Any company names are the recorded screen membership, not an impact estimate, ranking or suggestion to act. Companies the owner could not evaluate remain outside that conclusion.",
+      "以下为来源提供的敞口筛选。公司名单仅代表已记录的筛选成员，并非影响估计、排名或操作建议。来源无法评估的公司不包含在该结论之内。"));
     d.appendChild(lead);
+    function count(value) { return Number.isSafeInteger(value) && value >= 0 ? String(value) : "—"; }
     screens.forEach(function (screen) {
       var box = el("div", "ox-leg");
-      var h = el("h3");
-      h.appendChild(bi(screen.label));
-      box.appendChild(h);
-      if (screen.note) {
-        var note = el("p", "ox-note");
-        note.appendChild(bi(screen.note));
-        box.appendChild(note);
+      var h = el("h3"); h.appendChild(bi(screen.label)); box.appendChild(h);
+      if (snapshot.source?.chain === 'dollar_spike_em_multinational') {
+        var limits = {
+          em_revenue_exposure: {en: 'Disclosed EM revenue is a conservative lower bound; mixed geographic regions are excluded. Missing disclosures remain unevaluable.', zh: '已披露的新兴市场营收是保守下限，不计入混合地区。缺失披露仍属无法评估。'},
+          multinational_fx_translation: {en: 'Foreign revenue is a disclosed screening input, not a measured earnings response to this dollar move.', zh: '海外营收是已披露的筛选输入，并非本次美元变化对盈利影响的测量。'},
+          dollar_debt_burden: {en: "The screen assumes US filers' debt is USD-denominated. This is a stated assumption: debt currency is not measured in the substrate.", zh: '此筛选假设美国披露人的债务以美元计价。这是明示假设；底层数据未测量债务币种。'},
+          em_commodity_sector_proxy: {en: 'Materials and Energy sector membership is a coarse proxy, not a per-company EM revenue measurement.', zh: '材料与能源行业归属是粗略代理，并非逐公司新兴市场营收测量。'}
+        };
+        if (limits[screen.id]) { var limit = el('p','ox-note'); limit.dataset.screenQualification = screen.id; limit.appendChild(bi(limits[screen.id])); box.appendChild(limit); }
+      }
+      if (screen.note) { var note = el("p", "ox-note"); note.appendChild(bi(screen.note)); box.appendChild(note); }
+      var companies = screen.companies;
+      if (companies && Array.isArray(companies.linked) && Array.isArray(companies.unlinked)) {
+        var coverage = el("p", "ox-note");
+        coverage.appendChild(say("Recorded members: ", "已记录成员："));
+        coverage.appendChild(document.createTextNode(count(screen.n)));
+        coverage.appendChild(say(" · Could not evaluate: ", " · 无法评估："));
+        coverage.appendChild(document.createTextNode(count(screen.unevaluable)));
+        box.appendChild(coverage);
+        var clock = el("p", "ox-note");
+        clock.appendChild(say("Membership date: ", "成员名单日期："));
+        clock.appendChild(document.createTextNode(snapshot.source.asof || "—"));
+        clock.appendChild(say(" · Substrate date: ", " · 基础数据日期："));
+        var range = snapshot.source.substrate_asof;
+        var start = range && typeof range.min === "string" ? range.min : null;
+        var end = range && typeof range.max === "string" ? range.max : null;
+        var dates = start && end ? (start === end ? start : start + " – " + end) : null;
+        clock.appendChild(document.createTextNode(dates || "—"));
+        box.appendChild(clock);
+        var list = el("ul", "ox-exposure-members");
+        var epoch = readingEpoch;
+        companies.linked.forEach(function (entry) {
+          if (!entry || typeof entry.symbol !== "string" || typeof entry.security_id !== "string") return;
+          var row = el("li"); row.appendChild(el("strong", null, entry.symbol));
+          var company = document.getElementById("ox-company");
+          if (company) {
+            var button = el("button", "ox-cta secondary"); button.type = "button";
+            button.appendChild(say("Inspect company disclosures", "查看公司披露"));
+            function readiness() { button.disabled = company.dataset.companyReady !== "true"; }
+            readiness();
+            if (button.disabled) company.addEventListener("ontology-company-ready", readiness, { once: true });
+            button.addEventListener("click", function () {
+              if (epoch !== readingEpoch || !document.contains(button) || button.disabled) return;
+              company.dispatchEvent(new CustomEvent("ontology-select-company", { detail: {
+                symbol: entry.symbol, security_id: entry.security_id,
+                asof: snapshot.source.asof, manifest_hash: snapshot.source.source_manifest_hash
+              }}));
+            });
+            row.appendChild(button);
+          }
+          list.appendChild(row);
+        });
+        companies.unlinked.forEach(function (entry) {
+          if (!entry || typeof entry.symbol !== "string") return;
+          var row = el("li"); row.appendChild(el("strong", null, entry.symbol));
+          var refusal = el("span", "ox-note");
+          refusal.appendChild(say("Identity could not be verified for this reading.", "本次读数无法核实其身份。"));
+          row.appendChild(refusal); list.appendChild(row);
+        });
+        if (list.childNodes.length) box.appendChild(list);
+        else { var empty = el("p", "ox-note"); empty.appendChild(say("No company members in this owner reading.", "本次来源读数没有公司成员。")); box.appendChild(empty); }
+        if (screen.cuts && typeof screen.cuts === "object") {
+          var cuts = detail("Owner screen thresholds", "来源筛选阈值");
+          Object.keys(screen.cuts).forEach(function (key) {
+            var line = el("p", "ox-note");
+            line.textContent = key + ": " + JSON.stringify(screen.cuts[key]); cuts.appendChild(line);
+          });
+          box.appendChild(cuts);
+        }
+      } else {
+        var unavailable = el("p", "ox-note");
+        unavailable.appendChild(say("No actionable company membership is established for this reading.", "本次读数尚未确立可继续查看的公司成员名单。"));
+        box.appendChild(unavailable);
       }
       d.appendChild(box);
     });
@@ -1201,7 +1361,32 @@
     var k1 = snapshot.evidence.k1;
     if (k1.status !== "available") {
       var k1p = el("p", "ox-note");
-      if (k1.reason_code === "eligible_transition_not_k1_resolved") {
+      if (k1.status === "partial" && Array.isArray(k1.refs) && k1.refs.length > 0
+          && k1.refs_count === k1.refs.length) {
+        k1p.appendChild(say(
+          "Bound transition references: " + k1.refs_count + ". These identify recorded instrument events, not independent market evidence. "
+          + "Native rights and freshness policies, source-body access and historical replay remain unavailable.",
+          "已绑定状态转换引用：" + k1.refs_count + "。这些引用标识已记录的工具事件，并非独立市场证据。"
+          + "原生权限与时效政策、来源正文访问及历史回放仍不可用。"));
+        var references = el("details", "ox-detail");
+        var title = el("summary");
+        title.appendChild(say("Transition reference details", "状态转换引用详情"));
+        references.appendChild(title);
+        var referenceList = el("ul");
+        k1.refs.forEach(function (ref) {
+          var entry = el("li"), native = ref.native_identity || {};
+          entry.appendChild(el("p", "ox-note", String(native.transition || "") + " · " + String(native.asof || "")));
+          [ref.reference_id, ref.provenance && ref.provenance.pointer].forEach(function (value) {
+            var reference = el("p", "ox-hash");
+            reference.appendChild(el("code", "", String(value || "")));
+            entry.appendChild(reference);
+          });
+          referenceList.appendChild(entry);
+        });
+        references.appendChild(referenceList);
+        d.appendChild(references);
+      } else if (k1.reason_code === "eligible_transition_not_k1_resolved"
+          || k1.reason_code === "native_transition_reference_unavailable") {
         k1p.appendChild(say(
           "The owners have recorded " + k1.recorded_transitions + " transition(s) for this "
           + "path, but this page resolved none of them into a formal evidence reference, so "
@@ -1298,6 +1483,192 @@
     return d;
   }
 
+  var themeRoot = document.getElementById("ox-theme");
+  function deliverThemeReading() {
+    if (themeRoot && scenarioReading) themeRoot.dispatchEvent(new CustomEvent("ontology-reading", { detail: scenarioReading }));
+  }
+  if (themeRoot) themeRoot.addEventListener("ontology-consumer-ready", deliverThemeReading);
+  var scenarioRoot = document.getElementById("ox-scenario");
+  function deliverScenarioReading() {
+    if (scenarioRoot && scenarioReading) scenarioRoot.dispatchEvent(new CustomEvent("ontology-reading", { detail: scenarioReading }));
+  }
+  if (scenarioRoot) scenarioRoot.addEventListener("ontology-consumer-ready", deliverScenarioReading);
+  var portfolioRoot = document.getElementById("ox-portfolio");
+  function deliverPortfolioReading() {
+    if (portfolioRoot && portfolioReading) portfolioRoot.dispatchEvent(new CustomEvent("ontology-reading", { detail: portfolioReading }));
+  }
+  if (portfolioRoot) portfolioRoot.addEventListener("ontology-consumer-ready", deliverPortfolioReading);
+
+  function validTargetPredicate(p) {
+    var count = 0;
+    function text(v,n) { return typeof v === "string" && v.length > 0 && v.length <= n && !/[\x00-\x1f]/.test(v); }
+    function scalar(v) { return v === null || typeof v === "boolean" || typeof v === "number" && isFinite(v) || text(v,128); }
+    function test(t,depth) {
+      if (++count > 64 || depth > 8 || !t || typeof t !== "object" || Array.isArray(t)) return false;
+      var keys=Object.keys(t), groups=keys.filter(function(k){return k === "all" || k === "any";});
+      if (groups.length) return groups.length === 1 && keys.length === 1 && Array.isArray(t[groups[0]])
+        && t[groups[0]].length > 0 && t[groups[0]].length <= 64
+        && t[groups[0]].every(function(child){return test(child,depth+1);});
+      if (!keys.every(function(k){return ["path","series","metric","window","lookback","vs","ratio","op","value"].includes(k);})
+          || !["gt","gte","lt","lte","eq","ne","is_true","is_false","in","in_contains"].includes(t.op)
+          || (Object.hasOwn(t,"path") === Object.hasOwn(t,"series"))) return false;
+      if (t.op !== "is_true" && t.op !== "is_false" && !Object.hasOwn(t,"value")) return false;
+      if (Object.hasOwn(t,"value") && !(Array.isArray(t.value) ? t.value.length > 0 && t.value.length <= 64 && t.value.every(scalar) : scalar(t.value))) return false;
+      if (Object.hasOwn(t,"series") && (!["ret","ret_bp","ma_slope","rs","ratio_ret","off_high_bp"].includes(t.metric)
+          || !Number.isInteger(t.window) || t.window <= 0 || t.window > 100000
+          || (Object.hasOwn(t,"vs") !== (t.metric === "rs")) || (Object.hasOwn(t,"ratio") !== (t.metric === "ratio_ret")))) return false;
+      return keys.every(function(k){return k === "value" || k === "window" || k === "lookback"
+        ? k !== "lookback" || Number.isInteger(t[k]) && t[k] > 0 && t[k] <= 100000 : text(t[k],128);});
+    }
+    return p && Object.keys(p).sort().join(",") === "node_id,src,test" && text(p.node_id,128) && text(p.src,64) && test(p.test,0);
+  }
+
+  function targetPredicateSentence(t) {
+    var p=el("div"),group=t.all?"all":t.any?"any":null;
+    if (group) {
+      p.appendChild(group === "all" ? say("All conditions must hold:","以下条件须全部满足：") : say("At least one condition must hold:","以下条件至少须满足一项："));
+      var list=el("ul");t[group].forEach(function(child){var li=el("li");li.appendChild(targetPredicateSentence(child));list.appendChild(li);});p.appendChild(list);return p;
+    }
+    var paths={"state.rates.direction":["Real-yield direction","实际收益率方向"],
+      "state.rates.real_10y_chg_63d_bp":["63-observation change in the real 10-year yield (bp)","实际10年期收益率63期变动（基点）"],
+      "dollar_desk.trend":["Dollar trend","美元趋势"],"dollar_desk.usd_pos_pctile":["Dollar positioning percentile","美元持仓百分位"],
+      "transmission.usd_dir":["Dollar transmission direction","美元传导方向"],"transmission.headwind_for":["Declared headwind list","声明的逆风列表"]};
+    if (t.path) p.appendChild(Object.prototype.hasOwnProperty.call(paths,t.path) ? say.apply(null,paths[t.path]) : say("Declared field "+t.path,"声明字段 "+t.path));
+    else {
+      var metrics={ret:["change (%)","变动（%）"],ret_bp:["change (bp)","变动（基点）"],rs:["relative return (pp)","相对回报（百分点）"],
+        ratio_ret:["ratio change (%)","比率变动（%）"],ma_slope:["moving-average slope","均线斜率"],off_high_bp:["distance below high (bp)","距高点幅度（基点）"]};
+      p.appendChild(document.createTextNode(t.series+(t.vs?" vs "+t.vs:t.ratio?" / "+t.ratio:"")+" · "));
+      p.appendChild(say(t.window+"-observation "+metrics[t.metric][0],t.window+"期"+metrics[t.metric][1]));
+      if (t.lookback) p.appendChild(say(" · slope lookback: "+t.lookback+" observations"," · 斜率回看："+t.lookback+"期"));
+    }
+    var names={up:["up","向上"],rising:["rising","上升"],strengthening:["strengthening","走强"],"EM equities":["EM equities","新兴市场股票"]};
+    p.appendChild(document.createTextNode(" "));
+    if (t.op === "is_true" || t.op === "is_false") p.appendChild(t.op === "is_true" ? say("must be true","须为真") : say("must be false","须为假"));
+    else {
+      p.appendChild(t.op === "in_contains" ? say("must include ","须包含 ") : t.op === "in" ? say("must be one of ","须为以下之一 ") : document.createTextNode((_opGlyph(t.op)||t.op)+" "));
+      var values=Array.isArray(t.value)?t.value:[t.value];values.forEach(function(v,i){if(i)p.appendChild(document.createTextNode(", "));
+        p.appendChild(Object.prototype.hasOwnProperty.call(names,v) ? say.apply(null,names[v]) : document.createTextNode(String(v)));});
+    }
+    return p;
+  }
+
+  function renderTransmissionGap(snapshot) {
+    var box = card("Transmission gap", "传导缺口");
+    box.setAttribute("data-transmission-gap", "");
+    var g = snapshot.transmission_gap, src = snapshot.source;
+    var states = {
+      waiting_inside_window: ["Waiting inside the declared window", "正在声明的窗口内等待"],
+      stalled: ["Native stall annotation", "原生停滞标注"],
+      contradicted: ["Current readings disagree with the expected sequence", "当前读数与预期顺序不一致"],
+      condition_stopped: ["A watched condition stopped this episode", "观察条件使本轮过程停止"],
+      owner_expired: ["The owner recorded the window as expired", "数据方已记录窗口到期"],
+      owner_completed: ["The owner recorded this episode as complete", "数据方已记录本轮过程完成"],
+      dormant: ["No active episode", "暂无活动过程"]
+    };
+    function note(en, zh) { var p = el("p", "ox-note"); p.appendChild(say(en,zh)); box.appendChild(p); }
+    function calendar(v) { return typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)
+      && isFinite(Date.parse(v)) && new Date(v).toISOString().slice(0,10) === v; }
+    function instant(v) { return typeof v === "string" ? Date.parse(v.replace(" UTC","Z").replace(" ","T")) : NaN; }
+    function same(a,b) { return JSON.stringify(a) === JSON.stringify(b); }
+    function unavailable(reason) {
+      box.setAttribute("data-gap-state", "source_unavailable");
+      note("A transmission gap cannot be qualified for this reading. Missing data is not failed transmission.",
+        "本次读数无法确认传导缺口。缺失数据不代表传导失败。");
+      if (reason === "owner_transition_unsettled") note("The target already reads met, but the owner has not settled the next transition.",
+        "目标条件已满足，但数据方尚未确认下一次状态转换。");
+      else if (reason === "owner_window_elapsed_unsettled") note("The captured window has elapsed without a settled owner transition. This page does not expire it.",
+        "所记录窗口已结束，但数据方尚未确认状态转换。本页不会自行判定到期。");
+      else if (reason === "arming_observation_unavailable" || reason === "episode_ledger_unavailable")
+        note("The recorded initiating observation is unavailable.", "已记录的起始观测不可用。");
+      return box;
+    }
+    if (!g || g.schema !== "txi_gap_projection.v1" || g.scope !== "txi_only"
+        || g.method_class !== "native_owner_state_projection" || g.instrument_only !== true || g.market_thesis_verdict !== null
+        || !g.identity || g.identity.chain !== src.chain || g.identity.rev !== src.rev
+        || g.identity.episode_id !== snapshot.state.episode_id || g.owner_state !== snapshot.state.owner_state
+        || !g.observation || g.observation.asof !== src.asof || !calendar(src.asof)
+        || !isFinite(instant(src.built)) || instant(g.observation.built) !== instant(src.built)
+        || g.ledger?.clock_basis !== "native_transition_asof" || g.ledger.historical_knowledge !== "unavailable") return unavailable();
+    if (g.status === "unavailable" && g.state === "source_unavailable") return unavailable(g.reason);
+    if (g.status !== "available" || g.reason !== null || !Object.prototype.hasOwnProperty.call(states,g.state)) return unavailable();
+    var legs = snapshot.path.legs, hops = snapshot.path.hops, p = g.pending_hop;
+    var ledger = (src.reads || []).find(function(r) { return r.path === "data/transmission/chain_episodes.jsonl"; });
+    if (!same(g.current_contradiction,snapshot.contradiction) || !same(g.watched_conditions,snapshot.invalidators)) return unavailable();
+    if (g.state !== "dormant") {
+      var initial = g.initiating_observation;
+      if (!ledger || ledger.sha256 !== g.ledger.sha256 || ledger.bytes !== g.ledger.bytes
+          || !initial || initial.node_id !== legs[0].node_id || !calendar(initial.asof) || initial.asof > src.asof
+          || !Array.isArray(initial.receipts) || !initial.receipts.length || initial.receipts.length > 64) return unavailable();
+    } else if (g.owner_state !== "dormant" || g.identity.episode_id !== null || p !== null) return unavailable();
+    if (g.state === "owner_completed") { if (g.owner_state !== "expressed" || p !== null) return unavailable(); }
+    else if (g.state !== "dormant") {
+      var hop = hops.find(function(h) { return h.hop_id === p?.hop_id; });
+      var target = legs.find(function(n) { return n.node_id === p?.to; });
+      if (!p || !hop || !target || p.from !== hop.from || p.to !== hop.to || !same(p.lag_d,hop.lag_d)
+          || !validTargetPredicate(p.expected_target) || !same(p.expected_target,target.declared_predicate)
+          || p.expected_target.node_id !== target.node_id || p.expected_target.src !== target.src
+          || !same(p.applicability_assumption,hop.condition) || !Array.isArray(p.lag_d) || p.lag_d.length !== 2
+          || !p.lag_d.every(function(n){return typeof n === "number" && isFinite(n);}) || p.lag_d[0] < 0 || p.lag_d[1] < p.lag_d[0]
+          || p.elapsed_basis !== "native_calendar_days" || !calendar(p.anchor_asof) || p.anchor_asof > src.asof
+          || !Number.isInteger(p.elapsed_calendar_days) || p.elapsed_calendar_days !== (Date.parse(src.asof)-Date.parse(p.anchor_asof))/86400000
+          || p.minimum_lag_elapsed !== (p.elapsed_calendar_days >= p.lag_d[0])
+          || !p.target_observation || p.target_observation.asof !== src.asof || p.target_observation.node_id !== target.node_id
+          || p.target_observation.confirmed !== target.confirmed || target.observation !== "observed"
+          || !same(p.target_observation.receipts,target.receipts)) return unavailable();
+      if (["waiting_inside_window","stalled","contradicted"].includes(g.state)
+          && (!["arming","propagating"].includes(g.owner_state) || p.elapsed_calendar_days > p.lag_d[1])) return unavailable();
+      if (["waiting_inside_window","stalled"].includes(g.state) && target.confirmed !== false) return unavailable();
+      if (g.state === "stalled" && (g.turn_watch?.status !== "available" || g.turn_watch.stalling !== true)) return unavailable();
+      if (g.state === "contradicted" && !snapshot.contradiction) return unavailable();
+      if (g.state === "owner_expired" && g.owner_state !== "expired") return unavailable();
+      if (g.state === "condition_stopped" && (g.owner_state !== "failed" || !g.condition_stop
+          || !calendar(g.condition_stop.asof) || g.condition_stop.asof > src.asof
+          || !snapshot.invalidators.some(function(c){return c.id === g.condition_stop.condition_id;}))) return unavailable();
+    }
+    box.setAttribute("data-gap-state",g.state);
+    var headline = el("h3"); headline.appendChild(say.apply(null,states[g.state])); box.appendChild(headline);
+    note("TXI conditions only. This is an instrument reading, not a verdict on the market thesis.",
+      "仅反映 TXI 条件。这是仪表读数，不是对市场论点的裁定。");
+    if (p) {
+      var named = el("p"); named.appendChild(bi(target.title)); box.appendChild(named);
+      var assumption=el("p","ox-note");assumption.setAttribute("data-gap-applicability","");
+      assumption.appendChild(say("Applicability assumption: ","适用前提："));
+      assumption.appendChild(p.applicability_assumption ? bi(p.applicability_assumption) : say("Not declared","未声明"));box.appendChild(assumption);
+      note("Declared lag: "+p.lag_d[0]+"–"+p.lag_d[1]+" calendar days. Elapsed: "+p.elapsed_calendar_days+" calendar days since "+p.anchor_asof+".",
+        "声明滞后："+p.lag_d[0]+"–"+p.lag_d[1]+" 个日历日。自 "+p.anchor_asof+" 起已过 "+p.elapsed_calendar_days+" 个日历日。");
+      if (!p.minimum_lag_elapsed) note("The declared minimum lag has not elapsed.", "声明的最短滞后尚未届满。");
+      var focus = el("button","ox-action"); focus.type="button";focus.setAttribute("aria-controls",LEG_DETAIL_ID);
+      focus.appendChild(say("Inspect the expected step", "查看预期环节"));
+      focus.addEventListener("click",function(){focusLeg(p.to);});box.appendChild(focus);
+    }
+    var d = detail("Initiating observation, target and source clocks", "起始观测、目标与来源时间");
+    function row(en,zh,value) { var kv=el("dl","ox-kv"),dt=el("dt");dt.appendChild(say(en,zh));kv.appendChild(dt);kv.appendChild(el("dd",null,value));d.appendChild(kv); }
+    function readings(receipts) { var kv=el("dl","ox-kv"); (receipts || []).forEach(function(r){var dt=el("dt"),dd=el("dd");
+      dt.appendChild(receiptLabel(r));dd.appendChild(receiptValue(r));kv.appendChild(dt);kv.appendChild(dd);});d.appendChild(kv); }
+    if (g.initiating_observation) { row("Initiating observation","起始观测",g.initiating_observation.asof);readings(g.initiating_observation.receipts); }
+    if (p) {
+      var declared=el("div");declared.setAttribute("data-gap-target-predicate","");
+      var title=el("p");title.appendChild(say("Expected target condition","预期目标条件"));declared.appendChild(title);
+      declared.appendChild(targetPredicateSentence(p.expected_target.test));d.appendChild(declared);
+      row("Native source adapter","原生来源适配器",p.expected_target.src);
+      row("Target observation","目标观测",p.target_observation.asof);readings(target.receipts);
+    }
+    if (g.condition_stop) { row("Condition stopped on","条件停止日期",g.condition_stop.asof);readings(g.condition_stop.receipts); }
+    if (snapshot.invalidators.length) {
+      var watch = el("p","ox-note");watch.appendChild(say("Watched conditions: ","观察条件："));
+      snapshot.invalidators.forEach(function(c,i){if(i)watch.appendChild(document.createTextNode(" · "));if(c.note)watch.appendChild(bi(c.note));else if(c.watched && c.watched.series)watch.appendChild(watchedSentence(c.watched));else watch.appendChild(say("Condition wording unavailable", "条件描述不可用"));});d.appendChild(watch);
+    }
+    row("Owner observation / build","数据方观测 / 构建",g.observation.asof+" / "+g.observation.built);
+    row("Path revision","路径版本",String(g.identity.rev));
+    if (g.identity.episode_id) row("Episode reference","过程引用",g.identity.episode_id);
+    row("Source generation","来源版本",src.source_manifest_hash);
+    if (g.ledger.sha256) row("Captured ledger SHA-256","已读取账本 SHA-256",g.ledger.sha256);
+    var caution=el("p","ox-note");caution.appendChild(say("The ledger records transition dates without ingestion clocks. This is a captured reading, not historical point-in-time evidence.",
+      "账本记录状态转换日期，但不含接收时间。本页是本次读取结果，不是历史时点证据。"));d.appendChild(caution);
+    box.appendChild(d);return box;
+  }
+
+
   function render(snapshot) {
     root.textContent = "";
 
@@ -1338,6 +1709,8 @@
     answers.appendChild(renderNextAction(snapshot));
     root.appendChild(answers);
 
+    root.appendChild(renderTransmissionGap(snapshot));
+
     legDetail = renderLegDetail(snapshot);
     root.appendChild(legDetail);
     var exposure = renderExposure(snapshot);
@@ -1346,55 +1719,87 @@
     settle();
   }
 
-  function load() {
-    withAuth({ Accept: "application/json" })
-      .then(function (headers) {
-        return fetch(API, {
-          credentials: "same-origin",
-          cache: "no-store",
-          headers: headers
-        });
-      })
-      .then(function (response) {
-        if (response.status === 401) {
-          gate("Sign in to see the current path", "登录后查看当前路径",
-            "This page describes the product. The current reading is served only to a "
-            + "signed-in account.",
-            "本页面介绍该产品。当前读数仅向已登录账户提供。",
-            "Sign in", "登录", signinHref());
-          return null;
-        }
-        if (response.status === 403) {
-          gate("Included with full access", "包含于完整访问权限",
-            "Your account is signed in but does not include this desk yet.",
-            "您的账户已登录，但尚未包含此功能。",
-            "See plans", "查看方案", "/plans.html?upgrade=1");
-          return null;
-        }
-        if (!response.ok) {
-          return response.json()
-            .catch(function () { return null; })
-            .then(function (body) {
-              var detail = body && body.detail && typeof body.detail === "object"
-                ? body.detail : {};
-              gateForFailure(detail.code || "request_failed");
-              return null;
-            });
-        }
-        return response.json().then(function (snapshot) {
-          if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)
-              || snapshot.schema !== "ontology_explorer_snapshot.v1") {
-            gateForFailure("invalid_snapshot");
-            return null;
-          }
-          return snapshot;
-        });
-      })
-      .then(function (snapshot) { if (snapshot) { render(snapshot); focusFromHash(); } })
-      .catch(function () {
-        gateForFailure("request_failed");
+  async function load() {
+    invalidateReading();
+    if (!acceptedChain) { gateForFailure("chain_not_admitted"); return; }
+    var epoch = readingEpoch;
+    root.replaceChildren();
+    root.setAttribute("aria-busy", "true");
+    var request = new AbortController();
+    activeRequest = request;
+    try {
+      var auth = await withAuth({ Accept: "application/json" });
+      if (epoch !== readingEpoch) return;
+      if (!auth.identity) { signedOutGate(); return; }
+      var response = await fetch(API, {
+        credentials: "same-origin", cache: "no-store", headers: auth.headers,
+        signal: request.signal
       });
+      if (epoch !== readingEpoch) return;
+      if (response.status === 401) {
+        signedOutGate();
+        return;
+      }
+      if (response.status === 403) {
+        gate("Included with full access", "包含于完整访问权限",
+          "Your account is signed in but does not include this desk yet.",
+          "您的账户已登录，但尚未包含此功能。",
+          "See plans", "查看方案", "/plans.html?upgrade=1");
+        return;
+      }
+      var snapshot = await response.json().catch(function () { return null; });
+      if (epoch !== readingEpoch) return;
+      if (!response.ok) {
+        var failure = snapshot && snapshot.detail && typeof snapshot.detail === "object" ? snapshot.detail : {};
+        gateForFailure(failure.code || "request_failed");
+        return;
+      }
+      if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)
+          || snapshot.schema !== "ontology_explorer_snapshot.v1"
+          || snapshot.source?.chain !== selectedChain) {
+        gateForFailure("invalid_snapshot");
+        return;
+      }
+      var sameOwner = await sameReadingOwner(auth.identity);
+      if (epoch !== readingEpoch) return;
+      if (!sameOwner) { signedOutGate(); return; }
+      render(snapshot);
+      focusFromHash();
+      portfolioReading = {
+        chain: snapshot.source.chain, source_manifest_hash: snapshot.source.source_manifest_hash,
+        asof: snapshot.company_exposure && snapshot.company_exposure.asof,
+        identity_sha256: snapshot.company_exposure && snapshot.company_exposure.identity_source && snapshot.company_exposure.identity_source.sha256 || null,
+        owner_id: auth.identity.id,
+        channels: (snapshot.exposure_screens || []).map(function (s) { return {id:s.id, label:s.label}; })
+      };
+      deliverPortfolioReading();
+      scenarioReading = Object.assign({}, snapshot.source, { owner_id: auth.identity.id });
+      deliverScenarioReading();
+      deliverThemeReading();
+    } catch (error) {
+      if (epoch === readingEpoch) gateForFailure("request_failed");
+    } finally {
+      if (activeRequest === request) activeRequest = null;
+    }
   }
+
+  function signedOutGate() {
+    gate("Sign in to see the current path", "登录后查看当前路径",
+      "This page describes the product. The current reading is served only to a signed-in account.",
+      "本页面介绍该产品。当前读数仅向已登录账户提供。",
+      "Sign in", "登录", signinHref());
+  }
+  window.addEventListener("mdx-auth", function (event) {
+    var user = event.detail && event.detail.user;
+    var next = user && typeof user.id === "string" ? user.id : null;
+    if (next === canonicalOwner && (!event.detail || event.detail.event !== "SIGNED_OUT")) return;
+    canonicalOwner = next;
+    invalidateReading();
+    root.replaceChildren();
+    if (next) load(); else signedOutGate();
+  });
+  window.addEventListener("pagehide", function () { invalidateReading(); root.replaceChildren(); });
+  window.addEventListener("pageshow", function (event) { if (event.persisted) load(); });
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", load);

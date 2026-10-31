@@ -1,0 +1,90 @@
+{
+  "schema": "medtech.r14_current_main_composition/v1",
+  "observed_at": "2026-10-20T15:34:04.131135+00:00",
+  "status": "locally_qualified_pending_hosted_ci_and_independent_composition_review",
+  "parents": {
+    "candidate": "b81a5797df0cc2b43d72424461e4fbd0c4f05004",
+    "main": "c304c027c26b75d0f954a0699ddc56e0a3ec3e61"
+  },
+  "tested_tree_before_receipt": "43a3d91dcc935485c23db49a2b02d8ae406ee6d2",
+  "resolution": {
+    "manifest": {
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha256": "c0b86b6a4cdc6d453e7ad1304d8da8674d4102b5dfc343b4641e29a01733457c",
+      "conflict_blocks": 13,
+      "jobs": 337,
+      "all_both_parent_path_sets_preserved": true,
+      "all_non_path_job_bodies_equal_to_main": true
+    },
+    "updater": {
+      "path": "app/deploy/update.sh",
+      "sha256": "2348d39a6e2e7ef250c46961d3bbc59071e058d6b241f850b5a1a6c8a0eb61aa",
+      "both_parent_restart_terms_retained": [
+        "engine/medtech/(events|publication)\\.py",
+        "brain_visuals"
+      ],
+      "bash_syntax_exit": 0
+    },
+    "medtech_source_tests_and_scoped_policy_blobs_unchanged_from_candidate": true,
+    "unmerged_paths": [],
+    "branch_delta_whitespace_exit": 0
+  },
+  "tests": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_medtech.py tests/test_medtech_deployment.py tests/test_ci_pack.py -k 'medtech or ancestor_init_census_does_not_grow' -q",
+      "passed": 95,
+      "subtests_passed": 31,
+      "deselected": 201,
+      "seconds": 22.69,
+      "exit_code": 0,
+      "log": "/tmp/medtech-r14-current-main-composition-20261020.log"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_deploy_update_self_heal.py -q",
+      "passed": 289,
+      "seconds": 22.13,
+      "exit_code": 0,
+      "log": "/tmp/medtech-r14-deploy-update-composition-20261020.log"
+    }
+  ],
+  "previous_candidate_ci": {
+    "head": "b81a5797df0cc2b43d72424461e4fbd0c4f05004",
+    "normal_run_id": 39381334011,
+    "all_binding_checks": "success",
+    "inactive_pilot_context": "nonbinding for main only per canonical ci_authority/merge_on_green policy"
+  },
+  "source_review": {
+    "root_id": "medtech-r14-backend-20261019",
+    "run_id": "medtech-r14-recovery-source-review-20261020-01",
+    "response_sha256": "e7ae215f2c04462466694a47fd7f0bede977bfe3d9aebbf3d79a63f837d6b30a",
+    "worker_status": "COMPLETE",
+    "substantive_verdict": "PASS five source-shape repairs; census defect fixed by01b8 and retained b81; prior hosted pending gate now passed",
+    "parent_disposition": "independent review consumed and accepted for source findings only",
+    "fabric_accept_receipt": "RESULT_TOO_LARGE at max_bytes8000; execution_absence_proven=false and retry_allowed=false; not replayed; same-run result readback accepted=false",
+    "limits": [
+      "Raw private source pages were not visible to worker; committed receipts and exact source blobs were independently checked.",
+      "BR-prefix observation is unverified and does not authorize parser expansion.",
+      "Dedicated workflow ancestor-trigger completeness retained as follow-up; normal CI remains binding."
+    ]
+  },
+  "authority": {
+    "verified_mission_pin": "a7553e0a18339c910eef9687c730b06605dd710e",
+    "bounded_refresh_pin": "e99217f233a1370e7a1ebc9b0d3d1a248b0a8bba",
+    "core_procedures_and_publisher_unchanged": true,
+    "refreshed_companions": [
+      "AGENTS.md",
+      "skills/mastermind-fabric-orchestration/SKILL.md",
+      "skills/mastermind-fabric-orchestration/references/program-ceo.md"
+    ],
+    "direct_execution_reason": [
+      "CRITICAL_PATH_SHORTCUT",
+      "LOWER_TOTAL_OVERHEAD"
+    ],
+    "custody": "incumbent exclusive writer resolving two actual integration conflicts in same managed carrier",
+    "reviewer": "native principal medtech_current_release_ruling; final immutable candidate review pending"
+  },
+  "limits": [
+    "This receipt is not canonical merge, production SQL application, worker activation, API deployment or signed-in paid-user acceptance.",
+    "Scoped0037 policy amendments require canonical Macro acceptance and subsequent exact release/catalog/CI gates."
+  ]
+}

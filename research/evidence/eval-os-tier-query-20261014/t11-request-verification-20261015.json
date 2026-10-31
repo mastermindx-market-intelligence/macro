@@ -1,0 +1,227 @@
+{
+  "schema": "eval_os.t11_source_qualification.v1",
+  "at": "2026-10-15T09:02:19.119450+00:00",
+  "base_revision": "fadcae6907e97cd2d62f3841b64f0bf7bdf6b91d",
+  "source_sha256": {
+    "engine/neuralweb/response_eval.py": "6082ed746f27ea5ec61f2ee736b3fae52ef93bff07d4ef6c69d1c4c6fa369fa3",
+    "tests/test_response_eval.py": "735c00c15b33eaa5b41ad8723f260fa55cd1b46801a0735c777cf20fe79f75cc"
+  },
+  "worker": {
+    "run_id": "eval-t11-request-verifier-01a1333d-c1",
+    "result_sha256": "5ab09d39113c398b432de3b3ffdf3cf8d5f18ccba5ce5e6c26429a952eec8e58",
+    "result_bytes": 4020,
+    "acceptance": "reviewer accepted with parent corrections",
+    "independent_review": false,
+    "usage": "receipt unavailable; no fabricated usage"
+  },
+  "parent_corrections": [
+    "Namespaced private helper names for the existing module.",
+    "Enforced canonical 64-character lowercase registry digest shape.",
+    "Removed worker skip-on-import/missing-production fallbacks; absence now fails the binding tests.",
+    "Integrated explicit ephemeral source context in score_response; mismatch or unavailable assessment cannot pass through a judge score.",
+    "Added actual scorer/checker integration controls and malformed-registry control."
+  ],
+  "checks": {
+    "affected_response_suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "252",
+      "time": "1.984",
+      "timestamp": "2026-10-15T01:56:59.234767-07:00",
+      "hostname": "m2studio"
+    },
+    "focused_ci_controls": {
+      "passed": 3,
+      "exit_code": 0
+    },
+    "closure_misses": {},
+    "strict_packing": [
+      {
+        "probe": "templates/index.html",
+        "jobs": 134,
+        "weight": 5621,
+        "packs": 10,
+        "max_jobs": 136,
+        "max_weight": 5803,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+      },
+      {
+        "probe": "scripts/build_free_content.py",
+        "jobs": 134,
+        "weight": 5441,
+        "packs": 10,
+        "max_jobs": 134,
+        "max_weight": 5600,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+      },
+      {
+        "probe": "engine/prophet/plan_book.py",
+        "jobs": 128,
+        "weight": 5384,
+        "packs": 9,
+        "max_jobs": 130,
+        "max_weight": 5600,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 128/314 jobs (1 unscoped always-on, 127 scoped matches)"
+      }
+    ],
+    "strict_breaches": [],
+    "preexisting_functions_changed": [
+      "score_response"
+    ],
+    "ci_manifest_unchanged": true,
+    "job_definitions": 314
+  },
+  "scope": [
+    "Exact native-renderer subset of 1..12 available finite numeric security fields.",
+    "Caller must provide genuine admitted same-request subscriber envelopes; matching IDs are not authentication.",
+    "Reference-only verification output; no source-context echo to judge, persisted log or result.",
+    "No public badge, tier, historical reconstruction, empirical or financial authority."
+  ],
+  "remaining": [
+    "Protected release, installed execution and actual same-request numeric verdict in the existing internal response log/operator reader.",
+    "General model-narrative numeric verification.",
+    "A1 has no admitted numeric input.",
+    "Follow-on installed CLI and rights-qualified Discovery adoption."
+  ],
+  "production_proven": false,
+  "programme_complete": false,
+  "caller_composition": {
+    "at": "2026-10-15T09:34:30.375477+00:00",
+    "base_revision": "31e0da50ac6b1aa635b71f591252984b6bec13cc",
+    "source_sha256": {
+      "engine/neuralweb/native_facts.py": "0bea7716427aced73459f7d5d547ad06781adf6e1afbf0bb5eb82a2ad49f8be5",
+      "engine/neuralweb/brain_gateway.py": "eaabaad673bf89efebb526f759ae3e98fb35b22914e8793ad22f4c18479a418c",
+      "lib/mastermind_response_log.py": "1cf4f6afdcdf3084e6122b642aa09a1547bfa746a746d753c71bab5493980c79",
+      "tests/test_brain_instant_lane.py": "36a7c02a342202fcd44fde003fe24ea3386ff99252bec21a1b35cb4685e263b3",
+      "tests/test_mastermind_response_log.py": "880854a8cd9e417341b5cabdb3eb2fb92e484543d371f46fdd64452e26a76b0a",
+      ".github/ci/legacy-jobs.yml": "b959cfb636cebc9b12aae8952200110f143e0ec32bfe8bc0c108205ba69ff4ee"
+    },
+    "worker": {
+      "run_id": "eval-t11-log-telemetry-01a1333d-c1",
+      "result_sha256": "0aa70af7abbbab3faa5d2412722de3a26fa85dac2a022aaa57b34038ce7b93c9",
+      "result_bytes": 2994,
+      "acceptance": "reviewer accepted WITH substantial strictness corrections",
+      "independent_review": false,
+      "usage": "receipt unavailable"
+    },
+    "worker_corrections": [
+      "Reject missing or non-true internal_qa_only instead of restamping it.",
+      "Reject excess or malformed references before iteration instead of dropping them and retaining success.",
+      "Reject duplicate field identity, including different fingerprints; never deduplicate a claim into success.",
+      "Use exact count/list/dict types and bounded strict projection; add build_row and real caller-to-operator-reader coverage."
+    ],
+    "checks": {
+      "caller_regression_initial": {
+        "tests": 416,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0
+      },
+      "missing_identity_artifact_repair": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "sink_and_caller_integration": {
+        "tests": 39,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "remaining_sink_cases": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "unique_sink_tests": 36,
+      "scope_controls": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "probe_selftests": 14,
+      "closure_misses": {},
+      "packing": [
+        {
+          "probe": "templates/index.html",
+          "jobs": 134,
+          "weight": 5621,
+          "packs": 10,
+          "max_jobs": 136,
+          "max_weight": 5803,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+        },
+        {
+          "probe": "scripts/build_free_content.py",
+          "jobs": 134,
+          "weight": 5441,
+          "packs": 10,
+          "max_jobs": 134,
+          "max_weight": 5600,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+        },
+        {
+          "probe": "engine/prophet/plan_book.py",
+          "jobs": 128,
+          "weight": 5384,
+          "packs": 9,
+          "max_jobs": 130,
+          "max_weight": 5600,
+          "max_packs": 10,
+          "reason": "scoped to 1 changed file(s): 128/314 jobs (1 unscoped always-on, 127 scoped matches)"
+        }
+      ],
+      "strict_breaches": []
+    },
+    "initial_failure_disposition": "Two existing real-runtime parity tests lacked exact committed security_master/vendor_aliases files in the sparse checkout. Only those exact HEAD files were materialized; both failures then passed. The414 earlier passes were reused.",
+    "ci_preservation": {
+      "job_definitions": 314,
+      "only_added_inputs": {
+        "validated-claims-contract": [
+          "config/metabolism_budget.yml",
+          "engine/forward_dist.py",
+          "engine/k3e_eval1_forward.py",
+          "engine/llm_auth.py",
+          "engine/metabolism/__init__.py",
+          "engine/metabolism/budget_gate.py",
+          "engine/neuralweb/__init__.py",
+          "engine/neuralweb/analyst_doctrine.py",
+          "engine/neuralweb/capability_broker.py",
+          "engine/neuralweb/doctrine.py",
+          "engine/neuralweb/response_eval.py",
+          "engine/ollama_provider.py",
+          "engine/pick_forward_dist.py",
+          "engine/provider_health.py",
+          "engine/seasonality/contracts.py",
+          "engine/seasonality/multiplicity.py",
+          "research/BLS_SURVEY_REVISION_CASE_2024_03_08.md",
+          "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+          "research/FOMC_QT_CLOCK_CASE_2024_05_01.md",
+          "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
+          "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+          "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+          "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+          "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+          "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md",
+          "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+          "research/SNB_FLOOR_RATE_CASE_2015_01_15.md"
+        ]
+      },
+      "prior_paths_and_execution_limits_preserved": true
+    },
+    "behavior": "Native executor verifies actual same-request resolver envelopes; both gateway modes use compiled-context request_id for the existing internal log. Only strict reference-only verdict leaves source scope. Existing operator reader retains it; public response and persisted assistant metadata do not.",
+    "probe_scope": "Eleven direct source files and two existing CLI observations; not live numeric execution proof.",
+    "source_rights_or_auth_changed": false,
+    "public_response_contract_changed": false
+  }
+}

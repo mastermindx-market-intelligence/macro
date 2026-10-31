@@ -1,0 +1,261 @@
+{
+  "as_of": "2026-10-20",
+  "coverage": {
+    "end": "2026-10-19",
+    "note": "daily rollup covers 10 session-date(s) from 2026-10-08 to 2026-10-19; chronicle event store begins 2013-03-14; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-10-08"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-10-19",
+      "events": []
+    },
+    {
+      "date": "2026-10-16",
+      "events": []
+    },
+    {
+      "date": "2026-10-15",
+      "events": [
+        {
+          "date": "2026-10-15",
+          "id": "cev-regime_flip-cc70334b0cff",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-10-15#regime_canada",
+          "tickers": [],
+          "title": "CANADA regime: Q2 Reflation → Q3 Stagflation",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-15",
+          "id": "cev-research_vault-6dab5f979270",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-zarzrnqfgu6-29437b",
+          "tickers": [],
+          "title": "S&T: GS Novak GS U.S. Industrials & Materials tough EPS start 14 Oct 2026",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-15",
+          "id": "cev-research_vault-c6ef53e30dab",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-2vgkwavht24-a7588c",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Afternoon Briefing Oct 14",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-14",
+      "events": [
+        {
+          "date": "2026-10-14",
+          "id": "cev-regime_flip-01a7fce7e06a",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-10-14#regime_hk",
+          "tickers": [],
+          "title": "HK regime: Q4 Growth-scare → Q2 Reflation",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-14",
+          "id": "cev-research_vault-5c4104d034c2",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-zidfbw2dhyr-90424e",
+          "tickers": [],
+          "title": "S&T: GS Bartlett GS TMT TODAY 10.14.26 14 Oct 2026",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-14",
+          "id": "cev-research_vault-6b5616e57697",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-60kies6hqgh-b50195",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence Afternoon Briefing Oct 13",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-14",
+          "id": "cev-research_vault-9860c1d894e4",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-c0hubv6rxqd-061033",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-13",
+      "events": [
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-14cdff40d738",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-jwvuj75ku1d-91707f",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence Afternoon Briefing Oct 12",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-6267fbceae3c",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-i2kdffan2hz-88e4fd",
+          "tickers": [],
+          "title": "Goldman Sachs: Americas Fintech 3Q26 Preview Weighing key investor debates and near term earnings setups",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-79268d4c2c88",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-uejhgzrho58-2d4f8c",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Afternoon Briefing",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-a016e2b55ce2",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-wwiddhpakjg-5f90c1",
+          "tickers": [],
+          "title": "Goldman Sachs: GS Early Morning Research Recap Ratings and Target Price Changes October 13, 2026 as of 5 30 AM ET",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-13",
+          "id": "cev-research_vault-e8b1ba93a968",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-mltowfpejrj-13c4c0",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-12",
+      "events": [
+        {
+          "date": "2026-10-12",
+          "id": "cev-research_vault-92ee430321ca",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-arbvfsvswas-96701d",
+          "tickers": [],
+          "title": "BlackRock: Weekly investment commentary en us 20261012 upgrading us treasuries to lock in income",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-11",
+      "events": [
+        {
+          "date": "2026-10-11",
+          "id": "cev-research_vault-3e89189a0040",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-u3jutia0kcw-5915c8",
+          "tickers": [],
+          "title": "Morgan Stanley: MS Savone Global Reflections 10 Oct 2026",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-10",
+      "events": [
+        {
+          "date": "2026-10-10",
+          "id": "cev-research_vault-c81c6afe8815",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-xyyijkslpal-b997fb",
+          "tickers": [],
+          "title": "Other: Q4 2026 Corporate Bond Market Outlook",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-10",
+          "id": "cev-research_vault-c957b5402666",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-dbzxdymzfwl-25864a",
+          "tickers": [],
+          "title": "MUFG: Asia FX Weekly",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-09",
+      "events": [
+        {
+          "date": "2026-10-09",
+          "id": "cev-research_vault-563ddf08df7f",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-bysgsalbed9-23bafe",
+          "tickers": [],
+          "title": "UBS: Japanese equities",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-09",
+          "id": "cev-research_vault-7305295c7bad",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-qvymtn8aohk-00548d",
+          "tickers": [],
+          "title": "J.P. Morgan: REPLAY Intel Insights Conf. Call: Sales & Trading Views on Macro, Midterms, and Earnings Season Setup",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-09",
+          "id": "cev-research_vault-9de6b54454ae",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-boh0tbzdmrw-bc9fcb",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-08",
+      "events": [
+        {
+          "date": "2026-10-08",
+          "id": "cev-prophet_ledger-f542c25354ff",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "TRIP-BULL-20261002",
+          "tickers": [
+            "TRIP"
+          ],
+          "title": "Prophet close: TRIP BULL → T1_HIT (+5.3% in 6d)",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}

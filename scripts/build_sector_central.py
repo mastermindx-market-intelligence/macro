@@ -448,6 +448,15 @@ def main(*, strict: bool = False) -> int:
     (fdir / "sector_central.json").write_text(
         json.dumps(data, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
 
+    # Options R1 W2A: weekly relative-trend feed (additive, never fatal; see engine/rotation_relative_trend.py).
+    try:
+        from engine.rotation_relative_trend import emit_relative_trend_additive
+        from engine.sector_cycles import SECTORS as _W2A_SECTOR_FUNDS
+        emit_relative_trend_additive(
+            fdir, sectors=[(tk.lower(), tk) for tk in _W2A_SECTOR_FUNDS], log=log)
+    except Exception as e:  # noqa: BLE001
+        log.warning("sector_central: relative trend feed skipped: %s", e)
+
     # autoescape=True: the merged Sector Intelligence template descends from the baskets
     # rvx template (written for an autoescaping env); flows_html is |safe-marked in-template.
     env = Environment(loader=FileSystemLoader(str(root / "templates")), autoescape=True)
@@ -617,6 +626,12 @@ def main(*, strict: bool = False) -> int:
     log.info("built site/sector_central.html (%d sectors, %d baskets, %d calls logged, grader=%s)",
              len(data["sectors"]), len(data.get("baskets", [])), n_logged,
              (data.get("grader") or {}).get("available"))
+    # Options R1 W2B: holdings coverage feed (additive, never fatal; see scripts/build_sector_holdings_coverage.py).
+    try:
+        from scripts.build_sector_holdings_coverage import emit_holdings_coverage_additive
+        emit_holdings_coverage_additive(fdir, log=log)
+    except Exception as e:  # noqa: BLE001
+        log.warning("sector_central: holdings coverage feed skipped: %s", e)
     return 0
 
 

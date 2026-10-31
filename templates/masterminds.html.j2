@@ -144,14 +144,17 @@ html[data-theme="dark"] .mm-mets>div{background:var(--bg)}
         <div class="mm-mets">
           <div><span class="mm-k">Sharpe</span><span class="mm-v">{{ m.sharpe }}</span><span class="mm-d">{{ t('B&H','买持') }} {{ m.hodl_sharpe }}</span></div>
           <div><span class="mm-k">{{ t('Max DD','最大回撤') }}</span><span class="mm-v">{{ m.maxdd }}%</span><span class="mm-d">{{ t('B&H','买持') }} {{ m.hodl_maxdd }}%</span></div>
-          <div><span class="mm-k">{{ t('Leverage','杠杆') }}</span><span class="mm-v">{{ m.gross_now }}x</span><span class="mm-d">{{ m.years }}y</span></div>
+          <div><span class="mm-k">{{ t('Leverage','杠杆') }}</span><span class="mm-v">{{
+              m.gross_now }}x</span><span class="mm-d">{{ m.years }}y{% if m.asof %}
+          · {{ t('Weights as of','权重截至') }} {{ m.asof }}{% endif %}</span></div>
         </div>
         <div class="mm-thesis">{{ t(m.thesis_en, m.thesis_zh) }}</div>
         <div class="mm-go">{{ t('Open strategy','打开策略') }} →</div>
       </a>
       {% endfor %}
     </div>
-    <div class="note" style="margin-top:22px">{{ t('Honest framing: the robust, out-of-sample-stable edge is the SHARPE and the DRAWDOWN (~1.5-2x the benchmark Sharpe, far shallower drawdowns). The raw-CAGR beat is era-dependent — Aggressive beats the S&P on CAGR in both backtest halves; Moderate beats it full-sample; Conservative is built to beat 60/40 on risk-adjusted terms. Net of cost + financing. Benchmarks: the S&P 500 and a 60/40.','诚实说明：稳健且样本外稳定的优势在于夏普与回撤（约为基准夏普的 1.5-2 倍，回撤浅得多）。原始年化的跑赢取决于时代——进取档在回测两个半段均跑赢标普；均衡档全样本跑赢；保守档旨在风险调整后跑赢 60/40。扣除成本+融资。基准：标普500 与 60/40。') }}</div>
+    {% if note_en %}<div class="note" style="margin-top:22px">{{ t(note_en, note_zh)
+    }}</div>{% endif %}
   </div>
 
   <div class="foot">

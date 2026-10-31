@@ -1,0 +1,590 @@
+{
+  "schema": "medtech.cms-source-qualification.v1",
+  "scope": "Read-only source qualification; CMS is not activated or supported by the current R14 product",
+  "observed_on": "2026-10-20",
+  "spec": {
+    "url": "https://api.coverage.cms.gov/docs/v1/coverage-api.json",
+    "openapi": "3.0.3",
+    "version": "1.6",
+    "servers": null,
+    "sha256": "f785d57459573b5e54d01369cd04db74e14b62896a34b7b9462b5539d344fac9"
+  },
+  "operations": {
+    "/v1/reports/national-coverage-ncacal/": {
+      "operationId": "getReportsNcaCalStatus",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/document_type"
+        },
+        {
+          "$ref": "#/components/parameters/status"
+        }
+      ],
+      "security": "not declared on operation"
+    },
+    "/v1/reports/national-coverage-annual/": {
+      "operationId": "getReportsNationalCoverageAnnual",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/document_type"
+        },
+        {
+          "$ref": "#/components/parameters/year"
+        }
+      ],
+      "security": "not declared on operation"
+    },
+    "/v1/data/nca/": {
+      "operationId": "getDataNca",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ncaid"
+        }
+      ],
+      "security": "not declared on operation"
+    },
+    "/v1/data/nca/tracking-sheet": {
+      "operationId": "getDataNcaTrackingSheet",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ncaid"
+        }
+      ],
+      "security": "not declared on operation"
+    },
+    "/v1/data/nca/related-ncd": {
+      "operationId": "getDataNcaRelatedNcd",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ncaid"
+        }
+      ],
+      "security": "not declared on operation"
+    },
+    "/v1/data/nca/history": {
+      "operationId": "getDataNcaHistory",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ncaid"
+        }
+      ],
+      "security": "not declared on operation"
+    },
+    "/v1/data/nca/decision-memo": {
+      "operationId": "getDataNcaDecisionMemo",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ncaid"
+        }
+      ],
+      "security": "not declared on operation"
+    },
+    "/v1/data/nca/proposed-decision-memo": {
+      "operationId": "getDataNcaProposedDecisionMemo",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ncaid"
+        }
+      ],
+      "security": "not declared on operation"
+    },
+    "/v1/data/ncd/": {
+      "operationId": "getDataNcd",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ncdid"
+        },
+        {
+          "$ref": "#/components/parameters/ncdver"
+        }
+      ],
+      "security": "not declared on operation"
+    }
+  },
+  "report": {
+    "row_count": 298,
+    "unique_typed_ids": 295,
+    "document_type_counts": {
+      "NCA": 261,
+      "CAL": 37
+    },
+    "status_counts": {
+      "Open For Public Comment": 1,
+      "Open": 4,
+      "Closed": 293
+    },
+    "meta_status": {
+      "id": 200,
+      "message": "OK"
+    },
+    "next_token": "",
+    "duplicate_version_keys": [
+      {
+        "key": [
+          "NCA",
+          322,
+          4
+        ],
+        "rows": [
+          {
+            "document_type": "NCA",
+            "document_id": 322,
+            "document_version": 4,
+            "document_display_id": "CAG-00471N",
+            "title": "Leadless CRT - Wireless Stimulation Endocardially (WiSE)",
+            "document_status": "Open",
+            "last_updated": "07/17/2026",
+            "url": "/data/nca?ncaid=322",
+            "last_updated_sort": "20260717101802"
+          },
+          {
+            "document_type": "NCA",
+            "document_id": 322,
+            "document_version": 4,
+            "document_display_id": "CAG-00471N",
+            "title": "Wireless Stimulation Endocardially for Cardiac Resynchronization Therapy System (WiSE CRT)",
+            "document_status": "Open",
+            "last_updated": "07/17/2026",
+            "url": "/data/nca?ncaid=322",
+            "last_updated_sort": "20260717101802"
+          }
+        ]
+      },
+      {
+        "key": [
+          "NCA",
+          143,
+          50
+        ],
+        "rows": [
+          {
+            "document_type": "NCA",
+            "document_id": 143,
+            "document_version": 50,
+            "document_display_id": "CAG-00274N",
+            "title": "Mobility Assistive Equipment",
+            "document_status": "Closed",
+            "last_updated": "09/18/2026",
+            "url": "/data/nca?ncaid=143",
+            "last_updated_sort": "20260918115709"
+          },
+          {
+            "document_type": "NCA",
+            "document_id": 143,
+            "document_version": 50,
+            "document_display_id": "CAG-00274N",
+            "title": "Wheelchairs",
+            "document_status": "Closed",
+            "last_updated": "09/18/2026",
+            "url": "/data/nca?ncaid=143",
+            "last_updated_sort": "20260918115709"
+          }
+        ]
+      },
+      {
+        "key": [
+          "NCA",
+          297,
+          17
+        ],
+        "rows": [
+          {
+            "document_type": "NCA",
+            "document_id": 297,
+            "document_version": 17,
+            "document_display_id": "CAG-00438R",
+            "title": "Transcatheter Edge-to-Edge Repair (TEER) for Mitral Valve Regurgitation",
+            "document_status": "Closed",
+            "last_updated": "09/23/2026",
+            "url": "/data/nca?ncaid=297",
+            "last_updated_sort": "20260923132226"
+          },
+          {
+            "document_type": "NCA",
+            "document_id": 297,
+            "document_version": 17,
+            "document_display_id": "CAG-00438R",
+            "title": "Transcatheter Mitral Valve Repair (TMVR)",
+            "document_status": "Closed",
+            "last_updated": "09/23/2026",
+            "url": "/data/nca?ncaid=297",
+            "last_updated_sort": "20260923132226"
+          }
+        ]
+      }
+    ]
+  },
+  "samples": {
+    "nca-322-core.json": {
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "next_token": "",
+      "data_projection": [
+        {
+          "document_id": 322,
+          "document_display_id": "CAG-00471N",
+          "document_status": "Open",
+          "title": "Leadless CRT - Wireless Stimulation Endocardially (WiSE)",
+          "last_updated": "07/17/2026"
+        }
+      ],
+      "meta_notes": ""
+    },
+    "nca-322-tracking.json": {
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "next_token": "",
+      "data_projection": [
+        {
+          "document_id": 322,
+          "document_display_id": "CAG-00471N",
+          "document_status": "Open",
+          "title": "Leadless CRT - Wireless Stimulation Endocardially (WiSE)",
+          "formal_request_date": "06/03/2026",
+          "expected_completion_date": "03/03/2027",
+          "public_comment_start_date": "06/03/2026",
+          "public_comment_end_date": "07/03/2026",
+          "proposed_decision_memo_due_date": "12/03/2026",
+          "proposed_decision_memo_date": "",
+          "proposed_public_comment_start_date": "",
+          "proposed_public_comment_end_date": "",
+          "decision_memo_date": "",
+          "benefit_category_determination_date": ""
+        }
+      ],
+      "meta_notes": ""
+    },
+    "nca-322-related-ncd.json": {
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "next_token": "",
+      "data_projection": [],
+      "meta_notes": " Your parameters returned 0 results, so the data array is empty."
+    },
+    "nca-324-core.json": {
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "next_token": "",
+      "data_projection": [
+        {
+          "document_id": 324,
+          "document_display_id": "CAG-00430R3",
+          "document_status": "Open",
+          "title": "Transcatheter Aortic Valve Replacement (TAVR) for Aortic Regurgitation (AR)",
+          "last_updated": "09/14/2026"
+        }
+      ],
+      "meta_notes": ""
+    },
+    "nca-324-tracking.json": {
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "next_token": "",
+      "data_projection": [
+        {
+          "document_id": 324,
+          "document_display_id": "CAG-00430R3",
+          "document_status": "Open",
+          "title": "Transcatheter Aortic Valve Replacement (TAVR) for Aortic Regurgitation (AR)",
+          "formal_request_date": "09/10/2026",
+          "expected_completion_date": "06/08/2027",
+          "public_comment_start_date": "09/10/2026",
+          "public_comment_end_date": "10/10/2026",
+          "proposed_decision_memo_due_date": "03/10/2027",
+          "proposed_decision_memo_date": "",
+          "proposed_public_comment_start_date": "",
+          "proposed_public_comment_end_date": "",
+          "decision_memo_date": "",
+          "benefit_category_determination_date": ""
+        }
+      ],
+      "meta_notes": ""
+    },
+    "nca-324-related-ncd.json": {
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "next_token": "",
+      "data_projection": [
+        {
+          "document_id": 355,
+          "document_version": 2,
+          "title": "Transcatheter Aortic Valve Replacement (TAVR)",
+          "section": "20.32",
+          "url": "/data/ncd?ncdid=355&ncdver=2"
+        }
+      ],
+      "meta_notes": ""
+    },
+    "ncd-355-v2.json": {
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "next_token": "",
+      "data_projection": [
+        {
+          "document_id": "355",
+          "document_version": 2,
+          "document_display_id": "20.32",
+          "title": "Transcatheter Aortic Valve Replacement (TAVR)",
+          "publication_number": "100-3",
+          "effective_date": "06/21/2019",
+          "effective_end_date": "N/A",
+          "implementation_date": "06/12/2020",
+          "qr_modifier_date": "",
+          "transmittal_number": "217",
+          "transmittal_url": "https://www.cms.gov/files/document/r217ncd.pdf"
+        }
+      ],
+      "meta_notes": ""
+    }
+  },
+  "source_receipts": [
+    {
+      "observed_at": "2026-10-20T17:13:43.970571+00:00",
+      "url": "https://api.coverage.cms.gov/docs/v1/coverage-api.json",
+      "final_url": "https://api.coverage.cms.gov/docs/v1/coverage-api.json",
+      "status": 200,
+      "bytes": 284894,
+      "sha256": "f785d57459573b5e54d01369cd04db74e14b62896a34b7b9462b5539d344fac9",
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Coverage API",
+        "description": "This API supports the National and Local Coverage applications, including the Medicare Coverage Database (MCD). Please refer to the MCD data dictionaries for all field descriptions: [MCD Data Dictionary Downloads](https://www.cms.gov/medicare-coverage-database/downloads/downloads.aspx).<br/><br/>API Keys are not required to access the endpoints. However, please note that some endpoints require the License Agreement token for access. This token is generated by accepting the AMA, ADA, and AHA license agreements, and must be included in the Authorization header of your API requests as a Bearer token and is valid for one hour.<br/><br/> If you would like to sign up to receive updates on our API development, please go here [https://qualitynet.cms.gov/listserv-signup](https://qualitynet.cms.gov/listserv-signup) and enter your email address.",
+        "version": "1.6"
+      },
+      "servers": null
+    },
+    {
+      "observed_at": "2026-10-20T17:15:28.528201+00:00",
+      "url": "https://api.coverage.cms.gov/v1/reports/national-coverage-ncacal/",
+      "final_url": "https://api.coverage.cms.gov/v1/reports/national-coverage-ncacal/",
+      "http_status": 200,
+      "bytes": 107039,
+      "sha256": "7dc9badb5f0f6fd39b3bf09b5f137855302c093c8de4350cb12b0e322e06edbd",
+      "meta": {
+        "status": {
+          "id": 200,
+          "message": "OK"
+        },
+        "notes": "",
+        "fields": [
+          "document_id",
+          "document_version",
+          "document_display_id",
+          "document_status",
+          "last_updated",
+          "last_updated_sort",
+          "document_type",
+          "title",
+          "review_type",
+          "status_display_order",
+          "public_comment",
+          "url"
+        ],
+        "children": [],
+        "next_token": ""
+      },
+      "row_count": 298,
+      "document_types": {
+        "NCA": 261,
+        "CAL": 37
+      },
+      "document_statuses": {
+        "Open For Public Comment": 1,
+        "Open": 4,
+        "Closed": 293
+      }
+    },
+    {
+      "observed_at": "2026-10-20T17:16:03.198056+00:00",
+      "url": "https://api.coverage.cms.gov/v1/data/nca/?ncaid=322",
+      "final_url": "https://api.coverage.cms.gov/v1/data/nca/?ncaid=322",
+      "http_status": 200,
+      "file": "nca-322-core.json",
+      "bytes": 1586,
+      "sha256": "ae83964149e00af086090625de4b36930cdc308756668407f68b5c3548b44b25",
+      "row_count": 1,
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "next_token": ""
+    },
+    {
+      "observed_at": "2026-10-20T17:16:03.489553+00:00",
+      "url": "https://api.coverage.cms.gov/v1/data/nca/tracking-sheet?ncaid=322",
+      "final_url": "https://api.coverage.cms.gov/v1/data/nca/tracking-sheet?ncaid=322",
+      "http_status": 200,
+      "file": "nca-322-tracking.json",
+      "bytes": 6160,
+      "sha256": "4bb4e72f98d1e8f58cf7b504f56ad53904e7252fb178a2406828f196ca25dec3",
+      "row_count": 1,
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "next_token": ""
+    },
+    {
+      "observed_at": "2026-10-20T17:16:03.793761+00:00",
+      "url": "https://api.coverage.cms.gov/v1/data/nca/related-ncd?ncaid=322",
+      "final_url": "https://api.coverage.cms.gov/v1/data/nca/related-ncd?ncaid=322",
+      "http_status": 200,
+      "file": "nca-322-related-ncd.json",
+      "bytes": 228,
+      "sha256": "aa6cb0a21d8e6e943b8f11af285f615265548e6012305f68e516c5830cccc8ec",
+      "row_count": 0,
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "next_token": ""
+    },
+    {
+      "observed_at": "2026-10-20T17:16:04.117052+00:00",
+      "url": "https://api.coverage.cms.gov/v1/data/nca/?ncaid=324",
+      "final_url": "https://api.coverage.cms.gov/v1/data/nca/?ncaid=324",
+      "http_status": 200,
+      "file": "nca-324-core.json",
+      "bytes": 1583,
+      "sha256": "76c08ba2c7fe887ccc0ba7b028f80acabea69f4093ddb7dec6dbbfbbe5e37743",
+      "row_count": 1,
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "next_token": ""
+    },
+    {
+      "observed_at": "2026-10-20T17:16:04.446015+00:00",
+      "url": "https://api.coverage.cms.gov/v1/data/nca/tracking-sheet?ncaid=324",
+      "final_url": "https://api.coverage.cms.gov/v1/data/nca/tracking-sheet?ncaid=324",
+      "http_status": 200,
+      "file": "nca-324-tracking.json",
+      "bytes": 6343,
+      "sha256": "a14abdeedd69d79605dcd43cf2c078c32716beb93f5921e9eaec8bb66e9d9c63",
+      "row_count": 1,
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "next_token": ""
+    },
+    {
+      "observed_at": "2026-10-20T17:16:04.623801+00:00",
+      "url": "https://api.coverage.cms.gov/v1/data/nca/related-ncd?ncaid=324",
+      "final_url": "https://api.coverage.cms.gov/v1/data/nca/related-ncd?ncaid=324",
+      "http_status": 200,
+      "file": "nca-324-related-ncd.json",
+      "bytes": 320,
+      "sha256": "e783eb11d4c1d719a882149cd541b89ada3e3e0e6a2ce0bbc6c67b2ee5a838fb",
+      "row_count": 1,
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "next_token": ""
+    },
+    {
+      "source_url": "https://api.coverage.cms.gov/v1/data/ncd/?ncdid=355&ncdver=2",
+      "final_url": "https://api.coverage.cms.gov/v1/data/ncd/?ncdid=355&ncdver=2",
+      "retrieved_at": "2026-10-20T17:19:46.260825+00:00",
+      "http_status": 200,
+      "bytes": 23182,
+      "sha256": "3820d3f4da32b03c7b4401f5c9e06b77de862304fb39cabcc4417dabea1341a9",
+      "meta_status": {
+        "id": 200,
+        "message": "OK"
+      },
+      "file": "ncd-355-v2.json"
+    }
+  ],
+  "limitations": [
+    "No CMS collector, watch type, runtime capability, UI date forecast or deployment was added.",
+    "NCA detail/tracking responses do not return the report document_version, so a version-pinned join is not yet qualified.",
+    "National report pagination was observed empty; a general pagination contract is not qualified.",
+    "Raw staff contact fields and HTML clinical narratives are excluded from this bounded evidence projection.",
+    "An empty related-NCD array means this endpoint reports no link; it is not proof of no Medicare coverage.",
+    "CMS related document URLs omit the v1 prefix and must be resolved through an allowlisted known API route.",
+    "Process targets, actual memo dates, coverage effective dates, implementation dates and observation timestamps remain distinct."
+  ],
+  "owner_verification": {
+    "verified_at": "2026-10-20T18:08:34.810507+00:00",
+    "method": "Exact retained raw-byte digest/length comparison; complete report recount; field-by-field native sample projection comparison; OpenAPI operation comparison. No live re-fetch.",
+    "source_body_receipts_verified": [
+      {
+        "file": "coverage-api.json",
+        "bytes": 284894,
+        "sha256": "f785d57459573b5e54d01369cd04db74e14b62896a34b7b9462b5539d344fac9",
+        "receipt_matches": true
+      },
+      {
+        "file": "nca-cal-report.json",
+        "bytes": 107039,
+        "sha256": "7dc9badb5f0f6fd39b3bf09b5f137855302c093c8de4350cb12b0e322e06edbd",
+        "receipt_matches": true
+      },
+      {
+        "file": "nca-322-core.json",
+        "bytes": 1586,
+        "sha256": "ae83964149e00af086090625de4b36930cdc308756668407f68b5c3548b44b25",
+        "receipt_matches": true
+      },
+      {
+        "file": "nca-322-tracking.json",
+        "bytes": 6160,
+        "sha256": "4bb4e72f98d1e8f58cf7b504f56ad53904e7252fb178a2406828f196ca25dec3",
+        "receipt_matches": true
+      },
+      {
+        "file": "nca-322-related-ncd.json",
+        "bytes": 228,
+        "sha256": "aa6cb0a21d8e6e943b8f11af285f615265548e6012305f68e516c5830cccc8ec",
+        "receipt_matches": true
+      },
+      {
+        "file": "nca-324-core.json",
+        "bytes": 1583,
+        "sha256": "76c08ba2c7fe887ccc0ba7b028f80acabea69f4093ddb7dec6dbbfbbe5e37743",
+        "receipt_matches": true
+      },
+      {
+        "file": "nca-324-tracking.json",
+        "bytes": 6343,
+        "sha256": "a14abdeedd69d79605dcd43cf2c078c32716beb93f5921e9eaec8bb66e9d9c63",
+        "receipt_matches": true
+      },
+      {
+        "file": "nca-324-related-ncd.json",
+        "bytes": 320,
+        "sha256": "e783eb11d4c1d719a882149cd541b89ada3e3e0e6a2ce0bbc6c67b2ee5a838fb",
+        "receipt_matches": true
+      },
+      {
+        "file": "ncd-355-v2.json",
+        "bytes": 23182,
+        "sha256": "3820d3f4da32b03c7b4401f5c9e06b77de862304fb39cabcc4417dabea1341a9",
+        "receipt_matches": true
+      }
+    ],
+    "sample_native_fields_verified": 54,
+    "report_counts_reproduced": true,
+    "duplicate_groups_reproduced": true,
+    "nca_detail_tracking_do_not_echo_document_version": true,
+    "empty_related_ncd_note_retained": true,
+    "projection_correction": "Replaced six synthetic sort_date:null fields with exact native last_updated_sort values. Added native meta_notes to each bounded sample."
+  }
+}

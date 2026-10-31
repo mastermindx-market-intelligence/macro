@@ -1,0 +1,58 @@
+{
+  "classification": "LANDED_DEPENDENCY_SOURCE_EQUALITY_ONLY",
+  "at": "2026-10-20T04:34:34.090222+00:00",
+  "landed_ref": "a7553e0a18339c910eef9687c730b06605dd710e",
+  "files": [
+    {
+      "path": "bot/__init__.py",
+      "reviewed_git_blob": "7cd08f9dbb5a7534f997a1394062b4d72774d7a0",
+      "landed_git_blob": "7cd08f9dbb5a7534f997a1394062b4d72774d7a0",
+      "equal": true
+    },
+    {
+      "path": "portfolio/__init__.py",
+      "reviewed_git_blob": "8f957bc85f3f20f0fd1d8f97d27ba56f69f5d026",
+      "landed_git_blob": "8f957bc85f3f20f0fd1d8f97d27ba56f69f5d026",
+      "equal": true
+    },
+    {
+      "path": "portfolio/registry.py",
+      "reviewed_git_blob": "f5eb632d8f2d8dfcdbe11abb19076f9d746b38fe",
+      "landed_git_blob": "f5eb632d8f2d8dfcdbe11abb19076f9d746b38fe",
+      "equal": true
+    },
+    {
+      "path": "control_plane/locks.py",
+      "reviewed_git_blob": "e207d7da64ea2a1bb591b65c3229962b11945993",
+      "landed_git_blob": "e207d7da64ea2a1bb591b65c3229962b11945993",
+      "equal": true
+    },
+    {
+      "path": "portfolio/paper_account.py",
+      "reviewed_git_blob": "d80b8cfc3397742e203e99ee8c15e5f44969cd50",
+      "landed_git_blob": "d80b8cfc3397742e203e99ee8c15e5f44969cd50",
+      "equal": true
+    },
+    {
+      "path": "bot/settle.py",
+      "reviewed_git_blob": "abfe4b92f24061a82855af116d697cdbd25f5656",
+      "landed_git_blob": "abfe4b92f24061a82855af116d697cdbd25f5656",
+      "equal": true
+    },
+    {
+      "path": "portfolio/forward_evaluation.py",
+      "reviewed_git_blob": "ef9944ebed235803ea32e7532c0a03884675cc69",
+      "landed_git_blob": "ef9944ebed235803ea32e7532c0a03884675cc69",
+      "equal": true
+    },
+    {
+      "path": "scripts/refresh_datadog_release_tag.sh",
+      "reviewed_git_blob": "a7a32713ef1477d1b84398ff24c6b9fda938831e",
+      "landed_git_blob": "a7a32713ef1477d1b84398ff24c6b9fda938831e",
+      "equal": true
+    }
+  ],
+  "equal_count": 8,
+  "source_executed": false,
+  "production_operations": 0
+}

@@ -80,6 +80,8 @@
         <div class="cc-big">{{ c.n }} <span class="cc-sub">{{ t('names','只') }}</span></div>
         <div class="cc-sub">{{ t(c.spender_en, c.spender_zh) }}</div>
         {% if c.leaders %}<div class="cc-ser">{% for l in c.leaders %}<span class="ser">{{ l.t }} {{ '%+.0f'|format(l.yoy) }}%</span>{% endfor %}</div>{% endif %}
+        {% if c.cache_as_of %}<div class="cc-sub faint">{{ t('RPO data last refreshed',
+          'RPO数据最近更新于') }} {{ c.cache_as_of }}</div>{% endif %}
       {% endif %}
     </div>
     {% endfor %}
@@ -93,6 +95,8 @@
   <div class="sec">{{ t('Payer-side capex burden (spender cohorts)', '支付方资本开支负担（需求链发起方）') }}
     <span class="help">?<span class="tip"><span class="l-en">Annual company data, usually delayed. High capex plus negative free cash flow can flag funding stress. Context only.</span><span class="l-zh">年度公司数据，通常有滞后。高资本开支叠加负自由现金流，可能提示资金压力。仅供参考。</span></span></span>
   </div>
+  {% set _w18c3_tzh = {'rising': '上升', 'falling': '下降', 'flat': '持平'} %}
+  {% set _w18c3_fzh = {'improving': '改善', 'deteriorating': '恶化', 'flat': '持平'} %}
   {% for chain_key, burden_map in spender_burden.items() %}
   {% if burden_map %}
   <details class="fold" open>
@@ -106,13 +110,17 @@
         <th>{{ t('Spender','支出方') }}</th>
         <th>{{ t('Capex/OCF','资本开支/OCF') }}</th>
         <th>{{ t('Trend','趋势') }}</th>
+        <th>{{ t('Capex YoY','资本开支同比') }}</th>
         <th>{{ t('FCF ($B)','自由现金流（十亿）') }}</th>
+        <th>{{ t('FCF trend','自由现金流趋势') }}</th>
         <th>{{ t('Net-debt Δ ($B)','净债务变化（十亿）') }}</th>
         <th>{{ t('FY','财年') }}</th>
         <th>{{ t('Flag','标记') }}</th>
       </tr>
       {% for ticker, b in burden_map.items() %}
       {% if b is not none %}
+      {% set _w18c3_trend_zh = _w18c3_tzh.get(b.capex_ocf_trend, b.capex_ocf_trend) %}
+      {% set _w18c3_fcf_zh = _w18c3_fzh.get(b.fcf_trend, b.fcf_trend) %}
       <tr>
         <td class="tk"><a href="stock.html#{{ ticker }}">{{ ticker }}</a></td>
         <td class="num">
@@ -120,9 +128,17 @@
             <span class="{{ 'neg' if b.capex_ocf_latest > 80 else '' }}">{{ '%.0f'|format(b.capex_ocf_latest) }}%</span>
           {% else %}—{% endif %}
         </td>
-        <td class="faint">{{ t(b.capex_ocf_trend, b.capex_ocf_trend) }}</td>
+        <td class="faint">{{ t(b.capex_ocf_trend, _w18c3_trend_zh) }}</td>
+        <td class="num">
+          {% if b.capex_yoy_pct is not none %}
+            {{ '%+.0f'|format(b.capex_yoy_pct) }}%
+          {% else %}—{% endif %}
+        </td>
         <td class="num {% if b.fcf_latest_bn is not none and b.fcf_latest_bn >= 0 %}pos{% elif b.fcf_latest_bn is not none %}neg{% endif %}">
           {% if b.fcf_latest_bn is not none %}{{ '%+.1f'|format(b.fcf_latest_bn) }}{% else %}—{% endif %}
+        </td>
+        <td class="faint">
+          {% if b.fcf_trend is none %}—{% else %}{{ t(b.fcf_trend, _w18c3_fcf_zh) }}{% endif %}
         </td>
         <td class="num {% if b.net_debt_delta_bn is not none and b.net_debt_delta_bn > 0 %}neg{% elif b.net_debt_delta_bn is not none %}pos{% endif %}">
           {% if b.net_debt_delta_bn is not none %}{{ '%+.1f'|format(b.net_debt_delta_bn) }}{% else %}—{% endif %}
@@ -145,7 +161,8 @@
   <tr><th>{{ t('Name','标的') }}</th><th>{{ t('Chain','链条') }}</th><th>{{ t('Independent signal','独立信号') }}</th><th>{{ t('Consensus','共识') }}</th></tr>
   {% for r in rows %}
   <tr>
-    <td class="tk"><a href="stock.html#{{ r.ticker }}">{{ r.ticker }}</a></td>
+    <td class="tk"><a href="stock.html#{{ r.ticker }}">{{ r.ticker }}</a>{% if r.headline_en %}
+      <div class="faint">{{ t(r.headline_en, r.headline_zh) }}</div>{% endif %}</td>
     <td><span class="chip {{ 'coin' if not r.leading else '' }}">{{ r.chain }} · {{ r.tier }}</span></td>
     <td>{% if r.yoy_pct is not none %}<span class="num {{ 'pos' if r.yoy_pct >= 0 else 'neg' }}">{{ '%+.0f'|format(r.yoy_pct) }}%</span> {% endif %}<span class="faint">{{ t(r.trend_en, r.trend_zh) }}</span></td>
     <td class="faint">{{ t(r.consensus_dir, r.consensus_dir) }}</td>
@@ -179,6 +196,19 @@
     <div class="stat"><div class="k">{{ t('Hit rate','命中率') }}</div><div class="v">{% if (track.overall or {}).hit_rate is not none %}{{ '%.0f'|format(track.overall.hit_rate * 100) }}%{% else %}—{% endif %}</div></div>
     {% if phase0 %}<div class="stat"><div class="k">{{ t('Verdict','结论') }}</div><div class="v"><span class="verdict {{ phase0.verdict }}">{{ phase0.verdict }}</span></div></div>{% endif %}
   </div>
+  {% if open_theses %}<details class="fold">
+    <summary>{{ t('Open calls — what each is checked against, and when',
+      '未结判断 — 各自的检验对象与日期') }} ({{ open_theses|length }})</summary>
+    <table class="dt"><tr><th>{{ t('Name', '标的') }}</th><th>{{ t('Chain', '链条') }}</th>
+        <th>{{ t('Lean', '倾向') }}</th><th>{{ t('Check by', '检验日') }}</th></tr>
+      {% for o in open_theses %}<tr>
+        <td class="tk"><a href="stock.html#{{ o.subject }}">{{ o.subject }}</a></td>
+        <td><span class="chip">{{ o.chain }}</span></td>
+        <td>{% if o.lean == 'outperform' %}{{ t('outperform', '跑赢') }}
+          {%- elif o.lean == 'underperform' %}{{ t('underperform', '跑输') }}
+          {%- else %}{{ o.lean }}{% endif %}</td><td class="num">{{ o.check_by }}</td></tr>
+      {% endfor %}</table>
+  </details>{% endif %}
   {% if phase0 %}<p class="cav">{{ t(phase0.note, phase0.note_zh) }}</p>{% endif %}
 </div>
 {% endif %}

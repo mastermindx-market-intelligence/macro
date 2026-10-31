@@ -1,0 +1,7 @@
+{
+  "at": "2026-10-20T15:34:42.650328+00:00",
+  "pid": 4344,
+  "verified_command": "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python -B -u /tmp/shared-shell-local-browser-r7-20261019/kit/serve-readonly-macro.py --site-dir /Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/site --manifest /tmp/shared-shell-css-visual-20261019T1107/about-footer-green-manifest.json",
+  "signal": "SIGTERM",
+  "all_capture_contexts_closed": true
+}

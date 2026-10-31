@@ -55,15 +55,40 @@ _WITNESS_SHA = "6449489eef577b096abeb79f5375b7df9c95c23e4765a075222a765a19124d83
 _WITNESS_BYTES = 364
 _FIXTURE_RECORDED_AT = "2026-08-23T00:32:31Z"
 
-_HASH_AS_REPORTED_T1_T2 = "358d44741632d74ff76dd8771bb78b34295a08d62d2a0a8566a6abe5feac1442"
-_HASH_LATEST_KNOWN_T1_T2 = "191c49a37998052f17eec78113b5bd8bf0dcaaa52239c406cdb4c27cda5ad1a7"
-_HASH_LATEST_KNOWN_T3 = "83df03e99f570bacfab94fc9373861f14c1895c9aa9435b7dd7249a13c1e67fa"
-_HASH_LATEST_RESTATED_T3 = "c1095c7994c67f11ed602d15c2956bc24271cdce4d39d7869ed642713a6ed549"
-_HASH_MIXED_T3 = "5513f17260f98d261920d658be25bf319ace90a0580ad8f2e94931c518c5a20b"
-_RICH_PACKET_ID = "fip_49718dcaf4c6855592b6ba0a"
-_RICH_CONTENT_SHA = "49718dcaf4c6855592b6ba0a160851c608b4733b44f8ac9a6cf7d907df7565e5"
-_RICH_RESPONSE_SHA = "310f6579ab0014e6af16a3341f005078eab3fdcc70ebe67ec83cf138b9e6c23a"
-_GOLDEN_FIP1_PACKET_ID = "fip_18e2f725f6ba20678d0612bb"
+# The five FIP1 query hashes were re-captured at the FIF G0-r1p3 re-pin
+# commit with the same hermetic industrial resolver the FIP1 packet-service
+# tests inject — byte-equal to that already-pinned family
+# (tests/test_fundamental_forensics_financial_packet_service.py:78,
+# tests/test_fundamental_forensics_financial_revision_service.py:70) over the
+# same scenario, per the G0-r1p3 seat ruling on same-input families.
+_HASH_AS_REPORTED_T1_T2 = "58d438ec81d287f81e6981cf01ac6d16d57cf50689cc826cad39962742efa821"
+_HASH_LATEST_KNOWN_T1_T2 = "f275a7e02aff6e1119f1275365549e1fa9aa2d3f45dbc3cd0f4ba5fdb76f1d37"
+_HASH_LATEST_KNOWN_T3 = "2f8d30baf2d49aef0cc6936613eca1f9aa980e10ed56da135a75dd4238349915"
+_HASH_LATEST_RESTATED_T3 = "531309e192ac923e466365b05380a197f67d6df01c1d5fd9062a0e93aaf20b9f"
+_HASH_MIXED_T3 = "26a7ed7d95f861d3352c3a7e5fb6a0f52833ccf69947b10ca9da1f9662c44133"
+# The rich packet keeps the production default (no injected resolver): FIP1
+# has no shipped coverage record, so gross_margin (class-restricted under the
+# G0 catalog) reads NOT_EVALUABLE(issuer_class_unknown) — the formula never
+# assembles dependencies, so the gross_profit evidence cell and revision row
+# leave the packet and the body shrinks accordingly; re-captured at the same
+# commit.
+_RICH_PACKET_ID = "fip_5d77c1349de4f829db2c422a"
+_RICH_CONTENT_SHA = "5d77c1349de4f829db2c422a3000049cb12b6f0c16dbcd57686a0c0cd41c0af0"
+_RICH_RESPONSE_SHA = "a9c5a8657e7c5cb7e6789cd6d2ea4f78a1c14100c33a00d959856d7375045ca8"
+_RICH_BODY_BYTES = 15065
+# Golden FIP1 fixture identity re-captured at the FIF G0-r1p3 re-pin commit e94ba62aa89
+# (P2-E G-c: bytes written via canonical_packet_bytes only).
+_GOLDEN_FIP1_PACKET_ID = "fip_efe52d02d4a72a5a19f85a60"
+
+# FIP1 is a synthetic industrial issuer with no shipped coverage record, so
+# the five-hash family injects its SIC hermetically (same shape as the FIP1
+# packet-service tests); the fixture ledger's entity id is its CIK.
+_FIP1_CIK = "0000999999"
+_INDUSTRIAL_SIC = "3571"
+
+
+def _fip1_issuer_sic_resolver(cik: str) -> str | None:
+    return _INDUSTRIAL_SIC if cik == _FIP1_CIK else None
 
 T1_SOURCE = "2024-12-31T23:59:59Z"
 T2_SOURCE = "2025-12-31T23:59:59Z"
@@ -73,11 +98,23 @@ T3_RECORDED = "2026-08-05T12:00:02Z"
 FY2023 = {"kind": "duration", "start": "2023-01-01", "end": "2023-12-31", "label": "FY2023"}
 AR_INSTANT = {"kind": "instant", "start": None, "end": "2023-12-31", "label": "2023-12-31"}
 
+# FIF G0 shared-kernel integrator (seat ruling 2026-10-13, frozen spec
+# e7b0286c) releases this freeze for the authorized G0 change:
+# ``engine/fundamental_forensics/financial_intelligence_packet.py`` (G0 wired
+# the optional issuer-SIC resolver seam through the production entity
+# construction) and the golden fixture
+# ``expected_financial_intelligence_packet_v1.json`` (P2-E G-c re-capture via
+# canonical_packet_bytes) leave ``_FROZEN_FIF1``.  What the freeze protected
+# is still asserted directly: packet schema validity and content addressing
+# plus canonical rebuild equality in
+# tests/test_fundamental_forensics_financial_intelligence_packet.py:540-546,
+# cross-process byte equality in law11 (:444-449), the fixture packet_id
+# regression witness in tests/test_fundamental_forensics_financial_packet_service.py:200,
+# and this file's own ``golden["packet_id"]`` pin below.  The packet schema
+# and the synthetic fixture package remain byte-frozen.
 _FROZEN_FIF1 = (
     "contracts/financial_intelligence_packet.schema.json",
-    "engine/fundamental_forensics/financial_intelligence_packet.py",
     "engine/fundamental_forensics/synthetic_filing_package.py",
-    "tests/fixtures/fundamental_forensics/expected_financial_intelligence_packet_v1.json",
 )
 
 
@@ -113,7 +150,9 @@ def _query_hash(*, selection: str, source: str, recorded: str, metric_ids: list,
         },
         separators=(",", ":"),
     ).encode("utf-8")
-    result = execute_financial_query(body=body, provider=_P())
+    result = execute_financial_query(
+        body=body, provider=_P(), issuer_sic_resolver=_fip1_issuer_sic_resolver
+    )
     return result.envelope["receipt"]["query_hash"]
 
 
@@ -534,7 +573,7 @@ def test_fif2b_and_fif2c_accepted_packet_behavior_unchanged() -> None:
     assert rich.packet["packet_id"] == _RICH_PACKET_ID
     assert rich.packet["content_sha256"] == _RICH_CONTENT_SHA
     assert rich.response_sha256 == _RICH_RESPONSE_SHA
-    assert len(rich.body) == 18270
+    assert len(rich.body) == _RICH_BODY_BYTES
 
 
 def test_frozen_fif1_paths_are_empty_diff() -> None:
@@ -1498,3 +1537,97 @@ def test_statement_cell_exponent_text_passes_through_unchanged() -> None:
     result = _execute(provider=_ForgedTreeProvider(forged))
     envelope = json.loads(result.body)
     assert any(cell["value"] == "1E+2" for cell in _all_cells(envelope))
+
+
+# ---------------------------------------------------------------------------
+# Golden statement pins run on the committed byte-copy of the 1.0.0 registry.
+# Appended at the end of the module so no pinned line moves. The live-registry
+# statement bytes are pinned in test_fundamental_forensics_financial_statement_api.py,
+# which also proves the 1.0.0 registry re-derives the pins in this module.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(autouse=True, scope="module")
+def _golden_statement_pins_on_registry_v1_0_0():
+    import engine.fundamental_forensics.statement_service as statement_service
+    from engine.fundamental_forensics.financial_intelligence_packet import load_core_registry
+
+    registry_root = ROOT / "tests" / "fixtures" / "fundamental_forensics_registry_v1_0_0"
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(
+            statement_service,
+            "load_core_registry",
+            lambda _repo_root: load_core_registry(registry_root),
+        )
+        yield
+
+
+def _live_registry_loader():
+    """Undo this module's autouse 1.0.0-registry pin inside a bounded context.
+
+    The cutoff law is only observable against the live registry, where the
+    1.1.0 mapping clocks hide behind a pre-1.1.0 ``recorded_at``. Exit
+    restores the module fixture's patch (the value present on entry).
+    """
+    import contextlib
+
+    import engine.fundamental_forensics.statement_service as statement_service
+
+    @contextlib.contextmanager
+    def _loader():
+        with pytest.MonkeyPatch.context() as patch:
+            patch.setattr(statement_service, "load_core_registry", load_core_registry)
+            yield
+
+    return _loader()
+
+
+def test_recorded_at_cutoff_serves_the_clocked_mapping_view() -> None:
+    """#9761 follow-up (minor 5): the statement service honours the rule clock.
+
+    Matrix rows A12/A53: a cutoff before the 1.1.0 mapping clocks answers with
+    the registry view visible then — the 1.0.0 golden bytes — while the same
+    request without ``recorded_at`` keeps the live 1.1.0 bytes.
+    """
+    from tests.test_fundamental_forensics_statement_grid import (
+        _AAPL_BASE_DIGESTS,
+        _AAPL_LIVE_DIGESTS,
+        _tree_digest,
+    )
+
+    with _live_registry_loader():
+        clocked = _execute(body=_statement_body(extra={"recorded_at": "2026-10-20T00:00:00Z"}))
+        by_type = {item["statement_type"]: item for item in clocked.envelope["statements"]}
+        assert _tree_digest(by_type["balance_sheet"]) == _AAPL_BASE_DIGESTS["balance_sheet"]
+
+        live = _execute()
+        live_by_type = {item["statement_type"]: item for item in live.envelope["statements"]}
+        assert _tree_digest(live_by_type["balance_sheet"]) == _AAPL_LIVE_DIGESTS["balance_sheet"]
+
+
+def test_malformed_recorded_at_is_the_admission_error() -> None:
+    for bad in ("2026-10-20", "not-a-time", "", 17):
+        with pytest.raises(FinancialQueryAdmissionError) as refusal:
+            _execute(body=_statement_body(extra={"recorded_at": bad}))
+        assert refusal.value.status_code == 400
+
+
+def test_precomputed_trees_refuse_a_clock_older_than_their_registry() -> None:
+    """Published trees answer only clocks at/after the registry's newest rule."""
+    trees = reconstruct_primary_statements(
+        package=load_golden_aapl_package(ROOT), registry=load_core_registry(ROOT)
+    )
+    provider = _ForgedTreeProvider(trees)
+    with _live_registry_loader():
+        with pytest.raises(FinancialQueryAdmissionError) as refusal:
+            _execute(
+                body=_statement_body(extra={"recorded_at": "2026-10-20T00:00:00Z"}),
+                provider=provider,
+            )
+        assert refusal.value.status_code == 400
+
+        served = _execute(
+            body=_statement_body(extra={"recorded_at": "2026-10-22T00:00:00Z"}),
+            provider=provider,
+        )
+    assert served.envelope["statements"] == trees["statements"]

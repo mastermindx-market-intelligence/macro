@@ -1,0 +1,47 @@
+{
+  "schema": "forex_r26.native_4hour_receipt_diagnostics.v1",
+  "receipt_id": "148ee86d4fec717d8d5c4e4214cbbb8cdd4703ac8260ef42ca31c2efaba524ba",
+  "source": "forex-bars",
+  "symbol": "eurusd",
+  "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-20&resampleFreq=4hour&startDate=2026-10-19",
+  "receipt_observed_at_utc": "2026-10-21T22:45:21.025233+00:00",
+  "raw_sha256": "7c58219d4866e1d7aef2ab0da9c8f52e3ba9d4ca9a1ca1e6896b4fbb31c7e934",
+  "raw_bytes": 809,
+  "verified_rows": 7,
+  "field_names": [
+    "close",
+    "date",
+    "high",
+    "low",
+    "open",
+    "ticker"
+  ],
+  "returned_tickers": [
+    "eurusd"
+  ],
+  "vendor_date_labels_preserved": [
+    "2026-10-19T20:00:00.000Z",
+    "2026-10-20T00:00:00.000Z",
+    "2026-10-20T04:00:00.000Z",
+    "2026-10-20T08:00:00.000Z",
+    "2026-10-20T12:00:00.000Z",
+    "2026-10-20T16:00:00.000Z",
+    "2026-10-20T20:00:00.000Z"
+  ],
+  "observed_steps_seconds": [
+    14400.0,
+    14400.0,
+    14400.0,
+    14400.0,
+    14400.0,
+    14400.0
+  ],
+  "duplicate_instants": 0,
+  "utc_offset_present": true,
+  "positive_bounded_ohlc_rows": 7,
+  "date_labels_not_interpreted_as_bar_start_end_or_availability": true,
+  "eligible_finalized_4h": 0,
+  "finality_basis_calendar_rights_admitted": false,
+  "no_local_aggregation_or_gap_fill": true,
+  "qualification_note": "One exact 4hour request returned seven vendor rows, not evidence of a complete requested window or UTC-aligned/final bars. Capture time and vendor date labels stay separate. No price rows are copied into this summary."
+}

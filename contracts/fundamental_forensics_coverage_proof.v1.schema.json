@@ -1,0 +1,709 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/fundamental_forensics_coverage_proof.v1.schema.json",
+  "title": "Fundamental forensics C2 coverage proof v1",
+  "description": "Report of prove_coverage: predeclared tier/period/field thresholds proven from a fundamental_forensics.coverage_manifest/v1 document by membership, never by ticker loop count.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "proved_at",
+    "thresholds",
+    "manifest",
+    "manifest_sha256",
+    "census_identity",
+    "tiers",
+    "issuers",
+    "incomplete_issuers",
+    "manifest_rollup_mismatch",
+    "exclusions",
+    "orphan_cells",
+    "orphan_reasons",
+    "status_normalised",
+    "field_id_aliases_applied",
+    "acceptance_eligible",
+    "acceptance_blockers"
+  ],
+  "properties": {
+    "schema": {
+      "const": "fundamental_forensics.coverage_proof/v1"
+    },
+    "proved_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "thresholds_id",
+        "content_sha256",
+        "deep_target",
+        "core_target",
+        "freeze_ref",
+        "freeze_ref_valid",
+        "freeze_ref_exists",
+        "freeze_ref_sha256"
+      ],
+      "properties": {
+        "thresholds_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "deep_target": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "core_target": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "freeze_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "freeze_ref_valid": {
+          "type": "boolean"
+        },
+        "freeze_ref_exists": {
+          "type": "boolean"
+        },
+        "freeze_ref_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "census_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "thresholds",
+        "manifest",
+        "mismatched_fields",
+        "cell_source_generation_counts",
+        "mixed_source_generations",
+        "draft_identity",
+        "draft_identity_basis"
+      ],
+      "properties": {
+        "thresholds": {
+          "$ref": "#/$defs/declared_identity"
+        },
+        "manifest": {
+          "$ref": "#/$defs/declared_identity"
+        },
+        "mismatched_fields": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "source_generation_id",
+              "cutoff_at",
+              "manifest_draft_sha256_prefix",
+              "manifest_draft_sha256_prefix_declared"
+            ]
+          }
+        },
+        "cell_source_generation_counts": {
+          "$ref": "#/$defs/count_map"
+        },
+        "mixed_source_generations": {
+          "type": "boolean"
+        },
+        "draft_identity": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "draft_identity_basis": {
+          "enum": [
+            "manifest_bytes_sha256",
+            "declared_unverified"
+          ]
+        },
+        "draft_identity_trust": {
+          "description": "Present only when draft_identity_basis is declared_unverified (ruling V1-a r4, R3): the declared draft identity is not proved by these bytes and needs the attestation.",
+          "const": "attestation_required"
+        }
+      }
+    },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "sha256",
+        "source_generation_id",
+        "cutoff_at",
+        "recorded_at",
+        "draft",
+        "attested",
+        "basis"
+      ],
+      "properties": {
+        "schema": {
+          "type": ["string", "null"]
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "source_generation_id": {
+          "type": ["string", "null"]
+        },
+        "cutoff_at": {
+          "type": ["string", "null"]
+        },
+        "recorded_at": {
+          "type": ["string", "null"]
+        },
+        "draft": {
+          "type": ["boolean", "null"]
+        },
+        "attested": {
+          "type": ["boolean", "null"]
+        },
+        "basis": {
+          "type": ["string", "null"]
+        },
+        "manifest_draft_sha256": {
+          "description": "Optional, echoed verbatim: the sha256 of the draft this attested manifest records (null on a draft or when undeclared; an ill-typed declaration echoes as-is and blocks through census_identity_mismatch)."
+        }
+      }
+    },
+    "tiers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["core", "deep"],
+      "properties": {
+        "core": {
+          "$ref": "#/$defs/core_tier"
+        },
+        "deep": {
+          "$ref": "#/$defs/deep_tier"
+        }
+      }
+    },
+    "issuers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cik",
+          "ticker",
+          "tier",
+          "core_pass",
+          "deep_pass",
+          "field_rate",
+          "band",
+          "failed_fields",
+          "withheld_fields",
+          "na_not_presented",
+          "na_class",
+          "present_qualified",
+          "present_composed",
+          "complete_strict"
+        ],
+        "properties": {
+          "cik": {
+            "type": "string",
+            "pattern": "^[0-9]{10}$"
+          },
+          "ticker": {
+            "type": "string"
+          },
+          "tier": {
+            "enum": ["core", "deep"]
+          },
+          "core_pass": {
+            "type": "boolean"
+          },
+          "deep_pass": {
+            "type": ["boolean", "null"]
+          },
+          "field_rate": {
+            "type": ["number", "null"],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "band": {
+            "type": "string",
+            "minLength": 1
+          },
+          "failed_fields": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "withheld_fields": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "na_not_presented": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "na_class": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "present_qualified": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "present_composed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "complete_strict": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "incomplete_issuers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deep", "core"],
+      "properties": {
+        "deep": {
+          "$ref": "#/$defs/cik_list"
+        },
+        "core": {
+          "$ref": "#/$defs/cik_list"
+        }
+      }
+    },
+    "manifest_rollup_mismatch": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["cik", "field", "manifest_value", "proof_value", "reason"],
+        "properties": {
+          "cik": {
+            "type": "string",
+            "pattern": "^[0-9]{10}$"
+          },
+          "field": {
+            "enum": [
+              "core_pass",
+              "deep_pass",
+              "present_cells",
+              "absent_cells",
+              "na_cells"
+            ]
+          },
+          "manifest_value": {},
+          "proof_value": {},
+          "reason": {
+            "enum": ["rollup_field_invalid", "rollup_value_mismatch"]
+          }
+        }
+      }
+    },
+    "exclusions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issuer_reasons", "header"],
+      "properties": {
+        "issuer_reasons": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "header": {
+          "type": "object"
+        }
+      }
+    },
+    "orphan_cells": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "orphan_reasons": {
+      "$ref": "#/$defs/count_map"
+    },
+    "status_normalised": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "field_id_aliases_applied": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["package."],
+      "properties": {
+        "package.": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "acceptance_eligible": {
+      "type": "boolean"
+    },
+    "acceptance_blockers": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "manifest_draft",
+          "manifest_unattested",
+          "deep_target_not_met",
+          "core_target_not_met",
+          "legacy_field_id_alias",
+          "census_identity_mismatch",
+          "mixed_source_generations",
+          "freeze_ref_invalid",
+          "freeze_ref_missing",
+          "orphan_cells",
+          "rollup_mismatch"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "cik_list": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9]{10}$"
+      }
+    },
+    "count_map": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "policy_count_map": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "declared_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_generation_id",
+        "cutoff_at",
+        "manifest_draft_sha256_prefix"
+      ],
+      "properties": {
+        "source_generation_id": {
+          "type": ["string", "null"]
+        },
+        "cutoff_at": {
+          "type": ["string", "null"]
+        },
+        "manifest_draft_sha256_prefix": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "fields_block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "present",
+        "applicable",
+        "not_applicable",
+        "withheld",
+        "stale",
+        "failed_extraction",
+        "incomparable",
+        "rate",
+        "present_strict",
+        "present_qualified",
+        "present_composed",
+        "na_kernel",
+        "na_not_presented",
+        "na_class"
+      ],
+      "properties": {
+        "present": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "applicable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "not_applicable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "withheld": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stale": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed_extraction": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "incomparable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rate": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "present_strict": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "present_qualified": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "present_composed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "na_kernel": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "na_not_presented": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "na_class": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "bands_block": {
+      "type": "object",
+      "required": [
+        "complete",
+        "high",
+        "partial",
+        "low",
+        "no_applicable_fields"
+      ],
+      "properties": {
+        "complete": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "high": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "partial": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "low": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "no_applicable_fields": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "component_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "present",
+        "absent",
+        "not_applicable",
+        "missing",
+        "stale",
+        "failed_extraction",
+        "incomparable"
+      ],
+      "properties": {
+        "present": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "absent": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "not_applicable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stale": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed_extraction": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "incomparable": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "core_tier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "members",
+        "pass",
+        "target_met",
+        "shortfall",
+        "fields",
+        "bands",
+        "failing_reasons",
+        "complete_strict",
+        "qualifier_policies",
+        "derivation_policies"
+      ],
+      "properties": {
+        "target": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "members": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pass": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "target_met": {
+          "type": "boolean"
+        },
+        "shortfall": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fields": {
+          "$ref": "#/$defs/fields_block"
+        },
+        "bands": {
+          "$ref": "#/$defs/bands_block"
+        },
+        "failing_reasons": {
+          "$ref": "#/$defs/count_map"
+        },
+        "complete_strict": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "qualifier_policies": {
+          "$ref": "#/$defs/policy_count_map"
+        },
+        "derivation_policies": {
+          "$ref": "#/$defs/policy_count_map"
+        }
+      }
+    },
+    "deep_tier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "members",
+        "pass",
+        "target_met",
+        "shortfall",
+        "fields",
+        "bands",
+        "failing_reasons",
+        "complete_strict",
+        "qualifier_policies",
+        "derivation_policies",
+        "component_labelled",
+        "components"
+      ],
+      "properties": {
+        "target": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "members": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pass": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "target_met": {
+          "type": "boolean"
+        },
+        "shortfall": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fields": {
+          "$ref": "#/$defs/fields_block"
+        },
+        "bands": {
+          "$ref": "#/$defs/bands_block"
+        },
+        "failing_reasons": {
+          "$ref": "#/$defs/count_map"
+        },
+        "complete_strict": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "qualifier_policies": {
+          "$ref": "#/$defs/policy_count_map"
+        },
+        "derivation_policies": {
+          "$ref": "#/$defs/policy_count_map"
+        },
+        "component_labelled": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "components": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/component_counts"
+          }
+        }
+      }
+    }
+  }
+}

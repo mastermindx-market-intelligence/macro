@@ -1,0 +1,23 @@
+{
+  "observed_at_utc": "2026-10-18T09:21:38.439890+00:00",
+  "pr": 9595,
+  "failed_run": 39113159863,
+  "disposition": "DRAFT_DISARMED_PENDING_CONCRETE_CI_REPAIR",
+  "source_mutation": false,
+  "after": {
+    "autoMergeRequest": null,
+    "headRefOid": "f11fa0c66273ca1976f37e2f529fe9ff689ee439",
+    "isDraft": true,
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokucA",
+        "name": "merge-blocked",
+        "description": "Sweeper found a genuine red or merge conflict \u2014 needs a session/operator",
+        "color": "d93f0b"
+      }
+    ],
+    "mergeCommit": null,
+    "mergeStateStatus": "UNSTABLE",
+    "state": "OPEN"
+  }
+}

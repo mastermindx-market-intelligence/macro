@@ -38,7 +38,8 @@ def _number(value, *, volume=False):
 
 
 def build_chart_history(symbol: str, refs: list[tuple[str, str]], *,
-                        root: Path = DEFAULT_ARCHIVE, check_mount: bool = True) -> dict:
+                        root: Path = DEFAULT_ARCHIVE, check_mount: bool = True,
+                        receipt_paths: dict[tuple[str, str], Path] | None = None) -> dict:
     """Assemble selected captures, refusing conflicting revisions and unknown volume.
 
     Absence of a bar never proves no trade. No gap filling, quote/trade-tape
@@ -53,14 +54,18 @@ def build_chart_history(symbol: str, refs: list[tuple[str, str]], *,
         raise TiingoViewRefusal("invalid capture reference")
     if len(set(map(tuple, refs))) != len(refs):
         raise TiingoViewRefusal("duplicate capture references")
+    if receipt_paths is not None and set(receipt_paths) != set(map(tuple, refs)):
+        raise TiingoViewRefusal("receipt hints must match every selected capture")
     base = require_external_root(root, check_mount=check_mount)
     receipts, bars, lineage = [], {}, {}
     input_rows = 0
     for day, selected_id in refs:
+        receipt_path = receipt_paths[(day, selected_id)] if receipt_paths is not None else None
         view = read_research_view("boats-bars", day, selected_id, root=base,
-                                  max_rows=MAX_BARS, check_mount=check_mount)
+                                  max_rows=MAX_BARS, check_mount=check_mount,
+                                  receipt_path=receipt_path)
         context = _unique_raw_context(base, "boats-bars", day, view.source_sha256,
-                                      receipt_id=selected_id)
+                                      receipt_id=selected_id, receipt_path=receipt_path)
         if context.get("symbol") != symbol or receipt_identity(context) != selected_id:
             raise TiingoViewRefusal("capture does not identify requested ticker/receipt")
         request = view.source_request_path or ""

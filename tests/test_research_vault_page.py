@@ -318,10 +318,8 @@ def test_boot_waits_for_authoritative_catalog_before_ingesting_bake():
 
 
 # --- Wave 4 PR A: the status line may only claim what the clock supports -----
-# "Updated hourly" is a claim about the PRODUCER, and before Wave 4 the client
-# made it whenever the API request had not thrown — so an arbitrarily old catalog
-# read as live. Freshness now comes from generated_at, and every non-fresh outcome
-# states the data is saved AND prints the clock it was generated on.
+# Catalog freshness comes from generated_at. A fresh catalog does not prove
+# hourly full-text ingestion; every non-fresh outcome shows its saved clock.
 
 def test_live_label_is_gated_on_a_fresh_producer_clock():
     js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
@@ -331,9 +329,11 @@ def test_live_label_is_gated_on_a_fresh_producer_clock():
     assert ("CATALOG_FRESH = source === 'live' && isFresh(" in js)
     assert "} else if (CATALOG_FRESH) {" in js
     live = js.index("} else if (CATALOG_FRESH) {")
-    assert js.index("'This week · Updated hourly'") > live, (
-        "the hourly label must sit inside the freshness branch"
+    assert js.index("'Catalog recently updated'") > live, (
+        "the catalog freshness label must sit inside the freshness branch"
     )
+    assert "'This week · Updated hourly'" not in js
+    assert js.index("'目录近期已更新'") > live
     # Every other outcome shows the real generation time rather than an adjective.
     assert "'Saved snapshot · live update delayed'" in js
     assert "' · updated ' + fmtStamp(iso, false)" in js
@@ -586,3 +586,17 @@ def test_status_timestamp_is_rendered_per_language():
     assert "function fmtStamp(iso, useZh)" in js
     assert "fmtStamp(iso, false)" in js and "fmtStamp(iso, true)" in js
     assert "useZh ? p[0] + '年'" in js
+
+
+def test_hero_freshness_runtime_contract():
+    """Exercise the real hero function for stale, loading and entitled states."""
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    assert node, "Node is required for the Research Vault hero contract"
+    result = subprocess.run(
+        [node, "--test", str(bld.ROOT / "tests/js/research_vault_hero_freshness.test.mjs")],
+        cwd=bld.ROOT, capture_output=True, text=True, timeout=45,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

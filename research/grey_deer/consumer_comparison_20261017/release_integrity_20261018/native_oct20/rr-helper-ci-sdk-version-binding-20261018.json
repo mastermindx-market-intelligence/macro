@@ -1,0 +1,29 @@
+{
+  "observed_at_utc": "2026-10-18T09:39:43.127094+00:00",
+  "run": 39109519443,
+  "job": {
+    "id": 117622428401,
+    "name": "pytest shard 2"
+  },
+  "source_head": "797c760f3e18eb6993579f56986103de9d9fdcb4",
+  "log_bytes": 493655,
+  "log_sha256": "a75015ba9fc572688dbc0bc9186fc893c7796125f6edb615917ee0ea6acbe616",
+  "installation_records": [
+    {
+      "versions": [
+        "anthropic-1.15.0",
+        "anyio-4.15.1",
+        "claude-agent-sdk-0.2.168",
+        "httpx-0.28.1",
+        "httpx-sse-0.4.3",
+        "mcp-1.28.1",
+        "pydantic-2.14.1",
+        "pydantic-core-2.50.1",
+        "pydantic-settings-2.16.0",
+        "pytest-9.1.1",
+        "uvicorn-0.52.4"
+      ]
+    }
+  ],
+  "purpose": "Bind the missing native test dependency to the version actually installed by the existing exact-head hosted CI; no source/package mutation."
+}

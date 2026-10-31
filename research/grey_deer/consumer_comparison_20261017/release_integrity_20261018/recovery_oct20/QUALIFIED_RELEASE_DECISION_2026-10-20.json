@@ -1,0 +1,63 @@
+{
+  "schema": "grey_deer.qualified_release_decision.v1",
+  "prepared_at": "2026-10-20T08:13:26.029690+00:00",
+  "workstream": "WS:GREY-DEER-RISK-INTELLIGENCE",
+  "issue": "MAS-258",
+  "mission_complete": false,
+  "capability_delta": {
+    "before": "Five-file helper source accepted, but full archive, actual service namespace, positive startup effects and recovery were not sufficiently qualified for a concrete live release decision.",
+    "after": "Full a755 Linux registered startup and eligible code restoration are demonstrated; exact successor 8bce is qualified through unchanged critical source and new archive/receiver bindings. A concrete full-archive upgrade/restart can now be presented for reserved approval."
+  },
+  "production_state": "BUILT_NOT_PROVEN",
+  "deployment_authorized": false,
+  "candidate": "8bce27bb731f475885352add0be7f885e0862714",
+  "archive_sha256": "28e87cd1c942ed2c10c64cf39e0e26f21821ff60f18b7368cfbee10861140a92",
+  "archive_bytes": 102789120,
+  "archive_members": 5152,
+  "rehearsed_candidate": "a7553e0a18339c910eef9687c730b06605dd710e",
+  "rehearsal_actual": true,
+  "successor_rehearsal_executed": false,
+  "installed_last_observed": "732cf7be88e7159b4995a8885fbd381cd1484e3e",
+  "installed_pid_last_observed": 1627652,
+  "proposal": "Full standard VPS archive upgrade and mastermind.service restart through accepted scripts/deploy_from_git.sh with explicit candidate SHA. Preserve established cohort and canonical live data; no provider-policy/Parall installer invocation.",
+  "approval_source": "Existing cumulative Meta-CEO handoff: canonical strategic-state loader reports autonomous_production_deploy prohibited; source work is authorized under standing commission but full live release needs a concrete exact-release decision.",
+  "before_execution": [
+    "Fresh exact origin/master must equal approved candidate; wrapper explicit SHA enforces fail-closed equality. Qualify material delta if advanced.",
+    "Recheck current installed marker/health/PID and actual systemd service data namespace.",
+    "Recheck unchanged established cohort identity, readable nonempty NAV guards and absent pending targets/WAL/settlement receipts for autonomous/china/hk.",
+    "Reconcile original deployment custody, relevant active writers and absence of competing/unresolved deployment effects."
+  ],
+  "after_execution": [
+    "Verify installed exact SHA/helper/source and health; do not equate merge with installation.",
+    "Reconcile actual canonical cohort/book/state effects; retained code rollback is not data-effect undo.",
+    "Verify changed Risk Radar consumer through the authenticated real path with source dates, missing-data and advisory qualifications. Future-date controlled regression is accepted; do not fabricate a live future-date input."
+  ],
+  "do_not_redo": [
+    "Do not rerun accepted frozen studies, fits, W5/manual nightly or provider turn.",
+    "Do not reopen old 1610 queue/observer or reuse closed source carriers.",
+    "Do not broaden rehearsal/testing for unchanged release-critical source.",
+    "Preserve first audit-harness failure, corrected pass and original accepted source-test identities."
+  ],
+  "source_evidence": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 9595,
+    "operation": "risk-radar-release-qualification-20261018-0304",
+    "first_recovery_head": "5a228eb5bd392fa9a047c54bac3f0a4a09f9b3f0",
+    "enclosing_qualification_commit": "This file is bound by its enclosing immutable Git revision; source gates/landing must be read back separately.",
+    "source_gates_at_preparation": "MORE_WORK_EXISTS: complete actual final-head CI and normal landing before source closeout."
+  },
+  "independent_review": {
+    "fabric_run": "rr-startup-preflight-review-20261020-r1",
+    "response_sha256": "14383076e5311925f6a2aff524e5e22fff05606b089bb663422269ff09e65d8b",
+    "accepted_with_root_corrections": true,
+    "principal": "SUCCESSOR_PRINCIPAL_ADJUDICATION_2026-10-20.json",
+    "workers_terminal": true
+  },
+  "held_lanes": [
+    "Copilot repair and served useful answer under existing actual writers",
+    "8132/8721 warning/UI HOLDs and 9428 refusal",
+    "Research532fits NOT_ADMITTED, source-purpose/executable/runtime gates, FRED HOLD",
+    "Natural-time mature W5 evidence and dependence-qualified forecast support"
+  ],
+  "next_primary_action": "Finish evidence source gates/landing; then obtain the reserved exact-release upgrade/restart decision. Continue in the same user session; no automated wake is claimed."
+}

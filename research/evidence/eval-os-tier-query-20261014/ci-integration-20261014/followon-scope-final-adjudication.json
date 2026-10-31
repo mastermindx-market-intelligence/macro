@@ -1,0 +1,167 @@
+{
+  "schema": "eval_os.followon_scope_repair_adjudication.v1",
+  "observed_at": "2026-10-14T11:00:38.058041+00:00",
+  "source_head": "3adb0b0bfd163abf86069ab65f20601ef3df5bec",
+  "base_integration": "faed2a591b7a2210cb0c806861fc5afce3a86841",
+  "incoming_main": "cf8905fcaa40175661456d1f2c5589597a9029bb",
+  "problem": {
+    "curated_closure_missing_entries": 63,
+    "affected_existing_scopes": 11,
+    "packing_before": {
+      "free_content_jobs": 135,
+      "limit": 134
+    }
+  },
+  "repair": {
+    "additive_dependency_entries": 63,
+    "new_curated_existing_job": "qledger-cluster-honest-ci",
+    "inferred_owned_paths": 864,
+    "additional_real_runtime_input": "data/china_official/phrase_book.yml",
+    "all_314_job_execution_definitions_preserved": true,
+    "all_24_protected_product_source_hashes_preserved": true,
+    "limits_unchanged": true,
+    "final_qledger_scope_count": 906,
+    "post_review_additions": 41
+  },
+  "runtime_evidence": {
+    "original_audit": {
+      "passed": 1231,
+      "failed": 21,
+      "cause": "Tracked static phrase-book seed absent from sparse checkout; tuple-built path omitted by AST inference.",
+      "repo_data_or_site_opens": [],
+      "probe_opens": []
+    },
+    "targeted_repair": {
+      "passed": 32,
+      "failed": 0,
+      "source_seed_sha256": "a80fb64380194ed866507278a256eb008a437b5fa6a49bf2891e063edc6d7fbe"
+    },
+    "metric_validity_selftest": {
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "canonical_checks": {
+    "tested_head": "f095dfe19364e8ba3f3d9251c9765a6491e996d4",
+    "pytest_passed": 6,
+    "closure_misses": {},
+    "old_strict_packing": [
+      134,
+      134,
+      128
+    ],
+    "post_review_head": "3adb0b0bfd163abf86069ab65f20601ef3df5bec",
+    "post_review_validation": {
+      "status": "PASS",
+      "head": "3adb0b0bfd163abf86069ab65f20601ef3df5bec",
+      "focused_tests": 3,
+      "closure_misses": {},
+      "strict_pre9228_jobs": [
+        134,
+        134,
+        128
+      ],
+      "strict_pre9228_packs": [
+        10,
+        10,
+        9
+      ],
+      "receipt": "followon-final-scope-validation.json"
+    }
+  },
+  "actual_command_sequence": {
+    "status": "PASS",
+    "source_head": "f095dfe19364e8ba3f3d9251c9765a6491e996d4",
+    "execution_steps": 9,
+    "python": "3.12.13",
+    "pytest": {
+      "passed": 1252,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "selftest_controls": 7,
+    "receipt": "qledger-ci-command-validation.json"
+  },
+  "independent_review": {
+    "run": "eval-qledger-scope-01a1333d-c2",
+    "execution": "TERMINAL rc0; original exec4966 delivered retained result",
+    "foreground_exec": 4966,
+    "packet_sha256": "563777f1493a9f3f3f6d5a0ceeb05ac7034db1b7e0bceedbe6a7fa97641eb9b1",
+    "verdict": null,
+    "scope": "CI curation only; does not substitute for unresolved CLI semantic review or experience effect. Original864-path proposal; parent runtime audit adds phrasebook865th.",
+    "result_bytes": 13858,
+    "result_sha256": "d3d12d08d245fdfc7f20d9a75d6f2ef97c1bf0ee8aae5134ea17731a6068dc5b",
+    "reviewer_verdict": "BLOCKED",
+    "parent_verdict": "Accepted useful review through original adapter --by reviewer after adjudication and final source validation. BLOCKED findings corrected; no independent clean PASS on final source.",
+    "adapter_acceptance": "ACCEPTED / VALIDATED_OUTCOME / accepted_by reviewer"
+  },
+  "limits": [
+    "Final local scope qualification passed; hosted checks and actual production delivery remain outstanding.",
+    "Python open audit excludes native-extension and child-process reads; supplied tests bind subprocesses to synthetic roots.",
+    "No hosted CI/PR/merge/install/served-product/actual-adoption claim."
+  ],
+  "completion_flags": {
+    "SCOPED_COMMISSION_COMPLETE": false,
+    "LEGACY_PROGRAMME_COMPLETE": false,
+    "PRODUCTION_PROVEN": false
+  },
+  "review_dispositions": [
+    {
+      "finding": "Three K3E real inputs absent",
+      "ruling": "Two valid; one incorrect path",
+      "action": "Add both actual eval0/eval1 preregistration JSON sources. Source at tests/test_qledger_validity.py:1060 reads engine/k3e_eval1_forward.py already declared, not a research-bundle copy. Never open sealed outcomes."
+    },
+    {
+      "finding": "Raw preregistration SHA should equal named digest",
+      "ruling": "Incorrect digest semantics",
+      "action": "Existing passing tests use _canonical_json_digest(raw), not raw-file SHA; keep their existing contract."
+    },
+    {
+      "finding": "Packing arithmetic unresolved",
+      "ruling": "Resolved on f095 with canonical checks; rechecking final additive scope",
+      "action": "Actual134/134/128jobs;10/10/9packs; old stricter135/134/129job limits preserved. Scope rationale is real dependency coverage, not numerical waiver."
+    },
+    {
+      "finding": "Pytest configuration absent from both scope tiers",
+      "ruling": "Global invalidators already force all jobs",
+      "action": "run_ci_pack.py GLOBAL_INVALIDATORS covers conftest/pytest/project config. Additionally include full122-file tests/conftest.py source closure, config.yml and tests package; guards keep protected fixtures visible."
+    },
+    {
+      "finding": "Dynamic reader imports may escape static closure",
+      "ruling": "Valid limitation; strengthened beyond reviewer specific findings",
+      "action": "Normalize actual Python bytecode opens to tracked source. Add observed seasonality reader modules and complete source closures (16 more entries). Final source scope has906 entries. No unrelated freecontent owner added."
+    },
+    {
+      "finding": "Git clock invariant might silently skip",
+      "ruling": "No skip observed; scope does not change the checkout",
+      "action": "All1252 tests/0skips; test_t9_no_clock_file_is_ever_committed executed. Add exact data/qledger/control_evidence_clock_start/** namespace so future committed clock files still select the owner; no clock file created or changed."
+    },
+    {
+      "finding": "Legacy if:false means job never runs",
+      "ruling": "Incorrect execution model",
+      "action": "Manifest is packed command input, not directly run as workflow. Existing job gate code and commands are preserved; parent executed all9actual command steps in separate Python3.12 processes."
+    },
+    {
+      "finding": "Exclusive scope may materialize a narrowed checkout",
+      "ruling": "Incorrect execution model",
+      "action": "select_jobs selects jobs; it never removes files or .git. No curated checkout was created. Sparse seed omission was separately repaired using exact committed static input."
+    },
+    {
+      "finding": "Opaque imported subprocess/glob functions need runtime distinction",
+      "ruling": "Review covers supplied bodies only; avoid overstating",
+      "action": "Audited synthetic roots, scoped child CLI arguments, provider-disabled shared fixture, git_sha current-commit read and unchanged test commands. Python open trace shows no original repo data/site reads or probe reads; child/native reads are not comprehensively traced. No full independent audit of omitted bodies claimed."
+    },
+    {
+      "finding": "Patching builtins.open does not catch pathlib",
+      "ruling": "Correct limitation",
+      "action": "No purity claim inferred from that patch. Root Python audit observes open events including pathlib; retained receipt states limits."
+    }
+  ],
+  "publication": "Canonical evidence on existing followon carrier; remote publication recorded in execution frontier. No followon PR/hosted CI/deployment.",
+  "release_asset_projector": {
+    "tool_sha256": "20a06cc441ba99aff8687537e92d044be185665c923c3729b8aa79d91dd3125a",
+    "selfcheck": "asset-projection-selfcheck.json",
+    "source_only": true
+  }
+}

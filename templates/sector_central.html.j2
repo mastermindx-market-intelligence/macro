@@ -1699,6 +1699,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
 </head>
 <body class="macro-desk page-baskets">
 <div class="rvx-aurora" aria-hidden="true"><b class="a1"></b><b class="a2"></b><b class="a3"></b></div>
+{% set all_tools_enabled = true %}
 {% include "_site_nav.html.j2" %}
 
   <!-- ── Shock de-escalation banner (FTR W1 / PS-R3, de-escalation only) ── -->
@@ -2915,7 +2916,7 @@ function renderBTable(){
   tbl.querySelectorAll('th[data-c]').forEach(h=>h.onclick=()=>{ const c=h.dataset.c;
     if(c===btblSort.col) btblSort.dir*=-1; else btblSort={col:c,dir:c==='name'?1:-1};
     localStorage.setItem('fw-btbl-sort',JSON.stringify(btblSort)); renderBTable(); });
-  tbl.querySelectorAll('.bname[data-id]').forEach(n=>n.onclick=()=>{ const id=n.dataset.id||''; if(/^[a-z0-9_-]+$/i.test(id)) location.href='basket/'+id+'.html'; });
+  tbl.querySelectorAll('.bname[data-id]').forEach(n=>n.onclick=()=>{ const id=n.dataset.id||''; if(/^[a-z0-9_-]+$/i.test(id)){ var _d='basket/'+id+'.html'; var _ss=window.MMXSharedShell; if(_ss){_ss.navigate(_d,'push')}else{location.href=_d} } });
 }
 
 // ---- 02 chart -------------------------------------------------------------
@@ -3034,7 +3035,7 @@ function resolveThemeHash(){
   let id=location.hash.slice(7);          // '#theme-'.length
   try{ id=decodeURIComponent(id); }catch(e){}
   if(!id||!themeById(id)) return;         // unknown id → stay put rather than 404
-  location.replace('basket/'+encodeURIComponent(id)+'.html');
+  var _d='basket/'+encodeURIComponent(id)+'.html'; var _ss=window.MMXSharedShell; if(_ss){_ss.navigate(_d,'replace')}else{location.replace(_d)}
 }
 
 // ---- Money flow: ETF style/risk tone + vol pill (Op 2) ----
@@ -3325,7 +3326,7 @@ function __siWireTrace(){
     var open=lanes.querySelector('.si-trace'); var was=row.nextElementSibling===open;
     if(open) open.remove();
     if(was) return;
-    var html=window.__siTrace(id); if(!html){ location.href=row.getAttribute('href'); return; }
+    var html=window.__siTrace(id); if(!html){ var _d=row.getAttribute('href'); var _ss=window.MMXSharedShell; if(_ss){_ss.navigate(_d,'push')}else{location.href=_d} return; }
     var d=document.createElement('div'); d.className='si-trace'; d.innerHTML=html+
       '<div class="si-trace-foot"><a href="basket/'+encodeURIComponent(id)+'.html">'+
       (document.documentElement.getAttribute('data-lang')==='zh'?'打开成分页 →':'members →')+'</a></div>';

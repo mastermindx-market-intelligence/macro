@@ -104,3 +104,22 @@ def test_dollar_trend_scorecard_labels_12_month_horizon():
     zh_flats = re.findall(r"当前空仓[^<{]*", src)
     assert zh_longs and all("12个月" in s for s in zh_longs), zh_longs
     assert zh_flats and all("12个月" in s for s in zh_flats), zh_flats
+
+
+def test_optional_dark_tooltips_keep_surface_foreground_contrast():
+    """R26 light-default Forex still needs readable optional-dark popovers."""
+    src = _TEMPLATE.read_text(encoding="utf-8")
+
+    # Preserve #7409's contrast fix while adopting the R26 light default.
+    # In dark mode --ink is foreground ink, not a suitable tooltip surface.
+    assert "setAttribute('data-theme',t||'light')" in src
+
+    rule = re.search(
+        r'html\[data-theme="dark"\]\s+\.tip-pop\{(?P<body>[^}]*)\}',
+        src,
+    )
+    assert rule, "dark-theme tooltip override is required"
+    body = re.sub(r"\s+", "", rule.group("body"))
+    assert "background:var(--card)" in body
+    assert "color:var(--ink)" in body
+    assert "background:var(--ink)" not in body

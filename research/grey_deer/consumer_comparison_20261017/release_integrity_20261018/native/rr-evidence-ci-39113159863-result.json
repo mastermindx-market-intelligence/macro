@@ -1,0 +1,202 @@
+{
+  "schema": "risk_radar.evidence_required_ci_result.v1",
+  "observed_at_utc": "2026-10-18T09:20:32.683112+00:00",
+  "repository": "mastermindx-market-intelligence/macro",
+  "pr": 9595,
+  "run": {
+    "id": 39113159863,
+    "head_sha": "f11fa0c66273ca1976f37e2f529fe9ff689ee439",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-10-18T08:52:56Z",
+    "updated_at": "2026-10-18T09:16:31Z",
+    "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39113159863"
+  },
+  "jobs": [
+    {
+      "id": 117633380617,
+      "name": "ci-plan",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-18T08:52:58Z",
+      "completed_at": "2026-10-18T08:56:47Z",
+      "failed_steps": []
+    },
+    {
+      "id": 117633380678,
+      "name": "contract-delta",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-18T08:52:58Z",
+      "completed_at": "2026-10-18T09:04:24Z",
+      "failed_steps": [
+        {
+          "name": "differential contract-delta gate",
+          "number": 7
+        }
+      ]
+    },
+    {
+      "id": 117634123821,
+      "name": "ci-pack-2",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-18T08:56:49Z",
+      "completed_at": "2026-10-18T09:10:59Z",
+      "failed_steps": []
+    },
+    {
+      "id": 117634123828,
+      "name": "ci-pack-3",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-18T08:56:49Z",
+      "completed_at": "2026-10-18T09:16:16Z",
+      "failed_steps": []
+    },
+    {
+      "id": 117634123839,
+      "name": "ci-pack-7",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-18T08:56:49Z",
+      "completed_at": "2026-10-18T09:12:14Z",
+      "failed_steps": []
+    },
+    {
+      "id": 117634123863,
+      "name": "ci-pack-1",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-18T08:56:50Z",
+      "completed_at": "2026-10-18T09:09:34Z",
+      "failed_steps": [
+        {
+          "name": "validate and run legacy CI pack",
+          "number": 10
+        }
+      ]
+    },
+    {
+      "id": 117634123866,
+      "name": "ci-pack-0",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-18T08:56:49Z",
+      "completed_at": "2026-10-18T09:05:03Z",
+      "failed_steps": []
+    },
+    {
+      "id": 117634123881,
+      "name": "ci-pack-4",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-18T08:56:49Z",
+      "completed_at": "2026-10-18T09:09:21Z",
+      "failed_steps": [
+        {
+          "name": "validate and run legacy CI pack",
+          "number": 10
+        }
+      ]
+    },
+    {
+      "id": 117634123884,
+      "name": "ci-pack-11",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-18T08:56:49Z",
+      "completed_at": "2026-10-18T09:08:27Z",
+      "failed_steps": []
+    },
+    {
+      "id": 117634123951,
+      "name": "ci-pack-8",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-18T08:56:49Z",
+      "completed_at": "2026-10-18T09:08:51Z",
+      "failed_steps": []
+    },
+    {
+      "id": 117634123953,
+      "name": "ci-pack-9",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-18T08:56:49Z",
+      "completed_at": "2026-10-18T09:05:04Z",
+      "failed_steps": []
+    },
+    {
+      "id": 117634123965,
+      "name": "ci-pack-6",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-18T08:56:50Z",
+      "completed_at": "2026-10-18T09:08:05Z",
+      "failed_steps": []
+    },
+    {
+      "id": 117634123968,
+      "name": "ci-pack-10",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-18T08:56:49Z",
+      "completed_at": "2026-10-18T09:11:39Z",
+      "failed_steps": []
+    },
+    {
+      "id": 117634123973,
+      "name": "ci-pack-5",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-18T08:56:49Z",
+      "completed_at": "2026-10-18T09:09:30Z",
+      "failed_steps": []
+    },
+    {
+      "id": 117634124382,
+      "name": "trusted-ci",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-18T08:56:48Z",
+      "completed_at": "2026-10-18T08:56:47Z",
+      "failed_steps": []
+    },
+    {
+      "id": 117637911297,
+      "name": "ci-gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-18T09:16:19Z",
+      "completed_at": "2026-10-18T09:16:30Z",
+      "failed_steps": [
+        {
+          "name": "enforce semantic verdict",
+          "number": 8
+        },
+        {
+          "name": "enforce contract-delta verdict",
+          "number": 9
+        }
+      ]
+    }
+  ],
+  "introduced_archive_findings": {
+    "unregistered_foreign_test_suites": 6,
+    "foreign_first_party_import_findings": 27
+  },
+  "base_reproduced_findings": {
+    "reference_integrity_count": 3,
+    "ci_base": "dfdd93a75da34417deb1ad328c79f0bc795cf458",
+    "interpretation": "Same three reference-integrity findings observed in hosted candidate and base probes; no waiver follows."
+  },
+  "raw_failed_log": {
+    "bytes": 241956,
+    "sha256": "4f6c4912033dd26f77b55ef033dcd34356ef502ac49aa8378c019311a8a6477c",
+    "published": false
+  },
+  "source_landing": false,
+  "production_deploy": false
+}

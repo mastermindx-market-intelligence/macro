@@ -1,0 +1,1864 @@
+{
+  "snapshot_file": "/Volumes/Mastermind/ci-pack-throughput-20261019/parser-natural-runs-0754.json",
+  "treatment_merge": "9c7df3786fc3856fbb692da301584b4b443ab66d",
+  "treatment_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+  "additional_treatment_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+  "discovered": 57,
+  "pending": 18,
+  "cancelled": 3,
+  "reruns": 0,
+  "summary": [
+    {
+      "cohort": "before",
+      "scope": "scoped",
+      "conclusion": "success",
+      "run_to_gate_s": {
+        "n": 14,
+        "p50": 3265.5,
+        "p95": 4074.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95": null
+      },
+      "runner_minutes": {
+        "n": 14,
+        "p50": 223.015,
+        "p95": 257.63
+      }
+    },
+    {
+      "cohort": "after",
+      "scope": "scoped",
+      "conclusion": "success",
+      "run_to_gate_s": {
+        "n": 24,
+        "p50": 1895.0,
+        "p95": 2553.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95": null
+      },
+      "runner_minutes": {
+        "n": 24,
+        "p50": 177.675,
+        "p95": 253.95
+      }
+    },
+    {
+      "cohort": "before",
+      "scope": "scoped",
+      "conclusion": "failure",
+      "run_to_gate_s": {
+        "n": 4,
+        "p50": 3992.5,
+        "p95": 4342.0
+      },
+      "first_red_s": {
+        "n": 4,
+        "p50": 3118.0,
+        "p95": 4178.0
+      },
+      "runner_minutes": {
+        "n": 4,
+        "p50": 210.745,
+        "p95": 332.83
+      }
+    },
+    {
+      "cohort": "after",
+      "scope": "scoped",
+      "conclusion": "failure",
+      "run_to_gate_s": {
+        "n": 7,
+        "p50": 1867.0,
+        "p95": 2618.0
+      },
+      "first_red_s": {
+        "n": 7,
+        "p50": 578.0,
+        "p95": 1853.0
+      },
+      "runner_minutes": {
+        "n": 7,
+        "p50": 200.06666666666666,
+        "p95": 337.6333333333333
+      }
+    },
+    {
+      "cohort": "before",
+      "scope": "global",
+      "conclusion": "success",
+      "run_to_gate_s": {
+        "n": 1,
+        "p50": 3196.0,
+        "p95": 3196.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95": null
+      },
+      "runner_minutes": {
+        "n": 1,
+        "p50": 321.97,
+        "p95": 321.97
+      }
+    },
+    {
+      "cohort": "after",
+      "scope": "global",
+      "conclusion": "success",
+      "run_to_gate_s": {
+        "n": 5,
+        "p50": 2723.0,
+        "p95": 3156.0
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95": null
+      },
+      "runner_minutes": {
+        "n": 5,
+        "p50": 352.6,
+        "p95": 360.1
+      }
+    },
+    {
+      "cohort": "before",
+      "scope": "global",
+      "conclusion": "failure",
+      "run_to_gate_s": {
+        "n": 3,
+        "p50": 4109.0,
+        "p95": 7145.0
+      },
+      "first_red_s": {
+        "n": 3,
+        "p50": 2632.0,
+        "p95": 2957.0
+      },
+      "runner_minutes": {
+        "n": 3,
+        "p50": 361.0,
+        "p95": 481.25
+      }
+    },
+    {
+      "cohort": "after",
+      "scope": "global",
+      "conclusion": "failure",
+      "run_to_gate_s": {
+        "n": 0,
+        "p50": null,
+        "p95": null
+      },
+      "first_red_s": {
+        "n": 0,
+        "p50": null,
+        "p95": null
+      },
+      "runner_minutes": {
+        "n": 0,
+        "p50": null,
+        "p95": null
+      }
+    }
+  ],
+  "limitations": [
+    "Interim completion-conditioned cohort; long pending runs are not represented.",
+    "Same selected jobs/definition proofs do not prove identical test inputs or queue conditions.",
+    "No causal estimate; no claimed fleet p95 improvement."
+  ],
+  "after": [
+    {
+      "id": 39387371990,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39387371990",
+      "conclusion": "success",
+      "tested_tree_sha": "7bd1189a75a9871d7df35ff6f137a3d2097260bd",
+      "base_sha": "13e098071ab2799c41a170d21ad522f751dfb15a",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 81,
+      "job_set": "19fd6b6ac2a7c879bbef0eab874e03328dc0353a98b6b01d64066ac9711d22ab",
+      "proof_set": "ada61efa437e72e07ec3975a59f7d453a0495beacf2abf4377fab6b37bfe72a7",
+      "run_to_gate_s": 905.0,
+      "first_red_s": null,
+      "runner_minutes": 130.51666666666668,
+      "last_pack_to_gate_start_s": 3.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39386663657,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39386663657",
+      "conclusion": "success",
+      "tested_tree_sha": "119eca5a895ed8630063409bff74e8e1dacb9f3e",
+      "base_sha": "13e098071ab2799c41a170d21ad522f751dfb15a",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 131,
+      "job_set": "4ce14e1413ff5e014c08c9addedcbee5eee05037fb8f2d98f7615e6b511bbf82",
+      "proof_set": "a4fd7eec730bb4f08510f8e5e34fdfa428928a66a50f98a45c3fe653e26ed781",
+      "run_to_gate_s": 1405.0,
+      "first_red_s": null,
+      "runner_minutes": 187.23333333333332,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39386033073,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39386033073",
+      "conclusion": "success",
+      "tested_tree_sha": "1d4ff7b5d086c5af21225cc81b3e5aca910f3afb",
+      "base_sha": "13e098071ab2799c41a170d21ad522f751dfb15a",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 106,
+      "job_set": "46ffba333b6a96afed9eb58afb3d294abfac0129def5faebd847b609becb4664",
+      "proof_set": "12926d85fc9d9a57b282a4e65fedf0533bcaa742ba7c29625bbb1d67e6d76bc2",
+      "run_to_gate_s": 1854.0,
+      "first_red_s": null,
+      "runner_minutes": 167.91666666666666,
+      "last_pack_to_gate_start_s": 3.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39385994645,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39385994645",
+      "conclusion": "failure",
+      "tested_tree_sha": "b8730f9cc382bfcf3d562a320461b3c9d3f4c617",
+      "base_sha": "13e098071ab2799c41a170d21ad522f751dfb15a",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 108,
+      "job_set": "91f8f4b84511093d2e26dc695acee5295d1b8e545934a5355711b1cb24fe05a4",
+      "proof_set": "f672104d17e96e7ca18dffa566f0680630132c36552f89be29d17ef9d812c346",
+      "run_to_gate_s": 2007.0,
+      "first_red_s": 578.0,
+      "runner_minutes": 233.81666666666666,
+      "last_pack_to_gate_start_s": 3.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39385787266,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39385787266",
+      "conclusion": "success",
+      "tested_tree_sha": "844b670026fcf224282c100a072f3f960d71254e",
+      "base_sha": "13e098071ab2799c41a170d21ad522f751dfb15a",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 98,
+      "job_set": "35cdd4faa5f6b00a8bc71478853f216c0f02ce3473f1208d55a6d4fbde091d53",
+      "proof_set": "79069aef3c08b849820ab036076811bd3c1678232a956cc7e4663f540cdf9b3b",
+      "run_to_gate_s": 2016.0,
+      "first_red_s": null,
+      "runner_minutes": 166.2,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [
+            39342612192
+          ],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39384839986,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39384839986",
+      "conclusion": "success",
+      "tested_tree_sha": "33704e8ed283c9c9e1cb5620667eafaadd0dbb4a",
+      "base_sha": "23315c26737ec10893c44b6c9c9cc0b6593e97f3",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 103,
+      "job_set": "0c86be75812cc2f342fb7c63bec5f2848f46fd7f3a2384f022d4912139eeeb58",
+      "proof_set": "c79cde2ddaab2c735c8ace26951050b0dff8036c43e52041cb3763b6be7c9e66",
+      "run_to_gate_s": 2066.0,
+      "first_red_s": null,
+      "runner_minutes": 220.83333333333334,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [
+            39346152272
+          ],
+          "proofs": [
+            39346152272
+          ]
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39383304637,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39383304637",
+      "conclusion": "success",
+      "tested_tree_sha": "048b915c157f40fbb20af091fcfbac8c0a535e31",
+      "base_sha": "23715f41f5a262dd4d4b7b36f192ad4fd5ba60d9",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 104,
+      "job_set": "e65980bdfadddb79db5ac3714bff930ebcad1f8edba91dd623a7082b1acf97a0",
+      "proof_set": "653c023aed5e33709c7e5911dfbf4b1e04f8def876d144fe9bbf3078e2c5ab7d",
+      "run_to_gate_s": 2135.0,
+      "first_red_s": null,
+      "runner_minutes": 226.2,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39382851098,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39382851098",
+      "conclusion": "success",
+      "tested_tree_sha": "e2151eec3b354885189d9b00d0485b0470eb52c3",
+      "base_sha": "11135a8f4d8646d0597857c600dd505d2e69b119",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 80,
+      "job_set": "a3707a756361a0018f4c72b3c5631046e20246a974af20d9e02ad76bb7637a43",
+      "proof_set": "6fcfa2cd67ff138c3528a1e842b7854d7efd28fc0b92585b958883b5cf517f88",
+      "run_to_gate_s": 1218.0,
+      "first_red_s": null,
+      "runner_minutes": 137.18333333333334,
+      "last_pack_to_gate_start_s": 3.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39382681987,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39382681987",
+      "conclusion": "success",
+      "tested_tree_sha": "3ca64054b1a00545fdfe492ecee9d476f6cccbc8",
+      "base_sha": "11135a8f4d8646d0597857c600dd505d2e69b119",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 3,
+      "job_set": "1e59a2ee784881f7369c9c56bcfae3e5bcb1f1157410e6bfa970b0ece27fbfd8",
+      "proof_set": "0a7053bde969deaa5a1e2b763788565411b2e699101b47e525ec95b2854d6517",
+      "run_to_gate_s": 776.0,
+      "first_red_s": null,
+      "runner_minutes": 33.016666666666666,
+      "last_pack_to_gate_start_s": 3.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": false
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [
+            39317389150
+          ],
+          "proofs": [
+            39317389150
+          ]
+        }
+      }
+    },
+    {
+      "id": 39382473843,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39382473843",
+      "conclusion": "success",
+      "tested_tree_sha": "a1ebcfb59befb073f5911d1e52a935dc7cbc3491",
+      "base_sha": "11135a8f4d8646d0597857c600dd505d2e69b119",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "global",
+      "count": 259,
+      "job_set": "a1de05ee372ee8936bfafc69673998f0d843806644c3b25cce671db009d8b8e2",
+      "proof_set": "252378de9ed73737362ddd5ec9d5225fad387085b1e023916a7ac208d7231ccf",
+      "run_to_gate_s": 2603.0,
+      "first_red_s": null,
+      "runner_minutes": 350.71666666666664,
+      "last_pack_to_gate_start_s": 5.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39382113444,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39382113444",
+      "conclusion": "success",
+      "tested_tree_sha": "b3b55282544c6a39fea2ffbe8e038e8300559a88",
+      "base_sha": "240cc89c3251c355a6f41b7069a5d81bda607eb6",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 108,
+      "job_set": "31e60e4a821748ba519779e9d0b3ea3638424550237dd13d603e32832ffa8723",
+      "proof_set": "946448ca551adae773c7ed80f00b568c23392b071e460b8d107800f1d35f7823",
+      "run_to_gate_s": 1461.0,
+      "first_red_s": null,
+      "runner_minutes": 179.21666666666667,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39381334011,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39381334011",
+      "conclusion": "success",
+      "tested_tree_sha": "2a85c449d9e7f826c5d08a3130f46036963c9f59",
+      "base_sha": "d1b543eedb61c63bf1ddda52bd0cc077aae5037f",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "global",
+      "count": 258,
+      "job_set": "fe4c67e40b96b6ea4f0cf85e95efe38203d15f3e31e49036caab1aae3f2e06e4",
+      "proof_set": "5f1356704d73063daa8e8039d0901fb11b9e620ea2ec7f5544731456f73dfb3a",
+      "run_to_gate_s": 3156.0,
+      "first_red_s": null,
+      "runner_minutes": 352.6,
+      "last_pack_to_gate_start_s": 32.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [
+            39341951816,
+            39336503626
+          ],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [
+            39310593327,
+            39309256542
+          ],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39381147868,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39381147868",
+      "conclusion": "success",
+      "tested_tree_sha": "9669bfe6c8dac2d27238afd558b2946b5423b24a",
+      "base_sha": "d1b543eedb61c63bf1ddda52bd0cc077aae5037f",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 98,
+      "job_set": "35cdd4faa5f6b00a8bc71478853f216c0f02ce3473f1208d55a6d4fbde091d53",
+      "proof_set": "812f5aa1a45e03bdbfd2a017a3b8aaff6280f158733eabeff8782033a68b3b5b",
+      "run_to_gate_s": 1647.0,
+      "first_red_s": null,
+      "runner_minutes": 164.13333333333333,
+      "last_pack_to_gate_start_s": 3.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [
+            39342612192
+          ],
+          "proofs": [
+            39342612192
+          ]
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39380342443,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39380342443",
+      "conclusion": "success",
+      "tested_tree_sha": "d892ce7c024cac7f4ed3d5d0f6ed3160bb5f5f0b",
+      "base_sha": "720e1e7df9797e414d8a2a218ef2f77016c45f48",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 106,
+      "job_set": "5b64e1be07fc5a7dbe12975bf4bfb55125cb94a97134740fea565e6139d09860",
+      "proof_set": "da408d5aa4899f1f0066727df617f436b14dac71f97b5183ccf5cb2e737ecd9f",
+      "run_to_gate_s": 1990.0,
+      "first_red_s": null,
+      "runner_minutes": 176.13333333333333,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39379364837,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39379364837",
+      "conclusion": "success",
+      "tested_tree_sha": "623f59a048c8285687c6dfe28575e2a2f9c04a79",
+      "base_sha": "720e1e7df9797e414d8a2a218ef2f77016c45f48",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 83,
+      "job_set": "5ac85ee6843a79341fb4dff390187e8d1cf7c68b8e447e03304f9bcc12d3371e",
+      "proof_set": "3e1c75e1f24578c2579ef504702ff72bb56bd0f1cffb67501f5babaf6433930f",
+      "run_to_gate_s": 1905.0,
+      "first_red_s": null,
+      "runner_minutes": 162.06666666666666,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39379143776,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39379143776",
+      "conclusion": "failure",
+      "tested_tree_sha": "3ebbf8cf93500ff41bb99c835cd8801dfaf4d320",
+      "base_sha": "720e1e7df9797e414d8a2a218ef2f77016c45f48",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 108,
+      "job_set": "31e60e4a821748ba519779e9d0b3ea3638424550237dd13d603e32832ffa8723",
+      "proof_set": "946448ca551adae773c7ed80f00b568c23392b071e460b8d107800f1d35f7823",
+      "run_to_gate_s": 1747.0,
+      "first_red_s": 454.0,
+      "runner_minutes": 200.06666666666666,
+      "last_pack_to_gate_start_s": 3.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39378857695,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39378857695",
+      "conclusion": "success",
+      "tested_tree_sha": "b84340982ab8aa2dcdaf90791e6d1e5a2397228d",
+      "base_sha": "720e1e7df9797e414d8a2a218ef2f77016c45f48",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 103,
+      "job_set": "0c86be75812cc2f342fb7c63bec5f2848f46fd7f3a2384f022d4912139eeeb58",
+      "proof_set": "c79cde2ddaab2c735c8ace26951050b0dff8036c43e52041cb3763b6be7c9e66",
+      "run_to_gate_s": 2581.0,
+      "first_red_s": null,
+      "runner_minutes": 228.15,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [
+            39346152272
+          ],
+          "proofs": [
+            39346152272
+          ]
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39378262212,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39378262212",
+      "conclusion": "success",
+      "tested_tree_sha": "8a34bfb7f0138878a66d2c24db0740db3344524d",
+      "base_sha": "720e1e7df9797e414d8a2a218ef2f77016c45f48",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 124,
+      "job_set": "9390fc826ac57f49182cda0dd6658a0567604869c55272b9af718f93a0f86524",
+      "proof_set": "27825a77b5e83f11069e16ed47ba3de431667710502f8639ecf8af2addf31826",
+      "run_to_gate_s": 2480.0,
+      "first_red_s": null,
+      "runner_minutes": 253.95,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [
+        39234426974
+      ],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [
+            39234426974
+          ],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39377789507,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39377789507",
+      "conclusion": "success",
+      "tested_tree_sha": "34ae289d8dd4c0963dd17d5e2b7061aa450e3b27",
+      "base_sha": "270537f66abaf4e584ddbeafb8ea12c84af06270",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 92,
+      "job_set": "8354409e2fea141367d0797dc084bd780d727d995a8201ff0e80b5afa2b4f110",
+      "proof_set": "5fc8f88b22e285a8403ac1809950aaaf21828e82f5bd5cd0d2ab9bedc6a7de61",
+      "run_to_gate_s": 1300.0,
+      "first_red_s": null,
+      "runner_minutes": 147.41666666666666,
+      "last_pack_to_gate_start_s": 3.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39377742307,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39377742307",
+      "conclusion": "success",
+      "tested_tree_sha": "0fad9e9b41c1cd5839d6711555f4dd5bd761eaf5",
+      "base_sha": "270537f66abaf4e584ddbeafb8ea12c84af06270",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "global",
+      "count": 259,
+      "job_set": "a1de05ee372ee8936bfafc69673998f0d843806644c3b25cce671db009d8b8e2",
+      "proof_set": "42e12ac33a764454ad1e826f6aaf4c5573a4b01f3acbfdab1e65ceee315ebaed",
+      "run_to_gate_s": 2723.0,
+      "first_red_s": null,
+      "runner_minutes": 351.15,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39377551124,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39377551124",
+      "conclusion": "success",
+      "tested_tree_sha": "9f714986aab2ee6002032ec9295a7d175754d3e6",
+      "base_sha": "270537f66abaf4e584ddbeafb8ea12c84af06270",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "global",
+      "count": 259,
+      "job_set": "bc4a02d8098d6e6ec3c7b7a4ee30a3bae2e5ab87c00d9d966492099d5ace6b85",
+      "proof_set": "00ef48e4a52c46ab74eeb5cd54282da212e6d59886d402ecde65ebb36221435b",
+      "run_to_gate_s": 3003.0,
+      "first_red_s": null,
+      "runner_minutes": 360.1,
+      "last_pack_to_gate_start_s": 3.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39377263649,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39377263649",
+      "conclusion": "success",
+      "tested_tree_sha": "3b819c10b770d7209838d7252e1deb2a74249647",
+      "base_sha": "270537f66abaf4e584ddbeafb8ea12c84af06270",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 80,
+      "job_set": "b99186235046dfc9174b04fad13e2e39ccc0ec4d13672ae2069ada5809fb4d53",
+      "proof_set": "ca3b5af31e5c1378bfa304794518143d19d2ae68a1b5de964c59cfc4c587bede",
+      "run_to_gate_s": 1885.0,
+      "first_red_s": null,
+      "runner_minutes": 168.51666666666668,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39376715795,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39376715795",
+      "conclusion": "success",
+      "tested_tree_sha": "f9f5f06c894c2d6cb0c4c5f3dd4567725cfd7a38",
+      "base_sha": "270537f66abaf4e584ddbeafb8ea12c84af06270",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 116,
+      "job_set": "e1b82735e46a78c30382caaf0629395c0a2d94014f09e4e66b061c0efaaf5ec6",
+      "proof_set": "097b8a6aec6d54e48ebd63c2690340aa6d2c172255693558b066c32259f21e50",
+      "run_to_gate_s": 2429.0,
+      "first_red_s": null,
+      "runner_minutes": 242.15,
+      "last_pack_to_gate_start_s": 3.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [
+        39233349598
+      ],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [
+            39233349598
+          ],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39376451825,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39376451825",
+      "conclusion": "success",
+      "tested_tree_sha": "5e5cb96f8a94d73989cb8ea829c094b7401995eb",
+      "base_sha": "270537f66abaf4e584ddbeafb8ea12c84af06270",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 3,
+      "job_set": "1e59a2ee784881f7369c9c56bcfae3e5bcb1f1157410e6bfa970b0ece27fbfd8",
+      "proof_set": "0a7053bde969deaa5a1e2b763788565411b2e699101b47e525ec95b2854d6517",
+      "run_to_gate_s": 709.0,
+      "first_red_s": null,
+      "runner_minutes": 29.433333333333334,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": false
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [
+            39317389150
+          ],
+          "proofs": [
+            39317389150
+          ]
+        }
+      }
+    },
+    {
+      "id": 39375631488,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39375631488",
+      "conclusion": "success",
+      "tested_tree_sha": "de72edfafe5fc0efcbbdaf999e6f37b4bd11ae59",
+      "base_sha": "95f8d9f8e1784e7eb64d50de4abf501a93063f42",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 141,
+      "job_set": "0c348f8ac94f03cb59995c9f2226cec460c3d90bd058b24bb9b39595c053adef",
+      "proof_set": "80b3d0dcc1a7001031ce55d6afb2ae6979f28fa5266e01221e9359d01c98b144",
+      "run_to_gate_s": 2059.0,
+      "first_red_s": null,
+      "runner_minutes": 241.85,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39375523194,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39375523194",
+      "conclusion": "failure",
+      "tested_tree_sha": "ad2e4844501acbf5880c32a43eed506bdf667705",
+      "base_sha": "95f8d9f8e1784e7eb64d50de4abf501a93063f42",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 117,
+      "job_set": "0122d8fcbb25ab524d2d26f891c7538ac59205c0d86dd442abd298281f3690ec",
+      "proof_set": "05fc94ffe55586c0e8616f669153a6c0e5cebea646d41054163ba6a76b4ceb0b",
+      "run_to_gate_s": 1559.0,
+      "first_red_s": 483.0,
+      "runner_minutes": 190.0,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39375204727,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39375204727",
+      "conclusion": "failure",
+      "tested_tree_sha": "d9d4ea042daff7c024159b423b4fbe0a195df75f",
+      "base_sha": "95f8d9f8e1784e7eb64d50de4abf501a93063f42",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 147,
+      "job_set": "052dc1426eb7bb728bd39626dc750e1c69646c254e198407dbe926dc1638b42f",
+      "proof_set": "b1de8e7960f2b226c2915769a091488a16c5cb54e30ddbe2f1ec77450c6f7efc",
+      "run_to_gate_s": 2618.0,
+      "first_red_s": 569.0,
+      "runner_minutes": 337.6333333333333,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39375100115,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39375100115",
+      "conclusion": "failure",
+      "tested_tree_sha": "acbd469b17f12543be0cfa22501872e45c8e0f8e",
+      "base_sha": "95f8d9f8e1784e7eb64d50de4abf501a93063f42",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 83,
+      "job_set": "5ac85ee6843a79341fb4dff390187e8d1cf7c68b8e447e03304f9bcc12d3371e",
+      "proof_set": "3e1c75e1f24578c2579ef504702ff72bb56bd0f1cffb67501f5babaf6433930f",
+      "run_to_gate_s": 1867.0,
+      "first_red_s": 1853.0,
+      "runner_minutes": 170.75,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39374941046,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374941046",
+      "conclusion": "success",
+      "tested_tree_sha": "23e07f672169cabf9625fc7fcc5a24d7b58589f4",
+      "base_sha": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "global",
+      "count": 258,
+      "job_set": "fe4c67e40b96b6ea4f0cf85e95efe38203d15f3e31e49036caab1aae3f2e06e4",
+      "proof_set": "b95028673faa814b29892248820fcccbf1e451050b45f6636c89d713b08c22d8",
+      "run_to_gate_s": 2304.0,
+      "first_red_s": null,
+      "runner_minutes": 355.45,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [
+            39341951816,
+            39336503626
+          ],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [
+            39310593327,
+            39309256542
+          ],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39374339312,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374339312",
+      "conclusion": "success",
+      "tested_tree_sha": "8c4b543543d542bbd2a24142d05212daff3b3e98",
+      "base_sha": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 120,
+      "job_set": "ddf4e9d1f9aa56c5c5d9876bce16edb0ce0f1942e91449bd9091c307a36009ed",
+      "proof_set": "b961c9030674a6ec48be56709a15c0efd867e5e3ff50614349f79105c33e181e",
+      "run_to_gate_s": 2470.0,
+      "first_red_s": null,
+      "runner_minutes": 279.96666666666664,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39374315686,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374315686",
+      "conclusion": "failure",
+      "tested_tree_sha": "6d00b735f47095e4d8f2204a1c372a1430ca81ef",
+      "base_sha": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 94,
+      "job_set": "5c1665e29d3cc5bd915c930268abe6aa1d1af1c4b5083b0ca91140c1d9ac316e",
+      "proof_set": "159d9049fed8281478d7ce05a85b01cd0ac418f3dd3e590c934417f2f3af21be",
+      "run_to_gate_s": 2000.0,
+      "first_red_s": 1002.0,
+      "runner_minutes": 201.85,
+      "last_pack_to_gate_start_s": 3.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [
+            39341912215
+          ],
+          "proofs": [
+            39341912215
+          ]
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39374295130,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374295130",
+      "conclusion": "success",
+      "tested_tree_sha": "97d37ea56468372c16f8319bd905468c955bc9ce",
+      "base_sha": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 103,
+      "job_set": "0c86be75812cc2f342fb7c63bec5f2848f46fd7f3a2384f022d4912139eeeb58",
+      "proof_set": "c79cde2ddaab2c735c8ace26951050b0dff8036c43e52041cb3763b6be7c9e66",
+      "run_to_gate_s": 2553.0,
+      "first_red_s": null,
+      "runner_minutes": 228.06666666666666,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [
+            39346152272
+          ],
+          "proofs": [
+            39346152272
+          ]
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39373563550,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39373563550",
+      "conclusion": "success",
+      "tested_tree_sha": "b98c2bb25d9dbf11ffbc966ba08a84cbaa8a9baa",
+      "base_sha": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 104,
+      "job_set": "a6199c534002993878a1d9b459c853b6990dfbaae1152d55dd42605785000d02",
+      "proof_set": "8c260d0fbdcae1f2d9ea4d20a74491a94ef71ce936d6c339d2476b4793be088e",
+      "run_to_gate_s": 1716.0,
+      "first_red_s": null,
+      "runner_minutes": 163.01666666666668,
+      "last_pack_to_gate_start_s": 1.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39373398370,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39373398370",
+      "conclusion": "success",
+      "tested_tree_sha": "3d61400de8726b5903db1832ee5f7725bd872243",
+      "base_sha": "fbdf7c1a812c5e30e9e74e0d38a82203f18e6d34",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 114,
+      "job_set": "8f5d3c57fb858cbb9ece9dc2bb1642e2b78821373575c9f8bad25e22ea49b6b6",
+      "proof_set": "910f1cb82103ff5c4da19b813e61f0e759f3fd88a0e26155fffb327b7a3df147",
+      "run_to_gate_s": 2218.0,
+      "first_red_s": null,
+      "runner_minutes": 252.18333333333334,
+      "last_pack_to_gate_start_s": 3.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": true,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39372857203,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39372857203",
+      "conclusion": "success",
+      "tested_tree_sha": "b6e4e3defe9ffd40c67ec2f1ac1a0837ef3d8215",
+      "base_sha": "92c51f1ff800b36fc63e7869243945996ac7315c",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 139,
+      "job_set": "fdc5d49a50edabcb295828aadf4a062d387ecb3938be5dad1bab634e70a98ad2",
+      "proof_set": "c3cf4283e28d2ec4d183a45361cb20358b2c4171c771fa465a41ce1aec55328d",
+      "run_to_gate_s": 1860.0,
+      "first_red_s": null,
+      "runner_minutes": 228.5,
+      "last_pack_to_gate_start_s": 3.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": true
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [],
+          "proofs": []
+        }
+      }
+    },
+    {
+      "id": 39372741047,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39372741047",
+      "conclusion": "failure",
+      "tested_tree_sha": "c463b8452d0dfc79640ca39c344f6f06e22a7125",
+      "base_sha": "92c51f1ff800b36fc63e7869243945996ac7315c",
+      "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+      "eligible": true,
+      "scope": "scoped",
+      "count": 3,
+      "job_set": "1e59a2ee784881f7369c9c56bcfae3e5bcb1f1157410e6bfa970b0ece27fbfd8",
+      "proof_set": "0a7053bde969deaa5a1e2b763788565411b2e699101b47e525ec95b2854d6517",
+      "run_to_gate_s": 916.0,
+      "first_red_s": 899.0,
+      "runner_minutes": 33.4,
+      "last_pack_to_gate_start_s": 2.0,
+      "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+      "baseline_same_jobs": [],
+      "baseline_same_proofs": [],
+      "exposure": {
+        "fif": false,
+        "collector_registry": false
+      },
+      "secondary_matches": {
+        "baseline": {
+          "jobs": [],
+          "proofs": []
+        },
+        "ancestry": {
+          "jobs": [],
+          "proofs": []
+        },
+        "weighted": {
+          "jobs": [
+            39317389150
+          ],
+          "proofs": [
+            39317389150
+          ]
+        }
+      }
+    }
+  ],
+  "matched_success_comparison": {
+    "independent_control_count": 1,
+    "treated_success_count": 3,
+    "control_parser_blob": "c30aed46034103e88ec83b3d9f4b651bcfa3dc43",
+    "rows": [
+      {
+        "run": {
+          "id": 39346152272,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39346152272",
+          "conclusion": "success",
+          "tested_tree_sha": "340f03d56dc65027d25771c95c9dfffaec989589",
+          "base_sha": "7777a1df363809b24561c054b8c006286f5c0a56",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 103,
+          "job_set": "0c86be75812cc2f342fb7c63bec5f2848f46fd7f3a2384f022d4912139eeeb58",
+          "proof_set": "c79cde2ddaab2c735c8ace26951050b0dff8036c43e52041cb3763b6be7c9e66",
+          "run_to_gate_s": 2007.0,
+          "first_red_s": null,
+          "runner_minutes": 232.53333333333333,
+          "last_pack_to_gate_start_s": 3.0,
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        "critical_pack": "ci-pack-7",
+        "gate_delta_vs_single_control_s": 0.0,
+        "job_wall_delta_vs_single_control_min": 0.0
+      },
+      {
+        "run": {
+          "id": 39384839986,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39384839986",
+          "conclusion": "success",
+          "tested_tree_sha": "33704e8ed283c9c9e1cb5620667eafaadd0dbb4a",
+          "base_sha": "23315c26737ec10893c44b6c9c9cc0b6593e97f3",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 103,
+          "job_set": "0c86be75812cc2f342fb7c63bec5f2848f46fd7f3a2384f022d4912139eeeb58",
+          "proof_set": "c79cde2ddaab2c735c8ace26951050b0dff8036c43e52041cb3763b6be7c9e66",
+          "run_to_gate_s": 2066.0,
+          "first_red_s": null,
+          "runner_minutes": 220.83333333333334,
+          "last_pack_to_gate_start_s": 2.0,
+          "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        "critical_pack": "ci-pack-0",
+        "gate_delta_vs_single_control_s": 59.0,
+        "job_wall_delta_vs_single_control_min": -11.699999999999989
+      },
+      {
+        "run": {
+          "id": 39378857695,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39378857695",
+          "conclusion": "success",
+          "tested_tree_sha": "b84340982ab8aa2dcdaf90791e6d1e5a2397228d",
+          "base_sha": "720e1e7df9797e414d8a2a218ef2f77016c45f48",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 103,
+          "job_set": "0c86be75812cc2f342fb7c63bec5f2848f46fd7f3a2384f022d4912139eeeb58",
+          "proof_set": "c79cde2ddaab2c735c8ace26951050b0dff8036c43e52041cb3763b6be7c9e66",
+          "run_to_gate_s": 2581.0,
+          "first_red_s": null,
+          "runner_minutes": 228.15,
+          "last_pack_to_gate_start_s": 2.0,
+          "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        "critical_pack": "ci-pack-0",
+        "gate_delta_vs_single_control_s": 574.0,
+        "job_wall_delta_vs_single_control_min": -4.383333333333326
+      },
+      {
+        "run": {
+          "id": 39374295130,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39374295130",
+          "conclusion": "success",
+          "tested_tree_sha": "97d37ea56468372c16f8319bd905468c955bc9ce",
+          "base_sha": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+          "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+          "eligible": true,
+          "scope": "scoped",
+          "count": 103,
+          "job_set": "0c86be75812cc2f342fb7c63bec5f2848f46fd7f3a2384f022d4912139eeeb58",
+          "proof_set": "c79cde2ddaab2c735c8ace26951050b0dff8036c43e52041cb3763b6be7c9e66",
+          "run_to_gate_s": 2553.0,
+          "first_red_s": null,
+          "runner_minutes": 228.06666666666666,
+          "last_pack_to_gate_start_s": 2.0,
+          "additional_implementation_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+          "baseline_same_jobs": [],
+          "baseline_same_proofs": []
+        },
+        "critical_pack": "ci-pack-0",
+        "gate_delta_vs_single_control_s": 546.0,
+        "job_wall_delta_vs_single_control_min": -4.466666666666669
+      }
+    ],
+    "decision": "Retain twelve packs and both weights. The repeated hosted cost is in FIF primary commands; no additional source optimization is justified without a new discriminating residual profile and current carrier-custody check. Publish the fixed comparison without claiming causal speedup or cost neutrality.",
+    "inner_costs": {
+      "control": {
+        "run": 39346152272,
+        "fif_groups": [
+          {
+            "name": "fif-kernel-guards \u2014 FIF kernel suites (class A, hermetic)",
+            "seconds": 1312.91201
+          },
+          {
+            "name": "fif-kernel-guards \u2014 FIF P2 evidence-capture suite (code half)",
+            "seconds": 3.134578
+          },
+          {
+            "name": "fif-kernel-guards \u2014 FIF G-pack gold and kernel suites (hermetic half)",
+            "seconds": 5.030303
+          },
+          {
+            "name": "fif-kernel-guards \u2014 FIF desk page health and financial compare Node regressions",
+            "seconds": 8.780239
+          }
+        ],
+        "total_command_s": 1329.85713,
+        "primary_tests": "2680 passed, 1 skipped, 15 warnings in 1311.39s"
+      },
+      "treated": [
+        {
+          "id": 39384839986,
+          "fif_groups": [
+            {
+              "pack": "ci-pack-0",
+              "name": "fif-kernel-guards \u2014 FIF kernel suites (class A, hermetic)",
+              "seconds": 1575.078019
+            },
+            {
+              "pack": "ci-pack-0",
+              "name": "fif-kernel-guards \u2014 FIF P2 evidence-capture suite (code half)",
+              "seconds": 3.72006
+            },
+            {
+              "pack": "ci-pack-0",
+              "name": "fif-kernel-guards \u2014 FIF G-pack gold and kernel suites (hermetic half)",
+              "seconds": 6.446507
+            },
+            {
+              "pack": "ci-pack-0",
+              "name": "fif-kernel-guards \u2014 FIF desk page health and financial compare Node regressions",
+              "seconds": 8.851644
+            }
+          ],
+          "fif_command_s": 1594.09623,
+          "pack0_test_summaries": [
+            "2681 passed, 1 skipped, 15 warnings in 1573.45s (0:26:13)",
+            "102 passed, 3 deselected, 5 warnings in 3.06s",
+            "40 passed, 21 deselected in 5.99s"
+          ],
+          "pack0_runtime": [
+            "Current runner version: '2.337.0'",
+            "##[group]Runner Image Provisioner",
+            "Version: 20261012.601",
+            "##[group]Operating System",
+            "##[group]Runner Image",
+            "Image: ubuntu-24.04",
+            "Version: 20261012.334.1",
+            "Create Python 3.12.13 folder"
+          ]
+        },
+        {
+          "id": 39378857695,
+          "fif_groups": [
+            {
+              "pack": "ci-pack-0",
+              "name": "fif-kernel-guards \u2014 FIF kernel suites (class A, hermetic)",
+              "seconds": 2128.411615
+            },
+            {
+              "pack": "ci-pack-0",
+              "name": "fif-kernel-guards \u2014 FIF P2 evidence-capture suite (code half)",
+              "seconds": 4.905921
+            },
+            {
+              "pack": "ci-pack-0",
+              "name": "fif-kernel-guards \u2014 FIF G-pack gold and kernel suites (hermetic half)",
+              "seconds": 9.04965
+            },
+            {
+              "pack": "ci-pack-0",
+              "name": "fif-kernel-guards \u2014 FIF desk page health and financial compare Node regressions",
+              "seconds": 8.673782
+            }
+          ],
+          "fif_command_s": 2151.040968,
+          "pack0_test_summaries": [
+            "2681 passed, 1 skipped, 15 warnings in 2126.72s (0:35:26)",
+            "102 passed, 3 deselected, 5 warnings in 4.08s",
+            "40 passed, 21 deselected in 8.51s"
+          ],
+          "pack0_runtime": [
+            "Current runner version: '2.337.0'",
+            "##[group]Runner Image Provisioner",
+            "Version: 20261012.601",
+            "##[group]Operating System",
+            "##[group]Runner Image",
+            "Image: ubuntu-24.04",
+            "Version: 20261012.334.1",
+            "Create Python 3.12.13 folder"
+          ]
+        },
+        {
+          "id": 39374295130,
+          "fif_groups": [
+            {
+              "pack": "ci-pack-0",
+              "name": "fif-kernel-guards \u2014 FIF kernel suites (class A, hermetic)",
+              "seconds": 2066.767227
+            },
+            {
+              "pack": "ci-pack-0",
+              "name": "fif-kernel-guards \u2014 FIF P2 evidence-capture suite (code half)",
+              "seconds": 4.866599
+            },
+            {
+              "pack": "ci-pack-0",
+              "name": "fif-kernel-guards \u2014 FIF G-pack gold and kernel suites (hermetic half)",
+              "seconds": 9.159
+            },
+            {
+              "pack": "ci-pack-0",
+              "name": "fif-kernel-guards \u2014 FIF desk page health and financial compare Node regressions",
+              "seconds": 8.751321
+            }
+          ],
+          "fif_command_s": 2089.5441469999996,
+          "pack0_test_summaries": [
+            "2681 passed, 1 skipped, 15 warnings in 2065.02s (0:34:25)",
+            "102 passed, 3 deselected, 5 warnings in 4.04s",
+            "40 passed, 21 deselected in 8.61s"
+          ],
+          "pack0_runtime": [
+            "Current runner version: '2.337.0'",
+            "##[group]Runner Image Provisioner",
+            "Version: 20261012.601",
+            "##[group]Operating System",
+            "##[group]Runner Image",
+            "Image: ubuntu-24.04",
+            "Version: 20261012.334.1",
+            "Create Python 3.12.13 folder"
+          ]
+        }
+      ]
+    },
+    "limitations": [
+      "One reused control, not three independent matched pairs.",
+      "Control primary suite has 2680 passes; treated suites have 2681. Matching execution definitions do not imply identical transitive inputs.",
+      "Treated image/provisioner/runner/Python versions agree; physical CPU performance and contention are not controlled.",
+      "Summed job-wall minutes are not billed cost. All three treated gates are slower than the control."
+    ]
+  }
+}

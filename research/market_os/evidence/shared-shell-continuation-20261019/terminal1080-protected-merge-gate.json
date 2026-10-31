@@ -1,0 +1,119 @@
+{
+  "schema": "mastermind.attended.protected_beta_owner_gate.v1",
+  "observed_at": "2026-10-20T00:49:14Z",
+  "programme": "WS:MARKET-OS",
+  "original_root": "market-os-shared-shell-design-20260924-sol-001",
+  "attended_parent": "shared-shell-production-20261018-c1",
+  "pr": 1080,
+  "head": "5f4965b5668209036842b1ad8b4d0db12b919b5b",
+  "base": "50a8c01553ee92731a53dfcff36256308cfb5f0e",
+  "merged": true,
+  "merged_at": "2026-10-20T00:45:25Z",
+  "protected_owner_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+  "protected_master_identical": true,
+  "owner_git_blob": "25c24166d6a32ac851ee905afb2c36574bbb8e97",
+  "expected_owner_sha256": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+  "application_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "run": {
+    "id": 39344178400,
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "5f4965b5668209036842b1ad8b4d0db12b919b5b",
+    "event": "pull_request",
+    "run_attempt": 1
+  },
+  "jobs": [
+    {
+      "id": 118373008343,
+      "name": "Ingest + signal-layer tests",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-19T23:56:09Z"
+    },
+    {
+      "id": 118373008469,
+      "name": "Terminal e2e mobile-1 (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-20T00:45:07Z"
+    },
+    {
+      "id": 118373008479,
+      "name": "Investigation PostgreSQL invariants",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-19T23:53:33Z"
+    },
+    {
+      "id": 118373008483,
+      "name": "Terminal e2e tablet-1 (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-20T00:41:20Z"
+    },
+    {
+      "id": 118373008517,
+      "name": "Terminal e2e desktop-3 (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-20T00:29:13Z"
+    },
+    {
+      "id": 118373008522,
+      "name": "Terminal unit + typecheck (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-19T23:58:37Z"
+    },
+    {
+      "id": 118373008532,
+      "name": "Terminal e2e desktop-1 (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-20T00:43:25Z"
+    },
+    {
+      "id": 118373008584,
+      "name": "Terminal e2e serial (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-20T00:06:36Z"
+    },
+    {
+      "id": 118373008612,
+      "name": "Terminal e2e tablet-2 (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-20T00:45:05Z"
+    },
+    {
+      "id": 118373008637,
+      "name": "Terminal e2e mobile-2 (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-20T00:21:24Z"
+    },
+    {
+      "id": 118373008662,
+      "name": "Quote Hub tests",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-19T23:53:29Z"
+    },
+    {
+      "id": 118373008731,
+      "name": "Terminal e2e desktop-2 (shard)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-20T00:21:25Z"
+    },
+    {
+      "id": 118390046116,
+      "name": "Terminal typecheck + tests",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-20T00:45:13Z"
+    }
+  ],
+  "host_owner_invoked": false
+}
