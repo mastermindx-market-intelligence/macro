@@ -16631,7 +16631,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- endfor -%}
       {%- if pgate -%}
         {#- The leaders the SHELL renders keep their labels; only the withheld ones go. -#}
-        {%- for _r in (us_standouts.get('leaders') or [])[:pgate.get('preview') or 0] -%}
+        {%- for _r in (us_standouts.get('leaders') or [])[:(pgate.leaders.preview if pgate.get('leaders') else pgate.get('preview')) or 0] -%}
           {%- if _r.get('ticker') and _r.get('name') -%}{{ _plv_nm.update({_r.ticker: _r.name}) or '' }}{%- endif -%}
         {%- endfor -%}
       {%- endif -%}
@@ -16818,8 +16818,6 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {% set _has_delta = _su and _su.get('delta') and _su.delta.get('entries') %}
       {% if _has_delta %}
       {% set _dlt = _su.delta %}
-      {% set _NBR_EN = {'freshness_expired':'Cross too old — wait for a fresh trigger','not_topped':'Topped / overbought — wait for it to reset','earnings_blackout':'Earnings within blackout window','risk_veto':'Stressed tape — size down or wait','extended':'Extended / parabolic — do not chase','capped_by_entry':'Entry capped — entry timing blocks a full buy'} %}
-      {% set _NBR_ZH = {'freshness_expired':'交叉信号过期——等待新触发','not_topped':'超买/见顶——等待重置','earnings_blackout':'处于财报窗口期','risk_veto':'盘面承压——减仓或等待','extended':'过度拉伸/抛物线——勿追高','capped_by_entry':'入场封顶——入场时机阻碍满仓'} %}
       {% endif %}
       {# ── W8-R6: US stocktable JSON data block + mount points ───────────
          Serializes us_standouts.buy rows with flat keys for StockTable.init.
@@ -17593,7 +17591,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _ts_all = top_setups.get('buy') or [] -%}
       {%- set _eb_ticks = ((_su.get('earnings_blackout_note') or {}).get('tickers') or []) if _su else [] -%}
       {%- set _tsn = namespace(carded=[], resid=[], overlap=0, actionable=0, earnings=0) -%}
-      {%- if _su and _su.buy -%}{%- for _n in _su.buy -%}{%- if _n.get('ticker') -%}{%- set _tsn.carded = _tsn.carded + [_n.ticker] -%}{%- endif -%}{%- endfor -%}{%- endif -%}
+      {%- if us_board_tickers is defined and us_board_tickers -%}{%- set _tsn.carded = us_board_tickers -%}{%- elif _su and _su.buy -%}{%- for _n in _su.buy -%}{%- if _n.get('ticker') -%}{%- set _tsn.carded = _tsn.carded + [_n.ticker] -%}{%- endif -%}{%- endfor -%}{%- endif -%}
       {%- for _r in _ts_all -%}
         {%- if _r.get('ticker') in _eb_ticks -%}{%- set _tsn.earnings = _tsn.earnings + 1 -%}
         {%- elif _r.get('ticker') in _tsn.carded -%}{%- set _tsn.overlap = _tsn.overlap + 1 -%}{%- set _tsn.actionable = _tsn.actionable + 1 -%}
@@ -21219,6 +21217,18 @@ if (document.readyState === 'loading') {
       });
   }
 
+  /* The full "Passed on tonight" shelf replaces the free one, keeping open or closed. */
+  function hydratePassed(html){
+    var current = document.querySelector('details.pvr');
+    if (!html || !current) return;
+    var box = document.createElement('div');
+    box.innerHTML = html;
+    var full = box.querySelector('details.pvr');
+    if (!full) return;
+    full.open = current.open;
+    current.parentNode.replaceChild(full, current);
+  }
+
   function hydratePanels(payload){
     var admitted = hydrateToday(payload.today_cards_html, payload.today_preview,
                                 payload.today_total, payload.today_source_binding,
@@ -21228,6 +21238,8 @@ if (document.readyState === 'loading') {
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);
     appendTo('#us-standouts .topsetups.leaders-strip .ts-tbl tbody', payload.leaders_html);
     appendTo('#us-standouts .pbr-l', payload.ran_html);
+    appendTo('#wcd-dlg .wcd-list', payload.what_changed_html);
+    hydratePassed(payload.passed_html);
 
     /* The act-now rows arrive grouped by the .actbody id they were sliced out
        of, because five lanes share one payload block. */

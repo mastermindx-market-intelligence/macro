@@ -463,7 +463,52 @@ waves:
     # Continuation evidence 9573 merged 1ed4b870 at 2026-10-18T02:37:11Z; all 44 artifacts separately verified.
     # Subsequent helper qualification and proposed all-date baseline admission remain open; zero new fits/promotions.
     depends_on: [GD-PB-W7, GD-PB-W8]
+  - id: EW-P0
+    title: EW-P0 records - adopt the 2026-10-31 Chairman packet as an amendment to the #10219 task tree; takeover record; refreshed invalidators
+    status: done
+    pr: 10249
+    # MERGED 2026-10-31T16:09:14Z, squash 1d937d7e2b36 (head 5db467300b63 after review GD-EW-P0-R2 repair). Seat 00dea969 (Fable CEO).
+    # Adoption record research/grey_deer/ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md; handoff GREY-DEER-RISK-INTELLIGENCE-2026-10-31-FABLE-EW-CEO.md.
+    depends_on: [GD-RR-CENSUS-20261017]
+  - id: EW-P1
+    title: EW-P1 nightly publication repair - GH001 diagnosis (T1, done) and QLedger oversize carve-out parity for the engine and collect-tail commit paths (T2); acceptance = two natural sessions landing engine data
+    status: in_progress
+    # T1 DONE by the seat 2026-10-31: claims.jsonl 104,857,394 B (206 B under 100 MiB); engine script and commit-tail step carry no carve-out; run 40803269874 engine job 123688873047 + collect_tail job 123688869633 GH001; last landed engine data commit ad6e5a824334 (10-21; a050d2c71647 22 min earlier last landed claims.jsonl).
+    # T2 PR #10333 (head f095c641, two fabric APPROVEs) CLOSED 2026-10-31T20:14Z as SUPERSEDED by incumbent #10255 (two Opus review rounds, APPROVED, merge-on-green, superset scope). Seat ruling in #10333's closing comment; one note on #10255. Diagnosis retained at research/grey_deer/evidence/EW_P1_ENGINE_TAIL_GH001_DIAGNOSIS_2026-10-31.md.
+    # Acceptance unchanged: two natural nightly `engine: regime update` landings on main after #10255 merges; seat watcher (hourly git fetch, never dispatch). CI budget #10341 merged dbaf1e07 (intl job 8->15 min).
+    depends_on: [EW-P0]
+  - id: EW-P2
+    title: EW-P2 rotation observation continuity - successor of orphaned #10104 rebased onto main, six conflicts resolved both-sides, recording stays default-off (T1)
+    status: done
+    pr: 10325
+    # MERGED 2026-10-31T18:3xZ squash b38935afc1a5 (exact head 697b90ab after P0B receipt re-mint + main merge). Draft #10325 head f2532edbaa2d (parent main f2efb8baf983) by ORCH-P2 (Opus orchestrator, fabric lanes) on claude/gd-ew-p2-rotation-continuity-20261031; review lane gd-ew-p2-r1 APPROVE (R1-R11 hold); flag gate ROTATION_OBSERVATION_RECORDING_ENABLED != "1" keeps recording off.
+    # #10104 (head a324b7fc, merge-base c9608be2) left open; successor pointer comment posted once 2026-10-31. Activation (T2+) needs its own gate.
+    depends_on: [EW-P0]
+  - id: EW-P3
+    title: EW-P3 forecast-science prereg lane (product B) per the masterplan - own blob pin, size/power before any read
+    status: done
+    pr: 10340
+    # MERGED 2026-10-31 squash 11e6c98eb8c3 (reviewed head c5f00584 r3 ACCEPT_WITH_FINDINGS + seat sys.path pin repair 3c986e24). Contract v1 frozen blob 5270e309; prereg dated by records r3 (merge 2026-10-31, start 2026-11-02, L0 2027-12-31; registered blob f6d411e379c3); budgets 3+3 appended to data/trial_ledger.jsonl; zero outcome rows read; reader NOT_EXECUTABLE until window + receipted issue.
+    # Census lane GD-EW-P3-C1 done 2026-10-31 (10 RISK_RADAR preregs; no named claim/evidence ledger file; LR V2 reserves the V3 name). ORCH-P3 drafts CLAIM_EVIDENCE_CONTRACT_v1_DRAFT with SEAT DECIDES points; seat freezes before any registration; zero outcome rows read.
+    depends_on: [EW-P1]
+  - id: EW-P4
+    title: EW-P4 descriptive early-warning surface (product A) per PRODUCT_DESIGN_SPEC - observation language only, no forecast or sizing
+    status: in_progress
+    # ORCH-P4 (Opus orchestrator, fabric lanes) spawned 2026-10-31 18:4xZ after the EW-P2 merge; seat judges by artifact (rubric rows, EN/ZH x dark/light x 1280/390/320 shots + receipt), fresh review, merge.
+    depends_on: [EW-P2]
+  - id: EW-P5
+    title: EW-P5 acceptance and release - packs S01-S12, Q01-Q08, O01-O08, C01-C16, U01-U11, R01-R08 per ACCEPTANCE_AND_RELEASE.md; natural production proof
+    status: todo
+    depends_on: [EW-P1, EW-P2, EW-P3, EW-P4]
 next_action: >
+  2026-10-31 (Fable CEO seat 00dea969, records r3): EW-P0 #10249, EW-P2 #10325 (b38935af), CI budget #10341 (dbaf1e07) and
+  EW-P3 #10340 (11e6c98eb8c3) are MERGED; the EW-P3 prereg is dated (merge 2026-10-31, prospective start 2026-11-02, earliest first
+  look 2027-12-31) and its two declared budgets are on the trial ledger - zero outcome rows read. EW-P1.T2 #10333 is CLOSED,
+  superseded by the incumbent carve #10255; acceptance stays two natural nightly engine landings on main after #10255
+  merges (seat git-only watcher, never dispatch). EW-P4 UI is in flight on ORCH-P4; EW-P5 acceptance packs follow its merge.
+  See research/grey_deer/ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md (Reconciliation section) and the handoff.
+  Older frontier retained below.
+
   Continue the existing MAS-258 Census / Grey Deer / Risk Radar / Risk On-Risk Off programme.
   Macro9595 remains merged and closed. Mastermind1660 merged at 3960aefcf4724a88812d79d97c1b370dc9f951c4
   on October21 at06:24:13UTC, final headb54c58df73077bf50762e71136d8a8ae6c92bed2; this is not production deployment.

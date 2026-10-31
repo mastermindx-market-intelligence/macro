@@ -1,39 +1,11 @@
 {
-  "as_of": "2026-10-30",
+  "as_of": "2026-10-31",
   "evaluator_version": "W7b-PR3",
   "dry_run": false,
   "n_due": 2,
   "results": [
     {
-      "id": "cortex-2026-09-18-when-the-confirmed-us-quad-is-contradict-9274dc",
-      "claim_shape": "lead_lag",
-      "verdict": "insufficient-n",
-      "n": 0,
-      "metric_value": null,
-      "detail": {
-        "metric_space": "absolute",
-        "query_axes_applied": [
-          "symbol"
-        ],
-        "declares_feature": false,
-        "total_spine_rows": 0,
-        "pre_reg_dropped": 0,
-        "post_reg_n": 0,
-        "note": "No post-registration graded rows found. All data predates registration \u2014 anti-mining law enforced.",
-        "evaluator_version": "W7b-PR3"
-      },
-      "gate": {
-        "metric": "hit_rate",
-        "threshold": 0.6,
-        "min_n": 25,
-        "horizon_d": 7,
-        "direction_expected": 1,
-        "clamped_from": 20
-      },
-      "note": null
-    },
-    {
-      "id": "cortex-2026-10-02-when-net-liquidity-is-expanding-but-the-7c3e49",
+      "id": "cortex-2026-10-03-in-q2-observations-zero-agreement-bonds-061ea1",
       "claim_shape": "conditional_regime",
       "verdict": "insufficient-n",
       "n": 0,
@@ -52,8 +24,44 @@
       },
       "gate": {
         "metric": "excess_mean_difference",
-        "threshold": -0.01,
+        "threshold": -0.02,
         "min_n": 30,
+        "horizon_d": 21,
+        "direction_expected": -1
+      },
+      "note": null
+    },
+    {
+      "id": "cortex-2026-10-03-when-semiconductor-leadership-persists-w-c546b6",
+      "claim_shape": "conditional_regime",
+      "verdict": "insufficient-n",
+      "n": 12,
+      "metric_value": null,
+      "detail": {
+        "metric_space": "contrast",
+        "query_axes_applied": [
+          "symbol"
+        ],
+        "declares_feature": false,
+        "total_spine_rows": 454,
+        "pre_reg_dropped": 442,
+        "post_reg_n": 12,
+        "metric": "excess_mean_difference",
+        "treatment_n": 12,
+        "contrast_error": "metric requires a control group but none resolved",
+        "gate_reference_value": 0.0,
+        "gate_informative": true,
+        "episode_n": 4,
+        "control_episode_n": 0,
+        "hits": 0,
+        "overlapping_horizons": true,
+        "note": "control arm has 0 rows < min_n 25",
+        "evaluator_version": "W7b-PR3"
+      },
+      "gate": {
+        "metric": "excess_mean_difference",
+        "threshold": -0.015,
+        "min_n": 25,
         "horizon_d": 21,
         "direction_expected": -1
       },

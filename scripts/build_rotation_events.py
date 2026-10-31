@@ -109,6 +109,36 @@ def _load_sector_breadth() -> tuple[dict[str, float], dict[str, pd.Series]]:
     return breadth_by_sector, breadth_series_by_sector
 
 
+def _record_early_observations(payload, *, data_dir, site, art_dir, explicit_stamp):
+    """Opt-in observation recording by the existing canonical nightly builder.
+
+    Disabled by default. This records no delivery and never reads users or touches
+    an outbox. Historical/scratch/alternate publication paths cannot advance the
+    canonical notification baseline, even when the environment flag is inherited.
+    """
+    import os
+
+    if os.environ.get("ROTATION_OBSERVATION_RECORDING_ENABLED") != "1":
+        return {"status": "disabled", "receipts": 0}
+    if art_dir is not None or explicit_stamp:
+        return {"status": "replay_or_scratch", "receipts": 0}
+    if not rotation_events._ledger_lane_armed():
+        return {"status": "off_lane", "receipts": 0}
+    try:
+        canonical_data = Path(config.data_dir()).resolve()
+        canonical_site = (config.ROOT / config.load()["storage"]["site_dir"]).resolve()
+        if Path(data_dir).resolve() != canonical_data or Path(site).resolve() != canonical_site:
+            return {"status": "noncanonical_path", "receipts": 0}
+        # Use the time the existing publisher has actually returned, not a
+        # reconstructed bar date or the earlier start-of-build timestamp.
+        result = rotation_events.record_early_observation_history(
+            payload, canonical_data, observed_at=datetime.now(timezone.utc))
+        return {"status": result["status"], "receipts": len(result.get("records", []))}
+    except Exception as exc:  # observation quality cannot damage legacy publication
+        log.warning("rotation observation recording unavailable: %s", type(exc).__name__)
+        return {"status": "unavailable", "receipts": None, "error_class": type(exc).__name__}
+
+
 def build(site: Path | None = None, *, generated_utc: str | None = None,
           art_dir: Path | None = None) -> dict:
     """Main build function.
@@ -119,6 +149,7 @@ def build(site: Path | None = None, *, generated_utc: str | None = None,
     When art_dir is set and site is not, the published JSON goes to art_dir/'site'
     — a scratch run never writes the live site tree.
     """
+    explicit_stamp = generated_utc is not None
     generated_utc = generated_utc or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     data_dir = art_dir or config.data_dir()
     if site is None:
@@ -177,6 +208,8 @@ def build(site: Path | None = None, *, generated_utc: str | None = None,
     except Exception:  # noqa: BLE001 — ruler absent → rail simply omits the line
         pass
     _write_json(site / "marketdata" / "rotation_events.json", payload)
+    observation_recording = _record_early_observations(
+        payload, data_dir=data_dir, site=site, art_dir=art_dir, explicit_stamp=explicit_stamp)
 
     # RC-R5: creation alerts into the shared rotation alert store (same schema the
     # triage already reads; dedup by id, prune like subsector_rotation_alerts.rebuild).
@@ -209,7 +242,8 @@ def build(site: Path | None = None, *, generated_utc: str | None = None,
             "fragmented": frag["n_fragmented"],
             "active_events": len(payload["active"]),
             "created": payload["created_tonight"],
-            "as_of": payload["as_of"]}
+            "as_of": payload["as_of"],
+            "early_observation_recording": observation_recording}
 
 
 def main(argv: list[str] | None = None) -> int:

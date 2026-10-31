@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000018230-21-000221",
+    "expected_period_end": "2021-06-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "6372000000",
+    "fiscal_year": 2021,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_positive",
+    "pack_id": "PK07",
+    "polarity": "positive",
+    "reason": "cat-20210630.htm | us-gaap:Goodwill @i81781081f54c495885a814d5163d78d9_I20210630 | Goodwill 6,372 6,394 | Consolidated balance-sheet Goodwill at 2021-06-30 (current-quarter column), in millions (scale 6 applied).",
+    "section_family": "goodwill_intangibles",
+    "split": "held_out",
+    "target_id": "goodwill",
+    "target_kind": "extract",
+    "trial_id": "PK07|0000018230-21-000221|extract|goodwill"
+  },
+  {
+    "accession": "0000018230-21-000221",
+    "expected_period_end": "2021-06-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "1176000000",
+    "fiscal_year": 2021,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_positive",
+    "pack_id": "PK07",
+    "polarity": "positive",
+    "reason": "cat-20210630.htm | us-gaap:IntangibleAssetsNetExcludingGoodwill @i81781081f54c495885a814d5163d78d9_I20210630 | Intangible assets 1,176 1,308 | Balance-sheet caption 'Intangible assets' (net of accumulated amortization, excluding goodwill) at 2021-06-30 (current-quarter column), in millions (scale 6 applied).",
+    "section_family": "goodwill_intangibles",
+    "split": "held_out",
+    "target_id": "intangible_assets_net",
+    "target_kind": "extract",
+    "trial_id": "PK07|0000018230-21-000221|extract|intangible_assets_net"
+  }
+]

@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FSLR-BULL-20261029",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
-  "management_confidence": 58.7,
-  "raw_confidence": 58.7,
-  "delta_vs_base": -1.3,
+  "management_confidence": 59.8,
+  "raw_confidence": 61.0,
+  "delta_vs_base": -0.2,
   "recommended_action": "wait",
   "human_state": "Awaiting Trigger",
   "components": {
-    "validity": 67.7,
+    "validity": 76.3,
     "progress": 0.0,
     "pace": 100.0,
     "retention": 50.0,
-    "overlay": 47.0
+    "overlay": 46.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.749,
+    "dist_to_stop_r": 0.819,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 2.2,
-    "p1": -0.1671,
-    "p2": -0.0835,
+    "horizon_pct_used": 4.4,
+    "p1": -0.1209,
+    "p2": -0.0604,
     "p3": null,
-    "move_r": -0.251,
+    "move_r": -0.181,
     "mfe_r": 0.0,
     "mae_r": -0.251
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Moving Away from Stop",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 1,
-  "tau": 0.0222
+  "days_elapsed": 2,
+  "tau": 0.0444
 }

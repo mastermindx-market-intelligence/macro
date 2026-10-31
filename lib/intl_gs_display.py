@@ -346,7 +346,8 @@ def snapshot_display(snapshot):
 #: templates/market_structure.html.j2). The spec carries no ZH horizon copy —
 #: recorded under Gaps as a PROPOSAL for a seat ruling. Unknown ids pass
 #: through verbatim (never dropped, never upgraded).
-_HORIZON_LABELS = {"1m": ("1M", "1月"), "3m": ("3M", "3月"), "20d": ("20D", "20日")}
+_HORIZON_LABELS = {"1m": ("1M", "1月"), "3m": ("3M", "3月"), "20d": ("20D", "20日"),
+                   "6m": ("6M", "6个月"), "12m": ("1Y", "1年"), "ytd": ("YTD", "年初至今")}
 
 
 def horizon_label(horizon):

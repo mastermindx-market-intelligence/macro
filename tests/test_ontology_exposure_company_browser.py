@@ -320,7 +320,9 @@ def test_dollar_native_definition_on_macro_shell_keeps_proxy_and_scenario_limits
         page.locator('#ox-root details').evaluate_all('nodes=>nodes.forEach(n=>n.open=true)')
         text=page.locator('#ox-root').inner_text()
         assert ('includes EM equities' if language=='en' else '包含 新兴市场股票') in text
-        assert ('Observed: not published' if language=='en' else '读数：未发布') in text
+        assert ('Observed value unavailable in this view' if language=='en' else '此视图无法显示观测值') in text
+        assert ('Owner verdict: met' if language=='en' else '来源判定：已满足') in text
+        assert ('Observed: not published' if language=='en' else '读数：未发布') not in text
         assert ('proxy' if language=='en' else '代理') in text
         assert ('stated assumption' if language=='en' else '明示假设') in text
         terminal=page.locator('#ox-leg-em_derate').inner_text()

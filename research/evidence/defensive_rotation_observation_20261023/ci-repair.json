@@ -1,0 +1,17 @@
+{
+  "schema": "defensive_rotation.ci_repair.v1",
+  "scope": "manifest selection and preserved tests only",
+  "base": "3b5058cf10a6791d5e8097e514af0c8ff15b9b59",
+  "files": {
+    ".github/ci/legacy-jobs.yml": "c3f0e059e48c3bfe99b5fd29efc8909816f0a45e08bc47019673880c77249950",
+    "tests/test_ci_pack.py": "60d51251407b1ab12c51c8b7d59e7dce43569cfd8db7a072e4acb5ca4a582d28"
+  },
+  "delta_log_sha256": "9b26baa4896952697a4f5dc8597cdf046e83dd783e33ce33da6df3741da5981b",
+  "contract_delta": {
+    "introduced": 0,
+    "inherited": 0
+  },
+  "consumer_tests_passed": 208,
+  "packing_ceiling_changed": false,
+  "live_effects": false
+}

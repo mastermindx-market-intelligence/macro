@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FIZZ-BULL-20260818",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 45.1,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 37.6,
+    "progress": 36.3,
     "pace": 0.0,
-    "retention": 67.4,
-    "overlay": 59.0
+    "retention": 64.4,
+    "overlay": 58.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.681,
-    "dist_to_t1_r": 0.819,
-    "dist_to_t2_r": 2.319,
-    "horizon_pct_used": 160.0,
-    "p1": 0.4539,
-    "p2": 0.227,
+    "dist_to_stop_r": 1.65,
+    "dist_to_t1_r": 0.85,
+    "dist_to_t2_r": 2.35,
+    "horizon_pct_used": 162.2,
+    "p1": 0.4336,
+    "p2": 0.2168,
     "p3": null,
-    "move_r": 0.681,
+    "move_r": 0.65,
     "mfe_r": 1.01,
     "mae_r": -0.589
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 72,
-  "tau": 1.6,
+  "days_elapsed": 73,
+  "tau": 1.6222,
   "closed": true,
   "outcome": "EXPIRED"
 }

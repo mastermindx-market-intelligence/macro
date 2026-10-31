@@ -62,6 +62,8 @@ from datetime import datetime, timezone
 from email.message import EmailMessage
 from typing import Any
 
+from lib import rotation_observation_notification as rotation_obs
+
 log = logging.getLogger("macro.mailer")
 
 # --------------------------------------------------------------------------- #
@@ -1376,14 +1378,188 @@ def _alert_fired_at_display(fired_at, *, zh: bool = False) -> str:
         return fallback
 
 
+# --------------------------------------------------------------------------- #
+# Defensive-rotation observations (DR3, category 'sector_rotation_relative')
+# --------------------------------------------------------------------------- #
+#: The ONE link an observation may point at. Hard-coded on purpose: the caller's
+#: ``evidence_url`` is ignored entirely, so no payload field and no caller prose can
+#: steer a reader to an arbitrary destination. Anchored on the page that actually
+#: carries the early-context comparison these notes describe.
+ROTATION_EVIDENCE_URL = "https://www.mastermind-x.com/sector_central.html#rc-events-mount"
+
+#: Percent is the unit, always, and always shown as one. A relative number printed
+#: without its unit is how "-0.4" reads as "-40%".
+def _pct(x: float) -> str:
+    return f"{x:+.2f}%"
+
+
+def _rotation_direction_lines(obs) -> tuple[str, str]:
+    """Describe absolute and relative outcomes without turning a loss into safety."""
+    values = obs.values
+    n, d, r = (values[key] for key in (
+        "numerator_return_pct", "denominator_return_pct", "ratio_return_pct"))
+    relative = 1 if n > d else (-1 if n < d else 0)
+    en = (f"Across the two sessions {obs.num} returned {_pct(n)} and {obs.den} "
+          f"returned {_pct(d)}. Relative wealth in {obs.num} was {_pct(r)}. ")
+    zh = (f"两个交易日内，{obs.num} 涨跌 {_pct(n)}，{obs.den} 涨跌 {_pct(d)}。"
+          f"{obs.num} 的相对财富变化为 {_pct(r)}。")
+    if n < 0 and d < 0:
+        en = (f"Both fell across the two sessions: {obs.num} {_pct(n)} and "
+              f"{obs.den} {_pct(d)}. Relative wealth in {obs.num} was {_pct(r)}. ")
+        zh = (f"两个交易日内两者均下跌：{obs.num} {_pct(n)}，{obs.den} {_pct(d)}。"
+              f"{obs.num} 的相对财富变化为 {_pct(r)}。")
+        if relative > 0:
+            return (en + f"{obs.num} fell less: relative shelter only, not an absolute gain.",
+                    zh + f"{obs.num} 跌幅较小：仅相对抗跌，不代表绝对收益为正。")
+        if relative < 0:
+            return (en + f"{obs.num} fell more; both its absolute and relative returns were negative.",
+                    zh + f"{obs.num} 跌幅更大；其绝对收益与相对收益均为负。")
+        return (en + "Both fell equally; there was no relative advantage.",
+                zh + "两者跌幅相同；不存在相对优势。")
+    if n == 0 and d == 0:
+        return (en + "Both were flat; there was no measured change or relative advantage.",
+                zh + "两者均持平；没有可测变化或相对优势。")
+    if n == 0:
+        en += f"{obs.num} was flat. "
+        zh += f"{obs.num} 持平。"
+    elif d == 0:
+        en += f"{obs.den} was flat. "
+        zh += f"{obs.den} 持平。"
+    if relative > 0:
+        return en + f"{obs.num} was relatively stronger than {obs.den}.", zh + f"{obs.num} 相对 {obs.den} 更强。"
+    if relative < 0:
+        return en + f"{obs.num} was relatively weaker than {obs.den}.", zh + f"{obs.num} 相对 {obs.den} 更弱。"
+    return en + "The relative return was unchanged; neither leg outperformed.", zh + "相对收益没有变化；两者表现相同。"
+
+
+def _compose_rotation_observation(payload: dict, *, lang: str) -> dict:
+    """Compose one defensive-rotation observation. Pure, deterministic, bilingual.
+
+    Structure follows the frozen payload and NOTHING else. A wrong source, authority or
+    shape raises :class:`ValueError` from the contract rather than falling through to
+    the generic alert copy below -- that copy tells the reader a condition THEY SET was
+    met, which for an observation nobody authored would be a fabricated account of the
+    reader's own actions. Sending nothing is recoverable; that sentence is not.
+
+    What is deliberately ABSENT, because a two-session price comparison cannot support
+    it: any claim the user authored a thesis or holds a position; any crash probability,
+    fund flow, buy/sell instruction, leverage number or position size; and any
+    "first seen on" date, which would be invented rather than measured. ``observation_id``
+    / ``previous_observation_id`` / ``pair_id`` are unconstrained strings by contract and
+    so are never printed -- provenance is stated in prose instead.
+
+    This reads NO clock. ``Date.now`` does not appear here and never may: the drain owns
+    every freshness question (``rotation_observation_notification.evaluate``), and a
+    formatter that consulted its own clock would make the same payload render differently
+    at two instants and quietly defeat the stale-suppression the drain performs.
+    """
+    obs = rotation_obs.validate(payload)  # raises ValueError on any contract violation
+    zh = lang == "zh"
+
+    # --- what happened, in the reader's language ---------------------------- #
+    if obs.kind == "data_withdrawal":
+        lede_en = (f"The source evidence for a two-session {obs.num} against {obs.den} "
+                   "comparison is no longer available, so that observation has been "
+                   "withdrawn. This says the data behind it was withdrawn — it is not a "
+                   "statement that the market view was wrong.")
+        lede_zh = (f"某个关于 {obs.num} 对 {obs.den} 两个交易日比较的来源数据已不可用，"
+                   "因此该观察已撤回。这说明支撑它的数据被撤回，"
+                   "而不是市场判断被证伪。")
+    else:
+        dir_en, dir_zh = _rotation_direction_lines(obs)
+        if obs.kind == "reversal":
+            lede_en = ("Reversal: the earlier two-session comparison for this pair no "
+                       "longer holds. " + dir_en)
+            lede_zh = ("反转：此前针对该组合的两个交易日比较已不再成立。" + dir_zh)
+        elif obs.kind == "correction":
+            lede_en = ("Correction: the figures previously reported for this pair are "
+                       "revised. " + dir_en)
+            lede_zh = ("更正：此前针对该组合报告的数据已修订。" + dir_zh)
+        else:
+            lede_en, lede_zh = dir_en, dir_zh
+
+    # --- titles ------------------------------------------------------------ #
+    pair = f"{obs.num} vs {obs.den}"
+    pair_zh = f"{obs.num} 对 {obs.den}"
+    title_en = {
+        "observed_change": f"Defensive leadership change · {pair}",
+        "reversal": f"Reversal of an earlier comparison · {pair}",
+        "correction": f"Corrected comparison · {pair}",
+        "data_withdrawal": f"Withdrawn observation · {pair}",
+    }[obs.kind]
+    title_zh = {
+        "observed_change": f"防御板块领导力变化 · {pair_zh}",
+        "reversal": f"此前比较出现反转 · {pair_zh}",
+        "correction": f"比较数据更正 · {pair_zh}",
+        "data_withdrawal": f"观察已撤回 · {pair_zh}",
+    }[obs.kind]
+
+    # --- source date vs notification time, kept distinct ------------------- #
+    source_date = obs.source_as_of.isoformat() if obs.source_as_of else (
+        "撤回通知未记录来源日期" if zh else "not recorded on a withdrawal")
+    blocks: list = [
+        {"en": lede_en, "zh": lede_zh},
+        # Consent provenance, NOT authorship. This reader opted into a stream of
+        # observations; nothing here claims they wrote a condition or hold a position.
+        {"en": "You subscribed to defensive leadership observations.",
+         "zh": "你订阅了防御板块领导力观察。"},
+        {"kind": "kv",
+         "en": [("Market session", obs.event_as_of_iso),
+                ("Source date", source_date),
+                ("Noticed at", obs.observed_at.strftime("%Y-%m-%d %H:%M UTC"))],
+         "zh": [("市场交易日", obs.event_as_of_iso),
+                ("来源日期", source_date),
+                ("记录时间", obs.observed_at.strftime("%Y-%m-%d %H:%M UTC"))]},
+    ]
+    if obs.previous_observation_id:
+        # Provenance, stated in prose. No first-seen date is invented for the prior
+        # observation -- its date is not carried in this payload and guessing it would
+        # put a fabricated fact in front of the reader.
+        blocks.append({"kind": "fine",
+                       "en": ("Recorded against an earlier observation for the same "
+                              "sector pair. This note supersedes it; it makes no claim "
+                              "about when that earlier observation was first seen."),
+                       "zh": ("本条针对同一板块组合的此前观察记录，用以取代该观察；"
+                              "本条不对此前观察最初出现的时点作任何陈述。")})
+    blocks.append({"kind": "button",
+                   "en": "See the sector comparison", "zh": "查看板块比较",
+                   "url": ROTATION_EVIDENCE_URL})
+    blocks.append({"kind": "fine",
+                   "en": ("An observation about relative leadership, not advice — no "
+                          "recommendation to buy, sell, size or lever anything."),
+                   "zh": ("这是关于相对领先关系的观察，不是建议"
+                          "——不构成买入、卖出、加仓或使用杠杆的建议。")})
+
+    return {
+        "subject": (f"防御板块观察 · {pair_zh}" if zh
+                    else f"Defensive leadership observation · {pair}"),
+        "title_en": title_en,
+        "title_zh": title_zh,
+        "eyebrow": "观察" if zh else "OBSERVATION",
+        "preheader": title_zh if zh else title_en,
+        "why_en": "You subscribed to defensive leadership observations.",
+        "why_zh": "你订阅了防御板块领导力观察。",
+        "blocks": blocks,
+    }
+
+
 def compose_alert(payload: dict, *, lang: str = "en") -> dict:
     """Pure -- turn one ``alert_outbox.payload`` row into a plain-language email.
 
     No IO. Refuses machine text / raw slugs (F08 freeze plain-language filter); an
     offending source string is replaced by the neutral fallback rather than dropped
     or sent verbatim.
+
+    ``sector_rotation_relative`` takes its own branch FIRST, ahead of every generic
+    user-authored-condition path below. That ordering is the contract: those paths
+    exist to render a condition the reader personally configured, and routing an
+    observation through them would tell the reader they set something. The branch
+    validates rather than degrades, so a bad observation raises instead of silently
+    acquiring that false history. Every other category is untouched by this branch.
     """
     payload = payload or {}
+    if rotation_obs.claims_rotation_observation(payload):
+        return _compose_rotation_observation(payload, lang=lang)
     ticker = _alert_plain(payload.get("ticker"), "this name", "该标的")
     held_event = (
         payload.get("source") == "terminal.held_material_event.v1"

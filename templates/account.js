@@ -179,6 +179,7 @@
     al_what: ['What to send', '发送哪些提醒'],
     al_cat_hold: ['A position I hold moves on real news', '我持有的仓位因真实消息出现变动'],
     al_cat_thes: ['A market view I’m watching starts or ends', '我关注的市场观点开始或结束'],
+    al_cat_rot: ['Defensive leadership changes', '防御板块领导力变化'],
     al_none: ["No alert types chosen yet — you won't get any alert emails.",
       '尚未选择提醒类型 — 你不会收到提醒邮件。'],
     al_tz: ['Your time zone', '你的时区'],
@@ -680,6 +681,7 @@
           '<div class="mmacc-sublabel">' + esc(T('al_what')) + '</div>' +
           alertCatRow('holdings_material_change', T('al_cat_hold'), cats.indexOf('holdings_material_change') !== -1) +
           alertCatRow('thesis_window', T('al_cat_thes'), cats.indexOf('thesis_window') !== -1) +
+          alertCatRow('sector_rotation_relative', T('al_cat_rot'), cats.indexOf('sector_rotation_relative') !== -1) +
           (cats.length === 0 ? '<div class="mmacc-hint mmacc-hint-none">' + esc(T('al_none')) + '</div>' : '') +
           '<div class="mmacc-sublabel">' + esc(T('al_tz')) + '</div>' +
           '<select class="mmacc-input mmacc-select" id="mmacc-tz" data-act="alert-tz" data-prev="' + esc(tz || '') + '" aria-label="' + esc(T('al_tz')) + '">' + _tzOptions(tz) + '</select>' +
@@ -959,9 +961,17 @@
     var was = btn.getAttribute('aria-checked') === 'true';
     var next = !was;
     btn.setAttribute('aria-checked', next ? 'true' : 'false');
-    var cats = [];
-    document.querySelectorAll('[data-act="alert-cat"]').forEach(function (b) {
-      if (b.getAttribute('aria-checked') === 'true') cats.push(b.getAttribute('data-cat'));
+    var controls = document.querySelectorAll('[data-act="alert-cat"]');
+    var represented = [];
+    controls.forEach(function (b) { represented.push(b.getAttribute('data-cat')); });
+    // Some categories are managed by their own product surface. Toggling this
+    // panel must not silently unsubscribe an acknowledged, unrepresented one.
+    var cats = (_ackedAlerts().alert_categories || []).filter(function (c, i, all) {
+      return represented.indexOf(c) < 0 && all.indexOf(c) === i;
+    });
+    controls.forEach(function (b) {
+      var c = b.getAttribute('data-cat');
+      if (b.getAttribute('aria-checked') === 'true' && cats.indexOf(c) < 0) cats.push(c);
     });
     persistAlertPref('alert_categories', cats, function () {
       setMsg('mmacc-alert-msg', T('al_saved'), 'ok');

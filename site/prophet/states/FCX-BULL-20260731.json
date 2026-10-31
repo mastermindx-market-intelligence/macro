@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FCX-BULL-20260731",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 35.1,
-  "raw_confidence": 33.1,
-  "delta_vs_base": -24.9,
+  "management_confidence": 33.0,
+  "raw_confidence": 30.4,
+  "delta_vs_base": -27.0,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 55.5,
+    "validity": 47.1,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.646,
+    "dist_to_stop_r": 0.573,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 186.7,
-    "p1": -0.2359,
-    "p2": -0.118,
+    "horizon_pct_used": 188.9,
+    "p1": -0.2849,
+    "p2": -0.1425,
     "p3": null,
-    "move_r": -0.354,
+    "move_r": -0.427,
     "mfe_r": 0.615,
-    "mae_r": -0.354
+    "mae_r": -0.427
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 10.29000366210937,
-  "_mae": -5.919999237060551,
+  "_mae": -7.1499987792968795,
   "_max_p1": 0.41004198693402555,
   "_first_trigger_ts": "2026-08-20",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 84,
-  "tau": 1.8667,
+  "days_elapsed": 85,
+  "tau": 1.8889,
   "closed": true,
   "outcome": "EXPIRED"
 }
