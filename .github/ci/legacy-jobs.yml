@@ -11957,6 +11957,7 @@ jobs:
       - "tests/test_fif_a1_journey_ledger.py"
       - "tests/test_fif_excel_refresh_harness.py"
       - "tests/test_fif_gsrc_capture.py"
+      - "tests/test_fundamental_forensics_held_out_packages.py"
       - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_a43_responsive_keyboard_corpus.py"
       - "mockups/evidence/fundamental_forensics_p2/**"
@@ -11965,6 +11966,8 @@ jobs:
       - "tests/test_fif_se_receipts.py"
       - "tests/test_fif_g_pack_gold.py"
       - "tests/test_fif_g_pack_kernel.py"
+      - "tests/test_fif_a33_gold_replay_receipt.py"
+      - "research/financial_intelligence_fabric/FIF_A33_GOLD_REPLAY_RECEIPT_2026-10-20.json"
       - "tests/test_fif_z0_gap_a23_a38.py"
       - "tests/test_filing_forensics_broad_sec_lane.py"
       - "tests/test_filing_forensics_sec_lane.py"
@@ -12150,10 +12153,12 @@ jobs:
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_z0_closure_matrix.py
           tests/test_fif_z0_gap_a23_a38.py
+          tests/test_fif_a33_gold_replay_receipt.py
           tests/test_fif_a47_recovery_drill_receipts.py
           tests/test_fif_a21_publish_observation.py
           tests/test_fif_a43_responsive_keyboard_corpus.py
           tests/test_fif_gsrc_capture.py
+          tests/test_fundamental_forensics_held_out_packages.py
           tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
@@ -21373,6 +21378,43 @@ jobs:
         run: pip install pytest pandas numpy pyyaml pyarrow requests jinja2 plotly
       - name: International transmission board view
         run: python -m pytest tests/test_intl_gs_transmission_view.py -q
+
+  international-gs-closure:
+    # INTL-GS §14 closures: graph-boundary label rule (engine) and the
+    # cross-surface observation-identity test. scope: exclusive pins the
+    # measured import/read closure of exactly these two suites.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/intl_global_graph_boundary.py"
+      - "tests/test_intl_global_graph_boundary.py"
+      - "tests/test_intl_gs_cross_surface_identity.py"
+      - "tests/__init__.py"
+      - "engine/intl_transmission_evidence.py"
+      - "config/intl_transmission_channels_v1.json"
+      - "engine/intl_global_observation.py"
+      - "engine/intl_global_dislocation.py"
+      - "engine/intl_global_universe.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "config.yml"
+      - "engine/__init__.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install contract test dependencies
+        run: pip install pytest pandas numpy pyyaml pyarrow requests jinja2 plotly
+      - name: International graph boundary and cross-surface identity
+        run: python -m pytest tests/test_intl_global_graph_boundary.py tests/test_intl_gs_cross_surface_identity.py -q
 
   ird-substrate-engines:
     if: ${{ false }}
