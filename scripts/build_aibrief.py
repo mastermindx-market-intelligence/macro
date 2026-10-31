@@ -334,12 +334,26 @@ def _gather_forward_panel(data_dir: Path, today: date | None = None) -> dict:
         for entry in upcoming:
             if added >= 3:
                 break
+            if not isinstance(entry, dict):
+                continue
             release = entry.get("release", "")
+            if not isinstance(release, str):
+                continue
             # Skip Claims entries (killed model — ADB-R4)
             if "claims" in release.lower():
                 continue
             rel_date = entry.get("release_date", entry.get("date", ""))
-            if not rel_date:
+            if not isinstance(rel_date, str):
+                continue
+            try:
+                release_day = date.fromisoformat(rel_date)
+            except ValueError:
+                continue
+            # Require canonical dates; do not invent timing for malformed producer rows.
+            if release_day.isoformat() != rel_date:
+                continue
+            days_to = (release_day - today).days
+            if days_to < 0:
                 continue
             # Deduplicate by (release, date) — different release_types on same day count once
             dedup_key = f"{release}:{rel_date}"
@@ -349,7 +363,6 @@ def _gather_forward_panel(data_dir: Path, today: date | None = None) -> dict:
 
             label_en = release.upper()
             label_zh = release.upper()
-            days_to = entry.get("days_to", "?")
 
             # Surprise skew — for hover receipt only
             skew = entry.get("surprise_skew") or {}
@@ -367,13 +380,15 @@ def _gather_forward_panel(data_dir: Path, today: date | None = None) -> dict:
             mkt_implied = mkt.get("implied", "")
 
             no_record = "No accuracy record yet" if scoreboard_n == 0 else f"{scoreboard_n} graded"
-            tip_en_parts = [f"In {days_to} day(s). {no_record}."]
+            timing_en = "Today" if days_to == 0 else f"In {days_to} day{'s' if days_to != 1 else ''}"
+            timing_zh = "今天" if days_to == 0 else f"距今 {days_to} 天"
+            tip_en_parts = [f"{timing_en}. {no_record}."]
             if skew_plain_en:
                 tip_en_parts.append(skew_plain_en + ".")
             if mkt_implied:
                 tip_en_parts.append(f"Market implied: {mkt_implied}.")
             tip_en = " ".join(tip_en_parts)
-            tip_zh_parts = [f"距今 {days_to} 天。{no_record}。"]
+            tip_zh_parts = [f"{timing_zh}。{no_record}。"]
             if skew_plain_zh:
                 tip_zh_parts.append(skew_plain_zh + "。")
             tip_zh = " ".join(tip_zh_parts)
