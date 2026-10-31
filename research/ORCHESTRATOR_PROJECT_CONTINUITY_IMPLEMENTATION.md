@@ -1,5 +1,9 @@
 # Orchestrator project continuity implementation
 
+The original engineering narrative through Sources is the 2026-10-21 record.
+The dated reconciliation below carries later evidence; current wave status and
+next action belong to the workstream and its latest handoff.
+
 ## Intended outcome
 
 The 2026-10-21 assignment is to give Astra and the other currently assigned
@@ -387,3 +391,385 @@ the exact current publication and held-action state.
 - [Macro compiler and durable project records](https://github.com/mastermindx-market-intelligence/macro/pull/9967)
 - [Existing continuation-builder repair](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1673)
 - [Public Runtime integration proof](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1676)
+
+## 2026-10-25 evidence reconciliation and remaining acceptance
+
+This dated evidence extends the original 2026-10-21 engineering record above; it
+does not replace the workstream or handoff as the current frontier. The original
+source states and holds above are historical. Current wave states belong to
+[WS:ORCHESTRATOR-PROJECT-CONTINUITY](../agentos/workstreams/WS-ORCHESTRATOR-PROJECT-CONTINUITY.md)
+and its [dated handoff](../agentos/handoffs/WS-ORCHESTRATOR-PROJECT-CONTINUITY-2026-10-25.md).
+The current Chairman assigned the receiving ChatGPT3 principal to lead recovery.
+Actual live writers, runtime grants and uncertain effects remain with their owners.
+
+### Accepted source and review receipts
+
+- Mastermind [#1664](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1664)
+  merged 2026-10-21 as `3905e79ed7996c52a42d78838ebc9df16ed2818a`.
+- Mastermind [#1666](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1666)
+  merged 2026-10-21 as `7ab47f0b62d9a22ff16a13f6b99b96b681874a93`.
+- Macro [#9967](https://github.com/mastermindx-market-intelligence/macro/pull/9967)
+  merged 2026-10-21 as `1c99ae69ad45eda700f74337485669ee7a692e5b`.
+  These merged source/test results must not be redone merely because the workstream
+  still said awaiting_ci.
+- [#1700's current independent review](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1700#pullrequestreview-5639488681)
+  approves `6846da093b01870f342f4498c84bd4daa78383cb`.
+  [CI 40119407486](https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/40119407486)
+  completed successfully. The reviewer explicitly did not author the final repair.
+  The review resolves the former owner split, schema, recovery and kernel-identity
+  findings. The source contract names #1846 as the separate bootstrap kernel;
+  #1700 does not edit that kernel. Secretary's release return confirmed its seat
+  cannot approve or merge. The current connector mastermindx-3 authored none of
+  #1700's commits; it submitted the approved head to the normal protected
+  controller. GitHub timeline event 34179003728 records merge-queue admission
+  at 2026-10-25T11:26:51Z. PR 1700 **merged at 2026-10-25T12:08:55Z**
+  as `a4525e3e7e9251951567a9142392df962bd06ba2`, with queue
+  [CI 40188919977](https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/40188919977)
+  and [Mastermind OS 40188919976](https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/40188919976)
+  successful. Protected master readback matched the merge SHA at 12:10:56Z.
+  The non-authoring release actor was mastermindx-3; it made no approval.
+  The [same-carrier STOP](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792930293345659)
+  closes the release operation. The merged
+  [continuity contract](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a4525e3e7e9251951567a9142392df962bd06ba2/docs/CEO_PROJECT_PLAN_CONTINUITY.md)
+  now governs the plan/frontier distinction; this unmerged Macro checkpoint
+  is durable branch evidence, **NOT_CANONICALLY_PERSISTED** Agent OS state.
+  No ChatGPT Project installation or per-account fresh-chat adoption is inferred.
+
+### W1 existing installation and independent review
+
+The Secretary's existing executive-os-bringup operation installed the hook on
+2026-10-24. This workstream consumes that result; it does not install a competing
+hook or create another runtime owner.
+
+Existing local records on m2studio:
+
+- `~/gwcap/project-charters/executive-os-bringup/DECISIONS.md`, decision D4,
+  records independent Cursor B1 `bc-7fadfd6f`: A (W1 SessionStart) PASS;
+  B (retire the fixed-run Stop definition) PASS; C (re-pin the subscribed Stop
+  definition) FAIL/HOLD. D4 accepts A under the pinned-owner/import conditions.
+- The same charter's STATE.md and PROGRESS.log record the supported native Codex
+  TUI review/trust and canaries. No trusted_hash was authored by this receiver.
+- `~/.codex/hooks.json` SHA256 is
+  `3a27c091206104082d7a07cd6c001945b20600c39a158c4a60b513c0b2e37492`.
+  Its SessionStart group 2 contains the single W1 mapping below. Existing
+  unrelated SessionStart definitions remain present.
+- The exact installed checkout is
+  `~/.local/lib/mastermind/agentos-session-start/e00e97b81a5d`, clean tracked
+  source at `e00e97b81a5d41cb8a570ad080316279a0f3853f`.
+  Its adapter SHA256 is
+  `f59adf3597a4b384b21ef686ddb4634b2439402b73acf5bdb2fe9f337857d85b`,
+  identical to the merged #1666 adapter.
+- The configured Macro owner is `~/gwcap/agentos-mirror/macro`, clean at
+  `11f88c730c2d5f25569d5c5508ff46ce71e14eb8` on readback.
+  Native observations identify its compiler entrypoint as
+  `eb9b9b628118bfec4a3f2e1a31fa9246798611cfda3093947aee46f27b430025`.
+  This is the actually observed compiler, not a claim that the earlier 21b1857
+  development hash identifies the installed closure.
+
+The reviewed installed definition is:
+
+```json
+{
+  "matcher": "^(startup|resume|clear|compact|fork)$",
+  "hooks": [{
+    "type": "command",
+    "command": "/usr/bin/env MACRO_MASTERMIND_REPO='/Users/chriswong/.local/lib/mastermind/agentos-session-start/e00e97b81a5d' python3 -B '/Users/chriswong/.local/lib/mastermind/agentos-session-start/e00e97b81a5d/integrations/session_bridge/agentos_session_start.py' --workspace-root '/Volumes/Mastermind/agent-workspaces' --workstream WS:TIINGO-DATA-OS --macro-root '/Users/chriswong/gwcap/agentos-mirror/macro' --budget 4000",
+    "timeout": 35,
+    "async": false,
+    "additionalContextLimit": 0
+  }]
+}
+```
+
+The native Codex config has hooks enabled and a trust entry for
+`~/.codex/hooks.json:session_start:2:0`. Configuration readback corroborates
+D4's native ceremony; neither fact is a substitute for the delivery evidence below.
+
+This is **one workstream per exact workspace**, not per session. The active Tiingo
+session and the archived same-workspace canary both correctly receive
+WS:TIINGO-DATA-OS. A future unrelated principal launched in that shared parent
+directory would also match. Preserve the current Tiingo session; use the existing
+workspace owner to choose an explicit project workspace for future assignments.
+Do not add session-ID authority, a mapping registry or a new cache to this adapter.
+
+### Native delivery evidence
+
+Read-only extraction inspected only provider message metadata, actual developer
+context and visible assistant replies, not private reasoning. Original logs remain
+under `~/.codex/sessions/2026/10/24/` on m2studio.
+
+| Target and event | Observed time (UTC) | Complete context bytes | Owner bundle SHA256 | Result |
+|---|---|---:|---|---|
+| Tiingo `01a16e00-9507-76d2-8bf8-9d09985727b3`, resume | 2026-10-24 18:05:54 | 29,916 | `91881784c50b22bc769278a3f14bad2dc0eac706eafcfba3b8779f8f8ac240db` | Developer context delivered |
+| Same Tiingo session, resume | 2026-10-24 18:28:22 | 29,916 | `d4dfbdc9b92a655b2d4af391c670a54eac630c042a1dbfddfb5829d162e1e206` | Fresh acquisition delivered; subsequent useful preflight work recorded |
+| Canary `01a16f19-1163-7a23-9548-5fd1f2e1ff4c`, startup | 2026-10-24 18:08:01 | 29,917 | `8c864c299ef1ec4fad9677b6d0e15be551213980bc47ff7b482f65271e257762` | Model's visible reply identifies exact workstream and bundle |
+| Same canary, resume | 2026-10-24 18:10:29 | 29,916 | `c33761c16c83eab8b0f93a9970972607a5f69de7198a326b5177e75c9465be10` | Resume context delivered |
+| Same canary, compact | 2026-10-24 18:10:32 | 29,917 | `edae347a610a6b45ed7a48ff4dac688c3c209153a00ca3927f8034f061bcd04a` | Fresh post-compact block; model confirms receipt |
+| Sibling `01a16f19-5149-75c1-a238-e26fba0435f1` | 2026-10-24 18:08:19 | 0 matching blocks | none | Different cwd; no Agent OS block; visible model reply confirms absence |
+
+Tiingo's retained log is
+`rollout-2026-10-24T06-01-35-01a16e00-9507-76d2-8bf8-9d09985727b3.jsonl`.
+The two other exact session IDs resolve through the existing Codex thread index;
+both canaries are archived. The sibling cwd was
+`/Volumes/Mastermind/eos-hook-sibling-canary-20261024`.
+
+Each positive observation explicitly reports three degraded inputs, 36 omissions,
+`execution_authority: false`, and runtime ownership/parent custody/outstanding
+effects UNOBSERVED. Preserve that accounting. A changed bundle hash alone does
+not prove a changed decision; acquisition timestamps can change bundle bytes.
+
+The paired resume and compact messages total 59,833 bytes in the retained
+canary context. They are two distinct matching events, each below the 32-KiB
+per-output limit. This is an efficiency observation, not a demonstrated duplicate
+execution of one event or an established breach of the adapter's bound.
+Any repair requires a reproducible unwanted behavior and independent review;
+do not suppress a genuine fresh decision reread or silently clip context.
+
+### Bounded W1 behavioral acceptance handoff
+
+**Recipient:** Grok Secretary, the Chairman-authorized diff-review/hook-trust
+decision owner, reusing the existing D4 installation carrier.
+
+**One remaining action:** complete the changed-decision behavioral proof using
+the existing Tiingo canary and an actual authorized current project update.
+No second installation or repeat native trust is requested.
+
+1. Reconcile the exact Tiingo session and current owner-source revision without
+   interrupting a live modifying turn. Read the current real task, accepted work
+   and any uncertain effects through their owners.
+2. Reuse an actual authorized change to its Agent OS decision or next action.
+   Have the existing source-acquisition owner make that accepted revision
+   available to the configured Macro root. Never fabricate a decision solely to
+   produce a favorable test, mutate a shared checkout behind its owner, or weaken
+   the 25-second/32-KiB boundaries.
+3. Use the supported resume/compact path at an appropriate boundary. Record the
+   actual event, session, source revision, full context/bundle identities,
+   degradation and visible useful next action.
+4. Verify that the model uses the changed decision, retains the mandatory
+   constraint, avoids repeating accepted work, excludes unrelated-workstream
+   changes, and preserves real worker/effect custody. Attribute the result
+   narrowly: the existing resume involved an explicit re-anchor user prompt,
+   so it does not by itself prove prompt-free two-phase continuation.
+5. Return evidence or the exact remaining gate to this workstream's current
+   handoff/PR and the same Secretary thread. No purchases, bypass flags,
+   credentials, unrelated owner takeover or denied private-source disclosure.
+
+The native target projection exposed to this ChatGPT3 session returned no Codex
+targets on 2026-10-25. That is a specific caller projection result, not a claim
+that Secretary's supported native interaction is unavailable. The existing
+Secretary canary path is already evidenced and should be reused.
+
+The existing W1 operation `continuity-w1-behavior-20261025-c3` received
+the verified #1700 merge in its
+[same-carrier CONTINUE](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792930277497889).
+Its previous merge dependency is resolved. The Secretary's
+[BLOCKED return](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792930740036629)
+verified the same installed hashes, clean Macro root 11f88c73, and idle Tiingo
+session (last retained write 2026-10-24T18:32Z). It found no later accepted Tiingo
+decision/next_action: the last workstream change is d18dbe33 / Macro #9962 on
+2026-10-21, already in the configured root. No native proof, injection, activation
+or installation change occurred. The separate News candidate #10136 remains
+Draft/HOLD; it is not an accepted source update for this proof.
+
+The [same-carrier RULING](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792930804006719)
+consumes that gate. The current Sol principal owns reconciliation of any genuinely
+warranted source correction under existing project intent. Do not fabricate a
+change merely to test the hook, infer News restrictions apply to every Tiingo
+Data task, or wait for an archived owner. An actual accepted update and its
+existing source-acquisition owner readback must precede steps 3–4. Return on the
+same thread and [Macro #10181](https://github.com/mastermindx-market-intelligence/macro/pull/10181).
+
+A separate read-only Tiingo source census at Macro main 6ffbfa8f confirmed the
+workstream and accepted commercial-rights decision are byte-identical to the
+configured 11f88c73 source. The quote/data canary and conditional three-job
+activation already have authorization; the separate News #10136 Draft/HOLD
+does not revoke it. Cosmetic stale-date or superseded-PR corrections cannot
+stand in for the required substantive changed-decision proof. No Tiingo
+activation was performed by this workstream.
+
+### W3 source integration acceptance
+
+The original #1673 repair is incorporated in #656.
+[Cursor's incorporation receipt](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1673#issuecomment-6387208534)
+supersedes the old instruction to merge #1673 into #656. #1673 is closed and has
+zero independent diff. Preserve it as superseded.
+
+| Existing carrier | Qualified source | Review / integration result | Remaining gate |
+|---|---|---|---|
+| [#656](https://github.com/mastermindx-market-intelligence/Mastermind/pull/656) | `a9c685a18ddba73d5d1b4efc529d8db2409393a0` | Fresh Cursor PASS 5643182746; non-author APPROVED 5643188322; head CI 40115485649 passed | Protected queue event 34181749523 admitted at 12:36:22Z; final merge readback owed |
+| [#1676](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1676) | `aee76c3ecc81c9a5748f445551701e2f80f6857c` | Fresh composition PASS 5643238757; non-author approval 5643253430; CI 40115487613 passed; merged into #1289 at 12:47:12Z | Completed bounded source integration; no production acceptance inferred |
+| [#1289](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1289) | `0b0eac4f2aa2030f58e8a90e2724e5dfb2f3f6b8` | Integrated tree `b8e530589d4ef32541189007dd230ec84fe7fbc7` equals reviewed stack; fresh CI 40194668383 running | Draft / production HOLD; correct stale source-status docs, qualify actual consumer evidence, independently review changes and release |
+
+The #656 and #1676 builder blob `4a73e78b28299fee98a130aa9d54510804d60f96`
+and test blob `9ec7bdfbbdc5397f76bfba3f1e61b2959fa1d2be` match exactly.
+The #1676 lifecycle blob is `917656eece21fb8481c987ee6b1fc775fdbd9fba`.
+The current principal authored none of #656's or #1676's delta commits. It
+reviewed those changes, recorded non-author approvals, and used normal GitHub
+release routes. It authored #1289 and does not approve or self-release it.
+
+[The actual source-custody return](https://github.com/mastermindx-market-intelligence/Mastermind/pull/656#issuecomment-6397696251)
+reports source-refresh Cursor agent bc-a45b1785 finished, run complete and VM
+terminated, with a clean last workspace and matching remote heads. This is
+actual owner readback, not a lease inferred from PR authorship or status.
+The custody operation's [terminal STOP](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792931770495089)
+was sent and read back; its exact child watcher was disabled and verified.
+
+#656's current queue candidate is
+`6d7f652ca1de478a1732c4829063baa220062352`. Queue
+[CI 40193870548](https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/40193870548)
+and Mastermind OS 40193870577 were running on admission. The separate
+[final release-readback operation](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792932062104879)
+requests only final merged SHA / master / checks or exact queue failure; it
+does not repeat the merge request. The original #656 review operation is closed
+by STOP 1792931158.458859.
+
+The fresh stack reviewer bc-c248f76b returned
+[PASS on #1676](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1676#pullrequestreview-5643238757)
+and [PASS on prior #1289 a1c213b](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1289#pullrequestreview-5643238830),
+with 92 focused composed-tree tests passing. These used --noconftest because
+the standalone checkout lacked vendor/macro_src and shared conftest imported
+pandas. They are focused reviewer results, not full-suite or native proof.
+The composition merged cleanly with master a4525e3e, preserved #1666's hook
+blobs, and already contained the full #656 delta.
+
+[RULING 1792932401.375569](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792932401375569)
+consumed PASS and authorized bounded integration. The repository permits
+squash merges; #1676's exact-head squash result and #1289 branch readback
+confirm 0b0eac4f and identical reviewed tree b8e53058. This closes the requested
+#1676-to-#1289 source integration. The existing runbook's absent-builder sentence
+and historical Git-identity finding need correction on that same carrier.
+The same reviewer remains the changed-source return route; Secretary's
+approval/merge restriction and #1289 production HOLD remain intact.
+
+#### Next W3 slice: qualify native input evidence
+
+The existing [Supervisor turn-input owner](https://github.com/mastermindx-market-intelligence/Mastermind/blob/fbb0c69818edeb4217cdc1b2f353df2f00cd70fc/control_plane/executive_operator_supervisor.py)
+binds a commission prompt to a Runtime TurnRef. The existing Codex adapter sends
+that input and records a generic native turn acknowledgement. The inspected
+#1289/#1676 composition does not connect those operations to a prepared-capsule
+consumption evidence producer. The
+[ACK law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/fbb0c69818edeb4217cdc1b2f353df2f00cd70fc/docs/superpowers/specs/2026-08-27-operator-continuation-idempotency-amendment.md)
+requires the exact bound provider session to accept/consume the exact prepared
+continuation-bearing turn. The closed ContinuationAck identity validator does
+not itself observe provider input or infer model consumption.
+
+There is a plausible existing readback seam, with distinct owners:
+AppServerClient.request_raw_turn_page issues one closed thread/turns/list request;
+CodexOperatorAdapter._read_native_turn_result owns bounded complete traversal,
+session stability and unique native-turn selection. The inspected
+[fake App Server](https://github.com/mastermindx-market-intelligence/Mastermind/blob/fbb0c69818edeb4217cdc1b2f353df2f00cd70fc/scripts/ohf/fake_app_server.py)
+retains assistant output and inputSkills, and the
+[private raw fixture](https://github.com/mastermindx-market-intelligence/Mastermind/blob/fbb0c69818edeb4217cdc1b2f353df2f00cd70fc/tests/fixtures/ohf_raw_app_server.py)
+contains an assistant answer only. These sources do not qualify retention of
+the original textual input on the actual admitted native build.
+
+The next bounded source task is therefore **evidence-contract qualification**,
+before proposing a production ACK producer. The
+[complete compiled W3 brief](ORCHESTRATOR_PROJECT_CONTINUITY_W3_NATIVE_EVIDENCE_BRIEF.md)
+limits proposed writes to the existing runbook and focused fixtures/tests.
+Its assignment, workspace and host bindings are null: it is authoring content,
+not a launched worker or runtime admission. Compilation succeeded; the complete
+17,576-byte artifact has SHA256
+c383a6ac17c9df16bd4ff2c7fb08cbceb773a1db143dd9fa674590067b7d7b60.
+
+Qualify the exact supported native input shape, completeness and normalization
+through the existing source/build/evidence owner. Preserve the private one-shot
+readback and existing traversal bounds. If only transport or assistant-output
+evidence is available, return CONSUMPTION_EVIDENCE_UNAVAILABLE and leave ACK
+unwritten. Exact retained input, model use, useful work and original-parent
+acceptance remain distinct proof levels. After independent review of a concrete
+evidence producer, any production connection belongs on the existing
+#1676 to #1289 integration side, with actual source custody reconciled first.
+
+The bounded read-only build/schema census returned
+**CONSUMPTION_EVIDENCE_UNAVAILABLE**: no current installed binary identity or
+existing native input schema was retrieved. A historical Tiingo checkpoint
+records codex-cli 0.163.0; that is not a current build readback or RuntimeBinding.
+The child submitted only a read-only hostname probe; it was interrupted with no
+output, PID or exit status and was not retried. No native launch, RPC, provider
+turn, resume/compact, schema generation, transcript read, or persistent change
+was requested. Its execution/termination is unobserved, with no persistent or
+native effect requested. Keep the next action on the existing native evidence
+owner: qualify a current readable build/schema artifact first. Do not infer an
+input-retention capability from generic transport or assistant-result evidence.
+
+The current native owner received the
+[bounded evidence action](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1289#issuecomment-6397884159)
+on [its own return thread](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1792932795434119),
+operation continuity-w3-native-evidence-20261025-c3. The action requests only
+existing readable build/schema evidence and returns the exact missing artifact
+if insufficient. Its canonical hourly watcher 6addfbde54c081918e3c9d29bdd35f4f
+was created and read back with exact prompt equality; delivery is not pickup.
+
+### Checkpoint release and return continuity
+
+Fresh non-author review
+[5643229107](https://github.com/mastermindx-market-intelligence/macro/pull/10181#pullrequestreview-5643229107)
+passed the preceding 4a001017 checkpoint. This subsequent delta requires review
+on that same operation. Macro main 6ffbfa8f is **unprotected** and its normal
+release path is the existing merge-on-green workflow, not Mastermind's protected
+queue. The authoring mastermindx-3 receiver and restricted Secretary do not arm
+or self-release #10181. An eligible independent admission actor remains required;
+the [source-linked handoff](https://github.com/mastermindx-market-intelligence/macro/pull/10181#issuecomment-6397682990)
+identifies the concrete controller and main readback requirement.
+
+Canonical watcher prompts were rendered and validated from protected module blob
+b275ad19e2be9223103125f0909ceb8d78abbdd5 and read back after installation:
+checkpoint task 6addf60cc8f48191938ce039360a978a; stack review task
+6addf60dc81481919d38148cc0d20c08; #656 final release-readback task
+6addfa862b6081918c14d0f9224ec021. The native-evidence watch above has the same schedule. Their exact Slack carriers and handled baselines
+belong in the dated handoff. They recur hourly from 13:30Z on October 25.
+The closed custody task 6addf60f3998819196a049657c747005 was disabled after
+verified STOP. Configuration readback proves the watches exist; the stack watch
+has one recorded no-update run, and action-required return consumption is not
+yet proven. No scheduled task grants runtime or release authority.
+
+### W4 runtime prerequisites and proof boundary
+
+At 2026-10-25T12:07:42Z, the refreshed Executive Fabric read reported
+`ceo_submit_armed: false`; the installed control identity was
+`f572e1d7bb13ea3651160609390b460ea1d11a6f`. The installed Macro boot source
+was `88804ed7079700c598bb8e04aa64307d1335402d`. The read provenance
+remained PARTIAL/unjoined, and active-builds did not supersede current GitHub
+PR/CI truth. No arming or provider dispatch was performed by this receiver.
+
+The existing Secretary bring-up record
+`~/gwcap/project-charters/executive-os-bringup/B2_ARMING_RULING_f608f52f.md`
+records the accepted order for its exact release: installed/accepted identity,
+wholly disarmed stopped services, finite-control staging, finite bridge start,
+foreground-only arm, CEO submit arm, and canonical status readback.
+This is a dependency reference, not authorization to run those root actions or
+a claim that the staged release was installed. The existing root/host-chain
+writer and source/effect fences remain intact.
+
+**Arming f608f52f alone is not W4 readiness.** Immutable source comparisons prove
+that it lacks the W3 source builder and Runtime/Harness PREPARE/ACK additions:
+
+- [e00e97b to f608f52f](https://github.com/mastermindx-market-intelligence/Mastermind/compare/e00e97b81a5d41cb8a570ad080316279a0f3853f...f608f52f35384dcfa8e4305dc594f1fbe823d5ec)
+  changes only three Studio-reader cleanup diagnostic files, none of the W3 paths.
+- [f608f52f to #656](https://github.com/mastermindx-market-intelligence/Mastermind/compare/f608f52f35384dcfa8e4305dc594f1fbe823d5ec...a9c685a18ddba73d5d1b4efc529d8db2409393a0)
+  adds the source builder and its tests from the shared e00e97b ancestor.
+- [f608f52f to #1289](https://github.com/mastermindx-market-intelligence/Mastermind/compare/f608f52f35384dcfa8e4305dc594f1fbe823d5ec...a1c213b2779539687de1fe9c64368d06b1e0e55c)
+  adds prepare_operator_continuation and acknowledge_operator_continuation to
+  Runtime and the existing Harness port.
+
+After independent acceptance and normal integration of #656 and #1676 into
+#1289, the existing release owner must supply readback of a later accepted,
+installed **and selected** release containing that W3 closure. Separately identify
+and qualify the existing admitted path that delivers the exact prepared capsule
+to the intended successor and records ACK only after actual consumption.
+The [#1289 runbook](https://github.com/mastermindx-market-intelligence/Mastermind/blob/a1c213b2779539687de1fe9c64368d06b1e0e55c/docs/runbooks/portable-agent-continuity.md)
+explicitly adds neither delivery nor an uncertain-effect reconciliation writer;
+its Runtime methods are internal, not newly published external tools. #1676's
+synthetic PREPARE test does not close those boundaries. Runtime arming, accepted
+source installation, and the real delivery/consumption path are separate gates.
+
+After the actual owning runtime satisfies those prerequisites, select one
+bounded project under that owner's admitted root/grant and prove the original
+completion sequence: actual paid START, retained result, independent review,
+acceptance, compaction, useful second phase, then controlled interruption and
+same-carrier effect reconciliation. Review, CI, source merge, native context
+delivery and synthetic PREPARE tests must never substitute for those receipts.
+The held subscribed Stop definition C and its selected-generation dependency
+must be reconciled through the existing D4 owner before relying on its returns.
+No W4 canary has been newly launched by this receiver.
