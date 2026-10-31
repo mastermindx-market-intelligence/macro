@@ -42,6 +42,8 @@ Usage
 from __future__ import annotations
 
 import argparse
+import hashlib
+import re
 import json
 import logging
 import os
@@ -200,6 +202,143 @@ def repair_root(root: str, store, *, apply: bool, source_date: str | None = None
     return tally
 
 
+
+class _CorrectionRefused(ValueError):
+    """A local validation failure, always before a mutation wrapper call."""
+
+
+def _strict_correction_json(body: bytes):
+    def pairs(items):
+        obj = {}
+        for key, value in items:
+            if key in obj:
+                raise _CorrectionRefused("duplicate_json_key")
+            obj[key] = value
+        return obj
+    def constant(_value):
+        raise _CorrectionRefused("nonfinite_json")
+    return json.loads(body.decode("utf-8", errors="strict"),
+                      object_pairs_hook=pairs, parse_constant=constant)
+
+
+def correct_archive_artifact(artifact: Path, binding: dict, *, apply: bool = False,
+                             client_factory=None, bucket: str | None = None) -> dict:
+    """Opt-in replacement of ONE existing dated object, using already-built bytes.
+
+    A binding is an input pin, not authorization, source qualification or proof of
+    fresh custody. Those gates and the native whole-document matcher remain the
+    caller's responsibility. This function never discovers a version or creates
+    a missing object. It invokes put_object once, without wrapper retries; the
+    incumbent SDK's own policy may perform multiple physical attempts.
+    """
+    result = {"schema": "options_hub.gex_archive_correction_result/v1",
+              "status": "not_attempted", "wrapper_invocations": 0,
+              "physical_attempts": None, "remote_bytes_equal": None}
+    try:
+        if not isinstance(binding, dict) or binding.get("schema") != "options_hub.gex_archive_correction/v1":
+            raise _CorrectionRefused("invalid_binding")
+        root, session = binding.get("root"), binding.get("session")
+        if not isinstance(root, str) or not re.fullmatch(r"[A-Z][A-Z0-9.^_-]{0,19}", root):
+            raise _CorrectionRefused("invalid_root")
+        if (not isinstance(session, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", session)
+                or calendar_date.fromisoformat(session).isoformat() != session):
+            raise _CorrectionRefused("invalid_session")
+        key = f"{R2_PREFIX}{root}/{session}.json"
+        if binding.get("key") != key:
+            raise _CorrectionRefused("target_key_mismatch")
+        target_bucket = binding.get("bucket")
+        if not isinstance(target_bucket, str) or not re.fullmatch(r"[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]", target_bucket):
+            raise _CorrectionRefused("invalid_bucket")
+        etag = binding.get("expected_etag")
+        if not isinstance(etag, str) or not re.fullmatch(r'"[A-Za-z0-9._:-]{1,254}"', etag):
+            raise _CorrectionRefused("invalid_existing_version")
+        digest, prior_digest, size = (binding.get("input_sha256"),
+                                    binding.get("expected_existing_sha256"), binding.get("input_bytes"))
+        if any(not isinstance(v, str) or not re.fullmatch(r"[0-9a-f]{64}", v)
+               for v in (digest, prior_digest)):
+            raise _CorrectionRefused("invalid_digest_binding")
+        if type(size) is not int or not 0 < size <= 8 * 1024 * 1024:
+            raise _CorrectionRefused("invalid_size_binding")
+        # Read once and retain immutable bytes; a later file replacement cannot
+        # change the body passed to the conditional write.
+        with Path(artifact).open("rb") as stream:
+            body = stream.read(8 * 1024 * 1024 + 1)
+        if len(body) != size or hashlib.sha256(body).hexdigest() != digest:
+            raise _CorrectionRefused("artifact_bytes_mismatch")
+        payload = _strict_correction_json(body)
+        if (not isinstance(payload, dict) or payload.get("schema") != "options_hub.gex/v1"
+                or payload.get("root") != root or payload.get("asof") != session
+                or not isinstance(payload.get("by_strike"), list) or not payload["by_strike"]):
+            raise _CorrectionRefused("native_envelope_mismatch")
+        projection = payload.get("exposure_projection")
+        if (not isinstance(projection, dict) or projection.get("schema") != "options_hub.exposure_projection/v2"
+                or projection.get("root") != root or not isinstance(projection.get("clocks"), dict)
+                or projection["clocks"].get("source_session") != session
+                or projection.get("cells_status") != "complete"
+                or not isinstance(projection.get("cells"), list) or not projection["cells"]
+                or type(projection.get("cell_count")) is not int
+                or projection["cell_count"] != len(projection["cells"])):
+            raise _CorrectionRefused("native_projection_mismatch")
+        from engine.options_exposure_projection import expand_projection_cells, fit_gex_transport
+        from scripts.build_options_hub_nightly import _gex_history_relpath
+        expand_projection_cells(projection)  # native encoding, not scientific admission
+        fits, fitted = fit_gex_transport(payload)
+        if not fits or fitted != payload:
+            raise _CorrectionRefused("whole_envelope_transport_refused")
+        if "options_hub/" + str(_gex_history_relpath(root, payload)) != key:
+            raise _CorrectionRefused("native_key_mismatch")
+        result.update(key=key, bucket=target_bucket, expected_etag=etag,
+                      input_sha256=digest, input_bytes=size,
+                      expected_existing_sha256=prior_digest)
+    except _CorrectionRefused as exc:
+        result["reason"] = str(exc)  # only fixed local reason codes
+        return result
+    except Exception:  # noqa: BLE001
+        result["reason"] = "artifact_or_binding_invalid"
+        return result
+    if not apply:
+        result["status"] = "prepared"
+        return result
+    actual_bucket = bucket if bucket is not None else os.environ.get("R2_BUCKET")
+    if actual_bucket != target_bucket:
+        result["reason"] = "bucket_mismatch"
+        return result
+    try:
+        if client_factory is None:
+            from scripts.build_options_hub_nightly import _r2_client
+            client_factory = _r2_client
+        client = client_factory()
+        if client is None:
+            result["reason"] = "client_unavailable"
+            return result
+    except Exception:  # noqa: BLE001
+        result["reason"] = "client_unavailable"
+        return result
+    result["wrapper_invocations"] = 1
+    try:
+        response = client.put_object(Bucket=target_bucket, Key=key, Body=body,
+                                     ContentType="application/json", IfMatch=etag)
+    except Exception as exc:  # noqa: BLE001
+        # No refresh, retry, existence probe or unconditional fallback. Even a
+        # conflict is not proof that an earlier internal SDK attempt had no effect.
+        error = getattr(exc, "response", {})
+        error = error if isinstance(error, dict) else {}
+        metadata = error.get("ResponseMetadata", {})
+        metadata = metadata if isinstance(metadata, dict) else {}
+        details = error.get("Error", {})
+        details = details if isinstance(details, dict) else {}
+        code, status = details.get("Code"), metadata.get("HTTPStatusCode")
+        result["status"] = ("conflict" if status in (404, 412) or code in ("PreconditionFailed", "NoSuchKey")
+                            else "denied" if status in (401, 403) else "unknown")
+        return result
+    metadata = response.get("ResponseMetadata", {}) if isinstance(response, dict) else {}
+    status = metadata.get("HTTPStatusCode") if isinstance(metadata, dict) else None
+    result["status"] = "acknowledged" if type(status) is int and status == 200 else "unknown"
+    retries = metadata.get("RetryAttempts") if isinstance(metadata, dict) else None
+    if type(retries) is int and retries >= 0:
+        result["sdk_reported_retries"] = retries
+    return result
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -213,7 +352,26 @@ def main(argv: list[str] | None = None) -> int:
                     help="repair only this existing dated archive; never writes current boards")
     ap.add_argument("--exposure-context", default=None, metavar="JSON",
                     help="explicit full native-book receipt bundle; requires --date and --roots")
+    ap.add_argument("--correct-artifact", type=Path, help="one already-built native dated artifact")
+    ap.add_argument("--correction-binding", type=Path, help="exact artifact/target/existing-version binding")
     args = ap.parse_args(argv)
+    if args.correct_artifact is not None or args.correction_binding is not None:
+        if (args.correct_artifact is None or args.correction_binding is None
+                or args.apply != args.publish
+                or any(v is not None for v in (args.roots, args.date, args.theta_store, args.exposure_context))):
+            ap.error("correction requires both files, no legacy options, and either neither effect flag or --apply --publish")
+        try:
+            with args.correction_binding.open("rb") as stream:
+                binding_bytes = stream.read(65537)
+            if len(binding_bytes) > 65536:
+                raise ValueError("binding exceeds limit")
+            binding = _strict_correction_json(binding_bytes)
+        except Exception:  # noqa: BLE001
+            print(json.dumps({"status": "not_attempted", "reason": "invalid_binding_file", "wrapper_invocations": 0}))
+            return 1
+        result = correct_archive_artifact(args.correct_artifact, binding, apply=args.apply)
+        print(json.dumps(result, sort_keys=True))
+        return 0 if result["status"] in ("prepared", "acknowledged") else 1
     from scripts.build_options_hub_nightly import load_exposure_contexts
     contexts = load_exposure_contexts(args.exposure_context)
     if args.date is not None:
@@ -262,36 +420,128 @@ def main(argv: list[str] | None = None) -> int:
              "APPLIED" if args.apply else "DRY RUN",
              totals["n"], totals["changed"], totals["impossible"], totals["skipped"])
 
-    if args.publish and args.apply and repaired:
-        _publish(repaired, store=store)
+    publication = None
+    if args.publish and args.apply:
+        publication = _publish(repaired, store=store)
     elif args.publish and not args.apply:
         log.warning("repair: --publish ignored on a dry run")
-    return 1 if failures else 0
+    if publication is not None:
+        # One machine-readable process result; SDK acknowledgements are not
+        # remote-byte equality. Counts describe wrapper calls, not SDK retries.
+        print(json.dumps({"schema": "options_hub.gex_archive_publication/v1",
+                          "attempt_unit": "publisher_wrapper_call",
+                          "acknowledgement_only": True,
+                          "publication": publication}, sort_keys=True))
+    if publication is not None and publication["incomplete"]:
+        log.error("repair: requested publication INCOMPLETE — %d/%d snapshots confirmed, "
+                  "%d unconfirmed, %d not attempted",
+                  publication["confirmed"], publication["requested"],
+                  publication["unconfirmed"], publication["not_attempted"])
+    return 1 if failures or (publication is not None and publication["incomplete"]) else 0
 
 
-def _publish(repaired: list[tuple[str, Path]], *, store=None) -> None:
+def _publish(repaired: list[tuple[str, Path]], *, store=None) -> dict:
+    """Upload the repaired snapshots, then refresh each root's dated index.
+
+    Returns a truthful summary. A missing import, client or credentials means
+    every requested key is explicitly ``not_attempted`` (zero attempts). A
+    ``False`` upload or an exception is ``unconfirmed`` — never proof that a
+    remote object is absent — and is never retried or overwritten here. All
+    acknowledged successes and every requested object/index key are preserved.
+    Attempt counts are publisher-wrapper calls; existing SDK retries are unchanged.
+    Only dated objects and their truthful LIST-derived index are published:
+    zero heal budget prevents unrelated archive writes, and current
+    gex/vol/boards are never touched.
+    """
+    summary: dict = {"requested": len(repaired), "attempted": 0, "confirmed": 0,
+                     "unconfirmed": 0, "not_attempted": 0, "keys": {},
+                     "indices": {}, "incomplete": False}
+
+    def _index_result(root: str, detail: dict | None = None) -> dict:
+        detail = detail or {}
+        return {"key": f"{R2_PREFIX}{root}/dates.json",
+                "status": detail.get("status", "unconfirmed"),
+                "index_attempted": detail.get("index_attempted"),
+                "index_uploaded": detail.get("index_uploaded"),
+                "healed": detail.get("healed", 0)}
+
+    def _mark_all_not_attempted() -> None:
+        for root, path in repaired:
+            summary["keys"][f"{R2_PREFIX}{root}/{path.name}"] = {
+                "status": "not_attempted", "attempts": 0}
+            summary["not_attempted"] += 1
+            summary["indices"][root] = _index_result(root, {"status": "not_attempted",
+                                        "index_attempted": False})
+        summary["incomplete"] = True
+
+    if not repaired:
+        return summary
     try:
         from scripts.build_options_hub_nightly import _r2_client, _upload_r2, publish_gex_history_index
-    except Exception as exc:  # noqa: BLE001
-        log.warning("repair: publish unavailable — %s", exc)
-        return
-    s3 = _r2_client()
+    except Exception:  # noqa: BLE001
+        log.warning("repair: publish unavailable")
+        _mark_all_not_attempted()
+        return summary
+    try:
+        s3 = _r2_client()
+    except Exception:  # noqa: BLE001
+        log.warning("repair: client unavailable before upload")
+        _mark_all_not_attempted()
+        return summary
     bucket = os.environ.get("R2_BUCKET")
     if s3 is None or not bucket:
         log.warning("repair: R2 creds absent — snapshots repaired locally only")
-        return
+        _mark_all_not_attempted()
+        return summary
+
     ok = 0
     published: dict[str, list[str]] = {}
     for root, path in repaired:
-        if _upload_r2(s3, bucket, path, f"{R2_PREFIX}{root}/{path.name}"):
-            ok += 1
-            published.setdefault(root, []).append(path.stem)
-    # Only dated objects and their truthful LIST-derived index. Zero heal budget
-    # prevents unrelated archive writes; current gex/vol/boards are never touched.
-    for root, days in published.items():
-        publish_gex_history_index(root, max(days), store, None, HIST_DIR.parent,
-                                  s3, bucket, heal_budget=0)
+        key = f"{R2_PREFIX}{root}/{path.name}"
+        entry = {"status": "not_attempted", "attempts": 0}
+        summary["keys"][key] = entry
+        try:
+            entry["attempts"] = 1
+            summary["attempted"] += 1
+            if _upload_r2(s3, bucket, path, key):
+                entry["status"] = "confirmed"
+                summary["confirmed"] += 1
+                ok += 1
+                published.setdefault(root, []).append(path.stem)
+            else:
+                entry["status"] = "unconfirmed"
+                summary["unconfirmed"] += 1
+        except Exception:  # noqa: BLE001
+            entry["status"] = "exception"
+            summary["unconfirmed"] += 1
+
+    for root in sorted(published):
+        days = published[root]
+        detail: dict = {}
+        try:
+            # Only dated objects and their truthful LIST-derived index. Zero
+            # heal budget prevents unrelated archive writes; current
+            # gex/vol/boards are never touched.
+            publish_gex_history_index(root, max(days), store, None, HIST_DIR.parent,
+                                      s3, bucket, heal_budget=0, outcome=detail)
+        except Exception:  # noqa: BLE001
+            # A legacy/non-reporting callee leaves the attempt UNKNOWN. The
+            # native seam reports its phase before any potentially failing IO.
+            if not detail:
+                detail["status"] = "exception"
+        summary["indices"][root] = _index_result(root, detail)
+    for root in sorted({r for r, _ in repaired} - set(published)):
+        summary["indices"][root] = _index_result(root, {"status": "not_attempted",
+                                                     "index_attempted": False})
+
+    summary["incomplete"] = (summary["confirmed"] != summary["requested"]
+                             or any(d["status"] != "success"
+                                    for d in summary["indices"].values()))
     log.info("repair: published %d/%d repaired snapshots to R2", ok, len(repaired))
+    if summary["incomplete"]:
+        log.warning("repair: publication INCOMPLETE — indices: %s",
+                    {r: d["status"] for r, d in sorted(summary["indices"].items())})
+    return summary
 
 
 if __name__ == "__main__":

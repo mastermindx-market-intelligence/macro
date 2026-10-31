@@ -999,20 +999,44 @@ def _heal_gex_history(root: str, missed: list[str], theta_store,
 
 def publish_gex_history_index(root: str, asof: str, theta_store,
                               polygon_gex_dir: Path | None, out_dir: Path,
-                              s3, bucket: str, heal_budget: int) -> int:
+                              s3, bucket: str, heal_budget: int,
+                              *, outcome: dict | None = None) -> int:
     """List the plane, heal missed sessions within budget, publish dates.json.
 
     Returns how many snapshots were healed (the caller decrements its global
     budget). The index is written AFTER healing so it reflects the plane as
     this run leaves it; a listing failure skips both (no blind heal, no lying
     index).
+
+    When `outcome` is a dict, it is filled in-place with the detailed truth the
+    integer return cannot carry: a listing failure returns 0 exactly like a
+    genuine zero-heal, so callers that must not confuse the two read
+    `outcome["status"]` — "success", "list_failed" (index never attempted) or
+    "index_upload_unconfirmed" (the upload returned False, which is never proof
+    the remote index is absent). Existing callers that pass no `outcome` keep
+    the integer-healed-count contract unchanged. A pre-upload exception leaves
+    index_attempted=False; an upload exception leaves it True with an unknown
+    acknowledgement. The caller may retain this partial report on exceptions.
     """
+    # Record each phase BEFORE it can fail. The optional report survives an
+    # exception without asserting that an upload was reached when it was not.
+    if outcome is not None:
+        outcome.clear()
+        outcome.update(status="list_unconfirmed", list_ok=None,
+                       index_attempted=False, index_uploaded=None, healed=0)
     existing = _list_gex_history_dates(s3, bucket, root)
     if existing is None:
+        if outcome is not None:
+            outcome.update(status="list_failed", list_ok=False,
+                           index_attempted=False, index_uploaded=None, healed=0)
         return 0
+    if outcome is not None:
+        outcome.update(status="index_not_attempted", list_ok=True)
     missed = gex_history_missed_sessions(existing, asof)
     healed = _heal_gex_history(root, missed, theta_store, polygon_gex_dir,
                                out_dir, s3, bucket, heal_budget)
+    if outcome is not None:
+        outcome["healed"] = len(healed)
     index = build_gex_dates_index(
         list(existing) + healed, root=root,
         asof=_datetime.now(_timezone.utc).isoformat(timespec="seconds"),
@@ -1020,7 +1044,13 @@ def publish_gex_history_index(root: str, asof: str, theta_store,
     rel = f"gex_history/{root}/dates.json"
     local = out_dir / rel
     _write_json(local, index)
-    _upload_r2(s3, bucket, local, f"{R2_PREFIX}{rel}")
+    if outcome is not None:
+        outcome.update(status="index_upload_unconfirmed", index_attempted=True)
+    index_uploaded = _upload_r2(s3, bucket, local, f"{R2_PREFIX}{rel}")
+    if outcome is not None:
+        outcome.update(status="success" if index_uploaded else "index_upload_unconfirmed",
+                       list_ok=True, index_attempted=True,
+                       index_uploaded=index_uploaded, healed=len(healed))
     still = [d for d in missed if d not in healed]
     if still:
         log.info("options_hub_builder: gex_history %s still missing %d session(s): %s",
