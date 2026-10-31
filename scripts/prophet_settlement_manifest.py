@@ -294,6 +294,13 @@ def _utc_stamp_failure(value: object) -> str | None:
 # to infer that an unavailable source session actually settled.
 CLOCK_CAUSALITY_SKEW = timedelta(hours=3)
 
+# A genuinely late historical reader remains admissible (no 24h/weekly
+# freshness budget here). The conservative 1,000-year sanity fence prevents
+# millennia-apart synthetic clock extrema from being treated as a current
+# source-to-reader settlement receipt; this is a data-integrity bound, not
+# a clock invented by the projection or a new alert/publisher authority.
+MAX_SETTLEMENT_CLOCK_SPAN = timedelta(days=365_250)
+
 
 def _clock_chain_incoherent(
     source_asof: date | None,
@@ -305,8 +312,10 @@ def _clock_chain_incoherent(
 
     A source session is DATE-grained, not an invented exact midnight tick.
     Its midnight UTC is used only as a conservative lower bound with 3h
-    tolerance; no upper duration limit is imposed on legitimately delayed
-    publication or a later real reader observation.
+    tolerance. There is no ordinary freshness-age upper budget here: only
+    the very broad 1,000-year extreme-evidence sanity fence above. All
+    comparisons use datetime differences, never addition/subtraction to a
+    boundary datetime (which overflows near years 0001 and 9999).
     """
     stamps = (computed_at, published_at, checked_at)
     if any(_utc_stamp_failure(x) is not None for x in stamps):
@@ -315,16 +324,25 @@ def _clock_chain_incoherent(
     computed, published, read = (
         datetime.fromisoformat(x.replace("Z", "+00:00")) for x in stamps
     )
-    if computed > published + CLOCK_CAUSALITY_SKEW:
+    # Subtract two representable UTC timestamps, not a duration from/to
+    # an extreme timestamp: Python raises OverflowError for
+    # datetime.min - 3h or datetime.max + 3h. All valid 0001..9999
+    # endpoints must yield a TYPED failure/status, never abort a sentinel.
+    if computed - published > CLOCK_CAUSALITY_SKEW:
         return True
-    if computed > read + CLOCK_CAUSALITY_SKEW:
+    if computed - read > CLOCK_CAUSALITY_SKEW:
         return True
-    if published > read + CLOCK_CAUSALITY_SKEW:
+    if published - read > CLOCK_CAUSALITY_SKEW:
         return True
     if source_asof is not None:
         earliest = datetime.combine(source_asof, time.min, tzinfo=timezone.utc)
-        if any(clock < earliest - CLOCK_CAUSALITY_SKEW
+        if any(earliest - clock > CLOCK_CAUSALITY_SKEW
                for clock in (computed, published, read)):
+            return True
+        if read - earliest > MAX_SETTLEMENT_CLOCK_SPAN:
+            # Year-0001 source or year-9999 reader against a modern
+            # receipt is not a useful settlement observation. The source
+            # and reader are still injected evidence, never synthesized.
             return True
     return False
 

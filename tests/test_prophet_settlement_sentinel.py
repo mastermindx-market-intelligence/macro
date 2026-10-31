@@ -318,3 +318,36 @@ def test_public_boundary_preserves_incumbent_health_keys_only():
     assert out["heartbeat"] == raw["heartbeat"]
     assert out["surfaces"] == {"prophet_us": {"status": "ok"}}
     assert "unknown_private_owner" not in out
+
+
+def test_public_settlement_extreme_dates_refuse_without_aborting_pass():
+    """A malformed internal SETTLED envelope must never crash the
+    half-hourly sentinel; public payload is closed UNAVAILABLE_DATA
+    with no paid/unknown fields, including valid Python year extrema.
+    """
+    settled = _complete_settled_fixture()
+    cases = (
+        {"source_asof": "0001-01-01", "reader_visible_asof": "0001-01-01",
+         "owed_session": "0001-01-01"},
+        {"published_at": "9999-12-31T23:59:59Z"},
+        {"checked_at": "9999-12-31T23:59:59Z"},
+        {"computed_at": "9999-12-31T23:59:59Z"},
+        {"checked_at": "0001-01-01T00:00:00Z"},
+    )
+    for mutation in cases:
+        raw = dict(settled, **mutation)
+        public = fs.public_report({
+            "generated_at": NOW.isoformat(), "ok": True, "surfaces": {},
+            "prophet_settlement": raw,
+            "private_plan": "PAID_PRIVATE_PLAN",
+        })
+        block = public["prophet_settlement"]
+        assert block["status"] == "UNAVAILABLE_DATA", (mutation, block)
+        assert block["schema"] == "prophet.settlement_manifest/v1"
+        assert set(block) == {
+            "schema", "status", "owed_session", "source_asof", "failures",
+        }
+        assert "PAID_PRIVATE_PLAN" not in json.dumps(public)
+    assert fs.public_report({
+        "surfaces": {}, "prophet_settlement": settled,
+    })["prophet_settlement"]["status"] == "SETTLED"

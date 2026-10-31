@@ -994,3 +994,42 @@ def test_structural_validator_never_mints_settled_authority():
         assert not MAN.settled_envelope_is_structural(candidate), mutation
     assert not MAN.settled_envelope_is_structural(dict(settled, paid_secret="DO_NOT_PUBLISH"))
     assert not MAN.settled_envelope_is_structural("SETTLED")
+
+
+def test_clock_boundaries_never_overflow_and_refuse_extreme_span():
+    """Python datetime extrema are syntactically valid but must not crash.
+
+    Reproduced at 50bb0f22: datetime.max + 3h, datetime.min - 3h
+    raised OverflowError and propagated from both pure and public
+    sentinel paths. The 1,000y sanity fence refuses millennia-apart
+    claims without imposing an operational session-age budget.
+    """
+    cases = (
+        {"index_kw": {"source_asof": "0001-01-01"}},
+        {"health_kw": {"published_at": "9999-12-31T23:59:59Z"}},
+        {"reader_observed_at": "9999-12-31T23:59:59Z"},
+        {"computed_at": "9999-12-31T23:59:59Z"},
+        {"reader_observed_at": "0001-01-01T00:00:00Z"},
+        {"health_kw": {"published_at": "0001-01-01T00:00:00Z"}},
+    )
+    for kwargs in cases:
+        out = manifest_call(**kwargs)
+        assert out["status"] == "PENDING", (kwargs, out)
+        assert "clock_chain_incoherent" in out["failures"], (kwargs, out)
+        assert set(out) == set(MAN.MANIFEST_FIELDS)
+    assert manifest_call()["status"] == "SETTLED"
+
+
+def test_clock_boundary_skew_and_long_but_plausible_read_remain_valid():
+    """The repair must not erase previously accepted cross-host skew or
+    mark an ordinary late read as an outage.
+    """
+    for read, expected in (
+        ("2026-10-30T19:05:00Z", "SETTLED"),  # exactly 3h behind published
+        ("2026-10-30T19:04:59Z", "PENDING"),  # skew +1s
+        ("2027-10-30T22:11:03Z", "SETTLED"),  # real delayed read, not a live SLA
+    ):
+        out = manifest_call(reader_observed_at=read)
+        assert out["status"] == expected, (read, out)
+        if expected == "PENDING":
+            assert "clock_chain_incoherent" in out["failures"]
