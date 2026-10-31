@@ -20,7 +20,7 @@ Read these first, then load only the chosen domain's sources:
 4. [Dated census and audit](censuses/INTEGRATION_CENSUS_2026-10-31.md), which separates inspected source, accepted historical receipts, public serving evidence and unverified claims.
 5. [Machine-readable source index](censuses/INTEGRATION_CENSUS_2026-10-31.json), for exact repository pins, relevant paths, PR heads and observed checks.
 
-Apply the existing compatible Mastermind procedure pin once. Read the existing Fabric orchestration core and only the assigned role playbook. The current `fable-mode` entrypoint explicitly favors recovering the next useful action over repeatedly loading every doctrine. The commissioning environment must establish actual role/tool loading and admission; a file path or model name is not that proof. [G1][G2][G3]
+Apply the existing compatible Mastermind procedure pin once. Read the existing Fabric orchestration core and only the assigned role playbook. The current `fable-mode` entrypoint explicitly favors recovering the next useful action over repeatedly loading every doctrine. The commissioning environment must establish actual role/tool loading and admission; a file path or model name is not that proof. [G1] [G2] [G3]
 
 ### Six facts that prevent the largest repeat work
 
@@ -29,7 +29,9 @@ Apply the existing compatible Mastermind procedure pin once. Read the existing F
 - **K3-E Opportunity Evidence Vector already exists.** The similarly named K3E Expectation–Market-Dynamics / Information-to-Price programme is a different body of work with its own accepted evaluation constraints.
 - **OpportunityCase and real consumer integrations already landed.** Macro #9639 added or integrated important K5 research paths. Do not commission another case composer from the old `k5: todo` label.
 - **K3-D has both landed code and an open original carrier.** PR #6514's latest native disclosed-supplier extension remains separate from the v1/v2 integration already on main. Preserve that carrier and reconcile its current writer, review and effects before touching it.
-- **The ITP experiment has a consumed trial and a real time boundary.** The October 17 receipt places it in a 63-session purge ending January 15, 2027; read the actual fresh clock before any future label action. No new plan resets the trial or makes the future arrive early. [S1][S2][S3][S4][S5][S6]
+- **The ITP experiment has a consumed trial and a real time boundary.** The October 17 receipt places it in a 63-session purge ending January 15, 2027; read the actual fresh clock before any future label action. No new plan resets the trial or makes the future arrive early. [S1] [S2] [S3] [S4] [S5] [S6]
+
+An additional bounded repair is now ready: the paid Fabric audit identified two invalid-clock paths that make `validate_vector` raise `TypeError` despite its documented findings-only contract. The parent independently reproduced both against pinned source and a valid golden baseline. See [the audit adjudication](censuses/FABRIC_AUDIT_ADJUDICATION_2026-10-31.md), K3.5 and Packet J. This is a robustness defect, not evidence that valid production clocks or authority fences failed.
 
 ## 2. The product outcome
 
@@ -76,7 +78,7 @@ The detailed census is the dated evidence attachment. This table is a reading ma
 | **I — Prophet V4 Integration** | Existing structured families, conditional-fusion arena, candidate lifecycle, board/entry owners. | Does any genuinely incremental structured family qualify under existing evaluation and promotion law? Case prose remains outside ranking. |
 | **J — Evaluation / Expert Learning** | Existing track/trial/grade/QLedger owners; ITP forward evaluator and partition clock; manager descriptive history. | Does a family or expert add information prospectively beyond appropriate baselines, and under which context, horizon and coverage? |
 
-The separate China Alpha and Options Alpha programmes are dependencies or consumers where their accepted owners say so. Their entire roadmaps are not silently absorbed into this assignment. MarketOntology, Catalyst, OLI and ITP also retain their own accepted scope and custody. [S1][S7][S8]
+The separate China Alpha and Options Alpha programmes are dependencies or consumers where their accepted owners say so. Their entire roadmaps are not silently absorbed into this assignment. MarketOntology, Catalyst, OLI and ITP also retain their own accepted scope and custody. [S1] [S7] [S8]
 
 ## 4. Recommended architecture
 
@@ -103,7 +105,7 @@ This diagram describes logical relationships. It does not prescribe a new servic
 
 An issuer, security, listing, manager, vehicle, filing, event, evidence occurrence and derived generation are different things. A CIK does not prove a particular tradable security. A valid event ID does not prove every field can join to a historical price. A reporting manager does not prove a discretionary strategy or vehicle.
 
-For each required join, demand the native binding object at the intended time and grain. Preserve the original source identifiers even after resolution. If the existing recipe cannot carry the needed proof, solve that bounded contract/owner gap; do not replace it with a caller assertion, ticker string, URL query parameter or model inference. Retain the current narrow native DRL and earnings-event composition paths while broader joins are being qualified. [S2][S3][S9]
+For each required join, demand the native binding object at the intended time and grain. Preserve the original source identifiers even after resolution. If the existing recipe cannot carry the needed proof, solve that bounded contract/owner gap; do not replace it with a caller assertion, ticker string, URL query parameter or model inference. Retain the current narrow native DRL and earnings-event composition paths while broader joins are being qualified. [S2] [S3] [S9]
 
 ### 4.2 Preserve time as information
 
@@ -117,7 +119,7 @@ The original K4-G clock complaint has already received relevant repairs. Verify 
 
 Use the existing object classes and vocabulary. Observed facts, derived calculations, system beliefs, forward claims and instrument state must remain recognizable to the user and to downstream machines.
 
-For economic networks, keep separate the disclosed economic relationship, narrative association and residual co-movement. Similarity is useful for discovery; it does not establish a supplier contract, input share or causal effect. A disclosed supplier relationship may support a qualitative hypothesis while leaving magnitude and timing unknown. Neither repeated mentions nor agreement among model agents proves independent support. [S2][S11]
+For economic networks, keep separate the disclosed economic relationship, narrative association and residual co-movement. Similarity is useful for discovery; it does not establish a supplier contract, input share or causal effect. A disclosed supplier relationship may support a qualitative hypothesis while leaving magnitude and timing unknown. Neither repeated mentions nor agreement among model agents proves independent support. [S2] [S11]
 
 ### 4.4 Keep rights, historical suitability and quality separate
 
@@ -127,7 +129,7 @@ Apply the accepted October 23 commercial-rights attestation for the named Resear
 
 Every displayed comparison should retain metric, unit, currency, fiscal/observation period, reported/adjusted basis, consolidation/security grain, and the denominator that makes it meaningful. Zero, missing, excluded, incomparable and not admitted are distinct states. Source-basis changes should not become growth or surprise. A reported actual is not a beat/miss without a comparable, admitted prior estimate vintage.
 
-When a consumer merely displays an owner's metric, it should validate and present that metric rather than recompute an apparently equivalent number from another feed. Current Terminal intraday comparison work provides a useful example: matched coverage, source endpoints, retained observations and unknown/zero coverage are preserved independently. This is a pattern to reuse, not a proposal to copy that feature into every case. [S12][S13]
+When a consumer merely displays an owner's metric, it should validate and present that metric rather than recompute an apparently equivalent number from another feed. Current Terminal intraday comparison work provides a useful example: matched coverage, source endpoints, retained observations and unknown/zero coverage are preserved independently. This is a pattern to reuse, not a proposal to copy that feature into every case. [S12] [S13]
 
 ### 4.6 Keep interpretation downstream of qualified evidence
 
@@ -137,7 +139,7 @@ The product needs a sharp boundary between an observed change and a suggested ex
 
 ### 4.7 Maintain the existing authority separation
 
-Research composition can explain, compare and identify uncertainty. Prophet/LER continue to own candidate admission and entry, conditional fusion owns structured family interaction, and existing evaluation/promotion owners decide whether a result becomes financially influential. The workstream's runtime authority remains `NONE`; OpportunityCase prose never feeds ranking. Current unavailable score/confidence/probability/impact fields must remain unavailable until an accepted owner actually establishes them. [S1][S9]
+Research composition can explain, compare and identify uncertainty. Prophet/LER continue to own candidate admission and entry, conditional fusion owns structured family interaction, and existing evaluation/promotion owners decide whether a result becomes financially influential. The workstream's runtime authority remains `NONE`; OpportunityCase prose never feeds ranking. Current unavailable score/confidence/probability/impact fields must remain unavailable until an accepted owner actually establishes them. [S1] [S9]
 
 ## 5. Detailed experience design
 
@@ -238,7 +240,7 @@ The external research was used to challenge assumptions and identify measurement
 | Primary source | What it supports | Consequence for this programme |
 |---|---|---|
 | SEC Form 13F staff FAQ | Reporting is delayed, includes specific reportable long holdings, and does not reveal all exposures; reporting discretion is a defined filing concept. | Keep reported holdings separate from real-time flow, portfolio completeness and discretionary intent. A manager-intent positive needs additional dated owner facts. [R1] |
-| Federal Reserve Bank of St. Louis ALFRED / FRED real-time documentation | Historical vintages and real-time periods differ from the latest revised series; availability and ingestion require attention. | Preserve source vintage and system observation. Validate historical usability rather than assuming a current API response is point-in-time. [R2][R3] |
+| Federal Reserve Bank of St. Louis ALFRED / FRED real-time documentation | Historical vintages and real-time periods differ from the latest revised series; availability and ingestion require attention. | Preserve source vintage and system observation. Validate historical usability rather than assuming a current API response is point-in-time. [R2] [R3] |
 | Cohen & Frazzini, *Economic Links and Predictable Returns* | Historical research provides a testable customer/supplier information-transmission hypothesis. | Use actual economic links and prospective tests; do not import historical return magnitudes as product forecasts. [R4] |
 | Acemoglu et al., *The Network Origins of Aggregate Fluctuations* | Network structure can affect how shocks propagate through economic links. | Preserve direction and mechanism; similarity and co-movement cannot establish economic causality or impact size. [R5] |
 | Bailey & López de Prado, *The Deflated Sharpe Ratio* | Selection, multiple trials and return distribution assumptions can distort performance claims. | Preserve the actual trial ledger and budgets; use methods appropriate to the evaluated return claim, not an unearned Sharpe badge for narrative quality. [R6] |
@@ -278,6 +280,7 @@ A source-backed descriptive result can complete the bounded investigation or des
 | **K3.2** | Reconcile and finish the existing #6514 native supplier-carrier scope. | Original operation, current writer/effects, exact head and existing review findings. | Same-carrier source/review/release evidence; no assumption that current main integration closes this extension. |
 | **K3.3** | Prove a useful conditional economic read-through in an existing consumer. | Theme Graph/native disclosure, propagation v1/v2 and case composition. | Actual event and relationship; clear mechanism, direction, alternatives and falsifier; unsupported magnitude remains unavailable. |
 | **K3.4** | Compare opportunities at the appropriate typed dimensions. | Qualified K3-E dimensions and canonical owner comparisons. | Coverage, comparability, missingness and family context survive comparison; any predictive ranking remains a separate governed decision. |
+| **K3.5** | Restore structured failure handling for malformed vector clocks. | Parent-reproduced naive/aware and non-string clock witnesses; current K3-E validator. | Invalid clocks return typed findings; valid output and cutoff/authority semantics remain unchanged. Prove the actual caller behavior separately instead of assuming this alone changes the HTTP/UI error. |
 
 The ITP child is connected here but retains its own masterplan, seat decisions, source/alias boundaries and prospective experiment. Its work is not renamed into K3.1–K3.4.
 
@@ -433,6 +436,10 @@ These are proposed bounded outcomes, not launched jobs or automatic authority gr
 
 **Outcome:** challenge the first completed vertical against original intent, actual user behavior and adversarial evidence. **Reviewer independence:** separate qualified actor from the source author. **Required challenge:** wrong subject, source correction, shared upstream evidence, changed generation, missing coverage, stale data, access denial, unavailable entry and unsupported economic inference. **Return:** exact-source verdict, material findings, real-path proof reviewed and residual scope. A source PASS is not automatically a production PASS.
 
+### Packet J — Validator clock failure contract
+
+**Outcome:** restore the documented `validate_vector` findings-only behavior for malformed clock values without changing valid evidence semantics. **Start:** `lib/opportunity_evidence.py` `_check_clocks`, `_compare_known_at_to_asof` and `_check_lookahead`; the current vector schema/registry and existing focused tests. **Exact witnesses:** a previously valid golden vector with an included slot's naive datetime against an aware top-level as-of raises `can't compare offset-naive and offset-aware datetimes`; an integer value in a clock-distinct slot raises `'int' object is not subscriptable`. Recompute the content digest after mutation. **Return:** discriminating failing-before/passing-after tests, unchanged valid baseline, structured findings and actual caller consequence. Do not broaden the valid clock vocabulary, silently assign missing timezones or weaken temporal gates. The census adjudication supplies the complete reproduction.
+
 ## 11. Verification and acceptance strategy
 
 Use tests that could fail for the specific forbidden behavior. Existing focused suites are a better starting point than a new test framework. The census source index provides exact names and fixture locations.
@@ -447,7 +454,7 @@ Use tests that could fail for the specific forbidden behavior. Existing focused 
 | Scientific | Attractive retrospective story versus prospective incremental value | Existing frozen trial, actual outcome maturity, correct partitions, baselines and uncertainty. |
 | Release | Green head versus accepted current delivery | Exact source review, current integration, required checks, proper release owner and deployed-source evidence. |
 
-For Macro UI changes, consume the current design doctrine, theme token rules, render ownership, visual-evidence gate and any applicable paired-asset/P0B requirements. The expectation-surface history already documents these expensive traps. Do not treat them as optional because a local screenshot looks correct. For Terminal, preserve existing BFF/access owners and current production/browser requirements. [S6][S12]
+For Macro UI changes, consume the current design doctrine, theme token rules, render ownership, visual-evidence gate and any applicable paired-asset/P0B requirements. The expectation-surface history already documents these expensive traps. Do not treat them as optional because a local screenshot looks correct. For Terminal, preserve existing BFF/access owners and current production/browser requirements. [S6] [S12]
 
 Avoid an unbounded regression campaign for a small, reversible change. Broaden verification only for a concrete risk, changed dependency, required gate or strengthened capability claim. Reuse a qualified immutable semantic review when current source law permits and current integration is proven; do not rewrite source merely to refresh timestamps. [G1]
 

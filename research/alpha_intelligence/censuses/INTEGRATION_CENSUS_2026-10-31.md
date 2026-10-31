@@ -6,7 +6,7 @@
 
 The census recovered the canonical workstream, historical PASS-0, current date-only and topic handoffs, source-law/continuity/Fabric rules, relevant repository trees, contract/compiler/adapter/consumer source, active and merged PR metadata, selected current-head checks/reviews, Linear projection, and bounded public serving behavior. It also used primary external research to challenge institutional, point-in-time, propagation and evaluation assumptions.
 
-The [machine attachment](INTEGRATION_CENSUS_2026-10-31.json) contains **743 relevant path/blob entries**, **14 current evidence-owner vocabulary entries**, **24 current opportunity constructs**, **18 selected PR snapshots**, and exact check observations for the two principal open Macro carriers. Of the indexed paths, 59 had their complete source acquired in this session; additional acquired governance, handoff and source files are outside that selected path index. A path's presence is not a functional or production verdict.
+The [machine attachment](INTEGRATION_CENSUS_2026-10-31.json) contains **743 relevant path/blob entries**, **14 current evidence-owner vocabulary entries**, **24 current opportunity constructs**, **18 selected PR snapshots**, and exact check observations for the two principal open Macro carriers. Of the indexed paths, 60 had their complete source acquired in this session; additional acquired governance, handoff and source files are outside that selected path index. A path's presence is not a functional or production verdict.
 
 This is a complete scoped planning census of the visible A–J estate and its material integration dependencies. It is not a row-by-row audit of all private datasets, a live fleet census, a complete review of every adjacent programme, or a claim that every file in the repository was read. Explicit unknowns remain below. Those boundaries are necessary for a useful handoff: they identify the exact next probes instead of presenting missing evidence as absence.
 
@@ -35,7 +35,7 @@ Before source publication, Macro main was refreshed to `3a55fbf8a3338b82423660d1
 
 Its existing dependencies include Prophet US V4 Recovery, Prophet Conditional Fusion, GMI Theme Graph, Earnings Intelligence OS, Eval OS Measurement Law, Stock Identity, Financial Intelligence Fabric, Fundamental Forensics, Live Entry Radar and Defense Procurement V3. These dependency names are organizational references, not a statement that every dependent programme must finish before any independent Alpha research can advance. Actual accepted wave/owner constraints govern the specific action.
 
-The August PASS-0 explicitly calls itself a dated reconciliation snapshot. It should be retained as historical intent and adoption evidence. The maintained masterplan provides a current task tree while workstream/handoff records retain organizational continuation. The proposed October 31 date-only handoff carries forward the ITP, K3-D and Catalyst frontiers because the latest-handoff compiler otherwise risks selecting only the most recently documented bounded lane. [C1][C2][G1]
+The August PASS-0 explicitly calls itself a dated reconciliation snapshot. It should be retained as historical intent and adoption evidence. The maintained masterplan provides a current task tree while workstream/handoff records retain organizational continuation. The proposed October 31 date-only handoff carries forward the ITP, K3-D and Catalyst frontiers because the latest-handoff compiler otherwise risks selecting only the most recently documented bounded lane. [C1] [C2] [G1]
 
 ### Distinct programmes that must not be conflated
 
@@ -118,7 +118,7 @@ Full filename and blob navigation is in the JSON attachment. The main source fac
 
 ### F02 — K2-C native read is not institutional intent proof
 
-**Evidence:** K2-B contract #6370, native-read #6533 and proof receipt #6547 are merged. Later #6789 is also merged and preserves semantic quarantine. Current `run_pilot` reports `PILOT_OWNER_SEMANTICS_UNRESOLVED`; native-reading success does not compile a positive intent recipe. Required dated manager/vehicle facts and qualified security binding are distinct. [C5][C6]
+**Evidence:** K2-B contract #6370, native-read #6533 and proof receipt #6547 are merged. Later #6789 is also merged and preserves semantic quarantine. Current `run_pilot` reports `PILOT_OWNER_SEMANTICS_UNRESOLVED`; native-reading success does not compile a positive intent recipe. Required dated manager/vehicle facts and qualified security binding are distinct. [C5] [C6]
 
 **Implication:** caller proof, CIK text, sole/shared reporting discretion, or the later filing-backed CUSIP helper cannot alone unlock discretionary intent. The SEC filing concepts do not reveal a complete real-time portfolio or strategy. Useful descriptive holdings research can proceed within its proper scope. [R1]
 
@@ -126,7 +126,7 @@ Full filename and blob navigation is in the JSON attachment. The main source fac
 
 ### F03 — The K3-D open carrier and landed propagation are different facts
 
-**Evidence:** `lib/economic_propagation.py`, v2 and the native disclosure path exist on audited main through the #9639 integration. PR #6514 remains open at `5623fe34098f50b0b6dd36cf3c190f2acffeb7e3`, updated October 31, with native disclosed-supplier carrier scope. Its current body preserves original Macro publication and MarketOntology custody boundaries. [C7][C8]
+**Evidence:** `lib/economic_propagation.py`, v2 and the native disclosure path exist on audited main through the #9639 integration. PR #6514 remains open at `5623fe34098f50b0b6dd36cf3c190f2acffeb7e3`, updated October 31, with native disclosed-supplier carrier scope. Its current body preserves original Macro publication and MarketOntology custody boundaries. [C7] [C8]
 
 **Implication:** neither “propagation absent” nor “all K3-D released” is accurate. Finish the actual extension on the incumbent carrier after current writer/effect/review reconciliation. Do not fork a replacement because the old broad roadmap says K3 is incomplete.
 
@@ -186,7 +186,7 @@ Full filename and blob navigation is in the JSON attachment. The main source fac
 
 ### F11 — The latest date-only handoff is a bounded lane, not the entire frontier
 
-**Evidence:** the October 23 Alpha handoff records Catalyst release evidence and preserves unrelated ITP priorities. The October 22 expectation-surface handoff has a suffix. The canonical compiler chooses dated handoffs according to its existing convention. [C1][C10][C14]
+**Evidence:** the October 23 Alpha handoff records Catalyst release evidence and preserves unrelated ITP priorities. The October 22 expectation-surface handoff has a suffix. The canonical compiler chooses dated handoffs according to its existing convention. [C1] [C10] [C14]
 
 **Implication:** the new umbrella handoff must carry all relevant live continuations forward, by concise exact pointers, without overriding their source owners or scientific constraints.
 
@@ -198,7 +198,7 @@ Full filename and blob navigation is in the JSON attachment. The main source fac
 
 ### F13 — Terminal context already has important semantic safeguards
 
-**Evidence:** `marketOntologyContext.ts` explicitly treats `mo_*` query parameters as transient navigation context, not identity, authorization or persisted research. The expectation boundary separates reported results, company guidance, unadmitted historical consensus and unjoined price reaction, with `NOT_ESTABLISHED` repricing. [C16][C17]
+**Evidence:** `marketOntologyContext.ts` explicitly treats `mo_*` query parameters as transient navigation context, not identity, authorization or persisted research. The expectation boundary separates reported results, company guidance, unadmitted historical consensus and unjoined price reaction, with `NOT_ESTABLISHED` repricing. [C16] [C17]
 
 **Implication:** preserve these safeguards in cross-surface journeys. Navigation continuity should carry why the user arrived without inventing a subject proof. A visible earnings actual should not become an estimate surprise.
 
@@ -210,15 +210,23 @@ Full filename and blob navigation is in the JSON attachment. The main source fac
 
 ### F15 — Green checks and existing review history do not release the open carriers
 
-**Evidence:** current-head #6514 checks included a successful aggregate `ci-gate` and a failed `ci-authority/codex/merge-queue-pilot`; #10077 showed four check runs including the same named pilot failure. Required-check applicability and current integration were not adjudicated here. #6514 review history contains changes-requested dispositions on earlier heads; the review endpoint alone did not establish a current-head approval. #10077 returned no submitted reviews. Both were observed `mergeable:false`. [C7][C18]
+**Evidence:** current-head #6514 checks included a successful aggregate `ci-gate` and a failed `ci-authority/codex/merge-queue-pilot`; #10077 showed four check runs including the same named pilot failure. Required-check applicability and current integration were not adjudicated here. #6514 review history contains changes-requested dispositions on earlier heads; the review endpoint alone did not establish a current-head approval. #10077 returned no submitted reviews. Both were observed `mergeable:false`. [C7] [C18]
 
 **Implication:** do not describe either PR as release-ready or globally CI-green. Equally, do not diagnose the pilot check as a source defect without its governing required-check context. Give the exact head/check receipts to the current owner.
 
 ### F16 — Runtime and worker liveness are narrower than source visibility
 
-**Evidence:** Executive read-only state returned job counts but stale/truncated grounding, including an old active-build snapshot. A dedicated bounded paid audit was commissioned through the attended Fabric; its original request and subsequent status must be reconciled on that same carrier.
+**Evidence:** Executive read-only state returned job counts but stale/truncated grounding, including an old active-build snapshot. A dedicated bounded paid audit was commissioned through the attended Fabric; its original return subsequently completed and was consumed and accepted as a qualified source-audit report on the same carrier.
 
 **Implication:** source census and docs planning may proceed; those observations cannot establish that no live source writer exists or that a whole Fable/Opus team is running. Do not infer execution absence from silence or an unverified return.
+
+### F17 — Malformed vector clocks can escape the findings-only validator contract
+
+**Evidence:** the paid audit identified two `validate_vector` exception paths. The parent independently ran the pinned module against `golden_imxi_drl_event.json`: the unchanged baseline returned zero findings; a rehashed included slot with a naive `known_at` datetime against an aware top-level as-of raised `TypeError: can't compare offset-naive and offset-aware datetimes`; a rehashed integer clock in a clock-distinct slot raised `TypeError: 'int' object is not subscriptable`. The complete reproduction, worker return and adjudication are [retained separately](FABRIC_AUDIT_ADJUDICATION_2026-10-31.md).
+
+**Implication:** add a bounded validator repair with discriminating tests. The inspected case composer catches `TypeError` as `case_input_shape_invalid`, and the router has its own error behavior; this is not proof of an authority leak or failure on valid producer clocks. A validator repair alone does not prove a different UI/HTTP response.
+
+**Resolution test:** both malformed inputs return appropriate findings, the valid baseline remains unchanged, no missing timezone is silently invented, and the actual consumer failure behavior is verified.
 
 ## 5. Selected PR and release census
 
@@ -279,7 +287,7 @@ The handoff must retain the distinction between these direct observations, histo
 - Queried connected Linear and bounded read-only execution state; preserved their limits.
 - Performed direct public HTTP observations with response headers/body markers/digests.
 - Used independent principal advisers to challenge governance and product design; their advice is not a formal source-release approval.
-- Commissioned one bounded read-only paid Fabric source audit. Its final result and exact acceptance, if available, are recorded in the cumulative handoff; an unreturned worker contributes no test-pass claim.
+- Commissioned and consumed one bounded paid Fabric source audit on its original root/run; accepted its qualified report after independent parent checks. It reported an aggregate604 passes and two checkout-state failures, but its eight listed suite pass counts sum to603; the aggregate is not adopted. These are reported focused results, not all-green CI or a full parent rerun. The parent independently reproduced both validator defects, corrected the owner count from15 to14, and narrowed overbroad rights/consumer claims. See the [adjudication](FABRIC_AUDIT_ADJUDICATION_2026-10-31.md).
 
 ### Not established by this assignment
 
@@ -299,7 +307,7 @@ The handoff must retain the distinction between these direct observations, histo
 | Research question | Primary source | Finding used here | Limit |
 |---|---|---|---|
 | What can 13F actually say? | SEC staff FAQ. [R1] | Quarterly reporting deadline, reportable holdings scope, omission of shorts and the meaning of investment discretion require restrained intent interpretation. | The FAQ does not supply this system's manager/vehicle semantics or security binding. |
-| How should historical data be treated? | ALFRED help and FRED real-time-period documentation. [R2][R3] | Vintages and real-time periods are distinct from latest values; publication and acquisition need separate treatment. | Does not prove any particular vendor's historical estimate archive is fit for use. |
+| How should historical data be treated? | ALFRED help and FRED real-time-period documentation. [R2] [R3] | Vintages and real-time periods are distinct from latest values; publication and acquisition need separate treatment. | Does not prove any particular vendor's historical estimate archive is fit for use. |
 | Are economic links a plausible research direction? | Cohen & Frazzini 2008. [R4] | Historical customer/supplier information-transmission evidence motivates a conditional hypothesis. | No modern strategy return or product forecast is inferred. |
 | Why does network structure matter? | Acemoglu et al. 2012. [R5] | Network structure can transmit/amplify shocks. | Does not make a similarity edge causal or give a particular company's impact magnitude. |
 | How can repeated searching distort results? | Bailey & López de Prado 2014. [R6] | Multiple testing and selection affect reported performance; preserve trial accounting and appropriate statistical assumptions. | Deflated Sharpe is not a generic score for narrative intelligence. |

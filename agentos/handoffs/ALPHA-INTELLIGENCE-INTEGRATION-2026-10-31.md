@@ -21,13 +21,19 @@ changed:
       acceptance obligations and targeted source-loading map.
   - path: research/alpha_intelligence/censuses/INTEGRATION_CENSUS_2026-10-31.md
     what: >
-      Preserve a dated A-J census, sixteen material findings, current implementation and
+      Preserve a dated A-J census, seventeen material findings, current implementation and
       consumer map, selected PR boundaries, direct public serving observations and primary research.
   - path: research/alpha_intelligence/censuses/INTEGRATION_CENSUS_2026-10-31.json
     what: >
       Add the non-runtime evidence attachment with exact source pins, 743 relevant paths,
       14 current evidence-owner rows, 24 opportunity constructs, 18 selected PR snapshots
       and bounded public/check observations.
+  - path: research/alpha_intelligence/censuses/FABRIC_AUDIT_ADJUDICATION_2026-10-31.md
+    what: >
+      Retain qualified acceptance of the paid source audit, two independently reproduced
+      validator failures, reported test results, corrected overclaims and execution limits.
+  - path: research/alpha_intelligence/censuses/receipts/ALPHA_K1_K3E_FABRIC_RETURN_2026-10-31.md
+    what: Preserve the complete 11915-byte worker return at its exact response digest.
   - path: agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md
     what: >
       Add only plan/census/handoff artifact pointers and a task-tree explanation;
@@ -37,12 +43,25 @@ changed:
       Record this cumulative recovery boundary without erasing the separate K3-D,
       Information-to-Price and Catalyst continuations.
 verified:
+  - claim: The original paid audit completed and its qualified result was consumed and accepted.
+    command: >
+      Fabric status/result pages and same-run accept with expected response SHA256
+      16bded6f634f47a4b7ed428f11c56504d0b37d2a5e3b3dc19b446b7f775b53d5;
+      compare retained raw-report byte length/digest; parent executes pinned validate_vector
+      on the valid golden and two separately rehashed malformed-clock mutations.
+    result: >
+      Original run terminal rc0, root_verified true, accepted true by reviewer using
+      manual_result_review. Retained report11915bytes matches the exact digest. Worker
+      reports an aggregate604passes/2checkout-environment failures, but listed passes
+      sum to603; the aggregate is not adopted. Parent independently
+      confirms zero baseline findings and both TypeErrors, corrects owner count15to14 and
+      narrows rights/consumer overclaims. No implementation repair or product acceptance.
   - claim: Authored record schemas and proposed cold-start discovery pass the bounded local checks.
     command: >
       Run pinned scripts/agentos.py validate --root <source-mirror>/agentos --paths
       <source-mirror>/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md
       <source-mirror>/agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-10-31.md;
-      compile-context --workstream ALPHA-INTELLIGENCE-INTEGRATION --budget6000 --json;
+      compile-context --workstream ALPHA-INTELLIGENCE-INTEGRATION --budget 6000 --json;
       compare original/proposed workstream frontmatter.
     result: >
       Named records:0errors,41warnings for13 omitted existing artifact paths and28
@@ -98,12 +117,12 @@ unverified:
     what_would_verify: Current owner-specific lease/effect/source reconciliation, exact review, applicable current integration/checks and explicit release under existing law.
   - claim: Prospective incremental family or expert alpha and scientific programme completion.
     what_would_verify: Mature forward outcomes under existing frozen trial/partition/evaluator and promotion rules; no early label read or budget reset.
-  - claim: The separately commissioned paid source-audit result and acceptance.
-    what_would_verify: Reconcile original Fabric run alpha-k1-k3e-source-audit-20261031-r1 under original root alpha-intelligence-masterplan-20261031-sol-001, read the exact retained return and adjudicate it; never replay an uncertain request.
+  - claim: The two malformed-clock validator failures are repaired in implementation.
+    what_would_verify: Existing-owner source change with failing-before/passing-after witnesses, preserved valid baseline/temporal law and actual consumer error behavior; no repair was commissioned or made here.
 unresolved:
   - Programme implementation, broader K1 joins, K2-C semantics, K3-D current carrier release, complete K4/K5 journeys and predictive promotion remain scoped obligations.
   - The Linear project still points to August K1 dispatch; repair its projection only after canonical source acceptance.
-  - The paid audit request is a separate original operation whose result/return state must be reconciled; no tests are credited from a missing return.
+  - The accepted paid audit adds a bounded validator robustness repair; the parent has reproduced the failures but has not changed product code.
 next_actions:
   - >
     Complete independent review and acceptance of this docs-only source proposal through
@@ -117,9 +136,10 @@ next_actions:
     Commission that integrated outcome through the admitted Fabric with qualified
     Opus domain supervision and reserved independent review/repair capacity.
   - >
-    Reconcile the original paid-audit carrier with status/result under the same root
-    and run ID; consume and accept any qualified return or preserve its exact unresolved
-    state. This does not authorize a replacement worker, new root or native wake claim.
+    Adopt the qualified paid-audit findings and exact malformed-clock reproductions from
+    the retained adjudication. Use Packet J on the current K3-E owner when admitted;
+    do not rerun the completed audit or relaunch its terminal child merely because a
+    new principal picks up the plan.
   - >
     Preserve independent K2-C/K3-D/ITP/Catalyst work under its actual owner. Use the
     plan's bounded packets; do not relaunch the whole programme or reset an experiment.
@@ -145,7 +165,7 @@ danger_areas:
 
 ## Bounded outcome and programme scope
 
-This handoff covers the requested research, audit, design and planning deliverable. The Alpha implementation programme is **incomplete**. The proposed masterplan is designed to let Fable choose better tactics and architecture details while preserving accepted owners and evidence. No full Fable/Opus implementation team was launched by writing this plan. A single bounded read-only paid audit has its own original run identity; its result contributes no evidence until consumed.
+This handoff covers the requested research, audit, design and planning deliverable. The Alpha implementation programme is **incomplete**. The proposed masterplan is designed to let Fable choose better tactics and architecture details while preserving accepted owners and evidence. No full Fable/Opus implementation team was launched by writing this plan. The single bounded paid audit completed on its original run; its qualified report was consumed and accepted after parent checks.
 
 The source change is documentation only. It preserves K1-K7 statuses and dependencies, the unchanged historical PASS-0, all existing owner/control boundaries and the permanent runtime authority NONE of this workstream. Proposed links become adopted organization state only through accepted source, not by publication of a draft.
 
@@ -171,7 +191,9 @@ The old MedTech-first scheduling statement was superseded in that carrier as a s
 
 ## Paid audit continuity
 
-Original attended operation/root and immediate parent: `alpha-intelligence-masterplan-20261031-sol-001`. Child: `alpha-k1-k3e-source-audit-20261031-r1`. Controller PID: `79726`. Commission: read-only K1/K3-E/composer source audit at the exact Macro pin, optional focused tests in an eligible isolated source environment, no source edits, publication, data capture, labels, provider switching or descendants. The controller was created and retained an admission/launch-attempt log. Subsequent status was ACTIVE_OR_WAITING with root binding unverified and no result available; a result read returned CONTROLLER_RETURN_UNCONFIRMED. These observations prove neither failure nor execution absence. Retry remained false. Reconcile this same carrier and record its actual return before making any result claim.
+Original attended operation/root and immediate parent: `alpha-intelligence-masterplan-20261031-sol-001`. Child: `alpha-k1-k3e-source-audit-20261031-r1`. Controller PID: `79726`. Commission: read-only K1/K3-E/composer source audit at the exact Macro pin, optional focused tests in an eligible isolated source environment, no source edits, publication, data capture, labels, provider switching or descendants. Earlier ACTIVE_OR_WAITING / CONTROLLER_RETURN_UNCONFIRMED observations were reconciled on that same carrier: final state TERMINAL, rc 0, root verified, complete return recorded and accepted by reviewer. No worker retry or replacement occurred.
+
+The exact report is retained under `research/alpha_intelligence/censuses/receipts/ALPHA_K1_K3E_FABRIC_RETURN_2026-10-31.md`, 11,915 bytes, SHA256 `16bded6f634f47a4b7ed428f11c56504d0b37d2a5e3b3dc19b446b7f775b53d5`. Parent adjudication is the adjacent `FABRIC_AUDIT_ADJUDICATION_2026-10-31.md`. The worker's aggregate reports 604 passes and two checkout-dependent failures, while its listed suite passes sum to603; the aggregate is not adopted and parent did not rerun all suites. Parent independently reproduced two invalid-clock TypeErrors and verified14 owner rows, rejecting the report's15. Selected producer rights metadata does not override the standing commercial attestation. The worker disclosed an initial read that triggered local Git auto-gc in another checkout; that limited execution deviation and its unverified final process state remain in the adjudication. This terminal audit is not a deployed capability or formal approval of this documentation PR.
 
 ## Primary continuation
 

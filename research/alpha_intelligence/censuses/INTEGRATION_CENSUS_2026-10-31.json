@@ -1083,7 +1083,7 @@
       "path": "contracts/opportunity_evidence/vector.v1.schema.json",
       "blob_sha": "2fda91915cf5c3c2c0c2ccfad03e0a3d3c3ca450",
       "bytes": 42978,
-      "evidence": "TREE_PRESENCE_ONLY"
+      "evidence": "SOURCE_ACQUIRED"
     },
     {
       "repository": "macro",
@@ -6394,8 +6394,48 @@
   },
   "inventory_counts": {
     "paths": 743,
-    "source_acquired_in_index": 59,
+    "source_acquired_in_index": 60,
     "evidence_owner_rows": 14,
     "opportunity_constructs": 24
+  },
+  "fabric_audit": {
+    "root_id": "alpha-intelligence-masterplan-20261031-sol-001",
+    "run_id": "alpha-k1-k3e-source-audit-20261031-r1",
+    "controller_pid": 79726,
+    "state": "TERMINAL",
+    "rc": 0,
+    "root_verified": true,
+    "accepted": true,
+    "accepted_by": "reviewer",
+    "response_bytes": 11915,
+    "response_sha256": "16bded6f634f47a4b7ed428f11c56504d0b37d2a5e3b3dc19b446b7f775b53d5",
+    "adoption_scope": "Qualified source-audit report; not product, production, CI or source-release approval",
+    "worker_reported_tests": {
+      "aggregate_reported_passes": 604,
+      "sum_of_listed_suite_passes": 603,
+      "reported_failures": 2,
+      "aggregate_adopted": false,
+      "discrepancy": "one pass; raw per-test logs not independently inspected",
+      "failed_scope": "checkout-state tests in extracted scratch tree",
+      "parent_reran_suites": false
+    },
+    "parent_probe": {
+      "source_pin": "1c85878983323f9ab38fff56a15771166d0f8aeb",
+      "baseline_findings": [],
+      "naive_aware_probe": {
+        "exception_type": "TypeError",
+        "message": "can't compare offset-naive and offset-aware datetimes",
+        "construct": "options_state"
+      },
+      "non_string_probe": {
+        "exception_type": "TypeError",
+        "message": "'int' object is not subscriptable",
+        "construct": "drl_resid_shock"
+      },
+      "owner_count": 14,
+      "security_subject_owners": []
+    },
+    "adjudication_path": "research/alpha_intelligence/censuses/FABRIC_AUDIT_ADJUDICATION_2026-10-31.md",
+    "raw_return_path": "research/alpha_intelligence/censuses/receipts/ALPHA_K1_K3E_FABRIC_RETURN_2026-10-31.md"
   }
 }
