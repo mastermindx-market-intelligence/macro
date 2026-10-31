@@ -226,10 +226,11 @@ The first admissible origin is therefore CAL index 62 from 2012-01-03, which is 
 **Identical rows.** A row is scored only if every arm has a finite probability issued before the cutoff. When an arm abstains under X6 because of its **own inputs**, SD-23a substitutes B0. B1 is handled differently, as follows.
 
 **B1 segment rule (I-5).** The P-04 count (contract §3.2.1) found 18 epoch rows across 4 Radar fingerprints.
-- **Matched segment.** It is the Radar `(epoch, model_fingerprint)` pair matched by the **first** issued C-MKT row of the current C-MKT epoch. It is recorded in that row's receipt.
+- **Match.** A C-MKT row's Radar match is the Radar forward-log row with the same `asof`, the Radar's current epoch (contract §5 item 4) and an issue time inside the cutoff (contract §5 item 2).
+- **Matched segment.** It is the Radar `(epoch, model_fingerprint)` pair of the match of the **first** issued C-MKT row of the current C-MKT epoch. It is recorded in that row's receipt.
 - **First row unmatched.** If that first issued row has no in-cutoff Radar match, the segment is the pair matched by the first later issued row that has one, and every earlier row has no B1. If no issued row of the epoch has one, C-MKT has no B1 in that epoch. The choice depends only on issue order and Radar metadata, never on an outcome.
 - **Other segments.** A C-MKT row whose same-`asof` Radar row carries a different `(epoch, model_fingerprint)` has **no B1**.
-- **Missing or late.** A row with a missing or late Radar row also has no B1.
+- **Missing, late or not current.** A row whose same-`asof` Radar row is missing, late or not of the Radar's current epoch also has no B1.
 - **Consequence.** A row without B1 leaves **every** C-MKT arm's scored set, following contract §5 item 2. It is never scored with a substituted B1, because substituting B0 for a missing *comparator* would inflate the candidate's apparent skill. It counts as lost coverage, and coverage below 80% gives `SOURCE_LIMITED`.
 - **No pooling.** Segments are never pooled.
 - **Honest consequence.** While the Radar fingerprint keeps changing, C-MKT is likely to stay INSUFFICIENT or SOURCE_LIMITED (§15).
@@ -475,7 +476,7 @@ The `register_trials` lint covers only `validate_*` and `*_phase0/1*` script nam
 |---|---|---|
 | P-01 | **OPEN** for history | SPY has 8,497 rows (1993-01-29 → 2026-10-30) and SMH has 6,642 rows (2000-06-05 → 2026-10-30), from footer metadata only. History is RECONSTRUCTED, which is why P1-DEV is labelled RECONSTRUCTED. Prospective rows record their vintages (X5), so they do not depend on P-01's historical answer. |
 | P-04 | **OPEN** (one constant fingerprint is refuted historically) | The forward log has 71 rows. 18 carry epoch `2026-09-23-prospective-v1`, across 4 fingerprints. This leads to the §6.4 segment rule. |
-| P-09 | **ESTABLISHED for the calibration and P1-DEV windows** (contract §3.2.1); **OPEN** for future years (AMEND A2) | Session counts as in §5.4. Future years stay checkable from code: the prospective-window session count is re-derived from `lib/nyse_calendar.py` before the first issued row and at each look, because gate 3 (§11.1) depends on the 2027–2028 calendar. |
+| P-09 | **ESTABLISHED for the calibration and P1-DEV windows** (contract §3.2.1); **OPEN** for future years (AMEND A2) | Session counts as in §5.4. Future years stay checkable from code: the prospective-window session count is re-derived from `lib/nyse_calendar.py` before the first issued row and at each look, because gate 3 (§11.1) depends on the calendar years the prospective window reaches, from `EW_P3_PROSPECTIVE_START` to the first-look date `L0`. |
 | P-02, P-03 | **NOT REQUIRED** under SD-04a (AMEND A2) | — |
 
 P-01, P-04 and P-09 must be re-checked by counts and metadata only before the first issued row (AMEND A2). None of them is ever checked by reading a row.

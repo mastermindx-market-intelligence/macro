@@ -12,7 +12,7 @@ Rules for this file:
 | Item | Value |
 |---|---|
 | Prereg | `research/grey_deer/ew_completion_20261031/EW_FORECAST_PREREG_v1_2026-10-31.md` |
-| Prereg blob at the PR head (undated machine lines) | `e492c20ad1348db479956f43280097924e35c018` |
+| Prereg blob at the PR head (undated machine lines) | `efc932f221fae18f2e31a72c6b6b1d407601be88` |
 | Registered prereg blob (first `main` blob with both machine lines dated; the fingerprint input, X5) | UNRECORDED — the records lane writes it after dating |
 | Frozen contract | `research/grey_deer/ew_completion_20261031/CLAIM_EVIDENCE_CONTRACT_v1_2026-10-31.md`, blob `5270e309927a8a40eb9e72bbd1bda6907a5fe800` |
 | `EW_P3_MERGE_DATE_UTC` / `EW_P3_PROSPECTIVE_START` | UNRECORDED / UNRECORDED |
@@ -50,3 +50,4 @@ Only the two primary rows can take a verdict: VALIDATED, NOT_SUPPORTED, INSUFFIC
 |---|---|---|---|
 | 2026-10-31 | Prereg and this ledger drafted at the PR head. Contract v1 frozen by the seat's `FROZEN:` reply. | Prereg blob `61043f3f…`, contract blob `5270e309…` | 0 |
 | 2026-10-31 | Repair round 1 after independent review V1 (ACCEPT_WITH_FINDINGS on `0f497525`): text-only fixes for V1-F01, F03, F04, F05, F06, F08 and F09. No frozen value changed. F02 (I-3) and F07 (trial-ledger deferral) are left for the seat's merge. | Prereg blob `e492c20a…`, contract blob `5270e309…` (unchanged) | 0 |
+| 2026-10-31 | Repair round 2 after independent delta review V1-R2 (ACCEPT_WITH_FINDINGS on `e959e580`): text-only fix for V1R2-F01 (gate 3's calendar years are bound to the prospective window, not a fixed range) and the reviewer's carried I-5 observation (§6.4 now states contract §5 item 4's "current epoch" in the Radar match). No frozen value changed. | Prereg blob `efc932f2…`, contract blob `5270e309…` (unchanged) | 0 |
