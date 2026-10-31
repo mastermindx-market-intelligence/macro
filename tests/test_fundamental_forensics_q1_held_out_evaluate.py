@@ -9,7 +9,10 @@ that match the reports' own quality labels and failed families, and no file
 under the reports directory carrying the claims-checker's guarded token.
 
 This module is a Q1 test: it reads the sealed held-out labels to verify trial
-accounting (read-only; a label or seal is never modified here).
+accounting (read-only; a label or seal is never modified here). It also
+unit-tests the evaluator itself — the SIC binding order and the
+duplicate-target visibility rules (E1-3) — over synthetic inputs only: those
+tests never open a ``labels/`` directory and never read the stage.
 """
 from __future__ import annotations
 
@@ -18,6 +21,9 @@ import json
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
+
+from engine.fundamental_forensics.pack_evaluation import PredictionRecord
+from scripts import fif_held_out_evaluate as evaluator
 
 ROOT = Path(__file__).resolve().parents[1]
 HELD_OUT_ROOT = ROOT / "tests" / "fixtures" / "fundamental_forensics_held_out"
@@ -165,3 +171,116 @@ def test_no_report_file_carries_the_guarded_token() -> None:
         if _GUARDED_TOKEN.search(text):
             offenders.append(path.relative_to(ROOT).as_posix())
     assert offenders == [], f"guarded token present in report files: {offenders}"
+
+
+# ---------------------------------------------------------------------------
+# evaluator unit tests (synthetic inputs only; no labels/, no stage)
+
+
+def _extract_record(trial_id: str, target_id: str) -> PredictionRecord:
+    return PredictionRecord(
+        trial_id=trial_id, target_kind="extract", target_id=target_id, state="emitted"
+    )
+
+
+def test_contract_sic_binds_from_contract_rows_before_witness() -> None:
+    contract_rows = {
+        "0000070858": {"sic": "6021"},
+        "0000320193": {},
+    }
+    # A contract row with a digit sic binds from the contract.
+    assert evaluator._contract_sic(contract_rows, "0000070858") == (
+        "6021",
+        "held_out_contract",
+    )
+    # The contract wins over the witness when both could bind.
+    assert evaluator._bind_issuer_sic(
+        contract_rows, "0000070858", {"sic": "3571"}
+    ) == ("6021", "held_out_contract")
+    # A row without sic falls back to the staged witness.
+    assert evaluator._bind_issuer_sic(
+        contract_rows, "0000320193", {"sic": "3571"}
+    ) == ("3571", "sec_submissions")
+    # Neither source bound: unbound.
+    assert evaluator._bind_issuer_sic(contract_rows, "0000320193", {}) == (
+        None,
+        "unbound",
+    )
+    assert evaluator._contract_sic({}, "9999999999") == (None, "unbound")
+
+
+def test_held_out_contract_carries_a_digit_sic_for_every_issuer() -> None:
+    contract = json.loads(
+        (HELD_OUT_ROOT / "held_out_contract.json").read_text(encoding="utf-8")
+    )
+    issuers = contract["issuers"]
+    assert issuers, "held-out contract carries no issuer rows"
+    for row in issuers:
+        assert isinstance(row["sic"], str) and row["sic"].isdigit(), row.get("cik")
+        source = row["sic_source"]
+        assert isinstance(source, dict), row.get("cik")
+        capture_path = source.get("capture_path")
+        assert isinstance(capture_path, str) and capture_path, row.get("cik")
+
+
+def test_duplicate_label_targets_are_refused_not_collapsed() -> None:
+    rows = [
+        {"trial_id": "T1", "target_id": "revenue"},
+        {"trial_id": "T2", "target_id": "revenue"},
+        {"trial_id": "T3", "target_id": "net_income_loss"},
+    ]
+    note: dict = {}
+    exclusions: list[dict] = []
+    assert evaluator._refuse_duplicate_label_targets(rows, note, exclusions) is True
+    assert note["outcome"] == "duplicate_label_target"
+    assert note["detail"] == "revenue"
+    # Every row of the accession is refused visibly — none dropped silently.
+    assert exclusions == [
+        {"trial_id": "T1", "exclusion_reason": "duplicate_label_target:revenue"},
+        {"trial_id": "T2", "exclusion_reason": "duplicate_label_target:revenue"},
+        {"trial_id": "T3", "exclusion_reason": "duplicate_label_target:revenue"},
+    ]
+    # Distinct target_ids refuse nothing.
+    unique_rows = [
+        {"trial_id": "T1", "target_id": "revenue"},
+        {"trial_id": "T3", "target_id": "net_income_loss"},
+    ]
+    clean_note: dict = {}
+    clean_exclusions: list[dict] = []
+    assert (
+        evaluator._refuse_duplicate_label_targets(
+            unique_rows, clean_note, clean_exclusions
+        )
+        is False
+    )
+    assert clean_exclusions == [] and clean_note == {}
+
+
+def test_duplicate_prediction_targets_are_excluded_visibly() -> None:
+    records = [
+        _extract_record("T1", "revenue"),
+        _extract_record("T1-dup", "revenue"),
+        _extract_record("T2", "net_income_loss"),
+    ]
+    trial_ids = {
+        "revenue": "T1",
+        "net_income_loss": "T2",
+        "total_assets": "T3",
+    }
+    exclusions: list[dict] = []
+    held, duplicated = evaluator._select_scoreable_records(
+        records, trial_ids, exclusions
+    )
+    assert duplicated == ["revenue"]
+    assert len(duplicated) == 1  # the note counter derives from this list
+    # Only the duplicated target's row is excluded, visibly.
+    assert exclusions == [
+        {"trial_id": "T1", "exclusion_reason": "duplicate_prediction_target:revenue"}
+    ]
+    # Every other target is still scored normally (the adapter's own record),
+    # and a label target with no record keeps its field_not_in_envelope fallback.
+    assert [record.target_id for record in held] == ["net_income_loss", "total_assets"]
+    assert held[0] is records[2]
+    assert held[1].state == "not_evaluable"
+    assert held[1].exclusion_reason == "field_not_in_envelope"
+    assert held[1].trial_id == "T3"
