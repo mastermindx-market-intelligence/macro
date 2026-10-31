@@ -163,3 +163,42 @@ Next: #10338 CI → reviewDecision → ready → merge --match-head-commit 2981b
 production proof) remain for the seat; the classic-pair-tag follow-up and the pre-existing
 mobile-ZH breadcrumb/mark-as-read overlap are open terminal follow-ups, not this program's.
 
+
+## Fifth write 2026-10-31 20:4xZ — W3 Section C censuses merged (C1 exposure joins, C3 F05 delivery)
+
+Delivery ladder: macro PR #10344 (branch claude/news-w3-section-c-censuses-20261031, final head
+499d631b6870b041a55b7b002a162f04be2a8027) -> MERGED 81f64c2ca159a6cabee1e1f1d8cae15eca5056b5 (20:42:13Z). Two research-only files:
+C1_EXPOSURE_JOIN_CENSUS.md (322 lines; 28 rows / 21 functioning joins; dated YES 11 NO 7
+PARTIAL 6 n/a 1 after review; 10 evidence gaps; headline: no existing join takes a news object to a dated
+company/theme exposure) and C3_F05_CONSEQUENCE_DELIVERY_CENSUS.md (422 lines; Chronicle
+impact.py -> build_site.py -> news.html.j2 #nxConsequence; six GLANCE_ELIGIBLE families;
+127 citations re-derived; reconciliation 10 RECONCILED / 2 GAP (GAP-RECEIPT, GAP-COVERAGE) / 0 CONTRADICTED;
+site/news.html is a tracked rendered artifact, and no committed receipt checks it against the
+corpus — that receipt is owed by the F05 owner, not minted here).
+
+Lanes: census r1 glm-5.3 on ubuntu3 (news-w3-c1-census-r1 09dbc6bd; news-w3-c3-census-r1
+7ee58f07), review r1 (C1 PASS_WITH_NOTES, 11 drifted anchors; C3 FAIL on R1/R6/R7), repair r2
+(C1 6a20a420 PASS; C3 65e25b71 PASS), cherry-picked onto the integration branch from main
+00e8044c. Review r2 of the PR head: Fabric admission refused on ubuntu3 and ubuntu2
+(host_disk_below_staging_reserve; no reclaim under the Chairman disk law -> WAITING_CAPACITY,
+cleanup is the Mastermind#1632 owner's) and ubuntu1 (host_temperature_at_or_above_limit);
+run-ids news-w3-c{1,3}-review-r{2,3,4} are spent. Independent review was then taken by two
+native Opus read-only auditors (ROUTE: AUDIT, MODE: READ_ONLY) against head 2dc087c3:
+C1 FAIL (F1–F8 text findings, 44/46 citations exact, headline holds); C3 FAIL (one stale
+served-page anchor, one missing correction-history row). Seat repaired every finding
+(1414bd72) -> r3 delta reviews PASS_WITH_NOTES -> two wording nits fixed (499d631b) -> r4
+confirmations PASS on both. CI 20/20 green (only the standing non-required
+ci-authority/codex/merge-queue-pilot X); reviewDecision null, no HOLD label; merged
+--match-head-commit 499d631b. Deferred nit: C1 GAP-1 wording says J14 aggregates per
+build; classify_theme labels each headline singly (next C1 touch).
+
+do_not_redo additions:
+  - "C1 exposure-join census and C3 F05 consequence-delivery census are accepted by artifact at
+    81f64c2ca159a6cabee1e1f1d8cae15eca5056b5 (20:42:13Z); never re-census; extend by naming the row/stage a new fact changes."
+  - "Never relaunch news-w3-c{1,3}-census-r{1,2} or news-w3-c{1,3}-review-r{1,2,3,4}."
+unresolved additions:
+  - what: F05 GAP-RECEIPT — a committed receipt checking the rendered #nxConsequence section
+    against the Chronicle corpus of the same render.
+    owner: the C3/F05 (Chronicle) owner; this seat records the gap, mints nothing.
+  - what: W3 Section C rows C2/C4/C5 deliberately not launched (other owners' artifacts/holds).
+    owner: their incumbent owners; W3 Section F reviews and W4 E4 brief follow on this seat.

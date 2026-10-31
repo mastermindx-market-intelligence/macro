@@ -9,7 +9,11 @@ that match the reports' own quality labels and failed families, and no file
 under the reports directory carrying the claims-checker's guarded token.
 
 This module is a Q1 test: it reads the sealed held-out labels to verify trial
-accounting (read-only; a label or seal is never modified here). It also
+accounting (read-only; a label or seal is never modified here). The accounting
+is scoped to the accession universe the generation recorded in its
+``PKxx_trials.json``: the held-out root is append-only, a later split decision
+adds label files for new accessions under a later ``_SEALED`` block, and those
+are measured by a later generation, never by editing this one. It also
 unit-tests the evaluator itself — the SIC binding order, the envelope
 ``sic_source`` vocabulary, and the duplicate-target visibility rules (E1-3) —
 over synthetic inputs only: those tests never open the sealed held-out
@@ -76,15 +80,89 @@ def _report(pack_id: str) -> dict:
     return json.loads(_report_path(pack_id).read_text(encoding="utf-8"))
 
 
-def _label_trials(pack_id: str) -> list[str]:
+def _seal_blocks(labels_dir: Path) -> list[dict[str, str]]:
+    """The append-only ``_SEALED`` ledger as a list of ``key: value`` blocks.
+
+    One block per sealing act (a labeling wave); blocks are separated by a
+    blank line and never rewritten, so a later wave appends a block whose
+    ``sealed_at`` follows every earlier one.
+    """
+    blocks: list[dict[str, str]] = []
+    for chunk in (labels_dir / "_SEALED").read_text(encoding="utf-8").split("\n\n"):
+        lines = [line for line in chunk.splitlines() if line.strip()]
+        if not lines:
+            continue
+        block = {}
+        for line in lines:
+            key, _, value = line.partition(":")
+            block[key.strip()] = value.strip()
+        blocks.append(block)
+    return blocks
+
+
+def _generation_universe(pack_id: str, reports_dir: Path) -> set[str] | None:
+    """Accessions the generation's evaluator enumerated at its head commit.
+
+    ``PKxx_trials.json`` records every accession the evaluator read labels
+    for; that list is the generation's label universe. ``None`` when the
+    generation carries no trials file for the pack.
+    """
+    trials_path = reports_dir / f"{pack_id}_trials.json"
+    if not trials_path.is_file():
+        return None
+    trials = json.loads(trials_path.read_text(encoding="utf-8"))
+    return {row["accession"] for row in trials["accessions"]}
+
+
+def _label_trials(pack_id: str, reports_dir: Path = REPORTS_DIR) -> list[str]:
+    """Trial ids of every sealed label record inside the generation's universe.
+
+    A Q1 generation is a committed record of the held-out root as it stood
+    at the generation's head commit. The held-out root is append-only: a
+    later split decision adds label files for NEW accessions (sealed in a
+    later ``_SEALED`` block) and is measured by a later generation, never by
+    editing an earlier one. So the accounting pins of a generation cover the
+    label files whose accession the generation enumerated; a label file for
+    an accession outside that universe is admitted here only when the pack's
+    seal ledger records a sealing act AFTER the generation was evaluated —
+    otherwise it is a label the evaluator silently dropped, and the pin fails.
+    """
     labels_dir = HELD_OUT_ROOT / "packs" / pack_id / "labels"
     if not labels_dir.is_dir():
         return []
     assert (labels_dir / "_SEALED").is_file(), f"{pack_id} labels lack _SEALED"
+    universe = _generation_universe(pack_id, reports_dir)
+    evaluated_at = _generation_evaluated_at(pack_id, reports_dir)
     trials: list[str] = []
     for path in sorted(labels_dir.glob("*.json")):
-        trials.extend(row["trial_id"] for row in json.loads(path.read_text(encoding="utf-8")))
+        rows = json.loads(path.read_text(encoding="utf-8"))
+        accessions = {row["accession"] for row in rows}
+        if universe is not None and not accessions & universe:
+            later_seals = [
+                block
+                for block in _seal_blocks(labels_dir)
+                if block.get("sealed_at", "") > (evaluated_at or "")
+            ]
+            assert later_seals, (
+                f"{pack_id}: {path.name} is outside the generation's accession "
+                f"universe but no sealing act follows the generation's "
+                f"evaluated_at {evaluated_at}; a label present at the head "
+                f"commit was dropped"
+            )
+            continue
+        assert universe is None or accessions <= universe, (
+            f"{pack_id}: {path.name} mixes accessions inside and outside the "
+            f"generation's universe"
+        )
+        trials.extend(row["trial_id"] for row in rows)
     return trials
+
+
+def _generation_evaluated_at(pack_id: str, reports_dir: Path) -> str | None:
+    report_path = reports_dir / f"{pack_id}_pack_quality_report.json"
+    if not report_path.is_file():
+        return None
+    return json.loads(report_path.read_text(encoding="utf-8")).get("evaluated_at")
 
 
 def _families_text(report: dict) -> str:
@@ -162,6 +240,61 @@ def test_every_label_trial_accounted_for_exactly_once() -> None:
         )
         # The trial map the evaluator used is exactly the label trial set.
         assert sorted(trials["trial_field_map"]) == sorted(set(label_trials))
+
+
+def test_label_trials_scope_to_the_generation_universe_and_refuse_a_dropped_label(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Synthetic root: a later-sealed wave is skipped; a dropped label fails.
+
+    Never opens the real labels: builds its own held-out root and reports
+    directory under ``tmp_path``.
+    """
+    import sys
+
+    root = tmp_path / "held_out"
+    labels_dir = root / "packs" / "PK99" / "labels"
+    labels_dir.mkdir(parents=True)
+    reports_dir = tmp_path / "reports"
+    reports_dir.mkdir()
+
+    def label(accession: str, trial: str) -> list[dict]:
+        return [{"accession": accession, "trial_id": trial}]
+
+    (labels_dir / "AAA_0000000001-24-000001.json").write_text(
+        json.dumps(label("0000000001-24-000001", "PK99|one")), encoding="utf-8"
+    )
+    (labels_dir / "AAA_0000000001-21-000001.json").write_text(
+        json.dumps(label("0000000001-21-000001", "PK99|two")), encoding="utf-8"
+    )
+    (reports_dir / "PK99_trials.json").write_text(
+        json.dumps({"accessions": [{"accession": "0000000001-24-000001"}]}),
+        encoding="utf-8",
+    )
+    (reports_dir / "PK99_pack_quality_report.json").write_text(
+        json.dumps({"evaluated_at": "2026-10-31T16:37:04Z"}), encoding="utf-8"
+    )
+    wave_one = "sealed_by: lane-a\nsealed_at: 2026-10-31T07:15:22Z\nhead_commit: 1\n"
+    wave_two = (
+        "sealed_by: lane-b\nsealed_at: 2026-10-31T18:03:31Z\nhead_commit: 2\n"
+        "split_decision: 2\n"
+    )
+    monkeypatch.setattr(sys.modules[__name__], "HELD_OUT_ROOT", root)
+
+    # The second accession was sealed after the generation was evaluated:
+    # it belongs to a later generation and is skipped, not counted.
+    (labels_dir / "_SEALED").write_text(wave_one + "\n" + wave_two, encoding="utf-8")
+    assert _label_trials("PK99", reports_dir) == ["PK99|one"]
+
+    # Without a later sealing act the same file is a label the evaluator
+    # dropped at its head commit: the accounting pin must fail, not shrink.
+    (labels_dir / "_SEALED").write_text(wave_one, encoding="utf-8")
+    with pytest.raises(AssertionError, match="dropped"):
+        _label_trials("PK99", reports_dir)
+
+    # A generation without a trials file for the pack keeps the whole root.
+    (reports_dir / "PK99_trials.json").unlink()
+    assert sorted(_label_trials("PK99", reports_dir)) == ["PK99|one", "PK99|two"]
 
 
 def test_index_rows_match_reports() -> None:
