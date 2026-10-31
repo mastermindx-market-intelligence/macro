@@ -530,8 +530,11 @@ def test_css_block_scoped_literal_free_and_stripe_free():
     # block inserted, nothing edited, moved or deleted, sitting before the W2A
     # region so the file still ends with the W2B end anchor the W2 foundation
     # suite pins — expressed against the merge base instead of a frozen
-    # pre-W4B sha: the prefix before the block, the block bytes and the whole
-    # tail from the W2A region line are byte-identical to the base.
+    # pre-W4B sha: the prefix before the block and the block bytes are
+    # byte-identical to the base, and the block ends before the W2A region
+    # (F-POST-2: the tail from the W2A region line to EOF belongs to the
+    # W2A/W2B lanes and is pinned by their own suites, so it is not pinned
+    # here any more).
     base_css = _merge_base_css()
     if base_css is None:
         pytest.skip("git or merge base unavailable; append-only check skipped with this message")
@@ -542,7 +545,6 @@ def test_css_block_scoped_literal_free_and_stripe_free():
     assert block == base_text[base_text.index(BLOCK_START):
                               base_text.index(BLOCK_END) + len(BLOCK_END)]
     assert css.index(BLOCK_END) < css.index(w2a_anchor)
-    assert css[css.index(w2a_anchor):] == base_text[base_text.index(w2a_anchor):]
 
     for selector, _body in _rules(block):
         selector = re.sub(r":(?:is|where|not)\([^)]*\)", "", selector)
