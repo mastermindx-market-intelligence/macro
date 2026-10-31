@@ -4780,6 +4780,10 @@ CURATED_EXCLUSIVE = {
     "international-global-watch",
     # IM11 data-contract suite: hermetic universe/rights-matrix derivation tests.
     "international-global-universe",
+    # IM18 replay contract: point-in-time as-known-at replay over the IM12
+    # observation and IM15 dislocation chains; the exclusive scope pins the
+    # measured suite closure (engine/test import chain plus configs and inits).
+    "international-global-replay",
     # IM17 transmission-evidence contract: edges, qualified transmission
     # events and the US relevance ordering; the frozen contagion models are
     # read by the test alone, so its curated scope must pin their closure.

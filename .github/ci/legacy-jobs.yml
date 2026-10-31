@@ -9394,6 +9394,40 @@ jobs:
       - name: International dollar credit transmission and IM16 acceptance matrix
         run: python -m pytest tests/test_intl_global_dollar_credit.py tests/test_intl_global_acceptance_matrix.py -q
 
+  international-global-replay:
+    # IM18: point-in-time replay builder over the IM12 observation and IM15
+    # dislocation chains (engine half); scope pins the measured suite closure.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/intl_global_replay.py"
+      - "tests/test_intl_global_replay.py"
+      - "engine/intl_global_observation.py"
+      - "engine/intl_global_dislocation.py"
+      - "engine/intl_global_universe.py"
+      - "engine/intl_transmission_evidence.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/intl_transmission_channels_v1.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/__init__.py"
+      - "tests/__init__.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install replay contract test dependencies
+        run: pip install pytest pandas numpy pyyaml pyarrow requests jinja2 plotly
+      - name: International point-in-time replay contract
+        run: python -m pytest tests/test_intl_global_replay.py -q
+
   international-workspace-foundation:
     # Supplied-frame numerical records use the existing performance owner.
     # Scope includes the measured first-party import closure and config input.
