@@ -9,11 +9,31 @@
   },
   "verifier": {
     "path": "scripts/verify_stock_dashboard_mobile_layout.cjs",
-    "sha256": "fa9c70ee76d8ccc370e09c4288da4b22905d2f64266d90e16046b3fa14a98774"
+    "sha256": "7ed7911317e4dbb20faa7f98081079ac3bba3cc91f975440fc6cb9599254821a"
   },
   "browser": {
     "engine": "chromium",
     "version": "149.0.7827.55"
+  },
+  "font_pin": {
+    "manifest": {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/font-pin.json",
+      "sha256": "9cb8ba86b1f4ce3049984194134ad11d19f0beca7e6c8fa7b37b3a36f2573a08"
+    },
+    "stylesheet": "/p0b-font-pin/pin.css",
+    "served_html_transform": "<link rel=\"stylesheet\" href=\"/p0b-font-pin/pin.css\"> inserted after the <head> start tag of every served owner page",
+    "audited_pages": 72,
+    "platform_fonts": [],
+    "custom_fonts": [
+      "DejaVu Sans",
+      "Inter",
+      "Inter Black",
+      "Inter ExtraBold",
+      "Inter Medium",
+      "Inter SemiBold",
+      "Noto Sans SC",
+      "Twemoji Mozilla"
+    ]
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
@@ -517,6 +537,12 @@
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/marketdata/rotation_events_hk.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/cjk-400.woff2": "ac02a6519f8b4efb8ebce4411d22f731e7cc0831ad4856efde4def4f622e17a0",
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/cjk-700.woff2": "72cc73785af5c648b24f7c1ea72c6d5cf049c3652bda1839105e6bbb10a89a71",
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/emoji.woff2": "5c3b63d79b1df63a439061d8b446c2b9a0d39d0ffba9a913284f574831f26b66",
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/pin.css": "c45b4a8e41bff5def0b1f55ea2097832bb75dcaa3cee7af2e2628a1e0be2ada1",
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/symbol-400.woff2": "4861f855e4d627c72dc9a0d5e5ccea06a5ff75afdeee3b5967be9ed52a294dc4",
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/symbol-700.woff2": "c3eff6b66b01322f570db903f794c0882e7485c51994d2c6e2bce8a58523d2cd",
     "site/account.js": "c1732806e5acbc4c91ac183fee873772108eb6abce433d6e17e9601d4ed5a260",
     "site/charts.js": "84a794395899da373f00ae59374aab93c3a41aee56ac55e973f2f960e95ed47c",
     "site/dashboard-icons.css": "be32e541eabb7deeb4a6c88ff20bd1a0a53a96c873fb3773ed01da470682b0e9",
@@ -526,6 +552,7 @@
     "site/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
     "site/fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
     "site/fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+    "site/fonts/Inter-900.woff2": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e",
     "site/hk-stock-v36.js": "ae348f953da7ff49f2e10a42a74b6c81b76dcb8d25dd0d37003b831ac562a4d6",
     "site/illus.css": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
     "site/illus.js": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
@@ -3193,7 +3220,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-dark-390.png",
           "width": 390,
-          "sha256": "5842b33f1954946b2d1b8bf06861bab42573071120672eac944346d00d4319b7",
+          "sha256": "1c2204158f4c2fac691f48233071261f81847b520573c0dad8bfb62ac80d5ab2",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png"
         },
         "console_exceptions": [],
@@ -4577,7 +4604,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-dark-1440.png",
           "width": 1440,
-          "sha256": "4623d8463744758ee2c45cf69c39d400cd8e4095b7c03347b0e7f4741f15bd57",
+          "sha256": "b40a32fa441061df9084ebf3124bfd9a5a68c0f3e2a345ca7e2190a64bba329b",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png"
         },
         "console_exceptions": [],
@@ -5961,7 +5988,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-light-390.png",
           "width": 390,
-          "sha256": "5c8be8fdafed96b4a13dbcea52766125500e32e66344d3436fab1b4dae94ee33",
+          "sha256": "0ace436eee66a23d9a17599576e450bab9d8261372bf79e06d60db1f2c5c3781",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png"
         },
         "console_exceptions": [],
@@ -7345,7 +7372,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-light-1440.png",
           "width": 1440,
-          "sha256": "fd3e8723f57d8333c80c4a2f74eee693d93cad6475a911671cd65dada7e00ef0",
+          "sha256": "c4ee452f3d6d6186ebc455c2d0639ff743ebf0eeb458aae146665af8871b7c08",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png"
         },
         "console_exceptions": [],
@@ -8729,7 +8756,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-dark-390.png",
           "width": 390,
-          "sha256": "5d3d41ab6d0bb3305bcbd8fb3cad0a19428ff511cf760f5a87790fe3ad72fbf3",
+          "sha256": "23ee47f3ba841b058238651d1b431a1f6ab43a9e8b8d4a9d857c011833b118da",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png"
         },
         "console_exceptions": [],
@@ -10113,7 +10140,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-dark-1440.png",
           "width": 1440,
-          "sha256": "f85cbe6c8e17018213861b782573a71f536f0ed858eba5335fa5b7907fb3b4aa",
+          "sha256": "90f53a081d9894dd3686a82dd1ed7928bf0bca7a11e0b5ad76fb24c7fd2c05dd",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png"
         },
         "console_exceptions": [],
@@ -11497,7 +11524,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-light-390.png",
           "width": 390,
-          "sha256": "e288cb3c3408b19a6bd0fb7cbd7eaed35b355c477da04545ed561f646a014777",
+          "sha256": "10f6384e6c435b440015a4535f60e3feb69506fef3a2f4012f977251a229154a",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png"
         },
         "console_exceptions": [],
@@ -12881,7 +12908,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-light-1440.png",
           "width": 1440,
-          "sha256": "cd6b428f7e6831e9d430f1707083185cd2286089cc24e8861b06d7bd3122e5b1",
+          "sha256": "1ed5e63b902c9ca542197345ed451e15f6b329231ae851ee579c0712780894cc",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png"
         },
         "console_exceptions": [],
