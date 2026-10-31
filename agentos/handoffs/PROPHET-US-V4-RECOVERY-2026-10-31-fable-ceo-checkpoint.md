@@ -175,7 +175,31 @@ verified:
       with argued bias direction and a placebo negative control; policy contrast as
       P-only decomposition; INCUMBENT_LED class; interval-censored admission; NYSE
       session units; as-committed knowable session + next-close fill; REJECT/RETAIN
-      rules; B4 futility quoted; MDE stated. Round-3 review running on 8d86c28c.
+      rules; B4 futility quoted; MDE stated. Round-3 review (8d86c28c) REVISE: P1
+      interval-censored units had no defined incumbent entry; P2 the t_disc-5 placebo
+      cannot control admission selection and PROMOTE would endorse an inexecutable
+      rule; P3 the discovery-side knowable session was unmeasured; N1-N14.
+  - claim: W2 revision 4 (c38416ae) registers the implementable policy contrast as the P-only primary under three recorded seat adjudications, and census v4 times both arms by first commits.
+    command: >
+      python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions
+      <W1 r3 map> --commit-walk --document-walk (dates, flags, commit times only).
+    result: >
+      W2-ADJ-01 policy contrast (buy at every discovery vs follow the lane, ITT, cash
+      0, decomposition printed) is the promotable primary, P only, unidentifiable in R;
+      W2-ADJ-02 timing contrast + executable lead is a guard on exactly identified,
+      gap-free-pre-window pairs (floors 300 units + 100 pairs); W2-ADJ-03 lane state
+      from the first-commit blob (HEAD carries 59 BUY rows and three healthy dates
+      07-31/09-14/10-19 that only later heals added) and a turn_watch document commit
+      walk (54/54; every discovery knowable 1 session after its data session).
+      Security-first identity join confirmed by the forward resolver (the clocked
+      reverse lookup returns UNAVAILABLE for the membership namespace). Census v4:
+      1,087 -> 98 INCUMBENT_LED -> 989 pre-window gap -> 26 exact (executable lead
+      median 0; 15 of 26 zero) / 65 interval / 873 censored / 0 cash / 25 UNKNOWN
+      signal_asof; k* = 0 so T2m UNIDENTIFIED; generation recorded_at within 2
+      sessions for all units. Estimator = cluster bootstrap on t_disc (4000, seed
+      20261031); FRAGILE blocks PROMOTE; tolerance (ii) rescaled to a -25 bps mean.
+      Round-4 review running on c38416ae. Known r5 fix: pass rate at true zero is
+      ~22%, not 29% (carried from r3's critical value).
   - claim: PR #10255 round 2 (fresh bounded reviewer at 6454a74a) returned APPROVE-READY and the PR is armed merge-on-green.
     command: gh pr view 10255 --comments (the round-2 verdict comment); one GraphQL read of mergeStateStatus/labels.
     result: >
@@ -185,8 +209,8 @@ verified:
       ci-pack runs (10-31 ~10:xxZ read: #10277 d03acfd0, #10267 750dd2c2, #10255
       6454a74a all OPEN/UNSTABLE/armed).
 unverified:
-  - claim: W2 registration r3 (8d86c28c) is ready to freeze.
-    what_would_verify: the round-3 independent review's APPROVE-READY-TO-FREEZE on that exact head; until then no freeze and no outcome read.
+  - claim: W2 registration r4 (c38416ae) is ready to freeze.
+    what_would_verify: the round-4 independent review's APPROVE-READY-TO-FREEZE on that exact head; until then no freeze and no outcome read. T3 gate (union_admission reads completed closes only, asof-capable) is evaluated at freeze.
   - claim: PR #10267 (head 750dd2c2) hosted CI green and merged by the merge-on-green sweeper against that exact head.
     what_would_verify: the sweeper's merge commit on origin/main; mergeStateStatus read once via the bound PR status, not by polling.
   - claim: PR #10277 (head d03acfd0) and PR #10255 (head 6454a74a) merge through the sweeper against those exact heads.
@@ -251,10 +275,10 @@ next_actions:
     through its existing carrier before any overlapping issuer work; do not
     re-run it.
   - >
-    6. Entry Timing W2 (Draft PR #10283, registration r3 at 8d86c28c, DRAFT -
-    UNFROZEN; census v3 committed): consume the round-3 review; apply any REVISE on
-    the branch as r4; only on APPROVE-READY-TO-FREEZE run the freeze inputs (census
-    v3 re-run with both commit walks, T3 gate, panel commit SHA per look, Data OS
+    6. Entry Timing W2 (Draft PR #10283, registration r4 at c38416ae, DRAFT -
+    UNFROZEN; census v4 committed): consume the round-4 review; apply any REVISE on
+    the branch as r5 (include the 22% pass-rate fix); only on APPROVE-READY-TO-FREEZE
+    run the freeze inputs (census v4 re-run, T3 gate, panel commit SHA per look, Data OS
     exclusion list) and mirror a machine freeze; R can never promote; no outcome
     read before freeze; a separate registration, never a change to #7751 A1. B-17
     34-session window census (7,918 C0 episodes, none complete) stays null — no
@@ -334,8 +358,14 @@ knowability) and revision 3 (8d86c28c) registers what that census shows is ident
 in R: a per-protocol timing contrast on 96 admitted pairs, declared conditional with
 its bias direction argued and a placebo negative control, while the policy contrast
 becomes a P-only secondary. The reference-coverage finding was routed to the Data OS
-owner role on #6805. Round-3 review is running; still nothing merged, frozen or
-production-proven.
+owner role on #6805. Round 3 then rejected r3's conditional primary and placebo, and
+census v4 — lane state from first-commit blobs, a security-first join, a document
+commit walk — showed that HEAD's healed stamps overstate the practised lane, that every
+exact R pair has a pre-window gap, and that the lane admitted on the discovery session
+itself in 15 of 26 exact pairs. Revision 4 (c38416ae) therefore registers the
+implementable policy contrast as the P-only primary under three recorded adjudications,
+with the timing contrast as a guard; round 4 is running. Still nothing merged, frozen
+or production-proven.
 
 Canonical sources: completion brief and census at e757498822a2 (Draft #10242),
 recovery carrier #10174 (29cfb98b), program issue #6805 (comment 6539985230), shared
