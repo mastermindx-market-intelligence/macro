@@ -8,6 +8,8 @@ Plain record of what was observed and what the repair changes. No forecast.
   `34a097d796237c2ecd8f5cbd82e005757d47e940`, 104,857,394 bytes — 206 bytes under GitHub's
   104,857,600-byte hard file limit — and it is appended nightly.
 - Last commit touching it: `a050d2c71647` (2026-10-21T00:56:35-07:00, "engine: regime update 2026-10-21").
+- Last engine data commit on main: `ad6e5a824334` (2026-10-21T01:18:57-07:00, "engine: regime update
+  2026-10-21"); it is also the last commit to advance `data/risk_envelope/latest.json`.
 - Run 40803269874 (2026-10-29): engine job 123688873047 `commit engine outputs` was rejected by the
   remote with GH001 at 2026-10-30T00:17:12Z; collect_tail job 123688869633 `commit tail data` was
   rejected for a 146.50 MB QLedger blob at 2026-10-29T20:20:23Z.
@@ -21,9 +23,16 @@ Plain record of what was observed and what the repair changes. No forecast.
 Created 2026-10-31T01:44:33Z, as observed 2026-10-31T06:59Z:
 
 - collect job 124405276038: success, with the #9556 carve active (park + restore steps succeeded).
-- collect_tail job 124447218246: FAILED at `commit tail data`.
-- engine job 124447591106: still in progress; its `commit engine outputs` outcome was not yet
-  observed. *(The orchestrator appends the final engine outcome here.)*
+- collect_tail job 124447218246: FAILED at `commit tail data` — at 2026-10-31T05:26:10Z the remote
+  answered `File data/qledger/claims.jsonl is 146.56 MB; this exceeds GitHub's file size limit of
+  100.00 MB` / `GH001: Large files detected`, and the step logged `tail data: GH001 large-file
+  rejection; automatic retry stopped`.
+- engine job 124447591106 (observed 2026-10-31T16:1xZ): `bash scripts/ci/daily_engine_commit_outputs.sh`
+  ran twice and both pushes were rejected with GH001 for `data/qledger/claims.jsonl` (09:08:06Z and
+  09:27:35Z; the `commit engine outputs` step concluded failure), each logging
+  `engine outputs: GH001 large-file rejection; automatic retry stopped`. The runner log masks the
+  digit `1`, so the reported size reads `***00.00 MB`. The job concluded `cancelled` at
+  2026-10-31T09:29:59Z.
 
 ## Unprotected paths at origin/main f2efb8ba
 
