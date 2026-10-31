@@ -88,6 +88,10 @@ UNIVERSE: dict[str, tuple[str, int]] = {
 #: "Eligibility": t_rel strictly after this instant; == False at the instant).
 PREREG_COMMIT_TIME: datetime = datetime(2026, 10, 17, 12, 1, 44, tzinfo=timezone.utc)
 
+#: prereg §10 A5 "E": a submissions-JSON clock J >= this instant is true UTC as
+#: given; J < E keeps the A2 correction.
+A5_EFFECTIVE: datetime = datetime(2026, 11, 16, tzinfo=timezone.utc)
+
 _ET = ZoneInfo("America/New_York")
 #: Regular-session close mirrors ``lib/market_session.py:125`` (`close or time(16)`).
 _REGULAR_CLOSE = time(16)
@@ -232,11 +236,9 @@ def _parse_utc(value: Any) -> datetime | None:
 
     Generic parser: offset-less strings/datetimes are read as UTC, explicit
     offsets are honoured, unparseable values return None and the caller drops
-    or refuses the record — never a guessed clock.  It does NOT correct the
-    EDGAR submissions-JSON ``acceptanceDateTime``, whose "…Z" suffix is not true
-    UTC (``collectors/edgar_earnings_8k.py`` stores that raw value under an
-    "ISO-UTC" label); release times go through
-    :func:`_edgar_json_acceptance_utc` (prereg §10 A2).
+    or refuses the record — never a guessed clock.  Release times from the
+    EDGAR submissions-JSON ``acceptanceDateTime`` go through
+    :func:`_edgar_json_acceptance_utc` instead (prereg §10 A2, A5).
     """
     if value is None:
         return None
@@ -259,19 +261,23 @@ def _parse_utc(value: Any) -> datetime | None:
 
 
 def _edgar_json_acceptance_utc(value: Any) -> datetime | None:
-    """True UTC from an EDGAR submissions-JSON ``acceptanceDateTime`` (prereg §10 A2).
+    """``t_rel`` from an EDGAR submissions-JSON ``acceptanceDateTime`` (prereg §10 A2, A5).
 
-    The JSON clock J runs ahead of the true acceptance instant U by the
-    America/New_York offset (verified on non-universe MSFT/JPM filings against
-    the filing header's ET ``ACCEPTANCE-DATETIME``).  With o = -NY offset at J,
-    U = J - o, and the result is kept only when -NY offset at U equals o;
-    otherwise the clock is unresolvable and None is returned (fail closed —
-    the caller drops the row and prereg §10 A3 applies).  The two offsets can
-    disagree only within hours of a DST transition (a weekend night).
+    The JSON value J is true UTC (prereg §10 A5, checked against the filing
+    header's ET ``ACCEPTANCE-DATETIME``).  J >= :data:`A5_EFFECTIVE` is returned
+    as given.  An earlier J keeps the registered A2 correction, whose premise A5
+    withdraws: with o = -NY offset at J, U = J - o, and the result is kept only
+    when -NY offset at U equals o; otherwise the clock is unresolvable and None
+    is returned (fail closed — the caller drops the row and prereg §10 A3
+    applies).  The two offsets can disagree only within hours of a DST
+    transition (a weekend night).  A missing or unparseable value is None on
+    either side of E.
     """
     j = _parse_utc(value)
     if j is None:
         return None
+    if j >= A5_EFFECTIVE:
+        return j
     offset = -j.astimezone(_ET).utcoffset()
     u = j - offset
     if -u.astimezone(_ET).utcoffset() != offset:
@@ -440,7 +446,7 @@ def enumerate_episodes(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]
     dropped fail-closed).  Kept per row: issuer in UNIVERSE, Item 2.02 exact
     token, an EX-99.1 exhibit, a resolvable acceptance clock and a report_date
     anchor.  The clock is the EDGAR submissions-JSON ``acceptanceDateTime``
-    corrected to true UTC by :func:`_edgar_json_acceptance_utc` (prereg §10 A2).
+    read through :func:`_edgar_json_acceptance_utc` (prereg §10 A2, A5).
     ``(issuer, q, period_end)`` come from the repo fiscal helper
     (``FISCAL_HELPER_SOURCE`` records which path is live).  The FIRST
     qualifying filing per (issuer, q) is kept by acceptance time (prereg §1
@@ -863,10 +869,9 @@ def label_and_a0_from_companyfacts(
     ``prior_filings``, rows ``{"accession", "accepted_at", ...}``; an unknown
     accession or timestamp fails closed).  None available -> ``a0["sign"]=None``
     (the STATS lane ABSTAINs "no_prior_filing").  ``accepted_at`` is read as
-    given (:func:`_parse_utc`), deliberately NOT through the EDGAR-JSON
-    correction (prereg §10 A2): a raw submissions-JSON value runs late by the
-    NY offset, which can only exclude a filing accepted within those hours
-    before ``cutoff`` — never admit one accepted after it.
+    given (:func:`_parse_utc`), never through the A2 correction: the
+    submissions-JSON value is true UTC (prereg §10 A5 "A0 history"), so the
+    ``<= cutoff`` test is exact.
 
     All clocks are aware UTC; ``cutoff`` refuses naive datetimes.
     """
@@ -1085,8 +1090,8 @@ def _revision_clock(rev: Mapping[str, Any]) -> tuple[datetime | None, datetime |
     ``workspace.generated_at`` is the system clock of the workspace version;
     ``observed_at`` is the revision's own system observation clock.  Both are
     true UTC (prereg §2.1's clocks) and are parsed with :func:`_parse_utc` —
-    they are NOT submissions-JSON values and never go through the A2
-    correction.
+    they are NOT submissions-JSON values and never go through
+    :func:`_edgar_json_acceptance_utc`.
     """
     if not isinstance(rev, Mapping):
         return None, None
@@ -1150,12 +1155,12 @@ def s_from_revisions(
     q-release check (prereg §2.2/§2.4), computed over ``q_revisions``
     regardless of the q-1 outcome: a release-bearing q revision is a
     pre-cutoff disclosure when ANY of its ``workspace.generated_at``, its
-    ``observed_at``, or its corrected source clock
+    ``observed_at``, or its source clock read through
     :func:`_edgar_json_acceptance_utc` (the submissions-JSON
-    ``acceptanceDateTime``, stored unconverted — prereg §10 A2) is
+    ``acceptanceDateTime`` — prereg §10 A2, A5) is
     ``<= C``; any such revision sets ``q_release_before_cutoff=True``.  A
     release-bearing q revision whose source clock is missing, unparseable or
-    uncorrectable and that no system clock already flagged sets
+    unresolvable and that no system clock already flagged sets
     ``pit_unrecoverable=True`` with reason ``"q_release_time_unresolved"`` —
     unless a q-1 reason was set first; the first reason wins.
     NOTHING else is copied from the q revisions: the q release is never a
@@ -1469,7 +1474,7 @@ def enrich_exhibits(
 
 
 # --------------------------------------------------------------------------
-# Prior filings from EDGAR submissions pages (wave-2 spec §3; prereg §10 A2)
+# Prior filings from EDGAR submissions pages (wave-2 spec §3; prereg §10 A2, A5)
 # --------------------------------------------------------------------------
 
 
@@ -1480,11 +1485,10 @@ def prior_filings_from_submissions(*pages: Any) -> list[dict[str, str]]:
     ``filings.recent``) or an older-filings page (arrays at the top level);
     the arrays are ``accessionNumber``, ``acceptanceDateTime`` and ``form``.
     Only forms exactly ``"10-Q"`` or ``"10-K"`` are emitted (the original
-    filings A0 reads).  ``accepted_at`` is copied as given, UNCORRECTED: per
-    prereg §10 A2 ("A0 history") the submissions-JSON clock runs 4-5 hours
-    late, so the ``<= C(e)`` test can only exclude a filing that was in fact
-    available, never admit one that was not — the error is conservative, and
-    correcting it here would be a redesign of the registered rule.  Rows with
+    filings A0 reads).  ``accepted_at`` is copied as given, uncorrected: the
+    submissions-JSON clock is true UTC (prereg §10 A5 "A0 history", which
+    withdraws A2's statement that it runs 4-5 hours late), so the ``<= C(e)``
+    test is exact.  Rows with
     an empty accession or empty acceptance are skipped; unequal arrays zip to
     the shortest; the first row wins on a duplicate accession; a malformed
     page (not a Mapping, arrays not lists) contributes nothing and never

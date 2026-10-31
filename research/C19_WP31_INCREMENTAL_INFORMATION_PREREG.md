@@ -371,3 +371,74 @@ can land just below a boundary the hit counts reach exactly. For example, 24/40 
 **Rule.** The verdict compares the exact rational `(hits(A2) − hits(A2[−K])) / n` with
 `1/10`. The floating-point `Δ` is printed for display. The bootstrap interval is compared
 with 0 only, as before. Every read prints the exact `Δ` as `d/n` beside the float.
+
+### A5 (2026-10-31) — the submissions clock is true UTC
+
+*Operationalizes §1 "EDGAR acceptance timestamp (converted to UTC)" and §2 rule 1, and
+withdraws amendment A2's correction for releases from its effective time on.*
+
+**Reason.** Amendment A2's premise is false. The submissions-JSON `acceptanceDateTime`
+already is true UTC. Each check compared the JSON value with the filing's SGML header
+`<ACCEPTANCE-DATETIME>` (America/New_York local time), on non-universe filers only:
+
+| Check | Agree with the SGML header |
+|---|---|
+| The four filings A2 cites, read live on 2026-10-31 | 4 of 4 |
+| A live sample of 9 filers, 5 form types, 2015–2026, under both EST and EDT | 117 of 117 |
+| A sample of the stored 8-K capture of 2026-10-04, 2014–2026 | 76 of 76 |
+| MSFT `0001193125-26-027198`, the instant of A2's EST pin, stored and live | 1 of 1 |
+
+The stored and live MSFT value is `2026-01-28T21:04:38.000Z`; its header reads
+`20260128160438` (16:04:38 EST, which is 21:04:38Z). A2's EST pin used a JSON reading
+of `2026-01-29T02:04:38Z` for the same instant. A2's readings equal the true instant
+plus the New York offset. Their cause is not established.
+
+An earlier capture of the store (2026-07-05) held, for 27 non-universe issuers, values
+4–5 hours *earlier* than true UTC: New York wall-clock time labelled `Z`. The 2026-10-04
+capture replaced them with true UTC (33 of 33 sampled against SGML headers). No capture
+or live read has shown A2's direction.
+
+The production evaluator reads the 8-K rows from the live submissions JSON. A2's
+correction therefore places `t_rel` 4–5 hours *before* the true release. This leaks
+nothing: every cutoff moves earlier, so nothing after the true cutoff is read. It does
+change which session the rules select:
+
+- **`C(e)`** is one session early for a release that falls within 4 hours (EDT) or
+  5 hours (EST) after a session's scheduled close. For a regular session that is
+  16:00–20:00 EDT or 16:00–21:00 EST, measured in New York time.
+- **The cost exit** (§3.3) is one session early for a release during the first 4 hours
+  (EDT) or 5 hours (EST) of a session.
+- **The K window** and **A0's `<= C(e)` filter** move with `C(e)`.
+- **The label** (§3.3) does not depend on the clock and is unchanged.
+
+**Rule.** Let `E = 2026-11-16T00:00:00Z`. Let `J` be the stored value, parsed as UTC.
+
+- If `J >= E`, then `J` is `t_rel` as given. There is no offset correction and no
+  daylight-saving case. A missing or unparseable value is still unresolvable and is
+  handled under A3.
+- If `J < E`, A2 applies unchanged.
+- The same test applies, value by value, to the `source_available_at` of a quarter-`q`
+  revision, which the S leg checks under §2 rule 4.
+
+Because the clock is true UTC, `J >= E` holds exactly when the true acceptance instant
+is at or after `E`. If this amendment merges at or after `E`, it is void and must be
+re-filed with a later `E`.
+
+Pins:
+
+| `J` | Result |
+|---|---|
+| `2026-11-15T23:59:59Z` | `2026-11-15T18:59:59Z` (A2, EST) |
+| `2026-11-16T00:00:00Z` | `2026-11-16T00:00:00Z` |
+| `2026-12-08T21:05:00Z` | `2026-12-08T21:05:00Z` |
+| `2027-11-07T06:30:00Z` | `2027-11-07T06:30:00Z` (A2 would leave it unresolvable) |
+
+**Episodes before `E`.** They keep A2, so the shifts above apply to them. This amendment
+adds no exclusion reason, contrast, or budget row.
+
+**A0 history.** Unchanged. A0 reads prior-filing acceptance times as given, and they are
+exact. A2's statement that they read 4–5 hours late is withdrawn.
+
+**Upstream.** `collectors/edgar_earnings_8k.py` correctly labels the submissions value
+UTC. A2's open gap is closed with no collector change. A2's instruction to remove the
+correction when the collector changes is withdrawn.
