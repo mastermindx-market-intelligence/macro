@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-20T00:05:13Z",
+ "accession": "0001628280-26-009921",
+ "cik": "0000078814",
+ "doc_byte_length": 3811736,
+ "doc_sha256": "f7b19fe4fac6601926d8f5df5d3419c911c63f3b9d9916bc6cdfea1ad2982399",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-31",
+ "primary_document": "pbi-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 447962,
+  "byte_start": 447723,
+  "normalized": "Pursuant to the rules of the SEC, the exhibit list included herewith reflects currently-dated certifications from the Company’s Chief Executive Officer and Chief Financial Officer, which are filed as exhibits to this Amendment No. 1.",
+  "normalized_sha256": "f206e79f5d101c0118b338d465dae56f530a6f0081f3e80b2cac7a3b630604e4",
+  "raw": "Pursuant to the rules of the SEC, the exhibit list included herewith reflects currently-dated certifications from the Company&#8217;s Chief Executive Officer and Chief Financial Officer, which are filed as exhibits to this Amendment No. 1.",
+  "raw_sha256": "e80386b918516542bf56c7002d331b500c369f54458dd227ce4e69f29a949e9d"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/78814/000162828026009921/pbi-20251231.htm",
+ "xbrl_contexts": []
+}
