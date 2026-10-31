@@ -1,0 +1,352 @@
+{
+ "adoption_state": "proposed",
+ "as_of": "2026-10-21T00:00:00Z",
+ "authority": {
+  "gate": false,
+  "prediction": false,
+  "rank": false,
+  "size": false,
+  "trade": false
+ },
+ "counts": {
+  "assessments": 1,
+  "coverage_rows": 1,
+  "edges": 1,
+  "edges_by_species": {
+   "component_dependency": 0,
+   "contract_manufacturing": 0,
+   "distribution": 0,
+   "licensing": 0,
+   "supplier_customer": 1
+  },
+  "non_edges": 0,
+  "observations_in": 2,
+  "observations_pit_visible": 2,
+  "observations_quarantined": 0,
+  "observations_refused": 0,
+  "revisions": 6,
+  "warnings": 0
+ },
+ "coverage": [
+  {
+   "documents": [
+    "0000004127-24-000131",
+    "0000004127-25-000085",
+    "0000004127-26-000003"
+   ],
+   "issuer_id": "ISS:US-XNAS-SWKS",
+   "known_at": "2026-01-30T21:06:48Z",
+   "period_end": "2025-10-03",
+   "state": "assessed"
+  }
+ ],
+ "edges": [
+  {
+   "admission_state": "proposed",
+   "asserted_period": {
+    "end": "2025-10-03",
+    "start": "2021-10-02"
+   },
+   "asserting_parties": [
+    "ISS:US-XNAS-SWKS"
+   ],
+   "conditions": [],
+   "conflicts": [],
+   "correction_lineage": [
+    {
+     "accession": "0000004127-26-000003",
+     "amends_accession": "0000004127-25-000085",
+     "assessment": "not_restated",
+     "assessment_id": "asm:e45f8c5527e4f3586ca7",
+     "effect": "none",
+     "known_at": "2026-01-30T21:06:48Z",
+     "reason": "part_iii_only_amendment"
+    }
+   ],
+   "current_magnitudes": [
+    {
+     "asserting_party": "ISS:US-XNAS-SWKS",
+     "denominator_scope": "Skyworks consolidated net revenue",
+     "kind": "seller_revenue_share",
+     "known_at": "2025-11-07T21:08:12Z",
+     "numerator_scope": "net revenue from Apple in aggregate, through distributors, contract manufacturers and direct sales",
+     "period": {
+      "end": "2025-10-03",
+      "label": "FY2025",
+      "start": "2024-09-28"
+     },
+     "precision": "exact",
+     "relationship_key": "rel:2dddc958720e18bf0275",
+     "revision_id": "rev:f81d162b664d84beea12",
+     "revision_kind": "new_period",
+     "revision_seq": 1,
+     "source_ref": {
+      "accession": "0000004127-25-000085",
+      "byte_end": 1501205,
+      "byte_start": 1500407,
+      "excerpt_path": "research/theme_graph/gmi_relationships_20261021/sources/0000004127-25-000085.json",
+      "form": "10-K",
+      "span_sha256": "c8fedadd764727f63dc239ad99530ffa5b2f1cf1f0a6a7dada29854c88fb7aeb",
+      "xbrl_fact_id": "f-977"
+     },
+     "supersedes": null,
+     "unit": "ratio",
+     "value": 0.67,
+     "value_high": null
+    }
+   ],
+   "direction": {
+    "from_issuer_id": "ISS:US-XNAS-SWKS",
+    "from_role": "supplier",
+    "to_issuer_id": "ISS:US-XNAS-AAPL",
+    "to_role": "customer"
+   },
+   "first_known_at": "2024-11-15T21:37:43Z",
+   "freshness_state": "fresh",
+   "from": {
+    "issuer_id": "ISS:US-XNAS-SWKS",
+    "security_ids": [
+     "SEC:US-XNAS-SWKS"
+    ]
+   },
+   "last_asserted_at": "2025-11-07T21:08:12Z",
+   "last_assessed_at": "2026-01-30T21:06:48Z",
+   "magnitude_history": [
+    {
+     "asserting_party": "ISS:US-XNAS-SWKS",
+     "denominator_scope": "Skyworks consolidated net revenue",
+     "kind": "seller_revenue_share",
+     "known_at": "2024-11-15T21:37:43Z",
+     "numerator_scope": "net revenue from Apple in aggregate, through distributors, contract manufacturers and direct sales",
+     "period": {
+      "end": "2022-09-30",
+      "label": "FY2022",
+      "start": "2021-10-02"
+     },
+     "precision": "exact",
+     "relationship_key": "rel:2dddc958720e18bf0275",
+     "revision_id": "rev:d7badf30dc91d4cf35b7",
+     "revision_kind": "new_period",
+     "revision_seq": 1,
+     "source_ref": {
+      "accession": "0000004127-24-000131",
+      "byte_end": 1397687,
+      "byte_start": 1396889,
+      "excerpt_path": "research/theme_graph/gmi_relationships_20261021/sources/0000004127-24-000131.json",
+      "form": "10-K",
+      "span_sha256": "396a24d2ca9c4f82699f7b30d61289d45d9e3301c5ad313bb90a82d5b6c193fa",
+      "xbrl_fact_id": "f-958"
+     },
+     "supersedes": null,
+     "unit": "ratio",
+     "value": 0.58,
+     "value_high": null
+    },
+    {
+     "asserting_party": "ISS:US-XNAS-SWKS",
+     "denominator_scope": "Skyworks consolidated net revenue",
+     "kind": "seller_revenue_share",
+     "known_at": "2024-11-15T21:37:43Z",
+     "numerator_scope": "net revenue from Apple in aggregate, through distributors, contract manufacturers and direct sales",
+     "period": {
+      "end": "2023-09-29",
+      "label": "FY2023",
+      "start": "2022-10-01"
+     },
+     "precision": "exact",
+     "relationship_key": "rel:2dddc958720e18bf0275",
+     "revision_id": "rev:8cc9b7ac34702920a228",
+     "revision_kind": "new_period",
+     "revision_seq": 1,
+     "source_ref": {
+      "accession": "0000004127-24-000131",
+      "byte_end": 1397687,
+      "byte_start": 1396889,
+      "excerpt_path": "research/theme_graph/gmi_relationships_20261021/sources/0000004127-24-000131.json",
+      "form": "10-K",
+      "span_sha256": "396a24d2ca9c4f82699f7b30d61289d45d9e3301c5ad313bb90a82d5b6c193fa",
+      "xbrl_fact_id": "f-957"
+     },
+     "supersedes": null,
+     "unit": "ratio",
+     "value": 0.66,
+     "value_high": null
+    },
+    {
+     "asserting_party": "ISS:US-XNAS-SWKS",
+     "denominator_scope": "Skyworks consolidated net revenue",
+     "kind": "seller_revenue_share",
+     "known_at": "2025-11-07T21:08:12Z",
+     "numerator_scope": "net revenue from Apple in aggregate, through distributors, contract manufacturers and direct sales",
+     "period": {
+      "end": "2023-09-29",
+      "label": "FY2023",
+      "start": "2022-10-01"
+     },
+     "precision": "exact",
+     "relationship_key": "rel:2dddc958720e18bf0275",
+     "revision_id": "rev:565c7a3b9a1f21f2b5c0",
+     "revision_kind": "reassertion",
+     "revision_seq": 2,
+     "source_ref": {
+      "accession": "0000004127-25-000085",
+      "byte_end": 1501205,
+      "byte_start": 1500407,
+      "excerpt_path": "research/theme_graph/gmi_relationships_20261021/sources/0000004127-25-000085.json",
+      "form": "10-K",
+      "span_sha256": "c8fedadd764727f63dc239ad99530ffa5b2f1cf1f0a6a7dada29854c88fb7aeb",
+      "xbrl_fact_id": "f-979"
+     },
+     "supersedes": "rev:8cc9b7ac34702920a228",
+     "unit": "ratio",
+     "value": 0.66,
+     "value_high": null
+    },
+    {
+     "asserting_party": "ISS:US-XNAS-SWKS",
+     "denominator_scope": "Skyworks consolidated net revenue",
+     "kind": "seller_revenue_share",
+     "known_at": "2024-11-15T21:37:43Z",
+     "numerator_scope": "net revenue from Apple in aggregate, through distributors, contract manufacturers and direct sales",
+     "period": {
+      "end": "2024-09-27",
+      "label": "FY2024",
+      "start": "2023-09-30"
+     },
+     "precision": "exact",
+     "relationship_key": "rel:2dddc958720e18bf0275",
+     "revision_id": "rev:c83c12bd45e2a289f3c7",
+     "revision_kind": "new_period",
+     "revision_seq": 1,
+     "source_ref": {
+      "accession": "0000004127-24-000131",
+      "byte_end": 1397687,
+      "byte_start": 1396889,
+      "excerpt_path": "research/theme_graph/gmi_relationships_20261021/sources/0000004127-24-000131.json",
+      "form": "10-K",
+      "span_sha256": "396a24d2ca9c4f82699f7b30d61289d45d9e3301c5ad313bb90a82d5b6c193fa",
+      "xbrl_fact_id": "f-956"
+     },
+     "supersedes": null,
+     "unit": "ratio",
+     "value": 0.69,
+     "value_high": null
+    },
+    {
+     "asserting_party": "ISS:US-XNAS-SWKS",
+     "denominator_scope": "Skyworks consolidated net revenue",
+     "kind": "seller_revenue_share",
+     "known_at": "2025-11-07T21:08:12Z",
+     "numerator_scope": "net revenue from Apple in aggregate, through distributors, contract manufacturers and direct sales",
+     "period": {
+      "end": "2024-09-27",
+      "label": "FY2024",
+      "start": "2023-09-30"
+     },
+     "precision": "exact",
+     "relationship_key": "rel:2dddc958720e18bf0275",
+     "revision_id": "rev:afadb87e49423f44e4b6",
+     "revision_kind": "reassertion",
+     "revision_seq": 2,
+     "source_ref": {
+      "accession": "0000004127-25-000085",
+      "byte_end": 1501205,
+      "byte_start": 1500407,
+      "excerpt_path": "research/theme_graph/gmi_relationships_20261021/sources/0000004127-25-000085.json",
+      "form": "10-K",
+      "span_sha256": "c8fedadd764727f63dc239ad99530ffa5b2f1cf1f0a6a7dada29854c88fb7aeb",
+      "xbrl_fact_id": "f-978"
+     },
+     "supersedes": "rev:c83c12bd45e2a289f3c7",
+     "unit": "ratio",
+     "value": 0.69,
+     "value_high": null
+    },
+    {
+     "asserting_party": "ISS:US-XNAS-SWKS",
+     "denominator_scope": "Skyworks consolidated net revenue",
+     "kind": "seller_revenue_share",
+     "known_at": "2025-11-07T21:08:12Z",
+     "numerator_scope": "net revenue from Apple in aggregate, through distributors, contract manufacturers and direct sales",
+     "period": {
+      "end": "2025-10-03",
+      "label": "FY2025",
+      "start": "2024-09-28"
+     },
+     "precision": "exact",
+     "relationship_key": "rel:2dddc958720e18bf0275",
+     "revision_id": "rev:f81d162b664d84beea12",
+     "revision_kind": "new_period",
+     "revision_seq": 1,
+     "source_ref": {
+      "accession": "0000004127-25-000085",
+      "byte_end": 1501205,
+      "byte_start": 1500407,
+      "excerpt_path": "research/theme_graph/gmi_relationships_20261021/sources/0000004127-25-000085.json",
+      "form": "10-K",
+      "span_sha256": "c8fedadd764727f63dc239ad99530ffa5b2f1cf1f0a6a7dada29854c88fb7aeb",
+      "xbrl_fact_id": "f-977"
+     },
+     "supersedes": null,
+     "unit": "ratio",
+     "value": 0.67,
+     "value_high": null
+    }
+   ],
+   "magnitude_state": "disclosed",
+   "relation_status": "asserted",
+   "relationship_key": "rel:2dddc958720e18bf0275",
+   "rights": {
+    "excerpt_display": "unknown",
+    "magnitude_display": "unknown",
+    "public_display": "unknown",
+    "purpose_permitted": [
+     "private_api",
+     "research"
+    ],
+    "ruling_ref": null,
+    "source_class": "SEC_PUBLIC_ACCESS"
+   },
+   "scope": {
+    "geography": null,
+    "product_key": "all",
+    "segment": null
+   },
+   "source_refs": [
+    {
+     "accession": "0000004127-24-000131",
+     "byte_end": 1397687,
+     "byte_start": 1396889,
+     "excerpt_path": "research/theme_graph/gmi_relationships_20261021/sources/0000004127-24-000131.json",
+     "form": "10-K",
+     "observation_id": "obs:aafd6fdeb1ee9043d452",
+     "span_sha256": "396a24d2ca9c4f82699f7b30d61289d45d9e3301c5ad313bb90a82d5b6c193fa",
+     "url": "https://www.sec.gov/Archives/edgar/data/4127/000000412724000131/swks-20240927.htm"
+    },
+    {
+     "accession": "0000004127-25-000085",
+     "byte_end": 1501205,
+     "byte_start": 1500407,
+     "excerpt_path": "research/theme_graph/gmi_relationships_20261021/sources/0000004127-25-000085.json",
+     "form": "10-K",
+     "observation_id": "obs:ac5a91d2e47760c66b4b",
+     "span_sha256": "c8fedadd764727f63dc239ad99530ffa5b2f1cf1f0a6a7dada29854c88fb7aeb",
+     "url": "https://www.sec.gov/Archives/edgar/data/4127/000000412725000085/swks-20251003.htm"
+    }
+   ],
+   "species": "supplier_customer",
+   "theme_graph_mapping": "SUPPLIES",
+   "to": {
+    "issuer_id": "ISS:US-XNAS-AAPL",
+    "security_ids": [
+     "SEC:US-XNAS-AAPL"
+    ]
+   }
+  }
+ ],
+ "manifest_version": "2373df79e9418057828ab6cbf7f6fd4055e96b5d9fc66e3de72fa10854a782d5",
+ "non_edges": [],
+ "package_id": "pkg:56502f8b52805a61749a",
+ "package_sha256": "cc67c2f9c065d04f5029c75157eefad19277fde29d2cbda5b2865c0f5d1307bb",
+ "schema": "company_intelligence.relationship_edges/v1"
+}

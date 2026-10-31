@@ -1,0 +1,45 @@
+{
+ "accepted_at": "2024-11-15T21:37:43Z",
+ "accession": "0000004127-24-000131",
+ "cik": "0000004127",
+ "doc_byte_length": 1578967,
+ "doc_sha256": "7a9d70edb0083ad989e94eb0e5f0f168991869ab33da9f7c974c31cc3f6a514d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2024-11-15",
+ "form": "10-K",
+ "period_of_report": "2024-09-27",
+ "primary_document": "swks-20240927.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1397687,
+  "byte_start": 1396889,
+  "normalized": "During fiscal 2024, fiscal 2023, and fiscal 2022, Apple, through sales to multiple distributors, contract manufacturers, and direct sales for multiple applications including smartphones, tablets, desktop, and notebook computers, watches and other devices, in the aggregate accounted for 69%, 66%, and 58% of the Company’s net revenue, respectively.",
+  "normalized_sha256": "89aa9c36e74a2784670b60d921d62caf2c6c15bebe3b8d4d6cddcdf53c109257",
+  "raw": "During fiscal 2024, fiscal 2023, and fiscal 2022, Apple, through sales to multiple distributors, contract manufacturers, and direct sales for multiple applications including smartphones, tablets, desktop, and notebook computers, watches and other devices, in the aggregate accounted for <ix:nonFraction unitRef=\"number\" contextRef=\"c-232\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-956\">69</ix:nonFraction>%, <ix:nonFraction unitRef=\"number\" contextRef=\"c-233\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-957\">66</ix:nonFraction>%, and <ix:nonFraction unitRef=\"number\" contextRef=\"c-234\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-958\">58</ix:nonFraction>% of the Company&#8217;s net revenue, respectively.",
+  "raw_sha256": "396a24d2ca9c4f82699f7b30d61289d45d9e3301c5ad313bb90a82d5b6c193fa"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/4127/000000412724000131/swks-20240927.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 106236,
+   "byte_start": 105577,
+   "context_ref": "c-232",
+   "raw": "<xbrli:context id=\"c-232\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000004127</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">swks:CompanyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-09-30</xbrli:startDate><xbrli:endDate>2024-09-27</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "56217149e86c6d9902f2f3e25d42f2c5c60c7d9f3674beebeaf4989bf9f2b373"
+  },
+  {
+   "byte_end": 106895,
+   "byte_start": 106236,
+   "context_ref": "c-233",
+   "raw": "<xbrli:context id=\"c-233\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000004127</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">swks:CompanyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2022-10-01</xbrli:startDate><xbrli:endDate>2023-09-29</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "4da7f9ebe8ac8d928c25b4f99c71c4923fc0b17bbc78d2f308881265aae738cc"
+  },
+  {
+   "byte_end": 107554,
+   "byte_start": 106895,
+   "context_ref": "c-234",
+   "raw": "<xbrli:context id=\"c-234\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000004127</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">swks:CompanyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2021-10-02</xbrli:startDate><xbrli:endDate>2022-09-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "febf1eb678b77f10b24338741079dbff90744ba19be0f6a683662dfa4e4357f3"
+  }
+ ]
+}
