@@ -20645,6 +20645,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
