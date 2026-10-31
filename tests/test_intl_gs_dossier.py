@@ -421,11 +421,30 @@ def test_b8_no_specimen_true_in_production_sources():
             if path.suffix == ".j2":
                 assert "specimen=True" not in text, path
                 continue
+            def _truthy_const(node):
+                return isinstance(node, ast.Constant) and bool(node.value)
+
             for node in ast.walk(ast.parse(text)):
                 if isinstance(node, ast.keyword) and node.arg == "specimen":
-                    assert not (isinstance(node.value, ast.Constant)
-                                and bool(node.value.value)), (
+                    assert not _truthy_const(node.value), (
                         f"{path}:{node.lineno}: production call sets specimen=")
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    # a ``specimen=True`` FUNCTION DEFAULT is the same defect:
+                    # walk args.defaults (right-aligned over posonly+positional)
+                    # and args.kw_defaults so the default form cannot hide.
+                    params = [*node.args.posonlyargs, *node.args.args]
+                    named = params[len(params) - len(node.args.defaults):]
+                    for arg, default in zip(named, node.args.defaults):
+                        if arg.arg == "specimen":
+                            assert not _truthy_const(default), (
+                                f"{path}:{default.lineno}: production default "
+                                "sets specimen=True")
+                    for arg, default in zip(node.args.kwonlyargs,
+                                            node.args.kw_defaults):
+                        if arg.arg == "specimen" and default is not None:
+                            assert not _truthy_const(default), (
+                                f"{path}:{default.lineno}: production default "
+                                "sets specimen=True")
 
 
 def test_b8_specimen_page_board11(specimen_page):
@@ -486,6 +505,18 @@ def test_b9_css_region_design_laws():
                 prop, value = declaration.split(":", 1)
                 if prop.strip() in ("background", "background-color"):
                     assert value.strip() in ("var(--panel2)", "var(--panel)"), block
+
+
+def test_b9_css_region_bytes_pinned():
+    # R-14 (review r5): the W2B CSS region bytes are frozen. Any change — even
+    # one byte — fails here and must be a deliberate act: after a lawful CSS
+    # edit, re-run this test and refresh the pin to the sha it prints.
+    import hashlib
+    sha = hashlib.sha256(_w2b_css_region().encode("utf-8")).hexdigest()
+    pinned = "92d536245c8aaaba333bef3576e2daa16b52a9130751dabf0e2cdc14c2e25b6a"
+    assert sha == pinned, (
+        "W2B CSS region bytes changed (R-14 byte pin). If the edit is lawful, "
+        f"refresh the pinned sha to: {sha}")
 
 
 def test_b9_templates_no_style_no_igs():
