@@ -151,24 +151,27 @@ decisions:
   - DEC:FIF-Q0-SPLIT-DECISION-2-SECOND-LABELING-WAVE
   - DEC:FIF-Q1-EVALUATOR-ENVELOPE-SIC-SOURCE-FOLLOWS-PRODUCTION-RESOLVER
 next_action: >
-  2026-10-31 post-Q1 ladder (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-31-q1-held-out-wave).
-  Held-out labels for eleven packs are on main (#9915, #10260, #10263); the
-  independent evaluator and its first generation of reports are on main (#10293
-  → 594a7429); the first Q1 result is an honest negative: all 12 packs
-  unavailable_research_only, only PK01 at or above the predeclared 0.80 floor,
-  PK04/PK11/PK12 never measured (sic unbound), 30 BAC 10-K trials excluded
-  (primary_unparseable); A37 re-adjudicated to PARTIAL for all twelve (#10299).
-  PK09 v7 (#10272), PK08 F3-3 (#10271) merged; PK09 follow-up (#10298) and the
-  A34 ledger refresh (#9901) merge pinned on CONCLUDED. Ladder: (1) consume
-  build lanes fif-bacnil-20261031-r1 (parser nil-fact tolerance) and
-  fif-evalsic-20261031-r2 (evaluator SIC binding + E1-3), one independent review
-  each, PR, merge pinned; (2) second Q1 generation under a new evaluator lane id
-  and a new reports directory once a stage host is admissible — first
-  measurement for PK04/PK11/PK12 and the BAC trials, failed families keep their
-  disposition; (3) per-pack repairs from the failed-family descriptions, one PR
-  + review each, dispositions unchanged until fresh labels under a new Q0 split
-  decision; (4) format-axis and PK12/PK05 form-scope rulings. PK10 stays
-  not_measurable. A42/A45/A46 remain EXACT_HUMAN_GATE.
+  2026-10-31 post-wave-two ladder (handoff
+  FINANCIAL-INTELLIGENCE-FABRIC-2026-10-31-wave2-capture-and-envelope-repair).
+  On main: the capture-script predeclared split rows and 45 split-2 contract rows
+  (#10312), the A34 ledger refresh (#10314), the evaluator envelope repair under
+  DEC:FIF-Q1-EVALUATOR-ENVELOPE-SIC-SOURCE-FOLLOWS-PRODUCTION-RESOLVER (#10316 →
+  af6d63be), and the wave-two capture of all 45 split-2 accessions as digest-only
+  manifests (#10322 → c1012032; 38 admitted + 7 statement_roles_ambiguous capture
+  verdicts; bytes only on the ubuntu2 stage, re-locked). Q1 generation two
+  (#10332, reports q1_held_out_20261031_g2) admits all 58 label-bearing
+  accessions, scores the BAC FY2022 10-K and measures PK04/PK11 for the first
+  time; it is an honest negative for all twelve packs at the predeclared 0.80
+  floor and merges pinned only to its re-reviewed head. Ladder: (1) consume the
+  #10332 re-review, merge pinned, read back, record; (2) eleven independent
+  labeler lanes over the 45 wave-two accessions on ubuntu2 (batch one PK01–PK03
+  running; batches PK04–PK07 and PK08/PK09/PK11/PK12 follow under new run
+  suffixes), one PR per batch, labels merged unchanged; (3) Q1 generation three
+  under a new evaluator lane id into a new reports directory, independent review,
+  A37 re-adjudication only from its INDEX; (4) per-pack repairs from failed-family
+  descriptions against the dev corpus, one PR + review each, dispositions unchanged
+  until fresh labels under a new Q0 split decision. PK10 stays not_measurable.
+  A42/A45/A46 remain EXACT_HUMAN_GATE.
 landmines:
   - >
     Core catalog is consolidated_only. Company Facts conversion sets
@@ -238,6 +241,8 @@ landmines:
     (additional evidence: PR #6157 merged 2026-08-21T16:08:36Z while HOLD FOR SOL
     remained in the body and comments).
 do_not_redo:
+  - Do not re-review, re-run or widen #10312, #10314, #10316 or #10322 (returns accepted on the PRs; a second wave-two capture run needs a seat decision; the envelope enum stays frozen per DEC:FIF-Q1-EVALUATOR-ENVELOPE-SIC-SOURCE-FOLLOWS-PRODUCTION-RESOLVER).
+  - Do not edit reports/q1_held_out_20261031_g2 once merged (#10332); generation three is a new directory under a new evaluator lane id.
   - Do not edit or regenerate research/financial_intelligence_fabric/reports/q1_held_out_20261031/; a second generation is a new directory under a new evaluator lane id, and the 2026-10-31 failed families reopen only on fresh labels under a new Q0 split decision.
   - Do not move the predeclared 0.80 floor, lower N, relabel a failed family accepted or drop a failed cell from the denominator (DEC:FIF-Q1-PRECISION-FLOOR-PREDECLARED-0-80).
   - Do not rebuild or re-review PK09 B.3 v7 (#10272), PK08 F3-3 (#10271), the PK09 follow-up bundle (#10298), the evaluator (#10293) or the A37 Q1 record (#10299); returns are accepted on the PRs.
