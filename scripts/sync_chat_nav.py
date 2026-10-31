@@ -65,6 +65,17 @@ be regenerated); here the direction is right and only the decorations are
 collateral, and refusing would make this script's own printed remedy a dead end —
 returning chat.html's header to the hand-editing it exists to abolish.
 
+ANNOTATIONS — every finding here goes through ``report()``, which emits the
+``::error::`` workflow command only when the subject is the REAL tree. The
+``--selftest`` path deliberately drifts a throwaway fixture and requires this
+guard to go red, and GitHub's annotation collector scrapes ``::error::`` out of a
+step's stdout regardless of the step's exit status — so a PASSING selftest was
+publishing a red annotation on every PR that ran the fence pack (measured
+2026-09-25 in run 36099187934, job 107957833159, PR #7908: the line sits between
+two ``chat nav sync OK`` lines and ``selftest PASS``). It told the reader to
+hand-edit templates/chat.html — the very thing this script exists to abolish —
+about a file their PR never touched. See ``report()``.
+
 Usage:
     python -m scripts.sync_chat_nav              # report + exit 1 on drift
     python -m scripts.sync_chat_nav --fix        # re-splice from the partial
@@ -98,6 +109,34 @@ _STAMPED_REF_RE = re.compile(r'(?:href|src)\s*=\s*"([^"?#]+)\?v=([0-9a-f]{8})"',
 _SCRIPT_TAG_RE = re.compile(r"<script\b([^>]*)>", re.IGNORECASE)
 _ASSET_REF_RE = re.compile(r'(?:href|src)\s*=\s*"([^"]*)"', re.IGNORECASE)
 _DEFER_ATTR_RE = re.compile(r"\bdefer\b", re.IGNORECASE)
+
+
+def report(level: str, title: str, message: str, *, annotate: bool = True) -> None:
+    """Print one finding — as a GitHub workflow command only when `annotate`.
+
+    `annotate=False` is the fixture caller: ``selftest()`` runs this whole guard
+    against a copy under ``mkdtemp`` and PROVES the gate by making that copy
+    drift. GitHub's annotation collector reads ``::error::`` out of stdout and
+    does not care that the step exited 0, so that proof was posting a red
+    annotation on unrelated PRs, telling their authors to hand-edit a GENERATED
+    file that their branch had not touched.
+
+    Suppressing the message instead would cost the selftest its point: what it
+    proves is that the guard says the right THING on drift, not merely that it
+    returns False. So the text is unchanged and still printed — only the ``::``
+    prefix that promotes a line to an annotation is withheld, and only for a
+    finding whose subject is the fixture. A selftest that goes wrong still fails
+    loudly: its own ``selftest FAIL:`` lines and a nonzero exit are untouched.
+
+    ``flush=True`` on both branches: stdout is block-buffered when piped in CI,
+    and an annotation that does not start its own flushed line is dropped
+    silently (the house law tests/test_audit_unrun_tests.py::
+    test_annotations_start_the_line_and_flush pins for the unrun-test census).
+    """
+    if annotate:
+        print(f"::{level} title={title}::{message}", flush=True)
+    else:
+        print(f"selftest: fixture {level} [{title}]: {message}", flush=True)
 
 
 def render_canonical(templates: Path) -> str:
@@ -194,40 +233,49 @@ def lost_decorations(current: str, spliced: str) -> list[str]:
     return lost
 
 
-def extract_nav(text: str, label: str) -> str:
+def extract_nav(text: str, label: str, *, annotate: bool = True) -> str:
     """The page's single header element, or SystemExit with a real diagnosis."""
     found = _NAV_RE.findall(text)
     if len(found) != 1:
-        print(
-            f"::error title=chat-nav-sync boundary lost::{label} has {len(found)} "
+        report(
+            "error", "chat-nav-sync boundary lost",
+            f"{label} has {len(found)} "
             f'<nav class="site-nav">…</nav> elements, expected exactly 1. This '
             f"guard splices on that element; it cannot run against a page whose "
             f"header wrapper was renamed, removed or duplicated. Restore the "
             f"wrapper (or update {Path(__file__).name} deliberately) — do not "
-            f"leave this unresolved, it is the page's whole navigation."
+            f"leave this unresolved, it is the page's whole navigation.",
+            annotate=annotate,
         )
         raise SystemExit(1)
     return found[0]
 
 
-def check(root: Path, fix: bool = False) -> bool:
-    """True when the page's header matches the partial (after fixing, if asked)."""
+def check(root: Path, fix: bool = False, *, annotate: bool = True) -> bool:
+    """True when the page's header matches the partial (after fixing, if asked).
+
+    `annotate=False` keeps this run's findings out of GitHub's annotation feed
+    while printing the identical text — for ``selftest()``, whose subject is a
+    fixture and not this repo. See ``report()``.
+    """
     templates, site = root / "templates", root / "site"
     tpl_path, site_path = templates / PAGE, site / PAGE
     canonical = render_canonical(templates)
     page_text = tpl_path.read_text(encoding="utf-8")
-    current = extract_nav(page_text, f"templates/{PAGE}")
+    current = extract_nav(page_text, f"templates/{PAGE}", annotate=annotate)
 
     if normalize(current) == normalize(canonical):
         print(f"chat nav sync OK (templates/{PAGE} header == {CANONICAL})")
         return True
 
     if not fix:
-        print(
-            f"::error title=chat-nav-sync drift::templates/{PAGE}'s header no "
+        report(
+            "error", "chat-nav-sync drift",
+            f"templates/{PAGE}'s header no "
             f"longer matches {CANONICAL}. The header is GENERATED — do not hand-"
             f"edit it; edit {CANONICAL} / _navlinks.html.j2 and re-run: "
-            f"python -m scripts.sync_chat_nav --fix"
+            f"python -m scripts.sync_chat_nav --fix",
+            annotate=annotate,
         )
         return False
 
@@ -237,14 +285,16 @@ def check(root: Path, fix: bool = False) -> bool:
 
     lost = lost_decorations(current, spliced)
     if lost:
-        print(
-            f"::error title=chat-nav-sync decorations lost::re-splicing "
+        report(
+            "error", "chat-nav-sync decorations lost",
+            "re-splicing "
             f"templates/{PAGE}'s header would drop optimizer decorations that its "
             f"own assets still need: {'; '.join(lost)}. Refusing to write — a "
             f"stripped ?v= drops the asset out of the Caddyfile's "
             f"`immutable, max-age=1y` tier and a stripped defer puts the script "
             f"back on the first-paint path. Apply the header edit by hand, "
-            f"preserving these, or fix redecorate()."
+            f"preserving these, or fix redecorate().",
+            annotate=annotate,
         )
         raise SystemExit(1)
 
@@ -252,11 +302,12 @@ def check(root: Path, fix: bool = False) -> bool:
     # ONLY stamps and defer, the two things normalize() forgives. Anything else it
     # introduced would make --fix write a page the very next run calls drifted.
     if normalize(spliced) != normalize(canonical):
-        print(
-            f"::error title=chat-nav-sync redecoration changed the markup::"
+        report(
+            "error", "chat-nav-sync redecoration changed the markup",
             f"re-applying the optimizer's decorations to {PAGE}'s new header "
             f"changed it by more than ?v= stamps and defer, so --fix would write "
-            f"a page that immediately reports drift. Refusing to write."
+            f"a page that immediately reports drift. Refusing to write.",
+            annotate=annotate,
         )
         raise SystemExit(1)
 
@@ -266,13 +317,14 @@ def check(root: Path, fix: bool = False) -> bool:
             ("http://", "https://", "//", "data:"))
     )
     if bare:
-        print(
-            f"::warning title=chat-nav-sync unstamped asset::{PAGE}'s header "
+        report(
+            "warning", "chat-nav-sync unstamped asset",
+            f"{PAGE}'s header "
             f"references {len(bare)} local asset(s) the old header did not, so "
             f"they have no stamp to carry and ship bare until the next optimizer "
             f"pass: {bare}. Run `python -m scripts.optimize_assets` (or let the "
             f"next render) before relying on their cache headers.",
-            flush=True,
+            annotate=annotate,
         )
 
     updated = page_text.replace(current, spliced, 1)
@@ -292,11 +344,13 @@ def check(root: Path, fix: bool = False) -> bool:
     from lib.pages import DBASE_MARKER
 
     if page_text.count(DBASE_MARKER) != updated.count(DBASE_MARKER):
-        print(
-            f"::error title=chat-nav-sync shim lost::splicing the header changed the "
+        report(
+            "error", "chat-nav-sync shim lost",
+            "splicing the header changed the "
             f"number of {DBASE_MARKER!r} shim tags in {PAGE} "
             f"({page_text.count(DBASE_MARKER)} -> {updated.count(DBASE_MARKER)}). "
-            f"Refusing to write. The header splice must not touch <head>."
+            f"Refusing to write. The header splice must not touch <head>.",
+            annotate=annotate,
         )
         raise SystemExit(1)
 
@@ -312,7 +366,15 @@ def check(root: Path, fix: bool = False) -> bool:
 
 
 def selftest() -> int:
-    """Guard the guard: a hand-edited header must go red, and --fix must heal it."""
+    """Guard the guard: a hand-edited header must go red, and --fix must heal it.
+
+    Every call below passes ``annotate=False``. The drift this function creates is
+    the POINT of the exercise and it lives in a mkdtemp copy, so its findings are
+    not this repo's and must not reach GitHub's annotation feed — a red annotation
+    from a green step sent readers of unrelated PRs hunting a file they had not
+    touched. The messages themselves still print, unchanged, so the log remains
+    checkable; see ``report()``.
+    """
     import hashlib
     import shutil
     import tempfile
@@ -324,10 +386,10 @@ def selftest() -> int:
         (tmp / "site").mkdir()
         shutil.copy2(root / "site" / PAGE, tmp / "site" / PAGE)
 
-        if not check(tmp, fix=True):
+        if not check(tmp, fix=True, annotate=False):
             print("selftest FAIL: --fix could not bring the fixture into sync")
             return 1
-        if not check(tmp):
+        if not check(tmp, annotate=False):
             print("selftest FAIL: a freshly fixed page still reports drift "
                   "(the check is not a fixed point)")
             return 1
@@ -340,17 +402,17 @@ def selftest() -> int:
                          '<div class="nav-links">\n    <a href="whitehouse.html">X</a>', 1),
             encoding="utf-8",
         )
-        if check(tmp):
+        if check(tmp, annotate=False):
             print("selftest FAIL: a hand-added menu link did NOT trip the gate")
             return 1
 
         # Stamps/defer are the optimizer's, not drift — normalizing them must not
         # blind the gate to the line above, which is why this is asserted after it.
-        if not check(tmp, fix=True):
+        if not check(tmp, fix=True, annotate=False):
             print("selftest FAIL: --fix could not heal the drifted page")
             return 1
         healed = page.read_text(encoding="utf-8")
-        if "whitehouse.html" in extract_nav(healed, "fixture"):
+        if "whitehouse.html" in extract_nav(healed, "fixture", annotate=False):
             print("selftest FAIL: --fix left the hand-added link in the header")
             return 1
         if (tmp / "site" / PAGE).read_text(encoding="utf-8") != healed:
@@ -365,7 +427,7 @@ def selftest() -> int:
                    "navigation-refresh.css?v=deadbeef", healed, count=1),
             encoding="utf-8",
         )
-        if not check(tmp):
+        if not check(tmp, annotate=False):
             print("selftest FAIL: an optimizer ?v= stamp was reported as drift")
             return 1
 
@@ -385,7 +447,8 @@ def selftest() -> int:
             lambda url: hashlib.sha256(url.encode()).hexdigest()[:8],
         )
         page.write_text(decorated, encoding="utf-8")
-        want_stamps, want_defer = decorations(extract_nav(decorated, "fixture"))
+        want_stamps, want_defer = decorations(
+            extract_nav(decorated, "fixture", annotate=False))
         if not want_stamps or not want_defer:
             print(f"selftest FAIL: the fixture header carries {len(want_stamps)} stamp(s) "
                   f"and {len(want_defer)} defer(s) — this assertion would be vacuous")
@@ -396,11 +459,11 @@ def selftest() -> int:
                               '<div class="nav-links">\n    <a href="whitehouse.html">X</a>', 1),
             encoding="utf-8",
         )
-        if not check(tmp, fix=True):
+        if not check(tmp, fix=True, annotate=False):
             print("selftest FAIL: --fix could not heal the decorated page")
             return 1
         healed = page.read_text(encoding="utf-8")
-        nav = extract_nav(healed, "fixture")
+        nav = extract_nav(healed, "fixture", annotate=False)
         got_stamps, got_defer = decorations(nav)
         if "whitehouse.html" in nav:
             print("selftest FAIL: --fix left the hand-added link in the decorated header")
@@ -420,7 +483,7 @@ def selftest() -> int:
         if (tmp / "site" / PAGE).read_text(encoding="utf-8") != healed:
             print("selftest FAIL: --fix did not mirror the decorated site copy")
             return 1
-        if not check(tmp):
+        if not check(tmp, annotate=False):
             print("selftest FAIL: the re-decorated page reports drift — --fix is not a "
                   "fixed point once it carries decorations")
             return 1
