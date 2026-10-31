@@ -1,4 +1,4 @@
-"""Entry Timing W2 — T1 feasibility census (v5). Dates, tickers, lane/tier flags and commit
+"""Entry Timing W2 — T1 feasibility census (v6). Dates, tickers, lane/tier flags and commit
 times ONLY. Reads no price, grade, outcome, excess or paired-race column; the SPY parquet is
 opened for its DATE INDEX only (the NYSE session calendar).
 
@@ -20,6 +20,10 @@ Bases:
   (16:00 ET) is strictly after the arrival time + ``--buffer-minutes``. A later blob that
   changes the BUY set of an already-carried stamp_date is a HEAL: that session is a GAP
   (lane state not as practised). Every monthly parquet that ever existed on main is walked.
+* ``--server-arrival``: the commit clock (``%cI``) is the pushing bot's clock, so the instant
+  is corrected to ``max(commit instant, earliest GitHub check-suite createdAt for that commit)``
+  — a server-side arrival witness — through batched GraphQL reads (100 commits per read);
+  commits without a server witness keep the commit clock and are counted.
 """
 from __future__ import annotations
 
@@ -112,6 +116,7 @@ def commit_walk(months: list[str] | None, sessions: list[str], buffer_minutes: i
     stamp_date differs is a HEAL and the session is reported in ``healed_stamp_dates``."""
     months = months or _candidate_months()
     first_arrival: dict[str, tuple[str, str]] = {}
+    month_of: dict[str, set[str]] = {}
     first_curated: dict[str, bool] = {}
     buy_at_first: dict[str, set[str]] = {}
     sa_bad: set[tuple[str, str]] = set()
@@ -125,17 +130,20 @@ def commit_walk(months: list[str] | None, sessions: list[str], buffer_minutes: i
             n_commits += 1
             with tempfile.NamedTemporaryFile(suffix=".parquet", delete=False) as tf:
                 blob = subprocess.run(["git", "cat-file", "-p", f"{sha}:{rel}"], capture_output=True, check=False)
-                if blob.returncode != 0:
-                    continue
                 tf.write(blob.stdout)
                 tmp = tf.name
             try:
+                if blob.returncode != 0:
+                    raise RuntimeError("cat-file failed")
                 d = pd.read_parquet(tmp, columns=["stamp_date", "ticker", "lane", "tier", "signal_asof"])
-            except Exception:
+            except Exception as exc:
+                SKIPPED_BLOBS.append(f"{sha[:12]}:{rel}:{type(exc).__name__}")
                 continue
             finally:
                 Path(tmp).unlink(missing_ok=True)
             d["sd"] = pd.to_datetime(d["stamp_date"]).dt.strftime("%Y-%m-%d")
+            for sd in set(d["sd"]):
+                month_of.setdefault(sd, set()).add(m)
             cur = set(d[d.tier == "curated"]["sd"])
             b = d[d.lane == "buy"]
             sa = pd.to_datetime(b["signal_asof"], errors="coerce").dt.strftime("%Y-%m-%d")
@@ -154,12 +162,21 @@ def commit_walk(months: list[str] | None, sessions: list[str], buffer_minutes: i
                     healed[sd] = {"heal_commit": sha[:12], "heal_committed": ctime,
                                   "buy_added": len(buy_now.get(sd, set()) - buy_at_first[sd]),
                                   "buy_removed": len(buy_at_first[sd] - buy_now.get(sd, set()))}
-    knowable = {}
+    srv = server_arrival(sorted({sha for _, sha in first_arrival.values()})) if USE_SERVER_ARRIVAL else None
+    knowable, shift = {}, {}
+    si = {d: i for i, d in enumerate(sessions)}
     for sd, (ctime, sha) in first_arrival.items():
-        ct, ks = _knowable(ctime, sessions, buffer_minutes)
-        knowable[sd] = {"commit": sha[:12], "arrived_et": ct.isoformat(), "knowable_session": ks}
+        ct, ks = _knowable(ctime, sessions, buffer_minutes, sha)
+        knowable[sd] = {"commit": sha[:12], "arrived_et": ct.isoformat(), "knowable_session": ks,
+                        "server_witness": sha in SERVER_ARRIVAL}
+        if ks in si and sd in si:
+            shift[si[ks] - si[sd]] = shift.get(si[ks] - si[sd], 0) + 1
     buy_first = sorted((sd, t) for sd, ts in buy_at_first.items() for t in ts)
-    return {"basis": "first-parent arrival on origin/main; lane state = first blob per stamp_date; a later BUY-set change = HEAL (GAP)",
+    return {"basis": "first-parent origin/main commit clock, corrected by the server check-suite witness when --server-arrival; lane state = first blob per stamp_date; a later BUY-set change = HEAL (GAP)",
+            "origin_main_sha": subprocess.run(["git", "rev-parse", "origin/main"], capture_output=True, text=True, check=True).stdout.strip(),
+            "server_arrival": srv, "skipped_blobs": list(SKIPPED_BLOBS),
+            "stamp_dates_in_two_monthly_files": sorted(sd for sd, ms in month_of.items() if len(ms) > 1),
+            "knowable_shift_sessions_all_stamp_dates": {str(k): v for k, v in sorted(shift.items())},
             "months_walked": months, "commits_walked": n_commits, "buy_rows_first_blob": len(buy_first),
             "stamp_dates_seen": len(first_arrival), "healthy_stamp_dates_first_commit": sum(first_curated.values()),
             "healed_stamp_dates": healed, "knowable": knowable, "buy_first": buy_first,
@@ -167,10 +184,46 @@ def commit_walk(months: list[str] | None, sessions: list[str], buffer_minutes: i
 
 
 TURN_WATCH_DIR = "data/us_prophet_rank/episode_inputs/turn_watch"
+USE_SERVER_ARRIVAL = False
 
 
-def _knowable(ctime: str, sessions: list[str], buffer_minutes: int):
-    ct = datetime.fromisoformat(ctime).astimezone(ET) + timedelta(minutes=buffer_minutes)
+SERVER_ARRIVAL: dict[str, str] = {}   # sha -> ISO instant (filled by server_arrival())
+SKIPPED_BLOBS: list[str] = []
+
+
+def server_arrival(shas: list[str]) -> dict:
+    """Earliest GitHub check-suite createdAt per commit (server clock) via batched GraphQL."""
+    import os
+    owner, name = "mastermindx-market-intelligence", "macro"
+    found, missing = 0, []
+    for i in range(0, len(shas), 100):
+        batch = shas[i:i + 100]
+        q = "query{repository(owner:\"%s\",name:\"%s\"){" % (owner, name)
+        q += " ".join('c%d: object(oid:"%s"){... on Commit{oid committedDate checkSuites(first:20){nodes{createdAt}}}}' % (j, sha) for j, sha in enumerate(batch))
+        q += "}}"
+        r = subprocess.run(["gh", "api", "graphql", "-f", f"query={q}"], capture_output=True, text=True)
+        if r.returncode != 0:
+            missing.extend(batch)
+            continue
+        data = json.loads(r.stdout)["data"]["repository"]
+        for j, sha in enumerate(batch):
+            node = data.get(f"c{j}") or {}
+            times = [n["createdAt"] for n in (node.get("checkSuites") or {}).get("nodes", []) if n.get("createdAt")]
+            if times:
+                SERVER_ARRIVAL[sha] = min(times)
+                found += 1
+            else:
+                missing.append(sha)
+    return {"commits": len(shas), "with_server_witness": found, "without": len(missing)}
+
+
+def _knowable(ctime: str, sessions: list[str], buffer_minutes: int, sha: str | None = None):
+    ct = datetime.fromisoformat(ctime).astimezone(ET)
+    srv = SERVER_ARRIVAL.get(sha or "")
+    if srv:
+        st = datetime.fromisoformat(srv.replace("Z", "+00:00")).astimezone(ET)
+        ct = max(ct, st)
+    ct = ct + timedelta(minutes=buffer_minutes)
     ks = next((d for d in sessions if datetime.fromisoformat(d + "T16:00:00").replace(tzinfo=ET) > ct), None)
     return ct, ks
 
@@ -209,11 +262,18 @@ def document_walk(sessions: list[str], buffer_minutes: int) -> dict:
             receipt = f"sha256:{doc['content_sha256']}"
             if receipt not in earliest:
                 earliest[receipt] = (ctime, sha, doc["data_session"][:10])
-    knowable = {}
+    srv = server_arrival(sorted({sha for _, sha, _ in earliest.values()})) if USE_SERVER_ARRIVAL else None
+    knowable, shift = {}, {}
+    si = {d: i for i, d in enumerate(sessions)}
     for receipt, (ctime, sha, ds) in earliest.items():
-        ct, ks = _knowable(ctime, sessions, buffer_minutes)
-        knowable[receipt] = {"commit": sha[:12], "arrived_et": ct.isoformat(), "data_session": ds, "knowable_session": ks}
-    return {"basis": "first-parent arrival on origin/main", "commits_walked": len(log) // 2, "blobs": len(seen), "receipts": len(earliest), "knowable": knowable}
+        ct, ks = _knowable(ctime, sessions, buffer_minutes, sha)
+        knowable[receipt] = {"commit": sha[:12], "arrived_et": ct.isoformat(), "data_session": ds, "knowable_session": ks,
+                             "server_witness": sha in SERVER_ARRIVAL}
+        if ks in si and ds in si:
+            shift[si[ks] - si[ds]] = shift.get(si[ks] - si[ds], 0) + 1
+    return {"basis": "first-parent origin/main commit clock, corrected by the server check-suite witness when --server-arrival",
+            "server_arrival": srv, "knowable_shift_sessions_all_receipts": {str(k): v for k, v in sorted(shift.items())},
+            "commits_walked": len(log) // 2, "blobs": len(seen), "receipts": len(earliest), "knowable": knowable}
 
 
 def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk=None, dwalk=None, k_fixed=2) -> dict:
@@ -256,7 +316,7 @@ def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk
               "incumbent_led": 0, "incumbent_led_unknown": 0, "incumbent_led_unknown_pre_gap": 0, "incumbent_led_unknown_pre_identity": 0,
               "t1_identified_exact": 0, "t1_identified_interval": 0, "t1_cash_window_covered": 0,
               "t1_censored_gap_no_stamp": 0, "t1_unknown_signal_asof": 0, "t1_unknown_identity": 0,
-              "t1_buy_stamp_inside_k_but_knowable_outside": 0,
+              "t1_buy_stamp_inside_k_but_knowable_outside": 0, "t1_identified_exact_gap_after_admission": 0,
               "exact_zero_lag": 0, "exact_knowable_missing": 0, "exact_disc_knowable_missing": 0,
               "exact_knowable_later_than_stamp": 0, "exact_disc_knowable_later_than_session": 0,
               "exact_symbol_differs_from_ticker_at_observation": 0, "exact_multi_symbol_security": 0,
@@ -287,9 +347,14 @@ def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk
 
     lag_exact, lag_interval_obs, lag_interval_early, by_month_exact = [], [], [], {}
     t1_shift, t0_shift, exec_lead, exec_lead_strict = [], [], [], []
-    sessions_exact, sessions_primary, cohort = set(), set(), {}
+    sessions_exact, sessions_primary, cohort, late_hit_lag, disc_shift = set(), set(), {}, {}, {}
     for o in opened:
         s = receipt_sessions.get(o["receipt"])
+        _dk = (dwalk or {}).get("knowable", {}).get(o["receipt"])
+        if _dk and _dk.get("knowable_session") in si and s in si:
+            _sh = si[_dk["knowable_session"]] - si[s]
+            disc_shift[_sh] = disc_shift.get(_sh, 0) + 1
+            counts["late_discovery_arrival_gt1_session"] = counts.get("late_discovery_arrival_gt1_session", 0) + (_sh > 1)
         if not s:
             counts["t_disc_unrecovered"] += 1
             continue
@@ -347,7 +412,8 @@ def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk
                     break
                 if walk is not None and (knowable_stamp.get(d) is None or knowable_stamp[d] > k_limit):
                     counts["t1_buy_stamp_inside_k_but_knowable_outside"] += 1
-                    break   # not executable inside K: falls to cash / censored below
+                    late_hit_lag[si[d] - i0] = late_hit_lag.get(si[d] - i0, 0) + 1
+                    continue   # not executable inside K: a later in-window row may still be
                 t_cur, t_sym = d, hit[0]
                 break
         if unknown:
@@ -365,12 +431,14 @@ def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk
             lag_interval_early.append(si[gap_before[0]] - i0)
             continue
         counts["t1_identified_exact"] += 1
+        window_gap_free = all(d in healthy for d in window)
+        counts["t1_identified_exact_gap_after_admission"] += not window_gap_free
         counts["exact_zero_lag"] += (si[t_cur] - i0) == 0
         counts["exact_symbol_differs_from_ticker_at_observation"] += t_sym != o["ticker"]
         counts["exact_multi_symbol_security"] += len(reverse.get(sid, [])) > 1
         by_month_exact[s[:7]] = by_month_exact.get(s[:7], 0) + 1
         lag_exact.append(si[t_cur] - i0)
-        if strict:
+        if strict and window_gap_free:
             sessions_exact.add(s)
             sessions_primary.add(s)
             cohort[s] = cohort.get(s, 0) + 1
@@ -392,7 +460,7 @@ def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk
         counts["exact_disc_knowable_later_than_session"] += sh0 > 0
         lead = (si[t_cur] + sh1) - (i0 + sh0)   # t_exec(T1) - t_exec(T0): both fill one session after their knowable session
         exec_lead.append(lead)
-        if strict:
+        if strict and window_gap_free:
             exec_lead_strict.append(lead)
 
     def _dist(v):
@@ -405,11 +473,13 @@ def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk
         return {"n": int(len(x)), "median": float(x.median()), "iqr": [float(x.quantile(.25)), float(x.quantile(.75))], "distribution": _dist(v)}
 
     ex = pd.Series(lag_exact, dtype=float)
-    k_star = float(ex.median()) if len(ex) else None
+    k_star_lag = float(ex.median()) if len(ex) else None
+    k_star = float(pd.Series(exec_lead, dtype=float).median()) if exec_lead else k_star_lag
     n12 = {"healthy_stamp_dates_head": len(head_healthy), "healthy_stamp_dates_first_commit": len(healthy),
            "stamp_dates_total": int(c["stamp_date"].nunique()),
            "curated_rows_per_stamp_median": float(c[c.tier == "curated"].groupby("stamp_date").size().median()),
            "buy_rows_per_stamp_median": float(c[c.lane == "buy"].groupby("stamp_date").size().median()),
+           "per_stamp_medians_basis": "HEAD working tree (healed rows included; descriptive only)",
            "last_healthy_stamp_date": max(healthy) if healthy else None}
     return {"basis": "W1 r3 receipt sessions; VendorAliasTable membership join, security-first (record-derived candidates confirmed by resolve() on every window session, all candidates of a multi-symbol security); NYSE trading sessions; producer-health coverage on first-arrival blobs",
             "lane_state_basis": lane_basis, "head_vs_first_commit_disagreement": disagreement,
@@ -427,7 +497,11 @@ def freeze_basis(c, opened, receipt_sessions, sessions, *, k, r_from, r_to, walk
             "lag_sessions_exact": _stats(lag_exact),
             "lag_sessions_interval_observed_stamp": _stats(lag_interval_obs),
             "lag_sessions_interval_earliest_possible": _stats(lag_interval_early),
-            "k_star_sessions_exact_basis": k_star,
+            "k_star_sessions_exact_basis": k_star, "k_star_basis": "median executable lead (falls back to stamp lag without the walks)",
+            "k_star_stamp_lag_sessions": k_star_lag,
+            "late_hit_stamp_lag_sessions": {str(k): v for k, v in sorted(late_hit_lag.items())},
+            "discovery_knowable_shift_sessions_all_R_units": {str(k): v for k, v in sorted(disc_shift.items())},
+            "origin_main_sha": (walk or {}).get("origin_main_sha"),
             "t2m_identified": (k_star is not None and k_star not in (0, k_fixed)),
             "t1_knowability_shift_sessions_exact": _dist(t1_shift),
             "t0_knowability_shift_sessions_exact": _dist(t0_shift),
@@ -444,17 +518,20 @@ def main() -> None:
     ap.add_argument("--commit-walk", action="store_true")
     ap.add_argument("--buffer-minutes", type=int, default=30)
     ap.add_argument("--document-walk", action="store_true")
+    ap.add_argument("--server-arrival", action="store_true")
     a = ap.parse_args()
+    global USE_SERVER_ARRIVAL
+    USE_SERVER_ARRIVAL = bool(a.server_arrival)
     c, opened, sessions = _stamps(), _opened(), _sessions()
     out = {"screening": screening(c, opened)}
     walk = None
     if a.commit_walk:
         walk = commit_walk(None, sessions, a.buffer_minutes)
-        out["commit_walk"] = {k: v for k, v in walk.items() if k not in ("knowable", "buy_first", "first_curated", "sa_bad_first")}
+        out["commit_walk"] = {k: v for k, v in walk.items() if k not in ("buy_first", "first_curated", "sa_bad_first")}
     dwalk = None
     if a.document_walk:
         dwalk = document_walk(sessions, a.buffer_minutes)
-        out["document_walk"] = {k: v for k, v in dwalk.items() if k != "knowable"}
+        out["document_walk"] = dict(dwalk)
     if a.receipt_sessions:
         raw = json.loads(a.receipt_sessions.read_text())
         out["freeze_basis"] = freeze_basis(c, opened, raw.get("sessions", raw), sessions, k=a.k,

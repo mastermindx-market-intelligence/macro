@@ -42,7 +42,28 @@
   "note": "revision-2 screening basis: opened_session stand-in, ticker join, stamp-grid lags"
  },
  "commit_walk": {
-  "basis": "first-parent arrival on origin/main; lane state = first blob per stamp_date; a later BUY-set change = HEAL (GAP)",
+  "basis": "first-parent origin/main commit clock, corrected by the server check-suite witness when --server-arrival; lane state = first blob per stamp_date; a later BUY-set change = HEAL (GAP)",
+  "origin_main_sha": "761e814eda8460d09ad6c53adc8ee495b4283cf1",
+  "server_arrival": {
+   "commits": 44,
+   "with_server_witness": 31,
+   "without": 13
+  },
+  "skipped_blobs": [],
+  "stamp_dates_in_two_monthly_files": [],
+  "knowable_shift_sessions_all_stamp_dates": {
+   "1": 32,
+   "2": 12,
+   "3": 1,
+   "4": 1,
+   "5": 1,
+   "6": 1,
+   "8": 1,
+   "11": 1,
+   "12": 1,
+   "13": 1,
+   "16": 1
+  },
   "months_walked": [
    "2026-07",
    "2026-08",
@@ -66,13 +87,735 @@
     "buy_added": 104,
     "buy_removed": 0
    }
+  },
+  "knowable": {
+   "2026-07-31": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-18": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-12": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-07": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-14": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-19": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-20": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-05": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-06": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-17": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-21": {
+    "commit": "69268b06502c",
+    "arrived_et": "2026-08-23T19:25:44-04:00",
+    "knowable_session": "2026-08-24",
+    "server_witness": true
+   },
+   "2026-08-24": {
+    "commit": "be061c6d49e9",
+    "arrived_et": "2026-08-25T02:12:31-04:00",
+    "knowable_session": "2026-08-25",
+    "server_witness": false
+   },
+   "2026-08-25": {
+    "commit": "576959b11804",
+    "arrived_et": "2026-08-26T02:47:21-04:00",
+    "knowable_session": "2026-08-26",
+    "server_witness": true
+   },
+   "2026-08-26": {
+    "commit": "c4217922a866",
+    "arrived_et": "2026-08-27T06:56:14-04:00",
+    "knowable_session": "2026-08-27",
+    "server_witness": true
+   },
+   "2026-08-27": {
+    "commit": "e9646c38fab8",
+    "arrived_et": "2026-08-28T04:37:18-04:00",
+    "knowable_session": "2026-08-28",
+    "server_witness": true
+   },
+   "2026-08-28": {
+    "commit": "6602a935a912",
+    "arrived_et": "2026-08-29T06:33:00-04:00",
+    "knowable_session": "2026-08-31",
+    "server_witness": true
+   },
+   "2026-08-31": {
+    "commit": "3c6152147b9b",
+    "arrived_et": "2026-09-01T03:41:47-04:00",
+    "knowable_session": "2026-09-01",
+    "server_witness": true
+   },
+   "2026-09-02": {
+    "commit": "14ca8d3647d9",
+    "arrived_et": "2026-09-03T23:25:15-04:00",
+    "knowable_session": "2026-09-04",
+    "server_witness": true
+   },
+   "2026-09-03": {
+    "commit": "297b3e6f16a2",
+    "arrived_et": "2026-09-04T09:32:17-04:00",
+    "knowable_session": "2026-09-04",
+    "server_witness": true
+   },
+   "2026-09-04": {
+    "commit": "32dbf29f0535",
+    "arrived_et": "2026-09-04T23:59:51-04:00",
+    "knowable_session": "2026-09-08",
+    "server_witness": false
+   },
+   "2026-09-08": {
+    "commit": "477b9c3f449e",
+    "arrived_et": "2026-09-09T07:22:29-04:00",
+    "knowable_session": "2026-09-09",
+    "server_witness": true
+   },
+   "2026-09-09": {
+    "commit": "cdab3525f649",
+    "arrived_et": "2026-09-10T06:44:17-04:00",
+    "knowable_session": "2026-09-10",
+    "server_witness": true
+   },
+   "2026-09-10": {
+    "commit": "9b2d7b7d8755",
+    "arrived_et": "2026-09-11T07:21:25-04:00",
+    "knowable_session": "2026-09-11",
+    "server_witness": true
+   },
+   "2026-09-11": {
+    "commit": "60103cfca497",
+    "arrived_et": "2026-09-12T07:20:09-04:00",
+    "knowable_session": "2026-09-14",
+    "server_witness": true
+   },
+   "2026-09-14": {
+    "commit": "5342daea6162",
+    "arrived_et": "2026-09-15T15:53:56-04:00",
+    "knowable_session": "2026-09-15",
+    "server_witness": true
+   },
+   "2026-09-15": {
+    "commit": "1c4b19286bc6",
+    "arrived_et": "2026-09-16T18:57:22-04:00",
+    "knowable_session": "2026-09-17",
+    "server_witness": true
+   },
+   "2026-09-16": {
+    "commit": "92b0487f3187",
+    "arrived_et": "2026-09-17T06:23:04-04:00",
+    "knowable_session": "2026-09-17",
+    "server_witness": true
+   },
+   "2026-09-17": {
+    "commit": "706c352cd04f",
+    "arrived_et": "2026-09-18T04:42:36-04:00",
+    "knowable_session": "2026-09-18",
+    "server_witness": true
+   },
+   "2026-09-18": {
+    "commit": "00bf7ea85f91",
+    "arrived_et": "2026-09-19T18:17:39-04:00",
+    "knowable_session": "2026-09-21",
+    "server_witness": true
+   },
+   "2026-09-21": {
+    "commit": "e77ddcedfe9f",
+    "arrived_et": "2026-09-22T17:21:37-04:00",
+    "knowable_session": "2026-09-23",
+    "server_witness": false
+   },
+   "2026-09-22": {
+    "commit": "69b22c3b466a",
+    "arrived_et": "2026-09-23T16:45:48-04:00",
+    "knowable_session": "2026-09-24",
+    "server_witness": false
+   },
+   "2026-09-23": {
+    "commit": "fab3ad33b72f",
+    "arrived_et": "2026-09-24T06:09:54-04:00",
+    "knowable_session": "2026-09-24",
+    "server_witness": false
+   },
+   "2026-09-24": {
+    "commit": "38f2e3698d3c",
+    "arrived_et": "2026-09-25T17:05:37-04:00",
+    "knowable_session": "2026-09-28",
+    "server_witness": false
+   },
+   "2026-09-25": {
+    "commit": "5e921b1c54f0",
+    "arrived_et": "2026-09-26T15:58:26-04:00",
+    "knowable_session": "2026-09-28",
+    "server_witness": false
+   },
+   "2026-09-28": {
+    "commit": "25b798ecc71c",
+    "arrived_et": "2026-09-29T13:19:25-04:00",
+    "knowable_session": "2026-09-29",
+    "server_witness": true
+   },
+   "2026-09-29": {
+    "commit": "dc7d5011f25c",
+    "arrived_et": "2026-09-30T10:19:05-04:00",
+    "knowable_session": "2026-09-30",
+    "server_witness": true
+   },
+   "2026-09-30": {
+    "commit": "887b2647956e",
+    "arrived_et": "2026-10-01T15:54:40-04:00",
+    "knowable_session": "2026-10-01",
+    "server_witness": false
+   },
+   "2026-10-01": {
+    "commit": "ec66cc3fa210",
+    "arrived_et": "2026-10-02T06:42:03-04:00",
+    "knowable_session": "2026-10-02",
+    "server_witness": false
+   },
+   "2026-10-02": {
+    "commit": "f73c7271ede9",
+    "arrived_et": "2026-10-03T15:57:56-04:00",
+    "knowable_session": "2026-10-05",
+    "server_witness": true
+   },
+   "2026-10-05": {
+    "commit": "f7dd82910f31",
+    "arrived_et": "2026-10-06T05:53:18-04:00",
+    "knowable_session": "2026-10-06",
+    "server_witness": false
+   },
+   "2026-10-06": {
+    "commit": "856c5939858f",
+    "arrived_et": "2026-10-07T05:45:08-04:00",
+    "knowable_session": "2026-10-07",
+    "server_witness": false
+   },
+   "2026-10-08": {
+    "commit": "4d6ca3f0378f",
+    "arrived_et": "2026-10-09T06:07:33-04:00",
+    "knowable_session": "2026-10-09",
+    "server_witness": false
+   },
+   "2026-10-07": {
+    "commit": "b33d49061668",
+    "arrived_et": "2026-10-09T11:03:45-04:00",
+    "knowable_session": "2026-10-09",
+    "server_witness": true
+   },
+   "2026-10-09": {
+    "commit": "0c9f921769d7",
+    "arrived_et": "2026-10-10T08:02:00-04:00",
+    "knowable_session": "2026-10-12",
+    "server_witness": true
+   },
+   "2026-10-13": {
+    "commit": "be6bd11e9bcf",
+    "arrived_et": "2026-10-14T16:30:45-04:00",
+    "knowable_session": "2026-10-15",
+    "server_witness": true
+   },
+   "2026-10-14": {
+    "commit": "4b7d6c7e00dc",
+    "arrived_et": "2026-10-15T05:03:11-04:00",
+    "knowable_session": "2026-10-15",
+    "server_witness": false
+   },
+   "2026-10-15": {
+    "commit": "77bdc72d3897",
+    "arrived_et": "2026-10-16T15:09:45-04:00",
+    "knowable_session": "2026-10-16",
+    "server_witness": true
+   },
+   "2026-10-16": {
+    "commit": "cbab355f0b39",
+    "arrived_et": "2026-10-18T04:04:29-04:00",
+    "knowable_session": "2026-10-19",
+    "server_witness": true
+   },
+   "2026-10-19": {
+    "commit": "5996c79af937",
+    "arrived_et": "2026-10-20T17:38:13-04:00",
+    "knowable_session": "2026-10-21",
+    "server_witness": true
+   },
+   "2026-10-20": {
+    "commit": "d6952594712d",
+    "arrived_et": "2026-10-21T16:12:30-04:00",
+    "knowable_session": "2026-10-22",
+    "server_witness": true
+   },
+   "2026-10-21": {
+    "commit": "19e59b5143b0",
+    "arrived_et": "2026-10-22T17:39:00-04:00",
+    "knowable_session": "2026-10-23",
+    "server_witness": true
+   },
+   "2026-10-22": {
+    "commit": "296df1b5c7b5",
+    "arrived_et": "2026-10-23T16:56:52-04:00",
+    "knowable_session": "2026-10-26",
+    "server_witness": true
+   },
+   "2026-10-23": {
+    "commit": "420f7c0c2155",
+    "arrived_et": "2026-10-25T04:56:50-04:00",
+    "knowable_session": "2026-10-26",
+    "server_witness": true
+   },
+   "2026-10-29": {
+    "commit": "9198de0640cd",
+    "arrived_et": "2026-10-30T17:14:44-04:00",
+    "knowable_session": null,
+    "server_witness": true
+   }
   }
  },
  "document_walk": {
-  "basis": "first-parent arrival on origin/main",
+  "basis": "first-parent origin/main commit clock, corrected by the server check-suite witness when --server-arrival",
+  "server_arrival": {
+   "commits": 54,
+   "with_server_witness": 23,
+   "without": 31
+  },
+  "knowable_shift_sessions_all_receipts": {
+   "1": 37,
+   "2": 3,
+   "3": 2,
+   "4": 1,
+   "5": 3,
+   "6": 4,
+   "7": 1,
+   "10": 1,
+   "11": 2
+  },
   "commits_walked": 54,
   "blobs": 54,
-  "receipts": 54
+  "receipts": 54,
+  "knowable": {
+   "sha256:81486f0ae320db513ab25ad6818aa2a7bc72541b7b2545734a2520a1655e67ff": {
+    "commit": "576959b11804",
+    "arrived_et": "2026-08-26T02:47:21-04:00",
+    "data_session": "2026-08-25",
+    "knowable_session": "2026-08-26",
+    "server_witness": true
+   },
+   "sha256:dd77d3f54e86445f1e8a7010bc80936b65ed3e9f675cd6ad8cb7a4d3bb2a79be": {
+    "commit": "c4217922a866",
+    "arrived_et": "2026-08-27T06:56:14-04:00",
+    "data_session": "2026-08-26",
+    "knowable_session": "2026-08-27",
+    "server_witness": true
+   },
+   "sha256:91a2bdd5986912a2fe29228885b6acc129703ed461a4777eb4a5c1beb5e401ba": {
+    "commit": "e9646c38fab8",
+    "arrived_et": "2026-08-28T04:37:18-04:00",
+    "data_session": "2026-08-21",
+    "knowable_session": "2026-08-28",
+    "server_witness": true
+   },
+   "sha256:dd27d2e888df4ecde39976dac6a43fcd2c12a268c7c37b2f8774780b315d4043": {
+    "commit": "a56ce8ad150b",
+    "arrived_et": "2026-08-28T10:11:18-04:00",
+    "data_session": "2026-08-21",
+    "knowable_session": "2026-08-28",
+    "server_witness": true
+   },
+   "sha256:5c50c80e9b6337e4a36bc80e24ee54b71a3fbbf3344a03dc304a3b704402883f": {
+    "commit": "6602a935a912",
+    "arrived_et": "2026-08-29T06:33:00-04:00",
+    "data_session": "2026-08-21",
+    "knowable_session": "2026-08-31",
+    "server_witness": true
+   },
+   "sha256:1547078db48795ee9023afa8f2b791a9b1f246a326999bb790c74fe24fb703d7": {
+    "commit": "f6e7ae9270d4",
+    "arrived_et": "2026-08-29T09:38:03-04:00",
+    "data_session": "2026-08-21",
+    "knowable_session": "2026-08-31",
+    "server_witness": false
+   },
+   "sha256:a6a5b1404c8305e4e4458f4565598effd7b145589d26e22798a460d38968447d": {
+    "commit": "ffb0592bea5a",
+    "arrived_et": "2026-08-30T02:44:50-04:00",
+    "data_session": "2026-08-21",
+    "knowable_session": "2026-08-31",
+    "server_witness": true
+   },
+   "sha256:f417d0d27413ec6922d09a1779d397aee90095c609eb3405759dedea5be86ff0": {
+    "commit": "d4618ca89234",
+    "arrived_et": "2026-08-31T02:46:03-04:00",
+    "data_session": "2026-08-21",
+    "knowable_session": "2026-08-31",
+    "server_witness": true
+   },
+   "sha256:300be2750bc6541bcf622331a6e4afc0f0d7a7cfc41c5a0e0e196ee4c7e9df5c": {
+    "commit": "3c6152147b9b",
+    "arrived_et": "2026-09-01T03:41:47-04:00",
+    "data_session": "2026-08-21",
+    "knowable_session": "2026-09-01",
+    "server_witness": true
+   },
+   "sha256:30c616c639aceebbb5ccf0e20b364ac0ee277dffbfa6913ccffc960c743f3212": {
+    "commit": "297b3e6f16a2",
+    "arrived_et": "2026-09-04T09:32:17-04:00",
+    "data_session": "2026-08-21",
+    "knowable_session": "2026-09-04",
+    "server_witness": true
+   },
+   "sha256:44c56be6e8d107351ed110f23f8b5f1c9ea250f23592672dcf63547423881fb5": {
+    "commit": "32dbf29f0535",
+    "arrived_et": "2026-09-04T23:59:51-04:00",
+    "data_session": "2026-08-21",
+    "knowable_session": "2026-09-08",
+    "server_witness": false
+   },
+   "sha256:e7d1e5f94452deeea40b691617ece7a1fc941dc32d0357d4556903609f1cd513": {
+    "commit": "d6bedf9e3e02",
+    "arrived_et": "2026-09-05T11:17:42-04:00",
+    "data_session": "2026-08-21",
+    "knowable_session": "2026-09-08",
+    "server_witness": true
+   },
+   "sha256:4562a02279c554567d32a9a6a3e8f6de673f119d3dddf2eeb1d7636747f0268c": {
+    "commit": "6d2d2e42349a",
+    "arrived_et": "2026-09-06T04:34:54-04:00",
+    "data_session": "2026-09-04",
+    "knowable_session": "2026-09-08",
+    "server_witness": true
+   },
+   "sha256:59e746e6fbdb12f94f251ec7d486275fe639cc0a1747ac33a6937547916d5691": {
+    "commit": "e303b3448f97",
+    "arrived_et": "2026-09-06T20:53:27-04:00",
+    "data_session": "2026-09-04",
+    "knowable_session": "2026-09-08",
+    "server_witness": true
+   },
+   "sha256:e05adefe37e30b54ce3d1ce24188563eb3b6a2c7a4a24c2de04656fe943e1045": {
+    "commit": "477b9c3f449e",
+    "arrived_et": "2026-09-09T07:22:29-04:00",
+    "data_session": "2026-09-04",
+    "knowable_session": "2026-09-09",
+    "server_witness": true
+   },
+   "sha256:3ecd7e4487de61f156cc09833f3aee82f7ecd5f5189d089d2443a155831f801b": {
+    "commit": "cdab3525f649",
+    "arrived_et": "2026-09-10T06:44:17-04:00",
+    "data_session": "2026-09-04",
+    "knowable_session": "2026-09-10",
+    "server_witness": true
+   },
+   "sha256:47a46e1f9ba0d53c7adaedc043d16ca6dcfe946cc2e97d3a7c03dd2cb83ae30c": {
+    "commit": "9b2d7b7d8755",
+    "arrived_et": "2026-09-11T07:21:25-04:00",
+    "data_session": "2026-09-04",
+    "knowable_session": "2026-09-11",
+    "server_witness": true
+   },
+   "sha256:a7aa02723d5ff7e6e32815fd22eab1d13d18b3dce800c2b3c2b1f2354f3861a7": {
+    "commit": "60103cfca497",
+    "arrived_et": "2026-09-12T07:20:09-04:00",
+    "data_session": "2026-09-04",
+    "knowable_session": "2026-09-14",
+    "server_witness": true
+   },
+   "sha256:b938bd0d34c1e8c80e09ab9d48033e6a18757067dff212a462b6760bc4112355": {
+    "commit": "00fc3dfa93e3",
+    "arrived_et": "2026-09-13T06:58:44-04:00",
+    "data_session": "2026-09-11",
+    "knowable_session": "2026-09-14",
+    "server_witness": true
+   },
+   "sha256:3529e979d4fee8bf0f16a0ab4a5f204e94558bbdce55d093b727e0af726d22cb": {
+    "commit": "cf28b6bcb8e7",
+    "arrived_et": "2026-09-14T07:53:57-04:00",
+    "data_session": "2026-09-11",
+    "knowable_session": "2026-09-14",
+    "server_witness": true
+   },
+   "sha256:d8b86df22857085980a3ff2ff86509880b1739d0868d592ca894ae9c8307961a": {
+    "commit": "4347812e120f",
+    "arrived_et": "2026-09-16T06:18:40-04:00",
+    "data_session": "2026-09-11",
+    "knowable_session": "2026-09-16",
+    "server_witness": true
+   },
+   "sha256:bf510bf3bdf902a3efc90cd95d09b66163b5809e0f507057f5823197cfa027ef": {
+    "commit": "92b0487f3187",
+    "arrived_et": "2026-09-17T06:23:04-04:00",
+    "data_session": "2026-09-16",
+    "knowable_session": "2026-09-17",
+    "server_witness": true
+   },
+   "sha256:f819c8b4abaaa83d95ae56914b44ff69115f0b8fcc561c18b105ff1c3a216436": {
+    "commit": "706c352cd04f",
+    "arrived_et": "2026-09-18T04:42:36-04:00",
+    "data_session": "2026-09-17",
+    "knowable_session": "2026-09-18",
+    "server_witness": true
+   },
+   "sha256:325a5baa33e30615d2588e4c9e011d831533d4b90dde6d3d7e1763129068375f": {
+    "commit": "6fd01a29f029",
+    "arrived_et": "2026-09-18T15:35:16-04:00",
+    "data_session": "2026-09-17",
+    "knowable_session": "2026-09-18",
+    "server_witness": true
+   },
+   "sha256:10b4621e3bd012c8d64068d38f8e03401a4ba92e72e235c434bd4bf6662cfbf5": {
+    "commit": "e77ddcedfe9f",
+    "arrived_et": "2026-09-22T17:21:37-04:00",
+    "data_session": "2026-09-21",
+    "knowable_session": "2026-09-23",
+    "server_witness": false
+   },
+   "sha256:a2d942f3b8c84bc075b117cb0faff788e62b52bf060cb1db82a6255ae8192dc8": {
+    "commit": "69b22c3b466a",
+    "arrived_et": "2026-09-23T16:45:48-04:00",
+    "data_session": "2026-09-23",
+    "knowable_session": "2026-09-24",
+    "server_witness": false
+   },
+   "sha256:ebbf8f3babdad3801c326d25624df4810ac78d737bba0b884c9303e4a75df4ed": {
+    "commit": "fab3ad33b72f",
+    "arrived_et": "2026-09-24T06:09:54-04:00",
+    "data_session": "2026-09-23",
+    "knowable_session": "2026-09-24",
+    "server_witness": false
+   },
+   "sha256:95cc64b8f0f408143177d512d0618b7f1a2fe8720c928bffa3b2bffaf54cf22b": {
+    "commit": "969883bc9733",
+    "arrived_et": "2026-09-25T04:23:18-04:00",
+    "data_session": "2026-09-24",
+    "knowable_session": "2026-09-25",
+    "server_witness": false
+   },
+   "sha256:59446605116ab0918c46abf06b1899c55565632c0fc13dbacdade01b1357a446": {
+    "commit": "38f2e3698d3c",
+    "arrived_et": "2026-09-25T17:05:37-04:00",
+    "data_session": "2026-09-24",
+    "knowable_session": "2026-09-28",
+    "server_witness": false
+   },
+   "sha256:3c9cd232066df6c7880f80d1564da5058eaeb9d4effde1542f994e5e6a790dd6": {
+    "commit": "49b379eed634",
+    "arrived_et": "2026-09-26T05:31:16-04:00",
+    "data_session": "2026-09-25",
+    "knowable_session": "2026-09-28",
+    "server_witness": false
+   },
+   "sha256:2b5bd77b1c66f4293e6eaa300afedc4ccb6b0ca5c0ff27357643363ef64e9af4": {
+    "commit": "5e921b1c54f0",
+    "arrived_et": "2026-09-26T15:58:26-04:00",
+    "data_session": "2026-09-25",
+    "knowable_session": "2026-09-28",
+    "server_witness": false
+   },
+   "sha256:3c4b2d9d9f709aec6223138a32c2c1370c6a29318a19d91c481993ba36697fd2": {
+    "commit": "da2f5a45deb1",
+    "arrived_et": "2026-09-27T04:16:00-04:00",
+    "data_session": "2026-09-25",
+    "knowable_session": "2026-09-28",
+    "server_witness": false
+   },
+   "sha256:621814e3e025d0405bc8d9d27f4e00a11678b6739d29539a302486dff12286ff": {
+    "commit": "071b703f2ef5",
+    "arrived_et": "2026-09-28T05:44:33-04:00",
+    "data_session": "2026-09-25",
+    "knowable_session": "2026-09-28",
+    "server_witness": false
+   },
+   "sha256:f2027c853420cf97aece31d0a7d86396ab6d78443c85d1d30020298828d5516e": {
+    "commit": "76e3251268b6",
+    "arrived_et": "2026-09-30T08:55:28-04:00",
+    "data_session": "2026-09-29",
+    "knowable_session": "2026-09-30",
+    "server_witness": false
+   },
+   "sha256:c15805932aaa862f24d9e6b748036ed86a7531764a688c5c3b61f7c6d7650384": {
+    "commit": "887b2647956e",
+    "arrived_et": "2026-10-01T15:54:40-04:00",
+    "data_session": "2026-09-30",
+    "knowable_session": "2026-10-01",
+    "server_witness": false
+   },
+   "sha256:9dead67200fdc1904797325c7691a756e5787c2be6526c7ba43430c838174230": {
+    "commit": "ec66cc3fa210",
+    "arrived_et": "2026-10-02T06:42:03-04:00",
+    "data_session": "2026-10-01",
+    "knowable_session": "2026-10-02",
+    "server_witness": false
+   },
+   "sha256:f4509c720b782c67b8dc1ca6f7a99eb009ac4032ddac3df60601ab7c7467f355": {
+    "commit": "6ac799d52fa3",
+    "arrived_et": "2026-10-03T04:58:58-04:00",
+    "data_session": "2026-10-02",
+    "knowable_session": "2026-10-05",
+    "server_witness": false
+   },
+   "sha256:c07a0142069970e88b06a10366f27e6caa51714d2ff2c715ff4381cbb0e5cb16": {
+    "commit": "f73c7271ede9",
+    "arrived_et": "2026-10-03T15:57:56-04:00",
+    "data_session": "2026-10-02",
+    "knowable_session": "2026-10-05",
+    "server_witness": true
+   },
+   "sha256:3d191f5e3ff214fc96168b82331fbb1580d71e60ada19f00241ad39adc982a91": {
+    "commit": "dcdb6fa90327",
+    "arrived_et": "2026-10-04T05:17:25-04:00",
+    "data_session": "2026-10-02",
+    "knowable_session": "2026-10-05",
+    "server_witness": false
+   },
+   "sha256:4a573daadf1f61ddfbf07be9069a9836691519df522db0e1bf085c8719cb1e68": {
+    "commit": "0b6786b6dbec",
+    "arrived_et": "2026-10-05T05:36:49-04:00",
+    "data_session": "2026-10-02",
+    "knowable_session": "2026-10-05",
+    "server_witness": false
+   },
+   "sha256:d364f57a5f29992acfa25ab977d4b70a4253a583fc743f4f6e623935290e5098": {
+    "commit": "f7dd82910f31",
+    "arrived_et": "2026-10-06T05:53:18-04:00",
+    "data_session": "2026-10-05",
+    "knowable_session": "2026-10-06",
+    "server_witness": false
+   },
+   "sha256:89b35b1d442ee8e4bfe82c398906051d7ddcf9d64cb93cffb3e0451cea62b77a": {
+    "commit": "f9ccad3e50f6",
+    "arrived_et": "2026-10-06T10:10:52-04:00",
+    "data_session": "2026-10-05",
+    "knowable_session": "2026-10-06",
+    "server_witness": false
+   },
+   "sha256:27c266968f5a5a7aaad167a5fc17970fac407003355b8e7e3834f850a444b299": {
+    "commit": "856c5939858f",
+    "arrived_et": "2026-10-07T05:45:08-04:00",
+    "data_session": "2026-10-06",
+    "knowable_session": "2026-10-07",
+    "server_witness": false
+   },
+   "sha256:e9a9c820863b3935ff9b05cd6d3c56748ae06b9db5a5697402ec81898563766e": {
+    "commit": "4d6ca3f0378f",
+    "arrived_et": "2026-10-09T06:07:33-04:00",
+    "data_session": "2026-10-08",
+    "knowable_session": "2026-10-09",
+    "server_witness": false
+   },
+   "sha256:416f7d89e76cb9639774f5caa27998ce1afa082426baddb208992e4bb452ba7d": {
+    "commit": "48cf3140e2ff",
+    "arrived_et": "2026-10-09T10:50:55-04:00",
+    "data_session": "2026-10-08",
+    "knowable_session": "2026-10-09",
+    "server_witness": false
+   },
+   "sha256:6d57800d475bb3cfbd95c42636f58df4374aac3a13aa3f19d2f1152f91e4ea89": {
+    "commit": "8ce9f3e9908d",
+    "arrived_et": "2026-10-14T05:35:51-04:00",
+    "data_session": "2026-10-13",
+    "knowable_session": "2026-10-14",
+    "server_witness": false
+   },
+   "sha256:bf4780e936dc8431eaf287b231570efc6c6a8ed470b0f9558e3c577e7192f495": {
+    "commit": "74c70b24963c",
+    "arrived_et": "2026-10-14T15:17:56-04:00",
+    "data_session": "2026-10-13",
+    "knowable_session": "2026-10-14",
+    "server_witness": false
+   },
+   "sha256:ab04968452a659f0c75e74973438c1b64a090329a482331b113f228f6f632e7e": {
+    "commit": "4b7d6c7e00dc",
+    "arrived_et": "2026-10-15T05:03:11-04:00",
+    "data_session": "2026-10-14",
+    "knowable_session": "2026-10-15",
+    "server_witness": false
+   },
+   "sha256:feda5203b109c46d4b3a888fa01537bda0f6ca5e025fa1cd827bb5651aac49ab": {
+    "commit": "3bbe42a324e9",
+    "arrived_et": "2026-10-16T03:07:21-04:00",
+    "data_session": "2026-10-15",
+    "knowable_session": "2026-10-16",
+    "server_witness": false
+   },
+   "sha256:56b20813c7fff2af64c553e69f44e06e9b90197d38f85718075ee0596fd03419": {
+    "commit": "b6a7c87c9358",
+    "arrived_et": "2026-10-16T13:50:58-04:00",
+    "data_session": "2026-10-15",
+    "knowable_session": "2026-10-16",
+    "server_witness": false
+   },
+   "sha256:61ee56f229b9e3cdb76e100e2695e93be483a6917ae80e04027b54e513ad3a4f": {
+    "commit": "e154878495a1",
+    "arrived_et": "2026-10-17T02:53:33-04:00",
+    "data_session": "2026-10-16",
+    "knowable_session": "2026-10-19",
+    "server_witness": false
+   },
+   "sha256:86f1bdfa9ce9e01bb304d80dae321c5d061a24a80345379c83d7c2aeaa1ed2db": {
+    "commit": "a175b4654898",
+    "arrived_et": "2026-10-17T14:41:54-04:00",
+    "data_session": "2026-10-16",
+    "knowable_session": "2026-10-19",
+    "server_witness": false
+   },
+   "sha256:509cf2289d436c1e7d7b37bed9c3de09cf1814b8a288478a49314178d47a0c47": {
+    "commit": "e35e04468075",
+    "arrived_et": "2026-10-18T03:01:19-04:00",
+    "data_session": "2026-10-16",
+    "knowable_session": "2026-10-19",
+    "server_witness": false
+   },
+   "sha256:2de4fcaf163ca4f9bba3bc3d6279c5d9327fb86f46fe22ec7563620e1fb62956": {
+    "commit": "a050d2c71647",
+    "arrived_et": "2026-10-21T04:26:35-04:00",
+    "data_session": "2026-10-20",
+    "knowable_session": "2026-10-21",
+    "server_witness": false
+   }
+  }
  },
  "freeze_basis": {
   "basis": "W1 r3 receipt sessions; VendorAliasTable membership join, security-first (record-derived candidates confirmed by resolve() on every window session, all candidates of a multi-symbol security); NYSE trading sessions; producer-health coverage on first-arrival blobs",
@@ -145,7 +888,8 @@
    "t1_censored_gap_no_stamp": 918,
    "t1_unknown_signal_asof": 1,
    "t1_unknown_identity": 0,
-   "t1_buy_stamp_inside_k_but_knowable_outside": 21,
+   "t1_buy_stamp_inside_k_but_knowable_outside": 23,
+   "t1_identified_exact_gap_after_admission": 26,
    "exact_zero_lag": 15,
    "exact_knowable_missing": 0,
    "exact_disc_knowable_missing": 0,
@@ -155,7 +899,8 @@
    "exact_multi_symbol_security": 0,
    "recorded_at_missing": 0,
    "recorded_at_le_t0_fill": 1087,
-   "recorded_at_gt_t0_fill": 0
+   "recorded_at_gt_t0_fill": 0,
+   "late_discovery_arrival_gt1_session": 11
   },
   "stamp_facts": {
    "healthy_stamp_dates_head": 35,
@@ -163,6 +908,7 @@
    "stamp_dates_total": 54,
    "curated_rows_per_stamp_median": 2932.0,
    "buy_rows_per_stamp_median": 61.0,
+   "per_stamp_medians_basis": "HEAD working tree (healed rows included; descriptive only)",
    "last_healthy_stamp_date": "2026-10-14"
   },
   "identified_exact_by_t_disc_month": {
@@ -218,6 +964,17 @@
    }
   },
   "k_star_sessions_exact_basis": 0.0,
+  "k_star_basis": "median executable lead (falls back to stamp lag without the walks)",
+  "k_star_stamp_lag_sessions": 0.0,
+  "late_hit_stamp_lag_sessions": {
+   "9": 4,
+   "10": 19
+  },
+  "discovery_knowable_shift_sessions_all_R_units": {
+   "1": 1076,
+   "2": 11
+  },
+  "origin_main_sha": "761e814eda8460d09ad6c53adc8ee495b4283cf1",
   "t2m_identified": false,
   "t1_knowability_shift_sessions_exact": {
    "1": 26
@@ -242,15 +999,17 @@
   "executable_lead_sessions_exact_strict": null
  },
  "provenance": {
-  "census_version": "v5",
-  "command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <W1 r3 receipt map> --commit-walk --document-walk --k 10 --buffer-minutes 30 --r-from 2026-08-26 --r-to 2026-10-23",
+  "census_version": "v6",
+  "command": "python3 research/prophet_v4/entry_timing_w2_t1_census.py --receipt-sessions <W1 r3 receipt map> --commit-walk --document-walk --server-arrival --k 10 --buffer-minutes 30 --r-from 2026-08-26 --r-to 2026-10-23",
   "receipt_sessions_source": "turn_watch_receipt_sessions(data_root, git_ref='origin/main') from scripts/report_us_candidate_episode_waterfall.py at PR #10277 head d03acfd075d9 (54 receipts); re-derived at freeze, never hand-edited",
-  "lane_state": "first-parent ARRIVAL on origin/main (156 commits of the four monthly candidates parquets 2026-07..10): the first blob carrying each stamp_date fixes its BUY rows, curated coverage and signal_asof; a later blob that changes that date's BUY set is a HEAL and the session is a GAP (09-14 +50 BUY rows healed 09-16; 10-19 +104 healed 10-21); HEAD never read for lane state; HEAD disagreement reported (154 BUY rows exist only in the two heals)",
+  "lane_state": "first-parent ARRIVAL on origin/main pinned at 761e814eda84 (156 commits of the four monthly candidates parquets 2026-07..10): the first blob carrying each stamp_date fixes its BUY rows, curated coverage and signal_asof; a later blob that changes that date's BUY set is a HEAL and the session is a GAP (09-14 +50 BUY rows healed 09-16; 10-19 +104 healed 10-21); HEAD never read for lane state; HEAD disagreement reported (154 BUY rows exist only in the two heals)",
   "identity_join": "security-first: candidate symbols from the membership alias records, EVERY candidate confirmed by VendorAliasTable.resolve('membership', symbol, on=session) == security_id, tested on every healthy window session for every unit (uniform span); alias parquet sha256 pinned",
   "columns_read": "candidates: stamp_date, ticker, tier, lane, eligible, buyable, featured, signal_asof; OPENED episode_id/source_receipt/recorded_at/payload.{ticker_at_observation,opened_session,security_id,identity_epoch}; turn_watch documents (digest-verified) for receipt and commit time; data/reference/vendor_aliases.parquet; data/yahoo/SPY.parquet DATE INDEX only",
   "outcome_columns_read": "none",
   "generated": "2026-10-31",
   "knowable_session": "first NYSE session whose 16:00 ET close is strictly after the first-parent arrival instant + 30 min; applied per stamp_date (BUY arm) and per receipt (discovery arm); T1 is executable inside K only when k(c_cur) <= t_disc + K",
-  "recorded_at_check": "OPENED recorded_at compared as an instant against the T0 fill instant (close of the session after k(c_disc)): 1087/1087 recorded at or before it"
+  "recorded_at_check": "OPENED recorded_at compared as an instant against the T0 fill instant (close of the session after k(c_disc)): 1087/1087 recorded at or before it",
+  "arrival_clock": "first-parent commit instant corrected to max(commit, earliest GitHub check-suite createdAt for the commit) via batched GraphQL (--server-arrival); witness present for 31/44 stamp commits and 23/54 document commits, every witness within 2 minutes after the commit clock, no knowable session changed; commits without a witness keep the commit clock and are flagged server_witness=false",
+  "v6_changes": "round-5 M1 server witness; M2 window scan continues past a late-knowable BUY row (late_hit_stamp_lag_sessions exported); M3 strict sets require a fully covered window (t1_identified_exact_gap_after_admission); M5 origin_main_sha pinned; m2 k_star from executable lead (stamp lag also reported); m4 knowable maps and shift distributions exported for all stamp dates, receipts and R units; m5 skipped_blobs counter (0) and temp-file cleanup; n1 per_stamp_medians_basis labelled HEAD; LATE_DISCOVERY_ARRIVAL count (11)"
  }
 }
