@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 436514,
+  "byte_start": 436061,
+  "normalized": "We recently joined our largest customer’s American Manufacturing Program and are working with both our customer and GlobalFoundries to develop new process technologies for our products, including our efforts to manufacture for the first time at the Malta, New York facility. Participation in this program was one of several important steps we took over the past year to advance both process and geographic diversification across our supply chain.",
+  "normalized_sha256": "05d8920615b6fa68189cd956b98c623adcb3b8db2be2fe932c03555c9740235c",
+  "raw": "We recently joined our largest customer&#8217;s American Manufacturing Program and are working with both our customer and GlobalFoundries to develop new process technologies for our products, including our efforts to manufacture for the first time at the Malta, New York facility.  Participation in this program was one of several important steps we took over the past year to advance both process and geographic diversification across our supply chain.",
+  "raw_sha256": "8712c186bbc9356d8574ae3c4ac06f9abf9fe9ab548cb28b0099f71f09287225"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": []
+}

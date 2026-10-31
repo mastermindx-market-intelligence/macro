@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:45:35Z",
+ "accession": "0001801368-26-000008",
+ "cik": "0001801368",
+ "doc_byte_length": 3138683,
+ "doc_sha256": "5a886ef2e336b6b374b630f95ccc340e0abb6f4d652c6e0d313897d17e4f4048",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mp-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 752099,
+  "byte_start": 751370,
+  "normalized": "In July 2025, we entered into a definitive, long-term supply agreement with Apple for the development, manufacture, and supply of magnets from our Independence Facility, as well as the development and installation of scaled recycling capabilities at Mountain Pass to produce the contained rare earths from post-industrial and post-consumer recycled rare earth feedstocks. In connection with the agreement, and subject to achieving specified milestones, Apple agreed to make prepayments in the aggregate amount of $200.0 million for the purchase of magnets from the Company, of which we received $40.0 million during the third quarter of 2025, and became entitled to an additional $32.0 million in the fourth quarter of 2025.",
+  "normalized_sha256": "4541ea4c5be00d7448151383cd87e7389f1359419d9a8604f5d56481c6a136f1",
+  "raw": "In July 2025, we entered into a definitive, long-term supply agreement with Apple for the development, manufacture, and supply of magnets from our Independence Facility, as well as the development and installation of scaled recycling capabilities at Mountain Pass to produce the contained rare earths from post-industrial and post-consumer recycled rare earth feedstocks. In connection with the agreement, and subject to achieving specified milestones, Apple agreed to make prepayments in the aggregate amount of $200.0&#160;million for the purchase of magnets from the Company, of which we received $40.0 million during the third quarter of 2025, and became entitled to an additional $32.0 million in the fourth quarter of 2025.",
+  "raw_sha256": "341b2c6b15353ee0d3f1dee51f5673c1c9463b146301e0a8658aed9bda2704d0"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1801368/000180136826000008/mp-20251231.htm",
+ "xbrl_contexts": []
+}

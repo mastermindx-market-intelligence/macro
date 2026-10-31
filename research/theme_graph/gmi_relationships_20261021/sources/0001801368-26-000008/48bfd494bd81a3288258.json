@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:45:35Z",
+ "accession": "0001801368-26-000008",
+ "cik": "0001801368",
+ "doc_byte_length": 3138683,
+ "doc_sha256": "5a886ef2e336b6b374b630f95ccc340e0abb6f4d652c6e0d313897d17e4f4048",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mp-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 403711,
+  "byte_start": 402213,
+  "normalized": "The affirmative covenants impose obligations on us with respect to, among other things, (i) constructing the 10X Facility, (ii) extending HREE refining capability at Mountain Pass to include the separation of samarium oxide, (iii) recommissioning the chlor-alkali facilities at Mountain Pass, and (iv) expanding capacity at the Independence Facility to a projected 3,000 MTs of magnets annually. The negative covenants in the DoW Transaction Agreements restrict us with respect to, among other things, (i) consummating certain fundamental events other than to person(s) from certain permitted jurisdictions, (ii) selling any equity or material assets of the Project Company (as such term is defined in the DoW Offtake Agreement), (iii) selling assets or products identified by the DoW as a priority to U.S. national security interests, (iv) knowingly issuing more than 14.9% of the common stock to person(s) from foreign jurisdictions other than certain permitted jurisdictions, (v) consummating certain fundamental events subject to the jurisdiction of the Committee on Foreign Investment in the United States (“CFIUS”) without obtaining CFIUS clearance prior to consummation or (vi) selling NdPr or magnets to any customer qualifying as a “Restricted Buyer” under the Price Protection Agreement or permitting any customer to resell NdPr or magnets to a Restricted Buyer (other than any NdPr or magnets that are included in another finished product sold by such customer).",
+  "normalized_sha256": "8afa72557411a13e58b396196c96447491c9cb30b12fbb06f31bfb461d16b6da",
+  "raw": " The affirmative covenants impose obligations on us with respect to, among other things, (i) constructing the 10X Facility, (ii) extending HREE refining capability at Mountain Pass to include the separation of samarium oxide, (iii) recommissioning the chlor-alkali facilities at Mountain Pass, and (iv) expanding capacity at the Independence Facility to a projected 3,000 MTs of magnets annually. The negative covenants in the DoW Transaction Agreements restrict us with respect to, among other things, (i) consummating certain fundamental events other than to person(s) from certain permitted jurisdictions, (ii) selling any equity or material assets of the Project Company (as such term is defined in the DoW Offtake Agreement), (iii) selling assets or products identified by the DoW as a priority to U.S. national security interests, (iv) knowingly issuing more than 14.9% of the common stock to person(s) from foreign jurisdictions other than certain permitted jurisdictions, (v) consummating certain fundamental events subject to the jurisdiction of the Committee on Foreign Investment in the United States (&#8220;CFIUS&#8221;) without obtaining CFIUS clearance prior to consummation or (vi) selling NdPr or magnets to any customer qualifying as a &#8220;Restricted Buyer&#8221; under the Price Protection Agreement or permitting any customer to resell NdPr or magnets to a Restricted Buyer (other than any NdPr or magnets that are included in another finished product sold by such customer).",
+  "raw_sha256": "48bfd494bd81a3288258020c781310c44a495e35bcea245c9b51318f1890a0fb"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1801368/000180136826000008/mp-20251231.htm",
+ "xbrl_contexts": []
+}

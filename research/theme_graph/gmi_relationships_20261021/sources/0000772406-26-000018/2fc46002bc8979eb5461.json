@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1325852,
+  "byte_start": 1325288,
+  "normalized": "The Capacity Reservation Agreement requires GlobalFoundries to provide, and the Company to purchase, a defined number of wafers on a quarterly basis for the Commitment Period, subject to shortfall payments. In exchange for GlobalFoundries’ capacity commitment, the Company paid a $60 million non-refundable capacity reservation fee, which is amortized over the Commitment Period.",
+  "normalized_sha256": "10b6e750b30d6af2b46abe1095e09f52d120ce168b37cd943f261dd13b799697",
+  "raw": "The Capacity Reservation Agreement requires GlobalFoundries to provide, and the Company to purchase, a defined number of wafers on a quarterly basis for the Commitment Period, subject to shortfall payments.  In exchange for GlobalFoundries&#8217; capacity commitment, the Company paid a $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-195\" decimals=\"-6\" name=\"crus:PaymentsForLongTermPurchaseCommitmentCapacityReservationFee\" scale=\"6\" id=\"f-949\">60</ix:nonFraction>&#160;million non-refundable capacity reservation fee, which is amortized over the Commitment Period.",
+  "raw_sha256": "2fc46002bc8979eb546172da9d568b82dbb6835c5e20c737a6f797511d88432e"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": []
+}

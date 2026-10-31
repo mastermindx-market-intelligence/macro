@@ -1,0 +1,18 @@
+# CI registration PROPOSAL FRAGMENT — GMI ORCH-REL M2 (REL-M2-KEYS lane, 2026-10-22).
+#
+# A fragment the GMI COMPLETION seat folds into job company-intelligence-relationships
+# of ci_registration_proposal.yml (same gate/scope/runs-on/timeout; no .github/ or
+# config/ path is touched here — registration stays a seat-owned CI-authority
+# change).  `paths_add:` lists the closure paths this lane adds to the M1 `paths:`:
+# the suite's full import/read closure is otherwise unchanged from M1 (the producer
+# script, engine relationships modules + clock, lib/dataos/temporal chain, the four
+# contracts, the pinned extraction/sources/manifest inputs, conftest.py and the
+# three M1 suites are all already listed there).  `steps_add:` runs the new suite.
+# Proven by exporting exactly the M1 paths + paths_add at the lane commit and
+# running the suite inside that export (see the lane return).
+company-intelligence-relationships:
+  paths_add:
+    - "tests/test_relationship_m2_keys.py"
+  steps_add:
+    - name: Relationship M2 source keys and identity
+      run: python -m pytest tests/test_relationship_m2_keys.py -q

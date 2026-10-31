@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 288423,
+  "byte_start": 288010,
+  "normalized": "Although we seek to reduce our dependence on any one subcontractor, the substantial majority of our semiconductor wafers are manufactured by TSMC at fabs in Taiwan, and GlobalFoundries in Singapore and Germany. This concentration of subcontractors and manufacturing operations, subjects us to the risks of conducting business internationally, including associated political and economic conditions.",
+  "normalized_sha256": "4f3d71d621fa02660da7f2b6b7e0c9fb8ac2d70beb64e79759f06d7a18380428",
+  "raw": "              Although we seek to reduce our dependence on any one subcontractor, the substantial majority of our semiconductor wafers are manufactured by TSMC at fabs in Taiwan, and GlobalFoundries in Singapore and Germany.  This concentration of subcontractors and manufacturing operations, subjects us to the risks of conducting business internationally, including associated political and economic conditions.",
+  "raw_sha256": "aad2bab7cbec0e505d3ee75c6080ab82b7b59850532c5f20ea0a14ed3b3e60e5"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": []
+}
