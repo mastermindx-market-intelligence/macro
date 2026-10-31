@@ -44,28 +44,30 @@
 .tvs-notice{margin:16px 0;padding:12px 14px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-ctl,8px);color:var(--text);font-size:12px}
 @media(max-width:640px){.tvs-mount{margin:14px 0}.tvs summary{padding:14px;align-items:flex-start}.tvs-summary-meta{gap:4px;flex-direction:column;align-items:flex-end}.tvs-rel{font-size:17px}.tvs-brief{font-size:15px}.tvs-body{padding:0 12px 16px}.tvs-grid{grid-template-columns:1fr;gap:10px}.tvs-amount{font-size:38px}.tvs-bar{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.tvs *, .tvs *::before, .tvs *::after{animation:none!important;transition:none!important}}
+html[data-lang="zh"] .tvs[open] .tvs-toggle::after{content:" 收起 \25B2"}
+html[data-lang="zh"] .tvs:not([open]) .tvs-toggle::after{content:" 详情 \25BC"}
 </style>
 <details class="tvs" id="tech-volatility-shock">
-  <summary aria-label="Expand tech volatility shock market internals">
-    <span><span class="tvs-kicker">Quantitative Research / Market Internals</span>
-      <span class="tvs-brief">Tech volatility shock <span class="tvs-muted" style="font-size:11px;font-weight:500">· EOD</span></span></span>
+  <summary>
+    <span><span class="tvs-kicker l-en">Quantitative Research / Market Internals</span><span class="tvs-kicker l-zh">定量研究 / 市场内部结构</span>
+      <span class="tvs-brief"><span class="l-en">Tech volatility shock</span><span class="l-zh">科技股波动冲击</span> <span class="tvs-muted" style="font-size:11px;font-weight:500"><span class="l-en">· EOD</span><span class="l-zh">· 收盘数据</span></span></span></span>
     <span class="tvs-summary-meta">
       {% if tech_shock.relative_pp is not none %}
-        <strong class="tvs-rel {{ 'tvs-neg' if tech_shock.relative_pp < 0 else 'tvs-pos' if tech_shock.relative_pp > 0 else 'tvs-muted' }}">QQQ vs SPY {{ '%+.2f'|format(tech_shock.relative_pp) }} pp</strong>
+        <strong class="tvs-rel {{ 'tvs-neg' if tech_shock.relative_pp < 0 else 'tvs-pos' if tech_shock.relative_pp > 0 else 'tvs-muted' }}"><span class="l-en">QQQ vs SPY</span><span class="l-zh">QQQ 相对 SPY</span> {{ '%+.2f'|format(tech_shock.relative_pp) }} <span class="l-en">pp</span><span class="l-zh">百分点</span></strong>
       {% else %}
-        <span class="tvs-muted" style="font-size:12px">Data unavailable</span>
+        <span class="tvs-muted" style="font-size:12px"><span class="l-en">Data unavailable</span><span class="l-zh">数据不可用</span></span>
       {% endif %}
       <span class="tvs-toggle" aria-hidden="true"></span>
     </span>
   </summary>
   <div class="tvs-body">
-    <div class="tvs-ruler"><span class="tvs-label">SPY / QQQ · Same-session comparison</span>
-      <span class="tvs-muted" style="font-size:12px">As of {{ tech_shock.asof or 'unknown' }}{% if tech_shock.source_state == 'published_projection' %} · Last qualified published observation{% endif %}</span></div>
+    <div class="tvs-ruler"><span class="tvs-label"><span class="l-en">SPY / QQQ · Same-session comparison</span><span class="l-zh">SPY / QQQ · 同一交易日对比</span></span>
+      <span class="tvs-muted" style="font-size:12px"><span class="l-en">As of</span><span class="l-zh">截至</span> {{ tech_shock.asof or 'unknown' }}{% if tech_shock.source_state == 'published_projection' %} <span class="l-en">· Last qualified published observation</span><span class="l-zh">· 最近合格发布值</span>{% endif %}</span></div>
     {% if tech_shock.status != 'ok' %}
       <div class="tvs-notice" role="status">
-        {{ 'Stale observation' if tech_shock.status == 'stale' else 'Partial observation' if tech_shock.status == 'partial' else 'Unverified source coverage' }}:
-        {{ tech_shock.reason or 'Some observations are unavailable.' }}
-        {% if tech_shock.lag_sessions is not none and tech_shock.lag_sessions > 0 %} {{ tech_shock.lag_sessions }} completed exchange session(s) behind.{% endif %}
+        <span class="l-en">{{ 'Stale observation' if tech_shock.status == 'stale' else 'Partial observation' if tech_shock.status == 'partial' else 'Unverified source coverage' }}:</span><span class="l-zh">{{ '数据已延迟：' if tech_shock.status == 'stale' else '部分数据缺失：' if tech_shock.status == 'partial' else '来源数据不可用：' }}</span>
+        <span class="l-en">{{ tech_shock.reason or 'Some observations are unavailable.' }}</span><span class="l-zh">请检查原始数据可用性和截止时间。</span>
+        {% if tech_shock.lag_sessions is not none and tech_shock.lag_sessions > 0 %} {{ tech_shock.lag_sessions }} <span class="l-en">completed exchange session(s) behind.</span><span class="l-zh">个已完成交易日未更新。</span>{% endif %}
       </div>
     {% endif %}
     {% if tech_shock.indices %}
@@ -75,44 +77,45 @@
             <div class="tvs-card-head">{{ row.symbol }}</div>
             <div class="tvs-amount {{ 'tvs-neg' if row.return_pct < 0 else 'tvs-pos' if row.return_pct > 0 else 'tvs-muted' }}">{{ '%+.2f'|format(row.return_pct) }}%</div>
             <div class="tvs-table">
-              <div class="tvs-line"><span>Prior 60-session return z</span><strong>{{ '%+.2f'|format(row.z60) if row.z60 is not none else 'Unavailable' }}</strong></div>
-              <div class="tvs-line"><span>Full-day volume / 20d mean</span><strong>{{ '%.2f×'|format(row.volume_multiple) if row.volume_multiple is not none else 'Unavailable' }}</strong></div>
+              <div class="tvs-line"><span><span class="l-en">Prior 60-session return z</span><span class="l-zh">此前60日收益 Z 值</span></span><strong>{% if row.z60 is not none %}{{ '%+.2f'|format(row.z60) }}{% else %}<span class="l-en">Unavailable</span><span class="l-zh">不可用</span>{% endif %}</strong></div>
+              <div class="tvs-line"><span><span class="l-en">Full-day volume / 20d mean</span><span class="l-zh">全日成交量 / 前20日均值</span></span><strong>{% if row.volume_multiple is not none %}{{ '%.2f×'|format(row.volume_multiple) }}{% else %}<span class="l-en">Unavailable</span><span class="l-zh">不可用</span>{% endif %}</strong></div>
             </div>
             <div class="tvs-rank">
-              {% if row.rank_ytd is not none %}#{{ row.rank_ytd }} worst observed day of {{ row.year }} ({{ row.n_ytd }} eligible sessions)
-              {% else %}Year-to-date rank unavailable{% endif %}
+              {% if row.rank_ytd is not none %}<span class="l-en">#{{ row.rank_ytd }} worst observed day of {{ row.year }} ({{ row.n_ytd }} eligible sessions)</span><span class="l-zh">{{ row.year }}年观测跌幅倒数第{{ row.rank_ytd }}名（{{ row.n_ytd }}个有效交易日）</span>
+              {% else %}<span class="l-en">Year-to-date rank unavailable</span><span class="l-zh">年内排名不可用</span>{% endif %>
             </div>
           </div>
         {% endfor %}
       </div>
       <div class="tvs-relative">
-        <div class="tvs-label" style="color:var(--info)">QQQ relative to SPY</div>
-        <div class="tvs-amount {{ 'tvs-neg' if tech_shock.relative_pp < 0 else 'tvs-pos' if tech_shock.relative_pp > 0 else 'tvs-muted' }}">{{ '%+.2f'|format(tech_shock.relative_pp) }} pp</div>
-        <div class="tvs-muted" style="font-size:13px">Prior 60-session relative z: <strong>{{ '%+.2f'|format(tech_shock.relative_z60) if tech_shock.relative_z60 is not none else 'Unavailable' }}</strong></div>
+        <div class="tvs-label" style="color:var(--info)"><span class="l-en">QQQ relative to SPY</span><span class="l-zh">QQQ 相对 SPY</span></div>
+        <div class="tvs-amount {{ 'tvs-neg' if tech_shock.relative_pp < 0 else 'tvs-pos' if tech_shock.relative_pp > 0 else 'tvs-muted' }}">{{ '%+.2f'|format(tech_shock.relative_pp) }} <span class="l-en">pp</span><span class="l-zh">百分点</span></div>
+        <div class="tvs-muted" style="font-size:13px"><span class="l-en">Prior 60-session relative z:</span><span class="l-zh">此前60日相对收益 Z 值：</span> <strong>{% if tech_shock.relative_z60 is not none %}{{ '%+.2f'|format(tech_shock.relative_z60) }}{% else %}<span class="l-en">Unavailable</span><span class="l-zh">不可用</span>{% endif %}</strong></div>
       </div>
-      <div class="tvs-section-title">When the selling hit <span class="tvs-muted" style="float:right;font-size:11px;font-weight:500">Overnight vs regular session</span></div>
+      <div class="tvs-section-title"><span class="l-en">When the selling hit</span><span class="l-zh">抛售发生在何时</span> <span class="tvs-muted" style="float:right;font-size:11px;font-weight:500"><span class="l-en">Overnight vs regular session</span><span class="l-zh">隔夜与常规时段</span></span></div>
       {% for row in tech_shock.indices %}
         <div class="tvs-session">
-          <div class="tvs-session-head"><span>{{ row.symbol }}</span><span class="tvs-muted" style="font-size:11px">Overnight {{ '%+.2f'|format(row.overnight_pct) }}% · Intraday {{ '%+.2f'|format(row.intraday_pct) }}%</span></div>
+          <div class="tvs-session-head"><span>{{ row.symbol }}</span><span class="tvs-muted" style="font-size:11px"><span class="l-en">Overnight {{ '%+.2f'|format(row.overnight_pct) }}% · Intraday {{ '%+.2f'|format(row.intraday_pct) }}%</span><span class="l-zh">隔夜 {{ '%+.2f'|format(row.overnight_pct) }}% · 日间 {{ '%+.2f'|format(row.intraday_pct) }}%</span></span></div>
           {% if row.overnight_share is not none %}
-            <div class="tvs-bars" role="img" aria-label="{{ row.symbol }} negative overnight contribution {{ row.overnight_share }} percent of summed loss leg magnitudes">
-              <div class="tvs-bar tvs-overnight" style="width:{{ row.overnight_share }}%"><span>Overnight</span></div>
-              <div class="tvs-bar tvs-intraday" style="width:{{ 100 - row.overnight_share }}%"><span>Intraday</span></div>
+            <div class="tvs-bars" aria-hidden="true">
+              <div class="tvs-bar tvs-overnight" style="width:{{ row.overnight_share }}%"><span><span class="l-en">Overnight</span><span class="l-zh">隔夜</span></span></div>
+              <div class="tvs-bar tvs-intraday" style="width:{{ 100 - row.overnight_share }}%"><span><span class="l-en">Intraday</span><span class="l-zh">日间</span></span></div>
             </div>
           {% else %}
-            <div class="tvs-mixed">Mixed or positive leg: a loss-contribution bar would be misleading.</div>
+            <div class="tvs-mixed"><span class="l-en">Mixed or positive leg: a loss-contribution bar would be misleading.</span><span class="l-zh">有正收益或方向混合的时段，不适合使用跌幅贡献条。</span></div>
           {% endif %}
         </div>
       {% endfor %}
       <div class="tvs-bottom">
-        {% if tech_shock.session_read == 'overnight_dominant' %}Most of both ETFs' negative session legs occurred before the open.
-        {% elif tech_shock.session_read == 'intraday_dominant' %}Both ETFs' negative session legs were intraday-dominant.
-        {% else %}The two ETFs show mixed overnight and intraday pressure.{% endif %}
+        {% if tech_shock.session_read == 'overnight_dominant' %}<span class="l-en">Most of both ETFs' negative session legs occurred before the open.</span><span class="l-zh">两只 ETF 的负收益主要发生在常规开盘前。</span>
+        {% elif tech_shock.session_read == 'intraday_dominant' %}<span class="l-en">Both ETFs' negative session legs were intraday-dominant.</span><span class="l-zh">两只 ETF 的负收益主要发生在常规交易时段。</span>
+        {% else %}<span class="l-en">The two ETFs show mixed overnight and intraday pressure.</span><span class="l-zh">两只 ETF 的隔夜与日间压力表现不一致。</span>{% endif %}
       </div>
     {% else %}
-      <div class="tvs-mixed">The shock comparison is unavailable until two complete, paired SPY/QQQ raw daily OHLC histories are present.</div>
+      <div class="tvs-mixed"><span class="l-en">The shock comparison is unavailable until two complete, paired SPY/QQQ raw daily OHLC histories are present.</span><span class="l-zh">SPY 与 QQQ 的原始日线开高低收数据齐备且日期一致后，才会显示冲击对比。</span></div>
     {% endif %}
-    <p class="tvs-note">Source: existing Massive/Polygon unadjusted daily aggregates. Price O/H/L/C = regular NYSE trading session; reported volume = broader full market day. Overnight = prior regular close to current regular open (includes premarket); intraday = regular open to close. They compound, so rounded legs need not sum exactly to close-to-close performance. Z-scores compare today's return with the previous 60 sessions, excluding today; volume baseline excludes today. Historical ranks are observed sample ranks, not event probabilities. EOD context only, not a predictive trade alert.</p>
+    <p class="tvs-note l-en">Source: existing Massive/Polygon unadjusted daily aggregates. Price O/H/L/C = regular NYSE trading session; reported volume = broader full market day. Overnight = prior regular close to current regular open (includes premarket); intraday = regular open to close. They compound, so rounded legs need not sum exactly to close-to-close performance. Z-scores compare today's return with the previous 60 sessions, excluding today; volume baseline excludes today. Historical ranks are observed sample ranks, not event probabilities. EOD context only, not a predictive trade alert.</p>
+    <p class="tvs-note l-zh">来源：现有 Massive/Polygon 未复权日聚合数据。开高低收取纽交所常规交易时段；报告的成交量涵盖更广的全日交易活动。隔夜收益从前一常规收盘到当前常规开盘（含盘前）；日间收益从开盘到收盘。两段收益按复利相乘，因此四舍五入后不一定直接相加等于收盘对收盘收益。Z 值使用此前60个交易日收益（不包含当日）；成交量均值也不包含当日。年内排名仅为样本中的观察排名，不代表事件发生概率。本面板仅供收盘后市场背景分析，不构成预测或交易信号。</p>
   </div>
 </details>
 </div>

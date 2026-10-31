@@ -142,3 +142,18 @@ def test_snapshot_write_failure_keeps_readout_without_claimed_publish(tmp_path, 
     result = snapshot_for_macro(tmp_path, now=NOW)
     assert result["source_state"] == "raw_daily_store"
     assert not (tmp_path / "marketdata" / "tech_volatility_shock.json").exists()
+
+def test_panel_uses_bilingual_labels_and_nonduplicated_accessible_session_text():
+    html = render_macro_with_shock(
+        _env('<html><body><div id="regime-radar"></div></body></html>'),
+        {"tech_shock": _synthetic_readout()},
+    )
+    assert "Tech volatility shock" in html
+    assert "科技股波动冲击" in html
+    assert "此前60日相对收益 Z 值" in html
+    assert "QQQ 相对 SPY" in html
+    assert "隔夜" in html and "日间" in html
+    assert "收盘后市场背景分析" in html
+    assert 'summary aria-label=' not in html
+    assert 'class="tvs-bars" aria-hidden="true"' in html
+    assert 'role="img"' not in html
