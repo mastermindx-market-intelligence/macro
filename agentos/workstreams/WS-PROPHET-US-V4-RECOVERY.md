@@ -218,60 +218,52 @@ waves:
     title: "V4-A2 — canonical settlement manifest (prophet.settlement_manifest/v1)"
     status: in_progress
     next_action: >
-      2026-10-31 SOURCE GATE CLOSED, PRODUCTION GATE OPEN.
-      Existing #10202 Draft/HOLD at immutable head
-      2ea0bf0b213242ff06472f18306dbdb059443fa9
-      (no mutation after review). Exact-head hosted CI 41125933425,
-      all 12 ci-packs/contract-delta/ci-gate, and fences 41125933453
-      are SUCCESS; hosted ci-pack-4 executed 83 settlement tests.
-      Distinct nonauthor Fabric
-      prophet-v4-a2-postci-source-independent-review-20261030-01
-      root 6adce1ef-c13c-83e9-9510-983a2249a6a0 is
-      TERMINAL rc0, SOURCE_PASS, result sha256
-      63fc7ec9cf269c42c7a8b4802b968917a9ef676b124bc1d99bc505aa98b86b54:
-      clean isolated exact commit, 210 tests passed (75/8/127),
-      38 adversarial false-SETTLED probes with no bypass,
-      no semantic blockers. This new SOURCE_PASS supersedes
-      the old reviewer -01's CI-dependent UNVERIFIED boundary;
-      do not relabel that old result or self-approve. Evidence
-      #10202 comment 6539572235. Current reader-side capability
-      BUILT_NOT_PROVEN: missing/full/different issuer/reader
-      maps yield PENDING, never index-only SETTLED.
-      Separate source-clock Draft #10209 remains unchanged at
-      da3a04518f13695339ab54421e3894632d3b6ba4
-      with hosted CI 41110624274/fences 41110623759
-      SUCCESS and nonauthor SOURCE_PASS
-      sha256 3fffe3848cb7c7582fe29af8e70710fd3278a9c841b25b16185d6186ce46889e;
-      neither draft merged, deployed or formally approved.
-      Recovery records Draft #10174 prior head 808f9fbd
-      passed hosted CI 41134883450 and fences 41134882886
-      on exact records head (no release implication).
-      NEXT dependency: real source-issued full-population
-      candidate_store/board/index/theme_state SHA256 identity,
-      qualified same-run GMI ThemeState generation/rights,
-      one protected VPS reader-served identity and genuine
-      source/computed/published/read clocks, then existing
-      Availability liveness/rescue consumers, mutation drills
-      and real-path proof; A3 atomic publisher remains distinct.
-      GMI W3B canonical workstream remains in_progress,
-      accepted current-use ThemeState not proven at last read;
-      do not use descriptive neuralweb shadow as approved
-      generation. Existing nightly delta manifest only lists
-      CHANGED output paths, not full candidate store.
-      One bounded external source-preflight labor operation
-      prophet-v4-a2-source-issuer-preflight-20261031-01
-      was created under original Fabric root; controller
-      PID 88847, last observed REQUEST_RETAINED_NO_START_EVIDENCE,
-      no source modification or START/return receipt yet.
-      Consume that exact operation when terminal and integrate
-      only source-bound, tested real delta under incumbent writer,
-      no blind retry or duplicate publisher. WS:PROPHET-US-AVAILABILITY
-      text still speaks of #7180/#7187/#7457 pending,
-      while GitHub says all three merged; preserve this
-      projection disagreement for its own workstream owner.
-      Keep #10174, #10202 and #10209 Draft/HOLD,
-      no self-approval, merge, deployment, public paid-index
-      fetch or production SETTLED claim.
+      2026-10-31 NEXT SOURCE GATES. #10202 2ea0bf0b remains
+      independently SOURCE_PASS and exact-head CI/fences GREEN;
+      #10209 da3a0451 genuine producer clock remains independently
+      SOURCE_PASS and CI/fences GREEN. Both are Draft/HOLD and unmerged,
+      NOT live SETTLED. Original external Fabric issuer preflight
+      prophet-v4-a2-source-issuer-preflight-20261031-01 returned
+      TERMINAL rc0, sha256
+      3e8b2f130d310861a91049963a25a2b354373e5050424132e220980289548fcb,
+      five-file LOCAL-ONLY patch +1533/-1, 27 focused tests passed
+      via direct independent shell/venv rerun. It never issues
+      an accepted bundle. Independent review for this candidate
+      TERMINAL rc75 / REMOTE_SUB_ADMISSION_REFUSED
+      host_temperature_at_or_above_limit, response sha256
+      e66b66376d22b14d7f87bc09a6b56b8f14edaac97c74680d8b75ae61b4584956.
+      Do not promote or reroute it without real clearance.
+      New disjoint Availability Check E consumer Draft/HOLD #10256
+      head 8c6f946842af4fbf61d49b588448d39a677b4d45,
+      source files scripts/check_nightly_liveness.py and
+      tests/test_nightly_liveness.py only. Parent integrated
+      original terminal GLM two-file patch, fixed worker's
+      false schema sentinel.prophet_settlement/v1 to real
+      prophet.settlement_manifest/v1, and required no
+      stale-source or missing/nonempty failures on SETTLED.
+      Direct immutable Git blob test 111 PASS, exit zero.
+      Its hosted fences 41179369155 SUCCESS, full hosted
+      CI 41179369046 QUEUED at last check. Independent
+      nonauthor Fabric review request for #10256 also
+      TERMINAL rc75 from thermal admission refusal, response
+      sha256 55795ea66889c25f87472a55d591aac17bbef7e132e6d05892dc768292900c47;
+      no SOURCE_PASS or GitHub approval exists.
+      Availability owner/custody inquiry on Slack
+      C0CBC6AEAQZ thread 1793430537.066329
+      (operation prophet-v4-a2-availability-checke-owner-custody-20261031-01)
+      has PICKUP_ACK and START, not yet RESULT.
+      Previous records #10174 29cfb98b had full CI
+      41173519773 plus fences 41173519527 SUCCESS.
+      This records revision must be separately qualified.
+      Next consume #10256 exact-head CI and owner RESULT,
+      adjudicate source custody, then obtain lawful nonauthor
+      review after genuinely changed admission eligibility.
+      The original GMI W3B production ThemeState current-use
+      and accepted generation remains unavailable, leaving
+      no real four-asset issuer/reader bundle ID; A2 PENDING.
+      Preserve A3 atomic publisher and Availability sole
+      rescue/dispatch invariants; no self-merge/deploy.
+      #10174/#10202/#10209/#10256 remain Draft/HOLD.
 
   - id: a3
     depends_on: [a1]

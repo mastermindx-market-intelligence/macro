@@ -75,15 +75,64 @@ verified:
       established. The old Availability workstream next_action
       references #7180/#7187/#7457 as pending; current GitHub
       reports all merged, so no duplicate release action is allowed.
+  - claim: Both original A2 Fabric worker returns were consumed with verified local tests.
+    command: >
+      Fabric results for prophet-v4-a2-source-issuer-preflight-20261031-01
+      and prophet-v4-a2-liveness-check-e-consumer-patch-20261031-01;
+      authorized ubuntu1 project-venv 27-test run and ubuntu0 108-test run.
+    result: >
+      Issuer worker TERMINAL rc0, response sha256
+      3e8b2f130d310861a91049963a25a2b354373e5050424132e220980289548fcb,
+      five-file local-only patch, 27 tests independently passed.
+      Check E worker TERMINAL rc0, response sha256
+      0c4948157d40ef3002397923bdb503c2c3303045453dab96ad6af7488d748857,
+      two-file local-only patch, 108 worker tests
+      independently passed with isolated pytest tempdir. Local is not CI.
+  - claim: Check E new Draft source passes direct immutable exact-head regression test.
+    command: >
+      GitHub compare parent a416f5d7 to PR #10256 head
+      8c6f946842af4fbf61d49b588448d39a677b4d45;
+      fetch raw exact source/test files by immutable ref to authorized
+      ubuntu0 and match git hash-object to GitHub blobs, run pytest.
+    result: >
+      Two files only. Source blob ab31cd7cdb2a917b12a44b0f59708b83470baba0,
+      test blob 51a9e83417b3c32272596d2caeb1a41395f9a55c;
+      111 tests passed in 0.65 seconds, exit 0.
+      New Draft #10256 did not touch #10202/#10209,
+      source action or production site.
+  - claim: Thermal admission refusals are not substantive source review verdicts.
+    command: >
+      Fabric status/result for prophet-v4-a2-issuer-preflight-independent-review-20261031-01
+      and prophet-v4-a2-liveness-check-e-10256-independent-review-20261031-01
+      under original root 6adce1ef-c13c-83e9-9510-983a2249a6a0.
+    result: >
+      Both TERMINAL rc75 REMOTE_SUB_ADMISSION_REFUSED
+      host_temperature_at_or_above_limit, not SOURCE_PASS or code defect.
+      Response SHA256s e66b66376d22b14d7f87bc09a6b56b8f14edaac97c74680d8b75ae61b4584956
+      and 55795ea66889c25f87472a55d591aac17bbef7e132e6d05892dc768292900c47.
+      No reviewer started; no same/cross-carrier rerun.
+  - claim: Prior records and new Check E fence packs have verified hosted results.
+    command: >
+      GitHub #10174 runs 41173519773 and 41173519527;
+      #10256 fences 41179369155.
+    result: >
+      #10174 prior head 29cfb98b full CI all 12 packs, ci-plan,
+      contract-delta, ci-gate SUCCESS and fences SUCCESS.
+      #10256 exact new head fences SUCCESS; full CI queued
+      at last read, no new code green asserted.
 unverified:
-  - claim: Original Fabric source-preflight child is started or completed.
+  - claim: Preflight candidate is not independently source-reviewed or accepted.
     what_would_verify: >
-      Fabric original-root status/result of operation
-      prophet-v4-a2-source-issuer-preflight-20261031-01,
-      controller PID 88847. Request retained, last status
-      REQUEST_RETAINED_NO_START_EVIDENCE and controller logs
-      show cheap GLM reservation and lease, no genuine START yet.
-      The operation may still proceed; never retry it blindly.
+      An eligible nonauthor exact-source semantic review and source-owner
+      acceptance of the local preflight patch after the thermal
+      admission refusal is lawfully resolved. No source PR or
+      production consumer exists for that candidate yet.
+  - claim: Check E consumer Draft has no exact-head full hosted CI and review acceptance.
+    what_would_verify: >
+      GitHub CI 41179369046 on PR #10256 head 8c6f9468 finishes
+      successfully and a fresh independent nonauthor semantic
+      verdict is recorded after actual capacity/admission recovery.
+      Availability owner source-custody inquiry must also be consumed.
   - claim: V4-A2 complete four-asset issuer/protected-reader evidence.
     what_would_verify: >
       Existing owner issues validated exact candidate_store, board,
@@ -119,27 +168,27 @@ unresolved:
     mutation drills and A3 publication contract remain held.
 next_actions:
   - >
-    Reconcile original Fabric run
-    prophet-v4-a2-source-issuer-preflight-20261031-01
-    at root 6adce1ef-c13c-83e9-9510-983a2249a6a0,
-    controller PID 88847. Consume only a terminal retained
-    patch or exact typed BLOCKED. Independently inspect
-    any returned source and tests; if valid, integrate only
-    through existing producer #10209 under current-head
-    source lease, get fresh hosted CI and distinct nonauthor
-    review; never fake an accepted bundle from unqualified GMI.
+    Consume #10256 hosted CI 41179369046 and separate
+    fences 41179369155 at immutable 8c6f9468; do not
+    rerun queued work. Consume Secretary exact thread
+    1793430537.066329 RESULT and issue one same-carrier
+    Sol ruling/CONTINUE or STOP as warranted; it is read-only,
+    no release or source-lease receipt implied.
   - >
-    Obtain current GMI W3B qualified accepted ThemeState
-    generation/read purpose receipt from the existing GMI owner.
-    If unavailable, preserve PENDING and advance disjoint
-    source/reader/liveness safety instrumentation only.
+    Keep issuer-preflight patch local and independent
+    source-review gate unfulfilled after terminal thermal
+    refusal. Review old exact worker output without
+    redoing source builder. Obtain real admission recovery
+    before any new review operation; do not switch
+    provider/carrier merely to bypass the explicit denial.
   - >
-    Coordinate original protected issuer/reader publication route
-    and existing Availability liveness and rescue consumers,
-    verify source/computed/artifact/published/read chain and
-    full population. Preserve #10202 and #10209 Draft/HOLD;
-    require production proof and independent GitHub approval
-    for later release, with no self-merge or A3 bypass.
+    Coordinate incumbent Availability Check E source record
+    and review, then qualify #10256 source and real consumer
+    path before release. Hold #10202/#10209 unchanged;
+    GMI W3B current-use qualified generation and
+    authentic protected served bundle still block A2
+    SETTLED. A3 atomic publisher and rescue budget
+    remain separate.
 do_not_redo:
   - >
     Never rerun A1 2026-08-14 replay, B1 canonical episode identity,
@@ -172,7 +221,7 @@ danger_areas:
     present release instruction: three referenced PRs are merged.
   - >
     Fabric controller created is not worker START.
-prs: [10174, 10176, 10180, 10202, 10209]
+prs: [10174, 10176, 10180, 10202, 10209, 10256]
 ---
 
 # Prophet V4 A2 — October 31 current recovery frontier
@@ -209,3 +258,34 @@ https://github.com/mastermindx-market-intelligence/macro/pull/10202#issuecomment
 `prophet-v4-a2-source-issuer-preflight-20261031-01`
 retained under original root; controller PID 88847,
 no START evidenced at this checkpoint. Do not replace it.
+
+## October 31 further A2 recovery — draft Check E and thermal review holds
+
+Two original Fabric work outputs returned terminal. The source issuer
+preflight is a local five-file proposed patch, independently rerun
+27 tests PASS, no accepted bundle and no remote code branch. Its
+reviewer was refused at host-temperature admission, not by source.
+The GMI W3B fourth-asset acceptance and protected reader remain absent.
+
+Check E source was integrated separately as [Draft/HOLD Macro #10256](https://github.com/mastermindx-market-intelligence/macro/pull/10256)
+at exact commit `8c6f946842af4fbf61d49b588448d39a677b4d45`.
+It fixes the worker's incorrect schema to the real A2 public
+`prophet.settlement_manifest/v1`; it refuses fake SETTLED
+with stale source or missing/nonempty failure evidence.
+The exact current code and test blobs were fetched by SHA
+to authorized ubuntu0: **111 tests passed, exit 0**.
+Hosted fences 41179369155 SUCCESS, full CI
+41179369046 queued at last checked epoch.
+Its independent Fabric review was also refused by the host
+temperature admission guard, with no source review verdict.
+Preserve the original refused operation effects and no
+same/cross-carrier retry. Availability source-custody
+inquiry in Slack thread 1793430537.066329 remains an
+active read-only child with no RESULT yet.
+
+The sole authoritative safety claim remains that #10256 is
+BUILT_NOT_PROVEN and inert before its producer is deployed;
+#10202/#10209 remain independently source PASS but Draft/HOLD.
+No accepted GMI generation, same-bundle protected reader,
+actual production SETTLED, source release approval, self-merge
+or deployment is asserted here.
