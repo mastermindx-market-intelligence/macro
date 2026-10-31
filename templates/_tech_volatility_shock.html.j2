@@ -86,7 +86,7 @@
         {% endfor %}
       </div>
       <div class="tvs-relative">
-        <div class="tvs-label" style="color:#7da3fd">QQQ relative to SPY</div>
+        <div class="tvs-label" style="color:var(--info)">QQQ relative to SPY</div>
         <div class="tvs-amount {{ 'tvs-neg' if tech_shock.relative_pp < 0 else 'tvs-pos' if tech_shock.relative_pp > 0 else 'tvs-muted' }}">{{ '%+.2f'|format(tech_shock.relative_pp) }} pp</div>
         <div class="tvs-muted" style="font-size:13px">Prior 60-session relative z: <strong>{{ '%+.2f'|format(tech_shock.relative_z60) if tech_shock.relative_z60 is not none else 'Unavailable' }}</strong></div>
       </div>
