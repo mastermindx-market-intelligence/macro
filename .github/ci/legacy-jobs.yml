@@ -10055,6 +10055,21 @@ jobs:
       # spacer: keep unchanged
       # spacer: keep unchanged
       # W2B (IM14) paths: insert below this line
+      - "lib/intl_gs_dossier_view.py"
+      - "lib/__init__.py"
+      - "templates/intl_workspace/dossier.html.j2"
+      - "templates/intl_workspace/_gs_dossier_macros.html.j2"
+      - "templates/intl_workspace/_gs_macros.html.j2"
+      - "templates/intl_workspace_surveillance.css"
+      - "engine/intl_global_acceptance_matrix.py"
+      - "engine/intl_global_dollar_credit.py"
+      - "engine/global_liquidity_transmission.py"
+      - "config/global_liquidity_transmission_v1.yml"
+      - "research/GLOBAL_LIQUIDITY_TRANSMISSION_STATE_METHODOLOGY_2026-08-22.md"
+      - "tests/test_intl_gs_dossier.py"
+      - "tests/intl_gs_dossier_fixture.py"
+      - "tests/intl_gs_dossier_browser.test.cjs"
+      - "tests/__init__.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -10096,6 +10111,10 @@ jobs:
       # spacer: keep unchanged
       # spacer: keep unchanged
       # W2B (IM14) test steps: insert below this line
+      - name: IM14 market dossier tests (W2B)
+        run: python -m pytest tests/test_intl_gs_dossier.py -q
+      - name: IM14 market dossier browser proof (W2B)
+        run: node --test tests/intl_gs_dossier_browser.test.cjs
 
   stock-dashboard-first-frame:
     if: ${{ false }}
