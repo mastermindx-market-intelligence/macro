@@ -136,6 +136,43 @@ test('B2: 1440 layout — rail 400 beside the column, ranking widths, head 32, r
     assert.ok(rule && rule.includes('outline: 1.5px solid var(--info)'), rule);
     assert.equal(ring.style, 'solid');
     assert.equal(ring.color, await tokenColor(page, '--info'));
+    const ringWidth = await page.evaluate(() =>
+      getComputedStyle(document.querySelector('.intl-dislocations__ranking tr[data-i="0"]')).outlineWidth);
+    // this Chromium build snaps computed outline lengths to whole pixels — a
+    // bare `outline:1.5px` probe also computes 1px — so the 1.5px pin is the
+    // declaredRule assertion above; here we only require a painted-width ring.
+    assert.ok(parseFloat(ringWidth) >= 1, `ring width ${ringWidth}`);
+    // Scatter integrity in the LIVE DOM (r2 attack finding (a)): the threshold
+    // line, its label twins and the specimen dots must be children of the
+    // scatter svg — a t() <span> inside the svg is an HTML-parser breakout tag
+    // that truncates the chart at parse time and silently drops every element
+    // after it (server-side string checks cannot see this).
+    const scatter = await page.evaluate(() => {
+      const svg = document.querySelector('svg.intl-dislocations__scatter');
+      if (!svg) return null;
+      const threshold = svg.querySelector('line.intl-dislocations__threshold');
+      const labels = svg.querySelectorAll('text.intl-dislocations__thresholdlabel');
+      const en = svg.querySelector('text.intl-dislocations__thresholdlabel.l-en');
+      const zh = svg.querySelector('text.intl-dislocations__thresholdlabel.l-zh');
+      return {
+        threshold: !!threshold,
+        thresholdX: threshold ? parseFloat(threshold.getAttribute('x1')) : null,
+        labelTwins: labels.length,
+        labelEn: en ? en.textContent : null,
+        labelZh: zh ? zh.textContent : null,
+        dots: svg.querySelectorAll('circle.intl-dislocations__dot').length,
+        spansInSvg: svg.querySelectorAll('span').length,
+        children: svg.querySelectorAll('*').length,
+      };
+    });
+    assert.ok(scatter, 'scatter svg in live DOM');
+    assert.equal(scatter.spansInSvg, 0, 'no HTML span inside the scatter svg');
+    assert.ok(scatter.threshold, 'threshold line lives inside the scatter svg');
+    assert.ok(Math.abs(scatter.thresholdX - 395.2) < 0.01, `threshold x ${scatter.thresholdX}`);
+    assert.equal(scatter.labelTwins, 2, 'threshold label EN+ZH text twins');
+    assert.ok(/Fragility threshold 60/.test(scatter.labelEn), scatter.labelEn);
+    assert.ok(/脆弱度阈值/.test(scatter.labelZh), scatter.labelZh);
+    assert.ok(scatter.dots >= 1, 'specimen dots render inside the scatter svg');
   });
 });
 
@@ -286,6 +323,11 @@ test('B9: production variant — no fragility numeral, scatter Empty note, no sp
     assert.equal(audit.specimen, 0);
     assert.ok(audit.emptyNote);
     assert.equal(audit.above, false);
+    const noteInSvg = await page.evaluate(() => {
+      const svg = document.querySelector('svg.intl-dislocations__scatter');
+      return svg ? svg.querySelectorAll('text.intl-dislocations__emptynote').length : -1;
+    });
+    assert.equal(noteInSvg, 2, 'production empty note renders inside the scatter svg (EN+ZH twins)');
   }, {variant: 'production'});
 });
 

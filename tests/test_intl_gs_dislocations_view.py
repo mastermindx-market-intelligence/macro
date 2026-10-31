@@ -404,8 +404,13 @@ def test_template_classes_are_view_or_shared_scoped(fixture):
     tokens = set()
     for attribute in re.findall(r'class="([^"]*)"', source):
         tokens.update(attribute.split())
+    # the estate i18n classes (engine.i18n.t / svgt twins) are lawful in the
+    # template exactly as in the render; everything else must be view- or
+    # shared-scoped (mutant 7)
+    estate_i18n = {"l-en", "l-zh"}
     allowed = re.compile(r"^(intl-dislocations__|intl-gs__)")
-    offenders = sorted(token for token in tokens if not allowed.match(token))
+    offenders = sorted(token for token in tokens - estate_i18n
+                       if not allowed.match(token))
     assert not offenders, f"template class outside the two scopes: {offenders}"
     html = fixture.render_page(variant="specimen", scenario="restricted")
     section = _dislocations_section(html)
@@ -589,13 +594,20 @@ def test_v18_scatter_geometry(builder, fixture):
     assert 'viewBox="0 0 640 420"' in svg
     assert 'role="img"' in svg and "aria-label" in svg
     assert re.search(r'<line[^>]*x1="395\.2"', svg), "threshold line not at 60"
+    # SVG-safe bilingual labels: every <text> twin carries the estate i18n
+    # class pair, and NO t() span may appear inside the svg — a <span> inside
+    # foreign content is an HTML-parser breakout tag that silently truncates
+    # the chart after the first label (attack finding (a), r2).
+    assert not re.search(r"<span", svg), "t() markup inside the scatter svg"
     threshold_text = re.search(
-        r'<text class="intl-dislocations__thresholdlabel"[^>]*>(.*?)</text>', svg,
-        re.DOTALL)
-    assert threshold_text, "threshold line carries no text label element"
+        r'<text class="intl-dislocations__thresholdlabel l-en"[^>]*>(.*?)</text>',
+        svg, re.DOTALL)
+    assert threshold_text, "threshold label EN text twin missing"
+    assert re.search(
+        r'<text class="intl-dislocations__thresholdlabel l-zh"[^>]*>(.*?)</text>',
+        svg, re.DOTALL), "threshold label ZH text twin missing"
     threshold_copy = builder.COPY["threshold_label"]
-    assert threshold_copy[0] in threshold_text.group(1) \
-        or threshold_copy[1] in threshold_text.group(1)
+    assert threshold_copy[0] in threshold_text.group(1)
     y_title = builder.COPY["y_axis_title"]
     assert y_title[0] in svg or y_title[1] in svg
     assert "σ" not in svg and "sigma" not in svg.lower()

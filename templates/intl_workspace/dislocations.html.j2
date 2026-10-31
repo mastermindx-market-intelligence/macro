@@ -3,7 +3,14 @@
    Every user-visible string is a payload {en, zh} pair rendered through t();
    attribute strings are composed plain (bilingual, " · " separated) — never
    t() markup inside an attribute. No script, no style attribute, no inline
-   handlers; selection is native radios + per-index CSS (12 indices). #}
+   handlers; selection is native radios + per-index CSS (12 indices).
+   INSIDE <svg>: never call t() — its l-en/l-zh <span> legs are HTML-parser
+   breakout tags in foreign content and would truncate the whole chart after
+   the first label. Bilingual SVG labels use svgt() (two classed <text>
+   twins; theme.css's element-agnostic .l-en/.l-zh rules pick the language). #}
+{% macro svgt(cls, x, y, en, zh, anchor='', transform='') -%}
+<text class="{{ cls }} l-en" lang="en" x="{{ x }}" y="{{ y }}"{% if anchor %} text-anchor="{{ anchor }}"{% endif %}{% if transform %} transform="{{ transform }}"{% endif %}>{{ en|e }}</text><text class="{{ cls }} l-zh" lang="zh" x="{{ x }}" y="{{ y }}"{% if anchor %} text-anchor="{{ anchor }}"{% endif %}{% if transform %} transform="{{ transform }}"{% endif %}>{{ zh|e }}</text>
+{%- endmacro %}
 {% macro decbar(kind, value) -%}
 {%- set len = (([value|abs, 5]|min) / 5 * 44)|round(1) -%}
 <svg class="intl-dislocations__decbar" viewBox="0 0 88 12" role="img" aria-label="{{ kind }}"><line class="intl-gs__zero-tick" x1="44" y1="0" x2="44" y2="12"></line><rect class="intl-dislocations__leg intl-dislocations__leg--{{ kind }}" data-dir="{{ 'up' if value > 0 else 'down' }}" x="{{ 44 if value > 0 else 44 - len }}" y="2" width="{{ len }}" height="8" rx="2"></rect></svg>
@@ -42,18 +49,18 @@
             <text class="intl-dislocations__ticklabel" x="505.6" y="382" text-anchor="middle">80</text>
             <text class="intl-dislocations__ticklabel" x="616" y="382" text-anchor="middle">100</text>
           </g>
-          <text class="intl-dislocations__axislabel" x="340" y="404" text-anchor="middle">{{ t(c.x_axis_title.en, c.x_axis_title.zh) }}</text>
-          <text class="intl-dislocations__axislabel" x="18" y="194" text-anchor="middle" transform="rotate(-90 18 194)">{{ t(c.y_axis_title.en, c.y_axis_title.zh) }}</text>
+          {{ svgt('intl-dislocations__axislabel', 340, 404, c.x_axis_title.en, c.x_axis_title.zh, anchor='middle') }}
+          {{ svgt('intl-dislocations__axislabel', 18, 194, c.y_axis_title.en, c.y_axis_title.zh, anchor='middle', transform='rotate(-90 18 194)') }}
           <text class="intl-dislocations__ticklabel intl-gs__num" x="56" y="197" text-anchor="end">0</text>
           <text class="intl-dislocations__ticklabel intl-gs__num" x="56" y="33" text-anchor="end">+7</text>
           <text class="intl-dislocations__ticklabel intl-gs__num" x="56" y="367" text-anchor="end">−7</text>
           <line class="intl-gs__zero-tick" x1="64" y1="194" x2="616" y2="194"></line>
           <line class="intl-dislocations__attntick" x1="64" y1="109" x2="616" y2="109"></line>
           <line class="intl-dislocations__attntick" x1="64" y1="279" x2="616" y2="279"></line>
-          <text class="intl-dislocations__attnlabel intl-gs__num" x="68" y="105">{{ t(c.attention_ticks.en, c.attention_ticks.zh) }}</text>
-          <text class="intl-dislocations__attnlabel intl-gs__num" x="68" y="293">{{ t(c.attention_ticks.en, c.attention_ticks.zh) }}</text>
+          {{ svgt('intl-dislocations__attnlabel intl-gs__num', 68, 105, c.attention_ticks.en, c.attention_ticks.zh) }}
+          {{ svgt('intl-dislocations__attnlabel intl-gs__num', 68, 293, c.attention_ticks.en, c.attention_ticks.zh) }}
           <line class="intl-dislocations__threshold" x1="395.2" y1="24" x2="395.2" y2="364"></line>
-          <text class="intl-dislocations__thresholdlabel" x="401.2" y="38">{{ t(c.threshold_label.en, c.threshold_label.zh) }}</text>
+          {{ svgt('intl-dislocations__thresholdlabel', 401.2, 38, c.threshold_label.en, c.threshold_label.zh) }}
           {% for row in ranked %}{% set point = point_by_market.get(row.market_id) %}
           {% if point %}
           <circle class="intl-dislocations__ring" data-i="{{ row.index }}" cx="{{ point.x }}" cy="{{ point.y }}" r="8.5"></circle>
@@ -62,7 +69,7 @@
           <text class="intl-dislocations__ptlabel" x="{{ point.x - 9 if point.label_end else point.x + 9 }}" y="{{ point.y - 9 }}" text-anchor="{{ 'end' if point.label_end else 'start' }}">{{ point.market_id }}</text>
           {% endif %}{% endfor %}
           {% if not p.scatter.points %}
-          <text class="intl-dislocations__emptynote" x="340" y="194" text-anchor="middle">{{ t(c.scatter_empty_note.en, c.scatter_empty_note.zh) }}</text>
+          {{ svgt('intl-dislocations__emptynote', 340, 194, c.scatter_empty_note.en, c.scatter_empty_note.zh, anchor='middle') }}
           {% endif %}
         </svg>
         <table class="intl-dislocations__vh">
