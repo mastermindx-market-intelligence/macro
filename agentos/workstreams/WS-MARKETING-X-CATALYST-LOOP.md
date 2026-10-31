@@ -30,6 +30,8 @@ owns_paths:
   - tests/catalyst_scan_browser.js
   - tests/fixtures/catalyst_*.json
   - research/MARKETING_X_CATALYST_CONTINUATION_HANDOFF_*.md
+  - research/marketing_dockets/catalyst_fable_20261031/RIGHTS_CLASSIFICATION_REQUEST.md
+  - research/marketing_dockets/catalyst_fable_20261031/D1_READINESS_NOTE.md
 waves:
   - id: A1-INT
     title: Integrate the verified Session00/01/02 catalyst loop onto main
@@ -60,12 +62,20 @@ waves:
       Merged to main in PR #10257; delivered ONCE to the steward carrier PR #7870 (comment 6549466894, marker MX-CAT-RIGHTS-REQUEST-7870-ab29a89eb4bd). The steward decides D1–D5; never re-post.
   - id: SHIP
     title: One draft PR to main, independent review, merge, deploy observation
-    status: in_progress
+    status: done
     depends_on: [A1-INT, A2-WITNESS, B-NEG, C1-PACK]
     next_action: >
-      Seat integrates the judged lane heads into its claude/ branch, opens ONE draft PR to main,
-      CI green, fresh non-authoring review, merge with --match-head-commit, observe the macro-update
-      deploy with every catalyst flag still OFF.
+      PR #10257 merged to main ab29a89eb4bd (2026-10-31 21:36:49Z, squash, --match-head-commit 94f2a79a; ci run 41239170455 SUCCESS; independent read-only review ACCEPT_WITH_FINDINGS recorded in the PR body). Deploy observed 22:03Z: API process = merge commit, /api/catalyst 503, /optin/request 503, /scan?tickers=AAPL 503; flags OFF. Rung: MERGED + PRODUCTION_PROOF of the OFF state. DO_NOT_REDO.
+  - id: OWNER-GATES
+    title: Owner acts outside the seat — rights grant, flags ON, hosted proofs, acceptance
+    status: todo
+    depends_on: [SHIP]
+    next_action: >
+      Not seat-actionable. (1) Steward decides D1–D5 on PR #7870 comment 6549466894 or by an agentos decision;
+      (2) the flag operator turns CATALYST_PUBLIC_ENABLED / CATALYST_OPTIN_ENABLED / CATALYST_UX_ENABLED on only
+      after a bound grant; (3) hosted A2 proof, B2 opt-in return (needs a sender), C2 external cohort (partner
+      editor), D1 live conversions (Website/D07 UTM join), E1 decision (Chairman). Carried engineering gaps are in
+      the 2026-10-31 FABLE-CEO-MERGE handoff; each needs its own finding and owner before any edit.
 decisions:
   - DEC:ENTRY-RADAR-CATALYST-LIVE-READ-IS-OPT-IN
 discoveries: []
@@ -99,9 +109,10 @@ artifacts:
   - research/marketing_dockets/catalyst_fable_20261031/PILOT.md
   - research/marketing_dockets/D07_FUNNEL_LIFECYCLE_MNZ.md
 next_action: >
-  Seat ce215fa3 (Fable 5.1) orchestrates two Opus orchestrators over the Subagent Fabric for
-  waves A1-INT/A2-WITNESS/B-NEG (ORCH-A) and C1-PACK/RIGHTS-REQ (ORCH-B); on their judged
-  returns the seat ships SHIP. The docket documents themselves live on planning PR #10241.
+  Delivery rung MERGED + PRODUCTION_PROOF (OFF state) via PR #10257. Open owner gates, none seat-actionable:
+  steward decision D1–D5 on the SEC EDGAR rights request (PR #7870 comment 6549466894); flags ON only by their
+  operator after a grant; hosted A2 proof, opt-in return B2, external cohort C2, live conversions D1 and the E1
+  decision follow those gates. Carried engineering gaps are listed in the 2026-10-31 FABLE-CEO-MERGE handoff.
 ---
 
 # Marketing X — Catalyst Loop acquisition engine
