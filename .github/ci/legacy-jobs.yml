@@ -9645,6 +9645,9 @@ jobs:
       - "scripts/build_chart_data.py"
       - "scripts/build_international_macro.py"
       - "scripts/build_intl_library.py"
+      # publish_ohlc (reached via build_chart_data) reads the sealed-ssh known_hosts asset
+      - "scripts/publish_ohlc.py"
+      - "app/deploy/ohlc_origin_known_hosts"
       - "scripts/thematic_rotation_phase0.py"
       - "scripts/validate_regime_fwd.py"
       - "site/factordata/basket_washout_state.json"
