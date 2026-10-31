@@ -12437,6 +12437,55 @@ jobs:
       - name: China Alt-Data — catalyst cards print the inquiry company, pre-announcement type + swing, unlock size
         run: python -m pytest tests/test_china_altdata.py -q -p no:cacheprovider
 
+  research-record-claims:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    # Research record claims (W33-LF, 2026-10-21): the reports hub span, the research
+    # index hub claims and the per-report record claims. Three render suites (jinja2 +
+    # templates/ + the research-pages builder; no data/ or site/ write). Own job, not a
+    # step in washout-turn-organ: that step moved the index-template (5,843 > 5,837) and
+    # build_free_content (5,816 > 5,810) packing probes. scope: exclusive pins it to the
+    # suites' static import closure (run_ci_pack.inferred_as_if_not_exclusive on main
+    # d5d0be27, 26 files, no probe file in it); the probe ceilings stay fixed.
+    paths:
+      - "config/site_access.yml"
+      - "engine/research_vault/__init__.py"
+      - "engine/research_vault/catalog.py"
+      - "engine/research_vault/sidecar.py"
+      - "engine/research_vault/slugs.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
+      - "lib/seo.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "scripts/__init__.py"
+      - "scripts/build_reports.py"
+      - "scripts/build_research_pages.py"
+      - "scripts/build_research_vault.py"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/report_base.html.j2"
+      - "templates/reports.html.j2"
+      - "templates/research_index.html.j2"
+      - "templates/research_report.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_reports_hub_span.py"
+      - "tests/test_research_pages_hub_claims.py"
+      - "tests/test_research_pages_record_claims.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2 pyyaml
+      - name: Research record claims — hub span, index hub claims, per-report record claims
+        run: python -m pytest tests/test_reports_hub_span.py tests/test_research_pages_hub_claims.py tests/test_research_pages_record_claims.py -q -p no:cacheprovider
   china-board-breadth:
     if: ${{ false }}
     gate: code

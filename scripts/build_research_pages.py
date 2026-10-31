@@ -145,6 +145,7 @@ def _norm(item: dict) -> dict:
         "tickers": [t for t in (item.get("tickers") or []) if t][:6],
         "teaser": _trunc(pts[0], 220) if pts else "",
         "n_points": len(pts),
+        "top_pick": bool(item.get("top_pick")),
     }
 
 
@@ -406,6 +407,7 @@ def build(catalog: dict | None = None) -> int:
     groups = [{"inst": k, "reports": v} for k, v in
               sorted(by_inst.items(), key=lambda kv: (-len(kv[1]), kv[0]))]
     idx_html = idx_tmpl.render(groups=groups, total=len(all_norm),
+                               as_of=_fmt_date(catalog.get("generated_at") or ""),
                                canonical=f"{CANONICAL_BASE}/research/index.html",
                                site_base=CANONICAL_BASE)
     write_page(RESEARCH_DIR / "index.html", idx_html)
