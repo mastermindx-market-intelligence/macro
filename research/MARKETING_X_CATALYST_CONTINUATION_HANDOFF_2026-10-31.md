@@ -52,9 +52,23 @@ docket README. Nothing in this file is a completion claim beyond the rung each l
   worktree (fetch, diff vs fresh main, run `tests/test_ci_pack.py` + the catalyst suites), merge
   into the seat branch; then the ORCH-B head; open ONE draft PR to main; fabric independent
   review; merge `--match-head-commit`; observe the macro-update deploy with flags OFF.
+- **2026-10-31 09:3xZ** — Records PR #10257 open (head 7721f04e, fence-pack repaired). Both Opus
+  orchestrators died on the Opus session limit (~08:32Z) and were RESUMED by message (never re-spawned).
+  ORCH-A found the base RED before any merge (F-BASE-1..5): the Session 00 consumer patch imports
+  producer classes that live only on PR #8700 head `ddbb5829` (Session 01). **Seat decision
+  `DEC:MX-CAT-PRODUCER-ADOPTION-8700-DDBB5829`:** adopt exactly that head's four files byte-exact
+  (judge-tree evidence: admission 6 / scan 70 / packet_public 114 passed, imports resolve), then a
+  tests-only fixture repair against the Stage-B fail-closed gates (lifecycle `make()` confirm_gate,
+  opt-in/UX flags set per test, one disabled-path witness per gate; never loosen a gate). Takeover
+  recorded once on #8700. Amendment: `$K/orch/fabric/MX_ORCH_A_AMENDMENT_1B_2026-10-31.md` (lane
+  A1B-PROD-FIX-r1 → `lane/mx-cat-a1b-judged`); ORCH-B's enroll gates on the A1B head, cap 12:00Z.
+  ORCH-B so far: pack head `b2e93b13` published INTERIM as `lane/mx-cat-orch-b-judged`; REVIEW-B-r1
+  ACCEPT-WITH-FINDINGS (F1/F2 minor → REPAIR-B-r1; F3/F4 gaps for the seat); rights request and D1
+  readiness note drafted in `$S/orch/b/`. Fleet lane tokens cannot push new refs on this lineage
+  (workflow scope) — orchestrators fetch read-only over SSH and publish judged refs themselves.
 
 ## 5. Never
 
-Push `sol/*`; enable a catalyst flag; edit `config/theme_sources.yml`; stage `data/`/`site/`;
+Push `sol/*` or `web/mmx-acq-*`; edit the adopted producer files' semantics; enable a catalyst flag; edit `config/theme_sources.yml`; stage `data/`/`site/`;
 re-post the takeover note; `gh` in loops under 90 s; self-merge or self-approve; describe a
 HOLD/PARKED or an unmerged PR as shipped.
