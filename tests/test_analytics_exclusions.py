@@ -524,9 +524,11 @@ def test_candidate_dedup_keeps_exact_identity_set_under_repeated_events():
         ("v5", None, "127.0.0.1"),
     ] * 40
     def candidate(keys, anchor_pairs):
+        # Materialize once: a generator of anchors is consumed after one pass.
+        anchors_for_reuse = list(anchor_pairs)
         result = {}
         for cookie, key in keys:
-            matches = {uid for uid, akey in anchor_pairs if key is not None and key == akey}
+            matches = {uid for uid, akey in anchors_for_reuse if key is not None and key == akey}
             if matches:
                 result.setdefault(cookie, set()).update(matches)
         return {cookie: next(iter(users)) for cookie, users in result.items() if len(users) == 1}
