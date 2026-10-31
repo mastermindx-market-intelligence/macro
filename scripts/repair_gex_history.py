@@ -262,36 +262,128 @@ def main(argv: list[str] | None = None) -> int:
              "APPLIED" if args.apply else "DRY RUN",
              totals["n"], totals["changed"], totals["impossible"], totals["skipped"])
 
-    if args.publish and args.apply and repaired:
-        _publish(repaired, store=store)
+    publication = None
+    if args.publish and args.apply:
+        publication = _publish(repaired, store=store)
     elif args.publish and not args.apply:
         log.warning("repair: --publish ignored on a dry run")
-    return 1 if failures else 0
+    if publication is not None:
+        # One machine-readable process result; SDK acknowledgements are not
+        # remote-byte equality. Counts describe wrapper calls, not SDK retries.
+        print(json.dumps({"schema": "options_hub.gex_archive_publication/v1",
+                          "attempt_unit": "publisher_wrapper_call",
+                          "acknowledgement_only": True,
+                          "publication": publication}, sort_keys=True))
+    if publication is not None and publication["incomplete"]:
+        log.error("repair: requested publication INCOMPLETE — %d/%d snapshots confirmed, "
+                  "%d unconfirmed, %d not attempted",
+                  publication["confirmed"], publication["requested"],
+                  publication["unconfirmed"], publication["not_attempted"])
+    return 1 if failures or (publication is not None and publication["incomplete"]) else 0
 
 
-def _publish(repaired: list[tuple[str, Path]], *, store=None) -> None:
+def _publish(repaired: list[tuple[str, Path]], *, store=None) -> dict:
+    """Upload the repaired snapshots, then refresh each root's dated index.
+
+    Returns a truthful summary. A missing import, client or credentials means
+    every requested key is explicitly ``not_attempted`` (zero attempts). A
+    ``False`` upload or an exception is ``unconfirmed`` — never proof that a
+    remote object is absent — and is never retried or overwritten here. All
+    acknowledged successes and every requested object/index key are preserved.
+    Attempt counts are publisher-wrapper calls; existing SDK retries are unchanged.
+    Only dated objects and their truthful LIST-derived index are published:
+    zero heal budget prevents unrelated archive writes, and current
+    gex/vol/boards are never touched.
+    """
+    summary: dict = {"requested": len(repaired), "attempted": 0, "confirmed": 0,
+                     "unconfirmed": 0, "not_attempted": 0, "keys": {},
+                     "indices": {}, "incomplete": False}
+
+    def _index_result(root: str, detail: dict | None = None) -> dict:
+        detail = detail or {}
+        return {"key": f"{R2_PREFIX}{root}/dates.json",
+                "status": detail.get("status", "unconfirmed"),
+                "index_attempted": detail.get("index_attempted"),
+                "index_uploaded": detail.get("index_uploaded"),
+                "healed": detail.get("healed", 0)}
+
+    def _mark_all_not_attempted() -> None:
+        for root, path in repaired:
+            summary["keys"][f"{R2_PREFIX}{root}/{path.name}"] = {
+                "status": "not_attempted", "attempts": 0}
+            summary["not_attempted"] += 1
+            summary["indices"][root] = _index_result(root, {"status": "not_attempted",
+                                        "index_attempted": False})
+        summary["incomplete"] = True
+
+    if not repaired:
+        return summary
     try:
         from scripts.build_options_hub_nightly import _r2_client, _upload_r2, publish_gex_history_index
-    except Exception as exc:  # noqa: BLE001
-        log.warning("repair: publish unavailable — %s", exc)
-        return
-    s3 = _r2_client()
+    except Exception:  # noqa: BLE001
+        log.warning("repair: publish unavailable")
+        _mark_all_not_attempted()
+        return summary
+    try:
+        s3 = _r2_client()
+    except Exception:  # noqa: BLE001
+        log.warning("repair: client unavailable before upload")
+        _mark_all_not_attempted()
+        return summary
     bucket = os.environ.get("R2_BUCKET")
     if s3 is None or not bucket:
         log.warning("repair: R2 creds absent — snapshots repaired locally only")
-        return
+        _mark_all_not_attempted()
+        return summary
+
     ok = 0
     published: dict[str, list[str]] = {}
     for root, path in repaired:
-        if _upload_r2(s3, bucket, path, f"{R2_PREFIX}{root}/{path.name}"):
-            ok += 1
-            published.setdefault(root, []).append(path.stem)
-    # Only dated objects and their truthful LIST-derived index. Zero heal budget
-    # prevents unrelated archive writes; current gex/vol/boards are never touched.
-    for root, days in published.items():
-        publish_gex_history_index(root, max(days), store, None, HIST_DIR.parent,
-                                  s3, bucket, heal_budget=0)
+        key = f"{R2_PREFIX}{root}/{path.name}"
+        entry = {"status": "not_attempted", "attempts": 0}
+        summary["keys"][key] = entry
+        try:
+            entry["attempts"] = 1
+            summary["attempted"] += 1
+            if _upload_r2(s3, bucket, path, key):
+                entry["status"] = "confirmed"
+                summary["confirmed"] += 1
+                ok += 1
+                published.setdefault(root, []).append(path.stem)
+            else:
+                entry["status"] = "unconfirmed"
+                summary["unconfirmed"] += 1
+        except Exception:  # noqa: BLE001
+            entry["status"] = "exception"
+            summary["unconfirmed"] += 1
+
+    for root in sorted(published):
+        days = published[root]
+        detail: dict = {}
+        try:
+            # Only dated objects and their truthful LIST-derived index. Zero
+            # heal budget prevents unrelated archive writes; current
+            # gex/vol/boards are never touched.
+            publish_gex_history_index(root, max(days), store, None, HIST_DIR.parent,
+                                      s3, bucket, heal_budget=0, outcome=detail)
+        except Exception:  # noqa: BLE001
+            # A legacy/non-reporting callee leaves the attempt UNKNOWN. The
+            # native seam reports its phase before any potentially failing IO.
+            if not detail:
+                detail["status"] = "exception"
+        summary["indices"][root] = _index_result(root, detail)
+    for root in sorted({r for r, _ in repaired} - set(published)):
+        summary["indices"][root] = _index_result(root, {"status": "not_attempted",
+                                                     "index_attempted": False})
+
+    summary["incomplete"] = (summary["confirmed"] != summary["requested"]
+                             or any(d["status"] != "success"
+                                    for d in summary["indices"].values()))
     log.info("repair: published %d/%d repaired snapshots to R2", ok, len(repaired))
+    if summary["incomplete"]:
+        log.warning("repair: publication INCOMPLETE — indices: %s",
+                    {r: d["status"] for r, d in sorted(summary["indices"].items())})
+    return summary
 
 
 if __name__ == "__main__":
