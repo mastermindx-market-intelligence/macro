@@ -279,3 +279,15 @@ and the cross-family grain gap → G11.
 | F4-c2 | engine/chronicle/adapters.py:103-104 | if not item_id or not date: |
 | F5-c4 | ABSENT — grep at BASE: `git grep -in "received_at\|effective_at" -- contracts/news_impact/` → no match | ABSENT confirmed at BASE (no match) |
 | F6-g1 | app/integrated_answer.py:332 | def _expectation_chips(day: datetime.date) -> dict[str, dict[str, Any]]: |
+
+## Seat ruling 2026-10-31 (DEC-NEWS-ESTATE-B1-JOINS)
+
+Ruling by the News Intelligence Estate seat (602cd180) under the Chairman completion directive of 2026-10-31, on how the identifiers inventoried above may be joined across families. The inventory above stays as written at BASE 64ef5131; this section adds the join rules only.
+
+- R1 Canonical cross-family evidence reference = report key `source:source_item_id` (the qbus `item_id` namespace, same as news_impact `Article.story_id`) plus qbus `revision_id` whenever a specific revision is meant. Hash namespaces (`ev2_` cluster ids, Prophet `event_key`, `cev-`, `fact_`, `evt_cik`) are never compared across families.
+- R2 Cluster ids are owner-local. A consumer that reconstructs clusters locally (news_impact `cluster_articles`) publishes the relation by listing member report keys plus a receipt (run_id, policy version, member set); identical ids never imply identical membership.
+- R3 news_impact `provenance.origin_document_id` carries the report key; a revision reference is added as an optional field by the contract owner only when the first consumer needs it.
+- R4 Per-family clocks stay as they are, each carried with its companion basis field; normalization happens at the consumer boundary; no cross-family clock comparison is published as a fact.
+- R5 Issuer identity resolves ticker → CIK at read time through the existing `ticker_cik_ledger` / issuer ladder; derivatives carry both.
+- R6 Derivatives reference (report key, revision_id) and re-check the current revision through the store before publication; a superseded revision is published only as superseded.
+- R7 Only additive, optional fields on existing contracts; no renames, removals, new stores or new id namespaces. Legacy event-log supersede (G02) is deferred to the lane that first needs it.
