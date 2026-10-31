@@ -345,6 +345,42 @@ def test_same_session_payload_replay_is_idempotent_but_later_session_is_receipte
     assert set(observations.loc[observations["collection_session_id"] == "scheduled-2", "correction_state"]) == {"unchanged"}
 
 
+def test_lineage_history_is_indexed_once_per_collection_session(tmp_path: Path, monkeypatch):
+    """History-size work is paid once, not once per ticker/observation."""
+    clients = {"AAA": _Ticker(), "BBB": _Ticker()}
+    factory = lambda ticker: clients[ticker]
+
+    first = revisions.accrue_expectation_observations(
+        ["AAA", "BBB"],
+        output_dir=tmp_path,
+        collection_session_id="scheduled-1",
+        ticker_factory=factory,
+    )
+    assert first == {"attempts": 2, "observations": 56}
+
+    original = revisions._latest_lineage_index
+    calls = 0
+
+    def counted(existing):
+        nonlocal calls
+        calls += 1
+        return original(existing)
+
+    monkeypatch.setattr(revisions, "_latest_lineage_index", counted)
+    later = revisions.accrue_expectation_observations(
+        ["AAA", "BBB"],
+        output_dir=tmp_path,
+        collection_session_id="scheduled-2",
+        ticker_factory=factory,
+    )
+
+    assert calls == 1
+    assert later == {"attempts": 2, "observations": 56}
+    rows = _observations(tmp_path)
+    later_rows = rows[rows["collection_session_id"] == "scheduled-2"]
+    assert set(later_rows["correction_state"]) == {"unchanged"}
+
+
 def test_changed_payload_appends_supersession_without_mutating_prior_bytes(tmp_path: Path):
     _run(tmp_path, "scheduled-1")
     before = _observations(tmp_path).copy(deep=True)
