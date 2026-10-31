@@ -4769,6 +4769,11 @@ CURATED_EXCLUSIVE = {
     "international-workspace-pure-js",
     # Numerical records reuse the performance owner's measured import closure.
     "international-workspace-foundation",
+    # IM18 watch-condition lifecycle contract: the pure evaluator consumes
+    # IM12 observation and IM15 dislocation outputs; the curated scope pins
+    # its measured engine import closure (universe/theme-graph rights ride
+    # the dislocation import; no config file is read by the suite).
+    "international-global-watch",
     # IM11 data-contract suite: hermetic universe/rights-matrix derivation tests.
     "international-global-universe",
     # IM17 transmission-evidence contract: edges, qualified transmission
