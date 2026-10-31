@@ -205,7 +205,7 @@ def test_a_today_uses_owner_featured_preview_without_entry_promotion():
     assert "po-wait" in cards[1]["class"], "Featured bounce_wait must remain Wait"
     today_text = today.get_text(" ", strip=True)
     assert "2 more Featured names remain in Screener" in today_text
-    assert "not a pick quota" in today_text
+    assert "另有 2 只精选股票可在筛选器中查看。" in today_text
 
     # Today previews the owner's shelf; it does not remove any candidate row.
     assert len(soup.select("#us-cand-grid .pvcard")) == 6

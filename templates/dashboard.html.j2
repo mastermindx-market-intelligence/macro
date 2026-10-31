@@ -17103,12 +17103,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% with items=_today_visible, opportunity_prefix='today', sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
         </div>
         {%- if _today_more > 0 %}
-        <p class="mx-sec-note us-today-remainder"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener; this three-card preview is not a pick quota.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票保留在筛选器；三张卡只是预览容量，并非选股名额。</span></p>
+        <p class="mx-sec-note us-today-remainder"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票可在筛选器中查看。</span></p>
         {%- endif %}
         {%- elif _today_total > 0 %}
-        <div class="mx-empty"><div class="mx-empty-line">{{ t('Featured names exist, but none are visible in this access preview.', '存在精选股票，但当前访问预览中未显示。') }}</div><div class="mx-empty-why">{{ t('Open Screener after access is available; no hidden name is inferred here.', '获得访问权限后请打开筛选器；此处不会推断任何隐藏股票。') }}</div></div>
+        <div class="mx-empty"><div class="mx-empty-line">{{ t('Featured setups are outside your current access.', '精选形态尚未包含在当前访问权限内。') }}</div><div class="mx-empty-why">{{ t('Open Screener to browse the candidates available to you.', '打开筛选器，浏览当前可查看的候选股票。') }}</div></div>
         {%- else %}
-        <div class="mx-empty"><div class="mx-empty-line">{{ t('No Featured setups on this board.', '当前榜单暂无精选股票。') }}</div><div class="mx-empty-why">{{ t('Screener remains available; zero Featured is not a broken board.', '筛选器仍可使用；精选为零并不代表榜单故障。') }}</div></div>
+        <div class="mx-empty"><div class="mx-empty-line">{{ t('No Featured setups on this board.', '当前榜单暂无精选股票。') }}</div><div class="mx-empty-why">{{ t('Explore all candidates in Screener.', '前往筛选器浏览全部候选股票。') }}</div></div>
         {%- endif %}
       </section>
       {% endif %}
@@ -21067,9 +21067,8 @@ if (document.readyState === 'loading') {
       }
       note.innerHTML =
         '<span class="l-en">' + more + ' more Featured name' + (more === 1 ? '' : 's') +
-        ' remain in Screener; this ' + preview + '-card preview is not a pick quota.</span>' +
-        '<span class="l-zh">另有 ' + more + ' 只精选股票保留在筛选器；这 ' + preview +
-        ' 张卡只是预览容量，并非选股名额。</span>';
+        ' remain in Screener.</span>' +
+        '<span class="l-zh">另有 ' + more + ' 只精选股票可在筛选器中查看。</span>';
     } else if (note){
       note.remove();
     }
