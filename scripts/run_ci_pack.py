@@ -3507,6 +3507,157 @@ def _tested_tree_ancestry_ready(
     return merge_base.returncode == 0 and bool(re.fullmatch(r"[0-9a-f]{40}", value))
 
 
+def prepare_canonical_main(
+    root: Path, *, tested_tree_sha: str, base_ref: str = "main"
+) -> str:
+    """Acquire actual main once, then deepen only its pinned history as needed.
+
+    The International frozen-file guard reads origin/main and its merge base
+    with HEAD. Its fetch-depth-0 preparation already establishes tested-tree
+    ancestry; an unrestricted second fetch need not reacquire unrelated history
+    or auto-follow tags. Retain that ancestry with relative deepening, explicitly
+    create origin/main, and never repin to a main tip that moves during this call.
+
+    The manifest runs each synchronous fetch under the logical job's existing
+    deadline and process group. A failed/unknown fetch propagates immediately: only a completed
+    acquisition with valid bindings but insufficient ancestry earns a deeper rung.
+    Filter only this canonical acquisition, with child-only declarations so Git
+    does not persist a partial-clone policy on the fully materialized checkout.
+    Required guard objects must be present offline before returning. There is no
+    transport retry, private timeout, workspace restoration, or replay.
+    """
+    if base_ref != "main":
+        raise RuntimeError("canonical-main preparation requires base_ref='main'")
+    if not isinstance(tested_tree_sha, str) or not re.fullmatch(
+        r"[0-9a-f]{40}", tested_tree_sha
+    ):
+        raise RuntimeError("canonical-main preparation requires an exact tested-tree SHA")
+
+    root = root.resolve()
+    # Only the explicit acquisition may use transport. All readiness/object
+    # probes fail closed rather than silently repairing a missing promisor blob.
+    fetch_env = _trusted_git_environment(root)
+    fetch_env.update({
+        "GIT_CONFIG_COUNT": "2",
+        "GIT_CONFIG_KEY_0": "remote.origin.promisor",
+        "GIT_CONFIG_VALUE_0": "true",
+        "GIT_CONFIG_KEY_1": "remote.origin.partialclonefilter",
+        "GIT_CONFIG_VALUE_1": "blob:none",
+    })
+    git_env = _trusted_git_environment(root)
+    git_env.update(GIT_NO_LAZY_FETCH="1", GIT_ALLOW_PROTOCOL="")
+    canonical_sha: str | None = None
+    previous_depth = 0
+
+    def commit(ref: str) -> str:
+        result = _git_cmd(root, git_env, "rev-parse", "--verify", f"{ref}^{{commit}}")
+        value = result.stdout.strip().lower()
+        if result.returncode != 0 or not re.fullmatch(r"[0-9a-f]{40}", value):
+            raise RuntimeError(f"canonical-main preparation cannot resolve {ref!r}")
+        return value
+
+    def check_bindings() -> None:
+        if commit("HEAD") != tested_tree_sha:
+            raise RuntimeError("canonical-main preparation changed/mismatched tested HEAD")
+        if canonical_sha is not None and commit("origin/main") != canonical_sha:
+            raise RuntimeError("canonical-main preparation lost its pinned origin/main")
+
+    def is_shallow() -> bool:
+        result = _git_cmd(root, git_env, "rev-parse", "--is-shallow-repository")
+        if result.returncode != 0 or result.stdout.strip() not in {"true", "false"}:
+            raise RuntimeError("canonical-main preparation cannot determine shallow state")
+        return result.stdout.strip() == "true"
+
+    def require_local_objects(canonical_base: str) -> None:
+        # These are the exact paths compared by the International frozen guard.
+        frozen_paths = (
+            "templates/theme.css",
+            "templates/_navlinks.html.j2",
+            "engine/intl_global_universe.py",
+            "engine/intl_global_observation.py",
+            "lib/intl_global_observation_adapter.py",
+        )
+
+        def required(*args: str) -> str:
+            result = _git_cmd(root, git_env, *args)
+            if result.returncode != 0:
+                raise RuntimeError("canonical-main required local object unavailable")
+            return result.stdout.strip()
+
+        raw = required("cat-file", "-p", tested_tree_sha)
+        parents = [line.split()[1] for line in raw.splitlines()
+                   if line.startswith("parent ")]
+        commits = {canonical_sha, tested_tree_sha, canonical_base, *parents}
+        if len(parents) == 2:
+            commits.add(required("merge-base", *parents))
+        for oid in commits:
+            if not isinstance(oid, str) or not re.fullmatch(r"[0-9a-f]{40}", oid):
+                raise RuntimeError("canonical-main required object identity unavailable")
+            required("cat-file", "-e", f"{oid}^{{commit}}")
+            required("cat-file", "-e", f"{oid}^{{tree}}")
+        for ref in (canonical_base, tested_tree_sha):
+            for path in frozen_paths:
+                entry = required("ls-tree", ref, "--", path)
+                fields = entry.split()
+                if (len(fields) != 4 or fields[1] != "blob" or fields[3] != path
+                        or not re.fullmatch(r"[0-9a-f]{40}", fields[2])):
+                    raise RuntimeError("canonical-main required frozen object unavailable")
+                required("cat-file", "-e", f"{fields[2]}^{{blob}}")
+
+    for depth in _EXACT_TESTED_TREE_DEPTHS:
+        check_bindings()
+        command = ["git", "fetch", "--no-recurse-submodules", "--no-tags",
+                   "--filter=blob:none"]
+        # Absolute --depth can shorten already-qualified tested-tree history.
+        # Reuse the existing finite ancestry ladder as *additional* generations.
+        increment = depth - previous_depth
+        if is_shallow():
+            command.append(f"--deepen={increment}")
+        canonical_want = (
+            "+refs/heads/main:refs/remotes/origin/main"
+            if canonical_sha is None else canonical_sha
+        )
+        command.extend(["origin", canonical_want, tested_tree_sha])
+        print(
+            "::notice title=international-workspace-browser::acquiring canonical "
+            f"main {'tip' if canonical_sha is None else canonical_sha}; "
+            f"additional ancestry limit {depth}",
+            flush=True,
+        )
+        subprocess.run(command, cwd=root, env=fetch_env, check=True)
+        fetched_sha = commit("FETCH_HEAD")
+        if canonical_sha is None:
+            canonical_sha = commit("origin/main")
+        if fetched_sha != canonical_sha:
+            raise RuntimeError("canonical-main acquisition did not retain its first fetched main")
+        check_bindings()
+
+        merge_base = _git_cmd(root, git_env, "merge-base", canonical_sha, tested_tree_sha)
+        value = merge_base.stdout.strip().lower()
+        if merge_base.returncode not in (0, 1) or (
+            merge_base.returncode == 0 and not re.fullmatch(r"[0-9a-f]{40}", value)
+        ):
+            raise RuntimeError("canonical-main merge-base probe failed")
+        if merge_base.returncode == 0 and _tested_tree_ancestry_ready(
+            root, git_env, tested_tree_sha
+        ):
+            require_local_objects(value)
+            check_bindings()
+            print(
+                "::notice title=international-workspace-browser::canonical main "
+                f"{canonical_sha}; tested tree {tested_tree_sha}; merge base {value}",
+                flush=True,
+            )
+            return canonical_sha
+        if not is_shallow():
+            raise RuntimeError("canonical-main ancestry is unavailable in a complete repository")
+        previous_depth = depth
+
+    raise RuntimeError(
+        "canonical-main ancestry remained unavailable after the bounded deepen ladder"
+    )
+
+
 def _prepare_provided_actions(
     job: LegacyJob,
     *,

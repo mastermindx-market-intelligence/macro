@@ -1205,6 +1205,44 @@ def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
     return out
 
 
+def _evaluation_finding_error(value: Any) -> str | None:
+    """Validate data shape only; this does not verify evidence or assess a tier.
+
+    Missing observations/requirements are explicit nulls. A present numeric
+    comparison contains authored baseline/current/unit; qualitative text is copied
+    literally. No delta or temporal comparison is inferred.
+    The closed shape cannot carry scheduling, ranking or grant metadata.
+    """
+    fields = {"engine", "metric", "observed_change", "segment", "evidence_link", "suggested_tier"}
+    if not isinstance(value, dict) or set(value) != fields:
+        return "evaluation_finding must contain exactly the six documented fields"
+    def text_ok(item: Any) -> bool:
+        if not isinstance(item, str) or not item.strip():
+            return False
+        try:
+            return len(item.encode("utf-8")) <= 2048
+        except UnicodeEncodeError:
+            return False
+    for field in ("engine", "metric", "segment", "evidence_link"):
+        if not text_ok(value[field]):
+            return f"evaluation_finding.{field} must be non-empty text of at most 2048 UTF-8 bytes"
+    tier = value["suggested_tier"]
+    if tier is not None and (not isinstance(tier, str) or tier not in {"T0", "T1", "T2", "T3", "T4"}):
+        return "evaluation_finding.suggested_tier must be T0..T4 or explicit null"
+    change = value["observed_change"]
+    if change is None:
+        return None
+    if isinstance(change, str):
+        return None if text_ok(change) else "evaluation_finding.observed_change text must be non-empty UTF-8 of at most 2048 bytes"
+    if not isinstance(change, dict) or set(change) != {"baseline", "current", "unit"} or not text_ok(change["unit"]):
+        return "evaluation_finding.observed_change must be null, qualitative text, or baseline/current/unit"
+    for field in ("baseline", "current"):
+        number = change[field]
+        if number is not None and (type(number) not in (int, float) or not -1.7976931348623157e308 <= number <= 1.7976931348623157e308):
+            return f"evaluation_finding.observed_change.{field} must be a finite number or null"
+    return None
+
+
 def check_discovery(rec: dict[str, Any], path: Path) -> list[Problem]:
     out: list[Problem] = []
     for field in ("key", "claim", "falsifier", "so_what", "kind",
@@ -1218,6 +1256,11 @@ def check_discovery(rec: dict[str, Any], path: Path) -> list[Problem]:
         if path.stem != f"DSC-{key}":
             out.append(Problem(path, "filename-mismatch",
                                f"filename must be 'DSC-{key}.md'", hard=True))
+
+    if "evaluation_finding" in rec:
+        finding_error = _evaluation_finding_error(rec["evaluation_finding"])
+        if finding_error:
+            out.append(Problem(path, "bad-evaluation-finding", finding_error, hard=True))
 
     _enum(rec, "kind", DISCOVERY_KIND, path, out)
     _enum(rec, "confidence", CONFIDENCE_DSC, path, out)
@@ -2058,6 +2101,11 @@ def draft_discovery(payload: dict[str, Any]) -> str:
         "key", "claim", "falsifier", "so_what", "kind", "verified_at",
         "verified_by", "scope", "confidence",
     )}
+    if "evaluation_finding" in payload:
+        finding_error = _evaluation_finding_error(payload["evaluation_finding"])
+        if finding_error:
+            _die(finding_error)
+        rec["evaluation_finding"] = payload["evaluation_finding"]
     path = f"agentos/discoveries/DSC-{key}.md"
     return (
         _yaml_frontmatter(rec)

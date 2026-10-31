@@ -364,6 +364,7 @@
     doneTrial:    ["Your __T__ trial is live — first charge on __D__.", "你的 __T__ 试用已生效——首次扣款为 __D__。"],
     doneSubscribed:["Your __T__ plan is live.", "你的 __T__ 方案已开通。"],
     doneReady:    ["Your dashboards, signals and the Terminal are ready.", "你的看板、信号与 Terminal 已就绪。"],
+    donePrefsPending: ["Your preferences haven’t synced yet. After signing in, you can retry saving them in Settings.", "你的偏好尚未同步。登录后，可在设置中重试保存。"],
     openDashboard:["Open the dashboard", "打开仪表盘"],
     openTerminal: ["Open the Terminal →", "打开 Terminal →"],
 
@@ -520,7 +521,7 @@
     firstName: "", lastName: "", email: "", password: "",
     prefs: { market_focus: [], trade_types: [], theme_pref: "auto" },
     plan: "pro", period: "annual",
-    confirmPending: false, trialActive: false, trialEnd: null, subLive: false,
+    confirmPending: false, prefsPending: false, trialActive: false, trialEnd: null, subLive: false,
     // upgrade mode (post-login monetization sheet). upStep is the upgrade lane's
     // OWN progression (plan → billing) — it never borrows the signup stepper.
     pendingUpgrade: false, upgradeOpts: null, me: null, upStep: "plan",
@@ -540,7 +541,7 @@
         open: S.open, mode: S.mode, step: S.step,
         firstName: S.firstName, lastName: S.lastName, email: S.email,
         prefs: S.prefs, plan: S.plan, period: S.period,
-        confirmPending: S.confirmPending, trialActive: S.trialActive, trialEnd: S.trialEnd,
+        confirmPending: S.confirmPending, prefsPending: S.prefsPending, trialActive: S.trialActive, trialEnd: S.trialEnd,
         subLive: S.subLive,
         planTouched: S.planTouched
       }));
@@ -1632,19 +1633,47 @@
       market_focus: S.prefs.market_focus, trade_types: S.prefs.trade_types,
       theme_pref: S.prefs.theme_pref, onboarded_at: new Date().toISOString()
     };
+    S.prefsPending = true;
     if (S.confirmPending) {
-      // no session yet — stash to the SAME key the Terminal applies on first sign-in
-      try { localStorage.setItem(LS_PENDING_PREFS, JSON.stringify(payload)); } catch (e) {}
-      return;
+      // No authenticated subject yet: retain the existing, honestly unbound
+      // guest shape. The auth broker delivers it after a real session restores.
+      var broker = window.MDXAuth;
+      if (broker && broker.queueOnboardingPrefs) broker.queueOnboardingPrefs(payload, null);
+      else {
+        try {
+          var previous = JSON.parse(localStorage.getItem(LS_PENDING_PREFS) || 'null');
+          if (Array.isArray(previous) || (previous && Object.prototype.hasOwnProperty.call(previous, 'owner_user_id'))) return Promise.resolve({ status: 'held' });
+          localStorage.setItem(LS_PENDING_PREFS, JSON.stringify(payload));
+        } catch (e) {}
+      }
+      return Promise.resolve({ status: 'pending' });
     }
-    sbClient().then(function (sb) {
-      if (!sb) return;
-      sb.auth.getSession().then(function (r) {
-        var sess = r && r.data && r.data.session;
-        if (sess) { sb.auth.updateUser({ data: payload }).then(null, function () {}); }
-        else { try { localStorage.setItem(LS_PENDING_PREFS, JSON.stringify(payload)); } catch (e) {} }
+    var auth = window.MDXAuth, source = auth && auth.user && auth.user();
+    var sourceId = source && source.id, sourceEmail = source && source.email || S.email;
+    // The broker already knows this actor. Retain their bound choice BEFORE
+    // any client/identity lookup can fail; a later lookup cannot recast it.
+    var queuedForSource = false;
+    if (sourceId && auth && auth.queueOnboardingPrefs) {
+      queuedForSource = auth.queueOnboardingPrefs(payload, sourceId);
+      if (!queuedForSource) return Promise.resolve({ status: 'pending' });
+    }
+    return sbClient().then(function (sb) {
+      auth = window.MDXAuth;
+      if (!sb || !auth || !auth.queueOnboardingPrefs || !auth.deliverOnboardingPrefs) return { status: 'pending' };
+      return sb.auth.getUser().then(function (r) {
+        var user = r && !r.error && r.data && r.data.user;
+        if (!user || !user.id || (sourceId ? sourceId !== user.id : !sourceEmail || sourceEmail !== user.email)) return { status: 'held' };
+        if (!queuedForSource && !auth.queueOnboardingPrefs(payload, user.id)) return { status: 'pending' };
+        return auth.deliverOnboardingPrefs().then(function (result) {
+          var current = auth.user && auth.user();
+          if (!current || current.id !== user.id) return { status: 'held' };
+          S.prefsPending = result.status !== 'delivered' && result.status !== 'nothing-pending';
+          stashSave();
+          if (S.step === STEP_DONE) render();
+          return result;
+        });
       });
-    });
+    }).catch(function () { return { status: 'pending' }; });
   }
 
   // ══════════════════════════ STEP 3 — PLAN ══════════════════════════════════
@@ -2587,6 +2616,7 @@
       bodyBox.appendChild(l2);
     }
     if (!S.confirmPending && !S.trialActive && !S.subLive) { bodyBox.appendChild(T("p", "obm-done-line", "doneReady")); }
+    if (S.prefsPending) bodyBox.appendChild(T("p", "obm-done-line", "donePrefsPending"));
     wrap.appendChild(mark); wrap.appendChild(head); wrap.appendChild(bodyBox);
     root.appendChild(wrap);
 
@@ -3208,6 +3238,7 @@
       S.firstName = st.firstName || ""; S.lastName = st.lastName || ""; S.email = st.email || "";
       S.prefs = st.prefs || S.prefs; S.plan = normTier(st.plan) || S.plan; S.period = st.period || S.period;
       S.confirmPending = !!st.confirmPending; S.trialActive = !!st.trialActive; S.trialEnd = (typeof st.trialEnd === "number") ? st.trialEnd : null;
+      S.prefsPending = !!st.prefsPending;
       S.subLive = !!st.subLive;
       S.planTouched = !!st.planTouched || (st.step || 1) >= 3;  // stale stashes: reached-plan implies touched
       openSheet(S.mode, {});

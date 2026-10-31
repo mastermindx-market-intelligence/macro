@@ -37,7 +37,7 @@ from . import (actions, ai_cost, alerts as _alerts_mod, allies_store, analytics_
                codex_panel,
                config_store,
                content, context_lobe, edge_trust, email_center, entitlements, experiments,
-               flags, ga4, github_api, github_config, gitops, health, intelligence_os,
+               flags, ga4, github_api, github_config, gitops, health, intelligence_os, intelligence_execution,
                key_alerts, long_hold,
                live_runs,
                macro_thesis,
@@ -145,6 +145,7 @@ _API_CACHE_TTL_OVERRIDES: tuple[tuple[str, float], ...] = (
     ("/api/analytics/fp/", 60.0),
 )
 _API_CACHE_MAX_ENTRIES = 256
+_EVIDENCE_CACHE_BYTES = 32 * 1024 * 1024
 _API_RESPONSE_CACHE: OrderedDict[str, tuple[float, bytes]] = OrderedDict()
 _API_RESPONSE_CACHE_LOCK = threading.Lock()
 _API_RESPONSE_CACHE_GENERATION = 0
@@ -198,6 +199,14 @@ def _store_api_body(key: str, body: bytes, generation: int,
             _API_RESPONSE_CACHE.pop(old_key, None)
         _API_RESPONSE_CACHE[key] = (now + ttl, body)
         _API_RESPONSE_CACHE.move_to_end(key)
+        # Limit cumulative retained Evaluation bodies, including distinct engine
+        # details/query variants. Other panels retain their existing policy.
+        evidence_keys = [k for k in _API_RESPONSE_CACHE if ":/api/intelligence_os" in k]
+        retained = sum(len(_API_RESPONSE_CACHE[k][1]) for k in evidence_keys)
+        for old_key in evidence_keys:
+            if retained <= _EVIDENCE_CACHE_BYTES:
+                break
+            retained -= len(_API_RESPONSE_CACHE.pop(old_key)[1])
         while len(_API_RESPONSE_CACHE) > _API_CACHE_MAX_ENTRIES:
             _API_RESPONSE_CACHE.popitem(last=False)
 
@@ -1274,12 +1283,8 @@ class Handler(BaseHTTPRequestHandler):
                         {"error": f"achievements unavailable: {_ae}", "cycles": []}, 503
                     )
 
-            # Eval OS — the derived T1 (engine census) + T4 (output health) estate.
-            # Read-only and derived on demand: the module writes nothing, ever, and holds
-            # its own 5-minute in-process cache keyed on the registry's mtimes. That
-            # cache, not the 15s HTTP one above, is what keeps a click off a full
-            # 642-artifact walk; `?force=1` bypasses BOTH, which is the only combination
-            # that actually re-derives.
+            # Authenticated misses derive a complete snapshot inside the finite
+            # owned process envelope; the HTTP cache retains only bounded results.
             if path in {"/api/intelligence_os", "/api/intelligence_os/engine"}:
                 try:
                     if path == "/api/intelligence_os":
@@ -1287,8 +1292,8 @@ class Handler(BaseHTTPRequestHandler):
                         if force:
                             # Re-derive supersedes serialized panel/detail snapshots too.
                             _clear_response_cache()
-                        return self._json(intelligence_os.panel(force=force))
-                    return self._json(intelligence_os.engine_detail((q.get("id") or [""])[0]))
+                        return self._json(intelligence_execution.response("panel", force=force))
+                    return self._json(intelligence_execution.response("detail", engine_id=(q.get("id") or [""])[0]))
                 except Exception:  # noqa: BLE001 — private owner failure, fixed transport error
                     return self._json({"ok": False, "error": "Could not read the evidence estate",
                                        "error_code": "evidence_read_failed"}, 500)

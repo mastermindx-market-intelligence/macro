@@ -90,3 +90,29 @@ publication, and finish the calendar/clock/source-route qualification in the
 existing native loader before testing the actual Macro scenario journey. A
 fixture, green check, source merge, installed method, or export alone does not
 complete that journey.
+
+
+## Additive adapter temporal context (prospective only)
+
+New WTI receipts may carry `adapter_temporal_context`. Its typed context records
+only the successful existing download's explicitly passed settings (batch symbols
+are represented by a digest), loaded yfinance/pandas version strings, local source
+file hashes, and the extracted index **before collector validation**. The index
+representation preserves ISO timestamp labels, numeric UTC offsets when present,
+unit, recognized timezone and whether labels were already midnight. Dataframe
+attributes, index names, HTTP state, cookies, headers and environment are excluded.
+Unobserved request context and unsupported version/timezone metadata stay null.
+The version describes the current adapter execution; it does not qualify older
+captures. Local file hashes are not execution attestation.
+
+The context digest is embedded in the existing capture receipt and bound to both
+original image hashes. Images and ordinary series retain their existing formats
+and normalization semantics. A timezone-aware index can be represented in the
+per-call provenance, but the existing naive-image requirement still refuses its
+capture; this change does not silently strip timezone to force acceptance.
+
+Vendor session metadata, daily-label convention, provider availability, session
+completion and resolved request defaults remain null. Capture/export clocks never
+populate them. No additional provider or metadata call is performed. The native
+calendar/session contract and coherent selected transmission generation are still
+required before numerical scenario admission. Existing captures are not rewritten.

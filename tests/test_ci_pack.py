@@ -4390,6 +4390,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 CURATED_EXCLUSIVE = {
     # A1 pure product/finite QA must run on code PRs without the legacy data job.
     "eval-os-a1",
+    # Qledger suites retain all named imports; opaque fixture roots are audited.
+    "qledger-cluster-honest-ci",
     # F09 petroleum: native builder imports have opaque whole-root fallbacks.
     # Keep its complete measured closure; do not widen ordinary packing probes.
     "market-ontology-f09-petroleum-flow",
@@ -4956,6 +4958,11 @@ CURATED_EXCLUSIVE = {
     # pins each to its measured static closure plus its fixture globs.
     "research-price-panel",
     "washout-turn-organ",
+    # 2026-10-21 W33-LF: the research record-claims render suites. As a step in
+    # washout-turn-organ they moved the index-template (5,843 > 5,837) and
+    # build_free_content (5,816 > 5,810) packing probes; its own exclusive job
+    # keeps the templates, the builder closure and the suites; ceilings stay fixed.
+    "research-record-claims",
     # 2026-10-14: rotation AST/render fallback curation; retain full static
     # closure plus observed runtime inputs. Assertions and probe limits stay fixed.
     "leadership-rotation-contract",
@@ -5049,6 +5056,9 @@ CURATED_EXCLUSIVE = {
     # Synthetic OHLC delivery has an exact import/read closure; preserve every
     # packing ceiling and keep this new code gate off unrelated render probes.
     "ohlc-origin-delivery",
+    # Pure W3AR projection pins its complete import closure without selecting
+    # unrelated render probes or acquiring scientific execution authority.
+    "stock-identity-method-projection",
 }
 
 
@@ -5107,6 +5117,28 @@ def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
         assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
     selected, _ = PACK.select_jobs([job], ["templates/index.html"])  # ci-trigger-closure: data
     assert not selected, "The bounded acceptance job must not ride unrelated landing-page PRs"
+
+
+def test_qledger_scope_keeps_runtime_phrase_book_without_unrelated_builder() -> None:
+    """The tuple-joined seed is a real input even when AST inference misses it."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "qledger-cluster-honest-ci")
+    for dependency in (
+        "data/china_official/phrase_book.yml",  # ci-trigger-closure: data
+        "data/qledger/control_evidence_clock_start/new-clock.json",  # ci-trigger-closure: data
+        'config.yml',  # ci-trigger-closure: data
+        'tests/conftest.py',  # ci-trigger-closure: data
+        'research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json',  # ci-trigger-closure: data
+        'research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json',  # ci-trigger-closure: data
+        "engine/qledger_validity.py",  # ci-trigger-closure: data
+        "scripts/check_qledger_metric_validity.py",  # ci-trigger-closure: data
+        "tests/test_qledger_validity.py",  # ci-trigger-closure: data
+    ):
+        assert PACK._job_diff_match(job, [dependency]), dependency
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    selected, reason = PACK.select_jobs([job], ["scripts/build_free_content.py"])  # ci-trigger-closure: data
+    assert not selected, reason
 
 
 def test_research_vault_source_lineage_is_curated_to_its_recovered_package() -> None:

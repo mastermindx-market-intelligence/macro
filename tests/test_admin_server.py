@@ -693,8 +693,9 @@ def test_intelligence_http_force_supersedes_panel_and_detail_cache(monkeypatch):
         if force:version[0]+=1
         return {"ok":True,"generation":version[0],"generated":{"observed_at":f"fixture-{version[0]}"}}
     monkeypatch.setattr(server.settings,"auth_enabled",lambda:False)
-    monkeypatch.setattr(server.intelligence_os,"panel",panel)
-    monkeypatch.setattr(server.intelligence_os,"engine_detail",lambda _: {"ok":True,"generation":version[0]})
+    monkeypatch.setattr(server.intelligence_execution,"response",
+                        lambda operation, **kw: panel(kw.get("force", False)) if operation == "panel"
+                        else {"ok":True,"generation":version[0]})
     _clear_response_cache();httpd,port=_server()
     try:
         _,first,_=_get_with_headers(port,"/api/intelligence_os")
@@ -713,8 +714,7 @@ def test_intelligence_route_exceptions_have_fixed_wire_error(monkeypatch):
     from admin import server
     def fail(*a,**kw):raise RuntimeError("/private/synthetic SECRET_CANARY")
     monkeypatch.setattr(server.settings,"auth_enabled",lambda:False)
-    monkeypatch.setattr(server.intelligence_os,"panel",fail)
-    monkeypatch.setattr(server.intelligence_os,"engine_detail",fail)
+    monkeypatch.setattr(server.intelligence_execution,"response",fail)
     _clear_response_cache();httpd,port=_server()
     try:
         for route in ["/api/intelligence_os?force=1","/api/intelligence_os/engine?id=fixture&force=1"]:
@@ -734,8 +734,7 @@ def test_intelligence_routes_refuse_missing_and_invalid_sessions_before_owner(mo
     monkeypatch.setattr(server.settings,"auth_enabled",lambda:True)
     monkeypatch.setattr(server.auth,"valid_session",lambda cookie:False)
     def forbidden(*a,**k):raise AssertionError("unauthorized owner accessed")
-    monkeypatch.setattr(server.intelligence_os,"panel",forbidden)
-    monkeypatch.setattr(server.intelligence_os,"engine_detail",forbidden)
+    monkeypatch.setattr(server.intelligence_execution,"response",forbidden)
     httpd,port=_server()
     try:
         for route in ["/api/intelligence_os","/api/intelligence_os/engine?id=fixture"]:
@@ -773,8 +772,7 @@ def test_owner_snapshot_publication_invalidates_serialized_panel_and_detail(monk
     calls=[]
     def response(*a,**k):
         calls.append(1);return {'ok':True,**json.loads(path.read_text())}
-    monkeypatch.setattr(server.intelligence_os,'panel',response)
-    monkeypatch.setattr(server.intelligence_os,'engine_detail',response)
+    monkeypatch.setattr(server.intelligence_execution,'response',response)
     _clear_response_cache();httpd,port=_server()
     try:
         for route in ['/api/intelligence_os','/api/intelligence_os/engine?id=fixture']:
@@ -814,3 +812,23 @@ def test_diagnostic_tokens_are_fixed_path_readonly_and_revalidate(monkeypatch):
             assert json.loads(error.read()) == {"error": "diagnostic presentation unavailable"}
     finally:
         httpd.shutdown(); httpd.server_close()
+
+
+def test_intelligence_envelope_unavailability_is_never_cached(monkeypatch):
+    from admin import server
+    monkeypatch.setattr(server.settings, "auth_enabled", lambda: False)
+    calls = []
+    def unavailable(*args, **kwargs):
+        calls.append(1)
+        return {"ok": False, "error": "Evidence unavailable", "error_code": "evidence_deadline_exceeded"}
+    monkeypatch.setattr(server.intelligence_execution, "response", unavailable)
+    _clear_response_cache(); httpd, port = _server()
+    try:
+        for _ in range(2):
+            code, body, headers = _get_with_headers(port, "/api/intelligence_os")
+            assert code == 200 and json.loads(body)["ok"] is False
+            assert headers["Cache-Control"] == "no-store"
+            assert headers.get("X-Admin-Cache") != "HIT"
+        assert len(calls) == 2
+    finally:
+        httpd.shutdown(); httpd.server_close(); _clear_response_cache()
