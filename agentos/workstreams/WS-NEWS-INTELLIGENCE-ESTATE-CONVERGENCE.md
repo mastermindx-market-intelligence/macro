@@ -50,7 +50,7 @@ waves:
     title: Wave 2 — E3 convergence, B2 numeric fact adapter, D2 consumer wiring (get_intelligence, portfolio lens, engine/intelligence.py), A5 observability build, first corrected-event vertical
     status: in_progress
     depends_on: [W1]
-    next_action: "2026-10-31 ~17:0xZ: D2 macro #10280 MERGED 5b3c2e05 (16:11Z); Mastermind #1897 head 8bac8a4b BEHIND master + pytest shard pending -> update-branch, reviewDecision, merge. MMREV-03 producer follow-on open. ORCH-3 QUANT now seat-direct on the fabric (Opus orchestrators halted by 429): claim-r1 RETURNED PASS head 9f96188b QUANT CLAIM VERDICT DEFENSIBLE_NEGATIVE; prov-r2 / samp-r2 / route-r2 RUNNING on ubuntu3 since 16:47Z; then one glm-5.3 review lane, integration branch claude/news-quant-b4-adjudication-20261031, one draft PR, #10063 disposition recommended (never pushed). ORCH-4 PRODUCT (terminal census + E1 reconcile, then Journey 6 on the authenticated R2 rail) runs seat-direct next."
+    next_action: "2026-10-31 19:2xZ: Mastermind #1897 MERGED via merge queue -> master 3b7e002a; ORCH-3 QUANT integrated + reviewed PASS_WITH_NOTES -> macro draft #10338 head 2981b4ed (CI pending; merge --match-head-commit after reviewDecision); ORCH-4 PRODUCT Journey 6 MERGED terminal #1196 -> master 7f1fdafe, E1 comments posted once. Earlier: D2 macro #10280 MERGED 5b3c2e05 (16:11Z). MMREV-03 producer follow-on open. ORCH-3 QUANT now seat-direct on the fabric (Opus orchestrators halted by 429): claim-r1 RETURNED PASS head 9f96188b QUANT CLAIM VERDICT DEFENSIBLE_NEGATIVE; prov-r2 / samp-r2 / route-r2 RUNNING on ubuntu3 since 16:47Z; then one glm-5.3 review lane, integration branch claude/news-quant-b4-adjudication-20261031, one draft PR, #10063 disposition recommended (never pushed). ORCH-4 PRODUCT (terminal census + E1 reconcile, then Journey 6 on the authenticated R2 rail) runs seat-direct next."
   - id: W3
     title: Wave 3 — Section C (dated exposure mapping, F05 per-family proof) and Section F (claim/evidence matrices, independent READ_ONLY reviews)
     status: todo
@@ -61,7 +61,7 @@ waves:
     status: todo
     depends_on: [W2, W3]
     next_action: "Not before W2/W3 land."
-next_action: "2026-10-31 ~17:0xZ — Wave 1 landed (six PRs merged); merge Mastermind #1897 (update-branch) at their exact heads; judge prov-r2/samp-r2/route-r2 by artifact, review lane, integrate the B4 adjudication PR; then ORCH-4 PRODUCT seat-direct; Section C/F after W2 lands. Never re-spawn ORCH-1/ORCH-2; never relaunch a used fabric run-id."
+next_action: "2026-10-31 19:2xZ — ORCH-3 and ORCH-4 landed (macro #10338 pending CI/merge; terminal #1196 merged); next: merge #10338 at 2981b4ed, then W3 Section C/F and W4 brief + production proof; Chairman disk law 2026-10-31 binds every lane (no reclaim on any host)."
 ---
 
 # News Intelligence Estate convergence
