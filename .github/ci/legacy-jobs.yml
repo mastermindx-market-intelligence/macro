@@ -8656,6 +8656,9 @@ jobs:
       - "tests/test_options_issue_desk.py"
       - "tests/test_options_issue_desk_api.py"
       - "tests/test_options_episode_outcome_coverage.py"
+      - "engine/options_capability_manifest.py"
+      - "tests/test_options_capability_manifest.py"
+      - "tests/fixtures/options_capability_manifest_v0.json"
       - "tests/test_options_matrix.py"
       - "tests/test_options_scenario_surface.py"
       - "tests/test_options_scenario_admission.py"
@@ -8796,6 +8799,8 @@ jobs:
       # uncovered price universe (fixable) vs cadence-aligned exit (accepted).
       - name: options episode H+60 coverage census (unlabelled bound, structural gap vs accepted cadence class)
         run: python -m pytest tests/test_options_episode_outcome_coverage.py -q
+      - name: options capability manifest v0 (pure read-time adapter over live_flow meta + eod252 receipts; eight falsifiers asserted RED for the naive mtime/latch adapter)
+        run: python -m pytest tests/test_options_capability_manifest.py -q
       - name: sparse exact-option selector preregistration (zero denominator, permanent retrospective fence, no authority)
         run: python -m pytest tests/test_options_sparse_selector_prereg.py -q
       - name: bounded sparse selector runtime + private authenticated dictionary (fail-closed authority and cache forgery)
