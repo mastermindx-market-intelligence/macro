@@ -30,58 +30,52 @@ owns_paths:
   - tests/catalyst_scan_browser.js
   - tests/fixtures/catalyst_*.json
   - research/MARKETING_X_CATALYST_CONTINUATION_HANDOFF_*.md
+  - research/marketing_dockets/catalyst_fable_20261031/RIGHTS_CLASSIFICATION_REQUEST.md
+  - research/marketing_dockets/catalyst_fable_20261031/D1_READINESS_NOTE.md
 waves:
   - id: A1-INT
     title: Integrate the verified Session00/01/02 catalyst loop onto main
-    status: awaiting_ci
+    status: done
     next_action: >
-      Merge lane/mx-cat-a1-base (55dc7cab = Session00 head ed1ceabd + verified Stage-A v2
-      six-file patch + verified Stage-B consent repair) onto fresh main; resolve the three
-      mechanical conflicts (app/deploy/update.sh restart-fence regex union, tests/test_ci_pack.py
-      owner-set union, .github/ci/legacy-jobs.yml path-list union); eight catalyst suites and
-      tests/test_ci_pack.py green; producer-owned bytes unchanged.
+      Merged to main in PR #10257 (ab29a89eb4bd, 2026-10-31): base 55dc7cab judged 75caf025, three mechanical conflict resolutions kept both sides, producer bytes unchanged. DO_NOT_REDO.
   - id: A2-WITNESS
     title: Anonymous-journey witnesses A01/A02/A04/A05/A07
-    status: awaiting_ci
+    status: done
     depends_on: [A1-INT]
     next_action: >
-      Hermetic tests written by a non-author lane: supported-plus-unsupported ticker, four
-      distinct empty truth-states, nullable official publication never relabeled, revoked grant
-      retires the claim, no-JS fallback tells the same truth. Browser/Chromium availability is
-      reported honestly, never faked.
+      Merged to main in PR #10257: witness head 5a0079da, tests only (+1108/-0). Browser-dependent A07(c)/(d) remain recorded gaps, never faked. DO_NOT_REDO.
   - id: B-NEG
     title: Consent negatives B01–B04
-    status: awaiting_ci
+    status: done
     depends_on: [A1-INT]
     next_action: >
-      Append-only negatives in the enrolled lifecycle/optin suites: no grant without a signed,
-      fresh, consented scan; operator-OFF or rights-revoked during the OTP window leaves no
-      durable grant; email-denied and mid-batch expiry suppress; pre-send outage and post-invoke
-      exception are distinct non-sent states, never auto-replayed.
+      Merged to main in PR #10257 (B01–B04 appended to the enrolled suites). B04-DEDUP stays a carried gap on the producer side. DO_NOT_REDO.
   - id: C1-PACK
     title: Editorial asset factory adopted from Session04 with a producer→pack adapter
-    status: in_progress
+    status: done
     next_action: >
-      Adopt the four #8683 source files by exact blob (6b4e3b88); adapt to catalyst.public_event/v1
-      with rights gating (link-only without rehost right, PackRejected without grant), correction
-      lineage, opaque-attribution CTA, five distinct clocks; hermetic tests; enroll the suite in
-      catalyst-loop-integrated on the A1 head.
+      Merged to main in PR #10257: #8683 blob 6b4e3b88 adopted, adapter + enrollment + grant-binding fixtures; F3/F4/F5 partner-pack gaps carried. DO_NOT_REDO.
   - id: RIGHTS-REQ
     title: Exact SEC EDGAR document-rights classification request for the GMI/source steward
-    status: awaiting_ci
+    status: done
     next_action: >
-      Record (not a grant): exact document identity the producer binds, today's default-deny
-      behavior, the exact registry entry shape a steward would add, opaque attribution keys the
-      scan/pack may pass, remaining unknowns. The steward decides; the Chairman's data-rights
-      attestation does not cover SEC EDGAR.
+      Merged to main in PR #10257; delivered ONCE to the steward carrier PR #7870 (comment 6549466894, marker MX-CAT-RIGHTS-REQUEST-7870-ab29a89eb4bd). The steward decides D1–D5; never re-post.
   - id: SHIP
     title: One draft PR to main, independent review, merge, deploy observation
-    status: in_progress
+    status: done
     depends_on: [A1-INT, A2-WITNESS, B-NEG, C1-PACK]
     next_action: >
-      Seat integrates the judged lane heads into its claude/ branch, opens ONE draft PR to main,
-      CI green, fresh non-authoring review, merge with --match-head-commit, observe the macro-update
-      deploy with every catalyst flag still OFF.
+      PR #10257 merged to main ab29a89eb4bd (2026-10-31 21:36:49Z, squash, --match-head-commit 94f2a79a; ci run 41239170455 SUCCESS; independent read-only review ACCEPT_WITH_FINDINGS recorded in the PR body). Deploy observed 22:03Z: API process = merge commit, /api/catalyst 503, /optin/request 503, /scan?tickers=AAPL 503; flags OFF. Rung: MERGED + PRODUCTION_PROOF of the OFF state. DO_NOT_REDO.
+  - id: OWNER-GATES
+    title: Owner acts outside the seat — rights grant, flags ON, hosted proofs, acceptance
+    status: todo
+    depends_on: [SHIP]
+    next_action: >
+      Not seat-actionable. (1) Steward decides D1–D5 on PR #7870 comment 6549466894 or by an agentos decision;
+      (2) the flag operator turns CATALYST_PUBLIC_ENABLED / CATALYST_OPTIN_ENABLED / CATALYST_UX_ENABLED on only
+      after a bound grant; (3) hosted A2 proof, B2 opt-in return (needs a sender), C2 external cohort (partner
+      editor), D1 live conversions (Website/D07 UTM join), E1 decision (Chairman). Carried engineering gaps are in
+      the 2026-10-31 FABLE-CEO-MERGE handoff; each needs its own finding and owner before any edit.
 decisions:
   - DEC:ENTRY-RADAR-CATALYST-LIVE-READ-IS-OPT-IN
 discoveries: []
@@ -115,9 +109,10 @@ artifacts:
   - research/marketing_dockets/catalyst_fable_20261031/PILOT.md
   - research/marketing_dockets/D07_FUNNEL_LIFECYCLE_MNZ.md
 next_action: >
-  Seat ce215fa3 (Fable 5.1) orchestrates two Opus orchestrators over the Subagent Fabric for
-  waves A1-INT/A2-WITNESS/B-NEG (ORCH-A) and C1-PACK/RIGHTS-REQ (ORCH-B); on their judged
-  returns the seat ships SHIP. The docket documents themselves live on planning PR #10241.
+  Delivery rung MERGED + PRODUCTION_PROOF (OFF state) via PR #10257. Open owner gates, none seat-actionable:
+  steward decision D1–D5 on the SEC EDGAR rights request (PR #7870 comment 6549466894); flags ON only by their
+  operator after a grant; hosted A2 proof, opt-in return B2, external cohort C2, live conversions D1 and the E1
+  decision follow those gates. Carried engineering gaps are listed in the 2026-10-31 FABLE-CEO-MERGE handoff.
 ---
 
 # Marketing X — Catalyst Loop acquisition engine
