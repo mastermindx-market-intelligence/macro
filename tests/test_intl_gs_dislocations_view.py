@@ -493,8 +493,12 @@ def test_v14_template_hygiene():
                    "onload="):
         assert banned not in template, banned
     assert "gs_stance_chip" not in template
-    assert ("{% import 'intl_workspace/_gs_macros.html.j2' as gs %}" in template
-            or '{% import "intl_workspace/_gs_macros.html.j2" as gs %}' in template)
+    # with context: _gs_macros resolves t() from the caller — the real build
+    # supplies t as an env global, ad-hoc test envs as a macro of the
+    # including template (test_intl_eod_publisher_integration RED of run
+    # 41180689984), which a context-less import hides.
+    assert ("{% import 'intl_workspace/_gs_macros.html.j2' as gs with context %}" in template
+            or '{% import "intl_workspace/_gs_macros.html.j2" as gs with context %}' in template)
 
 
 # ---------------------------------------------------------------- V15 production honesty
