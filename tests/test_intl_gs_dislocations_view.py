@@ -123,9 +123,19 @@ def test_v2_panel_contract_through_the_seam(fixture):
         observations=fixture.build_set())
     views = result["surveillance"]["views"]
     assert views["dislocations"]["status"] == "available"
+    # DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT (F-POST-3):
+    # the six sibling views encode today's fixture world, not a law. A view is
+    # "available" exactly when its builder produced a panel; the day the
+    # scanner/coverage/dossier builders ship a panel in this fixture world the
+    # equality keeps holding. B1 stands: no builder may abstain to keep a
+    # test green.
+    panel_views = {panel["view"] for panel in result["surveillance_panels"]}
     for view in ("scanner", "transmission", "dossier", "scenario", "replay",
                  "coverage"):
-        assert views[view]["status"] == "not_built", view
+        has_panel = view in panel_views
+        assert (views[view]["status"] == "available") == has_panel, view
+        if not has_panel:
+            assert views[view]["status"] != "available", view
     panels = [panel for panel in result["surveillance_panels"]
               if panel["view"] == "dislocations"]
     assert len(panels) == 1
