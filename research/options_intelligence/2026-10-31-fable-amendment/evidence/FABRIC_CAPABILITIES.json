@@ -1,0 +1,43 @@
+{
+  "schema": "mastermind.fabric_mcp.v1",
+  "action": "capabilities",
+  "adapter_available": true,
+  "quota_continuity": {
+    "enabled": true,
+    "adapter_available": true,
+    "max_attempts": 3,
+    "replay_basis": "pre_task_capacity_rejection",
+    "mid_task_replay": false,
+    "native_parent_wake": false,
+    "background_execution": false
+  },
+  "manual_routing": {
+    "available": true,
+    "default": "AUTO",
+    "exact_model_requires_pool": true,
+    "selection_preflight": "native_preview_no_reservation",
+    "strict_pin_required": true,
+    "cross_provider_fallback": false
+  },
+  "controller_tracking": {
+    "max_unresolved": 512,
+    "max_generation_identities": 8192,
+    "scope": "backend_process_generation_only",
+    "restart_persistent": false
+  },
+  "worker_admission": "UNPROBED",
+  "worker_start": "UNPROBED",
+  "backend": "existing Desktop Commander process owner",
+  "tools": [
+    "fabric_capabilities",
+    "fabric_request",
+    "fabric_status",
+    "fabric_wait",
+    "fabric_result",
+    "fabric_accept",
+    "fabric_controller_output"
+  ],
+  "caller_identity": "trusted enrolled channel; not individual ChatGPT identity",
+  "root_metadata_is_authentication": false,
+  "retry_allowed": false
+}

@@ -1,0 +1,296 @@
+{
+  "verified_at_utc": "2026-10-31T06:35:59.539035+00:00",
+  "scope": "/workspace/scratch/502f30f0d015/options-census/deliverables",
+  "kind": "document_integrity_only",
+  "product_tests_executed": false,
+  "browser_qa_executed": false,
+  "checks": {
+    "json_parse": {
+      "files": 15,
+      "parsed": 15,
+      "errors": [],
+      "strict_duplicate_key_and_nonfinite_check": true
+    },
+    "csv_parse": {
+      "files": 1,
+      "parsed": 1,
+      "errors": []
+    },
+    "evidence_register": {
+      "records": 87,
+      "unique_ids": 87,
+      "duplicate_ids": [],
+      "markdown_evidence_headings": 87,
+      "markdown_json_id_sets_equal": true
+    },
+    "acceptance_matrix": {
+      "rows": 60,
+      "unique_assertion_ids": 60,
+      "duplicate_assertion_ids": [],
+      "source_reference_occurrences": 129,
+      "unique_referenced_sources": 65,
+      "missing_source_ids": []
+    },
+    "pr_census": {
+      "open_prs": 56,
+      "unique_open_prs": 56,
+      "open_by_repository": {
+        "mastermind-terminal": 15,
+        "macro": 40,
+        "Mastermind": 1
+      },
+      "supplemental": 15,
+      "unique_supplemental": 15,
+      "critical_gates": 10,
+      "unique_critical_gates": 10,
+      "all_full_head_shas": true,
+      "critical_head_correspondence": [
+        {
+          "repository": "macro",
+          "number": 10201,
+          "gate_head_sha": "87035e8928f78ac78c778aa83469d53c0c059057",
+          "census_head_sha": "87035e8928f78ac78c778aa83469d53c0c059057",
+          "equal": true
+        },
+        {
+          "repository": "macro",
+          "number": 10003,
+          "gate_head_sha": "f6d01b905d87d1a776f5374b297d1b01504d2af3",
+          "census_head_sha": "f6d01b905d87d1a776f5374b297d1b01504d2af3",
+          "equal": true
+        },
+        {
+          "repository": "macro",
+          "number": 6867,
+          "gate_head_sha": "1ba8321db28c7ff8458ac2931bd5bcf9bde66809",
+          "census_head_sha": "1ba8321db28c7ff8458ac2931bd5bcf9bde66809",
+          "equal": true
+        },
+        {
+          "repository": "macro",
+          "number": 9682,
+          "gate_head_sha": "9c7aa19c6a5e53aa802967452bd5dc8ad2645baf",
+          "census_head_sha": "9c7aa19c6a5e53aa802967452bd5dc8ad2645baf",
+          "equal": true
+        },
+        {
+          "repository": "macro",
+          "number": 9808,
+          "gate_head_sha": "98354d407b0263fcaad0c7853803a0b340f503a8",
+          "census_head_sha": "98354d407b0263fcaad0c7853803a0b340f503a8",
+          "equal": true
+        },
+        {
+          "repository": "macro",
+          "number": 8385,
+          "gate_head_sha": "0234ea19cb8fee75750f8c387b2fe4a3cf358a25",
+          "census_head_sha": "0234ea19cb8fee75750f8c387b2fe4a3cf358a25",
+          "equal": true
+        },
+        {
+          "repository": "mastermind-terminal",
+          "number": 1183,
+          "gate_head_sha": "85585945a30b9ca767cfc5509adbbdd38a1597bf",
+          "census_head_sha": "85585945a30b9ca767cfc5509adbbdd38a1597bf",
+          "equal": true
+        },
+        {
+          "repository": "mastermind-terminal",
+          "number": 1182,
+          "gate_head_sha": "b173a4bd2793a50ad7b7318a09f1df8a68805351",
+          "census_head_sha": "b173a4bd2793a50ad7b7318a09f1df8a68805351",
+          "equal": true
+        },
+        {
+          "repository": "mastermind-terminal",
+          "number": 804,
+          "gate_head_sha": "34fb2ea5d36c64acc2870d8537ae02cded2f75a0",
+          "census_head_sha": "34fb2ea5d36c64acc2870d8537ae02cded2f75a0",
+          "equal": true
+        },
+        {
+          "repository": "mastermind-terminal",
+          "number": 781,
+          "gate_head_sha": "85d9f4eae17227cc01731adc9c352ac67381645e",
+          "census_head_sha": "85d9f4eae17227cc01731adc9c352ac67381645e",
+          "equal": true
+        }
+      ],
+      "errors": []
+    },
+    "source_map": {
+      "macro": {
+        "entries": 396,
+        "unique_paths": 396,
+        "duplicate_paths": [],
+        "invalid_blob_entries": [],
+        "pin_sha": "1c85878983323f9ab38fff56a15771166d0f8aeb"
+      },
+      "terminal": {
+        "entries": 693,
+        "unique_paths": 693,
+        "duplicate_paths": [],
+        "invalid_blob_entries": [],
+        "pin_sha": "69e8e9f0eaad94180a83b108d05f16ad48c48950"
+      },
+      "total_repository_qualified_paths": 1089
+    },
+    "markdown_links": {
+      "markdown_files": 35,
+      "authored_markdown_files": 10,
+      "relative_link_occurrences": 117,
+      "fragment_checks": 91,
+      "authored_failures": [],
+      "preserved_snapshot_unresolved_links": [
+        {
+          "file": "evidence/source/PRINCIPAL_DECISIONS_20261003.md",
+          "line": 9,
+          "destination": "pilot-study-spec.v1.json",
+          "problems": [
+            "target_missing"
+          ]
+        },
+        {
+          "file": "evidence/source/PRINCIPAL_DECISIONS_20261003.md",
+          "line": 9,
+          "destination": "PILOT_STUDY_REVIEW.md",
+          "problems": [
+            "target_missing"
+          ]
+        },
+        {
+          "file": "evidence/source/PRINCIPAL_DECISIONS_20261003.md",
+          "line": 39,
+          "destination": "P3_REFERENCE_REVIEW.md",
+          "problems": [
+            "target_missing"
+          ]
+        },
+        {
+          "file": "evidence/source/PRINCIPAL_DECISIONS_20261003.md",
+          "line": 45,
+          "destination": "OWNER_DELTA_20261003.md",
+          "problems": [
+            "target_missing"
+          ]
+        },
+        {
+          "file": "evidence/source/PRINCIPAL_DECISIONS_20261003.md",
+          "line": 68,
+          "destination": "FABLE_STRUCTURAL_HANDOFF.md",
+          "problems": [
+            "target_missing"
+          ]
+        }
+      ]
+    },
+    "html": {
+      "ids": 32,
+      "unique_ids": 32,
+      "duplicate_ids": [],
+      "unresolved_marker_matches": [],
+      "legitimate_input_placeholder_attributes": [
+        "e.g. IW2, OA-3, latency"
+      ],
+      "embedded_acceptance_rows": 60,
+      "embedded_unique_ac_ids": 60,
+      "embedded_rows_equal_csv": true,
+      "final_ac60": {
+        "assertion_ref": "AC60",
+        "existing_owner_refs": "C00;R1/W5",
+        "capability": "Programme closeout",
+        "census_state": "INCOMPLETE_PRODUCT_MISSION",
+        "required_witness": "All promised admitted journeys and remaining in-scope product/empirical obligations accepted, or scope explicitly revised by the existing decision owner",
+        "falsifier": "Unrun/data-gated required work, merged-file count or static matrix percentage called programme completion",
+        "evidence_refs": "R02 R09",
+        "refresh_trigger": "Final scoped acceptance"
+      },
+      "final_ac60_rule_present": true,
+      "inline_script_blocks": 1,
+      "external_scripts": [],
+      "node_version": "v24.22.1",
+      "inline_javascript_syntax": [
+        {
+          "script_index": 0,
+          "type": "classic",
+          "sha256": "ddb7987af313b240c4162df29b228b61769e24f6335449672eb1f6d7bda6e166",
+          "exit_code": 0,
+          "stderr": "",
+          "command": "node --check <extracted inline script>"
+        }
+      ]
+    }
+  },
+  "failures": [],
+  "warnings": [
+    {
+      "category": "preserved_snapshot_relative_links",
+      "count": 5,
+      "detail": "Original source/procedure snapshots contain upstream-relative references that are not all bundled; authored package navigation is assessed separately."
+    }
+  ],
+  "limits": [
+    "No network access, URL reachability check, GitHub refresh or external-source verification.",
+    "No product tests, JavaScript execution, browser installation, browser rendering or visual QA.",
+    "Node --check validates inline JavaScript syntax only; DOM behavior and accessibility are not executed.",
+    "Markdown internal-link checking covers inline destinations, reference definitions and HTML href/src; fenced code is excluded. Fragment resolution uses explicit HTML IDs and a GitHub-compatible heading slug approximation.",
+    "Bundled source/procedure snapshots retain upstream relative references. Their unresolved links are reported separately from authored package-navigation failures.",
+    "Full 40-hex SHA shape and snapshot correspondence are verified; remote blob bytes and installed runtime identity are not fetched.",
+    "Evidence-ID/reference integrity does not independently validate the substantive claim associated with each source."
+  ],
+  "checked_file_sha256": {
+    "00_START_HERE.md": "0733f74ebc478bda834a0591645ce44c6de0a44e01b22694b778986a33f58f53",
+    "01_FABLE_MASTERPLAN.md": "383aa7b7160a96d72dd55fbca82b6beee2d0c784a6a9fed83c01d0d2a25482b8",
+    "02_CENSUS_AND_AUDIT.md": "9078a7b181401387a6b8e613605ca98119fba90c41e4c5306f154e697384d4c8",
+    "03_PRODUCT_AND_SYSTEM_DESIGN.md": "19973d3eab1930672caf64ca76df3368f9ac3660c3c2c515963cf2a4ae3ef1a6",
+    "04_RESEARCH_AND_VALIDATION.md": "e89677836b38a78b231550eb34140a90e3fc1ce5da94457ba77d3309b58967ec",
+    "05_EXECUTION_AND_ACCEPTANCE.md": "7e42bcb27e46b288303f3869f9bd991bf9fdc9e704ad26866d489ff5a6dd3bfb",
+    "06_EVIDENCE_REGISTER.json": "14163222d6d1d329e95f69c0ec0b07cb0ca264cf7ae055cc36aeb0ec0ae02b2c",
+    "06_EVIDENCE_REGISTER.md": "fbafd2f8486a7fea99ef7dfa4763114d4689c309dceb27998ce679d9b97c154f",
+    "07_OPEN_PR_CENSUS.json": "e965c3bd222407ef7a423bf5cf50be128a7a3c6a8c9b1b05ad13be7039d582cd",
+    "08_SOURCE_MAP.json": "81e08bd29af70044da005d7bd7cdeea5f90097eb84eef16f2933b20917750d4c",
+    "09_ACCEPTANCE_MATRIX.csv": "376f81629b51f27542481295bd549a6062b749f8500a1fdd5310d0705411648a",
+    "10_FABLE_BRIEF.md": "f1724425d728a294db664b3edb82a9699c3649761fa59d091ca737274cf344fe",
+    "11_DESIGN_EXPLORER.html": "a6a0ca5bcf2e559ee939696250d1fcc3cd9e942cadef30f5ab017eb59b76d665",
+    "VERIFICATION.md": "18c831fc066e7e821ccf50408c1b9842321a5f69e3b9ee9760289ba51611d617",
+    "evidence/FABRIC_CAPABILITIES.json": "392376595d2fd653544488383a7a9af5c81e332977642a296e13ffcacb4564cb",
+    "evidence/FLEET_STATUS.json": "566ea6c19caceef9170dbc09f0f098bd74ee3fe05fd72f8816663c495daafff9",
+    "evidence/PR_10201_DIFF.json": "29041bba5b4b96c61a9dc9ca2475bba9ccdd48fa9d4899c27a528a13cb03fb24",
+    "evidence/PR_6867_DIFF.json": "b2ff2f8b460e7b7cb874076c00b5c15a7e6dde6e3ea6675b3ccbb0bdbfa6dcd9",
+    "evidence/README.md": "ab2c4c9cc8d38262431cd9e31e06a998dcda85ed26696efac501adf94d170d43",
+    "evidence/intraday_semantic_reproduction.json": "9f4b07953132060a20b9a536e097bb934318a21b6d11566c42f93731a4c404d7",
+    "evidence/procedure/ACTIVE_EXECUTION.md": "4e0ecd8e8d1dfcd647b6a1316e1178952928bbcb193552f47ea74e7d2bdd1711",
+    "evidence/procedure/CEO_PROJECT_PLAN_CONTINUITY.md": "b82e77fb11032b9ce844d33f573e5074beb8e9122f969aeadd64df7fcae80633",
+    "evidence/procedure/CLOSEOUT.md": "0ca6abcd02eba70d56a8808e86ba3d42e4c8f2a26c0886edc8415b4e6dc2044e",
+    "evidence/procedure/COLD_START.md": "e59c8f2fb3f4c43720dbadf1c34c88750d1a84270b1781bd02d9d3761666e16d",
+    "evidence/procedure/INDEX.md": "82aaa968042ec7df5e7cb7b25165f42cf4eb00c4454e72934ccc93a7dc2c915b",
+    "evidence/procedure/SESSION_RELIABILITY.md": "7f1d77fe63a9bb3ee22f5ca3c639be5b6b9823fe4d61d4f0d175e48842c7c661",
+    "evidence/procedure/WEB_CEO_DELEGATION.md": "6ed10596201c2e20ab9abeb678d1a591a2988738e7fda74aac44b1a6e7b9f6e6",
+    "evidence/procedure/WORKER_ROUTING.md": "f5c7c6fd56cea9a1391449c815c4d669ca80672a19a2a1dca35aa6e140bece48",
+    "evidence/source/CANONICAL_C0_MASTERPLAN.md": "dc689bd43d5b8e2fd8e6b855cc5b6539d36100c8cf250b04c7273a4f7c203e5f",
+    "evidence/source/CONTINUATION_LEDGER_2026-10-11.md": "d9a777d3a4e4038ed55c9e0bd7ae8d999f88dae32bd29fb0f3b1a58477da3ed4",
+    "evidence/source/FABLE_EXECUTION_MASTERPLAN_2026-10-11.md": "54dd222485a22f33983ff599ed2b692a89e7c3db941e83b0ad8529b0fb56a9e3",
+    "evidence/source/HANDOFF-2026-10-22.md": "51f78e56f83ddbc89ca9cd609d4a6c0bf1fcd4bee5e98eaa9bc9510023aa27f1",
+    "evidence/source/OA_SIGNAL_SCIENCE.md": "52f7e9a647601c9fc6419c3e84e96916208a542d63b38e6a58afcc91a51be0d6",
+    "evidence/source/OPTIONS_EXPOSURE_PROJECTION.md": "4d638dff8531a786eb9aca99a2b4592166f1563637a98ea0e7005f3a0c8983b2",
+    "evidence/source/OPTIONS_PLAN_PRIVATE_CONSUMER.md": "3ff81ff263c528040e7dd583d4780e76b592dc56f1ba30476b48dc74f366df8c",
+    "evidence/source/OPTIONS_PLAN_SOURCE_PREPARATION.md": "650d6641755b5dfefd39f16278db4495c2684da3f9a77cb8fe731886da7d48bb",
+    "evidence/source/OPTIONS_R1_PROGRAM.md": "606fc74d44fa30a8a7b60f43c7a09d43d4dd3f0f7d25e9e8f34e75fcb908bf2c",
+    "evidence/source/OPTIONS_R1_W3_FREEZE.md": "151cdb154db345599fabced4a89eb8b080aa1a72506c413b96269a4548f9868e",
+    "evidence/source/OPTIONS_SUPERSESSION_REGISTER_2026-10.md": "e316ecdf4460b92ac4c1c968280109b5ab55e11f9f2f6fc7ba57dbc9de266b9b",
+    "evidence/source/PILOT_STUDY_SPEC_V1.md": "de848fbd06583d2c9572a37908c76fa07b21d3ae1643e7e016a1efdf8871f359",
+    "evidence/source/PRINCIPAL_DECISIONS_20261003.md": "85cbe054c7c0814003730e634f74bcb9f29feb6e58b881dfb581573d926ec571",
+    "evidence/source/WS-ADVANCED-DATA-OPTIONS.md": "62f05f9a6c4869715e84217b2e41833b72a93598c9894cc5007e30c16e1115cf",
+    "evidence/source/WS-INTRADAY-FLOW-P0-RECOVERY.md": "5a02c039ab2ff7b95767dfd59728948b3860a6f8eff7e4ae728573a06dd2f326",
+    "evidence/source/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md": "6cbea4573b899593bf476cd6beb0c6376c495c4cccc4ae6681ed9600785ff421",
+    "evidence/source/WS-OPTIONS-CONTEXT-AUDIT-PREREG-V2.md": "2f23ae6d54408809dffadd47f92532db1d55d6a90a70bf538ec2bd1fef371f3a",
+    "evidence/source/candidate_policy_v2.json": "c82b5115d09eb7b1c6ee28c19e4bce0842c36d64782b0ef88129962a3f5583a9",
+    "evidence/source/comments599.json": "5a0be469db018df0ab97bbe9bcdb3f49597d50f24d9f330e344f452cbba73281",
+    "evidence/source/exact_outcome_policy.json": "4cb008d8786f9ac35b9eb02e8456df7abcf05991f67f9c4105a4219c1627e2b6",
+    "evidence/source/flow_gate.json": "dbf8a742f275582fbc258086c3ad98b1bfaf6a2d383fe7a24b6fb706536f9c5b",
+    "evidence/source/intraday_semantic_reproduction.json": "9f4b07953132060a20b9a536e097bb934318a21b6d11566c42f93731a4c404d7",
+    "evidence/source/microstructure.schema.json": "82089d892433a4068bd740317f306e514d14c55d4bdf72b253fe04cfc216e72e",
+    "evidence/source/pilot_study.json": "3636f8a70a85bf717db4d325ea40b3129557240489d232aa7abcbb7b3c839778"
+  },
+  "status": "PASS_WITH_LIMITS"
+}

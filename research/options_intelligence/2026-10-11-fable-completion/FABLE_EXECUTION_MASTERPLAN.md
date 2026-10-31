@@ -1,5 +1,8 @@
 # Options Intelligence — Fable end-to-end execution masterplan
 
+> **October 31 amendment:** use the [current census, detailed design and adaptive Fable masterplan](../2026-10-31-fable-amendment/00_START_HERE.md) for newly verified programme state and continuation guidance. The original plan below is preserved as historical context. Existing programme owners, task identities and acceptance contracts remain authoritative.
+
+
 Prepared October 11, 2026. **Records-only planning handoff; not dispatched, not implementation acceptance, not a source-custody transfer.**
 
 Programme of record: existing `options-intelligence`, its four C0 workstreams and [Terminal #599](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599). This document is the durable repository entrypoint for the Chairman-requested completion plan. The fuller accompanying conversation artifact, `Mastermind_Options_Fable_End_to_End_2026-10-11.zip`, contains the detailed masterplan, 33-row capability census, 36 work packages, 169 planned acceptance assertions, 36-reference source register, passive dependency graph and packet templates. Those are planning artifacts, not a new runtime queue. No product tests, live host/browser qualification, market study or fleet dispatch were executed by preparing this handoff.
