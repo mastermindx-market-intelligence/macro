@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import copy
+import re
 import subprocess
 from pathlib import Path
 
 import pytest
 import yaml
+
+from scripts import check_runner_policy as policy
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1354,3 +1357,82 @@ def test_the_render_reservation_never_silently_claims_a_routable_slot() -> None:
                 f"pc-render claims label {label!r} that no host carries; declare it "
                 "in missing_labels so the reservation cannot read as live capacity"
             )
+
+
+# Existing render lane defaults; offline only, with no runner probes.
+def _render_routing_workflow() -> dict:
+    return policy.load_yaml(WORKFLOWS / "render.yml")
+
+
+def _runner_input(document: dict) -> dict:
+    events = document.get("on", document.get(True))
+    return events["workflow_dispatch"]["inputs"]["runner"]
+
+
+def _runner_expression(document: dict) -> re.Match[str]:
+    labels = document["jobs"]["render"]["runs-on"]
+    assert labels[0] == "self-hosted" and len(labels) == 2
+    match = re.fullmatch(
+        r"\$\{\{\s*github\.event\.inputs\.runner\s*\|\|\s*'([^']+)'\s*\}\}",
+        labels[1],
+    )
+    assert match, "the explicit runner input must remain the first operand"
+    return match
+
+
+def test_render_dispatch_defaults_to_declared_live_render_capacity() -> None:
+    assert _runner_input(_render_routing_workflow())["default"] == "render-heavy"
+
+
+def test_render_automatic_no_input_route_uses_the_same_live_default() -> None:
+    document = _render_routing_workflow()
+    assert "push" in policy.triggers(document)
+    assert _runner_expression(document).group(1) == "render-heavy"
+    assert policy.runs_on_labels(document["jobs"]["render"]) == {
+        "self-hosted", "render-heavy"
+    }
+
+
+@pytest.mark.parametrize("override", ["render-heavy", "render-linux", "macstudio"])
+def test_render_explicit_choices_keep_their_original_override(override: str) -> None:
+    document = _render_routing_workflow()
+    runner = _runner_input(document)
+    assert runner["type"] == "choice"
+    assert runner["options"] == ["render-heavy", "render-linux", "macstudio"]
+    # Match the actual input-first expression rather than inventing a resolver.
+    # A nonempty explicit choice therefore wins over this fallback under ||.
+    assert override in runner["options"]
+    assert _runner_expression(document).group(1) == runner["default"]
+
+
+def test_render_default_satisfies_policy_and_unwaived_orphan_regression_refuses() -> None:
+    document = _render_routing_workflow()
+    registry = policy.load_yaml(ROOT / ".github/runner-policy.yml")
+    heavy = registry["label_registry"]["render-heavy"]
+    assert heavy["status"] == "live"
+    assert heavy["carried_by"] == ["mac-builder-light"]
+    assert policy._label_registry_findings(
+        registry, {".github/workflows/render.yml": document}
+    ) == []
+
+    regressed = copy.deepcopy(document)
+    regressed["jobs"]["render"]["runs-on"][1] = (
+        "${{ github.event.inputs.runner || 'render-linux' }}"
+    )
+    # The current policy deliberately waives the old declaration so host recovery
+    # can remain separate. Exercise R15 without modifying that production waiver.
+    strict_registry = copy.deepcopy(registry)
+    orphan = strict_registry["label_registry"]["render-linux"]
+    assert orphan["status"] == "orphaned" and orphan["carried_by"] == []
+    orphan.pop("scheduled_use_waiver", None)
+    orphan.pop("automatic_use_waiver", None)
+    findings = policy._label_registry_findings(
+        strict_registry, {".github/workflows/render.yml": regressed}
+    )
+    assert any(row.rule == "R15" and "render-linux" in row.message for row in findings)
+
+
+def test_render_keeps_existing_serialization_and_running_job_protection() -> None:
+    assert _render_routing_workflow()["concurrency"] == {
+        "group": "pipeline-render", "cancel-in-progress": False
+    }
