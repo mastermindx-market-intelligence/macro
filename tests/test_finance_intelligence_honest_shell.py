@@ -10,7 +10,10 @@ future bound evidence service keeps every mount.
 The shared site nav is frozen (29 suites pin ``_navlinks.html.j2``) and
 carries its own governed copy ("Live session board", 盘中实时看板), so the
 visible-text scan covers the page's own markup: everything rendered except
-the ``nav.site-nav`` include.
+the ``nav.site-nav`` include. That markup includes the copy a reader or a screen
+reader meets outside text nodes: ``data-aria-*``, ``aria-label`` and ``alt``
+values, and the search-result ``<meta>`` copy. The scan ignores case, and Latin
+words match on word boundaries, so "deliver" is not "live".
 """
 from __future__ import annotations
 
@@ -18,6 +21,7 @@ import re
 from html.parser import HTMLParser
 from pathlib import Path
 
+import pytest
 from jinja2 import Environment, FileSystemLoader
 
 from scripts.build_finance_intelligence_page import render_shell
@@ -26,8 +30,32 @@ ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES = ROOT / "templates"
 
 # Common-rules banned words in user-visible copy, plus `refuted` per spec.
-_BANNED = ("实时", "申报", "证伪", "validated", "已验证", "live", "forecast",
-           "falsifier", "refuted")
+_BANNED = ("实时", "申报", "证伪", "已验证", "validated", "live", "forecast",
+           "forecaster", "falsifier", "refuted", "z-score", "percentile rank")
+
+# Any hyphen, dash or space may join a two-part term: "z score", "z‑score".
+_TERM_GAP = "[-\u2010-\u2015\\s\u00a0]*"
+# Attribute values that reach a reader or a screen reader. `aria-live` is a
+# behaviour switch with a keyword value, so it is not copy.
+_COPY_ATTRS = ("aria-label", "alt", "title", "placeholder")
+_COPY_META = ("description", "og:title", "og:description", "twitter:title",
+              "twitter:description")
+
+
+def _banned_pattern(word: str) -> str:
+    """One banned word as a pattern. A Latin word takes word boundaries and
+    keeps its negated and inflected forms ("unvalidated", "forecasts"), which
+    a plain substring search also caught. CJK has no word boundaries."""
+    if not word.isascii():
+        return re.escape(word)
+    term = _TERM_GAP.join(re.split(r"[- ]", word))
+    return rf"\b(?:un|in|non-?|re)?{term}(?:s|d|ed|ing)?\b"
+
+
+# re.ASCII because Unicode \b treats CJK as word characters: without it
+# "Live看板" would have no boundary after "Live" and would pass.
+_BANNED_RE = re.compile("|".join(_banned_pattern(w) for w in _BANNED),
+                        re.IGNORECASE | re.ASCII)
 
 
 def _shell_html(tmp_path: Path) -> str:
@@ -44,7 +72,9 @@ def _halves(html: str) -> tuple[list[str], list[str]]:
 
 
 class _VisibleTextCollector(HTMLParser):
-    """Collect visible text nodes; <script>/<style> bodies are not visible."""
+    """Collect reader-facing copy: visible text nodes plus the attribute values
+    in ``_COPY_ATTRS``, ``data-aria-*`` and ``_COPY_META``. <script>/<style>
+    bodies are not visible."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -54,6 +84,16 @@ class _VisibleTextCollector(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag in ("script", "style"):
             self._skip += 1
+        if self._skip:
+            return
+        values = dict(attrs)
+        for name, value in attrs:
+            if value and (name in _COPY_ATTRS or name.startswith("data-aria-")):
+                self.texts.append(value)
+        if tag == "meta" and values.get("content") and (
+                values.get("name") in _COPY_META
+                or values.get("property") in _COPY_META):
+            self.texts.append(values["content"])
 
     def handle_endtag(self, tag):
         if tag in ("script", "style") and self._skip:
@@ -65,8 +105,9 @@ class _VisibleTextCollector(HTMLParser):
 
 
 def _page_visible_text(html: str) -> str:
-    """Page-owned visible text: script/style bodies and comments dropped,
-    tags stripped, and the frozen shared nav include excluded."""
+    """Page-owned reader copy: script/style bodies and comments dropped, tags
+    stripped except for their copy attributes, and the frozen shared nav include
+    excluded. A second <nav> such as .fi-toc is the page's own and stays in."""
     no_nav = re.sub(r'<nav class="site-nav">.*?</nav>', "", html, flags=re.S)
     no_scripts = re.sub(r"<script.*?</script>", "", no_nav, flags=re.S)
     no_styles = re.sub(r"<style.*?</style>", "", no_scripts, flags=re.S)
@@ -134,11 +175,64 @@ def test_visible_text_has_no_banned_word_and_no_iso_date(tmp_path: Path) -> None
     none at all.
     """
     text = _page_visible_text(_shell_html(tmp_path))
-    lowered = text.lower()
-    for word in _BANNED:
-        assert word not in (text if word == word.lower() else lowered), word
+    hits = _BANNED_RE.findall(text)
+    assert not hits, hits
     assert not re.search(r"\d{4}-\d{2}-\d{2}", text), re.findall(
         r"\d{4}-\d{2}-\d{2}", text)
+
+
+@pytest.mark.parametrize("word", [
+    "Live", "LIVE", "Validated", "VALIDATED", "Forecast", "Falsifier", "Refuted",
+    "Z-Score", "Percentile Rank", "实时", "申报", "证伪", "已验证",
+])
+def test_a_banned_word_in_the_real_page_copy_fails_the_scan(
+        tmp_path: Path, word: str) -> None:
+    """The scan's job, on the real render: put the word in the page's own copy
+    and it is found, whatever its case."""
+    html = _shell_html(tmp_path)
+    line = "This dossier is not built yet."
+    assert line in html
+    mutated = html.replace(line, f"This {word} dossier is not built yet.")
+    assert _BANNED_RE.search(_page_visible_text(mutated)), word
+
+
+@pytest.mark.parametrize("copy", [
+    "live", "LIVE", "Live看板", "看板Live", "lives", "validated", "Unvalidated",
+    "not validated", "Invalidated", "forecasts", "Forecasting", "forecaster",
+    "falsifiers", "z-scores", "Z score", "z\u2011score", "percentile ranks",
+    "Percentile ranking", "percentile\u00a0rank", "percentile-rank",
+])
+def test_banned_matcher_catches_each_form(copy: str) -> None:
+    assert _BANNED_RE.search(copy), copy
+
+
+@pytest.mark.parametrize("copy", [
+    "deliver", "Delivered", "olive", "alive", "sliver", "liver", "livestock",
+    "scored", "percentile", "rank", "ranked", "cast",
+])
+def test_banned_matcher_leaves_other_words_alone(copy: str) -> None:
+    assert not _BANNED_RE.search(copy), copy
+
+
+def test_scan_reads_copy_attributes_and_skips_only_the_site_nav() -> None:
+    """A banned word in a data-aria value, an aria-label, the meta description
+    or the page's own second <nav> is found. The shared nav's copy is not."""
+    for page in (
+        '<section data-aria-en="Live evidence"></section>',
+        '<section data-aria-zh="实时证据"></section>',
+        '<a aria-label="Validated names">x</a>',
+        '<meta name="description" content="A live dossier">',
+        '<meta property="og:title" content="Forecast dossier">',
+        '<nav class="fi-toc" data-aria-en="Sections">Live</nav>',
+    ):
+        assert _BANNED_RE.search(_page_visible_text(page)), page
+    for page in (
+        '<nav class="site-nav"><a data-aria-en="Live board">实时测算</a></nav>',
+        '<div aria-live="polite" class="fi-notice-live"></div>',
+        '<meta name="viewport" content="live">',
+        '<script data-aria-en="Live">var live = 1;</script>',
+    ):
+        assert not _BANNED_RE.search(_page_visible_text(page)), page
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -287,3 +381,5 @@ def test_committed_page_is_the_honest_shell() -> None:
     for token in ("Synthetic limit", "syn-case", "合成限制", "2024-06-30", "2023-11-02",
                   "Research hint, not validated"):
         assert token not in html, token
+    hits = _BANNED_RE.findall(_page_visible_text(html))
+    assert not hits, hits
