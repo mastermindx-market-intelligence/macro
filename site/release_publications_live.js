@@ -61,6 +61,11 @@
     return parts.hour + ":" + parts.minute + " ET";
   }
 
+  function easternTimestamp(value) {
+    var time = easternTime(value);
+    return time ? easternDateKey(new Date(value)) + " " + time : "";
+  }
+
   function officialReleaseTime(row) {
     return easternTime(row && row.source_released_at);
   }
@@ -162,7 +167,7 @@
       ".mx-live-report-details summary{cursor:pointer;font-weight:650;padding:4px 0}" +
       ".mx-live-report-details dl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;margin:12px 0;font-size:12px}" +
       ".mx-live-report-details dt{overflow-wrap:anywhere}.mx-live-report-details dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}" +
-      ".mx-live-refresh{display:inline-flex;margin:10px 0 0 14px;padding:6px 10px;border:1px solid var(--line);border-radius:7px;" +
+      ".mx-live-refresh{display:inline-flex;margin:10px 0 0 14px;padding:6px 10px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);" +
       "background:var(--panel2);color:var(--text);font:inherit;font-size:11px;cursor:pointer}" +
       ".mx-live-refresh:disabled{opacity:.55;cursor:wait}.mx-live-event-card{overflow-wrap:anywhere}" +
       "@media(max-width:640px){.mx-live-event-top{align-items:flex-start;flex-direction:column;gap:4px}}";
@@ -286,10 +291,10 @@
     top.appendChild(languagePair("mx-live-event-pill", progress.pill, progress.pillZh));
     var asof = document.createElement("span");
     asof.className = "mx-live-event-asof";
-    var checked = easternTime((row.extraction || {}).last_attempt_at);
+    var checked = easternTimestamp((row.extraction || {}).last_attempt_at);
     setPair(asof,
-      "Detected " + (easternTime(row.detected_at) || "time unavailable") + (checked ? " · Checked " + checked : " · Last verification check unavailable"),
-      "检测于 " + (easternTime(row.detected_at) || "时间未记录") + (checked ? " · 上次核验 " + checked : " · 上次核验时间未记录"));
+      "Detected " + (easternTimestamp(row.detected_at) || "time unavailable") + (checked ? " · Checked " + checked : " · Last verification check unavailable"),
+      "检测于 " + (easternTimestamp(row.detected_at) || "时间未记录") + (checked ? " · 上次核验 " + checked : " · 上次核验时间未记录"));
     top.appendChild(asof);
     card.appendChild(top);
     card.appendChild(languagePair("mx-live-event-headline",
@@ -498,9 +503,12 @@
     var title = face.querySelector(".mx5-card-title");
     var subline = face.querySelector(".mx5-events-sub");
     var badge = face.querySelector(".mx5-card-badge");
+    var stance = face.querySelector(".mx5-card-stance");
     var actual = row.actual || {};
     if (published) {
       var verified = row.data_ready === true;
+      var progress = publicationProgress(row);
+      setPair(stance, progress.detail, progress.detailZh);
       setPair(
         title,
         verified ? "Latest official result" : "Official publication detected",
@@ -517,6 +525,8 @@
       setPair(subline, (row.label || row.type) + " · verifying official source",
         (row.label_zh || row.label || row.type) + " · 正在核验官方来源");
       setPair(badge, "Checking", "核验中");
+      setPair(stance, "Awaiting official-source verification.",
+        "等待官方来源核验。");
     }
   }
 
@@ -532,13 +542,13 @@
         "Live event status",
       published ? (verified ? "最新官方结果" : "已检测到官方发布") : "实时事件状态"
     );
-    setPair(
-      card.querySelector(".wnx-state"),
-      published ? (actual.headline_en || ((row.label || row.type) + " released")) :
+    var state = {
+      en: published ? (actual.headline_en || ((row.label || row.type) + " released")) :
         ((row.label || row.type) + " · verifying"),
-      published ? (actual.headline_zh || ((row.label_zh || row.label || row.type) + "已发布")) :
+      zh: published ? (actual.headline_zh || ((row.label_zh || row.label || row.type) + "已发布")) :
         ((row.label_zh || row.label || row.type) + " · 核验中")
-    );
+    };
+    setPair(card.querySelector(".wnx-state"), state.en, state.zh);
     setPair(
       card.querySelector(".wnx-line"),
       published ? (actual.summary_en || "Official source detected.") :
@@ -547,6 +557,7 @@
         "预定时间已过 · 正在等待官方来源"
     );
     setPair(card.querySelector(".wnx-go"), "Open live details", "查看实时详情");
+    card.__mmLiveWhereNextText = state;
   }
 
   function uniqueEventNames(rows) {
@@ -616,8 +627,8 @@
     }
     if (extracting) {
       enParts.push(extracting + " " + (extracting === 1 ? "publication" : "publications") +
-        " extracting");
-      zhParts.push(extracting + " 个官方发布正在提取");
+        " without verified values");
+      zhParts.push(extracting + " 个官方发布尚无核验值");
     }
     if (awaiting) {
       enParts.push(awaiting + " awaiting official " +
@@ -634,12 +645,12 @@
       badgeEn: verified && !extracting && !awaiting ?
         verified + " live" :
         ([verified ? verified + " live" : "",
-          extracting ? extracting + " parsing" : "",
+          extracting ? extracting + " unverified" : "",
           awaiting ? awaiting + " checking" : ""].filter(Boolean).join(" · ")),
       badgeZh: verified && !extracting && !awaiting ?
         verified + " 个实时" :
         ([verified ? verified + " 个已核验" : "",
-          extracting ? extracting + " 个提取中" : "",
+          extracting ? extracting + " 个未核验" : "",
           awaiting ? awaiting + " 个核验中" : ""].filter(Boolean).join(" · "))
     };
   }
@@ -660,6 +671,14 @@
     );
     setPair(face.querySelector(".mx5-events-sub"), summary.en, summary.zh);
     setPair(face.querySelector(".mx5-card-badge"), summary.badgeEn, summary.badgeZh);
+    setPair(
+      face.querySelector(".mx5-card-stance"),
+      group.awaiting.length || group.extracting.length ?
+        "Verification is incomplete — check each release's status." :
+        "Verified official values are available.",
+      group.awaiting.length || group.extracting.length ?
+        "核验尚未完成——请逐项查看发布状态。" : "官方数据已核验。"
+    );
   }
 
   function patchWhereNextGroup(group) {
@@ -676,6 +695,12 @@
     );
     setPair(card.querySelector(".wnx-line"), summary.en, summary.zh);
     setPair(card.querySelector(".wnx-go"), "Open all live details", "查看全部实时详情");
+    card.__mmLiveWhereNextText = {
+      en: group.awaiting.length || group.extracting.length ?
+        "Release status" : group.verified.length + " official results",
+      zh: group.awaiting.length || group.extracting.length ?
+        "发布状态" : group.verified.length + " 个官方结果"
+    };
   }
 
   function patchFedPath(row, published) {
@@ -1040,13 +1065,16 @@
       (Number(clock[0]) * 60 + Number(clock[1] || 0));
   }
 
-  function recentPublications(payload, now) {
+  function recentPublications(payload, now, includeRecovered) {
     var cutoff = now.getTime() - (24 * 60 * 60 * 1000);
     return (payload.publications || []).filter(function (row) {
       if (["published", "published_unparsed"].indexOf(row.status) < 0) return false;
       var detected = new Date(row.detected_at || row.date + "T23:59:59Z").getTime();
+      var verified = Date.parse(row.verified_at);
+      var justRecovered = includeRecovered && row.data_ready === true &&
+        verified >= cutoff && verified <= now.getTime();
       return !isNaN(detected) &&
-        (row.status === "published_unparsed" || detected >= cutoff);
+        (row.status === "published_unparsed" || detected >= cutoff || justRecovered);
     }).sort(function (left, right) {
       return new Date(left.detected_at || 0).getTime() -
         new Date(right.detected_at || 0).getTime();
@@ -1145,6 +1173,20 @@
       );
       setPair(face.querySelector(".mx5-card-badge"), "Update delayed", "更新延迟");
     }
+    var whereNext = document.querySelector('.wnx-card[href="#dlg-events"]');
+    var lastText = whereNext && whereNext.__mmLiveWhereNextText;
+    if (lastText) {
+      setPair(
+        whereNext.querySelector(".wnx-state"),
+        lastText.en + " · update delayed",
+        lastText.zh + " · 更新延迟"
+      );
+      setPair(
+        whereNext.querySelector(".wnx-go"),
+        "Open last known details",
+        "查看上次已知详情"
+      );
+    }
     list(document.querySelectorAll(".mx-live-event-card.published .mx-live-event-pill"))
       .forEach(function (pill) {
         var card = pill.closest(".mx-live-event-card");
@@ -1195,9 +1237,11 @@
 
   function expireLiveState() {
     var face = document.querySelector("#sx-events-v2 .mx5-card-face");
-    if (face) {
+    if (face && face.classList.contains("mx-live-event-face")) {
       face.classList.remove("mx-live-event-face");
       face.removeAttribute("data-live-state");
+      setPair(face.querySelector(".mx5-card-stance"),
+        "Watch — this read is being updated.", "观望——该读数更新中。");
       setPair(face.querySelector(".mx5-card-title"), "Upcoming events", "近期事件");
       setPair(face.querySelector(".mx5-events-sub"),
         "No active live result · open the current schedule",
@@ -1206,6 +1250,7 @@
     }
     var whereNext = document.querySelector('.wnx-card[href="#dlg-events"]');
     if (whereNext) {
+      delete whereNext.__mmLiveWhereNextText;
       setPair(whereNext.querySelector(".wnx-kicker"), "Event calendar", "事件日历");
       setPair(whereNext.querySelector(".wnx-state"), "No active live result", "当前无实时结果");
       setPair(whereNext.querySelector(".wnx-line"), "Open the current schedule", "打开最新日历");
@@ -1264,7 +1309,8 @@
     var awaiting = awaitingEvents(payload, now, publishedKeys);
     var panel = ensureOutcomePanel();
     if (panel) {
-      reconcileOutcomePanel(panel, publications, awaiting, payload, now);
+      // A late recovery belongs in report details without replaying an old market event.
+      reconcileOutcomePanel(panel, recentPublications(payload, now, true), awaiting, payload, now);
     }
 
     publications.forEach(function (row) {

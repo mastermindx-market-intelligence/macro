@@ -433,6 +433,7 @@ def _fetch(spec: SourceSpec, prior: dict[str, Any], timeout: float) -> dict[str,
             body = response.read(2_000_000)
             return {
                 "status": int(getattr(response, "status", 200)),
+                "url": response.geturl(),
                 "body": body,
                 "fingerprint": hashlib.sha256(body).hexdigest(),
                 "etag": response.headers.get("ETag"),
@@ -915,14 +916,33 @@ def _repair_event(publication: dict[str, Any]) -> dict[str, Any] | None:
     return {field: publication[field] for field in fields if field in publication}
 
 
+def _retained_cpi_archive(publication: dict[str, Any]) -> str | None:
+    """Accept only the original BLS archive for this detected, unresolved release."""
+    if (
+        publication.get("type") != "CPI"
+        or publication.get("source_id") != "bls_cpi"
+        or publication.get("status") != "published_unparsed"
+        or publication.get("data_ready") is not False
+        or not str(publication.get("reference_period") or "").strip()
+    ):
+        return None
+    day = date.fromisoformat(publication["date"])
+    url = f"https://www.bls.gov/news.release/archives/cpi_{day:%m%d%Y}.htm"
+    if (publication.get("event_id") == f"cpi:{day.isoformat()}"
+            and publication.get("source_url") == url):
+        return url
+    return None
+
+
 def _admit_governed_defect_repairs(
     *,
     publications: dict[str, Any],
     repair_state: dict[str, Any],
     now: datetime,
 ) -> tuple[list[dict[str, Any]], set[str]]:
-    """Re-admit only exact aged URL/hash defects whose bounded retry is due."""
+    """Re-admit retained CPI archives and governed binding defects with bounded backoff."""
     defects = _governed_source_binding_defects()
+    cpi_spec = next((spec for spec in SOURCES if spec.source_id == "bls_cpi"), None)
     admitted: list[dict[str, Any]] = []
     admitted_keys: set[str] = set()
     for publication_key, value in publications.items():
@@ -943,6 +963,8 @@ def _admit_governed_defect_repairs(
             and defect["recorded_source_sha256"] == source_sha256
         ]
         event = _repair_event(publication)
+        if event is None:
+            continue
         try:
             elapsed = now.astimezone(NY) - _event_at(publication)
         except (TypeError, ValueError):
@@ -952,18 +974,20 @@ def _admit_governed_defect_repairs(
             and source.follow_entry_link
             for source in SOURCES
         )
-        if (
-            not matching
-            or event is None
-            or publication.get("status") != "published"
-            or publication.get("data_ready") is not True
-            or not isinstance(actual, dict)
-            or not actual
-            or content_sha256 != source_sha256
-            or actual_source_url != source_url
-            or not source_supports_repair
-            or elapsed <= _alert_retention(publication)
-        ):
+        if elapsed <= _alert_retention(publication):
+            continue
+        archive_url = _retained_cpi_archive(publication) if cpi_spec else None
+        confirmed_defect = (
+            matching
+            and publication.get("status") == "published"
+            and publication.get("data_ready") is True
+            and isinstance(actual, dict) and actual
+            and actual_source_url == source_url
+            and source_supports_repair
+        )
+        if (not (archive_url or confirmed_defect)
+                or not re.fullmatch(r"[0-9a-f]{64}", source_sha256)
+                or content_sha256 != source_sha256):
             continue
 
         event_key = _event_key(event)
@@ -976,6 +1000,8 @@ def _admit_governed_defect_repairs(
                 defect["receipt_id"] for defect in matching
             ),
         }
+        if archive_url and cpi_spec:
+            signature["archive_parser_version"] = cpi_spec.actual_parser_version
         prior = repair_state.get(event_key)
         record = dict(prior) if isinstance(prior, dict) else {}
         if any(record.get(field) != value for field, value in signature.items()):
@@ -1208,6 +1234,7 @@ def detect(
         repair_state=repair_state,
         now=now,
     )
+    publications = _migrate_publication_keys(publications, repair_events)
     event_keys = {_event_key(event) for event in events}
     due_keys = {_event_key(event) for event in due}
     for event in repair_events:
@@ -1267,6 +1294,12 @@ def detect(
             repair_record = (
                 repair_state.get(scoped_event_key) if scoped_event_key else None
             )
+            archive_url = None
+            if forced_repair and scoped_event and spec.actual_parser == "cpi":
+                retained = _publication_for(publications, scoped_event)
+                archive_url = _retained_cpi_archive(retained)
+                if archive_url:
+                    resolved = replace(spec, url=archive_url, feed_kind=None, follow_entry_link=False)
             if forced_repair and isinstance(repair_record, dict):
                 _start_defect_repair_attempt(repair_record, now)
             attempt = _begin_source_attempt(
@@ -1276,6 +1309,8 @@ def detect(
             )
             try:
                 result = fetch_primary(resolved, {} if forced_repair else prior)
+                if archive_url and (result.get("status") != 200 or result.get("url") != archive_url):
+                    raise ValueError("CPIArchiveResponseMismatch")
                 # A statement can become visible seconds before the scheduled
                 # time.  That seed request stores validators, so the first
                 # post-time request will normally be a 304 with no body.  The
@@ -1326,6 +1361,11 @@ def detect(
                             force_unconditional=forced_repair,
                         )
                     )
+                    if archive_url:
+                        document.update(
+                            binding_kind="detail_document", source_url=archive_url,
+                            reference_period=retained["reference_period"],
+                        )
                     if detail_error:
                         detail_errors.append(detail_error)
                     document_url = str(document.get("source_url") or resolved.url)
@@ -1368,12 +1408,15 @@ def detect(
                     )
                     if (
                         actual and resolved.actual_parser == "cpi"
-                        and resolved.follow_entry_link
+                        and (resolved.follow_entry_link or archive_url)
                         and not _cpi_detail_matches_release(actual, event, document)
                     ):
                         actual = None
                         detail_error = "CPIDocumentBindingMismatch"
                         detail_errors.append(detail_error)
+                    if archive_url and not actual:
+                        # Keep the original binding on a wrong-period or malformed response.
+                        raise ValueError(detail_error or "CPIArchiveMetricsUnavailable")
                     primary_sha = str(result.get("fingerprint") or "").lower()
                     current_document_sha = str(
                         document.get("fingerprint") or ""
@@ -1428,6 +1471,9 @@ def detect(
                         event,
                         publication,
                     )
+                    if archive_url and publication.get("source_released_at"):
+                        source_released_at = publication["source_released_at"]
+                        source_time_basis = publication.get("source_time_basis")
                     if keep_verified_binding:
                         # The verified actual, permanent document URL, and document
                         # digest form one keep-first evidence tuple.  A later feed
@@ -1522,7 +1568,7 @@ def detect(
                         publication["verified_at"] = now.isoformat()
                     publications[event_key] = publication
                     if forced_repair and isinstance(repair_record, dict):
-                        if successful_detail_repair:
+                        if successful_detail_repair or (archive_url and actual):
                             _complete_defect_repair(
                                 repair_record,
                                 now=now,
@@ -1633,7 +1679,9 @@ def detect(
     display_keys = {_event_key(row) for row in display_publications}
     for publication in sorted_publications:
         key = _event_key(publication)
-        if publication.get("status") == "published_unparsed" and key not in display_keys:
+        verified_at = _state_time(publication.get("verified_at"))
+        recently_verified = verified_at is not None and timedelta(0) <= now - verified_at <= timedelta(days=1)
+        if key not in display_keys and (publication.get("status") == "published_unparsed" or recently_verified):
             display_publications.append(publication)
             display_keys.add(key)
 

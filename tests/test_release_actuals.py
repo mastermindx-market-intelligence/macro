@@ -599,3 +599,97 @@ def test_cpi_feed_only_never_becomes_accepted_actual():
         "https://www.bls.gov/feed/cpi.rss",
         "https://www.bls.gov/news.release/archives/cpi_07142026.htm",
     ]
+
+
+def _aged_cpi_state(**overrides):
+    _, event, document = _sample()
+    row = {
+        **event, "time_et": "08:30", "source_id": "bls_cpi",
+        "status": "published_unparsed", "data_ready": False,
+        "source_url": document["source_url"], "reference_period": "September 2026",
+        "source_sha256": "a" * 64, "content_sha256": "a" * 64,
+        "detected_at": "2026-10-14T12:31:17+00:00",
+        "parser": {"name": "cpi", "version": 1}, **overrides,
+    }
+    return {"publications": {event["event_id"]: row}}
+
+
+def test_aged_cpi_recovers_on_ordinary_tick_without_feed_or_rebuild(monkeypatch):
+    import hashlib
+    from datetime import timedelta
+
+    monkeypatch.setattr(watcher, "scheduled_releases", lambda *args, **kwargs: [])
+    state = _aged_cpi_state()
+    event_id, before = next(iter(state["publications"].items()))
+    now = datetime(2026, 10, 31, 6, 4, tzinfo=timezone.utc)
+    calls = []
+
+    def fetch(spec, prior, timeout):
+        calls.append(spec.url)
+        assert spec.url == before["source_url"]
+        assert not prior
+        if len(calls) == 1:
+            raise TimeoutError("temporarily unavailable")
+        return {"status": 200, "body": OFFICIAL, "url": spec.url,
+                "fingerprint": hashlib.sha256(OFFICIAL).hexdigest()}
+
+    state, _ = watcher.detect(now=now, state=state, fetcher=fetch)
+    assert calls == [before["source_url"]]
+    row = state["publications"][event_id]
+    assert row["data_ready"] is False and row["source_url"] == before["source_url"]
+    assert row["extraction"]["status"] == "source_unavailable"
+    state, _ = watcher.detect(now=now + timedelta(minutes=1), state=state, fetcher=fetch)
+    assert len(calls) == 1
+    state, payload = watcher.detect(now=now + timedelta(hours=1), state=state, fetcher=fetch)
+    row, = payload["publications"]
+    assert len(calls) == 2 and row["event_id"] == event_id
+    assert row["status"] == "published" and row["data_ready"] is True
+    assert row["detected_at"] == before["detected_at"]
+    assert row["actual"]["source_url"] == before["source_url"]
+    assert row["source_sha256"] == row["content_sha256"] == hashlib.sha256(OFFICIAL).hexdigest()
+    assert row["extraction"]["status"] == "verified" and len(row["actual"]["metrics"]) == 4
+    watcher.detect(now=now + timedelta(days=1), state=state, fetcher=fetch)
+    assert len(calls) == 2
+
+
+@pytest.mark.parametrize("override", [
+    {"source_url": "https://www.bls.gov/feed/cpi.rss"},
+    {"source_url": "https://www.bls.gov/news.release/archives/cpi_09112026.htm"},
+    {"source_url": "https://www.bls.gov.evil.test/news.release/archives/cpi_10142026.htm"},
+    {"data_ready": True}, {"reference_period": ""}, {"source_id": "bls_ppi"},
+])
+def test_aged_cpi_replay_requires_retained_event_bound_evidence(monkeypatch, override):
+    monkeypatch.setattr(watcher, "scheduled_releases", lambda *args, **kwargs: [])
+    calls = []
+    watcher.detect(now=datetime(2026, 10, 31, tzinfo=timezone.utc),
+                   state=_aged_cpi_state(**override), fetcher=lambda *args: calls.append(args))
+    assert not calls
+
+
+@pytest.mark.parametrize("fault", ["wrong_period", "redirect", "malformed"])
+def test_aged_cpi_rejects_unbound_document_and_exhausts_budget(monkeypatch, fault):
+    import hashlib
+    from datetime import timedelta
+
+    monkeypatch.setattr(watcher, "scheduled_releases", lambda *args, **kwargs: [])
+    state = _aged_cpi_state()
+    key, before = next(iter(state["publications"].items()))
+    now = datetime(2026, 10, 31, tzinfo=timezone.utc)
+    calls = []
+
+    def fetch(spec, prior, timeout):
+        calls.append(spec.url)
+        body = {"wrong_period": OFFICIAL.replace(b"September", b"August").replace(b"SEPTEMBER", b"AUGUST"),
+                "malformed": b"pending"}.get(fault, OFFICIAL)
+        url = spec.url if fault != "redirect" else "https://www.bls.gov/news.release/cpi.htm"
+        return {"status": 200, "body": body, "url": url,
+                "fingerprint": hashlib.sha256(body).hexdigest()}
+
+    for hours in [0, 1, 3, 24]:
+        state, _ = watcher.detect(now=now + timedelta(hours=hours), state=state, fetcher=fetch)
+        row = state["publications"][key]
+        assert row["data_ready"] is False and not row.get("actual")
+        assert row["source_sha256"] == before["source_sha256"]
+        assert row["source_url"] == before["source_url"]
+    assert len(calls) == 3
+    assert state[watcher.DEFECT_REPAIR_STATE_KEY][key]["status"] == "exhausted"
