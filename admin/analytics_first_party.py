@@ -427,22 +427,31 @@ def _candidate_cte(window_minutes: int | None = None) -> str:
     wwin = (f" where e.created_at > now() - interval '{int(window_minutes)} minutes'"
             if window_minutes else "")
     return (
-        # Anchors: the distinct (uid, fp, ip) points where a KNOWN user has been seen (their
-        # stitched events). `distinct` keeps the fan-out into the two joins below bounded.
+        # Historical, verified identity anchors. Distinct key projections avoid
+        # multiplying the same (user, fingerprint/IP) attribution across other
+        # devices or networks that the user happened to visit.
         "uanchor as (select distinct i.uid, e.fp, e.ip from public.analytics_events e "
         f"  join ident i on i.visitor_id = e.visitor_id{wwin}), "
-        # A cookie sharing a fingerprint with exactly one user → that user (device-strength link).
+        "uanchor_fp as (select distinct uid, fp from uanchor where fp is not null), "
+        "uanchor_ip as (select distinct uid, ip from uanchor "
+        f"  where {_routable('ip')}), "
+        # A visitor may send hundreds of page events with the same cookie+key.
+        # They cannot change min(uid) or count(distinct uid); joining them raw
+        # instead creates a many-to-many fanout on shared VPN IPs and devices.
+        # Deduplicate BOTH sides before each equality join. All ambiguity and
+        # routable-IP rules remain unchanged, as does the displayed time window.
+        "cookie_fp as (select distinct e.visitor_id, e.fp from public.analytics_events e "
+        f"  where e.visitor_id is not null and e.fp is not null{win}), "
+        "cookie_ip as (select distinct e.visitor_id, e.ip from public.analytics_events e "
+        f"  where e.visitor_id is not null and {_routable('e.ip')}{win}), "
         "cand_fp as (select e.visitor_id, min(a.uid) as uid "
-        "  from public.analytics_events e join uanchor a on a.fp = e.fp and e.fp is not null "
-        f"  where e.visitor_id is not null{win} "
+        "  from cookie_fp e join uanchor_fp a on a.fp = e.fp and e.fp is not null "
         "  group by e.visitor_id having count(distinct a.uid) = 1), "
-        # A cookie sharing a routable IP with exactly one user → that user (IP-strength link).
         "cand_ip as (select e.visitor_id, min(a.uid) as uid "
-        f"  from public.analytics_events e join uanchor a on a.ip = e.ip "
+        f"  from cookie_ip e join uanchor_ip a on a.ip = e.ip "
         f"    and {_routable('e.ip')} and {_routable('a.ip')} "
-        f"  where e.visitor_id is not null{win} "
         "  group by e.visitor_id having count(distinct a.uid) = 1), "
-        # Collapse to one candidate per cookie: fingerprint wins over IP; carry the basis for display.
+        # Device evidence wins over the weaker routable-IP suggestion.
         "cand as (select v.visitor_id, coalesce(f.uid, p.uid) as uid, "
         "    case when f.uid is not null then 'device' else 'ip' end as basis "
         "  from (select visitor_id from cand_fp union select visitor_id from cand_ip) v "
