@@ -468,3 +468,72 @@ def test_the_card_says_re_fired_and_never_persisting_for_a_generic_log(monkeypat
     # the quick filter followed the vocabulary
     assert 'data-quick="recurring"' in html
     assert 'data-quick="persisting"' not in html
+
+
+def test_store_probe_failure_withdraws_whole_tape_authority(monkeypatch):
+    """An empty read plus an unanswerable store probe is missing evidence."""
+    import sys
+    from types import SimpleNamespace
+
+    def unresolved():
+        raise PermissionError("private-store-marker")
+
+    monkeypatch.setitem(sys.modules, "engine.bonds_alerts", SimpleNamespace(
+        load_events=lambda: [], _path=unresolved))
+    result = at._jsonl_raw("bonds", BOARD, BOARD, at._BONDS_TIER)
+    coverage = at.coverage_report([result], at.READ_OK)
+    assert coverage["state"] == "partial"
+    assert coverage["n_unavailable"] == 1
+    assert "private-store-marker" not in str(result)
+
+
+@pytest.mark.parametrize("probe", ["missing", "resolver", "exists"])
+@pytest.mark.parametrize("old_event", [False, True])
+def test_store_probe_failure_is_unavailable(monkeypatch, probe, old_event):
+    import sys
+    from types import SimpleNamespace
+
+    def fail():
+        raise OSError("private-store-marker")
+
+    events = [{"ts": "2020-01-01", "type": "credit_band"}] if old_event else []
+    module = SimpleNamespace(load_events=lambda: events)
+    if probe == "resolver":
+        module._path = fail
+    elif probe == "exists":
+        module._path = lambda: SimpleNamespace(exists=fail)
+    monkeypatch.setitem(sys.modules, "engine.bonds_alerts", module)
+    result = at._jsonl_raw("bonds", BOARD, BOARD, at._BONDS_TIER)
+    assert result["state"] == at.READ_UNAVAILABLE
+    assert result["events"] == []
+    assert "private-store-marker" not in str(result)
+    assert at.coverage_report([result], at.READ_OK)["state"] == "partial"
+
+
+@pytest.mark.parametrize("exists, expected", [(True, at.READ_OK_ZERO), (False, at.READ_NO_COVERAGE)])
+def test_store_probe_preserves_known_empty_states(monkeypatch, exists, expected):
+    import sys
+    from types import SimpleNamespace
+
+    module = SimpleNamespace(load_events=lambda: [],
+                             _path=lambda: SimpleNamespace(exists=lambda: exists))
+    monkeypatch.setitem(sys.modules, "engine.bonds_alerts", module)
+    result = at._jsonl_raw("bonds", BOARD, BOARD, at._BONDS_TIER)
+    assert result == {"source": "bonds", "state": expected, "events": [], "reason": None}
+    assert at.coverage_report([result], at.READ_OK)["state"] == "complete"
+
+
+def test_store_probe_preserves_populated_read_without_probe(monkeypatch):
+    import sys
+    from types import SimpleNamespace
+
+    def no_probe():
+        raise AssertionError("populated read must not probe")
+
+    module = SimpleNamespace(load_events=lambda: [{"ts": BOARD.isoformat(), "type": "credit_band"}],
+                             _path=no_probe)
+    monkeypatch.setitem(sys.modules, "engine.bonds_alerts", module)
+    result = at._jsonl_raw("bonds", BOARD, BOARD, at._BONDS_TIER)
+    assert result["state"] == at.READ_OK
+    assert len(result["events"]) == 1
+    assert result["reason"] is None
