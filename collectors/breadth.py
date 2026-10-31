@@ -18,12 +18,14 @@ import io
 import logging
 import re
 import time
+from datetime import date
 
+import numpy as np
 import pandas as pd
 import yfinance as yf
 
 from collectors.base import Adapter
-from lib import config, delisted_symbols
+from lib import config, delisted_symbols, nyse_calendar
 
 log = logging.getLogger(__name__)
 
@@ -281,6 +283,115 @@ def disclose_stale_constituent_columns(members_symbols, closes: pd.DataFrame,
     return {"no_column": no_column, "never_populated": never_populated, "frozen": frozen}
 
 
+# Existing breadth coverage floor, applied to actual completed-session prices too.
+_COVERAGE_FLOOR = 0.8
+_US_CURRENT_SESSION_GROUPS = frozenset({"breadth", "smallcap_breadth", "midcap_breadth"})
+
+
+def _completed_close_values(closes: pd.DataFrame, tickers: list[str], expected_session: date) -> pd.Series:
+    """One exact-session price-validity rule for coverage and persisted holes."""
+    if closes.empty:
+        return pd.Series(index=tickers, dtype=float)
+    try:
+        dates = pd.DatetimeIndex(closes.index)
+        if dates.tz is not None:
+            dates = dates.tz_localize(None)
+        match = dates.normalize() == pd.Timestamp(expected_session)
+        if int(match.sum()) > 1:
+            raise ValueError("duplicate daily price rows")
+        if not match.any():
+            return pd.Series(index=tickers, dtype=float)
+        raw = closes.loc[match].iloc[0].reindex(tickers)
+        # bool is numerically coercible, but is never an observed market price.
+        raw = raw.mask(raw.map(lambda value: isinstance(value, (bool, np.bool_))))
+        values = pd.to_numeric(raw, errors="coerce")
+        return values.where(values.gt(0) & values.lt(float("inf")))
+    except (TypeError, ValueError) as exc:
+        raise RuntimeError(f"completed session {expected_session} has ambiguous price rows") from exc
+
+
+def _completed_close_count(closes: pd.DataFrame, tickers: list[str], expected_session: date) -> int:
+    """Count actual current prices, never dates, Volume or historical coverage."""
+    return int(_completed_close_values(closes, tickers, expected_session).notna().sum())
+
+
+def _mask_invalid_completed_closes(closes: pd.DataFrame, tickers: list[str], expected_session: date) -> pd.DataFrame:
+    """Keep invalid current values missing when a valid partial universe passes.
+
+    Only the expected-session cells are masked. Keep prior history, input rows,
+    constituent identity and the accepted 80% availability policy unchanged.
+    """
+    values = _completed_close_values(closes, tickers, expected_session)
+    if values.name is None:
+        return closes
+    invalid = [ticker for ticker in tickers
+               if ticker in closes.columns and pd.isna(values[ticker])
+               and pd.notna(closes.loc[values.name, ticker])]
+    if not invalid:
+        return closes
+    masked = closes.copy()
+    for ticker in invalid:
+        # Series.mask preserves a missing cell even for an object/bool column;
+        # assigning NaN into a bool array in place can coerce it back to True.
+        masked[ticker] = masked[ticker].mask(masked.index == values.name)
+    return masked
+
+
+def _without_cached_completed_session(closes: pd.DataFrame, tickers: list[str],
+                                      expected_session: date) -> pd.DataFrame:
+    """Do not let an earlier same-date cache observation impersonate settlement.
+
+    The cache has no per-cell finality stamp, so a finite value observed intraday
+    cannot fill a name the completed-session response omitted.  Preserve every
+    prior row and non-current constituent; only fresh source bytes may populate
+    requested names on the expected completed session.
+    """
+    if closes.empty:
+        return closes
+    dates = pd.DatetimeIndex(closes.index)
+    if dates.tz is not None:
+        dates = dates.tz_localize(None)
+    match = dates.normalize() == pd.Timestamp(expected_session)
+    if not match.any():
+        return closes
+    cleaned = closes.copy()
+    for ticker in tickers:
+        if ticker in cleaned.columns:
+            cleaned[ticker] = cleaned[ticker].mask(match)
+    return cleaned
+
+
+def _mask_completed_extras_without_close(extras: dict[str, pd.DataFrame],
+                                         closes: pd.DataFrame,
+                                         tickers: list[str],
+                                         expected_session: date) -> dict[str, pd.DataFrame]:
+    """A name without a valid settlement close has no coherent OHLCV row.
+
+    High, Low and Volume come from the same accepted provider response, but they
+    can be populated even when Close is missing.  Keep their prior history and
+    other names unchanged; only mask the expected-session cells for names whose
+    completed close is absent or invalid.
+    """
+    values = _completed_close_values(closes, tickers, expected_session)
+    if values.name is None:
+        return extras
+    missing = [ticker for ticker in tickers if pd.isna(values[ticker])]
+    if not missing:
+        return extras
+    return {key: _without_cached_completed_session(frame, missing, expected_session)
+            for key, frame in extras.items()}
+
+
+def _require_completed_closes(closes: pd.DataFrame, tickers: list[str], expected_session: date) -> int:
+    count = _completed_close_count(closes, tickers, expected_session)
+    if count < len(tickers) * _COVERAGE_FLOOR:
+        raise RuntimeError(
+            f"completed session {expected_session} close coverage {count}/{len(tickers)} "
+            "is below 80%; dated or volume-only rows are not current prices"
+        )
+    return count
+
+
 class BreadthAdapter(Adapter):
     name = "breadth"
     group = "breadth"
@@ -387,43 +498,78 @@ class BreadthAdapter(Adapter):
         df = df.drop_duplicates(subset="symbol", keep="first").reset_index(drop=True)
         return df[["symbol", "name", "sector"]]
 
-    def _download_closes(self, tickers: list[str], period: str) -> pd.DataFrame:
+    def _download_closes(self, tickers: list[str], period: str, *,
+                         expected_session: date | None = None) -> pd.DataFrame:
         bs = self.ycfg["batch_size"]
         parts: list[pd.DataFrame] = []
-        # ADDITIVE OHLCV capture: yfinance already downloads high/low/volume — keep them
-        # (instead of discarding all but Close) so the stock library can compute
-        # volume-based signals (engine/bottom_radar) for the full universe, not just the
-        # ~114 deep names. Stashed on self for fetch() to cache; never affects closes.
+        # Capture extras from the SAME accepted response as Close; an incomplete
+        # attempt must not supply Volume/High/Low beside a later corrected Close.
         extras: dict[str, list] = {"high": [], "low": [], "volume": []}
+        if expected_session is not None:
+            self._last_extras = {}
         for i in range(0, len(tickers), bs):
             batch = tickers[i:i + bs]
+            best = None
+            best_count = -1
             for attempt in range(self.ycfg["retries"]):
                 try:
                     df = yf.download(batch, period=period, auto_adjust=True,
                                      progress=False, group_by="column", threads=True)
                     lvl0 = (df.columns.get_level_values(0)
                             if isinstance(df.columns, pd.MultiIndex) else df.columns)
-                    parts.append(df["Close"] if "Close" in lvl0 else df)
-                    for k, F in (("high", "High"), ("low", "Low"), ("volume", "Volume")):
-                        if F in lvl0:
-                            extras[k].append(df[F])
+                    if expected_session is not None and "Close" not in lvl0:
+                        raise RuntimeError(f"completed session {expected_session} response has no Close field")
+                    closes = df["Close"] if "Close" in lvl0 else df
+                    captured = {k: df[field] for k, field in
+                                (("high", "High"), ("low", "Low"), ("volume", "Volume"))
+                                if field in lvl0}
+                    if expected_session is not None:
+                        if isinstance(closes, pd.Series):
+                            if len(batch) != 1:
+                                raise RuntimeError("completed session Close layout is ambiguous")
+                            closes = closes.to_frame(batch[0])
+                            captured = {k: (v.to_frame(batch[0]) if isinstance(v, pd.Series) else v)
+                                        for k, v in captured.items()}
+                        count = _completed_close_count(closes, batch, expected_session)
+                        closes = _mask_invalid_completed_closes(closes, batch, expected_session)
+                        captured = _mask_completed_extras_without_close(
+                            captured, closes, batch, expected_session)
+                        if count > best_count:
+                            best, best_count = (closes, captured), count
+                        _require_completed_closes(closes, batch, expected_session)
+                    parts.append(closes)
+                    for k, frame in captured.items():
+                        extras[k].append(frame)
                     break
-                except Exception as e:  # noqa: BLE001
+                except Exception as e:  # noqa: BLE001 — same configured retry owner/budget
                     wait = self.ycfg["backoff_base_s"] * (2 ** attempt)
                     log.warning("breadth batch %d failed (%s); retry in %.0fs", i // bs, e, wait)
                     time.sleep(wait)
+            else:
+                # Preserve existing partial-universe behavior, not all-or-nothing
+                # batches. The WHOLE requested universe must still pass below.
+                if expected_session is not None and best is not None:
+                    closes, captured = best
+                    parts.append(closes)
+                    for k, frame in captured.items():
+                        extras[k].append(frame)
             time.sleep(1)
         if not parts:
-            raise RuntimeError("no constituent closes downloaded")
+            suffix = f" for completed session {expected_session}" if expected_session else ""
+            raise RuntimeError("no constituent closes downloaded" + suffix)
 
         def _wide(plist: list) -> pd.DataFrame:
             w = pd.concat(plist, axis=1)
             return w.loc[:, ~w.columns.duplicated()].sort_index()
 
+        closes = _wide(parts)
+        if expected_session is not None:
+            _require_completed_closes(closes, tickers, expected_session)
         self._last_extras = {k: _wide(v) for k, v in extras.items() if v}
-        return _wide(parts)
+        return closes
 
-    def _merge_refreshed(self, fresh: pd.DataFrame, cached: pd.DataFrame) -> pd.DataFrame:
+    def _merge_refreshed(self, fresh: pd.DataFrame, cached: pd.DataFrame, *,
+                         expected_session: date | None = None) -> pd.DataFrame:
         """``fresh.combine_first(cached)`` + split-seam repair (see module comment).
 
         Flagged tickers get their FULL live window re-downloaded (one batched
@@ -432,9 +578,10 @@ class BreadthAdapter(Adapter):
         genuine ±40% news day (the re-pull returns identical data). The
         re-pulled tickers' OHLCV extras are grafted over the fresh-window
         extras so the _high/_low/_volume caches heal on the same run. If the
-        re-pull fails the poisoned columns are LEFT IN PLACE (loud warning):
-        the scan re-flags them next run, whereas truncating them would erase
-        the evidence and silently orphan the seam in the extras caches."""
+        re-pull fails the legacy/non-US path leaves the seam visible for retry.
+        A completed-session US refresh instead refuses before cache writes: an
+        incomplete repair must not publish corrected Close beside old-basis
+        extras. The caller retains its previous cache bytes for the next run."""
         merged = fresh.combine_first(cached)
         bad = seam_suspects(fresh, cached, merged)
         if not bad:
@@ -445,21 +592,62 @@ class BreadthAdapter(Adapter):
                     self.name, len(bad), bad[:12])
         fresh_extras = getattr(self, "_last_extras", {}) or {}
         try:
-            repull = self._download_closes(bad, f"{max(1, days // 365 + 1)}y")
-        except Exception as e:  # noqa: BLE001 — repair must never kill the run
+            download_kwargs = ({"expected_session": expected_session}
+                               if expected_session is not None else {})
+            repull = self._download_closes(bad, f"{max(1, days // 365 + 1)}y",
+                                          **download_kwargs)
+        except Exception as e:  # noqa: BLE001 — keep legacy fail-soft behavior
+            self._last_extras = fresh_extras
+            if expected_session is not None:
+                raise RuntimeError(
+                    f"completed session {expected_session} seam repair unavailable; "
+                    "previous cache preserved"
+                ) from e
             log.warning("%s: seam re-pull failed (%s) — cache kept as-is; the seam "
                         "scan retries next run", self.name, e)
-            self._last_extras = fresh_extras
             return merged
         repull_extras = getattr(self, "_last_extras", {}) or {}
         self._last_extras = fresh_extras
         healed = [t for t in bad if t in repull.columns and repull[t].notna().any()]
+        extra_keys = set(fresh_extras)
+        if expected_session is not None:
+            if set(bad) - set(healed):
+                raise RuntimeError("seam repair omitted affected price histories; previous cache preserved")
+            extra_keys.update(repull_extras)
+            extra_keys.update(key for key in ("high", "low", "volume")
+                              if (self.cache_path.parent / f"_{key}_cache.parquet").exists())
+            # A full-window repair changes basis. Any existing companion value
+            # beside a selected replacement Close must be supplied by that same
+            # replacement, not inherited by combine_first from an earlier basis.
+            # Refuse before writes rather than erase history or invent a field.
+            for key in sorted(extra_keys):
+                prior = fresh_extras.get(key)
+                path = self.cache_path.parent / f"_{key}_cache.parquet"
+                if path.exists():
+                    old_extra = pd.read_parquet(path)
+                    prior = old_extra if prior is None else prior.combine_first(old_extra)
+                replacement = repull_extras.get(key)
+                if prior is None:
+                    continue
+                for ticker in healed:
+                    if ticker not in prior.columns:
+                        continue
+                    required = prior[ticker].notna() & repull[ticker].reindex(prior.index).notna()
+                    available = (replacement[ticker].reindex(prior.index).notna()
+                                 if replacement is not None and ticker in replacement.columns
+                                 else pd.Series(False, index=prior.index))
+                    if (required & ~available).any():
+                        raise RuntimeError(
+                            f"seam repair omitted {key} for {ticker} on replaced price rows; "
+                            "previous cache preserved"
+                        )
         for t in healed:
             merged[t] = repull[t].reindex(merged.index)
         if missed := sorted(set(bad) - set(healed)):
             log.warning("%s: seam re-pull returned no data for %s — kept as-is, "
                         "retried next run", self.name, missed[:12])
-        for k, w in list(fresh_extras.items()):
+        for k in sorted(extra_keys):
+            w = fresh_extras.get(k)
             rw = repull_extras.get(k)
             # NOT filtered by `t in w.columns` (2026-08-06 split-basis incident): w is the
             # FRESH 1mo window, and a healed ticker missing from it — yfinance returned no
@@ -475,6 +663,8 @@ class BreadthAdapter(Adapter):
             # union index: the grafted column must span the extras CACHE's rows,
             # not just the 1mo fresh window, so combine_first in fetch() overrides
             # the poisoned cached rows instead of keeping them
+            if w is None:
+                w = pd.DataFrame(index=fresh.index)
             w = w.reindex(w.index.union(rw.index)).sort_index()
             for t in cols:
                 w[t] = rw[t].reindex(w.index)
@@ -484,9 +674,15 @@ class BreadthAdapter(Adapter):
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         members = self.constituents_checked(self.constituents())
         tickers = members["symbol"].tolist()
+        # Capture one canonical completed-session reference for this US fetch.
+        # Regional subclasses and Russell keep their existing calendars/interfaces.
+        expected_session = (nyse_calendar.expected_last_session()
+                            if self.name in _US_CURRENT_SESSION_GROUPS else None)
+        download_kwargs = ({"expected_session": expected_session}
+                           if expected_session is not None else {})
 
         if full_history:
-            closes = self._download_closes(tickers, "max")
+            closes = self._download_closes(tickers, "max", **download_kwargs)
         else:
             closes = None
             if self.cache_path.exists():
@@ -494,11 +690,15 @@ class BreadthAdapter(Adapter):
                 # refresh tail; full re-pull if cache is stale beyond the overlap
                 age = (pd.Timestamp.utcnow().tz_localize(None) - cached.index.max()).days
                 if age <= 14:
-                    fresh = self._download_closes(tickers, "1mo")
-                    closes = self._merge_refreshed(fresh, cached)
+                    fresh = self._download_closes(tickers, "1mo", **download_kwargs)
+                    cached_for_merge = (
+                        _without_cached_completed_session(cached, tickers, expected_session)
+                        if expected_session is not None else cached
+                    )
+                    closes = self._merge_refreshed(fresh, cached_for_merge, **download_kwargs)
             if closes is None:
                 days = self.cfg["lookback_days_live"]
-                closes = self._download_closes(tickers, f"{max(1, days // 365 + 1)}y")
+                closes = self._download_closes(tickers, f"{max(1, days // 365 + 1)}y", **download_kwargs)
             cutoff = closes.index.max() - pd.Timedelta(days=self.cfg["lookback_days_live"] + 30)
             closes = closes[closes.index >= cutoff]
 
@@ -515,9 +715,17 @@ class BreadthAdapter(Adapter):
 
         # coverage sanity: a half-empty matrix silently poisons every ratio
         live_cols = closes.dropna(axis=1, how="all").shape[1]
-        if live_cols < len(tickers) * 0.8:
+        if live_cols < len(tickers) * _COVERAGE_FLOOR:
             raise RuntimeError(f"breadth closes too sparse: {live_cols}/{len(tickers)}")
 
+        # Re-check after split-seam grafting and BEFORE any close/extras writes.
+        # A failed refresh leaves the accepted cache bytes intact and reports an
+        # actual collector failure through the existing run-status path.
+        if expected_session is not None:
+            closes = _mask_invalid_completed_closes(closes, tickers, expected_session)
+            _require_completed_closes(closes, tickers, expected_session)
+            self._last_extras = _mask_completed_extras_without_close(
+                dict(getattr(self, "_last_extras", {}) or {}), closes, tickers, expected_session)
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
         if not full_history:
             closes.to_parquet(self.cache_path)
@@ -526,11 +734,24 @@ class BreadthAdapter(Adapter):
             # only needs closes; the stock library falls back to close-only when absent.
             try:
                 cutoff_e = closes.index.max() - pd.Timedelta(days=self.cfg["lookback_days_live"] + 30)
-                for k, w in (getattr(self, "_last_extras", {}) or {}).items():
+                fresh_extras = dict(getattr(self, "_last_extras", {}) or {})
+                extra_keys = set(fresh_extras)
+                if expected_session is not None:
+                    extra_keys.update(
+                        key for key in ("high", "low", "volume")
+                        if (self.cache_path.parent / f"_{key}_cache.parquet").exists()
+                    )
+                for k in sorted(extra_keys):
                     ep = self.cache_path.parent / f"_{k}_cache.parquet"
+                    w = fresh_extras.get(k)
                     if ep.exists():
-                        w = w.combine_first(pd.read_parquet(ep))
-                    w[w.index >= cutoff_e].to_parquet(ep)
+                        cached_extra = pd.read_parquet(ep)
+                        if expected_session is not None:
+                            cached_extra = _without_cached_completed_session(
+                                cached_extra, tickers, expected_session)
+                        w = cached_extra if w is None else w.combine_first(cached_extra)
+                    if w is not None:
+                        w[w.index >= cutoff_e].to_parquet(ep)
             except Exception as e:  # noqa: BLE001
                 log.warning("breadth OHLCV extras cache failed (%s) — volume signals close-only", e)
         # constituents list is reference data, not a time series — written directly.
