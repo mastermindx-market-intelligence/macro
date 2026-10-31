@@ -878,42 +878,61 @@ waves:
       retirement ruling. No source merge, green build or missing-data substitution authorizes
       promotion or retirement.
 next_action: >
-  2026-10-30 continuation: current recovery role owns B2, B-17 and the
-  independent-review gate under Chris's no-owner-wait directive. Use the
-  cumulative handoff agentos/handoffs/
-  PROPHET-US-V4-RECOVERY-2026-10-30-b17-ci-registration.md and
-  discovery DSC:PROPHET-B17-VINTAGE-AND-PRICE-REPLAY-LIMIT.
-  Research Draft #10180 is unchanged at 943906af5c0478e6bcf43f601b7f001fc30e0914;
-  its CI 41043491441 conclusively passed contract-delta, all 12 code packs
-  including pack-5 B-17 regression (28 passed in 1.78s) and ci-gate, and
-  fences 41043491265 succeeded. Recovery CI 41044730818 passed at prior head.
-  The immutable original C0 population contains 7918 dated episodes;
-  7775 (98.19 percent) precede first archived complete board source on
-  2026-06-16, leaving only 143 on/after in the archived date range.
-  The sampled archive has 57 snapshots / 32 source dates and zero complete
-  34-session admission windows. Historical pre-archive input is unknown,
-  not zero return/coverage. TOP CURRENT WAVE: A2 adopt-first settlement
-  contract mapping and source gap delivery under the incumbent Availability
-  owner, with read-only Fabric operation
-  prophet-v4-a2-adoption-audit-20261030-01 already launched and pending a
-  substantive verified result. B17 PARALLEL SCIENCE ACTION: locate full-population PIT
-  admission evidence and source/serving clocks for the original cutoff or
-  escalate the scientifically unanswerable pre-history for an explicit scope
-  ruling; never silently replace the frozen 7918 denominator.
-  B2 correction Draft #10176 remains at 228c25d37617a7217c8f65f1613ade701a2fe01a.
-  Its exact-head 40147024285 CI passed; independent non-author reviewer
-  mastermindx-2 posted SOURCE_PASS comment 6522731353 on exact same head.
-  This closes B2-1 source-review only, not formal GitHub approval, native
-  Lab #7264 composition, merge or real production correction proof. Prior Fabric runs -01 through -04
-  retain terminal/refusal and no-retry fences. The separate non-Fabric Cursor
-  review comment 6521997949 was answered by cursor[bot] comment 6521998829
-  with an explicit repository authentication/configuration refusal; no
-  reviewer started. GitHub Copilot request yielded no assigned reviewer or
-  review receipt. Obtain legitimate review integration/admin access and then
-  request a fresh independent non-author review through an authorized path,
-  without bypassing either denial. Keep all three PRs Draft/HOLD, no
-  self-approval, merge or deployment. Counts remain five done, six
-  in_progress, nineteen todo; preserve accepted A1/B1/D5 and collision holds.
+  2026-10-31 CURRENT A2 SOURCE AND REVIEW FRONTIER. The original
+  thirty V4 waves remain five done, seven in_progress, eighteen todo.
+  A2, B2, B3 and B4 retain their distinct original ownership
+  and dependencies; do not redo accepted A1/B1 or B2-1 source work.
+  Use the latest current cumulative handoff
+  agentos/handoffs/PROPHET-US-V4-RECOVERY-2026-10-31.md,
+  original recovery Draft #10174 and its current reviews.
+  Historical 2026-10-30 B17 discovery and source receipts remain
+  scientific evidence, not a new pending worker or permission to
+  manufacture pre-history.
+  A2 reader-side #10202 advanced to exact Draft/HOLD
+  eee773ad13236a15753c681217f91bc75c837217 after a
+  narrow fail-closed public-report correction; its prior
+  independent SOURCE_PASS at 2ea0bf0b is old-head only.
+  New-head CI 41192866361 and fences 41192866050
+  need exact terminal readback and new non-author review,
+  requested through Grok Secretary in Slack #dotsandgroksecretary.
+  Producer UTC clock #10209 remains Draft/HOLD at da3a0451
+  with exact prior green CI and independent SOURCE_PASS.
+  Availability Check E consumer Draft/HOLD #10256 stays at
+  c155e2781c81b7363f68b9d1e7d6790b89c7c49d,
+  exact hosted CI 41179807210/fences 41179807192 GREEN.
+  Independent nonauthor mastermindxryan submitted native
+  CHANGES_REQUESTED review 5722359885 on that head:
+  malformed trailing date text is accepted by the generic
+  date parser, and stale/unreadable PENDING/UNAVAILABLE_DATA
+  can enter typed facts. This code-fix operation was explicitly
+  safety-blocked during its attempted modification; no
+  rephrased/cross-carrier retry is authorized and no fix
+  was applied here. Preserve that Draft and review HOLD.
+  This recovery records Draft #10174 had CI 41179708571
+  and fences 41179708525 success at old head a758b483;
+  native nonauthor review 5722371541 requested correction
+  of this top-level wave count/current action, the Oct-31
+  handoff unresolved worker-return line and Oct-30 B17
+  source-review phrasing. Requalify this amended records
+  head with hosted CI and a fresh independent review
+  before any release.
+  The V4-A2 adoption audit returned terminal long ago;
+  original bounded source-issuer preflight also returned
+  TERMINAL rc0 with locally proven 27-test patch but no
+  independent admitted source review and no accepted bundle.
+  GMI W3B has no accepted current-use-qualified ThemeState
+  generation. Public R2 health was observed on 2026-10-31
+  with source_asof 2026-10-30, while public
+  /live/staleness.json still had no A2 settlement field.
+  Accepted full four-asset issuer bundle/protected served
+  reader attestation, Availability rescue liveness integration,
+  A3 atomic publication and A4 fire drills remain unmet.
+  B17 historical full-population PIT admission evidence
+  remains scientifically unavailable for the frozen
+  denominator; preserve original scope and source-owner
+  obligations without silently changing the 7918 population.
+  Do not claim new SETTLED, self-approve, merge, deploy or
+  bypass a host/permission/safety denial.
 ---
 
 ## Context

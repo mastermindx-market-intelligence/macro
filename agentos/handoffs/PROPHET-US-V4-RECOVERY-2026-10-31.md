@@ -127,12 +127,15 @@ unverified:
       acceptance of the local preflight patch after the thermal
       admission refusal is lawfully resolved. No source PR or
       production consumer exists for that candidate yet.
-  - claim: Check E consumer Draft has no exact-head full hosted CI and review acceptance.
+  - claim: Check E Draft #10256 has two independent blocking source findings.
     what_would_verify: >
-      GitHub CI 41179369046 on PR #10256 head 8c6f9468 finishes
-      successfully and a fresh independent nonauthor semantic
-      verdict is recorded after actual capacity/admission recovery.
-      Availability owner source-custody inquiry must also be consumed.
+      A lawful, independently reviewed correction of the malformed
+      settlement-date suffix and stale/unreadable heartbeat fact
+      defects identified by nonauthor GitHub review 5722359885.
+      #10256 old exact head c155e278 has CI/fences success but
+      CHANGES_REQUESTED. An attempted source modification was
+      explicitly safety-blocked; no retry, new source head or
+      release acceptance is claimed.
   - claim: V4-A2 complete four-asset issuer/protected-reader evidence.
     what_would_verify: >
       Existing owner issues validated exact candidate_store, board,
@@ -159,7 +162,7 @@ unresolved:
     GMI accepted current-use ThemeState and source-purpose grant unproven,
     so never upgrade a shadow generation into accepted quartet.
   - >
-    Fabric preflight source labor has no START/return proof yet.
+    Fabric issuer preflight returned TERMINAL rc0 with a locally tested five-file patch; however the patch is unmerged and not independently source-reviewed after the thermal admission refusal. No accepted issuer identity or live reader proof exists.
   - >
     Availability Agent OS next_action stale relative to 3 merged PRs;
     sister source owner must reconcile, not duplicate.
@@ -168,27 +171,33 @@ unresolved:
     mutation drills and A3 publication contract remain held.
 next_actions:
   - >
-    Consume #10256 hosted CI 41179369046 and separate
-    fences 41179369155 at immutable 8c6f9468; do not
-    rerun queued work. Consume Secretary exact thread
-    1793430537.066329 RESULT and issue one same-carrier
-    Sol ruling/CONTINUE or STOP as warranted; it is read-only,
-    no release or source-lease receipt implied.
+    Reconcile original nonauthor native reviews: #10256
+    exact c155e278 review 5722359885 CHANGES_REQUESTED,
+    #10174 old a758b483 review 5722371541 CHANGES_REQUESTED.
+    The latter's three source-consistency defects are corrected
+    only in this docs revision; verify exact new hosted CI and
+    obtain genuinely independent re-review on the new head.
+    Do not borrow old-head approvals or change earlier receipts.
   - >
-    Keep issuer-preflight patch local and independent
-    source-review gate unfulfilled after terminal thermal
-    refusal. Review old exact worker output without
-    redoing source builder. Obtain real admission recovery
-    before any new review operation; do not switch
-    provider/carrier merely to bypass the explicit denial.
+    #10256 source edit was explicitly safety-blocked; do
+    not retry the same action through any other tool,
+    worker, identity or carrier. Preserve its original
+    native review findings and code HOLD. The user/Chairman
+    must control any required separate authorization path;
+    no automatic merge or implicit source repair.
   - >
-    Coordinate incumbent Availability Check E source record
-    and review, then qualify #10256 source and real consumer
-    path before release. Hold #10202/#10209 unchanged;
-    GMI W3B current-use qualified generation and
-    authentic protected served bundle still block A2
-    SETTLED. A3 atomic publisher and rescue budget
-    remain separate.
+    Consume original #10202 new head eee773ad exact hosted
+    CI 41192866361/fences 41192866050 and independent
+    nonauthor review via new Grok Secretary source request.
+    The prior SOURCE_PASS at 2ea0bf0b is historical only.
+    Preserve the #10209 clock Draft and source review,
+    do not redo accepted 210-test immutable evidence.
+  - >
+    W3B GMI current-use qualified ThemeState and same-bundle
+    protected VPS reader evidence remain A2 dependencies;
+    keep PENDING. B17 pre-June full-population PIT archive
+    remains unknown, never replace the frozen denominator,
+    and preserve A3/A4 as separate publication/drill gates.
 do_not_redo:
   - >
     Never rerun A1 2026-08-14 replay, B1 canonical episode identity,
