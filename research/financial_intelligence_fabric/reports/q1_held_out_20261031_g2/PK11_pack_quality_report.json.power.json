@@ -1,0 +1,30 @@
+[
+  {
+    "issuer": "BAC",
+    "met": true,
+    "minimum_n": 2,
+    "observed_n": 27,
+    "rule": "pack, applicable issuer, polarity=positive"
+  },
+  {
+    "issuer": null,
+    "met": true,
+    "minimum_n": 1,
+    "observed_n": 10,
+    "rule": "pack, polarity=negative"
+  },
+  {
+    "issuer": null,
+    "met": false,
+    "minimum_n": 1,
+    "observed_n": 0,
+    "rule": "pack, format_class != ixbrl_inline"
+  },
+  {
+    "issuer": null,
+    "met": true,
+    "minimum_n": 1,
+    "observed_n": 10,
+    "rule": "PK11 x non-bank issuers"
+  }
+]

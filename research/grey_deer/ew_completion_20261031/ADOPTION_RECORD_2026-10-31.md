@@ -56,10 +56,10 @@ with the seat; labor runs on Mastermind Subagent Fabric lanes administrated by O
 
 | Wave | Task | Owner | State 2026-10-31 |
 | --- | --- | --- | --- |
-| EW-P0 | T1 records / adoption | seat | this PR |
+| EW-P0 | T1 records / adoption | seat | MERGED #10249 → 1d937d7e2b36 (2026-10-31T16:09Z) |
 | EW-P1 | T1 diagnosis · T2 carve parity · acceptance = 2 natural sessions | seat · ORCH-P1 · watcher | T1 done; T2 in flight |
-| EW-P2 | T1 #10104 successor (dormant) | ORCH-P2 | in flight |
-| EW-P3 | T1 prereg lane (B) | next orchestrator wave | todo |
+| EW-P2 | T1 #10104 successor (dormant) | ORCH-P2 | draft #10325 (head f2532edbaa2d) awaiting CI; review lane APPROVE |
+| EW-P3 | T1 prereg lane (B) | ORCH-P3 | census done; contract draft in flight (seat freezes before registration) |
 | EW-P4 | T1 descriptive early-warning UI (A) | next orchestrator wave | todo (after EW-P2 merge) |
 | EW-P5 | acceptance packs S/Q/O/C/U/R | seat | todo |
 
