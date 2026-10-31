@@ -3,11 +3,12 @@ from __future__ import annotations
 import io
 from hashlib import sha256
 import json
+import traceback
 
 import pytest
 
 from engine.company_intelligence.views import build_bundle, write_generation
-from scripts.publish_company_intelligence_r2 import publish
+from scripts.publish_company_intelligence_r2 import ImmutableAddressIntegrityError, _publish_immutable_object, publish
 
 
 class _FakeR2:
@@ -119,3 +120,120 @@ def test_existing_exact_generation_objects_are_safe_noops_before_marker_promotio
 
     assert publish(tmp_path, s3=fake, bucket="bucket") == 0
     assert [key for key, _ in fake.puts] == ["company_intelligence/manifest.json"]
+
+
+class ClientError(RuntimeError):
+    def __init__(self, response) -> None:
+        super().__init__("DO_NOT_RETAIN https://user:password@example.test/?token=DO_NOT_RETAIN")
+        self.response = response
+
+
+class _FailedCreateR2(_FakeR2):
+    def __init__(self, failure: Exception, *, write_before_error: bool = False) -> None:
+        super().__init__({"status": "ready", "company_count": 1, "event_count": 1})
+        self.failure = failure
+        self.write_before_error = write_before_error
+        self.attempts: list[dict] = []
+
+    def put_object(self, **kwargs):
+        self.attempts.append(kwargs)
+        if self.write_before_error:
+            super().put_object(**kwargs)
+        raise self.failure
+
+
+def test_create_error_retains_sdk_details_without_promoting_marker(tmp_path, caplog) -> None:
+    _tree(tmp_path)
+    fake = _FailedCreateR2(ClientError({
+        "Error": {"Code": "AccessDenied", "Message": "DO_NOT_RETAIN"},
+        "ResponseMetadata": {"HTTPStatusCode": 403, "HTTPHeaders": {"secret": "DO_NOT_RETAIN"}},
+        "Body": "DO_NOT_RETAIN",
+    }))
+
+    assert publish(tmp_path, s3=fake, bucket="bucket") == 1
+    message = next(record.message for record in caplog.records if "payload upload failed:" in record.message)
+    details = json.loads(message.split("; details=", 1)[1].removesuffix(")"))
+    assert details == {
+        "operation": "put_object", "exception_class": "ClientError",
+        "sdk_error_code": "AccessDenied", "http_status": 403,
+    }
+    assert "DO_NOT_RETAIN" not in caplog.text
+    assert "example.test" not in caplog.text
+    assert len(fake.attempts) == 1
+    assert fake.attempts[0]["IfNoneMatch"] == "*"
+    assert fake.objects == {}
+    assert fake.remote_manifest == {"status": "ready", "company_count": 1, "event_count": 1}
+    assert "root manifest not promoted" in caplog.text
+
+
+@pytest.mark.parametrize("response", [
+    {"Error": {"Code": "DO_NOT_RETAIN"}, "ResponseMetadata": {"HTTPStatusCode": "https://DO_NOT_RETAIN"}},
+    {"Error": {"Code": "AccessDenied\nDO_NOT_RETAIN"}, "ResponseMetadata": {"HTTPStatusCode": True}},
+    {"Error": {"Code": {"secret": "DO_NOT_RETAIN"}}, "ResponseMetadata": {"HTTPStatusCode": 403.5}},
+    {"Error": "DO_NOT_RETAIN", "ResponseMetadata": "DO_NOT_RETAIN"},
+    "DO_NOT_RETAIN",
+])
+def test_create_diagnostics_reject_untrusted_metadata_and_exception_names(response) -> None:
+    unsafe_class = type("DO_NOT_RETAIN", (ClientError,), {})
+    fake = _FailedCreateR2(unsafe_class(response))
+    key = "company_intelligence/generations/test/companies/AAPL.json"
+
+    with pytest.raises(ImmutableAddressIntegrityError) as caught:
+        _publish_immutable_object(fake, "bucket", key, b"payload", sha256(b"payload").hexdigest(), dry_run=False)
+
+    rendered = "".join(traceback.format_exception(caught.value))
+    assert "DO_NOT_RETAIN" not in rendered
+    assert "example.test" not in rendered
+    details = json.loads(str(caught.value).split("; details=", 1)[1])
+    assert details == {
+        "operation": "put_object", "exception_class": "unavailable",
+        "sdk_error_code": "unavailable", "http_status": "unavailable",
+    }
+    assert caught.value.__cause__ is None
+    assert len(fake.attempts) == 1
+    assert fake.objects == {}
+
+
+def test_transport_error_retains_class_without_raw_message() -> None:
+    fake = _FailedCreateR2(TimeoutError("DO_NOT_RETAIN"))
+    with pytest.raises(ImmutableAddressIntegrityError) as caught:
+        _publish_immutable_object(fake, "bucket", "company_intelligence/generations/test/object.json",
+                                  b"payload", sha256(b"payload").hexdigest(), dry_run=False)
+    details = json.loads(str(caught.value).split("; details=", 1)[1])
+    assert details == {
+        "operation": "put_object", "exception_class": "TimeoutError",
+        "sdk_error_code": "unavailable", "http_status": "unavailable",
+    }
+    assert "DO_NOT_RETAIN" not in "".join(traceback.format_exception(caught.value))
+    assert len(fake.attempts) == 1
+
+
+def test_write_then_error_preserves_unknown_outcome_without_retry_or_promotion(tmp_path, caplog) -> None:
+    _tree(tmp_path)
+    fake = _FailedCreateR2(ClientError({
+        "Error": {"Code": "InternalError"}, "ResponseMetadata": {"HTTPStatusCode": 500},
+    }), write_before_error=True)
+
+    assert publish(tmp_path, s3=fake, bucket="bucket") == 1
+    assert len(fake.attempts) == 1
+    key = fake.attempts[0]["Key"]
+    assert key.endswith("/companies/AAPL.json")
+    assert fake.objects[key][0] == fake.attempts[0]["Body"]
+    assert "company_intelligence/manifest.json" not in fake.objects
+    assert all(not written.endswith("/manifest.json") for written, _ in fake.puts)
+    assert fake.remote_manifest == {"status": "ready", "company_count": 1, "event_count": 1}
+    assert '"sdk_error_code": "InternalError"' in caplog.text
+    assert "DO_NOT_RETAIN" not in caplog.text
+
+
+def test_precondition_race_still_requires_exact_existing_bytes() -> None:
+    class _CompetingCreate(_FakeR2):
+        def put_object(self, **kwargs):
+            super().put_object(**kwargs)
+            raise _PreconditionFailed()
+
+    fake = _CompetingCreate()
+    _publish_immutable_object(fake, "bucket", "company_intelligence/generations/test/object.json",
+                              b"payload", sha256(b"payload").hexdigest(), dry_run=False)
+    assert len(fake.puts) == 1
+    assert fake.puts[0][1]["IfNoneMatch"] == "*"

@@ -1,90 +1,90 @@
 {
   "schema": "bottom_sensors_geometry_audit.v1",
-  "n_booked": 135417,
+  "n_booked": 137123,
   "booked_dates": [
     "2026-07-06",
-    "2026-10-14"
+    "2026-10-19"
   ],
-  "asof": "2026-10-14",
-  "n_matured": 22725,
+  "asof": "2026-10-20",
+  "n_matured": 25182,
   "by_horizon": {
     "h21": {
-      "n_obs": 18827,
+      "n_obs": 19815,
       "decline_geometry": {
         "buckets": {
           "flush": {
-            "mean_fwd_ret": -0.01434527006102561,
-            "n": 2932
+            "mean_fwd_ret": -0.013240265265808942,
+            "n": 3088
           },
           "grind": {
-            "mean_fwd_ret": -0.001427606183995208,
-            "n": 2975
+            "mean_fwd_ret": -0.0009284126072716945,
+            "n": 3137
           },
           "mixed": {
-            "mean_fwd_ret": -0.007003594796763772,
-            "n": 2955
+            "mean_fwd_ret": -0.006055599156799046,
+            "n": 3117
           }
         },
-        "flush_minus_grind": -0.012917663877030403
+        "flush_minus_grind": -0.012311852658537247
       },
       "underwater_state": {
         "buckets": {
           "long": {
-            "mean_fwd_ret": -0.007100642094281347,
-            "n": 2869
+            "mean_fwd_ret": -0.006336414632129529,
+            "n": 3025
           },
           "mid": {
-            "mean_fwd_ret": -9.279429438367745e-06,
-            "n": 2996
+            "mean_fwd_ret": 0.00042312827298052695,
+            "n": 3160
           },
           "short": {
-            "mean_fwd_ret": -0.0155500632304502,
-            "n": 2997
+            "mean_fwd_ret": -0.014204340558124353,
+            "n": 3157
           }
         },
-        "long_minus_short": 0.008449421136168853
+        "long_minus_short": 0.007867925925994824
       }
     },
     "h63": {
-      "n_obs": 3898,
+      "n_obs": 5367,
       "decline_geometry": {
         "buckets": {
           "flush": {
-            "mean_fwd_ret": -0.012672721972645224,
-            "n": 583
+            "mean_fwd_ret": -0.00476067824617629,
+            "n": 803
           },
           "grind": {
-            "mean_fwd_ret": -0.02754372337511259,
-            "n": 589
+            "mean_fwd_ret": -0.018449230956136015,
+            "n": 818
           },
           "mixed": {
-            "mean_fwd_ret": -0.006242653385240626,
-            "n": 577
+            "mean_fwd_ret": -0.010832366292522797,
+            "n": 801
           }
         },
-        "flush_minus_grind": 0.014871001402467365
+        "flush_minus_grind": 0.013688552709959724
       },
       "underwater_state": {
         "buckets": {
           "long": {
-            "mean_fwd_ret": -0.016738126294923217,
-            "n": 563
+            "mean_fwd_ret": -0.008056072829229896,
+            "n": 785
           },
           "mid": {
-            "mean_fwd_ret": -0.009626684076617084,
-            "n": 583
+            "mean_fwd_ret": -0.0048491392183506845,
+            "n": 804
           },
           "short": {
-            "mean_fwd_ret": -0.020194923815203634,
-            "n": 603
+            "mean_fwd_ret": -0.020850295139988193,
+            "n": 833
           }
         },
-        "long_minus_short": 0.003456797520280417
+        "long_minus_short": 0.012794222310758297
       }
     }
   },
   "interpretation": "Realized forward-return gaps of the FROZEN structural descriptors per horizon: decline_geometry flush\u2212grind (family E, DISPLAY-CANDIDATE) and underwater_state long\u2212short (family F, ADVERSE-CONTEXT). Descriptive only; empty/thin until horizons elapse.",
   "authority": "DISPLAY-ONLY \u2014 no ranking/gating/allocation surface is touched; a positive gap does NOT promote either descriptor. CHIP promotion is blocked until the true eq_band cache lands (RUL-28).",
   "survivorship": "OPTIMISTIC bound \u2014 free prices serve currently-listed names only.",
-  "generated_utc": "2026-10-20T08:07:05+00:00"
+  "generated_utc": "2026-10-21T08:12:30+00:00"
 }

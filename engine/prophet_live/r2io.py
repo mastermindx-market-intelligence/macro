@@ -39,6 +39,12 @@ CN_PACK_KEY = "live_flow/cn_prophet_live_armed.json"
 CN_LIVE_KEY = "live_flow/cn_prophet_live.json"
 CN_EVENTS_PREFIX = "live_flow/cn_prophet_live_events"
 
+#: Content-addressed archive of every armed pack the CN lane ever published
+#: (China P1). The current key is a single slot that each roll overwrites;
+#: without this prefix the N-1 pack — the authority for first-event identity
+#: and frozen score/rank — is lost at every roll.
+CN_PACK_ARCHIVE_PREFIX = "live_flow/cn_prophet_live_armed_archive"
+
 
 def public_base() -> str:
     """The R2 public base URL (no trailing slash). config.yml → in-code fallback."""
@@ -175,3 +181,15 @@ def events_key(session: str, stamp: str, *, prefix: str = EVENTS_PREFIX) -> str:
     day's file, so nothing can lose a row (the shared-``.tmp`` erasure class).
     """
     return f"{prefix}/{session}/{stamp}.json"
+
+
+def pack_archive_key(session: str, digest: str,
+                     *, prefix: str = CN_PACK_ARCHIVE_PREFIX) -> str:
+    """``<prefix>/<session>/<digest>.json`` — one object per distinct pack.
+
+    Addressed by intended session + content digest, never a timestamp: publishing
+    identical content twice lands on the same object, so the archive can never
+    fork two authorities for one session (the events_key erasure class, applied
+    to the N-1 record the reconciler falls back to).
+    """
+    return f"{prefix}/{session}/{digest}.json"

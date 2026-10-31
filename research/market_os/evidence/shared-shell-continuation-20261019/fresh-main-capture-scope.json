@@ -1,0 +1,42 @@
+{
+  "verified_at": "2026-10-19T12:10:55.835202+00:00",
+  "captured_source": "b2ff80dfb558ea05d6c749391ca37b8ea4ad6df4",
+  "integrated_source": "b4255da8c14a14d5654a03b466ebabe943f2c24e",
+  "identical_relevant_path_blobs": {
+    "lib/shared_shell.py": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+    "scripts/build_sector_central.py": "c8685799a3391a4777d672d2a244ddaf71b14a91",
+    "scripts/build_site.py": "68f39a88101860ff28b814f083e1b435d6152943",
+    "scripts/capture_page_evidence.py": "6f184c6469f6fd653d003716ad96605055e71f56",
+    "scripts/check_ui_visual_evidence.py": "cfd1c3dd422ce8033b0f07edb2ae4302f2f1a01d",
+    "site/about.html": "9fa278e011c606d1a4b41b8c3f96647d8d8961a9",
+    "site/landing.css": "4866885b4abd7fe2da059392c7bc46a703892970",
+    "site/onboard.css": "39f81eaa22c458aeae6f2183d6a138231b789055",
+    "site/shared_shell.css": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+    "site/shared_shell_bridge.js": "dd501dc2dd846b19190c430c0d093452b8d5f322",
+    "site/theme.css": "620895319be7e3f7808439ecbae8c33c2197389f",
+    "site/theme.js": "003f1fe02eab06175d836c0e275589f6519cc01b",
+    "templates/about.html": "9fa278e011c606d1a4b41b8c3f96647d8d8961a9",
+    "templates/dashboard.html.j2": "82c0d00ed32b2da676c7243c543a48a6ab6f1489",
+    "templates/landing.css": "4866885b4abd7fe2da059392c7bc46a703892970",
+    "templates/onboard.css": "39f81eaa22c458aeae6f2183d6a138231b789055",
+    "templates/sector_central.html.j2": "9f1f75beba1a9a12f725135be9a367a79d58d065",
+    "templates/shared_shell.css": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+    "templates/shared_shell_bridge.js": "dd501dc2dd846b19190c430c0d093452b8d5f322",
+    "templates/si_workspace.js": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
+    "templates/theme.css": "620895319be7e3f7808439ecbae8c33c2197389f",
+    "templates/theme.js": "52751694694a381e717d8be6d4c8609d93bdeca6"
+  },
+  "macro_html_captured_blob": "88eaae96b294e6981998d16d2f835edb5a314cf9",
+  "macro_html_integrated_blob": "9af5ac6565d070056e507bf69b688c2ddf12663d",
+  "narrow_historical_css_reuse_only": true,
+  "exact_new_macro_page_pixels_claimed": false,
+  "sector_views": [
+    "overview",
+    "map",
+    "moving",
+    "money",
+    "explore",
+    "confluence"
+  ],
+  "sector_paper": "REVISE"
+}

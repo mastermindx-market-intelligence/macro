@@ -2356,6 +2356,7 @@
 <div class="mx5-aurora{{ ' au-yellow' if (market_state and market_state.color == 'yellow') else (' au-red' if (market_state and market_state.color == 'red') else '') }}" aria-hidden="true"><div class="mx5-a3"></div><div class="mx5-a4"></div></div>
 <div class="mx5-popover-backdrop" id="mx5PopBackdrop" onclick="if(window.mx5CloseAllPopovers)mx5CloseAllPopovers()"></div>
 {% endif %}
+{% set all_tools_enabled = (mode != 'stocks') %}
 {% include "_site_nav.html.j2" %}
 <div class="grid">
 
@@ -15399,7 +15400,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          tiers; until it does, fail toward the non-destructive sign-in sheet. */
       if(document.body && document.body.classList.contains('page-macro') &&
          (!window.MMXAccessPreview || window.MMXAccessPreview.isAnon())){
-        if(window.MMXAccessPreview) window.MMXAccessPreview.openSignin();
+        if(window.MMXSharedShell) window.MMXSharedShell.openAuth('signin');
+        else if(window.MMXAccessPreview) window.MMXAccessPreview.openSignin();
         else if(window.MMOnboard && window.MMOnboard.open) window.MMOnboard.open('signin', {});
         else location.href='/?signin=1&ret=/macro.html';
         return;
@@ -15535,7 +15537,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       var legacy = false;
       if(_legacyAnchor[h]){
         var tgt = _legacyAnchor[h];
-        if(tgt.indexOf('.html') !== -1){ location.replace(tgt); return; }
+        if(tgt.indexOf('.html') !== -1){ var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(tgt, 'replace'); } else { location.replace(tgt); } return; }
         h = tgt; legacy = true;
       }
       var el = document.getElementById(h);
@@ -15567,6 +15569,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       window.addEventListener('load', function(){ setTimeout(_resolveAlertHashOnce, 500); });
     }
     window.addEventListener('hashchange', _resolveAlertHash);
+    window.addEventListener('mmx:shell-location', _resolveAlertHash);
 
   })();
   </script>
@@ -17709,7 +17712,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         if (!tk) return;
         var T = window.MDXTerminal;
         if (T && T.on && T.on() && T.open && T.open(tk, tr)) return;
-        location.href = 'stock.html#' + encodeURIComponent(tk);
+        var _d = 'stock.html#' + encodeURIComponent(tk); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { location.href = _d; }
       });
     })();
     </script>
@@ -18466,6 +18469,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     }
     window.addEventListener('load', fromHash);
     window.addEventListener('hashchange', fromHash);
+    window.addEventListener('mmx:shell-location', fromHash);
     document.addEventListener('click', function (e) {
       var a = e.target.closest('a.alert[href^="#"]');
       if (!a) return;
@@ -21543,6 +21547,7 @@ if (document.readyState === 'loading') {
         var a = si.querySelector('[data-act="signin"]');
         if (a) a.addEventListener('click', function(ev){
           ev.preventDefault();
+          if(window.MMXSharedShell){ window.MMXSharedShell.openAuth('signin'); return; }
           try{ window.MDXAuth.open('signin'); }catch(e2){ location.href = 'plans.html'; }
         });
       }

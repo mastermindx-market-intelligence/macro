@@ -72,8 +72,10 @@ Frozen rules implemented here (G_PACK spec R5/R7/R8):
   ``~/lanes/stage/fif-gsrc``) per package as
   ``<stage>/<cik10>/<accession>/{index.json, sec_submissions_witness.json,
   members/<name>}``. Only ``package_manifest.json`` per package plus per
-  issuer ``request_log.jsonl`` and ``capture_index.json`` are written under
-  ``tests/fixtures/fundamental_forensics/g_src/``.
+  issuer ``request_log.jsonl`` and ``capture_index.json`` are written under the
+  fixture output root: ``--out-root``, default
+  ``tests/fixtures/fundamental_forensics/g_src`` under the repo root (every
+  pre-flag caller stays byte-identical in behaviour).
 """
 from __future__ import annotations
 
@@ -966,6 +968,12 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
         help="lane-local retained-bytes stage root (outside git)",
     )
     parser.add_argument(
+        "--out-root",
+        default=None,
+        help="fixture output root for manifests/capture_index/request_log "
+        "(default: tests/fixtures/fundamental_forensics/g_src under the repo root)",
+    )
+    parser.add_argument(
         "--min-interval",
         type=float,
         default=MIN_INTERVAL_FLOOR_SECONDS,
@@ -1148,7 +1156,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 2
 
     stage_root = Path(args.stage_root).expanduser()
-    out_root = _ROOT / "tests" / "fixtures" / "fundamental_forensics" / "g_src"
+    out_root = (
+        Path(args.out_root).expanduser()
+        if args.out_root
+        else _ROOT / "tests" / "fixtures" / "fundamental_forensics" / "g_src"
+    )
     pacer = SecRequestPacer(min_interval_seconds=args.min_interval)
 
     plan: dict[str, list[SelectedAccession]] = {}

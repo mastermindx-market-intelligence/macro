@@ -42,6 +42,39 @@
 {%- elif '(fingerprint)' in (stage or '') -%}<span class="fx-prov" tabindex="0">{{ t('from filings','来自年报') }}<span class="fxq-tip">{{ t('Inferred from annual XBRL filing fingerprints — provisional until a live numeric series confirms.','由年度 XBRL 备案指纹推断——在实时数值序列确认前为暂定。') }}</span></span>
 {%- endif -%}
 {%- endmacro %}
+{# filing-fingerprint evidence depth: how many member filings reported, and which
+   fiscal year the read comes from. A leg the producer suppressed for want of members
+   shows its count and its gate — never a value: the producer returns None below its
+   member floor precisely so nothing is fabricated. Gated on the `fingerprint` object,
+   not on the stage substring, so fingerprint-only rows whose stage carries no
+   `(fingerprint)` qualifier are covered too. #}
+{% macro fp_leg(label, leg) -%}
+{%- if leg and leg.n_reporting is defined -%}
+{{ label }} — <b>{{ leg.n_reporting }}</b>
+{{ t('members reporting', '家成员披露') }}
+{%- if leg.latest_fy %} · {{ t('fiscal year', '财年') }}
+FY{{ leg.latest_fy }}{% endif -%}
+{%- if not leg.met_gate %} ·
+{{ t('value withheld — too few members', '成员过少——数值不予给出') }}{% endif -%}
+{%- endif -%}
+{%- endmacro %}
+{% macro fp_depth(r) -%}
+{%- set fp = r.fingerprint -%}
+{%- if fp and fp.components -%}
+{%- set _c = fp.components -%}
+<p class="fx-note">{{ t('Filing depth', '年报深度') }}
+{{ fxq('Members that reported, and the fiscal year of the read.'
+       ~ ' A suppressed leg shows its count, not a number.',
+       '披露的成员家数与读数所属财年。被舍去的腿只显示家数，不显示数值。') }}
+{%- if fp.n_legs_live is defined %} <b>{{ fp.n_legs_live }}</b>
+{{ t('filing leg(s) reading', '条年报腿有读数') }}{% endif -%}
+{%- if _c.leg7_member_inventory is defined %}<br>
+{{ fp_leg(t('member inventory', '成员库存'), _c.leg7_member_inventory) }}{% endif -%}
+{%- if _c.leg8_member_backlog is defined %}<br>
+{{ fp_leg(t('member backlog', '成员订单积压'), _c.leg8_member_backlog) }}{% endif -%}
+</p>
+{%- endif -%}
+{%- endmacro %}
 
 {# ---- The lead-time relay: the signature element. Five stops light up as evidence
        fires; the pulse travels the lit portion; the dim rail ahead = edge remaining. ---- #}
@@ -66,7 +99,19 @@
     <span class="fx-node"></span><span class="fx-slbl">{{ t('Demand','需求') }}</span></div>
   <div class="fx-stop{{ ' lit' if l3 }}"{% if r.guidance_band %} title="Guidance: {{ r.guidance_band }}{% if r.guidance_raisers %} · {{ r.guidance_raisers }} raising{% endif %}{% if r.guidance_cutters %} · {{ r.guidance_cutters }} cutting{% endif %}"{% endif %}>
     <span class="fx-node"></span><span class="fx-slbl">{{ t('Guidance','指引') }}</span></div>
-  <div class="fx-stop{{ ' lit' if l4 }}"{% if r.revision_breadth is not none %} title="Estimates / revision breadth {{ '%+.2f'|format(r.revision_breadth) }}{% if r.est_drift_90d is not none %} · 90d EPS drift {{ '%+.0f'|format(r.est_drift_90d) }}%{% endif %}"{% endif %}>
+{# the estimate-trend state joins the English-only receipt; the admitted gap is a
+   visible mark in the card loop instead, and never enters this title #}
+{%- set _est = none -%}
+{%- if r.revision_breadth is not none -%}
+{%- set _est = "Estimates / revision breadth " ~ '%+.2f'|format(r.revision_breadth) -%}
+{%- if r.est_drift_90d is not none -%}
+{%- set _est = _est ~ " · 90d EPS drift " ~ '%+.0f'|format(r.est_drift_90d) ~ "%" -%}
+{%- endif -%}
+{%- if r.broadening_state and r.broadening_state != 'INSUFFICIENT_HISTORY' -%}
+{%- set _est = _est ~ " · trend " ~ r.broadening_state -%}
+{%- endif -%}
+{%- endif -%}
+  <div class="fx-stop{{ ' lit' if l4 }}"{% if _est %} title="{{ _est }}"{% endif %}>
     <span class="fx-node"></span><span class="fx-slbl">{{ t('Estimates','预期') }}</span></div>
   <div class="fx-stop fx-stop-entry{{ ' lit' if le }}" title="{{ r.entry_note }}">
     <span class="fx-node"></span><span class="fx-slbl">{{ t('Entry','入场') }}</span></div>
@@ -555,8 +600,16 @@
     {%- set sv = (r.score_detail or {}).verdict -%}
     <article class="fx-card fx-t-{{ sb }}">
       <div class="fx-crow">
+        {%- set _sd = r.score_detail or {} -%}
+        {%- set _axns = namespace(ax=[]) -%}
+        {%- for _ak, _av in (_sd.axes or {}).items() -%}
+        {%- if _av is not none -%}{%- set _axns.ax = _axns.ax + [_ak ~ ' ' ~ _av] -%}{%- endif -%}
+        {%- endfor -%}
+        {%- set _has_base = _sd.base is defined and _sd.base is not none -%}
+        {%- set _show_base = _has_base and _sd.base != r.score -%}
+        {%- set _nlive = _sd.n_axes_live if _sd.n_axes_live is defined else none -%}
         {% if r.score is defined and r.score is not none %}
-        <span class="fx-score" title="{% for k, v in ((r.score_detail or {}).axes or {}).items() %}{{ k }} {{ v }}{% if not loop.last %} · {% endif %}{% endfor %}">
+        <span class="fx-score" title="{{ _axns.ax|join(' · ') }}">
           <span class="s">{{ r.score|round|int }}</span><span class="l">{{ t('score', '评分') }}</span>
         </span>{% endif %}
         <span class="fx-nm">{{ r.name }}</span>
@@ -582,9 +635,26 @@
         <span class="fx-chip mute">{{ t(osp.manufacturer.en, osp.manufacturer.zh) }}</span>
         <span class="fx-chip mute">{{ t(osp.capacity.en, osp.capacity.zh) }}</span>
         {% endif %}
+        {% if r.broadening_state == 'INSUFFICIENT_HISTORY' %}
+        <span class="fx-prov" tabindex="0">{{ t('no trend window', '暂无趋势窗口') }}
+        <span class="fxq-tip">{{ t('The estimates leg has no trend window for this theme,'
+                                   ~ ' so the direction is an admitted gap, not a reading.',
+                                   '该主题的预期腿没有趋势窗口，'
+                                   ~ '因此方向是如实标注的缺口，'
+                                   ~ '而非读数。') }}</span></span>
+        {% endif %}
       </div>
       {% if r.fda_details %}<p class="fx-note" data-fda-details="{{ r.fda_details|length }}">{{ t('FDA records', 'FDA 记录') }}: {% for line in r.fda_details %}<span class="fx-fda-line">{{ line|e }}</span>{% if not loop.last %} · {% endif %}{% endfor %}</p>{% endif %}
+      {{ fp_depth(r) }}
       {% if r.score_detail and r.score_detail.caps %}<div class="fx-cap">⚑ {{ t('score held back', '评分受限') }}: {{ r.score_detail.caps|join(' · ') }}</div>{% endif %}
+      {% if _show_base or _nlive is not none %}
+      <div class="fx-note">
+        {%- if _show_base %}{{ t('before the cap', '上限前') }} <b>{{ _sd.base }}</b>{% endif -%}
+        {%- if _show_base and _nlive is not none %} · {% endif -%}
+        {%- if _nlive is not none %}<b>{{ _nlive }}</b>
+        {{ t('of 7 axes reading', '/ 7 项有读数') }}{% endif -%}
+      </div>
+      {% endif %}
     </article>
     {% endfor %}
   </div>
@@ -719,7 +789,9 @@
         </div>
         {% endif %}
         {% if analyst and analyst.regime_read %}
-        <p>{{ analyst.regime_read }}</p>
+        {# escape-then-toggle: `t()` applies |safe, so a ledger-derived sentence
+           must be pre-escaped; a falsy zh falls back to the English string #}
+        <p>{{ t(analyst.regime_read|e, (analyst.regime_read_zh or analyst.regime_read)|e) }}</p>
         {% for th in analyst.theses %}
         <div class="fx-ai-th">
           <div class="fx-ai-mech"><b>{{ th.theme.replace('_',' ')|title }}</b> <span class="fx-ai-conf c-{{ th.confidence }}">{{ th.confidence }}</span>{% if th.mechanism %} — {{ th.mechanism }}{% endif %}</div>
@@ -847,6 +919,34 @@
             <span class="fx-rchip">📋 {{ t('no flags logged yet — ledger starts on next build', '尚无标记——下次构建开始累计') }}</span>
           {% endif %}
         </div>
+        {% endif %}
+        {% if track and track.recent %}
+        <p class="fx-note">{{ t('The newest logged flags, with the date each fired'
+                                ~ ' and the membership then.',
+                                '最近记录的标记，附触发日期与当时成分。') }}</p>
+        <table class="fx-tbl">
+          <thead><tr>
+            <th>{{ t('Theme', '主题') }}</th>
+            <th>{{ t('Logged', '记录日') }}</th>
+            <th>{{ t('Stance then', '当时判断') }}</th>
+            <th>{{ t('Members then', '当时成分') }}</th>
+          </tr></thead>
+          <tbody>
+          {% for _fr in track.recent %}
+          {%- set _fns = namespace(tt=[]) -%}
+          {%- if _fr.stage %}{%- set _fns.tt = _fns.tt + [_fr.stage] -%}{%- endif -%}
+          {%- if _fr.bottleneck_band -%}
+          {%- set _fns.tt = _fns.tt + [_fr.bottleneck_band] -%}{%- endif -%}
+          <tr{% if _fns.tt %} title="{{ _fns.tt|join(' · ') }}"{% endif %}>
+            <td>{{ (_fr.theme or '')|replace('_', ' ') }}</td>
+            <td class="num">{{ _fr.asof or '—' }}</td>
+            <td>{{ stance_word(sbase(_fr.stage)) }}</td>
+            <td>{% for _fm in (_fr.members or []) -%}
+            <span class="fx-tk">{{ _fm }}</span>{%- endfor %}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
         {% endif %}
       </div>
     </details>

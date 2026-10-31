@@ -55,6 +55,21 @@ def _public_policy_tokens() -> set[str]:
     return result
 
 
+def test_shell_opt_in_cache_policy_is_independent_of_parent_framing_admission():
+    """An unmatched parent must not prime a cache entry that denies the beta iframe."""
+    text = _read_caddyfile()
+    cache_selector = _extract_block(text, "@shared_shell_requested")
+    assert _path_tokens(cache_selector) == {"/", "*.html"}
+    assert "query mmx_shell=1" in cache_selector
+    assert "Referer" not in cache_selector
+    cache_headers = _extract_block(text, "header @shared_shell_requested")
+    assert 'Cache-Control "private, no-store"' in cache_headers
+    assert re.search(r"(?m)^\s*defer\s*$", cache_headers)
+    frame_selector = _extract_block(text, "@shared_shell_document")
+    assert "query mmx_shell=1" in frame_selector
+    assert r"header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/" in frame_selector
+
+
 def test_broad_asset_matcher_protects_paid_json_and_keeps_only_carveouts_public():
     text = _read_caddyfile()
     exclusions = _path_tokens(_extract_block(text, "@reg_asset"))
@@ -97,6 +112,17 @@ def test_shared_cache_headers_match_only_reviewed_public_paths():
     assert re.search(r"(?m)^[ \t]*@static[ \t]*\{", text) is None
     assert re.search(r"(?m)^[ \t]*@versioned[ \t]*\{", text) is None
     assert re.search(r"(?m)^[ \t]*@reg_json[ \t]*\{", text) is None
+
+
+def test_shared_shell_presentation_assets_are_exact_public_paths_in_all_edge_matchers():
+    paths = {"/shared_shell_bridge.js", "/shared_shell.css"}
+    policy = yaml.safe_load(POLICY_FILE.read_text(encoding="utf-8"))
+    assert paths <= set(policy["public"]["exact"])
+    text = _read_caddyfile()
+    for matcher in ("@reg_asset", "@reg_asset_err", "@public_static", "@public_versioned"):
+        assert paths <= _path_tokens(_extract_block(text, matcher))
+    assert "not query v=*" in _extract_block(text, "@public_static")
+    assert "query v=*" in _extract_block(text, "@public_versioned")
 
 
 def test_public_pages_fetch_nothing_under_paid_prefixes():

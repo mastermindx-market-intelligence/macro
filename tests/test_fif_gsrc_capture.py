@@ -500,6 +500,71 @@ def test_submissions_failure_still_maps_to_fetch_failed_submissions(
     assert summary["totals"]["refusals"] == {"fetch_failed": len(plan)}
 
 
+def _admitted_row(selected: object) -> dict:
+    return {
+        "accession": selected.accession,
+        "form": selected.form,
+        "period_of_report": selected.period_of_report,
+        "selection": selected.selection,
+        "manifest_sha256": None,
+        "admission": "ADMITTED",
+        "statement_roles_state": "extracted",
+    }
+
+
+def _capture_recording_out_dirs(out_dirs: list[Path]) -> object:
+    def _capture(**kwargs: object) -> tuple[dict, dict]:
+        out_dirs.append(Path(kwargs["out_issuer_dir"]))
+        selected = kwargs["selected"]
+        return _admitted_row(selected), {"admission": "ADMITTED"}
+
+    return _capture
+
+
+def test_out_root_default_writes_under_g_src(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    argv, index_path = _run_main_in_tmp(tmp_path, monkeypatch, "SNOW")
+    out_dirs: list[Path] = []
+    monkeypatch.setattr(
+        gsrc,
+        "build_submissions_index",
+        lambda fetch, cik10, wanted: {accession: {} for accession in wanted},
+    )
+    monkeypatch.setattr(gsrc, "capture_package", _capture_recording_out_dirs(out_dirs))
+    assert gsrc.main([str(arg) for arg in argv]) == 0
+    default_cik_dir = (
+        tmp_path / "tests" / "fixtures" / "fundamental_forensics" / "g_src" / "0001640147"
+    )
+    assert index_path.is_file()
+    assert index_path.parent == default_cik_dir
+    assert set(out_dirs) == {default_cik_dir}
+    assert (default_cik_dir / "request_log.jsonl").is_file()
+
+
+def test_out_root_flag_redirects_writes_and_default_root_stays_absent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    argv, _default_index_path = _run_main_in_tmp(tmp_path, monkeypatch, "SNOW")
+    custom = tmp_path / "heldout" / "packages"
+    argv = [*argv, "--out-root", str(custom)]
+    out_dirs: list[Path] = []
+    monkeypatch.setattr(
+        gsrc,
+        "build_submissions_index",
+        lambda fetch, cik10, wanted: {accession: {} for accession in wanted},
+    )
+    monkeypatch.setattr(gsrc, "capture_package", _capture_recording_out_dirs(out_dirs))
+    assert gsrc.main([str(arg) for arg in argv]) == 0
+    custom_cik_dir = custom / "0001640147"
+    assert set(out_dirs) == {custom_cik_dir}
+    assert (custom_cik_dir / "capture_index.json").is_file()
+    assert (custom_cik_dir / "request_log.jsonl").is_file()
+    assert not (
+        tmp_path / "tests" / "fixtures" / "fundamental_forensics" / "g_src"
+    ).exists()
+
+
 # ---------------------------------------------------------------------------
 # (c) Committed g_src manifests, capture indexes and request logs.
 # ---------------------------------------------------------------------------

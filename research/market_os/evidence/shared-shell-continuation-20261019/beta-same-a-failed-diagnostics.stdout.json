@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-10-20T18:52:22.529048+00:00",
+  "command_exit": 0,
+  "stdout": "MainPID=0\nControlPID=0\nStatusErrno=0\nResult=exit-code\nNRestarts=0\nExecMainStartTimestampMonotonic=7560285026653\nExecMainExitTimestampMonotonic=7622513495147\nExecMainCode=1\nExecMainStatus=143\nControlGroup=\nActiveState=failed\nSubState=failed\nJob=\n",
+  "stderr": "",
+  "connection": {
+    "connected": false,
+    "errno": 111,
+    "type": "ConnectionRefusedError",
+    "connection_refused": true
+  }
+}

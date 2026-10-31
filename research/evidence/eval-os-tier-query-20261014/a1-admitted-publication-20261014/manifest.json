@@ -1,0 +1,25 @@
+{
+  "records": [
+    {
+      "file": "admission.json",
+      "sha256": "5683bb4c8c5a5a57f5ebcc424f8dadd4fda8c02966a657d917b57243c160bf8f",
+      "bytes": 98169
+    },
+    {
+      "file": "preview.json",
+      "sha256": "b9a91f7ac384511af832afd0271509047b780703a95a0a1afe1faa15c1f6a66a",
+      "bytes": 268
+    },
+    {
+      "file": "publication.json",
+      "sha256": "a7153ca6cc447112ae5daf59c9a3c80a71619a4c73815e5de28081c1e7a27c77",
+      "bytes": 706
+    },
+    {
+      "file": "pr-body-update.json",
+      "sha256": "ec3ef2cc8ff122d79d981c8714966d4c6f95a8ae163735de8a32e67413933dc6",
+      "bytes": 254
+    }
+  ],
+  "scope": "Actual admitted ordinary publication and source/PR readback; no hosted acceptance or deployment"
+}

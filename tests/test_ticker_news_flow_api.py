@@ -571,6 +571,8 @@ def test_no_multi_security_or_sorted_flow_route():
             assert {param.name for param in route.dependant.query_params} == {
                 "limit",
                 "cursor",
+                "view",
+                "view_revision",
             }
 
 
@@ -728,7 +730,7 @@ def test_old_terminal_parser_shape_unaffected(monkeypatch, tmp_path):
     )
 
     expected_keys = [
-        "schema", "ticker", "security_id", "state", "rows",
+        "schema", "editorial_policy", "ticker", "security_id", "state", "rows",
         # Additive atomic delivery watermark; older consumers ignore this key.
         "change_sequence", "next_cursor", "has_more", "source_health", "annotations",
         # W11-07 additive provenance keys (tests/test_ticker_news_snapshot_provenance.py).

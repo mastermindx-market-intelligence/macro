@@ -1,0 +1,24 @@
+{
+  "observed_at": "2026-10-20T06:13:03.395050+00:00",
+  "old_main": "1f44ac1873ac8dba2147ad91567446fbbe0a83ea",
+  "new_main": "270537f66abaf4e584ddbeafb8ea12c84af06270",
+  "new_manifest_blob": "e4ef630d4c61b67d276def50a1d4eaacffb59ce2",
+  "new_manifest_bytes": 1921011,
+  "helper_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+  "job_count": 329,
+  "changed_jobs": [
+    {
+      "job": "site20-s4-chart-brief-js",
+      "old_weight": 3,
+      "new_weight": 4,
+      "observed_override": null,
+      "added_commands": [
+        "RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_trail.test.mjs tests/js/radar_panel_horizon.test.mjs tests/js/radar_panel_names.test.mjs"
+      ],
+      "removed_commands": []
+    }
+  ],
+  "source_mutation": false,
+  "fresh_selection_run": false,
+  "scope": "existing estimator comparison only; not updated candidate CI or packing acceptance"
+}

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-en="Decision line, compare" data-zh="决策线：对比">Decision line, compare</title>
+<style>
+:root{color-scheme:light;--bg:#F7F8FA;--panel:#FFFFFF;--fill:#EEF1F6;--text:#1C2430;--muted:#5D6B7E;--line:#C9CCD1;--line-quiet:#E2E6EC;--up:#1E6D47;--down:#B23C3D;--warn:#7D5922;--link:#2758E6;--ok:#2F8A52;--shadow:0 1px 2px rgba(28,36,48,.06)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0F1115;--panel:#181B21;--fill:#1E222A;--text:#D7DCE3;--muted:#8B93A1;--line:#3A4150;--line-quiet:#272C35;--up:#45B873;--down:#E06464;--warn:#E0A030;--link:#7AA7E0;--ok:#3DA564;--shadow:none}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0F1115;--panel:#181B21;--fill:#1E222A;--text:#D7DCE3;--muted:#8B93A1;--line:#3A4150;--line-quiet:#272C35;--up:#45B873;--down:#E06464;--warn:#E0A030;--link:#7AA7E0;--ok:#3DA564;--shadow:none}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"PingFang SC",system-ui,sans-serif;font-size:14px;line-height:20px}
+html[lang="zh-Hans"] body{line-height:22px}
+.label{font-size:12.5px;line-height:18px;color:var(--muted)}
+html[lang="zh-Hans"] .label{line-height:20px}
+.body{font-size:14px;line-height:20px}
+html[lang="zh-Hans"] .body{line-height:22px}
+.num{font-variant-numeric:tabular-nums}
+.ticker{font-size:17px;line-height:22px;font-weight:600}
+.stance-word{font-size:17px;line-height:22px;font-weight:600}
+a:focus-visible,button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 24px;flex-wrap:wrap}
+.bar-actions{display:flex;gap:8px}
+.btn{font:inherit;font-size:12.5px;line-height:18px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);cursor:pointer}
+.btn:hover{background:var(--fill)}
+.wrap{max-width:1440px;margin:0 auto;padding:8px 24px 24px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+table{border-collapse:collapse;width:100%;table-layout:fixed}
+caption{text-align:left;padding:16px 20px 12px;color:var(--muted);font-size:14px;line-height:20px;caption-side:top}
+html[lang="zh-Hans"] caption{line-height:22px}
+th,td{padding:12px 20px;text-align:left;vertical-align:top}
+tbody tr>*{border-top:1px solid var(--line-quiet)}
+tbody th[scope="row"]{background:var(--fill);vertical-align:middle}
+.co-head>*+*{margin-top:2px}
+tbody td>*+*{margin-top:2px}
+.stance{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.foot{padding:12px 24px 32px;max-width:1440px;margin:0 auto}
+.chg-up{color:var(--up)}
+.chg-down{color:var(--down)}
+html[lang="zh-Hans"] .chg-up{color:var(--down)}
+html[lang="zh-Hans"] .chg-down{color:var(--up)}
+</style>
+</head>
+<body>
+<header class="bar">
+  <p class="body" data-en="Decision line, compare (1440px reference)" data-zh="决策线：对比（1440px 参考稿）">Decision line, compare (1440px reference)</p>
+  <div class="bar-actions">
+    <button class="btn" id="langBtn" type="button">中文</button>
+    <button class="btn" id="themeBtn" type="button" data-en="Toggle theme" data-zh="切换主题">Toggle theme</button>
+  </div>
+</header>
+<main class="wrap">
+  <section class="panel" data-en-aria="Decision line, compare" data-zh-aria="决策线，对比">
+    <table>
+      <caption data-en="Each lens is judged on its own terms. Positions in different lenses are not ranked against each other." data-zh="各策略按自身标准评估，不同策略之间不作排名比较。">Each lens is judged on its own terms. Positions in different lenses are not ranked against each other.</caption>
+      <colgroup>
+        <col style="width:200px"><col><col><col><col>
+      </colgroup>
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col"><div class="co-head"><div class="ticker num">NVDA</div><div class="label" data-en="NVIDIA Corporation" data-zh="NVIDIA Corporation">NVIDIA Corporation</div></div></th>
+          <th scope="col"><div class="co-head"><div class="ticker num">VKTX</div><div class="label" data-en="Viking Therapeutics, Inc." data-zh="Viking Therapeutics, Inc.">Viking Therapeutics, Inc.</div></div></th>
+          <th scope="col"><div class="co-head"><div class="ticker num">PFE</div><div class="label" data-en="Pfizer Inc." data-zh="Pfizer Inc.">Pfizer Inc.</div></div></th>
+          <th scope="col"><div class="co-head"><div class="ticker num">LFUS</div><div class="label" data-en="Littelfuse, Inc." data-zh="Littelfuse, Inc.">Littelfuse, Inc.</div></div></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="label" scope="row" data-en="Company" data-zh="公司">Company</th>
+          <td>
+            <div class="label" data-en="Semiconductors" data-zh="半导体">Semiconductors</div>
+            <div class="body num">$225.07</div>
+            <div class="body num chg-up" data-en="+0.22% today" data-zh="今日 +0.22%">+0.22% today</div>
+            <div class="label num" data-en="quote 16:00 ET" data-zh="报价 美东 16:00">quote 16:00 ET</div>
+          </td>
+          <td>
+            <div class="label" data-en="Biotechnology" data-zh="生物科技">Biotechnology</div>
+            <div class="body num">$35.56</div>
+            <div class="body num chg-down" data-en="−3.24% today" data-zh="今日 −3.24%">−3.24% today</div>
+          </td>
+          <td>
+            <div class="label" data-en="Pharmaceuticals" data-zh="制药">Pharmaceuticals</div>
+            <div class="body num">$28.67</div>
+            <div class="body num chg-up" data-en="+0.92% today" data-zh="今日 +0.92%">+0.92% today</div>
+          </td>
+          <td>
+            <div class="label" data-en="Electronic Components" data-zh="电子元件">Electronic Components</div>
+            <div class="body num">$429.22</div>
+            <div class="body num chg-up" data-en="+1.91% today" data-zh="今日 +1.91%">+1.91% today</div>
+          </td>
+        </tr>
+        <tr>
+          <th class="label" scope="row" data-en="Current decision" data-zh="当前决策">Current decision</th>
+          <td>
+            <div class="stance">
+              <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><circle cx="5" cy="5" r="5" fill="var(--ok)"/></svg>
+              <span class="stance-word" data-en="Buy" data-zh="买入">Buy</span>
+            </div>
+            <div class="body" data-en="Entry is ready now" data-zh="现在符合入场条件">Entry is ready now</div>
+            <div class="label num" data-en="assessed Oct 20 close" data-zh="评估截至 10 月 20 日收盘">assessed Oct 20 close</div>
+          </td>
+          <td>
+            <div class="stance">
+              <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><circle cx="5" cy="5" r="4" fill="none" stroke="var(--muted)" stroke-width="1.5"/></svg>
+              <span class="stance-word" data-en="Wait" data-zh="等待">Wait</span>
+            </div>
+            <div class="body" data-en="Wait for a pullback" data-zh="等待回调">Wait for a pullback</div>
+          </td>
+          <td>
+            <div class="stance">
+              <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><circle cx="5" cy="5" r="4" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="2.5 2"/></svg>
+              <span class="stance-word" data-en="Not assessed" data-zh="未评估">Not assessed</span>
+            </div>
+            <div class="body" data-en="No earnings assessment yet" data-zh="尚无财报评估">No earnings assessment yet</div>
+          </td>
+          <td>
+            <div class="stance">
+              <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><circle cx="5" cy="5" r="4" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="2.5 2"/></svg>
+              <span class="stance-word" data-en="Current decision unavailable" data-zh="当前决策暂缺">Current decision unavailable</span>
+            </div>
+            <div class="body" data-en="Tonight's assessment did not publish" data-zh="今晚评估未发布">Tonight's assessment did not publish</div>
+          </td>
+        </tr>
+        <tr>
+          <th class="label" scope="row" data-en="Timing" data-zh="时机">Timing</th>
+          <td>
+            <div class="body num" data-en="Entry zone $220.50–225.10" data-zh="入场区间 $220.50–225.10">Entry zone $220.50–225.10</div>
+            <div class="label num" data-en="Window 2–15 sessions" data-zh="窗口 2–15 个交易日">Window 2–15 sessions</div>
+          </td>
+          <td><div class="body" data-en="Ran too far" data-zh="涨得太急">Ran too far</div></td>
+          <td><div class="body" data-en="Next report not supplied" data-zh="下次财报：来源未提供">Next report not supplied</div></td>
+          <td><div class="body" data-en="Next milestone not yet supplied" data-zh="下一个节点：来源未提供">Next milestone not yet supplied</div></td>
+        </tr>
+        <tr>
+          <th class="label" scope="row" data-en="What ends it" data-zh="失效条件">What ends it</th>
+          <td><div class="body num" data-en="Base invalidation $212.40" data-zh="筑底失效位 $212.40">Base invalidation $212.40</div></td>
+          <td><div class="body num" data-en="Base invalidation $31.10" data-zh="筑底失效位 $31.10">Base invalidation $31.10</div></td>
+          <td><div class="body" data-en="Not supplied" data-zh="来源未提供">Not supplied</div></td>
+          <td><div class="body" data-en="Funding unknown" data-zh="融资情况未知">Funding unknown</div></td>
+        </tr>
+        <tr>
+          <th class="label" scope="row" data-en="Lens" data-zh="策略">Lens</th>
+          <td><div class="body" data-en="Early leadership" data-zh="早期领涨">Early leadership</div></td>
+          <td><div class="body" data-en="Early leadership" data-zh="早期领涨">Early leadership</div></td>
+          <td><div class="body" data-en="Quality earnings" data-zh="优质盈利">Quality earnings</div></td>
+          <td><div class="body" data-en="Cycle capture" data-zh="周期捕捉">Cycle capture</div></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+<footer class="foot">
+  <p class="label" data-en="Sample names and prices for design review, not live signals." data-zh="示例名称与价格，仅供设计评审，并非实时信号。">Sample names and prices for design review, not live signals.</p>
+</footer>
+<script>
+(function(){
+  var root=document.documentElement;
+  function isDark(){
+    var t=root.getAttribute('data-theme');
+    if(t==='dark'){return true}
+    if(t==='light'){return false}
+    return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  function applyLang(lang){
+    root.setAttribute('lang',lang==='zh'?'zh-Hans':'en');
+    var pick=lang==='zh'?'data-zh':'data-en';
+    document.querySelectorAll('[data-en]').forEach(function(el){
+      var s=el.getAttribute(pick);
+      if(s!==null){el.textContent=s}
+    });
+    document.querySelectorAll('[data-en-aria]').forEach(function(el){
+      el.setAttribute('aria-label',el.getAttribute(lang==='zh'?'data-zh-aria':'data-en-aria'));
+    });
+    var lb=document.getElementById('langBtn');
+    if(lb){lb.textContent=lang==='zh'?'English':'中文'}
+  }
+  document.getElementById('langBtn').addEventListener('click',function(){
+    applyLang(root.getAttribute('lang')==='zh-Hans'?'en':'zh');
+  });
+  document.getElementById('themeBtn').addEventListener('click',function(){
+    root.setAttribute('data-theme',isDark()?'light':'dark');
+  });
+})();
+</script>
+</body>
+</html>

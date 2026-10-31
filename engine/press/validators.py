@@ -61,6 +61,7 @@ from __future__ import annotations
 import html as _html
 import json
 import logging
+import math
 import re
 from html.parser import HTMLParser
 from datetime import date, datetime, timedelta
@@ -941,6 +942,106 @@ def _anchored_values(text: str, pool: list[float], generic_max: int) -> list[flo
     return hits
 
 
+def _native_clause_key(text: str) -> str:
+    return _claim_text_key(text).casefold().strip(' .;:')
+
+
+def _native_clauses(text: str) -> list[str]:
+    # Preserve decimal points and calendar dates with the incumbent splitter.
+    return [clause.strip() for sentence in sentences(text)
+            for clause in re.split(r'[;:]\s*', sentence) if clause.strip()]
+
+
+def _native_receipt_records(slot: dict, cfg: dict) -> dict[str, list[float]]:
+    """Exact quantitative clauses from the bound native lead/plan only.
+
+    Equality to a number in a different story is not receipt evidence. This
+    checks exact visible clauses, not the semantics of unrestricted commentary.
+    """
+    from engine.press.native_plan_scope import receipt_facts, scope_fragments, required_dossier
+
+    scope_fragments(slot)
+    required_dossier(slot)
+    scope = slot['native_plan_scope']
+    plan_ref = 'prophet_plan:' + scope['source_ref'].split(':', 1)[1]
+    facts = receipt_facts(slot)
+    plans = [fact for fact in facts if fact.get('ref') == plan_ref]
+    if (len(plans) != 1 or plans[0].get('native_plan_scope') != scope
+            or plans[0].get('dated') != scope['recorded_at']
+            or f"recorded {scope['recorded_at']}" not in str(plans[0].get('text') or '')
+            or f"price basis {scope['price_basis_date']}" not in str(plans[0].get('text') or '')
+            or (slot.get('story') or {}).get('event_date') != scope['close_date']):
+        raise ValueError('native plan scope does not match its bound facts or event clock')
+    quantities = scope.get('quantities')
+    if (not isinstance(quantities, dict) or not quantities
+            or any(type(value) not in (int, float) or not math.isfinite(value)
+                   for value in quantities.values())):
+        raise ValueError('native plan quantities missing or invalid')
+    # Rounded aliases and repeated activation/entry values earn one receipt.
+    pool = list(dict.fromkeys(float(value) for value in quantities.values()))
+    generic_max = int(_v(cfg).get('generic_integer_max') or 12)
+    records = {}
+    for fact in facts:
+        if fact.get('tier') != 'first_party':
+            continue
+        for clause in _native_clauses(str(fact.get('text') or '')):
+            values = _anchored_values(clause, pool, generic_max)
+            if values:
+                records[_native_clause_key(clause)] = values
+    return records
+
+
+def _native_context_keys(slot: dict) -> set[str]:
+    """Known background statements cannot borrow a coincident plan value.
+
+    Unrestricted paraphrase/causality still needs semantic acceptance; this is
+    deliberately not a general subject-understanding classifier.
+    """
+    from engine.press.native_plan_scope import receipt_facts
+    bound = {id(fact) for fact in receipt_facts(slot)}
+    return {_native_clause_key(statement)
+            for fact in slot.get('facts') or [] if id(fact) not in bound
+            for statement in sentences(str(fact.get('text') or ''))}
+
+
+def native_plan_preflight(slot: dict, cfg: dict) -> dict:
+    """Require valid bound scope and enough distinct potential receipts.
+
+    No source-word-count law is introduced: the existing 40% metric measures
+    sentence-level anchoring, not verbatim source-word share.
+    """
+    from engine.press.native_plan_scope import is_native_plan_brief
+
+    if not is_native_plan_brief(slot):
+        return {'ok': True, 'active': False}
+    try:
+        records = _native_receipt_records(slot, cfg)
+        minimum = int(slot.get('min_anchored_receipts')
+                      or _v(cfg).get('min_anchored_receipts') or 0)
+        available = {value for values in records.values() for value in values}
+        ok = len(available) >= minimum
+        return {'ok': ok, 'active': True,
+                'reason': None if ok else 'native_plan_receipts_insufficient',
+                'available_receipts': len(available), 'minimum_receipts': minimum}
+    except (ValueError, TypeError, KeyError) as exc:
+        return {'ok': False, 'active': True, 'reason': 'native_plan_scope_invalid',
+                'detail': str(exc)}
+
+
+def check_native_plan_scope(draft: dict, slot: dict, cfg: dict) -> dict:
+    from engine.press.native_plan_scope import is_native_plan_brief, scope_problems
+
+    if not is_native_plan_brief(slot):
+        return _row('native_plan_scope', True, 'not a native plan Brief', active=False)
+    readiness = native_plan_preflight(slot, cfg)
+    problems = scope_problems(_prose_html(draft, cfg), slot)
+    if not readiness['ok']:
+        problems.append(str(readiness['reason']))
+    return _row('native_plan_scope', not problems,
+                'native plan disclosures and dossier present' if not problems else '; '.join(problems),
+                active=True, preflight=readiness, problems=problems)
+
+
 def check_our_value(draft: dict, slot: dict, cfg: dict) -> dict:
     """Share of word count in SENTENCES carrying at least one anchored receipt.
 
@@ -962,7 +1063,15 @@ def check_our_value(draft: dict, slot: dict, cfg: dict) -> dict:
     """
     v = _v(cfg)
     floor = float(v.get("our_value_min") or 0.40)
-    idx = fact_tier_index(slot)
+    from engine.press.native_plan_scope import is_native_plan_brief
+    native = is_native_plan_brief(slot)
+    from engine.press.native_plan_scope import receipt_facts
+    if native:
+        _native_receipt_records(slot, cfg)  # Validate binding before credit.
+    excluded_context = _native_context_keys(slot) if native else set()
+    idx = ([(float(value), 'first_party')
+            for value in slot['native_plan_scope']['quantities'].values()]
+           if native else fact_tier_index(slot))
     first = [val for val, tier in idx if tier == "first_party"]
     third = [val for val, tier in idx if tier != "first_party"]
     generic_max = int(v.get("generic_integer_max") or 12)
@@ -977,6 +1086,9 @@ def check_our_value(draft: dict, slot: dict, cfg: dict) -> dict:
             if not wc:
                 continue
             total_words += wc
+            if native and _native_clause_key(sent) in excluded_context:
+                per_sentence.append({'words': wc, 'tier': 'neutral'})
+                continue
             nums = [nm for nm in extract_quantities(sent)
                     if not (nm.is_bare_int and nm.value <= generic_max)]
             if not nums:
@@ -1018,8 +1130,22 @@ def check_receipts(draft: dict, slot: dict, cfg: dict) -> dict:
     generic_max = int(v.get("generic_integer_max") or 12)
     minimum = int(slot.get("min_anchored_receipts")
                   or v.get("min_anchored_receipts") or 0)
-    pool = [val for val, tier in fact_tier_index(slot) if tier == "first_party"]
-    found = _anchored_values(strip_tags(_prose_html(draft, cfg)), pool, generic_max)
+    from engine.press.native_plan_scope import is_native_plan_brief
+    if is_native_plan_brief(slot):
+        records = _native_receipt_records(slot, cfg)
+        excluded_context = _native_context_keys(slot)
+        found = []
+        for block in blocks(_prose_html(draft, cfg)):
+            for statement in sentences(block['text']):
+                if _native_clause_key(statement) in excluded_context:
+                    continue
+                for clause in _native_clauses(statement):
+                    for value in records.get(_native_clause_key(clause), []):
+                        if value not in found:
+                            found.append(value)
+    else:
+        pool = [val for val, tier in fact_tier_index(slot) if tier == "first_party"]
+        found = _anchored_values(strip_tags(_prose_html(draft, cfg)), pool, generic_max)
     ok = len(found) >= minimum
     return _row("receipts", ok,
                 f"{len(found)} distinct anchored receipt(s) "
@@ -1609,6 +1735,7 @@ _SUITE = (
     ("markup_safety", check_markup_safety, False),
     ("fact_anchor", check_fact_anchor, False),
     ("claim_scope", check_claim_scope, False),
+    ("native_plan_scope", check_native_plan_scope, False),
     ("close_paraphrase", check_close_paraphrase, False),
     ("our_value", check_our_value, False),
     ("receipts", check_receipts, False),

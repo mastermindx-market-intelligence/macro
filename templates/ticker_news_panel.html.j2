@@ -20,7 +20,7 @@
   <div class="tn-rows" data-tn-rows></div>
   <footer class="tn-footer">
     <button type="button" data-tn-retry hidden>{{ t('Retry', '重试') }}</button>
-    <a data-tn-signin href="{{ nav_prefix|default('') }}account.html" hidden>{{ t('Sign in', '登录') }}</a>
+    <a data-tn-signin href="{{ nav_prefix|default('') }}index.html?signin=1" hidden>{{ t('Sign in', '登录') }}</a>
     <button type="button" data-tn-more hidden>{{ t('Earlier reporting', '更早报道') }} <span aria-hidden="true">↓</span></button>
     <button type="button" data-tn-latest hidden>{{ t('Back to latest', '返回最新') }}</button>
     <a href="{{ nav_prefix|default('') }}news.html">{{ t('News Intelligence', '新闻情报') }} <span aria-hidden="true">↗</span></a>

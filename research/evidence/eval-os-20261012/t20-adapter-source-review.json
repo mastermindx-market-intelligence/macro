@@ -1,0 +1,57 @@
+{
+  "schema": "eval_os_t20_independent_adapter_review.v1",
+  "adjudication": "ACCEPTED_RECORDED_CONTEXT_MODULE",
+  "reviewed_at": "2026-10-13T06:23:45.276428+00:00",
+  "scope_ruling_sha256": "a61442b7cf702129996d09dee7fd3bdf3694020ca248c7264d58d8070a89472e",
+  "initial_source_sha256": {
+    "admin/evidence_findings.py": "877b92b28b5338e44390d4f9f8a991bd546f0f59a235c9b6dc4135dc1e3238d5",
+    "tests/test_evidence_findings.py": "5db4173c48011b69b404d9b4a788c67fa8e3078af2f8fb5c589bc2ecea1106fd"
+  },
+  "supported": [
+    "Existing owner artifact only; schema/artifact_id/produced_by/tier/display/context contract explicit",
+    "2MiB plus1 read cap before decode; malformed/error/missing differs from valid empty",
+    "Exact normalized repository-relative T4 output path plus unique engine_id; ambiguous/unbound sides preserved",
+    "Unsupported records counted and result partial, no silent successful truncation",
+    "Complete source-byte digest and as-of/produced-at/gaps retained; unknown owner timestamps allowed without current qualification",
+    "Numeric proof explicitly unavailable without request-scoped subscriber receipt; no native value reconstruction or QA export",
+    "No detector execution, new store, current source qualification, evidence band or financial authority change"
+  ],
+  "findings": [
+    {
+      "id": "T20-SOURCE-REGULAR-FILE",
+      "state": "CLOSED_AT_FINAL_HASH",
+      "witness": "Path.stat generation follows a special source; no regular-file test before stream.read. Byte allocation cap does not prevent FIFO/special-file blocking.",
+      "closure": "lstat regular-file guard; RDONLY|NONBLOCK|NOFOLLOW open; descriptor fstat regular and generation identity; bounded cap+1 then post-decode identity. Directory/symlink/FIFO and pre-open replacement controls consumed."
+    }
+  ],
+  "test_success_claimed": true,
+  "integration_limit": "Module review only; API/UI/cache dependency integration and actual browser consumer proof remain separate.",
+  "source_writes": false,
+  "ci_queries": false,
+  "review_closed_at": "2026-10-13T06:28:01.505818+00:00",
+  "final_source_sha256": {
+    "admin/evidence_findings.py": "d2355370c9c458db54a35e2253903d5b781b5b0193c945b587618706cb3bf909",
+    "tests/test_evidence_findings.py": "f75b401ba275710a260a82e7b8683964cea07f9be760191910ca8774e074a41d"
+  },
+  "tests_consumed": {
+    "stdout": "../integration/typed-findings-tests.txt",
+    "stdout_sha256": "3b63bcd76fc00d022ba2a806a7b4838308a9a18605f661f2f928c33bf055739d",
+    "junit": "../integration/typed-findings-tests.xml",
+    "junit_sha256": "758fea7dc09f74c54d9e53a47f9940f77b4a338a40310fc88a73cd4e81e856ea",
+    "tests": 21,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "stdout_seconds": 14.81,
+    "junit_seconds": 15.184
+  },
+  "acceptance_limit": "Recorded owner context adapter only. API/UI/cache dependency and authenticated product proof remain open; numeric subscriber proof unavailable; no generic impossible verdict, band change or owner/financial authority.",
+  "current_test_sha256_at_record": "e1f5fbcdebb3dd694c0eeeba682e6812f544d387ad8bc6856da57a243f47e9a7",
+  "test_source_frontier": "Test file independently matched named f75b401b when21-test receipt was consumed, then changed during ruling save. No success is claimed for later e1f5fbcd tests. Module d2355370 remains unchanged; parent owns affected new controls.",
+  "subsequent_integration_red": {
+    "path": "../integration/typed-findings-api-red.txt",
+    "sha256": "46b340dc566f87bf8d7b8ac8a3d1aa72d3142fbf9d720b991df3c5bf9ec10c2a",
+    "result": "1 failed,21 deselected,7.85s",
+    "scope": "Actual absent API typed_findings connection; product owner still writes API/UI. This does not invalidate unchanged module controls and does not prove product delivery."
+  }
+}

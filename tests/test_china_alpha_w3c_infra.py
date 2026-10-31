@@ -177,6 +177,173 @@ class TestMarginDetailSchema:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# C1b  refresh() prior-window selection (P4 MARGIN_HORIZON_TRACE repair)
+# ─────────────────────────────────────────────────────────────────────────────
+
+_PRIOR_TICKER = "600000.SS"
+
+
+def _bday_calendar(n: int, end: str = "2026-03-31") -> list:
+    """Synthetic YYYYMMDD trading calendar, newest last."""
+    return [d.strftime("%Y%m%d") for d in pd.bdate_range(end=end, periods=n)]
+
+
+def _iso(date: str) -> str:
+    return pd.to_datetime(date).strftime("%Y-%m-%d")
+
+
+def _synthetic_source(dates: list, populated, unlock_after_first_success=()):
+    """A `_detail_for` over `dates`, populated only at `populated` indexes.
+
+    Each populated date returns one name whose fin_balance encodes its calendar
+    index (1e9 + idx * 1e6) so the chosen prior is identifiable in the parquet.
+    `unlock_after_first_success` indexes become populated only AFTER the first
+    call that returns data — a source that starts serving newer dates between
+    the current and the prior lookup."""
+    state = {"unlocked": False}
+
+    def _detail_for(date: str) -> dict:
+        active = set(populated)
+        if state["unlocked"]:
+            active |= set(unlock_after_first_success)
+        try:
+            idx = dates.index(date)
+        except ValueError:
+            return {}
+        if idx not in active:
+            return {}
+        state["unlocked"] = True
+        return {_PRIOR_TICKER: {"fin_balance": 1e9 + idx * 1e6,
+                                "short_balance": float(idx),
+                                "short_balance_yuan": None}}
+
+    return _detail_for
+
+
+_RUN_SEQ = [0]
+
+
+def _run_refresh(monkeypatch, tmp_path, dates, source):
+    """refresh() against a synthetic calendar/source; returns (names, parquet df).
+    Each call gets its own data dir — refresh() is idempotent within a UTC day,
+    so a reused dir would early-return and serve the previous run's parquet."""
+    import collectors.china_margin_detail as cmd
+
+    _RUN_SEQ[0] += 1
+    data_dir = tmp_path / f"run{_RUN_SEQ[0]}"
+    monkeypatch.setattr(cmd.config, "data_dir", lambda: data_dir)
+    monkeypatch.setattr(cmd, "_trading_dates", lambda n=40: list(dates))
+    monkeypatch.setattr(cmd, "_detail_for", source)
+    n = cmd.refresh()
+    return n, pd.read_parquet(data_dir / "china_margin_detail" / "detail.parquet")
+
+
+class TestMarginDetailPriorWindow:
+    """Prior-candidate selection in refresh() — the 20/21/22-position window and
+    the strictly-earlier guard. `_first_populated` is the REAL one (only
+    `_trading_dates`/`_detail_for` are synthetic), so the lookup itself runs."""
+
+    def test_m1_normal_prior_is_20_positions_back(self, tmp_path, monkeypatch):
+        """M1: 41 populated dates -> prior is the date 20 positions before current."""
+        dates = _bday_calendar(41)                 # indexes 0..40, current = 40
+        n, df = _run_refresh(monkeypatch, tmp_path, dates,
+                             _synthetic_source(dates, populated=range(41)))
+        assert n == 1, "one synthetic name should be appended"
+        row = df.iloc[0]
+        assert row["date"] == _iso(dates[40])
+        assert row["prior_date"] == _iso(dates[20]), "prior must be 20 positions earlier"
+        assert row["fin_balance_prior"] == pytest.approx(1e9 + 20 * 1e6)
+
+    def test_m2_fallback_to_21_then_22_positions(self, tmp_path, monkeypatch):
+        """M2: ci-20 empty -> ci-21; ci-20 and ci-21 empty -> ci-22."""
+        dates = _bday_calendar(41)
+        populated = [i for i in range(41) if i != 20]   # ci-20 empty, ci-21 populated
+        _, df = _run_refresh(monkeypatch, tmp_path, dates,
+                             _synthetic_source(dates, populated))
+        assert df.iloc[0]["prior_date"] == _iso(dates[19])
+        assert df.iloc[0]["fin_balance_prior"] == pytest.approx(1e9 + 19 * 1e6)
+
+        populated = [i for i in range(41) if i not in (19, 20)]  # ci-20/ci-21 empty
+        _, df = _run_refresh(monkeypatch, tmp_path, dates,
+                             _synthetic_source(dates, populated))
+        assert df.iloc[0]["prior_date"] == _iso(dates[18])
+        assert df.iloc[0]["fin_balance_prior"] == pytest.approx(1e9 + 18 * 1e6)
+
+    def test_m3_no_candidate_populated_rows_still_written(self, tmp_path, monkeypatch):
+        """M3: window empty -> rows still appended, prior fields all None."""
+        dates = _bday_calendar(41)
+        populated = [i for i in range(41) if i not in (18, 19, 20)]
+        n, df = _run_refresh(monkeypatch, tmp_path, dates,
+                             _synthetic_source(dates, populated))
+        assert n == 1 and len(df) == 1, "rows must still be written without a prior"
+        assert df["prior_date"].isna().all(), "prior_date must be None for every row"
+        assert df["fin_balance_prior"].isna().all(), "fin_balance_prior must be None"
+        assert df.iloc[0]["date"] == _iso(dates[40])
+        assert df.iloc[0]["fin_balance"] == pytest.approx(1e9 + 40 * 1e6)
+
+    def test_m4_underfilled_history_never_selects_self(self, tmp_path, monkeypatch):
+        """M4: 21 dates, current resolves to idx 18 -> prior None
+        (BASE's slice selected idx 18 itself)."""
+        dates = _bday_calendar(21)                  # indexes 0..20
+        n, df = _run_refresh(monkeypatch, tmp_path, dates,
+                             _synthetic_source(dates, populated=range(19)))
+        assert n == 1
+        row = df.iloc[0]
+        assert row["date"] == _iso(dates[18])
+        assert row["prior_date"] is None, "prior must not resolve to the current date"
+        assert row["fin_balance_prior"] is None
+
+    def test_m4b_changed_source_response_never_newer_prior(self, tmp_path, monkeypatch):
+        """M4b: as M4 but `_detail_for` starts serving idx 19/20 after its first
+        success -> prior stays None, never newer than current (BASE picked idx 19)."""
+        dates = _bday_calendar(21)
+        n, df = _run_refresh(monkeypatch, tmp_path, dates,
+                             _synthetic_source(dates, populated=range(19),
+                                               unlock_after_first_success=(19, 20)))
+        assert n == 1
+        row = df.iloc[0]
+        assert row["date"] == _iso(dates[18])
+        assert row["prior_date"] is None, "prior must never be newer than current"
+        assert row["fin_balance_prior"] is None
+
+    def test_m5_19_position_case_no_fallback(self, tmp_path, monkeypatch):
+        """M5: 21 dates, current at idx 19 -> prior None (BASE picked idx 0 via
+        the `or dates[:1]` fallback)."""
+        dates = _bday_calendar(21)
+        n, df = _run_refresh(monkeypatch, tmp_path, dates,
+                             _synthetic_source(dates, populated=range(20)))
+        assert n == 1
+        row = df.iloc[0]
+        assert row["date"] == _iso(dates[19])
+        assert row["prior_date"] is None, "no wrong-offset (19-position) fallback"
+        assert row["fin_balance_prior"] is None
+
+    def test_m6_latest_current_prior_is_index_0(self, tmp_path, monkeypatch):
+        """M6: 21 fully-populated dates, current at idx 20 -> prior is idx 0."""
+        dates = _bday_calendar(21)
+        n, df = _run_refresh(monkeypatch, tmp_path, dates,
+                             _synthetic_source(dates, populated=range(21)))
+        assert n == 1
+        row = df.iloc[0]
+        assert row["date"] == _iso(dates[20])
+        assert row["prior_date"] == _iso(dates[0])
+        assert row["fin_balance_prior"] == pytest.approx(1e9 + 0 * 1e6)
+
+    def test_m7_guard_rejects_candidate_not_earlier(self, tmp_path, monkeypatch):
+        """M7: candidate position holds a date not earlier than the current ->
+        prior treated as unavailable (None)."""
+        dates = _bday_calendar(41)
+        dates[20] = "20261231"          # candidate ci-20 sits AFTER the current
+        n, df = _run_refresh(monkeypatch, tmp_path, dates,
+                             _synthetic_source(dates, populated=range(41)))
+        assert n == 1
+        row = df.iloc[0]
+        assert row["date"] == _iso(dates[40])
+        assert row["prior_date"] is None, "guard must drop a not-strictly-earlier prior"
+        assert row["fin_balance_prior"] is None
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # C2  ChinaLhbAdapter + backfill script
 # ─────────────────────────────────────────────────────────────────────────────
 

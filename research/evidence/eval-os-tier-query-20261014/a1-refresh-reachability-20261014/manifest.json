@@ -1,0 +1,59 @@
+{
+  "recorded_at": "2026-10-14T15:53:49.966874+00:00",
+  "scope": "Original-byte evidence for a diagnosed orchestration prerequisite error; no base/source mutation or release",
+  "records": [
+    {
+      "file": "source-binding.json",
+      "sha256": "9f6bc0a38dc70c847e6ee9e4413bccce783cc1483369b67cc0639446ac6b4bbb",
+      "bytes": 272
+    },
+    {
+      "file": "probe_refresh_reachability.py",
+      "sha256": "bc0bb653b4fa20713cef8d9c27d44ec7b9c15693d0c1775669d351ce374bdbbc",
+      "bytes": 3187
+    },
+    {
+      "file": "reachability-proof.json",
+      "sha256": "a5fec03db0039a68325cea92a8013eec7517d7832b82ca78e1154e285c161b44",
+      "bytes": 1119
+    },
+    {
+      "file": "retained-result.txt",
+      "sha256": "6015dd9b8d31f0e1de1e158c98c12da170bd35a49cf25eb706475a72424af385",
+      "bytes": 4615
+    },
+    {
+      "file": "adjudication.json",
+      "sha256": "d5268b6373bcb2bf69027bd4605d609d3c3979f6675680e9c035c451b5a44f83",
+      "bytes": 1815
+    },
+    {
+      "file": "source-preview.json",
+      "sha256": "f9813d88527f0aeb016341bbe9b5ef77a246620bb9295f1b0733f039ba8c620f",
+      "bytes": 462
+    },
+    {
+      "file": "prepare_reviewable_correction.py",
+      "sha256": "ff7deedeefae7eeccdf5f90e11dabd8ae7624c1037d434cdff428949f8a3e131",
+      "bytes": 3398
+    },
+    {
+      "file": "reviewable-post-update-correction.patch.gz",
+      "sha256": "408e03ba536ebb674417f680861e0c1f27c17fea303596ed8f9ffa1cb8cb1686",
+      "bytes": 1677,
+      "decoded_sha256": "0b9f209bfd91106ea7586d217f3463f583f05eabc371a5716e325559adb59058",
+      "decoded_bytes": 3692,
+      "encoding": "gzip"
+    },
+    {
+      "file": "reviewable-correction.json",
+      "sha256": "3fc3196a588dd3b117abefa6c05352aa599669399fead64a2d554c91ab6c1a75",
+      "bytes": 1989
+    },
+    {
+      "file": "chairman-exception-approved.json",
+      "sha256": "c817d7468443e1083f2a6cdfa849aa7340c6488b8d702660d2559645e84cb370",
+      "bytes": 808
+    }
+  ]
+}

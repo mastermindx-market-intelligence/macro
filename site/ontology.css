@@ -145,10 +145,10 @@ html[data-lang="zh"] .blk>.l-zh{display:block!important}
 .ox-detail>summary:hover{color:var(--text)}
 .ox-leg{border-top:1px solid var(--line);padding:16px 0}
 .ox-leg h3{font-size:var(--fs-h3);margin:0 0 6px;color:var(--text)}
-.ox-kv{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:4px 16px;margin:8px 0 0;
+.ox-kv{display:grid;grid-template-columns:minmax(120px,auto) minmax(0,1fr);gap:4px 16px;margin:8px 0 0;
   font-size:var(--fs-sm)}
 .ox-kv dt{color:var(--muted)}
-.ox-kv dd{margin:0;color:var(--text);font-family:var(--font-mono);font-size:var(--fs-sm)}
+.ox-kv dd{margin:0;min-width:0;overflow-wrap:anywhere;color:var(--text);font-family:var(--font-mono);font-size:var(--fs-sm)}
 .ox-note{font-size:var(--fs-sm);color:var(--muted);margin:8px 0 0;line-height:1.55}
 
 /* ---- the qualifying line under the stance ------------------------------- */
@@ -189,7 +189,7 @@ html[data-lang="zh"] .blk>.l-zh{display:block!important}
   font-size:var(--fs-sm);color:var(--muted)}
 .ox-hash code{font-family:var(--font-mono);font-size:var(--fs-micro);color:var(--text);
   overflow-wrap:anywhere;word-break:break-all}
-.ox-hash-path{font-family:var(--font-mono);color:var(--text)}
+.ox-hash-path{font-family:var(--font-mono);color:var(--text);min-width:0;overflow-wrap:anywhere}
 .ox-hash-size{color:var(--muted);white-space:nowrap}
 .ox-gaps{margin:8px 0 0;padding:0;list-style:none;font-size:var(--fs-sm)}
 .ox-gaps li{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;
@@ -305,3 +305,10 @@ html:not([data-theme="light"]) .ox-hero--answer .ox-answer-summary{
   .ox-answer-title{font-size:var(--fs-h1);max-width:none}
   .ox-hero--answer .ox-answer-summary{padding:var(--sp-5,20px)}
 }
+
+/* Existing exposure cards: membership is an unranked source list. */
+.ox-exposure-members{list-style:none;padding:0;margin:var(--space-4,16px) 0;display:grid;gap:var(--space-3,12px)}
+.ox-exposure-members li{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3,12px);flex-wrap:wrap;padding:var(--space-3,12px) 0;border-bottom:1px solid var(--line)}
+.ox-exposure-members strong{overflow-wrap:anywhere}
+.ox-exposure-members .ox-cta{min-height:44px;white-space:normal;text-align:center}
+@media(max-width:600px){.ox-exposure-members .ox-cta{width:100%}}

@@ -1,0 +1,77 @@
+{
+  "schema": "eval-os.base402b-incoming-review.v1",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "reviewer_native_thread": "01a13341-2c83-79b2-9a5a-dddb12e780e3",
+  "carrier": "PR6651",
+  "candidate": "ae037b81c0aec563afe94314bf11275ea2a5b88e",
+  "incoming_main": "402b57defb301fc611ab81242f685a96e085d035",
+  "base": "6b154e09357300964c0720448cee9654bf2585d0",
+  "ruling": "ACCEPTED_BOUNDED_SOURCE_UNION_PENDING_FAST_CHECKS",
+  "findings": [],
+  "working_manifest_sha256": "eff7fe91f6be398533fa420918febc4f5ad753d6789d75ccfecb160acdf2a077",
+  "working_ci_test_sha256": "e0147a77d9154bf24f72015def416d33ebb090401860477c44fe9d3eab259f3d",
+  "curated_exact_union": true,
+  "only_candidate_vs_incoming_curated_addition": [
+    "eval-os-a1"
+  ],
+  "A1_job_identical_ae037": true,
+  "AgentOS_newjob_exact_main": true,
+  "incoming_changed_existing_jobs": {
+    "self-mod-fence": [
+      "steps",
+      "paths"
+    ],
+    "sni-s2-event-response": [
+      "steps",
+      "paths"
+    ],
+    "sni-s1-residual": [
+      "steps",
+      "paths"
+    ]
+  },
+  "incoming_newjobs": [
+    "agentos-knowledge-contracts",
+    "sni-program-guards",
+    "sni-public-exposure-scan",
+    "sni-shared-and-drafts"
+  ],
+  "new_ci_gate_change": "ci.yml includes agentos/** eventfilter, exactincoming bytes; AgentOS records no longer use unownedrecordshortcut",
+  "AgentOS_applicability": "Incoming optional acceptance_contracts schema and compiler require freshcanonicalvalidation; absence of this optionalfield creates no newmandatoryEvalOSmission/grant/acceptance gate. Preserve incomingowner source/tests.",
+  "qualified_source_changed": [],
+  "incoming_file_count": 3979,
+  "incoming_files_not_exact_main": [
+    ".github/ci/legacy-jobs.yml",
+    "tests/test_ci_pack.py"
+  ],
+  "unmerged_index_empty": true,
+  "sealed_data_discipline": "Only Git tree/index identities and pathmetadata inspected for SNI/data/site; no sealed/outcome content read",
+  "base6b_timing_s": {
+    "full_curated_closure": 698.897,
+    "packing": 114.307,
+    "A1_selection": 12.938,
+    "set": 3.001,
+    "price_ladder_cases": "subsecond;4existingreal-store skipsremainqualified"
+  },
+  "minimal_local_checks": [
+    "Existing A1ordinarycodePRselection regression",
+    "Existing curatedsetdeclaration regression",
+    "CanonicalAgentOSvalidation againstincomingcompiler/schema"
+  ],
+  "do_not_repeat": "Full14minclosure/packing or unchangedprice_ladder suite absent newsemanticfailure. Reuse acceptedbase6b andisolated373proof; incomingmain-ownedSNI controls remain subjectfreshhostedCI.",
+  "incoming_packing_law": "Mainraises templates weight5800\u21925803 with explicit documented subject-ownedSNIpublicexposure rationale; retain as ownerchange, not A1waiver. No reviewerceilingchange.",
+  "remaining": [
+    "Parent twofastselection/setchecks andAgentOSvalidation",
+    "exactintegrationcommit/publishedheadbindings",
+    "Actual hostedselection/execution of incomingAgentOSknowledgeowner alongsideA1/validityreadinessowners",
+    "freshhostedselectedsemanticexecution/terminalCI/controller",
+    "installed/authenticatedproduction/postreleaseT23/operator/legacyobligations"
+  ],
+  "reviewer_effects": {
+    "tests": false,
+    "network_CIqueries": false,
+    "source_Gitwrites": false,
+    "newworkers": false
+  },
+  "AgentOS_CI_owner_preservation": "Incomingself-mod-fence still invokes canonicalvalidator and broadship/source-rights checks; tenknowledge suites move to code-gatedexclusiveagentos-knowledge-contracts, which also invokesvalidatorbeforepytest and addsacceptance-basiscoverage. No validatorbypass/skip; newowner exactmain. Freshhostedproof must include selectedknowledgeowner whenAgentOSchanges."
+}

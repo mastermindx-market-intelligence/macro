@@ -1,13 +1,13 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
-  "as_of": "2026-10-20",
-  "generated_utc": "2026-10-20T08:11:32Z",
+  "as_of": "2026-10-21",
+  "generated_utc": "2026-10-21T08:17:42Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 328,
     "by_state": {
-      "overdue": 157,
-      "due": 22,
+      "overdue": 158,
+      "due": 21,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
@@ -134,7 +134,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 4202,
-        "n_past_check_by": 4008
+        "n_past_check_by": 4012
       },
       "allowed_actions": [
         "inspect",
@@ -182,7 +182,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 4202,
-        "n_past_check_by": 4008
+        "n_past_check_by": 4012
       },
       "allowed_actions": [
         "inspect",
@@ -230,7 +230,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 42146,
-        "n_past_check_by": 39173
+        "n_past_check_by": 39702
       },
       "allowed_actions": [
         "inspect",
@@ -278,7 +278,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 42146,
-        "n_past_check_by": 39173
+        "n_past_check_by": 39702
       },
       "allowed_actions": [
         "inspect",
@@ -466,7 +466,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 6932,
-        "n_past_check_by": 5741
+        "n_past_check_by": 5836
       },
       "allowed_actions": [
         "inspect",
@@ -514,7 +514,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 96,
-        "n_past_check_by": 85
+        "n_past_check_by": 86
       },
       "allowed_actions": [
         "inspect",
@@ -578,7 +578,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 1585,
-        "n_past_check_by": 1021
+        "n_past_check_by": 1030
       },
       "allowed_actions": [
         "inspect",
@@ -1060,7 +1060,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 22,
-        "n_past_check_by": 16
+        "n_past_check_by": 17
       },
       "allowed_actions": [
         "inspect",
@@ -2799,8 +2799,8 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 71,
-        "n_past_check_by": 24
+        "n_open": 72,
+        "n_past_check_by": 26
       },
       "allowed_actions": [
         "inspect",
@@ -2930,7 +2930,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 203,
-        "n_past_check_by": 59
+        "n_past_check_by": 72
       },
       "allowed_actions": [
         "inspect",
@@ -5280,8 +5280,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-13",
       "as_of": "2026-06-23",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "score_ledger() grades a thesis when check_by<=today; display-only, no significance gate.",
         "cadence": "daily",
@@ -5855,7 +5855,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-20",
+      "due_at": "2026-10-21",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -5887,7 +5887,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-20",
+      "due_at": "2026-10-21",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -5919,7 +5919,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-20",
+      "due_at": "2026-10-21",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -5951,7 +5951,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-10-20",
+      "due_at": "2026-10-21",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -6016,11 +6016,11 @@
       "owner_program": "nw-mastermind-bridge",
       "clock_type": "freshness_sla",
       "due_at": null,
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "state": "stale",
       "date_state": "stale",
       "readiness": {
-        "as_of": "2026-10-14",
+        "as_of": "2026-10-16",
         "stale_chips": [
           "market",
           "reliability",
@@ -6114,8 +6114,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 118392,
-        "n_with_falsifier": 1263,
+        "n_claims": 118393,
+        "n_with_falsifier": 1264,
         "falsifier_coverage": "1.1%",
         "blocking_reason": "falsifier coverage 1.1%; not a promotion-grade substrate"
       },

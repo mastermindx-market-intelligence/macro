@@ -1,0 +1,430 @@
+TAP version 13
+# Subtest: standalone page: zero surface
+ok 1 - standalone page: zero surface
+  ---
+  duration_ms: 2.860208
+  type: 'test'
+  ...
+# Subtest: candidate guards: flag, generation, referrer
+ok 2 - candidate guards: flag, generation, referrer
+  ---
+  duration_ms: 4.027583
+  type: 'test'
+  ...
+# Subtest: INIT rejects unverified sources without effects
+ok 3 - INIT rejects unverified sources without effects
+  ---
+  duration_ms: 0.434042
+  type: 'test'
+  ...
+# Subtest: missing document meta: initialization_failed, no activation
+ok 4 - missing document meta: initialization_failed, no activation
+  ---
+  duration_ms: 0.769375
+  type: 'test'
+  ...
+# Subtest: valid INIT: chrome suppression, context, READY shape
+ok 5 - valid INIT: chrome suppression, context, READY shape
+  ---
+  duration_ms: 0.638625
+  type: 'test'
+  ...
+# Subtest: static chrome rules are dormant and both published assets match their templates
+ok 6 - static chrome rules are dormant and both published assets match their templates
+  ---
+  duration_ms: 0.297333
+  type: 'test'
+  ...
+# Subtest: unverified INIT cannot activate or probe shell CSS
+ok 7 - unverified INIT cannot activate or probe shell CSS
+  ---
+  duration_ms: 0.369708
+  type: 'test'
+  ...
+# Subtest: missing, blocked, wrong or unreadable CSS refuses activation and queued navigation
+ok 8 - missing, blocked, wrong or unreadable CSS refuses activation and queued navigation
+  ---
+  duration_ms: 2.11475
+  type: 'test'
+  ...
+# Subtest: CSS removed during document boot cannot produce initial READY or restoration
+ok 9 - CSS removed during document boot cannot produce initial READY or restoration
+  ---
+  duration_ms: 0.655417
+  type: 'test'
+  ...
+# Subtest: CSS removal prevents subsequent CONTEXT or repeated INIT readiness claims
+ok 10 - CSS removal prevents subsequent CONTEXT or repeated INIT readiness claims
+  ---
+  duration_ms: 0.636792
+  type: 'test'
+  ...
+# Subtest: CONTEXT apply, staleness, unsupported_context
+ok 11 - CONTEXT apply, staleness, unsupported_context
+  ---
+  duration_ms: 0.9885
+  type: 'test'
+  ...
+# Subtest: user themechange echoes as CONTEXT_REQUEST; suppression while applying
+ok 12 - user themechange echoes as CONTEXT_REQUEST; suppression while applying
+  ---
+  duration_ms: 0.57025
+  type: 'test'
+  ...
+# Subtest: VISIBILITY dispatches exactly one CustomEvent shape
+ok 13 - VISIBILITY dispatches exactly one CustomEvent shape
+  ---
+  duration_ms: 0.553542
+  type: 'test'
+  ...
+# Subtest: LOCATION_ACCEPTED and stale kinds have no outbound effect
+ok 14 - LOCATION_ACCEPTED and stale kinds have no outbound effect
+  ---
+  duration_ms: 0.59125
+  type: 'test'
+  ...
+# Subtest: navigate after INIT: catalog-exact admission and closed keys
+ok 15 - navigate after INIT: catalog-exact admission and closed keys
+  ---
+  duration_ms: 0.66
+  type: 'test'
+  ...
+# Subtest: openAuth intents only
+ok 16 - openAuth intents only
+  ---
+  duration_ms: 0.425709
+  type: 'test'
+  ...
+# Subtest: anchors: projection, same-tab click, external, download
+ok 17 - anchors: projection, same-tab click, external, download
+  ---
+  duration_ms: 1.275
+  type: 'test'
+  ...
+# Subtest: uncontrolled hashchange/popstate reports navigation_unavailable only
+ok 18 - uncontrolled hashchange/popstate reports navigation_unavailable only
+  ---
+  duration_ms: 0.595
+  type: 'test'
+  ...
+# Subtest: scroll VIEW_STATE throttled to about 100ms
+ok 19 - scroll VIEW_STATE throttled to about 100ms
+  ---
+  duration_ms: 222.869917
+  type: 'test'
+  ...
+# Subtest: pre-INIT: queue cap 8, replace-only history, drain after INIT
+ok 20 - pre-INIT: queue cap 8, replace-only history, drain after INIT
+  ---
+  duration_ms: 3.521292
+  type: 'test'
+  ...
+# Subtest: pre-INIT sensitive history becomes queued authentication_navigation
+ok 21 - pre-INIT sensitive history becomes queued authentication_navigation
+  ---
+  duration_ms: 2.145292
+  type: 'test'
+  ...
+# Subtest: restore and fresh-page focus
+ok 22 - restore and fresh-page focus
+  ---
+  duration_ms: 3.834958
+  type: 'test'
+  ...
+# Subtest: pagehide: listeners removed, history unwrapped, api inert
+ok 23 - pagehide: listeners removed, history unwrapped, api inert
+  ---
+  duration_ms: 1.37925
+  type: 'test'
+  ...
+# Subtest: catalog bound admits the real 13015 legacy + 14 native projection
+ok 24 - catalog bound admits the real 13015 legacy + 14 native projection
+  ---
+  duration_ms: 18.900625
+  type: 'test'
+  ...
+# Subtest: catalog rejects over-bound totals, duplicates and collisions
+ok 25 - catalog rejects over-bound totals, duplicates and collisions
+  ---
+  duration_ms: 34.395042
+  type: 'test'
+  ...
+# Subtest: transport pairs never reserialize non-reserved query bytes
+ok 26 - transport pairs never reserialize non-reserved query bytes
+  ---
+  duration_ms: 0.748667
+  type: 'test'
+  ...
+# Subtest: fragment anchor click: view first, child replace only, parent push
+ok 27 - fragment anchor click: view first, child replace only, parent push
+  ---
+  duration_ms: 0.602041
+  type: 'test'
+  ...
+# Subtest: already-current fragment scrolls without fabricating a parent entry
+ok 28 - already-current fragment scrolls without fabricating a parent entry
+  ---
+  duration_ms: 0.47575
+  type: 'test'
+  ...
+# Subtest: API navigate of a fragment: child replace only, caller mode preserved
+ok 29 - API navigate of a fragment: child replace only, caller mode preserved
+  ---
+  duration_ms: 0.557125
+  type: 'test'
+  ...
+# Subtest: internal _blank anchors project to the parent href and keep native new-tab clicks
+ok 30 - internal _blank anchors project to the parent href and keep native new-tab clicks
+  ---
+  duration_ms: 0.473042
+  type: 'test'
+  ...
+# Subtest: explicit parent-origin targets are first-party and map back for classification
+ok 31 - explicit parent-origin targets are first-party and map back for classification
+  ---
+  duration_ms: 0.662875
+  type: 'test'
+  ...
+# Subtest: noopener is added without dropping existing rel tokens
+ok 32 - noopener is added without dropping existing rel tokens
+  ---
+  duration_ms: 0.459667
+  type: 'test'
+  ...
+# Subtest: parent-origin hrefs never become a default _self frame navigation
+ok 33 - parent-origin hrefs never become a default _self frame navigation
+  ---
+  duration_ms: 0.646834
+  type: 'test'
+  ...
+# Subtest: newer CONTEXT after the initial READY is acknowledged without restoring
+ok 34 - newer CONTEXT after the initial READY is acknowledged without restoring
+  ---
+  duration_ms: 0.551958
+  type: 'test'
+  ...
+# Subtest: CONTEXT newer than an unsent initial READY yields exactly one READY
+ok 35 - CONTEXT newer than an unsent initial READY yields exactly one READY
+  ---
+  duration_ms: 0.459541
+  type: 'test'
+  ...
+# Subtest: repeated trusted INIT is idempotent and path-validated
+ok 36 - repeated trusted INIT is idempotent and path-validated
+  ---
+  duration_ms: 0.612166
+  type: 'test'
+  ...
+# Subtest: setters run even when the attributes already equal the request
+ok 37 - setters run even when the attributes already equal the request
+  ---
+  duration_ms: 0.4535
+  type: 'test'
+  ...
+# Subtest: a throwing incumbent setter surfaces failure instead of READY
+ok 38 - a throwing incumbent setter surfaces failure instead of READY
+  ---
+  duration_ms: 1.094958
+  type: 'test'
+  ...
+# Subtest: outbound messages match the host contract and never carry auth payloads
+ok 39 - outbound messages match the host contract and never carry auth payloads
+  ---
+  duration_ms: 0.838666
+  type: 'test'
+  ...
+# Subtest: response classification distinguishes actual gate and product documents
+ok 40 - response classification distinguishes actual gate and product documents
+  ---
+  duration_ms: 2.2825
+  type: 'test'
+  ...
+# Subtest: presentation application is visible to incumbent owners only while setters run
+ok 41 - presentation application is visible to incumbent owners only while setters run
+  ---
+  duration_ms: 0.8315
+  type: 'test'
+  ...
+# Subtest: the first context application is observable before activation and never after
+ok 42 - the first context application is observable before activation and never after
+  ---
+  duration_ms: 0.640167
+  type: 'test'
+  ...
+# Subtest: legacy boot theme/lang overwrite is restored at DOM ready and never echoed
+ok 43 - legacy boot theme/lang overwrite is restored at DOM ready and never echoed
+  ---
+  duration_ms: 0.617625
+  type: 'test'
+  ...
+# Subtest: a parent CONTEXT received during loading wins the DOM-ready restoration
+ok 44 - a parent CONTEXT received during loading wins the DOM-ready restoration
+  ---
+  duration_ms: 0.525791
+  type: 'test'
+  ...
+# Subtest: a boot-window INIT repeated while loading still restores exactly once
+ok 45 - a boot-window INIT repeated while loading still restores exactly once
+  ---
+  duration_ms: 0.663041
+  type: 'test'
+  ...
+# Subtest: a throwing setter at DOM-ready restoration is an explicit initialization failure
+ok 46 - a throwing setter at DOM-ready restoration is an explicit initialization failure
+  ---
+  duration_ms: 0.68
+  type: 'test'
+  ...
+# Subtest: an incumbent setter that overrides the parent presentation blocks READY
+ok 47 - an incumbent setter that overrides the parent presentation blocks READY
+  ---
+  duration_ms: 0.505791
+  type: 'test'
+  ...
+# Subtest: locale read-back prefers data-lang and normalizes the zh-CN html.lang
+ok 48 - locale read-back prefers data-lang and normalizes the zh-CN html.lang
+  ---
+  duration_ms: 0.552958
+  type: 'test'
+  ...
+# Subtest: a genuine post-readiness zh choice survives data-lang/zh-CN and round-trips
+ok 49 - a genuine post-readiness zh choice survives data-lang/zh-CN and round-trips
+  ---
+  duration_ms: 0.484709
+  type: 'test'
+  ...
+# Subtest: _self, _parent and named targets are projected while default handling is kept
+ok 50 - _self, _parent and named targets are projected while default handling is kept
+  ---
+  duration_ms: 0.641417
+  type: 'test'
+  ...
+# Subtest: an unregistered href rewrite is reclassified instead of navigating a stale target
+ok 51 - an unregistered href rewrite is reclassified instead of navigating a stale target
+  ---
+  duration_ms: 0.49625
+  type: 'test'
+  ...
+# Subtest: interactive parser state waits for deferred legacy boot before initial READY
+ok 52 - interactive parser state waits for deferred legacy boot before initial READY
+  ---
+  duration_ms: 0.434875
+  type: 'test'
+  ...
+# Subtest: bootstrap observes DOMContentLoaded before a delayed INIT while images still load
+ok 53 - bootstrap observes DOMContentLoaded before a delayed INIT while images still load
+  ---
+  duration_ms: 0.662291
+  type: 'test'
+  ...
+# Subtest: queued initial fragment callbacks cannot publish boot preferences to the parent
+ok 54 - queued initial fragment callbacks cannot publish boot preferences to the parent
+  ---
+  duration_ms: 0.621042
+  type: 'test'
+  ...
+# Subtest: correct semantic locale cannot conceal a wrong html language at readiness
+ok 55 - correct semantic locale cannot conceal a wrong html language at readiness
+  ---
+  duration_ms: 0.506542
+  type: 'test'
+  ...
+# Subtest: accepted fragment updates reach actual window page subscribers exactly once
+ok 56 - accepted fragment updates reach actual window page subscribers exactly once
+  ---
+  duration_ms: 0.891709
+  type: 'test'
+  ...
+# Subtest: accepted location subscriber may replace current history without an event loop
+ok 57 - accepted location subscriber may replace current history without an event loop
+  ---
+  duration_ms: 2.550417
+  type: 'test'
+  ...
+# Subtest: superseded same-document acknowledgments cannot notify a stale page location
+ok 58 - superseded same-document acknowledgments cannot notify a stale page location
+  ---
+  duration_ms: 0.975
+  type: 'test'
+  ...
+# Subtest: pathname-changing history routes through the parent without altering the child document
+ok 59 - pathname-changing history routes through the parent without altering the child document
+  ---
+  duration_ms: 0.80475
+  type: 'test'
+  ...
+# Subtest: pre-INIT pathname-changing history stays put and drains as document navigation
+ok 60 - pre-INIT pathname-changing history stays put and drains as document navigation
+  ---
+  duration_ms: 0.776833
+  type: 'test'
+  ...
+# Subtest: same-path history preserves local state and raw query bytes while parent owns entries
+ok 61 - same-path history preserves local state and raw query bytes while parent owns entries
+  ---
+  duration_ms: 0.7615
+  type: 'test'
+  ...
+# Subtest: a full pre-INIT queue cannot mutate an unreported history location
+ok 62 - a full pre-INIT queue cannot mutate an unreported history location
+  ---
+  duration_ms: 0.576334
+  type: 'test'
+  ...
+# Subtest: direct authentication fragments never enter API navigation messages
+ok 63 - direct authentication fragments never enter API navigation messages
+  ---
+  duration_ms: 3.19725
+  type: 'test'
+  ...
+# Subtest: direct authentication fragments never mutate history before or after INIT
+ok 64 - direct authentication fragments never mutate history before or after INIT
+  ---
+  duration_ms: 1.897625
+  type: 'test'
+  ...
+# Subtest: direct authentication-fragment anchor activation is claimed without leaking the URL
+ok 65 - direct authentication-fragment anchor activation is claimed without leaking the URL
+  ---
+  duration_ms: 0.451542
+  type: 'test'
+  ...
+# Subtest: post-readiness context never acknowledges a setter that leaves the presentation wrong
+ok 66 - post-readiness context never acknowledges a setter that leaves the presentation wrong
+  ---
+  duration_ms: 1.10075
+  type: 'test'
+  ...
+# Subtest: repeated INIT cannot falsely acknowledge a broken incumbent setter
+ok 67 - repeated INIT cannot falsely acknowledge a broken incumbent setter
+  ---
+  duration_ms: 0.427792
+  type: 'test'
+  ...
+# Subtest: authentication material in the initial child URL never enters READY
+ok 68 - authentication material in the initial child URL never enters READY
+  ---
+  duration_ms: 0.937708
+  type: 'test'
+  ...
+# Subtest: persisted pagehide preserves the bridge for restored browser documents
+ok 69 - persisted pagehide preserves the bridge for restored browser documents
+  ---
+  duration_ms: 0.632583
+  type: 'test'
+  ...
+# Subtest: credential-bearing history URLs never mutate or enter the protocol
+ok 70 - credential-bearing history URLs never mutate or enter the protocol
+  ---
+  duration_ms: 1.140417
+  type: 'test'
+  ...
+1..70
+# tests 70
+# suites 0
+# pass 70
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1290.430542

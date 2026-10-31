@@ -582,25 +582,53 @@
   {% if latest.conditions %}
   {% set C = latest.conditions %}
   <h3 style="font-size:13px;margin:14px 0 2px">{{ t('Real-time conditions', '实时状况') }}</h3>
+  {# VINTAGES — engine/conditions.py records the last date each input actually printed
+     ({asof, age_days, stale, label, cadence_days}; asof None when it never printed).
+     Each tile prints only its OWN input's vintage; a tile whose input has no record
+     prints nothing rather than borrowing the page date. Older payloads carry no
+     `vintages` key, so every line below stays dark for them. #}
+  {% set _VIN = C.vintages if (C.vintages is defined and C.vintages is mapping) else {} %}
+  {% set _VSTALE = C.stale_inputs if (C.stale_inputs is defined and C.stale_inputs) else [] %}
+  {% macro vin(v) -%}
+  {% if v is mapping and v.get('asof') %}
+      <div class="muted sm" data-vin>{{ t('As of ' ~ v.asof, '截至 ' ~ v.asof) }}
+        {%- if v.get('stale') and v.get('age_days') is not none %}
+        <span class="chip" data-vin-stale>{{ t('stale','已过期') }} · {{ t(
+          v.age_days ~ 'd old, due every ' ~ v.cadence_days ~ 'd',
+          v.age_days ~ '天前，应每' ~ v.cadence_days ~ '天更新') }}</span>
+        {%- endif %}</div>
+  {% endif %}
+  {%- endmacro %}
   <div class="sig-grid">
 
     {# Recession risk #}
     {% if C.recession %}{% set RC = C.recession %}
-    {% set _rc_state = 'bad' if (RC.score is not none and RC.score >= 60) else ('warn' if (RC.score is not none and RC.score >= 35) else 'good') %}
+    {% set _rc_state = 'flat' if RC.score is none
+       else ('bad' if RC.score >= 60 else ('warn' if RC.score >= 35 else 'good')) %}
     <div class="sig-tile {{ _rc_state }}">
       <div class="sig-label">{{ t('Recession risk','衰退风险') }}</div>
       <div class="sig-value">{{ RC.score|round|int if RC.score is not none else '—' }}<small style="font-size:11px">/100</small></div>
       <div class="sig-meaning">{{ t('odds the economy tips over the next year','未来一年经济衰退的可能性') }}</div>
       {{ help(
-        'Sahm: ' ~ (('%.2f'|format(RC.sahm)) if RC.sahm is not none else '—') ~ ' · NY Fed prob: ' ~ (('%.0f%%'|format(RC.ny_fed_prob*100)) if RC.ny_fed_prob is not none else '—') ~ ' · Excess bond premium: ' ~ (('%+.2f'|format(RC.ebp)) if RC.ebp is not none else '—'),
-        '萨姆规则: ' ~ (('%.2f'|format(RC.sahm)) if RC.sahm is not none else '—') ~ ' · 纽约联储曲线概率: ' ~ (('%.0f%%'|format(RC.ny_fed_prob*100)) if RC.ny_fed_prob is not none else '—') ~ ' · 超额债券溢价: ' ~ (('%+.2f'|format(RC.ebp)) if RC.ebp is not none else '—')
+        'Sahm: ' ~ (('%.2f'|format(RC.sahm)) if RC.sahm is not none else '—')
+        ~ ' · NY Fed prob: '
+        ~ (('%.2f%%'|format(RC.ny_fed_prob)) if RC.ny_fed_prob is not none else '—')
+        ~ ' · Excess bond premium: '
+        ~ (('%+.2f'|format(RC.ebp)) if RC.ebp is not none else '—'),
+        '萨姆规则: ' ~ (('%.2f'|format(RC.sahm)) if RC.sahm is not none else '—')
+        ~ ' · 纽约联储曲线概率: '
+        ~ (('%.2f%%'|format(RC.ny_fed_prob)) if RC.ny_fed_prob is not none else '—')
+        ~ ' · 超额债券溢价: '
+        ~ (('%+.2f'|format(RC.ebp)) if RC.ebp is not none else '—')
       ) }}
+      {{ vin(_VIN.get('recession_risk')) }}
     </div>
     {% endif %}
 
     {# Drawdown risk #}
     {% if C.drawdown_risk %}{% set DR = C.drawdown_risk %}
-    {% set _dr_state = 'bad' if (DR.score is not none and DR.score >= 60) else ('warn' if (DR.score is not none and DR.score >= 35) else 'good') %}
+    {% set _dr_state = 'flat' if DR.score is none
+       else ('bad' if DR.score >= 60 else ('warn' if DR.score >= 35 else 'good')) %}
     <div class="sig-tile {{ _dr_state }}">
       <div class="sig-label">{{ t('Drawdown risk','回撤风险') }}</div>
       <div class="sig-value">{{ DR.score|round|int if DR.score is not none else '—' }}<small style="font-size:11px">/100</small></div>
@@ -609,12 +637,36 @@
         'P(dd≥10%/63d): ' ~ ((DR.dd10_prob_pct|string ~ '%') if DR.dd10_prob_pct is not none else '—') ~ ' · Base rate: ' ~ ((DR.base_rate_pct|string ~ '%') if DR.base_rate_pct is not none else '—'),
         '概率(≥10%/63日): ' ~ ((DR.dd10_prob_pct|string ~ '%') if DR.dd10_prob_pct is not none else '—') ~ ' · 基准概率: ' ~ ((DR.base_rate_pct|string ~ '%') if DR.base_rate_pct is not none else '—')
       ) }}
+      {# The producer WITHHOLDS the per-band odds when the composite runs on fewer
+         inputs than it was measured on, and already wrote the reason bilingually
+         (engine/conditions.py:890-899). Gate on the producer's own flags, never on
+         a value test; a payload that predates them keeps this branch dark. #}
+      {% set _dr_pass = DR.stat_passport if (DR.stat_passport is defined
+                                             and DR.stat_passport is mapping) else {} %}
+      {% set _dr_partial = ((DR.partial is defined and DR.partial)
+                            or _dr_pass.get('basis') == 'partial') %}
+      {% set _dr_dark = DR.dd10_prob_informative is defined and not DR.dd10_prob_informative %}
+      {% if _dr_dark and _dr_partial %}
+      <div class="muted sm" data-dr-withheld>
+        {% if DR.degraded_note_en is defined %}
+        <span class="l-en">{{ DR.degraded_note_en }}</span>
+        {% endif %}
+        {% if DR.degraded_note_zh is defined %}
+        <span class="l-zh">{{ DR.degraded_note_zh }}</span>
+        {% endif %}
+        {% if DR.n_legs is defined and DR.n_legs_expected is defined %}
+        <span>{{ DR.n_legs }} / {{ DR.n_legs_expected }} {{ t('inputs','项输入') }}</span>
+        {% endif %}
+      </div>
+      {% endif %}
+      {{ vin(_VIN.get('hy_oas')) }}
     </div>
     {% endif %}
 
     {# Financial conditions #}
     {% if C.financial_conditions %}{% set FC = C.financial_conditions %}
-    {% set _fc_state = 'bad' if FC.state and 'tight' in FC.state else ('warn' if FC.state and 'neutral' in FC.state else 'good') %}
+    {% set _fc_state = 'flat' if not FC.state
+       else ('bad' if 'tight' in FC.state else ('warn' if 'neutral' in FC.state else 'good')) %}
     <div class="sig-tile {{ _fc_state }}">
       <div class="sig-label">{{ t('Financial conditions','金融条件') }}</div>
       {% set _fc_zh = {'loose':'宽松','neutral':'中性','tight':'收紧'} %}
@@ -624,12 +676,14 @@
         'NFCI: ' ~ (('%+.2f'|format(FC.nfci)) if FC.nfci is not none else '—') ~ ' · Percentile: ' ~ ((FC.nfci_pctile*100)|round|int|string ~ '%' if FC.nfci_pctile is not none else '—') ~ ' · Trend: ' ~ ((td(FC.trend)) if FC.trend else '—'),
         'NFCI: ' ~ (('%+.2f'|format(FC.nfci)) if FC.nfci is not none else '—') ~ ' · 百分位: ' ~ ((FC.nfci_pctile*100)|round|int|string ~ '%' if FC.nfci_pctile is not none else '—') ~ ' · 趋势: ' ~ ((td(FC.trend)) if FC.trend else '—')
       ) }}
+      {{ vin(_VIN.get('nfci')) }}
     </div>
     {% endif %}
 
     {# Systemic stress #}
     {% if C.systemic_stress %}{% set SS = C.systemic_stress %}
-    {% set _ss_state = 'bad' if SS.state and 'stress' in SS.state else ('warn' if SS.state and 'elevated' in SS.state else 'good') %}
+    {% set _ss_state = 'flat' if not SS.state
+       else ('bad' if 'stress' in SS.state else ('warn' if 'elevated' in SS.state else 'good')) %}
     <div class="sig-tile {{ _ss_state }}">
       <div class="sig-label">{{ t('System stress','系统压力') }}</div>
       <div class="sig-value">{{ td(SS.state) if SS.state else '—' }}</div>
@@ -638,12 +692,14 @@
         'OFR FSI: ' ~ (('%+.2f'|format(SS.ofr_fsi)) if SS.ofr_fsi is not none else '—') ~ ' · Top channel: ' ~ ((td(SS.leading_driver)) if SS.leading_driver else '—') ~ ' · CP funding: ' ~ ((td(SS.cp_stress)) if SS.cp_stress else '—'),
         'OFR FSI: ' ~ (('%+.2f'|format(SS.ofr_fsi)) if SS.ofr_fsi is not none else '—') ~ ' · 主要渠道: ' ~ ((td(SS.leading_driver)) if SS.leading_driver else '—') ~ ' · 商业票据融资: ' ~ ((td(SS.cp_stress)) if SS.cp_stress else '—')
       ) }}
+      {{ vin(_VIN.get('ofr_fsi')) }}
     </div>
     {% endif %}
 
     {# Growth right now #}
     {% if C.growth_nowcast %}{% set GN = C.growth_nowcast %}
-    {% set _gn_state = 'good' if (GN.gdpnow is not none and GN.gdpnow >= 2) else ('warn' if (GN.gdpnow is not none and GN.gdpnow >= 0) else 'bad') %}
+    {% set _gn_state = 'flat' if GN.gdpnow is none
+       else ('good' if GN.gdpnow >= 2 else ('warn' if GN.gdpnow >= 0 else 'bad')) %}
     <div class="sig-tile {{ _gn_state }}">
       <div class="sig-label">{{ t('Growth right now','当前增长') }}</div>
       <div class="sig-value">{{ ('%+.1f%%'|format(GN.gdpnow)) if GN.gdpnow is not none else '—' }}</div>
@@ -657,7 +713,8 @@
 
     {# Inflation right now #}
     {% if C.inflation_nowcast %}{% set IN = C.inflation_nowcast %}
-    {% set _in_state = 'bad' if (IN.sticky_ann is not none and IN.sticky_ann >= 4) else ('warn' if (IN.sticky_ann is not none and IN.sticky_ann >= 2.5) else 'good') %}
+    {% set _in_state = 'flat' if IN.sticky_ann is none
+       else ('bad' if IN.sticky_ann >= 4 else ('warn' if IN.sticky_ann >= 2.5 else 'good')) %}
     <div class="sig-tile {{ _in_state }}">
       <div class="sig-label">{{ t('Inflation right now','当前通胀') }}</div>
       <div class="sig-value">{{ ('%.1f%%'|format(IN.sticky_ann)) if IN.sticky_ann is not none else '—' }}</div>
@@ -671,13 +728,18 @@
 
     {# Jobs & activity #}
     {% if C.labor_nowcast %}{% set LN = C.labor_nowcast %}
-    {% set _ln_up = LN.claims_yoy_pct is not none and LN.claims_yoy_pct > 5 %}
-    {% set _ln_state = 'bad' if _ln_up else 'good' %}
+    {% set _ln_none = LN.claims_yoy_pct is none %}
+    {% set _ln_up = not _ln_none and LN.claims_yoy_pct > 5 %}
+    {% set _ln_state = 'flat' if _ln_none else ('bad' if _ln_up else 'good') %}
     <div class="sig-tile {{ _ln_state }}">
       <div class="sig-label">{{ t('Jobs & activity','就业与活动') }}</div>
       {% set _ln_zh = {'labor firm':'就业稳固','labor mixed':'就业混杂','labor cooling':'就业降温'} %}
       <div class="sig-value">{% if LN.read %}{{ t(LN.read, _ln_zh.get(LN.read, LN.read)) }}{% else %}—{% endif %}</div>
+      {% if _ln_none %}
+      <div class="sig-meaning">{{ t('no claims print','无初请数据') }}</div>
+      {% else %}
       <div class="sig-meaning">{{ t('layoffs rising','裁员上升') if _ln_up else t('layoffs steady','裁员平稳') }}</div>
+      {% endif %}
       {{ help(
         'Initial claims YoY: ' ~ (('%+.1f%%'|format(LN.claims_yoy_pct)) if LN.claims_yoy_pct is not none else '—') ~ ' · Indeed postings 3m: ' ~ (('%+.1f%%'|format(LN.indeed_chg_3m_pct)) if LN.indeed_chg_3m_pct is not none else '—') ~ ' · Withheld taxes YoY: ' ~ (('%+.1f%%'|format(LN.withheld_tax_yoy_pct)) if LN.withheld_tax_yoy_pct is not none else '—'),
         '初请同比: ' ~ (('%+.1f%%'|format(LN.claims_yoy_pct)) if LN.claims_yoy_pct is not none else '—') ~ ' · Indeed招聘3月: ' ~ (('%+.1f%%'|format(LN.indeed_chg_3m_pct)) if LN.indeed_chg_3m_pct is not none else '—') ~ ' · 预扣税同比: ' ~ (('%+.1f%%'|format(LN.withheld_tax_yoy_pct)) if LN.withheld_tax_yoy_pct is not none else '—')
@@ -696,6 +758,7 @@
         'RORO: ' ~ (('%+.2f'|format(RA.roro)) if RA.roro is not none else '—') ~ ' · VRP: ' ~ (('%+.1f'|format(RA.vrp)) if RA.vrp is not none else '—') ~ ' · VIX term: ' ~ (('%.2f'|format(RA.vix_term)) if RA.vix_term is not none else '—') ~ ' · Stock-bond corr: ' ~ (('%+.2f'|format(RA.stock_bond_corr)) if RA.stock_bond_corr is not none else '—'),
         'RORO: ' ~ (('%+.2f'|format(RA.roro)) if RA.roro is not none else '—') ~ ' · 方差风险溢价: ' ~ (('%+.1f'|format(RA.vrp)) if RA.vrp is not none else '—') ~ ' · VIX期限: ' ~ (('%.2f'|format(RA.vix_term)) if RA.vix_term is not none else '—') ~ ' · 股债相关: ' ~ (('%+.2f'|format(RA.stock_bond_corr)) if RA.stock_bond_corr is not none else '—')
       ) }}
+      {{ vin(_VIN.get('vix_term')) }}
     </div>
     {% endif %}
 
@@ -713,6 +776,17 @@
     {% endif %}
 
   </div>{# /sig-grid #}
+  {% if _VSTALE %}
+  {# The producer's own stale_inputs list, once, by its own labels (raw key when the
+     vintages record carries none) — the same receipt idiom as DL.stale_inputs. #}
+  <div class="muted sm" data-vin-stale-list>
+    {{ t('Inputs older than their usual update:', '超出常规更新周期的输入：') }}
+    {% for _k in _VSTALE %}
+    {% set _vr = _VIN.get(_k) if _VIN.get(_k) is mapping else {} %}
+    <span class="chip">{{ _vr.get('label') or _k }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
   {% endif %}{# /conditions #}
 
 </div>{# /panel cycle #}
@@ -786,8 +860,13 @@
   {# Top 3 drivers by |z| as bars #}
   {% if FG.legs_included %}
   <div style="font-size:12px;color:var(--muted);margin-bottom:4px">{{ t("What's driving it most","主要驱动因素") }}</div>
-  {% set _sorted_legs = FG.legs_included|sort(attribute='z',reverse=true) %}
-  {% for leg in _sorted_legs[:3] %}
+  {# Decorate rather than reorder the producer list; Jinja's sort is stable for ties. #}
+  {% set _fg_rank = namespace(legs=[]) %}
+  {% for leg in FG.legs_included %}
+    {% set _fg_rank.legs = _fg_rank.legs + [((leg.z|abs) if leg.z is not none else 0, leg)] %}
+  {% endfor %}
+  {% for ranked in (_fg_rank.legs|sort(attribute=0, reverse=true))[:3] %}
+  {% set leg = ranked[1] %}
   <div class="leg">
     <span style="flex:0 0 130px;font-size:12.5px">{{ t(leg.name_en, leg.name_zh) }}</span>
     <div class="leg-bar"><i style="width:{{ ([leg.z|abs / 3 * 100, 100]|min) if leg.z is not none else 0 }}%;background:{{ 'var(--down)' if (leg.z is not none and leg.z < 0) else 'var(--up)' }}"></i></div>

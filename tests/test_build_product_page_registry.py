@@ -12,6 +12,7 @@ Two halves:
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -47,11 +48,50 @@ def test_committed_registry_covers_all_three_repos(committed):
     assert counts.get("mastermind", 0) >= 7, counts
 
 
+_IMMUTABLE_SHA_RE = re.compile(r"[0-9a-f]{40}")
+
+
+def _terminal_source_problems(terminal: dict) -> list[str]:
+    """Provenance ``sources.terminal`` may record — exactly what the builder's
+    ``--terminal-ref`` accepts: the mutable default (``origin/master``) or an
+    explicit immutable commit.  An immutable ref qualifies only when it IS the
+    resolved sha; a ref naming any other object than the one the rows were
+    derived from is false provenance, and so is every weaker ref shape."""
+    ref, sha = terminal.get("ref"), terminal.get("sha")
+    if not isinstance(sha, str) or not _IMMUTABLE_SHA_RE.fullmatch(sha):
+        return [f"terminal sha {sha!r} is not a resolved 40-hex commit"]
+    if ref == "origin/master":
+        return []
+    if isinstance(ref, str) and _IMMUTABLE_SHA_RE.fullmatch(ref):
+        if ref == sha:
+            return []
+        return [f"terminal ref {ref!r} does not match the resolved sha"]
+    return [f"terminal ref {ref!r} is neither origin/master nor the resolved sha"]
+
+
 def test_committed_registry_records_a_terminal_sha(committed):
     terminal = committed["sources"]["terminal"]
     assert terminal["available"] is True
-    assert terminal["ref"] == "origin/master"
-    assert len(terminal["sha"]) == 40, terminal["sha"]
+    assert _terminal_source_problems(terminal) == []
+
+
+def test_terminal_source_helper_rejects_an_immutable_ref_off_the_resolved_sha():
+    """A 40-hex ref is only qualified when it names the same commit as the
+    recorded sha — a pinned ref plus a sha from another object is exactly the
+    false provenance this guard exists for."""
+    problems = _terminal_source_problems({"ref": "b" * 40, "sha": "c" * 40})
+    assert problems and "does not match" in problems[0]
+
+
+def test_terminal_source_helper_rejects_weak_refs_and_takes_supported_forms():
+    weak = [{"ref": "HEAD", "sha": "a" * 40},
+            {"ref": "claude/a-branch", "sha": "a" * 40},
+            {"ref": "A" * 40, "sha": "a" * 40},
+            {"ref": "", "sha": "a" * 40},
+            {"ref": "a" * 40, "sha": "tooshort"}]
+    assert all(_terminal_source_problems(case) for case in weak)
+    assert _terminal_source_problems({"ref": "origin/master", "sha": "a" * 40}) == []
+    assert _terminal_source_problems({"ref": "a" * 40, "sha": "a" * 40}) == []
 
 
 def test_committed_page_ids_are_unique(committed):
