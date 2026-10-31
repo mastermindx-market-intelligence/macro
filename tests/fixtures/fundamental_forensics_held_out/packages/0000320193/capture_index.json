@@ -34,5 +34,86 @@
     "manifest_sha256": null,
     "admission": "member_missing:schema",
     "statement_roles_state": null
+  },
+  {
+    "accession": "0000320193-23-000106",
+    "form": "10-K",
+    "period_of_report": "2023-09-30",
+    "selection": "admission_candidate",
+    "manifest_sha256": "3f3248fef100ebe3c193cb065a5f5f7155a17ff5470a062bcbb61f372001f8bd",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0000320193-22-000108",
+    "form": "10-K",
+    "period_of_report": "2022-09-24",
+    "selection": "admission_candidate",
+    "manifest_sha256": "29f5e1c0ab4eb53f57d954f2fa8621f4dbf56791db06f102b615fee0982f1fbb",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0000320193-24-000006",
+    "form": "10-Q",
+    "period_of_report": "2023-12-30",
+    "selection": "admission_candidate",
+    "manifest_sha256": "73cb210b67d4716098d0488840dd72b26101f4434fa505730b102701eeb70009",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0000320193-23-000077",
+    "form": "10-Q",
+    "period_of_report": "2023-07-01",
+    "selection": "admission_candidate",
+    "manifest_sha256": "455e1402534fc02c54a537f5d0143d3b0471d482fa9e16b0e72552274e53033a",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0000320193-23-000064",
+    "form": "10-Q",
+    "period_of_report": "2023-04-01",
+    "selection": "admission_candidate",
+    "manifest_sha256": "0191d80ca7814b846b66fdd06778e3d8ee5fb91b78a621064f2ced9882f91351",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0000320193-23-000006",
+    "form": "10-Q",
+    "period_of_report": "2022-12-31",
+    "selection": "admission_candidate",
+    "manifest_sha256": "8d516363cf794760c08fa29781dfc25e2b6bee17a0161672b5766b5c97d2df30",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0000320193-22-000070",
+    "form": "10-Q",
+    "period_of_report": "2022-06-25",
+    "selection": "admission_candidate",
+    "manifest_sha256": "5fdd14fb839c80311775416029084e0eaf869c8201bdf14d4dedb262124e226b",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0000320193-22-000059",
+    "form": "10-Q",
+    "period_of_report": "2022-03-26",
+    "selection": "admission_candidate",
+    "manifest_sha256": "b8820ca7991ad4a13f40181826da60f2b32e794bb82d9e11c168b8e5ffdbcf02",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
+  },
+  {
+    "accession": "0000320193-22-000007",
+    "form": "10-Q",
+    "period_of_report": "2021-12-25",
+    "selection": "admission_candidate",
+    "manifest_sha256": "df71f8654b129d7fbc43b12b30bc200b48f920840cbaa33505810d93c17d932f",
+    "admission": "ADMITTED",
+    "statement_roles_state": "extracted"
   }
 ]

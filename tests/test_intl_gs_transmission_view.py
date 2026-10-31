@@ -136,7 +136,11 @@ def test_view_not_built_without_builder():
     from tests.intl_gs_fixture_site import render_intl_page
     result = attach_surveillance(build_workspace_overviews(None))
     assert result["surveillance"]["views"]["transmission"]["status"] == "not_built"
-    assert result["surveillance_panels"] == []
+    assert not any(panel.get("view") == "transmission" for panel in result["surveillance_panels"])
+    for view, state in result["surveillance"]["views"].items():
+        assert (state["status"] == "available") == any(
+            p.get("view") == view for p in result["surveillance_panels"]
+        ), f"surveillance panel presence must mirror view availability for {view}"
     html = render_intl_page(include_surveillance=True, stub_coverage=False)
     button = re.search(r'<button[^>]*data-im-view="transmission"[^>]*>', html)
     assert button, "Transmission nav button missing"
