@@ -8,8 +8,11 @@ Plain record of what was observed and what the repair changes. No forecast.
   `34a097d796237c2ecd8f5cbd82e005757d47e940`, 104,857,394 bytes — 206 bytes under GitHub's
   104,857,600-byte hard file limit — and it is appended nightly.
 - Last commit touching it: `a050d2c71647` (2026-10-21T00:56:35-07:00, "engine: regime update 2026-10-21").
-- Last engine data commit on main: `ad6e5a824334` (2026-10-21T01:18:57-07:00, "engine: regime update
-  2026-10-21"); it is also the last commit to advance `data/risk_envelope/latest.json`.
+- Last commit on main from the daily engine job (subject `engine: regime update <date>`, written by
+  `scripts/ci/daily_engine_commit_outputs.sh`): `ad6e5a824334` (2026-10-21T01:18:57-07:00); it is also
+  the last commit to advance `data/risk_envelope/latest.json`. The asia-close workflow's separate
+  `engine: asia dashboards <date>` commits kept landing (newest at `f8cb6f8abe26`: `a99473f26f4f`,
+  2026-10-31T06:05:38-07:00).
 - Run 40803269874 (2026-10-29): engine job 123688873047 `commit engine outputs` was rejected by the
   remote with GH001 at 2026-10-30T00:17:12Z; collect_tail job 123688869633 `commit tail data` was
   rejected for a 146.50 MB QLedger blob at 2026-10-29T20:20:23Z.
