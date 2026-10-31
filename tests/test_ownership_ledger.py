@@ -20,6 +20,145 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import engine.ownership_ledger as ol
 
 
+@pytest.mark.parametrize("filer,expected_state", [
+    (None, "activist"), ("", "activist"), (pd.NA, "activist"),
+    ("Synthetic Capital", "flip"),
+])
+def test_l3_persists_qualified_filer_state_without_grading(
+        tmp_path, monkeypatch, filer, expected_state):
+    import engine.beneficial_ownership as bo
+
+    events = pd.DataFrame([
+        {"ticker": "SYNTH", "form_type": "SC 13G", "date_filed": "2025-01-01",
+         "filer": filer, "filer_type": "other"},
+        {"ticker": "SYNTH", "form_type": "SC 13D", "date_filed": "2026-01-01",
+         "filer": filer, "filer_type": "other"},
+    ])
+    monkeypatch.setattr(bo, "_load_enrichment", lambda: events)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Synthetic composition must not load a source or price panel")
+
+    monkeypatch.setattr(bo, "_load_events_with_tickers", forbidden)
+    monkeypatch.setattr(ol, "_grade_entry", lambda *args: {})
+    monkeypatch.setattr(ol, "_spy_grade", lambda *args: {})
+    rows = ol._l3_entries(panel=None)
+    assert len(rows) == 1 and rows[0]["state"] == expected_state
+    assert rows[0]["entry_price"] is None
+    assert all(value is None for key, value in rows[0].items()
+               if key.startswith(("fwd_", "excess_")))
+    assert ol._append_rows("L3", rows, root=tmp_path) == 1
+    assert ol._append_rows("L3", rows, root=tmp_path) == 0
+    persisted = pd.read_parquet(ol._ledger_path("L3", tmp_path))
+    assert persisted["state"].tolist() == [expected_state]
+    assert persisted["ticker"].tolist() == ["SYNTH"]
+
+
+@pytest.mark.parametrize("existing", [False, True])
+def test_failed_ledger_write_never_reports_added_rows(tmp_path, monkeypatch, existing):
+    row = {"ticker": "OLD", "anchor_date": "2026-10-30", "filer": "synthetic"}
+    if existing:
+        assert ol._append_rows("L3", [row], root=tmp_path) == 1
+    path = ol._ledger_path("L3", tmp_path)
+    before = path.read_bytes() if existing else None
+
+    def fail_write(*args, **kwargs):
+        raise OSError("synthetic disk write failure")
+
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", fail_write)
+    with pytest.raises(OSError, match="synthetic disk write failure"):
+        ol._append_rows("L3", [{**row, "ticker": "NEW"}], root=tmp_path)
+    assert (path.read_bytes() if path.exists() else None) == before
+
+
+def test_partial_ledger_write_preserves_previous_bytes(tmp_path, monkeypatch):
+    row = {"ticker": "OLD", "anchor_date": "2026-10-30", "filer": "synthetic"}
+    assert ol._append_rows("L3", [row], root=tmp_path) == 1
+    path = ol._ledger_path("L3", tmp_path)
+    before = path.read_bytes()
+
+    def partial_write(self, target, **kwargs):
+        Path(target).write_bytes(b"synthetic truncated parquet")
+        raise OSError("synthetic partial write failure")
+
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", partial_write)
+    try:
+        ol._append_rows("L3", [{**row, "ticker": "NEW"}], root=tmp_path)
+    except OSError:
+        pass
+    assert path.read_bytes() == before
+    assert list(path.parent.iterdir()) == [path]
+
+
+def test_ledger_replace_failure_preserves_previous_bytes(tmp_path, monkeypatch):
+    row = {"ticker": "OLD", "anchor_date": "2026-10-30", "filer": "synthetic"}
+    assert ol._append_rows("L3", [row], root=tmp_path) == 1
+    path = ol._ledger_path("L3", tmp_path)
+    before = path.read_bytes()
+    replace = os.replace
+
+    def fail_replace(src, dst, *args, **kwargs):
+        if Path(dst) == path:
+            raise OSError("synthetic replacement failure")
+        return replace(src, dst, *args, **kwargs)
+
+    monkeypatch.setattr(os, "replace", fail_replace)
+    with pytest.raises(OSError, match="synthetic replacement failure"):
+        ol._append_rows("L3", [{**row, "ticker": "NEW"}], root=tmp_path)
+    assert path.read_bytes() == before
+    assert list(path.parent.iterdir()) == [path]
+
+
+@pytest.mark.parametrize("existing", [False, True])
+def test_ledger_write_preserves_normal_file_permissions(tmp_path, existing):
+    import stat
+    baseline = tmp_path / "baseline.parquet"
+    pd.DataFrame([{"x": 1}]).to_parquet(baseline, index=False)
+    expected = stat.S_IMODE(baseline.stat().st_mode)
+    row = {"ticker": "OLD", "anchor_date": "2026-10-30", "filer": "synthetic"}
+    path = ol._ledger_path("L3", tmp_path)
+    if existing:
+        assert ol._append_rows("L3", [row], root=tmp_path) == 1
+        path.chmod(0o640)
+        expected = 0o640
+    assert ol._append_rows("L3", [{**row, "ticker": "NEW"}], root=tmp_path) == 1
+    assert stat.S_IMODE(path.stat().st_mode) == expected
+    assert list(path.parent.iterdir()) == [path]
+
+
+def test_failed_ledger_write_reports_zero_to_advance(tmp_path, monkeypatch):
+    import engine.manager_trades as mt
+    monkeypatch.setattr(ol, "_ledger_advance_enabled", lambda: True)
+    monkeypatch.setattr(mt, "ClosePanel", lambda: object())
+    for name in ("_l1_entries", "_l2_entries", "_l4_entries", "_l5_entries"):
+        monkeypatch.setattr(ol, name, lambda *args: [])
+    monkeypatch.setattr(ol, "_l3_entries", lambda *args: [
+        {"ticker": "NEW", "anchor_date": "2026-10-30", "filer": "synthetic"}])
+
+    def fail_write(*args, **kwargs):
+        raise OSError("synthetic disk write failure")
+
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", fail_write)
+    assert ol.advance_ledgers({}, None, root=tmp_path)["L3"] == 0
+    assert not ol._ledger_path("L3", tmp_path).exists()
+
+
+def test_private_ledger_staging_is_private_before_serialization(tmp_path, monkeypatch):
+    import stat
+    row = {"ticker": "OLD", "anchor_date": "2026-10-30", "filer": "synthetic"}
+    assert ol._append_rows("L3", [row], root=tmp_path) == 1
+    path = ol._ledger_path("L3", tmp_path)
+    path.chmod(0o600)
+    serialize = pd.DataFrame.to_parquet
+
+    def check_permissions(self, target, **kwargs):
+        assert stat.S_IMODE(Path(target).stat().st_mode) == 0o600
+        return serialize(self, target, **kwargs)
+
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", check_permissions)
+    assert ol._append_rows("L3", [{**row, "ticker": "NEW"}], root=tmp_path) == 1
+
+
 # --------------------------------------------------------------------------- #
 # Nightly guard                                                                 #
 # --------------------------------------------------------------------------- #
@@ -496,3 +635,55 @@ class TestL2L4FilingDateAnchor:
         # With no filing_date, the ticker should be skipped entirely (no entry)
         assert not any(r["ticker"] == "TSLA" for r in entries), (
             "L2 must skip tickers whose holders have no filing_date")
+
+
+@pytest.mark.parametrize("cohort", ["L1", "L2", "L3", "L4", "L5"])
+def test_append_preserves_unreadable_existing_ledger(tmp_path, cohort):
+    path = ol._ledger_path(cohort, tmp_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    original = b"synthetic-unreadable-ledger-do-not-replace"
+    path.write_bytes(original)
+    row = {"ticker": "SYNTH", "anchor_date": "2026-10-30", "slug": "synthetic",
+           "filer": "synthetic", "composite_version": "synthetic"}
+    try:
+        ol._append_rows(cohort, [row], root=tmp_path)
+    except Exception:
+        pass
+    assert path.read_bytes() == original
+
+
+def test_append_preserves_valid_ledger_on_transient_read_error(tmp_path, monkeypatch):
+    path = ol._ledger_path("L3", tmp_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([{"ticker": "OLD", "anchor_date": "2026-10-29", "filer": "existing"}]).to_parquet(path)
+    original = path.read_bytes()
+    def unavailable(*args, **kwargs):
+        raise OSError("synthetic read unavailable")
+    monkeypatch.setattr(pd, "read_parquet", unavailable)
+    try:
+        ol._append_rows("L3", [{"ticker": "NEW", "anchor_date": "2026-10-30", "filer": "new"}], root=tmp_path)
+    except OSError:
+        pass
+    assert path.read_bytes() == original
+
+
+def test_append_preserves_ledger_when_stat_is_denied(tmp_path, monkeypatch):
+    path = ol._ledger_path("L3", tmp_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(b"synthetic preimage")
+    original_stat = type(path).stat
+    def denied(self, *args, **kwargs):
+        if self == path:
+            raise PermissionError("synthetic stat denied")
+        return original_stat(self, *args, **kwargs)
+    monkeypatch.setattr(type(path), "stat", denied)
+    with pytest.raises(PermissionError):
+        ol._append_rows("L3", [{"ticker": "NEW", "anchor_date": "2026-10-30", "filer": "new"}], root=tmp_path)
+    assert path.read_bytes() == b"synthetic preimage"
+
+
+def test_display_reader_retains_unreadable_fallback(tmp_path):
+    path = ol._ledger_path("L3", tmp_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(b"synthetic unreadable")
+    assert ol._load_ledger("L3", root=tmp_path).empty
