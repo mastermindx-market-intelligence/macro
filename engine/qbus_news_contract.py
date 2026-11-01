@@ -207,12 +207,28 @@ def _revision_id(*, source_item_id: str, removed: bool, content_hash: str,
 
 
 def _clock_anomalies(published: datetime | None, updated: datetime | None,
-                     event_at: datetime | None) -> tuple[str, ...]:
+                     event_at: datetime | None,
+                     received: datetime) -> tuple[str, ...]:
+    """Name every provider stamp that contradicts another clock.
+
+    Stamps are flagged, never clamped: the publisher's time and this
+    observation's local receipt stay separate facts. A provider stamp later
+    than the receipt of the observation that carries it cannot be when the
+    report became available, so it is named here and left as the provider
+    wrote it. The comparison has no tolerance; the flag records the observed
+    order of two clocks and does not say which clock was wrong.
+    """
     out: list[str] = []
     if published is not None and updated is not None and updated < published:
         out.append("updated_before_published")
     if published is not None and event_at is not None and event_at < published:
         out.append("event_before_published")
+    if published is not None and published > received:
+        out.append("published_after_received")
+    if updated is not None and updated > received:
+        out.append("updated_after_received")
+    if event_at is not None and event_at > received:
+        out.append("event_after_received")
     return tuple(out)
 
 
@@ -276,7 +292,9 @@ def _build(*, source_item_id: str, transport: str, message_id: str | None,
         body_sha256=body_sha256,
         content_hash=content_hash,
         revision_id=revision_id,
-        clock_anomalies=_clock_anomalies(published_at, updated_at, source_event_at),
+        clock_anomalies=_clock_anomalies(
+            published_at, updated_at, source_event_at, received_at
+        ),
     )
 
 

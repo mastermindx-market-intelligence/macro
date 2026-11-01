@@ -2591,6 +2591,24 @@ def _isolate_pack_runner_planner_env(monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv(name, raising=False)
 
 
+@pytest.fixture(autouse=True)
+def _isolate_tested_tree_sha():
+    """F10 #10367: ``execute_pack`` publishes the plan tree into the runner's own
+    ``os.environ`` as ``TESTED_TREE_SHA`` (never overriding). Keep it out of the
+    ambient env between tests (review INTL-GS-F10-AUDIT-2, N5) with an explicit
+    snapshot/restore: ``monkeypatch.delenv`` records no undo for an absent key, so
+    a value set during the test would survive teardown (INTL-GS-F10-HYGIENE-AUDIT).
+    """
+    before = os.environ.pop("TESTED_TREE_SHA", None)
+    try:
+        yield
+    finally:
+        if before is None:
+            os.environ.pop("TESTED_TREE_SHA", None)
+        else:
+            os.environ["TESTED_TREE_SHA"] = before
+
+
 def _stub_planner_paths(
     monkeypatch: pytest.MonkeyPatch, paths: list[str] | None
 ) -> None:

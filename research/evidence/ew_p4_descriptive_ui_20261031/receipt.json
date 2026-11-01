@@ -1,18 +1,20 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "5bb16bdbe145208c8e7a5d2395a579e2f2c01a07",
+  "source_revision": "30998ca145bc247cbb6fb67e18ad6f06a3588a8a",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
-  "script_sha256": "aae2d21b9e3666b0cf70c870e164f28b692c6f99ba60b0e309aea9125332b44e",
-  "band_template_sha256": "184e2e5df38e8bc873fd705fc894733bbb31032338e62588e3c31e9760be714c",
+  "script_sha256": "b4289d262052e7c7ff26a019b16930410c4d541161916ad5973ed7d701b19639",
+  "band_template_sha256": "ea98fb3f2d677800629dd582de622a45286ff524e2631db4d803cba1447508f6",
   "fixtures": {
     "conflict_20s.json": "06d235e8980585e8daaa69bd6a06b036fb1643b11b9370e9d28423ef36a023d1",
     "corrected.json": "97b37a597b3da373925ff74fef57c74395499b39d4c2af226838d7d754b3563e",
-    "expected.json": "886e2bdb9a92686c7591ebe2176067a66eb7a5ae547bce5048899b65ec9922e9",
+    "expected.json": "54aa195a68a291119ff6caf4f5e550724bf4cdc2c26f2a0c68618f025e934ac3",
     "journey_b_both_fell.json": "ec3bbb92869ae8298e0c05fa03fcaa42b823b99b43f444efaff5c10d92cafb2e",
     "journey_c_envelope_1d253e1d.json": "ce20bb87d141c371dc2850c984da08b0f51522c51a5db889b8cf4dcba74f776a",
+    "malformed_blank_pair.json": "8623601cbc7b781f7e8ebbd1b5a9b50fd4ee1e9f8ce3d1866f63fe2558b35d50",
+    "malformed_calendar.json": "2ac98a491594780374c41c958cfede702bdaa9d0c13f5cf0e97c71679a4d6545",
     "malformed_future.json": "9173f52645c7c36c00051bc30d6b6358adcf336bbdfa0f2a9b569a04249a84ed",
     "malformed_id.json": "cdd6dd19dd824e0f55900e1a38a7f03fce060d8971e9b9e3c1241815d4f08897",
     "malformed_ratio.json": "72851275760ce45bbaef43c849ded29b42c1e225faff58457ca3ed9b6e71ec4d",
@@ -982,14 +984,14 @@
     "sc-states": "contact-sc-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Shots were rendered by the orchestrator (ORCH-P4b, local Playwright Chromium) at source_revision, a commit on the PR branch; the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks the blob ids against the tested tree. Test-only and CI-manifest files are excluded from the render set.",
-    "pr_branch": "claude/gd-ew-p4-descriptive-early-warning-ui-20261031b",
-    "pr_parent_of_evidence_commit": "5bb16bdbe145208c8e7a5d2395a579e2f2c01a07",
+    "note": "Shots were rendered by the Grey Deer early-warning CEO seat (local Playwright Chromium) at source_revision, the EW-P4-FU code commit on the PR branch; the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks the blob ids against the tested tree. Test-only and CI-manifest files are excluded from the render set.",
+    "pr_branch": "claude/gd-ew-p4-fu-20261101",
+    "pr_parent_of_evidence_commit": "30998ca145bc247cbb6fb67e18ad6f06a3588a8a",
     "render_files": [
       {
         "path": "site/rotation_events.js",
-        "blob_at_source_revision": "c012d27b16e11273ded426c202c9794a15992d4b",
-        "blob_on_pr_branch": "c012d27b16e11273ded426c202c9794a15992d4b",
+        "blob_at_source_revision": "c90c13d73e09a072646f4845ae683f811e8c6f6f",
+        "blob_on_pr_branch": "c90c13d73e09a072646f4845ae683f811e8c6f6f",
         "equal": true
       },
       {
@@ -1000,14 +1002,14 @@
       },
       {
         "path": "templates/_risk_envelope_band.html.j2",
-        "blob_at_source_revision": "15041d937d23de7cc4f4df5e285df5eebfcdf0af",
-        "blob_on_pr_branch": "15041d937d23de7cc4f4df5e285df5eebfcdf0af",
+        "blob_at_source_revision": "40ea00376e89055ab900d8d6de3de1f85ff595ff",
+        "blob_on_pr_branch": "40ea00376e89055ab900d8d6de3de1f85ff595ff",
         "equal": true
       },
       {
         "path": "templates/rotation_events.js",
-        "blob_at_source_revision": "c012d27b16e11273ded426c202c9794a15992d4b",
-        "blob_on_pr_branch": "c012d27b16e11273ded426c202c9794a15992d4b",
+        "blob_at_source_revision": "c90c13d73e09a072646f4845ae683f811e8c6f6f",
+        "blob_on_pr_branch": "c90c13d73e09a072646f4845ae683f811e8c6f6f",
         "equal": true
       },
       {
@@ -1024,8 +1026,8 @@
       },
       {
         "path": "tests/fixtures/ew_p4_observation/expected.json",
-        "blob_at_source_revision": "74fa602e0e5e9a6225df5e2c7858e4f6299ee99b",
-        "blob_on_pr_branch": "74fa602e0e5e9a6225df5e2c7858e4f6299ee99b",
+        "blob_at_source_revision": "4a6c9ff1eabaf7644413a7e3c6236fbf491705f3",
+        "blob_on_pr_branch": "4a6c9ff1eabaf7644413a7e3c6236fbf491705f3",
         "equal": true
       },
       {
@@ -1098,6 +1100,18 @@
         "path": "tests/probe_ew_p4_descriptive_ui_browser.py",
         "blob_at_source_revision": "7dd43bdcebe106c2ecc94d6181f44b3bf00bd87d",
         "blob_on_pr_branch": "7dd43bdcebe106c2ecc94d6181f44b3bf00bd87d",
+        "equal": true
+      },
+      {
+        "path": "tests/fixtures/ew_p4_observation/malformed_blank_pair.json",
+        "blob_at_source_revision": "966cfc96da7ae3a70395d7a9e5e850537f7600a3",
+        "blob_on_pr_branch": "966cfc96da7ae3a70395d7a9e5e850537f7600a3",
+        "equal": true
+      },
+      {
+        "path": "tests/fixtures/ew_p4_observation/malformed_calendar.json",
+        "blob_at_source_revision": "ac09f2373f0bba6f2472352a5e9bd23bff61c2aa",
+        "blob_on_pr_branch": "ac09f2373f0bba6f2472352a5e9bd23bff61c2aa",
         "equal": true
       }
     ],
