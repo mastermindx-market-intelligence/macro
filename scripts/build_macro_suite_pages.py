@@ -644,6 +644,7 @@ COPY_IDS = frozenset({
 P3_PRIMER_OPEN = frozenset({"overview", "money", "policy"})
 _STALE_NOTE_TITLES = frozenset({
     "Required source not current",
+    "Required source late, within tolerance",
     "Optional legs degraded",
 })
 _DISAGREE_NOTE_TITLES = frozenset({"Contradictory signals"})

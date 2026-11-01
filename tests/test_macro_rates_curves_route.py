@@ -842,6 +842,26 @@ _T21_LABEL_COLLAPSE: tuple[tuple[tuple[str, ...], str, str], ...] = (
 )
 
 
+# Measured collapses for reviewed reader-facing changes, one JSON file per change
+# under tests/fixtures/macro_suite_t11/collapses/. Each pair is [text as rendered
+# now, text the golden froze], exact bytes, applied by str.replace, so any other
+# edit still fails T11. An empty second item removes a new element whole. The
+# goldens are never regenerated from the candidate renderer. One file per change,
+# so changes in review at the same time do not touch the same lines here.
+T11_COLLAPSE_DIR = T11_DATA / "collapses"
+
+
+def _t11_registered_collapses() -> list[tuple[str, str]]:
+    pairs: list[tuple[str, str]] = []
+    for path in sorted(T11_COLLAPSE_DIR.glob("*.json")):
+        record = json.loads(path.read_text(encoding="utf-8"))
+        pairs.extend((new, old) for new, old in record["pairs"])
+    return pairs
+
+
+_T11_REGISTERED_COLLAPSE = _t11_registered_collapses()
+
+
 def _t11_collapse_t21_labels(html: str) -> str:
     """Collapse the reviewed T21 label strings back to BASE's fallback.
 
@@ -853,6 +873,10 @@ def _t11_collapse_t21_labels(html: str) -> str:
     the candidate renderer (tests/fixtures/macro_suite_t11/README).
     """
     for _refs, _new, _old in _T21_LABEL_COLLAPSE:
+        html = html.replace(_new, _old)
+    # The registered collapses run here because every comparison already
+    # calls this function, on both sides.
+    for _new, _old in _T11_REGISTERED_COLLAPSE:
         html = html.replace(_new, _old)
     return html
 
@@ -994,6 +1018,56 @@ def _assert_same_macro_suite_region(before_html: str, after_html: str, name: str
         "page. That is a regression introduced by this packet's shared-surface "
         "edits, not main-side drift."
     )
+
+
+def test_11_registered_collapses_are_exact_and_explained() -> None:
+    """Each file says why. Each pair starts at a tag boundary, so a collapse
+    cannot fold a loose word out of the middle of a sentence."""
+    files = sorted(T11_COLLAPSE_DIR.glob("*.json"))
+    assert files, "the collapse directory must not be empty"
+    for path in files:
+        record = json.loads(path.read_text(encoding="utf-8"))
+        assert set(record) == {"why", "pairs"}, path.name
+        assert record["why"].strip(), path.name
+        assert record["pairs"], path.name
+        for new, old in record["pairs"]:
+            assert isinstance(new, str) and isinstance(old, str), path.name
+            assert new[0] in "<>", (path.name, new)
+            assert new != old, (path.name, new)
+
+
+@pytest.mark.parametrize("new,old", _T11_REGISTERED_COLLAPSE)
+def test_11_registered_collapse_does_not_mask_other_edits(new: str, old: str) -> None:
+    """The change itself passes T11. The same change with one more character
+    fails, and a pair whose frozen text is on no golden fails as stale."""
+    if old:
+        names = [p.name for p in sorted(T11_PAGES.glob("*.html"))
+                 if old in (_region(p.read_text(encoding="utf-8"), p.name) or "")]
+        assert names, f"no golden holds {old!r}"
+        name = names[0]
+        golden = (T11_PAGES / name).read_text(encoding="utf-8")
+        changed = golden.replace(old, new)
+        stray = golden.replace(old, new[:-1] + "X" + new[-1], 1)
+    else:
+        name = "macro_inflation_system.html"
+        golden = (T11_PAGES / name).read_text(encoding="utf-8")
+        assert "</main>" in golden
+        changed = golden.replace("</main>", new + "</main>", 1)
+        stray = golden.replace("</main>", new[:-1] + "X" + new[-1] + "</main>", 1)
+    assert changed != golden
+    _assert_same_macro_suite_region(golden, changed, name)
+    with pytest.raises(AssertionError):
+        _assert_same_macro_suite_region(golden, stray, name)
+
+
+def test_late_within_tolerance_note_still_raises_the_hub_note() -> None:
+    """The hub's "not current today" note reads the note title, so the new
+    title must count as stale or the hub would silently drop that note."""
+    view = {"diagnostics": [{
+        "tone": "warn",
+        "title": {"en": "Required source late, within tolerance"},
+    }]}
+    assert builder._input_note_from_view(view) == "stale"
 
 
 def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
