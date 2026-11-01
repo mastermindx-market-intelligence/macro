@@ -394,13 +394,24 @@ def test_css_no_edge_stripe_no_color_literal_focus_visible():
     assert "outline-offset:2px" in block
 
     js = (ROOT / "templates" / "rotation_events.js").read_text(encoding="utf-8")
-    rc_ew = js[js.index(".rc-ew{margin"):]
-    rc_ew = rc_ew[:rc_ew.index("var s=document.createElement")]
+    # B1: the glance is styled by a governed stylesheet, never a runtime-injected one
+    assert ".rc-ew{" not in js
+    assert not re.search(r"\.rc-ew[\w-]*(?::[\w-]+)?\s*[,{]", js)
+    rc_ew = re.sub(r"/\*.*?\*/", "", (ROOT / "templates" / "rotation_glance.css").read_text(encoding="utf-8"), flags=re.S)
     assert not re.search(r'border-(left|right|top|inline-start|inline-end|block-start)\s*:', rc_ew)
     assert not re.search(r'box-shadow[^;}]*inset', rc_ew)
     assert not re.search(r'#[0-9a-fA-F]{3,8}\b', rc_ew)
     assert "rgb(" not in rc_ew and "hsl(" not in rc_ew
-    assert ".rc-ew-next:focus-visible" in rc_ew
+    assert not re.search(r'(?:^|[^-a-z])(red|blue|green|white|black|orange|yellow|purple|gray|grey)\s*[;}]', rc_ew)
+    assert ".rc-ew-next:focus-visible" in rc_ew and "outline:2px solid var(--link)" in rc_ew
+    assert "outline-offset:2px" in rc_ew
+    # sizes come from the --fs-* scale, never literal px
+    assert not re.search(r"font-size\s*:\s*\d", rc_ew) and "var(--fs-" in rc_ew
+    # light is its own art direction: a raised white panel with the card shadow
+    assert ':root[data-theme="light"] .rc-ew {' in rc_ew and "var(--card-shadow)" in rc_ew
+    # host-scoped tokens always carry their fallback on Sector Central
+    for tok in ("--ink-1", "--ink-2", "--ink-3", "--r-card", "--r-ctl"):
+        assert f"var({tok})" not in rc_ew, tok
     # the pre-existing rc-ec edge stripe is repaired (even border, warn surface)
     assert ".rc-ec-stale,.rc-ec-conflict{border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--surface-warn-subtle);" in js
     assert ".rc-ec-stale,.rc-ec-conflict{border-left:" not in js
@@ -504,10 +515,22 @@ def test_review_r1_observation_id_is_selectable_monospace():
 
 
 def test_review_r1_site_copy_is_byte_identical_to_template():
-    site = ROOT / "site" / "rotation_events.js"
-    if not site.exists():
-        pytest.skip("site/ not materialized in this sparse tree")
-    assert site.read_bytes() == (ROOT / "templates" / "rotation_events.js").read_bytes()
+    for name in ("rotation_events.js", "rotation_glance.css"):
+        site = ROOT / "site" / name
+        if not site.exists():
+            pytest.skip("site/ not materialized in this sparse tree")
+        assert site.read_bytes() == (ROOT / "templates" / name).read_bytes(), name
+
+
+def test_sector_central_links_the_governed_glance_stylesheet():
+    tpl = (ROOT / "templates" / "sector_central.html.j2").read_text(encoding="utf-8")
+    assert '<link rel="stylesheet" href="rotation_glance.css">' in tpl
+    build = (ROOT / "scripts" / "build_sector_central.py").read_text(encoding="utf-8")
+    assert '"rotation_glance.css"' in build
+    page = ROOT / "site" / "sector_central.html"
+    if page.exists():
+        assert re.search(r'<link rel="stylesheet" href="rotation_glance\.css\?v=[0-9a-f]{8}">',
+                         page.read_text(encoding="utf-8"))
 
 
 def _git_blob_id(path: Path) -> str:
@@ -529,6 +552,7 @@ def test_receipt_shots_depict_the_source_under_test():
         "templates/_risk_envelope_band.html.j2",
         "templates/_risk_envelope_band.css.j2",
         "templates/rotation_events.js",
+        "templates/rotation_glance.css",
         "tests/probe_ew_p4_descriptive_ui_browser.py",
     } <= paths
     assert {f"tests/fixtures/ew_p4_observation/{p.name}" for p in FIX.glob("*.json")} <= paths

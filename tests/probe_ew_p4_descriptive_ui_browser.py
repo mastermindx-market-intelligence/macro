@@ -193,10 +193,11 @@ def sc_payload(wrapper: dict | None, early_as_of: str = SESSION) -> bytes:
 
 def sc_html(lang: str, theme: str) -> str:
     theme_css = (ROOT / "templates" / "theme.css").read_text(encoding="utf-8")
+    glance_css = (ROOT / "templates" / "rotation_glance.css").read_text(encoding="utf-8")
     return (f'<!doctype html><html lang="{lang}" data-lang="{lang}" data-theme="{theme}">'
             '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             f"<style>{theme_css}</style>"
-            f"<style>{PAGE_BODY_CSS}</style></head>"
+            f"<style>{PAGE_BODY_CSS}</style><style>{glance_css}</style></head>"
             '<body style="padding:16px"><main style="max-width:1080px;margin:auto">'
             '<p style="font-size:12px">Component QA · synthetic fixture · not a live market signal</p>'
             '<div id="rc-events-mount"></div></main>'

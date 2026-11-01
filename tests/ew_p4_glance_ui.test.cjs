@@ -233,11 +233,15 @@ test('the glance is prepended to the early-context output and does not alter it'
 test('the pre-existing rc-ec edge stripe is repaired, rc-ew uses even borders', () => {
   assert.ok(src.includes('.rc-ec-stale,.rc-ec-conflict{border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--surface-warn-subtle);'));
   assert.ok(!src.includes('.rc-ec-stale,.rc-ec-conflict{border-left:'));
-  const rcEw = src.slice(src.indexOf('.rc-ew{margin'), src.indexOf("var s=document.createElement"));
+  // B1: no runtime-injected glance styles; the governed stylesheet carries them
+  assert.ok(!src.includes('.rc-ew{') && !/\.rc-ew[\w-]*(?::[\w-]+)?\s*[,{]/.test(src));
+  const rcEw = fs.readFileSync(path.join(path.dirname(target), 'rotation_glance.css'), 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '');
   assert.ok(!/border-(left|right|top|inline-start|inline-end|block-start)\s*:/.test(rcEw));
   assert.ok(!/#[0-9a-fA-F]{3,8}\b/.test(rcEw));
   assert.ok(!rcEw.includes('rgb(') && !rcEw.includes('hsl('));
-  assert.ok(rcEw.includes('.rc-ew-next:focus-visible,.rc-ew-study summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;}'));
+  assert.ok(!/font-size\s*:\s*\d/.test(rcEw));
+  assert.ok(rcEw.includes('.rc-ew-next:focus-visible, .rc-ew-study > summary:focus-visible {outline:2px solid var(--link); outline-offset:2px;'));
 });
 
 test('repair wave B: separator, routes and a single both-fell sentence', () => {
@@ -311,7 +315,8 @@ test('review r1: explicit keys, non-object wrapper, monospace id', () => {
   }
   assert.equal(stateOf(fn(null, null, '2026-10-30', 'en', NOW)), 'unavailable', 'null wrapper stays absent');
   assert.equal(stateOf(fn(undefined, null, '2026-10-30', 'en', NOW)), 'unavailable', 'missing wrapper stays absent');
-  assert.match(src, /\.rc-ew-id\{user-select:all;font-family:var\(--font-mono\);\}/, 'selectable monospace id');
+  const glanceCss = fs.readFileSync(path.join(path.dirname(target), 'rotation_glance.css'), 'utf8');
+  assert.ok(glanceCss.includes('.rc-ew-id {user-select:all; font-family:var(--font-mono);}'), 'selectable monospace id');
 });
 
 test('EW-P4-FU: blank pair_id and calendar-invalid dates are unreadable; real dates pass', () => {

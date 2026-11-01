@@ -20571,6 +20571,7 @@ jobs:
       # EW-P4.T1 descriptive observation glance (GD-EW-P4-B1): the node suite
       # reads the production function and the shared fixtures.
       - "templates/rotation_events.js"
+      - "templates/rotation_glance.css"
       - "tests/ew_p4_glance_ui.test.cjs"
       - "tests/fixtures/ew_p4_observation/**"
     runs-on: ubuntu-latest
@@ -43587,6 +43588,7 @@ jobs:
       - "templates/_risk_envelope_band.html.j2"
       - "templates/_risk_envelope_band.css.j2"
       - "templates/rotation_events.js"
+      - "templates/rotation_glance.css"
       # The route test reads the Sector Central hash router.
       - "templates/si_workspace.js"
       # The receipt test binds the committed shots to their render inputs.
