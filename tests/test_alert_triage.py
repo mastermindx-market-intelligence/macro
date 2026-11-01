@@ -365,13 +365,13 @@ _IMPULSE_EDGE = (
     "Forward de-risk window from a precursor cross in the impulse radar "
     "(a Deribit DVOL range jolt or a SOPR profit-take spike). Research-stage: "
     "the radar's re-check zeroes the score of a leg that fails its 2024+ lift "
-    "floor or permutation test, and this alert can still print for such a leg. "
+    "floor or permutation test. "
     "Any effect fades in ~2-4 days. " + _BLIND_CAVEAT
 )
 _IMPULSE_EDGE_ZH_LIVE = (
     "来自脉冲雷达前兆突破的前瞻减仓窗口（Deribit DVOL 区间跳升或 SOPR 获利了结骤升）。"
     "处于研究阶段：若某条腿未通过 2024 年以来的提升倍数下限或置换检验，"
-    "雷达复核时其分值归零，但本提醒仍可能因该腿出现。"
+    "雷达复核时其分值归零。"
     "任何效果约 2-4 天内衰减。"
     + _BLIND_CAVEAT_ZH
 )
