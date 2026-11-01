@@ -58,20 +58,35 @@ live plane ``/var/lib/macro-live`` (``state/quotes_full.json`` +
 same-read is SPLIT exactly like the incumbent Prophet Live lane (evaluator ->
 R2 event spool -> nightly reconciler), never duplicated:
   ``--spool``                the VPS timer pass (app/deploy/macro-live-b4capture.timer,
-                             once per US session after the open): builds every row
-                             against the live plane, writes nothing under data/, and
-                             publishes ONE object per pass at
+                             once per US session after the open).  SESSION GUARD
+                             first: the pass's Eastern date must be an NYSE session
+                             (``NOT_A_SESSION`` otherwise -- a holiday never produces
+                             a row) and the committed board stamp must be that
+                             session or the session immediately before it
+                             (``STALE_BOARD_STAMP`` otherwise -- a nightly that has not
+                             landed on this host never yields a row under an old
+                             stamp).  Then it builds every row against the live
+                             plane, writes nothing under data/, and publishes ONE
+                             object per pass at
                              ``live_flow/prophet_b4_capture/<stamp_date>/<captured_at>.json``
                              (object-per-pass, never read-modify-write).  An
                              unpublished pass is a typed refusal (exit 3), never a
                              silent no-op: the spool IS this pass's only output.
-  ``--nightly --from-spool`` the Mac nightly (daily.yml ``us_prophet_ledgers``): lists
-                             the last N stamp_date prefixes, re-checks every row
-                             against the write fence, and keep-first merges them into
-                             the committed day files -- the SOLE durable advancer, still
-                             lane-gated, and the commit step lands the stream.  An
-                             EMPTY spool is a valid state (the VPS lane not enrolled
-                             yet, or a holiday), never a refusal.
+  ``--nightly --from-spool`` the Mac nightly (daily.yml ``us_prophet_ledgers``): a STRICT
+                             listing (a failed LIST is ``SPOOL_LIST_FAILED``, never an
+                             empty spool), calendar-stamp prefixes only, every object
+                             and row validated (schema, producer, stamp, pass date,
+                             session rule, closed key set, write fence) BEFORE any
+                             write; per stamp the EARLIEST pass is the observation and
+                             later passes are recorded as superseded, not merged; all
+                             day-file merges are planned (conflicts raised) before the
+                             first byte is written; then keep-first merge -- the SOLE
+                             durable advancer, still lane-gated, and the commit step
+                             lands the stream.  Selected stamps = the last N prefixes
+                             plus every older prefix that has no committed day file
+                             yet (a backlog is never aged out unread).  An EMPTY spool
+                             is a valid state (the VPS lane not enrolled yet), never a
+                             refusal.
   ``--nightly`` alone        unchanged: a host that has BOTH the tree and the live
                              plane (none exists today) captures and writes directly.
 No row is built twice and no verdict is persisted on either host; the row key,
@@ -87,9 +102,10 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
 from pathlib import Path
 from typing import Mapping
@@ -98,7 +114,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from engine import ledger_lane  # noqa: E402
-from engine.prophet_live import r2io  # noqa: E402
+from engine.prophet_live import live_states, r2io  # noqa: E402
+from lib.nyse_calendar import is_session, last_session_on_or_before  # noqa: E402
 from engine.prophet_b4_same_read import (  # noqa: E402
     evaluate_same_read_entry_availability,
 )
@@ -194,6 +211,8 @@ SPOOL_PRODUCER = "scripts/capture_prophet_b4_same_read.py"
 #: How many most-recent stamp_date prefixes one nightly ingest reads (keep-first
 #: makes a re-read a no-op, so this bounds GETs, not correctness).
 SPOOL_SESSIONS_DEFAULT = 5
+#: A spool prefix is a calendar stamp or it is ignored (never a path component).
+_STAMP_PREFIX_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 #: The three identity columns every durable candidates-store row must carry for
 #: the builder-identical source-key derivation to be lawful.
@@ -647,14 +666,14 @@ def _read_day_file(target: Path) -> list[dict[str, object]]:
     return rows
 
 
-def _merge_and_write(target: Path, rows: list[dict[str, object]]) -> int:
-    """Keep-first merge of the run's rows into the day file; append-only.
+def _plan_merge(
+    target: Path, rows: list[dict[str, object]]
+) -> tuple[dict[tuple, dict[str, object]], int]:
+    """Keep-first merge of ``rows`` into the day file's committed rows, WITHOUT writing.
 
-    The key is ``_row_key_of`` (stamp_date, candidate_source_event_id,
-    candidate_generation_id, strategy_definition_id).  An existing key keeps its
-    committed row verbatim (``captured_at`` included); only new keys are appended; the whole day file is rewritten canonical-JSON,
-    sorted by key, via temp file + atomic rename.  A changed body under an
-    existing key is a typed conflict and NOTHING is written.
+    Returns ``(committed_by_key, written)``; raises CaptureConflictError on a changed
+    body under an existing key.  Reading and merging are separated from writing so a
+    caller holding several day files can plan every merge before the first write.
     """
     committed: dict[tuple, dict[str, object]] = {}
     for row in _read_day_file(target):
@@ -680,6 +699,11 @@ def _merge_and_write(target: Path, rows: list[dict[str, object]]) -> int:
             continue  # keep-first: the committed row (and its captured_at) stand
         committed[key] = row
         written += 1
+    return committed, written
+
+
+def _write_day_file(target: Path, committed: dict[tuple, dict[str, object]]) -> None:
+    """Rewrite the whole day file canonical-JSON, sorted by key, temp file + atomic rename."""
     target.parent.mkdir(parents=True, exist_ok=True)
     payload = "".join(
         json.dumps(
@@ -704,6 +728,20 @@ def _merge_and_write(target: Path, rows: list[dict[str, object]]) -> int:
     except BaseException:
         temp.unlink(missing_ok=True)
         raise
+
+
+def _merge_and_write(target: Path, rows: list[dict[str, object]]) -> int:
+    """Keep-first merge of the run's rows into the day file; append-only.
+
+    The key is ``_row_key_of`` (stamp_date, candidate_source_event_id,
+    candidate_generation_id, strategy_definition_id).  An existing key keeps its
+    committed row verbatim (``captured_at`` included); only new keys are appended;
+    the whole day file is rewritten canonical-JSON, sorted by key, via temp file +
+    atomic rename.  A changed body under an existing key is a typed conflict and
+    NOTHING is written.
+    """
+    committed, written = _plan_merge(target, rows)
+    _write_day_file(target, committed)
     return written
 
 
@@ -711,6 +749,64 @@ def spool_key(stamp_date: str, captured_at: str) -> str:
     """``<SPOOL_PREFIX>/<stamp_date>/<captured_at digits>.json`` — one object per pass."""
     stamp = "".join(ch for ch in str(captured_at) if ch.isalnum())
     return f"{SPOOL_PREFIX}/{str(stamp_date)[:10]}/{stamp}.json"
+
+
+def _stamp_is_lawful_for_pass(stamp: date, pass_date: date) -> bool:
+    """The one session rule both hosts enforce: the pass date is an NYSE session and
+    the committed board stamp is that session or the session immediately before it.
+
+    A holiday pass (no session) and a pass whose host has not yet pulled the prior
+    session's nightly (stamp two or more sessions old) both fail; neither may become
+    a row, because ``captured_at`` is the observation instant of the stamp's
+    candidates at THE NEXT session's decision window, not of an arbitrary later day.
+    """
+    if not is_session(pass_date):
+        return False
+    prior = last_session_on_or_before(pass_date - timedelta(days=1))
+    return stamp in (pass_date, prior)
+
+
+def _pass_date(moment: datetime) -> date:
+    """The Eastern calendar date of a pass (one ET definition: live_states.et_clock)."""
+    return live_states.et_clock(moment).date()
+
+
+def _spool_session_guard(root_path: Path, moment: datetime) -> dict[str, str]:
+    """``--spool`` refuses before any live-plane read when the session rule fails."""
+    pass_date = _pass_date(moment)
+    if not is_session(pass_date):
+        raise TypedRefusal(
+            "NOT_A_SESSION",
+            f"the pass date {pass_date.isoformat()} (US-Eastern) is not an NYSE session; "
+            "a holiday pass observes nothing and publishes nothing",
+        )
+    stamp_date = resolve_board_as_of(root_path)
+    if not stamp_date:
+        raise TypedRefusal(
+            "COMMITTED_BOARD_AS_OF_MISSING",
+            "no committed board as_of: the stamp is the observation identity and "
+            "is never wall-clock, run id or Pages",
+        )
+    try:
+        stamp = date.fromisoformat(str(stamp_date)[:10])
+    except ValueError as exc:
+        raise TypedRefusal(
+            "COMMITTED_BOARD_AS_OF_MISSING", f"board as_of is not a date: {stamp_date!r}"
+        ) from exc
+    prior = last_session_on_or_before(pass_date - timedelta(days=1))
+    if not _stamp_is_lawful_for_pass(stamp, pass_date):
+        raise TypedRefusal(
+            "STALE_BOARD_STAMP",
+            f"committed board as_of {stamp.isoformat()} is neither the pass session "
+            f"{pass_date.isoformat()} nor the session before it {prior.isoformat()}: the "
+            "prior session's nightly has not landed on this host (or the board is ahead "
+            "of the clock); no row is observed against a stale stamp",
+        )
+    return {
+        "pass_date": pass_date.isoformat(),
+        "stamp_date": str(stamp_date),
+        "prior_session": prior.isoformat(),
+    }
 
 
 def _build_rows(root_path: Path, live_root_path: Path, *, alias_required: bool) -> dict[str, object]:
@@ -803,6 +899,15 @@ def _validate_spool_object(key: str, stamp_date: str, obj: object) -> list[dict[
         raise refuse(f"producer is not {SPOOL_PRODUCER}")
     if str(obj.get("stamp_date")) != stamp_date:
         raise refuse("stamp_date does not match its prefix")
+    try:
+        stamp_d = date.fromisoformat(stamp_date)
+        pass_d = date.fromisoformat(str(obj.get("pass_date")))
+    except (TypeError, ValueError):
+        raise refuse("stamp_date / pass_date are not calendar dates") from None
+    if not _stamp_is_lawful_for_pass(stamp_d, pass_d):
+        raise refuse(
+            f"pass_date {pass_d.isoformat()} is not a session whose stamp may be {stamp_date}"
+        )
     rows = obj.get("rows")
     if not isinstance(rows, list) or not rows:
         raise refuse("rows is not a non-empty list")
@@ -823,10 +928,38 @@ def _validate_spool_object(key: str, stamp_date: str, obj: object) -> list[dict[
     return out
 
 
+def _strict_list_keys(s3, prefix: str) -> list[str]:
+    """Every key under ``prefix`` or a typed refusal.
+
+    ``r2io.list_keys`` returns an EMPTY or PARTIAL list on any failure, which here
+    would be indistinguishable from "no VPS pass has published" — the exact silent
+    dark that cost 27 days in 2026-07/08.  The ingest therefore lists itself and
+    refuses on error.
+    """
+    out: list[str] = []
+    kwargs: dict[str, object] = {"Bucket": r2io.bucket(), "Prefix": prefix}
+    try:
+        while True:
+            page = s3.list_objects_v2(**kwargs)
+            out.extend(str(o["Key"]) for o in (page.get("Contents") or []))
+            token = page.get("NextContinuationToken")
+            if not page.get("IsTruncated") or not token:
+                break
+            kwargs["ContinuationToken"] = token
+    except Exception as exc:  # noqa: BLE001 — any transport/auth failure is the same refusal
+        raise TypedRefusal(
+            "SPOOL_LIST_FAILED",
+            f"listing {prefix} failed ({type(exc).__name__}: {exc}); an unreadable spool "
+            "is not an empty spool — nothing ingested, nothing written",
+        ) from exc
+    return out
+
+
 def _ingest_spool(
     root_path: Path, *, dry_run: bool, sessions: int, root_override: bool
 ) -> dict[str, object]:
-    """``--nightly --from-spool``: list, validate everything, then keep-first merge."""
+    """``--nightly --from-spool``: list strictly, validate everything, plan every
+    merge, then write — the sole durable advancer of the capture stream."""
     s3 = r2io.client()
     if s3 is None:
         raise TypedRefusal(
@@ -834,44 +967,83 @@ def _ingest_spool(
             "no R2 credentials: the capture spool cannot be listed, so nothing is "
             "ingested and nothing is written",
         )
+    prefix = SPOOL_PREFIX + "/"
     by_stamp: dict[str, list[str]] = {}
-    for key in r2io.list_keys(SPOOL_PREFIX + "/", s3=s3):
-        parts = str(key)[len(SPOOL_PREFIX):].strip("/").split("/")
-        if len(parts) != 2 or not parts[1].endswith(".json"):
+    foreign: list[str] = []
+    for key in _strict_list_keys(s3, prefix):
+        parts = str(key)[len(prefix):].split("/")
+        lawful = (
+            len(parts) == 2 and bool(_STAMP_PREFIX_RE.match(parts[0]))
+            and parts[1].endswith(".json") and len(parts[1]) > len(".json")
+        )
+        if lawful:
+            try:
+                date.fromisoformat(parts[0])
+            except ValueError:
+                lawful = False
+        if not lawful:
+            foreign.append(str(key))
             continue
         by_stamp.setdefault(parts[0], []).append(str(key))
-    stamps = sorted(by_stamp)
-    if sessions > 0:
-        stamps = stamps[-sessions:]
-    # Phase 1 — read and validate every object; a single malformed object refuses
-    # the whole run before any write (never a partial day).
-    plan: list[tuple[str, str, list[dict[str, object]]]] = []
-    for stamp in stamps:
+    stamps_seen = sorted(by_stamp)
+    window = set(stamps_seen[-sessions:]) if sessions > 0 else set(stamps_seen)
+    # A stamp outside the window is still ingested while it has NO committed day file:
+    # a backlog (runner outage, late enrollment) is never aged out unread.  A stamp
+    # outside the window WITH a day file is already landed; a later pass for it is a
+    # superseded re-observation and is not fetched.
+    selected = [
+        stamp for stamp in stamps_seen
+        if stamp in window or not capture_path(root_path, stamp).exists()
+    ]
+    aged_out = [stamp for stamp in stamps_seen if stamp not in selected]
+
+    # Phase 1 — read and validate EVERY object of every selected stamp; the earliest
+    # pass (by captured_at) is the stamp's observation, later passes are superseded.
+    # One malformed object refuses the whole run before any write.
+    observations: list[tuple[str, str, list[dict[str, object]], list[str]]] = []
+    objects_read = 0
+    for stamp in selected:
+        passes: list[tuple[str, str, list[dict[str, object]]]] = []
         for key in sorted(by_stamp[stamp]):
             obj = r2io.get_json(key, s3=s3, allow_public=False)
-            plan.append((stamp, key, _validate_spool_object(key, stamp, obj)))
-    # Phase 2 — keep-first merge per stamp day file (conflict law unchanged).
+            rows = _validate_spool_object(key, stamp, obj)
+            objects_read += 1
+            passes.append((str(obj["captured_at"]), key, rows))
+        passes.sort(key=lambda item: (item[0], item[1]))
+        _, first_key, first_rows = passes[0]
+        observations.append((stamp, first_key, first_rows, [k for _, k, _ in passes[1:]]))
+
+    # Phase 2a — plan every day-file merge; a conflict or malformed committed file
+    # anywhere raises BEFORE the first write (never a partial night).
+    plans: list[tuple[str, Path, dict[tuple, dict[str, object]], int]] = []
+    for stamp, _key, rows, _superseded in observations:
+        target = capture_path(root_path, stamp)
+        committed, written = _plan_merge(target, rows)
+        plans.append((stamp, target, committed, written))
+    # Phase 2b — write.
+    if not dry_run:
+        for _stamp, target, committed, written in plans:
+            if written:
+                _write_day_file(target, committed)
+
     sessions_doc: dict[str, dict[str, object]] = {}
     total_rows = 0
     total_written = 0
-    for stamp in stamps:
-        rows = [row for s_, _k, rs in plan if s_ == stamp for row in rs]
-        target = capture_path(root_path, stamp)
-        written = 0
-        if not dry_run:
-            written = _merge_and_write(target, rows)
+    for (stamp, key, rows, superseded), (_s, target, _c, written) in zip(observations, plans):
         total_rows += len(rows)
-        total_written += written
+        total_written += written if not dry_run else 0
         sessions_doc[stamp] = {
-            "objects": sum(1 for s_, _k, _r in plan if s_ == stamp),
+            "objects": 1 + len(superseded),
+            "observation": key,
+            "superseded": superseded,
             "rows": len(rows),
-            "rows_written": written,
+            "rows_written": written if not dry_run else 0,
             "target": str(target),
         }
-    if not stamps:
+    if not stamps_seen:
         print(
             "::notice title=prophet-b4-capture::capture spool is empty — no VPS pass "
-            f"has published under {SPOOL_PREFIX}/ (lane not enrolled, or no session); "
+            f"has published under {prefix} (lane not enrolled, or no session); "
             "nothing to ingest, nothing written",
             file=sys.stderr, flush=True,
         )
@@ -884,7 +1056,11 @@ def _ingest_spool(
         "spool": {
             "prefix": SPOOL_PREFIX,
             "sessions_requested": sessions,
-            "objects": len(plan),
+            "stamps_seen": stamps_seen,
+            "stamps_selected": selected,
+            "stamps_aged_out": aged_out,
+            "foreign_keys": len(foreign),
+            "objects": objects_read,
             "sessions": sessions_doc,
         },
         "rows": total_rows,
@@ -946,6 +1122,9 @@ def run(
             root_path, dry_run=dry_run, sessions=int(spool_sessions),
             root_override=root is not None,
         )
+    session_guard: dict[str, str] | None = None
+    if spool:
+        session_guard = _spool_session_guard(root_path, _now())
     live_root_path = Path(live_root) if live_root is not None else NATIVE_LIVE_ROOT
     if not live_root_path.is_absolute() or not live_root_path.is_dir():
         raise TypedRefusal(
@@ -970,6 +1149,7 @@ def run(
             "schema": SPOOL_SCHEMA,
             "producer": SPOOL_PRODUCER,
             "stamp_date": stamp_date,
+            "pass_date": session_guard["pass_date"] if session_guard else None,
             "captured_at": captured_at,
             "snapshot_generation_id": str(built["snapshot"].generation_id),
             "alias_table": built["alias_table"],
@@ -986,7 +1166,7 @@ def run(
                 "credentials, PROPHET_LIVE_NO_PUBLISH, or a PUT failure); nothing is "
                 "written anywhere else, so this decision instant is lost unless re-run",
             )
-        spool_doc = {"key": key, "published": True}
+        spool_doc = {"key": key, "published": True, "session_guard": session_guard}
 
     if spool:
         mode = "spool"

@@ -837,19 +837,42 @@ def test_docstring_pins_zero_authority_and_capture_only():
 # below is a dict; r2io's own suite covers the wire.
 
 
+class _FakeS3:
+    """The two boto3 calls the ingest's STRICT listing makes, paginated in pages of 2
+    so a single-page fake cannot hide a lost continuation."""
+
+    def __init__(self, spool):
+        self.spool = spool
+
+    def list_objects_v2(self, *, Bucket, Prefix, ContinuationToken=None):
+        if self.spool.list_fail:
+            raise RuntimeError("R2 LIST failed (fake transport)")
+        if ContinuationToken is None:
+            self.spool.lists.append(Prefix)
+        keys = sorted(k for k in self.spool.objects if k.startswith(Prefix))
+        start = int(ContinuationToken or 0)
+        page = keys[start:start + 2]
+        more = start + 2 < len(keys)
+        out = {"Contents": [{"Key": k} for k in page], "IsTruncated": more}
+        if more:
+            out["NextContinuationToken"] = str(start + 2)
+        return out
+
+
 class _FakeSpool:
     """Dict-backed stand-in for the r2io functions the capture calls."""
 
-    def __init__(self, *, publish=True, client=True):
+    def __init__(self, *, publish=True, client=True, list_fail=False):
         self.objects: dict[str, object] = {}
         self.puts: list[str] = []
         self.lists: list[str] = []
         self.publish = publish
         self.client_available = client
+        self.list_fail = list_fail
 
     def install(self, monkeypatch):
         r2 = capture.r2io
-        monkeypatch.setattr(r2, "client", lambda: object() if self.client_available else None)
+        monkeypatch.setattr(r2, "client", lambda: _FakeS3(self) if self.client_available else None)
 
         def put_json(key, payload, *, s3=None):
             self.puts.append(key)
@@ -859,9 +882,8 @@ class _FakeSpool:
             self.objects[key] = json.loads(json.dumps(payload))
             return True
 
-        def list_keys(prefix, *, s3=None):
-            self.lists.append(prefix)
-            return sorted(k for k in self.objects if k.startswith(prefix))
+        def list_keys(prefix, *, s3=None):  # the lenient lister: the ingest must NOT use it
+            raise AssertionError("ingest must list strictly via s3.list_objects_v2, not r2io.list_keys")
 
         def get_json(key, *, s3=None, allow_public=True):
             assert allow_public is False, "the ingest must never fall back to the public mirror"
@@ -907,6 +929,9 @@ def test_spool_pass_publishes_one_object_with_the_rows_the_nightly_would_write(
     assert obj["schema"] == capture.SPOOL_SCHEMA
     assert obj["producer"] == capture.SPOOL_PRODUCER
     assert obj["stamp_date"] == _SESSION and obj["captured_at"] == "2026-09-17T20:05:00Z"
+    assert obj["pass_date"] == _SESSION  # the session guard's Eastern date rides with the pass
+    assert doc["spool"]["session_guard"] == {
+        "pass_date": _SESSION, "stamp_date": _SESSION, "prior_session": "2026-09-16"}
     assert obj["counts_by_state"] == {"UNAVAILABLE_DATA": 2}
     for row in obj["rows"]:
         assert set(row) == set(capture.ROW_KEYS)
@@ -1030,6 +1055,10 @@ def test_from_spool_refuses_a_malformed_or_smuggled_object_before_any_write(
     bad("stamp mismatch", lambda o: o.update(stamp_date="2026-09-18"))
     bad("row without the closed key set", lambda o: o["rows"][0].pop("facts"))
     bad("row clock not the pass clock", lambda o: o["rows"][0].update(captured_at="2026-09-17T21:30:00Z"))
+    bad("no pass date", lambda o: o.pop("pass_date"))
+    bad("pass on a Saturday", lambda o: o.update(pass_date="2026-09-19"))
+    bad("pass two sessions after the stamp", lambda o: o.update(pass_date="2026-09-21"))
+    bad("pass before the stamp", lambda o: o.update(pass_date="2026-09-16"))
 
     def smuggle(o):
         o["rows"][0]["facts"] = {"availability_state": "ENTRY_OPEN", "x": 1}
@@ -1048,13 +1077,32 @@ def test_from_spool_changed_body_under_a_committed_key_is_a_conflict_exit_2(
     target = _capture_file(mac)
     committed = target.read_bytes()
 
-    # A later VPS pass (new object, same key, DIFFERENT body) must not rewrite history.
+    # A later VPS pass (new object, same key, DIFFERENT body — a stale re-read, a
+    # re-fired timer) is a SUPERSEDED observation: validated, recorded, never merged.
+    # The stamp's observation is its EARLIEST pass, so the second pass can neither
+    # win keep-first nor conflict with the first.
+    later_key = f"{capture.SPOOL_PREFIX}/{_SESSION}/20260917T214000Z.json"
     later = json.loads(json.dumps(obj))
     later["captured_at"] = "2026-09-17T21:40:00Z"
     for row in later["rows"]:
         row["captured_at"] = later["captured_at"]
         row["unavailable_reasons"] = ["SOMETHING_ELSE"]
-    spool.objects[f"{capture.SPOOL_PREFIX}/{_SESSION}/20260917T214000Z.json"] = later
+    spool.objects[later_key] = later
+
+    assert _ingest(monkeypatch, mac) == 0
+    doc = json.loads(capsys.readouterr().out)
+    sess = doc["spool"]["sessions"][_SESSION]
+    assert sess["objects"] == 2 and sess["superseded"] == [later_key]
+    assert sess["observation"].endswith("/20260917T200500Z.json")
+    assert doc["rows_written"] == 0 and target.read_bytes() == committed
+
+    # The committed day file disagreeing with the stamp's observation IS a conflict
+    # (tampered or foreign-written history): exit 2, nothing rewritten.
+    first_key = sess["observation"]
+    tampered = json.loads(json.dumps(spool.objects[first_key]))
+    for row in tampered["rows"]:
+        row["unavailable_reasons"] = ["SOMETHING_ELSE"]
+    spool.objects[first_key] = tampered
 
     code = _ingest(monkeypatch, mac)
 
@@ -1062,6 +1110,49 @@ def test_from_spool_changed_body_under_a_committed_key_is_a_conflict_exit_2(
     conflict = json.loads(capsys.readouterr().out)
     assert conflict["conflict"][0] == _SESSION
     assert target.read_bytes() == committed
+
+
+def test_from_spool_plans_every_stamp_before_the_first_write(tmp_path, monkeypatch, capsys):
+    """A conflict on the SECOND stamp leaves the first stamp unwritten: a nightly is
+    all-or-nothing across day files, never a partial night."""
+    spool, obj = _spooled_world(tmp_path, monkeypatch, capsys, tickers=("UNIT",))
+    mac = tmp_path / "mac"
+    mac.mkdir()
+    assert _ingest(monkeypatch, mac) == 0
+    capsys.readouterr()
+    committed = _capture_file(mac).read_bytes()
+    first_key = next(iter(spool.objects))
+    tampered = json.loads(json.dumps(obj))
+    for row in tampered["rows"]:
+        row["unavailable_reasons"] = ["SOMETHING_ELSE"]
+    spool.objects[first_key] = tampered
+    older = json.loads(json.dumps(obj))
+    older["stamp_date"] = older["pass_date"] = "2026-09-16"
+    for row in older["rows"]:
+        row["stamp_date"] = "2026-09-16"
+    spool.objects[f"{capture.SPOOL_PREFIX}/2026-09-16/20260916T200500Z.json"] = older
+
+    code = _ingest(monkeypatch, mac)
+
+    assert code == 2
+    assert json.loads(capsys.readouterr().out)["conflict"][0] == _SESSION
+    assert not _capture_file(mac, "2026-09-16").exists()
+    assert _capture_file(mac).read_bytes() == committed
+
+
+def test_from_spool_refuses_when_the_listing_fails_instead_of_reporting_an_empty_spool(
+        tmp_path, monkeypatch, capsys):
+    spool = _FakeSpool(list_fail=True).install(monkeypatch)
+    mac = tmp_path / "mac"
+    mac.mkdir()
+
+    code = _ingest(monkeypatch, mac)
+
+    assert code == 3
+    refusal = json.loads(capsys.readouterr().out)
+    assert refusal["refused"] == "SPOOL_LIST_FAILED"
+    assert not (mac / _CAPTURE_REL).exists()
+    assert spool.puts == []
 
 
 def test_from_spool_without_r2_credentials_is_a_typed_refusal(tmp_path, monkeypatch, capsys):
@@ -1118,21 +1209,78 @@ def test_from_spool_bounds_the_sessions_read_and_ignores_foreign_keys(
     older["stamp_date"] = "2026-09-16"
     for row in older["rows"]:
         row["stamp_date"] = "2026-09-16"
+    older["pass_date"] = "2026-09-16"
     spool.objects[f"{capture.SPOOL_PREFIX}/2026-09-16/20260916T200500Z.json"] = older
     spool.objects[f"{capture.SPOOL_PREFIX}/README.txt"] = "not a pass"
     spool.objects[f"{capture.SPOOL_PREFIX}/2026-09-16/nested/x.json"] = {}
+    # Prefixes that are not calendar stamps are never path components nor sessions:
+    # a traversal, a date-shaped-but-invalid prefix, a late sort-order prefix.
+    spool.objects[f"{capture.SPOOL_PREFIX}/../x.json"] = older
+    spool.objects[f"{capture.SPOOL_PREFIX}/2026-13-40/x.json"] = older
+    spool.objects[f"{capture.SPOOL_PREFIX}/zzzz-latest/x.json"] = older
     mac = tmp_path / "mac"
     mac.mkdir()
 
+    # Window of ONE session, but 2026-09-16 has no committed day file: a backlog is
+    # ingested, never aged out unread.  Foreign prefixes are counted and ignored.
     assert _ingest(monkeypatch, mac, "--spool-sessions", "1") == 0
     doc = json.loads(capsys.readouterr().out)
-    assert list(doc["spool"]["sessions"]) == [_SESSION]
-    assert not _capture_file(mac, "2026-09-16").exists()
+    assert doc["spool"]["stamps_seen"] == ["2026-09-16", _SESSION]
+    assert doc["spool"]["stamps_selected"] == ["2026-09-16", _SESSION]
+    assert doc["spool"]["stamps_aged_out"] == [] and doc["spool"]["foreign_keys"] == 5
+    assert _capture_file(mac, "2026-09-16").exists() and _capture_file(mac).exists()
+    # Nothing escaped the capture directory and nothing landed under a foreign prefix.
+    written = sorted(p.relative_to(mac / _CAPTURE_REL).as_posix()
+                     for p in (mac / _CAPTURE_REL).rglob("*") if p.is_file())
+    assert written == [_capture_file(mac, "2026-09-16").relative_to(mac / _CAPTURE_REL).as_posix(),
+                       _capture_file(mac).relative_to(mac / _CAPTURE_REL).as_posix()]
+    assert not (mac / "x.json").exists() and not (mac / "data" / "us_prophet_rank" / "x.json").exists()
 
+    # Now 2026-09-16 is landed: with a window of one it is aged out of the READ (a
+    # later pass under it would be superseded anyway) and only 09-17 is re-checked.
+    assert _ingest(monkeypatch, mac, "--spool-sessions", "1") == 0
+    doc = json.loads(capsys.readouterr().out)
+    assert doc["spool"]["stamps_selected"] == [_SESSION]
+    assert doc["spool"]["stamps_aged_out"] == ["2026-09-16"]
+    assert doc["rows_written"] == 0
+
+    # Window 0 = every stamp.
     assert _ingest(monkeypatch, mac, "--spool-sessions", "0") == 0
     doc = json.loads(capsys.readouterr().out)
     assert list(doc["spool"]["sessions"]) == ["2026-09-16", _SESSION]
-    assert _capture_file(mac, "2026-09-16").exists()
+
+
+def test_spool_pass_refuses_a_holiday_and_a_stale_board_before_any_live_read(
+        tmp_path, monkeypatch, capsys):
+    world = _world(tmp_path, tickers=("UNIT",))
+    spool = _FakeSpool().install(monkeypatch)
+
+    # Thanksgiving 2026 is a Thursday: the timer fires, the pass refuses.
+    code = _run(monkeypatch, tmp_path, world, "--spool", lane=None,
+                now=datetime(2026, 11, 26, 15, 6, 30, tzinfo=timezone.utc))
+    assert code == 3
+    assert json.loads(capsys.readouterr().out)["refused"] == "NOT_A_SESSION"
+
+    # Monday 2026-09-21 with a board still stamped Thu 09-17 (Fri 09-18's nightly
+    # never landed here): two sessions old, refused.
+    code = _run(monkeypatch, tmp_path, world, "--spool", lane=None,
+                now=datetime(2026, 9, 21, 15, 6, 30, tzinfo=timezone.utc))
+    assert code == 3
+    refusal = json.loads(capsys.readouterr().out)
+    assert refusal["refused"] == "STALE_BOARD_STAMP"
+    assert "2026-09-18" in refusal["message"]
+    assert spool.puts == [] and not (tmp_path / _CAPTURE_REL).exists()
+
+
+def test_spool_session_rule_admits_the_stamp_session_and_the_next_session_only():
+    thu, fri, mon = date(2026, 9, 17), date(2026, 9, 18), date(2026, 9, 21)
+    assert capture._stamp_is_lawful_for_pass(thu, thu)          # same session (the nightly landed pre-open)
+    assert capture._stamp_is_lawful_for_pass(thu, fri)          # the next session (the usual case)
+    assert not capture._stamp_is_lawful_for_pass(thu, mon)      # two sessions old
+    assert not capture._stamp_is_lawful_for_pass(fri, thu)      # board ahead of the clock
+    assert not capture._stamp_is_lawful_for_pass(thu, date(2026, 9, 19))   # Saturday
+    assert not capture._stamp_is_lawful_for_pass(date(2026, 11, 25), date(2026, 11, 26))  # holiday
+    assert capture._stamp_is_lawful_for_pass(date(2026, 11, 25), date(2026, 11, 27))      # over the holiday
 
 
 def test_docstring_names_the_two_host_design_and_both_entrypoints():

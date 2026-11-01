@@ -891,7 +891,7 @@ def test_the_b4_capture_service_is_the_spool_pass_on_the_prophet_lanes_caps():
 
 def test_the_b4_capture_timer_fires_once_per_session_inside_both_dst_regimes():
     tim = _unit(B4_TIMER)["Timer"]
-    m = re.fullmatch(r"Mon\.\.Fri \*-\*-\* (\d+):(\d+):00 UTC", tim["OnCalendar"])
+    m = re.fullmatch(r"Mon\.\.Fri \*-\*-\* (\d+):(\d+):(\d+) UTC", tim["OnCalendar"])
     assert m, tim["OnCalendar"]
     hour = int(m.group(1))
     # 15:xxZ is 11:xx ET under EDT and 10:xx ET under EST — inside the session both ways,
