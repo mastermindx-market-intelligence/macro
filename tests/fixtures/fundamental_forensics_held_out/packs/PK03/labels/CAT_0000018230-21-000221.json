@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000018230-21-000221",
+    "expected_period_end": "2021-06-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "1024000000",
+    "fiscal_year": 2021,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "cat-20210630.htm | us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments @ ife716a85a90148d1b88353ac76ae2846_D20210401-20210630 (StatementBusinessSegmentsAxis=cat:ConstructionIndustriesMember; SubsegmentsConsolidationItemsAxis=us-gaap:ReportableSubsegmentsMember; ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember) | 'Construction Industries $ 1,024 $ 518 $ 2,059 $ 1,158' | Segment profit for the largest segment, Construction Industries, for the Q2 2021 (three months ended June 30, 2021); segment information note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_profit_or_loss",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000018230-21-000221|extract|segment_profit_or_loss"
+  },
+  {
+    "accession": "0000018230-21-000221",
+    "expected_period_end": "2021-06-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "5656000000",
+    "fiscal_year": 2021,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "cat-20210630.htm | us-gaap:Revenues @ i8c76ff3fef7741ef8035c8f724f163b8_D20210401-20210630 (StatementBusinessSegmentsAxis=cat:ConstructionIndustriesMember; SubsegmentsConsolidationItemsAxis=us-gaap:ReportableSubsegmentsMember) | 'Construction Industries $ 2,498 $ 430 $ 1,291 $ 1,384 $ 5,603 $ 53 $ 5,656' | Largest reportable segment by total sales and revenues for the Q2 2021 (three months ended June 30, 2021): Construction Industries (vs Energy & Transportation 4,975; Resource Industries 2,579; Financial Products 774); segment information note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_revenue",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000018230-21-000221|extract|segment_revenue"
+  }
+]

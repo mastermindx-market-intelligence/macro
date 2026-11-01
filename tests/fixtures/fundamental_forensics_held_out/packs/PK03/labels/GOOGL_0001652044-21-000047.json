@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0001652044-21-000047",
+    "expected_period_end": "2021-06-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "22343000000",
+    "fiscal_year": 2021,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "GOOGL",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "goog-20210630.htm | us-gaap:OperatingIncomeLoss @ i565c889e48334ec8b8a2383077c746ce_D20210401-20210630 (ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember; StatementBusinessSegmentsAxis=goog:GoogleServicesSegmentMember) | 'Google Services $ 9,539 $ 22,343 $ 21,087 $ 41,889' | Segment operating income for the largest segment, Google Services, for the three months ended June 30, 2021; segment note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_profit_or_loss",
+    "target_kind": "extract",
+    "trial_id": "PK03|0001652044-21-000047|extract|segment_profit_or_loss"
+  },
+  {
+    "accession": "0001652044-21-000047",
+    "expected_period_end": "2021-06-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "57067000000",
+    "fiscal_year": 2021,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "GOOGL",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "goog-20210630.htm | us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax @ ia5b726b704a1449ca0b3b358d7629a2d_D20210401-20210630 (StatementBusinessSegmentsAxis=goog:GoogleServicesSegmentMember) | 'Google Services total 34,991 57,067 73,189 108,245' | Largest reportable segment by revenues for the three months ended June 30, 2021: Google Services (vs Google Cloud 4,628; Other Bets 192); segment note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_revenue",
+    "target_kind": "extract",
+    "trial_id": "PK03|0001652044-21-000047|extract|segment_revenue"
+  }
+]

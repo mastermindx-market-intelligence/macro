@@ -37,7 +37,9 @@ from tests.test_fundamental_forensics_q1_held_out_evaluate import (
     REPORT_SCHEMA_PATH,
     _GUARDED_TOKEN,
     _families_text,
-    _label_trials,
+)
+from tests.test_fundamental_forensics_q1_held_out_evaluate import (
+    _label_trials as _label_trials_in,
 )
 
 REPORTS_DIR = (
@@ -48,6 +50,11 @@ REPORTS_DIR = (
     / "q1_held_out_20261031_g2"
 )
 SIC_BINDING_ORDER = ["held_out_contract", "sec_submissions_witness"]
+
+
+def _label_trials(pack_id: str) -> list[str]:
+    """Label trials inside generation two's own accession universe."""
+    return _label_trials_in(pack_id, REPORTS_DIR)
 
 
 def _report_path(pack_id: str) -> Path:
