@@ -176,17 +176,17 @@ def _conviction(type_: str) -> dict:
         edge_zh = ("预先承诺的结构性解除规则——事先登记、机械触发；"
                    "仓位交还给引擎自身的策略输出。")
     elif type_ in ("impulse_warn_down", "impulse_trigger_down"):
-        # Wording follows data/vector/impulse_legs_gate.json: the radar's re-check can
-        # demote these legs, and fire_series still emits the event when it has.
+        # Wording follows data/vector/impulse_legs_gate.json: the radar's re-check can demote
+        # these legs. fire_series still emits, and _apply_leg_gate prints that row as background.
         edge = ("Forward de-risk window from a precursor cross in the impulse radar "
                 "(a Deribit DVOL range jolt or a SOPR profit-take spike). Research-stage: "
                 "the radar's re-check zeroes the score of a leg that fails its 2024+ lift "
-                "floor or permutation test, and this alert can still print for such a leg. "
+                "floor or permutation test. "
                 "Any effect fades in ~2-4 days. BLIND to slow/options-calm flushes "
                 "(e.g. it did NOT lead the 2026-06-24 cascade).")
         edge_zh = ("来自脉冲雷达前兆突破的前瞻减仓窗口（Deribit DVOL 区间跳升或 SOPR 获利了结骤升）。"
                    "处于研究阶段：若某条腿未通过 2024 年以来的提升倍数下限或置换检验，"
-                   "雷达复核时其分值归零，但本提醒仍可能因该腿出现。"
+                   "雷达复核时其分值归零。"
                    "任何效果约 2-4 天内衰减。"
                    "对缓慢/期权平静式下跌无效（例如未能领先 2026-06-24 的下跌）。")
     elif type_ == "impulse_warn_up":
