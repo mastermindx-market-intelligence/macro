@@ -32,6 +32,29 @@ SHA_HEAD = "2" * 40
 SHA_BASE = "3" * 40
 
 
+@pytest.fixture(autouse=True)
+def _isolate_tested_tree_sha():
+    """``execute_pack`` publishes the plan-bound tree as ``TESTED_TREE_SHA`` in
+    the runner's own ``os.environ`` (F10 #10367) and never overrides a value that
+    is already there. Without isolation the first plan-driven ``execute_pack`` in
+    a pytest run would leave its tree ambient for every later test and every
+    child they spawn (review INTL-GS-F10-AUDIT-2, N5).
+
+    Explicit snapshot/restore on purpose: ``monkeypatch.delenv`` records an undo
+    entry only when the key EXISTS before the test, so a value that the test body
+    (or ``execute_pack``) sets afterwards would survive teardown and the leak
+    would simply move to the end of the module (review INTL-GS-F10-HYGIENE-AUDIT).
+    """
+    before = os.environ.pop("TESTED_TREE_SHA", None)
+    try:
+        yield
+    finally:
+        if before is None:
+            os.environ.pop("TESTED_TREE_SHA", None)
+        else:
+            os.environ["TESTED_TREE_SHA"] = before
+
+
 def _job(
     job_id: str,
     steps: list[dict[str, object]],
@@ -2305,6 +2328,67 @@ def test_unknown_timeout_stops_environment_reuse_restore_and_base_replay(tmp_pat
     evidence = SEMANTIC.reconcile_evidence(plan.to_dict(), [doc])
     assert SEMANTIC.semantic_gate_verdict(evidence).clear is False
     assert evidence["status"] != "clear"
+
+
+def _capture_run_job_env(monkeypatch, tmp_path, seen):
+    monkeypatch.setattr(PACK, "_workspace_root", lambda: tmp_path)
+    monkeypatch.setattr(PACK, "_current_commit_sha", lambda *_a: SHA_TREE)
+    # Production builds every job's command_env from os.environ: ``_child_environment``
+    # right after the export, and ``_dependency_environment`` (which starts from the
+    # same copy) whenever the dependency set changes. A ``{}`` stub would hide the
+    # export this test exists to prove.
+    monkeypatch.setattr(PACK, "_dependency_environment", lambda dep, **_k: PACK._child_environment())
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_a: None)
+    monkeypatch.setattr(PACK, "_run_exact_base_replays", lambda **_k: None)
+
+    def run(job, **kwargs):
+        seen["command_env"] = dict(kwargs["command_env"])
+        seen["tested_tree_sha"] = kwargs["tested_tree_sha"]
+        steps = tuple(
+            {**spec.plan_dict(), "outcome": "timed_out", "failure_signature": None}
+            for spec in PACK.semantic_step_specs(job)
+        )
+        result = PACK.JobExecution(
+            job.job_id,
+            PACK.semantic_job_digest(job),
+            {"outcome": "unknown", "detail": "stub"},
+            steps,
+            "stub",
+        )
+        object.__setattr__(result, "timeout_settlement", "unknown")
+        return result
+
+    monkeypatch.setattr(PACK, "_run_job", run)
+
+
+def test_execute_pack_publishes_plan_tree_to_legacy_step_environment(tmp_path, monkeypatch):
+    """F10 #10367 / review AUDIT-2 N6: the trusted and canary executors pass only
+    CLI flags, so the pack itself must hand ``TESTED_TREE_SHA`` to legacy steps.
+    Deleting the ``_export_tested_tree_sha`` call in ``execute_pack`` fails here."""
+    jobs = [_job("alpha", [{"name": "proof", "run": "true"}])]
+    plan = _plan(jobs, changed=[".github/ci/legacy-jobs.yml"])
+    seen: dict[str, object] = {}
+    _capture_run_job_env(monkeypatch, tmp_path, seen)
+    assert "TESTED_TREE_SHA" not in os.environ
+    PACK.execute_pack(jobs, plan=plan, emit_semantic_fragment=tmp_path / "fragment.json")
+    assert seen["tested_tree_sha"] == SHA_TREE
+    assert seen["command_env"]["TESTED_TREE_SHA"] == SHA_TREE
+    assert os.environ["TESTED_TREE_SHA"] == SHA_TREE  # _isolate_tested_tree_sha pops it at teardown
+
+
+def test_execute_pack_never_overrides_an_explicit_tested_tree_sha(tmp_path, monkeypatch):
+    """ci.yml exports ``TESTED_TREE_SHA`` itself; the pack must not replace it."""
+    jobs = [_job("alpha", [{"name": "proof", "run": "true"}])]
+    plan = _plan(jobs, changed=[".github/ci/legacy-jobs.yml"])
+    explicit = "c" * 40
+    monkeypatch.setenv("TESTED_TREE_SHA", explicit)
+    seen: dict[str, object] = {}
+    _capture_run_job_env(monkeypatch, tmp_path, seen)
+    PACK.execute_pack(jobs, plan=plan, emit_semantic_fragment=tmp_path / "fragment.json")
+    assert seen["tested_tree_sha"] == SHA_TREE
+    assert seen["command_env"]["TESTED_TREE_SHA"] == explicit
+    assert os.environ["TESTED_TREE_SHA"] == explicit
+
 
 def test_unsettled_base_boundary_preserves_original_checkout(tmp_path, monkeypatch):
     source = tmp_path / "source"

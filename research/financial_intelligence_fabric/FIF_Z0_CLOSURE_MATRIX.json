@@ -7,7 +7,7 @@
     "path": "research/financial_intelligence_fabric/e2e_20261011/ACCEPTANCE_MATRIX.json",
     "case_count": 54
   },
-  "as_of": "2026-10-20",
+  "as_of": "2026-11-01",
   "verdicts": [
     "CLOSED",
     "PARTIAL",
@@ -28,8 +28,8 @@
     "records"
   ],
   "summary": {
-    "CLOSED": 30,
-    "PARTIAL": 17,
+    "CLOSED": 36,
+    "PARTIAL": 11,
     "OPEN": 0,
     "PENDING_LIVE": 3,
     "HUMAN_GATE": 4
@@ -38,7 +38,8 @@
     "claimable": false,
     "independent_acceptance": "Z1 pending",
     "independent_acceptance_history": [
-      "Z1 r1 2026-10-20 (fif-z1rev-20261020-r1, base 830adc10): FAIL — F1 A43 and F2 A22 lowered to PARTIAL; F3/F5 rebutted (legacy-pack convention, run 39461860948); F4 A03 evidence amended; A54 RATIFIED. Re-review only the A43/A22 repairs."
+      "Z1 r1 2026-10-20 (fif-z1rev-20261020-r1, base 830adc10): FAIL — F1 A43 and F2 A22 lowered to PARTIAL; F3/F5 rebutted (legacy-pack convention, run 39461860948); F4 A03 evidence amended; A54 RATIFIED. Re-review only the A43/A22 repairs.",
+      "Z1 r2 2026-11-01 (fif-z1rev-20261101-r1, base c133b698): PASS_WITH_NOTES — F1 A43 and F2 A22 CLOSED_BY_DIFF on #9895 (afbd02da); negatives executed for the tablet, focus-restore and logging assertions."
     ],
     "rule": "No phase, report, PR or green CI is a final claim while any case is not CLOSED; Z1 independent acceptance follows a fully CLOSED matrix."
   },
@@ -240,22 +241,19 @@
       ],
       "condition": "Later filing, correction, mapping or rule available after query cutoff",
       "required_behavior": "Exclude from then-known view under each required source/system/policy clock.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_source_cutoff_between_filings_hides_the_unaccepted_tail",
         "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_recorded_cutoff_before_the_chain_rule_sees_no_v2_evidence",
         "tests/test_fundamental_forensics_query.py::test_system_cutoff_gates_mapping_compute_and_publication_clocks",
         "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a12_a_correction_recorded_after_the_cutoff_stays_out_of_the_then_known_view",
-        "tests/test_fundamental_forensics_finding_judgments.py::test_then_known_replay_returns_prior_value_before_the_correction"
+        "tests/test_fundamental_forensics_finding_judgments.py::test_then_known_replay_returns_prior_value_before_the_correction",
+        "tests/test_fundamental_forensics_mapping_pack_v1_1.py::test_a53_no_hindsight_bundle_before_rule_clock_equals_base_bundle",
+        "tests/test_fundamental_forensics_mapping_pack_v1_1.py::test_v1_1_pack_and_catalog_versions_and_cutoff_gated_rules",
+        "tests/test_fundamental_forensics_mapping_pack_v1_1.py::test_identity_alias_yields_value_after_rule_clock_and_base_state_before"
       ],
-      "obligations": [
-        {
-          "kind": "pending_merge",
-          "owner": "FIF seat",
-          "next_action": "Merge #9761 (mapping pack 1.1.0) in its window, then add the mapping-pack clock: a cutoff before 1.1.0 replays the 1.0.0 mapping."
-        }
-      ],
-      "note": "Source, accepted, recorded, compute and publication clocks are tested; a correction recorded after the cutoff stays out of both the source and the judgment then-known views."
+      "obligations": [],
+      "note": "Source, accepted, recorded, compute and publication clocks are tested; a correction recorded after the cutoff stays out of both the source and the judgment then-known views. 2026-11-01: #9761 (mapping pack 1.1.0) merged at 42c85954 with its mapping-pack clock: a recorded cutoff one second before the rule clock (2026-10-21T00:00Z) yields a governance bundle whose to_dict() and content_id equal the rebuilt pre-1.1.0 registry, and the alias rule yields its value only after the clock (fif-kernel-guards suite)."
     },
     {
       "id": "A13",
@@ -457,22 +455,18 @@
       ],
       "condition": "Signed-out, unauthorized or wrong-entitlement request",
       "required_behavior": "Deny before opening private provider; no secret/source body in error or logging.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_financial_query_api.py::test_provider_not_constructed_before_auth_or_admission",
         "tests/test_fundamental_forensics_financial_query_api.py::test_free_user_returns_403_with_private_headers",
         "tests/test_fundamental_forensics_financial_query_api.py::test_misbound_provider_returns_503",
         "tests/test_fundamental_forensics_financial_query_api.py::test_malformed_json_returns_400",
-        "tests/test_fundamental_forensics_financial_query_api.py::test_wrong_method_returns_405_with_private_headers"
+        "tests/test_fundamental_forensics_financial_query_api.py::test_wrong_method_returns_405_with_private_headers",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_denied_and_failed_paths_log_nothing_private",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_provider_generic_exception_returns_503_no_leak"
       ],
-      "obligations": [
-        {
-          "kind": "test_gap",
-          "owner": "FIF seat (fabric build lane)",
-          "next_action": "Add a caplog test proving the 401/403/503 paths log no secret, path, traceback or source body (the body scan already lives in _assert_error, tests/test_fundamental_forensics_financial_query_api.py:391-400; no test captures logs)."
-        }
-      ],
-      "note": "Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F2: lowered CLOSED->PARTIAL; the two cited tests check headers only; the response-body leak scan is _assert_error (forbidden /Users/, /opt/, traceback, R2, paid-user) exercised by the added evidence; log capture is unproven."
+      "obligations": [],
+      "note": "Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F2: lowered CLOSED->PARTIAL; the two cited tests check headers only; the response-body leak scan is _assert_error (forbidden /Users/, /opt/, traceback, R2, paid-user) exercised by the added evidence; log capture is unproven. 2026-11-01: Z1 F2 repaired in #9895 (afbd02da): the 401, 403 and three 503 legs run at caplog DEBUG over the API logger and root and carry no secret, path, traceback, request body or provider name; Z1 r2 (fif-z1rev-20261101-r1, base c133b698) PASS_WITH_NOTES: F2 CLOSED_BY_DIFF, an injected leak makes the test fail. Notes: the record filter covers the API logger and root only, and there is no separate filing-body fragment class."
     },
     {
       "id": "A23",
@@ -664,19 +658,19 @@
       ],
       "condition": "Four additional accounting stress issuers",
       "required_behavior": "Same general provider and kernel with governed packs; no ticker-specific patched answers.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_kernel_literal_guard.py::test_a33_kernel_has_no_ticker_or_cik_literals_outside_the_golden_layer",
         "tests/test_fundamental_forensics_kernel_literal_guard.py::test_a33_golden_layer_allowlist_is_still_live",
-        "tests/test_fundamental_forensics_kernel_literal_guard.py::test_a33_guard_detects_a_patched_ticker_branch"
+        "tests/test_fundamental_forensics_kernel_literal_guard.py::test_a33_guard_detects_a_patched_ticker_branch",
+        "tests/test_fif_a33_gold_replay_receipt.py::test_a33_receipt_schema_and_counts",
+        "tests/test_fif_a33_gold_replay_receipt.py::test_a33_receipt_covers_every_committed_pack",
+        "tests/test_fif_a33_gold_replay_receipt.py::test_a33_receipt_executed_every_kernel_group",
+        "tests/test_fif_a33_gold_replay_receipt.py::test_a33_receipt_every_ledger_defect_is_grouped",
+        "tests/test_fif_a33_gold_replay_receipt.py::test_a33_receipt_carries_no_path_or_identity"
       ],
-      "obligations": [
-        {
-          "kind": "ci_proof",
-          "owner": "FIF seat",
-          "next_action": "The kernel-vs-gold replays in test_fif_g_pack_kernel.py and test_fif_g_pack_gold.py skip without FIF_GSRC_STAGE_ROOT. Record a run where they execute (not skip) for SNOW, CAT, BAC and GOOGL."
-        }
-      ]
+      "obligations": [],
+      "note": "2026-11-01: the ci_proof landed in #9910 (6793df30): FIF_A33_GOLD_REPLAY_RECEIPT_2026-10-20.json records the kernel-vs-gold and staged-bytes replays executing (not skipping) over the four committed G-packs, and the hermetic guard pins the receipt to the committed packs with the executed and xfailed groups each pinned exactly."
     },
     {
       "id": "A34",
@@ -691,15 +685,21 @@
       "verdict": "PARTIAL",
       "evidence": [
         "tests/test_fundamental_forensics_specialist_pack_contract.py::test_a25_pack_authority_cannot_be_widened",
-        "tests/test_fundamental_forensics_pack_evaluation.py::test_a27_language_gate"
+        "tests/test_fundamental_forensics_pack_evaluation.py::test_a27_language_gate",
+        "tests/test_fif_a34_pack_proof_ledger.py::test_a34_ledger_lists_every_registered_pack_once",
+        "tests/test_fif_a34_pack_proof_ledger.py::test_a34_ledger_is_fresh",
+        "tests/test_fif_a34_pack_proof_ledger.py::test_a34_every_missing_proof_is_a_listed_gap",
+        "tests/test_fif_a34_pack_proof_ledger.py::test_a34_no_aggregate_can_hide_a_gap",
+        "tests/test_fif_a34_pack_proof_ledger.py::test_a34_ledger_reads_no_held_out_contents"
       ],
       "obligations": [
         {
           "kind": "implementation_gap",
           "owner": "FIF seat (pack lanes)",
-          "next_action": "All 12 packs are catalogue_state 'specified'. Each pack needs its own gold, held-out, review and live proof; the group summary must list per-pack gaps."
+          "next_action": "Close the per-pack gaps FIF_A34_PACK_PROOF_LEDGER.json lists (held-out precision below the 0.80 floor or not_measurable, review and live proofs); regenerate the ledger after each Q1 generation."
         }
-      ]
+      ],
+      "note": "2026-11-01: the group-summary half is met by #9901 (cca91862): the ledger lists every registered pack once with its own schema/gold/held-out/review/live proof and no aggregate can hide a gap; the per-pack proofs themselves remain open."
     },
     {
       "id": "A35",
@@ -873,19 +873,21 @@
       ],
       "condition": "EN/ZH desktop/tablet/mobile and keyboard use",
       "required_behavior": "Readable responsive layout, focus restore, no clipping and correct disabled/unavailable text.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_check_ui_visual_evidence.py::test_committed_evidence_corpus_has_zero_findings",
-        "tests/test_fif_p2_evidence_capture.py::test_manifest_postprocess_populated"
+        "tests/test_fif_p2_evidence_capture.py::test_manifest_postprocess_populated",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_manifest_covers_every_viewport_locale_theme_cell",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_keyboard_manifest_is_36_states",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_keyboard_interactions_are_exactly_24_verified_receipts",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_drawer_trap_receipts_prove_escape_close_and_focus_restore",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_populated_rest_cells_carry_disabled_controls_receipts",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_keyboard_receipts_probe_the_none_state_controls",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_tablet_cells_use_the_capture_tool_tablet_preset",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_no_tablet_clipping_in_the_smell_report"
       ],
-      "obligations": [
-        {
-          "kind": "test_gap",
-          "owner": "FIF seat (fabric build lane)",
-          "next_action": "Add the tablet cell to REQUIRED_CELLS in tests/test_check_ui_visual_evidence.py (today desktop/mobile x en/zh x dark/light only) so the recaptured tablet corpus is guarded, and assert focus restore / disabled-control text on the keyboard set (tab_keys, drawer_trap); cite the P0 view contract RECEIPT_REST_CELLS_PER_VIEWPORT tablet receipt (tests/test_fundamental_forensics_p0_view_contract.py:299-302)."
-        }
-      ],
-      "note": "2026-10-20: PR #9879 fixes the tablet desk header (820px band) and recaptures mockups/evidence/fundamental_forensics_p2/populated and keyboard at desktop/tablet/mobile x en/zh x dark/light (keyboard tab_keys + drawer_trap force states); 0 wide, overflow false. r3 (2d23934a630b) repaired the first-viewport drift main's 10-12 receipt hid (saved-views row #9068 + holding reader #9771) with one closed Desk tools disclosure; en desktop tabs_px pin amended [633,694]->[647,708] (partial-coverage stat wrap), recorded in the contract note. PR #9882 removes the desk's colored left-edge accents under the 2026-10-18 Chairman rule (even neutral borders, design-ratchet tokens) with all five P2 sets recaptured on the r3 shell (8/8/8/48/36). Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F1: lowered CLOSED->PARTIAL; the cited tests prove corpus hygiene only, REQUIRED_CELLS has no tablet cell, and no cited test asserts focus restore, disabled text or readability."
+      "obligations": [],
+      "note": "2026-10-20: PR #9879 fixes the tablet desk header (820px band) and recaptures mockups/evidence/fundamental_forensics_p2/populated and keyboard at desktop/tablet/mobile x en/zh x dark/light (keyboard tab_keys + drawer_trap force states); 0 wide, overflow false. r3 (2d23934a630b) repaired the first-viewport drift main's 10-12 receipt hid (saved-views row #9068 + holding reader #9771) with one closed Desk tools disclosure; en desktop tabs_px pin amended [633,694]->[647,708] (partial-coverage stat wrap), recorded in the contract note. PR #9882 removes the desk's colored left-edge accents under the 2026-10-18 Chairman rule (even neutral borders, design-ratchet tokens) with all five P2 sets recaptured on the r3 shell (8/8/8/48/36). Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F1: lowered CLOSED->PARTIAL; the cited tests prove corpus hygiene only, REQUIRED_CELLS has no tablet cell, and no cited test asserts focus restore, disabled text or readability. 2026-11-01: Z1 F1 repaired in #9895 (afbd02da): the corpus guard requires a tablet cell for every locale x theme bound to the capture tool's own tablet preset, and asserts Escape-close focus restore and disabled-control text that the capture tool measures on the live page; Z1 r2 (fif-z1rev-20261101-r1, base c133b698) PASS_WITH_NOTES: F1 CLOSED_BY_DIFF, each assertion shown to fail when its fact is removed. The guard skips only on a sparse checkout; CI's pack executor runs a full tree."
     },
     {
       "id": "A44",
@@ -965,20 +967,18 @@
       ],
       "condition": "Restart, lost publication, restore and rollback",
       "required_behavior": "Exact generation/receipt recovery, tenant protection, originals intact; no duplicate writers.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_recovery_drill.py::test_restart_new_store_object_sees_same_generation_and_clock",
         "tests/test_fundamental_forensics_recovery_drill.py::test_backup_restore_round_trip_is_exact_and_idempotent",
         "tests/test_fundamental_forensics_recovery_drill.py::test_restore_refuses_different_bytes_and_never_overwrites",
-        "tests/test_fundamental_forensics_recovery_drill.py::test_rollback_is_a_correction_the_owner_refuses_to_rewind"
+        "tests/test_fundamental_forensics_recovery_drill.py::test_rollback_is_a_correction_the_owner_refuses_to_rewind",
+        "tests/test_fif_a47_recovery_drill_receipts.py::test_a47_receipt_schema",
+        "tests/test_fif_a47_recovery_drill_receipts.py::test_a47_replay_matches_committed_receipt",
+        "tests/test_fif_a47_recovery_drill_receipts.py::test_a47_every_scenario_asserts_its_law"
       ],
-      "obligations": [
-        {
-          "kind": "live_proof",
-          "owner": "FIF seat",
-          "next_action": "Run the recovery drill (restart, lost publication, restore, rollback) against a non-production generation and record the receipts."
-        }
-      ]
+      "obligations": [],
+      "note": "2026-11-01: the drill ran in #9899 (5f997449) on local-directory, non-production generations (publish, restart, backup, lost publication, restore, refused rollback, corrupted target); FIF_A47_RECOVERY_DRILL_RECEIPTS_2026-10-20.json is the receipt and the guard replays run_drill() hermetically and pins every field except recorded_at."
     },
     {
       "id": "A48",
@@ -1086,18 +1086,15 @@
       ],
       "condition": "Historical query after a mapping/rule revision",
       "required_behavior": "Return the cutoff-valid policy version; no newest-rules hindsight contamination.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_metric_qualification.py::test_s1_a53_01_revision_append_cutoff_digest_unchanged",
-        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_recorded_cutoff_before_the_chain_rule_sees_no_v2_evidence"
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_recorded_cutoff_before_the_chain_rule_sees_no_v2_evidence",
+        "tests/test_fundamental_forensics_mapping_pack_v1_1.py::test_a53_no_hindsight_bundle_before_rule_clock_equals_base_bundle",
+        "tests/test_fundamental_forensics_mapping_pack_v1_1.py::test_a53_every_new_rule_carries_the_r_9761_clk_clock_and_is_cutoff_gated"
       ],
-      "obligations": [
-        {
-          "kind": "pending_merge",
-          "owner": "FIF seat",
-          "next_action": "Merge #9761 (mapping pack 1.1.0) in its window, then test that a cutoff before 1.1.0 returns the 1.0.0 policy version."
-        }
-      ]
+      "obligations": [],
+      "note": "2026-11-01: #9761 merged at 42c85954; a cutoff before the 1.1.0 rule clock returns the base policy content (bundle and content_id equal to the rebuilt pre-1.1.0 registry), and every 1.1.0 rule carries that clock and is cutoff-gated."
     },
     {
       "id": "A54",
