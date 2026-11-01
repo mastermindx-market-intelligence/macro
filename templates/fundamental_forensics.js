@@ -279,6 +279,7 @@
       'SEC Company Facts normalized projection': 'SEC 公司事实标准化投影',
       'repository quarterly and annual EDGAR panels': '仓库内季度及年度 EDGAR 面板',
       'normalized_quarterly_projection': '标准化季度投影',
+      'coverage_contract_catalog_only': '覆盖合约·仅申报目录',
       'filing_index': '披露索引',
       'companyfacts_source': '公司事实来源'
     };
