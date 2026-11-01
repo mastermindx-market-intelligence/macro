@@ -5,8 +5,10 @@ Checks a held-out label set against the frozen Q0 quality protocol BEFORE the
 set is sealed: per-pack issuer applicability (section 5 — a positive label on
 a ``negative``-applicability issuer is a labeling error) and the held-out
 minimum-N rows (section 6), including the format-generalization row. The
-minimum-N checks mirror ``engine/fundamental_forensics/pack_evaluation.py``,
-so a conforming set meets the evaluator's per-cell floors. The report is
+minimum-N checks mirror ``engine/fundamental_forensics/pack_evaluation.py``
+and, like it, count a label as positive or negative by its ``polarity`` field
+(the label_class buckets are reported but never feed a floor), so a
+conforming set meets the evaluator's per-cell floors. The report is
 counts-only: it carries counts, protocol vocabulary and fixed sentinels, never
 record payloads (no trial ids, accessions, targets, expected values, reasons,
 fiscal years, format classes or out-of-vocabulary polarities).
@@ -244,7 +246,7 @@ def _issuer_cell(applicability: str | None) -> dict:
 
 
 def _class_cell() -> dict:
-    return {"positive": 0, "negative": 0, "other": 0}
+    return {"positive": 0, "negative": 0, "other": 0, "polarity": {}}
 
 
 def _empty_pack_report() -> dict:
@@ -278,12 +280,13 @@ def _pack_shortfalls(
     if positive_need is not None:
         # Applicable issuers, as in the evaluator: every "required" issuer,
         # plus each "optional" issuer that carries at least one label (every
-        # label adds exactly one polarity tally to its issuer's cell).
+        # label adds exactly one polarity tally to its issuer's cell). Every
+        # floor counts by polarity, as the evaluator does.
         for issuer in issuers:
             state = applicability.get(issuer)
             labeled = sum(by_issuer[issuer]["polarity"].values()) > 0
             if state == "required" or (state == "optional" and labeled):
-                have = by_issuer[issuer]["positive"]
+                have = by_issuer[issuer]["polarity"].get("positive", 0)
                 if have < positive_need:
                     shortfalls.append(
                         {
@@ -318,7 +321,7 @@ def _pack_shortfalls(
         per_issuer, issuer_row_need = issuer_row
         if per_issuer:
             for issuer in issuers:
-                have = by_issuer[issuer]["negative"]
+                have = by_issuer[issuer]["polarity"].get("negative", 0)
                 if have < issuer_row_need:
                     shortfalls.append(
                         {
@@ -330,7 +333,7 @@ def _pack_shortfalls(
                     )
         else:
             have = sum(
-                by_issuer[issuer]["negative"]
+                by_issuer[issuer]["polarity"].get("negative", 0)
                 for issuer in issuers
                 if applicability.get(issuer) != "required"
             )
@@ -345,7 +348,7 @@ def _pack_shortfalls(
                 )
     if min_positive_per_family is not None:
         for family in family_ids:
-            have = by_family[family]["positive"]
+            have = by_family[family]["polarity"].get("positive", 0)
             if have < min_positive_per_family:
                 shortfalls.append(
                     {
@@ -423,8 +426,6 @@ def _scan_pack(
         )
         if bucket is not None:
             cell[bucket] += 1
-            if bucket == "negative":
-                pack_negatives += 1
         polarity = record["polarity"]
         if polarity in POLARITIES:
             polarity_key = polarity
@@ -432,6 +433,8 @@ def _scan_pack(
             polarity_key = OUTSIDE_VOCABULARY_KEY
             count("polarity_outside_vocabulary")
         cell["polarity"][polarity_key] = cell["polarity"].get(polarity_key, 0) + 1
+        if polarity_key == "negative":
+            pack_negatives += 1
 
         if primary_format is not None and record["format_class"] != primary_format:
             format_nonprimary += 1
@@ -447,6 +450,9 @@ def _scan_pack(
         family_cell = by_family.setdefault(family_key, _class_cell())
         if bucket is not None:
             family_cell[bucket] += 1
+        family_cell["polarity"][polarity_key] = (
+            family_cell["polarity"].get(polarity_key, 0) + 1
+        )
 
         form_type = record["form_type"]
         if not form_set:

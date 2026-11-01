@@ -560,3 +560,41 @@ def test_unrestricted_forms_and_families(mode, tmp_path):
     assert pack["by_family"]["<unrestricted>"]["negative"] == len(records)
     assert "zz-any-form" not in result.stdout
     assert "zz-any-family" not in result.stdout
+
+
+# (18) floors count by polarity, as the evaluator does: a record whose
+# label_class disagrees with its polarity cannot fill a cell.
+def test_positive_cell_counts_by_polarity(tmp_path):
+    records = pk11_conforming_records()
+    issuer = required_issuers("PK11")[0]
+    for record in records:
+        if record["issuer"] == issuer and record["label_class"] == POSITIVE_CLASS:
+            record["polarity"] = "negative"
+    write_labels(tmp_path, "PK11", records)
+    result = run_tool(tmp_path, "--packs", "PK11")
+    assert result.returncode == 1
+    pack = report_of(result)["packs"]["PK11"]
+    assert pack["by_issuer"][issuer]["positive"] == POSITIVE_MIN
+    assert {
+        "code": "positive_cell_short",
+        "scope": issuer,
+        "have": 0,
+        "need": POSITIVE_MIN,
+    } in pack["shortfalls"]
+
+
+def test_negative_issuer_row_counts_by_polarity(tmp_path):
+    records = pk12_all_negative_records()
+    records[0]["polarity"] = "positive"
+    write_labels(tmp_path, "PK12", records)
+    result = run_tool(tmp_path, "--packs", "PK12")
+    assert result.returncode == 1
+    pack = report_of(result)["packs"]["PK12"]
+    assert pack["by_issuer"][records[0]["issuer"]]["negative"] == 1
+    assert {
+        "code": "negative_issuer_short",
+        "scope": records[0]["issuer"],
+        "have": 0,
+        "need": 1,
+    } in pack["shortfalls"]
+
