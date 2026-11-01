@@ -125,6 +125,7 @@ def _context(snapshot: Mapping[str, Any], page_built_at: str) -> dict[str, Any]:
             "required": bool(item.get("required")),
             "freshness": L.label("freshness", item.get("freshness")),
             "freshness_tone": L.tone("freshness", item.get("freshness")),
+            "freshness_state": item.get("freshness"),
             "presence": L.label("presence", item.get("status")),
             "presence_tone": L.tone("presence", item.get("status")),
             "source_asof": asof,
@@ -726,6 +727,18 @@ def _translation_basis_pair(basis: Any, metric: Mapping[str, Any]) -> dict[str, 
     return L.label("basis", basis)
 
 
+def _catch_rate_sample_note(metric: Mapping[str, Any]) -> dict[str, str] | None:
+    """Sample size for the leave-one-out catch rate, or nothing."""
+    if metric.get("metric_id") != "recession_signal_oos_catch_rate":
+        return None
+    transformation = metric.get("transformation")
+    if not isinstance(transformation, str):
+        return None
+    if "~3" not in transformation or "tiny sample" not in transformation:
+        return None
+    return L.CATCH_RATE_SAMPLE_NOTE
+
+
 def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> list[dict[str, Any]]:
     rows = []
     for metric in (snapshot.get("metrics") or {}).get("items") or []:
@@ -757,6 +770,7 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
             "owner_name": D.owner_display_pair(metric.get("owner_ref")),
             "model_version": metric.get("model_version"),
             "transformation": metric.get("transformation"),
+            "sample_note": _catch_rate_sample_note(metric),
             "coverage": L.fmt_ratio_pct(metric.get("coverage")),
             "authority_ceiling": D.authority_ceiling_pair(
                 metric.get("authority_ceiling")),
@@ -906,16 +920,31 @@ def _diagnostics(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             "body": context["contradiction"]["text"],
         })
 
-    stale = [c for c in context.get("required") or []
-             if c["freshness_tone"] in ("warn", "bad")]
-    if stale:
-        names_en = ", ".join(c["label"]["en"] for c in stale)
-        names_zh = "、".join(c["label"]["zh"] for c in stale)
+    required_rows = context.get("required") or []
+    # LATE_WITHIN_TOLERANCE shares the warn tone with a source that broke.
+    # A missing token stays on the degraded path, which is what tone alone did.
+    late = [c for c in required_rows
+            if c.get("freshness_state") == "LATE_WITHIN_TOLERANCE"]
+    degraded = [c for c in required_rows
+                if c.get("freshness_state") != "LATE_WITHIN_TOLERANCE"
+                and c["freshness_tone"] in ("warn", "bad")]
+    if degraded:
+        names_en = ", ".join(c["label"]["en"] for c in degraded)
+        names_zh = "、".join(c["label"]["zh"] for c in degraded)
         out.append({
             "tone": "warn",
             "title": _pair("Required source not current", "必需数据源并非最新"),
             "body": _pair(f"Degraded required components: {names_en}.",
                           f"降级的必需分项：{names_zh}。"),
+        })
+    if late:
+        names_en = ", ".join(c["label"]["en"] for c in late)
+        names_zh = "、".join(c["label"]["zh"] for c in late)
+        out.append({
+            "tone": "warn",
+            "title": _pair("Required source late, within tolerance", "必需数据源延迟，仍在容差内"),
+            "body": _pair(f"Late within tolerance: {names_en}.",
+                          f"延迟但仍在容差内：{names_zh}。"),
         })
 
     for component in context.get("required") or []:

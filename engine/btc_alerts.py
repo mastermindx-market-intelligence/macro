@@ -89,7 +89,8 @@ CONVICTION = {
     "override_release": {"tier": "act",     "signal": None,         "whipsaw": None},
     "market_mode":      {"tier": "context", "signal": None,         "whipsaw": "market_mode"},
     "leadership":       {"tier": "context", "signal": None,         "whipsaw": "alt_cycle_leader"},
-    # forward impulse radar (engine/btc_impulse_radar.py) — act-tier LEADING crosses
+    # forward impulse radar (engine/btc_impulse_radar.py) — act tier while the re-check passes
+    # the leg; _apply_leg_gate prints any other leg as context
     "impulse_warn_down":   {"tier": "act",   "signal": None, "whipsaw": None},
     "impulse_trigger_down":{"tier": "act",   "signal": None, "whipsaw": None},
     "impulse_warn_up":     {"tier": "act",   "signal": None, "whipsaw": None},
@@ -129,7 +130,7 @@ def _edge_zh_from_verdict(v: str) -> str:
     if not v:
         return ""
     if v.startswith("CONFIRMED"):
-        return "经验证的优势 — 在市场的前后两半段均成立。"
+        return "实测优势 — 在市场的前后两半段均成立。"
     if v.startswith("DIRECTIONAL"):
         return "信心较低 — 该优势在 2021 年（ETF 时代）后减弱。"
     if v.startswith("CONTEXT"):
@@ -166,26 +167,26 @@ def _conviction(type_: str) -> dict:
         edge_zh = ("持续极端时具逆向性 — 有提示意义但未经证实；"
                    "高风险区间的前瞻收益中等且依赖周期。")
     elif type_ == "flash_crash":
-        edge = "Real-time risk event — act on it, don't wait for confirmation."
-        edge_zh = "实时风险事件 — 应立即行动，无需等待确认。"
+        edge = "Intraday risk event — act on it, don't wait for confirmation."
+        edge_zh = "盘中风险事件 — 应立即行动，无需等待确认。"
     elif type_ == "override_release":
         edge = ("Pre-committed structural release rule — registered in advance and "
-                "fired mechanically; sizing returns to the engine's validated "
+                "fired mechanically; sizing returns to the engine's own "
                 "strategy output.")
         edge_zh = ("预先承诺的结构性解除规则——事先登记、机械触发；"
-                   "仓位交还给引擎经验证的策略输出。")
+                   "仓位交还给引擎自身的策略输出。")
     elif type_ in ("impulse_warn_down", "impulse_trigger_down"):
-        # Wording follows data/vector/impulse_legs_gate.json: the radar's re-check can
-        # demote these legs, and fire_series still emits the event when it has.
+        # Wording follows data/vector/impulse_legs_gate.json: the radar's re-check can demote
+        # these legs. fire_series still emits, and _apply_leg_gate prints that row as background.
         edge = ("Forward de-risk window from a precursor cross in the impulse radar "
                 "(a Deribit DVOL range jolt or a SOPR profit-take spike). Research-stage: "
                 "the radar's re-check zeroes the score of a leg that fails its 2024+ lift "
-                "floor or permutation test, and this alert can still print for such a leg. "
+                "floor or permutation test. "
                 "Any effect fades in ~2-4 days. BLIND to slow/options-calm flushes "
                 "(e.g. it did NOT lead the 2026-06-24 cascade).")
         edge_zh = ("来自脉冲雷达前兆突破的前瞻减仓窗口（Deribit DVOL 区间跳升或 SOPR 获利了结骤升）。"
                    "处于研究阶段：若某条腿未通过 2024 年以来的提升倍数下限或置换检验，"
-                   "雷达复核时其分值归零，但本提醒仍可能因该腿出现。"
+                   "雷达复核时其分值归零。"
                    "任何效果约 2-4 天内衰减。"
                    "对缓慢/期权平静式下跌无效（例如未能领先 2026-06-24 的下跌）。")
     elif type_ == "impulse_warn_up":
@@ -197,10 +198,10 @@ def _conviction(type_: str) -> dict:
         edge = ("OI-crowding de-risk nudge — funding-INDEPENDENT (breaks the "
                 "cascade AND-gate). LOW-CONVICTION: open interest is anti-predictive "
                 "standalone (measured lift ~0.36) — a 'fuel building' context flag, "
-                "not a validated crash call.")
+                "not a tested crash call.")
         edge_zh = ("持仓拥挤减仓提示 — 与资金费率无关（突破连环清算的与门）。"
                    "低信心：未平仓合约单独使用为反向指标（实测 lift 约 0.36）— "
-                   "仅为“燃料堆积”背景标记，而非经验证的下跌信号。")
+                   "仅为“燃料堆积”背景标记，而非已测实的下跌信号。")
     wk = c["whipsaw"]
     if wk:
         w = (cal.get("whipsaw", {}) or {}).get(wk, {})
@@ -418,8 +419,79 @@ def _onsets(s: pd.Series):
     return b.index[b & ~b.shift(1, fill_value=False)]
 
 
+# --------------------------------------------------------------------------- #
+# leg gate: a leg the radar's re-check has not passed prints as background
+# --------------------------------------------------------------------------- #
+_IMPULSE_TYPES = ("impulse_warn_down", "impulse_trigger_down", "impulse_warn_up")
+# leg -> (headline, detail, headline_zh, detail_zh). Says what crossed and asks nothing of the reader.
+_GATED_COPY = {
+    "d2": ("Research-stage cross: vol-of-vol jolt",
+           "DVOL intraday-range spike (unusually large versus its own history).",
+           "研究阶段信号：波动率跳升", "DVOL 日内振幅骤升（相对自身历史异常偏大）。"),
+    "d3": ("Research-stage cross: SOPR profit-take spike",
+           "Aggregate SOPR profit-taking spike (unusually large versus its own history) while price is up.",
+           "研究阶段信号：SOPR 获利了结骤升", "价格上涨之际总体 SOPR 获利了结骤升（相对自身历史异常偏大）。"),
+    "u1": ("Research-stage cross: SOPR capitulation",
+           "Aggregate SOPR capitulation (unusually deep versus its own history) after a deep drop.",
+           "研究阶段信号：SOPR 投降", "深跌之后总体 SOPR 投降（相对自身历史异常偏深）。"),
+    "d2d3": ("Research-stage co-fire: vol-jolt + SOPR spike",
+             "Both legs crossed on the same day.",
+             "研究阶段信号：波动跳升 + SOPR 骤升", "两条腿在同一天同时突破。"),
+}
+_GATE_REASON = {
+    "demoted": ("failed its 2024+ lift floor or permutation test", "未通过 2024 年以来的提升下限或置换检验"),
+    "insufficient_n": ("has too few 2024+ fires to judge", "2024 年以来的触发次数不足以判断"),
+}
+
+
+def _apply_leg_gate(events: list[dict]) -> list[dict]:
+    """Print an impulse row as background when the radar's re-check has not passed its leg.
+
+    The gauge zeroes such a leg's points (btc_impulse_radar.GATED_STATUSES), so the log must not
+    ask for action on it either. fire_series stays raw because the backtest and the cohort study
+    need every fire. A co-fire row needs both legs, so either gated leg gates it. An absent gate
+    changes nothing, as on the gauge. Runs when rows are built and when stored rows are read, so a
+    reader gets the current verdict between rebuilds. A stored row returns to act on the first
+    rebuild after the gate passes its leg.
+    """
+    rows = [e for e in events if e.get("type") in _IMPULSE_TYPES]
+    if not rows:
+        return events
+    try:
+        from engine import btc_impulse_radar, btc_impulse_radar_backtest
+        gate = btc_impulse_radar_backtest.load_gate() or {}
+        gated = btc_impulse_radar.GATED_STATUSES
+    except Exception:  # noqa: BLE001 — additive, never fatal
+        return events
+    legs = gate.get("legs") or {}
+    asof = gate.get("asof")
+    when, when_zh = (f" (as of {asof})", f"（截至 {asof}）") if asof else ("", "")
+    for e in rows:
+        ctx = e.get("context") or {}
+        key = ctx.get("leg") or "d2d3"
+        if key not in _GATED_COPY:
+            continue
+        names = ("d2", "d3") if key == "d2d3" else (key,)
+        status = next((s for s in ((legs.get(n) or {}).get("status") for n in names) if s in gated), None)
+        if status is None:
+            continue
+        head, det, head_zh, det_zh = _GATED_COPY[key]
+        why, why_zh = _GATE_REASON.get(status, ("has not passed it", "未通过复核"))
+        who, who_zh = ("one of these legs", "其中一条腿") if key == "d2d3" else ("this leg", "此腿")
+        px = ctx.get("price")
+        pxs = f" BTC ${px:,.0f}." if px is not None else ""
+        e.update(tier="context", severity="info", leg_gate=status, forward="", forward_zh="",
+                 headline=head, detail=f"{det}{pxs}", headline_zh=head_zh, detail_zh=f"{det_zh}{pxs}",
+                 edge=(f"Research-stage: the radar's re-check{when} scores {who} zero because it {why}. "
+                       "Background only, not a prompt to act."),
+                 edge_zh=(f"研究阶段：雷达复核{when_zh}将{who_zh}分值归零，因其{why_zh}。"
+                          "仅作背景，不构成操作提示。"))
+    return events
+
+
 def impulse_radar_events(sig: pd.DataFrame) -> list[dict]:
-    """One act-tier event per fresh act-leg cross from engine/btc_impulse_radar.
+    """One event per fresh leg cross from engine/btc_impulse_radar: act tier while the
+    re-check passes the leg, background otherwise (_apply_leg_gate).
     D2 (DVOL jolt) / D3 (SOPR spike) -> down warning; both co-firing -> down
     trigger; U1 (SOPR capitulation) -> reactive up/bounce. Idempotent (recomputed
     from history; deduped by id). Degrades to [] if the radar can't build."""
@@ -465,7 +537,7 @@ def impulse_radar_events(sig: pd.DataFrame) -> list[dict]:
                            {"price": round(px) if px is not None else None}, "d2d3",
                            headline_zh="下行脉冲触发：波动跳升 + SOPR 骤升",
                            detail_zh=f"两个独立的领先前兆同时突破。{pxs}"))
-    return out
+    return _apply_leg_gate(out)
 
 
 def leverage_derisk_events(sig: pd.DataFrame) -> list[dict]:
@@ -652,7 +724,7 @@ def load_events() -> list[dict]:
                 out.append(json.loads(line))
             except json.JSONDecodeError:
                 continue
-    return out
+    return _apply_leg_gate(out)
 
 
 def rebuild(sig: pd.DataFrame | None = None) -> list[dict]:

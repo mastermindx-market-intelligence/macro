@@ -622,6 +622,15 @@ FY{{ leg.latest_fy }}{% endif -%}
 
       <p class="fx-stance-line">{{ stance_line(sb) }}</p>
       <p class="fx-why">{{ r.rationale }}</p>
+      {%- set _pol = r.policy_reg_chip or {} -%}
+      {% if _pol.next_comment_close_title %}
+      <p class="fx-note" data-policy-title="1">
+        <span class="l-en">Next comment close {{ _pol.next_comment_close_date }}:
+          {{ _pol.next_comment_close_title }}</span>
+        <span class="l-zh">下一次意见截止 {{ _pol.next_comment_close_date }}：
+          {{ _pol.next_comment_close_title }}</span>
+      </p>
+      {% endif %}
 
       <div class="fx-chips">
         <span class="fx-chip entry {{ 'ready' if r.entry_ready else '' }}">{{ '✅' if r.entry_ready else '⏳' }} {{ r.entry_note }}</span>
