@@ -11,8 +11,9 @@ answer: >
   relabeled with another clock (tests/test_catalyst_scan_frontend.py::test_a04_*). Naming the
   packet's event_time_utc as "SEC acceptance (UTC)" on the scan is an addition: it needs
   catalyst_scan._public_result to allowlist the field and the HTTP bridge to pass it. The seat
-  implements it after the A3 source lane lands in catalyst_integration.py, so the two edits
-  never race; until then it stays a carried enhancement, not an acceptance failure.
+  implemented both ahead of A3 (aae0a47c scan, 827cc5ba bridge): the clock must be named
+  SEC_ACCEPTANCE, never lie in the future or after the evidence clock, and renders in whole
+  seconds; an unnamed or impossible clock fails closed.
   (2) G5-F4: there is no production caller and none is added now. A partner pack is an
   editorial asset for a named partner (C2 needs a partner editor); scripts/build_catalyst_partner_pack.py
   stays the operator-run, fixture-only builder. A production caller lands with the C2 owner

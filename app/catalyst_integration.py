@@ -367,10 +367,15 @@ def sanitize_public_scan(raw: Any, tickers: list[str], now_utc: datetime | None 
         if "event_time_basis" in item or "event_time_utc" in item:
             if item.get("event_time_basis") != "SEC_ACCEPTANCE":
                 raise ValueError("unnamed event clock")
-            accepted = _utc(item.get("event_time_utc"), now, fresh=False)
-            if (datetime.fromisoformat(accepted.replace("Z", "+00:00"))
-                    > datetime.fromisoformat(item_as_of.replace("Z", "+00:00"))):
+            accepted_dt = datetime.fromisoformat(
+                _utc(item.get("event_time_utc"), now, fresh=False).replace("Z", "+00:00"))
+            # An acceptance has happened: no skew allowance, and whole seconds so
+            # every renderer shows the same instant.
+            if accepted_dt > now:
+                raise ValueError("future event clock")
+            if accepted_dt > datetime.fromisoformat(item_as_of.replace("Z", "+00:00")):
                 raise ValueError("event clock after evidence clock")
+            accepted = accepted_dt.replace(microsecond=0).isoformat().replace("+00:00", "Z")
             event_clock = {"event_time_utc": accepted, "event_time_basis": "SEC_ACCEPTANCE"}
         public_results.append({"ticker": ticker, "status": "SUPPORTED", "headline": headline.strip(),
                                "relationship": relation, "relationship_evidence_ids": relation_ids,

@@ -1132,6 +1132,9 @@ def test_g2_bridge_passes_named_acceptance_clock_through():
         _g2_bridge_scan(event_time_utc=None, event_time_basis=None), ["PFE"], now_utc=NOW)
     assert "event_time_utc" not in bare["results"][0]
     assert "event_time_basis" not in bare["results"][0]
+    fractional = ci.sanitize_public_scan(
+        _g2_bridge_scan(event_time_utc=_stamp(T_ACC).replace("Z", ".5Z")), ["PFE"], now_utc=NOW)
+    assert fractional["results"][0]["event_time_utc"] == _stamp(T_ACC)
 
 
 @pytest.mark.parametrize("change", [
@@ -1141,8 +1144,9 @@ def test_g2_bridge_passes_named_acceptance_clock_through():
     {"event_time_utc": _stamp(NOW + 30 * MIN)},
     {"event_time_utc": "2026-10-31T11:56:00"},
     {"event_time_utc": _stamp(NOW + 2 * MIN), "as_of_utc": _stamp(NOW)},
+    {"event_time_utc": _stamp(NOW + 3 * MIN), "as_of_utc": _stamp(NOW + 4 * MIN)},
 ], ids=["basis-without-clock", "clock-without-basis", "wrong-basis", "future",
-        "naive", "after-evidence-clock"])
+        "naive", "after-evidence-clock", "future-within-skew"])
 def test_g2_bridge_refuses_unnamed_or_impossible_acceptance_clock(change):
     """Catches: the public bridge emitting an event clock that is unnamed,
     mislabelled, in the future, naive, or later than the evidence it rests on."""
