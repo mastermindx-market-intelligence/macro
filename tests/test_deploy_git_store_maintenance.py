@@ -370,6 +370,235 @@ def test_defers_when_memory_is_short(store: Store):
     assert packs(store.app) == before
 
 
+# ---------------------------------------------------------------------------
+# Kept tier (2026-11-01 second refill): large consolidated packs freeze, so a
+# night rewrites only what arrived since the last promotion.
+# ---------------------------------------------------------------------------
+
+
+def _kept(app: Path) -> dict[str, str]:
+    """pack file name -> .keep content, for every kept pack."""
+    pack_dir = app / ".git" / "objects" / "pack"
+    return {k.with_suffix(".pack").name: k.read_text() for k in pack_dir.glob("pack-*.keep")}
+
+
+def _big_commit(store: Store, name: str, random_kib: int = 48) -> None:
+    # Hex of random bytes packs to roughly random_kib KiB, so a pack's size is
+    # predictable: 48 clears PROMOTE_SMALL on its own, 18 does not.
+    _commit_file(store.origin, name, os.urandom(random_kib * 1024).hex() + "\n", f"big {name}")
+    store.pull()
+
+
+def _small_pulls(store: Store, first: int, count: int = 3) -> None:
+    for n in range(first, first + count):
+        store.commit(n)
+        store.pull()
+
+
+def _stub_df(tmp: Path, avail_kib: int) -> str:
+    bin_dir = tmp / "stub-df"
+    bin_dir.mkdir(exist_ok=True)
+    df = bin_dir / "df"
+    df.write_text(f"#!/bin/sh\necho '    Avail'\necho '  {avail_kib}'\n")
+    df.chmod(0o755)
+    return f"{bin_dir}:{os.environ['PATH']}"
+
+
+def _kib(path: Path) -> int:
+    return path.stat().st_size // 1024
+
+
+PROMOTE_SMALL = "32"  # KiB: above any fixture fetch pack, below a big commit's pack
+
+
+@needs_linux_tools
+def test_large_consolidated_pack_joins_the_kept_tier_and_is_never_rewritten(store: Store):
+    pack_dir = store.app / ".git" / "objects" / "pack"
+    _big_commit(store, "blob-a.txt")
+    # Night 1 (default threshold): one consolidated pack, nothing frozen yet.
+    done = store.run()
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert len(packs(store.app)) == 1 and _kept(store.app) == {}
+    (base,) = packs(store.app)
+    assert _kib(pack_dir / base) >= int(PROMOTE_SMALL)
+
+    # Night 2: the base pack is frozen before the repack and survives it
+    # byte-for-byte; only the day's small fetch packs are rewritten.
+    _small_pulls(store, 7)
+    base_stat = (pack_dir / base).stat()
+    base_objects = _pack_contents(store.app, (pack_dir / base).with_suffix(".idx"))
+    done = store.run(MACRO_GIT_MAINT_PROMOTE_KIB=PROMOTE_SMALL)
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert "kept tier: " + base[:-5] in done.stdout
+    assert list(_kept(store.app)) == [base]
+    after = (pack_dir / base).stat()
+    assert (after.st_ino, after.st_mtime, after.st_size) == (
+        base_stat.st_ino, base_stat.st_mtime, base_stat.st_size)
+    rest = packs(store.app) - {base}
+    assert len(rest) == 1, packs(store.app)
+    (day,) = rest
+    day_objects = _pack_contents(store.app, (pack_dir / day).with_suffix(".idx"))
+    assert day_objects and not (day_objects & base_objects), "kept objects were repacked"
+    assert _kib(pack_dir / day) < int(PROMOTE_SMALL)
+    assert ok(store.app, "fsck", "--connectivity-only")
+    assert ok(store.app, "merge-base", "--is-ancestor", store.commits[3], "HEAD")
+
+    # Night 3: three fetch packs, each below the threshold, consolidate into
+    # one that clears it, so it is frozen AFTER the repack; the first base
+    # pack is still untouched.
+    for i in range(3):
+        _big_commit(store, f"blob-b{i}.txt", random_kib=18)
+    assert all(_kib(pack_dir / n) < int(PROMOTE_SMALL) for n in packs(store.app) - {base})
+    done = store.run(MACRO_GIT_MAINT_PROMOTE_KIB=PROMOTE_SMALL)
+    assert done.returncode == 0, done.stdout + done.stderr
+    kept = _kept(store.app)
+    assert base in kept and len(kept) == 2 and set(kept) == packs(store.app), kept
+    assert all("macro-git-store-maintenance kept tier" in v for v in kept.values())
+    assert (pack_dir / base).stat().st_ino == base_stat.st_ino
+    assert ok(store.app, "fsck", "--connectivity-only")
+    store.commit(20)
+    store.pull()
+    assert git(store.app, "rev-parse", "HEAD") == store.commits[-1]
+
+
+@needs_linux_tools
+def test_kept_tier_assertion_fails_without_promotion(store: Store, tmp_path: Path):
+    """Negative control: without promotion the base pack is rewritten, so the test bites."""
+    pack_dir = store.app / ".git" / "objects" / "pack"
+    _big_commit(store, "blob-a.txt")
+    assert store.run().returncode == 0
+    (base,) = packs(store.app)
+    _small_pulls(store, 7)
+    mutated = tmp_path / "mutated.sh"
+    text = SCRIPT_TEXT.replace("\npromote_large_packs\n", "\n:\n")
+    assert text.count("promote_large_packs") == SCRIPT_TEXT.count("promote_large_packs") - 2
+    mutated.write_text(text)
+    done = store.run(script=mutated, MACRO_GIT_MAINT_PROMOTE_KIB=PROMOTE_SMALL)
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert _kept(store.app) == {}
+    assert base not in packs(store.app) and len(packs(store.app)) == 1, "base pack survived"
+
+
+@needs_linux_tools
+def test_cruft_pack_is_never_frozen(store: Store):
+    fresh = store.packed_unreachable_blob("fresh packed garbage\n")
+    assert store.run().returncode == 0
+    done = store.run(MACRO_GIT_MAINT_PROMOTE_KIB="0")
+    assert done.returncode == 0, done.stdout + done.stderr
+    pack_dir = store.app / ".git" / "objects" / "pack"
+    cruft = list(pack_dir.glob("pack-*.mtimes"))
+    assert len(cruft) == 1, "cruft pack must stay rewritable"
+    assert not cruft[0].with_suffix(".keep").exists()
+    assert len(_kept(store.app)) == 1
+    assert ok(store.app, "cat-file", "-e", fresh), "grace period not honoured"
+
+
+@needs_linux_tools
+def test_a_keep_file_it_did_not_write_is_left_alone(store: Store):
+    pack_dir = store.app / ".git" / "objects" / "pack"
+    foreign = sorted(packs(store.app))[0]
+    keep = (pack_dir / foreign).with_suffix(".keep")
+    keep.write_text("fetch-pack 4242 on prod\n")
+    done = store.run(MACRO_GIT_MAINT_PROMOTE_KIB="0")
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert keep.read_text() == "fetch-pack 4242 on prod\n"
+    assert (pack_dir / foreign).exists()
+
+
+@needs_linux_tools
+def test_space_gate_counts_only_what_the_repack_rewrites(store: Store):
+    """Need = non-kept packs + loose + margin. Kept bytes never count."""
+    pack_dir = store.app / ".git" / "objects" / "pack"
+    _big_commit(store, "blob-a.txt")
+    assert store.run().returncode == 0
+    (base,) = packs(store.app)
+    _big_commit(store, "blob-c.txt", random_kib=8)  # a measurable non-kept pack
+    _small_pulls(store, 7)
+    unkept = sum(_kib(pack_dir / n) for n in packs(store.app) - {base})
+    assert 0 < unkept < int(PROMOTE_SMALL)
+    loose = int(re.search(r"^size: (\d+)$", git(store.app, "count-objects", "-v"), re.M).group(1))
+    margin = 10
+    need = unkept + loose + margin
+    assert need < _kib(pack_dir / base) + unkept, "fixture must separate the two formulas"
+    before = packs(store.app)
+
+    short = store.run(MACRO_GIT_MAINT_PROMOTE_KIB=PROMOTE_SMALL,
+                      MACRO_GIT_MAINT_MARGIN_KIB=str(margin), PATH=_stub_df(store.tmp, need - 1))
+    assert short.returncode == 1, short.stdout + short.stderr
+    assert f"REFUSED: repack needs {need} KiB" in short.stdout
+    assert packs(store.app) == before
+
+    enough = store.run(MACRO_GIT_MAINT_PROMOTE_KIB=PROMOTE_SMALL,
+                       MACRO_GIT_MAINT_MARGIN_KIB=str(margin), PATH=_stub_df(store.tmp, need))
+    assert enough.returncode == 0, enough.stdout + enough.stderr
+    assert base in packs(store.app) and len(packs(store.app)) == 2
+
+
+# ---------------------------------------------------------------------------
+# update.sh root-disk floor (refuses the pull before it writes)
+# ---------------------------------------------------------------------------
+
+GUARD_BEGIN = "# BEGIN MACRO_UPDATE_FREE_SPACE_GUARD\n"
+GUARD_END = "# END MACRO_UPDATE_FREE_SPACE_GUARD\n"
+
+
+def _run_free_space_guard(tmp: Path, avail_kib: int) -> tuple[subprocess.CompletedProcess, Path]:
+    start = UPDATE_TEXT.index(GUARD_BEGIN)
+    stanza = UPDATE_TEXT[start:UPDATE_TEXT.index(GUARD_END, start)]
+    bin_dir = tmp / "bin"
+    bin_dir.mkdir(exist_ok=True)
+    (bin_dir / "df").write_text(
+        f"#!/bin/sh\necho \"$@\" >> '{tmp}/df.args'\necho '    Avail'\necho '  {avail_kib}'\n")
+    (bin_dir / "logger").write_text(f"#!/bin/sh\necho \"$@\" >> '{tmp}/logger.log'\n")
+    for tool in ("df", "logger"):
+        (bin_dir / tool).chmod(0o755)
+    app = tmp / "app"
+    (app / ".git" / "objects").mkdir(parents=True, exist_ok=True)
+    marker = tmp / "disk-refused"
+    harness = "\n".join([
+        "set -euo pipefail",
+        f"APP_DIR='{app}'",
+        stanza,
+        "echo PASSED_GUARD",
+    ])
+    env = os.environ.copy()
+    env.pop("MACRO_UPDATE_MIN_FREE_KIB", None)
+    env.update({"PATH": f"{bin_dir}:{env['PATH']}", "MACRO_UPDATE_DISK_MARKER": str(marker)})
+    done = subprocess.run(["bash", "-c", harness], capture_output=True, text=True, env=env,
+                          check=False, timeout=60)
+    return done, marker
+
+
+def test_update_refuses_the_pull_below_the_root_disk_floor(tmp_path: Path):
+    done, marker = _run_free_space_guard(tmp_path, 4 * 1024 * 1024 - 1)
+    assert done.returncode == 1
+    assert "PASSED_GUARD" not in done.stdout
+    assert "macro-update: REFUSED pull: 4194303 KiB free" in done.stderr
+    assert "floor 4194304 KiB; nothing pulled" in done.stderr
+    assert "-p user.err -t macro-update" in (tmp_path / "logger.log").read_text()
+    assert "REFUSED pull" in marker.read_text()
+    assert ".git/objects" in (tmp_path / "df.args").read_text()
+
+
+def test_update_pulls_at_the_floor_and_clears_the_refusal_marker(tmp_path: Path):
+    (tmp_path / "disk-refused").write_text("stale refusal\n")
+    done, marker = _run_free_space_guard(tmp_path, 4 * 1024 * 1024)
+    assert done.returncode == 0, done.stderr
+    assert "PASSED_GUARD" in done.stdout
+    assert not marker.exists()
+    assert not (tmp_path / "logger.log").exists()
+
+
+def test_free_space_guard_runs_under_the_lock_and_before_the_pull():
+    lock = UPDATE_TEXT.index("flock -n 9 || exit 0")
+    guard = UPDATE_TEXT.index(GUARD_BEGIN)
+    pull = UPDATE_TEXT.index('git -C "$APP_DIR" fetch -q origin main')
+    assert lock < guard < pull
+    between = UPDATE_TEXT[UPDATE_TEXT.index(GUARD_END, guard):pull]
+    assert "# Do not add --depth here" in between
+    assert UPDATE_TEXT.count(GUARD_BEGIN) == 1
+
+
 def _pack_contents(repo: Path, idx: Path) -> set[str]:
     with idx.open("rb") as fh:
         done = subprocess.run(

@@ -288,6 +288,28 @@ if ! cmp -s "$APP_DIR/app/deploy/update.sh" /usr/local/bin/macro-update; then
 	stop_reciprocal_market_memory_writers
 fi
 
+# BEGIN MACRO_UPDATE_FREE_SPACE_GUARD
+# Root-disk floor before the pull writes anything (2026-10-19 and 2026-11-01
+# refills). Every pull lands a new pack in $APP_DIR/.git/objects on the root
+# filesystem; on a full disk the next one fails half-way and journald, Caddy
+# and the API start failing with it. Below the floor this tick refuses before
+# the network read, says why on stderr and in the system log, and leaves a
+# marker that names the shortfall. A refusal also holds back deploys of fixes,
+# by design: recovering space is a manual step (app/deploy/README.md, "Git
+# store maintenance"), never something this updater improvises.
+MIN_FREE_KIB="${MACRO_UPDATE_MIN_FREE_KIB:-4194304}"
+DISK_REFUSED_MARKER="${MACRO_UPDATE_DISK_MARKER:-/run/macro-update-disk-refused}"
+ROOT_FREE_KIB=$(df --output=avail -k "$APP_DIR/.git/objects" | tail -n 1 | tr -d ' ')
+if [ "$ROOT_FREE_KIB" -lt "$MIN_FREE_KIB" ]; then
+	DISK_REFUSAL="macro-update: REFUSED pull: ${ROOT_FREE_KIB} KiB free on $APP_DIR/.git/objects, floor ${MIN_FREE_KIB} KiB; nothing pulled (recovery: app/deploy/README.md, 'Git store maintenance')"
+	echo "$DISK_REFUSAL" >&2
+	logger -p user.err -t macro-update "$DISK_REFUSAL" 2>/dev/null || true
+	echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) $DISK_REFUSAL" > "$DISK_REFUSED_MARKER" 2>/dev/null || true
+	exit 1
+fi
+rm -f "$DISK_REFUSED_MARKER"
+# END MACRO_UPDATE_FREE_SPACE_GUARD
+
 # Do not add --depth here: depth-one fetches sever the new tip from previously
 # published revisions, breaking the native accepts_revision ancestry check even
 # when both commit objects remain present. Ordinary fetch preserves connectivity

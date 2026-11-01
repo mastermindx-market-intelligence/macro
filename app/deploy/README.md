@@ -413,15 +413,32 @@ UTC (`Persistent=true`). The script (installed at `/usr/local/sbin/macro-git-sto
 1. under the updater lock (`/var/lock/macro-update.lock`, so a pull tick skips rather
    than colliding): expires unreachable reflog entries and packs refs;
 2. deletes temporary packs older than 6 h left by a killed repack;
-3. checks free space for the worst case (the whole store again + 3 GiB) and
+3. freezes every consolidated non-cruft pack of at least 2 GiB into the kept tier (see
+   below), then checks free space for the worst case (every pack it will rewrite, that is
+   every pack without a `.keep`, plus the loose objects, again + 3 GiB) and
    `MemAvailable` (768 MiB) BEFORE it writes anything;
-4. runs `git repack -d -l --cruft --cruft-expiration=2.weeks.ago` at idle I/O, nice 19,
-   one pack thread and a 128 MiB delta window, inside the unit's cgroup memory cap;
+4. runs `git repack -d -l --cruft --cruft-expiration=2.weeks.ago` with
+   `repack.packKeptObjects=false` at idle I/O, nice 19, one pack thread and a 128 MiB
+   delta window, inside the unit's cgroup memory cap, then freezes the new pack too if it
+   reached 2 GiB;
 5. under the lock again: `git prune --expire=2.weeks.ago` for loose objects.
 
 History is untouched (MO-A-F04): the job never fetches, deepens, truncates or edits
 `.git/shallow`; it only changes how the same reachable objects are stored. Objects
 that became unreachable in the last two weeks go to a cruft pack, as with `git gc`.
+
+Kept tier (added after the 2026-11-01 second refill): almost all of the connected history
+stays reachable, so a full nightly repack would rewrite the whole store, tens of GiB, to
+reclaim nearly nothing, and would need that much free space on root. Instead a
+consolidated pack of at least 2 GiB (`MACRO_GIT_MAINT_PROMOTE_KIB`, in KiB) gets a
+`.keep` file whose text starts with "macro-git-store-maintenance kept tier". `git repack`
+never rewrites or deletes a kept pack, so each night only rewrites the packs added since
+the last promotion: about one day of pulls plus less than 2 GiB. Cruft packs (they have a
+`.mtimes` file) are never frozen, so unreachable objects still expire, and a `.keep` the
+job did not write (an in-flight fetch writes one) is never touched or removed.
+Unreachable objects that end up inside a kept pack are not reclaimed; a recovery repack
+below reclaims them if that ever matters. The log line "kept tier: pack-... frozen as a
+base pack" marks each promotion, and "store after" reports the kept count.
 
 Exit status: 0 = consolidated; 75 = deferred (lock or memory busy), logged and treated
 as success, retried next night; 1 = refused or failed, a failed unit in
@@ -429,7 +446,8 @@ as success, retried next night; 1 = refused or failed, a failed unit in
 Run it by hand with `systemctl start macro-git-store-maintenance.service`.
 
 Recovery when it REFUSES for space (the store has outgrown root-disk headroom): do not
-run the repack on the root filesystem. Write the consolidated pack on
+run the repack on the root filesystem. Stop `macro-git-store-maintenance.timer` for the
+duration and start it again at the end. Write the consolidated pack on
 `/mnt/terminal_storage` instead and swap it in, all while holding the updater lock
 (pull ticks skip until it is released; the site and macro-api keep serving):
 
@@ -456,19 +474,31 @@ the swap. Under the lock: first add `$M/objects` to `.git/objects/info/alternate
 every object stays readable. Then rescue what only the old packs hold: a small fetch is
 unpacked loose and skips any object that is already packed, so a pull after the snapshot
 can depend on an old object that was unreachable at the snapshot and is therefore not in
-the new pack. Touch a `.keep` next to every pack that is not in `old-packs.txt`, run
+the new pack. Move the `.keep` of every pack in `old-packs.txt` aside first (a kept-tier
+`.keep` there would make the rescue skip that pack's objects, which the retire step then
+loses). Touch a `.keep` next to every pack that is not in `old-packs.txt`, run
 `sed 's/^/^/' "$M/old-tips.txt" | git -C /opt/macro pack-objects --revs --local
 --honor-pack-keep --non-empty --all --reflog --indexed-objects .git/objects/pack/pack`
 (it skips objects in the new pack and in the kept packs, so only those rescued objects and
-a few loose ones go on root), and remove the `.keep` files again. Now delete
+a few loose ones go on root), and remove the `.keep` files you just touched. Now delete
 `objects/pack/multi-pack-index`, move every pack in `old-packs.txt` (`.pack`, `.idx`,
-`.rev`) aside on the same filesystem, and check with `git fsck --connectivity-only` (move
-the old packs back if it fails). Then delete the old packs, copy the new `.pack` and
+`.rev`, and any `.mtimes`) aside on the same filesystem, and check with
+`git fsck --connectivity-only` (move the old packs and their `.keep` files back if it
+fails). Then delete the old packs, copy the new `.pack` and
 `.rev` and then its `.idx` into `objects/pack`, remove the alternates line, run fsck
 again, and finish with `git prune-packed` and
 `git prune --expire=2.weeks.ago` before releasing the lock (`exec 9>&-`). `git prune`
 also drops `.git/shallow` lines for boundary commits that are no longer reachable; the
-repository stays shallow and its reachable boundary is unchanged.
+repository stays shallow and its reachable boundary is unchanged. The swapped-in pack
+has no `.keep`; the next nightly run freezes it into the kept tier before it repacks.
+
+When the consolidated pack itself does not fit in one pass, a staged variant does the same
+swap in batches: `pack-objects --stdin-packs`, run with the same `GIT_OBJECT_DIRECTORY`
+and alternates setup, reads pack names on stdin (a name prefixed with `^` is excluded) and
+writes one pack of exactly the objects in the listed packs, without a reachability walk.
+Pack the oldest packs first, swap them in with the same lock, rescue, retire and fsck
+sequence, and repeat for the rest. The 2026-11-01 recovery used it; its record is the
+Agent OS handoff for the VPS Git store.
 
 ### Alert delivery drain (macro-alert-drain.service/.timer)
 

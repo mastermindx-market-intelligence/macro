@@ -21,6 +21,17 @@
 # converts or edits history or .git/shallow by hand. Repack only changes how
 # the same reachable objects are stored; recently unreachable objects go to a
 # cruft pack for the grace period, as `git gc` does.
+#
+# Kept tier (2026-11-01 second refill): the connected history is almost all
+# reachable, so a nightly full repack would rewrite the whole store (tens of
+# GiB) to reclaim nearly nothing, and needs that much free space on root.
+# Instead, every consolidated non-cruft pack of at least PROMOTE_KIB gets a
+# `.keep` and becomes part of a frozen base tier. `git repack` never rewrites
+# or deletes a kept pack (on this non-bare, bitmap-less clone it honors
+# .keep), so each night only rewrites the packs added since the last
+# promotion: about one day of pulls plus at most PROMOTE_KIB. Unreachable
+# objects inside a kept pack are never reclaimed; a full recovery repack
+# (README) reclaims them if that ever matters.
 set -euo pipefail
 
 APP_DIR="${MACRO_GIT_MAINT_APP_DIR:-/opt/macro}"
@@ -35,11 +46,51 @@ GRACE="${MACRO_GIT_MAINT_GRACE:-2.weeks.ago}"
 WINDOW_MEMORY="${MACRO_GIT_MAINT_WINDOW_MEMORY:-128m}"
 MIN_MEMAVAIL_KIB="${MACRO_GIT_MAINT_MIN_MEMAVAIL_KIB:-786432}"
 MEMINFO="${MACRO_GIT_MAINT_MEMINFO:-/proc/meminfo}"
+# A consolidated non-cruft pack at least this large joins the kept base tier
+# (KiB; 2 GiB). It bounds what each night rewrites and must free on root.
+PROMOTE_KIB="${MACRO_GIT_MAINT_PROMOTE_KIB:-2097152}"
 
 log() { echo "macro-git-store-maintenance: $*"; }
 g() { git -C "$APP_DIR" -c gc.auto=0 "$@"; }
 store_kib() {
 	g count-objects -v | awk '/^size-pack:/{p=$2} /^size:/{l=$2} END{print p + l}'
+}
+pack_kib() { echo $(( $(wc -c < "$1") / 1024 )); }
+# KiB of every pack a repack would rewrite: all packs without a .keep (the
+# cruft pack included, since it is rewritten to age its objects out).
+unkept_pack_kib() {
+	local p sum=0
+	for p in "$OBJECTS"/pack/pack-*.pack; do
+		[ -e "$p" ] || continue
+		[ -e "${p%.pack}.keep" ] && continue
+		sum=$((sum + $(pack_kib "$p")))
+	done
+	echo "$sum"
+}
+kept_pack_count() {
+	local p n=0
+	for p in "$OBJECTS"/pack/pack-*.keep; do
+		[ -e "$p" ] && n=$((n + 1))
+	done
+	echo "$n"
+}
+# Freeze large consolidated packs into the kept tier. Skips cruft packs
+# (.mtimes: they must stay rewritable to expire), packs without an index yet,
+# and any pack that already has a .keep: a .keep written by someone else
+# (an in-flight index-pack) is never touched, here or anywhere in this job.
+promote_large_packs() {
+	local p base kib
+	for p in "$OBJECTS"/pack/pack-*.pack; do
+		[ -e "$p" ] || continue
+		base=${p%.pack}
+		[ -e "$base.keep" ] && continue
+		[ -e "$base.mtimes" ] && continue
+		[ -e "$base.idx" ] || continue
+		kib=$(pack_kib "$p")
+		[ "$kib" -ge "$PROMOTE_KIB" ] || continue
+		echo "macro-git-store-maintenance kept tier $(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$base.keep"
+		log "kept tier: ${base##*/} (${kib} KiB) frozen as a base pack"
+	done
 }
 
 [ -d "$APP_DIR/.git/objects" ] || { log "no Git store at $APP_DIR"; exit 1; }
@@ -63,19 +114,25 @@ exec 9>&-
 find "$OBJECTS/pack" -maxdepth 1 -type f \( -name 'tmp_*' -o -name '.tmp-*' \) \
 	-mmin +360 -print -delete
 
-# 3. Space and memory gates. A full repack writes its new packs before it
-#    deletes the old ones, so the worst case is the whole current store again
-#    plus a margin for the pull, which keeps fetching while this runs.
+# 3. Kept tier, then the space and memory gates. A repack writes its new packs
+#    before it deletes the old ones, so the worst case is every pack it will
+#    rewrite (the non-kept ones) plus the loose objects, again, plus a margin
+#    for the pull, which keeps fetching while this runs. Kept packs are never
+#    rewritten, so they do not count. A .keep is only metadata: writing one
+#    is safe even when the gate then refuses.
+promote_large_packs
 BEFORE_KIB=$(store_kib)
-NEED_KIB=$((BEFORE_KIB + MARGIN_KIB))
+LOOSE_KIB=$(g count-objects -v | awk '/^size:/{print $2}')
+UNKEPT_KIB=$(unkept_pack_kib)
+NEED_KIB=$((UNKEPT_KIB + LOOSE_KIB + MARGIN_KIB))
 AVAIL_KIB=$(df --output=avail -k "$OBJECTS" | tail -n 1 | tr -d ' ')
 if [ "$AVAIL_KIB" -lt "$NEED_KIB" ]; then
-	log "REFUSED: repack needs ${NEED_KIB} KiB free on $OBJECTS, ${AVAIL_KIB} KiB available; nothing written (recovery: app/deploy/README.md, 'Git store maintenance')"
+	log "REFUSED: repack needs ${NEED_KIB} KiB free on $OBJECTS (${UNKEPT_KIB} KiB of non-kept packs, ${LOOSE_KIB} KiB loose, ${MARGIN_KIB} KiB margin), ${AVAIL_KIB} KiB available; no pack written (recovery: app/deploy/README.md, 'Git store maintenance')"
 	exit 1
 fi
 MEMAVAIL_KIB=$(awk '/^MemAvailable:/{print $2}' "$MEMINFO")
 if [ "$MEMAVAIL_KIB" -lt "$MIN_MEMAVAIL_KIB" ]; then
-	log "DEFERRED: MemAvailable ${MEMAVAIL_KIB} KiB < ${MIN_MEMAVAIL_KIB} KiB (another heavy job is running); nothing written"
+	log "DEFERRED: MemAvailable ${MEMAVAIL_KIB} KiB < ${MIN_MEMAVAIL_KIB} KiB (another heavy job is running); no pack written"
 	exit 75
 fi
 
@@ -83,10 +140,14 @@ fi
 #    to fetch/reset (new packs it did not list are never deleted, and old packs
 #    are removed only after the replacement is in place). -l keeps it local;
 #    --cruft keeps recently unreachable objects instead of deleting them.
-log "store before: ${BEFORE_KIB} KiB; free: ${AVAIL_KIB} KiB"
+#    Objects already in a kept pack are left there (repack.packKeptObjects is
+#    pinned false here), so the new pack holds only the newer objects.
+log "store before: ${BEFORE_KIB} KiB ($(kept_pack_count) kept packs; rewriting ${UNKEPT_KIB} KiB of non-kept packs and ${LOOSE_KIB} KiB loose); free: ${AVAIL_KIB} KiB"
 nice -n 19 ionice -c 3 git -C "$APP_DIR" -c gc.auto=0 -c pack.threads=1 \
 	-c pack.windowMemory="$WINDOW_MEMORY" -c pack.deltaCacheSize=32m \
+	-c repack.packKeptObjects=false \
 	repack -d -l --cruft --cruft-expiration="$GRACE"
+promote_large_packs
 
 # 5. Loose-object prune under the lock: a small fetch unpacks loose objects
 #    that are unreferenced until its ref update lands, and the lock excludes
@@ -101,4 +162,4 @@ fi
 rm -f "$APP_DIR/.git/gc.log"
 
 AFTER_KIB=$(store_kib)
-log "store after: ${AFTER_KIB} KiB ($(g count-objects -v | awk '/^packs:/{print $2}') packs); free: $(df --output=avail -k "$OBJECTS" | tail -n 1 | tr -d ' ') KiB"
+log "store after: ${AFTER_KIB} KiB ($(g count-objects -v | awk '/^packs:/{print $2}') packs, $(kept_pack_count) kept); free: $(df --output=avail -k "$OBJECTS" | tail -n 1 | tr -d ' ') KiB"
