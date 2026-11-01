@@ -285,3 +285,46 @@ def test_cl_rows_present_and_nondelegable(rulings: list[dict]):
     assert not not_nondelegable, (
         f"CL rows that are not marked nondelegable=True: {not_nondelegable}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Fail-closed CI diff coverage / exact tested-base transport regressions
+# ---------------------------------------------------------------------------
+
+def test_conflict_guard_fails_closed_without_git_diff(monkeypatch, capsys):
+    """Missing history may not turn H1/H2/W1 into an accidental green run."""
+    monkeypatch.setattr(_conflict_mod, "_get_changed_files", lambda _root: ([], False))
+    monkeypatch.setattr(sys, "argv", ["check_ruling_conflicts.py"])
+    assert _conflict_mod.main() == 2
+    assert "H1/H2/W1" in capsys.readouterr().err
+
+
+def test_conflict_guard_treats_failed_git_diff_as_unavailable(monkeypatch, tmp_path):
+    """A valid merge-base is insufficient if changed-path enumeration fails."""
+    def broken_diff(args, **_kwargs):
+        if args[1] == "merge-base":
+            return subprocess.CompletedProcess(args, 0, stdout="a" * 40 + "\n")
+        if args[1] == "diff":
+            return subprocess.CompletedProcess(args, 128, stdout="")
+        return subprocess.CompletedProcess(args, 0, stdout="")
+
+    monkeypatch.setattr(_conflict_mod.subprocess, "run", broken_diff)
+    changed, available = _conflict_mod._get_changed_files(tmp_path)
+    assert changed == []
+    assert available is False
+
+
+def test_ruling_ci_consumes_exact_base_without_network_refetch():
+    """The ruling guard uses the planner's tested-base object, not moving main."""
+    manifest = yaml.safe_load(
+        (_REPO_ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
+    )
+    steps = manifest["jobs"]["ruling-graph"]["steps"]
+    cmd = next(
+        step["run"] for step in steps
+        if step.get("name", "").startswith("conflict checker (hard fail")
+    )
+    assert "git fetch" not in cmd
+    assert "TESTED_BASE_SHA" in cmd
+    assert "git merge-base --is-ancestor" in cmd
+    assert 'RULING_DIFF_BASE="$TESTED_BASE_SHA"' in cmd

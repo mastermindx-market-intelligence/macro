@@ -16743,11 +16743,11 @@ jobs:
     #   - all test_ruling_graph.py assertions pass
     # The graph is display-only (RUL-CL-12: authority_ceiling A1_EXPLAIN).
     # Mirrors cycle-pattern-authority pattern.
-    # fetch-depth 0 + explicit base fetch: the checker needs `git merge-base HEAD
-    # origin/main` for its diff-scoped H1/H2/W1 scans. On a shallow checkout there
-    # is no base ref, the checker degrades to skip-diff-checks, and the job goes
-    # green while guarding nothing — the #1195 shallow-cut incident class (see the
-    # board-contradictions job above).
+    # Hosted ci-pack already holds the exact tested merge and its planner-pinned
+    # base ancestry. A second unbounded fetch of moving origin/main is redundant
+    # and can fail with invalid index-pack on this very large repository.
+    # Require the exact CI-tested base locally and prove its ancestry. Never
+    # weaken the H1/H2/W1 changed-file guard for missing Git history.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16762,8 +16762,10 @@ jobs:
         run: python scripts/build_ruling_graph.py --check
       - name: conflict checker (hard fail on new FDR family or privacy boundary violations)
         run: |
-          git fetch origin ${{ github.base_ref || 'main' }}
-          RULING_DIFF_BASE="origin/${{ github.base_ref || 'main' }}" python scripts/check_ruling_conflicts.py
+          : "${TESTED_BASE_SHA:?missing authoritative CI-tested base SHA}"
+          git cat-file -e "${TESTED_BASE_SHA}^{commit}"
+          git merge-base --is-ancestor "$TESTED_BASE_SHA" HEAD
+          RULING_DIFF_BASE="$TESTED_BASE_SHA" python scripts/check_ruling_conflicts.py
       - name: conflict checker selftest (gate fires on planted violations)
         run: python scripts/check_ruling_conflicts.py --selftest
       - name: ruling graph test suite
