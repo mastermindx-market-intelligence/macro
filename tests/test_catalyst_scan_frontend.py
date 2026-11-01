@@ -1011,3 +1011,93 @@ def test_g3_real_browser_320px_no_hscroll_and_focus_kept(tmp_path):
                 page.close()
         finally:
             browser.close()
+
+
+# ---------------------------------------------------------------- G2-scan --
+
+def test_g2_scan_names_sec_acceptance_by_basis_never_as_source_stamp():
+    """Catches: the earnings packet's SEC acceptance clock dropped from the scan,
+    or shown in place of the source's first-verified stamp."""
+    scan = compose_scan(["PFE"], packets=[_pkt()], issuers=UNIVERSE, as_of=NOW,
+                        coverage=_coverage())
+    row = scan["results"][0]
+    assert row["status"] == "SUPPORTED"
+    assert row["event_time_utc"] == _stamp(T_ACC)
+    assert row["event_time_basis"] == "SEC_ACCEPTANCE"
+    assert row["sources"][0]["first_verified_at_utc"] == _stamp(T_FIRST)
+    assert row["sources"][0]["published_at_utc"] is None
+
+
+@pytest.mark.parametrize("change", [
+    {"event_time_utc": _stamp(NOW + MIN)},
+    {"event_time_utc": "2026-10-31T11:56:00"},
+    {"event_time_utc": "not-a-clock"},
+    {"event_time_utc": None},
+    {"event_kind": "guidance"},
+], ids=["future", "naive", "garbage", "absent", "not-earnings"])
+def test_g2_scan_withholds_acceptance_clock_when_unproven(change):
+    """Catches: a future, naive, unparseable or non-earnings clock surfacing as
+    an SEC acceptance. v2 coverage refuses these packets upstream, so the
+    result builder is exercised directly."""
+    packet = dict(_pkt(), **change)
+    relation = catalyst_scan._relation(packet, "PFE")
+    row = catalyst_scan._public_result(
+        "PFE", packet, relation, catalyst_scan._base("PFE", UNIVERSE, NOW), NOW)
+    assert "event_time_utc" not in row
+    assert "event_time_basis" not in row
+
+
+_G2_JS_BODY = r"""
+const cases=JSON.parse(process.argv[2]);
+function find(node,cls){
+  if((node.className||'').includes(cls)) return node;
+  for(const child of node.children||[]){const hit=find(child,cls); if(hit) return hit;}
+  return null;
+}
+(async ()=>{
+  const out={};
+  for(const c of cases){
+    const dom=boot(async()=>({ok:true,status:200,json:async()=>c.payload}));
+    dom.elements['cs-tickers'].value='PFE';
+    await dom.elements['cs-scan-form'].listeners.submit(SUBMIT);
+    const cards=dom.elements['cs-result-cards'];
+    const node=find(cards,'cs-acceptance');
+    out[c.name]={text:collect(cards),
+      acceptance:node?{text:node.textContent,dateTime:node.dateTime}:null};
+  }
+  console.log('G2_JS_RENDER='+JSON.stringify(out));
+})().catch((e)=>{console.error(e.stack);process.exitCode=1;});
+"""
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
+def test_g2_scan_js_renders_acceptance_only_under_its_own_name():
+    """Catches: templates/catalyst_scan.js dropping the SEC acceptance clock,
+    rendering it without its basis, or substituting it for the source stamp."""
+    def payload(**extra):
+        wire = _wire_scan("PFE", "SYNTHETIC PFE fixture headline", "SYNTHETIC claim.")
+        wire["results"][0].update(extra)
+        return wire
+    cases = [
+        {"name": "named", "payload": payload(event_time_utc=_stamp(T_ACC),
+                                             event_time_basis="SEC_ACCEPTANCE")},
+        {"name": "no_basis", "payload": payload(event_time_utc=_stamp(T_ACC))},
+        {"name": "wrong_basis", "payload": payload(event_time_utc=_stamp(T_ACC),
+                                                   event_time_basis="PUBLISHED")},
+        {"name": "bad_clock", "payload": payload(event_time_utc="not-a-clock",
+                                                 event_time_basis="SEC_ACCEPTANCE")},
+    ]
+    done = subprocess.run(
+        [shutil.which("node"), "-e", _JS_DOM_PREAMBLE + _G2_JS_BODY,
+         str(SOURCE_JS), json.dumps(cases)],
+        text=True, capture_output=True, timeout=30, check=False)
+    assert done.returncode == 0, done.stdout + done.stderr
+    line = next(l for l in done.stdout.splitlines() if l.startswith("G2_JS_RENDER="))
+    out = json.loads(line.split("=", 1)[1])
+    named = out["named"]
+    assert named["acceptance"]["text"].startswith("SEC ACCEPTANCE: ")
+    assert named["acceptance"]["dateTime"] == _stamp(T_ACC)
+    assert "First verified available" in named["text"]
+    for name in ("no_basis", "wrong_basis", "bad_clock"):
+        assert out[name]["acceptance"] is None, name
+        assert "SEC ACCEPTANCE" not in out[name]["text"], name

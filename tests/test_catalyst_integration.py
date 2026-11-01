@@ -781,6 +781,7 @@ const sample={schema:'catalyst.scan/v1',schema_version:1,as_of_utc:'2026-10-09T1
   results:[{ticker:'NVDA',status:'SUPPORTED',headline:'Synthetic filing',
     as_of_utc:'2026-10-09T15:00:00Z',relationship:'DIRECT',
     correction_state:'CURRENT',what_changed:[{text:'Fixture fact'}],
+    event_time_utc:'2026-10-09T13:58:00Z',event_time_basis:'SEC_ACCEPTANCE',
     scenarios:[],invalidators:[],
     sources:[{title:'SEC search fixture',url:'https://www.sec.gov/edgar/search/',
       published_at_utc:'2026-10-09T14:00:00Z'}],
@@ -806,6 +807,11 @@ async function main(){
   assert.deepEqual(calls[0].body.tickers,['NVDA']);
   assert.equal(elements['catalyst-optin'].hidden,false);
   assert.equal(elements['catalyst-results'].children.length>0,true);
+  const rendered=JSON.stringify(elements['catalyst-results'].children.map(function walk(n){
+    return [n.textContent,(n.children||[]).map(walk)];}));
+  // The SEC acceptance clock is labelled by its basis, apart from the source stamp.
+  assert.equal(rendered.includes('SEC acceptance (UTC): 2026-10-09T13:58:00Z'),true);
+  assert.equal(rendered.includes(' · published 2026-10-09T14:00:00Z'),true);
   assert.equal(replaced.includes('email'),false);
   await elements['catalyst-optin-form'].listeners.submit(event);
   assert.equal(calls[1].path,'/api/catalyst/optin/request');

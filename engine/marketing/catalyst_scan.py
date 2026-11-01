@@ -298,6 +298,14 @@ def _public_result(ticker: str, packet: Mapping, relation: Mapping,
                   what_changed=changed[:10], scenarios=scenarios[:10],
                   invalidators=invalidators[:10], sources=sources[:12],
                   correction_state=packet["correction_state"])
+    # G2-scan (DEC:MX-CATALYST-GAPS-SEAT-RULINGS-20261101): an earnings packet's
+    # SEC acceptance is a filing clock of its own. It is named by its basis and
+    # never doubles as a source stamp; an unparseable or future value is withheld.
+    acceptance = (_utc(packet.get("event_time_utc"))
+                  if packet.get("event_kind") == "earnings" else None)
+    if acceptance is not None and acceptance <= now:
+        result["event_time_utc"] = _stamp(acceptance)
+        result["event_time_basis"] = "SEC_ACCEPTANCE"
     return result
 
 
