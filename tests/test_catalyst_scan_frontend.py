@@ -482,8 +482,15 @@ def test_a04_first_verified_without_publication_reader_path():
     assert "first verified available" in page
     assert "· published" not in page
     assert CLAIM_EPS in page
-    # The earlier SEC-acceptance clock never leaks in as a displayed stamp.
-    assert _stamp(T_ACC) not in page
+    assert _stamp(T_FIRST) in page
+    # The earlier SEC-acceptance clock is displayed only in its own named row,
+    # never as a source or publication stamp; the recheck clock never displays.
+    assert public["results"][0]["event_time_utc"] == _stamp(T_ACC)
+    assert public["results"][0]["event_time_basis"] == "SEC_ACCEPTANCE"
+    acceptance_row = (f'<p>SEC acceptance (UTC): <time datetime="{_stamp(T_ACC)}">'
+                      f'{_stamp(T_ACC)}</time></p>')
+    assert page.count(acceptance_row) == 1
+    assert _stamp(T_ACC) not in page.replace(acceptance_row, "")
     assert _stamp(T_DOCHECK) not in page
 
 
@@ -764,7 +771,8 @@ def test_a07_nojs_and_js_renderers_agree_on_truth_states():
         "SUPPORTED": [
             lambda t: CLAIM_EPS.lower() in t,
             lambda t: "first verified available" in t,
-            lambda t: "sec form 8-k item 2.02" in t],
+            lambda t: "sec form 8-k item 2.02" in t,
+            lambda t: "sec acceptance" in t and _stamp(T_ACC)[:19].lower() in t],
         "NOT_COVERED": [lambda t: "not covered" in t,
                         lambda t: CLAIM_EPS.lower() not in t],
         "NO_QUALIFIED_EVENT": [
@@ -1101,3 +1109,42 @@ def test_g2_scan_js_renders_acceptance_only_under_its_own_name():
     for name in ("no_basis", "wrong_basis", "bad_clock"):
         assert out[name]["acceptance"] is None, name
         assert "SEC ACCEPTANCE" not in out[name]["text"], name
+
+
+def _g2_bridge_scan(**change):
+    scan = compose_scan(["PFE"], packets=[_pkt()], issuers=UNIVERSE, as_of=NOW,
+                        coverage=_coverage())
+    for key, value in change.items():
+        if value is None:
+            scan["results"][0].pop(key, None)
+        else:
+            scan["results"][0][key] = value
+    return scan
+
+
+def test_g2_bridge_passes_named_acceptance_clock_through():
+    """Catches: the public bridge dropping the producer's named SEC acceptance
+    clock, renaming its basis, or re-clocking it."""
+    row = ci.sanitize_public_scan(_g2_bridge_scan(), ["PFE"], now_utc=NOW)["results"][0]
+    assert row["event_time_utc"] == _stamp(T_ACC)
+    assert row["event_time_basis"] == "SEC_ACCEPTANCE"
+    bare = ci.sanitize_public_scan(
+        _g2_bridge_scan(event_time_utc=None, event_time_basis=None), ["PFE"], now_utc=NOW)
+    assert "event_time_utc" not in bare["results"][0]
+    assert "event_time_basis" not in bare["results"][0]
+
+
+@pytest.mark.parametrize("change", [
+    {"event_time_utc": None},
+    {"event_time_basis": None},
+    {"event_time_basis": "PUBLISHED"},
+    {"event_time_utc": _stamp(NOW + 30 * MIN)},
+    {"event_time_utc": "2026-10-31T11:56:00"},
+    {"event_time_utc": _stamp(NOW + 2 * MIN), "as_of_utc": _stamp(NOW)},
+], ids=["basis-without-clock", "clock-without-basis", "wrong-basis", "future",
+        "naive", "after-evidence-clock"])
+def test_g2_bridge_refuses_unnamed_or_impossible_acceptance_clock(change):
+    """Catches: the public bridge emitting an event clock that is unnamed,
+    mislabelled, in the future, naive, or later than the evidence it rests on."""
+    with pytest.raises(ValueError):
+        ci.sanitize_public_scan(_g2_bridge_scan(**change), ["PFE"], now_utc=NOW)
