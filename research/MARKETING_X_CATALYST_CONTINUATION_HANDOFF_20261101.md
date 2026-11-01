@@ -120,9 +120,11 @@ namespace prefix is also safe once the timer is off.
 - Snapshot accumulation: the timer publishes a new immutable snapshot every
   5 minutes (~288 per day) with NO pruning policy; an owner decision on
   retention/pruning is still needed.
-- SEC `acceptanceDateTime` timezone handling is not verified against real
-  EDGAR data (the writer parses the ISO value as UTC); a witness run against
-  live EDGAR was out of scope for this lane (no network in tests by design).
+- RESOLVED 2026-11-01: SEC `acceptanceDateTime` timezone. Checked against
+  live EDGAR for MSFT 0001193125-26-436122 and KO 0001628280-26-067403: the
+  submissions-JSON value (`...Z`) equals the filing index page's "Accepted"
+  time (US Eastern) plus 4 hours under EDT, so the `Z` is true UTC and the
+  writer's UTC parse (`_parse_clock`) is correct. No code change.
 - 8-K/A attestation is rare in submissions data: `amendsAccessionNumber` is
   often absent, so most 8-K/A filings surface as `unattested_amendment`
   skips rather than corrections.
@@ -168,3 +170,25 @@ Observed 2026-11-01 on the macro-api host (counts and states only; no env values
 - Writer env names present: `SEC_USER_AGENT` and the four `R2_RESEARCH_*` names; `RESEARCH_LOCAL_STORE` absent.
 - Timer at 22:09:06Z: `macro-catalyst-source-cycle.timer` enabled + active; last trigger 22:08:28Z, next 22:13:28Z (5-minute cadence). Service is a timer-driven oneshot (inactive between runs): Result=success, ExecMainStatus=0, NRestarts=0.
 - First two cycles (22:03:59Z and 22:08:41Z finished): both COMPLETE exit 0; issuers ok 20 / incomplete 0 / failed 0 / not_checked 0; events 6; snapshot published both runs. SEC GETs 32 on the bootstrap cycle, 26 on the next (inside the 150 budget).
+
+## Production reader proof (in-process, flags OFF)
+
+Observed 2026-11-01 ~22:25Z on the macro-api host, checkout `7bc879e90cf5`
+(counts and public status names only). Admission was configured inside a
+probe process only; the running macro-api, its flags and the timer were not
+touched.
+
+- `production_store=True`; the `sec_issuer_earnings_release_facts` emission
+  is allowed by the rights registry.
+- `read_qualified_event_context(now)`: 6 qualified packets, 20 issuers, and
+  a source-coverage receipt covering all 20 tickers (complete-current).
+- `scan_tickers([t])` across the 20 pilot names: 14 NO_QUALIFIED_EVENT
+  (COMPLETE_EMPTY), 1 SUPPORTED (V, PUBLIC_QUALIFIED), 5
+  TEMPORARILY_UNAVAILABLE (PARTIAL: AMZN, MA, MSFT, GOOGL, KO).
+- The five unavailable results all carry `missing_or_invalid_eps_actual`,
+  `missing_or_invalid_rev_actual` and `no_supported_material_facts`: the
+  incumbent `engine/earnings_release/figures.py` binder extracts no EPS or
+  revenue actuals from those EX-99.1 releases. Failing closed is correct,
+  but it limits usefulness until the figure-yield follow-up lands. V binds
+  revenue but not EPS.
+- The public HTTP surface stays 503 until the operator's flags-ON decision.
