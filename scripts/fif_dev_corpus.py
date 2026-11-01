@@ -37,6 +37,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -60,6 +61,9 @@ from scripts.capture_fif_issuer_packages import (
 
 CONTRACT_ID = "fif_dev_corpus_banks_v1"
 CORPUS_ID = "banks_v1"
+# The contract id is derived from the corpus id; the constants above stay the
+# defaults so the default output is byte-identical to the first corpus.
+CORPUS_ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]{0,39}$")
 CONTRACT_SCHEMA = "fundamental_forensics.coverage_contract/v1"
 MANIFEST_SCHEMA = "fif_dev_corpus_manifest.v1"
 TICKER_MAP_URL = "https://www.sec.gov/files/company_tickers.json"
@@ -82,6 +86,21 @@ class DevCorpusError(Exception):
     def __init__(self, message: str, *, code: str) -> None:
         super().__init__(message)
         self.code = code
+
+
+def contract_id_for(corpus_id: str) -> str:
+    """The dev contract id derived from a corpus id."""
+    return f"fif_dev_corpus_{corpus_id}"
+
+
+def validated_corpus_id(value: str) -> str:
+    """The corpus id, or a typed refusal for anything outside the id pattern."""
+    if not CORPUS_ID_PATTERN.fullmatch(value or ""):
+        raise DevCorpusError(
+            f"corpus id must match {CORPUS_ID_PATTERN.pattern}: {value!r}",
+            code="corpus_id_invalid",
+        )
+    return value
 
 
 # ---------------------------------------------------------------------------
@@ -347,11 +366,12 @@ def build_dev_contract(
     issuer_rows: Sequence[Mapping[str, Any]],
     captured_at: str,
     shape_reference: Mapping[str, Any],
+    corpus_id: str = CORPUS_ID,
 ) -> dict[str, Any]:
     """The lane-local dev contract; verbatim blocks come from the shape reference."""
     contract: dict[str, Any] = {
         "schema": CONTRACT_SCHEMA,
-        "contract_id": CONTRACT_ID,
+        "contract_id": contract_id_for(corpus_id),
         "attested": False,
         "capture_basis": "dev_corpus",
         "captured_at": captured_at,
@@ -425,6 +445,7 @@ def build_manifest(
     stage_root: Path,
     capture_out: Path,
     held_out_path: Path,
+    corpus_id: str = CORPUS_ID,
 ) -> dict[str, Any]:
     """Digest-only corpus manifest over a completed capture."""
     _, held_ciks = load_held_out_exclusions(held_out_path)
@@ -510,8 +531,8 @@ def build_manifest(
         )
     return {
         "schema": MANIFEST_SCHEMA,
-        "corpus_id": CORPUS_ID,
-        "contract_id": CONTRACT_ID,
+        "corpus_id": corpus_id,
+        "contract_id": contract_id_for(corpus_id),
         "held_out_disjoint": True,
         "captured_at": (captured_ats.pop() if captured_ats else ""),
         "stage_root": str(stage_root),
@@ -567,14 +588,14 @@ def admit_staged_package(
 
 
 def _entity_for(
-    package_manifest: Mapping[str, Any], ticker: str
+    package_manifest: Mapping[str, Any], ticker: str, *, contract_id: str = CONTRACT_ID
 ) -> dict[str, str]:
     return {
         "entity_id": package_manifest["entity_id"],
         "cik": package_manifest["cik"],
         "ticker": ticker,
         "name": package_manifest["legal_name"],
-        "identity_basis": f"{CONTRACT_ID}:sec_submissions_ticker_map",
+        "identity_basis": f"{contract_id}:sec_submissions_ticker_map",
         "source_entity_id": package_manifest["cik"],
     }
 
@@ -669,6 +690,8 @@ def probe_corpus(
     per_accession: list[dict[str, Any]] = []
     assertion_rows: list[dict[str, Any]] = []
     probed = 0
+    # The probed corpus names its own contract; probe never re-derives it.
+    corpus_contract_id = str(corpus.get("contract_id") or CONTRACT_ID)
     for issuer in corpus.get("issuers") or []:
         cik10 = str(issuer.get("cik10") or "")
         ticker = str(issuer.get("ticker") or "")
@@ -707,7 +730,9 @@ def probe_corpus(
                 pack_id,
                 PackInput(
                     packages=(package,),
-                    entity=_entity_for(package_manifest, ticker),
+                    entity=_entity_for(
+                    package_manifest, ticker, contract_id=corpus_contract_id
+                ),
                     query=_query_for(package_manifest, pack_id),
                     issuer_sic=str(issuer.get("sic") or "") or None,
                     sic_source="sec_submissions",
@@ -789,6 +814,11 @@ def _issuer_class(sic: str) -> str:
 
 
 def _run_contract(args: argparse.Namespace) -> int:
+    try:
+        corpus_id = validated_corpus_id(args.corpus_id)
+    except DevCorpusError as exc:
+        print(f"dev_corpus_refusal: {exc.code}: {exc}")
+        return 2
     if args.min_interval < MIN_INTERVAL_FLOOR_SECONDS:
         print(
             f"dev_corpus_refusal: min_interval_below_floor: {args.min_interval} < "
@@ -885,6 +915,7 @@ def _run_contract(args: argparse.Namespace) -> int:
         issuer_rows=issuer_rows,
         captured_at=captured_at,
         shape_reference=shape_reference,
+        corpus_id=corpus_id,
     )
     # The capture tool must accept what this lane-local contract declares:
     # prove it with the tool's own gates before writing.
@@ -898,7 +929,7 @@ def _run_contract(args: argparse.Namespace) -> int:
         json.dumps(
             {
                 "contract": str(out_path),
-                "contract_id": CONTRACT_ID,
+                "contract_id": contract_id_for(corpus_id),
                 "issuers": [
                     {
                         "ticker": row["ticker"],
@@ -918,10 +949,12 @@ def _run_contract(args: argparse.Namespace) -> int:
 
 def _run_manifest(args: argparse.Namespace) -> int:
     try:
+        corpus_id = validated_corpus_id(args.corpus_id)
         manifest = build_manifest(
             stage_root=Path(args.stage_root).expanduser(),
             capture_out=Path(args.capture_out).expanduser(),
             held_out_path=Path(args.held_out_contract),
+            corpus_id=corpus_id,
         )
     except DevCorpusError as exc:
         print(f"dev_corpus_refusal: {exc.code}: {exc}")
@@ -983,6 +1016,11 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
         "contract", help="build the lane-local dev coverage contract"
     )
     contract_parser.add_argument("--tickers", nargs="+", required=True)
+    contract_parser.add_argument(
+        "--corpus-id",
+        default=CORPUS_ID,
+        help="corpus id; the contract id is derived as fif_dev_corpus_<corpus-id>",
+    )
     contract_parser.add_argument("--captured-at", required=True)
     contract_parser.add_argument(
         "--out", required=True, help="lane-local contract path (never committed)"
@@ -1011,6 +1049,11 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     manifest_parser.add_argument("--stage-root", required=True)
     manifest_parser.add_argument("--capture-out", required=True)
     manifest_parser.add_argument("--out", required=True)
+    manifest_parser.add_argument(
+        "--corpus-id",
+        default=CORPUS_ID,
+        help="corpus id; the contract id is derived as fif_dev_corpus_<corpus-id>",
+    )
     manifest_parser.add_argument(
         "--held-out-contract", default=str(HELD_OUT_CONTRACT_PATH)
     )
