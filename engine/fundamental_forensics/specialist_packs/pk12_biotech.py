@@ -178,6 +178,20 @@ _FIELD_MAPPINGS = {
             "us-gaap:ProceedsFromIssuanceOfCommonStock",
             "us-gaap:ProceedsFromIssuanceOrSaleOfEquity",
             "us-gaap:ProceedsFromIssuanceInitialPublicOffering",
+            # biotech_v1 dev corpus: many biotechs report their only
+            # equity-issuance financing line as proceeds from incentive/stock
+            # plans, tagged with the standard us-gaap stock-plan issuance
+            # concepts ("Issuances of common stock under benefit plans",
+            # "Proceeds from issuance of common stock through equity plans").
+            # Period rule: the cash-flow duration ending at period_of_report,
+            # exactly like every alias above (the resolver admits the longest
+            # duration context whose end equals period_of_report). Declared
+            # AFTER the capital-raise aliases so a filing carrying both a
+            # capital-raise line and a stock-plan line keeps reporting the
+            # capital-raise proceeds; footnote option-table facts are usually
+            # dimensioned and never resolve here (dimensions_allowed=()).
+            "us-gaap:ProceedsFromIssuanceOfSharesUnderIncentiveAndShareBasedCompensationPlansIncludingStockOptions",
+            "us-gaap:ProceedsFromStockPlans",
         )
     ),
     # Reserved (A.4): span evidence is a later lane; both rows stay
