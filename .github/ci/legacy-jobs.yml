@@ -20554,6 +20554,7 @@ jobs:
       - "tests/test_rotation_early_context.py"
       - "tests/test_rotation_observation_state.py"
       - "tests/test_rotation_observation_builder.py"
+      - "tests/test_rotation_observation_view.py"
       - "lib/us_cash_calendar.py"
       - "lib/exchange_holidays.py"
       - "engine/subsector_rotation_alerts.py"
@@ -20581,7 +20582,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy scipy pyyaml pyarrow
       - name: ratio lens test suite
-        run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_observation_state.py tests/test_rotation_observation_builder.py tests/test_rotation_role_retention.py tests/test_rotation_flow_pit.py -q
+        run: python -m pytest tests/test_oracle_ratio_lens.py tests/test_rotation_early_context.py tests/test_rotation_observation_state.py tests/test_rotation_observation_builder.py tests/test_rotation_observation_view.py tests/test_rotation_role_retention.py tests/test_rotation_flow_pit.py -q
       - name: ew-p4 glance node test
         run: node --test tests/ew_p4_glance_ui.test.cjs
 
