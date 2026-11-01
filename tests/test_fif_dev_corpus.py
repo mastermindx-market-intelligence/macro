@@ -422,3 +422,263 @@ def test_probe_on_empty_stage_reports_zero_accessions(
     assert report["accessions_probed"] == 0
     assert report["per_field"] == {}
     assert report["per_accession"] == []
+
+
+def test_default_corpus_id_output_is_byte_identical(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
+    # The same synthetic inputs produce byte-identical contract and manifest
+    # outputs with and without the explicit default --corpus-id banks_v1.
+    held_out = _write_held_out(tmp_path)
+    _patch_client(monkeypatch)
+    assert dev_corpus.main(_contract_argv(tmp_path, held_out, "DEV1")) == 0
+    capsys.readouterr()
+    default_contract = (tmp_path / "dev_contract.json").read_bytes()
+
+    explicit_dir = tmp_path / "explicit"
+    explicit_dir.mkdir()
+    argv = _contract_argv(explicit_dir, held_out, "DEV1") + [
+        "--corpus-id",
+        dev_corpus.CORPUS_ID,
+        "--submissions-dir",
+        str(tmp_path / "submissions"),
+    ]
+    assert dev_corpus.main(argv) == 0
+    capsys.readouterr()
+    explicit_contract = (explicit_dir / "dev_contract.json").read_bytes()
+    assert explicit_contract == default_contract
+
+    capture_out = tmp_path / "out"
+    stage_root = tmp_path / "stage"
+    accession = "0001111111-26-000001"
+    package_manifest = {
+        "filing_date": "2026-02-15",
+        "fixture_recorded_at": CAPTURED_AT,
+        "members": [],
+    }
+    issuer_dir = capture_out / DEV_CIK10
+    (issuer_dir / accession).mkdir(parents=True)
+    (issuer_dir / accession / "package_manifest.json").write_text(
+        json.dumps(package_manifest), encoding="utf-8"
+    )
+    (issuer_dir / "capture_index.json").write_text(
+        json.dumps(
+            [
+                {
+                    "accession": accession,
+                    "form": "10-K",
+                    "period_of_report": "2025-12-31",
+                    "admission": "ADMITTED",
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    stage_submissions = stage_root / "submissions"
+    stage_submissions.mkdir(parents=True)
+    (stage_submissions / f"CIK{DEV_CIK10}.json").write_text(
+        json.dumps({"tickers": ["DEV1"], "sic": "6021"}), encoding="utf-8"
+    )
+    stage_accession = stage_root / DEV_CIK10 / accession
+    stage_accession.mkdir(parents=True)
+    (stage_accession / "index.json").write_bytes(b"{}")
+    (stage_accession / "sec_submissions_witness.json").write_bytes(b"{}")
+
+    def _manifest_argv(out: Path, *extra: str) -> list[str]:
+        return [
+            "manifest",
+            "--stage-root",
+            str(stage_root),
+            "--capture-out",
+            str(capture_out),
+            "--out",
+            str(out),
+            "--held-out-contract",
+            str(held_out),
+            *extra,
+        ]
+
+    assert dev_corpus.main(_manifest_argv(tmp_path / "default.manifest.json")) == 0
+    capsys.readouterr()
+    assert (
+        dev_corpus.main(
+            _manifest_argv(
+                tmp_path / "explicit.manifest.json", "--corpus-id", dev_corpus.CORPUS_ID
+            )
+        )
+        == 0
+    )
+    capsys.readouterr()
+    assert (tmp_path / "explicit.manifest.json").read_bytes() == (
+        tmp_path / "default.manifest.json"
+    ).read_bytes()
+
+
+def test_custom_corpus_id_reaches_contract_manifest_and_entity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
+    held_out = _write_held_out(tmp_path)
+    _patch_client(monkeypatch)
+    argv = _contract_argv(tmp_path, held_out, "DEV1") + ["--corpus-id", "litigation_v1"]
+    assert dev_corpus.main(argv) == 0
+    summary = json.loads(capsys.readouterr().out)
+    assert summary["contract_id"] == "fif_dev_corpus_litigation_v1"
+    contract = json.loads((tmp_path / "dev_contract.json").read_text("utf-8"))
+    assert contract["contract_id"] == "fif_dev_corpus_litigation_v1"
+
+    capture_out = tmp_path / "out"
+    stage_root = tmp_path / "stage"
+    accession = "0001111111-26-000001"
+    package_manifest = {
+        "filing_date": "2026-02-15",
+        "fixture_recorded_at": CAPTURED_AT,
+        "members": [],
+    }
+    issuer_dir = capture_out / DEV_CIK10
+    (issuer_dir / accession).mkdir(parents=True)
+    (issuer_dir / accession / "package_manifest.json").write_text(
+        json.dumps(package_manifest), encoding="utf-8"
+    )
+    (issuer_dir / "capture_index.json").write_text(
+        json.dumps(
+            [
+                {
+                    "accession": accession,
+                    "form": "10-K",
+                    "period_of_report": "2025-12-31",
+                    "admission": "ADMITTED",
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    stage_submissions = stage_root / "submissions"
+    stage_submissions.mkdir(parents=True)
+    (stage_submissions / f"CIK{DEV_CIK10}.json").write_text(
+        json.dumps({"tickers": ["DEV1"], "sic": "6021"}), encoding="utf-8"
+    )
+    manifest_path = tmp_path / "litigation_v1.manifest.json"
+    assert (
+        dev_corpus.main(
+            [
+                "manifest",
+                "--stage-root",
+                str(stage_root),
+                "--capture-out",
+                str(capture_out),
+                "--out",
+                str(manifest_path),
+                "--held-out-contract",
+                str(held_out),
+                "--corpus-id",
+                "litigation_v1",
+            ]
+        )
+        == 0
+    )
+    capsys.readouterr()
+    manifest = json.loads(manifest_path.read_text("utf-8"))
+    assert manifest["corpus_id"] == "litigation_v1"
+    assert manifest["contract_id"] == "fif_dev_corpus_litigation_v1"
+
+    # The probe threads the manifest's own contract id into the packet entity.
+    entities: list[dict[str, str]] = []
+
+    def _fake_admit(stage_root, cik10, accession, manifest):
+        return "ADMITTED", "", object()
+
+    def _fake_produce_pack(pack_id, packet):
+        entities.append(dict(packet.entity))
+        return {"fields": [], "applicability": {"state": "applicable"}}
+
+    import engine.fundamental_forensics.specialist_packs as specialist_packs
+
+    monkeypatch.setattr(dev_corpus, "admit_staged_package", _fake_admit)
+    monkeypatch.setattr(specialist_packs, "produce_pack", _fake_produce_pack)
+    captured_manifest = dict(manifest)
+    captured_manifest["issuers"] = [
+        {
+            "ticker": "DEV1",
+            "cik10": DEV_CIK10,
+            "sic": "6021",
+            "accessions": [
+                {
+                    "accession": accession,
+                    "admission": dev_corpus.DEV_ADMISSION,
+                    "form": "10-K",
+                    "period_of_report": "2025-12-31",
+                    "filing_date": "2026-02-15",
+                    "members": {},
+                }
+            ],
+        }
+    ]
+    # The probe reads the capture output's package manifest for the entity row.
+    package_manifest["form"] = "10-K"
+    package_manifest["period_of_report"] = "2025-12-31"
+    package_manifest["source_accepted_at"] = "2026-02-15T16:00:00Z"
+    package_manifest["entity_id"] = "DEV:DEV1"
+    package_manifest["cik"] = DEV_CIK10
+    package_manifest["legal_name"] = "DEV ONE BANCORP"
+    (issuer_dir / accession / "package_manifest.json").write_text(
+        json.dumps(package_manifest), encoding="utf-8"
+    )
+    probe_manifest_path = tmp_path / "probe.manifest.json"
+    probe_manifest_path.write_text(
+        json.dumps(captured_manifest), encoding="utf-8"
+    )
+    assert (
+        dev_corpus.main(
+            [
+                "probe",
+                "--stage-root",
+                str(stage_root),
+                "--manifest",
+                str(probe_manifest_path),
+                "--pack",
+                "PK08",
+            ]
+        )
+        == 0
+    )
+    capsys.readouterr()
+    assert entities == [
+        {
+            "entity_id": "DEV:DEV1",
+            "cik": DEV_CIK10,
+            "ticker": "DEV1",
+            "name": "DEV ONE BANCORP",
+            "identity_basis": "fif_dev_corpus_litigation_v1:sec_submissions_ticker_map",
+            "source_entity_id": DEV_CIK10,
+        }
+    ]
+
+
+def test_invalid_corpus_id_is_refused(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
+    _patch_client(monkeypatch)
+    held_out = _write_held_out(tmp_path)
+    for bad_id in ("Banks-V1", "1banks", "banks v1", "x" * 41, ""):
+        code = dev_corpus.main(
+            _contract_argv(tmp_path, held_out, "DEV1") + ["--corpus-id", bad_id]
+        )
+        assert code == 2
+        assert "dev_corpus_refusal: corpus_id_invalid" in capsys.readouterr().out
+    code = dev_corpus.main(
+        [
+            "manifest",
+            "--stage-root",
+            str(tmp_path / "stage"),
+            "--capture-out",
+            str(tmp_path / "out"),
+            "--out",
+            str(tmp_path / "m.json"),
+            "--held-out-contract",
+            str(held_out),
+            "--corpus-id",
+            "Litigation-V1",
+        ]
+    )
+    assert code == 2
+    assert "dev_corpus_refusal: corpus_id_invalid" in capsys.readouterr().out
