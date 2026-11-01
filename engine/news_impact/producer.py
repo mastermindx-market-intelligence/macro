@@ -51,6 +51,7 @@ CURRENCY = re.compile(r"^([A-Z]{3}|NA)$")
 FALSE_FLAGS = {"may_rank": False, "may_size": False, "may_gate": False, "prophet_authority": False}
 # Numeric grounding (F2 control M04). A numeral never starts inside another number.
 _NUMERAL = re.compile(r"(?<![\d.,])(?:\d(?:[\d.,]*\d)?|\.\d+)")
+_US_GROUPED = re.compile(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?")
 _SCALE = dict(SCALE_WORDS)
 _SCALE_SUFFIX = re.compile(r"\s*(" + "|".join(sorted(map(re.escape, _SCALE), key=len, reverse=True)) + r")\b",
                            re.IGNORECASE)
@@ -116,8 +117,24 @@ def _fold(value: Any) -> Any:
 
 
 def _numeral_readings(token: str) -> set[Decimal]:
-    """Every exact reading of one written numeral under either grouping convention."""
-    texts = (token,) if token.startswith(".") else (token.replace(",", ""), token.replace(".", "").replace(",", "."))
+    """The exact reading of one written numeral; European grouping only where US grouping cannot apply.
+
+    Commas each followed by three digits, with no period before them, are US grouping (1,234);
+    any other comma is a European decimal mark (1,5 and 1.234,5). Two or more periods are
+    European grouping (1.234.567). A single period is a decimal point, so a European 1.500
+    meaning 1500 fails closed rather than letting a value 1000 times off ground. A numeral
+    longer than 64 characters is not a stated quantity and has no reading.
+    """
+    if len(token) > 64:
+        return set()
+    if token.startswith("."):
+        texts = (token,)
+    elif "," in token and ("." in token[:token.rfind(",")] or not _US_GROUPED.fullmatch(token)):
+        texts = (token.replace(".", "").replace(",", "."),)
+    elif token.count(".") > 1:
+        texts = (token.replace(".", ""),)
+    else:
+        texts = (token.replace(",", ""),)
     readings = set()
     for text in texts:
         try:

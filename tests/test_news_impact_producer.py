@@ -363,13 +363,24 @@ def test_stated_amount_grounds_at_either_scale(value):
     assert event["incremental_amount"]["value"] == value
 
 
-def test_a_doctored_excerpt_cannot_carry_the_fabricated_number():
-    # The labeler's excerpt is not evidence: replay rejects a mismatch before grounding,
-    # and grounding itself reads only the verified source bytes.
+def test_a_doctored_excerpt_is_rejected_by_replay_before_grounding():
+    # The labeler's excerpt is not evidence: replay rejects any excerpt that differs from the
+    # verified source bytes, so a doctored excerpt never reaches grounding.
     amount = present(qpoint(777, period=FY27), BOARD)
     amount["source_span"]["excerpt"] = "The board authorized USD 777."
-    kind, _, event = produce(pair(incremental_amount=amount), shadow="fam_a")
-    assert kind == "rejected" and event is None
+    kind, code, event = produce(pair(incremental_amount=amount), shadow="fam_a")
+    assert (kind, code, event) == ("rejected", "replay_failed", None)
+
+
+@pytest.mark.parametrize("value, text", [
+    (1234000, "$1,234 million"),
+    (1500000000000, "$1.500 billion notes"),
+    (2.25, "issued 2,250 thousand shares"),
+    (4125, "4.125% senior notes"),
+    (5, "1" * 100 + " trillion"),
+])
+def test_a_value_read_under_the_other_grouping_convention_does_not_ground(value, text):
+    assert not pr._quantity_grounded({"form": "point", "value": value}, text)
 
 
 @pytest.mark.parametrize("quantity, text", [
