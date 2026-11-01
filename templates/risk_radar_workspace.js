@@ -450,6 +450,17 @@
     setHorizon(days[next]);
     one('[data-rkw-horizon="' + days[next] + '"]').focus();
   });
+  /* A closed <details> keeps its controls in the DOM and Chrome still reports
+     boxes for them; only its own <summary> is reachable. */
+  function reachable(node) {
+    if (!node.getClientRects().length || node.closest('[hidden],[inert]')) return false;
+    for (var box = node.closest('details:not([open])'); box;
+         box = box.parentElement && box.parentElement.closest('details:not([open])')) {
+      var summary = box.querySelector(':scope > summary');
+      if (!summary || !summary.contains(node)) return false;
+    }
+    return true;
+  }
   /* The shared modal's document-capture Escape handler runs later in the path.
      Handle only this open workspace at window capture: one Escape returns to
      overview, a second continues to the existing modal close/re-focus behavior. */
@@ -462,7 +473,7 @@
     }
     if (event.key !== 'Tab') return;
     var focusable = all('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])', dialog)
-      .filter(function (node) { return node.getClientRects().length && !node.closest('[hidden],[inert]'); });
+      .filter(reachable);
     if (!focusable.length) return;
     var first = focusable[0], last = focusable[focusable.length - 1];
     /* The legacy trap includes hidden evidence; use only visible targets here. */

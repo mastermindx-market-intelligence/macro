@@ -15364,15 +15364,38 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       window.scrollTo(0, _dlgScrollY);
     }
 
+    /* A stop the keyboard can reach. A closed <details> keeps its controls in the
+       DOM and Chrome still reports layout boxes for them, so ask the disclosure
+       rather than the box; only its own <summary> stays reachable. */
+    function _tabStop(el){
+      if(el.tabIndex < 0 || el.closest('[inert]') || el.getClientRects().length === 0) return false;
+      /* Chrome also paints boxes for content its CSS hides, so defer to
+         checkVisibility when the engine offers it. */
+      if(typeof el.checkVisibility === 'function' && !el.checkVisibility({checkVisibilityCSS:true})) return false;
+      for(var d = el.closest('details:not([open])'); d;
+          d = d.parentElement && d.parentElement.closest('details:not([open])')){
+        var s = d.querySelector(':scope > summary');
+        if(!s || !s.contains(el)) return false;
+      }
+      return true;
+    }
+
+    /* The stops _focusFirst and _trapTab agree on. Read on each call: dlg-sentiment
+       and dlg-markets fill in on open. */
+    function _dlgStops(dlg){
+      return Array.prototype.filter.call(
+        dlg.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])'),
+        _tabStop);
+    }
+
     function _focusFirst(dlg){
-      var focusable = dlg.querySelectorAll('button,a[href],[tabindex]:not([tabindex="-1"])');
+      var focusable = _dlgStops(dlg);
       if(focusable.length) focusable[0].focus();
     }
 
     function _trapTab(dlg, e){
       if(e.key !== 'Tab') return;
-      var focusable = Array.prototype.slice.call(
-        dlg.querySelectorAll('button:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])'));
+      var focusable = _dlgStops(dlg);
       if(!focusable.length) return;
       var first = focusable[0], last = focusable[focusable.length-1];
       if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }

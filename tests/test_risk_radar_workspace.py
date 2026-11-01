@@ -88,3 +88,19 @@ def test_partial_data_still_keeps_the_legacy_evidence_in_the_dialog():
     ).render(latest={"risk_radar": {"scares": []}})
     soup = BeautifulSoup(rendered, "html.parser")
     assert soup.select_one("#after").parent.get("id") == "host"
+
+
+def test_workspace_trap_skips_controls_inside_closed_disclosures():
+    # Once mounted, the workspace owns Tab for #dlg-risk ahead of the shared mx5
+    # trap. Chrome reports boxes for controls inside a closed <details>, so a box
+    # check alone let Tab leave the Sources and Sentiment views after their last
+    # summary. CI packs install no browser; the PR carries the keyboard evidence.
+    source = (ROOT / "templates/risk_radar_workspace.js").read_text()
+    start = source.index("function reachable(node)")
+    reachable = source[start:source.index("\n  }\n", start)]
+    for needle in ("getClientRects().length", "[hidden],[inert]", "details:not([open])", ":scope > summary",
+                   ".contains(node)"):
+        assert needle in reachable, needle
+    tab = source[source.index("if (event.key !== 'Tab') return;"):]
+    tab = tab[:tab.index("}, true);")]
+    assert "summary" in tab and ".filter(reachable)" in tab
