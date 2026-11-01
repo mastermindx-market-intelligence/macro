@@ -13,6 +13,18 @@ from engine import subsector_confluence as sc
 
 # ----------------------------------------------------------------- pure logic ----
 
+def test_us_subsector_js_honesty_has_no_live_or_shishi():
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    text = (root / "templates" / "subsectors.js").read_text(encoding="utf-8")
+    assert "实时" not in text
+    assert "deep live coverage" not in text
+    assert "enough live data" not in text
+    assert "have enough data to time" in text
+    assert "有足够数据可计时" in text
+    assert "High confidence — deep coverage" in text
+
+
 def test_slug():
     assert sc._slug("Software - Infrastructure") == "software-infrastructure"
     assert sc._slug("Diagnostics & Research") == "diagnostics-research"
