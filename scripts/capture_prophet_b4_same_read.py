@@ -61,11 +61,10 @@ R2 event spool -> nightly reconciler), never duplicated:
                              once per US session after the open).  SESSION GUARD
                              first: the pass's Eastern date must be an NYSE session
                              (``NOT_A_SESSION`` otherwise -- a holiday never produces
-                             a row) and the committed board stamp must be that
-                             session or the session immediately before it
-                             (``STALE_BOARD_STAMP`` otherwise -- a nightly that has not
-                             landed on this host never yields a row under an old
-                             stamp).  Then it builds every row against the live
+                             a row) and the committed board stamp must be EXACTLY the
+                             session immediately before it (``STALE_BOARD_STAMP``
+                             otherwise -- a nightly that has not landed on this host,
+                             or a board rendered mid-session, never yields a row).  Then it builds every row against the live
                              plane, writes nothing under data/, and publishes ONE
                              object per pass at
                              ``live_flow/prophet_b4_capture/<stamp_date>/<captured_at>.json``
@@ -753,17 +752,18 @@ def spool_key(stamp_date: str, captured_at: str) -> str:
 
 def _stamp_is_lawful_for_pass(stamp: date, pass_date: date) -> bool:
     """The one session rule both hosts enforce: the pass date is an NYSE session and
-    the committed board stamp is that session or the session immediately before it.
+    the committed board stamp is EXACTLY the session immediately before it.
 
-    A holiday pass (no session) and a pass whose host has not yet pulled the prior
-    session's nightly (stamp two or more sessions old) both fail; neither may become
-    a row, because ``captured_at`` is the observation instant of the stamp's
-    candidates at THE NEXT session's decision window, not of an arbitrary later day.
+    A holiday pass (no session), a pass whose host has not yet pulled the prior
+    session's nightly (stamp two or more sessions old) and a board stamped with the
+    pass day itself (the nightly runs after the close, so a same-day stamp during the
+    session can only be an anomalous mid-session render) all fail; none may become a
+    row, because ``captured_at`` is the observation instant of the stamp's candidates
+    at THE NEXT session's decision window, not of an arbitrary other day.
     """
     if not is_session(pass_date):
         return False
-    prior = last_session_on_or_before(pass_date - timedelta(days=1))
-    return stamp in (pass_date, prior)
+    return stamp == last_session_on_or_before(pass_date - timedelta(days=1))
 
 
 def _pass_date(moment: datetime) -> date:
@@ -797,10 +797,10 @@ def _spool_session_guard(root_path: Path, moment: datetime) -> dict[str, str]:
     if not _stamp_is_lawful_for_pass(stamp, pass_date):
         raise TypedRefusal(
             "STALE_BOARD_STAMP",
-            f"committed board as_of {stamp.isoformat()} is neither the pass session "
-            f"{pass_date.isoformat()} nor the session before it {prior.isoformat()}: the "
-            "prior session's nightly has not landed on this host (or the board is ahead "
-            "of the clock); no row is observed against a stale stamp",
+            f"committed board as_of {stamp.isoformat()} is not the session before the "
+            f"pass session {pass_date.isoformat()} (expected {prior.isoformat()}): the "
+            "prior session's nightly has not landed on this host, or the board was "
+            "rendered mid-session; no row is observed against that stamp",
         )
     return {
         "pass_date": pass_date.isoformat(),
@@ -809,13 +809,19 @@ def _spool_session_guard(root_path: Path, moment: datetime) -> dict[str, str]:
     }
 
 
-def _build_rows(root_path: Path, live_root_path: Path, *, alias_required: bool) -> dict[str, object]:
+def _build_rows(
+    root_path: Path, live_root_path: Path, *, alias_required: bool,
+    moment: datetime | None = None, stamp_date: str | None = None,
+) -> dict[str, object]:
     """Every capture row for the committed stamp against the given live plane.
 
     Shared by the direct nightly, the dry-run, report mode and the VPS spool pass:
-    one HEAD-backed snapshot, one alias table, one ``captured_at`` per run.
+    one HEAD-backed snapshot, one alias table, one ``captured_at`` per run, and ONE
+    board read per run (the spool pass hands in the stamp its session guard read, so
+    a board re-rendered by macro-update between two reads cannot split the pass).
     """
-    stamp_date = resolve_board_as_of(root_path)
+    if stamp_date is None:
+        stamp_date = resolve_board_as_of(root_path)
     if not stamp_date:
         raise TypedRefusal(
             "COMMITTED_BOARD_AS_OF_MISSING",
@@ -832,7 +838,7 @@ def _build_rows(root_path: Path, live_root_path: Path, *, alias_required: bool) 
 
     alias_table = resolve_alias_table(root_path, required=alias_required)
     alias_receipt = getattr(alias_table, "receipt", None)
-    captured_at = _now_iso(_now())
+    captured_at = _now_iso(moment if moment is not None else _now())
     rows: list[dict[str, object]] = []
     for native_row in native_rows:
         ticker, source_event_id, source_receipt = _candidate_source_identity(native_row)
@@ -888,8 +894,16 @@ def _validate_spool_object(key: str, stamp_date: str, obj: object) -> list[dict[
     closed row key set and the write fence, re-applied here because a spool object
     is bytes from another host, not a row this process built."""
     def refuse(detail: str) -> TypedRefusal:
+        # A malformed object under a stamp with no committed day file fails EVERY
+        # nightly until it is gone (the backlog rule re-reads it each night).  That is
+        # fail-closed on purpose; the remedy is an operator act on the spool, never a
+        # day-file edit: move or delete the exact object in R2 and let the next
+        # nightly ingest the rest.  No lawful producer writes such an object.
         return TypedRefusal(
-            "SPOOL_OBJECT_MALFORMED", f"spool object {key} refused, nothing written: {detail}"
+            "SPOOL_OBJECT_MALFORMED",
+            f"spool object {key} refused, nothing written: {detail}; operator remedy = move "
+            "or delete that exact object in the R2 spool (never edit a day file), then let "
+            "the next nightly ingest the rest",
         )
     if not isinstance(obj, Mapping):
         raise refuse("not a JSON object (or unreadable)")
@@ -907,6 +921,16 @@ def _validate_spool_object(key: str, stamp_date: str, obj: object) -> list[dict[
     if not _stamp_is_lawful_for_pass(stamp_d, pass_d):
         raise refuse(
             f"pass_date {pass_d.isoformat()} is not a session whose stamp may be {stamp_date}"
+        )
+    try:
+        captured = datetime.fromisoformat(str(obj.get("captured_at")).replace("Z", "+00:00"))
+    except ValueError:
+        raise refuse("captured_at is not an instant") from None
+    if captured.tzinfo is None or _pass_date(captured) != pass_d:
+        # pass_date is the producer's declaration; captured_at is the observation.  The
+        # ingest trusts neither alone: the Eastern date of the instant must BE pass_date.
+        raise refuse(
+            f"captured_at {obj.get('captured_at')} is not on the declared pass_date {pass_d.isoformat()}"
         )
     rows = obj.get("rows")
     if not isinstance(rows, list) or not rows:
@@ -1122,9 +1146,13 @@ def run(
             root_path, dry_run=dry_run, sessions=int(spool_sessions),
             root_override=root is not None,
         )
+    # ONE clock read per pass: the guard's pass date and every row's captured_at are
+    # the same instant (the ingest re-derives pass_date from captured_at and refuses
+    # a disagreement).
+    moment = _now()
     session_guard: dict[str, str] | None = None
     if spool:
-        session_guard = _spool_session_guard(root_path, _now())
+        session_guard = _spool_session_guard(root_path, moment)
     live_root_path = Path(live_root) if live_root is not None else NATIVE_LIVE_ROOT
     if not live_root_path.is_absolute() or not live_root_path.is_dir():
         raise TypedRefusal(
@@ -1136,6 +1164,8 @@ def run(
     built = _build_rows(
         root_path, live_root_path,
         alias_required=bool((nightly and not dry_run) or spool),
+        moment=moment,
+        stamp_date=session_guard["stamp_date"] if session_guard else None,
     )
     stamp_date = str(built["stamp_date"])
     rows = list(built["rows"])  # type: ignore[arg-type]
