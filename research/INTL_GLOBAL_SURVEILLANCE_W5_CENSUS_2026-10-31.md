@@ -288,3 +288,87 @@ All PR facts below verified 2026-10-31 via `gh pr view <n> --json state,mergeCom
   cycle, both-themes browser proof) remain PARTIAL pending the nightly render + served-journey proof; row 16
   correction propagation moved off GAP but its §14 acceptance rides IM18 completion; #10341 raised the
   international-dislocation-explorer CI budget 8→15 (20:08:34Z) separately from the W2A budget raise.
+
+## Addendum 2026-11-01 — §14 closure after gb1/pin1
+
+Appended by the seat (Fable Meta-CEO d7c4f490, records r8, seat-direct after the fabric refused admission on
+every host — ubuntu0 `host_disk_below_staging_reserve`, a capacity wait under the 2026-10-31 no-disk-reclaim
+law). The measured body and the post-census section above are untouched. PR facts verified 2026-11-01 04:4xZ in
+ONE batched read (`gh api graphql`, aliases per PR → state, headRefOid, mergeCommit.oid, mergedAt):
+
+| PR | head | main | mergedAt (UTC) |
+|---|---|---|---|
+| #10288 W2A IM13 scanner + coverage | 74e28ce960bfe2608de1aeeeba8221f75a73e4a2 | 92881169bb888435ab84b40740212a1fb0876a77 | 2026-10-31T21:54:40Z |
+| #10353 records r7 | ed9b641d62ab35ef997307a34a31a6d555ce6905 | 83a77d8533c6f885f6b061207d017f27cf485a78 | 2026-10-31T22:57:30Z |
+| #10354 W2B gb1 graph-boundary label | ecbd01fb8cfb36b4972fca4b1b183249a0759d50 | aba326f385ea19672e1a87f47e97c25e01c3b6d1 | 2026-11-01T01:03:18Z |
+| #10355 pin1 polish | 89d7be656c772cd051f31269a749df9b2a11684f | 4e1ae041040e638028f9b189fe6dfe932f4eb5b1 | 2026-11-01T02:32:05Z |
+| #10341 dislocation-explorer budget 8→15 (other author) | 51b16608d57592b52d6c4b93877d65b2590a7c95 | dbaf1e07bcccf689a740ad3f1281c59ff1b9d946 | 2026-10-31T20:08:34Z |
+
+**Served proof (seat curl 2026-11-01 04:4xZ, independent of any CI watcher):** `https://www.mastermind-x.com/intl.html`
+HTTP/2 200, `Last-Modified: Sun, 01 Nov 2026 03:12:25 GMT`, etag `dmjjnurxkzx7dhgu2`, content-length 22649978;
+served `<span data-graph-boundary="…">` chips = **640** (530 `structural_research` + 110 `structural_graph_member`,
+0 `qualified_candidate` — correct, since production passes `edges=[]` / `edge_basis: "no_admitted_edge_set"` and no
+qualified candidate can exist without an admitted edge producer). The pin1 head-row wrapper `intl-gs__edges__head`
+counted **0** at probe time: the 4e1ae041 render was still queued behind render run 41259434450 (in_progress since
+02:3xZ), so the pin1 layout polish is MERGED but **not yet served**. The served page carries no commit stamp;
+attribution to aba326f3 is by content (gb1 chip present, pin1 wrapper absent). This is a content-level
+PRODUCTION_PROOF for row 4, not the entitled-browser journey proof row 18 requires.
+
+### Rows whose status changes
+
+| # | Test | Was | Now | Citation |
+|---|---|---|---|---|
+| 4 | Graph boundary | PARTIAL | **DONE** | Engine label path `engine/intl_global_graph_boundary.py` (#10286 → d444ae67, gh-verified in the rec7 #10353 record); display: W2B dossier Typed-edges chip + EN/ZH footnote under DEC:INTL-GS-GB1-GRAPH-BOUNDARY-CHIP, gb1 #10354 → aba326f385ea19672e1a87f47e97c25e01c3b6d1 (tests T1–T7 in `tests/test_intl_global_graph_boundary.py` + `tests/test_intl_gs_dossier.py`, `[data-graph-boundary]` browser assertion in `tests/intl_gs_dossier_browser.test.cjs`, 64/64 evidence cells + 8 crops both themes); head-row placement pin1 #10355 → 4e1ae041040e638028f9b189fe6dfe932f4eb5b1; served: 640 labelled chips on the live page (above). Masterplan test: "an out-of-graph market displays structural research or a qualified candidate label, never an invented graph score" — 530 structural-research labels served, no score drawn, no edge implied. |
+| 16 | Correction propagation | GAP | **PARTIAL** | `engine/intl_global_correction.py` on main via #10276 → cd195298c0748e06c80c11614c7b47c78a7e2835 (2026-10-31T09:34:28Z, gh-verified in the rec7 #10353 record): corrected source → dependent invalidation → visible revision, saved evidence never erased, at engine level. Missing for DONE: the surface/saved-investigation integration (rides IM18 + IM08/IM09 custody #8754). |
+
+Rows re-examined and left unchanged (no cited PR closes the "Missing for DONE" column): 14 Cross-surface consistency
+(PARTIAL — #10286 added the cross-surface identity test; the unified identity/first-qualified/revision contract
+across International + country + US stays with the Terminal/US + ontology owners, ORCH-5 F4); 18 Served-path proof
+(PARTIAL — the seat curl is anonymous HTTP 200 + content; "HTTP 200 alone fails", entitled-browser initialise /
+navigate / state-preserve on the served URL is still unproven); 19 Publication retention (PARTIAL — the push-render
+lane published the gb1 chip once at 03:12:25Z; the normal *subsequent* publisher cycle retaining it has not yet
+run); 20 Legacy continuity (PARTIAL — `tests/intl_workspace_legacy_navigation.test.cjs` is CI-owned; a green-run
+quote is the remaining step, no navlink was touched by any merged PR); 21 Bilingual/theme semantics (PARTIAL — the
+W2B dossier board has both-theme, EN/ZH, 1440/390 evidence at gb1b/pin1 (`mockups/evidence/intl-gs-w2b/`); the
+other GS boards' served both-themes/narrow proof is not yet recorded).
+
+### Recount
+
+Original table: **14 DONE / 6 PARTIAL / 1 GAP** (PARTIAL rows 4, 14, 18, 19, 20, 21; GAP row 16).
+After this addendum: **15 DONE / 6 PARTIAL / 0 GAP** — row 4 → DONE; row 16 GAP → PARTIAL; PARTIAL set is now
+rows 14, 16, 18, 19, 20, 21.
+
+### Rows that stay PARTIAL — owner
+
+- 14 Cross-surface consistency — Terminal/US + ontology owners (ORCH-5 F4); IM18.
+- 16 Correction propagation — IM18 surface + IM08/IM09 custody #8754 (never touched by this programme).
+- 18 Served-path proof — entitled-browser journey on the served URL (seat/records; needs a playwright-capable
+  host or the CI browser job pointed at the live URL).
+- 19 Publication retention — the next normal publisher cycle (nightly) retaining the GS views; records.
+- 20 Legacy continuity — one CI-green quote of the legacy navigation suite; records.
+- 21 Bilingual/theme semantics — served both-themes/narrow proof for Scanner / Dislocations boards; records.
+- Deferred, not §14 rows: R2-01 scanner-abstain focus-state evidence cell; F10 structural CI-budget fetch fix (both
+  international jobs do a full checkout AND a separate ~4-min `git fetch origin main` on hosted runners — shallow /
+  base-only fetch, own PR); Transmission tab `not_built` BY DESIGN (no emission-permitted candidate source).
+
+## Addendum 2026-11-01 (r9) — pin1 served, legend basis, F10
+
+- **pin1 served (PRODUCTION_PROOF for row 4 placement).** Seat probe 2026-11-01 06:1xZ of
+  `https://www.mastermind-x.com/intl.html`: HTTP/2 200, `Last-Modified: Sun, 01 Nov 2026 05:21:32 GMT`,
+  etag `dmjmeq11txpydibom`; `intl-gs__edges__head` wrappers = **640**, `data-graph-boundary` chips = **640**.
+  The chip now sits in the Typed-edges head row (pin1 #10355 → 4e1ae041); deferred F12 is closed in production.
+  Row 4 is therefore served in full (engine #10286, display #10354, placement #10355). Counts unchanged:
+  15 DONE / 6 PARTIAL / 0 GAP.
+- **Legend basis for the 2026-11-01 row-4 flip (review INTL-GS-REC8 F-2).** The 2026-10-31 legend defines DONE as a
+  test that ran green in this worktree with its tail quoted. The row-4 flip in the first 2026-11-01 addendum rests
+  instead on tests merged through CI (gb1/pin1 suites in #10354/#10355, CI green at merge) plus the served chips;
+  no local green tail was quoted. The basis is disclosed here; the count is unaffected.
+- **records r8 merged.** #10362 → main `f2a7fe7436a755f47c584a1fcfb37b7ef6a85ba1` (2026-11-01T06:03:02Z), squash
+  pinned to 8dbc2d5c after review INTL-GS-REC8 `PASS_WITH_NOTES` (native Opus read-only auditor; fabric refused).
+- **F10 (structural CI-budget fetch fix, own PR).** PR #10367 OPEN (draft) on claude/intl-gs-f10-canonical-main: head 5ac89fd395432d688e13e583d1c15591adba58b8 (follow-up to the reviewed 8f1b1d5e; review INTL-GS-F10 PASS_WITH_NOTES with one SHOULD-FIX fixed in the follow-up; re-read INTL-GS-F10-AUDIT-2 PASS_WITH_NOTES at 5ac89fd3 with two test-hygiene NITs N5/N6 deferred to a later test PR), CI rollup pending at 06:4xZ; merge seat-only pinned to 5ac89fd3 after a green rollup including the international-dislocation-explorer check. Design: the `international-dislocation-explorer` legacy
+  job acquires canonical main through `scripts/run_ci_pack.prepare_canonical_main` (blob-filtered, tag-free, fail
+  closed) with a new validated `frozen_paths` keyword naming the three objects its guard compares, instead of an
+  unrestricted post-checkout base fetch (~4 min on hosted runners). Budgets 15 / 20 unchanged. Not a §14 row.
+- **GB1A ruling date (review F-3).** `DEC-INTL-GS-GB1A-CLOSURE-WIDENING-ACCEPTED` records `decided_at: 2026-10-31`;
+  the ruling was made in the seat's 2026-10-31 local session and applied before the #10354 merge at
+  2026-11-01T01:03:18Z; the exact UTC minute is not recorded, so the UTC calendar date may be 2026-11-01.

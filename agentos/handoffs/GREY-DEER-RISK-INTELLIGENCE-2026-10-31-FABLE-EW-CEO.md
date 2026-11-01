@@ -31,6 +31,8 @@ changed:
     what: The Chairman packet (README, FABLE_START_HERE, ADOPTION_AND_FABRIC_BRIEF, MASTERPLAN, SOURCE_INDEX, CENSUS_AND_AUDIT, CENSUS_SNAPSHOT.json, PRODUCT_DESIGN_SPEC, RESEARCH_AND_VALIDATION, ACCEPTANCE_AND_RELEASE) retained verbatim as reviewed source, plus ADOPTION_RECORD_2026-10-31.md with decisions D1-D6.
   - path: research/grey_deer/README.md
     what: Current next action dated 2026-10-31 pointing at the adoption record; the 2026-10-17 section retained as history.
+  - path: research/grey_deer/ew_completion_20261031/EW_P5_ACCEPTANCE_RECEIPTS.md
+    what: Records r4 (2026-11-01) - section 7 receipts table for every merged EW wave through EW-P4 #10350; no pack marked PASS.
 verified:
   - claim: data/qledger/claims.jsonl on main is 206 bytes under GitHub's 100 MiB single-file limit.
     command: >-
@@ -71,10 +73,14 @@ unresolved:
     #10221's three engine-script hunks are not taken over; #10221 remains the orphaned carrier for the pair check until a successor is decided. QLedger publication (data/qledger + site/qledger) stays unpublished; owner #10079 (inert/NOT_CUT_OVER).
   - >-
     EW-P3 reader stays NOT_EXECUTABLE until the registered window elapses (earliest first look 2027-12-31) and a receipted issue exists; no scorer is implemented; no outcome row has been read.
-  - EW-P4 (descriptive UI, ORCH-P4) is in flight; EW-P5 acceptance packs S/Q/O/C/U/R are not started.
+  - >-
+    EW-P4 #10350 MERGED 2026-11-01T04:36:16Z (886ab694c947, exact head a49a16d5, review r3 APPROVE_WITH_NOTES); rung MERGED only.
+    No producer writes latest_observation, so production renders the unavailable state; review notes F-1..F-3 and the producer
+    gap are tracked as EW-P4-FU. EW-P5 packs S/Q/O/C/U/R are not started; receipts table at
+    research/grey_deer/ew_completion_20261031/EW_P5_ACCEPTANCE_RECEIPTS.md.
 next_actions:
   - >-
-    Seat: judge the ORCH-P4 return by artifact (rubric rows, EN/ZH x dark/light x 1280/390/320 shots + receipt.json; no new header, stripe or color); fresh non-authoring fabric review; merge --match-head-commit after green exact-head CI and reviewDecision.
+    Seat: EW-P4-FU repairs (F-1 whitespace pair_id, F-2 calendar-impossible event_as_of, F-3 selector scan) as one small PR with a fresh non-authoring review; the producer activation needs its own gate and is not a UI fix.
   - >-
     Seat: when the EW-P1 watcher reports two engine landings, record PRODUCTION_PROOF for EW-P1 in this workstream (never before; a merge of #10255 is not proof).
   - >-
@@ -98,6 +104,8 @@ danger_areas:
   - >-
     `gh` in a shell loop and repeated `gh pr checks` are hook-blocked (shared quota, REDUNDANT POLL); use one GraphQL read or a durable watcher.
   - daily.yml sits near the 512 KB processing cap guarded by tests/test_workflow_file_size.py; it may only shrink, which is why the tail step is extracted to a script.
+  - >-
+    A `git log --grep '#10255'` watcher matches any records commit that mentions #10255 (it matched f9b070d8, records r3). Match the squash subject ending "(#10255)" and count engine landings only after that commit in ancestry.
 ---
 
 # 2026-10-31 — Fable CEO takeover of the Early-Warning Completion program
