@@ -59,7 +59,9 @@ Each row has exactly one disposition. The evidence column cites the appendix lin
 | AC56 | OWNER_HELD | B2 L18. coo-fable (R06 L16); macro #7728 / #10065. | |
 | AC60 | GATED | B2 L19. R02@820f33b5 L95 `decided_by: ceo-sol`. | Closeout by the existing decision owner. |
 
-Totals: 8 DO_NOT_REDO_ACCEPTED, 6 OWNER_HELD, 3 ACTIONABLE_NOW, 3 GATED, 1 RULED_B_BUILD_PENDING (AC40), for 21 rows.
+Totals: 8 DO_NOT_REDO_ACCEPTED, 6 OWNER_HELD, 3 ACTIONABLE_NOW, 4 GATED, for 21 rows.
+
+After the seat ruling of 2026-11-01, AC40 moves from GATED to RULED_B_BUILD_PENDING. The rows above therefore read 3 GATED and 1 RULED_B_BUILD_PENDING; the delivery-time totals line is kept as verified.
 
 ## 2. L2 — ENTITLED-RENDER CHECKLIST (Journey A, D107 steps 1–4 and 6)
 
