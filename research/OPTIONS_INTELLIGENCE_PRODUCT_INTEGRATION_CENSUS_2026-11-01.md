@@ -209,6 +209,11 @@ Each PR is a single commit on master db6168c2. Both are DRAFT; ORCH-2 did not ma
   - with the guard: 24 passed;
   - the existing suite: 22 passed;
   - `tsc` exit 0.
+- **Red check, named and diagnosed (observed, CI run 41293618917, job 124809797160):** "Terminal unit + typecheck (shard)" fails with `Test Files 1 failed | 1029 passed | 5 skipped`. The one failure has nothing to do with Series A. It is `terminal/lib/__tests__/reportedOwnershipPanel.test.tsx:290` ("does not treat an old REPORT date as staleness on a fresh acquisition"; blob 9ee56afd at TERM db6168c2).
+  - Cause: the fixture pins `PAST_ACQUIRED = "2026-10-02T04:52:16Z"` at L35, while the panel validates against the real clock (the comment at L32-34 says so).
+  - From 2026-11-01 the acquisition is 30 days old, so the panel prints "Retrieved 30 days ago (30-day disclosure threshold)" and the `not.toContain("disclosure threshold")` assertion fails.
+  - It is a wall-clock time bomb that predates this change, and it hits every Terminal PR run on or after 2026-11-01. Master pushes run only `sweep` and CodeQL, so master shows no red for it.
+  - The "plain-language" error annotations in the same job are the guard's self-test fixture receipt (`terminal/components/Bad.tsx:2`). The guard's own C1–C3 tests pass, so they do not block.
 
 **Series B — terminal #1198** (head `719fff3694feac5413685116311c36a329202c3c`)
 
@@ -235,6 +240,10 @@ Each PR is a single commit on master db6168c2. Both are DRAFT; ORCH-2 did not ma
   - The w2a failure (`w2a-workspaces.spec.ts:876`) reproduces on a clean db6168c2, so it predates this change.
   - Evidence-lock test `terminal/lib/__tests__/eodHeatmapFlowdeskLoadFailureEvidence.test.ts` ("each layoutFiles sha256 matches the file on disk") goes red. `terminal/docs/pr-crops/eod-heatmap-flowdesk-load-failure/EVIDENCE.yml` sha256-locks `FlowDeskView.tsx` (`7c4ee44e…`) and `flowdeskStrings.ts` (`7b2a88ac…`), and this PR changes both.
   - The evidence-lock repair is to recapture with `terminal/e2e/tools/capture_eod_heatmap_flowdesk_load_failure.cjs` and restamp `layoutFiles`. It is open (§8).
+  - Observed in CI, check run 124809824137 "Terminal unit + typecheck (shard)": exactly two failures.
+    - `eodHeatmapFlowdeskLoadFailureEvidence.test.ts:93`: "FlowDeskView.tsx changed without a recapture: expected '36d99a98…' to be '7c4ee44e…'". This is the expected lock.
+    - The same `reportedOwnershipPanel.test.tsx:290` wall-clock time bomb as Series A, which predates this change.
+    - Ingest + signal-layer tests and Quote Hub tests are SUCCESS at 719fff36.
 
 The independent review of both PRs (and of this record) is lane oi2-rv-r1 (§7); its outcome is recorded there.
 
@@ -261,7 +270,7 @@ Every lane is C1_ROUTINE_BOUNDED on host ubuntu1. Unless noted, placement was po
 | oi2-l5-r1 | census | REFUSED `temperature_at_or_above_limit` | b7134b9b | burned; ORCH-2 direct reads |
 | oi2-l3-r1 | build | DELIVERED rc=0 (worker STATUS PARTIAL: evidence-lock recapture not run) | 9a714cc3 / `OI2_L3_PATCH.md` 67869247 | ACCEPT pending review. ORCH-2 opened it, reproduced both trees with `git am`, and pushed them as terminal #1197 and #1198. |
 | oi2-recrv-r1 | review (grok-4.7) | REFUSED `host_temperature_at_or_above_limit` | c62b0111 | burned |
-| oi2-rv-r1 | review (grok-4.7), combined #1197 + #1198 + this record | see the final record update | — | — |
+| oi2-rv-r1 | review (grok-4.7), combined #1197 + #1198 + this record | REFUSED `host_temperature_at_or_above_limit` (09:42Z; load1 4.2/24, active 2) | 878421e9 | burned |
 
 ## 8. GAPS, DEVIATIONS, seat-only acts
 
@@ -272,6 +281,7 @@ Every lane is C1_ROUTINE_BOUNDED on host ubuntu1. Unless noted, placement was po
 - `OPTIONS_FROZEN_DELIVERY_ENABLED` observed value: UNKNOWN.
 - Terminal origin serving `/options`: unverified.
 - The Series B evidence lock (#1198) is red until a recapture with `terminal/e2e/tools/capture_eod_heatmap_flowdesk_load_failure.cjs` and a restamp of `terminal/docs/pr-crops/eod-heatmap-flowdesk-load-failure/EVIDENCE.yml` `layoutFiles`, which pin `FlowDeskView.tsx` at `7c4ee44e…` and `flowdeskStrings.ts` at `7b2a88ac…`, at TERM db6168c2.
+- `terminal/lib/__tests__/reportedOwnershipPanel.test.tsx:290` at TERM db6168c2 (blob 9ee56afd) is a wall-clock time bomb. `PAST_ACQUIRED = "2026-10-02T04:52:16Z"` (L35) crossed the panel's 30-day disclosure threshold on 2026-11-01. "Terminal unit + typecheck (shard)" is therefore red for #1197, #1198 and every other Terminal PR run today. This is outside ORCH-2's rows and files. The test-only repair is to pin the clock (`vi.useFakeTimers()` + `vi.setSystemTime`) or derive the fixture from `Date.now()`. No open Terminal PR touches the file (search 2026-11-01).
 - `w2a-workspaces.spec.ts:876` ("an unreadable row is present, disabled, and no write fires on click") fails on a clean db6168c2 as well. It predates this work and is not caused by #1197 or #1198.
 - L3 candidates not commissioned:
   - The OptionsHubView SSE skeleton (L1614/L2711). It overlaps #804/#1195, so it is left alone.
