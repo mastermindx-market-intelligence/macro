@@ -429,6 +429,10 @@ waves:
     title: Neural Web, outcomes, and Prophet shadow
     status: todo
     depends_on: [FIF-4]
+    next_action: >
+      The Prophet shadow component is EXCLUDED from the 2026-10-11
+      commission (masterplan line 19) — excluded, not done. Neural Web and
+      outcomes stay in scope.
   - id: FIF-11
     title: Broad scale and independent closure
     status: todo
@@ -590,3 +594,67 @@ literal-match law and the lane-host dependency split are recorded as
 `DSC:CONTRACT-DELTA-UNRUN-SUITE-GATE-IS-LITERAL-MATCH` and
 `DSC:FIF-LANE-HOST-DEPENDENCY-SPLIT`. Full state, evidence and obligations:
 `agentos/handoffs/FINANCIAL-INTELLIGENCE-FABRIC-2026-10-12-fif-e2e-wave1.md`.
+
+## Commission scope and execution envelope (2026-11-01)
+
+### Excluded programs (A50): excluded, not done
+
+The 2026-10-11 commission (masterplan at Macro `44e3c09b`,
+`research/financial_intelligence_fabric/e2e_20261011/MASTERPLAN.md` line 19)
+excludes these programs from FIF delivery. Each one is **excluded from this
+commission, not done**. FIF may consume an existing owner's output, but it
+improves none of them:
+
+| Program | FIF status |
+|---|---|
+| Single-Name Intelligence (SNI) | excluded, not done |
+| Grey Deer Risk | excluded, not done |
+| Market OS | excluded, not done |
+| Mastermind OS | excluded, not done |
+| Options Intelligence | excluded, not done |
+| Prophet, including the original FIF-10 Prophet shadow component | excluded, not done |
+| Market Ontology | excluded, not done |
+| GMI | excluded, not done |
+| Executive OS | excluded, not done |
+| Subagent Fabric (buildout) | excluded, not done |
+| BioCatalyst clinical prediction | excluded, not done |
+| New capital-risk or relationship engines | excluded, not done |
+
+The FIF-10 wave keeps Neural Web and outcomes. Its Prophet shadow component
+is recorded as excluded, never as completed. No FIF PR implements any program
+in this table.
+
+### Single global execution envelope (A49)
+
+Masterplan line 149 sets one global envelope. It covers the principal, any
+coordinators the runtime counts, workers, reviewers and repair reserves, with
+no per-coordinator multiplication of concurrency or budget. FIF ran inside
+that one envelope:
+
+- **Shape.** One principal seat (session 96dc937a) adjudicated and
+  integrated. All build, label, capture, evaluation and review labor ran as
+  admitted Fabric lanes (`ext/remote_sub.sh`, GLM pool). Each lane had a
+  frozen packet, its own run id and its own host admission. No native labor
+  subagent and no simulated fleet.
+- **Admission is final per launch.** A host refusal (temperature, disk
+  below the staging reserve, REFUSED) ended that launch. The seat never
+  edited admission configuration and never ran the refused work directly
+  on the refusing host. A later launch used a fresh run id, never a reused
+  one.
+- **Consumed returns.** Every DONE or BLOCKED return was read and
+  adjudicated by the seat before any pull, PR or matrix change.
+  Independent review lanes are separate run ids; the seat's own review is
+  never counted as independent.
+- **Lane-ledger reconciliation, 2026-10-20.** 143 rows, 0 non-terminal.
+- **Lane-ledger reconciliation, 2026-11-01** (seat ledger, 2026-10-31T06:34Z
+  to 2026-11-01T07:59Z). 64 launches (39 build, 25 review), all terminal:
+
+  | Outcome | Count |
+  |---|---|
+  | DONE, return consumed | 43 |
+  | BLOCKED, return consumed | 4 |
+  | Early exit, superseded by a later run id that finished DONE | 2 |
+  | Refused at admission (9 temperature, 3 disk, 1 REFUSED) | 13 |
+  | Failed start, no output (rc=3) | 2 |
+
+  0 non-terminal rows; 0 effect-unknown. Spent run ids are never relaunched.
