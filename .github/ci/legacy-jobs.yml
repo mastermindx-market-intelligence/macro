@@ -6975,16 +6975,69 @@ jobs:
 
   site-access-boundary:
     if: ${{ false }}
-    gate: data
+    gate: code
     # The static serving boundary, on its own (2026-10-31). This step sat in
     # `tier-gate` after "tier-preview split contract". The pack runner skips a
     # job's later steps once one fails, and that shell check moves with every
     # bake, so its reds kept this suite from running: the heartbeat skipped it in
     # at least seven runs in a row. Here it reports whatever the shells do.
     #
-    # `gate: data` because the suite reads the committed site/ tree, so a bake
-    # alone can move its verdict. pytest + pyyaml is the whole dependency line,
-    # measured with every other third-party import refused.
+    # On the merge gate since R-28 (2026-11-01). It was `gate: data`, which
+    # ci.yml never packs, so a pull request could breach the public list and
+    # still merge on green.
+    #
+    # `scope: exclusive` so that these paths replace inference. `site/**` is not
+    # listed on purpose: the suite globs the committed site/ tree, and a bake
+    # alone can move its verdict, so a bake must not wake this job on an
+    # unrelated pull request. The heartbeat mirror in ci-main-heartbeat.yml stays
+    # and still reports what a bake moves. Only the site/ files the suite opens
+    # by name are listed. The same holds for the workflow files: the suite joins
+    # every workflow, and only the ones that carry a force-add are listed.
+    #
+    # pytest + pyyaml is the whole dependency line, measured with every other
+    # third-party import refused. The job id is registered in CURATED_EXCLUSIVE
+    # in tests/test_ci_pack.py.
+    scope: exclusive
+    paths:
+      - ".github/ci/legacy-jobs.yml"
+      - ".github/workflows/btc-live.yml"
+      - ".github/workflows/ci-main-heartbeat.yml"
+      - ".github/workflows/ci.yml"
+      - ".github/workflows/closing-bell.yml"
+      - ".github/workflows/earlyclose.yml"
+      - ".github/workflows/intraday-fastpath.yml"
+      - ".gitignore"
+      - "app/__init__.py"
+      - "app/biocatalyst.py"
+      - "app/deploy/Caddyfile"
+      - "app/ontology_explorer.py"
+      - "app/paywall.py"
+      - "app/regwall.py"
+      - "config/site_access.yml"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "site/assets/js/intelligence-hub-market-pulse.js"
+      - "site/help_refresh.js"
+      - "site/market_memory_intent.js"
+      - "site/market_memory_retained.css"
+      - "site/market_memory_retained.js"
+      - "site/portfolio_state.js"
+      - "site/scene-motion.css"
+      - "site/scene-motion.js"
+      - "site/theme.css"
+      - "site/watchlist.html"
+      - "templates/dashboard.html.j2"
+      - "templates/help_refresh.js"
+      - "templates/market_memory_intent.js"
+      - "templates/market_memory_retained.css"
+      - "templates/market_memory_retained.js"
+      - "templates/watchlist.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_site_access_boundary.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12204,6 +12257,8 @@ jobs:
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_held_out_capture_predeclared.py"
       - "tests/test_fundamental_forensics_held_out_packages.py"
+      - "tests/test_fif_q0_label_conformance.py"
+      - "scripts/fif_q0_label_conformance.py"
       - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_a43_responsive_keyboard_corpus.py"
       - "mockups/evidence/fundamental_forensics_p2/**"
@@ -12422,6 +12477,7 @@ jobs:
           tests/test_fif_gsrc_capture.py
           tests/test_fif_held_out_capture_predeclared.py
           tests/test_fundamental_forensics_held_out_packages.py
+          tests/test_fif_q0_label_conformance.py
           tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
