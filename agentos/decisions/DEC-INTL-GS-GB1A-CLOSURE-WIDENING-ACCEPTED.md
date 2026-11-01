@@ -70,3 +70,7 @@ burns an id); accept by ruling and record (ruled).
 
 Seat ruling of 2026-10-31 (Fable Meta-CEO seat d7c4f490), applied before the #10354 merge, recorded in this
 records PR (r8) and in the continuation handoff checkpoint "2026-11-01 01:0x–02:3xZ — gb1 + pin1 MERGED".
+
+Date precision (records r9, review INTL-GS-REC8 F-3): the ruling was made in the seat's 2026-10-31 local session
+and applied before the #10354 merge at 2026-11-01T01:03:18Z; the exact UTC minute is not recorded, so the UTC
+calendar date may be 2026-11-01. `decided_at` is kept as attested.
