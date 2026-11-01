@@ -157,6 +157,20 @@ class CatalystPartnerPackTests(unittest.TestCase):
                      route_receipt="approved-route-01")
         self.assertEqual(p["publication_status"], "DRAFT_HOLD")
 
+    def test_g5_apex_scan_route_is_refused(self):
+        """Catches: a partner link naming the apex host, which only 301-redirects and serves no route."""
+        self.refused("INVALID_SCAN_ROUTE",
+                     scan_url="https://mastermind-x.com/api/catalyst",
+                     route_receipt="approved-route-01")
+
+    def test_g5_www_scan_route_still_live(self):
+        """Catches: the apex refusal also refusing the canonical www scan route."""
+        p = self.make(scan_url="https://www.mastermind-x.com/api/catalyst",
+                      route_receipt="approved-route-01")
+        self.assertFalse(p["link_is_placeholder"])
+        self.assertEqual(urlsplit(p["scan_link"]).hostname, "www.mastermind-x.com")
+        self.assertEqual(urlsplit(p["scan_link"]).path, "/api/catalyst")
+
     def test_duplicate_utm_or_unregistered_placeholder_with_receipt_blocked(self):
         self.refused("DUPLICATE_OR_INVALID_UTM",
                      scan_url="https://www.mastermind-x.com/scan/?utm_source=x",

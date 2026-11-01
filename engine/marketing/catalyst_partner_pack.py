@@ -241,8 +241,10 @@ def _route(scan_url: str | None, route_receipt: str | None) -> tuple[str, bool]:
              "DUPLICATE_OR_INVALID_UTM")
     _require(parsed.hostname != "preview.invalid", "ROUTE_RECEIPT_FOR_PLACEHOLDER")
     # Partner readers must land on the accessible HTML first-value experience,
-    # never the machine-readable JSON scan endpoint.
-    _require(parsed.hostname in ("www.mastermind-x.com", "mastermind-x.com")
+    # never the machine-readable JSON scan endpoint. Only the canonical www
+    # host serves it: the apex only 301-redirects (app/deploy/Caddyfile), so
+    # it is not a route a partner link may name.
+    _require(parsed.hostname == "www.mastermind-x.com"
              and parsed.path == "/api/catalyst",
              "INVALID_SCAN_ROUTE")
     return u, True
