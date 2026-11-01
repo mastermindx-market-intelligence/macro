@@ -3,7 +3,10 @@
 ``compute_news_velocity`` is a pure read of one security's indexed reports.
 It reports how many distinct reports the reader may see (active status,
 rights-allowed sources) fall in the last 24 hours and 7 days, beside that
-security's own trailing 28 UTC-day counts and their median.
+security's own trailing 28 UTC-day counts and their median. A report counts
+as of ``now`` only if the store had first received it by ``now``: a report
+received later is outside every count, bin and basis total, even when its
+published time is earlier.
 ``compare_to_typical`` compares one 24h count with that median for display
 only. Display-tier context only.
 """
@@ -46,9 +49,18 @@ _DAILY_WINDOW_DAYS = 28
 # databases with neither cluster table (a shape NewsStore never writes): it
 # drops both cluster joins, so every report is its own story and no policy
 # stamp exists.
+#
+# The seventh column is the report's first receipt, the store's
+# ``first_received_at`` state field. It bounds possession: a report the store
+# first received after ``as_of`` is dropped before any count. json_valid
+# guards hand-built fixtures; when the stamp is absent or unreadable, the
+# projection's ``received_at`` (the latest receipt, never earlier than the
+# first) stands in, which can only exclude more, never admit a later report.
 _STORY_SQL = """
 SELECT i.source, i.source_item_id, p.published_at, p.received_at, m.cluster_id,
-       c.cluster_policy_version
+       c.cluster_policy_version,
+       CASE WHEN json_valid(s.state_json)
+            THEN json_extract(s.state_json, '$.first_received_at') END
 FROM news_security_index AS i
 JOIN news_states AS s
   ON s.source = i.source
@@ -69,7 +81,9 @@ ORDER BY i.source, i.source_item_id
 
 _STORY_SQL_NO_POLICY_COLUMN = """
 SELECT i.source, i.source_item_id, p.published_at, p.received_at, m.cluster_id,
-       NULL
+       NULL,
+       CASE WHEN json_valid(s.state_json)
+            THEN json_extract(s.state_json, '$.first_received_at') END
 FROM news_security_index AS i
 JOIN news_states AS s
   ON s.source = i.source
@@ -90,7 +104,9 @@ ORDER BY i.source, i.source_item_id
 
 _STORY_SQL_MEMBERS_ONLY = """
 SELECT i.source, i.source_item_id, p.published_at, p.received_at, m.cluster_id,
-       NULL
+       NULL,
+       CASE WHEN json_valid(s.state_json)
+            THEN json_extract(s.state_json, '$.first_received_at') END
 FROM news_security_index AS i
 JOIN news_states AS s
   ON s.source = i.source
@@ -108,7 +124,9 @@ ORDER BY i.source, i.source_item_id
 """
 
 _STORY_SQL_NO_CLUSTER_TABLES = """
-SELECT i.source, i.source_item_id, p.published_at, p.received_at, NULL, NULL
+SELECT i.source, i.source_item_id, p.published_at, p.received_at, NULL, NULL,
+       CASE WHEN json_valid(s.state_json)
+            THEN json_extract(s.state_json, '$.first_received_at') END
 FROM news_security_index AS i
 JOIN news_states AS s
   ON s.source = i.source
@@ -206,7 +224,7 @@ def compute_news_velocity(
         story_sql.format(placeholders=placeholders),
         (security_id, *curated_params, *counted_sources),
     ).fetchall()
-    stories = _distinct_stories(rows)
+    stories = _distinct_stories(rows, as_of)
     return _assemble(security_id, as_of, stories, counted_sources)
 
 
@@ -247,8 +265,12 @@ def compare_to_typical(
 
 def _distinct_stories(
     rows: list[tuple[object, ...]],
+    as_of: datetime,
 ) -> dict[tuple[str, str], tuple[datetime, str, str, str | None]]:
     """One entry per (source, source_item_id); the ordered row wins ties.
+
+    A report the store first received after ``as_of`` is skipped: it was not
+    in possession at the calculation instant.
 
     The entry carries the report's effective time, its time basis, its story
     key (the cluster id, or ``item:`` + source + ``\\x1f`` + source_item_id
@@ -268,9 +290,13 @@ def _distinct_stories(
         received_at,
         cluster_id,
         policy_version,
+        first_received_at,
     ) in rows:
         key = (str(source), str(source_item_id))
         if key in stories:
+            continue
+        possessed = _possession_time(first_received_at, received_at)
+        if possessed is None or possessed > as_of:
             continue
         when, basis = _effective_time(published_at, received_at)
         if when is None:
@@ -286,6 +312,26 @@ def _distinct_stories(
             label = str(policy_version)
         stories[key] = (when, basis, story_key, label)
     return stories
+
+
+def _possession_time(
+    first_received_at: object, received_at: object
+) -> datetime | None:
+    """When the store first held the report.
+
+    The stored first receipt when it parses; otherwise the projection's
+    latest receipt, which is never earlier than the first. ``None`` when
+    neither parses: possession is unknown, so the caller skips the report
+    rather than counting it at an as-of it may postdate.
+    """
+    for value in (first_received_at, received_at):
+        try:
+            instant = _parse_instant(value)
+        except (TypeError, ValueError):
+            instant = None
+        if instant is not None:
+            return instant
+    return None
 
 
 def _effective_time(

@@ -85,6 +85,7 @@ def _insert(
     received: datetime,
     status: str = "active",
     source: str = "benzinga",
+    state_json: str = "{}",
 ) -> None:
     source_item_id = str(item_id)
     revision_id = f"rev-{source}-{source_item_id}-{status}"
@@ -105,7 +106,7 @@ def _insert(
             state_json, last_sequence, universe_revision
         ) VALUES(?,?,?,?,?,?,?)
         """,
-        (source, source_item_id, revision_id, status, "{}", 1, "u1"),
+        (source, source_item_id, revision_id, status, state_json, 1, "u1"),
     )
     conn.execute(
         """
@@ -460,7 +461,9 @@ def test_window_edges_24h_and_7d(tmp_path):
     assert result["history_days_observed"] == 28
     assert result["sufficient_history"] is True
     assert result["median_daily_28d"] == 0.0
-    assert result["basis_counts"] == {"published_at": 8, "received_at": 0}
+    # "after-now" was received 1 microsecond after the calculation instant, so
+    # the store did not hold it then: it is outside the basis totals too.
+    assert result["basis_counts"] == {"published_at": 7, "received_at": 0}
 
 
 def test_thin_history_says_not_enough(tmp_path):
@@ -1258,3 +1261,169 @@ def test_banned_words_en_zh(tmp_path):
         assert (
             re.search(rf"\b{re.escape(word)}\b", method_lowered) is None
         ), word
+
+
+def _first_receipt(at: datetime) -> str:
+    return json.dumps({"first_received_at": at.astimezone(UTC).isoformat()})
+
+
+def test_report_received_after_as_of_is_outside_every_count(tmp_path):
+    """Published before the instant but first received after it: not counted.
+
+    This is the possession bound. A read at an earlier ``now`` must not see a
+    report the store only learned of later, whatever its published time says.
+    """
+    db = _new_db(tmp_path)
+    conn = _writer(db)
+    held = NOW - timedelta(hours=20)  # yesterday (UTC): daily bin 27
+    _insert(
+        conn,
+        security_id="sec-NVDA",
+        item_id="held",
+        published=held,
+        received=held + timedelta(seconds=5),
+        state_json=_first_receipt(held + timedelta(seconds=5)),
+    )
+    late = NOW + timedelta(days=2)
+    _insert(
+        conn,
+        security_id="sec-NVDA",
+        item_id="received-late",
+        published=NOW - timedelta(hours=21),  # would land in bin 27 too
+        received=late,
+        state_json=_first_receipt(late),
+    )
+    _close_writer(conn, db)
+
+    result = _velocity(db, "sec-NVDA")
+
+    assert result["count_24h"] == 1
+    assert result["count_7d"] == 1
+    assert sum(result["daily_counts_28d"]) == 1
+    assert result["basis_counts"] == {"published_at": 1, "received_at": 0}
+    assert result["basis_counts_24h"] == {"published_at": 1, "received_at": 0}
+    assert result["history_days_observed"] == 1
+
+    later = _velocity(db, "sec-NVDA", now=late + timedelta(seconds=1))
+    # Once received, the same report counts on its published day; it falls
+    # outside the 24h window of the later instant but inside its 7 days.
+    assert later["count_7d"] == 2
+    assert later["basis_counts"] == {"published_at": 2, "received_at": 0}
+
+
+def test_first_receipt_wins_over_a_later_redelivery(tmp_path):
+    """A report first received before the instant counts even when the
+    projection's latest receipt (a redelivery) is after it."""
+    db = _new_db(tmp_path)
+    conn = _writer(db)
+    first = NOW - timedelta(hours=1)
+    _insert(
+        conn,
+        security_id="sec-NVDA",
+        item_id="redelivered",
+        published=first - timedelta(minutes=1),
+        received=NOW + timedelta(hours=6),
+        state_json=_first_receipt(first),
+    )
+    _close_writer(conn, db)
+
+    result = _velocity(db, "sec-NVDA")
+
+    assert result["count_24h"] == 1
+    assert result["basis_counts"] == {"published_at": 1, "received_at": 0}
+
+
+@pytest.mark.parametrize(
+    "state_json",
+    ["{}", "not json", json.dumps({"first_received_at": "not a time"}),
+     json.dumps({"first_received_at": None})],
+    ids=["no-stamp", "invalid-json", "malformed-stamp", "null-stamp"],
+)
+def test_missing_or_unreadable_first_receipt_falls_back_to_latest_receipt(
+    tmp_path, state_json
+):
+    """Without a readable first receipt the projection's latest receipt bounds
+    possession. It is never earlier than the first, so it can only exclude."""
+    db = _new_db(tmp_path)
+    conn = _writer(db)
+    published = NOW - timedelta(hours=1)
+    _insert(
+        conn,
+        security_id="sec-NVDA",
+        item_id="before",
+        published=published,
+        received=published + timedelta(seconds=1),
+        state_json=state_json,
+    )
+    _insert(
+        conn,
+        security_id="sec-NVDA",
+        item_id="after",
+        published=published,
+        received=NOW + timedelta(seconds=1),
+        state_json=state_json,
+    )
+    _close_writer(conn, db)
+
+    result = _velocity(db, "sec-NVDA")
+
+    assert result["count_24h"] == 1
+    assert result["basis_counts"] == {"published_at": 1, "received_at": 0}
+
+
+def test_live_read_after_every_receipt_is_unchanged(tmp_path):
+    """When ``now`` is after every receipt the bound excludes nothing."""
+    db = _new_db(tmp_path)
+    conn = _writer(db)
+    for index in range(4):
+        base = NOW - timedelta(hours=index * 30, minutes=10)
+        received = base + timedelta(minutes=3)
+        _insert(
+            conn,
+            security_id="sec-NVDA",
+            item_id=f"live-{index}",
+            published=base - timedelta(minutes=5),
+            received=received,
+            state_json=_first_receipt(received),
+        )
+    _close_writer(conn, db)
+
+    result = _velocity(db, "sec-NVDA")
+
+    assert result["count_24h"] == 1
+    assert result["count_7d"] == 4
+    assert result["basis_counts"] == {"published_at": 4, "received_at": 0}
+
+
+def test_report_with_no_readable_receipt_is_skipped_not_raised(tmp_path):
+    """Possession unknown fails closed: a report whose first and latest
+    receipts both fail to parse is left out of every count, and the read
+    does not raise."""
+    db = _new_db(tmp_path)
+    conn = _writer(db)
+    published = NOW - timedelta(hours=1)
+    _insert(
+        conn,
+        security_id="sec-NVDA",
+        item_id="unreadable",
+        published=published,
+        received=published + timedelta(seconds=1),
+        state_json=json.dumps({"first_received_at": "not a time"}),
+    )
+    _insert(
+        conn,
+        security_id="sec-NVDA",
+        item_id="readable",
+        published=published,
+        received=published + timedelta(seconds=1),
+    )
+    conn.execute(
+        "UPDATE news_state_projection SET received_at = ? WHERE source_item_id = ?",
+        ("not a time", "unreadable"),
+    )
+    _close_writer(conn, db)
+
+    result = _velocity(db, "sec-NVDA")
+
+    assert result["count_24h"] == 1
+    assert result["basis_counts"] == {"published_at": 1, "received_at": 0}
