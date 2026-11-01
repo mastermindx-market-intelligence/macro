@@ -475,20 +475,42 @@ def nc_m04() -> None:
            f"value/quote compare hits={len(compare_hits)}")
 
 
-def nc_m05() -> None:
-    """Percent vs percentage points: grader canonicalises pp==percent; producer blind."""
+def nc_m05a() -> None:
+    """Percent vs percentage points, grader half: the frozen contract folds pp into percent.
+
+    endpoints.v1 unit_map maps "pp" to "percent" and the grader keeps that map
+    verbatim. MASTERPLAN 9.3 names percent versus percentage points as a required
+    control, so this stays BROKEN until a versioned contract separates them; it is
+    contract-mandated behaviour, not a grader defect the code may override.
+    """
     from engine.news_impact.eval_grade import grade_critical_numeric_field
-    from engine.news_impact.producer_facts import run as facts_run
     gold = point_qty(value=5, unit="percent", currency="NA", basis="percent")
     cand = point_qty(value=5, unit="pp", currency="NA", basis="percent")
     graded = grade_critical_numeric_field(
         case_id="SYNTH-CASE-1", fold="SYNTH", template="capital_allocation_event.v1",
         field="incremental_amount", gold_quantity=gold, candidate_quantity=cand)
+    broken = graded.outcome == "correct"
+    report("M05a", "BROKEN" if broken else "HELD",
+           f"grader pp-vs-percent outcome={graded.outcome}; contract-mandated by endpoints.v1 "
+           "unit_map pp->percent; needs a versioned contract")
 
-    outdir = Path(tempfile.mkdtemp(dir=RESULTS_SCRATCH, prefix="m05_"))
-    rows_path = RESULTS_SCRATCH / "m05_events.jsonl"
+
+def nc_m05b() -> None:
+    """Percent vs percentage points, producer half: a unit change is a fact revision.
+
+    Three T1 observations of one fact key: 5 percent, then 5 pp, then 5
+    "percentage points". The unit change must be a second fact_revision; the
+    third, a different spelling of the same unit, must stay a manifestation so
+    the fingerprint does not split on spelling.
+    """
+    from engine.news_impact.producer_facts import run as facts_run
+    outdir = Path(tempfile.mkdtemp(dir=RESULTS_SCRATCH, prefix="m05b_"))
+    rows_path = RESULTS_SCRATCH / "m05b_events.jsonl"
+    fact_3 = "fact_c1b2c3d4e5f6a7b8c9d0e1f4"
+    t_latest = "2026-04-03T14:00:00Z"
     with rows_path.open("w") as fh:
-        for fid, unit, observed in ((FACT_1, "percent", T_OBSERVED), (FACT_2, "pp", T_LATER)):
+        for fid, unit, observed in ((FACT_1, "percent", T_OBSERVED), (FACT_2, "pp", T_LATER),
+                                    (fact_3, "percentage points", t_latest)):
             event = t1_event()
             event["fact_id"] = fid
             event["observed_at"] = observed
@@ -496,13 +518,12 @@ def nc_m05() -> None:
                                                     basis="incremental")
             fh.write(json.dumps({"case_id": "SYNTH-CASE-1", "shadow": True,
                                  "novelty_source": "SYNTH", "event": event}) + "\n")
-    report_run = facts_run([rows_path], outdir, as_of=T_LATER)
+    report_run = facts_run([rows_path], outdir, as_of=t_latest)
     n_records = report_run.get("n_records", {})
-    unit_change_unrevised = n_records.get("fact_revision", 0) == 1 \
-        and n_records.get("manifestation", 0) == 1
-    broken = graded.outcome == "correct" and unit_change_unrevised
-    report("M05", "BROKEN" if broken else "HELD",
-           f"grader pp-vs-percent outcome={graded.outcome}; producer records={n_records}")
+    held = n_records.get("fact_revision", 0) == 2 and n_records.get("manifestation", 0) == 1
+    report("M05b", "HELD" if held else "BROKEN",
+           f"producer percent->pp->'percentage points' records={n_records} "
+           f"rejected={report_run.get('rejected', {})}")
 
 
 def nc_m06a() -> None:
@@ -798,7 +819,7 @@ def main() -> int:
     controls: list[tuple[str, Any]] = [
         ("M01a", nc_m01a), ("M01b", nc_m01b), ("M01c", nc_m01c),
         ("M01d", lambda: nc_m01d(RESULTS_SCRATCH)),
-        ("M02", nc_m02), ("M03", nc_m03), ("M04", nc_m04), ("M05", nc_m05),
+        ("M02", nc_m02), ("M03", nc_m03), ("M04", nc_m04), ("M05a", nc_m05a), ("M05b", nc_m05b),
         ("M06a", nc_m06a), ("M06b", nc_m06b), ("M07a", nc_m07a), ("M07b", nc_m07b),
         ("M08", nc_m08), ("M09", nc_m09), ("M10", nc_m10), ("M11", nc_m11),
         ("M12", nc_m12), ("M13", nc_m13), ("M14", nc_m14),
