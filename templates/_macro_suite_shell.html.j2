@@ -662,6 +662,9 @@
         {%- if metric.unit %}<span class="mq-metric-unit">{{ bl(metric.unit) }}</span>{% endif -%}
       </strong>
       <p class="mq-metric-direction">{{ bl(metric.direction) }}</p>
+      {%- if metric.sample_note -%}
+      <p class="mq-metric-direction mq-metric-sample">{{ bl(metric.sample_note) }}</p>
+      {%- endif %}
       <details class="mc-details">
         <summary>{{ t('Details', '详情') }}</summary>
         <div class="mc-details-body mq-metric-clocks">
