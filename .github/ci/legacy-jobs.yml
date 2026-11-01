@@ -1318,6 +1318,7 @@ jobs:
       - "engine/marketing/opportunity_bus.py"
       - "engine/marketing/publication.py"
       - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -3328,6 +3329,7 @@ jobs:
       - "engine/marketing/opportunity_bus.py"
       - "engine/marketing/publication.py"
       - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
     runs-on: ubuntu-latest
     steps:
@@ -4393,6 +4395,7 @@ jobs:
       - "engine/marketing/opportunity_bus.py"
       - "engine/marketing/publication.py"
       - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
     runs-on: ubuntu-latest
     steps:
@@ -8222,6 +8225,7 @@ jobs:
       - "engine/marketing/opportunity_bus.py"
       - "engine/marketing/publication.py"
       - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
       - "lib/rotation_observation_notification.py"
     runs-on: ubuntu-latest
@@ -8872,6 +8876,7 @@ jobs:
       - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
@@ -12406,6 +12411,7 @@ jobs:
       - "engine/marketing/catalyst_source_adapter.py"
       - "engine/marketing/catalyst_source_cycle.py"
       - "engine/marketing/catalyst_source_store.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
     runs-on: ubuntu-latest
     steps:
@@ -16544,6 +16550,7 @@ jobs:
       - "engine/marketing/catalyst_source_adapter.py"
       - "engine/marketing/catalyst_source_cycle.py"
       - "engine/marketing/catalyst_source_store.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
       - "lib/rotation_observation_notification.py"
     timeout-minutes: 10
@@ -26355,6 +26362,7 @@ jobs:
       # W2F-X closure widening: the observation seam widened these import closures
       - "engine/intl_global_observation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
@@ -26933,6 +26941,7 @@ jobs:
       - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
@@ -29726,6 +29735,7 @@ jobs:
       - "engine/marketing/opportunity_bus.py"
       - "engine/marketing/publication.py"
       - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -30870,6 +30880,7 @@ jobs:
       - "data/baskets/membership.json"
       - "data/baskets/ohlcv/**"
       - "data/yahoo/SPY.parquet"
+      - "engine/__init__.py"
       - "tests/fixtures/defense_government_context.json"
       - "tests/fixtures/defense_government_context_inputs.json"
       - "tests/test_theme_economic_interpretation.py"
@@ -30905,6 +30916,7 @@ jobs:
       - "engine/market_os/macro_workspaces/__init__.py"
       - "engine/market_os/macro_workspaces/contract.py"
       - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
       - "engine/research_intelligence/extractor.py"
       - "engine/research_intelligence/schema.py"
@@ -31796,6 +31808,7 @@ jobs:
       - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
@@ -37390,6 +37403,7 @@ jobs:
       - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
@@ -38704,6 +38718,7 @@ jobs:
       - "engine/marketing/opportunity_bus.py"
       - "engine/marketing/publication.py"
       - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
     runs-on: ubuntu-latest
     steps:
@@ -41885,6 +41900,7 @@ jobs:
       - "engine/marketing/catalyst_source_adapter.py"
       - "engine/marketing/catalyst_source_cycle.py"
       - "engine/marketing/catalyst_source_store.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - "engine/seasonality/multiplicity.py"
@@ -48127,6 +48143,7 @@ jobs:
       - "engine/marketing/catalyst_source_adapter.py"
       - "engine/marketing/catalyst_source_cycle.py"
       - "engine/marketing/catalyst_source_store.py"
+      - "engine/news_impact/__init__.py"
       - "engine/news_impact/edgar_body.py"
       - "lib/rotation_observation_notification.py"
     runs-on: ubuntu-latest
