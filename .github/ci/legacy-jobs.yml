@@ -6975,16 +6975,69 @@ jobs:
 
   site-access-boundary:
     if: ${{ false }}
-    gate: data
+    gate: code
     # The static serving boundary, on its own (2026-10-31). This step sat in
     # `tier-gate` after "tier-preview split contract". The pack runner skips a
     # job's later steps once one fails, and that shell check moves with every
     # bake, so its reds kept this suite from running: the heartbeat skipped it in
     # at least seven runs in a row. Here it reports whatever the shells do.
     #
-    # `gate: data` because the suite reads the committed site/ tree, so a bake
-    # alone can move its verdict. pytest + pyyaml is the whole dependency line,
-    # measured with every other third-party import refused.
+    # On the merge gate since R-28 (2026-11-01). It was `gate: data`, which
+    # ci.yml never packs, so a pull request could breach the public list and
+    # still merge on green.
+    #
+    # `scope: exclusive` so that these paths replace inference. `site/**` is not
+    # listed on purpose: the suite globs the committed site/ tree, and a bake
+    # alone can move its verdict, so a bake must not wake this job on an
+    # unrelated pull request. The heartbeat mirror in ci-main-heartbeat.yml stays
+    # and still reports what a bake moves. Only the site/ files the suite opens
+    # by name are listed. The same holds for the workflow files: the suite joins
+    # every workflow, and only the ones that carry a force-add are listed.
+    #
+    # pytest + pyyaml is the whole dependency line, measured with every other
+    # third-party import refused. The job id is registered in CURATED_EXCLUSIVE
+    # in tests/test_ci_pack.py.
+    scope: exclusive
+    paths:
+      - ".github/ci/legacy-jobs.yml"
+      - ".github/workflows/btc-live.yml"
+      - ".github/workflows/ci-main-heartbeat.yml"
+      - ".github/workflows/ci.yml"
+      - ".github/workflows/closing-bell.yml"
+      - ".github/workflows/earlyclose.yml"
+      - ".github/workflows/intraday-fastpath.yml"
+      - ".gitignore"
+      - "app/__init__.py"
+      - "app/biocatalyst.py"
+      - "app/deploy/Caddyfile"
+      - "app/ontology_explorer.py"
+      - "app/paywall.py"
+      - "app/regwall.py"
+      - "config/site_access.yml"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "site/assets/js/intelligence-hub-market-pulse.js"
+      - "site/help_refresh.js"
+      - "site/market_memory_intent.js"
+      - "site/market_memory_retained.css"
+      - "site/market_memory_retained.js"
+      - "site/portfolio_state.js"
+      - "site/scene-motion.css"
+      - "site/scene-motion.js"
+      - "site/theme.css"
+      - "site/watchlist.html"
+      - "templates/dashboard.html.j2"
+      - "templates/help_refresh.js"
+      - "templates/market_memory_intent.js"
+      - "templates/market_memory_retained.css"
+      - "templates/market_memory_retained.js"
+      - "templates/watchlist.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_site_access_boundary.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12298,12 +12351,17 @@ jobs:
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_held_out_capture_predeclared.py"
       - "tests/test_fundamental_forensics_held_out_packages.py"
+      - "tests/test_fif_q0_label_conformance.py"
+      - "scripts/fif_q0_label_conformance.py"
       - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_a43_responsive_keyboard_corpus.py"
       - "mockups/evidence/fundamental_forensics_p2/**"
       - "tests/test_fif_source_rights.py"
       - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_fif_se_receipts.py"
+      - "tests/test_fif_dev_corpus.py"
+      - "scripts/fif_dev_corpus.py"
+      - "tests/fixtures/fundamental_forensics/dev_corpus/**"
       - "tests/test_fif_g_pack_gold.py"
       - "tests/test_fif_g_pack_kernel.py"
       - "tests/test_fif_a33_gold_replay_receipt.py"
@@ -12513,9 +12571,11 @@ jobs:
           tests/test_fif_gsrc_capture.py
           tests/test_fif_held_out_capture_predeclared.py
           tests/test_fundamental_forensics_held_out_packages.py
+          tests/test_fif_q0_label_conformance.py
           tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
+          tests/test_fif_dev_corpus.py
           tests/test_fif_pf_health_entity.py
           tests/test_fif_pf_health_pointer.py
           tests/test_fif_a0_production_mode_unit.py
@@ -13656,7 +13716,7 @@ jobs:
       - name: factor boundary selftest (guard fires on planted violations)
         run: python3 scripts/check_factor_boundaries.py --selftest
       - name: synapse owning contracts in one pytest session
-        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
+        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_quarterly_period_start.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
       # Share one pytest session across the five existing offline EDGAR suites.
       # Test inventory, dependencies and ordinary scope inference are unchanged.
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
@@ -21252,6 +21312,30 @@ jobs:
         run: pip install pytest pandas pyarrow jinja2 pyyaml
       - name: basket staleness warn tests
         run: python -m pytest tests/test_basket_staleness_warn.py -q
+
+  sector-basket-links:
+    if: ${{ false }}
+    gate: code
+    # The sector page and the basket page link each other through two small blocks in
+    # shared templates, and no merge-gate job reads templates/sector.html.j2. The suite
+    # renders the two blocks alone, so a bake cannot move this job. One test runs the
+    # basket block under the node the runner ships.
+    scope: exclusive
+    paths:
+      - "templates/basket_detail.html.j2"
+      - "templates/sector.html.j2"
+      - "tests/__init__.py"
+      - "tests/test_sector_basket_links.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: sector page and basket page links
+        run: python -m pytest tests/test_sector_basket_links.py -q
 
   ftr-tape-surfaces:
     if: ${{ false }}
