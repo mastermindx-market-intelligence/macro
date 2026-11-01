@@ -63,6 +63,23 @@ FIGURE_SCALE: dict[str, dict[str, str]] = {
 }
 FIGURE_SCALE_FALLBACK = _pair("index reading", "指数读数")
 
+# Leave-one-recession-out catch rate. The view shows this only when the
+# producer recorded ~3 and a tiny sample on that one metric.
+CATCH_RATE_SAMPLE_NOTE = _pair(
+    "About 3 modern recessions, leave-one-out. The sample is small.",
+    "约 3 次现代衰退，留一法。样本很小。",
+)
+
+# Treasury cash balance. Shown only when that metric's transformation
+# records both DRAINS and INJECTS.
+TGA_RESERVES_NOTE = _pair(
+    "When this balance rises, Treasury is pulling cash into its own "
+    "account and bank reserves fall. When it falls, Treasury is "
+    "spending it down and reserves rise.",
+    "余额上升时，财政部把现金抽入自有账户，银行准备金随之减少；"
+    "余额下降时，财政部花出这笔现金，银行准备金随之增加。",
+)
+
 
 # --- section 7.6 freshness vocabulary ---------------------------------------
 FRESHNESS: dict[str, dict[str, str]] = {

@@ -836,6 +836,12 @@ MUST_RESTART = [
     'engine/company_intelligence/h20_reported_event.py',
     'engine/earnings_release/__init__.py',
     'engine/earnings_release/receipts.py',
+    'engine/earnings_release/binding.py',
+    'engine/earnings_release/figures.py',
+    'engine/earnings_release/filing_key.py',
+    'collectors/sec_document_spine.py',
+    'collectors/sec_request_pacer.py',
+    'engine/marketing/attribution.py',
     'engine/theme_graph/native_disclosure_propagation.py',
     'lib/economic_propagation.py',
     'lib/economic_propagation_v2.py',
@@ -1037,6 +1043,13 @@ MUST_RESTART = [
     "engine/marketing/ledgers.py",
     "engine/marketing/opportunity_bus.py",
     "engine/marketing/publication.py",
+    # The catalyst public reader imports the source adapter and its store.
+    "engine/marketing/catalyst_source_adapter.py",
+    "engine/marketing/catalyst_source_store.py",
+    # The reader loads the pilot universe through the writer's load_universe and
+    # caches the rows for the process lifetime.
+    "engine/marketing/catalyst_source_cycle.py",
+    "config/catalyst_pilot_universe.json",
     # app/tape.py REST quotes, and lib modules on the chat path
     "engine/live_quotes.py",
     "lib/config.py",
@@ -1052,6 +1065,8 @@ MUST_NOT_RESTART = [
     'engine/price_pressure/artifact.py',
     'engine/entry_radar/live_eval.py',
     'engine/entry_radar/earnings_contexts.py',
+    # The catalyst SEC writer CLI runs as its own oneshot timer, never in macro-api.
+    'scripts/run_catalyst_source_cycle.py',
     'engine/entry_radar/replay/identity_observation_snapshot.py.bak',
     'scripts/entry_radar_live.py',
     'contracts/opportunity_evidence/vector.v1.schema.json.bak',
