@@ -81,3 +81,13 @@ Do not force one cause. Roles are packet §12. Confidence wording is calibrated 
 - **Kind:** deterministic
 - **Confidence:** high
 - **What would change it:** a consumer that already bound LC into a gate (none found)
+
+## H-EWF. Pointer — EW forecast claims live in CLAIM_EVIDENCE_LEDGER_v1
+
+- **Role:** pointer only. The early-warning forecast claims (C-MKT `grey_deer_ew_mkt_v1`, C-RS `grey_deer_ew_rs_v1`; product B) are recorded in `research/grey_deer/ew_completion_20261031/CLAIM_EVIDENCE_LEDGER_v1.md` under SD-18 = (ii) + (i)-pointer, not in this file
+- **Evidence for:** none recorded; no outcome has been read (`EW_FORECAST_PREREG_v1_2026-10-31.md`)
+- **Evidence against:** none recorded
+- **First-known:** 2026-10-31 (prereg drafted); registration is the seat's merge date, recorded inside the prereg
+- **Kind:** forecast (issued probability), prospective only; no rank, gate, size or execute authority
+- **Confidence:** null until a registered P3 look returns a verdict
+- **What would change it:** a verdict entry in CLAIM_EVIDENCE_LEDGER_v1 at a registered look

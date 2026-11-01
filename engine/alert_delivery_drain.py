@@ -54,6 +54,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Callable
 
+from lib import rotation_observation_notification as rotation_obs
 from lib import user_prefs
 from lib.tiers import normalize_tier, tier_rank
 from lib.frozen_delivery_client import FrozenEmailDelivery, FrozenEmailAdmission, origin as delivery_origin
@@ -552,6 +553,33 @@ def decide_row(row: dict, *, user_state: str, record: dict | None,
     if action == "defer":
         return Decision(action="defer", reason="quiet_hours", deliver_after=deliver_after,
                         to_email=to_email, lang=prefs.lang)
+    # Defensive-rotation observations (DR3) are the one category with its own consumer
+    # contract, and it is consulted HERE -- after every ordinary preference/category
+    # gate above, and immediately before the send. Placing it lower would let an
+    # opted-out reader's malformed payload be reported as a contract failure instead of
+    # the consent decision it actually is; placing it earlier would let a
+    # category-filtered row be answered by the rotation gate. Placement is the point.
+    #
+    # Both outcomes reuse the EXISTING decision vocabulary and the EXISTING outbox
+    # status set: 'unevaluable' leaves the row pending and counts it, 'suppress' writes
+    # status='suppressed' with this reason as last_error (migration0013 already admits
+    # 'suppressed'). No new enum, no new send_fn, no new retry owner. An expired
+    # observation is a SUPPRESSION, not a retry: the next tick re-derives the same
+    # answer, and pushing deliver_after into the future to rescue it would be exactly
+    # the artificial deferral the contract forbids.
+    #
+    # PROSE CONSTRAINT, learned the hard way: the comment above avoids every substring
+    # tests/test_portfolio_changes.py counts across this module. That guard proves the
+    # alert drain never grew an address opt-out leg, which is what keeps it from being a
+    # drop-in home for the portfolio digest. The guard belongs to another owner and stays
+    # intact; a comment that trips it gets reworded here, not relaxed there.
+    if rotation_obs.claims_rotation_observation(payload):
+        verdict = rotation_obs.evaluate(payload, now_utc=now_utc)
+        if verdict.action == "unevaluable":
+            return Decision(action="unevaluable", reason=verdict.reason)
+        if verdict.action == "suppress":
+            return Decision(action="suppress", reason=verdict.reason,
+                            to_email=to_email, lang=prefs.lang)
     return Decision(action="send", reason="ok", to_email=to_email, lang=prefs.lang)
 
 
