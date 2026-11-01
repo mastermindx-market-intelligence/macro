@@ -429,8 +429,6 @@
     "tests/test_institutional_13f_r2_conformance.py",
     "tests/test_institutional_13f_reconciliation.py",
     "tests/test_institutional_13f_research_bench.py",
-    "tests/test_institutional_13f_rolling.py",
-    "tests/test_institutional_13f_sec_sources.py",
     "tests/test_institutional_13f_storage.py",
     "tests/test_institutional_13f_workflows.py",
     "tests/test_intel_discovery.py",

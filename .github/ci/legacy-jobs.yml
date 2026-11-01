@@ -48005,3 +48005,41 @@ jobs:
         run: node --version
       - name: Intelligence OS API renderer source and finite measurement contracts
         run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py -q
+  institutional-13f-ingestion-contracts:
+    # 13F census ingestion: the SEC source parser and the bounded rolling ingest.
+    # Both suites were grandfathered dark in config/unrun_test_baseline.json while
+    # they held the only proof that a Latest Filings <updated> clock disagreeing
+    # with the filing's own <ACCEPTANCE-DATETIME> is refused, never published.
+    # scope: exclusive — paths: is the measured import/read closure
+    # (run_ci_pack.inferred_as_if_not_exclusive) plus the ancestor package inits.
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    scope: exclusive
+    paths:
+      - config/institutional_13f.yml
+      - engine/__init__.py
+      - engine/institutional_census/__init__.py
+      - engine/institutional_census/catalog.py
+      - engine/institutional_census/models.py
+      - engine/institutional_census/rolling.py
+      - engine/institutional_census/sec_sources.py
+      - engine/institutional_census/storage.py
+      - engine/research_vault/__init__.py
+      - engine/research_vault/r2_store.py
+      - scripts/__init__.py
+      - scripts/run_institutional_13f_rolling.py
+      - tests/__init__.py
+      - tests/fixtures/institutional_13f/**
+      - tests/test_institutional_13f_rolling.py
+      - tests/test_institutional_13f_sec_sources.py
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: 13F SEC source parsing and rolling ingestion contracts
+        run: python -m pytest tests/test_institutional_13f_sec_sources.py tests/test_institutional_13f_rolling.py -q
