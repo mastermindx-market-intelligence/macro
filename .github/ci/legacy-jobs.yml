@@ -43127,7 +43127,12 @@ jobs:
         with:
           node-version: "20"
       - name: Catalyst hermetic integration dependencies
-        run: pip install pytest pandas pyarrow pyyaml requests fastapi httpx jinja2 websockets jsonschema referencing
+        # playwright: tests/test_catalyst_scan_frontend.py drives the scan card
+        # in Chromium (importorskip("playwright.sync_api")); without it the
+        # browser contract only ever SKIPS on the merge gate.
+        run: pip install pytest pandas pyarrow pyyaml requests fastapi httpx jinja2 websockets jsonschema referencing playwright
+      - name: Install Chromium for the scan-card browser contract
+        run: python -m playwright install --with-deps chromium
       - name: Anonymous scan, rights, consent and first-value UX
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
