@@ -4720,6 +4720,7 @@ CURATED_EXCLUSIVE = {
     "covenant-headroom",
     "cycle-consistency",
     "ftr-tape-surfaces",
+    "sector-basket-links",  # renders two template blocks alone, no bake input
     "market-ontology-f09-usgs-mcs",
     "research-screener",
     "sanctions-map-page",

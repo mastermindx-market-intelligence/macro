@@ -21159,6 +21159,30 @@ jobs:
       - name: basket staleness warn tests
         run: python -m pytest tests/test_basket_staleness_warn.py -q
 
+  sector-basket-links:
+    if: ${{ false }}
+    gate: code
+    # The sector page and the basket page link each other through two small blocks in
+    # shared templates, and no merge-gate job reads templates/sector.html.j2. The suite
+    # renders the two blocks alone, so a bake cannot move this job. One test runs the
+    # basket block under the node the runner ships.
+    scope: exclusive
+    paths:
+      - "templates/basket_detail.html.j2"
+      - "templates/sector.html.j2"
+      - "tests/__init__.py"
+      - "tests/test_sector_basket_links.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: sector page and basket page links
+        run: python -m pytest tests/test_sector_basket_links.py -q
+
   ftr-tape-surfaces:
     if: ${{ false }}
     gate: code
