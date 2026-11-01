@@ -12210,6 +12210,9 @@ jobs:
       - "tests/test_fif_source_rights.py"
       - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_fif_se_receipts.py"
+      - "tests/test_fif_dev_corpus.py"
+      - "scripts/fif_dev_corpus.py"
+      - "tests/fixtures/fundamental_forensics/dev_corpus/**"
       - "tests/test_fif_g_pack_gold.py"
       - "tests/test_fif_g_pack_kernel.py"
       - "tests/test_fif_a33_gold_replay_receipt.py"
@@ -12422,6 +12425,7 @@ jobs:
           tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
+          tests/test_fif_dev_corpus.py
           tests/test_fif_pf_health_entity.py
           tests/test_fif_pf_health_pointer.py
           tests/test_fif_a0_production_mode_unit.py
