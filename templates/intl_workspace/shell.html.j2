@@ -26,7 +26,7 @@
     </label>
     <label>{{ t('Return horizon', '回报区间') }}
       <select data-im-action="set_horizon">
-        {% for horizon in intl_workspace.config.horizons %}<option value="{{ horizon|e }}">{{ horizon|e }}</option>{% endfor %}
+        {% for horizon in intl_workspace.config.horizons %}{% set _hl = intl_workspace.surveillance.horizon_labels.get(horizon) if intl_workspace.surveillance is defined and intl_workspace.surveillance.horizon_labels is defined else none %}{% if _hl %}<option value="{{ horizon|e }}" data-im-label-en="{{ _hl.en|e }}" data-im-label-zh="{{ _hl.zh|e }}">{{ _hl.en|e }}</option>{% else %}<option value="{{ horizon|e }}">{{ horizon|e }}</option>{% endif %}{% endfor %}
       </select>
     </label>
     <label>{{ t('Currency basis', '计价币种') }}

@@ -1,0 +1,95 @@
+{
+  "accessions": [
+    {
+      "accession": "0000018230-23-000011",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "form": "10-K",
+      "issuer_sic": null,
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "not_evaluable": 3,
+        "typed_absence": 3
+      },
+      "predictions": 6,
+      "sic_source": "unbound",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "product_service_revenue"
+      ]
+    },
+    {
+      "accession": "0000320193-24-000123",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "form": "10-K",
+      "issuer_sic": null,
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2024-09-28",
+      "prediction_states": {
+        "emitted": 2,
+        "not_evaluable": 2,
+        "typed_absence": 2
+      },
+      "predictions": 6,
+      "sic_source": "unbound",
+      "unmapped_pack_fields": [
+        "geographic_revenue",
+        "product_service_revenue"
+      ]
+    },
+    {
+      "accession": "0001652044-23-000016",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "form": "10-K",
+      "issuer_sic": null,
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 4,
+        "not_evaluable": 2,
+        "typed_absence": 2
+      },
+      "predictions": 8,
+      "sic_source": "unbound",
+      "unmapped_pack_fields": []
+    }
+  ],
+  "exclusions": [],
+  "label_count": 20,
+  "labels_status": "labelled",
+  "pack_id": "PK03",
+  "trial_field_map": {
+    "PK03|0000018230-23-000011|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0000018230-23-000011|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0000018230-23-000011|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000018230-23-000011|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0000018230-23-000011|extract|segment_revenue": "segment_revenue",
+    "PK03|0000018230-23-000011|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0000320193-24-000123|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0000320193-24-000123|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0000320193-24-000123|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0000320193-24-000123|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0000320193-24-000123|extract|segment_revenue": "segment_revenue",
+    "PK03|0000320193-24-000123|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations",
+    "PK03|0001652044-23-000016|extract|geographic_revenue": "geographic_revenue",
+    "PK03|0001652044-23-000016|extract|number_of_operating_segments": "number_of_operating_segments",
+    "PK03|0001652044-23-000016|extract|product_service_revenue": "product_service_revenue",
+    "PK03|0001652044-23-000016|extract|segment_definition_change_note": "segment_definition_change_note",
+    "PK03|0001652044-23-000016|extract|segment_profit_or_loss": "segment_profit_or_loss",
+    "PK03|0001652044-23-000016|extract|segment_reporting_text_block": "segment_reporting_text_block",
+    "PK03|0001652044-23-000016|extract|segment_revenue": "segment_revenue",
+    "PK03|0001652044-23-000016|extract|unallocated_corporate_and_eliminations": "unallocated_corporate_and_eliminations"
+  }
+}

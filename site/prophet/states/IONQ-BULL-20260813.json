@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "IONQ-BULL-20260813",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 20.4,
@@ -10,21 +10,21 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 3.1,
+    "validity": 5.6,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.121,
+    "dist_to_stop_r": 0.158,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 173.3,
-    "p1": -0.5859,
-    "p2": -0.2929,
+    "horizon_pct_used": 175.6,
+    "p1": -0.5614,
+    "p2": -0.2807,
     "p3": null,
-    "move_r": -0.879,
+    "move_r": -0.842,
     "mfe_r": 0.105,
     "mae_r": -0.879
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 78,
-  "tau": 1.7333,
+  "days_elapsed": 79,
+  "tau": 1.7556,
   "closed": true,
   "outcome": "EXPIRED"
 }

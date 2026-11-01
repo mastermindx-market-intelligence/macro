@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MUSA-BULL-20260722",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 40.8,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 15.0,
-    "pace": 24.7,
-    "retention": 85.7,
-    "overlay": 59.0
+    "progress": 11.3,
+    "pace": 23.3,
+    "retention": 59.3,
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": 1.199,
-    "dist_to_t1_r": 1.301,
-    "dist_to_t2_r": 2.801,
-    "horizon_pct_used": 108.9,
-    "p1": 0.1327,
-    "p2": 0.0664,
+    "dist_to_stop_r": 1.138,
+    "dist_to_t1_r": 1.362,
+    "dist_to_t2_r": 2.862,
+    "horizon_pct_used": 111.1,
+    "p1": 0.0919,
+    "p2": 0.0459,
     "p3": null,
-    "move_r": 0.199,
+    "move_r": 0.138,
     "mfe_r": 0.232,
     "mae_r": -0.238
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-15",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 49,
-  "tau": 1.0889,
+  "days_elapsed": 50,
+  "tau": 1.1111,
   "closed": true,
   "outcome": "EXPIRED"
 }

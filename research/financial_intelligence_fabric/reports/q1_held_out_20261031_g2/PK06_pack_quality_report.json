@@ -1,0 +1,236 @@
+{
+  "aapl_golden_used_as_held_out": false,
+  "builders_read_held_out": false,
+  "cells": [
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 4,
+      "n_predicted": 4,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 8,
+      "n_predicted": 8,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    }
+  ],
+  "evaluated_at": "2026-10-31T16:37:04Z",
+  "evaluator_role": "independent_q1",
+  "failed_families": [
+    {
+      "blocks": [
+        "PK06"
+      ],
+      "disposition": "unavailable_research_only",
+      "does_not_block": [
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK07",
+        "PK08",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "numerator_denominator": {
+        "abstention": "2/16",
+        "false_positive_rate": "0/2",
+        "precision": "14/14",
+        "recall": "14/14",
+        "source_fidelity_error": "0/14"
+      },
+      "pack_id": "PK06",
+      "reason_codes": [
+        "precision_below_floor"
+      ],
+      "relabel_forbidden": true,
+      "reopen_requires": "fresh held-out labels under a new Q0 split decision",
+      "section_family": "lease_liability"
+    }
+  ],
+  "false_positives": [],
+  "head_commit": "af6d63be102326f5019df8d95484454d79302e6e",
+  "language_gate": {
+    "guarded_token_count": 0,
+    "hyphen_guarded_count": 0
+  },
+  "metrics": {
+    "extraction": {
+      "abstention": {
+        "denominator": 16,
+        "exclusions": [
+          "insufficient_evidence:0",
+          "not_applicable:2"
+        ],
+        "numerator": 2,
+        "wilson95": [
+          0.035,
+          0.3602
+        ]
+      },
+      "false_positive_rate": {
+        "denominator": 2,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.6576
+        ]
+      },
+      "precision": {
+        "denominator": 14,
+        "exclusions": [],
+        "numerator": 14,
+        "wilson95": [
+          0.7847,
+          1.0
+        ]
+      },
+      "recall": {
+        "denominator": 14,
+        "exclusions": [],
+        "numerator": 14,
+        "wilson95": [
+          0.7847,
+          1.0
+        ]
+      },
+      "source_fidelity_error": {
+        "denominator": 14,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.2153
+        ]
+      }
+    },
+    "findings": {
+      "abstention": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "false_positive_rate": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "precision": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "recall": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      }
+    },
+    "refusal": {
+      "abstention": {
+        "denominator": 2,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.6576
+        ]
+      },
+      "precision": {
+        "denominator": 2,
+        "exclusions": [],
+        "numerator": 2,
+        "wilson95": [
+          0.3424,
+          1.0
+        ]
+      },
+      "recall": {
+        "denominator": 2,
+        "exclusions": [],
+        "numerator": 2,
+        "wilson95": [
+          0.3424,
+          1.0
+        ]
+      }
+    }
+  },
+  "numerator_denominator_note": "Every rate is numerator/denominator with exclusions listed; truthful refusal is excluded from positive coverage.",
+  "pack_id": "PK06",
+  "pack_name": "Leases and off-balance commitments",
+  "protocol_id": "fif-q0-quality-protocol/v1",
+  "quality_label": "underpowered",
+  "schema": "fundamental_forensics.pack_quality_report/v1",
+  "split_roots": {
+    "gold": "tests/fixtures/fundamental_forensics/",
+    "held_out": "tests/fixtures/fundamental_forensics_held_out/"
+  }
+}

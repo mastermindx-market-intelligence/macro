@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "YELP-BULL-20260630",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 9.6,
@@ -14,23 +14,23 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 47.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": -0.04,
+    "dist_to_stop_r": -0.014,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 202.2,
-    "p1": -0.6934,
-    "p2": -0.3467,
+    "horizon_pct_used": 204.4,
+    "p1": -0.6759,
+    "p2": -0.3379,
     "p3": null,
-    "move_r": -1.04,
+    "move_r": -1.014,
     "mfe_r": 0.0,
     "mae_r": -1.202
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: overtime \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 91,
-  "tau": 2.0222,
+  "days_elapsed": 92,
+  "tau": 2.0444,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

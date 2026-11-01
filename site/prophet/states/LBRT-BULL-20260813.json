@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LBRT-BULL-20260813",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 18.5,
@@ -10,27 +10,27 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 2.0,
+    "validity": 1.6,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 44.7,
-    "overlay": 47.0
+    "retention": 44.6,
+    "overlay": 46.9
   },
   "geometry": {
-    "dist_to_stop_r": 0.1,
+    "dist_to_stop_r": 0.09,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 164.4,
-    "p1": -0.6002,
-    "p2": -0.3001,
+    "horizon_pct_used": 166.7,
+    "p1": -0.6067,
+    "p2": -0.3033,
     "p3": null,
-    "move_r": -0.9,
+    "move_r": -0.91,
     "mfe_r": 0.0,
     "mae_r": -1.165
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: invalidated \u2192 overtime",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 74,
-  "tau": 1.6444,
+  "days_elapsed": 75,
+  "tau": 1.6667,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

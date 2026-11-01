@@ -62,7 +62,7 @@
     "label": "emerging",
     "name": "China Consumer Brands",
     "name_zh": "\u4e2d\u8d44\u6d88\u8d39\u54c1\u724c",
-    "rank": 5,
+    "rank": 4,
     "reco": "hold",
     "score": 69
   },
@@ -144,7 +144,7 @@
     "name_zh": "\u5730\u4ea7\u4e0eREITs",
     "rank": 7,
     "reco": "hold",
-    "score": 48
+    "score": 49
   },
   "hk_tech_hardware": {
     "label": "deteriorating",
@@ -158,8 +158,8 @@
     "label": "emerging",
     "name": "Telecom & Utilities",
     "name_zh": "\u7535\u4fe1\u4e0e\u516c\u7528\u4e8b\u4e1a",
-    "rank": 4,
+    "rank": 5,
     "reco": "hold",
-    "score": 71
+    "score": 64
   }
 }

@@ -30,7 +30,6 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - ORCH-D (Opus): Paper R14 masterpiece page + spec `research/INTL_GLOBAL_SURVEILLANCE_DESIGN_SPEC_R14_2026-10-21.md`, PNGs in seat scratch `r14/`.
 - ORCH-1 (Opus): census + IM11/IM12 packets → lanes W1A/W1B → review lanes; records `$K/orch/fabric/reviews/INTL-GS-W1*.md`.
 - Seat SSD worktrees intl-gs-w0a-6c9c36115aa4036d / intl-gs-w0b-b67a2895768398e0 were minted but are UNUSED (lanes run remotely); reclaim later.
-<<<<<<< HEAD
 
 ## Checkpoint 2026-10-21 03:18Z — W0A PR OPEN, review lane running
 - W0A r2 DONE rc=0 → draft PR **#9920** (mastermindx-market-intelligence/macro) head 898edeccaf3219838fc1c9b0b3cac5f2d5af9753, branch `lane/intl-gs-w0a-r2`, 2 files, +16/−4. Seat verified the token-diff of all four Caddy matchers = exactly the nine intl paths added, nothing removed; yml `public:` block added with comment. Lane reported 94 passed on the five boundary suites (watchstore baseline red is inherited on origin/main), caddy hub boundary 22 passed, contract delta 0/0, 12 packs validate. Lane did NOT cat its record (summary only) — review lane re-runs everything.
@@ -58,8 +57,6 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - IM-W0 → `done` (PRODUCTION_PROOF). ACCEPTANCE of the served journeys (anonymous + entitled, masterplan §15 Wave 0) is recorded against §14 tests at the Wave 2 boundary; this checkpoint claims only the access repair.
 - Wave 1 under ORCH-1: lane W1A → PR open @686eb9a7, lane W1B → PR open @78711372; review lanes W1A-REVIEW/W1B-REVIEW launched 04:06Z on fabric (W1B-REVIEW r1 refused by economic policy, relaunched). Seat consumes ORCH-1's return, never the lanes directly.
 - Agent OS handoff record committed: `agentos/handoffs/WS-INTL-GLOBAL-SURVEILLANCE-2026-10-21.md`.
-=======
->>>>>>> 6e096d7b21719 (docs(intl-gs): International Markets Global Surveillance masterplan + continuation handoff (2026-10-21))
 
 ## Checkpoint 2026-10-21 04:3xZ — R14 design FROZEN (DEC:INTL-GS-R14-DESIGN-FREEZE)
 - ORCH-D (Opus orchestrator abd45165af1bdea65) returned DONE: Paper page "Global Surveillance · R14 · Masterpiece" (14 boards; R13 untouched), spec `research/INTL_GLOBAL_SURVEILLANCE_DESIGN_SPEC_R14_2026-10-21.md` (789 lines, §0–§17, blob 5d9c51dc25005935a6be5846a01baa48246f9375), 14 PNGs. Seat inspected the scanner dark/EN/1440 and Brazil dossier boards directly and ACCEPTS; PNGs committed under `mockups/refs/intl-gs-r14/`.
@@ -214,3 +211,103 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - Proven rungs: #9920 PRODUCTION_PROOF · #9923/#9924/#9937/#9939/#9943/#9944/#9952/#9960/#9973 MERGED ·
   **#9949 W2 foundation MERGED (e6debbb0)** · DEC:INTL-GS-R14-DESIGN-FREEZE amended A1/A1.1/A1.2 · ORCH-2/ORCH-4
   RUNNING the burst (W4B/W3U/W2A/W2B) · ORCH-1/ORCH-D/ORCH-3 COMPLETED.
+
+## Checkpoint 2026-10-22 16:3xZ — burst EFFECT_UNKNOWN
+- All four operator lanes hit the 7200 s transport deadline rc=124 before opening PRs: W4B-r2 (ubuntu0),
+  W3U-r1 (ubuntu3), W2A-r2 / W2B-r2 (ubuntu1).
+- ORCH-2 (a700b1ec0d7c6f480) and ORCH-4 (a93f43c8031ad627a) failed on the Opus weekly 429 and are gone.
+- The seat scratchpad was wiped. (Seat-attested; no GitHub artifact exists for the burst — no PR was opened.)
+
+## Checkpoint 2026-10-30 — salvage
+- Seat recovered the operator packets to the kit and pushed host branches `origin/lane/intl-gs-w4b-r2`
+  @4e1669e66d94c00d43dd02286ef87033dce26660 and `origin/lane/intl-gs-w3u-r1`
+  @030785eb31464aa77dca13a7fceddb2a9183123e (verified 2026-10-31 by `git ls-remote origin` from records
+  lane intl-gs-rec7-r2: both tips exact).
+- GRANT LAW: the one-per-root-life 16-child grant is spent → every later lane is a zero-child operator.
+- ORCH-6 (Opus a72e6abe523f34f85) spawned 2026-10-30 for VIEW LANES COMPLETION.
+
+## Checkpoint 2026-10-31 06:0x–08:5xZ — lanes relaunched, rulings
+- ORCH-6 LANE_START 06:03Z: W4B `intl-gs-w4b-r3` ubuntu0 (resume of r2, rebased onto
+  24c59413bbc41bce5ef0b8a2f423330da557e1bd), W3U `intl-gs-w3u-r2` ubuntu3 (resume of r1), W2A
+  `intl-gs-w2a-r3` and W2B `intl-gs-w2b-r3` ubuntu1 (fresh, zero-child).
+- ORCH-5 (Opus a9024303624892228) spawned ~06:2xZ for Wave 5 engine lanes + §14 closures.
+- W5 census lane `intl-gs-w5-census-r1` returned PASS 06:06Z (§14 = 14 DONE / 6 PARTIAL / 1 GAP correction
+  propagation, at base 6e721225); census record landed verbatim 2026-10-31 by records lane r7 with the
+  post-census section below its measured body.
+- SEAT RULING ~08:4xZ `DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT`
+  (W2B-FOUNDATION-TRANSITION = A): the ten W2F foundation tests (four pytest in
+  tests/test_intl_gs_foundation.py: test_seven_new_tabs_disabled_without_available_payload,
+  test_shell_renders_no_surveillance_wrapper_without_panels,
+  test_stub_coverage_view_enables_only_coverage,
+  test_absent_builders_are_not_built_and_leave_workspace_intact; browser "seven disabled tabs" + X6a–X6e)
+  pinned the pre-builder world; the invariant is restated as "a GS tab/option is enabled iff its builder
+  exists AND produced a panel"; negatives re-scoped never deleted; stub-coverage test covers only
+  unattached views; X6 locators per panel; the transition lands inside whichever of W2A/W2B merges first
+  (it was W2B); the A1 frozen-files guard is amended only via its sanctioned list; spec B1 stands.
+
+## Checkpoint 2026-10-31 09:3x–10:5xZ — Wave 4B + Wave 5 engines MERGED
+- W4B **#10258** (head 37d5f9b22329a16586734b7748e5f9bde7ea4c1e, review r3 PASS_WITH_NOTES) → main
+  949c6adac4bc48ca7f1198b189effa86871829b2 (09:33:22Z) — presenter lib/intl_gs_transmission_present.py +
+  templates/intl_workspace/transmission.html.j2 + CI job; the production Transmission tab stays `not_built`
+  BY DESIGN (no lib/intl_gs_transmission_view.py: the frozen rights matrix has no emission-permitted
+  candidate source, so no admitted edge producer exists).
+- W5-WATCH **#10274** (head 1137a84d6c4467a936126271df55c52de8101e8e) →
+  c784d045f3a76dd944a7cd8af2936bd505b02fa5 (09:34:05Z) engine/intl_global_watch.py.
+- W5-CORRECTION **#10276** (head f2c1d55fc1142515fe1cff448ae34c401b88b349) →
+  cd195298c0748e06c80c11614c7b47c78a7e2835 (09:34:28Z) engine/intl_global_correction.py.
+- W5-REPLAY **#10275** (head 673f8d333cd7bbbfb776e1517e20b245e6b7910f) →
+  6c13414f379941be2806de2a6bf839d0b2c8f62a (09:34:43Z) engine/intl_global_replay.py.
+- S14-CLOSE **#10286** (head 92a211e1d4e07d0d1e65d76f3044f1ca210968d5 after a merge-sync) →
+  d444ae6713b008aede6197f01989d44fa5122e4c (10:45:49Z) engine/intl_global_graph_boundary.py + §14 closure
+  tests.
+- ORCH-5 returned PROVEN_OUTCOME 10:5xZ with DEFERRED F1–F9 (below).
+
+## Checkpoint 2026-10-31 12:2x–15:0xZ — views MERGED
+- W3U **#10265** (head d7c1e9170d26dd10a8ab3907b9350dbc340111ef, review delta r7 PASS_WITH_NOTES, CI 27
+  green) → 281e21c600ab5031805c33fa32711b8e02f3e53c (12:49:14Z; dislocation explorer).
+- W5-HARDEN **#10296** (test-only, kills surviving review mutants H1–H8; review PASS_WITH_NOTES) →
+  b3330f3cdd29ffef0260769c73764c9ce11f4a52 (11:51:13Z).
+- W2B **#10278** IM14 market dossier (head c2a3de654b843924dbc95f7a5b0c8b47382d4d69, review delta r5
+  PASS_WITH_NOTES, CI 27 green; carries the RULING-A foundation transition) →
+  a99b539578003e7dfd32394dc1e839cba7f8bb0a (15:05:04Z).
+- W2A **#10288** IM13 global scanner + coverage view (Wave 2): head 74e28ce960bfe2608de1aeeeba8221f75a73e4a2;
+  reviews r4b PASS_WITH_NOTES, r4c2 PASS_WITH_NOTES, r6 PASS at head, r5 PASS_WITH_NOTES at 39b40490
+  (canonical reviews/INTL-GS-W2A.md) → MERGED to main 92881169bb888435ab84b40740212a1fb0876a77 at
+  2026-10-31T21:54:40Z. Carried the CI budget raise international-workspace-browser 12→20 plus its
+  tests/test_ci_pack_semantic.py pin update under DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031
+  (c1); main **#10341** raised international-dislocation-explorer 8→15 separately (merged 20:08:34Z).
+  IM13 is DONE; the Transmission tab stays not_built by design (no emission-permitted candidate source).
+
+### Seat ruling 2026-10-31 DEC:INTL-GS-GB1-GRAPH-BOUNDARY-CHIP
+- The §14 "Graph boundary" label renders in the W2B dossier Typed-edges card (Q4 · Q5) band-head row as one
+  gs_chip from engine LABELS (structural_graph_member → neutral, qualified_candidate → warn-dashed,
+  structural_research → muted-dashed) with `data-graph-boundary`; one footnote = engine reasons via
+  reason_copy + the first interpretation limit, EN/ZH.
+- Production passes `edges=[]` (no admitted edge producer) and stamps `edge_basis: "no_admitted_edge_set"`
+  stated in the footnote; aggregates/shape errors → chip omitted + `graph_boundary_unavailable` note.
+- Follow-up lane `intl-gs-w2b-gb1-r1` (also R-14 sha256 pin of `_w2b_css_region()` bytes, R-11 B8 AST scan
+  over function defaults).
+
+### ORCH-5 DEFERRED F1–F9 (verbatim custody)
+- F1 IM08 International Investigation adapter — todo, custody #8754 (never touched).
+- F2 IM09 Saved workspace extension — todo, depends on IM08, custody #8754, E3 saved_evidence() is the
+  engine digest it can consume.
+- F3 IM06 History publication contract — accepted via #8527, changes belong to the Paper-waves carrier;
+  E1/E2 neither read nor change lib/intl_workspace_history.py _TRACK_FIELDS.
+- F4 cross-surface identity unification — Terminal/US + ontology owners.
+- F5 graph-boundary label rendering → seat ruling above / lane gb1.
+- F6 E1 replay view surface — the view layer owns it; commission only if the R14 spec defines a board.
+- F7 NIT test hardening → CLOSED by #10296.
+- F8 PR-body hygiene → CLOSED by seat corrections on #10286/#10275.
+- F9 fabric hosts lack playwright for the node legacy test (environmental; CI green at every merged head;
+  fleet ops).
+
+### Standing
+- Never re-spawn ORCH-5/ORCH-6 (message only); never relaunch a used lane run id;
+  DEC:INTL-GS-FRED-GOVERNMENT-SERIES-RIGHTS asked once, never re-ask; #8754 never touch; #9596 never push;
+  Opus cap 2.
+
+### Next
+- Seat merges gb1 after its review; served-journey proof on www.mastermind-x.com/intl.html after the nightly
+  renders the views (Scanner / Dossier / Dislocations enabled; Transmission disabled-by-design); §14 PARTIAL
+  rows closure.

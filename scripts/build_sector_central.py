@@ -578,6 +578,7 @@ def main(*, strict: bool = False) -> int:
             accumulation=_acc_rows,
             accumulation_universe_n=_acc_uni,
             theme_tape=_theme_tape_view(site),
+            fast_lens=(data.get("market") or {}).get("fast_lens") or {},
             generated_utc=ctx.get("generated_utc") or data.get("as_of") or "")
         write_page(site / "sector_central.html", html, encoding="utf-8")
     except Exception as e:  # noqa: BLE001 — a template error must NOT abort the daily engine job

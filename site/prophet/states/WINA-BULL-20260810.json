@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WINA-BULL-20260810",
-  "asof": "2026-10-30",
+  "asof": "2026-10-31",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 56.0
+    "overlay": 52.9
   },
   "geometry": {
-    "dist_to_stop_r": -0.595,
+    "dist_to_stop_r": -0.629,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 180.0,
-    "p1": -1.0636,
-    "p2": -0.5318,
+    "horizon_pct_used": 182.2,
+    "p1": -1.086,
+    "p2": -0.543,
     "p3": null,
-    "move_r": -1.595,
+    "move_r": -1.629,
     "mfe_r": 0.0,
     "mae_r": -1.753
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 81,
-  "tau": 1.8,
+  "days_elapsed": 82,
+  "tau": 1.8222,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

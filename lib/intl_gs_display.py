@@ -114,6 +114,22 @@ REASON_COPY = {
     "thesis_unadmitted": ("No admitted thesis", "无已准入的论点"),
     "session_calendar_unadmitted": ("Session calendar not admitted", "交易时段日历未准入"),
     "corrections_none": ("No corrections recorded", "暂无更正记录"),
+    # --- §14 graph-boundary chip copy (INTL-GS-W2B-GB1). Registered here and
+    # composed ONLY through reason_copy (delivered via the dossier payload
+    # abstain_copy registry); the template never re-types a pair. The EN leg
+    # of graph_boundary_limit_research_labeling is the engine's FIRST
+    # interpretation limit verbatim (asserted in lib.intl_gs_dossier_view). ---
+    "no_candidate_evidence": ("No admitted candidate evidence", "无已准入的候选证据"),
+    "no_structural_research": ("No admitted structural research", "无已准入的结构研究"),
+    "no_admitted_edge_set": (
+        "No admitted statistical edge set; the label reflects frozen graph "
+        "membership and admitted evidence only",
+        "无已准入的统计边集；标签仅反映冻结结构图成员身份与已准入证据"),
+    "graph_boundary_unavailable": ("Graph boundary label unavailable", "图边界标签不可用"),
+    "graph_boundary_limit_research_labeling": (
+        "Research labeling only: not a trading signal, a valuation or a "
+        "recommendation.",
+        "仅研究标注：非交易信号、非估值、非投资建议"),
 }
 
 #: The view-abstain display tokens shared by the IM13 and IM14 view lanes, in
@@ -346,7 +362,8 @@ def snapshot_display(snapshot):
 #: templates/market_structure.html.j2). The spec carries no ZH horizon copy —
 #: recorded under Gaps as a PROPOSAL for a seat ruling. Unknown ids pass
 #: through verbatim (never dropped, never upgraded).
-_HORIZON_LABELS = {"1m": ("1M", "1月"), "3m": ("3M", "3月"), "20d": ("20D", "20日")}
+_HORIZON_LABELS = {"1m": ("1M", "1月"), "3m": ("3M", "3月"), "20d": ("20D", "20日"),
+                   "6m": ("6M", "6个月"), "12m": ("1Y", "1年"), "ytd": ("YTD", "年初至今")}
 
 
 def horizon_label(horizon):

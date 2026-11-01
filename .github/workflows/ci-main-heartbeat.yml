@@ -146,8 +146,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # jinja2/markupsafe match legacy-jobs.yml::template-site-sync. test_optimize_assets
+      # bakes the research screener, and render_html imports jinja2 inside the function,
+      # so without them that test fails with ImportError rather than skipping.
       - name: install minimal deps (theme.js bake reads config.yml)
-        run: pip install pyyaml pytest rjsmin==1.2.5
+        run: pip install pyyaml pytest jinja2 markupsafe rjsmin==1.2.5
       - name: template-site-sync selftest (gate fires on synthetic divergence)
         run: python3 scripts/check_template_site_sync.py --selftest
       - name: site copies of template assets must byte-match templates/
@@ -388,9 +391,9 @@ jobs:
         run: python -m pytest tests/test_i18n_split_tag_guard.py -q
       # Mirrors legacy-jobs.yml::free-content-estate — see the long note there.
       # Short version: this suite's jinja2-gated cross-module test (externalize_css
-      # and build_free_content must share ONE HAND_AUTHORED frozenset) skips in
-      # template-site-sync above, whose venv has no jinja2, so without this step it
-      # executes in no job at all. This job already installs jinja2; the pairing is
-      # free. Deleting it as a duplicate re-creates the SKIP-ONLY class.
+      # and build_free_content must share ONE HAND_AUTHORED frozenset) also runs in
+      # template-site-sync above now that its venv has jinja2. Keep it here too: this
+      # job already installs jinja2, the pairing is free, and this step still holds
+      # the test if that lane ever drops jinja2, which would make it SKIP-ONLY again.
       - name: inline-CSS externalization units (incl. the jinja2 cross-module gate)
         run: python -m pytest tests/test_externalize_css.py -q
