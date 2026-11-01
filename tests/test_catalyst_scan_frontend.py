@@ -975,38 +975,39 @@ def test_g3_real_browser_320px_no_hscroll_and_focus_kept(tmp_path):
                 return
         route.fulfill(status=404, body="not found")
 
-    browser = None
-    try:
+    # playwright.sync_api exposes browsers only inside sync_playwright();
+    # a module-level .chromium does not exist, so the witness never ran.
+    with sync_api.sync_playwright() as pw:
         try:
-            browser = sync_api.chromium.launch()
+            browser = pw.chromium.launch()
         except Exception as exc:
             pytest.skip(f"chromium unavailable: {exc}")
-        for width in (320, 1280):
-            page = browser.new_page(viewport={"width": width, "height": 800})
-            page.route("http://catalyst.localhost/**", handler)
-            page.goto("http://catalyst.localhost/catalyst-scan.html")
-            assert page.evaluate(
-                "document.documentElement.scrollWidth <= window.innerWidth + 1"), width
-            page.fill("#cs-tickers", tickers)
-            page.focus("#cs-scan-submit")
-            page.keyboard.press("Enter")
-            page.wait_for_selector("#cs-result-cards > *", timeout=5000)
-            page.wait_for_timeout(300)
-            assert page.evaluate(
-                "document.documentElement.scrollWidth <= window.innerWidth + 1"), width
-            assert page.evaluate("document.activeElement.id") == "cs-scan-submit"
-            pill = page.evaluate(
-                """() => {
-                    for (const card of document.querySelectorAll('#cs-result-cards > *')) {
-                        if (card.textContent.includes('PFE')) {
-                            const node = card.querySelector('.cs-pill');
-                            return node ? node.textContent : null;
+        try:
+            for width in (320, 1280):
+                page = browser.new_page(viewport={"width": width, "height": 800})
+                page.route("http://catalyst.localhost/**", handler)
+                page.goto("http://catalyst.localhost/catalyst-scan.html")
+                assert page.evaluate(
+                    "document.documentElement.scrollWidth <= window.innerWidth + 1"), width
+                page.fill("#cs-tickers", tickers)
+                page.focus("#cs-scan-submit")
+                page.keyboard.press("Enter")
+                page.wait_for_selector("#cs-result-cards > *", timeout=5000)
+                page.wait_for_timeout(300)
+                assert page.evaluate(
+                    "document.documentElement.scrollWidth <= window.innerWidth + 1"), width
+                assert page.evaluate("document.activeElement.id") == "cs-scan-submit"
+                pill = page.evaluate(
+                    """() => {
+                        for (const card of document.querySelectorAll('#cs-result-cards > *')) {
+                            if (card.textContent.includes('PFE')) {
+                                const node = card.querySelector('.cs-pill');
+                                return node ? node.textContent : null;
+                            }
                         }
-                    }
-                    return null;
-                }""")
-            assert pill == "NO QUALIFYING EVENT"
-            page.close()
-    finally:
-        if browser is not None:
+                        return null;
+                    }""")
+                assert pill == "NO QUALIFYING EVENT"
+                page.close()
+        finally:
             browser.close()
