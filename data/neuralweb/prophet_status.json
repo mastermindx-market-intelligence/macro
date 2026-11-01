@@ -1,6 +1,6 @@
 {
   "schema": "prophet.status/v1",
-  "as_of": "2026-10-31T09:45:01+00:00",
+  "as_of": "2026-11-01T10:42:07+00:00",
   "built_by": "engine.neuralweb.prophet_governor",
   "markets": {
     "us": {
@@ -45,7 +45,7 @@
         "process_integrity": null
       },
       "track_history": {
-        "as_of": "2026-10-31",
+        "as_of": "2026-11-01",
         "n_cohorts": null,
         "status": null
       },
@@ -79,12 +79,12 @@
         "fill_basis_note": "t1_hl2 \u2014 accruing"
       },
       "fitness_card": {
-        "as_of": "2026-10-30",
+        "as_of": "2026-10-31",
         "hit_quality": null,
         "process_integrity": null
       },
       "audit_scoreboard": {
-        "as_of": "2026-10-30",
+        "as_of": "2026-10-31",
         "status": null,
         "n_matured": null
       },
@@ -186,21 +186,21 @@
           "artifact": "us-audit-scoreboard",
           "path": "site/factordata/us_audit_scoreboard.json",
           "status": "stale",
-          "age_hours": 2025.8,
+          "age_hours": 2050.7,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-track-history",
           "path": "site/factordata/us_track_history.json",
           "status": "ok",
-          "age_hours": 9.8,
+          "age_hours": 10.7,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-board-outcomes",
           "path": "site/factordata/us_board_outcomes.json",
           "status": "stale",
-          "age_hours": 873.8,
+          "age_hours": 898.7,
           "sla_hours": 48
         }
       ],
@@ -214,7 +214,7 @@
           "artifact": "site-china-standouts",
           "path": "data/metabolism/fitness/standouts_cn.json",
           "status": "stale",
-          "age_hours": 33.8,
+          "age_hours": 34.7,
           "sla_hours": 30.0
         }
       ],
@@ -228,7 +228,7 @@
           "artifact": "hk-board-ledger",
           "path": "data/board_ledger/hk_board.parquet",
           "status": "ok",
-          "age_hours": 13.7,
+          "age_hours": 11.9,
           "sla_hours": 48
         }
       ],
@@ -242,7 +242,7 @@
           "artifact": "ca-board-ledger",
           "path": "data/board_ledger/ca_board.parquet",
           "status": "ok",
-          "age_hours": 13.7,
+          "age_hours": 11.9,
           "sla_hours": 48
         }
       ],
@@ -255,13 +255,13 @@
         {
           "artifact": "intl-setups",
           "path": "site/factordata/intl_setups.json",
-          "status": "ok",
-          "age_hours": 33.8,
+          "status": "stale",
+          "age_hours": 58.7,
           "sla_hours": 48
         }
       ],
       "data_gap_count": 0,
-      "overall_health": "ok"
+      "overall_health": "degraded"
     }
   },
   "momoedge_trade_plans": {

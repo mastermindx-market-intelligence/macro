@@ -6868,7 +6868,8 @@ jobs:
     #
     # The serving boundary has three enforcement halves and CI now covers all of
     # them: the Caddy public list (site_access_boundary), the paid stage
-    # (paywall/api_paywall), and the anonymous stage (regwall). The regwall pair
+    # (paywall/api_paywall), and the anonymous stage (regwall), now in the
+    # `site-access-boundary` and `paywall-contracts` jobs below. The regwall pair
     # was the last one running in no workflow — and it is the expensive one to get
     # wrong in the quiet direction: #3387 had to reopen /stocks/ /tools/ /learn/
     # /blog/ after a wall with no crawler exception 302'd Googlebot off 1,665
@@ -6931,12 +6932,27 @@ jobs:
         # workflow. tests/test_site_access_boundary.py derives this job's inputs
         # into ci.yml's paths filter, so this line also makes the suite reach.
         run: python -m pytest tests/test_public_dashboard_preview.py -q
+
+  paywall-contracts:
+    if: ${{ false }}
+    gate: data
+    # The paid and anonymous stages of the serving boundary, moved out of
+    # `tier-gate` on 2026-10-31 for the same reason as `site-access-boundary`
+    # below: a failed step skips the rest of its job, and the tier-preview shell
+    # checks move with every bake. Most of these suites have no other CI home.
+    # Same install line as `tier-gate`: app.main's import graph needs it.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow
       - name: paywall fail-closed contract (incl. enforced-early payload lane)
         run: python -m pytest tests/test_paywall.py tests/test_api_paywall.py tests/test_auth_cache_outage.py -q
       - name: Pro-only host gate (bot.mastermind-x.com -> /api/paywall/check_pro)
         run: python -m pytest tests/test_paywall_pro_gate.py -q
-      - name: static serving boundary (Caddy <-> site_access.yml, no leaked artifacts)
-        run: python -m pytest tests/test_site_access_boundary.py -q
       - name: delivery-plane census (exact families, alternate origins, consumers, defaults)
         run: python -m pytest tests/test_r2_delivery_plane_classification.py -q
       # tests/test_regwall_json_gate.py used to run HERE and no longer does: it
@@ -6956,6 +6972,29 @@ jobs:
       # with exactly `pytest pyyaml jinja2 fastapi httpx`: 10 passed.
       - name: member Earnings Wire API transport (auth gate + private headers)
         run: python -m pytest tests/test_earnings_api.py -q
+
+  site-access-boundary:
+    if: ${{ false }}
+    gate: data
+    # The static serving boundary, on its own (2026-10-31). This step sat in
+    # `tier-gate` after "tier-preview split contract". The pack runner skips a
+    # job's later steps once one fails, and that shell check moves with every
+    # bake, so its reds kept this suite from running: the heartbeat skipped it in
+    # at least seven runs in a row. Here it reports whatever the shells do.
+    #
+    # `gate: data` because the suite reads the committed site/ tree, so a bake
+    # alone can move its verdict. pytest + pyyaml is the whole dependency line,
+    # measured with every other third-party import refused.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: static serving boundary (Caddy <-> site_access.yml, no leaked artifacts)
+        run: python -m pytest tests/test_site_access_boundary.py -q
 
   regwall-boundary:
     if: ${{ false }}
@@ -9047,6 +9086,11 @@ jobs:
         # `from playwright.sync_api import sync_playwright` at test level for the
         # computed-style probe — the suite died ModuleNotFoundError without it.
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 fastapi httpx jsonschema rjsmin==1.2.5 playwright
+      # tests/test_ud_b2_w1_red_first_proof.py reads site/macro.html at the pre-fold
+      # commit, and this checkout is one commit deep. Fetch only that commit's trees;
+      # git show then pulls the one blob it needs. fetch-depth: 0 would cost minutes.
+      - name: fetch the pre-fold commit for the red-first proof
+        run: git fetch --no-tags --depth=1 --filter=blob:none origin c22864f80967e77e6e42cd926ef00f11f7197d06
       - name: Install Chromium for the browser-backed render guards
         run: python -m playwright install --with-deps chromium
       # NEVER put a `#` comment inside the folded `run: >` scalar below. YAML folds it
@@ -12171,6 +12215,9 @@ jobs:
       - "tests/test_fif_a33_gold_replay_receipt.py"
       - "research/financial_intelligence_fabric/FIF_A33_GOLD_REPLAY_RECEIPT_2026-10-20.json"
       - "tests/test_fif_z0_gap_a23_a38.py"
+      - "tests/test_fif_z0_gap_a23_saved_research.py"
+      - "engine/fif_saved_research_notifications.py"
+      - "scripts/run_fif_saved_research_notifications.py"
       - "tests/test_filing_forensics_broad_sec_lane.py"
       - "tests/test_filing_forensics_sec_lane.py"
       - "tests/test_forensics_api.py"
@@ -12363,6 +12410,7 @@ jobs:
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_z0_closure_matrix.py
           tests/test_fif_z0_gap_a23_a38.py
+          tests/test_fif_z0_gap_a23_saved_research.py
           tests/test_fif_a33_gold_replay_receipt.py
           tests/test_fif_a34_pack_proof_ledger.py
           tests/test_fif_a47_recovery_drill_receipts.py
@@ -12447,6 +12495,7 @@ jobs:
           tests/test_fundamental_forensics_q0_quality_protocol.py
           tests/test_fundamental_forensics_q1_held_out_evaluate.py
           tests/test_fundamental_forensics_q1_held_out_g2_reports.py
+          tests/test_fundamental_forensics_q1_held_out_g3_reports.py
           tests/test_fundamental_forensics_query.py
           tests/test_fundamental_forensics_query_exports.py
           tests/test_fundamental_forensics_query_metric_qualification.py
@@ -12992,8 +13041,15 @@ jobs:
     # ceilings stay fixed.
     # W31-L51 (2026-10-21): the tape staleness tests import scripts/build_china_altdata.py,
     # so the builder and its closure (lib/illus, lib/pages, lib/site_assets) join the paths.
+    # W38-B3 (2026-10-31): the suite reads engine/china_narrative_radar.py by ast to pin its
+    # provenance copy, so that module and its closure join the paths.
     paths:
       - "templates/china_altdata.html.j2"
+      - "engine/china_narrative_radar.py"
+      - "engine/china_sector_index.py"
+      - "engine/china_sector_pathway.py"
+      - "engine/cn_ai_semis_confirmer.py"
+      - "engine/grading_stats.py"
       - "tests/test_china_altdata.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -44683,7 +44739,8 @@ jobs:
   # cluster adapter, issuer resolver, and the W2 benchmark tools (tape draw
   # with the body-available frame, EDGAR body fetch; hermetic, no network) and
   # the W3 measured packet producer (label returns to validated candidate events),
-  # and the section 11 registration (pinned inputs, populations and draws).
+  # and the section 11 registration (pinned inputs, populations and draws),
+  # plus the F2 negative-control repairs (amount formatting, text safety).
   news-impact-contracts:
     if: ${{ false }}
     gate: code
@@ -44746,6 +44803,8 @@ jobs:
         run: python -m pytest tests/test_news_impact_transfer.py tests/test_news_impact_observation.py tests/test_news_impact_cascade.py tests/test_news_impact_mechanisms.py tests/test_news_impact_eval_receipt.py tests/test_news_impact_eval_grade.py tests/test_news_impact_thesis.py tests/test_news_impact_prophet_adapter.py tests/test_news_impact_agreement.py tests/test_news_impact_producer.py tests/test_news_impact_producer_facts.py tests/test_news_impact_section11.py -q
       - name: news impact w2 benchmark (tape draw, edgar body)
         run: python -m pytest tests/test_news_impact_tape_draw.py tests/test_news_impact_edgar_body.py -q
+      - name: news impact F2 negative-control repairs (amount formatting, text safety)
+        run: python -m pytest tests/test_news_impact_f2_amount_format.py tests/test_news_impact_f2_text_safety.py -q
 
   site20-s4-chart-brief-js:
     if: ${{ false }}
