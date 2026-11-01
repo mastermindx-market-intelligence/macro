@@ -213,9 +213,27 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
   function E(s) { return escFn(String(s == null ? '' : s).slice(0, 2048)); }
   function L2(en, zh) { return '<span class="l-en">' + en + '</span><span class="l-zh">' + (zh == null ? en : zh) + '</span>'; }
   var ID_RE = /^rotobs_[0-9a-f]{40}$/, SYM_RE = /^[A-Z0-9][A-Z0-9.^=-]{0,19}$/, DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  // lib _req_str: blank means Python str.strip() leaves nothing, so match str.isspace() exactly;
+  // JS trim() differs (it strips U+FEFF, keeps U+001C-U+001F and U+0085)
+  var PY_BLANK_RE = /^[\t\n\x0b\x0c\r\x1c-\x1f \x85\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]*$/;
+  // lib len() counts code points, not UTF-16 units
+  function cpLen(s) { return s.replace(/[\ud800-\udbff][\udc00-\udfff]/g, '_').length; }
+  // a real calendar day, as lib date.fromisoformat requires: 2026-02-30 and 2026-13-01 fail
+  function calOk(s) {
+    var y = +s.slice(0, 4), mo = +s.slice(5, 7), d = +s.slice(8, 10);
+    var leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+    var md = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    return y >= 1 && mo >= 1 && mo <= 12 && d >= 1 && d <= md[mo - 1];
+  }
   var ME = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var MZ = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-  function utcIso(s) { return typeof s === 'string' && s.length >= 20 && (s.slice(-6) === '+00:00' || s.slice(-1) === 'Z'); }
+  // lib _aware_utc: accept only the producer's canonical UTC subset, isoformat() with an optional
+  // six-digit fraction then +00:00 or Z, on a real calendar day and clock time, so a stamp the lib rejects never renders
+  var UTC_RE = /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{6})?(?:Z|\+00:00)$/;
+  function utcIso(s) {
+    var m = typeof s === 'string' ? UTC_RE.exec(s) : null;
+    return !!m && calOk(m[1]) && +m[2] <= 23 && +m[3] <= 59 && +m[4] <= 59;
+  }
   function numOk(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) < 1e12; }
   function ts(s) {
     if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return NaN;
@@ -275,8 +293,8 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
         && typeof n.num === 'string' && SYM_RE.test(n.num)
         && typeof n.den === 'string' && SYM_RE.test(n.den)
         && n.num !== n.den
-        && typeof n.pair_id === 'string' && n.pair_id.length >= 1 && n.pair_id.length <= 128
-        && typeof n.event_as_of === 'string' && DATE_RE.test(n.event_as_of)
+        && typeof n.pair_id === 'string' && !PY_BLANK_RE.test(n.pair_id) && cpLen(n.pair_id) <= 128
+        && typeof n.event_as_of === 'string' && DATE_RE.test(n.event_as_of) && calOk(n.event_as_of)
         && utcIso(n.observed_at) && utcIso(n.not_after)
         && String(n.not_after).slice(0, 19) > String(n.observed_at).slice(0, 19)) {
       // lib: source_as_of and values must be explicit keys, including nullable withdrawals
@@ -286,7 +304,8 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
         valid = false;
       } else if (n.kind === 'data_withdrawal') {
         valid = n.values == null && (n.source_as_of == null
-          || (typeof n.source_as_of === 'string' && n.source_as_of <= n.event_as_of));
+          || (typeof n.source_as_of === 'string' && DATE_RE.test(n.source_as_of) && calOk(n.source_as_of)
+              && n.source_as_of <= n.event_as_of));
       } else {
         v = valsOk(n.values);
         valid = n.source_as_of === n.event_as_of && v !== null;

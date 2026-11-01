@@ -153,7 +153,7 @@
     {% else %}
       {% set _ew.num = _nm %}{% set _ew.den = _dn %}
       {% set _pid = _n.get('pair_id') %}
-      {% if _pid is string and _pid|length >= 1 and _pid|length <= 128 %}{% set _ew.pair = _pid %}
+      {% if _pid is string and _pid|length >= 1 and _pid|length <= 128 and _pid|trim|length >= 1 %}{% set _ew.pair = _pid %}
       {% else %}{% set _ew.fail = true %}{% endif %}
     {% endif %}
   {% endif %}
@@ -164,6 +164,13 @@
     {% if _evd is string and _evd|length == 10 and _evd[4:5] == '-' and _evd[7:8] == '-' %}
       {% set _dns.ok = true %}
       {% for _ch in (_evd[0:4] ~ _evd[5:7] ~ _evd[8:10]) %}{% if _ch not in _EW_DIGITS %}{% set _dns.ok = false %}{% endif %}{% endfor %}
+      {% if _dns.ok %}
+        {# a real calendar day, as lib date.fromisoformat requires: 2026-02-30 and 2026-13-01 fail #}
+        {% set _cy = _evd[0:4]|int %}{% set _cm = _evd[5:7]|int %}{% set _cd = _evd[8:10]|int %}
+        {% set _leap = _cy % 4 == 0 and (_cy % 100 != 0 or _cy % 400 == 0) %}
+        {% set _mdays = [31, 29 if _leap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] %}
+        {% if _cy < 1 or _cm < 1 or _cm > 12 or _cd < 1 or _cd > _mdays[_cm - 1] %}{% set _dns.ok = false %}{% endif %}
+      {% endif %}
     {% endif %}
     {% if not _dns.ok %}{% set _ew.fail = true %}
     {% else %}
@@ -171,9 +178,28 @@
       {% set _ew.event_en = _EW_MONTHS_EN[_evd[5:7]|int - 1] ~ ' ' ~ (_evd[8:10]|int) %}
       {% set _ew.event_zh = _evd[5:7]|int ~ '月' ~ (_evd[8:10]|int) ~ '日' %}
       {% set _oa = _n.get('observed_at') %}{% set _na = _n.get('not_after') %}
-      {% if _oa is string and _oa|length >= 20 and (_oa.endswith('+00:00') or _oa.endswith('Z'))
-            and _na is string and _na|length >= 20 and (_na.endswith('+00:00') or _na.endswith('Z'))
-            and _na[0:19] > _oa[0:19] %}
+      {# lib _aware_utc: accept only the producer's canonical UTC subset, YYYY-MM-DDTHH:MM:SS with an optional
+         six-digit fraction then +00:00 or Z, on a real calendar day and clock time, so a stamp the lib rejects never renders #}
+      {% set _tns = namespace(ok=true) %}
+      {% for _t in [_oa, _na] %}
+        {% if _t is not string %}{% set _tns.ok = false %}
+        {% else %}
+          {% set _core = _t[:-1] if _t.endswith('Z') else (_t[:-6] if _t.endswith('+00:00') else '') %}
+          {% if _core|length != 19 and not (_core|length == 26 and _core[19:20] == '.') %}{% set _tns.ok = false %}
+          {% elif _core[4:5] != '-' or _core[7:8] != '-' or _core[10:11] != 'T' or _core[13:14] != ':' or _core[16:17] != ':' %}{% set _tns.ok = false %}
+          {% else %}
+            {% for _ch in (_core[0:4] ~ _core[5:7] ~ _core[8:10] ~ _core[11:13] ~ _core[14:16] ~ _core[17:19] ~ _core[20:]) %}{% if _ch not in _EW_DIGITS %}{% set _tns.ok = false %}{% endif %}{% endfor %}
+            {% if _tns.ok %}
+              {% set _ty = _core[0:4]|int %}{% set _tm = _core[5:7]|int %}{% set _td = _core[8:10]|int %}
+              {% set _tleap = _ty % 4 == 0 and (_ty % 100 != 0 or _ty % 400 == 0) %}
+              {% set _tmd = [31, 29 if _tleap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] %}
+              {% if _ty < 1 or _tm < 1 or _tm > 12 or _td < 1 or _td > _tmd[_tm - 1]
+                    or _core[11:13]|int > 23 or _core[14:16]|int > 59 or _core[17:19]|int > 59 %}{% set _tns.ok = false %}{% endif %}
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {% if _tns.ok and _na[0:19] > _oa[0:19] %}
         {% set _ew.obs_at = _oa %}{% set _ew.not_after = _na %}
       {% else %}{% set _ew.fail = true %}{% endif %}
     {% endif %}
@@ -185,7 +211,20 @@
     {% if 'source_as_of' not in _n or 'values' not in _n %}{% set _ew.fail = true %}
     {% elif _ew.kind == 'data_withdrawal' %}
       {% if _vals is not none %}{% set _ew.fail = true %}
-      {% elif _sa is not none and (not _sa is string or _sa > _ew.event) %}{% set _ew.fail = true %}
+      {% elif _sa is not none %}
+        {# lib _opt_iso_date: a withdrawal's source_as_of is a strict, real calendar date, never after the event #}
+        {% set _sns = namespace(ok=false) %}
+        {% if _sa is string and _sa|length == 10 and _sa[4:5] == '-' and _sa[7:8] == '-' %}
+          {% set _sns.ok = true %}
+          {% for _ch in (_sa[0:4] ~ _sa[5:7] ~ _sa[8:10]) %}{% if _ch not in _EW_DIGITS %}{% set _sns.ok = false %}{% endif %}{% endfor %}
+          {% if _sns.ok %}
+            {% set _sy = _sa[0:4]|int %}{% set _sm = _sa[5:7]|int %}{% set _sd = _sa[8:10]|int %}
+            {% set _sleap = _sy % 4 == 0 and (_sy % 100 != 0 or _sy % 400 == 0) %}
+            {% set _smd = [31, 29 if _sleap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] %}
+            {% if _sy < 1 or _sm < 1 or _sm > 12 or _sd < 1 or _sd > _smd[_sm - 1] %}{% set _sns.ok = false %}{% endif %}
+          {% endif %}
+        {% endif %}
+        {% if not _sns.ok or _sa > _ew.event %}{% set _ew.fail = true %}{% endif %}
       {% endif %}
     {% else %}
       {% if _sa != _ew.event or _vals is not mapping %}{% set _ew.fail = true %}
@@ -470,7 +509,7 @@
             </div>
             {% if _ew.state == 'conflicting' %}<p class="gde-ew-contextline"><span class="l-en">The two-session move conflicts with the 20-session trend.</span><span class="l-zh">两个交易日的变化与20个交易日趋势不一致。</span></p>{% endif %}
             {# ── EW-P4 D4: what argues against this reading. #}
-            <p class="gde-disc-h"><span class="l-en">What argues against this</span><span class="l-zh">反方证据</span></p>
+            <p class="gde-disc-h gde-ew-h"><span class="l-en">What argues against this</span><span class="l-zh">反方证据</span></p>
             <ul class="gde-ew-against">
               {% if _ew.n is number and _ew.n < 0 and _ew.d is number and _ew.d < 0 %}<li><span class="l-en">Relative shelter only: {{ _ew.num|e }} also fell.</span><span class="l-zh">仅为相对抗跌：{{ _ew.num|e }}同样下跌。</span></li>{% endif %}
               {% if _ew.state == 'conflicting' %}<li><span class="l-en">The 20-session trend points the other way.</span><span class="l-zh">20个交易日趋势方向相反。</span></li>{% endif %}
@@ -478,9 +517,9 @@
               <li><span class="l-en">Two sessions are a short window; one session can undo it.</span><span class="l-zh">两个交易日窗口很短，一个交易日即可逆转。</span></li>
             </ul>
             {# ── EW-P4 D5/D6: what would undo it, and where to compare next. #}
-            <p class="gde-disc-h"><span class="l-en">What would undo this</span><span class="l-zh">何种情况会推翻</span></p>
-            <p class="gde-context-line"><span class="l-en">A later session that reverses the relative move, or a correction or withdrawal of this record. Corrections keep the original in history.</span><span class="l-zh">后续交易日出现反向相对变动，或本记录被更正或撤回。更正时保留原记录。</span></p>
-            <p class="gde-context-line"><span class="l-en">Next: </span><span class="l-zh">下一步：</span><a class="gde-ew-next" href="sector_central.html#rc-events-mount"><span class="l-en">Compare horizons in Sector Central</span><span class="l-zh">在行业中心对比周期</span></a></p>
+            <p class="gde-disc-h gde-ew-h"><span class="l-en">What would undo this</span><span class="l-zh">何种情况会推翻</span></p>
+            <p class="gde-context-line gde-ew-undo"><span class="l-en">A later session that reverses the relative move, or a correction or withdrawal of this record. Corrections keep the original in history.</span><span class="l-zh">后续交易日出现反向相对变动，或本记录被更正或撤回。更正时保留原记录。</span></p>
+            <p class="gde-context-line gde-ew-nextline"><span class="l-en">Next: </span><span class="l-zh">下一步：</span><a class="gde-ew-next" href="sector_central.html#rc-events-mount"><span class="l-en">Compare horizons in Sector Central</span><span class="l-zh">在行业中心对比周期</span></a></p>
             {% endif %}
             {# ── EW-P4 §E study: on-demand record detail, native details/summary (keyboard + touch). #}
             <details class="gde-ew-study">

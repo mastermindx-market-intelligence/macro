@@ -21512,6 +21512,27 @@ if (document.readyState === 'loading') {
     });
   }
 
+  function replacePreviewCards(grid, html){
+    if (!grid || !html) return;
+    var box = document.createElement('div');
+    box.innerHTML = html;
+    var incoming = box.querySelectorAll('[data-ticker]');
+    var byTicker = {}, i, el, tk, cards;
+    for (i = 0; i < incoming.length; i++){
+      el = incoming[i];
+      tk = el.getAttribute('data-ticker');
+      if (tk) byTicker[tk] = el;
+    }
+    cards = grid.querySelectorAll('[data-ticker]');
+    for (i = 0; i < cards.length; i++){
+      el = cards[i];
+      tk = el.getAttribute('data-ticker');
+      if (tk && byTicker[tk] && el.parentNode){
+        el.parentNode.replaceChild(byTicker[tk], el);
+      }
+    }
+  }
+
   function hydrate(payload){
     if (!payload || payload.schema !== 'tier_payload.v1' || payload.page !== 'us_stocks'){
       throw new Error('invalid payload');
@@ -21571,6 +21592,7 @@ if (document.readyState === 'loading') {
       freshCand.setAttribute('data-showmore-rows', candGrid.getAttribute('data-showmore-rows') || '3');
       freshCand.innerHTML = candGrid.innerHTML;
       mergeBoardCards(freshCand, payload.cards_html);
+      replacePreviewCards(freshCand, payload.preview_cards_html);
       candGrid.parentNode.insertBefore(freshCand, candGrid);
       candGrid.parentNode.removeChild(candGrid);
       if (candOldBar && candOldBar.parentNode) candOldBar.parentNode.removeChild(candOldBar);

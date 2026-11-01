@@ -98,7 +98,13 @@ from engine.fundamental_forensics.ixbrl_raw_ledger import (
     ConversionReport,
     FilingConversionReceipt,
 )
-from engine.fundamental_forensics.raw_ledger import FactContext, RawFactLedger
+from engine.fundamental_forensics.raw_ledger import (
+    FactContext,
+    FactUnit,
+    RawFactLedger,
+    RawFactOccurrence,
+    make_raw_fact,
+)
 from engine.fundamental_forensics.synthetic_filing_package import (
     filing as synthetic_filing,
 )
@@ -1889,6 +1895,465 @@ def test_pk11_a30_limitation_matches_core_catalogue(
         if "bank" in ((row.get("applicability") or {}).get("excluded_classes") or [])
     ]
     assert line == "pk11.industrial_basis_excluded: " + ",".join(excluded)
+
+
+# 20b. PK11 disclosed regulatory table cells (dev corpus banks_v1) -----------
+#
+# The A.4v2 finalize resolution is proven on synthetic ledgers built entirely
+# in this file: dimensioned ratio/minimum/NPL facts (the shapes the dev bank
+# filings carry) plus a synthetic presentation linkbase member, so the table-
+# cell coordinates come from the fixture's own declared table.
+
+
+_PURE_UNIT = FactUnit("pure", ["xbrli:pure"])
+_RATIO_TABLE_ROLE = "http://www.testbankx.com/role/RegulatoryCapitalTables"
+
+
+def _tablebank_filing_row() -> dict:
+    return synthetic_filing(
+        accession="0000000002-25-000010",
+        document_id="testbank-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTBANK_CIK,
+    )
+
+
+def _ratio_context(context_id: str, instant: str, dimensions: dict) -> FactContext:
+    return FactContext(
+        context_id=context_id,
+        entity_scheme="http://www.sec.gov/CIK",
+        entity_identifier=TESTBANK_CIK,
+        instant=instant,
+        explicit_dimensions=dimensions,
+    )
+
+
+def _ratio_fact(
+    concept: str, context: FactContext, value: str, key: str
+) -> RawFactOccurrence:
+    return make_raw_fact(
+        source=_tablebank_filing_row()["source"],
+        concept_qname=concept,
+        context=context,
+        unit=_PURE_UNIT,
+        raw_token=value,
+        parsed_value=value,
+        dimensions_known=True,
+        decimals="6",
+        source_span=(0, len(value)),
+        source_occurrence_key=key,
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+    )
+
+
+def _table_pre_xml(concept_locals: tuple[str, ...]) -> bytes:
+    locs = (
+        '<link:loc xlink:type="locator" xlink:label="head" '
+        'xlink:href="#us-gaap_RegulatoryCapitalInformationTextBlock"/>'
+    ) + "".join(
+        f'<link:loc xlink:type="locator" xlink:label="c{index}" '
+        f'xlink:href="#us-gaap_{local}"/>'
+        for index, local in enumerate(concept_locals)
+    )
+    arcs = "".join(
+        f'<link:presentationArc xlink:type="arc" '
+        f'xlink:arcrole="http://www.xbrl.org/2003/arcrole/parent-child" '
+        f'xlink:from="head" xlink:to="c{index}" order="{float(index)}"/>'
+        for index in range(len(concept_locals))
+    )
+    return (
+        '<link:linkbase xmlns:link="http://www.xbrl.org/2003/linkbase" '
+        'xmlns:xlink="http://www.w3.org/1999/xlink">'
+        f'<link:presentationLink xlink:type="extended" xlink:role="{_RATIO_TABLE_ROLE}">'
+        f"{locs}{arcs}</link:presentationLink></link:linkbase>"
+    ).encode("utf-8")
+
+
+class _SyntheticTablePackage:
+    """Manifest-plus-members package: the patched converter supplies facts."""
+
+    def __init__(self, manifest: dict, members: dict[str, bytes]) -> None:
+        self.manifest = manifest
+        self.members = members
+
+
+def _tablebank_packages(pre_concepts: tuple[str, ...] | None) -> tuple:
+    members = {}
+    if pre_concepts is not None:
+        members["testbank-20251231_pre.xml"] = _table_pre_xml(pre_concepts)
+    return (
+        _SyntheticTablePackage(dict(_testbank_packages()[0].manifest), members),
+    )
+
+
+_CET1_RATIO = "us-gaap:CommonEquityTierOneCapitalRatio"
+_CET1_MINIMUM = (
+    "us-gaap:BankingRegulationCommonEquityTierOneRiskBasedCapitalRatio"
+    "CapitalAdequacyMinimum"
+)
+_NPL = "us-gaap:FinancingReceivableExcludingAccruedInterestNonaccrual"
+# Presentation loc href fragments carry the FULL concept local name
+# (``#us-gaap_<FullConceptName>``), so the fixture concepts must too.
+_CET1_RATIO_LOCAL = "CommonEquityTierOneCapitalRatio"
+_CET1_MINIMUM_LOCAL = (
+    "BankingRegulationCommonEquityTierOneRiskBasedCapitalRatioCapitalAdequacyMinimum"
+)
+_NPL_LOCAL = "FinancingReceivableExcludingAccruedInterestNonaccrual"
+_PARENT = {"srt:ConsolidatedEntitiesAxis": "srt:ParentCompanyMember"}
+_METHODOLOGY = "us-gaap:RiskWeightedAssetsCalculationMethodologyAxis"
+
+
+def _produce_tablebank(
+    monkeypatch: pytest.MonkeyPatch,
+    events: tuple,
+    pre_concepts: tuple[str, ...] | None,
+    *,
+    sic: str = TESTBANK_SIC,
+) -> dict:
+    _patch_testbank_converter(monkeypatch, events)
+    return produce_pack(
+        "PK11",
+        _pk11_bank_input(packages=_tablebank_packages(pre_concepts), issuer_sic=sic),
+    )
+
+
+def test_pk11_cet1_ratio_table_cell_prefers_consolidated_lower_approach(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The consolidated parent's standardized (0.1126) vs advanced (0.1308)
+    # cells: the lower ratio is the binding constraint. The depositary
+    # subsidiary's standardized cell (0.1452) never resolves the field, and
+    # the prior-year comparative only feeds the column index.
+    events = _testbank_events(drop=("cet1", "rwa")) + (
+        _ratio_fact(
+            _CET1_RATIO,
+            _ratio_context(
+                "c-r-pstd",
+                "2025-12-31",
+                {
+                    **_PARENT,
+                    _METHODOLOGY: "us-gaap:StandardizedApproachMember",
+                },
+            ),
+            "0.1126",
+            "cet1_pstd",
+        ),
+        _ratio_fact(
+            _CET1_RATIO,
+            _ratio_context(
+                "c-r-padv",
+                "2025-12-31",
+                {
+                    **_PARENT,
+                    _METHODOLOGY: "us-gaap:AdvancedApproachMember",
+                },
+            ),
+            "0.1308",
+            "cet1_padv",
+        ),
+        _ratio_fact(
+            _CET1_RATIO,
+            _ratio_context(
+                "c-r-sstd",
+                "2025-12-31",
+                {
+                    "srt:ConsolidatedEntitiesAxis": "srt:SubsidiariesMember",
+                    _METHODOLOGY: "us-gaap:StandardizedApproachMember",
+                },
+            ),
+            "0.1452",
+            "cet1_sstd",
+        ),
+        _ratio_fact(
+            _CET1_RATIO,
+            _ratio_context(
+                "c-r-pstd-prior",
+                "2024-12-31",
+                {
+                    **_PARENT,
+                    _METHODOLOGY: "us-gaap:StandardizedApproachMember",
+                },
+            ),
+            "0.109",
+            "cet1_pstd_prior",
+        ),
+    )
+    result = _produce_tablebank(
+        monkeypatch, events, ("ProvisionForLoanLeaseAndOtherLosses", "CommonEquityTierOneCapitalRatio")
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "cet1_ratio_disclosed")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "0.1126"
+    assert row["evidence_kind"] == "table_cell"
+    assert row["required_evidence_kind"] == "table_cell"
+    assert row["concept"] == _CET1_RATIO
+    assert row["taxonomy"] == "us-gaap"
+    assert row["source_occurrence_ids"]
+    assert {dim["member"] for dim in row["dimensions"]} == {
+        "srt:ParentCompanyMember",
+        "us-gaap:StandardizedApproachMember",
+    }
+    assert row["period"] == {"kind": "instant", "end": "2025-12-31"}
+    assert row["table_cell"] == {
+        "table_id": _RATIO_TABLE_ROLE,
+        "row": 1,
+        "column": 0,
+    }
+    assert row["mapping_rule_id"] == "PK11.cet1_ratio_disclosed.table/v1"
+    assert row["mapping_rule_digest"]
+    assert (
+        "pk11.cet1_ratio_disclosed: standardized and advanced approaches both "
+        "disclosed; lower ratio taken" in result["limitations"]
+    )
+    # The still-reserved liquidity fields keep the reserved limitation.
+    assert "pk11.table_cell_reserved" in result["limitations"]
+    assert result["coverage"] == {
+        "valued_fields": 8,
+        "missing_fields": 3,
+        "unsupported_fields": 5,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "present",
+    }
+
+
+def test_pk11_regulatory_minimum_uses_latest_disclosed_instant_on_or_before_por(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The consolidated holding-company minimum is disclosed at the prior
+    # year-end column; only the depositary-subsidiary minimum sits at por.
+    # The consolidated cell wins and the row reports the instant used.
+    events = _testbank_events() + (
+        _ratio_fact(
+            _CET1_MINIMUM,
+            _ratio_context(
+                "c-m-bhc",
+                "2024-12-31",
+                {
+                    "dei:LegalEntityAxis": "srt:BankHoldingCompaniesMember",
+                    _METHODOLOGY: "us-gaap:StandardizedApproachMember",
+                },
+            ),
+            "0.115",
+            "min_bhc",
+        ),
+        _ratio_fact(
+            _CET1_MINIMUM,
+            _ratio_context(
+                "c-m-sub",
+                "2025-12-31",
+                {
+                    "dei:LegalEntityAxis": "srt:SubsidiariesInsuredDepositoryMember",
+                    _METHODOLOGY: "us-gaap:StandardizedApproachMember",
+                },
+            ),
+            "0.07",
+            "min_sub",
+        ),
+    )
+    result = _produce_tablebank(monkeypatch, events, (_CET1_MINIMUM_LOCAL,))
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "regulatory_minimum_disclosed")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "0.115"
+    assert row["period"] == {"kind": "instant", "end": "2024-12-31"}
+    assert row["table_cell"]["column"] == 1  # prior-year column, latest first
+    # One operand alone keeps the comparison check typed.
+    minimum_check = _check(result, "cet1_vs_minimum")
+    assert minimum_check["status"] == "not_evaluable"
+    assert minimum_check["reason"] == "missing_dependency"
+
+
+def test_pk11_npl_disclosed_resolves_only_on_nonperforming_total(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The disclosed nonperforming total carries the nonperforming status
+    # member; the portfolio-segment cells are components, never the total.
+    events = _testbank_events(drop=("cet1", "rwa")) + (
+        usd_fact(
+            _tablebank_filing_row(),
+            _NPL,
+            _ratio_context(
+                "c-npl-total",
+                "2025-12-31",
+                {
+                    "us-gaap:FinancialInstrumentPerformanceStatusAxis": (
+                        "us-gaap:NonperformingFinancingReceivableMember"
+                    )
+                },
+            ),
+            "2218000000",
+            source_span=(0, 10),
+            source_occurrence_key="npl_total",
+        ),
+        usd_fact(
+            _tablebank_filing_row(),
+            _NPL,
+            _ratio_context(
+                "c-npl-seg",
+                "2025-12-31",
+                {
+                    "us-gaap:FinancingReceivablePortfolioSegmentAxis": (
+                        "us-gaap:CommercialPortfolioSegmentMember"
+                    )
+                },
+            ),
+            "4524000000",
+            source_span=(0, 10),
+            source_occurrence_key="npl_segment",
+        ),
+    )
+    result = _produce_tablebank(
+        monkeypatch, events, ("NonperformingAssets", _NPL_LOCAL)
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "npl_or_npa_disclosed")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "2218000000"
+    assert row["unit"] == "USD"
+    assert row["concept"] == _NPL
+    assert {dim["member"] for dim in row["dimensions"]} == {
+        "us-gaap:NonperformingFinancingReceivableMember"
+    }
+
+
+def test_pk11_unnameable_conflict_keeps_field_reserved(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Two different figures under members that are not the two regulatory
+    # approaches: never a guess. The sibling NPL field in the same filing
+    # resolves, proving the reserved row is a decision, not a crash.
+    events = _testbank_events(drop=("cet1", "rwa")) + (
+        _ratio_fact(
+            _CET1_RATIO,
+            _ratio_context(
+                "c-r-trans",
+                "2025-12-31",
+                {
+                    **_PARENT,
+                    "pncx:CapitalStandardRequirementsAxis": "pncx:TransitionalMember",
+                },
+            ),
+            "0.115",
+            "cet1_transitional",
+        ),
+        _ratio_fact(
+            _CET1_RATIO,
+            _ratio_context(
+                "c-r-phased",
+                "2025-12-31",
+                {
+                    **_PARENT,
+                    "pncx:CapitalStandardRequirementsAxis": "pncx:FullyPhasedMember",
+                },
+            ),
+            "0.12",
+            "cet1_fully_phased",
+        ),
+        usd_fact(
+            _tablebank_filing_row(),
+            _NPL,
+            _ratio_context(
+                "c-npl-total",
+                "2025-12-31",
+                {
+                    "us-gaap:FinancialInstrumentPerformanceStatusAxis": (
+                        "us-gaap:NonperformingFinancingReceivableMember"
+                    )
+                },
+            ),
+            "2218000000",
+            source_span=(0, 10),
+            source_occurrence_key="npl_total",
+        ),
+    )
+    result = _produce_tablebank(monkeypatch, events, (_NPL_LOCAL,))
+    assert contract.validate_pack_result(result) == []
+    ratio = _row(result, "cet1_ratio_disclosed")
+    assert ratio["quality_state"] == "unsupported"
+    assert ratio["reason"] == "missing_dependency"
+    assert ratio["value"] is None
+    assert _row(result, "npl_or_npa_disclosed")["value"] == "2218000000"
+
+
+def test_pk11_table_cell_requires_presentation_evidence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Facts exist for the ratio, but the filing's presentation linkbase does
+    # not present the concept: there is no honest table cell, so the field
+    # stays reserved while the presented NPL concept resolves.
+    events = _testbank_events(drop=("cet1", "rwa")) + (
+        _ratio_fact(
+            _CET1_RATIO,
+            _ratio_context("c-r-und", "2025-12-31", {}),
+            "0.1126",
+            "cet1_undimensioned",
+        ),
+        usd_fact(
+            _tablebank_filing_row(),
+            _NPL,
+            _ratio_context(
+                "c-npl-total",
+                "2025-12-31",
+                {
+                    "us-gaap:FinancialInstrumentPerformanceStatusAxis": (
+                        "us-gaap:NonperformingFinancingReceivableMember"
+                    )
+                },
+            ),
+            "2218000000",
+            source_span=(0, 10),
+            source_occurrence_key="npl_total",
+        ),
+    )
+    result = _produce_tablebank(monkeypatch, events, (_NPL_LOCAL,))
+    assert contract.validate_pack_result(result) == []
+    ratio = _row(result, "cet1_ratio_disclosed")
+    assert ratio["quality_state"] == "unsupported"
+    assert ratio["table_cell"] is None
+    assert _row(result, "npl_or_npa_disclosed")["value"] == "2218000000"
+
+
+def test_pk11_non_bank_gate_holds_with_disclosed_facts_present(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The class gate is unchanged: an industrial SIC keeps every field
+    # not_applicable even when the disclosed regulatory facts exist.
+    events = _testbank_events(drop=("cet1", "rwa")) + (
+        _ratio_fact(
+            _CET1_RATIO,
+            _ratio_context("c-r-und", "2025-12-31", {}),
+            "0.1126",
+            "cet1_undimensioned",
+        ),
+    )
+    result = _produce_tablebank(
+        monkeypatch, events, ("CommonEquityTierOneCapitalRatio",), sic="3571"
+    )
+    assert result["applicability"] == {
+        "state": "not_applicable",
+        "reason": "issuer_class_not_bank",
+        "rule_id": "pack.pk11.applicability/v1",
+        "sic": "3571",
+        "sic_source": "dei",
+    }
+    for row in result["fields"]:
+        assert row["quality_state"] == "not_applicable"
+        assert row["value"] is None
+        assert row["table_cell"] is None
+    assert contract.validate_pack_result(result) == []
+    # Control: the SAME facts under the bank SIC resolve the disclosed cell —
+    # the industrial class gate, not absent evidence, is what typed the rows.
+    control = _produce_tablebank(
+        monkeypatch, events, ("CommonEquityTierOneCapitalRatio",)
+    )
+    assert control["applicability"]["state"] == "applicable"
+    assert _row(control, "cet1_ratio_disclosed")["quality_state"] == "valued"
+    assert _row(control, "cet1_ratio_disclosed")["value"] == "0.1126"
 
 
 def test_base_pack_envelopes_identical_after_pk11() -> None:
@@ -9649,3 +10114,396 @@ def test_pk08_cli_writes_valid_envelope(tmp_path: Path) -> None:
     assert contract.validate_pack_result(envelope) == []
     assert envelope["applicability"]["state"] == "applicable"
     assert envelope["coverage"]["valued_fields"] == 5
+
+
+# 62. PK03 dev-corpus widened re-resolution (synthetic; lane fif-pk03dev-r2) -----
+#
+# DEC-FIF-PACK-GENERALIZATION-DEV-CORPUS: the finalize hook widens exactly
+# three PK03 fields (segment_profit_or_loss -> us-gaap:ProfitLoss on the
+# segment axis; geographic_revenue / product_service_revenue ->
+# us-gaap:Revenues on their mirror axes), each optionally stamped with
+# ConsolidationItemsAxis = OperatingSegmentsMember. These tests build the
+# ledger, the filing package and the definition linkbase synthetically inside
+# the test (no filing bytes) and pin: each new concept alias, the optional
+# second-axis member admission, the replace vs append row order, the
+# byte-identical no-evidence path, and the near-miss refusals.
+
+_PK03_SYN_CIK = "0000000012"
+_PK03_SYN_ENTITY = {
+    "entity_id": "ISS:US-SYNTHETIC-SEGMENTS",
+    "cik": _PK03_SYN_CIK,
+    "ticker": "SYNSEG",
+    "name": "SYNTHETIC SEGMENTS CORP",
+    "identity_basis": "synthetic_in_test_ledger_v1",
+    "source_entity_id": _PK03_SYN_CIK,
+}
+_PK03_SYN_QUERY = {**QUERY, "requested_metrics": ["segments"]}
+
+# Standard-taxonomy members only; an extension member joins per-test as the
+# near-miss fact that must never resolve.
+_PK03_SYN_DEF_XML = b"""<?xml version="1.0" encoding="UTF-8"?>
+<link:linkbase xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <link:definitionLink xlink:role="http://example.com/role/segments" xlink:type="extended">
+    <link:loc xlink:type="locator" xlink:label="axis" xlink:href="syn-2026.xsd#us-gaap_StatementBusinessSegmentsAxis"/>
+    <link:loc xlink:type="locator" xlink:label="dom" xlink:href="syn-2026.xsd#us-gaap_SegmentReportingDomain"/>
+    <link:loc xlink:type="locator" xlink:label="m1" xlink:href="syn-2026.xsd#us-gaap_AlphaSegmentMember"/>
+    <link:loc xlink:type="locator" xlink:label="m2" xlink:href="syn-2026.xsd#us-gaap_BetaSegmentMember"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/dimension-domain" xlink:from="axis" xlink:to="dom" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="dom" xlink:to="m1" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="dom" xlink:to="m2" order="2"/>
+  </link:definitionLink>
+  <link:definitionLink xlink:role="http://example.com/role/geography" xlink:type="extended">
+    <link:loc xlink:type="locator" xlink:label="axis" xlink:href="syn-2026.xsd#srt_StatementGeographicalAxis"/>
+    <link:loc xlink:type="locator" xlink:label="dom" xlink:href="syn-2026.xsd#srt_GeographicDomain"/>
+    <link:loc xlink:type="locator" xlink:label="m1" xlink:href="syn-2026.xsd#srt_DomesticMember"/>
+    <link:loc xlink:type="locator" xlink:label="m2" xlink:href="syn-2026.xsd#srt_InternationalMember"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/dimension-domain" xlink:from="axis" xlink:to="dom" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="dom" xlink:to="m1" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="dom" xlink:to="m2" order="2"/>
+  </link:definitionLink>
+  <link:definitionLink xlink:role="http://example.com/role/products" xlink:type="extended">
+    <link:loc xlink:type="locator" xlink:label="axis" xlink:href="syn-2026.xsd#srt_ProductOrServiceAxis"/>
+    <link:loc xlink:type="locator" xlink:label="dom" xlink:href="syn-2026.xsd#srt_ProductOrServiceDomain"/>
+    <link:loc xlink:type="locator" xlink:label="m1" xlink:href="syn-2026.xsd#us-gaap_ProductMember"/>
+    <link:loc xlink:type="locator" xlink:label="m2" xlink:href="syn-2026.xsd#us-gaap_ServiceMember"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/dimension-domain" xlink:from="axis" xlink:to="dom" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="dom" xlink:to="m1" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="dom" xlink:to="m2" order="2"/>
+  </link:definitionLink>
+</link:linkbase>
+"""
+
+_PK03_SYN_SEG_AXIS = "us-gaap:StatementBusinessSegmentsAxis"
+_PK03_SYN_CONS_AXIS = "srt:ConsolidationItemsAxis"
+_PK03_SYN_GEO_AXIS = "srt:StatementGeographicalAxis"
+_PK03_SYN_PROD_AXIS = "srt:ProductOrServiceAxis"
+_PK03_SYN_OP_SEG = "us-gaap:OperatingSegmentsMember"
+
+
+class _Pk03SynPackage:
+    """Manifest-only package; the patched converter supplies the facts."""
+
+    def __init__(self, manifest: dict, members: dict[str, bytes]) -> None:
+        self.manifest = manifest
+        self.members = members
+
+
+def _pk03_syn_fact(
+    concept: str,
+    dimensions: tuple[tuple[str, str], ...],
+    value: str,
+    *,
+    start: str = "2025-01-01",
+    end: str = "2025-12-31",
+) -> RawFactOccurrence:
+    context = FactContext(
+        context_id=f"ctx-{len(concept)}-{abs(hash((concept, dimensions, value))) % 10**8}",
+        entity_scheme="urn:test",
+        entity_identifier="synthetic-entity",
+        start=start,
+        end=end,
+        explicit_dimensions=dimensions,
+    )
+    return RawFactOccurrence(
+        source=SourceIdentity(
+            source="synthetic",
+            entity_id="synthetic-entity",
+            accession="0000000012-26-000001",
+            document_id="syn-20251231.htm",
+            body_sha256="0" * 64,
+        ),
+        concept_qname=concept,
+        context=context,
+        clocks=TemporalClocks(recorded_at="2026-02-15T16:00:00Z"),
+        unit=FactUnit(unit_id=f"u-{abs(hash(concept)) % 10**6}", measures=("iso4217:USD",)),
+        parsed_value=Decimal(value),
+        decimals="-6",
+    )
+
+
+def _produce_pk03_synthetic(
+    monkeypatch: pytest.MonkeyPatch,
+    facts: tuple[RawFactOccurrence, ...],
+    *,
+    def_xml: bytes | None = _PK03_SYN_DEF_XML,
+    form: str = "10-K",
+    por: str = "2025-12-31",
+) -> dict:
+    manifest = {
+        "cik": _PK03_SYN_CIK,  # R-F4: package issuer == packet entity
+        "form": form,
+        "period_of_report": por,
+        "accession": "0000000012-26-000001",
+        "primary_document": "syn-20251231.htm",
+        "members": (
+            [{"name": "syn-2026_def.xml", "state": "stored"}] if def_xml else []
+        ),
+    }
+    package = _Pk03SynPackage(
+        manifest, {"syn-2026_def.xml": def_xml} if def_xml else {}
+    )
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000012-26-000001",
+            parser_numeric_fact_count=len(facts),
+            ledger_occurrence_count=len(facts),
+            represented_count=len(facts),
+            excluded={},
+            source_namespace_families=("us-gaap", "srt"),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap", "srt"),
+        )
+        return RawFactLedger(facts), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    return produce_pack(
+        "PK03",
+        PackInput(
+            packages=(package,),
+            entity=_PK03_SYN_ENTITY,
+            query=_PK03_SYN_QUERY,
+            issuer_sic="3826",
+            sic_source="sec_submissions",
+        ),
+    )
+
+
+def _pk03_field_rows(result: dict, field_id: str) -> list[dict]:
+    return [row for row in result["fields"] if row["field_id"] == field_id]
+
+
+def _pk03_row_values(rows: list[dict]) -> list[str]:
+    return [str(row.get("value")) for row in rows]
+
+
+def test_pk03_widened_profitloss_segment_measure_resolves(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An ASU 2023-07 net-earnings CODM measure resolves via ProfitLoss."""
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            _pk03_syn_fact(
+                "us-gaap:ProfitLoss",
+                (
+                    (_PK03_SYN_SEG_AXIS, "us-gaap:AlphaSegmentMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "1500",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:ProfitLoss",
+                (
+                    (_PK03_SYN_SEG_AXIS, "us-gaap:BetaSegmentMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "2500",
+            ),
+        ),
+    )
+    assert result["applicability"]["state"] == "applicable"
+    rows = _pk03_field_rows(result, "segment_profit_or_loss")
+    # The single absence row is REPLACED by the widened member rows.
+    assert [row["quality_state"] for row in rows] == ["valued", "valued"]
+    assert _pk03_row_values(rows) == ["1500", "2500"]
+    assert {row["concept"] for row in rows} == {"us-gaap:ProfitLoss"}
+    assert {row["taxonomy"] for row in rows} == {"us-gaap"}
+    assert {row["mapping_rule_id"] for row in rows} == {
+        "PK03.segment_profit_or_loss.dimensioned_fact/v1"
+    }
+    for row, member in zip(rows, ("AlphaSegmentMember", "BetaSegmentMember")):
+        pairs = {
+            (d["axis"], d["member"]) for d in row.get("dimensions") or ()
+        }
+        assert (_PK03_SYN_SEG_AXIS, f"us-gaap:{member}") in pairs
+        # The optional subtotal-basis second axis is admitted and carried.
+        assert (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG) in pairs
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_widened_revenues_geographic_mirror_resolves(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An other-than-606 geographic table resolves via us-gaap:Revenues."""
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_GEO_AXIS, "srt:DomesticMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "4000",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_GEO_AXIS, "srt:InternationalMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "5000",
+            ),
+        ),
+    )
+    rows = _pk03_field_rows(result, "geographic_revenue")
+    assert [row["quality_state"] for row in rows] == ["valued", "valued"]
+    assert _pk03_row_values(rows) == ["4000", "5000"]
+    assert {row["concept"] for row in rows} == {"us-gaap:Revenues"}
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_widened_revenues_product_mirror_resolves(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An other-than-606 product/service table resolves via us-gaap:Revenues."""
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_PROD_AXIS, "us-gaap:ProductMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "8000",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_PROD_AXIS, "us-gaap:ServiceMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "2000",
+            ),
+        ),
+    )
+    rows = _pk03_field_rows(result, "product_service_revenue")
+    assert [row["quality_state"] for row in rows] == ["valued", "valued"]
+    # Canonical member order: Product before Service.
+    assert _pk03_row_values(rows) == ["8000", "2000"]
+    assert {row["concept"] for row in rows} == {"us-gaap:Revenues"}
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_widened_rows_append_after_valued_base_block(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A field with a valued base row keeps it and appends the widened rows.
+
+    The base mapping admits only single-axis facts, so the 606-basis service
+    row resolves the base block while the two-axis Revenues fact is admitted
+    by the widened pass alone (the optional second-axis rule).
+    """
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            _pk03_syn_fact(
+                "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                ((_PK03_SYN_PROD_AXIS, "us-gaap:ServiceMember"),),
+                "2000",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_PROD_AXIS, "us-gaap:ProductMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "8000",
+            ),
+        ),
+    )
+    rows = _pk03_field_rows(result, "product_service_revenue")
+    assert [row["quality_state"] for row in rows] == ["valued", "valued"]
+    # Concept-major order: base block first, widened concept appended after.
+    assert [row["concept"] for row in rows] == [
+        "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+        "us-gaap:Revenues",
+    ]
+    assert _pk03_row_values(rows) == ["2000", "8000"]
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_widened_absent_without_evidence_is_typed_absence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """No widened-concept evidence: every repaired field stays typed-absent.
+
+    The filing carries only a segment-axis revenue total (a core:revenue
+    alias): the three repaired fields have no candidate fact of their own
+    concepts on their own axes, so each keeps its single ``missing`` row.
+    """
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_SEG_AXIS, "us-gaap:AlphaSegmentMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "9000",
+            ),
+        ),
+    )
+    for field_id, first_concept in (
+        ("segment_profit_or_loss", "us-gaap:OperatingIncomeLoss"),
+        ("geographic_revenue", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"),
+        ("product_service_revenue", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"),
+    ):
+        rows = _pk03_field_rows(result, field_id)
+        assert [row["quality_state"] for row in rows] == ["missing"]
+        assert rows[0]["value"] is None
+        assert rows[0]["reason"] == f"missing_standard_fact:{first_concept}"
+    assert "outside every definition group" not in " ".join(result["limitations"])
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_widened_near_misses_never_resolve(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Extension members, foreign second-axis members and non-primary axes
+    never resolve a widened field."""
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            # Issuer-extension segment member outside every definition group.
+            _pk03_syn_fact(
+                "us-gaap:ProfitLoss",
+                (
+                    (_PK03_SYN_SEG_AXIS, "ext:WidgetDivisionMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "700",
+            ),
+            # A second-axis member the rule does not admit.
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_GEO_AXIS, "srt:DomesticMember"),
+                    (_PK03_SYN_CONS_AXIS, "us-gaap:CorporateNonSegmentMember"),
+                ),
+                "999",
+            ),
+            # The right concept on a non-segment axis only.
+            _pk03_syn_fact(
+                "us-gaap:ProfitLoss",
+                ((_PK03_SYN_GEO_AXIS, "srt:InternationalMember"),),
+                "600",
+            ),
+        ),
+    )
+    profit_rows = _pk03_field_rows(result, "segment_profit_or_loss")
+    assert [row["quality_state"] for row in profit_rows] == ["missing"]
+    assert profit_rows[0]["value"] is None
+    geo_rows = _pk03_field_rows(result, "geographic_revenue")
+    assert [row["quality_state"] for row in geo_rows] == ["missing"]
+    assert geo_rows[0]["value"] is None
+    # The no-evidence path stays byte-identical: the widened pass's
+    # outside-group diagnostic is dropped with the rest of its rows.
+    assert "outside every definition group" not in " ".join(result["limitations"])
+    assert contract.validate_pack_result(result) == []
