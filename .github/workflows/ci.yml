@@ -3766,6 +3766,11 @@ on:
       # Hermetic receipt compatibility also runs in the prophet-lab code gate.
       - "tests/test_prophet_today_provenance.py"
       - "tests/test_prophet_miss_audit.py"
+      # Entry Timing W2 (2026-10-31): conservative-of-two block estimator + suite run in prophet-lab.
+      - "research/prophet_v4/entry_timing_w2_estimator.py"
+      - "research/prophet_v4/entry_timing_w2_freeze.py"
+      - "tests/test_entry_timing_w2_estimator.py"
+      - "tests/test_entry_timing_w2_freeze.py"
       - "scripts/grade_us_prophet_candidates.py"
       # Archetype coverage pipeline (2026-08): the candidates-stamp heal script and
       # the suite pinning fac-less classification + store freshness + fill-null-only
