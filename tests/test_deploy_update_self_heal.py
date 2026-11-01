@@ -1046,6 +1046,10 @@ MUST_RESTART = [
     # The catalyst public reader imports the source adapter and its store.
     "engine/marketing/catalyst_source_adapter.py",
     "engine/marketing/catalyst_source_store.py",
+    # The reader loads the pilot universe through the writer's load_universe and
+    # caches the rows for the process lifetime.
+    "engine/marketing/catalyst_source_cycle.py",
+    "config/catalyst_pilot_universe.json",
     # app/tape.py REST quotes, and lib modules on the chat path
     "engine/live_quotes.py",
     "lib/config.py",
@@ -1061,8 +1065,7 @@ MUST_NOT_RESTART = [
     'engine/price_pressure/artifact.py',
     'engine/entry_radar/live_eval.py',
     'engine/entry_radar/earnings_contexts.py',
-    # The catalyst SEC writer runs as its own oneshot timer, never in macro-api.
-    'engine/marketing/catalyst_source_cycle.py',
+    # The catalyst SEC writer CLI runs as its own oneshot timer, never in macro-api.
     'scripts/run_catalyst_source_cycle.py',
     'engine/entry_radar/replay/identity_observation_snapshot.py.bak',
     'scripts/entry_radar_live.py',
