@@ -138,6 +138,8 @@ def _seed_source(state: dict) -> str:
 def _prepare_site() -> None:
     """Stage a copy of site/ in /tmp/mr-capture/site and inject the Look-up row
     into macro.html between the More-row container and its parent close."""
+    sys.path.insert(0, str(REPO))  # this script runs without PYTHONPATH
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
     TEMP_SITE_DIR.parent.mkdir(parents=True, exist_ok=True)
     if TEMP_SITE_DIR.exists():
         # Always rebuild fresh — the source site/ may have changed since the
@@ -177,7 +179,7 @@ def _prepare_site() -> None:
     # markup is indented at 6 spaces (matching the More-row's 6-space indent).
     insertion_point = close_more + len("</div>")
     new_text = text[:insertion_point] + "\n" + LOOPUP_ROW_HTML + text[insertion_point:]
-    macro.write_text(new_text, encoding="utf-8")
+    write_unshimmed_html(macro, new_text, encoding="utf-8")
 
 
 class _QuietHandler(http.server.SimpleHTTPRequestHandler):
