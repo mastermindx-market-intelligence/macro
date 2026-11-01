@@ -524,17 +524,23 @@ def nc_m06a() -> None:
 
 
 def nc_m06b() -> None:
-    """Thousands-denominated USD value rendered as plain dollars (scale dropped)."""
+    """Thousands-denominated USD value: shown as written, never as plain dollars.
+
+    HELD only when both locales keep the value and the word "thousands", show
+    no dollar sign or 美元, and do not rescale (no "million"/万). Scale is never
+    inferred from the unit (endpoints.v1 normalisation.value).
+    """
     from engine.news_impact.prophet_adapter import format_amount
-    thousands = format_amount({"form": "point", "value": 2500, "bound": "exact",
-                               "unit": "thousands", "currency": "USD",
-                               "basis": "total"}, "en")
-    zh = format_amount({"form": "point", "value": 2500, "bound": "exact",
-                        "unit": "thousands", "currency": "USD", "basis": "total"}, "zh")
-    scale_lost = thousands.strip() == "$2500" and "thousand" not in thousands \
-        and "thousand" not in zh
-    report("M06b", "BROKEN" if scale_lost else "HELD",
-           f"USD thousands unit: en='{thousands}' zh ends 万='{zh[-8:]}'")
+    quantity = {"form": "point", "value": 2500, "bound": "exact",
+                "unit": "thousands", "currency": "USD", "basis": "total"}
+    en = format_amount(quantity, "en")
+    zh = format_amount(quantity, "zh")
+    held = ("thousands" in en and "thousands" in zh
+            and "2500" in en and "2500" in zh
+            and "$" not in en and "美元" not in zh
+            and "million" not in en and "万" not in zh)
+    report("M06b", "HELD" if held else "BROKEN",
+           f"USD thousands unit: en='{en}' zh='{zh}'")
 
 
 def nc_m07a() -> None:
@@ -661,16 +667,23 @@ def nc_m11() -> None:
         render_glance_copy(adapt_batch([pt_event])[0])
     except ProphetAdapterError:
         pt_render_refused = True
-    rendered = render_glance_copy(adapt_batch([rec_event])[0])
-    subtitle = rendered["en"]["subtitle"]
-    rec_leaked = "strong buy" in subtitle
+    # A refused render cannot leak: count a TEXT_UNSAFE refusal as no leak,
+    # exactly as the price-target branch above counts its refusal.
+    rec_render_refused = False
+    try:
+        rendered = render_glance_copy(adapt_batch([rec_event])[0])
+    except ProphetAdapterError:
+        rec_render_refused = True
+        rec_leaked = False
+    else:
+        rec_leaked = "strong buy" in rendered["en"]["subtitle"]
     if pt_render_refused and not rec_leaked:
         verdict = "HELD"
     else:
         verdict = "BROKEN"
     report("M11", verdict,
            f"'price target': validator ok={pt_rep.ok} render refused={pt_render_refused}; "
-           f"'strong buy' subtitle leak={rec_leaked}")
+           f"'strong buy' render refused={rec_render_refused} subtitle leak={rec_leaked}")
 
 
 def nc_m12() -> None:
