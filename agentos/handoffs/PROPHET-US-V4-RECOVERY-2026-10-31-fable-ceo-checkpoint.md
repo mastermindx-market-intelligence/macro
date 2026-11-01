@@ -48,7 +48,7 @@ changed:
       concurrent-writer rebase, and after main added/changed qledger files), a
       hard-kill + always()-step restore, the park-failure withhold, a carved new
       file, trap chaining (one-line, multi-line, quoted), and the wiring pins.
-prs: [10255, 10267, 10277, 10283, 10289]
+prs: [10255, 10267, 10277, 10283, 10289, 10363]
 verified:
   - claim: The nightly outage root cause is GitHub's GH001 blob limit on data/qledger/claims.jsonl, not the builders.
     command: >
@@ -370,7 +370,34 @@ verified:
       entries) deferred to a follow-up PR; label merge-on-green set; UNSTABLE while
       ci-pack runs (10-31 ~10:xxZ read: #10277 d03acfd0, #10267 750dd2c2, #10255
       6454a74a all OPEN/UNSTABLE/armed).
+  - claim: >
+      The B4 capture's durable home is decided and built: a two-host stream (VPS
+      --spool pass -> R2 live_flow/prophet_b4_capture -> Mac nightly --nightly
+      --from-spool ingest) mirroring the incumbent Prophet Live lane; Draft PR #10363
+      (head 6146ef6b01bc on c3f5994b) passes the local gates.
+    command: >
+      python3 -m pytest tests/test_capture_prophet_b4_same_read.py
+      tests/test_prophet_off_engine_lane.py tests/test_prophet_live_vps_lane.py -q;
+      python3 scripts/check_contract_delta.py --base c3f5994bf286;
+      python3 scripts/check_dag_conformance.py
+    result: >
+      123 passed / 1 skipped; contract-delta 0 introduced, 0 inherited (wall 375 s);
+      DAG conformance rc 0. The finding behind the design: the capture must read the
+      committed tree AND /var/lib/macro-live, which exists only on the VPS (LEDGER LAW
+      G0.2 forbids data/ writes there) while the Mac nightly has no live plane, so a
+      direct --nightly wiring would red every night (a local dry-run refuses
+      NATIVE_LIVE_ROOT_MISSING). The VPS pass writes nothing under data/ and an
+      unpublished pass is a typed refusal; the nightly validates every spool object and
+      row against the write fence before any write, keep-first merges, and treats an
+      empty spool as a valid state. Units macro-live-b4capture.{service,timer} are
+      registered in live-setup.sh; daily.yml us_prophet_ledgers gains the step and the
+      commit add-list; config/dag.yml gains the entry; no new test files.
 unverified:
+  - claim: >
+      PR #10363 survives independent non-author review, hosted CI is green at its head,
+      and it merges through the sweeper; VPS enrollment (live-setup.sh as root after
+      macro-update pulls the merge) is a separate operator step, and the first non-empty
+      nightly ingest is the production proof.
   - claim: W2 freeze PR #10283 (head 915e50b3) merges to main through the sweeper against that exact head.
     what_would_verify: green hosted CI on 915e50b3, reviewDecision, then merge --match-head-commit 915e50b3 by the sweeper; until then no freeze and no outcome read. T3 gate (union_admission reads completed closes only, asof-capable) is evaluated at freeze.
   - claim: PR #10267 (head 750dd2c2) hosted CI green and merged by the merge-on-green sweeper against that exact head.
@@ -410,7 +437,9 @@ unresolved:
     the VPS (systemd macro-live-* units under app/deploy, installed by update.sh), where
     LEDGER LAW G0.2 forbids writing data/ paths; the capture stream's durable home
     (local state dir + R2 publication vs. a nightly-job read of VPS-published owner
-    files) is an unmade design decision — binding the seam does not wire the nightly.
+    files) was decided 10-31 as R2 spool + nightly ingest and built in Draft PR #10363
+    (verified above); what remains unresolved is its review/CI/merge and the human-only
+    VPS enrollment.
 next_actions:
   - >
     1. #10255 at 6454a74a is reviewed APPROVE-READY and armed merge-on-green:
@@ -430,10 +459,14 @@ next_actions:
     comment naming this session and the green evidence; if hosted CI reds, repair on
     the branch (never relabel silently, #5291). Never self-approve or self-merge.
   - >
-    4. Decide the B4 capture's durable home (unresolved above) with the Data OS /
-    live-plane owners before any nightly wiring; preserve the amended B4
-    preregistration (#7751 A1), its prospective population, H10 MAE endpoint, cost
-    floor, multiplicity treatment, fixed looks and refusal handling unchanged.
+    4. B4 durable home = Draft PR #10363 (head 6146ef6b): consume the independent
+    review once, repair findings on the branch, `gh pr ready`, arm merge-on-green
+    (never self-approve or self-merge); after the merge, name the VPS enrollment
+    (`bash /opt/macro/app/deploy/live-setup.sh` as root, after the nightly
+    macro-update pulls it) as the operator step — never claim it — and record the
+    first non-empty `--from-spool` ingest as the production proof. #7751 A1
+    (population, H10 MAE endpoint, cost floor, multiplicity, fixed looks, refusal
+    handling) is untouched by this wiring.
   - >
     5. A2 PR #10289 (head ea8e3805, APPROVE-READY by independent review, draft, stacked on
     #10209's head da3a0451): nothing to do until #10209 lands; then retarget to main, consume
@@ -496,8 +529,8 @@ and the Entry Timing W1 waterfall (PR #10277) measured it: of 62,500 IDENTITY_UN
 rows, none was resolvable by a reference already ingested on its session; 11,153 became
 resolvable only after later ingests (lawful as-known refusals) and 51,347 are tickers no
 current reference knows. The seam itself is bound in PR #10267 (two independent review
-rounds; REVISE → APPROVE-READY; armed merge-on-green at 750dd2c2). The capture's durable
-home is still an unmade design decision (unresolved above), so no nightly is wired.
+rounds; REVISE → APPROVE-READY; armed merge-on-green at 750dd2c2, MERGED 31ab1d32). The
+capture's durable home was then decided and built as Draft PR #10363 (verified above).
 
 Second segment (same session, after context compaction): W1 went through three
 independent review rounds — the round-1 finding that mapped turn_watch rows were
