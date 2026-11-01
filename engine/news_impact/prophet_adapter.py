@@ -27,6 +27,7 @@ from typing import Any, Iterable, Mapping
 
 from jsonschema import Draft202012Validator
 
+from engine.news_impact.eval_grade import UNIT_MAP
 from engine.news_impact.validate import project_display
 
 SCHEMA_NAME = "prophet_evidence.v1"
@@ -362,45 +363,37 @@ def _one_decimal(n: float) -> str:
     return text
 
 
-# Scale words a quantity's unit may carry ("thousands", "USD millions"). Same
-# factors as eval_grade.SCALE_WORDS; the abbreviations k/m/bn are not read here
-# because a bare "m" or "k" in a unit string is ambiguous.
-_UNIT_SCALE: dict[str, float] = {
-    "thousand": 1e3,
-    "million": 1e6,
-    "billion": 1e9,
-    "trillion": 1e12,
-}
+# Non-monetary contract units (endpoints.v1 normalisation.unit_map). A currency
+# code is never appended to these.
+_NON_MONETARY_UNITS = frozenset({"shares", "percent", "units"})
 
 
-def _split_unit_scale(unit: str) -> tuple[float, str]:
-    """Return (scale factor, residual unit) for a unit such as "USD millions"."""
-    scale = 1.0
-    residual: list[str] = []
-    for token in unit.split():
-        word = token.lower()
-        if word.endswith("s") and word[:-1] in _UNIT_SCALE:
-            word = word[:-1]
-        if word in _UNIT_SCALE:
-            scale *= _UNIT_SCALE[word]
-        else:
-            residual.append(token)
-    return scale, " ".join(residual)
+def _unit_names_currency(unit: str, currency: str) -> bool:
+    """True when a token of ``unit`` is, or maps to, ``currency``."""
+    wanted = currency.lower()
+    for token in re.findall(r"[a-z$€£]+", unit.lower()):
+        if token == wanted or UNIT_MAP.get(token, "").lower() == wanted:
+            return True
+    return False
 
 
 def format_amount(quantity: Mapping[str, Any], locale: str) -> str:
     """Deterministic amount_format (copy_templates.v1). Never derives EPS or % cap.
 
-    A scale word in the unit (thousand/million/billion/trillion, singular or
-    plural, any case) multiplies the value. A negative amount carries exactly
-    one minus sign, dropped when the shown figure rounds to 0. Non-USD amounts
-    keep their own unit and are never converted.
+    The USD billion/million tiers apply only when the unit means USD in the
+    contract unit_map (or is empty with currency USD). Every other amount is
+    shown raw with its unit, plus the currency code when the unit does not name
+    it; it is never converted and never rescaled. Scale is never inferred from
+    the unit (endpoints.v1 normalisation; eval_grade does the same), so a
+    "thousands" unit is displayed as written. Tiers are chosen after rounding,
+    so 999999.96 shows as $1 million. A negative amount carries exactly one
+    minus sign, dropped when the shown figure rounds to 0.
     """
     if quantity.get("form") == "absent":
         return ""
     bound = str(quantity.get("bound") or "exact")
     currency = str(quantity.get("currency") or "")
-    unit = str(quantity.get("unit") or "")
+    unit = str(quantity.get("unit") or "").strip()
     if quantity.get("form") == "range":
         low = format_amount(
             {**dict(quantity), "form": "point", "value": quantity.get("low")}, locale
@@ -410,16 +403,18 @@ def format_amount(quantity: Mapping[str, Any], locale: str) -> str:
         )
         return f"{low}–{high}"
     value = quantity.get("value")
-    if not isinstance(value, (int, float)):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
         return ""
-    scale, residual = _split_unit_scale(unit)
-    magnitude = abs(float(value)) * scale
-    usd = currency == "USD" or residual == "USD"
-    if usd and magnitude >= 1e9:
+    magnitude = abs(float(value))
+    canonical = UNIT_MAP.get(unit.lower()) if unit else None
+    usd = (canonical == "USD" and currency in ("USD", "NA", "")) or (
+        not unit and currency == "USD"
+    )
+    if usd and (magnitude >= 1e9 or float(_one_decimal(magnitude / 1e6)) >= 1000):
         shown = _one_decimal(magnitude / 1e9)
         en = f"${shown} billion"
         zh = f"{_one_decimal(magnitude / 1e8)}亿美元"
-    elif usd and magnitude >= 1e6:
+    elif usd and (magnitude >= 1e6 or float(_one_decimal(magnitude)) >= 1e6):
         shown = _one_decimal(magnitude / 1e6)
         en = f"${shown} million"
         zh = f"{_one_decimal(magnitude / 1e4)}万美元"
@@ -429,9 +424,13 @@ def format_amount(quantity: Mapping[str, Any], locale: str) -> str:
         zh = f"{shown}美元"
     else:
         shown = _one_decimal(magnitude)
-        label = residual
-        if not label and unit.strip() and currency not in ("", "NA"):
-            label = currency
+        label = unit
+        if (
+            currency not in ("", "NA")
+            and canonical not in _NON_MONETARY_UNITS
+            and not _unit_names_currency(unit, currency)
+        ):
+            label = f"{label} {currency}".strip()
         en = f"{shown} {label}".strip()
         zh = en
     sign = "-" if float(value) < 0 and shown != "0" else ""
