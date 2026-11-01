@@ -8,10 +8,14 @@ of the five printed analogs pointed the wrong way (2026-04-10: +4.6% at 20
 sessions, -4.9% at 120). ``fan.h120.n = 11`` against ``fan.h20.n = 12``: one
 analog's 120-session window has not resolved, so a null must print an em dash
 exactly like ``:202``/``:204`` already do, never ``0.0%`` and never a blank
-cell. ``scripts/build_china.py`` is READ-ONLY, so this is display-only.
+cell.
 
-Synthetic fixtures only: no ``data/`` or ``site/`` read, no builder call.
-Record 1 and record 2's SHCOMP triple are quoted verbatim by the packet; the
+The lifespan table's rows come from ``finished_lifespan_rows``. ``quad_segments``
+ends with the period still running, whose length so far is only its age, so the
+builder tests run ``scripts/build_china.py``'s own ``_build_history``.
+
+Synthetic fixtures only: no ``data/`` or ``site/`` read, and the builder tests
+patch out ``write_page`` and both chart helpers so nothing is written. Record 1 and record 2's SHCOMP triple are quoted verbatim by the packet; the
 fields the packet elides (record 2/3 CSI300 and distances) are lane-filled and
 are never asserted on.
 
@@ -126,6 +130,92 @@ def test_median_column_states_its_unit() -> None:
     assert "存续中位数（周一至周五计，天）" in zh
     assert "median length (days)" not in en
     assert "存续中位数（天）" not in zh
+
+
+class _Store:
+    """Stands in for lib.store: only the regime_history frame is served."""
+
+    def __init__(self, frame):
+        self.frame = frame
+
+    def read(self, category, name, *args, **kwargs):
+        if (category, name) == ("china_regime", "regime_history"):
+            return self.frame
+        return None
+
+
+def _frame(segments, end="2026-10-16"):
+    """Expand [(quad, n_weekdays), ...] onto a Monday-to-Friday index ending `end`."""
+    import pandas as pd
+    quads = [quad for quad, n in segments for _ in range(n)]
+    return pd.DataFrame({"quad": quads},
+                        index=pd.bdate_range(end=end, periods=len(quads)))
+
+
+def _running_frame():
+    """Q3 finished at 10/20/30/40 and still running at 100: 4 periods, median 25.
+    With the running one counted it would read 5 periods, median 30."""
+    closed = [seg for q3 in (10, 20, 30, 40) for seg in (("Q3", q3), ("Q1", 5))]
+    return _frame(closed + [("Q3", 100)])
+
+
+def _build(monkeypatch, tmp_path, frame) -> str:
+    """Run scripts/build_china.py's own _build_history with every write patched."""
+    from scripts import build_china
+    captured = {}
+
+    class _Config:
+        @staticmethod
+        def load():
+            return {"china": {"yahoo": {"market_index": "SHCOMP"}},
+                    "storage": {"site_dir": str(tmp_path)}}
+
+    monkeypatch.setattr(build_china, "store", _Store(frame))
+    monkeypatch.setattr(build_china, "config", _Config)
+    # _build_history finds its phase tape from this module's path.
+    monkeypatch.setattr(build_china, "__file__", str(tmp_path / "scripts" / "build_china.py"))
+    monkeypatch.setattr(build_china, "_chart_regime", lambda *a, **k: "")
+    monkeypatch.setattr(build_china, "_chart_axes", lambda *a, **k: "")
+    monkeypatch.setattr(build_china, "write_page",
+                        lambda path, html: captured.__setitem__("html", html))
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)
+    env.globals.update(td=i18n.td, tr=i18n.tr)
+    build_china._build_history(env, {"date": "2026-10-16"}, STAMP)
+    assert captured.get("html"), "_build_history wrote no page"
+    return re.sub(r"\s+", " ", captured["html"])
+
+
+def _lifespan_row(html: str, en_name: str) -> str:
+    panel = html.split("Regime lifespans")[1].split("</table>")[0]
+    needle = '<span class="l-en">%s</span>' % en_name
+    for chunk in panel.split("<tr>")[1:]:
+        if needle in chunk:
+            return chunk
+    raise AssertionError("no lifespan row for %s" % en_name)
+
+
+def test_table_rows_count_finished_periods(monkeypatch, tmp_path) -> None:
+    html = _build(monkeypatch, tmp_path, _running_frame())
+    q3, q1 = _lifespan_row(html, "Stagflation"), _lifespan_row(html, "Goldilocks")
+    assert "<td>4</td><td>25</td>" in q3, q3[:200]
+    assert "<td>4</td><td>5</td>" in q1, q1[:200]
+    panel = html.split("Regime lifespans")[1].split("</table>")[0]
+    en, zh = _view(panel, "zh"), _view(panel, "en")
+    assert "finished periods" in en and "已结束次数" in zh
+
+
+def test_no_finished_period_prints_a_dash_in_both_columns(monkeypatch, tmp_path) -> None:
+    html = _build(monkeypatch, tmp_path, _frame([("Q1", 5), ("Q3", 3)]))
+    assert "<td>—</td><td>—</td>" in _lifespan_row(html, "Stagflation")
+    assert "<td>1</td><td>5</td>" in _lifespan_row(html, "Goldilocks")
+    assert "None" not in html.split("Regime lifespans")[1].split("</table>")[0]
+
+
+def test_main_page_rows_share_the_basis(monkeypatch, tmp_path) -> None:
+    from engine.playbook import finished_lifespan_rows
+    from scripts import build_china
+    quad = _running_frame()["quad"]
+    assert build_china._lifespan_rows(quad) == finished_lifespan_rows(quad)
 
 
 def test_panel_degrades_with_no_analogs() -> None:

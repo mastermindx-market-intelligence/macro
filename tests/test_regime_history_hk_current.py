@@ -1,4 +1,4 @@
-"""HK regime-history page: the segment in force and the sample behind "next".
+"""HK regime-history page: the segment in force, and a table of finished periods.
 
 W33 SPEC 2 (findings F4/F5/F11 of the W32D design packet):
 
@@ -8,10 +8,11 @@ W33 SPEC 2 (findings F4/F5/F11 of the W32D design packet):
   ``matrix`` / ``n_by_quad`` / ``median_days`` and ``n_segments`` survived only
   into ``log.info`` (``scripts/build_hk.py:313``), so the page said
   "Reflation -> Stagflation 70%" with no hint the label was 3 weekdays old.
-* ``engine/playbook.py:231`` excludes the unfinished segment from ``matrix[q]``
-  while ``:234-237`` counts it in ``n_by_quad[q]``: the sample behind the
-  "most common next" percentages is ``n_by_quad[q] - 1`` for the regime in
-  force (HK: 45 shown / 44 behind).
+* ``transition_stats`` excludes the unfinished segment from ``matrix[q]`` while
+  counting it in ``n_by_quad[q]``, which is how the table once printed 45 for a
+  count of 44. Rows now come from ``finished_lifespan_rows``: every finished
+  period has a successor, so one count sits behind the row, its median, its
+  "most common next" and the in-force line.
 * ``scripts/build_hk.py:1334`` already stamps ``... UTC``, so the template's
   own literal made the committed page read ``2026-10-20 17:09 UTC UTC``.
 * ``quad_segments`` ends with the period still running, so the regime in force
@@ -51,9 +52,9 @@ STAMP = "2026-10-20 17:09 UTC"
 BANNED = ("实时", "申报", "证伪", "validated", "已验证", "live", "forecast",
           "falsifier", "refuted", "z-score", "percentile rank", "probability",
           "概率", "当前", "最新", "独立")
-NEW_EN = ("(sample)", "sample", "Regime in force", "since", "weekdays old",
+NEW_EN = ("finished periods", "Regime in force", "since", "weekdays old",
           "median", "periods in the sample", "median length (weekdays)")
-NEW_ZH = ("（样本）", "样本", "现行周期", "始于", "天（周一至周五计）", "中位数",
+NEW_ZH = ("已结束次数", "现行周期", "始于", "天（周一至周五计）", "中位数",
           "个样本时段", "存续中位数（周一至周五计，天）")
 
 
@@ -93,7 +94,7 @@ def _committed_shape_frame():
 
 
 def _denominator_frame():
-    """n_by_quad Q1=40 / Q2=45 with Q2 in force: 45 shown, 44 behind it."""
+    """Q1 40 finished; Q2 44 finished and a 45th still running, in force."""
     pairs = ["Q1", "Q2"] * 40 + ["Q3", "Q2"] * 5
     return _frame([(quad, 26) for quad in pairs])
 
@@ -128,12 +129,6 @@ def _row(html, en_name):
         if needle in chunk:
             return chunk
     raise AssertionError("no lifespan row for %s" % en_name)
-
-
-def _sample_of(row_html):
-    hit = re.search(r'l-zh">样本</span>\s*(\d+)', row_html)
-    assert hit, "no sample marker beside the next-quad line: %s" % row_html[:160]
-    return int(hit.group(1))
 
 
 def test_current_segment_start_and_age_reach_the_template(monkeypatch, tmp_path) -> None:
@@ -188,7 +183,7 @@ def test_table_row_of_the_regime_in_force_excludes_the_running_period(
         monkeypatch, tmp_path) -> None:
     html = _render(monkeypatch, tmp_path, _open_segment_frame())
     q2, q1 = _row(html, "Reflation"), _row(html, "Goldilocks")
-    assert "<td>5</td><td>25</td>" in q2, q2[:200]
+    assert "<td>4</td><td>25</td>" in q2, q2[:200]
     assert "<td>4</td><td>5</td>" in q1, q1[:200]
 
 
@@ -204,16 +199,36 @@ def test_no_finished_period_prints_no_median(monkeypatch, tmp_path) -> None:
     assert "median" not in in_force
     assert "in the sample" not in in_force, "there is no sample behind no median"
     assert "样本时段" not in zh
-    assert "<td>1</td><td>—</td>" in _row(html, "Reflation")
+    assert "<td>—</td><td>—</td>" in _row(html, "Reflation")
+    assert "<td>1</td><td>5</td>" in _row(html, "Goldilocks")
 
 
-def test_denominator_is_one_less_for_the_regime_in_force(monkeypatch, tmp_path) -> None:
+def test_row_and_in_force_line_print_one_count(monkeypatch, tmp_path) -> None:
+    """44 finished and one running: the page says 44 everywhere and never 45."""
     html = _render(monkeypatch, tmp_path, _denominator_frame())
     q2, q1 = _row(html, "Reflation"), _row(html, "Goldilocks")
-    assert ">45</td>" in q2, q2[:200]
-    assert _sample_of(q2) == 44, "the regime in force must drop its own open segment"
-    assert ">40</td>" in q1, q1[:200]
-    assert _sample_of(q1) == 40, "a closed regime's sample equals its period count"
+    assert "<td>44</td><td>26</td>" in q2, q2[:200]
+    assert "<td>40</td><td>26</td>" in q1, q1[:200]
+    en = _view(html, "zh")
+    assert "median 26 · 44 periods in the sample" in en, en[-400:]
+    assert ">45<" not in html.split("Regime lifespans")[1].split("</table>")[0]
+
+
+def test_table_says_what_it_counts(monkeypatch, tmp_path) -> None:
+    """The row's count is the sample, so no second column repeats it."""
+    html = _render(monkeypatch, tmp_path, _denominator_frame())
+    panel = html.split("Regime lifespans")[1].split("</table>")[0]
+    en, zh = _view(panel, "zh"), _view(panel, "en")
+    assert "finished periods" in en and "已结束次数" in zh
+    assert "(sample)" not in en and "（样本）" not in zh
+    assert " sample 4" not in en and "样本 4" not in zh
+
+
+def test_main_page_rows_share_the_basis(monkeypatch, tmp_path) -> None:
+    from engine.playbook import finished_lifespan_rows
+    from scripts import build_hk
+    quad = _denominator_frame()["quad"]
+    assert build_hk._lifespan_rows(quad) == finished_lifespan_rows(quad)
 
 
 def test_in_force_count_is_the_set_behind_its_median(monkeypatch, tmp_path) -> None:
@@ -225,8 +240,7 @@ def test_in_force_count_is_the_set_behind_its_median(monkeypatch, tmp_path) -> N
     assert "162" not in en.split("Regime in force")[1]
     assert "162" not in zh.split("现行周期")[1]
     assert "41 periods in the sample" not in en
-    assert "<td>41</td><td>26</td>" in _row(html, "Reflation")
-    assert _sample_of(_row(html, "Reflation")) == 40
+    assert "<td>40</td><td>26</td>" in _row(html, "Reflation")
 
 
 def test_in_force_line_reads_singular_at_one(monkeypatch, tmp_path) -> None:

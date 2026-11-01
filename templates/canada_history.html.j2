@@ -49,6 +49,7 @@
   .help:hover .tip { display:block; }
   table { border-collapse:collapse; width:100%; font-size:13px; }
   th,td { text-align:right; padding:4px 8px; border-bottom:1px solid var(--line); }
+  @media (max-width:420px) { th,td { padding:4px 5px; } }
   th { color:var(--muted); font-weight:500; }
   th:first-child,td:first-child { text-align:left; }
 </style>
@@ -92,7 +93,7 @@
                   'Q3': ('Stagflation', '滞胀'), 'Q4': ('Growth scare', '增长恐慌')} %}
     {% set _force = _qn.get(latest.get('quad')) %}
     <table>
-      <tr><th>{{ t('regime', '周期') }}</th><th>{{ t('periods', '次数') }}</th>
+      <tr><th>{{ t('regime', '周期') }}</th><th>{{ t('finished periods', '已结束次数') }}</th>
         <th>{{ t('median length (weekdays)', '存续中位数（周一至周五计，天）') }}</th>
         <th>{{ t('most common next', '最常见的下一周期') }}</th></tr>
       {% for row in lifespan_rows %}

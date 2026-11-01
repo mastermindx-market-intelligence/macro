@@ -20,7 +20,13 @@ in the HK/CN artifacts and NaN is truthy, hence the tight
 its span, 12-25 and 1-1 included. The count and the medians are weekdays, not
 trading days, so both labels say weekdays.
 
-Synthetic fixtures only: no ``data/`` or ``site/`` read, no builder call.
+The lifespan rows come from ``finished_lifespan_rows``, here and on
+``canada.html``. ``quad_segments`` ends with the period still running, whose
+length so far is only its age, so the builder tests run
+``scripts/build_canada.py``'s own ``_build_history``.
+
+Synthetic fixtures only: no ``data/`` or ``site/`` read, and the builder tests
+patch out ``write_page`` and both chart helpers so nothing is written.
 
 Run: MM_DATA_GUARD=off PYTHONPATH=. python3 -m pytest \
     tests/test_regime_history_canada_today.py -q
@@ -51,7 +57,7 @@ LIFESPAN_ROWS = [
     {"name": "Reflation", "n": 83, "median": 21,
      "next": "Goldilocks 45%, Stagflation 31%",
      "next_zh": "理想增长 45%、滞胀 31%"},
-    {"name": "Stagflation", "n": 72, "median": 17,
+    {"name": "Stagflation", "n": 71, "median": 17,
      "next": "Reflation 69%, Growth scare 21%",
      "next_zh": "再通胀 69%、增长恐慌 21%"},
     {"name": "Growth scare", "n": 65, "median": 24,
@@ -143,6 +149,88 @@ def test_median_column_states_its_unit() -> None:
     assert "存续中位数（周一至周五计，天）" in zh
     assert "median length (days)" not in en
     assert "存续中位数（天）" not in zh
+
+
+class _Store:
+    """Stands in for lib.store: only the regime_history frame is served."""
+
+    def __init__(self, frame):
+        self.frame = frame
+
+    def read(self, category, name, *args, **kwargs):
+        if (category, name) == ("canada_regime", "regime_history"):
+            return self.frame
+        return None
+
+
+def _frame(segments, end="2026-10-16"):
+    """Expand [(quad, n_weekdays), ...] onto a Monday-to-Friday index ending `end`."""
+    import pandas as pd
+    quads = [quad for quad, n in segments for _ in range(n)]
+    return pd.DataFrame({"quad": quads},
+                        index=pd.bdate_range(end=end, periods=len(quads)))
+
+
+def _running_frame():
+    """Q3 finished at 10/20/30/40 and still running at 100: 4 periods, median 25.
+    With the running one counted it would read 5 periods, median 30."""
+    closed = [seg for q3 in (10, 20, 30, 40) for seg in (("Q3", q3), ("Q1", 5))]
+    return _frame(closed + [("Q3", 100)])
+
+
+def _build(monkeypatch, tmp_path, frame) -> str:
+    """Run scripts/build_canada.py's own _build_history with every write patched."""
+    from scripts import build_canada
+    captured = {}
+
+    class _Config:
+        @staticmethod
+        def load():
+            return {"canada": {"yahoo": {"market_index": "XIC"}},
+                    "storage": {"site_dir": str(tmp_path)}}
+
+    monkeypatch.setattr(build_canada, "store", _Store(frame))
+    monkeypatch.setattr(build_canada, "config", _Config)
+    monkeypatch.setattr(build_canada, "_chart_regime", lambda *a, **k: "")
+    monkeypatch.setattr(build_canada, "_chart_axes", lambda *a, **k: "")
+    monkeypatch.setattr(build_canada, "write_page",
+                        lambda path, html: captured.__setitem__("html", html))
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)
+    env.globals.update(td=i18n.td, tr=i18n.tr)
+    build_canada._build_history(env, dict(LATEST), STAMP)
+    assert captured.get("html"), "_build_history wrote no page"
+    return re.sub(r"\s+", " ", captured["html"])
+
+
+def test_table_rows_count_finished_periods(monkeypatch, tmp_path) -> None:
+    html = _build(monkeypatch, tmp_path, _running_frame())
+    q3, q1 = _row(html, "Stagflation"), _row(html, "Goldilocks")
+    assert "<td>4</td><td>25</td>" in q3, q3[:260]
+    assert "<td>4</td><td>5</td>" in q1, q1[:260]
+    panel = html.split("Regime lifespans")[1].split("</table>")[0]
+    en, zh = _view(panel, "zh"), _view(panel, "en")
+    assert "finished periods" in en and "已结束次数" in zh
+
+
+def test_no_finished_period_prints_a_dash_in_both_columns(monkeypatch, tmp_path) -> None:
+    html = _build(monkeypatch, tmp_path, _frame([("Q1", 5), ("Q3", 3)]))
+    assert "<td>—</td><td>—</td>" in _row(html, "Stagflation")
+    assert "<td>1</td><td>5</td>" in _row(html, "Goldilocks")
+    assert "None" not in html.split("Regime lifespans")[1].split("</table>")[0]
+
+
+def test_main_page_table_prints_the_history_page_numbers() -> None:
+    """canada.html prints these rows too, under its own keys: same numbers."""
+    from engine.playbook import finished_lifespan_rows
+    from scripts import build_canada
+    quad = _running_frame()["quad"]
+    main = build_canada._lifespan_rows(quad)
+    history = finished_lifespan_rows(quad)
+    assert [(r["quad"], r["n"], r["median_days"], r["next"], r["next_zh"]) for r in main] == [
+        (r["name"], r["n"], r["median"], r["next"], r["next_zh"]) for r in history]
+    assert main[2]["n"] == 4 and main[2]["median_days"] == 25
+    src = (ROOT / "templates" / "canada.html.j2").read_text(encoding="utf-8")
+    assert "td(row.quad)" in src and "row.median_days" in src and "row.n" in src
 
 
 def test_nan_pending_quad_never_reaches_the_page() -> None:
