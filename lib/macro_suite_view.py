@@ -125,6 +125,7 @@ def _context(snapshot: Mapping[str, Any], page_built_at: str) -> dict[str, Any]:
             "required": bool(item.get("required")),
             "freshness": L.label("freshness", item.get("freshness")),
             "freshness_tone": L.tone("freshness", item.get("freshness")),
+            "freshness_state": item.get("freshness"),
             "presence": L.label("presence", item.get("status")),
             "presence_tone": L.tone("presence", item.get("status")),
             "source_asof": asof,
@@ -906,16 +907,31 @@ def _diagnostics(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             "body": context["contradiction"]["text"],
         })
 
-    stale = [c for c in context.get("required") or []
-             if c["freshness_tone"] in ("warn", "bad")]
-    if stale:
-        names_en = ", ".join(c["label"]["en"] for c in stale)
-        names_zh = "、".join(c["label"]["zh"] for c in stale)
+    required_rows = context.get("required") or []
+    # LATE_WITHIN_TOLERANCE shares the warn tone with a source that broke.
+    # A missing token stays on the degraded path, which is what tone alone did.
+    late = [c for c in required_rows
+            if c.get("freshness_state") == "LATE_WITHIN_TOLERANCE"]
+    degraded = [c for c in required_rows
+                if c.get("freshness_state") != "LATE_WITHIN_TOLERANCE"
+                and c["freshness_tone"] in ("warn", "bad")]
+    if degraded:
+        names_en = ", ".join(c["label"]["en"] for c in degraded)
+        names_zh = "、".join(c["label"]["zh"] for c in degraded)
         out.append({
             "tone": "warn",
             "title": _pair("Required source not current", "必需数据源并非最新"),
             "body": _pair(f"Degraded required components: {names_en}.",
                           f"降级的必需分项：{names_zh}。"),
+        })
+    if late:
+        names_en = ", ".join(c["label"]["en"] for c in late)
+        names_zh = "、".join(c["label"]["zh"] for c in late)
+        out.append({
+            "tone": "warn",
+            "title": _pair("Required source late, within tolerance", "必需数据源延迟，仍在容差内"),
+            "body": _pair(f"Late within tolerance: {names_en}.",
+                          f"延迟但仍在容差内：{names_zh}。"),
         })
 
     for component in context.get("required") or []:
