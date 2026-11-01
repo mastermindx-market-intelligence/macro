@@ -495,7 +495,7 @@
   },
   "flows": {
     "etf": "Steady",
-    "stablecoins": "Falling",
+    "stablecoins": "Unavailable",
     "volume": "Quiet tape"
   },
   "flow_kinds": {
@@ -506,7 +506,7 @@
     },
     "stablecoins": {
       "kind": "issuance",
-      "observation": "current",
+      "observation": "stale",
       "expected_cadence": "calendar_day"
     },
     "volume": {

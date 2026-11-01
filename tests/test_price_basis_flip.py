@@ -90,12 +90,20 @@ def test_analyze_real_etf_structure_differs():
     px = _yahoo_close("XLU", basis="price")
     if tr is None or px is None:
         pytest.skip("XLU not in store")
-    tr, px = tr.dropna(), px.dropna()
+    # The cut is pinned because the two bases only separate when the cycle low sits
+    # before a dividend. Unpinned, this test passes or fails with the store's last bar:
+    # cut at 2026-10-15 both bases read 39.25. Cut at 2026-09-30 the price basis reads
+    # 43.1 and the TR basis 42.51.
+    cut = "2026-09-30"
+    tr, px = tr.dropna().loc[:cut], px.dropna().loc[:cut]
     a = cycles.analyze(tr, kind="equity", price=px)
     a0 = cycles.analyze(tr, kind="equity")
     # momentum identical, structure (dcl_price) on the price basis
     assert _clean(a["mtf"]) == _clean(a0["mtf"])
-    assert (a["cycle"] or {}).get("dcl_price") != (a0["cycle"] or {}).get("dcl_price")
+    dcl_price = (a["cycle"] or {}).get("dcl_price")
+    dcl_tr = (a0["cycle"] or {}).get("dcl_price")
+    assert dcl_price is not None and dcl_tr is not None
+    assert dcl_price != dcl_tr, f"bases did not differ at {cut}: {dcl_price} on both"
 
 
 # ─────────────────────────────────────────────────────────────────────────────

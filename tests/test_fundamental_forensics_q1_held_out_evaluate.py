@@ -9,20 +9,40 @@ that match the reports' own quality labels and failed families, and no file
 under the reports directory carrying the claims-checker's guarded token.
 
 This module is a Q1 test: it reads the sealed held-out labels to verify trial
-accounting (read-only; a label or seal is never modified here). It also
-unit-tests the evaluator itself — the SIC binding order and the
-duplicate-target visibility rules (E1-3) — over synthetic inputs only: those
-tests never open a ``labels/`` directory and never read the stage.
+accounting (read-only; a label or seal is never modified here). The accounting
+is scoped to the accession universe the generation recorded in its
+``PKxx_trials.json``: the held-out root is append-only, a later split decision
+adds label files for new accessions under a later ``_SEALED`` block, and those
+are measured by a later generation, never by editing this one. It also
+unit-tests the evaluator itself — the SIC binding order, the envelope
+``sic_source`` vocabulary, and the duplicate-target visibility rules (E1-3) —
+over synthetic inputs only: those tests never open the sealed held-out
+``labels/`` directories and never read the real stage (the end-to-end note
+test builds its own synthetic corpus, labels and stage bytes included, under
+``tmp_path``).
 """
 from __future__ import annotations
 
 from importlib import import_module
 import json
+import shutil
 from pathlib import Path
 
+import pytest
 from jsonschema import Draft202012Validator
 
+from engine.fundamental_forensics.admitted_filing_package import (
+    admit_retained_filing_package,
+)
 from engine.fundamental_forensics.pack_evaluation import PredictionRecord
+from engine.fundamental_forensics.specialist_pack_contract import (
+    load_pack_schema,
+    validate_pack_result,
+)
+from engine.fundamental_forensics.specialist_packs import (
+    PackInput,
+    produce_pack,
+)
 from scripts import fif_held_out_evaluate as evaluator
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,6 +57,11 @@ REPORTS_DIR = (
 REPORT_SCHEMA_PATH = (
     ROOT / "contracts" / "fundamental_forensics_pack_quality_report.v1.schema.json"
 )
+ENVELOPE_SCHEMA_PATH = ROOT / "contracts" / "specialist_pack_result.v1.schema.json"
+# Committed AAPL 10-K filing-package fixture (raw package bytes, not a gold
+# expectation): the in-repo corpus the evaluator's admission path can build
+# a package from without the stage.
+AAPL_10K_2025_PACKAGE = ROOT / "tests" / "fixtures" / "fundamental_forensics" / "aapl_10k_2025"
 HELD_OUT_SPLIT_ROOT = "tests/fixtures/fundamental_forensics_held_out"
 PACK_IDS = tuple(f"PK{number:02d}" for number in range(1, 13))
 
@@ -55,15 +80,97 @@ def _report(pack_id: str) -> dict:
     return json.loads(_report_path(pack_id).read_text(encoding="utf-8"))
 
 
-def _label_trials(pack_id: str) -> list[str]:
+def _seal_blocks(labels_dir: Path) -> list[dict[str, str]]:
+    """The append-only ``_SEALED`` ledger as a list of ``key: value`` blocks.
+
+    One block per sealing act (a labeling wave); blocks are separated by a
+    blank line and never rewritten, so a later wave appends a block whose
+    ``sealed_at`` follows every earlier one.
+    """
+    blocks: list[dict[str, str]] = []
+    for chunk in (labels_dir / "_SEALED").read_text(encoding="utf-8").split("\n\n"):
+        lines = [line for line in chunk.splitlines() if line.strip()]
+        if not lines:
+            continue
+        block = {}
+        for line in lines:
+            key, _, value = line.partition(":")
+            block[key.strip()] = value.strip()
+        blocks.append(block)
+    return blocks
+
+
+def _generation_universe(pack_id: str, reports_dir: Path) -> set[str] | None:
+    """Accessions the generation's evaluator enumerated at its head commit.
+
+    ``PKxx_trials.json`` records every accession the evaluator read labels
+    for; that list is the generation's label universe. ``None`` when the
+    generation carries no trials file for the pack.
+    """
+    trials_path = reports_dir / f"{pack_id}_trials.json"
+    if not trials_path.is_file():
+        return None
+    trials = json.loads(trials_path.read_text(encoding="utf-8"))
+    return {row["accession"] for row in trials["accessions"]}
+
+
+def _label_trials(pack_id: str, reports_dir: Path = REPORTS_DIR) -> list[str]:
+    """Trial ids of every sealed label record inside the generation's universe.
+
+    A Q1 generation is a committed record of the held-out root as it stood
+    at the generation's head commit. The held-out root is append-only: a
+    later split decision adds label files for NEW accessions (sealed in a
+    later ``_SEALED`` block) and is measured by a later generation, never by
+    editing an earlier one. So the accounting pins of a generation cover the
+    label files whose accession the generation enumerated; a label file for
+    an accession outside that universe is admitted here only when the pack's
+    seal ledger records a sealing act AFTER the generation was evaluated —
+    otherwise it is a label the evaluator silently dropped, and the pin fails.
+    A report that records no ``evaluated_at`` cannot date the seals, so an
+    out-of-universe file is refused outright (fail closed).
+    """
     labels_dir = HELD_OUT_ROOT / "packs" / pack_id / "labels"
     if not labels_dir.is_dir():
         return []
     assert (labels_dir / "_SEALED").is_file(), f"{pack_id} labels lack _SEALED"
+    universe = _generation_universe(pack_id, reports_dir)
+    evaluated_at = _generation_evaluated_at(pack_id, reports_dir)
     trials: list[str] = []
     for path in sorted(labels_dir.glob("*.json")):
-        trials.extend(row["trial_id"] for row in json.loads(path.read_text(encoding="utf-8")))
+        rows = json.loads(path.read_text(encoding="utf-8"))
+        accessions = {row["accession"] for row in rows}
+        if universe is not None and not accessions & universe:
+            assert evaluated_at, (
+                f"{pack_id}: {path.name} is outside the generation's accession "
+                f"universe and the generation's report records no evaluated_at; "
+                f"a later wave cannot be told apart from a dropped label, so "
+                f"the pin fails closed"
+            )
+            later_seals = [
+                block
+                for block in _seal_blocks(labels_dir)
+                if block.get("sealed_at", "") > evaluated_at
+            ]
+            assert later_seals, (
+                f"{pack_id}: {path.name} is outside the generation's accession "
+                f"universe but no sealing act follows the generation's "
+                f"evaluated_at {evaluated_at}; a label present at the head "
+                f"commit was dropped"
+            )
+            continue
+        assert universe is None or accessions <= universe, (
+            f"{pack_id}: {path.name} mixes accessions inside and outside the "
+            f"generation's universe"
+        )
+        trials.extend(row["trial_id"] for row in rows)
     return trials
+
+
+def _generation_evaluated_at(pack_id: str, reports_dir: Path) -> str | None:
+    report_path = reports_dir / f"{pack_id}_pack_quality_report.json"
+    if not report_path.is_file():
+        return None
+    return json.loads(report_path.read_text(encoding="utf-8")).get("evaluated_at")
 
 
 def _families_text(report: dict) -> str:
@@ -141,6 +248,73 @@ def test_every_label_trial_accounted_for_exactly_once() -> None:
         )
         # The trial map the evaluator used is exactly the label trial set.
         assert sorted(trials["trial_field_map"]) == sorted(set(label_trials))
+
+
+def test_label_trials_scope_to_the_generation_universe_and_refuse_a_dropped_label(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Synthetic root: a later-sealed wave is skipped; a dropped label fails.
+
+    Never opens the real labels: builds its own held-out root and reports
+    directory under ``tmp_path``.
+    """
+    import sys
+
+    root = tmp_path / "held_out"
+    labels_dir = root / "packs" / "PK99" / "labels"
+    labels_dir.mkdir(parents=True)
+    reports_dir = tmp_path / "reports"
+    reports_dir.mkdir()
+
+    def label(accession: str, trial: str) -> list[dict]:
+        return [{"accession": accession, "trial_id": trial}]
+
+    (labels_dir / "AAA_0000000001-24-000001.json").write_text(
+        json.dumps(label("0000000001-24-000001", "PK99|one")), encoding="utf-8"
+    )
+    (labels_dir / "AAA_0000000001-21-000001.json").write_text(
+        json.dumps(label("0000000001-21-000001", "PK99|two")), encoding="utf-8"
+    )
+    (reports_dir / "PK99_trials.json").write_text(
+        json.dumps({"accessions": [{"accession": "0000000001-24-000001"}]}),
+        encoding="utf-8",
+    )
+    (reports_dir / "PK99_pack_quality_report.json").write_text(
+        json.dumps({"evaluated_at": "2026-10-31T16:37:04Z"}), encoding="utf-8"
+    )
+    wave_one = "sealed_by: lane-a\nsealed_at: 2026-10-31T07:15:22Z\nhead_commit: 1\n"
+    wave_two = (
+        "sealed_by: lane-b\nsealed_at: 2026-10-31T18:03:31Z\nhead_commit: 2\n"
+        "split_decision: 2\n"
+    )
+    monkeypatch.setattr(sys.modules[__name__], "HELD_OUT_ROOT", root)
+
+    # The second accession was sealed after the generation was evaluated:
+    # it belongs to a later generation and is skipped, not counted.
+    (labels_dir / "_SEALED").write_text(wave_one + "\n" + wave_two, encoding="utf-8")
+    assert _label_trials("PK99", reports_dir) == ["PK99|one"]
+
+    # Without a later sealing act the same file is a label the evaluator
+    # dropped at its head commit: the accounting pin must fail, not shrink.
+    (labels_dir / "_SEALED").write_text(wave_one, encoding="utf-8")
+    with pytest.raises(AssertionError, match="dropped"):
+        _label_trials("PK99", reports_dir)
+
+    # A report without evaluated_at cannot date the seals: the out-of-universe
+    # file is refused rather than admitted as a later wave (fail closed).
+    (labels_dir / "_SEALED").write_text(wave_one + "\n" + wave_two, encoding="utf-8")
+    (reports_dir / "PK99_pack_quality_report.json").write_text(
+        json.dumps({}), encoding="utf-8"
+    )
+    with pytest.raises(AssertionError, match="no evaluated_at"):
+        _label_trials("PK99", reports_dir)
+    (reports_dir / "PK99_pack_quality_report.json").write_text(
+        json.dumps({"evaluated_at": "2026-10-31T16:37:04Z"}), encoding="utf-8"
+    )
+
+    # A generation without a trials file for the pack keeps the whole root.
+    (reports_dir / "PK99_trials.json").unlink()
+    assert sorted(_label_trials("PK99", reports_dir)) == ["PK99|one", "PK99|two"]
 
 
 def test_index_rows_match_reports() -> None:
@@ -284,3 +458,193 @@ def test_duplicate_prediction_targets_are_excluded_visibly() -> None:
     assert held[1].state == "not_evaluable"
     assert held[1].exclusion_reason == "field_not_in_envelope"
     assert held[1].trial_id == "T3"
+
+
+def test_envelope_sic_source_values_are_members_of_the_frozen_enum() -> None:
+    schema = json.loads(ENVELOPE_SCHEMA_PATH.read_text(encoding="utf-8"))
+    applicability = schema["properties"]["applicability"]
+    if "$ref" in applicability:
+        # The frozen schema keeps the applicability object in $defs.
+        applicability = schema["$defs"][applicability["$ref"].rsplit("/", 1)[-1]]
+    enum = applicability["properties"]["sic_source"]["enum"]
+    for binding in ("held_out_contract", "sec_submissions", "unbound"):
+        for sic in ("6021", None):
+            assert evaluator._envelope_sic_source(binding, sic) in enum, (
+                binding,
+                sic,
+            )
+    # The binding-route label itself is what the frozen enum refuses — the
+    # schema error that zeroed the second Q1 generation
+    # ("applicability.sic_source: 'held_out_contract' is not one of
+    # ['sec_submissions', 'dei', 'unbound', None]") — which is exactly why
+    # the mapping exists: the route lives in the report note, never in the
+    # envelope.
+    assert "held_out_contract" not in enum
+
+
+def _admitted_aapl_10k_2025() -> tuple[dict, object]:
+    """(manifest, admitted package) built the evaluator's admission way."""
+    manifest = json.loads(
+        (AAPL_10K_2025_PACKAGE / "package_manifest.json").read_text(encoding="utf-8")
+    )
+    members = {
+        item["name"]: (AAPL_10K_2025_PACKAGE / "members" / item["name"]).read_bytes()
+        for item in manifest["members"]
+        if item.get("state") == "stored"
+    }
+    package = admit_retained_filing_package(
+        index_bytes=(AAPL_10K_2025_PACKAGE / "index.json").read_bytes(),
+        manifest=manifest,
+        members=members,
+        witness_bytes=(
+            AAPL_10K_2025_PACKAGE / "sec_submissions_witness.json"
+        ).read_bytes(),
+        capture_recorded_at=manifest["fixture_recorded_at"],
+    )
+    return manifest, package
+
+
+def test_contract_bound_sic_produces_a_valid_envelope_end_to_end() -> None:
+    manifest, package = _admitted_aapl_10k_2025()
+    entity = evaluator._entity_for(
+        manifest,
+        {manifest["cik"]: {"ticker": "AAPL", "identity_binding_state": "test"}},
+        "synthetic_test_contract",
+    )
+    # PK04 is the bank pack; PK01 stands in for the non-bank packs. Both
+    # must return (no SpecialistPackError) with the contract-bound SIC
+    # expressed in the envelope's own vocabulary.
+    for pack_id in ("PK04", "PK01"):
+        catalogue = [
+            field["field_id"]
+            for field in load_pack_schema(pack_id).get("fields") or ()
+            if isinstance(field, dict)
+        ]
+        result = produce_pack(
+            pack_id,
+            PackInput(
+                packages=(package,),
+                entity=entity,
+                query=evaluator._query_for(manifest, catalogue),
+                issuer_sic="6021",
+                sic_source=evaluator._envelope_sic_source("held_out_contract", "6021"),
+            ),
+        )
+        assert result["applicability"]["sic"] == "6021"
+        assert result["applicability"]["sic_source"] == "sec_submissions"
+        assert validate_pack_result(result) == [], pack_id
+
+
+def _synthetic_held_out_corpus(base: Path) -> dict[str, Path]:
+    """One-accession synthetic corpus (held-out root + stage) over the
+    committed AAPL 10-K fixture bytes: a contract row with a digit SIC, the
+    package manifest, one synthetic label under this corpus's own
+    ``_SEALED`` marker, and the staged member bytes. Nothing under the
+    sealed held-out root and nothing under the real stage is read."""
+    accession = "0000320193-25-000079"
+    cik10 = "0000320193"
+    held_out_root = base / "held_out"
+    stage_root = base / "stage"
+    package_dir = held_out_root / "packages" / cik10 / accession
+    package_dir.mkdir(parents=True)
+    shutil.copy(
+        AAPL_10K_2025_PACKAGE / "package_manifest.json",
+        package_dir / "package_manifest.json",
+    )
+    (held_out_root / "held_out_contract.json").write_text(
+        json.dumps(
+            {
+                "contract_id": "synthetic_test_contract",
+                "issuers": [
+                    {
+                        "cik": cik10,
+                        "ticker": "AAPL",
+                        "sic": "6021",
+                        "sic_source": {"capture_path": "synthetic"},
+                        "identity_binding_state": "test",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    labels_dir = held_out_root / "packs" / "PK04" / "labels"
+    labels_dir.mkdir(parents=True)
+    (labels_dir / "labels.json").write_text(
+        json.dumps(
+            [
+                {
+                    "trial_id": "T-PK04-1",
+                    "pack_id": "PK04",
+                    "issuer": "AAPL",
+                    "form_type": "10-K",
+                    "fiscal_year": "2025",
+                    "section_family": "bank_operations",
+                    "polarity": "positive",
+                    "format_class": "ixbrl_inline",
+                    "split": "held_out",
+                    "accession": accession,
+                    "label_class": "extract_positive",
+                    "target_kind": "extract",
+                    "target_id": "revenue",
+                    "expected_value_text": "416,161",
+                    "expected_unit": "USD",
+                    "expected_period_end": "2025-09-27",
+                    "reason": "synthetic",
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    (labels_dir / "_SEALED").write_text("synthetic corpus\n", encoding="utf-8")
+    stage_accession = stage_root / cik10 / accession
+    (stage_accession / "members").mkdir(parents=True)
+    for name in ("index.json", "sec_submissions_witness.json"):
+        shutil.copy(AAPL_10K_2025_PACKAGE / name, stage_accession / name)
+    manifest = json.loads(
+        (AAPL_10K_2025_PACKAGE / "package_manifest.json").read_text(encoding="utf-8")
+    )
+    for item in manifest["members"]:
+        if item.get("state") == "stored":
+            shutil.copy(
+                AAPL_10K_2025_PACKAGE / "members" / item["name"],
+                stage_accession / "members" / item["name"],
+            )
+    return {
+        "held_out_root": held_out_root,
+        "stage_root": stage_root,
+        "out_dir": base / "out",
+    }
+
+
+def test_report_note_keeps_binding_beside_envelope_source(tmp_path: Path) -> None:
+    corpus = _synthetic_held_out_corpus(tmp_path)
+    contract_id, contract_rows = evaluator._load_contract(corpus["held_out_root"])
+    with pytest.raises(SystemExit):
+        # The frozen report core refuses the calibration-only AAPL accession
+        # on the held_out split (A37 untouched proof set), so the report CLI
+        # exits nonzero — but only AFTER the per-accession note this test
+        # asserts on is persisted to the trials file.
+        evaluator.evaluate_pack_held_out(
+            "PK04",
+            held_out_root=corpus["held_out_root"],
+            stage_root=corpus["stage_root"],
+            out_dir=corpus["out_dir"],
+            manifests=evaluator._index_package_manifests(corpus["held_out_root"]),
+            contract_rows=contract_rows,
+            contract_id=contract_id,
+            head_commit="a" * 40,
+            evaluated_at="2026-10-31T00:00:00Z",
+            precision_floor="0.80",
+        )
+    trials = json.loads(
+        (corpus["out_dir"] / "PK04_trials.json").read_text(encoding="utf-8")
+    )
+    note = trials["accessions"][0]
+    # The binding route and the envelope vocabulary sit side by side, and
+    # the accession is admitted (before the fix, produce_pack refused every
+    # accession here and the second Q1 generation produced zero predictions).
+    assert note["outcome"] == "ADMITTED"
+    assert note["issuer_sic"] == "6021"
+    assert note["sic_binding"] == "held_out_contract"
+    assert note["sic_source"] == "sec_submissions"

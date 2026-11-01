@@ -31,6 +31,8 @@ changed:
     what: The Chairman packet (README, FABLE_START_HERE, ADOPTION_AND_FABRIC_BRIEF, MASTERPLAN, SOURCE_INDEX, CENSUS_AND_AUDIT, CENSUS_SNAPSHOT.json, PRODUCT_DESIGN_SPEC, RESEARCH_AND_VALIDATION, ACCEPTANCE_AND_RELEASE) retained verbatim as reviewed source, plus ADOPTION_RECORD_2026-10-31.md with decisions D1-D6.
   - path: research/grey_deer/README.md
     what: Current next action dated 2026-10-31 pointing at the adoption record; the 2026-10-17 section retained as history.
+  - path: research/grey_deer/ew_completion_20261031/EW_P5_ACCEPTANCE_RECEIPTS.md
+    what: Records r4 (2026-11-01) - section 7 receipts table for every merged EW wave through EW-P4 #10350; records r5 added EW-P4-FU #10364 and the first EW-P5 pack census (run ew-p5-packs-20261101T071404Z-518ae7cd); no pack marked PASS.
 verified:
   - claim: data/qledger/claims.jsonl on main is 206 bytes under GitHub's 100 MiB single-file limit.
     command: >-
@@ -54,30 +56,40 @@ verified:
   - claim: The Agent OS record set validates after this change.
     command: python3 scripts/agentos.py validate
     result: see the records PR body for the exact exit code and warning count at the pushed head.
+  - claim: The 2026-10-30 natural run 41156792292 landed no engine data commit.
+    command: gh run view 41156792292 --json status,conclusion,jobs
+    result: >-
+      completed/failure; collect success 04:55:23Z, collect_tail failure 05:26:25Z, engine CANCELLED 09:29:59Z (not a GH001 push failure; the job did not reach a commit). origin/main's last engine data commit remains ad6e5a824334.
+  - claim: The first EW-P5 pack census ran at main d3fb043b0f2f with every count read from junit XML and node TAP.
+    command: >-
+      python3 run_packs.py d3fb043b0f2f521f3d37971f19622019b5b041f1 <out_dir>   # seat script: 14 pytest files plus tests/ew_p4_glance_ui.test.cjs, clean tree asserted
+    result: >-
+      ew-p5-packs-20261101T071404Z-518ae7cd: pytest 1069 passed, 17 skipped, 0 failed, 0 errors; node 20 of 20; pytest exit 0, node exit 0.
 unverified:
-  - claim: The 2026-10-30 natural run 41156792292 engine job also lost its commit to GH001.
-    what_would_verify: Read its engine job conclusion and log once the run completes; the collect_tail job was already FAILURE at 06:2xZ.
   - claim: EW-P1 repair restores the nightly engine data commit.
     what_would_verify: >-
       Two natural nightly sessions after merge in which `engine: regime update <date>` lands on main and data/risk_envelope/latest.json advances; observed by a durable watcher, never polled.
   - claim: #10219's failing check names.
     what_would_verify: One bounded `gh pr checks 10219` after the CI-wait cooldown (REDUNDANT POLL blocked the second read).
 unresolved:
-  - EW-P1.T2 (carve parity, ORCH-P1) and EW-P2.T1 (#10104 successor, ORCH-P2) are in flight on Opus orchestrators administrating fabric lanes; their PRs are judged by artifact by this seat, independently reviewed by a fabric lane, and merged only by the seat after a fresh non-authoring review. Never self-merge.
   - >-
-    #10221's three engine-script hunks are not taken over; EW-P1 inserts at a disjoint seam. #10221 remains the orphaned carrier for the pair check until a successor is decided.
-  - QLedger publication (data/qledger + site/qledger) stays unpublished after EW-P1; its owner is the QLedger native publication program (#10079, inert/NOT_CUT_OVER).
-  - Stale durable mirror vs advancing public file (data/risk_envelope/latest.json vs site/riskdata/risk_envelope.json) is a consequence of the lost commits, not a separate defect; it resolves with EW-P1's natural proof.
-  - EW-P3 (prereg lane), EW-P4 (descriptive early-warning UI) and EW-P5 (acceptance) are not started; they wait on EW-P1 natural proof and EW-P2 merge respectively.
+    EW-P1 acceptance: two natural nightly `engine: regime update` landings on main after the incumbent carve #10255 (merged c2772cc4, 06:29:41Z) (#10333 closed as superseded 2026-10-31T20:14Z); observed by the seat's hourly git-only watcher, never dispatched or polled.
+  - >-
+    #10221's three engine-script hunks are not taken over; #10221 remains the orphaned carrier for the pair check until a successor is decided. QLedger publication (data/qledger + site/qledger) stays unpublished; owner #10079 (inert/NOT_CUT_OVER).
+  - >-
+    EW-P3 reader stays NOT_EXECUTABLE until the registered window elapses (earliest first look 2027-12-31) and a receipted issue exists; no scorer is implemented; no outcome row has been read.
+  - >-
+    EW-P4 #10350 MERGED 2026-11-01T04:36:16Z (886ab694c947, exact head a49a16d5, review r3 APPROVE_WITH_NOTES); rung MERGED only.
+    No producer writes latest_observation, so production renders the unavailable state (EW-P4-ACT). Review notes F-1..F-3
+    are closed by #10364 (squash d3fb043b0f2f, merged 2026-11-01T07:11:16Z). EW-P5 first census ew-p5-packs-20261101T071404Z-518ae7cd: no pack is PASS;
+    defects and gaps are EW-P5-FU; receipts at research/grey_deer/ew_completion_20261031/EW_P5_ACCEPTANCE_RECEIPTS.md.
 next_actions:
   - >-
-    Seat: judge ORCH-P1 and ORCH-P2 returns by opening the diffs and test output in their SSD trees; request a fresh non-authoring review; merge --match-head-commit after green exact-head CI and reviewDecision.
+    Seat: EW-P5-FU repairs (S02/S12 live-overlay precedence merged as #10371 a7628775, O06 publish-before-record, then O01, C05, U02, U09 and the sparse-tree guard), each as its own PR with a fresh non-authoring review. EW-P4-ACT (the latest_observation producer) needs its own activation gate and is not a UI fix.
   - >-
-    Seat: comment once on #10219 (takeover + records PR link), once on #10221 (disjoint-seam notice for scripts/ci/daily_engine_commit_outputs.sh), once on #10104 (successor pointer) after the EW-P2 PR exists.
+    Seat: when the EW-P1 watcher reports two engine landings, record PRODUCTION_PROOF for EW-P1 in this workstream (never before; a merge of #10255 is not proof).
   - >-
-    Seat: after EW-P1 merges, hand the two-natural-session proof to a durable watcher (scheduled task, never a poll) reading the next two natural daily.yml runs' engine job conclusions and the landing of `engine: regime update`.
-  - >-
-    Then: EW-P3.T1 prereg lane commission (B, forecast science) and EW-P4.T1 descriptive UI (A) per the masterplan §4, each as its own orchestrator wave with fabric lanes; EW-P5 acceptance packs S/Q/O/C/U/R per ACCEPTANCE_AND_RELEASE.md.
+    Then: a second named EW-P5 pack run after the EW-P5-FU merges, per ACCEPTANCE_AND_RELEASE.md; `SESSION END:` line at a genuine stop.
 do_not_redo:
   - >-
     Do not re-ACK, re-START or re-spec the adopted task tree; #10219's tree is the source of truth and this record is an amendment.
@@ -97,6 +109,8 @@ danger_areas:
   - >-
     `gh` in a shell loop and repeated `gh pr checks` are hook-blocked (shared quota, REDUNDANT POLL); use one GraphQL read or a durable watcher.
   - daily.yml sits near the 512 KB processing cap guarded by tests/test_workflow_file_size.py; it may only shrink, which is why the tail step is extracted to a script.
+  - >-
+    A `git log --grep '#10255'` watcher matches any records commit that mentions #10255 (it matched f9b070d8, records r3). Match the squash subject ending "(#10255)" and count engine landings only after that commit in ancestry.
 ---
 
 # 2026-10-31 — Fable CEO takeover of the Early-Warning Completion program
@@ -108,3 +122,7 @@ non-authoring review is still required on every PR; the seat never self-merges o
 Adoption decisions D1–D6, the refreshed invalidator table and the wave plan live in
 `research/grey_deer/ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md`. The Chairman packet is retained
 verbatim beside it.
+
+Records r5 (2026-11-01): EW-P4-FU #10364 merged at 2026-11-01T07:11:16Z (squash d3fb043b0f2f). The first EW-P5 pack
+census (ew-p5-packs-20261101T071404Z-518ae7cd) found no pack at PASS; the defects and gaps are EW-P5-FU in the
+workstream, and the producer gap is EW-P4-ACT.

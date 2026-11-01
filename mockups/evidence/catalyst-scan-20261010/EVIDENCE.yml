@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/catalyst_scan.css
+manifest: mockups/evidence/catalyst-scan-20261010/manifest.json

@@ -1,6 +1,6 @@
 {
   "schema": "prophet_arena.scoreboard/v1",
-  "as_of": "2026-10-31",
+  "as_of": "2026-11-01",
   "tier": "display",
   "authority": {
     "tier": "display",
@@ -71,66 +71,8 @@
   "standing_line_zh": "\u5f71\u5b50\u8bb0\u5f55 \u2014 \u5b9e\u76d8\u7b56\u7565\u4ec5\u5728\u64cd\u4f5c\u8005\u6279\u51c6\u540e\u624d\u4f1a\u66f4\u6539",
   "headline_min_closed": 20,
   "harness_validity": {
-    "c0_plan_ids": [
-      "CAR-BULL-20261029",
-      "CF-BULL-20261029",
-      "CRGY-BULL-20261029",
-      "CVNA-BULL-20261029",
-      "CWK-BULL-20261026",
-      "EMN-BULL-20261026",
-      "EPR-BULL-20261029",
-      "FLS-BULL-20261029",
-      "IBP-BULL-20261026",
-      "INGR-BULL-20261029",
-      "MKC-BULL-20261029",
-      "MRP-BULL-20261029",
-      "MSEX-BULL-20261026",
-      "NOV-BULL-20261029",
-      "NVO-BULL-20261029",
-      "OSK-BULL-20261026",
-      "POR-BULL-20261029",
-      "SLVM-BULL-20261029",
-      "TFIN-BULL-20261026",
-      "TKO-BULL-20261029",
-      "TROW-BULL-20261029",
-      "TSCO-BULL-20261029",
-      "UE-BULL-20261029",
-      "UVV-BULL-20261029",
-      "VRT-BULL-20261026",
-      "VSAT-BULL-20261026",
-      "VTOL-BULL-20261026",
-      "WPC-BULL-20261029"
-    ],
-    "live_plan_ids": [
-      "CAR-BULL-20261029",
-      "CF-BULL-20261029",
-      "CRGY-BULL-20261029",
-      "CVNA-BULL-20261029",
-      "CWK-BULL-20261026",
-      "EMN-BULL-20261026",
-      "EPR-BULL-20261029",
-      "FLS-BULL-20261029",
-      "IBP-BULL-20261026",
-      "INGR-BULL-20261029",
-      "MKC-BULL-20261029",
-      "MRP-BULL-20261029",
-      "MSEX-BULL-20261026",
-      "NOV-BULL-20261029",
-      "NVO-BULL-20261029",
-      "OSK-BULL-20261026",
-      "POR-BULL-20261029",
-      "SLVM-BULL-20261029",
-      "TFIN-BULL-20261026",
-      "TKO-BULL-20261029",
-      "TROW-BULL-20261029",
-      "TSCO-BULL-20261029",
-      "UE-BULL-20261029",
-      "UVV-BULL-20261029",
-      "VRT-BULL-20261026",
-      "VSAT-BULL-20261026",
-      "VTOL-BULL-20261026",
-      "WPC-BULL-20261029"
-    ],
+    "c0_plan_ids": [],
+    "live_plan_ids": [],
     "c0_mismatch_count": 0,
     "missing_from_mirror": [],
     "extra_in_mirror": [],
@@ -369,10 +311,10 @@
     }
   ],
   "tonight": {
-    "asof": "2026-10-31",
+    "asof": "2026-11-01",
     "standouts_as_of": "2026-10-30",
     "price_through": "2026-10-30",
-    "observed_at_utc": "2026-10-31T05:59:47.400707+00:00",
+    "observed_at_utc": "2026-11-01T06:46:03.509954+00:00",
     "source_delayed": false,
     "source_unknown": false,
     "source_basis": "panel_majority",
@@ -381,7 +323,7 @@
     "dispersion": {
       "mode": "not_lean_in",
       "state": "neutral",
-      "artifact_as_of": "2026-10-31",
+      "artifact_as_of": "2026-11-01",
       "stale_sessions": 0,
       "cap": 6,
       "path": "data/dispersion/regime.json"
@@ -412,7 +354,7 @@
           "2B",
           "3B"
         ],
-        "runtime_s": 20.1
+        "runtime_s": 18.1
       }
     },
     "policies": {
@@ -428,6 +370,7 @@
           "CVCO",
           "CRGY",
           "EPC",
+          "EPR",
           "CVNA",
           "VRT",
           "AM",
@@ -450,7 +393,6 @@
           "CF",
           "BOOT",
           "FBK",
-          "EPR",
           "POR",
           "IBP",
           "NOV",
@@ -486,37 +428,8 @@
           "NVO",
           "SLVM"
         ],
-        "plan_ids": [
-          "CAR-BULL-20261029",
-          "CF-BULL-20261029",
-          "CRGY-BULL-20261029",
-          "CVNA-BULL-20261029",
-          "CWK-BULL-20261026",
-          "EMN-BULL-20261026",
-          "EPR-BULL-20261029",
-          "FLS-BULL-20261029",
-          "IBP-BULL-20261026",
-          "INGR-BULL-20261029",
-          "MKC-BULL-20261029",
-          "MRP-BULL-20261029",
-          "MSEX-BULL-20261026",
-          "NOV-BULL-20261029",
-          "NVO-BULL-20261029",
-          "OSK-BULL-20261026",
-          "POR-BULL-20261029",
-          "SLVM-BULL-20261029",
-          "TFIN-BULL-20261026",
-          "TKO-BULL-20261029",
-          "TROW-BULL-20261029",
-          "TSCO-BULL-20261029",
-          "UE-BULL-20261029",
-          "UVV-BULL-20261029",
-          "VRT-BULL-20261026",
-          "VSAT-BULL-20261026",
-          "VTOL-BULL-20261026",
-          "WPC-BULL-20261029"
-        ],
-        "n_plans": 28,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 67,
           "cap": null,
@@ -526,13 +439,13 @@
         },
         "origination": {
           "offered": 67,
-          "skipped_duplicate_id": 23,
+          "skipped_duplicate_id": 51,
           "skipped_open_plan": 10,
           "skipped_clock_provenance": 6,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-31",
+          "recorded_at": "2026-11-01",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
@@ -585,11 +498,11 @@
               ]
             }
           ],
-          "originated": 28,
+          "originated": 0,
           "validation_failed": 6
         },
-        "ledger_rows_appended": 28,
-        "ledger_closures_appended": 3
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C1_buy_soon_first": {
         "selected_tickers": [
@@ -603,17 +516,11 @@
           "CVCO",
           "CRGY",
           "EPC",
-          "CVNA",
-          "VRT"
+          "EPR",
+          "CVNA"
         ],
-        "plan_ids": [
-          "CRGY-BULL-20261029",
-          "CVNA-BULL-20261029",
-          "FLS-BULL-20261029",
-          "VRT-BULL-20261026",
-          "VSAT-BULL-20261026"
-        ],
-        "n_plans": 5,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 67,
           "cap": 12,
@@ -623,13 +530,13 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 3,
+          "skipped_duplicate_id": 8,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 3,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-31",
+          "recorded_at": "2026-11-01",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
@@ -658,10 +565,10 @@
               ]
             }
           ],
-          "originated": 5,
+          "originated": 0,
           "validation_failed": 3
         },
-        "ledger_rows_appended": 5,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C3_door_w_union": {
@@ -681,11 +588,9 @@
         ],
         "plan_ids": [
           "ATO-BULL-20261030",
-          "FLS-BULL-20261029",
-          "LHX-BULL-20261030",
-          "VSAT-BULL-20261026"
+          "LHX-BULL-20261030"
         ],
-        "n_plans": 4,
+        "n_plans": 2,
         "selection": {
           "admitted": 67,
           "cap": 12,
@@ -698,13 +603,13 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 3,
+          "skipped_duplicate_id": 5,
           "skipped_open_plan": 2,
           "skipped_clock_provenance": 3,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-31",
+          "recorded_at": "2026-11-01",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
@@ -733,10 +638,10 @@
               ]
             }
           ],
-          "originated": 4,
+          "originated": 2,
           "validation_failed": 3
         },
-        "ledger_rows_appended": 4,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C4_dispersion_cap": {
@@ -748,11 +653,8 @@
           "GM",
           "CC"
         ],
-        "plan_ids": [
-          "FLS-BULL-20261029",
-          "VSAT-BULL-20261026"
-        ],
-        "n_plans": 2,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 67,
           "cap": 6,
@@ -760,13 +662,13 @@
         },
         "origination": {
           "offered": 6,
-          "skipped_duplicate_id": 2,
+          "skipped_duplicate_id": 4,
           "skipped_open_plan": 0,
           "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-31",
+          "recorded_at": "2026-11-01",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
@@ -787,10 +689,10 @@
               ]
             }
           ],
-          "originated": 2,
+          "originated": 0,
           "validation_failed": 2
         },
-        "ledger_rows_appended": 2,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C5_align2_gate": {
@@ -802,13 +704,8 @@
           "CWK",
           "INGR"
         ],
-        "plan_ids": [
-          "CWK-BULL-20261026",
-          "FLS-BULL-20261029",
-          "INGR-BULL-20261029",
-          "TSCO-BULL-20261029"
-        ],
-        "n_plans": 4,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 67,
           "cap": 12,
@@ -825,20 +722,20 @@
         },
         "origination": {
           "offered": 6,
-          "skipped_duplicate_id": 1,
+          "skipped_duplicate_id": 5,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 0,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-31",
+          "recorded_at": "2026-11-01",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [],
-          "originated": 4,
+          "originated": 0,
           "validation_failed": 0
         },
-        "ledger_rows_appended": 4,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C6_time_stop_21": {
@@ -853,6 +750,7 @@
           "CVCO",
           "CRGY",
           "EPC",
+          "EPR",
           "CVNA",
           "VRT",
           "AM",
@@ -875,7 +773,6 @@
           "CF",
           "BOOT",
           "FBK",
-          "EPR",
           "POR",
           "IBP",
           "NOV",
@@ -911,37 +808,8 @@
           "NVO",
           "SLVM"
         ],
-        "plan_ids": [
-          "CAR-BULL-20261029",
-          "CF-BULL-20261029",
-          "CRGY-BULL-20261029",
-          "CVNA-BULL-20261029",
-          "CWK-BULL-20261026",
-          "EMN-BULL-20261026",
-          "EPR-BULL-20261029",
-          "FLS-BULL-20261029",
-          "IBP-BULL-20261026",
-          "INGR-BULL-20261029",
-          "MKC-BULL-20261029",
-          "MRP-BULL-20261029",
-          "MSEX-BULL-20261026",
-          "NOV-BULL-20261029",
-          "NVO-BULL-20261029",
-          "OSK-BULL-20261026",
-          "POR-BULL-20261029",
-          "SLVM-BULL-20261029",
-          "TFIN-BULL-20261026",
-          "TKO-BULL-20261029",
-          "TROW-BULL-20261029",
-          "TSCO-BULL-20261029",
-          "UE-BULL-20261029",
-          "UVV-BULL-20261029",
-          "VRT-BULL-20261026",
-          "VSAT-BULL-20261026",
-          "VTOL-BULL-20261026",
-          "WPC-BULL-20261029"
-        ],
-        "n_plans": 28,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 67,
           "cap": null,
@@ -951,13 +819,13 @@
         },
         "origination": {
           "offered": 67,
-          "skipped_duplicate_id": 23,
+          "skipped_duplicate_id": 51,
           "skipped_open_plan": 10,
           "skipped_clock_provenance": 6,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-31",
+          "recorded_at": "2026-11-01",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
@@ -1010,11 +878,11 @@
               ]
             }
           ],
-          "originated": 28,
+          "originated": 0,
           "validation_failed": 6
         },
-        "ledger_rows_appended": 28,
-        "ledger_closures_appended": 4
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
       },
       "C7_buy_soon_admitted": {
         "selected_tickers": [
@@ -1028,17 +896,11 @@
           "CVCO",
           "CRGY",
           "EPC",
-          "CVNA",
-          "VRT"
+          "EPR",
+          "CVNA"
         ],
-        "plan_ids": [
-          "CRGY-BULL-20261029",
-          "CVNA-BULL-20261029",
-          "FLS-BULL-20261029",
-          "VRT-BULL-20261026",
-          "VSAT-BULL-20261026"
-        ],
-        "n_plans": 5,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 67,
           "cap": 12,
@@ -1051,13 +913,13 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 3,
+          "skipped_duplicate_id": 8,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 3,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-10-31",
+          "recorded_at": "2026-11-01",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
@@ -1086,10 +948,10 @@
               ]
             }
           ],
-          "originated": 5,
+          "originated": 0,
           "validation_failed": 3
         },
-        "ledger_rows_appended": 5,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       }
     }
