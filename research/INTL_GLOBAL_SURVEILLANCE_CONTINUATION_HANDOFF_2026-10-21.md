@@ -412,3 +412,26 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
   SUCCESS incl. the international-dislocation-explorer check); then record the merge (records r10).
 - Row 18 entitled-browser journey proof; row 19 next nightly cycle; row 20 CI-green quote; row 21 served
   both-themes proof — records-only appends. R2-01 remains the one deferred product follow-up.
+
+## Checkpoint 2026-11-01 (r10) — F10 + hygiene + R2-01 MERGED; records r9 merged; §14 17/4/0
+
+- Records r9 #10368 → main dd24759ec2a9ffe14a91db2e8921a7bba72200d3 (2026-11-01T06:49:49Z), pinned 2d68f618 after
+  review INTL-GS-REC9 `PASS_WITH_NOTES` (nits N1–N3 applied in the pinned follow-up).
+- PR #10367 MERGED → main c133b698b4960f5a2a8b4540e6b164c3c7c23e1b at 2026-11-01T07:40:51Z (squash pinned 5ac89fd3; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed).
+- PR #10376 MERGED → main bacc2d765488de853291dc0f8d7c545d3b3ca29a at 2026-11-01T09:29:37Z (squash pinned d50f5839; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed). Lessons recorded (memory `monkeypatch-delenv-on-absent-key-records-no-teardown`,
+  `stacked-pr-dies-when-parent-branch-is-deleted-on-merge`).
+- R2-01: PR #10384 MERGED → main 3d8ad3eb4c027126174fc2bf9f75c74f5bb04709 at 2026-11-01T09:36:34Z (squash pinned ee5ce58a; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed; review INTL-GS-R2-01 PASS).
+- §14 row 20 → DONE by records (local green quotes 14/14 + 18/18 of the CI-owned cjs suites on a playwright-capable
+  host, same playwright version as CI, system Chrome channel). Row 19 stays PARTIAL (render.yml is path-filtered and not
+  the only publisher; pin1's own render is not a retention cycle; probe after the next nightly). Row 21: DONE on the served pack.
+  Row 18 stays PARTIAL (anonymous half 18/18 green; entitled journey = human sign-in). **Recount: 17 DONE / 4 PARTIAL (rows 14, 16, 18, 19) / 0 GAP.**
+- Review INTL-GS-REC10 AUDIT-1 `FAIL` on dd66d75d; all seven findings applied in the pinned follow-up (census addendum
+  r10 "Audit trail" bullet).
+- Merges performed by the seat's durable pinned-merge watcher (`seat_pinned_merge_watch.sh`: 10-min reads,
+  fail-closed on head move / red / required-not-pass), not by polling.
+
+### Next
+- Row 18 entitled-browser journey proof (human sign-in); rows 14 and 16 per their listed owners. Row 19: probe the
+  served `intl.html` after the next `daily.yml` nightly or an unrelated render (chip + 530/110-style split + GS views
+  retained). row 21 is CLOSED on the served pack. R2-01 is CLOSED (#10384 merged); F10 and its test hygiene are CLOSED.
+  Dislocation job re-measure before touching its 15-min budget: the F10 `ci` run 41280629630 (pull_request, success, #10367 head 5ac89fd3): read its job list in ONE unpaginated page (`per_page=100`, no `--paginate`), outside the read cooldown; the paginated shape was refused by the shared-quota guard and is not to be repeated. No other product lane is open.

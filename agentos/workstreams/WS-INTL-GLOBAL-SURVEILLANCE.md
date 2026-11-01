@@ -150,12 +150,13 @@ next_action: >
   W2B #10278, W2A #10288, gb1 #10354, pin1 #10355; records #10353) and §14 row 4 is served (640 chips on
   intl.html at 03:12:25 GMT); §14 recount 15 DONE / 6 PARTIAL / 0 GAP (census addendum 2026-11-01). Records r8
   merged (#10362 → f2a7fe74, 06:03:02Z); pin1 served at 05:21:32 GMT (intl-gs__edges__head = 640, r9 addendum);
-  F10 state: PR #10367 OPEN (draft) on claude/intl-gs-f10-canonical-main: head 5ac89fd395432d688e13e583d1c15591adba58b8 (follow-up to the reviewed 8f1b1d5e; review INTL-GS-F10 PASS_WITH_NOTES with one SHOULD-FIX fixed in the follow-up; re-read INTL-GS-F10-AUDIT-2 PASS_WITH_NOTES at 5ac89fd3 with two test-hygiene NITs N5/N6 deferred to a later test PR), CI rollup pending at 06:4xZ; merge seat-only pinned to 5ac89fd3 after a green rollup including the international-dislocation-explorer check. Remaining:
-  row 18 entitled-browser journey
-  proof on the served URL; row 19 next nightly publisher cycle retaining the GS views; row 20 CI-green quote of
-  the legacy navigation suite; row 21 served both-themes proof for the Scanner / Dislocations boards; deferred
-  R2-01 (scanner-abstain focus evidence cell) and F10 (structural CI-budget fetch fix, own PR); IM18 view surfaces
-  + IM08/IM09 custody #8754 (never touched); Transmission tab not_built by design. Standing: never re-spawn
+  F10 state: PR #10367 MERGED → main c133b698b4960f5a2a8b4540e6b164c3c7c23e1b at 2026-11-01T07:40:51Z (head 5ac89fd395432d688e13e583d1c15591adba58b8 on claude/intl-gs-f10-canonical-main, follow-up to the reviewed 8f1b1d5e; review INTL-GS-F10 PASS_WITH_NOTES with one SHOULD-FIX fixed in the follow-up; INTL-GS-F10-AUDIT-2 PASS_WITH_NOTES at 5ac89fd3 with test-hygiene NITs N5/N6 → #10376; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed). Test-hygiene follow-up: PR #10376 MERGED → main bacc2d765488de853291dc0f8d7c545d3b3ca29a at 2026-11-01T09:29:37Z (squash pinned d50f5839; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed). R2-01: PR #10384 MERGED → main 3d8ad3eb4c027126174fc2bf9f75c74f5bb04709 at 2026-11-01T09:36:34Z (squash pinned ee5ce58a; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed; review INTL-GS-R2-01 PASS). §14 after records r10 (AUDIT-1 findings applied): 17 DONE / 4 PARTIAL (rows 14, 16, 18, 19) / 0 GAP. Remaining:
+  row 18 entitled-browser journey proof on the served URL (human sign-in); row 19 one probe of the served
+  intl.html after the next daily.yml nightly or an unrelated render (Graph-boundary chip + source-qualification split +
+  GS views retained; render.yml is path-filtered (templates/** with exclusions + builder/sweep scripts) and is not the only publisher: daily.yml nightly, closing-bell.yml, asia-close.yml, public-render.yml (dispatch + filtered main pushes), engine-render.yml; no pages.yml exists); rows 14/16 per
+  their listed owners; dislocation job re-measure via the F10 `ci` run 41280629630 (pull_request, success, #10367 head 5ac89fd3): read its job list in ONE unpaginated page (`per_page=100`, no `--paginate`), outside the read cooldown; the paginated shape was refused by the shared-quota guard and is not to be repeated; IM18 view surfaces
+  + IM08/IM09 custody #8754 (never touched); Transmission tab not_built by design. R2-01, F10 and the F10 test
+  hygiene are CLOSED (merged). Standing: never re-spawn
   ORCH-5/ORCH-6 (message only); never relaunch a used lane run id (incl. rec8-r1, admission-refused);
   DEC:INTL-GS-FRED-GOVERNMENT-SERIES-RIGHTS asked once, never re-ask; #8754 never touch; #9596 never push;
   Opus cap 2; the 16-child grant is spent.
