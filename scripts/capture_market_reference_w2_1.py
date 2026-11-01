@@ -46,6 +46,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO))  # this script runs by file path, without PYTHONPATH
 EVIDENCE_DIR = REPO / "mockups" / "evidence" / "market_reference_w2_1"
 TEMP_SITE_DIR = Path("/tmp/mr-capture/site")
 
@@ -138,7 +139,6 @@ def _seed_source(state: dict) -> str:
 def _prepare_site() -> None:
     """Stage a copy of site/ in /tmp/mr-capture/site and inject the Look-up row
     into macro.html between the More-row container and its parent close."""
-    sys.path.insert(0, str(REPO))  # this script runs without PYTHONPATH
     from lib.pages import write_unshimmed_html  # noqa: PLC0415
     TEMP_SITE_DIR.parent.mkdir(parents=True, exist_ok=True)
     if TEMP_SITE_DIR.exists():
