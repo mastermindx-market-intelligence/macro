@@ -35,6 +35,7 @@ from engine.fundamental_forensics.sec_document_spine import (
     build_filing_manifests,
 )
 from engine.fundamental_forensics.source_sync import sync_source_roots
+from engine.marketing.catalyst_packets import FIGURE_OUTCOMES, bound_figure_outcome
 from engine.marketing.catalyst_source_store import (
     INDEX_RELATIVE_PATH,
     INDEX_SCHEMA,
@@ -220,20 +221,26 @@ def project_release_figures(
     manifest: Mapping,
     exhibit_url: str,
     document_sha256: str,
-) -> tuple[str, tuple[dict, ...]]:
+) -> tuple[str, tuple[dict, ...], str]:
     """Project an EX-99.1 body's figures exactly as the public packet does.
 
-    Mirrors ``engine/marketing/catalyst_packets.py`` 334-371: bind with the
-    incumbent Earnings Release binder, map eps_diluted / revenue candidates,
-    replay every span receipt against the exact bytes and drop non-finite
-    amounts.  Returns ``(status, figures)`` where status is ``parsed``,
-    ``no_figures``, ``parse_failed`` or ``binding_digest_mismatch``.
+    Mirrors the bind block of ``engine/marketing/catalyst_packets.py``: bind
+    with the incumbent Earnings Release binder, map eps_diluted / revenue
+    candidates, replay every span receipt against the exact bytes and drop
+    non-finite amounts.  Returns ``(status, figures, figure_outcome)`` where
+    status is ``parsed``, ``no_figures``, ``parse_failed`` or
+    ``binding_digest_mismatch`` and figure_outcome is one of
+    ``FIGURE_OUTCOMES`` (empty on a digest mismatch), so a release with no
+    projectable figures never reads like a binder failure.
     """
     from engine.earnings_release.binding import bind_release_document
     from engine.earnings_release.receipts import replay_receipt
 
     try:
         body = body_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        return ("parse_failed", (), "document_not_utf8")
+    try:
         bound = bind_release_document(
             cik=cik,
             accession=accession,
@@ -245,10 +252,10 @@ def project_release_figures(
             exhibit_url=exhibit_url,
         )
     except Exception:  # noqa: BLE001 - a binding failure is never fatal to D4.
-        return ("parse_failed", ())
+        return ("parse_failed", (), "binder_exception")
     if bound.revision.source_sha256 != document_sha256:
         # Checked OUTSIDE the generic except so it can never be swallowed.
-        return ("binding_digest_mismatch", ())
+        return ("binding_digest_mismatch", (), "")
     figures: list[dict] = []
     try:
         for f in bound.figures.figures:
@@ -279,10 +286,9 @@ def project_release_figures(
                 "span_sha256": f.receipt.span_sha256,
             })
     except Exception:  # noqa: BLE001 - unreadable attachment, no facts admitted.
-        return ("parse_failed", ())
-    if figures:
-        return ("parsed", tuple(figures))
-    return ("no_figures", ())
+        return ("parse_failed", (), "replay_failed")
+    outcome = bound_figure_outcome(bound.figures.outcome, len(figures))
+    return (FIGURE_OUTCOMES[outcome], tuple(figures), outcome)
 
 
 class _Cycle:
@@ -901,7 +907,7 @@ def _new_filing(cycle: _Cycle, issuer: UniverseIssuer, manifest: dict,
         receipt_id = "catsec-" + hashlib.sha256(
             f"{url}\n{document_sha256}\n{retrieved_at_text}".encode("utf-8"),
         ).hexdigest()[:40]
-        parse_status, figures = project_release_figures(
+        parse_status, figures, figure_outcome = project_release_figures(
             cik=issuer.cik, accession=accession, body_bytes=body,
             manifest=manifest, exhibit_url=url, document_sha256=document_sha256,
         )
@@ -942,4 +948,5 @@ def _new_filing(cycle: _Cycle, issuer: UniverseIssuer, manifest: dict,
             "correction_generation": correction_generation,
         },
         "parse_status": parse_status,
+        "figure_outcome": figure_outcome,
     }

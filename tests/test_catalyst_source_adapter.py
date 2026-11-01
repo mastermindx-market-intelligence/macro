@@ -791,3 +791,23 @@ def test_31_coverage_reads_the_state_at_the_callers_now(tmp_path, target_registr
     assert coverage is not None
     assert coverage.outcome == "COMPLETE"
     assert coverage.returned_events == 1
+
+
+def test_32_figure_outcome_reaches_the_observation(tmp_path, target_registry):
+    # Catches: the reader dropping why a release has no figures, or passing on
+    # a code that contradicts the record's parse status.
+    now = NOW
+    for parse_status, outcome, expected in (
+            ("no_figures", "no_period_columns", "no_period_columns"),
+            ("parse_failed", "binder_exception", "binder_exception"),
+            ("parsed", "no_period_columns", ""),
+            ("no_figures", ["no_tables"], ""),
+            ("no_figures", None, "")):
+        event = _record(now, figures=[], parse_status=parse_status)
+        if outcome is not None:
+            event["figure_outcome"] = outcome
+        source, _ = _configure(_index(now, events=[event]), now)
+        [recent] = source.recent_events(now - timedelta(days=7), now, 10)
+        observation = source.document_observation(recent, now)
+        assert observation is not None, (parse_status, outcome)
+        assert observation.figure_outcome == expected, (parse_status, outcome)

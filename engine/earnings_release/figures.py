@@ -95,8 +95,13 @@ _UNIT_BY_SCALE = {
 }
 _SCALE_FACTOR = {"usd_thousands": 1e3, "usd_millions": 1e6, "usd_billions": 1e9}
 
+# "(In millions)", "(in $ millions)", and the symbol-led "($ billions, except
+# EPS)" / "$ in millions" forms.  A "$" in the caption also declares the
+# currency of the table it governs.
 _UNITS_CAPTION_RE = re.compile(
-    r"\b(?:in|dollars in|amounts in|figures in)\s+(thousands|millions|billions)\b", re.I
+    r"\b(?:in|dollars in|amounts in|figures in)\s+(?:(?:US)?\$\s*)?(thousands|millions|billions)\b|"
+    r"(?:\A|\()\s*(?:US)?\$\s*(?:in\s+)?(thousands|millions|billions)\b",
+    re.I,
 )
 _CURRENCY_WORD_RE = re.compile(r"\b(?:U\.?S\.?\s+dollars|US\$|USD)\b", re.I)
 _CURRENCY_SYMBOL = {"$": "USD", "US$": "USD", "€": "EUR", "£": "GBP", "¥": "JPY"}
@@ -105,7 +110,9 @@ _CURRENCY_SYMBOL = {"$": "USD", "US$": "USD", "€": "EUR", "£": "GBP", "¥": "
 # not assuming a default.
 _GAAP_CAPTION_RE = re.compile(
     r"condensed\s+consolidated\s+(?:statements?|balance)|"
-    r"consolidated\s+statements?\s+of\s+(?:operations|income|cash\s+flows)|"
+    r"consolidated\s+statements?\s+of\s+(?:operations|income|earnings|cash\s+flows)|"
+    r"consolidated\s+(?:income|earnings)\s+information|"
+    r"\A\s*(?:consolidated\s+)?income\s+statements?\s*(?:\(unaudited\))?\s*\Z|"
     r"\bU\.?S\.?\s+GAAP\b|\bGAAP\s+(?:results|measures|basis)\b",
     re.I,
 )
@@ -113,22 +120,56 @@ _NON_GAAP_CAPTION_RE = re.compile(
     r"non-?GAAP|reconciliation\s+of\s+|\badjusted\s+(?:results|measures|basis)\b", re.I
 )
 _NON_GAAP_INLINE_RE = re.compile(r"non-?GAAP|\badjusted\b", re.I)
+# A basis DECLARATION is a caption: "Non-GAAP Financial Measures",
+# "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
+# "RECONCILIATION OF ADJUSTED OPERATING INCOME AND ADJUSTED OPERATING MARGIN".
+# Prose that merely MENTIONS a basis ("Non-GAAP results exclude the impact
+# from certain investments, explained in ...", "1Non-GAAP financial measure;
+# excludes ...") governs nothing after it.  Across the 40-release census every
+# real caption is at most nine words and none is punctuated as a sentence.
+_CAPTION_MAX_WORDS = 9
+_SENTENCE_PUNCTUATION_RE = re.compile(r";|\.\s*\Z")
 
 _NUMERIC_CELL_RE = re.compile(r"\A\(?-?\d{1,3}(?:,\d{3})*(?:\.\d+)?\)?%?\Z")
 _BARE_NUMERIC_RE = re.compile(r"\A\(?-?\d+(?:\.\d+)?\)?%?\Z")
 _FOOTNOTE_CELL_RE = re.compile(r"\A\(\d{1,2}\)\Z")
 _FOOTNOTE_SUFFIX_RE = re.compile(r"\s*\(\d{1,2}\)\s*\Z")
-_DATE_CELL_RE = re.compile(
-    r"\A(January|February|March|April|May|June|July|August|September|October|"
-    r"November|December)\s+(\d{1,2}),?\s+(\d{4})\Z",
-    re.I,
+_MONTHS = (
+    r"(January|February|March|April|May|June|July|August|September|October|"
+    r"November|December)"
 )
+_DATE_CELL_RE = re.compile(r"\A" + _MONTHS + r"\s+(\d{1,2}),?\s+(\d{4})\Z", re.I)
+# "Three Months Ended September 30, 2025" in one cell: the date is the tail.
+_DATE_TAIL_RE = re.compile(r"\b" + _MONTHS + r"\s+(\d{1,2}),?\s+(\d{4})\Z", re.I)
+# "September 30," (or "Three Months Ended September 30,") over a row of years.
+_MONTH_DAY_TAIL_RE = re.compile(r"(?:\A|\s)" + _MONTHS + r"\s+(\d{1,2}),?\Z", re.I)
+_SLASH_DATE_RE = re.compile(r"\A(\d{1,2})/(\d{1,2})/(\d{4})\Z")
+_YEAR_CELL_RE = re.compile(r"\A(?:19|20)\d{2}\Z")
 _PERIOD_PREFIX_RE = re.compile(
     r"\b(?:three|six|nine|twelve|three-?month|first|second|third|fourth)\b.*\b"
     r"(?:month|quarter|year)s?\b.*\b(?:ended|ending)\b|"
-    r"\b(?:month|quarter|year)s?\s+(?:ended|ending)\b",
+    r"\b(?:week|month|quarter|year)s?\s+(?:ended|ending)\b",
     re.I,
 )
+# How long a period header says its period runs: "Three Months Ended",
+# "12 Weeks Ended", "Fiscal Year Ended", "Fourth Quarter".
+_SPAN_WORDS = {"three": 3, "six": 6, "nine": 9, "twelve": 12, "thirteen": 13, "sixteen": 16}
+_PERIOD_SPAN_RE = re.compile(
+    r"\b(three|six|nine|twelve|thirteen|sixteen|\d{1,2})[\s-]+(month|week)s?\b", re.I
+)
+_YEAR_SPAN_RE = re.compile(r"\byears?\s+(?:ended|ending)\b|\bfiscal\s+(?:year\b|\d{4})", re.I)
+_QUARTER_SPAN_RE = re.compile(
+    r"\bquarters?\s+(?:ended|ending)\b|\b(?:first|second|third|fourth)\s+quarter\b|\bQ[1-4]\b",
+    re.I,
+)
+# A cell that holds a column's place but no value: "—", "n/m", "*".
+_PLACEHOLDER_CELL_RE = re.compile(r"\A(?:[-–—]+|n\.?/?m\.?|n\.?/?a\.?|\*+)\s*%?\Z", re.I)
+# The closing half of a value typeset across cells: "(0.12" + ")", "12.5" + "%".
+_SUFFIX_CELLS = frozenset({")", "%", ")%", "%)"})
+_PERCENT_HEADER_RE = re.compile(r"%|\bpercent", re.I)
+# "Net revenues1": a footnote reference glued to the label word.
+_GLUED_FOOTNOTE_RE = re.compile(r"(?<=[a-z])\d{1,2}\Z")
+_EPS_LABEL_RE = re.compile(r"\bEPS\b", re.I)
 _SEGMENT_SCOPE_RE = re.compile(r"by\s+(?:reportable\s+)?segment|segment\s+(?:results|revenue)", re.I)
 _SHARE_COUNT_SCOPE_RE = re.compile(r"shares\s+used|weighted[- ]average\s+shares", re.I)
 _PER_SHARE_SCOPE_RE = re.compile(r"per\s+(?:common\s+)?share", re.I)
@@ -165,7 +206,11 @@ class _RowRule:
 
 _ROW_RULES: tuple[_RowRule, ...] = (
     _RowRule(
-        re.compile(r"\A(?:total\s+)?(?:net\s+)?(?:sales|revenues?)\Z", re.I),
+        re.compile(
+            r"\A(?:total\s+)?(?:net\s+)?(?:operating\s+)?(?:sales|revenues?)\Z|"
+            r"\A(?:total\s+)?sales\s+to\s+customers\Z",
+            re.I,
+        ),
         {ValueKind.MONETARY.value: "revenue"},
     ),
     _RowRule(
@@ -229,6 +274,21 @@ _ROW_RULES: tuple[_RowRule, ...] = (
         {ValueKind.PER_SHARE.value: "eps_diluted"},
         scope_forbidden=_SHARE_COUNT_SCOPE_RE,
     ),
+    # "Diluted EPS", "Adjusted diluted EPS", "EPS (diluted)", "EPS - diluted".
+    _RowRule(
+        re.compile(
+            r"\A(?:adjusted\s+|non-?GAAP\s+)?basic\s+EPS\b|\AEPS\s*[-–—(]\s*basic\)?\Z", re.I
+        ),
+        {ValueKind.PER_SHARE.value: "eps_basic"},
+        scope_forbidden=_SHARE_COUNT_SCOPE_RE,
+    ),
+    _RowRule(
+        re.compile(
+            r"\A(?:adjusted\s+|non-?GAAP\s+)?diluted\s+EPS\b|\AEPS\s*[-–—(]\s*diluted\)?\Z", re.I
+        ),
+        {ValueKind.PER_SHARE.value: "eps_diluted"},
+        scope_forbidden=_SHARE_COUNT_SCOPE_RE,
+    ),
 )
 
 
@@ -288,14 +348,38 @@ class TypedAbsence:
         }
 
 
+class BindingOutcome(str, Enum):
+    """Why a release bound what it bound — so an empty figure list is never silent.
+
+    "The release reports no figures" and "the parser could not read this
+    release's layout" both leave ``figures`` empty.  The outcome says which,
+    from the structure the binder actually walked.
+    """
+
+    FIGURES_BOUND = "figures_bound"
+    NO_BLOCKS = "no_blocks"                  # the body normalized to nothing
+    NO_TABLES = "no_tables"                  # prose only; nothing tabular to read
+    NO_CANDIDATE_ROWS = "no_candidate_rows"  # tables, but no row names a roster concept
+    NO_PERIOD_COLUMNS = "no_period_columns"  # roster rows, none under a header that names a date
+    ALL_REFUSED = "all_refused"              # roster rows under dated headers, every one refused
+
+
 @dataclass(frozen=True)
 class ReleaseFigureSet:
-    """Everything read out of one release body, plus everything refused."""
+    """Everything read out of one release body, plus everything refused.
+
+    ``outcome`` and the counts are None on a set built by hand; the extractor
+    always fills them.
+    """
 
     figures: tuple[ReleaseFigure, ...] = ()
     absences: tuple[TypedAbsence, ...] = ()
     schema: str = FIGURES_SCHEMA
     authority: str = AUTHORITY
+    outcome: str | None = None
+    table_count: int | None = None
+    period_table_count: int | None = None
+    candidate_row_count: int | None = None
 
     def concepts(self) -> frozenset[str]:
         return frozenset(figure.concept for figure in self.figures)
@@ -320,6 +404,10 @@ class ReleaseFigureSet:
             "absences": [item.to_dict() for item in self.absences],
             "bound_count": len(self.figures),
             "absent_count": len(self.absences),
+            "outcome": self.outcome,
+            "table_count": self.table_count,
+            "period_table_count": self.period_table_count,
+            "candidate_row_count": self.candidate_row_count,
         }
 
 
@@ -384,48 +472,372 @@ class _Context:
     def observe(self, text: str) -> None:
         units = _UNITS_CAPTION_RE.search(text)
         if units:
-            self.units = _UNIT_BY_SCALE[units.group(1).lower()]
+            self.units = _UNIT_BY_SCALE[(units.group(1) or units.group(2)).lower()]
             self.units_source = text
+            if "$" in units.group(0):
+                self.currency_from_caption = "USD"
         if _CURRENCY_WORD_RE.search(text):
             self.currency_from_caption = "USD"
         # Non-GAAP is checked first: "Reconciliation of GAAP to non-GAAP"
         # matches both patterns and is a non-GAAP scope.
         if _NON_GAAP_CAPTION_RE.search(text):
-            self.basis, self.basis_source = Basis.NON_GAAP.value, text
+            declared = Basis.NON_GAAP.value
         elif _GAAP_CAPTION_RE.search(text):
-            self.basis, self.basis_source = Basis.GAAP.value, text
+            declared = Basis.GAAP.value
+        else:
+            return
+        if _is_caption_shaped(text):
+            self.basis, self.basis_source = declared, text
+        else:
+            # Prose that mentions a basis declares nothing, but it does tell us
+            # the section is no longer the one the last caption opened: a
+            # footnote about non-GAAP measures under a GAAP statement is where a
+            # release turns to its non-GAAP tables.  Unknown, not the old basis.
+            self.basis, self.basis_source = None, ""
 
-    def reset_table_scope(self) -> None:
-        """Forget the units/currency captions once their table is consumed.
+    def reset_table_scope(self, *, entry_basis: str | None, reported: bool) -> None:
+        """Forget the per-table captions once their table is consumed.
 
         ``(In millions)`` is a typesetting statement about ONE table and never
         carries to the next; a release that omits it above a supplemental table
         has not declared units there, and the figures must land as absences.
-        The GAAP / non-GAAP declaration is deliberately NOT reset — a release
-        states it as a section header precisely because it governs everything
-        presented until the next such header.
+
+        A GAAP / non-GAAP caption ABOVE a table is a section header and governs
+        everything until the next one, so it is not reset here.  A basis
+        declared INSIDE a table that reported values (a title row, a header
+        cell, a "Reconciliation of cash ..." scope row in a GAAP cash-flow
+        statement) speaks for that table only.  Once the table is consumed the
+        basis is unknown rather than reverted: an untitled table after a
+        reconciliation is as likely non-GAAP as GAAP.  A table that reported no
+        values is typesetting a caption and is read as one.
         """
         self.units = None
         self.units_source = ""
         self.currency_from_caption = None
+        if reported and self.basis != entry_basis:
+            self.basis, self.basis_source = None, ""
+
+
+def _is_caption_shaped(text: str) -> bool:
+    stripped = text.strip()
+    return (len(stripped.split()) <= _CAPTION_MAX_WORDS
+            and not _SENTENCE_PUNCTUATION_RE.search(stripped))
+
+
+_INLINE_CURRENCY_RE = re.compile(r"\A(US\$|\$|€|£|¥)\s*")
 
 
 @dataclass(frozen=True)
 class _Column:
-    index: int
+    """One period column: where it sits in the header grid, and its period."""
+
+    start: int
+    end: int
     period_label: str
     period_end: str
+
+
+@dataclass(frozen=True)
+class _HeaderLayout:
+    """The header grid of one table.
+
+    ``slots`` are every value column the header names, in order: the dated
+    ``columns`` plus the undated ones ("% Change", an unconverted year) that
+    still take a value cell in each data row.  A row is mapped onto the slots,
+    never onto the dated columns alone, so a "% Change" cell between two
+    periods cannot shift a value into the wrong period.
+    """
+
+    columns: tuple[_Column, ...] = ()
+    slots: tuple[tuple[int, int], ...] = ()
+    width: int = 0
+    # Index of the first row below the last row that names a period.
+    body_start: int = 0
+    # Period columns a sub-header splits into several amounts ("As Reported
+    # (GAAP) | Adjustments | As Adjusted (non-GAAP)"): one period, many values.
+    split: frozenset[tuple[int, int]] = frozenset()
+
+
+@dataclass(frozen=True)
+class _ValueCell:
+    value: float
+    kind: str
+    currency: str | None
+    literals: tuple[str, ...]
+    open_paren: bool = False
+
+
+@dataclass
+class _Group:
+    """One value position in a data row: its cells' grid span and what they read.
+
+    ``value`` None is a placeholder ("—", "n/m") — a cell that holds a column's
+    place but reports nothing.
+    """
+
+    start: int
+    end: int
+    cell: TableCell | None = None
+    value: float | None = None
+    kind: str = ""
+    currency: str | None = None
+    literals: tuple[str, ...] = ()
+    open_paren: bool = False
+
+
+@dataclass
+class _TableStats:
+    tables: int = 0
+    period_tables: int = 0
+    candidate_rows: int = 0
+    dated_candidate_rows: int = 0
 
 
 def _non_empty(cells: Sequence[TableCell]) -> list[TableCell]:
     return [cell for cell in cells if cell.text.strip()]
 
 
+def _grid(cells: Sequence[TableCell]) -> list[tuple[int, int, TableCell]]:
+    """Each cell with its ``[start, end)`` grid position, honouring colspan."""
+    placed: list[tuple[int, int, TableCell]] = []
+    position = 0
+    for cell in cells:
+        span = max(1, cell.colspan)
+        placed.append((position, position + span, cell))
+        position += span
+    return placed
+
+
+def _parse_value_cell(text: str) -> _ValueCell | None:
+    """Read one value cell, including the currency-led forms ``parse_numeric`` refuses.
+
+    ``$96,221``, ``$(0.12)`` and ``($0.12)`` carry their currency inline;
+    ``$(0.12`` is the opening half of a negative whose ``)`` sits in the next
+    cell.  ``literals`` are what the receipt looks for, most exact first: the
+    raw cell text, then the bare number when an entity or space sits between
+    the symbol and the digits in the source.
+    """
+    raw = text.strip()
+    if not raw or _FOOTNOTE_CELL_RE.match(raw):
+        return None
+    parsed = parse_numeric(raw)
+    if parsed is not None:
+        return _ValueCell(parsed[0], parsed[1], None, (raw,))
+    body, negative, currency = raw, False, None
+    if body.startswith("(") and body.endswith(")"):
+        body, negative = body[1:-1].strip(), True
+    symbol = _INLINE_CURRENCY_RE.match(body)
+    if symbol:
+        currency = _CURRENCY_SYMBOL[symbol.group(1)]
+        body = body[symbol.end():]
+    if not body or (currency is None and not negative):
+        return None
+    literals = tuple(dict.fromkeys((raw, body)))
+    parsed = parse_numeric(body)
+    if parsed is not None:
+        return _ValueCell(-parsed[0] if negative else parsed[0], parsed[1], currency, literals)
+    if body.startswith("(") and not negative:
+        parsed = parse_numeric(body + ")")
+        if parsed is not None:
+            return _ValueCell(parsed[0], parsed[1], currency, literals, open_paren=True)
+    return None
+
+
+def _is_value_cell(text: str) -> bool:
+    raw = text.strip()
+    if _parse_value_cell(raw) is not None:
+        return True
+    # "(0.12" with no currency: the open half of a negative split across cells.
+    return raw.startswith("(") and parse_numeric(raw + ")") is not None
+
+
 def _row_is_header(cells: Sequence[TableCell]) -> bool:
     populated = _non_empty(cells)
     if not populated:
         return True
-    return not any(parse_numeric(cell.text) is not None for cell in populated)
+    numeric = [cell for cell in populated if _is_value_cell(cell.text)]
+    if not numeric:
+        return True
+    # A row of fiscal years ("2025   2024") under "September 30," is a column
+    # header, not data — unless a currency or a roster label says otherwise.
+    if not all(_YEAR_CELL_RE.match(cell.text.strip()) for cell in numeric):
+        return False
+    if any(
+        cell.text.strip() in _CURRENCY_SYMBOL or _INLINE_CURRENCY_RE.match(cell.text.strip())
+        for cell in populated
+    ):
+        return False
+    first = next(
+        (cell for cell in populated if not _FOOTNOTE_CELL_RE.match(cell.text.strip())), None
+    )
+    if first is None or first in numeric:
+        return True
+    label = _FOOTNOTE_SUFFIX_RE.sub("", first.text.strip())
+    return not any(rule.pattern.match(label) for rule in _ROW_RULES)
+
+
+def _iso_date(month: str, day: str, year: str) -> str | None:
+    try:
+        return datetime.strptime(f"{month} {day} {year}", "%B %d %Y").date().isoformat()
+    except ValueError:
+        return None
+
+
+def _classify_header_cell(text: str) -> tuple[str, str, str, bool]:
+    """Return ``(kind, label, value, has_prefix)`` for one header cell.
+
+    kind is ``date`` (value = ISO period end), ``md`` (a month and day awaiting
+    the year row below; value = "Month Day"), ``prefix`` ("Three Months
+    Ended"), ``year`` (value = the year), or ``other`` ("% Change").
+    """
+    full = parse_statement_date(text)
+    if full is not None:
+        return "date", text, full, False
+    slash = _SLASH_DATE_RE.match(text)
+    if slash is not None:
+        try:
+            iso = datetime(
+                int(slash.group(3)), int(slash.group(1)), int(slash.group(2))
+            ).date().isoformat()
+        except ValueError:
+            iso = None
+        if iso is not None:
+            return "date", text, iso, False
+    tail = _DATE_TAIL_RE.search(text)
+    if tail is not None and _PERIOD_PREFIX_RE.search(text[: tail.start()]):
+        iso = _iso_date(tail.group(1), tail.group(2), tail.group(3))
+        if iso is not None:
+            return "date", text, iso, True
+    month_day = _MONTH_DAY_TAIL_RE.search(text)
+    if month_day is not None:
+        head = text[: month_day.start()].strip()
+        if not head or _PERIOD_PREFIX_RE.search(head):
+            return "md", text, f"{month_day.group(1)} {month_day.group(2)}", bool(head)
+    if _PERIOD_PREFIX_RE.search(text):
+        return "prefix", text, "", True
+    year = _FOOTNOTE_SUFFIX_RE.sub("", text)
+    if _YEAR_CELL_RE.match(year):
+        return "year", text, year, False
+    return "other", text, "", False
+
+
+def _overlap(a: tuple[int, int], b: tuple[int, int]) -> int:
+    return max(0, min(a[1], b[1]) - max(a[0], b[0]))
+
+
+def _covering(span: tuple[int, int], candidates: Sequence[tuple[int, int, Any]]) -> Any:
+    """The candidate whose span best overlaps ``span``; the sole one if none does."""
+    best = max(candidates, key=lambda item: _overlap(span, item[:2]), default=None)
+    if best is not None and _overlap(span, best[:2]) > 0:
+        return best
+    return candidates[0] if len(candidates) == 1 else None
+
+
+def _header_layout(block: DisclosureBlock) -> _HeaderLayout:
+    if block.table is None:
+        return _HeaderLayout()
+    rows: list[list[tuple[int, int, TableCell]]] = []
+    for row in block.table.rows:
+        if not _row_is_header(row):
+            break
+        rows.append(_grid(row))
+    body_start = 0
+    width = max((placed[-1][1] for placed in rows if placed), default=0)
+
+    prefixes: list[tuple[int, int, str]] = []
+    month_days: list[tuple[int, int, tuple[str, str, bool]]] = []
+    dated: list[tuple[int, int, tuple[str, str, bool], int]] = []
+    years: list[tuple[int, int, str, int]] = []
+    others: list[tuple[int, int, str, int]] = []
+    for index, placed in enumerate(rows):
+        for start, end, cell in placed:
+            text = cell.text.strip()
+            if not text:
+                continue
+            kind, label, value, has_prefix = _classify_header_cell(text)
+            if kind != "other":
+                body_start = index + 1
+            if kind == "date":
+                dated.append((start, end, (label, value, has_prefix), index))
+            elif kind == "md":
+                month_days.append((start, end, (label, value, has_prefix)))
+            elif kind == "prefix":
+                prefixes.append((start, end, label))
+            elif kind == "year":
+                years.append((start, end, value, index))
+            else:
+                others.append((start, end, label, index))
+
+    def with_prefix(span: tuple[int, int], label: str, has_prefix: bool) -> str:
+        if has_prefix:
+            return label
+        prefix = _covering(span, prefixes)
+        return f"{prefix[2]} {label}" if prefix is not None else label
+
+    by_start: dict[int, tuple[_Column, int]] = {}
+    for start, end, (label, iso, has_prefix), row in dated:
+        column = _Column(start, end, with_prefix((start, end), label, has_prefix), iso)
+        by_start[start] = (column, row)
+    leftover: list[tuple[int, int]] = []
+    for start, end, year, row in years:
+        anchor = _covering((start, end), month_days)
+        iso = None
+        if anchor is not None:
+            md_label, md_value, md_prefixed = anchor[2]
+            month, day = md_value.split(" ")
+            iso = _iso_date(month, day, year)
+        if iso is None or start in by_start:
+            if start not in by_start:
+                leftover.append((start, end))
+            continue
+        label = with_prefix(anchor[:2], f"{md_label.rstrip(',')}, {year}", md_prefixed)
+        by_start[start] = (_Column(start, end, label, iso), row)
+    if not by_start:
+        return _HeaderLayout(width=width, body_start=body_start)
+
+    # Sub-headers set under one period column split it.  "Amount | % of Net
+    # Sales" narrows the period to its one amount sub-column; "As Reported
+    # (GAAP) | Impact | As Adjusted (non-GAAP)" holds several amounts for the
+    # same period, and no position in it is THE value for that period.
+    columns: list[_Column] = []
+    sub_slots: list[tuple[int, int]] = []
+    split: set[tuple[int, int]] = set()
+    for start in sorted(by_start):
+        column, row = by_start[start]
+        subs = [
+            (sub_start, sub_end, text) for sub_start, sub_end, text, sub_row in others
+            if sub_row > row and column.start <= sub_start and sub_end <= column.end
+        ]
+        if len(subs) >= 2:
+            amounts = [sub for sub in subs if not _PERCENT_HEADER_RE.search(sub[2])]
+            if len(amounts) == 1:
+                column = _Column(amounts[0][0], amounts[0][1], column.period_label,
+                                 column.period_end)
+                sub_slots.extend(sub[:2] for sub in subs if sub is not amounts[0])
+            elif amounts:
+                # Each sub-column still takes a position in every data row.
+                split.add((column.start, column.end))
+                sub_slots.extend(sub[:2] for sub in subs)
+        columns.append(column)
+
+    first = columns[0].start
+    spans = [(column.start, column.end) for column in columns]
+    barriers = {
+        (start, end)
+        for start, end in [item[:2] for item in others] + leftover
+        if start > first and not any(_overlap((start, end), span) for span in spans)
+    }
+    # A caption spanning two undated sub-columns is not itself a column.
+    barriers = {
+        outer for outer in barriers
+        if not any(inner != outer and outer[0] <= inner[0] and inner[1] <= outer[1]
+                   for inner in barriers)
+    }
+    slots = tuple(sorted(
+        {span for span in spans if span not in split} | barriers | set(sub_slots)
+    ))
+    return _HeaderLayout(columns=tuple(columns), slots=slots, width=width,
+                         body_start=body_start, split=frozenset(split))
 
 
 def _columns_for_table(block: DisclosureBlock) -> tuple[_Column, ...]:
@@ -435,33 +847,7 @@ def _columns_for_table(block: DisclosureBlock) -> tuple[_Column, ...]:
     in it becomes a ``period_undeclared`` absence.  That is the correct answer:
     a revenue number with no period is not a fact about a quarter.
     """
-    if block.table is None:
-        return ()
-    prefix = ""
-    dates: list[str] = []
-    labels: list[str] = []
-    for row in block.table.rows:
-        if not _row_is_header(row):
-            break
-        populated = _non_empty(row)
-        if not populated:
-            continue
-        texts = [cell.text.strip() for cell in populated]
-        parsed = [parse_statement_date(text) for text in texts]
-        if parsed and all(item is not None for item in parsed):
-            dates = [item for item in parsed if item is not None]
-            labels = texts
-            continue
-        if len(texts) == 1 and _PERIOD_PREFIX_RE.search(texts[0]):
-            prefix = texts[0]
-    return tuple(
-        _Column(
-            index=index,
-            period_label=f"{prefix} {labels[index]}".strip() if prefix else labels[index],
-            period_end=value,
-        )
-        for index, value in enumerate(dates)
-    )
+    return _header_layout(block).columns
 
 
 def _slugify(text: str) -> str:
@@ -477,29 +863,153 @@ def _receipt_or_absence(
     *,
     document: DisclosureDocument,
     cell: TableCell,
-    literal: str,
+    literals: Sequence[str],
     concept: str,
     label: str,
     absences: list[TypedAbsence],
 ) -> SpanReceipt | None:
-    try:
-        return receipt_for_literal(
-            source=document.raw_source,
-            source_sha256=document.source_sha256,
-            search_start=cell.source_span.char_start,
-            search_end=cell.source_span.char_end,
-            literal=literal,
-        )
-    except ReceiptError as exc:
-        absences.append(
-            TypedAbsence(
-                concept=concept,
-                reason=AbsenceReason.VALUE_AMBIGUOUS.value,
-                detail=f"no unique source location for {literal!r}: {exc}",
-                label=label,
+    first_error: ReceiptError | None = None
+    for literal in literals:
+        try:
+            return receipt_for_literal(
+                source=document.raw_source,
+                source_sha256=document.source_sha256,
+                search_start=cell.source_span.char_start,
+                search_end=cell.source_span.char_end,
+                literal=literal,
             )
+        except ReceiptError as exc:
+            first_error = first_error or exc
+    absences.append(
+        TypedAbsence(
+            concept=concept,
+            reason=AbsenceReason.VALUE_AMBIGUOUS.value,
+            detail=f"no unique source location for {literals[0]!r}: {first_error}",
+            label=label,
         )
-        return None
+    )
+    return None
+
+
+def _row_groups(placed: Sequence[tuple[int, int, TableCell]]) -> list[_Group]:
+    """The value positions of one data row, after its label cell.
+
+    A currency symbol in its own cell, a value, and a trailing ")" or "%" in
+    the next cell are one position: Workiva typesets "$ | (0.12 | )" as three
+    cells under one column header.
+    """
+    groups: list[_Group] = []
+    pending: tuple[str, int] | None = None
+    for start, end, cell in placed:
+        text = cell.text.strip()
+        if not text:
+            continue
+        if text in _CURRENCY_SYMBOL:
+            pending = (_CURRENCY_SYMBOL[text], start)
+            continue
+        if _FOOTNOTE_CELL_RE.match(text):
+            continue
+        if text in _SUFFIX_CELLS:
+            if groups:
+                last = groups[-1]
+                last.end = end
+                if "%" in text and last.value is not None:
+                    last.kind = ValueKind.PERCENT.value
+                if ")" in text:
+                    last.open_paren = False
+            continue
+        group_start = pending[1] if pending else start
+        parsed = _parse_value_cell(text)
+        if parsed is None and text.startswith("("):
+            closed = parse_numeric(text + ")")
+            if closed is not None:
+                parsed = _ValueCell(closed[0], closed[1], None, (text,), open_paren=True)
+        if parsed is not None:
+            groups.append(_Group(
+                start=group_start,
+                end=end,
+                cell=cell,
+                value=parsed.value,
+                kind=parsed.kind,
+                currency=parsed.currency or (pending[0] if pending else None),
+                literals=parsed.literals,
+                open_paren=parsed.open_paren,
+            ))
+        elif _PLACEHOLDER_CELL_RE.match(text) or any(g.value is not None for g in groups):
+            groups.append(_Group(start=group_start, end=end))
+        pending = None
+    for group in groups:
+        # "(0.12" whose ")" never arrived is not a number we can sign.
+        if group.open_paren:
+            group.value, group.cell, group.literals, group.open_paren = None, None, (), False
+    return groups
+
+
+def _select_group(
+    groups: Sequence[_Group],
+    layout: _HeaderLayout,
+    target: _Column | None,
+    row_width: int,
+) -> tuple[_Group, _Column | None, AbsenceReason | None, str]:
+    """Pick the value position that reports ``target``, or say why none does."""
+    values = [group for group in groups if group.value is not None]
+    if target is None:
+        return (values[0], None, AbsenceReason.PERIOD_UNDECLARED,
+                "the table header names no period end date")
+    wanted = (target.start, target.end)
+    if wanted in layout.split:
+        return values[0], None, AbsenceReason.VALUE_AMBIGUOUS, (
+            "a sub-header splits the period column into several amounts "
+            "(as reported / adjustments / as adjusted); refusing to pick one"
+        )
+    if row_width == layout.width:
+        # Same grid as the header: a value belongs to the slot it sits under.
+        under = []
+        for group in groups:
+            span = (group.start, group.end)
+            best = max(
+                layout.slots,
+                key=lambda slot: (_overlap(span, slot), -abs(sum(span) - sum(slot))),
+            )
+            if best == wanted and _overlap(span, best) > 0:
+                under.append(group)
+        amounts = [group for group in under if group.kind != ValueKind.PERCENT.value]
+        if len(amounts) > 1:
+            return values[0], None, AbsenceReason.VALUE_AMBIGUOUS, (
+                f"{len(amounts)} values sit side by side under the period column; "
+                "refusing to pick one"
+            )
+        if under:
+            return (amounts or under)[0], target, None, ""
+        return (values[0], None, AbsenceReason.PERIOD_UNDECLARED,
+                "value cell does not sit under the period column it maps to")
+    # A different grid (Workiva drops the "$" cells on inner rows): map by
+    # order, and only when every header slot has a position in this row.
+    if len(groups) < len(layout.slots):
+        return values[0], None, AbsenceReason.PERIOD_UNDECLARED, (
+            "the row has fewer value positions than the header has columns; "
+            "refusing to guess which period each reports"
+        )
+    return groups[layout.slots.index(wanted)], target, None, ""
+
+
+def _is_scope_caption(row: Sequence[TableCell], index: int, layout: _HeaderLayout) -> bool:
+    """A value-less row below the period header, set in the label column only.
+
+    "(1) Net sales by reportable segment:" sits under the dates and before the
+    first value row; it scopes the rows beneath it, it does not head a column.
+    A units caption in the same place ("(in millions, except per share)") stays
+    a caption: as a scope it would read every row beneath it as per-share.
+    """
+    if not layout.columns or index < layout.body_start:
+        return False
+    placed = [
+        (start, cell.text.strip()) for start, _end, cell in _grid(row)
+        if cell.text.strip() and not _FOOTNOTE_CELL_RE.match(cell.text.strip())
+    ]
+    if not placed or any(start >= layout.columns[0].start for start, _text in placed):
+        return False
+    return not _UNITS_CAPTION_RE.search(" ".join(text for _start, text in placed))
 
 
 def _extract_table(
@@ -508,10 +1018,22 @@ def _extract_table(
     context: _Context,
     figures: list[ReleaseFigure],
     absences: list[TypedAbsence],
-) -> None:
+    stats: _TableStats,
+) -> bool:
+    """Bind one table's rows; True when any row reported a value."""
     if block.table is None:
-        return
-    columns = _columns_for_table(block)
+        return False
+    reported = False
+    layout = _header_layout(block)
+    stats.tables += 1
+    target: _Column | None = None
+    if layout.columns:
+        stats.period_tables += 1
+        # The current period is the latest period end the header names.  The
+        # first column with it wins, so the quarter precedes the year-to-date
+        # column that ends on the same day.
+        latest = max(column.period_end for column in layout.columns)
+        target = next(column for column in layout.columns if column.period_end == latest)
     column_currency: dict[int, str] = {}
     scope = ""
     # "Header" is a position, not a shape.  A value-less row BEFORE the first
@@ -521,77 +1043,72 @@ def _extract_table(
     # EPS (the bare Basic/Diluted labels need their scope) and every segment.
     seen_data_row = False
 
-    for row in block.table.rows:
+    for index, row in enumerate(block.table.rows):
         populated = _non_empty(row)
         if not populated:
             continue
-        if not seen_data_row and _row_is_header(row):
+        if (not seen_data_row and _row_is_header(row)
+                and not _is_scope_caption(row, index, layout)):
             # Header rows may still carry a units caption typeset inside the
             # table rather than above it.
             for cell in populated:
                 context.observe(cell.text)
             continue
-        if any(parse_numeric(cell.text) is not None for cell in populated):
-            seen_data_row = True
+        seen_data_row = True
 
+        placed = _grid(row)
+        row_width = placed[-1][1]
+        placed = [item for item in placed if item[2].text.strip()]
         # Label: the first non-empty cell, stepping over a bare footnote marker
         # — EDGAR typesets "(1)" in its own cell before the real label.
         cursor = 0
-        while cursor < len(populated) and _FOOTNOTE_CELL_RE.match(populated[cursor].text.strip()):
+        while cursor < len(placed) and _FOOTNOTE_CELL_RE.match(placed[cursor][2].text.strip()):
             cursor += 1
-        if cursor >= len(populated):
+        if cursor >= len(placed):
             continue
-        label_cell = populated[cursor]
-        label = _FOOTNOTE_SUFFIX_RE.sub("", label_cell.text.strip())
-        rest = populated[cursor + 1:]
+        label = _FOOTNOTE_SUFFIX_RE.sub("", placed[cursor][2].text.strip())
+        label = _GLUED_FOOTNOTE_RE.sub("", label)
+        groups = _row_groups(placed[cursor + 1:])
 
-        # Value cells, in column order, skipping currency symbols and footnotes.
-        values: list[tuple[TableCell, float, str]] = []
-        pending_currency: str | None = None
-        currency_for_value: list[str | None] = []
-        for cell in rest:
-            text = cell.text.strip()
-            if text in _CURRENCY_SYMBOL:
-                pending_currency = _CURRENCY_SYMBOL[text]
-                continue
-            if _FOOTNOTE_CELL_RE.match(text):
-                continue
-            parsed = parse_numeric(text)
-            if parsed is None:
-                continue
-            values.append((cell, parsed[0], parsed[1]))
-            currency_for_value.append(pending_currency)
-            pending_currency = None
-
-        if not values:
+        if not any(group.value is not None for group in groups):
             # A label-only row is a scope caption: "Earnings per share:",
-            # "(1) Net sales by reportable segment:".
-            if label:
+            # "(1) Net sales by reportable segment:".  A row of placeholders
+            # only ("Restructuring  —  —") reports nothing and changes no scope.
+            if not groups and label:
                 scope = label
                 context.observe(label)
             continue
+        reported = True
 
-        # Only the first (current-period) column is bound.  A prior-year column
-        # is a different period and would need its own concept namespace.
-        cell, value, kind_hint = values[0]
-        currency = currency_for_value[0]
-        if currency:
-            column_currency.setdefault(0, currency)
-        currency = column_currency.get(0) or context.currency_from_caption
+        # Only the current-period column is bound.  A prior-year column is a
+        # different period and would need its own concept namespace.
+        group, column, refusal_reason, refusal = _select_group(groups, layout, target, row_width)
+        if group.value is None or group.cell is None:
+            continue
+        key = target.start if target is not None else 0
+        if group.currency:
+            column_currency.setdefault(key, group.currency)
+        currency = column_currency.get(key) or context.currency_from_caption
 
-        _bind_row(
+        if _bind_row(
             document=document,
-            cell=cell,
-            value=value,
-            kind_hint=kind_hint,
+            cell=group.cell,
+            value=group.value,
+            kind_hint=group.kind,
+            literals=group.literals,
             label=label,
             scope=scope,
             context=context,
             currency=currency,
-            columns=columns,
+            column=column,
+            refusal_reason=refusal_reason,
+            period_refusal=refusal,
             figures=figures,
             absences=absences,
-        )
+        ):
+            stats.candidate_rows += 1
+            stats.dated_candidate_rows += target is not None
+    return reported
 
 
 def _observed_kind(
@@ -599,7 +1116,8 @@ def _observed_kind(
 ) -> str | None:
     if kind_hint == ValueKind.PERCENT.value:
         return ValueKind.PERCENT.value
-    if _PER_SHARE_SCOPE_RE.search(scope) or _PER_SHARE_SCOPE_RE.search(label):
+    if (_PER_SHARE_SCOPE_RE.search(scope) or _PER_SHARE_SCOPE_RE.search(label)
+            or _EPS_LABEL_RE.search(label)):
         return ValueKind.PER_SHARE.value
     if currency or context.units:
         return ValueKind.MONETARY.value
@@ -612,22 +1130,29 @@ def _bind_row(
     cell: TableCell,
     value: float,
     kind_hint: str,
+    literals: Sequence[str],
     label: str,
     scope: str,
     context: _Context,
     currency: str | None,
-    columns: tuple[_Column, ...],
+    column: _Column | None,
+    refusal_reason: AbsenceReason | None,
+    period_refusal: str,
     figures: list[ReleaseFigure],
     absences: list[TypedAbsence],
-) -> None:
+) -> bool:
+    """Bind one row's current-period value, or record why not.
+
+    Returns True when the row names a roster concept — bound or refused — so
+    the caller can tell "no candidate rows" from "every candidate refused".
+    """
     kind = _observed_kind(
         kind_hint=kind_hint, label=label, scope=scope, currency=currency, context=context
     )
     concept = _concept_for(label=label, scope=scope, kind=kind)
     if concept is None:
-        return
+        return False
 
-    literal = cell.text.strip()
     basis = _basis_for(label=label, scope=scope, context=context)
     if basis is None:
         absences.append(TypedAbsence(
@@ -636,7 +1161,7 @@ def _bind_row(
             detail="no GAAP or non-GAAP caption governs this row; refusing to default a basis",
             label=label,
         ))
-        return
+        return True
     if kind is None:
         absences.append(TypedAbsence(
             concept=concept,
@@ -644,7 +1169,7 @@ def _bind_row(
             detail="no units caption and no currency symbol govern this value",
             label=label,
         ))
-        return
+        return True
     if kind == ValueKind.MONETARY.value:
         if context.units is None:
             absences.append(TypedAbsence(
@@ -653,7 +1178,7 @@ def _bind_row(
                 detail="no '(In thousands/millions/billions)' caption governs this table",
                 label=label,
             ))
-            return
+            return True
         if currency is None:
             absences.append(TypedAbsence(
                 concept=concept,
@@ -661,7 +1186,7 @@ def _bind_row(
                 detail="no currency symbol governs this column and no caption names one",
                 label=label,
             ))
-            return
+            return True
         units, scale = context.units, _SCALE_FACTOR[context.units]
     elif kind == ValueKind.PER_SHARE.value:
         if currency is None:
@@ -671,27 +1196,27 @@ def _bind_row(
                 detail="a per-share amount with no currency symbol is not a price",
                 label=label,
             ))
-            return
+            return True
         # A per-share amount never inherits the statement's (In millions) scale.
         units, scale = "per_share", 1.0
     else:
         units, scale, currency = "percent", 1.0, None
 
-    if not columns:
+    if column is None:
         absences.append(TypedAbsence(
             concept=concept,
-            reason=AbsenceReason.PERIOD_UNDECLARED.value,
-            detail="the table header names no period end date",
+            reason=(refusal_reason or AbsenceReason.PERIOD_UNDECLARED).value,
+            detail=period_refusal,
             label=label,
         ))
-        return
+        return True
 
     receipt = _receipt_or_absence(
-        document=document, cell=cell, literal=literal,
+        document=document, cell=cell, literals=literals,
         concept=concept, label=label, absences=absences,
     )
     if receipt is None:
-        return
+        return True
 
     figures.append(ReleaseFigure(
         concept=concept,
@@ -700,11 +1225,12 @@ def _bind_row(
         basis=basis,
         units=units,
         currency=currency,
-        period_label=columns[0].period_label,
-        period_end=columns[0].period_end,
+        period_label=column.period_label,
+        period_end=column.period_end,
         receipt=receipt,
         scale_factor=scale,
     ))
+    return True
 
 
 def _concept_for(*, label: str, scope: str, kind: str | None) -> str | None:
@@ -840,6 +1366,25 @@ def _extract_guidance(
         ))
 
 
+def _declared_period_months(period_label: str) -> int | None:
+    """How many months the period header says it spans, or None if it says not.
+
+    Weeks round to the nearest month, so "13 Weeks Ended", "Three Months
+    Ended" and "Fourth Quarter" are all 3 and "52 Weeks Ended", "Twelve
+    Months Ended" and "Fiscal Year Ended" are all 12: two names for one span
+    stay one span, and readings that disagree on it stay a conflict.
+    """
+    match = _PERIOD_SPAN_RE.search(period_label)
+    if match is not None:
+        count = _SPAN_WORDS.get(match.group(1).lower()) or int(match.group(1))
+        return round(count * 7 / 30.44) if match.group(2).lower() == "week" else count
+    if _QUARTER_SPAN_RE.search(period_label):
+        return 3
+    if _YEAR_SPAN_RE.search(period_label):
+        return 12
+    return None
+
+
 def _resolve_restatements(
     figures: list[ReleaseFigure], absences: list[TypedAbsence]
 ) -> tuple[list[ReleaseFigure], list[TypedAbsence]]:
@@ -853,6 +1398,15 @@ def _resolve_restatements(
     Two readings that DISAGREE are not a fact at all.  Keeping the first would
     make the answer depend on document order, so both are dropped and the
     conflict is reported as a typed absence.
+
+    One disagreement is not a conflict: a fourth-quarter release heads its
+    statement of operations "Three Months Ended September 30" and its
+    cash-flow statement "Twelve Months Ended September 30".  Both end on the
+    same day, but they are two periods.  When every reading declares how long
+    its period runs, the shortest is the release's own period, which is the
+    in-table rule (the quarter precedes the year-to-date column) applied
+    across tables.  The longer readings are cumulative facts that this
+    figure's identity cannot hold, so they are not reported.
     """
     grouped: dict[tuple[str, str, str], list[ReleaseFigure]] = {}
     for figure in figures:
@@ -862,6 +1416,11 @@ def _resolve_restatements(
     extra: list[TypedAbsence] = []
     for (concept, basis, period_end), rows in grouped.items():
         values = {row.value for row in rows}
+        if len(values) > 1:
+            lengths = [_declared_period_months(row.period_label) for row in rows]
+            if None not in lengths:
+                rows = [row for row, days in zip(rows, lengths) if days == min(lengths)]
+                values = {row.value for row in rows}
         if len(values) == 1:
             kept.append(rows[0])
             continue
@@ -894,11 +1453,13 @@ def extract_release_figures(
     absences: list[TypedAbsence] = []
     context = _Context()
     guidance_seen: set[str] = set()
+    stats = _TableStats()
 
     for block in document.blocks:
         if block.kind is BlockKind.TABLE:
-            _extract_table(document, block, context, figures, absences)
-            context.reset_table_scope()
+            entry_basis = context.basis
+            reported = _extract_table(document, block, context, figures, absences, stats)
+            context.reset_table_scope(entry_basis=entry_basis, reported=reported)
             continue
         context.observe(block.text)
         if block.kind is BlockKind.PARAGRAPH:
@@ -927,13 +1488,34 @@ def extract_release_figures(
     return ReleaseFigureSet(
         figures=tuple(figures),
         absences=tuple(sorted(absences, key=lambda item: (item.concept, item.reason))),
+        outcome=_outcome(document, figures, stats).value,
+        table_count=stats.tables,
+        period_table_count=stats.period_tables,
+        candidate_row_count=stats.candidate_rows,
     )
+
+
+def _outcome(
+    document: DisclosureDocument, figures: Sequence[ReleaseFigure], stats: _TableStats
+) -> BindingOutcome:
+    if figures:
+        return BindingOutcome.FIGURES_BOUND
+    if not document.blocks:
+        return BindingOutcome.NO_BLOCKS
+    if not stats.tables:
+        return BindingOutcome.NO_TABLES
+    if not stats.candidate_rows:
+        return BindingOutcome.NO_CANDIDATE_ROWS
+    if not stats.dated_candidate_rows:
+        return BindingOutcome.NO_PERIOD_COLUMNS
+    return BindingOutcome.ALL_REFUSED
 
 
 __all__ = [
     "AUTHORITY",
     "AbsenceReason",
     "Basis",
+    "BindingOutcome",
     "CONCEPT_ROSTER",
     "FIGURES_SCHEMA",
     "ReleaseFigure",

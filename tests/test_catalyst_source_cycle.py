@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import socket
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -338,6 +339,7 @@ def test_bootstrap_complete_three_gets(tmp_path):
     assert event["retention"]["first_retained_at"] == event["retention"]["last_verified_at"]
     assert event["lineage"] == {"amends_filing_key": "", "correction_generation": 0}
     assert event["parse_status"] == "parsed"
+    assert event["figure_outcome"] == "figures_projected"
     assert event["figures"], "projection must yield figures for the release fixture"
     assert index["skipped"] == []
     assert index["truncated"] is False
@@ -841,7 +843,7 @@ def test_projection_parity_with_producer(tmp_path):
                   "items": ["2.02,9.01"], "primaryDocument": ["test8k.htm"]}}}
     manifest = build_filing_manifests(
         source, ticker="PFE", recorded_at="2026-08-04T11:03:20Z")[0]
-    status, figures = project_release_figures(
+    status, figures, outcome = project_release_figures(
         cik=78003, accession=ACCESSION, body_bytes=body, manifest=manifest,
         exhibit_url=raw["source_url"],
         document_sha256=hashlib.sha256(body).hexdigest())
@@ -849,9 +851,99 @@ def test_projection_parity_with_producer(tmp_path):
         (figure["field"], figure["basis"], figure["value"], figure["span_sha256"])
         for figure in figures
     }
-    assert status == "parsed"
+    assert (status, outcome) == ("parsed", "figures_projected")
+    assert observation.figure_outcome == "figures_projected"
     assert mine == producer
     assert mine, "projection must be non-empty for the release fixture"
+
+
+PROSE_RELEASE = b"<html><body><p>Acme reports results for the quarter.</p></body></html>"
+
+
+def _project(body):
+    source = {"cik": 78003, "name": "Synthetic test issuer",
+              "filings": {"recent": {
+                  "accessionNumber": [ACCESSION],
+                  "form": ["8-K"], "filingDate": ["2026-08-04"],
+                  "reportDate": ["2026-06-28"],
+                  "acceptanceDateTime": [ACCEPTED],
+                  "amendsAccessionNumber": [None],
+                  "items": ["2.02,9.01"], "primaryDocument": ["test8k.htm"]}}}
+    manifest = build_filing_manifests(
+        source, ticker="PFE", recorded_at="2026-08-04T11:03:20Z")[0]
+    return project_release_figures(
+        cik=78003, accession=ACCESSION, body_bytes=body, manifest=manifest,
+        exhibit_url=archive_document_url(78003, ACCESSION, "ex99-1.htm"),
+        document_sha256=hashlib.sha256(body).hexdigest())
+
+
+def test_projection_names_why_a_release_has_no_figures():
+    """Catches: a release without tables reading the same as a binder failure."""
+    assert _project(PROSE_RELEASE) == ("no_figures", (), "no_tables")
+
+
+def test_projection_names_the_failed_step(monkeypatch):
+    """Catches: a binder or replay exception publishing as an empty figure list."""
+    import engine.earnings_release.binding as binding
+
+    assert _project(b"\xff\xfe not utf-8") == ("parse_failed", (), "document_not_utf8")
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("parser broke")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(binding, "bind_release_document", boom)
+        assert _project(FIXTURE.read_bytes()) == ("parse_failed", (), "binder_exception")
+    real_bind = binding.bind_release_document
+
+    def unreplayable(**kwargs):
+        bound = real_bind(**kwargs)
+        figures = tuple(replace(f, receipt=replace(f.receipt, span_sha256="0" * 64))
+                        for f in bound.figures.figures)
+        return replace(bound, figures=replace(bound.figures, figures=figures))
+
+    with monkeypatch.context() as patch:
+        patch.setattr(binding, "bind_release_document", unreplayable)
+        assert _project(FIXTURE.read_bytes()) == ("parse_failed", (), "replay_failed")
+
+
+def test_cycle_publishes_the_figure_outcome(tmp_path, monkeypatch):
+    """Catches: the index dropping the reason a release projected no figures."""
+    import engine.earnings_release.binding as binding
+
+    store = open_local_store(tmp_path / "store")
+    result, _ = bootstrap(store, tmp_path, routes=std_routes(release_bytes=PROSE_RELEASE))
+    assert result.exit_code == 0
+    [event] = read_latest_index(store).index["events"]
+    assert (event["parse_status"], event["figure_outcome"]) == ("no_figures", "no_tables")
+    assert event["figures"] == []
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("parser broke")
+
+    monkeypatch.setattr(binding, "bind_release_document", boom)
+    store = open_local_store(tmp_path / "store-broken")
+    result, _ = bootstrap(store, tmp_path)
+    assert result.exit_code == 0
+    [event] = read_latest_index(store).index["events"]
+    assert (event["parse_status"], event["figure_outcome"]) == (
+        "parse_failed", "binder_exception")
+
+
+def test_index_validates_the_figure_outcome(tmp_path):
+    """Catches: an unknown or contradictory figure outcome passing validation."""
+    store = open_local_store(tmp_path / "store")
+    bootstrap(store, tmp_path)
+    index = read_latest_index(store).index
+    validate_index(index)
+    for bad in ("not_a_code", "no_tables", ["figures_projected"], None):
+        broken = json.loads(json.dumps(index))
+        broken["events"][0]["figure_outcome"] = bad
+        with pytest.raises(ValueError, match="figure_outcome"):
+            validate_index(broken)
+    legacy = json.loads(json.dumps(index))
+    del legacy["events"][0]["figure_outcome"]
+    validate_index(legacy)
 
 
 # ---------------------------------------------------------------------------

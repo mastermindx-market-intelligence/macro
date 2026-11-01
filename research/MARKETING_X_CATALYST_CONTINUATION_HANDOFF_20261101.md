@@ -160,3 +160,32 @@ The reader half lives in `engine/marketing/catalyst_source_adapter.py`
   returns its existing disabled status and admission stays unconfigured.
 - Environment variable NAMES only: `CATALYST_PUBLIC_ENABLED`,
   `RESEARCH_LOCAL_STORE`.
+
+## Figure binding yield (follow-up g)
+
+The census lives at
+[MARKETING_X_CATALYST_BINDER_CENSUS_20261101.md](MARKETING_X_CATALYST_BINDER_CENSUS_20261101.md).
+It covers 40 releases: the 20 pilot issuers, 2 latest Item 2.02 EX-99.1 each,
+bound in memory under D4 and recorded as hashes and URLs only.
+
+- **Yield.** `parsed` rose from 10 to 31 of 40 and projected public figures
+  from 14 to 49. Nothing bound at the base was lost or changed value.
+- **Binder changes.** Failure classes A–E, G and the span rule S, each with
+  a test in `tests/test_earnings_release_binding.py`.
+- **Silent breaks are visible.** `ReleaseFigureSet.outcome` names why a
+  release bound nothing. The cycle index carries it as `figure_outcome`,
+  validated against `parse_status`, and packets name it as
+  `source_figure_outcome_<code>`. A binder error (`parse_failed`:
+  `binder_exception` / `replay_failed` / `document_not_utf8`) now reads
+  differently from a release with nothing to project.
+- **Flags.** All stay OFF. No producer-file semantics of Filing Forensics
+  changed.
+
+Open follow-ups, each needing its own evidence:
+
+1. TSLA and UNH exhibits with no tables (`no_tables` / `no_candidate_rows`):
+   the figures need a non-table source.
+2. JPM: headline metrics outside dated tables (`no_period_columns`).
+3. JNJ: roster rows under undated headers (`no_period_columns`).
+4. PG fiscal-year vs Q4 tables refused as `value_ambiguous` (`all_refused`).
+5. V EPS: `concept_not_present`.
