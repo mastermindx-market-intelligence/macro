@@ -211,3 +211,20 @@ unresolved additions:
 - Still open for the seat: F2 adversarial review of the matrix, F3/F4 installed-vertical observation (human sign-in gate), F5 final acceptance, §9.1 seven vertical proofs (none committed), E4 implementation only after B1–B4 are qualified. F05 GAP-RECEIPT remains the Chronicle owner's. C2/C4/C5 not launched (other owners).
 
 Next action: merge #10351 at a3b84009 → W3 F2 (adversarial review of the F1 matrix), §9.1 vertical proofs where no human gate blocks, E4 stays design-blocked until B1–B4 are qualified; F3/F4 real-sign-in observation is a human gate named once; F05 GAP-RECEIPT stays with the Chronicle owner.
+
+## Seventh write 2026-11-01 04:5xZ — E4 census and records r5 merged; W3 F2 negative controls commissioned
+
+- **Correction to the sixth write:** macro #10351 (E4 Brief binding census) is MERGED → f3b17d9e
+  (2026-11-01T04:34:13Z), not "open pinned". Records r5 #10352 MERGED → 6ff08d8e (04:34:34Z).
+- **F2 commissioned (MASTERPLAN §7.F row F2, line 387).** Three path-disjoint Fabric lanes on
+  ubuntu1 (glm-5.3, class review, C2_COMPLEX_BOUNDED, base 6ff08d8e, parent
+  w3-seat-direct-20261031), launched 04:50Z:
+  - `news-w3-f2-time-corrections-r1` — clocks, revisions, corrections, withdrawal, source health (T01–T14).
+  - `news-w3-f2-rights-identity-r1` — rights receipts, read leakage, dated ticker identity, mirror/transport independence, over-merge (R01–R15).
+  - `news-w3-f2-model-context-r1` — injection, uncited claims, numbers/units/periods, sentiment and confidence authority, legacy path default (M01–M15).
+  Each lane writes one evidence doc and one offline synthetic control script under
+  `research/news_intelligence_estate_20261021/` (`F2_*_NEGATIVE_CONTROLS.md`, `f2_controls/nc_*.py`).
+  Lanes author none of the attacked modules and edit no source. The seat accepts a lane only after
+  re-running its script on M2 and reproducing every verdict. A BROKEN control is recorded as
+  evidence; its repair is a separately commissioned build lane, never part of the F2 lane.
+- Spent lane ids (never relaunch): the three ids above.
