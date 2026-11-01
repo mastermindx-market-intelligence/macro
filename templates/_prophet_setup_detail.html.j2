@@ -56,11 +56,12 @@
         {#- A candidate row's headline_reason is an engine decision code. When the
             pool's shared plain-language copy for that code is supplied, the detail
             shows the SAME words the row shows (never the raw code); the code itself
-            stays machine-readable in data-reason. Without supplied copy the R22 rule
+            stays machine-readable in data-reason ('unknown' mirrors the row's own
+          fallback for a missing code). Without supplied copy the R22 rule
             holds: the untranslated original is labelled, never promoted or invented. -#}
         {%- set _why_known = kind != 'board' and why_copy is sequence and why_copy is not string and why_copy|length >= 2 and why_copy[0] is string and why_copy[1] is string %}
         {%- if _why_known %}
-        <p data-reason="{{ (row.get('headline_reason') or '')|e }}">{{ t(why_copy[0], why_copy[1]) }}</p>
+        <p data-reason="{{ (row.get('headline_reason') or 'unknown')|e }}">{{ t(why_copy[0], why_copy[1]) }}</p>
         {%- else %}
         <p>{{ original(sig.get('reason') if kind == 'board' else row.get('headline_reason')) }}</p>
         {%- endif %}

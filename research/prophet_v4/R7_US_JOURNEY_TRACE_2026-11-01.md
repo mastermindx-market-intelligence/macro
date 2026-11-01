@@ -41,7 +41,11 @@ Method: the committed `site/` tree served from `127.0.0.1` with the premium JSON
 present on disk (so the page runs exactly the committed JS against the committed
 data), headless Chromium (Playwright 1.62), actions = open the pool, switch to the
 table view, open each ticker's setup `<details>`. Receipts are in
-`r7_journey_receipts_2026-11-01/` (checker output verbatim).
+`r7_journey_receipts_2026-11-01/` (checker output verbatim). `receipt_static_en.json`
+is the same checker run on the committed HTML without JavaScript (FLS; J5 N/A because
+no runtime view exists before scripts run) and is the baseline the post-JS receipts
+improve on. The `inputs.path` values inside the receipts are the seat's ephemeral
+scratch paths; the recorded sha256 values are the identity of each input.
 
 | Ticker | Result | Failing checks | Reading |
 | --- | --- | --- | --- |
@@ -51,16 +55,28 @@ table view, open each ticker's setup `<details>`. Receipts are in
 
 Interpretation of each failing family:
 
-- **J11 (raw decision codes in displayed copy) — a real product defect, fixed in this
-  PR.** The pool row words every engine decision code in plain language (`_why` in
+- **J11 (internal enum tokens in displayed copy) — 17 hits on CVCO, in two families.**
+  (a) *Why-section enum leak, 3 of 17 hits, fixed in this PR.* The pool row words every
+  engine decision code in plain language (`_why` in
   `templates/_us_candidate_pool_rows.html.j2`), but the same row's setup detail printed
-  the raw code under "Why it is here" as `Original source · cleared_admission`
-  (also `sector_cap_overflow`, `board_featured`, …). 172/172 pool rows carry a code the
-  pool can word, so every detail leaked its enum. Fix: `body()` in
-  `templates/_prophet_setup_detail.html.j2` takes the pool's shared copy and shows the
-  same words the row shows, keeping the code in `data-reason`; board rows and unmapped
-  or malformed copy keep the R22 "Original source" rule. Production proof = the next
-  scheduled nightly render shows J11 PASS on CVCO under this checker.
+  the raw code under "Why it is here" as `Original source · cleared_admission` /
+  `sector_cap_overflow`. Every one of the 172 pool rows in
+  `factordata/us_standouts.json` (counted on the committed render, not in the
+  per-ticker receipts) carries a code the pool can word, so every detail leaked its
+  enum. Fix: `body()` in `templates/_prophet_setup_detail.html.j2` takes the pool's
+  shared copy and shows the same words the row shows, keeping the code in
+  `data-reason`; board rows and unmapped or malformed copy keep the R22 "Original
+  source" rule. Proof on the next scheduled nightly render = the CVCO J11 receipt
+  contains no `cleared_admission` / `sector_cap_overflow` hit under "Why it is here".
+  (b) *Lifecycle vocabulary in displayed text, 14 of 17 hits, OPEN and not changed
+  here.* The checker's frozen DOM law also flags the lifecycle words `ready`, `watch`,
+  `entered`, `delivering`, `overtime`, `invalidated`, `resolved` wherever they appear in
+  journey text; on CVCO they appear as the plan record's "Status Ready", the plan
+  counter row "Watch 78 Ready 271 Entered 0 Delivering 0 Overtime 16 Invalidated 467"
+  and "Resolved" labels on older signals (`#us-plan-block` / `.pvs-section`). Whether
+  those capitalised labels are a product defect or a checker over-match is an
+  adjudication for the journey-law owner (#8108 checker, R7 #6817); until it is made,
+  J11 on CVCO stays FAIL after this PR and this record does not claim otherwise.
 - **J8 (open plan not linked from the board detail) — a pipeline-order finding, not
   fixed here.** `config/dag.yml` runs `build_site` (line 735) before `build_prophet`
   (line 856) in the same nightly job, so board setup-detail plan relations are computed
@@ -109,7 +125,7 @@ that merge commits sessions again; no return is invented here.
 | Obligation | Rung reached |
 | --- | --- |
 | Anonymous boundary under the same cut | PROVEN on served production (data 401, shell public) |
-| Machine trace Today → Screener → detail on committed bytes | DELIVERED (receipts), with one defect fixed (J11) and one routed (J8) |
+| Machine trace Today → Screener → detail on committed bytes | DELIVERED (receipts), with the why-section leak fixed (J11a), the lifecycle-token family open (J11b) and the plan-relation order routed (J8) |
 | Authenticated browser proof | EXACT_HUMAN_GATE (classifier refusal is final for the seat) |
 | Watch → next-day return | PENDING on the W3 ledger after #10255's first nightly |
-| Ranking and refusal explained under the same cut | Ranking: pool row copy == detail copy after this PR; refusal: 401 locked payloads named above |
+| Ranking and refusal explained under the same cut | Refusal: the 401 locked payloads named above. Ranking explanation: PARTIAL — after this PR the detail's "Why it is here" repeats the row's decision copy instead of an enum; the ranking itself (lane placement, tier, sector cap) is explained only to the extent the row copy explains it |

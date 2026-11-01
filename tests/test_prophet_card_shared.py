@@ -1027,9 +1027,12 @@ def test_pool_why_section_uses_the_shared_plain_copy_when_known():
 
 def test_pool_rows_detail_words_the_reason_exactly_as_the_row_does():
     """Rendered through the real pool rows partial: for every decision code the
-    pool can word, the row's `.ucp-reason` copy and the setup detail's why
-    section are the same words, and no displayed English text inside the setup
-    body contains the raw snake_case code (the J11 journey law)."""
+    pool can word, the row's headline copy (`.ucp-decision`, EN and ZH) and the
+    setup detail's why section are the same words, and no displayed text inside
+    the setup body contains the raw snake_case code or the R22 "Original source"
+    label (the J11 journey law). The fixture's `lane_reasons` deliberately differ
+    from `headline_reason`, so the detail must follow the headline, not the
+    decision-record chips."""
     import re
     from bs4 import BeautifulSoup
     env = _r18_env()
@@ -1038,29 +1041,43 @@ def test_pool_rows_detail_words_the_reason_exactly_as_the_row_does():
     codes = sorted(set(re.findall(r"^\s*'([A-Za-z0-9_]+)':\s*\(", source, re.M)))
     assert {'cleared_admission', 'sector_cap_overflow', 'alpha_below_floor'} <= set(codes)
     rows = [{'ticker': f'T{i}', 'name': f'Name {i}', 'sector': 'Industrials',
-             'headline_reason': code, 'lane_reasons': [code], 'in_buy_lane': False}
+             'headline_reason': code,
+             'lane_reasons': ['grade_low' if code != 'grade_low' else 'no_trigger'],
+             'in_buy_lane': False}
             for i, code in enumerate(codes)]
     html = tpl.render(rows=rows)
     soup = BeautifulSoup(html, 'html5lib')
-    checked = 0
-    for row_node in soup.select('.ucp-row'):
-        code = row_node.select_one('.ucp-reason')['data-reason']
-        row_copy = row_node.select_one('.ucp-reason .l-en').get_text(strip=True)
+    by_ticker = {n['data-ticker']: n for n in soup.select('.ucp-row')}
+    assert len(by_ticker) == len(codes)
+    for row, code in zip(rows, codes):
+        row_node = by_ticker[row['ticker']]
+        head_en = row_node.select_one('.ucp-decision > span.l-en').get_text(strip=True)
+        head_zh = row_node.select_one('.ucp-decision > span.l-zh').get_text(strip=True)
+        chip = row_node.select_one('.ucp-reason .l-en').get_text(strip=True)
+        assert chip != head_en, code  # the fixture keeps the chip and the headline apart
         why = row_node.select_one('.pv-setup-body .pvs-section p[data-reason]')
         assert why is not None, code
         assert why['data-reason'] == code
-        assert why.select_one('.l-en').get_text(strip=True) == row_copy, code
+        assert why.select_one('.l-en').get_text(strip=True) == head_en, code
+        assert why.select_one('.l-zh').get_text(strip=True) == head_zh, code
         body = row_node.select_one('.pv-setup-body')
         assert not body.select('.pvs-original-source'), code
-        displayed_en = ' '.join(t.get_text(' ', strip=True) for t in body.select('.l-en'))
-        if '_' in code:  # the J11 law flags raw snake_case codes, not English words
+        displayed = body.get_text(' ', strip=True)
+        assert 'Original source' not in displayed, code
+        if '_' in code:  # the J11 law flags raw snake_case codes; plain-word codes are English words
             assert not re.search(r'(?<![A-Za-z0-9_])' + re.escape(code) + r'(?![A-Za-z0-9_])',
-                                 displayed_en), (code, displayed_en[:200])
-        checked += 1
-    assert checked == len(codes)
+                                 displayed), (code, displayed[:200])
     unmapped = tpl.render(rows=[{'ticker': 'U1', 'headline_reason': 'never_a_known_code',
                                  'lane_reasons': ['never_a_known_code'], 'in_buy_lane': False}])
     u = BeautifulSoup(unmapped, 'html5lib')
     assert u.select_one('.ucp-reason-raw').get_text() == 'never_a_known_code'
     original = u.select_one('.pv-setup-body .pvs-original-source')
     assert original is not None and 'never_a_known_code' in original.get_text()
+    # A missing code: the row falls back to its 'unknown' copy and the detail
+    # follows it, with the resolved code (not an empty string) in data-reason.
+    missing = BeautifulSoup(tpl.render(rows=[{'ticker': 'M1', 'lane_reasons': [],
+                                              'in_buy_lane': False}]), 'html5lib')
+    why = missing.select_one('.pv-setup-body .pvs-section p[data-reason]')
+    assert why is not None and why['data-reason'] == 'unknown'
+    assert why.select_one('.l-en').get_text(strip=True) == \
+        missing.select_one('.ucp-decision > span.l-en').get_text(strip=True)
