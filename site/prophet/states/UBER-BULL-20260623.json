@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "UBER-BULL-20260623",
-  "asof": "2026-10-31",
+  "asof": "2026-11-01",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 9.9,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": -0.165,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 257.8,
+    "horizon_pct_used": 260.0,
     "p1": -0.7766,
     "p2": -0.3883,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 116,
-  "tau": 2.5778,
+  "days_elapsed": 117,
+  "tau": 2.6,
   "closed": true,
   "outcome": "INVALIDATED"
 }

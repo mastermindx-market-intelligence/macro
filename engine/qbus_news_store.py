@@ -24,7 +24,7 @@ import urllib.parse
 from collections.abc import Mapping
 from typing import Iterable, Sequence
 
-from engine.qbus_news_quality import (EDITORIAL_POLICY_VERSION, curated_source, curated_sql_clause, display_text, publisher_identity, register_curated_reader, representatives_in_display_order, reporting_state)
+from engine.qbus_news_quality import (EDITORIAL_POLICY_VERSION, curated_source, curated_sql_clause, display_text, information_family_count, publisher_identity, register_curated_reader, representatives_in_display_order, reporting_state)
 from engine.qbus_news_contract import NewsRevision
 from engine.qbus_news_editorial import NewsEditorialView
 from engine.qbus_news_cluster import (
@@ -162,6 +162,7 @@ class StoryRow:
     source_item_id: str
     story_id: str
     source_count: int
+    publisher_count: int
     item_count: int
     title: str
     url: str
@@ -198,6 +199,7 @@ class ChangeRow:
     universe_revision: str
     observed_at: datetime
     source_count: int | None = None
+    publisher_count: int | None = None
     item_count: int | None = None
     published_at: datetime | None = None
     updated_at: datetime | None = None
@@ -220,6 +222,7 @@ class StoryDetail:
     schema: str
     story_id: str
     source_count: int
+    publisher_count: int
     item_count: int
     members: tuple[StoryRow, ...]
     reporting_state: str = "not_compared"
@@ -615,6 +618,7 @@ def _projection_story(
     row: sqlite3.Row,
     story_id: str,
     source_count: int,
+    publisher_count: int,
     item_count: int,
     universe_revision: str,
     rights: NewsReadRights,
@@ -629,6 +633,7 @@ def _projection_story(
         source_item_id=str(row["source_item_id"]),
         story_id=story_id,
         source_count=source_count,
+        publisher_count=publisher_count,
         item_count=item_count,
         title=display_text(row["title"]) if rights.allows(str(row["source"]), "title") else "",
         url=str(row["url"]) if rights.allows(str(row["source"]), "url") else "",
@@ -648,6 +653,7 @@ def _redact_story(
     state: NewsState,
     story_id: str,
     source_count: int,
+    publisher_count: int,
     item_count: int,
     universe_revision: str,
     rights: NewsReadRights,
@@ -658,6 +664,7 @@ def _redact_story(
         source_item_id=state.source_item_id,
         story_id=story_id,
         source_count=source_count,
+        publisher_count=publisher_count,
         item_count=item_count,
         title=display_text(state.title) if rights.allows(state.source, "title") else "",
         url=state.url if rights.allows(state.source, "url") else "",
@@ -1896,7 +1903,8 @@ class NewsStore:
                     sequence=int(cluster["cluster_sequence"]),
                     row=representative,
                     story_id=cluster_id,
-                    source_count=len(
+                    source_count=information_family_count(members, rights),
+                    publisher_count=len(
                         {publisher_identity(str(member["source"]), str(member["url"])) for member in members}
                     ),
                     item_count=len(members),
@@ -1964,7 +1972,8 @@ class NewsStore:
                     break
                 stories.append({
                     "story_id": item.story_id, "story_sequence": item.sequence,
-                    "source_count": detail.source_count, "item_count": detail.item_count,
+                    "source_count": detail.source_count, "publisher_count": detail.publisher_count,
+                    "item_count": detail.item_count,
                     "reporting_state": detail.reporting_state,
                     "reports_truncated": detail.item_count > len(reports), "reports": reports,
                 })
@@ -2157,7 +2166,8 @@ class NewsStore:
             if rights.allows(str(row["source"]), "title") and row["title"]
         }))
         rows = representatives_in_display_order(rows, rights, comparison=comparison)
-        source_count = len({publisher_identity(str(row["source"]), str(row["url"])) for row in rows})
+        source_count = information_family_count(rows, rights)
+        publisher_count = len({publisher_identity(str(row["source"]), str(row["url"])) for row in rows})
         item_count = len(rows)
         members = tuple(
             _projection_story(
@@ -2165,6 +2175,7 @@ class NewsStore:
                 row=row,
                 story_id=story_id,
                 source_count=source_count,
+                publisher_count=publisher_count,
                 item_count=item_count,
                 universe_revision=str(row["universe_revision"]),
                 rights=rights,
@@ -2177,6 +2188,7 @@ class NewsStore:
             schema=SCHEMA,
             story_id=story_id,
             source_count=source_count,
+            publisher_count=publisher_count,
             item_count=item_count,
             members=members,
             reporting_state=comparison,
@@ -2281,7 +2293,8 @@ class NewsStore:
                         row.story_id, max(member.sequence for member in detail.members),
                     ),
                     title=best.title, url=best.url, teaser=best.teaser,
-                    source_count=detail.source_count, item_count=detail.item_count,
+                    source_count=detail.source_count, publisher_count=detail.publisher_count,
+                    item_count=detail.item_count,
                     published_at=best.published_at, updated_at=best.updated_at,
                     received_at=best.received_at, universe_revision=best.universe_revision,
                     reporting_state=detail.reporting_state,
