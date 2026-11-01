@@ -257,7 +257,7 @@ See Appendix D. Recommendation (interpreted): **B**, which anchors interpolated 
 
 ## 7. Lane table (Fabric only; 0 native Agent/Task/Workflow calls)
 
-Every lane is C1_ROUTINE_BOUNDED on host ubuntu1. Unless noted, placement was pool `glm`, model `glm-5.3-flash`. That is observed in `ext/state/remote_sub/<id>.provider.json` (`provider: glm`, `model: glm-5.3-flash`) and in each request log's `LEASE_OK pool=glm`. Review lanes are placed on pool `grok` (`grok-4.7`) with `--subject-pool glm`, so the reviewer is on a different pool and model from the author.
+14 of 14 lanes used: 5 DELIVERED (4 census and 1 build), 9 refused before any worker started. Fabric acceptance (observed, `fabric_task.py status`): oi2-l1a-r1, oi2-l1b-r2 and oi2-l2a-r1 are `ACCEPTED` by reviewer (`VALIDATED_OUTCOME`). oi2-l3-r1 is `NOT_ACCEPTED`; ORCH-2 deliberately did not accept it, because its independent review never ran. Every lane is C1_ROUTINE_BOUNDED on host ubuntu1. Unless noted, placement was pool `glm`, model `glm-5.3-flash`. That is observed in `ext/state/remote_sub/<id>.provider.json` (`provider: glm`, `model: glm-5.3-flash`) and in each request log's `LEASE_OK pool=glm`. Review lanes are placed on pool `grok` (`grok-4.7`) with `--subject-pool glm`, so the reviewer is on a different pool and model from the author.
 
 | Run id | Class | Final state | Digest (remote stdout sha256 / artifact) | Adjudication |
 |---|---|---|---|---|
@@ -272,10 +272,19 @@ Every lane is C1_ROUTINE_BOUNDED on host ubuntu1. Unless noted, placement was po
 | oi2-recrv-r1 | review (grok-4.7) | REFUSED `host_temperature_at_or_above_limit` | c62b0111 | burned |
 | oi2-rv-r1 | review (grok-4.7), combined #1197 + #1198 + this record | REFUSED `host_temperature_at_or_above_limit` (09:42Z; load1 4.2/24, active 2) | 878421e9 | burned |
 | oi2-rv-r2 | review (grok-4.7), same combined packet, records head b83a324b | REFUSED pre-dispatch: `no eligible remote mode` (ubuntu0/2/3 disk, ubuntu1 thermal, ubuntu4 automatic-qualification), rc=75, no remote stdout | — | burned |
+| oi2-rv-r3 | review (grok-4.7), same combined packet, records head 29c5557f | Read-only `preview` at 09:57:19Z showed `grok`/`grok-4.7` on ubuntu1 (`selection_rechecked_at_request`). The request got `LEASE_OK pool=grok` and launched, then remote admission returned `REMOTE_SUB_ADMISSION_REFUSED` `host_temperature_at_or_above_limit` (load1 5.596/24, active 2), rc=75 | 1b3ab3f7 | burned; lane budget 14/14 spent |
 
 ## 8. GAPS, DEVIATIONS, seat-only acts
 
 **GAPS:**
+
+- **Independent review of #1197, #1198 and this record has not run.** This is the main open obligation. All three combined review lanes (oi2-rv-r1, r2, r3) were refused before any reviewer started:
+  - ubuntu1 refused on `host_temperature_at_or_above_limit`;
+  - the pre-dispatch blockers were ubuntu0/2/3 disk and ubuntu4 automatic-qualification;
+  - the 14-lane budget is now spent.
+
+  The repair diffs are therefore built (oi2-l3-r1) and opened by ORCH-2, but not independently reviewed, and the build lane stays NOT_ACCEPTED. The packet to reuse unchanged under a fresh id is `oi2-rv-r3.pkt` in ORCH-2's scratchpad, with 4.1–4.8, static review and READ_ONLY. Its blocker is capacity plus budget, not code. Resolution: a seat-granted lane budget once a router `preview` shows an eligible host and the remote temperature gate is clear, or a seat-commissioned read-only auditor.
+- **Series B recapture and repair have not run.** No lane remains. The blocker is at TERM db6168c2: `terminal/docs/pr-crops/eod-heatmap-flowdesk-load-failure/EVIDENCE.yml` `layoutFiles` pins `FlowDeskView.tsx` at `7c4ee44e…`, and `eodHeatmapFlowdeskLoadFailureEvidence.test.ts:93` enforces that pin. Clearing it needs a run of `terminal/e2e/tools/capture_eod_heatmap_flowdesk_load_failure.cjs`, which starts next dev plus Playwright and is CPU-heavy. ORCH-2 does not run it on M2, which would route around the O-14 host-load refusal; it belongs on a Fabric lane.
 
 - AC46 oracle port: not executed because of capacity.
 - AC54 options axe coverage: not executed.
