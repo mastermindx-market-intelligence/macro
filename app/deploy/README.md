@@ -413,16 +413,18 @@ UTC (`Persistent=true`). The script (installed at `/usr/local/sbin/macro-git-sto
 1. under the updater lock (`/var/lock/macro-update.lock`, so a pull tick skips rather
    than colliding): expires unreachable reflog entries and packs refs;
 2. deletes temporary packs older than 6 h left by a killed repack, and orphaned packs
-   older than 6 h (a `.pack` with no `.idx` and no `.keep`: a write interrupted before its
-   index landed, which Git never reads);
-3. freezes every consolidated non-cruft pack of at least 2 GiB into the kept tier (see
-   below), then checks free space for the worst case (every pack it will rewrite, that is
-   every indexed pack without a `.keep`, plus the loose objects, again + 3 GiB) and
-   `MemAvailable` (768 MiB) BEFORE it writes anything. When that does not fit, the space
-   fallback freezes the single largest non-kept, non-cruft pack, of any size, if that
-   alone makes it fit, and logs "kept tier fallback: pack-... frozen so the repack fits";
-   otherwise it refuses. Free space, `MemAvailable` and every numeric setting must read
-   as whole numbers, or it refuses;
+   older than 6 h (a `.pack` with no `.idx` and no `.keep`, which Git never reads, since it
+   finds a pack only through its index);
+3. checks `MemAvailable` (768 MiB) first, so a deferred run freezes nothing; then freezes
+   every consolidated non-cruft pack of at least 2 GiB into the kept tier (see below), and
+   checks free space for the worst case (every pack it will rewrite, that is every indexed
+   pack without a `.keep`, plus the loose objects, again + 3 GiB) BEFORE it writes a pack.
+   When that does not fit, the space fallback freezes non-kept, non-cruft packs of any
+   size, largest first, until it fits, at most 16 of them (`MACRO_GIT_MAINT_FALLBACK_MAX`;
+   0 turns the fallback off), and logs "kept tier fallback: pack-... frozen so the repack
+   fits" for each. If 16 would not be enough, it freezes nothing, logs "nothing frozen"
+   and refuses. Free space, `MemAvailable` and every numeric setting must read as whole
+   numbers, or it refuses;
 4. runs `git repack -d -l --cruft --cruft-expiration=2.weeks.ago` with
    `repack.packKeptObjects=false` at idle I/O, nice 19, one pack thread and a 128 MiB
    delta window, inside the unit's cgroup memory cap, then freezes the new pack too if it
@@ -453,8 +455,11 @@ Run it by hand with `systemctl start macro-git-store-maintenance.service`.
 
 Pull floor: `macro-update` refuses to fetch when the root filesystem has less than 7 GiB
 free (`MACRO_UPDATE_MIN_FREE_KIB`, in KiB), or when free space or the floor does not read
-as a number. The floor sits above the nightly repack's own need (about 4 GiB on a normal
-night), so the night after a refusal the job can still consolidate. A refused tick logs
+as a number. The floor is set above what the nightly repack needed on a normal night
+(about 4 GiB, measured 2026-11-01), so after a refusal the job can usually still
+consolidate; when it cannot, it refuses too and recovery is the manual step below. A
+refused tick skips only the fetch (it never reads `FETCH_HEAD`, which a fetch that failed
+part-way leaves empty), logs
 "macro-update: REFUSED pull: ... nothing pulled" to stderr and the system log, writes the
 same line to `/run/macro-update-disk-refused`, still reconciles the current checkout (a
 timer it disarmed earlier in the tick is re-armed, as on any tick with no new commit),

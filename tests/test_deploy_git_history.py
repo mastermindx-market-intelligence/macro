@@ -258,7 +258,7 @@ def updater_acquisition_fragment(text: str = UPDATE_TEXT,
         text, r'^OLD=\$\(git -C "\$APP_DIR" rev-parse HEAD\)$',
         "installed-HEAD capture", source)
     new = _matching_lines(
-        text, r'^NEW=\$\(git -C "\$APP_DIR" rev-parse FETCH_HEAD\)$',
+        text, r'^\t?NEW=\$\(git -C "\$APP_DIR" rev-parse FETCH_HEAD\)$',
         "published-revision capture", source)
     changed = _matching_lines(
         text, r'^\tCHANGED=\$\(git -C "\$APP_DIR" diff --name-only "\$OLD" "\$NEW"\)$',

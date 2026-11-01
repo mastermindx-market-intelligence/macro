@@ -299,9 +299,10 @@ fi
 # disarmed above is re-armed, as on any no-change tick), then exits 1. A refused
 # pull also holds back deploys of fixes, by design: recovering space is a
 # manual step (app/deploy/README.md, "Git store maintenance"), never something
-# this updater improvises. The 7 GiB floor leaves the nightly repack room to
-# run (it needs about 4 GiB on a normal night), so a refused pull is not also a
-# stuck store.
+# this updater improvises. The 7 GiB floor is set above what the nightly repack
+# needed on a normal night (about 4 GiB measured 2026-11-01), so on most nights
+# the repack can still run below a refused pull; when it cannot, it refuses and
+# says so, and the recovery stays manual.
 MIN_FREE_KIB="${MACRO_UPDATE_MIN_FREE_KIB:-7340032}"
 DISK_REFUSED_MARKER="${MACRO_UPDATE_DISK_MARKER:-/run/macro-update-disk-refused}"
 DISK_REFUSED=0
@@ -324,13 +325,21 @@ fi
 # for later updates. Existing shallow boundaries require a separate repair;
 # this updater never deepens or rewrites them. A fetch failure still aborts
 # under strict mode before OLD/NEW and reset. A disk-refused tick skips the
-# fetch and pins NEW to HEAD, so nothing below resets or pulls.
+# fetch and pins NEW to HEAD without reading FETCH_HEAD: a fetch that failed
+# part-way (as on a full disk) truncates FETCH_HEAD to empty, and reading it
+# would abort the tick here before the reconciliation below. From here on a
+# refused tick is a no-change tick: nothing below resets or pulls.
+# BEGIN MACRO_UPDATE_PULL_SELECT
 if [ "$DISK_REFUSED" -eq 0 ]; then
 	git -C "$APP_DIR" fetch -q origin main
 fi
 OLD=$(git -C "$APP_DIR" rev-parse HEAD)
-NEW=$(git -C "$APP_DIR" rev-parse FETCH_HEAD)
-if [ "$DISK_REFUSED" -eq 1 ]; then NEW=$OLD; fi
+if [ "$DISK_REFUSED" -eq 1 ]; then
+	NEW=$OLD
+else
+	NEW=$(git -C "$APP_DIR" rev-parse FETCH_HEAD)
+fi
+# END MACRO_UPDATE_PULL_SELECT
 CHANGED=""
 REPO_UPDATED=0
 RECONCILED=0

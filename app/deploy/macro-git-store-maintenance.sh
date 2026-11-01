@@ -33,13 +33,15 @@
 # objects inside a kept pack are never reclaimed; a full recovery repack
 # (README) reclaims them if that ever matters.
 #
-# Space fallback: when even the non-kept packs do not fit (a night or more of
-# refused pulls, or a consolidated pack just under PROMOTE_KIB), the job freezes
-# the single largest non-kept, non-cruft pack into the kept tier if that alone
-# makes the repack fit, and refuses otherwise. Orphaned packs (a `.pack` with
-# no `.idx` and no `.keep`, older than 6 h: an interrupted pack write that Git
-# never reads) are removed and do not count toward the space the repack needs.
-# Free space, MemAvailable and every numeric setting must read as whole
+# Space fallback: when even the non-kept packs do not fit (nights of missed
+# runs, or a consolidated pack just under PROMOTE_KIB), the job freezes non-kept,
+# non-cruft packs into the kept tier, largest first, until the repack fits, at
+# most FALLBACK_MAX of them. If freezing that many would still not make it fit,
+# it freezes nothing and refuses. Each freeze is logged. The memory check runs
+# before any freeze, so a deferred run leaves the kept tier as it found it.
+# Orphaned packs (a `.pack` with no `.idx` and no `.keep`, older than 6 h, which
+# Git never reads) are removed and do not count toward the space the repack
+# needs. Free space, MemAvailable and every numeric setting must read as whole
 # numbers, or the job refuses before it writes anything.
 set -euo pipefail
 
@@ -58,9 +60,12 @@ MEMINFO="${MACRO_GIT_MAINT_MEMINFO:-/proc/meminfo}"
 # A consolidated non-cruft pack at least this large joins the kept base tier
 # (KiB; 2 GiB). It bounds what each night rewrites and must free on root.
 PROMOTE_KIB="${MACRO_GIT_MAINT_PROMOTE_KIB:-2097152}"
+# Most packs the space fallback may freeze in one run (0 disables it). Each
+# frozen pack stays in the kept tier until a full recovery repack.
+FALLBACK_MAX="${MACRO_GIT_MAINT_FALLBACK_MAX:-16}"
 
 log() { echo "macro-git-store-maintenance: $*"; }
-for setting in LOCK_WAIT MARGIN_KIB MIN_MEMAVAIL_KIB PROMOTE_KIB; do
+for setting in LOCK_WAIT MARGIN_KIB MIN_MEMAVAIL_KIB PROMOTE_KIB FALLBACK_MAX; do
 	if ! [[ ${!setting} =~ ^[0-9]+$ ]]; then
 		log "REFUSED: $setting='${!setting}' is not a whole number; nothing written"
 		exit 1
@@ -109,31 +114,24 @@ promote_large_packs() {
 		log "kept tier: ${base##*/} (${kib} KiB) frozen as a base pack"
 	done
 }
-# Print "<KiB> <path without .pack>" of the largest pack the space fallback may
-# freeze (same eligibility as promote_large_packs, any size); nothing if none.
-largest_unkept_pack() {
-	local p base kib best_kib=0 best=""
+# Print "<KiB> <path without .pack>" for every pack the space fallback may
+# freeze (same eligibility as promote_large_packs, any size), largest first.
+fallback_candidates() {
+	local p base
 	for p in "$OBJECTS"/pack/pack-*.pack; do
 		[ -e "$p" ] || continue
 		base=${p%.pack}
 		[ -e "$base.keep" ] && continue
 		[ -e "$base.mtimes" ] && continue
 		[ -e "$base.idx" ] || continue
-		kib=$(pack_kib "$p")
-		if [ "$kib" -gt "$best_kib" ]; then
-			best_kib=$kib
-			best=$base
-		fi
-	done
-	if [ -n "$best" ]; then
-		echo "$best_kib $best"
-	fi
+		echo "$(pack_kib "$p") $base"
+	done | sort -rn
 }
-# Remove packs whose write was interrupted before the .idx landed. Git writes a
-# pack's .idx last and deletes it last, and finds packs only through their
-# .idx, so an old .pack without one is never read. A .keep means someone owns
-# it (an in-flight fetch writes its .keep first): never touched. Six hours
-# excludes any write still in progress.
+# Remove orphaned packs. Git finds a pack only through its .idx, so a .pack
+# without one is never read, whatever left it there (an interrupted write or an
+# interrupted removal). A .keep means someone owns it (an in-flight fetch writes
+# its .keep first): never touched. Six hours excludes any write still in
+# progress.
 remove_orphan_packs() {
 	local p base ext
 	while IFS= read -r p; do
@@ -171,13 +169,23 @@ find "$OBJECTS/pack" -maxdepth 1 -type f \( -name 'tmp_*' -o -name '.tmp-*' \) \
 	-mmin +360 -print -delete
 remove_orphan_packs
 
-# 3. Kept tier, then the space and memory gates. A repack writes its new packs
-#    before it deletes the old ones, so the worst case is every pack it will
-#    rewrite (the non-kept ones) plus the loose objects, again, plus a margin
-#    for the pull, which keeps fetching while this runs. Kept packs are never
-#    rewritten, so they do not count. A .keep is only metadata: writing one
-#    is safe even when the gate then refuses. When the non-kept packs do not
-#    fit, the space fallback freezes the largest one if that alone is enough.
+# 3. Memory gate, kept tier, then the space gate. The memory gate comes first so
+#    a deferred run freezes nothing. A repack writes its new packs before it
+#    deletes the old ones, so the worst case is every pack it will rewrite (the
+#    non-kept ones) plus the loose objects, again, plus a margin for the pull,
+#    which keeps fetching while this runs. Kept packs are never rewritten, so
+#    they do not count. A .keep is only metadata: writing one is safe even when
+#    the gate then refuses. When the non-kept packs do not fit, the space
+#    fallback freezes the largest ones until it fits, or nothing.
+MEMAVAIL_KIB=$(awk '/^MemAvailable:/{print $2}' "$MEMINFO" 2>/dev/null) || MEMAVAIL_KIB=""
+if ! [[ $MEMAVAIL_KIB =~ ^[0-9]+$ ]]; then
+	log "REFUSED: could not read MemAvailable from $MEMINFO (got '${MEMAVAIL_KIB}'); no pack written"
+	exit 1
+fi
+if [ "$MEMAVAIL_KIB" -lt "$MIN_MEMAVAIL_KIB" ]; then
+	log "DEFERRED: MemAvailable ${MEMAVAIL_KIB} KiB < ${MIN_MEMAVAIL_KIB} KiB (another heavy job is running); no pack written"
+	exit 75
+fi
 promote_large_packs
 BEFORE_KIB=$(store_kib)
 LOOSE_KIB=$(g count-objects -v | awk '/^size:/{print $2}')
@@ -189,29 +197,31 @@ if ! [[ $AVAIL_KIB =~ ^[0-9]+$ ]]; then
 	exit 1
 fi
 if [ "$AVAIL_KIB" -lt "$NEED_KIB" ]; then
-	FALLBACK=$(largest_unkept_pack)
-	if [ -n "$FALLBACK" ]; then
-		read -r FALLBACK_KIB FALLBACK_BASE <<<"$FALLBACK"
-		if [ $((NEED_KIB - FALLBACK_KIB)) -le "$AVAIL_KIB" ]; then
-			echo "macro-git-store-maintenance kept tier (space fallback) $(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$FALLBACK_BASE.keep"
-			log "kept tier fallback: ${FALLBACK_BASE##*/} (${FALLBACK_KIB} KiB) frozen so the repack fits in ${AVAIL_KIB} KiB"
-			UNKEPT_KIB=$(unkept_pack_kib)
-			NEED_KIB=$((UNKEPT_KIB + LOOSE_KIB + MARGIN_KIB))
-		fi
+	# Plan first, freeze only if the plan fits: largest first, at most
+	# FALLBACK_MAX packs.
+	FALLBACK_PLAN=()
+	PLAN_NEED_KIB=$NEED_KIB
+	while read -r kib base; do
+		if [ "${#FALLBACK_PLAN[@]}" -ge "$FALLBACK_MAX" ]; then break; fi
+		FALLBACK_PLAN+=("$kib $base")
+		PLAN_NEED_KIB=$((PLAN_NEED_KIB - kib))
+		if [ "$PLAN_NEED_KIB" -le "$AVAIL_KIB" ]; then break; fi
+	done < <(fallback_candidates)
+	if [ "${#FALLBACK_PLAN[@]}" -gt 0 ] && [ "$PLAN_NEED_KIB" -le "$AVAIL_KIB" ]; then
+		for entry in "${FALLBACK_PLAN[@]}"; do
+			read -r kib base <<<"$entry"
+			echo "macro-git-store-maintenance kept tier (space fallback) $(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$base.keep"
+			log "kept tier fallback: ${base##*/} (${kib} KiB) frozen so the repack fits in ${AVAIL_KIB} KiB"
+		done
+		UNKEPT_KIB=$(unkept_pack_kib)
+		NEED_KIB=$((UNKEPT_KIB + LOOSE_KIB + MARGIN_KIB))
+	else
+		log "kept tier fallback: freezing up to ${FALLBACK_MAX} packs would not make the repack fit; nothing frozen"
 	fi
 fi
 if [ "$AVAIL_KIB" -lt "$NEED_KIB" ]; then
 	log "REFUSED: repack needs ${NEED_KIB} KiB free on $OBJECTS (${UNKEPT_KIB} KiB of non-kept packs, ${LOOSE_KIB} KiB loose, ${MARGIN_KIB} KiB margin), ${AVAIL_KIB} KiB available; no pack written (recovery: app/deploy/README.md, 'Git store maintenance')"
 	exit 1
-fi
-MEMAVAIL_KIB=$(awk '/^MemAvailable:/{print $2}' "$MEMINFO" 2>/dev/null) || MEMAVAIL_KIB=""
-if ! [[ $MEMAVAIL_KIB =~ ^[0-9]+$ ]]; then
-	log "REFUSED: could not read MemAvailable from $MEMINFO (got '${MEMAVAIL_KIB}'); no pack written"
-	exit 1
-fi
-if [ "$MEMAVAIL_KIB" -lt "$MIN_MEMAVAIL_KIB" ]; then
-	log "DEFERRED: MemAvailable ${MEMAVAIL_KIB} KiB < ${MIN_MEMAVAIL_KIB} KiB (another heavy job is running); no pack written"
-	exit 75
 fi
 
 # 4. Consolidate. Without the updater lock: like auto-gc, repack is safe next
