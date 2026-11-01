@@ -844,10 +844,12 @@ def _series(snapshot: Mapping[str, Any]) -> dict[str, Any]:
 def _drivers(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
     block = snapshot.get("drivers") or {}
     axis_by_index = list(axes)
+    trade_page = (snapshot.get("workspace") or {}).get("id") == "trade_flows"
     groups = []
-    for key, fallback_en, fallback_zh, axis_index in (
-        ("rate_side", "Rate-side drivers", "利率侧驱动", 0),
-        ("balance_sheet", "Balance-sheet drivers", "资产负债表驱动", 1),
+    for key, fallback_en, fallback_zh, trade_en, trade_zh, axis_index in (
+        ("rate_side", "Rate-side drivers", "利率侧驱动", "Trade prices", "贸易价格", 0),
+        ("balance_sheet", "Balance-sheet drivers", "资产负债表驱动",
+         "Dollar flows", "美元流量", 1),
     ):
         rows = []
         for driver in block.get(key) or []:
@@ -881,9 +883,15 @@ def _drivers(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> 
                 "coverage_tone": L.tone("presence", driver.get("coverage_state")),
             })
         axis = axis_by_index[axis_index] if axis_index < len(axis_by_index) else None
+        if trade_page:
+            title = _pair(trade_en, trade_zh)
+        elif axis and axis.get("label"):
+            title = axis["label"]
+        else:
+            title = _pair(fallback_en, fallback_zh)
         groups.append({
             "group_id": key,
-            "title": (axis["label"] if axis and axis.get("label") else _pair(fallback_en, fallback_zh)),
+            "title": title,
             "fallback_title": _pair(fallback_en, fallback_zh),
             "rows": rows,
             "absent": not rows,
