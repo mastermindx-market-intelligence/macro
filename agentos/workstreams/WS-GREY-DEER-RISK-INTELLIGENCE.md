@@ -475,7 +475,7 @@ waves:
     status: in_progress
     # T1 DONE by the seat 2026-10-31: claims.jsonl 104,857,394 B (206 B under 100 MiB); engine script and commit-tail step carry no carve-out; run 40803269874 engine job 123688873047 + collect_tail job 123688869633 GH001; last landed engine data commit ad6e5a824334 (10-21; a050d2c71647 22 min earlier last landed claims.jsonl).
     # T2 PR #10333 (head f095c641, two fabric APPROVEs) CLOSED 2026-10-31T20:14Z as SUPERSEDED by incumbent #10255 (two Opus review rounds, APPROVED, merge-on-green, superset scope). Seat ruling in #10333's closing comment; one note on #10255. Diagnosis retained at research/grey_deer/evidence/EW_P1_ENGINE_TAIL_GH001_DIAGNOSIS_2026-10-31.md.
-    # Acceptance unchanged: two natural nightly `engine: regime update` landings on main after #10255 merges; seat watcher (hourly git fetch, never dispatch). CI budget #10341 merged dbaf1e07 (intl job 8->15 min).
+    # Acceptance unchanged: two natural nightly `engine: regime update` landings on main after #10255 (merged c2772cc4, 2026-11-01T06:29:41Z); seat watcher (hourly git fetch, never dispatch). CI budget #10341 merged dbaf1e07 (intl job 8->15 min).
     depends_on: [EW-P0]
   - id: EW-P2
     title: EW-P2 rotation observation continuity - successor of orphaned #10104 rebased onto main, six conflicts resolved both-sides, recording stays default-off (T1)

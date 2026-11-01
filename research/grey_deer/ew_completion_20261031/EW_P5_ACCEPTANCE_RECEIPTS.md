@@ -43,7 +43,7 @@ Skipped cases and their recorded reason:
 
 Mapping source: an independent native Opus read-only reviewer mapped all 63 catalogue rows to tests. Its dispositions are copied unchanged. The seat did not upgrade any row.
 
-Mapping-head note (added after the records r5 review): the mapping was made at main `2796abf7`, which is not an ancestor of the census head `d3fb043b`. #10255 merged between them as `c2772cc44ef5` at 2026-11-01T06:29:41Z and is on the census head. So every reason below that says #10255 is not on this tree is false at the census head. Rows S01, S03, S05, S06 and Q01 to Q05 are stale: their dispositions were not rechecked at the census head. #10255 added `tests/test_qledger_carve.py` (17 tests). It was neither mapped nor run here and joins the next named run, which re-maps these rows.
+Mapping-head note (added after the records r5 review): the mapping was made at `2796abf7`, the head of the EW-P4-FU pull request branch, whose main base is `c3f5994b`. `2796abf7` is not an ancestor of the census head `d3fb043b`. #10255 merged between them as `c2772cc44ef5` at 2026-11-01T06:29:41Z and is on the census head. So every reason below that says #10255 is not on this tree is false at the census head. Rows S01, S03, S05, S06 and Q01 to Q05 are stale: their dispositions were not rechecked at the census head. #10255 added `tests/test_qledger_carve.py` (17 test functions; three are parametrized, so 21 collected cases). It was neither mapped nor run here and joins the next named run, which re-maps these rows.
 
 A pack is PASS only when every row in it is COVERED_ISOLATED and every mapped test passed in this run. No pack meets that bar.
 
@@ -129,7 +129,7 @@ Short names: ROS, ROB and ROI are the rotation observation state, builder and in
 | R07 | PARTIAL | `ROS::test_positive_divergence_is_observed_not_sized_or_predicted` | 1 passed | The output is `notification_only` with no confidence or allocation field. With no model, the "promising model, no policy grant" case cannot run. |
 | R08 | NOT_EXECUTABLE | None | No mapped test | Disposition logic is EW-P3.T3. The reader only refuses. |
 
-### Seat-found candidates (not independently verified)
+### Seat-found candidates (not verified by the mapping reviewer)
 
 The mapping reviewer did not read three envelope test files in full. The seat found the tests below in them. They change no disposition above until an independent reviewer confirms them.
 
