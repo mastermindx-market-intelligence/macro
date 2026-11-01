@@ -223,7 +223,10 @@ def test_summary_mirrors_the_js_arithmetic():
 def test_ssr_observation_coverage_is_validated_and_bilingual():
     """The crawler-visible disclosure must use the current-membership denominator
     and must fail closed when the accounting does not reconcile."""
-    summary = dict(_summary("china"))
+    summary = _shell_summary(scope={
+        "en": "Map sample · 4 names",
+        "zh": "本图样本 · 4 只",
+    })
     summary["tf"] = "1D"
     summary["observation_coverage"] = {
         "basis": "current_membership",
@@ -239,8 +242,8 @@ def test_ssr_observation_coverage_is_validated_and_bilingual():
         },
     }
     html = _render("china", summary=summary, gated=False)
-    assert "1700 / 1706 names have observed endpoint pairs · 6 unavailable." in html
-    assert "1700 / 1706 个标的具备有效区间行情 · 6 个不可用。" in html
+    assert "This map: 1700 / 1706 names have observed endpoint pairs · 6 unavailable." in html
+    assert "本图：1700 / 1706 个标的具备有效区间行情 · 6 个不可用。" in html
 
     broken = dict(summary)
     broken["observation_coverage"] = {
@@ -297,8 +300,8 @@ def test_publisher_writes_one_coherent_json_and_ssr_page(tmp_path, monkeypatch):
         "denominator": 4,
         "fraction": 0.75,
     }
-    assert "3 / 4 names have observed endpoint pairs · 1 unavailable." in html
-    assert "3 / 4 个标的具备有效区间行情 · 1 个不可用。" in html
+    assert "This map: 3 / 4 names have observed endpoint pairs · 1 unavailable." in html
+    assert "本图：3 / 4 个标的具备有效区间行情 · 1 个不可用。" in html
     assert 'data-hm-gated="1"' in html
     assert '"url":"marketdata/china_heatmap.json"' in html
 
@@ -615,7 +618,7 @@ def test_shipped_shell_carries_the_summary_and_the_gate():
     assert "tier-wall" not in html
     # Real numbers, not empty containers.
     assert re.search(r'<div class="hx-bleg"><span class="hx-up">▲ [\d,]+</span>', html)
-    assert re.search(r'<div class="hx-pulse-read">\s*<span class="l-en"><b>\d+%</b>', html)
+    assert re.search(r'<div class="hx-pulse-read">\s*<span class="l-en">(?:Whole board: )?<b>\d+%</b>', html)
     assert html.count('class="hx-sec"') >= 5
     assert html.count('class="hx-row"') == 10       # 5 gainers + 5 losers
 
@@ -762,3 +765,106 @@ def test_new_copy_is_glance_tier_and_bilingual():
         i = html.index(frag)
         window = html[i:i + 1400]
         assert 'class="l-en"' in window and 'class="l-zh"' in window, frag
+
+
+def _shell_summary(*, scope):
+    """A page_summary-shaped dict. No engine import and no site file."""
+    return {
+        "stance": {"tone": "down", "en": "Broad decline", "zh": "普跌"},
+        "pct_up": 16,
+        "median": "−3.12%",
+        "asof": "session",
+        "tf": "1D",
+        "median_tone": "down",
+        "median_word": {"en": "Tilted lower", "zh": "偏弱"},
+        "breadth": {
+            "adv": "1",
+            "dec": "2",
+            "adv_w": 30.0,
+            "flat_w": 10.0,
+            "dec_w": 60.0,
+            "scope": scope,
+        },
+        "up_sectors": [{"en": "Energy", "zh": "能源"}],
+        "down_sectors": [{"en": "Banks", "zh": "银行"}],
+        "top": {"en": "Energy", "zh": "能源", "pc": "+1.20%", "tone": "up"},
+        "bot": {"en": "Banks", "zh": "银行", "pc": "−2.40%", "tone": "down"},
+        "gainers": [],
+        "losers": [],
+        "sectors": [],
+    }
+
+
+def _render_copy(summary, n_tiles):
+    """Render the shared heatmap template without engine or site bytes."""
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=True)
+    mk = {
+        "seo_title": "Heatmap",
+        "seo_desc": "A sector map.",
+        "key": "china",
+        "icon": "*",
+        "h1_en": "Heatmap",
+        "h1_zh": "热力图",
+        "sub_en": "Tiles.",
+        "sub_zh": "方块。",
+        "label_en": "China",
+        "label_zh": "A股",
+        "json": "marketdata/china_heatmap.json",
+        "foot_en": "Research context.",
+        "foot_zh": "研究参考。",
+    }
+    return env.get_template("market_heatmap.html.j2").render(
+        mk=mk, summary=summary, gated=False, n_tiles=n_tiles, siblings=None,
+    )
+
+
+def _pulse_region(html):
+    match = re.search(r'<div class="hx-pulse-read">(.*?)</div>', html, re.S)
+    assert match, "pulse did not render"
+    return match.group(1)
+
+
+def test_pulse_splits_board_from_map():
+    """Advance rate is the whole board; sector ranks are this map's price move."""
+    summary = _shell_summary(scope={
+        "en": "Shanghai + Shenzhen A-shares traded",
+        "zh": "沪深全市场",
+    })
+    pulse = _pulse_region(_render_copy(summary, 1740))
+    assert "Whole board:" in pulse
+    assert "On this map (1,740 names):" in pulse
+    assert "全市场：" in pulse
+    assert "本图（1,740 只）：" in pulse
+    assert "资金流向" not in pulse
+    en_head = re.search(r'<span class="l-en">(.*?)</span>', pulse, re.S).group(1)
+    zh_head = re.search(r'<span class="l-zh">(.*?)</span>', pulse, re.S).group(1)
+    assert "全市场：" not in en_head
+    assert "Whole board:" not in zh_head
+
+    fallback = _shell_summary(scope={
+        "en": "Map sample · 4 names",
+        "zh": "本图样本 · 4 只",
+    })
+    fb = _pulse_region(_render_copy(fallback, 1740))
+    assert "Whole board:" not in fb
+    assert "全市场：" not in fb
+    assert "On this map (1,740 names):" in fb
+    assert "本图（1,740 只）：" in fb
+
+    bare = _pulse_region(_render_copy(_shell_summary(scope=None), 1740))
+    assert "Whole board:" not in bare
+    assert "全市场：" not in bare
+    assert "On this map (1,740 names):" in bare
+    assert "本图（1,740 只）：" in bare
+
+
+def test_js_pulse_names_the_map():
+    """The repaint must name the map with n_tiles, not the board count."""
+    assert "On this map (' + fmtInt(data.n_tiles)" in HEATMAP_JS
+    assert "'本图（' + fmtInt(data.n_tiles)" in HEATMAP_JS
+    assert "var board = sm.scope && sm.scope.whole;" in HEATMAP_JS
+    assert "(board ? 'Whole board: ' : '')" in HEATMAP_JS
+    assert "(board ? '全市场：' : '')" in HEATMAP_JS
+    assert "资金流向：' + lead" not in HEATMAP_JS
+    assert "This map:" in HEATMAP_JS
+    assert "本图：" in HEATMAP_JS
