@@ -1,0 +1,692 @@
+{
+  "aapl_golden_used_as_held_out": false,
+  "builders_read_held_out": false,
+  "cells": [
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 13,
+      "n_predicted": 13,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 13,
+      "n_predicted": 13,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2020",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2020",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 8,
+      "n_predicted": 8,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 8,
+      "n_predicted": 8,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 6,
+      "n_predicted": 6,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 6,
+      "n_predicted": 6,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 6,
+      "n_predicted": 6,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2020",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2020",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 9,
+      "n_predicted": 9,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 9,
+      "n_predicted": 9,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 8,
+      "n_predicted": 8,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 6,
+      "n_predicted": 6,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 6,
+      "n_predicted": 6,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2020",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 12,
+      "n_predicted": 12,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 12,
+      "n_predicted": 12,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 15,
+      "n_predicted": 15,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 15,
+      "n_predicted": 15,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 5,
+      "n_predicted": 5,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "SNOW",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "SNOW",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 10,
+      "n_predicted": 10,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "SNOW",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "SNOW",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 10,
+      "n_predicted": 10,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "SNOW",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "SNOW",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 9,
+      "n_predicted": 9,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "SNOW",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "SNOW",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 9,
+      "n_predicted": 9,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "SNOW",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "SNOW",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "lease_liability",
+      "split": "held_out"
+    }
+  ],
+  "evaluated_at": "2026-11-01T09:21:05Z",
+  "evaluator_role": "independent_q1",
+  "failed_families": [],
+  "false_positives": [],
+  "head_commit": "30359c741f1f4c2b7085fdb1caabdd6655e6222a",
+  "language_gate": {
+    "guarded_token_count": 0,
+    "hyphen_guarded_count": 0
+  },
+  "metrics": {
+    "extraction": {
+      "abstention": {
+        "denominator": 231,
+        "exclusions": [
+          "insufficient_evidence:0",
+          "not_applicable:167"
+        ],
+        "numerator": 167,
+        "wilson95": [
+          0.6619,
+          0.7767
+        ]
+      },
+      "false_positive_rate": {
+        "denominator": 43,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.082
+        ]
+      },
+      "precision": {
+        "denominator": 64,
+        "exclusions": [],
+        "numerator": 64,
+        "wilson95": [
+          0.9434,
+          1.0
+        ]
+      },
+      "recall": {
+        "denominator": 188,
+        "exclusions": [],
+        "numerator": 64,
+        "wilson95": [
+          0.2765,
+          0.4108
+        ]
+      },
+      "source_fidelity_error": {
+        "denominator": 64,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.0566
+        ]
+      }
+    },
+    "findings": {
+      "abstention": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "false_positive_rate": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "precision": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "recall": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      }
+    },
+    "refusal": {
+      "abstention": {
+        "denominator": 43,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.082
+        ]
+      },
+      "precision": {
+        "denominator": 167,
+        "exclusions": [],
+        "numerator": 43,
+        "wilson95": [
+          0.1971,
+          0.3287
+        ]
+      },
+      "recall": {
+        "denominator": 43,
+        "exclusions": [],
+        "numerator": 43,
+        "wilson95": [
+          0.918,
+          1.0
+        ]
+      }
+    }
+  },
+  "numerator_denominator_note": "Every rate is numerator/denominator with exclusions listed; truthful refusal is excluded from positive coverage.",
+  "pack_id": "PK06",
+  "pack_name": "Leases and off-balance commitments",
+  "protocol_id": "fif-q0-quality-protocol/v1",
+  "quality_label": "underpowered",
+  "schema": "fundamental_forensics.pack_quality_report/v1",
+  "split_roots": {
+    "gold": "tests/fixtures/fundamental_forensics/",
+    "held_out": "tests/fixtures/fundamental_forensics_held_out/"
+  }
+}
