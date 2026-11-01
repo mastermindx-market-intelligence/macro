@@ -61,7 +61,7 @@
 <link rel="prefetch" href="sector_cycles_series_data.js?v=90ff8735" as="script">
 <link rel="prefetch" href="sector_cycles_narr_data.js?v=6ce7dfd5" as="script">
 <link rel="prefetch" href="sector_cycles_dna_data.js?v=46b0879d" as="script">
-<link rel="preload" href="sector_central_data.js?v=5057c4a5" as="script">
+<link rel="preload" href="sector_central_data.js?v=3338bea2" as="script">
 
 <link rel="prefetch" href="subsector_rotation.js?v=454792b8" as="script">
 <link rel="prefetch" href="rotation_events.js?v=b4289d26" as="script">
@@ -69,7 +69,7 @@
 <link rel="prefetch" href="time_machine.js?v=0c71b0e3" as="script">
 <link rel="prefetch" href="heatmap.js?v=05810a58" as="script">
 
-<link rel="prefetch" href="subsectors.js?v=d2799449" as="script">
+<link rel="prefetch" href="subsectors.js?v=062584cc" as="script">
 <link rel="stylesheet" href="assets/css/9c49d714.css?v=9c49d714">
 <link rel="stylesheet" href="assets/css/9f3951dd.css?v=9f3951dd">
 <link rel="stylesheet" href="assets/css/add725b2.css?v=add725b2">
@@ -523,20 +523,20 @@
     var session = pulse.session||'closed';
     var ts      = pulse.as_of_quotes||pulse.as_of_utc;
     var asofStr = '';
+    /* >12h staleness guard (weekend/holiday frozen file) — a stale file describes
+       a finished session; never label it live or post-market */
+    var builtMs=Date.parse(pulse.as_of_utc||'');
+    var stale=isFinite(builtMs)&&(Date.now()-builtMs)>12*3600e3;
     if(ts){
       try{
         if(ts.length<=10){ asofStr=ts; }
-        else if(mode==='last_rth'&&pulse.settled_close){
+        else if(stale||(mode==='last_rth'&&pulse.settled_close)){
           asofStr=new Date(ts).toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',timeZoneName:'short'});
         } else {
           asofStr=new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',timeZoneName:'short'});
         }
       }catch(e){asofStr=ts;}
     }
-    /* >12h staleness guard (weekend/holiday frozen file) — a stale file describes
-       a finished session; never label it live or post-market */
-    var builtMs=Date.parse(pulse.as_of_utc||'');
-    var stale=isFinite(builtMs)&&(Date.now()-builtMs)>12*3600e3;
     if(stale){
       if(mode==='live'||mode==='delayed'){ pulse.mode='last_rth'; }
       return {cls:'closed', en:'LAST SESSION · SETTLED', zh:'上一交易时段 · 已收盘', asofStr:asofStr, live:false};
@@ -957,7 +957,7 @@
   <section class="rvx-hero rvx-reveal "
            data-si-as-of="2026-10-30"
            data-si-baskets-sha256="337b99e5640f089206350954af2b6b46d73a9341998a8784a91e290cc4452ee6"
-           data-si-action-board-sha256="748656efbcfde9c672a95151a88aa0a79f05283b5aa256c0b3bdf68347c45e58">
+           data-si-action-board-sha256="62e576779565ccf634c227decc6fd9784902cab63a72ddcb3696a57b3b28f9c4">
     <div class="rvx-eyebrow">
       <span><span class="l-en">US Sector Intelligence 🇺🇸</span><span class="l-zh">美国行业情报 🇺🇸</span></span>
       <span class="rvx-mut" id="hero-count"></span>
@@ -2416,13 +2416,13 @@
       
       <a href="#moving"><span class="l-en">See the rotation map</span><span class="l-zh">查看轮动图</span></a>
       <span class="l-en">for where each group sits in the leading / lagging cycle.</span><span class="l-zh">了解各组在领先/落后周期中的位置。</span>
-      · <span class="l-en">Built</span><span class="l-zh">生成于</span> <span class="num">2026-11-01 14:35 UTC</span>
+      · <span class="l-en">Built</span><span class="l-zh">生成于</span> <span class="num">2026-11-01 21:47 UTC</span>
     </div>
   </section>
 
   <footer>
     <span class="l-en">Informational only, not investment advice. Baskets are equal-weighted and benchmarked to the S&amp;P 500. Membership is curated, so results are descriptive, not an out-of-sample backtest or buy list.</span><span class="l-zh">仅供参考，非投资建议。篮子等权重，并以标普 500 为基准。成分为人工整理，因此结果是描述性信息，不是样本外回测或买入清单。</span>
-    <span class="l-en">Generated</span><span class="l-zh">生成于</span> <span id="gen">2026-11-01 14:35 UTC</span>.
+    <span class="l-en">Generated</span><span class="l-zh">生成于</span> <span id="gen">2026-11-01 21:47 UTC</span>.
   </footer>
   
   </div>
@@ -3025,7 +3025,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
 
 
 
-<script data-sync src="sector_central_data.js?v=5057c4a5"></script>
+<script data-sync src="sector_central_data.js?v=3338bea2"></script>
 <script>
 (function(){
   "use strict";

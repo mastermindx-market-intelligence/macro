@@ -1295,11 +1295,31 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
+      - "engine/marketing/accounts.py"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -3286,11 +3306,31 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
+      - "engine/marketing/accounts.py"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4332,11 +4372,31 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
+      - "engine/marketing/accounts.py"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -6975,16 +7035,69 @@ jobs:
 
   site-access-boundary:
     if: ${{ false }}
-    gate: data
+    gate: code
     # The static serving boundary, on its own (2026-10-31). This step sat in
     # `tier-gate` after "tier-preview split contract". The pack runner skips a
     # job's later steps once one fails, and that shell check moves with every
     # bake, so its reds kept this suite from running: the heartbeat skipped it in
     # at least seven runs in a row. Here it reports whatever the shells do.
     #
-    # `gate: data` because the suite reads the committed site/ tree, so a bake
-    # alone can move its verdict. pytest + pyyaml is the whole dependency line,
-    # measured with every other third-party import refused.
+    # On the merge gate since R-28 (2026-11-01). It was `gate: data`, which
+    # ci.yml never packs, so a pull request could breach the public list and
+    # still merge on green.
+    #
+    # `scope: exclusive` so that these paths replace inference. `site/**` is not
+    # listed on purpose: the suite globs the committed site/ tree, and a bake
+    # alone can move its verdict, so a bake must not wake this job on an
+    # unrelated pull request. The heartbeat mirror in ci-main-heartbeat.yml stays
+    # and still reports what a bake moves. Only the site/ files the suite opens
+    # by name are listed. The same holds for the workflow files: the suite joins
+    # every workflow, and only the ones that carry a force-add are listed.
+    #
+    # pytest + pyyaml is the whole dependency line, measured with every other
+    # third-party import refused. The job id is registered in CURATED_EXCLUSIVE
+    # in tests/test_ci_pack.py.
+    scope: exclusive
+    paths:
+      - ".github/ci/legacy-jobs.yml"
+      - ".github/workflows/btc-live.yml"
+      - ".github/workflows/ci-main-heartbeat.yml"
+      - ".github/workflows/ci.yml"
+      - ".github/workflows/closing-bell.yml"
+      - ".github/workflows/earlyclose.yml"
+      - ".github/workflows/intraday-fastpath.yml"
+      - ".gitignore"
+      - "app/__init__.py"
+      - "app/biocatalyst.py"
+      - "app/deploy/Caddyfile"
+      - "app/ontology_explorer.py"
+      - "app/paywall.py"
+      - "app/regwall.py"
+      - "config/site_access.yml"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "site/assets/js/intelligence-hub-market-pulse.js"
+      - "site/help_refresh.js"
+      - "site/market_memory_intent.js"
+      - "site/market_memory_retained.css"
+      - "site/market_memory_retained.js"
+      - "site/portfolio_state.js"
+      - "site/scene-motion.css"
+      - "site/scene-motion.js"
+      - "site/theme.css"
+      - "site/watchlist.html"
+      - "templates/dashboard.html.j2"
+      - "templates/help_refresh.js"
+      - "templates/market_memory_intent.js"
+      - "templates/market_memory_retained.css"
+      - "templates/market_memory_retained.js"
+      - "templates/watchlist.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_site_access_boundary.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -6995,6 +7108,100 @@ jobs:
         run: pip install pytest pyyaml
       - name: static serving boundary (Caddy <-> site_access.yml, no leaked artifacts)
         run: python -m pytest tests/test_site_access_boundary.py -q
+
+  sector-cycles-page:
+    if: ${{ false }}
+    gate: code
+    # tests/test_sector_cycles.py sat on the unrun baseline, so no pull request ran it,
+    # and the sector page's copy and its RS arithmetic could change and still merge.
+    # On the merge gate since 2026-11-01. pyarrow stays out on purpose: the two tests
+    # that compute from the sector store skip without it, so a bake cannot move this job.
+    # One test runs the page's date scripts under the node the runner ships.
+    scope: exclusive
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "collectors/holdings.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "engine/__init__.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_index.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/cycle_forward_log.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycles.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/falsifier_tripwires.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/mtf_monitor.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/read.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/rates_command_basis.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_state.py"
+      - "engine/sector_cycles.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/__init__.py"
+      - "scripts/_cycles_payload.py"
+      - "scripts/_narrative_epoch.py"
+      - "scripts/_narrative_ttl.py"
+      - "scripts/build_sector_cycles.py"
+      - "scripts/validate_regime_fwd.py"
+      - "templates/country_cycles.html.j2"
+      - "templates/sector_cycles.html.j2"
+      - "templates/sector_cycles.js"
+      - "templates/sector_cycles_china.html.j2"
+      - "tests/__init__.py"
+      - "tests/test_sector_cycles.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest numpy pandas pyyaml jinja2
+      - name: sector cycles page and RS arithmetic
+        run: python -m pytest tests/test_sector_cycles.py -q
 
   regwall-boundary:
     if: ${{ false }}
@@ -8181,11 +8388,31 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
+      - "engine/marketing/accounts.py"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "lib/rotation_observation_notification.py"
     runs-on: ubuntu-latest
     steps:
@@ -8835,6 +9062,8 @@ jobs:
       - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
@@ -12204,12 +12433,17 @@ jobs:
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_held_out_capture_predeclared.py"
       - "tests/test_fundamental_forensics_held_out_packages.py"
+      - "tests/test_fif_q0_label_conformance.py"
+      - "scripts/fif_q0_label_conformance.py"
       - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_a43_responsive_keyboard_corpus.py"
       - "mockups/evidence/fundamental_forensics_p2/**"
       - "tests/test_fif_source_rights.py"
       - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_fif_se_receipts.py"
+      - "tests/test_fif_dev_corpus.py"
+      - "scripts/fif_dev_corpus.py"
+      - "tests/fixtures/fundamental_forensics/dev_corpus/**"
       - "tests/test_fif_g_pack_gold.py"
       - "tests/test_fif_g_pack_kernel.py"
       - "tests/test_fif_a33_gold_replay_receipt.py"
@@ -12389,11 +12623,19 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12419,9 +12661,11 @@ jobs:
           tests/test_fif_gsrc_capture.py
           tests/test_fif_held_out_capture_predeclared.py
           tests/test_fundamental_forensics_held_out_packages.py
+          tests/test_fif_q0_label_conformance.py
           tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
+          tests/test_fif_dev_corpus.py
           tests/test_fif_pf_health_entity.py
           tests/test_fif_pf_health_pointer.py
           tests/test_fif_a0_production_mode_unit.py
@@ -13041,8 +13285,15 @@ jobs:
     # ceilings stay fixed.
     # W31-L51 (2026-10-21): the tape staleness tests import scripts/build_china_altdata.py,
     # so the builder and its closure (lib/illus, lib/pages, lib/site_assets) join the paths.
+    # W38-B3 (2026-10-31): the suite reads engine/china_narrative_radar.py by ast to pin its
+    # provenance copy, so that module and its closure join the paths.
     paths:
       - "templates/china_altdata.html.j2"
+      - "engine/china_narrative_radar.py"
+      - "engine/china_sector_index.py"
+      - "engine/china_sector_pathway.py"
+      - "engine/cn_ai_semis_confirmer.py"
+      - "engine/grading_stats.py"
       - "tests/test_china_altdata.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -13555,7 +13806,7 @@ jobs:
       - name: factor boundary selftest (guard fires on planted violations)
         run: python3 scripts/check_factor_boundaries.py --selftest
       - name: synapse owning contracts in one pytest session
-        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
+        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_quarterly_period_start.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
       # Share one pytest session across the five existing offline EDGAR suites.
       # Test inventory, dependencies and ordinary scope inference are unchanged.
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
@@ -16524,11 +16775,18 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
       - "engine/marketing/attribution.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "lib/rotation_observation_notification.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
@@ -21152,6 +21410,30 @@ jobs:
         run: pip install pytest pandas pyarrow jinja2 pyyaml
       - name: basket staleness warn tests
         run: python -m pytest tests/test_basket_staleness_warn.py -q
+
+  sector-basket-links:
+    if: ${{ false }}
+    gate: code
+    # The sector page and the basket page link each other through two small blocks in
+    # shared templates, and no merge-gate job reads templates/sector.html.j2. The suite
+    # renders the two blocks alone, so a bake cannot move this job. One test runs the
+    # basket block under the node the runner ships.
+    scope: exclusive
+    paths:
+      - "templates/basket_detail.html.j2"
+      - "templates/sector.html.j2"
+      - "tests/__init__.py"
+      - "tests/test_sector_basket_links.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: sector page and basket page links
+        run: python -m pytest tests/test_sector_basket_links.py -q
 
   ftr-tape-surfaces:
     if: ${{ false }}
@@ -26339,6 +26621,8 @@ jobs:
       # W2F-X closure widening: the observation seam widened these import closures
       - "engine/intl_global_observation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
@@ -26916,6 +27200,8 @@ jobs:
       - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
@@ -29684,11 +29970,32 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -30832,6 +31139,7 @@ jobs:
       - "data/baskets/membership.json"
       - "data/baskets/ohlcv/**"
       - "data/yahoo/SPY.parquet"
+      - "engine/__init__.py"
       - "tests/fixtures/defense_government_context.json"
       - "tests/fixtures/defense_government_context_inputs.json"
       - "tests/test_theme_economic_interpretation.py"
@@ -30867,6 +31175,8 @@ jobs:
       - "engine/market_os/macro_workspaces/__init__.py"
       - "engine/market_os/macro_workspaces/contract.py"
       - "engine/market_os/macro_workspaces/registry.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/research_intelligence/extractor.py"
       - "engine/research_intelligence/schema.py"
       - "engine/research_intelligence/selection.py"
@@ -31757,6 +32067,8 @@ jobs:
       - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
@@ -37350,6 +37662,8 @@ jobs:
       - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/FOMC_QT_CLOCK_CASE_2024_05_01.md
@@ -38640,11 +38954,31 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
+      - "engine/marketing/accounts.py"
       - "engine/marketing/attribution.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41212,6 +41546,7 @@ jobs:
       - "engine/intelligence_workspace/adapters/stage.py"
       # Catalyst route import closure; selection only, no test exemptions.
       - "app/catalyst_opportunity.py"
+      - "app/catalyst_source_wiring.py"
       - "engine/catalyst_opportunity/projection.py"
       - "engine/catalyst_opportunity/__init__.py"
       - "engine/catalyst_opportunity/reader.py"
@@ -41771,6 +42106,7 @@ jobs:
       - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
+      - "config/catalyst_pilot_universe.json"
       - "engine/company_intelligence/h20_reported_event.py"
       - "engine/theme_graph/native_disclosure_propagation.py"
       - "lib/economic_propagation.py"
@@ -41820,6 +42156,11 @@ jobs:
       - "engine/transmission_company_continuation.py"
       - "engine/company_intelligence/sec_supplier_adoption.py"
       - "engine/k3e_eval1_forward.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/pick_forward_dist.py"
       - "engine/seasonality/multiplicity.py"
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
@@ -41932,6 +42273,7 @@ jobs:
       - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "research/DO_NOT_REBUILD.md"
+      - "research/MARKETING_X_CATALYST_CONTINUATION_HANDOFF_20261101.md"
       - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
@@ -41986,7 +42328,10 @@ jobs:
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
       - "app/catalyst_scan_ui.js"
+      - "app/catalyst_source_wiring.py"
       - "app/company_intelligence.py"
+      - "app/deploy/macro-catalyst-source-cycle.service"
+      - "app/deploy/macro-catalyst-source-cycle.timer"
       - "app/deploy/update.sh"
       - "app/dossier_quote.py"
       - "app/earnings.py"
@@ -42059,6 +42404,7 @@ jobs:
       - "config/biocatalyst_sources.yml"
       - "config/biocatalyst_sponsor_ticker_map.yml"
       - "config/capability_manifest.yml"
+      - "config/catalyst_pilot_universe.json"
       - "config/compiled_kill_registry.yml"
       - "config/dataset_registry.yml"
       - "config/delisted_symbols.yml"
@@ -42334,6 +42680,9 @@ jobs:
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_partner_pack.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
       - "engine/marketing/chart_director.py"
       - "engine/marketing/chart_facts.py"
       - "engine/marketing/chart_followups.py"
@@ -42394,6 +42743,7 @@ jobs:
       - "engine/name_resolver.py"
       - "engine/name_score.py"
       - "engine/name_score_grader.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/narrative_crossmarket.py"
       - "engine/narrative_rotation.py"
       - "engine/neuralweb/__init__.py"
@@ -42651,6 +43001,7 @@ jobs:
       - "scripts/optimize_assets.py"
       - "scripts/query_k3e_expectation_surface.py"
       - "scripts/render_catalyst_scan.py"
+      - "scripts/run_catalyst_source_cycle.py"
       - "scripts/security_state_producer.py"
       - "scripts/snapshot_shadow_book.py"
       - "scripts/sparse_guard.py"
@@ -42684,6 +43035,9 @@ jobs:
       - "tests/test_catalyst_scan.py"
       - "tests/test_catalyst_scan_authority.py"
       - "tests/test_catalyst_scan_frontend.py"
+      - "tests/test_catalyst_source_adapter.py"
+      - "tests/test_catalyst_source_cycle.py"
+      - "tests/test_catalyst_source_deploy.py"
       - "app/catalyst_opportunity.py"
       - "app/company_disclosures.py"
       - "app/company_supplier_research.py"
@@ -43008,7 +43362,12 @@ jobs:
         with:
           node-version: "20"
       - name: Catalyst hermetic integration dependencies
-        run: pip install pytest pandas pyarrow pyyaml requests fastapi httpx jinja2 websockets jsonschema referencing
+        # playwright: tests/test_catalyst_scan_frontend.py drives the scan card
+        # in Chromium (importorskip("playwright.sync_api")); without it the
+        # browser contract only ever SKIPS on the merge gate.
+        run: pip install pytest pandas pyarrow pyyaml requests fastapi httpx jinja2 websockets jsonschema referencing playwright
+      - name: Install Chromium for the scan-card browser contract
+        run: python -m playwright install --with-deps chromium
       - name: Anonymous scan, rights, consent and first-value UX
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
@@ -43021,6 +43380,9 @@ jobs:
           tests/test_catalyst_admission.py
           tests/test_catalyst_scan_frontend.py
           tests/test_catalyst_partner_pack.py
+          tests/test_catalyst_source_cycle.py
+          tests/test_catalyst_source_deploy.py
+          tests/test_catalyst_source_adapter.py
           -q -rs
 
   no-client-supplied-identity:
@@ -48040,11 +48402,18 @@ jobs:
       - "app/catalyst_integration.py"
       - "app/catalyst_optin.py"
       - "app/catalyst_scan_authority.py"
+      - "app/catalyst_source_wiring.py"
+      - "config/catalyst_pilot_universe.json"
       - "engine/marketing/attribution.py"
       - "engine/marketing/catalyst_admission.py"
       - "engine/marketing/catalyst_lifecycle.py"
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_adapter.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
+      - "engine/news_impact/__init__.py"
+      - "engine/news_impact/edgar_body.py"
       - "lib/rotation_observation_notification.py"
     runs-on: ubuntu-latest
     steps:

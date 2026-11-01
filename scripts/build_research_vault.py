@@ -27,6 +27,7 @@ import html as _html
 import json
 import logging
 import sys
+from datetime import datetime
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
@@ -278,6 +279,39 @@ def _ssr_feed(catalog: dict) -> str:
     return preview + gate
 
 
+def _saved_written(generated_at: object) -> str:
+    """YYYY-MM-DD HH:MM UTC, or empty when the write time is unusable."""
+    if not isinstance(generated_at, str):
+        return ""
+    text = generated_at.strip()
+    if len(text) < 16 or text[10] != "T":
+        return ""
+    stamp = text[:16]
+    try:
+        datetime.strptime(stamp, "%Y-%m-%dT%H:%M")
+    except ValueError:
+        return ""
+    return stamp[:10] + " " + stamp[11:] + " UTC"
+
+
+def _saved_latest(summary: object) -> str:
+    """First ten characters of the newest report clock, or empty."""
+    if not isinstance(summary, dict):
+        return ""
+    clock = summary.get("source_clock")
+    if not isinstance(clock, dict):
+        return ""
+    latest = clock.get("latest_report_published_at")
+    if not isinstance(latest, str) or len(latest.strip()) < 10:
+        return ""
+    head = latest.strip()[:10]
+    try:
+        datetime.strptime(head, "%Y-%m-%d")
+    except ValueError:
+        return ""
+    return head
+
+
 def render(catalog: dict | None = None) -> str:
     env = Environment(
         loader=FileSystemLoader(str(TEMPLATES)),
@@ -300,10 +334,13 @@ def render(catalog: dict | None = None) -> str:
     # title/summary containing it can't break out of the island.
     catalog_json = json.dumps(baked_catalog, ensure_ascii=False).replace("</", "<\\/")
     ssr_feed = _ssr_feed(catalog)
+    summary = baked_catalog.get("summary") or {}
     return tmpl.render(
         catalog_json=catalog_json,
         ssr_feed=ssr_feed,
-        summary=baked_catalog.get("summary") or {},
+        summary=summary,
+        saved_written=_saved_written(baked_catalog.get("generated_at")),
+        saved_latest=_saved_latest(summary),
     )
 
 
