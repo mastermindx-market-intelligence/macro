@@ -118,10 +118,10 @@ test('no observation: missing early_context is unavailable, aged context is stal
 
 test('legs withheld when the 2-session window mismatches, shown when only 20s is missing', () => {
   const mismatch = render('partial_window_mismatch', 'en');
-  assert.ok(mismatch.includes('Partial evidence for XLP vs XLK; ratio withheld.'));
+  assert.ok(mismatch.includes('Partial evidence for consumer staples (XLP) vs technology (XLK); ratio withheld.'));
   assert.ok(!mismatch.includes('+2.06%'));
   const missing20 = render('partial_missing_20s', 'en');
-  assert.ok(missing20.includes('Both fell; XLP fell less than XLK.'));
+  assert.ok(missing20.includes('Both sectors fell; consumer staples (XLP) fell less than technology (XLK).'));
   assert.ok(missing20.includes('-1.00%') && missing20.includes('-3.00%') && missing20.includes('+2.06%'));
   assert.ok(missing20.includes('Not supplied') && missing20.includes('未提供'));
 });
@@ -175,7 +175,7 @@ test('correction and withdrawal keep the original in history', () => {
   assert.ok(corrected.includes('Original (rotobs_'));
   assert.ok(corrected.includes('Corrected: n -0.50% · d -3.00% · r +2.58%'));
   const withdrawn = render('withdrawn', 'en');
-  assert.ok(withdrawn.includes('Evidence for XLP vs XLK was withdrawn on Oct 30.'));
+  assert.ok(withdrawn.includes('Evidence for consumer staples (XLP) vs technology (XLK) was withdrawn on Oct 30.'));
   const glanceOnly = withdrawn.slice(0, withdrawn.indexOf('<details')); // the study keeps the original
   assert.ok(!glanceOnly.includes('+2.06%'), 'withdrawn glance must not show stale numbers');
   assert.ok(withdrawn.includes('Original (rotobs_') && withdrawn.includes('n -1.00%'), 'study keeps original values');
@@ -245,7 +245,7 @@ test('repair wave B: separator, routes and a single both-fell sentence', () => {
   assert.ok(h.includes(' · <span class="rc-ew-built">'), 'quality · built separator');
   assert.ok(!h.includes('#rc-early-context'), 'no unregistered in-page route');
   assert.ok(h.includes('href="#rc-events-mount"'), 'registered SC route');
-  assert.equal(h.split('Both fell; XLP fell less than XLK.').length - 1, 1, 'stated once');
+  assert.equal(h.split('Both sectors fell; consumer staples (XLP) fell less than technology (XLK).').length - 1, 1, 'stated once');
   // JSON.parse makes 2.0 === 2, so the JS glance cannot tell a float session
   // count from an integer one; the Radar (Jinja) path enforces integers.
   assert.equal(JSON.parse('{"s":2.0}').s, 2);

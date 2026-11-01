@@ -146,7 +146,7 @@ def test_five_second_glance_structure():
     g = glance(dlg)
     assert dlg.index('id="gde-ew"') < dlg.index("<details")  # precedes the drawer
     for frag in ("gde-ew-title", "US Technology leadership", "Observed",
-                 "Both fell; XLP fell less than XLK.", "Source session Oct 30",
+                 "Both sectors fell; consumer staples (XLP) fell less than technology (XLK).", "Source session Oct 30",
                  "Quality: Complete", "Watch only: this describes what happened"):
         assert frag in g, frag
     assert g.count("<a ") == 1
@@ -160,18 +160,22 @@ def test_five_second_glance_structure():
 def test_side_by_side_ratio_legs_table():
     dlg = render(envelope(_fixtures()["journey_b_both_fell"]))
     table = re.search(r'<table class="gde-ew-legs">.*?</table>', dlg, re.S).group(0)
-    for frag in ("-1.00%", "-3.00%", "+2.06%", ">XLP<", ">XLK<",
-                 "Receiver (numerator)", "Donor (denominator)", "Relative (XLP vs XLK)",
+    for frag in ("-1.00%", "-3.00%", "+2.06%", ">Consumer staples (XLP)<", ">Technology (XLK)<",
+                 ">必需消费（XLP）<", ">科技（XLK）<",
+                 "Receiver (numerator)", "Donor (denominator)", ">Relative<", ">相对<",
+                 ">Consumer staples (XLP) vs technology (XLK)<", ">必需消费（XLP） 对 科技（XLK）<",
                  "2 sessions, Oct 29 → Oct 30 · US cash sessions"):
         assert frag in table, frag
-    assert "Both fell; XLP fell less than XLK." in dlg
+    # D1: the relative row names the pair; it never carries a stray dash cell
+    assert ">—<" not in table
+    assert "Both sectors fell; consumer staples (XLP) fell less than technology (XLK)." in dlg
 
 
 def test_side_by_side_ratio_partial_window_mismatch_withholds_numbers():
     dlg = render(envelope(_fixtures()["partial_window_mismatch"]))
     assert 'class="gde-ew-legs"' not in dlg  # legs and ratio withheld with the window
     g = glance(dlg)
-    assert "Partial evidence for XLP vs XLK; ratio withheld." in g
+    assert "Partial evidence for consumer staples (XLP) vs technology (XLK); ratio withheld." in g
     for pct in ("-1.00%", "-3.00%", "+2.06%"):
         assert pct not in g, pct
 
@@ -217,7 +221,7 @@ def test_correction_history_original_and_corrected():
 def test_withdrawal_keeps_original_and_hides_current_values():
     dlg = render(envelope(_fixtures()["withdrawn"]))
     g = glance(dlg)
-    assert "Evidence for XLP vs XLK was withdrawn on Oct 30." in g
+    assert "Evidence for consumer staples (XLP) vs technology (XLK) was withdrawn on Oct 30." in g
     for pct in ("-1.00%", "-3.00%", "+2.06%"):
         assert pct not in g, pct
     study = re.search(r'<details class="gde-ew-study">.*?</details>', dlg, re.S).group(0)
@@ -318,7 +322,7 @@ def test_quiet_headline_does_not_suppress_qualified_observation():
     env["hazard_summary"] = dict(env["hazard_summary"], stage="NONE")
     dlg = render(env)
     assert state_of(dlg) == "observed"
-    assert "Both fell; XLP fell less than XLK." in glance(dlg)
+    assert "Both sectors fell; consumer staples (XLP) fell less than technology (XLK)." in glance(dlg)
 
 
 def test_fragile_headline_does_not_create_an_observation():
@@ -730,3 +734,39 @@ def test_o06_a_future_session_view_is_unreadable_and_claims_no_id():
     assert state_of(dlg) == "unreadable"
     assert _observation_id_attr(dlg) == ""
     assert fixture["notification"]["observation_id"] not in dlg
+
+
+# ── sector display names: glance JS, Radar band and registry agree ──────────
+def _js_sector_names() -> dict:
+    src = (ROOT / "templates" / "rotation_events.js").read_text(encoding="utf-8")
+    body = re.search(r"var SECTOR_NAMES = \{(.*?)\};", src, re.S).group(1)
+    return {k: (en, zh) for k, en, zh in
+            re.findall(r"(\w+): \['([^']*)', '([^']*)'\]", body)}
+
+
+def _band_sector_names() -> dict:
+    src = (ROOT / "templates" / "_risk_envelope_band.html.j2").read_text(encoding="utf-8")
+    body = re.search(r"\{% set _EW_SECTOR_NAMES = \{(.*?)\} %\}", src, re.S).group(1)
+    return {k: (en, zh) for k, en, zh in
+            re.findall(r"'(\w+)': \('([^']*)', '([^']*)'\)", body)}
+
+
+def test_sector_display_names_mirror_the_registry_in_both_renderers():
+    js, band = _js_sector_names(), _band_sector_names()
+    assert len(js) == 5 and js == band
+    pairs = json.loads((ROOT / "data" / "oracle" / "ratio_pairs.json").read_text(encoding="utf-8"))["pairs"]
+    rows = pairs if isinstance(pairs, list) else list(pairs.values())
+    defensive = [r for r in rows if "defensive_sector" in json.dumps(r)]
+    assert defensive, "registry lost its defensive-sector pairs"
+    for r in defensive:
+        en_num, en_den = r["name_en"].split(" vs ")
+        zh_num, zh_den = r["name_zh"].split(" vs ")
+        assert js[r["num"]] == (en_num.lower(), zh_num), r["id"]
+        assert js[r["den"]] == (en_den.lower(), zh_den), r["id"]
+
+
+def test_the_banned_relative_words_never_return_to_rotation_copy():
+    for path in ("templates/rotation_events.js", "templates/_risk_envelope_band.html.j2", "app/mailer.py"):
+        text = (ROOT / path).read_text(encoding="utf-8")
+        assert "relative shelter" not in text.lower(), path
+        assert "抗跌" not in text, path
