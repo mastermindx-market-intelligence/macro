@@ -40,7 +40,7 @@ waves:
   - id: W0
     title: Wave 0 — seat context, custody verification, program records
     status: done
-    next_action: "2026-10-31 22:1xZ — W3 F1 denominator matrix MERGED (macro #10348 -> ed8cd519; review PASS_WITH_NOTES, 18 segments: SOURCE 14 / MERGE 7 / INSTALLATION 5 / AUTH 1 / ACCEPTANCE 1 historical); W4 E4 binding census repaired after an Opus audit FAIL, re-reviewed PASS_WITH_NOTES, macro #10351 OPEN at a3b84009 (merge pinned, CI pending); next: merge #10351, W3 F2 adversarial review, §9 vertical proofs, E4 design-blocked until B1-B4 qualified."
+    next_action: "2026-11-01 04:5xZ — W3 F1 matrix MERGED (#10348 -> ed8cd519); W4 E4 binding census MERGED (#10351 -> f3b17d9e, PASS_WITH_NOTES after Opus-audit repair); W3 F2 negative controls commissioned as three ubuntu1 Fabric lanes (time/corrections T01-T14, rights/identity R01-R15, model/context M01-M15; base 6ff08d8e); next: seat re-runs each lane control script, independent review, one PR; BROKEN controls become separate build lanes; then §9.1 vertical proofs; E4 implementation blocked until B1-B4 are qualified."
   - id: W1
     title: Wave 1 — Sections A+E (delivery, rights, propagation, custody) and B+D (schema inventory, engine trace, corpus frontier) on fabric lanes under two Opus orchestrators
     status: done
@@ -61,7 +61,7 @@ waves:
     status: todo
     depends_on: [W2, W3]
     next_action: "Not before W2/W3 land."
-next_action: "2026-10-31 22:1xZ — W3 Section C (#10344) and F1 (#10348 -> ed8cd519) on main; W4 E4 census #10351 open at a3b84009 pinned for merge; next: merge #10351, then W3 F2 review, §9.1 vertical proofs, production proof; E4 implementation blocked until B1-B4 bindings are qualified (all PARTIAL at HEAD)."
+next_action: "2026-11-01 04:5xZ — W3 C (#10344), F1 (#10348 -> ed8cd519) and W4 E4 census (#10351 -> f3b17d9e) on main; W3 F2 negative-control lanes running on ubuntu1; next: adjudicate F2 by seat re-run, review, merge; then §9.1 vertical proofs and production proof; E4 implementation blocked until B1-B4 bindings are qualified (all PARTIAL at HEAD)."
 ---
 
 # News Intelligence Estate convergence
