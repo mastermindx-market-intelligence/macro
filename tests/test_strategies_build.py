@@ -269,6 +269,78 @@ def test_w20e_hub_shows_asof_and_score():
     assert "Oct 13, 2026" not in block and "Composite score" not in block
 
 
+# --------------------------------------------------------------------------- #
+# W38-B8R: say why the book weight can differ from the score's band. The
+# 5-day debounce is the only mechanism named. Display-only.
+# --------------------------------------------------------------------------- #
+_W38_GAP_EN = "until a new band holds 5 trading days"
+_W38_GAP_ZH = "在新区间持续满 5 个交易日之前"
+
+
+def _w38_detail_vm(monkeypatch, score: int, risk_w: int) -> dict:
+    import scripts.build_strategies as bs
+    for name in ("_chart_strategy", "_chart_growth", "_chart_dd"):
+        monkeypatch.setattr(bs, name, lambda *a, **k: "")
+    ev = _w20e_ev()
+    ev["score"] = score
+    ev["risk_w"] = risk_w
+    ev["cash_w"] = 100 - risk_w
+    return bs._detail_vm(ev, "2026-10-31 00:00 UTC")
+
+
+def _w38_gap_sentences(vm: dict) -> tuple[str, str]:
+    band, spec = vm["score_band"], vm["s"]
+    en = (f"The score {vm['score']} sits in {band['label']} ({band['rng']}), "
+          f"which maps to {band['weight']}% {spec['bench_en']}. "
+          f"The book is still {vm['risk_w']}% {_W38_GAP_EN}.")
+    zh = (f"{vm['score']} 分落在「{band['label_zh']}」区间（{band['rng']}），"
+          f"对应 {band['weight']}% {spec['bench_zh']}。"
+          f"{_W38_GAP_ZH}，持仓仍为 {vm['risk_w']}%。")
+    return en, zh
+
+
+def test_w38_score_47_book_100_names_the_band(monkeypatch):
+    vm = _w38_detail_vm(monkeypatch, 47, 100)
+    band = vm["score_band"]
+    assert band["label"] == "Watch — trim" and band["label_zh"] == "关注 — 减仓"
+    assert band["weight"] == 66 and band["rng"] == "25–50"
+    assert vm["risk_w"] == 100 and vm["score"] == 47
+    en, zh = _w38_gap_sentences(vm)
+    html = _w20e_detail_html(vm)
+    assert en in html and zh in html
+    assert "High-yield credit (TR)" in en and "高收益信用债（总回报）" in zh
+
+
+def test_w38_same_band_prints_no_sentence(monkeypatch):
+    """The weight guard. Removing it prints the sentence while the book matches."""
+    vm = _w38_detail_vm(monkeypatch, 47, 66)
+    assert vm["score_band"]["weight"] == vm["risk_w"] == 66
+    assert vm["score_band"]["label"] == "Watch — trim"
+    html = _w20e_detail_html(vm)
+    assert _W38_GAP_EN not in html and _W38_GAP_ZH not in html
+    bare = _w20e_detail_html(_detail_vm())
+    assert "score_band" not in _detail_vm()
+    assert _W38_GAP_EN not in bare and _W38_GAP_ZH not in bare
+
+
+def test_w38_band_edges_follow_bands(monkeypatch):
+    watch = _w38_detail_vm(monkeypatch, 25, 100)["score_band"]
+    assert watch["label"] == "Watch — trim" and watch["weight"] == 66
+    assert watch["rng"] == "25–50"
+    below = _w38_detail_vm(monkeypatch, 24, 100)["score_band"]
+    assert below["label"] == "Calm — fully invested" and below["weight"] == 100
+    stress = _w38_detail_vm(monkeypatch, 50, 100)["score_band"]
+    assert stress["label"] == "Stress — de-risk" and stress["weight"] == 33
+    assert stress["rng"] == "50–75"
+    assert _w38_detail_vm(monkeypatch, 49, 100)["score_band"]["label"] == "Watch — trim"
+    top = _w38_detail_vm(monkeypatch, 75, 100)["score_band"]
+    assert top["label"] == "Defensive — all cash" and top["label_zh"] == "防守 — 全现金"
+    assert top["weight"] == 0 and top["rng"] == "≥ 75"
+    held = _w38_detail_vm(monkeypatch, 100, 66)["score_band"]
+    assert held["weight"] == 0 and held["label"] == "Defensive — all cash"
+    assert _w38_detail_vm(monkeypatch, 101, 0)["score_band"] is None
+
+
 def test_w20e_card_passes_asof_and_score():
     import scripts.build_strategies as bs
     from types import SimpleNamespace

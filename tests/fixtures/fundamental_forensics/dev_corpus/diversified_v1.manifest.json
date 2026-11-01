@@ -1,0 +1,496 @@
+{
+  "capture_out_root": "/tmp/fif-pk03dev-r1/out",
+  "captured_at": "2026-11-01T16:41:37Z",
+  "contract_id": "fif_dev_corpus_diversified_v1",
+  "corpus_id": "diversified_v1",
+  "held_out_disjoint": true,
+  "issuers": [
+    {
+      "accessions": [
+        {
+          "accession": "0000080424-26-000103",
+          "admission": "admitted",
+          "filing_date": "2026-08-04",
+          "form": "10-K",
+          "members": {
+            "index.json": "40074d87b19b7a371453524ac08e4f995e1813af7533c81730fad902ce3d2978",
+            "pg-20260630.htm": "19aaf77c65a9b9dda06f00df88ec78eef86d948c8d5959a75c048b5de8e01725",
+            "pg-20260630.xsd": "a2fbfc54267c82a4b7870edc734805c6533612f1e5f2d45776ea46eb2d3f4598",
+            "pg-20260630_cal.xml": "6fa38aa37aebee439f97c89fa708840c030bd61b967afa0eeb52b87f5bb3e1f0",
+            "pg-20260630_def.xml": "5d398480cb69d6a4e049d2004fb9f5b0a44af53d21fe9e2706b0192176e823a8",
+            "pg-20260630_lab.xml": "173e2b174a893defdb11b26649d1fc2abf843aeb1eb2bb9178ac5f88f1253611",
+            "pg-20260630_pre.xml": "23c7e2167321a103b4c5361490cd346fb302b4ba1f2a1c20ff1b1f231114d2dc",
+            "sec_submissions_witness.json": "a1a1de9ee70d72ab7c3b067de34cd309f818c43b8a39a01a5d67089df2b6b722"
+          },
+          "package_manifest_sha256": "a0a6fcfe53315d60d00d917ba31f445f48bc066de141460a7cb5247996813679",
+          "period_of_report": "2026-06-30"
+        },
+        {
+          "accession": "0000080424-25-000076",
+          "admission": "admitted",
+          "filing_date": "2025-08-04",
+          "form": "10-K",
+          "members": {
+            "index.json": "dfb9e0b74beac35df223279c8175d1ef289eefeabddab71368dc31999100c6f0",
+            "pg-20250630.htm": "eedd010649efb7db3861353a39ebcebc9f1f4468f5a6267b7107e30c8e4c5b3f",
+            "pg-20250630.xsd": "00153eb54ba5004e380bdb6242682b479f8538b7a7a696c7cf33d94e97862a28",
+            "pg-20250630_cal.xml": "deb3b23ae8c204eee26d01128857d63d7fe733c4a4174de0fca648afab9ba2b3",
+            "pg-20250630_def.xml": "3085d191a3c73ea6897268cb7e102a9ea1fa28f8d50719d1bf40654096e8eddd",
+            "pg-20250630_lab.xml": "e3441741140259eecce487665e20050d39011a27650172c2f23e0b7c0be23dfa",
+            "pg-20250630_pre.xml": "bbebeb30f584d3eb8de787a77c9b73d06827c6f21091be9fefb5f8881f06b9fd",
+            "sec_submissions_witness.json": "4e9ccf82429ecec45f078ba058d8c29403aeff1be6d6f70dffa436cd82fecd23"
+          },
+          "package_manifest_sha256": "88972ea35feef3de81614864a6f4b0c7ebc29827277298328c51fce90d2c6dda",
+          "period_of_report": "2025-06-30"
+        },
+        {
+          "accession": "0000080424-26-000256",
+          "admission": "admitted",
+          "filing_date": "2026-10-22",
+          "form": "10-Q",
+          "members": {
+            "index.json": "5bb91c07722ebb38ad9c62d06d08eb2935f9a7c698037c491ccff999cd9e9d1d",
+            "pg-20260930.htm": "9d3f4f88283c5a1a0bb4faa21d85699f3a7e647625788a0dc78199667ddb110a",
+            "pg-20260930.xsd": "13f28cee4ae5949020feb2fa90262fb211078377a46960ea70ad51464089507d",
+            "pg-20260930_cal.xml": "6a736506a62b454d964ca2aed2d69c9a89fc72899171621725f665800c45f1ef",
+            "pg-20260930_def.xml": "ed25bfbfc2f403544134dd02460c4bfe656cce545e7e9273cf4c2a6b0298adb7",
+            "pg-20260930_lab.xml": "490e255e0f7464f70ba51be70b5edaf1f24364e22394bf8bec1f0eef16a3b0e7",
+            "pg-20260930_pre.xml": "25a067c7df9b837e3cfbf4b46a592f0312f9306d129e5f7df38bbeb9f6f15304",
+            "sec_submissions_witness.json": "22dbd78f17249836c46a6937cfd3ea7af6ef563678aab911f47758fe9a65c2c7"
+          },
+          "package_manifest_sha256": "d75deb42c6521a12023f2c0a72f4e09fce96b16cf36e02a7bd9694316ec29a2d",
+          "period_of_report": "2026-09-30"
+        },
+        {
+          "accession": "0000080424-26-000060",
+          "admission": "admitted",
+          "filing_date": "2026-04-24",
+          "form": "10-Q",
+          "members": {
+            "index.json": "b34dedf9f5c1f48f563e9bc2aab891567ee0f2b26583f158e9da02102f1a1ef5",
+            "pg-20260331.htm": "920bbdabc1c0e48b952b673b27beca455d776ddf59abe581ef22f157ffbd1278",
+            "pg-20260331.xsd": "5e959574af7f7e0608a33348bdf1bf0b07da314e61489156237ceb7b8f064489",
+            "pg-20260331_cal.xml": "9a93e5ea4720c3207beaaffe05b60cbfede603691617ebad6353bd9f3c1fa5d1",
+            "pg-20260331_def.xml": "aa6ff094eaed9fef06dd4c530023a36d8d9d91226caa4ac6c6d283107ff70705",
+            "pg-20260331_lab.xml": "b916c0082751eb88bf688d0ce022d7c41379a9c0f6f6c4deda9f89d51b40cc35",
+            "pg-20260331_pre.xml": "0a76f5033228ff2a252c307d89ea22e877c8900fed7bf6ac84e9e5dddac570d4",
+            "sec_submissions_witness.json": "2266e7f68950c2369033f774329568e2f646fa100ff9972e3a0df4e6ca66d97c"
+          },
+          "package_manifest_sha256": "83d36e06d1c0cf03be8b94a7d21028a374a7790e22ed87f88f5ab0efb07fec0e",
+          "period_of_report": "2026-03-31"
+        },
+        {
+          "accession": "0000080424-25-000245",
+          "admission": "not_admitted:capture_only",
+          "filing_date": "2025-10-24",
+          "form": "10-Q",
+          "members": {
+            "index.json": "ab84273691ad74490f9b51ab91aa243cf13d93f46f3da5d424c975f897e1b591",
+            "pg-20250930.htm": "292b7363cb669e0934cf353187343c6df4b2ecd05db36ff7ef14cb48f113a020",
+            "pg-20250930.xsd": "ee9f622702302ac46c7f8d282e26356aed6e4a981b049354d93168adb691d76a",
+            "pg-20250930_cal.xml": "29f7c2e2e7cff290a3dd52ece0cdc5a71ed0d643d9820f1409755f55c87aae40",
+            "pg-20250930_def.xml": "da2b13955ae958f374ed2549766d96e349c81236066abcd9e07a0a3f52830a14",
+            "pg-20250930_lab.xml": "9e8afadddae77bba1ba7678497ff686144d51825f8d0527b32b1c57992a393eb",
+            "pg-20250930_pre.xml": "c06bed479559f42058aff26777a687b331f475c2c1ac7bb63b3f6dbe762128e6",
+            "sec_submissions_witness.json": "a7110532f07a37f864312639a43a0571069a1fc9e6828c3af487c83209c3431a"
+          },
+          "package_manifest_sha256": "2bd4e122fff55667108c3f78e316fef3e599bc57f6c75643e72ce6c7047e1157",
+          "period_of_report": "2025-09-30"
+        }
+      ],
+      "cik10": "0000080424",
+      "sic": "2840",
+      "ticker": "PG"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000097745-26-000018",
+          "admission": "admitted",
+          "filing_date": "2026-02-26",
+          "form": "10-K",
+          "members": {
+            "index.json": "d406d27704efa109d47072c7d61c9af87c2d6a02ab9cbb31876b997d4f29fd0e",
+            "sec_submissions_witness.json": "8433e01dcbc3f70bb643bd598bd23460f4569cd5cf8a6c11c8317ce58d6d63d5",
+            "tmo-20251231.htm": "342b2da3fd958c0339b23ba8869cbd4ce56f9ec9dceea165c42ad757b3ccaf82",
+            "tmo-20251231.xsd": "1d3efd3da46eaf730d1e189f55879e3e6ba8f9237e36d02e1d7825613ad592fd",
+            "tmo-20251231_cal.xml": "d459192f7f29f8a8c3c3aded2f2235b2622d403bfef7c937cb725aa9ef8f2fdb",
+            "tmo-20251231_def.xml": "6417ccb3884eb00d2da483189cbcc73207d48e975047ce18da7c65a71548c7c7",
+            "tmo-20251231_lab.xml": "c24ae553fc81241041e07679edf516d18d132a84b20fbe3e38f6cb46b9e75297",
+            "tmo-20251231_pre.xml": "687594d84b98fd90129e4626f3a53267e4aa54837ce1a64db374059bd37a2d17"
+          },
+          "package_manifest_sha256": "9508c0c1194341b202a5ca6fb4ed3582a5a247811805cdf74a41f26a09170ae1",
+          "period_of_report": "2025-12-31"
+        },
+        {
+          "accession": "0000097745-25-000010",
+          "admission": "primary_unparseable",
+          "filing_date": "2025-02-20",
+          "form": "10-K",
+          "members": {
+            "index.json": "4f2783139a623246120bdb206bf2be66df492857f46e959c709b7635a519765b",
+            "sec_submissions_witness.json": "a4a1a65f98c3ec531d42bc707bec91b18e48424a23e5ee183c6bcf27e932f535",
+            "tmo-20241231.htm": "7a5335e0750ea1c22bc85113430154b22e42d5cb30db9e443f70f46bb2dd7975",
+            "tmo-20241231.xsd": "fadf7616ca500be1b26e60ab255d4ca379cb0dd94eb51fca6bafd09db885d0b5",
+            "tmo-20241231_cal.xml": "80643aa1cb1ec484696078db6eb91585040951705d61e5be307db6d0a793d6a9",
+            "tmo-20241231_def.xml": "7b036fb79c33e34961160cacbe6e8553e91d6942d8b14019f00b55cd550d7e4f",
+            "tmo-20241231_lab.xml": "1a5fa8e8865601b76025633cddb16a7764a4f6de2a0e096e84036d02ccf70948",
+            "tmo-20241231_pre.xml": "e5b836c3dd0e9347c24dfbdde4ffd2c23b6bc07b4c0c4e0285773328564e013d"
+          },
+          "package_manifest_sha256": "f593637b1267e4539ce6c2443ef9b150c4a7e985551cea0f7364e0c903ebd626",
+          "period_of_report": "2024-12-31"
+        },
+        {
+          "accession": "0000097745-26-000179",
+          "admission": "admitted",
+          "filing_date": "2026-10-30",
+          "form": "10-Q",
+          "members": {
+            "index.json": "7c779c1c584d0f6d7cff10d714909db40cce42b62e78aa43e877ad7d5f0049e2",
+            "sec_submissions_witness.json": "60d6c9305da722d0377a3d46b325738f7d57b1c604264b52cc8773ffaf5a1363",
+            "tmo-20260926.htm": "305b0dca12ff5109900ea38f1022c8bd415514a05938139caa33e8a8690bf4d2",
+            "tmo-20260926.xsd": "108a298c924526179e91cd237ba9e1875e2f8baadb5d599c0eb098d1a4d5c9ee",
+            "tmo-20260926_cal.xml": "56afd67e36406be25092a651faaa84f79dc0437d53623d42a96834f508f7edd2",
+            "tmo-20260926_def.xml": "224e3aafb416c872799efd2518d2389517b04b38824c317a3874403e4e5ee6b2",
+            "tmo-20260926_lab.xml": "f8d042dea734ccfaefa6f93eb1d2198af441b7e0c659e9bab30e6986590a101c",
+            "tmo-20260926_pre.xml": "8c996d5a227e8f10a0f62b8b5e2f8cd6c2f47e84143116f2c39a6df489d099de"
+          },
+          "package_manifest_sha256": "1c293f8c8929e73b2b5fc6e40068fbaffa24ee85095cc47977634959119c8d55",
+          "period_of_report": "2026-09-26"
+        },
+        {
+          "accession": "0000097745-26-000144",
+          "admission": "admitted",
+          "filing_date": "2026-07-31",
+          "form": "10-Q",
+          "members": {
+            "index.json": "8ea102a7b56ebedfe30d3f925d0527e05def385b2764882449f665217cfb00dd",
+            "sec_submissions_witness.json": "1ceb24817e33075f49a05354a5641c4157035ec03ad2dc0022b42d567fdcb738",
+            "tmo-20260627.htm": "8da486f7f8982ee3e141b2dcb6992fe5dc8c2490b9fe38f0f37081f8225a2747",
+            "tmo-20260627.xsd": "1f499e03fb7de225a83964b0ae90345a176bc4cf8ac87f020fdc2d5a5c6ec94e",
+            "tmo-20260627_cal.xml": "1b1730cc6ddb620de51054910f0c88ae250014e089058f01db66079980c24f63",
+            "tmo-20260627_def.xml": "2bf5fb9a1272af012371e4d2aad723026a9f1ade25bbe990cbc767ffff89a81a",
+            "tmo-20260627_lab.xml": "4e9ea4e7a30798529259cd673684260fb006437fcc442c2406a4cebf05dd1c72",
+            "tmo-20260627_pre.xml": "5099c03e3f3d791962151248ed52411fed86c9423fece46bf7ae739edd5fb27d"
+          },
+          "package_manifest_sha256": "f6430c8d3bd475ac80da6e3ae6baf17d6aa7bf60f1ad64476c76584e25682fd7",
+          "period_of_report": "2026-06-27"
+        },
+        {
+          "accession": "0000097745-25-000159",
+          "admission": "not_admitted:capture_only",
+          "filing_date": "2025-10-31",
+          "form": "10-Q",
+          "members": {
+            "index.json": "9aa45438a23785d830868dc2973b12eacb69910da57d9d90300b4861d87090d5",
+            "sec_submissions_witness.json": "5c3a15d5ffefadd8c1aa8f2b36d353a61f032409bed87cbd75c508c227fd017a",
+            "tmo-20250927.htm": "6d112ad12477193b65f4c8d81fb64b0c2c2a8cbc59ab0f5fbd6cf11c26ad0fa5",
+            "tmo-20250927.xsd": "7d2ba15a9460424f078efe4ad3b8da0159421dd721b03a88dde70875975e40a7",
+            "tmo-20250927_cal.xml": "37c68677a58b3823f3ecc0df9c261427cb8c880fd242969424f83cb63375761f",
+            "tmo-20250927_def.xml": "821586b63d9bca73e1b59bb364ef70bf183270d5ba24d9ad136bedf9140963a9",
+            "tmo-20250927_lab.xml": "85da96b007b80a1328adf3a59788e991fc582f75e9597ed7c5546308f506826f",
+            "tmo-20250927_pre.xml": "323a40ef0702e9dc042c88bdbcc3851f44e9cfea0e30eac9f67d4866514b61ac"
+          },
+          "package_manifest_sha256": "c25337ca0cefacc29ea24f3d7089f70839275825b4fd6dea843a2001f5e8999b",
+          "period_of_report": "2025-09-27"
+        }
+      ],
+      "cik10": "0000097745",
+      "sic": "3829",
+      "ticker": "TMO"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000313616-26-000062",
+          "admission": "admitted",
+          "filing_date": "2026-02-24",
+          "form": "10-K",
+          "members": {
+            "dhr-20251231.htm": "0ef5c819301223304615c8f28e44c6e12fc7401fcad76ced7d1f9c38443970eb",
+            "dhr-20251231.xsd": "14cbae47484c2a6699194afb01137e9e647fe68eeab93058e7fd5ac05af2547a",
+            "dhr-20251231_cal.xml": "630d639e127e43018ced836a961a426d00cfcdb10ce562e8d83766a30b7d138c",
+            "dhr-20251231_def.xml": "2ca7b085936df5b3f8cda8bd77a9d1e391637b049bbc6722829b9686c683f36e",
+            "dhr-20251231_lab.xml": "f70907018ffe4bbfbbfbfe069663d543e16557e522a303fc9f683209628211db",
+            "dhr-20251231_pre.xml": "dbef73e2379a11d584367d3d1511aa0404abc25d6981d596757a8de2a1d04486",
+            "index.json": "1c1125b9207177334922058f03d9454e7c2930d7dd151296299279ca3c0f0ec4",
+            "sec_submissions_witness.json": "16000b0020a0445955af05136cdbd2849846ad5dcb2198d59119ee6e677c2631"
+          },
+          "package_manifest_sha256": "b9dcbfc1a691cd771db08675551fd8d72e122c60743341866d16c72ac0232eba",
+          "period_of_report": "2025-12-31"
+        },
+        {
+          "accession": "0000313616-25-000043",
+          "admission": "admitted",
+          "filing_date": "2025-02-20",
+          "form": "10-K",
+          "members": {
+            "dhr-20241231.htm": "5ba238142bc2ae74d7966b1f00142b28bcdda08855f6c34b1d415b657913bfcb",
+            "dhr-20241231.xsd": "9ba75d3310ef00a3eda4efc3a57ced8073e9b95a2f2cdaa76fad6f8ca3deedb1",
+            "dhr-20241231_cal.xml": "4c0c790e0faa33957bca2890274e2790797b6e5f0bd4196698ca35ae7ecbdf0c",
+            "dhr-20241231_def.xml": "77a0679a3798047e11cba04ddb7c4c3a53deba7d332b3e894201182043bd9709",
+            "dhr-20241231_lab.xml": "b4b1899ada337afcd88a3e731460ed210f27353f892a77a18384d56aa1d2802a",
+            "dhr-20241231_pre.xml": "0c2411dbfa75d2a5981cbc3b2cddf5cd5ef852f8c2ac55c35112027a931797d7",
+            "index.json": "3d528157c97a2407b58864efcca147febc5c5be9944f3a1a462ed90fd7a50bc5",
+            "sec_submissions_witness.json": "20ddebe26565ba2ae0a870645bb47f30a115dc6767b90f6219aeadaa7c782295"
+          },
+          "package_manifest_sha256": "1fc439d62a40591e19704eae249ac02c73d16a253dd6d38ba5a053b1bdf677ec",
+          "period_of_report": "2024-12-31"
+        },
+        {
+          "accession": "0000313616-26-000199",
+          "admission": "admitted",
+          "filing_date": "2026-10-21",
+          "form": "10-Q",
+          "members": {
+            "dhr-20260925.htm": "138022807928407442d95f5643c5e789272b5a435f95a7c133e699619a0efb7d",
+            "dhr-20260925.xsd": "ab2924e81535c2a58d85df11af2aa4510914c20fcf50f65435e9bd33ee7642f4",
+            "dhr-20260925_cal.xml": "f9fab668e70fdb68cc404e0028b078e61078fdbcbb9654946ce6a6db0c31180b",
+            "dhr-20260925_def.xml": "47afaccf5af800fa358813496702c7f8de8fb7ab75f1b911199ff62c108b1ef2",
+            "dhr-20260925_lab.xml": "797de323ecf54d2f95cc6e1bc7cf11d91cf73757de4ab40821cca658dc13ad26",
+            "dhr-20260925_pre.xml": "62f88273b73bd3d90c72fbd55702ea1d3908e2f002564a3bf2ebef2b2cfd6426",
+            "index.json": "6b2d52961ae12d3a9ecaa2bcc769a22f6c461eeabca3bc995e3671d97a6ccbac",
+            "sec_submissions_witness.json": "ea7ea0b16e501721da080700eb0153e90103b0a537dc0c4adc2516c6099c8cbb"
+          },
+          "package_manifest_sha256": "aa159cb3c674e7c9321eb3988c36056a69d62f1945136b46441744dfde2df82d",
+          "period_of_report": "2026-09-25"
+        },
+        {
+          "accession": "0000313616-26-000161",
+          "admission": "admitted",
+          "filing_date": "2026-07-21",
+          "form": "10-Q",
+          "members": {
+            "dhr-20260626.htm": "d8a3732abf127c1043e4ae640aed6d2dfa341ef235b0ef1ca2b0ff445113b511",
+            "dhr-20260626.xsd": "0c6e01b26ec07d2292762697cf1226738a4e0b5c021c0c5e72c3c8f79352de4f",
+            "dhr-20260626_cal.xml": "3816131c736d0ece22ca7bfac9cbfbec5eaccf82149293e77083e91ddd847104",
+            "dhr-20260626_def.xml": "332d810f27b242129fc2949e3327cae6ec8e3900f4cdb470e74067a4e8ba1edf",
+            "dhr-20260626_lab.xml": "7eec7ccfeb678272cc397d75d2544c5e60a981c8c29a92c3108d6d38613ae338",
+            "dhr-20260626_pre.xml": "dda6e2c6e004be2058f4b5a14642313997fab0398604912b3d256ce28353f3a3",
+            "index.json": "7a984f41487879c9cc26ef9c9c572c3e09fcf2fa27082035e9a42579034cf0a9",
+            "sec_submissions_witness.json": "74db5803a6234d64d9466889af6443042926c0867bd0dd2396ad123a4f1178f7"
+          },
+          "package_manifest_sha256": "7a026bfccb42fc515df44855095d88603cbdd7742cff351ee8c96518ba9f8ce0",
+          "period_of_report": "2026-06-26"
+        },
+        {
+          "accession": "0000313616-25-000182",
+          "admission": "not_admitted:capture_only",
+          "filing_date": "2025-10-21",
+          "form": "10-Q",
+          "members": {
+            "dhr-20250926.htm": "4a4dfb68e03430b5c98e225b867dfb27a39e664d6869cf97d8e756cb4334e0df",
+            "dhr-20250926.xsd": "8b8df1fa97817a0d911c2b9cc5c1341db25699a19a0d9ddf5be2c1fa402bfd2d",
+            "dhr-20250926_cal.xml": "79ac2de7f36768a8c06636a18f5bf0aa9135b7f0e48b3c233901357cbf43fa49",
+            "dhr-20250926_def.xml": "c909f359397a91220ea1a37299e7801f474a4e6d5dea7fd6619e9399384609e1",
+            "dhr-20250926_lab.xml": "1a7fb732e9da69a14e72ebe2c740a535d045b57a9ca0b3f0e1e7cef7c88ec31c",
+            "dhr-20250926_pre.xml": "68cba99331c337179628028890f4cee0856328e98c1750b2b9f73428ad0cf5f4",
+            "index.json": "0cb94139624af7a314e3a50ac9f649b473612cf8293d1795e37a4d0f0c238448",
+            "sec_submissions_witness.json": "e84078ad61eed47b8c35c976f2d7272107e7956c4e93bfd31a79dccd605e027c"
+          },
+          "package_manifest_sha256": "5a2a30d373ea7597ec28799abd44eb06af61ae3429711a5ecae4d97e21242b15",
+          "period_of_report": "2025-09-26"
+        }
+      ],
+      "cik10": "0000313616",
+      "sic": "3823",
+      "ticker": "DHR"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000732712-26-000007",
+          "admission": "admitted",
+          "filing_date": "2026-02-17",
+          "form": "10-K",
+          "members": {
+            "index.json": "6a194649ddaabdc41b67de505855369a02eef72ec00978657e858c21e6f7038e",
+            "sec_submissions_witness.json": "129fd8b5075bdf240c5d0457862fac5e5905c3f955c81249a2a578f1194a86bc",
+            "vz-20251231.htm": "568294c16331be29df4679afbbf5d827d6f3930bcb5f37b66c9287b123f68476",
+            "vz-20251231.xsd": "6ff4c8b2e68d1eae9fc7931a53f182347db00954c681baefaf70f0fb2e810f1b",
+            "vz-20251231_cal.xml": "4adcbc4a862956512871a3ee6209816b22e6c8a93aa4ae10b7c044940e80e135",
+            "vz-20251231_def.xml": "7f3c564abd5013ae18a736c735a154d3513e5c99677d4dd2d393437c10e79d7b",
+            "vz-20251231_lab.xml": "c6d4064a2b54fbb90af2e71ec9a2e1cc45fe47fc240c3e34ed84b8cac61ec2e8",
+            "vz-20251231_pre.xml": "4cd854b80f876df95f9b9728185b38dda2d788b179faf37480bf1fe0e3285ddd"
+          },
+          "package_manifest_sha256": "ee860d4ff8d26fed0a13ebce3dee4cd022e9bddc43a6424eed5f130820c35b20",
+          "period_of_report": "2025-12-31"
+        },
+        {
+          "accession": "0000732712-25-000006",
+          "admission": "admitted",
+          "filing_date": "2025-02-12",
+          "form": "10-K",
+          "members": {
+            "index.json": "55fc5ccd169870c96be4d3defa37c487074acb6de6a7a5175ef6f0e31d69bcd9",
+            "sec_submissions_witness.json": "2a52951628cdf3cbea5ad0077804244183fbef5898530322fcb36f0f0aa8413f",
+            "vz-20241231.htm": "edbc74a46b2d82b818649d71cab95085d6d003f943cb1cafd790fa67d9fd5a5f",
+            "vz-20241231.xsd": "2bc351224c4c62be2e0cffb084066ed0eacd5a2e48cce2d6fa5b8622305fef10",
+            "vz-20241231_cal.xml": "33196edcc5aa379be49d3f1fe3663eed261286201ab3c462e9ed4966eff66fee",
+            "vz-20241231_def.xml": "88684db617b6ed732d22b4d106e89ce7412494f5281fdfb15e209d8410423f62",
+            "vz-20241231_lab.xml": "99a71a1fb686605c686e32ed97d5318fd2181b16df7c61d3ebea712c848abead",
+            "vz-20241231_pre.xml": "2e292ff8a5c41c8a8eacd05ca9518c7925bca1c63a13e1bcd0c2fdb70c91ebf7"
+          },
+          "package_manifest_sha256": "ed58e3846bd04f7d9d39486536a0d24281e81887799be7a184d68e4100de870c",
+          "period_of_report": "2024-12-31"
+        },
+        {
+          "accession": "0000732712-26-000052",
+          "admission": "admitted",
+          "filing_date": "2026-10-29",
+          "form": "10-Q",
+          "members": {
+            "index.json": "4dd0d041d8173ec54c882698cf1e0e467cd7458a94e18f09359b613b931b25f5",
+            "sec_submissions_witness.json": "b6bf43f64123d64b922c0384dd6f398cf484e987ba03b1b9f15344a846d4ca2f",
+            "vz-20260930.htm": "ff628ce5683af17284d0ed4ca3aa4c3d373b00943c57c94605d9aa626d9d5d1e",
+            "vz-20260930.xsd": "4da745fcb0cf26f50ba78a60bc424a4d0ab44a130e224c5eceb870f1cd2032a5",
+            "vz-20260930_cal.xml": "6e4eca559f126fa7413f2d495e17a1fde4377be009c7783d9c2319b9b01b8ec1",
+            "vz-20260930_def.xml": "cdd618dd0a7aa511fe5d43f60707750d1d192dc86fb7dad22ad27fd5525a8d48",
+            "vz-20260930_lab.xml": "fdbc6bf0219eb47b62739cc072acf6c535f703eac5440af724da5ebddde9fb61",
+            "vz-20260930_pre.xml": "4368a1c86fea9c6743f0e2334c9dafe7d1bfc64b3c44800a2cbca9d012e42d9e"
+          },
+          "package_manifest_sha256": "97ff1b4bd294f892bf883aa5f6340d30998072cf22eee8f6e8d5c0ecaf87fa0c",
+          "period_of_report": "2026-09-30"
+        },
+        {
+          "accession": "0000732712-26-000046",
+          "admission": "admitted",
+          "filing_date": "2026-07-31",
+          "form": "10-Q",
+          "members": {
+            "index.json": "a21fc917886a1db4199475c649ce770c095cd26aad7b8b2bbc865118a1df08b5",
+            "sec_submissions_witness.json": "5abd9f0066ba7aff48e9ee7783efc49d6837dd9ac591cc877628791e1f6cc7ad",
+            "vz-20260630.htm": "d91b5206b5b03dce5fc1a7f41287287eeb765708fb37254fc163642e4fdcd5f8",
+            "vz-20260630.xsd": "3a37d89e93d71f4f83c5dc7e21cece84c57eb8d4e7144a513be3150b12744c35",
+            "vz-20260630_cal.xml": "b48b022e79cfc3d01f08fd31e76517eeb78361f879de53e1af763aca7430013d",
+            "vz-20260630_def.xml": "bd897f59355153ce76494c8acfa41d47784a99f86c11abcf85273cc1b446c0b3",
+            "vz-20260630_lab.xml": "fdfae1e3033399aab2d5b432fb2f14934fba62607d24aeccb934d27defabe388",
+            "vz-20260630_pre.xml": "23c104d9be33d70eed385a8f3c46c5b73ef8e465984c32128b576e60a551320f"
+          },
+          "package_manifest_sha256": "724a2093049421796152a649893938f662eef0b7f75744611f579cb5f6433787",
+          "period_of_report": "2026-06-30"
+        },
+        {
+          "accession": "0000732712-25-000116",
+          "admission": "not_admitted:capture_only",
+          "filing_date": "2025-10-29",
+          "form": "10-Q",
+          "members": {
+            "index.json": "12d8b1b11157378e138202a6326d217596e3056b030366b2615b84ca3dc196c5",
+            "sec_submissions_witness.json": "b6c02b1ada8127b6cb87b340512cd18beac1093102337ea3e91a6f9cd1463803",
+            "vz-20250930.htm": "38fcec9e6b200721630b8e36afec44fb0f9b1ded7ebf1fb0ba9f3b1387578186",
+            "vz-20250930.xsd": "618dfb53ddcf9c631c9861b7f3cd14cb8c88ada63f733e9d5280a3f6ef166ffa",
+            "vz-20250930_cal.xml": "a0aea75105fd4bdda0d363b057afed78708a64362c8bd73f47b36e20c4938655",
+            "vz-20250930_def.xml": "3c3ad234f9af07791998de877c71b1fccd18fe42ecd154151fef289272863505",
+            "vz-20250930_lab.xml": "d2b5181b4fe784e4b92427654873dc5fe5c5a514a1f22d5fc9bd7f965b7049a6",
+            "vz-20250930_pre.xml": "502678bb3d2e908b4171f42ea7a7ec35cb2ce9565034e887c39826b87c6f2f12"
+          },
+          "package_manifest_sha256": "223ac61cf557c498ccfe95068d7cc94f3ab033e9acf464fa4a943a5314550584",
+          "period_of_report": "2025-09-30"
+        }
+      ],
+      "cik10": "0000732712",
+      "sic": "4813",
+      "ticker": "VZ"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000773840-26-000013",
+          "admission": "admitted",
+          "filing_date": "2026-02-17",
+          "form": "10-K",
+          "members": {
+            "hon-20251231.htm": "3f725139db699411ff492b6fd21e15ded9a220ce85e7b0fd909893402717d7c1",
+            "hon-20251231.xsd": "04bd9f5ea14bdb64b8d5280497298db41b559616dbfa2c63f0efb02f89d50dbf",
+            "hon-20251231_cal.xml": "8d1ee9924aa97fbe7e60cd1115cee965bb1af6c76ffca815b564b6a7bf925bde",
+            "hon-20251231_def.xml": "fff519a3104157f5e40e5eddead2d457a9187b0cdcbbadbcb1337e8707e716db",
+            "hon-20251231_lab.xml": "1731ff405ebc9c95eebca9b00f1eace0d8d4ca78ccbb142918ea14e31330ce31",
+            "hon-20251231_pre.xml": "772140ff7102fce63c078d35828dde77d3ae96f03cc3b9d519e47e2ff9208be5",
+            "index.json": "8502193c4730a72ea438d465711947374a75f8e60e2fec1de7ab3835b4e59ec4",
+            "sec_submissions_witness.json": "a354422e86621647c200aac08348be1befe78ad5160954fcea65915fd578bcfd"
+          },
+          "package_manifest_sha256": "80eb0a36234e5f8ef4f622fd2f94fa8563c4d60e974d9ba94df897066b67d2e8",
+          "period_of_report": "2025-12-31"
+        },
+        {
+          "accession": "0000773840-25-000010",
+          "admission": "admitted",
+          "filing_date": "2025-02-14",
+          "form": "10-K",
+          "members": {
+            "hon-20241231.htm": "629dda540ab4afe2fdc91901748405ff092fcbc5609e699fccc861c9d16456a1",
+            "hon-20241231.xsd": "a8e48e25ed604b84237c04cc93ced9562badbe8945e6460575dc9c92db9ef424",
+            "hon-20241231_cal.xml": "7dd0635724513ff67ca492e40d4afbf1256c25dfe10584a7bb70c3eda54a925c",
+            "hon-20241231_def.xml": "4d9cf2f9202bad38148ee126b71c2466c834b47d1c2bb99f6e38bd6ab841e5b9",
+            "hon-20241231_lab.xml": "9f95c7fc2fb96cda7cd32fecf4b2cc76dc55930ecc5f2220df51f8dd15b176a2",
+            "hon-20241231_pre.xml": "c40c4d524fb77f0506f0fc760071c0c9d70b244a474439d68661c40ba98fb142",
+            "index.json": "f0b849f62b7c97f560b1780300a893cb8c9380d9f0092145adc057372699efd1",
+            "sec_submissions_witness.json": "b720254fa3873bcab9b6e1b3134477ace7ed40b73c4eefe440a72677085abe8e"
+          },
+          "package_manifest_sha256": "64b9c7c74a5b542aee38e2afe3a882665dbbbf547298654aa60725e0d675198a",
+          "period_of_report": "2024-12-31"
+        },
+        {
+          "accession": "0000773840-26-000143",
+          "admission": "admitted",
+          "filing_date": "2026-10-22",
+          "form": "10-Q",
+          "members": {
+            "hon-20260930.htm": "157237843478350a9417df058239bb3ec4dbb8e356a86da3e2c33228910091e4",
+            "hon-20260930.xsd": "e53feec28aa68347554467582998611e1bbdea0d50ad1ed84e85c9013bb930d4",
+            "hon-20260930_cal.xml": "ae973059d403a2e52e08de7532e6cb3ecf4e16b2212c5591f2e1c7bdb6d9a137",
+            "hon-20260930_def.xml": "b2a5084b0a9cfc98b39f0808cba33fd0c7f8366ca50d2131e893d99566324175",
+            "hon-20260930_lab.xml": "ad69c887ddc9c2117577b2830f6d771c43be31459c8be441bcbb84d118e76204",
+            "hon-20260930_pre.xml": "d1e1090b45782759c1d24d82a21b49ca34b5d926b3052c6c8259ae14ccd833d9",
+            "index.json": "b35257f76afaa0c845ef490ce37f3b3bb377459a3c0b9949c0bce225581ebbc8",
+            "sec_submissions_witness.json": "1c18cfb40cdbc7d0beab600b6b862f3480c08eaad50bbace61879ad14a78fcad"
+          },
+          "package_manifest_sha256": "4fde88535e15058abc3fe15d9c9b79b4a91d5a0e1ecc815451f2a190f5b8fdb4",
+          "period_of_report": "2026-09-30"
+        },
+        {
+          "accession": "0000773840-26-000124",
+          "admission": "admitted",
+          "filing_date": "2026-07-23",
+          "form": "10-Q",
+          "members": {
+            "hon-20260630.htm": "50cf8c6fc674bd7381511d97e57fe3326f8920e667a0b7dd96dddcf0533909b5",
+            "hon-20260630.xsd": "0803c7d1d4dfac30703841c205949b91e9a0e82293d0d54b638b4ffc130b1228",
+            "hon-20260630_cal.xml": "d79917ad1bebba1c0598658fd46c4a1d20d1cf8ce08d31277efc9de0ccb01f77",
+            "hon-20260630_def.xml": "f0d1e56d5fbd26db501cdb46129d1f21b5bfddd7430ad0e5ff13b3338d52f20f",
+            "hon-20260630_lab.xml": "8a5d10a90443df8ebbcc331dcde271a3ba3770e29ebe56cb1525015355ff926b",
+            "hon-20260630_pre.xml": "e6fa095c209fc18744fe6265770567a1501c7292da0a67e9c8978e92c88d7ca9",
+            "index.json": "1d8972062ebf578850e697dec825a8b892649c7704f455031ae5b49f56549216",
+            "sec_submissions_witness.json": "dd0ab526631a45b32623081cba52196361188bd32f7bce9399d3b43751bb0110"
+          },
+          "package_manifest_sha256": "43505637c7ff29c9de867934dfb710751944b83d8a516faa611ae68d0a1f676d",
+          "period_of_report": "2026-06-30"
+        },
+        {
+          "accession": "0000773840-25-000105",
+          "admission": "not_admitted:capture_only",
+          "filing_date": "2025-10-23",
+          "form": "10-Q",
+          "members": {
+            "hon-20250930.htm": "1ab35c2409706b64cc63bf054f97400607da12b2c49b9fdf4b33aaf1bcfb189e",
+            "hon-20250930.xsd": "0858c65b7dd1b219b020486fc5478a7e9ff393a3b2160a4d534906af3f9eaed9",
+            "hon-20250930_cal.xml": "9605f49fda2c85731d7b27322766738f48e5533c1769480449ce32460cbc3e59",
+            "hon-20250930_def.xml": "14190ae88c4f5af7eac6f6c6d77c8240db985d7e5f0b105c93219296f9509051",
+            "hon-20250930_lab.xml": "d6a08ae9527c998a6e7953a6179b6a59091f425c360ee5c1a2cd1bd569f7dc8d",
+            "hon-20250930_pre.xml": "01e29cabac934c424b6b553400fa497141d2856f3190489980c3ca9c73606ea9",
+            "index.json": "874f35538ebd7a7499ae28e56ba20fab5a787998b1223450bb0a7ba0b2c575bb",
+            "sec_submissions_witness.json": "7f378d261ddea377a6897853e1da6f87bd38464f4c0935b63f4daa10513fdbca"
+          },
+          "package_manifest_sha256": "5fb7f1ec82db8a67991df4f4239ff1dfa1eb59c2871a7c0aa988292f8b13641e",
+          "period_of_report": "2025-09-30"
+        }
+      ],
+      "cik10": "0000773840",
+      "sic": "3724",
+      "ticker": "HON"
+    }
+  ],
+  "schema": "fif_dev_corpus_manifest.v1",
+  "stage_root": "/home/longr/lanes/stage/fif-dev-diversified-20261101"
+}

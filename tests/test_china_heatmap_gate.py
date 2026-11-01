@@ -23,7 +23,7 @@ So the conversion is a CONTENT build, and this module guards both halves:
 
 Runs in the `unrun-page-guards` CI job (full venv: the engine imports pandas).
 The Caddy↔policy byte-equality half is pinned by tests/test_site_access_boundary.py
-and the wall mirror by tests/test_regwall.py, both in `tier-gate`.
+and the wall mirror by tests/test_regwall.py, in their own CI jobs beside `tier-gate`.
 
 Spec: research/seo_supercharge/W2_HEATMAP_ETFS_PREVIEW_SPEC.md Part A + §R.
 """
