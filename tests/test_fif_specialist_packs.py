@@ -9649,3 +9649,472 @@ def test_pk08_cli_writes_valid_envelope(tmp_path: Path) -> None:
     assert contract.validate_pack_result(envelope) == []
     assert envelope["applicability"]["state"] == "applicable"
     assert envelope["coverage"]["valued_fields"] == 5
+
+
+# 41. PK04 dev-corpus pins (diversified_v1: PG, TMO, DHR, VZ, HON) -------------
+#
+# Dev-corpus evidence lane (fif-pk04dev-20261101-r1). Every test below is a
+# PIN of verified-correct current behaviour, rebuilt synthetically from the
+# diversified_v1 filings' own fact shapes (no filing bytes):
+#
+#   - revenue alias selection: the undimensioned
+#     RevenueFromContractWithCustomerExcludingAssessedTax annual total wins
+#     (TMO/DHR/HON 10-K shape), a Revenues-only issuer resolves at alias 30
+#     (VZ/PG shape), and segment-dimensioned totals never leak into the
+#     consolidated row.
+#   - typed absences: an issuer that tags no contract-liability or RPO
+#     concepts (PG shape) gets exact missing_standard_fact reasons.
+#   - rollforward false-positive guard: an issuer that tags only the split
+#     balance-sheet contract liabilities and no bare
+#     ContractWithCustomerLiability (TMO 10-K shape) never gets an invented
+#     rollforward opening/closing from the balance-sheet lines.
+#   - rpo_percentage_next_12m: the earliest typed start date on/after the
+#     period of report is the within-12-months share (DHR two-bucket shape).
+#   - rpo_total boundary pin: RPO facts that exist ONLY on the standard typed
+#     start-date axis (VZ shape) stay a typed absence today. The intended
+#     repair — admitting the filing's single typed-axis aggregate while
+#     keeping multi-bucket disclosures absent — requires the shared framework
+#     helper ``base.py::_dimensions_admitted`` to compare dimension AXIS
+#     NAMES rather than (axis, member) pair tuples against
+#     ``FactMapping.dimensions_allowed``; base.py is outside the lane's owned
+#     files, so the repair returned BLOCKED naming it and this pin records
+#     the exact boundary the framework fix would flip.
+
+from engine.fundamental_forensics.raw_ledger import make_raw_fact  # noqa: E402
+
+TESTREV_CIK = "0000000004"
+TESTREV_SIC = "3829"
+TESTREV_ENTITY = {
+    "entity_id": "ISS:US-TESTREV",
+    "cik": TESTREV_CIK,
+    "ticker": "TESTREV",
+    "name": "TESTREV SYNTHETIC CORP",
+    "identity_basis": "synthetic_in_test_ledger_v1",
+    "source_entity_id": TESTREV_CIK,
+}
+_RPO_AXIS = RPO_TIMING_AXIS_QNAME
+
+
+def _typed_member(day: str) -> str:
+    return f"<{_RPO_AXIS}.domain>{day}</{_RPO_AXIS}.domain>"
+
+
+def _testrev_packages() -> tuple:
+    return (
+        _SyntheticPackage(
+            {
+                "cik": TESTREV_CIK,  # R-F4: package issuer == packet entity
+                "form": "10-K",
+                "period_of_report": "2025-12-31",
+                "accession": "0000000004-26-000010",
+                "primary_document": "testrev-20251231.htm",
+            }
+        ),
+    )
+
+
+def _testrev_contexts() -> dict:
+    return {
+        "duration": FactContext(
+            context_id="c-fy",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            start="2025-01-01",
+            end="2025-12-31",
+        ),
+        "instant": FactContext(
+            context_id="c-i",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            instant="2025-12-31",
+        ),
+        "segment": FactContext(
+            context_id="c-seg",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            instant="2025-12-31",
+            explicit_dimensions=(
+                (
+                    "us-gaap:StatementBusinessSegmentsAxis",
+                    "us-gaap:OperatingSegmentsMember",
+                ),
+            ),
+        ),
+    }
+
+
+def _testrev_events(
+    *, facts: tuple[tuple[str, str, str, str, str], ...]
+) -> tuple:
+    """(key, concept, placement, value, unit_id) placements from the contexts."""
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    contexts = _testrev_contexts()
+    units = {"USD": FactUnit("USD", ["iso4217:USD"]), "pure": FactUnit("xbrli:pure", ["xbrli:pure"])}
+    events = []
+    for key, concept, placement, value, unit_id in facts:
+        events.append(
+            make_raw_fact(
+                source=filing_row["source"],
+                concept_qname=concept,
+                context=contexts[placement],
+                unit=units[unit_id],
+                raw_token=value,
+                parsed_value=value,
+                dimensions_known=True,
+                decimals="0",
+                source_span=(0, len(value)),
+                source_occurrence_key=key,
+                accepted_at=filing_row["accepted_at"],
+                recorded_at=filing_row["recorded_at"],
+            )
+        )
+    return tuple(events)
+
+
+def _produce_testrev(monkeypatch: pytest.MonkeyPatch, facts) -> dict:
+    events = _testrev_events(facts=facts)
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    return produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+
+
+def _testrev_row(result: dict, field_id: str) -> dict:
+    return next(row for row in result["fields"] if row["field_id"] == field_id)
+
+
+# PIN: the TMO/DHR/HON 10-K shape — the undimensioned annual
+# RevenueFromContractWithCustomerExcludingAssessedTax total resolves at alias
+# 10 and a segment-dimensioned duplicate never leaks into the consolidated
+# row.
+def test_pk04dev_pin_revenue_first_alias_and_segment_guard(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _produce_testrev(
+        monkeypatch,
+        (
+            ("rev", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax", "duration", "24568000000", "USD"),
+            (
+                "rev_segment",
+                "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                "segment",
+                "15000000000",
+                "USD",
+            ),
+        ),
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _testrev_row(result, "revenue")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "24568000000"
+    assert row["concept"] == "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
+    assert row["dimensions"] == []
+
+
+# PIN: the VZ/PG 10-K shape — an issuer tagging only Revenues resolves at
+# alias 30, again ignoring its segment-dimensioned totals.
+def test_pk04dev_pin_revenue_revenues_fallback_alias(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _produce_testrev(
+        monkeypatch,
+        (
+            ("rev", "us-gaap:Revenues", "duration", "138191000000", "USD"),
+            ("rev_segment", "us-gaap:Revenues", "segment", "40000000000", "USD"),
+        ),
+    )
+    row = _testrev_row(result, "revenue")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "138191000000"
+    assert row["concept"] == "us-gaap:Revenues"
+
+
+# PIN: the PG shape — an issuer that tags no contract-liability or RPO
+# concepts gets exact typed-absence reasons, never a narrative extraction.
+def test_pk04dev_pin_contract_liability_and_rpo_typed_absences(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _produce_testrev(
+        monkeypatch,
+        (("rev", "us-gaap:Revenues", "duration", "87032000000", "USD"),),
+    )
+    for field_id, concept in (
+        ("contract_liability_current", "us-gaap:ContractWithCustomerLiabilityCurrent"),
+        ("contract_liability_noncurrent", "us-gaap:ContractWithCustomerLiabilityNoncurrent"),
+        ("contract_liability_rollforward_opening", "us-gaap:ContractWithCustomerLiability"),
+        ("contract_liability_rollforward_closing", "us-gaap:ContractWithCustomerLiability"),
+        ("rpo_total", "us-gaap:RevenueRemainingPerformanceObligation"),
+        (
+            "rpo_percentage_next_12m",
+            "us-gaap:RevenueRemainingPerformanceObligationPercentage",
+        ),
+    ):
+        row = _testrev_row(result, field_id)
+        assert row["quality_state"] == "missing", field_id
+        assert row["reason"] == f"missing_standard_fact:{concept}", field_id
+        assert row["value"] is None, field_id
+
+
+# PIN (rollforward false-positive guard): the TMO 10-K shape — split
+# balance-sheet contract liabilities with no bare ContractWithCustomerLiability
+# rollforward never invents an opening/closing from the balance-sheet lines.
+def test_pk04dev_pin_rollforward_absent_without_bare_concept(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _produce_testrev(
+        monkeypatch,
+        (
+            ("rev", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax", "duration", "44556000000", "USD"),
+            ("cl_cur", "us-gaap:ContractWithCustomerLiabilityCurrent", "instant", "2710000000", "USD"),
+            ("cl_nc", "us-gaap:ContractWithCustomerLiabilityNoncurrent", "instant", "1183000000", "USD"),
+        ),
+    )
+    assert _testrev_row(result, "contract_liability_current")["value"] == "2710000000"
+    assert _testrev_row(result, "contract_liability_noncurrent")["value"] == "1183000000"
+    for field_id in (
+        "contract_liability_rollforward_opening",
+        "contract_liability_rollforward_closing",
+    ):
+        row = _testrev_row(result, field_id)
+        assert row["quality_state"] == "missing", field_id
+        assert row["reason"] == (
+            "missing_standard_fact:us-gaap:ContractWithCustomerLiability"
+        ), field_id
+        assert row["value"] is None, field_id
+
+
+# PIN: the DHR shape — the earliest typed start date on/after the period of
+# report is the within-12-months share; the later bucket never wins, and the
+# undimensioned RPO total resolves alongside it.
+def test_pk04dev_pin_rpo_percentage_earliest_typed_bucket(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    undimensioned = _testrev_contexts()
+    events = [
+        make_raw_fact(
+            source=filing_row["source"],
+            concept_qname="us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            context=undimensioned["duration"],
+            unit=FactUnit("USD", ["iso4217:USD"]),
+            raw_token="24568000000",
+            parsed_value="24568000000",
+            dimensions_known=True,
+            decimals="0",
+            source_span=(0, 10),
+            source_occurrence_key="rev",
+            accepted_at=filing_row["accepted_at"],
+            recorded_at=filing_row["recorded_at"],
+        ),
+        make_raw_fact(
+            source=filing_row["source"],
+            concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+            context=undimensioned["instant"],
+            unit=FactUnit("USD", ["iso4217:USD"]),
+            raw_token="5200000000",
+            parsed_value="5200000000",
+            dimensions_known=True,
+            decimals="0",
+            source_span=(0, 10),
+            source_occurrence_key="rpo",
+            accepted_at=filing_row["accepted_at"],
+            recorded_at=filing_row["recorded_at"],
+        ),
+    ]
+    for key, day, value in (
+        ("pct_next12", "2026-01-01", "0.47"),
+        ("pct_subsequent", "2027-01-01", "0.26"),
+    ):
+        events.append(
+            make_raw_fact(
+                source=filing_row["source"],
+                concept_qname=(
+                    "us-gaap:RevenueRemainingPerformanceObligationPercentage"
+                ),
+                context=FactContext(
+                    context_id=f"c-pct-{day}",
+                    entity_scheme="http://www.sec.gov/CIK",
+                    entity_identifier=TESTREV_CIK,
+                    instant="2025-12-31",
+                    typed_dimensions=((_RPO_AXIS, _typed_member(day)),),
+                ),
+                unit=FactUnit("xbrli:pure", ["xbrli:pure"]),
+                raw_token=value,
+                parsed_value=value,
+                dimensions_known=True,
+                decimals="2",
+                source_span=(0, 4),
+                source_occurrence_key=key,
+                accepted_at=filing_row["accepted_at"],
+                recorded_at=filing_row["recorded_at"],
+            )
+        )
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    assert _testrev_row(result, "rpo_total")["value"] == "5200000000"
+    percentage = _testrev_row(result, "rpo_percentage_next_12m")
+    assert percentage["quality_state"] == "valued"
+    assert percentage["value"] == "0.47"
+    assert percentage["dimensions"] == [
+        {"axis": _RPO_AXIS, "member": "2026-01-01"}
+    ]
+
+
+# BOUNDARY PIN: the VZ shape — RPO tagged only on the standard typed
+# start-date axis stays a typed absence under the current framework. A
+# single typed-axis aggregate (the note's total sentence) and a multi-bucket
+# timing ladder are both absent; no bucket is ever surfaced as the total and
+# buckets are never summed. Flipping this pin to admit the single aggregate
+# is the blocked repair: it needs base.py::_dimensions_admitted to compare
+# axis names against FactMapping.dimensions_allowed (pair tuples never
+# match today), and base.py is outside this lane's owned files.
+def test_pk04dev_boundary_pin_rpo_total_typed_axis_only_stays_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    aggregate = FactContext(
+        context_id="c-rpo-typed",
+        entity_scheme="http://www.sec.gov/CIK",
+        entity_identifier=TESTREV_CIK,
+        instant="2025-12-31",
+        typed_dimensions=((_RPO_AXIS, _typed_member("2026-01-01")),),
+    )
+    filing_row = synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+    events = []
+    for key, day, value in (
+        ("rpo_total", "2026-01-01", "58100000000"),
+        ("bucket_2026", "2026-01-01", "28500000000"),
+        ("bucket_2027", "2027-01-01", "17500000000"),
+        ("bucket_2028", "2028-01-01", "7200000000"),
+    ):
+        events.append(
+            make_raw_fact(
+                source=filing_row["source"],
+                concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+                context=(
+                    aggregate
+                    if key == "rpo_total"
+                    else FactContext(
+                        context_id=f"c-rpo-{day}",
+                        entity_scheme="http://www.sec.gov/CIK",
+                        entity_identifier=TESTREV_CIK,
+                        instant="2025-12-31",
+                        typed_dimensions=((_RPO_AXIS, _typed_member(day)),),
+                    )
+                ),
+                unit=FactUnit("USD", ["iso4217:USD"]),
+                raw_token=value,
+                parsed_value=value,
+                dimensions_known=True,
+                decimals="0",
+                source_span=(0, len(value)),
+                source_occurrence_key=key,
+                accepted_at=filing_row["accepted_at"],
+                recorded_at=filing_row["recorded_at"],
+            )
+        )
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    result = produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+    rows = [row for row in result["fields"] if row["field_id"] == "rpo_total"]
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
