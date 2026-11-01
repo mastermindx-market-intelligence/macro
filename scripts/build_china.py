@@ -1018,6 +1018,24 @@ def _rd_word(value, bands):
     return None
 
 
+def _cn_pullback_risk_popup(*, now: datetime) -> dict | None:
+    """Read-only China Risk Radar observation for the shared Risk Radar dialog.
+
+    Same shape as the US hook in build_site: the licensed benchmark-index reader
+    and the single episode owner are bound here. Any failure, including an
+    import or programming error in the adapters, leaves the view unavailable
+    and the existing popup in place without breaking the page.
+    """
+    try:
+        from lib import cn_pullback_observation as pb
+        from lib.pullback_observation import observe
+        return pb.present(pb.snapshot(now=now, read=pb.licensed_index_closes,
+                                      observer=observe))
+    except Exception as exc:  # noqa: BLE001 — additive popup section, never fatal
+        log.warning("CN pullback presentation unavailable: %s", type(exc).__name__)
+        return None
+
+
 def _radar_dlg_vm(vm: dict, latest: dict) -> dict:
     """Assemble the `radar_dlg` ctx the shared Risk Radar dialog consumes on china.html.
 
@@ -2141,6 +2159,10 @@ def main() -> int:
         except Exception as _rdlg_e:  # noqa: BLE001 — additive, never fatal
             log.warning("china radar_dlg ctx failed (%s); dialog renders core only", _rdlg_e)
             vm["radar_dlg"] = {}
+        # Measured settled-close pullback leads the dialog only when the observer
+        # confirms an active decline; the radar's risk odds stay as evidence.
+        vm["radar_dlg"]["pullback_view"] = _cn_pullback_risk_popup(
+            now=datetime.now(timezone.utc))
 
         # Per-candidate Added / 入榜 date (engine/prophet_board_since.py). Display-only.
         # watch_definitions is the CANONICAL china_standout_track set, imported here

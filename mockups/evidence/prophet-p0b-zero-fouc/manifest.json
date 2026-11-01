@@ -530,7 +530,7 @@
     "browser_receipts": {
       "hk": {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-        "sha256": "b5ebddfc4d2d038c6fc836eb41d8f2d224eedf010385a3d0ae8a3a4d802b4683",
+        "sha256": "ab7dc39684e3ba1a88e6c20eb6055a9e833f714fdd46743913c5c87416b67a7d",
         "pass": true,
         "primary_cases": 48,
         "degraded_control_cases": 16,
@@ -538,7 +538,7 @@
       },
       "ca": {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-        "sha256": "13403b1b14c19d1c129b4c27a3b5085ad7daf7627522c7e8a0ac2ec1d4394f99",
+        "sha256": "61f84fc5e98bad3f70839ea4f06f5c63bf46eab052184df3e20391eb532cebce",
         "pass": true,
         "primary_cases": 48,
         "degraded_control_cases": 16,
@@ -553,7 +553,7 @@
     },
     "fixture_receipt": {
       "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+      "sha256": "b56d34f332f9bd112e19a988c129022c602fa33aac039a0933ab6169a5a872e6"
     },
     "generated_at": "2026-10-23T16:12:45.749290+00:00",
     "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
@@ -1559,7 +1559,7 @@
         },
         "fixture_receipt": {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-          "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+          "sha256": "b56d34f332f9bd112e19a988c129022c602fa33aac039a0933ab6169a5a872e6"
         },
         "generated_at": "2026-10-18T17:37:29.662919+00:00",
         "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
@@ -1783,7 +1783,7 @@
         },
         "fixture_receipt": {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-          "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+          "sha256": "b56d34f332f9bd112e19a988c129022c602fa33aac039a0933ab6169a5a872e6"
         },
         "generated_at": "2026-10-20T11:04:34.647117+00:00",
         "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
@@ -2007,7 +2007,7 @@
         },
         "fixture_receipt": {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-          "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+          "sha256": "b56d34f332f9bd112e19a988c129022c602fa33aac039a0933ab6169a5a872e6"
         },
         "generated_at": "2026-10-20T18:39:01.746528+00:00",
         "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
@@ -2119,7 +2119,7 @@
         },
         "fixture_receipt": {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-          "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+          "sha256": "b56d34f332f9bd112e19a988c129022c602fa33aac039a0933ab6169a5a872e6"
         },
         "generated_at": "2026-10-22T19:40:51.856949+00:00",
         "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
@@ -2231,7 +2231,7 @@
         },
         "fixture_receipt": {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-          "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+          "sha256": "b56d34f332f9bd112e19a988c129022c602fa33aac039a0933ab6169a5a872e6"
         },
         "generated_at": "2026-10-22T22:32:41.444363+00:00",
         "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
@@ -2343,7 +2343,7 @@
         },
         "fixture_receipt": {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-          "sha256": "c2988f6e67654f92d2e125d5f2bf92cdb76ac8a3aec75b12b76b920bc00ef33d"
+          "sha256": "b56d34f332f9bd112e19a988c129022c602fa33aac039a0933ab6169a5a872e6"
         },
         "generated_at": "2026-10-23T00:02:56.541628+00:00",
         "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
