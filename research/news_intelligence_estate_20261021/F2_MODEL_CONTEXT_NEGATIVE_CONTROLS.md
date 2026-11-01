@@ -135,8 +135,14 @@ basis, bound, period, negation; evidence excluded as provenance). Units canonica
 through the contract `UNIT_MAP` for spelling only (`USD`/`$`/`US$` agree), while
 percentage points and basis points keep their own canonical identity, so the three-event
 chain percent -> pp -> "percentage points" now records
-`n_records={'fact_revision': 2, 'manifestation': 1}`. A value-only payload yields the
-byte-identical pre-repair digest, so existing fingerprints are unchanged.
+`n_records={'fact_revision': 2, 'manifestation': 1}`. Wording stays out: a fiscal
+period enters as its fact-key token and a typed period absence as one fixed token, so
+rewording an absence's subject, detail or missing_fields is a repeat, not a revision
+(review finding R3 on the first head, repaired with tests). A payload without
+`quantity_terms` keeps the byte-identical pre-repair digest, but producer leaf payloads
+always carry them, so every producer digest changes. That is safe today only because no
+stored digest is compared: no fact log is committed and `producer_facts.run` starts
+each run from an empty log.
 **M05a (grader) — still BROKEN, by contract:** `eval_grade.UNIT_MAP` is verbatim
 `contracts/news_impact/endpoints.v1.json:60` (`"pp": "percent"`), which is frozen; the
 grader keeps grading 5 pp against gold 5 percent as `correct` until a versioned

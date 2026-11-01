@@ -760,6 +760,65 @@ def test_fingerprint_ignores_evidence_and_basis_whitespace():
     assert _fp(_with(basis=" incremental ")) == base
 
 
+def _period_absence(**changes) -> dict:
+    period = absence("period")
+    period.update(changes)
+    return period
+
+
+def test_fingerprint_ignores_period_absence_wording():
+    base = _fp(_with(period=_period_absence()))
+    assert _fp(_with(period=_period_absence(detail="The release names no fiscal period."))) == base
+    assert _fp(_with(period=_period_absence(subject="quantity period"))) == base
+    assert _fp(_with(period=_period_absence(missing_fields=["period", "calendar_end"]))) == base
+    assert _fp(_with(period=_period_absence(reason="not_applicable"))) == base
+    # Absent versus a stated period is still a change of meaning.
+    assert base != _fp(_with())
+
+
+def test_fingerprint_period_follows_the_fact_key_token():
+    q1 = {"year": 2025, "quarter": 1, "calendar_end": None, "period_kind": "quarter"}
+    q1_dated = dict(q1, calendar_end="2025-03-31")
+    q2 = dict(q1, quarter=2)
+    assert _fp(_with(period=q1)) == _fp(_with(period=q1_dated))
+    assert _fp(_with(period=q1)) != _fp(_with(period=q2))
+    assert _fp(_with(period=q1)) != _fp(_with(period=dict(q1, year=2026)))
+    assert _fp(_with(period=q1)) != _fp(_with(period=dict(FY27, year=2025)))
+
+
+def test_fingerprint_period_not_tokenizable_keeps_its_structure():
+    odd = {"year": 2025, "quarter": None, "calendar_end": None, "period_kind": "trailing"}
+    assert _fp(_with(period=odd)) != _fp(_with(period=dict(odd, year=2026)))
+    assert _fp(_with(period=odd)) != _fp(_with(period=_period_absence()))
+
+
+def test_fingerprint_unit_aliases_collapse_without_merging_meanings():
+    usd = _fp(_with())
+    for spelling in ("US dollars", "us dollar", "U.S. Dollars", " u.s. dollar "):
+        assert _fp(_with(unit=spelling)) == usd
+    assert _fp(_with(unit="euros", currency="EUR")) == _fp(_with(unit="EUR", currency="EUR"))
+    assert _fp(_with(unit="pounds sterling", currency="GBP")) == _fp(_with(unit="GBP", currency="GBP"))
+    percent = _fp(_with(unit="percent", currency="NA"))
+    assert _fp(_with(unit="per cent", currency="NA")) == percent
+    assert _fp(_with(unit="Percentage", currency="NA")) == percent
+    # An alias never reaches across a rate-unit boundary.
+    assert _fp(_with(unit="percentage points", currency="NA")) != percent
+
+
+def test_producer_treats_reworded_period_absence_as_a_repeat(tmp_path):
+    first = t1("a1", 1, incremental_amount=_with(period=_period_absence()))
+    repeat = t1("a2", 2, doc=DOC_B, incremental_amount=qpoint(5, "incremental", doc=DOC_B))
+    repeat["incremental_amount"]["period"] = _period_absence(detail="No fiscal period is named.")
+    for event in (first, repeat):
+        assert_valid(event)
+    report, log, _, _ = run_rows(tmp_path, [row(first, "c1"), row(repeat, "c2")])
+    records = by_fact(log)
+    assert records[first["fact_id"]]["record_kind"] == "fact_revision"
+    assert records[repeat["fact_id"]]["record_kind"] == "manifestation"
+    assert records[repeat["fact_id"]]["reports_fact_id"] == first["fact_id"]
+    assert report["n_records"] == {"fact_revision": 1, "manifestation": 1}
+
+
 def test_fingerprint_without_terms_is_the_unchanged_value_only_digest():
     payload = {"incremental": 50_000_000, "remaining": 80_000_000}
     expected = thesis.canonical_json_sha256(payload)

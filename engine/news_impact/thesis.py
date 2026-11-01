@@ -285,6 +285,24 @@ _FINGERPRINT_RATE_UNITS: dict[str, str] = {
     "basis points": "basis_point",
 }
 
+#: Common spellings of contract units that the frozen ``unit_map`` omits.
+#: Fingerprint-only: the grader keeps the contract map verbatim. Without these
+#: a relabelled "US dollars" for "USD" would read as a fact revision.
+_FINGERPRINT_UNIT_ALIASES: dict[str, str] = {
+    "us dollar": "USD",
+    "us dollars": "USD",
+    "u.s. dollar": "USD",
+    "u.s. dollars": "USD",
+    "euro": "EUR",
+    "euros": "EUR",
+    "pound": "GBP",
+    "pounds": "GBP",
+    "pound sterling": "GBP",
+    "pounds sterling": "GBP",
+    "per cent": "percent",
+    "percentage": "percent",
+}
+
 #: The per-quantity terms that change what a number means. ``evidence`` (quote,
 #: span) is provenance, not meaning, and stays outside the fingerprint. The
 #: structured ``period`` enters it: T1/T2 also key on the event-level period,
@@ -305,11 +323,39 @@ def _fingerprint_unit(unit: Any) -> Any:
     token = " ".join(unit.strip().lower().split())
     if token in _FINGERPRINT_RATE_UNITS:
         return _FINGERPRINT_RATE_UNITS[token]
+    if token in _FINGERPRINT_UNIT_ALIASES:
+        return _FINGERPRINT_UNIT_ALIASES[token]
     from engine.news_impact.eval_grade import UNIT_MAP
 
     if token in UNIT_MAP:
         return UNIT_MAP[token]
     return "raw:" + token
+
+
+def _fingerprint_period(period: Any) -> Any:
+    """Canonical period for comparison: what the period means, not its wording.
+
+    A fiscal period reduces to the same lossless token the fact key uses, so a
+    present-versus-null ``calendar_end`` on a quarter is not a revision. A typed
+    absence reduces to one fixed token: its reason, subject, detail and
+    missing_fields are free-text provenance, and rewording them must not read
+    as a changed number.
+    """
+    if isinstance(period, Mapping) and "period_kind" in period:
+        # Lazy import: producer_facts imports this module.
+        from engine.news_impact.producer_facts import Reject, period_token
+
+        try:
+            return "period:" + period_token(period)
+        except Reject:
+            return {
+                key: period[key]
+                for key in ("period_kind", "year", "quarter", "calendar_end", "end_year")
+                if key in period
+            }
+    if isinstance(period, Mapping):
+        return "period:absent"
+    return period
 
 
 def _fingerprint_slot(value: Any, terms: Any) -> Any:
@@ -327,6 +373,8 @@ def _fingerprint_slot(value: Any, terms: Any) -> Any:
         raw = terms[term]
         if term == "unit":
             raw = _fingerprint_unit(raw)
+        elif term == "period":
+            raw = _fingerprint_period(raw)
         elif isinstance(raw, str):
             raw = raw.strip()
         slot[term] = raw
@@ -346,7 +394,9 @@ def quantity_fingerprint(
     ``quantity_terms`` for a slot, the slot's form, canonical unit, currency,
     basis, bound, period and negation enter the fingerprint with its value, so
     a change of what the number means is a fact revision rather than a repeat.
-    Evidence text and span stay outside it.
+    Evidence text and span stay outside it, and so does the free text of a
+    typed period absence: a fiscal period enters as its fact-key token and any
+    absence as one fixed token.
     """
     if not payload:
         return {"form": "absent"}
