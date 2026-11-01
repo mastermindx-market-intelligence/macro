@@ -47,6 +47,9 @@ def test_built_sector_pages_have_no_bare_nav_links():
     assert not bad, f"bare nav links in built sector pages (would 404 live): {bad}"
 
 
+_HOLDINGS_GUARD = "{% if s.holdings %}"
+
+
 def _holdings_heading_source() -> str:
     """Nav checks above only read template text. Render the holdings heading
     block (t/help macros plus the panel through </h2>) on its own."""
@@ -59,7 +62,9 @@ def _holdings_heading_source() -> str:
     assert panel_at >= 0, "holdings panel div missing"
     h2_end = text.find("</h2>", help_at)
     assert h2_end >= 0, "holdings heading close missing"
-    return macros + text[panel_at:h2_end + len("</h2>")]
+    guarded = text[:panel_at].rstrip().endswith(_HOLDINGS_GUARD)
+    block = text[panel_at:h2_end + len("</h2>")]
+    return macros + (_HOLDINGS_GUARD + block + "{% endif %}" if guarded else block)
 
 
 def _render_holdings_heading(rows: list) -> str:
@@ -89,6 +94,18 @@ def test_holdings_heading_omits_share_when_any_weight_missing():
     assert "% of the fund" not in html
     assert "合计占基金" not in html
     assert "Top 10 holdings" not in html
+
+
+def test_holdings_panel_is_skipped_for_an_empty_list():
+    """build_site.py writes the page with holdings [] when a fund has no usable rows.
+    A missing value must not print as a measured "0% of the fund"."""
+    html = _render_holdings_heading([])
+    for absent in ("Top 0", "0%", "前 0", "of the fund", "合计占基金", "<h2>", 'class="panel"'):
+        assert absent not in html, absent
+    # The guard closes after the rows and the panel's own </div>, so no empty shell stays on the page.
+    text = (ROOT / "templates" / "sector.html.j2").read_text()
+    panel = text[text.index(_HOLDINGS_GUARD):text.index("How much to trust these states")]
+    assert panel.rindex("{% endif %}") > panel.rindex("</div>") > panel.rindex("{% endfor %}") > panel.index("</h2>")
 
 
 def test_holdings_heading_counts_zero_weight_in_the_share():

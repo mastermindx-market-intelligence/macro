@@ -373,6 +373,7 @@
   </div>
   {% endif %}
 
+  {% if s.holdings %}
   <div class="panel">
     {% set n = s.holdings|length %}
     {% set weights = s.holdings|map(attribute='weight_pct')|list %}
@@ -412,6 +413,7 @@
     </div>
     {% endfor %}
   </div>
+  {% endif %}
 
   <div class="panel">
     <h2>{{ t('How much to trust these states — measured, not promised', '这些状态有多可信 — 实测得出，而非承诺') }}
