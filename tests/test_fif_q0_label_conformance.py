@@ -598,3 +598,409 @@ def test_negative_issuer_row_counts_by_polarity(tmp_path):
         "need": 1,
     } in pack["shortfalls"]
 
+
+# ---------------------------------------------------------------------------
+# --contract: pack-scoped split cohorts (every contract below is synthetic)
+# ---------------------------------------------------------------------------
+
+SYNB1 = "SYNB1"
+SYNB2 = "SYNB2"
+SYNC1 = "SYNC1"
+SPLIT_ID = 3
+CONTRACT_SENTINEL = "ZZ-CONTRACT-SENTINEL"
+
+
+def syn_accession(n):
+    """A synthetic accession string; never a real filing id."""
+    return f"0000000000-00-9000{n:02d}"
+
+
+def contract_path(tmp_path, payload):
+    path = tmp_path / "contract.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def scoped_rows(ticker, accessions, pack="PK12", split=SPLIT_ID):
+    return {
+        "ticker": ticker,
+        "accessions": [
+            {"accession": accession, "split_decision": split, "pack_scope": [pack]}
+            for accession in accessions
+        ],
+    }
+
+
+def synb_contract(tmp_path, pack="PK12"):
+    """SYNB1 with three PK12-scoped rows and SYNB2 with two, split 3."""
+    return contract_path(
+        tmp_path,
+        {
+            "split_decisions": [{"id": 1}, {"id": SPLIT_ID}],
+            "issuers": [
+                scoped_rows(
+                    SYNB1, [syn_accession(n) for n in (1, 2, 3)], pack
+                ),
+                scoped_rows(SYNB2, [syn_accession(n) for n in (4, 5)], pack),
+            ],
+        },
+    )
+
+
+def synb_label(ticker, accession, label_class, pack="PK12"):
+    pack_cfg = PACKS[pack]
+    record = make_record(
+        pack,
+        ticker,
+        label_class,
+        pack_cfg["section_family_ids"][0],
+        form_type=pack_cfg["forms"][0],
+    )
+    record["accession"] = accession
+    return record
+
+
+def synb_conforming_records():
+    """The PK12 negatives the protocol already requires, plus the scoped
+    cohort: 2 positives on each of SYNB1/SYNB2 and every scoped accession
+    labelled (SYNB1's third row carries the cohort's negative)."""
+    records = pk12_all_negative_records()
+    records += [
+        synb_label(SYNB1, syn_accession(1), POSITIVE_CLASS),
+        synb_label(SYNB1, syn_accession(2), POSITIVE_CLASS),
+        synb_label(SYNB1, syn_accession(3), NEGATIVE_CLASS),
+        synb_label(SYNB2, syn_accession(4), POSITIVE_CLASS),
+        synb_label(SYNB2, syn_accession(5), POSITIVE_CLASS),
+    ]
+    return records
+
+
+# (19) without --contract the two new top-level keys are present and inert.
+def test_no_contract_reports_contract_not_supplied(tmp_path):
+    write_labels(tmp_path, "PK11", pk11_conforming_records())
+    result = run_tool(tmp_path, "--packs", "PK11")
+    assert result.returncode == 0, result.stderr
+    report = report_of(result)
+    assert report["contract_supplied"] is False
+    assert report["split_cohorts"] == {}
+
+
+# (20) a conforming scoped-cohort PK12 label set exits 0 and reports cohort 3.
+def test_contract_admits_scoped_cohort_conforming(tmp_path):
+    write_labels(tmp_path, "PK12", synb_conforming_records())
+    result = run_tool(
+        tmp_path, "--packs", "PK12", "--contract", str(synb_contract(tmp_path))
+    )
+    assert result.returncode == 0, result.stderr
+    report = report_of(result)
+    assert report["contract_supplied"] is True
+    assert report["split_cohorts"][str(SPLIT_ID)] == {
+        "packs": ["PK12"],
+        "issuers": 2,
+        "accessions": 5,
+        "labelled_accessions": {"PK12": 5},
+        "labels": {"PK12": {"positive": 4, "negative": 1, "other": 0}},
+    }
+    synb1 = report["packs"]["PK12"]["by_issuer"][SYNB1]
+    assert synb1["applicability"] == "required"
+    assert synb1["split_decision"] == SPLIT_ID
+    assert synb1["positive"] == POSITIVE_MIN
+    assert report["packs"]["PK12"]["violations"] == {}
+    assert report["packs"]["PK12"]["shortfalls"] == []
+    assert report["conforming"] is True
+
+
+# (21) a scoped issuer with only one positive is positive-cell short.
+def test_scoped_issuer_positive_cell_short(tmp_path):
+    records = [r for r in synb_conforming_records() if r["issuer"] != SYNB1]
+    records += [
+        synb_label(SYNB1, syn_accession(1), POSITIVE_CLASS),
+        synb_label(SYNB1, syn_accession(2), NEGATIVE_CLASS),
+        synb_label(SYNB1, syn_accession(3), NEGATIVE_CLASS),
+    ]
+    write_labels(tmp_path, "PK12", records)
+    result = run_tool(
+        tmp_path, "--packs", "PK12", "--contract", str(synb_contract(tmp_path))
+    )
+    assert result.returncode == 1
+    pack = report_of(result)["packs"]["PK12"]
+    assert {
+        "code": "positive_cell_short",
+        "scope": SYNB1,
+        "have": 1,
+        "need": POSITIVE_MIN,
+    } in pack["shortfalls"]
+
+
+# (22) a scoped-cohort label outside the cohort's pack stays outside-protocol.
+def test_scoped_issuer_label_outside_pack_scope(tmp_path):
+    contract = synb_contract(tmp_path)
+    record = synb_label(SYNB1, syn_accession(1), NEGATIVE_CLASS, pack="PK01")
+    write_labels(tmp_path, "PK01", [record])
+    result = run_tool(tmp_path, "--packs", "PK01", "--contract", str(contract))
+    assert result.returncode == 1
+    pack = report_of(result)["packs"]["PK01"]
+    assert pack["violations"] == {
+        "issuer_outside_protocol": 1,
+        "accession_outside_split_scope": 1,
+    }
+    assert "<outside_protocol>" in pack["by_issuer"]
+    assert SYNB1 not in pack["by_issuer"]
+
+
+# (23) a scoped-pack label whose accession is not one of the contract's.
+def test_accession_outside_contract(tmp_path):
+    records = synb_conforming_records()
+    positives = [
+        r for r in records if r["issuer"] == SYNB1 and r["label_class"] == POSITIVE_CLASS
+    ]
+    positives[0]["accession"] = "ZZ-BOGUS-ACCESSION"
+    write_labels(tmp_path, "PK12", records)
+    result = run_tool(
+        tmp_path, "--packs", "PK12", "--contract", str(synb_contract(tmp_path))
+    )
+    assert result.returncode == 1
+    pack = report_of(result)["packs"]["PK12"]
+    assert pack["violations"] == {"accession_outside_contract": 1}
+    assert "ZZ-BOGUS-ACCESSION" not in result.stdout
+
+
+# (24) one of SYNB1's three scoped accessions left unlabelled.
+def test_split_accession_unlabelled(tmp_path):
+    records = [
+        r for r in synb_conforming_records() if r["accession"] != syn_accession(3)
+    ]
+    write_labels(tmp_path, "PK12", records)
+    result = run_tool(
+        tmp_path, "--packs", "PK12", "--contract", str(synb_contract(tmp_path))
+    )
+    assert result.returncode == 1
+    pack = report_of(result)["packs"]["PK12"]
+    assert pack["violations"] == {}
+    assert pack["shortfalls"] == [
+        {"code": "split_accession_unlabelled", "scope": SYNB1, "have": 2, "need": 3}
+    ]
+
+
+# (25) contract and label accession values never reach stdout or --out.
+def test_contract_accessions_never_leak(tmp_path):
+    accessions = [f"{CONTRACT_SENTINEL}-ACC-{n}" for n in range(5)]
+    contract = contract_path(
+        tmp_path,
+        {
+            "split_decisions": [{"id": 1}, {"id": SPLIT_ID}],
+            "issuers": [
+                scoped_rows(SYNB1, accessions[:3]),
+                scoped_rows(SYNB2, accessions[3:]),
+            ],
+        },
+    )
+    records = pk12_all_negative_records()
+    for record in records:
+        record["accession"] = f"{CONTRACT_SENTINEL}-LABEL"
+    records += [
+        synb_label(SYNB1, accessions[0], POSITIVE_CLASS),
+        synb_label(SYNB1, accessions[1], POSITIVE_CLASS),
+        synb_label(SYNB1, accessions[2], NEGATIVE_CLASS),
+        synb_label(SYNB2, accessions[3], POSITIVE_CLASS),
+        synb_label(SYNB2, accessions[4], POSITIVE_CLASS),
+    ]
+    write_labels(tmp_path, "PK12", records)
+    out_path = tmp_path / "report.json"
+    result = run_tool(
+        tmp_path,
+        "--packs",
+        "PK12",
+        "--contract",
+        str(contract),
+        "--out",
+        str(out_path),
+    )
+    assert result.returncode == 0, result.stderr
+    written = out_path.read_text(encoding="utf-8")
+    for text in (result.stdout, written):
+        for value in (*accessions, f"{CONTRACT_SENTINEL}-LABEL"):
+            assert value not in text
+    assert json.loads(written)["split_cohorts"][str(SPLIT_ID)][
+        "labelled_accessions"
+    ] == {"PK12": 5}
+
+
+# (26) every malformed-contract case exits 2 without echoing contract values.
+MALFORMED_CONTRACTS = {
+    "unreadable_file": None,
+    "invalid_json": "not-json " + CONTRACT_SENTINEL + " {{{",
+    "top_level_not_object": [{"ticker": CONTRACT_SENTINEL}],
+    "issuers_missing": {
+        "split_decisions": [{"id": SPLIT_ID, "note": CONTRACT_SENTINEL}]
+    },
+    "issuers_not_list": {"issuers": {"ticker": CONTRACT_SENTINEL}},
+    "ticker_not_string": {"issuers": [{"ticker": [CONTRACT_SENTINEL], "accessions": []}]},
+    "accessions_missing": {"issuers": [{"ticker": CONTRACT_SENTINEL}]},
+    "accessions_not_list": {"issuers": [{"ticker": "T", "accessions": CONTRACT_SENTINEL}]},
+    "row_missing_accession": {
+        "split_decisions": [{"id": SPLIT_ID}],
+        "issuers": [
+            {
+                "ticker": "T",
+                "accessions": [{"split_decision": SPLIT_ID, "x": CONTRACT_SENTINEL}],
+            }
+        ],
+    },
+    "row_missing_split_decision": {
+        "split_decisions": [{"id": SPLIT_ID}],
+        "issuers": [{"ticker": "T", "accessions": [{"accession": CONTRACT_SENTINEL}]}],
+    },
+    "pack_scope_not_list": {
+        "split_decisions": [{"id": SPLIT_ID}],
+        "issuers": [
+            {
+                "ticker": "T",
+                "accessions": [
+                    {
+                        "accession": CONTRACT_SENTINEL,
+                        "split_decision": SPLIT_ID,
+                        "pack_scope": "PK12",
+                    }
+                ],
+            }
+        ],
+    },
+    "pack_scope_empty": {
+        "split_decisions": [{"id": SPLIT_ID}],
+        "issuers": [
+            {
+                "ticker": "T",
+                "accessions": [
+                    {
+                        "accession": CONTRACT_SENTINEL,
+                        "split_decision": SPLIT_ID,
+                        "pack_scope": [],
+                    }
+                ],
+            }
+        ],
+    },
+    "pack_scope_unknown_pack": {
+        "split_decisions": [{"id": SPLIT_ID}],
+        "issuers": [
+            {
+                "ticker": "T",
+                "accessions": [
+                    {
+                        "accession": CONTRACT_SENTINEL,
+                        "split_decision": SPLIT_ID,
+                        "pack_scope": ["PK12", "ZZ99"],
+                    }
+                ],
+            }
+        ],
+    },
+    "pack_scope_bad_split_decision": {
+        "split_decisions": [{"id": 1}],
+        "issuers": [
+            {
+                "ticker": "T",
+                "accessions": [
+                    {
+                        "accession": CONTRACT_SENTINEL,
+                        "split_decision": SPLIT_ID,
+                        "pack_scope": ["PK12"],
+                    }
+                ],
+            }
+        ],
+    },
+}
+
+
+@pytest.mark.parametrize(
+    "case", sorted(MALFORMED_CONTRACTS), ids=sorted(MALFORMED_CONTRACTS)
+)
+def test_malformed_contract_exits_two(case, tmp_path):
+    root = tmp_path / "root"
+    root.mkdir()
+    payload = MALFORMED_CONTRACTS[case]
+    if payload is None:
+        contract = tmp_path / "no-such-contract.json"
+    else:
+        contract = tmp_path / "contract.json"
+        contract.write_text(
+            payload if isinstance(payload, str) else json.dumps(payload),
+            encoding="utf-8",
+        )
+    result = run_tool(root, "--packs", "PK12", "--contract", str(contract))
+    assert result.returncode == 2
+    assert CONTRACT_SENTINEL not in result.stderr
+    assert CONTRACT_SENTINEL not in result.stdout
+
+
+# (27) contract rows without pack_scope admit nothing.
+def test_unscoped_contract_issuer_not_admitted(tmp_path):
+    contract = contract_path(
+        tmp_path,
+        {
+            "split_decisions": [{"id": SPLIT_ID}],
+            "issuers": [
+                {
+                    "ticker": SYNC1,
+                    "accessions": [
+                        {"accession": syn_accession(1), "split_decision": SPLIT_ID},
+                        {"accession": syn_accession(2), "split_decision": SPLIT_ID},
+                    ],
+                }
+            ],
+        },
+    )
+    records = pk12_all_negative_records()
+    records += [
+        synb_label(SYNC1, syn_accession(1), NEGATIVE_CLASS),
+        synb_label(SYNC1, syn_accession(2), NEGATIVE_CLASS),
+    ]
+    write_labels(tmp_path, "PK12", records)
+    result = run_tool(tmp_path, "--packs", "PK12", "--contract", str(contract))
+    assert result.returncode == 1
+    report = report_of(result)
+    pack = report["packs"]["PK12"]
+    assert pack["violations"] == {"issuer_outside_protocol": 2}
+    assert "<outside_protocol>" in pack["by_issuer"]
+    assert SYNC1 not in pack["by_issuer"]
+    assert report["split_cohorts"] == {}
+
+
+# (28) the same label set with and without --contract differs only in the
+# contract-dependent parts; protocol-issuer by_issuer entries are equal.
+def test_contract_changes_only_contract_dependent_keys(tmp_path):
+    write_labels(tmp_path, "PK12", synb_conforming_records())
+    plain = report_of(run_tool(tmp_path, "--packs", "PK12"))
+    with_contract = report_of(
+        run_tool(
+            tmp_path, "--packs", "PK12", "--contract", str(synb_contract(tmp_path))
+        )
+    )
+    assert plain["contract_supplied"] is False
+    assert with_contract["contract_supplied"] is True
+    assert plain["split_cohorts"] == {}
+    for key in ("schema", "protocol_id", "require_sealed", "min_positive_per_family"):
+        assert plain[key] == with_contract[key]
+    for pack_id, plain_pack in plain["packs"].items():
+        scoped_pack = with_contract["packs"][pack_id]
+        assert {
+            key: value
+            for key, value in plain_pack.items()
+            if key not in ("by_issuer", "violations")
+        } == {
+            key: value
+            for key, value in scoped_pack.items()
+            if key not in ("by_issuer", "violations")
+        }
+        for issuer in PROTOCOL["issuers"]:
+            assert plain_pack["by_issuer"][issuer] == scoped_pack["by_issuer"][issuer]
+        assert set(plain_pack["by_issuer"]) - set(PROTOCOL["issuers"]) == {
+            "<outside_protocol>"
+        }
+        assert set(scoped_pack["by_issuer"]) - set(PROTOCOL["issuers"]) == {SYNB1, SYNB2}
+    assert plain["packs"]["PK12"]["violations"] == {"issuer_outside_protocol": 5}
+    assert with_contract["packs"]["PK12"]["violations"] == {}
+    assert with_contract["conforming"] is True
+
