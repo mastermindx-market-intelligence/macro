@@ -9835,12 +9835,32 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
           npx playwright install --with-deps chromium
+      # F10 (intl-GS CI budget, DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031):
+      # the unrestricted post-checkout base fetch cost ~4 minutes on hosted runners
+      # (PR full-suite runs of 2026-10-31; every subtest green, job cut at the pack
+      # budget). The same fail-closed helper the international-workspace-browser
+      # job uses acquires canonical main once, blob-filtered and tag-free, and
+      # verifies this job's compared objects are present offline before the tests
+      # run. The compared paths are passed here, not hard-coded in the helper, so
+      # the control-plane job's import closure does not absorb scripts/build_intl.py.
       - name: canonical base for the frozen-file guard (fail closed)
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=international-dislocation-explorer::could not fetch origin/${{ github.base_ref || 'main' }}; tests/test_intl_gs_dislocations_view.py frozen-seam checks have NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a pass."
-            exit 1
-          fi
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from scripts.run_ci_pack import prepare_canonical_main
+
+          prepare_canonical_main(
+              Path.cwd(),
+              tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],
+              base_ref="${{ github.base_ref || 'main' }}",
+              frozen_paths=(
+                  "templates/intl_workspace_surveillance.css",
+                  "lib/intl_surveillance_mount.py",
+                  "scripts/build_intl.py",
+              ),
+          )
+          PY
       - name: Dislocation explorer view contracts
         run: python -m pytest tests/test_intl_gs_dislocations_view.py -q
       - name: Dislocation explorer DOM and selection in Chromium
@@ -10620,8 +10640,10 @@ jobs:
     # ran ~1.8x faster, and W2A's own IM13 step costs 95s tests + 78s browser proof,
     # with the IM14 dossier step still to run at 9m45s.  12 → 20.
     # Weight is not derived from timeout-minutes, so this does not rebalance packs.
-    # The structural fix — dropping the redundant base fetch after the fetch-depth 0
-    # checkout, or a job split — is deferred to a separate intl-GS CI-budget lane.
+    # The structural fix for the sibling international-dislocation-explorer job
+    # (its redundant unrestricted base fetch after the fetch-depth 0 checkout)
+    # landed as F10: both international jobs now use prepare_canonical_main.
+    # This job's own measured budget (20) is unchanged by F10.
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:

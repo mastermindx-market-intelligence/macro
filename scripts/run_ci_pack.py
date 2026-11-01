@@ -3507,10 +3507,28 @@ def _tested_tree_ancestry_ready(
     return merge_base.returncode == 0 and bool(re.fullmatch(r"[0-9a-f]{40}", value))
 
 
+# Exact paths compared by the international-workspace-browser frozen guard
+# (tests/test_intl_gs_foundation.py). The international-dislocation-explorer
+# job passes its own compared paths from its manifest step (F10) so that this
+# module's closure never names that guard's builder script.
+INTERNATIONAL_FOUNDATION_FROZEN_PATHS = (
+    "templates/theme.css",
+    "templates/_navlinks.html.j2",
+    "engine/intl_global_universe.py",
+    "engine/intl_global_observation.py",
+    "lib/intl_global_observation_adapter.py",
+)
+
+
 def prepare_canonical_main(
-    root: Path, *, tested_tree_sha: str, base_ref: str = "main"
+    root: Path, *, tested_tree_sha: str, base_ref: str = "main",
+    frozen_paths: tuple[str, ...] = INTERNATIONAL_FOUNDATION_FROZEN_PATHS,
 ) -> str:
     """Acquire actual main once, then deepen only its pinned history as needed.
+
+    ``frozen_paths`` are the exact repository paths the calling job's frozen
+    guard compares at the canonical base and the tested tree; every one must be
+    present offline at both before this returns.
 
     The International frozen-file guard reads origin/main and its merge base
     with HEAD. Its fetch-depth-0 preparation already establishes tested-tree
@@ -3532,6 +3550,10 @@ def prepare_canonical_main(
         r"[0-9a-f]{40}", tested_tree_sha
     ):
         raise RuntimeError("canonical-main preparation requires an exact tested-tree SHA")
+    if (not isinstance(frozen_paths, tuple) or not frozen_paths or not all(
+            isinstance(path, str) and path and not path.startswith("/")
+            and ".." not in path.split("/") for path in frozen_paths)):
+        raise RuntimeError("canonical-main preparation requires exact relative frozen paths")
 
     root = root.resolve()
     # Only the explicit acquisition may use transport. All readiness/object
@@ -3569,14 +3591,7 @@ def prepare_canonical_main(
         return result.stdout.strip() == "true"
 
     def require_local_objects(canonical_base: str) -> None:
-        # These are the exact paths compared by the International frozen guard.
-        frozen_paths = (
-            "templates/theme.css",
-            "templates/_navlinks.html.j2",
-            "engine/intl_global_universe.py",
-            "engine/intl_global_observation.py",
-            "lib/intl_global_observation_adapter.py",
-        )
+        # ``frozen_paths`` are the exact paths compared by the caller's guard.
 
         def required(*args: str) -> str:
             result = _git_cmd(root, git_env, *args)

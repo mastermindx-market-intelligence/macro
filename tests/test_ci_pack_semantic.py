@@ -3967,6 +3967,27 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
         for path in _CM_FROZEN_PATHS:
             guards['test_frozen_files_unchanged_vs_origin_main'](path)
 
+    def test_caller_frozen_paths_replace_the_foundation_default(self):
+        # F10: the dislocation job names its own compared paths; a path absent
+        # from the fixture's trees must refuse, and the default tuple is the
+        # unchanged foundation set.
+        self.assertEqual(PACK.INTERNATIONAL_FOUNDATION_FROZEN_PATHS, _CM_FROZEN_PATHS)
+        f = self.fixture()
+        with self.assertRaisesRegex(RuntimeError, 'required frozen object unavailable'):
+            PACK.prepare_canonical_main(
+                f['checkout'], tested_tree_sha=f['tested'],
+                frozen_paths=('templates/not_in_fixture_or_repo.css',))
+        for bad in ((), ('/abs/path',), ('../escape',), ['templates/theme.css']):
+            with self.assertRaisesRegex(RuntimeError, 'exact relative frozen paths'):
+                PACK.prepare_canonical_main(
+                    f['checkout'], tested_tree_sha=f['tested'], frozen_paths=bad)
+
+    def test_caller_frozen_paths_subset_prepares_canonical_main(self):
+        f = self.fixture()
+        self.assertEqual(PACK.prepare_canonical_main(
+            f['checkout'], tested_tree_sha=f['tested'],
+            frozen_paths=_CM_FROZEN_PATHS[:2]), f['canonical'])
+
     def test_missing_required_blob_refuses_after_fetch_without_lazy_fallback(self):
         f = self.fixture(full_checkout=True)
         _cm_git(f['source'], 'config', 'uploadpack.allowFilter', 'true')
