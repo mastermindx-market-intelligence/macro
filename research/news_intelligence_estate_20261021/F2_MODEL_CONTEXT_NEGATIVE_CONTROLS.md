@@ -42,7 +42,7 @@ producer outputs) land under `--scratch`; `git status` shows only the two owned 
 | M03 | Unsupported A→B relationship (:509; :245 "cannot manufacture a supplier relationship") | transfer.py:317 "V_TWO_PARTY_SPAN has no off switch" | engine/news_impact/transfer.py:464-468, 789-800 | HELD | one-party -> TransferAbsence:span_names_one_party_only; both-party edge=True |
 | M04 | Fabricated number (:509 "fabricated number"; :513) | F1:85 row 10 (engine on main); producer.py:104 "verified" span binding | producer.py:103-119; producer_facts.py:228-245; validate.py | NO_MECHANISM | value-777 vs numeral-free quote: validator ok=True; value/quote compare hits=0 |
 | M05 | Percent vs percentage points (:507; §5.3 :251-253) | eval_grade.py:362 "unit map … never inferred"; F1:85 row 10 | engine/news_impact/eval_grade.py:129-147 (UNIT_MAP `"pp": "percent"` :144); engine/news_impact/thesis.py:273-296 | BROKEN | grader pp-vs-percent outcome=correct; producer records={'fact_revision': 1, 'manifestation': 1} |
-| M06a | Currency + sign handling (:507; §5.3 :253) | prophet_adapter.py:366 "Deterministic amount_format" | engine/news_impact/prophet_adapter.py:355-362, 365-401 | BROKEN | jpy='1200000 JPY' neg='-$-1.5 million' zero='$0' range='-$-5–-$2' |
+| M06a | Currency + sign handling (:507; §5.3 :253) | prophet_adapter.py:366 "Deterministic amount_format" | engine/news_impact/prophet_adapter.py:355-362, 365-401 | BROKEN | jpy='1200000 JPY' neg='-$-1.5 million' zero='$0' range='-$-5–-$-2' |
 | M06b | Thousands-denominated USD (:507 "thousands versus millions") | same as M06a | prophet_adapter.py:385-393 (`usd = currency == "USD" or unit == "USD"`) | BROKEN | USD thousands unit: en='$2500' zh ends 万='2500美元' |
 | M07a | Fiscal period tokens (:507; §5.3 :251) | producer_facts.py:88 "Lossless fiscal_period token" | engine/news_impact/producer_facts.py:87-111; prophet_adapter.py:404-419 | HELD | tokens FY2026\|FY2026Q4\|FY2026H-0630\|FY2026-2028; windows differ=True |
 | M07b | 52/53-week year; claim-vs-evidence period mismatch (:507) | §5.3 :251 "fiscal versus calendar period" | producer_facts.py:87-111; news_impact_event.v1.schema.json fiscal_period def | NO_MECHANISM | 52/53w tokens equal=True; claim Q4-2026 vs qty FY2027 validator ok=True |
@@ -130,7 +130,7 @@ actively erases the distinction.
 **B3 (M06a) — negative USD amounts render with a duplicated sign.**
 Minimal reproduction: `format_amount({'form':'point','value':-1500000,'bound':'exact',
 'unit':'USD','currency':'USD','basis':'total'}, 'en')` → `'-$-1.5 million'` (ranges:
-`'-$-5–-$2'`). Producing line: `prophet_adapter.py:387-393` prefixes `sign = "-"` while
+`'-$-5–-$-2'`, both ends doubled). Producing line: `prophet_adapter.py:387-393` prefixes `sign = "-"` while
 `_one_decimal(float(value)/1e6)` (`:355-362`) formats the already-negative quotient,
 emitting its own minus. Zero renders `' $0'`-correct (`'$0'`) and JPY keeps its unit with
 no conversion (control M06a). Claim contradicted: MASTERPLAN:507 currency/number
@@ -292,7 +292,7 @@ NC M02 HELD evidence-less quantity verdict ok=False codes=schema_violation
 NC M03 HELD one-party -> TransferAbsence:span_names_one_party_only; both-party edge=True
 NC M04 NO_MECHANISM value-777 vs numeral-free quote: validator ok=True; value/quote compare hits=0
 NC M05 BROKEN grader pp-vs-percent outcome=correct; producer records={'fact_revision': 1, 'manifestation': 1}
-NC M06a BROKEN jpy='1200000 JPY' neg='-$-1.5 million' zero='$0' range='-$-5–-$2'
+NC M06a BROKEN jpy='1200000 JPY' neg='-$-1.5 million' zero='$0' range='-$-5–-$-2'
 NC M06b BROKEN USD thousands unit: en='$2500' zh ends 万='2500美元'
 NC M07a HELD tokens FY2026|FY2026Q4|FY2026H-0630|FY2026-2028; windows differ=True
 NC M07b NO_MECHANISM 52/53w tokens equal=True; claim Q4-2026 vs qty FY2027 validator ok=True
