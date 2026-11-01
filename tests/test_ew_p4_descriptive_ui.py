@@ -75,16 +75,23 @@ def glance(dlg: str) -> str:
 EW_SELECTORS = (
     "div.gde-ew", "div.gde-ew-brief-h", "div.gde-ew-tablewrap", "details.gde-ew-study",
     "span.gde-policy-caveat", "span.gde-scope",
+    # EW-P4-FU F-3: the drawer lines outside div.gde-ew (horizons, context, against, undo, next)
+    "div.gde-ew-horizons", "p.gde-ew-contextline", "p.gde-ew-h", "ul.gde-ew-against",
+    "p.gde-ew-undo", "p.gde-ew-nextline",
 )
 
 
 def _new_elements(dlg: str) -> str:
     """Concatenate every element this lane added (parsed, not regex-scraped)."""
     soup = BeautifulSoup(dlg, "html.parser")
-    parts = []
-    for selector in EW_SELECTORS:
-        for el in soup.select(selector):
-            parts.append(str(el))
+    picked = [el for selector in EW_SELECTORS for el in soup.select(selector)]
+    ids = {id(el) for el in picked}
+    parts, seen = [], set()
+    for el in picked:
+        if id(el) in seen or any(id(p) in ids for p in el.parents):
+            continue  # nested inside another selected element: already counted once
+        seen.add(id(el))
+        parts.append(str(el))
     return "\n".join(parts)
 
 
@@ -440,7 +447,7 @@ def test_record_fields_are_escaped_and_history_is_separated():
     w = deepcopy(_fixtures()["withdrawn"])
     w["previous"]["observation_id"] = bad
     w["basis"] = bad
-    w["notification"]["source_as_of"] = "2026-10-29" + bad
+    w["notification"]["source_as_of"] = "2026-10-29"  # lib _opt_iso_date: a real date; markup here is covered below
     w["coverage"] = {"evaluable_2s": bad, "registered_pairs": 8, "missing_pair_ids": []}
     dlg = render(envelope(w))
     assert state_of(dlg) == "withdrawn"
@@ -451,6 +458,14 @@ def test_record_fields_are_escaped_and_history_is_separated():
     assert '<br><span class="l-en">Corrected: ' in corrected
     quiet = _new_elements(render(envelope(None, rotation={"coverage": bad})))
     assert "<img" not in quiet and "&lt;img" in quiet
+    # round 2: markup in a withdrawal's source_as_of fails the lib date check, so it renders unreadable, never as text
+    s = deepcopy(_fixtures()["withdrawn"])
+    s["notification"]["source_as_of"] = "2026-10-29" + bad
+    with pytest.raises(ValueError):
+        lib_validate(s["notification"])
+    sdlg = render(envelope(s))
+    assert state_of(sdlg) == "unreadable"
+    assert "<img" not in _new_elements(sdlg)
 
 
 # ---------------------------------------------------------------------------
@@ -537,3 +552,112 @@ def test_receipt_shots_depict_the_source_under_test():
         assert hashlib.sha256(shot.read_bytes()).hexdigest() == case["sha256"], case["screenshot"]
         assert case["no_horizontal_overflow"] is True, case["screenshot"]
         assert case["page_errors"] == [], case["screenshot"]
+
+
+# ---------------------------------------------------------------------------
+# EW-P4-FU: the UI validator rejects what the lib validator rejects.
+# ---------------------------------------------------------------------------
+def test_fu_blank_pair_id_and_impossible_date_fixtures_are_unreadable():
+    for name in ("malformed_blank_pair", "malformed_calendar"):
+        fixture = _fixtures()[name]
+        with pytest.raises(ValueError):
+            lib_validate(fixture["notification"])
+        assert state_of(render(envelope(fixture))) == "unreadable", name
+
+
+@pytest.mark.parametrize("bad", ["2026-00-10", "2025-13-01", "2026-02-30", "2026-04-31", "2025-02-29", "0000-01-01"])
+def test_fu_calendar_invalid_event_dates_are_unreadable(bad):
+    fixture = deepcopy(_fixtures()["observed_rise"])
+    fixture["notification"]["event_as_of"] = bad
+    fixture["notification"]["source_as_of"] = bad
+    with pytest.raises(ValueError):
+        lib_validate(fixture["notification"])
+    assert state_of(render(envelope(fixture))) == "unreadable", bad
+
+
+@pytest.mark.parametrize("good", ["2024-02-29", "2026-04-30", "2025-12-31"])
+def test_fu_real_calendar_dates_still_pass_the_grammar(good):
+    fixture = deepcopy(_fixtures()["observed_rise"])
+    fixture["notification"]["event_as_of"] = good
+    fixture["notification"]["source_as_of"] = good
+    assert state_of(render(envelope(fixture))) != "unreadable", good
+
+
+@pytest.mark.parametrize("pid", ["   ", "\t", " \n ", "\x1c", "\x1f", "\x85", "\u3000", "\u2028 \xa0"])
+def test_fu_whitespace_only_pair_id_is_unreadable(pid):
+    fixture = deepcopy(_fixtures()["observed_rise"])
+    fixture["notification"]["pair_id"] = pid
+    with pytest.raises(ValueError):
+        lib_validate(fixture["notification"])
+    assert state_of(render(envelope(fixture))) == "unreadable", repr(pid)
+
+
+@pytest.mark.parametrize("pid", ["\ufeff", "a" * 128, "\U0001F600" * 128, "x\u3000"])
+def test_fu_pair_id_the_lib_accepts_is_not_unreadable(pid):
+    """Round 2: the template agrees with lib _req_str on what is blank and on code-point length."""
+    fixture = deepcopy(_fixtures()["observed_rise"])
+    fixture["notification"]["pair_id"] = pid
+    lib_validate(fixture["notification"])
+    assert state_of(render(envelope(fixture))) != "unreadable", repr(pid)
+
+
+@pytest.mark.parametrize("pid", ["a" * 129, "\U0001F600" * 129])
+def test_fu_pair_id_over_128_code_points_is_unreadable(pid):
+    fixture = deepcopy(_fixtures()["observed_rise"])
+    fixture["notification"]["pair_id"] = pid
+    with pytest.raises(ValueError):
+        lib_validate(fixture["notification"])
+    assert state_of(render(envelope(fixture))) == "unreadable", len(pid)
+
+
+@pytest.mark.parametrize("bad", ["2025-13-01", "2026-02-30", "2025-02-29", "0000-01-01", "2026-1-01", "garbage"])
+def test_fu_withdrawal_with_an_invalid_source_date_is_unreadable(bad):
+    fixture = deepcopy(_fixtures()["withdrawn"])
+    fixture["notification"]["source_as_of"] = bad
+    with pytest.raises(ValueError):
+        lib_validate(fixture["notification"])
+    assert state_of(render(envelope(fixture))) == "unreadable", bad
+
+
+def test_fu_withdrawal_with_a_real_earlier_source_date_still_renders_withdrawn():
+    fixture = deepcopy(_fixtures()["withdrawn"])
+    event = fixture["notification"]["event_as_of"]
+    earlier = f"{int(event[:4]) - 1}{event[4:]}"
+    fixture["notification"]["source_as_of"] = earlier
+    lib_validate(fixture["notification"])
+    assert state_of(render(envelope(fixture))) == "withdrawn", earlier
+
+
+BAD_STAMPS = ["garbage-but-long-enough-Z", "2026-10-30T21:15:00<b>Z", "2026-10-30T21:15:60Z",
+              "2026-02-30T21:15:00+00:00", "2026-10-30<img src=x>T21:15:00Z"]
+
+
+@pytest.mark.parametrize("key", ["observed_at", "not_after"])
+@pytest.mark.parametrize("bad", BAD_STAMPS)
+def test_fu_timestamp_the_lib_rejects_is_unreadable(key, bad):
+    """Round 2: the stamp check is a subset of lib _aware_utc, not a length-and-suffix test."""
+    fixture = deepcopy(_fixtures()["observed_rise"])
+    fixture["notification"][key] = bad
+    with pytest.raises(ValueError):
+        lib_validate(fixture["notification"])
+    out = render(envelope(fixture))
+    assert state_of(out) == "unreadable", (key, bad)
+    assert "<img" not in _new_elements(out) and "<b>" not in _new_elements(out)
+
+
+@pytest.mark.parametrize("suffix", ["+00:00", "Z"])
+def test_fu_producer_isoformat_stamps_are_readable(suffix):
+    """isoformat() carries six fraction digits when microseconds are set; Z is the other canonical UTC suffix."""
+    fixture = deepcopy(_fixtures()["observed_rise"])
+    n = fixture["notification"]
+    n["observed_at"] = n["observed_at"].replace("+00:00", ".123456" + suffix)
+    n["not_after"] = n["not_after"].replace("+00:00", suffix)
+    lib_validate(n)
+    assert state_of(render(envelope(fixture))) != "unreadable", suffix
+
+
+def test_fu_scan_reaches_every_drawer_line():
+    """F-3: the parsed scan now covers the drawer lines outside div.gde-ew."""
+    text = _text(_new_elements(render(envelope(_fixtures()["observed_rise"]))))
+    for phrase in ("What argues against this", "What would undo this", "Next: "):
+        assert phrase in text, phrase

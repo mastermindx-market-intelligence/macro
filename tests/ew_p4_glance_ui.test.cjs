@@ -224,8 +224,7 @@ test('repair wave C: bilingual study rows, separated history, escaped record fie
   const w = fixture('withdrawn');
   w.previous.observation_id = bad;
   w.basis = bad;
-  w.notification.source_as_of = '2026-10-29' + bad;
-  w.notification.observed_at = '2026-10-30' + bad + 'T21:15:00Z';
+  w.notification.source_as_of = '2026-10-29'; // lib _opt_iso_date: a real date; markup there is checked below
   w.coverage = { evaluable_2s: bad, registered_pairs: 8, missing_pair_ids: [] };
   w.lineage_roots = [bad];
   const outs = [
@@ -235,6 +234,22 @@ test('repair wave C: bilingual study rows, separated history, escaped record fie
     fn(null, { as_of: bad }, bad, 'zh', NOW),
   ];
   assert.equal(stateOf(outs[0]), 'withdrawn', 'payloads leave the validated state unchanged');
+  { const s = fixture('withdrawn'); s.notification.source_as_of = '2026-10-29' + bad;
+    const h = fn(s, null, '2026-10-30', 'en', NOW);
+    assert.equal(stateOf(h), 'unreadable', 'markup in a withdrawal source date fails the lib date check');
+    assert.ok(!h.includes('<img'), 'never rendered'); }
+  // lib _aware_utc parity: a stamp the lib rejects is unreadable, never rendered
+  for (const key of ['observed_at', 'not_after']) {
+    for (const st of ['garbage-but-long-enough-Z', '2026-10-30T21:15:00<b>Z', '2026-10-30T21:15:60Z',
+                      '2026-02-30T21:15:00+00:00', '2026-10-30' + bad + 'T21:15:00Z']) {
+      const s = fixture('withdrawn'); s.notification[key] = st;
+      const h = fn(s, null, '2026-10-30', 'en', NOW);
+      assert.equal(stateOf(h), 'unreadable', key + ' ' + st);
+      assert.ok(!h.includes('<img') && !h.includes('<b>'), 'never rendered'); } }
+  for (const sfx of ['+00:00', 'Z']) {
+    const s = fixture('withdrawn'); const n = s.notification;
+    n.observed_at = n.observed_at.replace('+00:00', '.123456' + sfx); n.not_after = n.not_after.replace('+00:00', sfx);
+    assert.equal(stateOf(fn(s, null, '2026-10-30', 'en', NOW)), 'withdrawn', 'producer isoformat stamp ' + sfx); }
   assert.equal(stateOf(outs[2]), 'stale', 'aged context with a malformed session');
   for (const h of outs) {
     assert.ok(!h.includes('<img'), 'raw injected element');
@@ -257,4 +272,31 @@ test('review r1: explicit keys, non-object wrapper, monospace id', () => {
   assert.equal(stateOf(fn(null, null, '2026-10-30', 'en', NOW)), 'unavailable', 'null wrapper stays absent');
   assert.equal(stateOf(fn(undefined, null, '2026-10-30', 'en', NOW)), 'unavailable', 'missing wrapper stays absent');
   assert.match(src, /\.rc-ew-id\{user-select:all;font-family:var\(--font-mono\);\}/, 'selectable monospace id');
+});
+
+test('EW-P4-FU: blank pair_id and calendar-invalid dates are unreadable; real dates pass', () => {
+  const run = (patch, session) => {
+    const v = fixture('observed_rise');
+    Object.assign(v.notification, patch);
+    return stateOf(fn(v, null, session || v.notification.event_as_of, 'en', NOW));
+  };
+  for (const pid of ['   ', '\t', ' \n ', '\x1c', '\x1f', '\x85', '\u3000', '\u2028 \xa0', 'a'.repeat(129), '\u{1F600}'.repeat(129)]) {
+    assert.equal(run({ pair_id: pid }), 'unreadable', JSON.stringify(pid)); }
+  // lib _req_str keeps these: U+FEFF is not Python whitespace; length counts code points
+  for (const pid of ['\ufeff', 'a'.repeat(128), '\u{1F600}'.repeat(128), 'x\u3000']) {
+    assert.notEqual(run({ pair_id: pid }), 'unreadable', JSON.stringify(pid)); }
+  const wd = (src) => { const v = fixture('withdrawn'); v.notification.source_as_of = src;
+    return stateOf(fn(v, null, v.notification.event_as_of, 'en', NOW)); };
+  for (const d of ['2025-13-01', '2026-02-30', '2025-02-29', '0000-01-01', '2026-1-01', 'garbage']) {
+    assert.equal(wd(d), 'unreadable', 'withdrawal source ' + d); }
+  { const ev = fixture('withdrawn').notification.event_as_of;
+    assert.equal(wd(String(+ev.slice(0, 4) - 1) + ev.slice(4)), 'withdrawn'); }
+  for (const d of ['2026-00-10', '2025-13-01', '2026-02-30', '2026-04-31', '2025-02-29', '0000-01-01']) {
+    assert.equal(run({ event_as_of: d, source_as_of: d }, '2026-10-30'), 'unreadable', d);
+  }
+  for (const d of ['2024-02-29', '2026-04-30', '2025-12-31']) {
+    assert.notEqual(run({ event_as_of: d, source_as_of: d }), 'unreadable', d);
+  }
+  assert.equal(stateOf(render('malformed_blank_pair', 'en')), 'unreadable');
+  assert.equal(stateOf(render('malformed_calendar', 'en', '2026-10-30')), 'unreadable');
 });
