@@ -12527,3 +12527,11 @@
 {"id":"ob-2026-10-30-f9d1a2551e","from":"queued","to":"quarantined","at":"2026-11-01T11:06:28Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
 {"id":"ob-2026-10-30-9d18d68c4b","from":"approved","to":"quarantined","at":"2026-11-01T11:06:28Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
 {"id":"ob-2026-10-30-ac0f34cdf9","from":"queued","to":"quarantined","at":"2026-11-01T11:06:28Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-30-7a7a2e97bd","from":"queued","to":"quarantined","at":"2026-11-01T14:21:38Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-30-424d4e79d6","from":"queued","to":"quarantined","at":"2026-11-01T14:21:38Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-10-30-ddf188c2a3","from":"approved","to":"quarantined","at":"2026-11-01T14:21:38Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-11-01-dbb4fcc0d6","from":"queued","to":"quarantined","at":"2026-11-01T14:21:38Z","actor":"press_wire_reap","note":"expired_session: Friday tape cannot post on Sunday; 2026-11-01 is not a trading day","receipt":null}
+{"id":"ob-2026-11-01-1cb0de5060","from":"queued","to":"quarantined","at":"2026-11-01T14:21:38Z","actor":"press_wire_reap","note":"expired_session: Friday tape cannot post on Sunday; 2026-11-01 is not a trading day","receipt":null}
+{"id":"ob-2026-11-01-0ac775f640","from":"queued","to":"quarantined","at":"2026-11-01T14:21:38Z","actor":"press_wire_reap","note":"expired_session: Friday tape cannot post on Sunday; 2026-11-01 is not a trading day","receipt":null}
+{"id":"ob-2026-11-01-a510c70377","from":"queued","to":"quarantined","at":"2026-11-01T14:21:38Z","actor":"press_wire_reap","note":"expired_session: Friday tape cannot post on Sunday; 2026-11-01 is not a trading day","receipt":null}
+{"id":"ob-2026-11-01-fe4ca0c7bd","from":"queued","to":"quarantined","at":"2026-11-01T14:21:38Z","actor":"press_wire_reap","note":"expired_session: Friday tape cannot post on Sunday; 2026-11-01 is not a trading day","receipt":null}
