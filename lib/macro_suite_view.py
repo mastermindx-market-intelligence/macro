@@ -803,7 +803,11 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
 
 def _prior_claims_note(snapshot: Mapping[str, Any],
                        metric: Mapping[str, Any]) -> dict[str, str] | None:
-    """Previous level for the two claims cards, or nothing."""
+    """The value on the page's previous version, when it differs from this one.
+
+    The prior is a build, not a claims print, and most builds carry the same print.
+    Two equal numbers would read as two readings that came out level.
+    """
     metric_id = metric.get("metric_id")
     if metric_id not in ("initial_claims_4wk", "continued_claims"):
         return None
@@ -834,6 +838,9 @@ def _prior_claims_note(snapshot: Mapping[str, Any],
         return None
     number = L.value_pair(value)
     if number is None:
+        return None
+    current = metric.get("value")
+    if not _finite(current) or L.value_pair(current) == number:
         return None
     return L.prior_claims_note(day, number)
 

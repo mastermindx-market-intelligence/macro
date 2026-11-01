@@ -65,10 +65,10 @@ FIGURE_SCALE_FALLBACK = _pair("index reading", "指数读数")
 
 def prior_claims_note(day: Mapping[str, str],
                       value: Mapping[str, str]) -> dict[str, str]:
-    """Previous claims reading for one card, dated from that card's prior item."""
+    """What the page's previous version showed on one claims card."""
     return _pair(
-        f"Previous reading, {day['en']}: {value['en']} persons.",
-        f"上一期读数，{day['zh']}：{value['zh']} 人。",
+        f"This page's previous version, dated {day['en']}, showed {value['en']} persons.",
+        f"本页上一版（{day['zh']}）显示 {value['zh']} 人。",
     )
 
 
