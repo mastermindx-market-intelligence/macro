@@ -3146,13 +3146,15 @@ def _regime_dynamics(cc: str, d: dict) -> dict:
     """Direction (improving/stable/deteriorating) + phase (fresh/stable/aging/turning) +
     drift-target quad, from the growth/inflation TRAJECTORY. Empty (null) when we have no
     history for a market — honest, not guessed."""
-    empty = {"rdir": None, "rphase": None, "rtoward_en": None, "rtoward_zh": None, "rflip": None}
+    empty = {"rdir": None, "rphase": None, "rtoward_en": None, "rtoward_zh": None, "rflip": None,
+             "rdir_asof": None}
     fn = _RTL.get(cc)
     if not fn:
         return empty
     try:
         tl = json.loads((config.site_dir() / fn).read_text())
         g, i, tr = tl.get("g") or [], tl.get("i") or [], tl.get("trans") or []
+        dates = tl.get("dates") or []
     except Exception:  # noqa: BLE001
         return empty
     # A null TIP is not a gap to compact — it is a MISSING CURRENT READING, and the two
@@ -3212,6 +3214,8 @@ def _regime_dynamics(cc: str, d: dict) -> dict:
         "rflip": rflip,
         "flip_axis": flip.get("axis") or "",
         "flip_component": flip.get("component") or "",
+        # The guard above makes the last index the last paired reading, so this is its date.
+        "rdir_asof": str(dates[-1]) if len(dates) == len(g) else None,
     }
 
 
@@ -3301,7 +3305,7 @@ def _g_legend(blob):
 
 
 def _market_card_status(m):
-    """Turn, regime date, and the closest check. No element when nothing is known."""
+    """Turn, its date, the regime date, and the closest check. No element when nothing is known."""
     en_bits = []
     zh_bits = []
     phase = m.get("rphase") or ""
@@ -3323,10 +3327,16 @@ def _market_card_status(m):
     elif rdir == "stable":
         en_bits.append("Holding")
         zh_bits.append("维持")
-    asof = m.get("macro_asof") or ""
+    # The direction reads the timeline file, the label the regime record. Each date goes with its own reading.
+    asof = str(m.get("macro_asof") or "")
+    dir_asof = str(m.get("rdir_asof") or "")
+    apart = bool(en_bits) and dir_asof != asof
+    if apart and dir_asof:
+        en_bits[0] += " as of " + dir_asof
+        zh_bits[0] += "（截至 " + dir_asof + "）"
     if asof:
-        en_bits.append("as of " + str(asof))
-        zh_bits.append("截至 " + str(asof))
+        en_bits.append(("regime as of " if apart else "as of ") + asof)
+        zh_bits.append(("周期截至 " if apart else "截至 ") + asof)
     axis = m.get("flip_axis") or ""
     comp = m.get("flip_component") or ""
     if axis == "growth" and comp == "copper_gold":
@@ -3970,9 +3980,9 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
             '<link rel="stylesheet" href="theme.css">\n'
             + _GLOBE_HUB_CSS + _HUB_CRITICAL_CSS + '</head><body class="hub-page">')
 
-    # Snapshot as-of is a civil date from the bake (vm.built, else macro.date).
+    # The page clock is the civil date of the bake (vm.built), never a data date.
     # Never tick the viewer's clock — that would relabel a snapshot as live.
-    _asof_raw = str((vm or {}).get("built") or (macro or {}).get("date") or "").strip()
+    _asof_raw = str((vm or {}).get("built") or "").strip()
     _asof = _asof_raw[:10] if len(_asof_raw) >= 10 else ""
     _MONTH = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
