@@ -449,6 +449,7 @@ def test_impulse_radar_edge_carries_the_blind_caveat_past_the_old_cap():
     assert _BLIND_CAVEAT_ZH in edge_zh
     assert len(edge) > 120
     assert edge[:120] != edge          # the old cap would have amputated it
+    assert edge == _IMPULSE_EDGE
     assert edge_zh == _IMPULSE_EDGE_ZH_LIVE
     assert _IMPULSE_EDGE_ZH.startswith(edge_zh)
 
