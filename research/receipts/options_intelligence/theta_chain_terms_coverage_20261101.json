@@ -1,0 +1,495 @@
+{
+  "schema": "oi.theta_chain_terms_coverage_receipt/v1",
+  "generated_at_utc": "2026-11-01T08:55:58Z",
+  "lane_id": "oi1-l2-r1",
+  "lane_host": "m1studio",
+  "lane_platform": "Darwin 24.6.0",
+  "repository_commit": "021af584204c9fb00ad516c2dbc9467503a84083",
+  "cohort": {
+    "source": "flow_meta_20261101T043626Z.json (live_flow.meta/v2)",
+    "source_asof": "2026-10-30T20:11:27.962419Z",
+    "derivation": "root_catalog tier==core minus QQQ",
+    "catalog_entries": 30,
+    "core_entries": 27,
+    "roots": [
+      "SPY",
+      "NVDA",
+      "TSLA",
+      "AAPL",
+      "META",
+      "IWM",
+      "SMH",
+      "MSFT",
+      "GLD",
+      "SLV",
+      "TLT",
+      "XLE",
+      "XLK",
+      "DIA",
+      "XLP",
+      "HYG",
+      "XLV",
+      "XBI",
+      "ARKK",
+      "XLU",
+      "XLI",
+      "KRE",
+      "XLF",
+      "XLY",
+      "XLB",
+      "XLRE"
+    ]
+  },
+  "store_probe": {
+    "candidates": [
+      {
+        "path": "/Users/chriswong/lanes/repos/macro/data/thetadata_eod",
+        "exists": true
+      },
+      {
+        "path": "/Users/chriswong/theta-ops-wt/data/thetadata_eod",
+        "exists": true
+      }
+    ],
+    "env_THETADATA_STORE_set": false,
+    "resolved_store": "/Users/chriswong/theta-ops-wt/data/thetadata_eod"
+  },
+  "terminal_probe": {
+    "url": "http://127.0.0.1:25503/v3/option/list/symbols",
+    "result": "200"
+  },
+  "terms_source": {
+    "multiplier": {
+      "source": "POLICY ASSUMPTION (not vendor-observed): frozen code constant MULTIPLIER = 100 in the outcome module, used as the research quote ruler ('frozen_research_quote_ruler_not_actual_account_fee_or_fill'). The ThetaData path carries NO multiplier field: eod/oi/greeks parquet schemas contain no multiplier column and 'multiplier' has 0 hits in engine/thetadata_store.py and collectors/thetadata.py at the baseline.",
+      "kind": "POLICY_CONSTANT",
+      "ref": "engine/options_alpha_exact_option_outcome.py@021af584204c9fb00ad516c2dbc9467503a84083:72"
+    },
+    "exercise_style": {
+      "source": "NONE on the ThetaData path: no exercise-style field in any store tier and 0 hits for exercise/exercise_style in engine/thetadata_store.py and collectors/thetadata.py at the baseline. The only exercise-style decoder in the repo is a NON-Theta source (OCC DDS FIXML CFI position 3, A/E) whose own docstring states it does not admit a source, authenticate a feed, observe availability, or grant market-data authority. The store's 'right' column encodes Call/Put only, not exercise style.",
+      "kind": "NONE",
+      "ref": "engine/thetadata_store.py@021af584204c9fb00ad516c2dbc9467503a84083:no-match(grep multiplier|exercise|settle|deliverable); engine/options_occ_contract_terms.py@021af584204c9fb00ad516c2dbc9467503a84083:58"
+    },
+    "settlement": {
+      "source": "NONE on the ThetaData path: no settlement field in any store tier and 0 hits for settlement/settle in engine/thetadata_store.py at the baseline. The only settlement decoder in the repo is a NON-Theta source (OCC DDS FIXML CFI position 5 P/C, settlement_method/settlement_status from Undly SetMeth/SettlStat), not authenticated and not Theta-observed. The Theta collector's 'PM-settled' text is a comment about SPXW weekly index roots, not a contract-term field.",
+      "kind": "NONE",
+      "ref": "engine/thetadata_store.py@021af584204c9fb00ad516c2dbc9467503a84083:no-match; engine/options_occ_contract_terms.py@021af584204c9fb00ad516c2dbc9467503a84083:60,337"
+    },
+    "deliverable": {
+      "source": "POLICY ASSUMPTION (not vendor-observed): frozen policy population filter standard_deliverable_only=True with a NON_STANDARD_DELIVERABLE exclusion, and deliverable_components exist only in the non-Theta OCC FIXML decoder. No deliverable field exists in any Theta store tier.",
+      "kind": "POLICY_CONSTANT",
+      "ref": "engine/options_alpha_exact_option_outcome.py@021af584204c9fb00ad516c2dbc9467503a84083:101,195,804-805"
+    },
+    "store_columns": {
+      "eod": [
+        "root",
+        "expiration",
+        "strike",
+        "right",
+        "date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "count",
+        "bid",
+        "ask"
+      ],
+      "oi": [
+        "root",
+        "expiration",
+        "strike",
+        "right",
+        "date",
+        "open_interest"
+      ],
+      "greeks": [
+        "root",
+        "expiration",
+        "strike",
+        "right",
+        "date",
+        "bid",
+        "ask",
+        "underlying_price",
+        "delta",
+        "theta",
+        "vega",
+        "rho",
+        "epsilon",
+        "lambda",
+        "implied_vol",
+        "iv_error"
+      ]
+    }
+  },
+  "per_root": [
+    {
+      "root": "SPY",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 35,
+      "n_strikes": 491,
+      "n_rows": 12170,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'SPY', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=SPY&format=csv (n_exp=2161, first=2012-06-01, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=SPY&expiration=20261102&format=csv (n_strikes=149)",
+      "reason": null
+    },
+    {
+      "root": "NVDA",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 25,
+      "n_strikes": 277,
+      "n_rows": 4096,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'NVDA', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=NVDA&format=csv (n_exp=851, first=2012-06-01, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=NVDA&expiration=20261102&format=csv (n_strikes=53)",
+      "reason": null
+    },
+    {
+      "root": "TSLA",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 23,
+      "n_strikes": 221,
+      "n_rows": 5154,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'TSLA', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=TSLA&format=csv (n_exp=811, first=2012-06-16, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=TSLA&expiration=20261102&format=csv (n_strikes=86)",
+      "reason": null
+    },
+    {
+      "root": "AAPL",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 23,
+      "n_strikes": 130,
+      "n_rows": 3250,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'AAPL', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=AAPL&format=csv (n_exp=851, first=2012-06-01, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=AAPL&expiration=20261104&format=csv (n_strikes=47)",
+      "reason": null
+    },
+    {
+      "root": "META",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 24,
+      "n_strikes": 273,
+      "n_rows": 7038,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'META', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=META&format=csv (n_exp=337, first=2021-07-16, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=META&expiration=20261102&format=csv (n_strikes=142)",
+      "reason": null
+    },
+    {
+      "root": "IWM",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 34,
+      "n_strikes": 192,
+      "n_rows": 5130,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'IWM', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=IWM&format=csv (n_exp=1575, first=2012-06-01, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=IWM&expiration=20261102&format=csv (n_strikes=83)",
+      "reason": null
+    },
+    {
+      "root": "SMH",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 23,
+      "n_strikes": 235,
+      "n_rows": 6318,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'SMH', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=SMH&format=csv (n_exp=605, first=2012-06-16, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=SMH&expiration=20261102&format=csv (n_strikes=130)",
+      "reason": null
+    },
+    {
+      "root": "MSFT",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 23,
+      "n_strikes": 160,
+      "n_rows": 3856,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'MSFT', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=MSFT&format=csv (n_exp=848, first=2012-06-01, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=MSFT&expiration=20261102&format=csv (n_strikes=70)",
+      "reason": null
+    },
+    {
+      "root": "GLD",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 31,
+      "n_strikes": 352,
+      "n_rows": 7084,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'GLD', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=GLD&format=csv (n_exp=1089, first=2012-06-01, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=GLD&expiration=20261102&format=csv (n_strikes=120)",
+      "reason": null
+    },
+    {
+      "root": "SLV",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 26,
+      "n_strikes": 206,
+      "n_rows": 4346,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'SLV', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=SLV&format=csv (n_exp=1051, first=2012-06-01, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=SLV&expiration=20261102&format=csv (n_strikes=57)",
+      "reason": null
+    },
+    {
+      "root": "TLT",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 31,
+      "n_strikes": 90,
+      "n_rows": 2846,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'TLT', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=TLT&format=csv (n_exp=1043, first=2012-06-01, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=TLT&expiration=20261102&format=csv (n_strikes=48)",
+      "reason": null
+    },
+    {
+      "root": "XLE",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 24,
+      "n_strikes": 102,
+      "n_rows": 2012,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'XLE', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=XLE&format=csv (n_exp=830, first=2012-06-01, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=XLE&expiration=20261102&format=csv (n_strikes=36)",
+      "reason": null
+    },
+    {
+      "root": "XLK",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 18,
+      "n_strikes": 154,
+      "n_rows": 2474,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'XLK', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=XLK&format=csv (n_exp=719, first=2012-06-16, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=XLK&expiration=20261106&format=csv (n_strikes=79)",
+      "reason": null
+    },
+    {
+      "root": "DIA",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 20,
+      "n_strikes": 264,
+      "n_rows": 4518,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'DIA', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=DIA&format=csv (n_exp=796, first=2012-06-16, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=DIA&expiration=20261106&format=csv (n_strikes=110)",
+      "reason": null
+    },
+    {
+      "root": "XLP",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 13,
+      "n_strikes": 66,
+      "n_rows": 1090,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'XLP', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=XLP&format=csv (n_exp=715, first=2012-06-16, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=XLP&expiration=20261106&format=csv (n_strikes=48)",
+      "reason": null
+    },
+    {
+      "root": "HYG",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 21,
+      "n_strikes": 79,
+      "n_rows": 1492,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'HYG', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=HYG&format=csv (n_exp=722, first=2012-06-16, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=HYG&expiration=20261106&format=csv (n_strikes=41)",
+      "reason": null
+    },
+    {
+      "root": "XLV",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 14,
+      "n_strikes": 106,
+      "n_rows": 1634,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'XLV', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=XLV&format=csv (n_exp=714, first=2012-06-16, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=XLV&expiration=20261106&format=csv (n_strikes=68)",
+      "reason": null
+    },
+    {
+      "root": "XBI",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 17,
+      "n_strikes": 153,
+      "n_rows": 2408,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'XBI', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=XBI&format=csv (n_exp=643, first=2012-06-16, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=XBI&expiration=20261106&format=csv (n_strikes=64)",
+      "reason": null
+    },
+    {
+      "root": "ARKK",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 13,
+      "n_strikes": 105,
+      "n_rows": 1292,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'ARKK', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=ARKK&format=csv (n_exp=350, first=2018-03-16, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=ARKK&expiration=20261106&format=csv (n_strikes=52)",
+      "reason": null
+    },
+    {
+      "root": "XLU",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 17,
+      "n_strikes": 65,
+      "n_rows": 1070,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'XLU', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=XLU&expiration=20261106&format=csv (n_strikes=36) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=XLU&format=csv (n_exp=719, first=2012-06-16, last=2029-01-19)",
+      "reason": null
+    },
+    {
+      "root": "XLI",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 14,
+      "n_strikes": 139,
+      "n_rows": 1908,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'XLI', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=XLI&format=csv (n_exp=714, first=2012-06-16, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=XLI&expiration=20261106&format=csv (n_strikes=57)",
+      "reason": null
+    },
+    {
+      "root": "KRE",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 21,
+      "n_strikes": 86,
+      "n_rows": 1622,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'KRE', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=KRE&format=csv (n_exp=705, first=2012-06-16, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=KRE&expiration=20261106&format=csv (n_strikes=43)",
+      "reason": null
+    },
+    {
+      "root": "XLF",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 24,
+      "n_strikes": 69,
+      "n_rows": 1768,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'XLF', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=XLF&format=csv (n_exp=845, first=2012-06-01, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=XLF&expiration=20261102&format=csv (n_strikes=48)",
+      "reason": null
+    },
+    {
+      "root": "XLY",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 14,
+      "n_strikes": 115,
+      "n_rows": 1420,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'XLY', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=XLY&format=csv (n_exp=714, first=2012-06-16, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=XLY&expiration=20261106&format=csv (n_strikes=51)",
+      "reason": null
+    },
+    {
+      "root": "XLB",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 13,
+      "n_strikes": 76,
+      "n_rows": 952,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'XLB', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=XLB&format=csv (n_exp=727, first=2012-06-01, last=2029-01-19) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=XLB&expiration=20261106&format=csv (n_strikes=36)",
+      "reason": null
+    },
+    {
+      "root": "XLRE",
+      "status": "OBSERVED",
+      "chain_returns_expirations": true,
+      "chain_returns_strikes": true,
+      "n_expirations": 5,
+      "n_strikes": 28,
+      "n_rows": 220,
+      "as_of": "2026-10-29",
+      "query": "store.chain('2026-10-29', 'XLRE', store='/Users/chriswong/theta-ops-wt/data/thetadata_eod') ;; terminal: GET http://127.0.0.1:25503/v3/option/list/expirations?symbol=XLRE&format=csv (n_exp=137, first=2015-11-20, last=2027-05-21) ;; terminal: GET http://127.0.0.1:25503/v3/option/list/strikes?symbol=XLRE&expiration=20261120&format=csv (n_strikes=22)",
+      "reason": null
+    }
+  ],
+  "unavailable_roots": [],
+  "committed_artifacts": [
+    {
+      "path": "data/thetadata_eod/_manifest.json",
+      "as_of": null,
+      "note": "HISTORICAL_COMMITTED: empty stub at the baseline ({\"store\":\"thetadata_eod\",\"n_roots\":0,\"per_root\":{},\"updated_at\":null}) - no committed per-root coverage. Stale is not live."
+    },
+    {
+      "path": "data/thetadata_eod/_backfill_state.json",
+      "as_of": null,
+      "note": "HISTORICAL_COMMITTED: empty stub at the baseline ({\"version\":1,\"completed\":{}}) - no committed per-root coverage."
+    },
+    {
+      "path": "reports/artifacts/options_surface_coverage.md",
+      "as_of": "2026-07-17T10:59:09Z",
+      "note": "HISTORICAL_COMMITTED: per-root coverage audit of the same store (/Users/chriswong/theta-ops-wt/data/thetadata_eod), 20-root roster, coverage floor greeks+oi 2017-2026; covers 18 of the 26 cohort roots (also SPX/SPXW/QQQ/XLC); stale vs the live 2026-10-29 chain read."
+    },
+    {
+      "path": "reports/artifacts/options_theta_retrospective_20261002_manifest.json",
+      "as_of": "2026-10-02",
+      "note": "HISTORICAL_COMMITTED: schema options.science.theta_eod_retrospective_association.manifest/v1, 435 entries over 23 roots, kinds=price|oi|greeks, states=present|missing; 18 of the 26 cohort roots present (TSLA, AAPL, META, MSFT, GLD, SLV, TLT, HYG absent); DIA and ARKK carry some 'missing' slots. Coverage metadata only - a study manifest, not a live chain read."
+    },
+    {
+      "path": "reports/artifacts/options_theta_retrospective_20261002_run1_manifest.json",
+      "as_of": "2026-10-02",
+      "note": "HISTORICAL_COMMITTED: run1 variant of the same manifest; identical 435 entries over the same 23 roots and the same 18-of-26 cohort-root coverage."
+    },
+    {
+      "path": "reports/artifacts/options_theta_retrospective_20261002_protocol.json",
+      "as_of": "2026-10-02",
+      "note": "HISTORICAL_COMMITTED: study protocol, schema options.science.theta_eod_retrospective_association/v1 - not a per-root coverage receipt."
+    },
+    {
+      "path": "reports/artifacts/options_opex_vanna_charm_summary.md",
+      "as_of": "2026-07-06T12:34:48.824943+00:00",
+      "note": "HISTORICAL_COMMITTED: Greek-panel coverage summary - 363317 greek panel rows across 171 roots, Greek date range 2017-01-04 to 2026-07-02. Historical coverage counts only; outcome test values were not read."
+    },
+    {
+      "path": "reports/artifacts/options_opex_vanna_charm_results.json",
+      "as_of": "2026-07-06T12:34:48.820817+00:00",
+      "note": "HISTORICAL_COMMITTED: schema options_opex_vanna_charm_study/v1, keys schema/generated_at/theta_store/yahoo_dir/calendar/greek_panel/cross_section_tests/state_tests. Coverage metadata only; cross_section_tests and state_tests outcome values were NOT read (out of scope)."
+    },
+    {
+      "path": "reports/artifacts/options_historical_signal_science_20261002.md",
+      "as_of": "2026-10-02",
+      "note": "HISTORICAL_COMMITTED: research-only exploratory result; no per-root chain coverage; states historical alpha validation is not established."
+    }
+  ],
+  "counts": {
+    "roots": 26,
+    "observed": 26,
+    "empty": 0,
+    "unobserved": 0,
+    "read_failed": 0
+  }
+}
