@@ -6868,7 +6868,8 @@ jobs:
     #
     # The serving boundary has three enforcement halves and CI now covers all of
     # them: the Caddy public list (site_access_boundary), the paid stage
-    # (paywall/api_paywall), and the anonymous stage (regwall). The regwall pair
+    # (paywall/api_paywall), and the anonymous stage (regwall), now in the
+    # `site-access-boundary` and `paywall-contracts` jobs below. The regwall pair
     # was the last one running in no workflow — and it is the expensive one to get
     # wrong in the quiet direction: #3387 had to reopen /stocks/ /tools/ /learn/
     # /blog/ after a wall with no crawler exception 302'd Googlebot off 1,665
@@ -6931,12 +6932,27 @@ jobs:
         # workflow. tests/test_site_access_boundary.py derives this job's inputs
         # into ci.yml's paths filter, so this line also makes the suite reach.
         run: python -m pytest tests/test_public_dashboard_preview.py -q
+
+  paywall-contracts:
+    if: ${{ false }}
+    gate: data
+    # The paid and anonymous stages of the serving boundary, moved out of
+    # `tier-gate` on 2026-10-31 for the same reason as `site-access-boundary`
+    # below: a failed step skips the rest of its job, and the tier-preview shell
+    # checks move with every bake. Most of these suites have no other CI home.
+    # Same install line as `tier-gate`: app.main's import graph needs it.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow
       - name: paywall fail-closed contract (incl. enforced-early payload lane)
         run: python -m pytest tests/test_paywall.py tests/test_api_paywall.py tests/test_auth_cache_outage.py -q
       - name: Pro-only host gate (bot.mastermind-x.com -> /api/paywall/check_pro)
         run: python -m pytest tests/test_paywall_pro_gate.py -q
-      - name: static serving boundary (Caddy <-> site_access.yml, no leaked artifacts)
-        run: python -m pytest tests/test_site_access_boundary.py -q
       - name: delivery-plane census (exact families, alternate origins, consumers, defaults)
         run: python -m pytest tests/test_r2_delivery_plane_classification.py -q
       # tests/test_regwall_json_gate.py used to run HERE and no longer does: it
@@ -6956,6 +6972,29 @@ jobs:
       # with exactly `pytest pyyaml jinja2 fastapi httpx`: 10 passed.
       - name: member Earnings Wire API transport (auth gate + private headers)
         run: python -m pytest tests/test_earnings_api.py -q
+
+  site-access-boundary:
+    if: ${{ false }}
+    gate: data
+    # The static serving boundary, on its own (2026-10-31). This step sat in
+    # `tier-gate` after "tier-preview split contract". The pack runner skips a
+    # job's later steps once one fails, and that shell check moves with every
+    # bake, so its reds kept this suite from running: the heartbeat skipped it in
+    # at least seven runs in a row. Here it reports whatever the shells do.
+    #
+    # `gate: data` because the suite reads the committed site/ tree, so a bake
+    # alone can move its verdict. pytest + pyyaml is the whole dependency line,
+    # measured with every other third-party import refused.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: static serving boundary (Caddy <-> site_access.yml, no leaked artifacts)
+        run: python -m pytest tests/test_site_access_boundary.py -q
 
   regwall-boundary:
     if: ${{ false }}
