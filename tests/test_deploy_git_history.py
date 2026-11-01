@@ -252,7 +252,7 @@ def updater_acquisition_fragment(text: str = UPDATE_TEXT,
     actually execute, not just what they assert.
     """
     fetch = _matching_lines(
-        text, r'^git -C "\$APP_DIR" fetch [^\n]*origin main$',
+        text, r'^\t?git -C "\$APP_DIR" fetch [^\n]*origin main$',
         "acquisition fetch line", source)
     old = _matching_lines(
         text, r'^OLD=\$\(git -C "\$APP_DIR" rev-parse HEAD\)$',
@@ -415,7 +415,7 @@ def fence_events(events: Path) -> list:
 
 def test_updater_acquisition_fetch_has_no_depth_limit():
     line = _matching_lines(
-        UPDATE_TEXT, r'^git -C "\$APP_DIR" fetch [^\n]*origin main$',
+        UPDATE_TEXT, r'^\t?git -C "\$APP_DIR" fetch [^\n]*origin main$',
         "acquisition fetch line", "app/deploy/update.sh")
     assert "--depth" not in line, (
         "the updater acquisition must not truncate protected-branch history"

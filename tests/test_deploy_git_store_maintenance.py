@@ -22,6 +22,7 @@ import shutil
 import subprocess
 import time
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -395,7 +396,7 @@ def _small_pulls(store: Store, first: int, count: int = 3) -> None:
         store.pull()
 
 
-def _stub_df(tmp: Path, avail_kib: int) -> str:
+def _stub_df(tmp: Path, avail_kib: int | str) -> str:
     bin_dir = tmp / "stub-df"
     bin_dir.mkdir(exist_ok=True)
     df = bin_dir / "df"
@@ -505,33 +506,175 @@ def test_a_keep_file_it_did_not_write_is_left_alone(store: Store):
     assert (pack_dir / foreign).exists()
 
 
-@needs_linux_tools
-def test_space_gate_counts_only_what_the_repack_rewrites(store: Store):
-    """Need = non-kept packs + loose + margin. Kept bytes never count."""
+def _loose_kib(store: Store) -> int:
+    return int(re.search(r"^size: (\d+)$", git(store.app, "count-objects", "-v"), re.M).group(1))
+
+
+def _gate_fixture(store: Store) -> SimpleNamespace:
+    """A frozen base pack plus measurable non-kept packs; the gate's own numbers."""
     pack_dir = store.app / ".git" / "objects" / "pack"
     _big_commit(store, "blob-a.txt")
     assert store.run().returncode == 0
     (base,) = packs(store.app)
-    _big_commit(store, "blob-c.txt", random_kib=8)  # a measurable non-kept pack
+    # Two measurable non-kept packs of different sizes (the small pulls' packs are
+    # under 1 KiB each, so they count 0 KiB here and in the script alike).
+    _big_commit(store, "blob-c.txt", random_kib=8)
+    _big_commit(store, "blob-d.txt", random_kib=4)
     _small_pulls(store, 7)
-    unkept = sum(_kib(pack_dir / n) for n in packs(store.app) - {base})
+    rest = packs(store.app) - {base}
+    unkept = sum(_kib(pack_dir / n) for n in rest)
     assert 0 < unkept < int(PROMOTE_SMALL)
-    loose = int(re.search(r"^size: (\d+)$", git(store.app, "count-objects", "-v"), re.M).group(1))
     margin = 10
-    need = unkept + loose + margin
+    need = unkept + _loose_kib(store) + margin
     assert need < _kib(pack_dir / base) + unkept, "fixture must separate the two formulas"
+    largest = max(_kib(pack_dir / n) for n in rest)
+    assert 0 < largest < unkept, "fixture needs a second non-kept pack"
+    return SimpleNamespace(pack_dir=pack_dir, base=base, rest=rest, unkept=unkept, need=need,
+                           margin=margin, largest=largest)
+
+
+def _gate_run(store: Store, fx: SimpleNamespace, avail_kib: int) -> subprocess.CompletedProcess:
+    return store.run(MACRO_GIT_MAINT_PROMOTE_KIB=PROMOTE_SMALL,
+                     MACRO_GIT_MAINT_MARGIN_KIB=str(fx.margin), PATH=_stub_df(store.tmp, avail_kib))
+
+
+@needs_linux_tools
+def test_space_gate_counts_only_what_the_repack_rewrites(store: Store):
+    """Need = non-kept packs + loose + margin. Kept bytes never count."""
+    fx = _gate_fixture(store)
+    enough = _gate_run(store, fx, fx.need)
+    assert enough.returncode == 0, enough.stdout + enough.stderr
+    assert "kept tier fallback" not in enough.stdout
+    assert list(_kept(store.app)) == [fx.base]
+    assert fx.base in packs(store.app) and len(packs(store.app)) == 2
+
+
+@needs_linux_tools
+def test_space_fallback_freezes_the_largest_pack_only_when_that_makes_it_fit(store: Store):
+    fx = _gate_fixture(store)
     before = packs(store.app)
 
-    short = store.run(MACRO_GIT_MAINT_PROMOTE_KIB=PROMOTE_SMALL,
-                      MACRO_GIT_MAINT_MARGIN_KIB=str(margin), PATH=_stub_df(store.tmp, need - 1))
+    # Even freezing the largest non-kept pack leaves the repack 1 KiB short: refuse,
+    # write no pack and freeze nothing beyond the regular kept tier.
+    short = _gate_run(store, fx, fx.need - fx.largest - 1)
     assert short.returncode == 1, short.stdout + short.stderr
-    assert f"REFUSED: repack needs {need} KiB" in short.stdout
+    assert f"REFUSED: repack needs {fx.need} KiB" in short.stdout
+    assert "kept tier fallback" not in short.stdout
+    assert packs(store.app) == before
+    assert list(_kept(store.app)) == [fx.base]
+
+    # 1 KiB short without the fallback: the largest non-kept pack is frozen, the rest
+    # is repacked, and the frozen pack survives byte-for-byte.
+    fits = _gate_run(store, fx, fx.need - 1)
+    assert fits.returncode == 0, fits.stdout + fits.stderr
+    found = re.search(r"kept tier fallback: (pack-[0-9a-f]+) \((\d+) KiB\) frozen so the repack "
+                      rf"fits in {fx.need - 1} KiB", fits.stdout)
+    assert found, fits.stdout
+    frozen = found.group(1) + ".pack"
+    assert frozen in fx.rest and int(found.group(2)) == fx.largest == _kib(fx.pack_dir / frozen)
+    kept = _kept(store.app)
+    assert set(kept) == {fx.base, frozen}, kept
+    assert kept[frozen].startswith("macro-git-store-maintenance kept tier (space fallback)")
+    assert f"rewriting {fx.unkept - fx.largest} KiB of non-kept packs" in fits.stdout
+    after = packs(store.app)
+    assert {fx.base, frozen} < after and len(after) == 3, after
+    assert ok(store.app, "fsck", "--connectivity-only")
+    store.commit(30)
+    store.pull()
+    assert git(store.app, "rev-parse", "HEAD") == store.commits[-1]
+
+
+@needs_linux_tools
+def test_space_fallback_assertion_fails_without_the_fallback(store: Store, tmp_path: Path):
+    """Negative control: with the fallback removed, 1 KiB short refuses."""
+    fx = _gate_fixture(store)
+    mutated = tmp_path / "mutated.sh"
+    text = SCRIPT_TEXT.replace("\tFALLBACK=$(largest_unkept_pack)\n", "\tFALLBACK=\n")
+    assert text != SCRIPT_TEXT
+    mutated.write_text(text)
+    done = store.run(script=mutated, MACRO_GIT_MAINT_PROMOTE_KIB=PROMOTE_SMALL,
+                     MACRO_GIT_MAINT_MARGIN_KIB=str(fx.margin),
+                     PATH=_stub_df(store.tmp, fx.need - 1))
+    assert done.returncode == 1, done.stdout + done.stderr
+    assert "REFUSED: repack needs" in done.stdout
+
+
+def _orphan(pack_dir: Path, source: Path, tag: str, age_hours: float, size_kib: int = 0) -> Path:
+    """A .pack (+ .rev) with no .idx, as an interrupted pack write leaves it."""
+    pack = pack_dir / f"pack-{tag * 40}.pack"
+    pack.write_bytes(source.read_bytes() + os.urandom(size_kib * 1024))
+    pack.with_suffix(".rev").write_bytes(b"RIDX")
+    then = time.time() - age_hours * 3600
+    for f in (pack, pack.with_suffix(".rev")):
+        os.utime(f, (then, then))
+    return pack
+
+
+@needs_linux_tools
+def test_orphan_packs_are_removed_after_six_hours_and_never_counted(store: Store, tmp_path: Path):
+    pack_dir = store.app / ".git" / "objects" / "pack"
+    source = pack_dir / sorted(packs(store.app))[0]
+    old = _orphan(pack_dir, source, "a", age_hours=7)
+    fresh = _orphan(pack_dir, source, "b", age_hours=1, size_kib=200)
+    owned = _orphan(pack_dir, source, "c", age_hours=7)
+    owned.with_suffix(".keep").write_text("fetch-pack 4242 on prod\n")
+    indexed = {n for n in packs(store.app) if (pack_dir / n).with_suffix(".idx").exists()}
+    need = sum(_kib(pack_dir / n) for n in indexed) + _loose_kib(store)
+
+    # Exactly the indexed packs' worth of space: the 200 KiB fresh orphan must not count.
+    done = store.run(PATH=_stub_df(store.tmp, need))
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert not old.exists() and not old.with_suffix(".rev").exists()
+    assert f"removed orphan {old.stem}.pack (no .idx, older than 6 h)" in done.stdout
+    assert f"removed orphan {old.stem}.rev (no .idx, older than 6 h)" in done.stdout
+    assert fresh.exists() and fresh.with_suffix(".rev").exists(), "a write in progress was removed"
+    assert owned.exists() and owned.with_suffix(".keep").read_text() == "fetch-pack 4242 on prod\n"
+    assert "removed orphan " + fresh.stem not in done.stdout
+    assert "removed orphan " + owned.stem not in done.stdout
+    assert ok(store.app, "fsck", "--connectivity-only")
+
+    # Negative control: counting idx-less packs (the old formula) refuses at that space.
+    mutated = tmp_path / "mutated.sh"
+    text = SCRIPT_TEXT.replace('[ -e "${p%.pack}.idx" ] || continue\n\t\tsum=', "sum=")
+    assert text != SCRIPT_TEXT
+    mutated.write_text(text)
+    indexed = {n for n in packs(store.app) if (pack_dir / n).with_suffix(".idx").exists()}
+    need = sum(_kib(pack_dir / n) for n in indexed) + _loose_kib(store)
+    counted = store.run(script=mutated, PATH=_stub_df(store.tmp, need))
+    assert counted.returncode == 1, counted.stdout + counted.stderr
+    assert "REFUSED: repack needs" in counted.stdout
+
+
+@needs_linux_tools
+@pytest.mark.parametrize("setting", ["LOCK_WAIT", "MARGIN_KIB", "MIN_MEMAVAIL_KIB", "PROMOTE_KIB"])
+def test_a_non_numeric_setting_refuses_before_anything_is_written(store: Store, setting: str):
+    before = packs(store.app)
+    refs = git(store.app, "for-each-ref")
+    done = store.run(**{f"MACRO_GIT_MAINT_{setting}": "3G"})
+    assert done.returncode == 1, done.stdout + done.stderr
+    assert f"REFUSED: {setting}='3G' is not a whole number; nothing written" in done.stdout
+    assert packs(store.app) == before and git(store.app, "for-each-ref") == refs
+    assert (store.app / ".git" / "gc.log").exists()
+
+
+@needs_linux_tools
+@pytest.mark.parametrize("reading", ["n/a", "", "12.5"])
+def test_unreadable_free_space_refuses(store: Store, reading: str):
+    before = packs(store.app)
+    done = store.run(PATH=_stub_df(store.tmp, reading))
+    assert done.returncode == 1, done.stdout + done.stderr
+    assert "REFUSED: could not read free space" in done.stdout
     assert packs(store.app) == before
 
-    enough = store.run(MACRO_GIT_MAINT_PROMOTE_KIB=PROMOTE_SMALL,
-                       MACRO_GIT_MAINT_MARGIN_KIB=str(margin), PATH=_stub_df(store.tmp, need))
-    assert enough.returncode == 0, enough.stdout + enough.stderr
-    assert base in packs(store.app) and len(packs(store.app)) == 2
+
+@needs_linux_tools
+def test_missing_memavailable_refuses(store: Store):
+    before = packs(store.app)
+    store.meminfo.write_text("MemTotal: 4000000 kB\nMemFree: 3000000 kB\n")
+    done = store.run()
+    assert done.returncode == 1, done.stdout + done.stderr
+    assert "REFUSED: could not read MemAvailable" in done.stdout
+    assert packs(store.app) == before
 
 
 # ---------------------------------------------------------------------------
@@ -542,13 +685,16 @@ GUARD_BEGIN = "# BEGIN MACRO_UPDATE_FREE_SPACE_GUARD\n"
 GUARD_END = "# END MACRO_UPDATE_FREE_SPACE_GUARD\n"
 
 
-def _run_free_space_guard(tmp: Path, avail_kib: int) -> tuple[subprocess.CompletedProcess, Path]:
+def _run_free_space_guard(
+    tmp: Path, avail_kib: int | str, floor: str | None = None, df_rc: int = 0,
+) -> tuple[subprocess.CompletedProcess, Path]:
     start = UPDATE_TEXT.index(GUARD_BEGIN)
     stanza = UPDATE_TEXT[start:UPDATE_TEXT.index(GUARD_END, start)]
     bin_dir = tmp / "bin"
     bin_dir.mkdir(exist_ok=True)
     (bin_dir / "df").write_text(
-        f"#!/bin/sh\necho \"$@\" >> '{tmp}/df.args'\necho '    Avail'\necho '  {avail_kib}'\n")
+        f"#!/bin/sh\necho \"$@\" >> '{tmp}/df.args'\necho '    Avail'\necho '  {avail_kib}'\n"
+        f"exit {df_rc}\n")
     (bin_dir / "logger").write_text(f"#!/bin/sh\necho \"$@\" >> '{tmp}/logger.log'\n")
     for tool in ("df", "logger"):
         (bin_dir / tool).chmod(0o755)
@@ -559,22 +705,29 @@ def _run_free_space_guard(tmp: Path, avail_kib: int) -> tuple[subprocess.Complet
         "set -euo pipefail",
         f"APP_DIR='{app}'",
         stanza,
-        "echo PASSED_GUARD",
+        'echo "PASSED_GUARD DISK_REFUSED=$DISK_REFUSED"',
     ])
     env = os.environ.copy()
     env.pop("MACRO_UPDATE_MIN_FREE_KIB", None)
+    if floor is not None:
+        env["MACRO_UPDATE_MIN_FREE_KIB"] = floor
     env.update({"PATH": f"{bin_dir}:{env['PATH']}", "MACRO_UPDATE_DISK_MARKER": str(marker)})
     done = subprocess.run(["bash", "-c", harness], capture_output=True, text=True, env=env,
                           check=False, timeout=60)
     return done, marker
 
 
+FLOOR_KIB = 7 * 1024 * 1024
+
+
 def test_update_refuses_the_pull_below_the_root_disk_floor(tmp_path: Path):
-    done, marker = _run_free_space_guard(tmp_path, 4 * 1024 * 1024 - 1)
-    assert done.returncode == 1
-    assert "PASSED_GUARD" not in done.stdout
-    assert "macro-update: REFUSED pull: 4194303 KiB free" in done.stderr
-    assert "floor 4194304 KiB; nothing pulled" in done.stderr
+    # The guard never exits on its own: the tick goes on to reconcile the current
+    # checkout (timers, units) and the exit-status block fails it at the end.
+    done, marker = _run_free_space_guard(tmp_path, FLOOR_KIB - 1)
+    assert done.returncode == 0, done.stderr
+    assert "PASSED_GUARD DISK_REFUSED=1" in done.stdout
+    assert f"macro-update: REFUSED pull: {FLOOR_KIB - 1} KiB free" in done.stderr
+    assert f"floor {FLOOR_KIB} KiB; nothing pulled" in done.stderr
     assert "-p user.err -t macro-update" in (tmp_path / "logger.log").read_text()
     assert "REFUSED pull" in marker.read_text()
     assert ".git/objects" in (tmp_path / "df.args").read_text()
@@ -582,11 +735,33 @@ def test_update_refuses_the_pull_below_the_root_disk_floor(tmp_path: Path):
 
 def test_update_pulls_at_the_floor_and_clears_the_refusal_marker(tmp_path: Path):
     (tmp_path / "disk-refused").write_text("stale refusal\n")
-    done, marker = _run_free_space_guard(tmp_path, 4 * 1024 * 1024)
+    done, marker = _run_free_space_guard(tmp_path, FLOOR_KIB)
     assert done.returncode == 0, done.stderr
-    assert "PASSED_GUARD" in done.stdout
+    assert "PASSED_GUARD DISK_REFUSED=0" in done.stdout
     assert not marker.exists()
     assert not (tmp_path / "logger.log").exists()
+
+
+@pytest.mark.parametrize(("reading", "df_rc", "shown"), [
+    ("n/a", 0, "n/a"), ("", 0, "unreadable"), ("99999999", 1, "unreadable"),
+    ("12.5", 0, "12.5"),
+])
+def test_update_refuses_when_free_space_is_unreadable(
+    tmp_path: Path, reading: str, df_rc: int, shown: str,
+):
+    done, marker = _run_free_space_guard(tmp_path, reading, df_rc=df_rc)
+    assert done.returncode == 0, done.stderr
+    assert "PASSED_GUARD DISK_REFUSED=1" in done.stdout
+    assert f"REFUSED pull: {shown} KiB free" in done.stderr
+    assert "REFUSED pull" in marker.read_text()
+
+
+def test_update_refuses_when_the_floor_setting_is_not_a_number(tmp_path: Path):
+    done, marker = _run_free_space_guard(tmp_path, 10 * FLOOR_KIB, floor="7G")
+    assert done.returncode == 0, done.stderr
+    assert "PASSED_GUARD DISK_REFUSED=1" in done.stdout
+    assert "floor 7G KiB; nothing pulled" in done.stderr
+    assert marker.exists()
 
 
 def test_free_space_guard_runs_under_the_lock_and_before_the_pull():
@@ -597,6 +772,27 @@ def test_free_space_guard_runs_under_the_lock_and_before_the_pull():
     between = UPDATE_TEXT[UPDATE_TEXT.index(GUARD_END, guard):pull]
     assert "# Do not add --depth here" in between
     assert UPDATE_TEXT.count(GUARD_BEGIN) == 1
+    stanza = UPDATE_TEXT[guard:UPDATE_TEXT.index(GUARD_END, guard)]
+    assert not [c for c in _commands(stanza) if re.search(r"\bexit\b", c)], (
+        "the guard must not end the tick: reconciliation still has to run")
+    # A refused tick fetches nothing, so it must also not deploy a stale FETCH_HEAD.
+    assert 'if [ "$DISK_REFUSED" -eq 0 ]; then\n\tgit -C "$APP_DIR" fetch -q origin main\nfi' in (
+        UPDATE_TEXT)
+    new = UPDATE_TEXT.index('NEW=$(git -C "$APP_DIR" rev-parse FETCH_HEAD)')
+    hold = UPDATE_TEXT.index('if [ "$DISK_REFUSED" -eq 1 ]; then NEW=$OLD; fi')
+    reset = UPDATE_TEXT.index('git -C "$APP_DIR" reset --hard -q FETCH_HEAD')
+    assert pull < new < hold < reset
+
+
+def test_a_refused_pull_fails_the_tick_after_reconciliation():
+    begin = UPDATE_TEXT.index("# BEGIN DISK_REFUSAL_EXIT_STATUS\n")
+    end = UPDATE_TEXT.index("# END DISK_REFUSAL_EXIT_STATUS\n")
+    block = UPDATE_TEXT[begin:end]
+    assert 'if [ "${DISK_REFUSED:-0}" -eq 1 ]; then' in block
+    assert "DEPLOY_EXIT_STATUS=1" in block
+    assert UPDATE_TEXT.index("# END OHLC_DELIVERY_EXIT_STATUS\n") < begin
+    assert end < UPDATE_TEXT.index("# BEGIN DEPLOY_EXIT_STATUS\n")
+    assert end < UPDATE_TEXT.rindex('exit "${DEPLOY_EXIT_STATUS:-0}"')
 
 
 def _pack_contents(repo: Path, idx: Path) -> set[str]:
@@ -614,7 +810,7 @@ def _commit_file(repo: Path, name: str, text: str, message: str) -> None:
     git(repo, "commit", "-qm", message)
 
 
-def test_readme_recovery_rescues_old_objects_that_a_small_fetch_reused(tmp_path: Path):
+def _rescue_fixture(tmp_path: Path) -> SimpleNamespace:
     # A fetch below transfer.unpackLimit is unpacked loose and SKIPS objects that are
     # already packed (on the droplet 2026-10-19 a 07:39 pull re-freshened two 2026-10-18
     # packs instead of writing loose copies). An object unreachable at the snapshot is not
@@ -688,24 +884,71 @@ def test_readme_recovery_rescues_old_objects_that_a_small_fetch_reused(tmp_path:
             f.rename(pack_dir / f.name)
         retired.rmdir()
 
+    def run_rescue() -> set[Path]:
+        """The README's rescue step: keep post-snapshot packs, rescue, unkeep them."""
+        before = set(pack_dir.glob("pack-*.pack"))
+        touched = [p for p in post_packs if not p.with_suffix(".keep").exists()]
+        for pack in touched:
+            pack.with_suffix(".keep").touch()
+        command = rescue.replace('"$M/old-tips.txt"', f"'{tips}'").replace("/opt/macro", str(prod))
+        subprocess.run(["bash", "-c", command], capture_output=True, env=git_env(), check=True)
+        for pack in touched:
+            pack.with_suffix(".keep").unlink()
+        return set(pack_dir.glob("pack-*.pack")) - before
+
+    return SimpleNamespace(prod=prod, x=x, pack_dir=pack_dir, old_packs=old_packs,
+                           post_objects=post_objects, new_idx=new_idx, retire=retire_old_packs,
+                           restore=restore_old_packs, run_rescue=run_rescue)
+
+
+def test_readme_recovery_rescues_old_objects_that_a_small_fetch_reused(tmp_path: Path):
+    fx = _rescue_fixture(tmp_path)
     # Falsifier: without the rescue the swap's fsck must fail on this fixture.
-    retire_old_packs()
-    assert not ok(prod, "fsck", "--connectivity-only", "--no-dangling")
-    restore_old_packs()
+    fx.retire()
+    assert not ok(fx.prod, "fsck", "--connectivity-only", "--no-dangling")
+    fx.restore()
 
-    before = set(pack_dir.glob("pack-*.pack"))
-    for pack in post_packs:
-        pack.with_suffix(".keep").touch()
-    command = rescue.replace('"$M/old-tips.txt"', f"'{tips}'").replace("/opt/macro", str(prod))
-    subprocess.run(["bash", "-c", command], capture_output=True, env=git_env(), check=True)
-    for pack in post_packs:
-        pack.with_suffix(".keep").unlink()
-    (rescued,) = set(pack_dir.glob("pack-*.pack")) - before
-    rescued_objects = _pack_contents(prod, rescued.with_suffix(".idx"))
-    assert x in rescued_objects
-    assert not rescued_objects & post_objects, "rescue duplicated a kept post-snapshot pack"
-    assert not rescued_objects & _pack_contents(prod, new_idx), "rescue duplicated the new pack"
+    (rescued,) = fx.run_rescue()
+    rescued_objects = _pack_contents(fx.prod, rescued.with_suffix(".idx"))
+    assert fx.x in rescued_objects
+    assert not rescued_objects & fx.post_objects, "rescue duplicated a kept post-snapshot pack"
+    assert not rescued_objects & _pack_contents(fx.prod, fx.new_idx), "rescue duplicated the new pack"
 
-    retire_old_packs()
-    assert ok(prod, "fsck", "--connectivity-only", "--no-dangling")
-    assert ok(prod, "cat-file", "-e", x)
+    fx.retire()
+    assert ok(fx.prod, "fsck", "--connectivity-only", "--no-dangling")
+    assert ok(fx.prod, "cat-file", "-e", fx.x)
+
+
+def test_readme_recovery_moves_kept_tier_keeps_aside_before_the_rescue(tmp_path: Path):
+    # The nightly job freezes large old packs with a .keep. The rescue honors .keep
+    # files, so a kept-tier .keep on an old pack hides that pack's objects from the
+    # rescue, and retiring the old packs then loses them. The recipe moves those
+    # .keep files aside first; this proves both the loss and the step that avoids it.
+    readme = " ".join((DEPLOY / "README.md").read_text(encoding="utf-8").split())
+    assert "Move the `.keep` of every pack in `old-packs.txt` aside first" in readme
+    fx = _rescue_fixture(tmp_path)
+    (holder,) = [p for p in fx.old_packs
+                 if fx.x in _pack_contents(fx.prod, p.with_suffix(".idx"))]
+    keep = holder.with_suffix(".keep")
+    keep.write_text("macro-git-store-maintenance kept tier 2026-11-01T03:40:00Z\n")
+
+    # Rescue with the kept-tier .keep still in place: X is skipped and then lost.
+    skipped = fx.run_rescue()
+    for pack in skipped:
+        assert fx.x not in _pack_contents(fx.prod, pack.with_suffix(".idx"))
+    fx.retire()
+    assert not ok(fx.prod, "fsck", "--connectivity-only", "--no-dangling")
+    fx.restore()
+    for pack in skipped:
+        for ext in (".pack", ".idx", ".rev"):
+            pack.with_suffix(ext).unlink(missing_ok=True)
+
+    # The recipe: move the old packs' .keep files aside, then rescue.
+    aside = tmp_path / "keep-aside"
+    aside.mkdir()
+    keep.rename(aside / keep.name)
+    (rescued,) = fx.run_rescue()
+    assert fx.x in _pack_contents(fx.prod, rescued.with_suffix(".idx"))
+    fx.retire()
+    assert ok(fx.prod, "fsck", "--connectivity-only", "--no-dangling")
+    assert ok(fx.prod, "cat-file", "-e", fx.x)

@@ -292,22 +292,30 @@ fi
 # Root-disk floor before the pull writes anything (2026-10-19 and 2026-11-01
 # refills). Every pull lands a new pack in $APP_DIR/.git/objects on the root
 # filesystem; on a full disk the next one fails half-way and journald, Caddy
-# and the API start failing with it. Below the floor this tick refuses before
-# the network read, says why on stderr and in the system log, and leaves a
-# marker that names the shortfall. A refusal also holds back deploys of fixes,
-# by design: recovering space is a manual step (app/deploy/README.md, "Git
-# store maintenance"), never something this updater improvises.
-MIN_FREE_KIB="${MACRO_UPDATE_MIN_FREE_KIB:-4194304}"
+# and the API start failing with it. Below the floor, or when free space or the
+# floor cannot be read as a number, this tick skips the fetch: it says why on
+# stderr and in the system log, leaves a marker that names the shortfall, and
+# still runs the reconciliation below against the current checkout (so a timer
+# disarmed above is re-armed, as on any no-change tick), then exits 1. A refused
+# pull also holds back deploys of fixes, by design: recovering space is a
+# manual step (app/deploy/README.md, "Git store maintenance"), never something
+# this updater improvises. The 7 GiB floor leaves the nightly repack room to
+# run (it needs about 4 GiB on a normal night), so a refused pull is not also a
+# stuck store.
+MIN_FREE_KIB="${MACRO_UPDATE_MIN_FREE_KIB:-7340032}"
 DISK_REFUSED_MARKER="${MACRO_UPDATE_DISK_MARKER:-/run/macro-update-disk-refused}"
-ROOT_FREE_KIB=$(df --output=avail -k "$APP_DIR/.git/objects" | tail -n 1 | tr -d ' ')
-if [ "$ROOT_FREE_KIB" -lt "$MIN_FREE_KIB" ]; then
-	DISK_REFUSAL="macro-update: REFUSED pull: ${ROOT_FREE_KIB} KiB free on $APP_DIR/.git/objects, floor ${MIN_FREE_KIB} KiB; nothing pulled (recovery: app/deploy/README.md, 'Git store maintenance')"
+DISK_REFUSED=0
+DISK_REFUSAL=""
+ROOT_FREE_KIB=$(df --output=avail -k "$APP_DIR/.git/objects" 2>/dev/null | tail -n 1 | tr -d ' ') || ROOT_FREE_KIB=""
+if ! [[ $ROOT_FREE_KIB =~ ^[0-9]+$ ]] || ! [[ $MIN_FREE_KIB =~ ^[0-9]+$ ]] || [ "$ROOT_FREE_KIB" -lt "$MIN_FREE_KIB" ]; then
+	DISK_REFUSED=1
+	DISK_REFUSAL="macro-update: REFUSED pull: ${ROOT_FREE_KIB:-unreadable} KiB free on $APP_DIR/.git/objects, floor ${MIN_FREE_KIB} KiB; nothing pulled; this tick reconciles the current checkout and exits 1 (recovery: app/deploy/README.md, 'Git store maintenance')"
 	echo "$DISK_REFUSAL" >&2
 	logger -p user.err -t macro-update "$DISK_REFUSAL" 2>/dev/null || true
 	echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) $DISK_REFUSAL" > "$DISK_REFUSED_MARKER" 2>/dev/null || true
-	exit 1
+else
+	rm -f "$DISK_REFUSED_MARKER"
 fi
-rm -f "$DISK_REFUSED_MARKER"
 # END MACRO_UPDATE_FREE_SPACE_GUARD
 
 # Do not add --depth here: depth-one fetches sever the new tip from previously
@@ -315,10 +323,14 @@ rm -f "$DISK_REFUSED_MARKER"
 # when both commit objects remain present. Ordinary fetch preserves connectivity
 # for later updates. Existing shallow boundaries require a separate repair;
 # this updater never deepens or rewrites them. A fetch failure still aborts
-# under strict mode before OLD/NEW and reset.
-git -C "$APP_DIR" fetch -q origin main
+# under strict mode before OLD/NEW and reset. A disk-refused tick skips the
+# fetch and pins NEW to HEAD, so nothing below resets or pulls.
+if [ "$DISK_REFUSED" -eq 0 ]; then
+	git -C "$APP_DIR" fetch -q origin main
+fi
 OLD=$(git -C "$APP_DIR" rev-parse HEAD)
 NEW=$(git -C "$APP_DIR" rev-parse FETCH_HEAD)
+if [ "$DISK_REFUSED" -eq 1 ]; then NEW=$OLD; fi
 CHANGED=""
 REPO_UPDATED=0
 RECONCILED=0
@@ -2792,6 +2804,14 @@ if [ "$OHLC_DELIVERY_EXIT_STATUS" -ne 0 ]; then
 	fi
 fi
 # END OHLC_DELIVERY_EXIT_STATUS
+# BEGIN DISK_REFUSAL_EXIT_STATUS
+if [ "${DISK_REFUSED:-0}" -eq 1 ]; then
+	echo "macro-update: tick reconciled without pulling: $DISK_REFUSAL" >&2
+	if [ "${DEPLOY_EXIT_STATUS:-0}" -eq 0 ]; then
+		DEPLOY_EXIT_STATUS=1
+	fi
+fi
+# END DISK_REFUSAL_EXIT_STATUS
 # BEGIN DEPLOY_EXIT_STATUS
 if [ "${W2C_LANE_FROZEN:-0}" -eq 1 ]; then
 	echo "macro-update: deploy finished with status ${DEPLOY_EXIT_STATUS:-1} (frozen lanes: w2c)" >&2

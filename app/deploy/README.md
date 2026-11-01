@@ -412,11 +412,17 @@ UTC (`Persistent=true`). The script (installed at `/usr/local/sbin/macro-git-sto
 
 1. under the updater lock (`/var/lock/macro-update.lock`, so a pull tick skips rather
    than colliding): expires unreachable reflog entries and packs refs;
-2. deletes temporary packs older than 6 h left by a killed repack;
+2. deletes temporary packs older than 6 h left by a killed repack, and orphaned packs
+   older than 6 h (a `.pack` with no `.idx` and no `.keep`: a write interrupted before its
+   index landed, which Git never reads);
 3. freezes every consolidated non-cruft pack of at least 2 GiB into the kept tier (see
    below), then checks free space for the worst case (every pack it will rewrite, that is
-   every pack without a `.keep`, plus the loose objects, again + 3 GiB) and
-   `MemAvailable` (768 MiB) BEFORE it writes anything;
+   every indexed pack without a `.keep`, plus the loose objects, again + 3 GiB) and
+   `MemAvailable` (768 MiB) BEFORE it writes anything. When that does not fit, the space
+   fallback freezes the single largest non-kept, non-cruft pack, of any size, if that
+   alone makes it fit, and logs "kept tier fallback: pack-... frozen so the repack fits";
+   otherwise it refuses. Free space, `MemAvailable` and every numeric setting must read
+   as whole numbers, or it refuses;
 4. runs `git repack -d -l --cruft --cruft-expiration=2.weeks.ago` with
    `repack.packKeptObjects=false` at idle I/O, nice 19, one pack thread and a 128 MiB
    delta window, inside the unit's cgroup memory cap, then freezes the new pack too if it
@@ -445,9 +451,28 @@ as success, retried next night; 1 = refused or failed, a failed unit in
 `systemctl --failed`. Read it with `journalctl -u macro-git-store-maintenance.service -n 50`.
 Run it by hand with `systemctl start macro-git-store-maintenance.service`.
 
+Pull floor: `macro-update` refuses to fetch when the root filesystem has less than 7 GiB
+free (`MACRO_UPDATE_MIN_FREE_KIB`, in KiB), or when free space or the floor does not read
+as a number. The floor sits above the nightly repack's own need (about 4 GiB on a normal
+night), so the night after a refusal the job can still consolidate. A refused tick logs
+"macro-update: REFUSED pull: ... nothing pulled" to stderr and the system log, writes the
+same line to `/run/macro-update-disk-refused`, still reconciles the current checkout (a
+timer it disarmed earlier in the tick is re-armed, as on any tick with no new commit),
+and exits 1. The marker is removed by the first tick that passes the floor. While pulls
+are refused, deploys of fixes are held back too; recovering space is the manual step
+below.
+
 Recovery when it REFUSES for space (the store has outgrown root-disk headroom): do not
-run the repack on the root filesystem. Stop `macro-git-store-maintenance.timer` for the
-duration and start it again at the end. Write the consolidated pack on
+run the repack on the root filesystem. Aim to finish with at least the 7 GiB pull floor
+free plus about 0.63 GiB for every day pulls were refused, since the first pull after the
+recovery lands those days at once. First stop both
+`macro-git-store-maintenance.timer` and `macro-git-store-maintenance.service`, check that
+`systemctl is-active` reports both inactive, and run
+`systemctl mask --runtime macro-git-store-maintenance.service` so nothing starts the job
+mid-swap (a `Persistent=true` catch-up, a hand start, or a pull tick re-arming the timer
+while the lock is released). At the end run
+`systemctl unmask --runtime macro-git-store-maintenance.service` and start the timer
+again. Write the consolidated pack on
 `/mnt/terminal_storage` instead and swap it in, all while holding the updater lock
 (pull ticks skip until it is released; the site and macro-api keep serving):
 
@@ -476,11 +501,12 @@ unpacked loose and skips any object that is already packed, so a pull after the 
 can depend on an old object that was unreachable at the snapshot and is therefore not in
 the new pack. Move the `.keep` of every pack in `old-packs.txt` aside first (a kept-tier
 `.keep` there would make the rescue skip that pack's objects, which the retire step then
-loses). Touch a `.keep` next to every pack that is not in `old-packs.txt`, run
+loses). Touch a `.keep` next to every pack that is not in `old-packs.txt` and has no
+`.keep` yet (never overwrite or later remove one that was already there), run
 `sed 's/^/^/' "$M/old-tips.txt" | git -C /opt/macro pack-objects --revs --local
 --honor-pack-keep --non-empty --all --reflog --indexed-objects .git/objects/pack/pack`
 (it skips objects in the new pack and in the kept packs, so only those rescued objects and
-a few loose ones go on root), and remove the `.keep` files you just touched. Now delete
+a few loose ones go on root), and remove only the `.keep` files you just touched. Now delete
 `objects/pack/multi-pack-index`, move every pack in `old-packs.txt` (`.pack`, `.idx`,
 `.rev`, and any `.mtimes`) aside on the same filesystem, and check with
 `git fsck --connectivity-only` (move the old packs and their `.keep` files back if it
