@@ -222,7 +222,7 @@ waves:
       and rendering the desk's change lines with honest first-visit, no-change, overflow
       (expand in place), free-tier teaser, unavailable and signed-out states, each ticker
       linking to /analysis. The beta release owner was idle, so the receiver seat ran the
-      owner's beta entrance for db6168c2 on 2026-11-01 (release running at first commit; the result follows on the same records PR). Production
+      owner's beta entrance for db6168c2 on 2026-11-01 (owner DONE 04:53Z; beta serves db6168c2, anonymous proxy POST 401). Production
       does not carry the slice and strips the shared shell. Next: signed-in browser proof
       on beta Today (needs Chris signed in), then a PRODUCTION_PROOF record kept apart
       from acceptance. Contract dependency (not a wave): Macro PRs 10199 and 10200 closed
@@ -364,7 +364,7 @@ next_action: >
   RECEIVER 2026-10-31: the Fable flagship seat (PR 10230, handoff
   WS-MARKET-OS-2026-10-31-fable-flagship-receiver) owns Market OS completion. Slice 1
   (wave flagship-today-since-last-visit) is merged as Terminal master db6168c2 and the
-  seat ran the beta release on 2026-11-01 (running at first commit; result follows on the same records PR). Next: signed-in browser
+  seat ran the beta release on 2026-11-01 (owner DONE 04:53Z; beta serves db6168c2). Next: signed-in browser
   proof on beta Today, then a PRODUCTION_PROOF record apart from acceptance, then slice 2
   as a bounded design commission. Maintenance #6510 may proceed independently as a bounded
   Portfolio mode-tab count synchronization repair if a fresh collision census remains

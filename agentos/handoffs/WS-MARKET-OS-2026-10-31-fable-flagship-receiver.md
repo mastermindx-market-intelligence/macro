@@ -189,9 +189,18 @@ owner acquired the shared build lock and runs its own W2A preflight, containment
 staged build, swap, health and identity checks, with its own pre-commit rollback.
 Log: `/opt/terminal/deploy-marketos-today-beta-db6168c2-20261101T044131Z.log`.
 
-Release result: running when this record was first committed; the outcome observed on the
-beta marker, the served deployment id and the anonymous proxy status is recorded in a later
-commit on this records PR. Running is not deployed.
+Release result (observed 2026-11-01 04:53Z): the owner logged `DONE — target=beta live =
+origin/master @ db6168c20ce4`, committed transaction f89a01278f8940f293ed19676fc34203 with a
+CLEAN source preflight, and released the build lock. terminal-beta restarted at 04:52:39Z.
+Served evidence: beta `.deployment-id`, `/api/shared-shell/status` buildId and the `/today`
+`data-dpl-id` all read db6168c20ce42217ed99d9fa53e6048683505da5; `/today` returns 200; an
+anonymous POST to `/api/portfolio-changes` returns 401 `unauthenticated` (it was 404 before).
+Production `terminal.service` kept its PID and the production route still returns 404.
+Rung: DEPLOYED to beta. Not yet signed-in proven, PRODUCTION_PROOF or ACCEPTANCE.
+
+Signed-in proof gate: the built-in browser pane has no beta session (Today shows its
+signed-out gate) and no Claude in Chrome browser is connected. The signed-in proof needs
+Chris to sign in to beta in the pane, or to connect Claude in Chrome with 1Password.
 
 Producer contract dependency: Macro PRs 10199 and 10200 closed unmerged and 10203 is
 still open, so the deployed `portfolio_changes.v1` producer the slice pins is unchanged.
