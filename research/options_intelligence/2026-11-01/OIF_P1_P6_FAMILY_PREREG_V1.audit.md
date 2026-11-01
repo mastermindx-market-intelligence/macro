@@ -70,16 +70,21 @@ seal.
 | --- | --- | --- | --- |
 | `oi1-l3r-r1` | review, C1 | ubuntu1 / grok-4.7 | Admission refused, rc 75, 08:48Z, not started; id burned |
 | `oi1-l3r-r2` | review, C1 | ubuntu1 / glm-5.3 (glm-frontier) | Admission refused, rc 75, 08:56Z, not started; id burned |
+| `oi1-l3r-r3` | review, C1 | ubuntu1 / glm-frontier, router-placed | Admission refused, rc 75, 09:20Z, not started; id burned |
 
 OBSERVED:
-- A read-only router preview for the next review id returned
-  `ubuntu1 / glm-5.3` (`judgment_order_glm+burn_down_urgent`).
+- Router previews for the next review id kept returning ubuntu1, as
+  `glm-5.3` (`judgment_order_glm+burn_down_urgent`) and then as `grok-4.7`
+  (`judgment_order_grok`).
 - Cached ubuntu1 host telemetry at 09:16:32Z read `cpu_tctl_c` 78.0, active
   lanes 1, load1 2.36.
-- The temperature is above the admission threshold that refused the earlier
-  lanes.
+- The `oi1-l3r-r3` remote admission record states:
+  `"allowed":false`, `"reasons":["host_temperature_at_or_above_limit"]`,
+  `"load1":7.208`, `"active_count":2`, `"max_active":18`.
 
-No host was selected to route around that refusal.
+No host was selected to route around that refusal. After three equivalent
+refusals no further review lane is requested on this carrier until its
+admission clears.
 
 Status: the independent review is **WAITING_CAPACITY**.
 - No review verdict exists.
