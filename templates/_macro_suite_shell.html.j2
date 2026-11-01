@@ -596,10 +596,16 @@
 {# ────────────────────────────── 7. what changed ────────────────────────── #}
 {%- macro what_changed(view) -%}
 {%- set changes = view.changes -%}
+{%- set dated = false -%}
+{%- if changes.comparable and changes.prior_is_earlier -%}
+{%- set cur_date = view.headline.effective_date|date_pair -%}
+{%- set prior_date = changes.prior_effective_date|date_pair -%}
+{%- set dated = cur_date and prior_date -%}
+{%- endif -%}
 <section class="mq-changed" aria-labelledby="mq-changed-title">
   <div class="mq-section-head">
     <h3 id="mq-changed-title">{{ t('What changed', '发生了什么变化') }}</h3>
-    <span class="mq-section-note">{{ t('Today against last time, measured the same way.', '以相同方法将今天与上次对比。') }}</span>
+    <span class="mq-section-note">{% if dated %}{{ t(cur_date.en ~ ' against ' ~ prior_date.en ~ ', measured the same way.', cur_date.zh ~ '与' ~ prior_date.zh ~ '对比，测算方法相同。') }}{% else %}{{ t('The latest reading against the one before it, measured the same way.', '以相同方法将最新读数与上一读数对比。') }}{% endif %}</span>
   </div>
   {% call mc_details() %}
     <p>{{ t('Current accepted snapshot against the prior accepted snapshot, under the same method version.', '在相同方法版本下，将当前已接受快照与上一已接受快照对比。') }}</p>
@@ -610,8 +616,8 @@
   <table class="mq-table">
     <thead><tr>
       <th scope="col">{{ t('Metric', '指标') }}</th>
-      <th scope="col">{{ t('Prior', '上期') }}</th>
-      <th scope="col">{{ t('Current', '当前') }}</th>
+      <th scope="col">{{ t('Prior', '上期') }}{% if dated %}<span class="mq-owner-field">{{ bl(prior_date) }}</span>{% endif %}</th>
+      <th scope="col">{{ t('Current', '当前') }}{% if dated %}<span class="mq-owner-field">{{ bl(cur_date) }}</span>{% endif %}</th>
       <th scope="col">{{ t('Change', '变化') }}</th>
     </tr></thead>
     <tbody>
