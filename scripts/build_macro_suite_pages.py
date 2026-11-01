@@ -49,7 +49,6 @@ sys.path.insert(0, str(_REPO_ROOT))
 from engine.market_os.macro_workspaces import contract, registry  # noqa: E402
 from lib import macro_suite_labels as L  # noqa: E402
 from lib import macro_suite_view  # noqa: E402
-from lib.pages import write_unshimmed_html  # noqa: E402
 
 # Shared across every workspace page: copied once per build, never per page.
 # macro_command.css / macro_command.js are Macro Command's page-level assets —
@@ -1421,6 +1420,10 @@ def _fragment_context(value: Any) -> Any:
 def write_fragments(env: Environment, sections: Sequence[Mapping[str, Any]],
                     out_dir: Path) -> list[Path]:
     """Emit `site/macro/fragments/<id>.html` — the inner HTML of `[data-mc-figure]`."""
+    # macro-api imports this module but never writes fragments. A module-level import
+    # would put lib/pages.py in its load-time closure.
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
+
     dest = Path(out_dir) / "macro" / "fragments"
     dest.mkdir(parents=True, exist_ok=True)
     tmpl = env.get_template("_macro_command_fragment.html.j2")
