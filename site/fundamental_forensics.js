@@ -1841,7 +1841,8 @@
       titlePair: '',
       exactText: '',
       unit: '',
-      excerpt: ''
+      excerpt: '',
+      negatedLabel: false
     };
     // Exact facts attach only when this control backs onto a query node whose
     // value is canonical decimal text; a JSON number is a contract break and
@@ -1874,6 +1875,7 @@
         cell.titlePair = entry.label ? pair(entry.label, entry.label) : '';
         cell.exactText = entry.value;
         cell.unit = entry.unit;
+        cell.negatedLabel = entry.negatedLabel === true;
         break;
       }
     }
@@ -2516,6 +2518,23 @@
     });
   }
 
+  // Defect (c): a presentation arc whose preferred label is in the XBRL
+  // negated-label family tells the reader to show the reported fact with
+  // its sign reversed. "Purchases of marketable securities" is a positive
+  // PaymentsToAcquire fact that the filing prints as (24,407). Only the
+  // compact text follows the filing; the exact value and its receipt keep
+  // the reported bytes (A38/AM1).
+  function isNegatedLabelRole(role) {
+    return /\/role\/negated[A-Za-z]*Label$/.test(String(role || ''));
+  }
+
+  function negatedDecimalText(text) {
+    var value = String(text || '');
+    if (value.charAt(0) === '-') return value.slice(1);
+    if (!/[1-9]/.test(value)) return value;
+    return '-' + value;
+  }
+
   function statementCellControl(cell, row) {
     cell = objectValue(cell) || {};
     var quality = String(cell.quality_state || '');
@@ -2525,7 +2544,8 @@
     if (quality !== 'available' || !exact) {
       return sourceControlHtml({ kind: 'statement' });
     }
-    var control = controlFromStatementCell(cell, formatValue(cell.value, 'currency'));
+    var negated = isNegatedLabelRole(row.preferred_label_role);
+    var control = controlFromStatementCell(cell, formatValue(negated ? negatedDecimalText(exact) : exact, 'currency'));
     control.metricId = String(row.standardized_metric_id || '');
     state.statementCells.push({
       occurrenceId: control.occurrenceId,
@@ -2534,7 +2554,8 @@
       metricId: control.metricId,
       value: exact,
       unit: cell.unit == null ? '' : String(cell.unit),
-      accession: control.accession
+      accession: control.accession,
+      negatedLabel: negated
     });
     return sourceControlHtml(control);
   }
@@ -3433,7 +3454,8 @@
       '<section class="ff-proof-section"><h3>' + pair('Exact value', '精确数值') + '</h3>' +
       (exact ? '<code class="ff-exact">' + esc(exact) + '</code>' +
         '<p class="ff-proof-compact-line"><b>' + pair('Compact', '简写') + '</b> ' + esc(cell.compactText || '—') + '</p>' +
-        (cell.unit ? '<p class="ff-proof-compact-line"><b>' + pair('Unit', '单位') + '</b> ' + esc(cell.unit) + '</p>' : '')
+        (cell.unit ? '<p class="ff-proof-compact-line"><b>' + pair('Unit', '单位') + '</b> ' + esc(cell.unit) + '</p>' : '') +
+        (cell.negatedLabel ? '<p class="ff-proof-compact-line">' + pair('The filing shows this line with its sign reversed; the exact value is the reported fact.', '财报以相反符号列示此项；精确数值为所报告的原始数值。') + '</p>' : '')
         : '<p class="ff-proof-compact-line">' + pair('Exact value unavailable for this cell.', '该单元格的精确数值不可用。') + '</p>') +
       '</section>' +
       '<section class="ff-proof-section"><h3>' + pair('Source span', '来源片段') + '</h3>' +
