@@ -79,6 +79,50 @@ Protocol §10 and §13 forbid fixing this after the fact. The seat does not rela
 the 140 positive cells from the denominator, and does not harmonise the labeler's interpretation.
 PK12 stays `underpowered` for g3.
 
+## Q0 conformance across all g3 packs
+
+The PK12 defect classes are not PK12-only. The same aggregate census, run over every g3 pack report
+(cells only: `n_labeled` by pack, issuer, form, section family and polarity), gives:
+
+| pack | labels | under a family outside the pack's §5 ids | on a form outside the pack's §5 forms | positives on a `negative` issuer |
+|---|---|---|---|---|
+| PK01 | 424 | 0 | 0 | 0 |
+| PK02 | 205 | 205 | 0 | 0 |
+| PK03 | 158 | 158 | 0 | 0 |
+| PK04 | 199 | 199 | 0 | 11 |
+| PK05 | 324 | 226 | 123 (10-Q) | 0 |
+| PK06 | 231 | 0 | 0 | 0 |
+| PK07 | 160 | 142 | 70 (10-Q) | 0 |
+| PK08 | 208 | 208 | 0 | 0 |
+| PK09 | 201 | 0 | 0 | 0 |
+| PK10 | 0 | — | — | — |
+| PK11 | 190 | 0 | 0 | 0 |
+| PK12 | 156 | 134 | 111 (10-Q) | 140 |
+
+PK01, PK06, PK09 and PK11 conform on all three axes. For PK02, PK03, PK04 and PK08 every label
+sits under a family name that is not one of the pack's protocol family ids. For PK05, PK07 and PK12
+most labels do: only `utp`, `goodwill_rollforward` and `rd_expense` respectively match a protocol id.
+
+What this means for g3:
+
+- The per-family `failed_families` rows for PK02, PK03, PK04, PK05, PK07, PK08 and PK12 are keyed by
+  the labeler's family names. The protocol's own families for those packs (§10: a disposition family
+  is `(pack_id, section_family)`) are largely unmeasured in g3.
+- These rows still describe pack behaviour on real filing sections. For example, PK08 recall is 0/75
+  on sections labeled `legal_proceedings` and PK03 recall is 1/130 on `segments`. They are valid
+  repair signals, but they are not protocol-family verdicts.
+- Nothing changes in g3. The pack dispositions, the failed-family dispositions and the reports stand
+  as published. Nothing is relabeled, renamed or dropped from a denominator.
+
+What this means for repair and reopening:
+
+- Dev-corpus repair lanes target the pack's protocol families and field semantics, not the g3
+  labeler's family names.
+- A family reopens only as a protocol family id, on fresh labels under a new split decision.
+- The conformance gate's `section_family_outside_pack` and `form_outside_pack` checks catch every
+  non-conforming cell in this table before a future seal. `positive_on_negative_issuer` catches the
+  PK04 and PK12 cells.
+
 ## What follows
 
 - **Conformance gate before any future seal.** Build lane `fif-q0conf-20261101-r1` adds
