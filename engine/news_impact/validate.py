@@ -29,6 +29,14 @@ compatibility fold matches a frozen ``text_safe`` not-pattern that the raw
 string does not match is an injection_pattern issue (full-width or other
 compatibility forms cannot route around the schema's injection guard).  It
 reuses the existing code; REASON_CODES stay closed.
+
+F2 review NOTE-A (2026-11-01) widens two existing rules without a new code:
+S8 also tests the NFKC fold of each field and of each join, so a full-width
+role marker split across two fields is refused; S7 also tests each value
+with ASCII tab, LF and CR deleted (a URL parser deletes them), so a scheme
+name split by those characters is refused.  A split scheme taken from the
+contract's own URI-scheme branch is reported once, by S7, only when neither
+the schema pass nor S14 already reports the value.
 """
 
 from __future__ import annotations
@@ -155,6 +163,7 @@ class _Context:
     calendar_props: dict = field(default_factory=dict)  # property name -> 'date'|'date-time'|'either'
     role_marker_patterns: tuple = ()              # compiled role-marker branches of text_safe
     text_safe_patterns: tuple = ()                # every compiled text_safe branch (rule S14)
+    scheme_patterns: tuple = ()                   # compiled URI-scheme branches of text_safe (rule S7)
 
     @classmethod
     def build(cls, contract: dict) -> "_Context":
@@ -180,6 +189,7 @@ class _Context:
         ctx._index_calendar_props()
         ctx._index_role_marker_patterns()
         ctx._index_text_safe_patterns()
+        ctx._index_scheme_patterns()
         return ctx
 
     # -- semantic-layer indices (pure walks over the frozen contract) ------
@@ -332,6 +342,26 @@ class _Context:
                 patterns.append(re.compile(pattern))
         self.text_safe_patterns = tuple(patterns)
 
+    def _index_scheme_patterns(self) -> None:
+        """The text_safe branches that refuse a URI scheme (rule S7).
+
+        A branch is a URI-scheme branch when its pattern names the
+        ``javascript`` scheme: the contract's
+        ``\\b(https?|ftps?|wss?|file|javascript|vbscript|gopher|hxxps?|hxtp)\\s*:``
+        branch.  S7 tests it against each value with ASCII tab, LF and CR
+        deleted, so a scheme name those characters split is refused.
+        """
+        text_safe = self.contract.get("$defs", {}).get("text_safe", {})
+        patterns = []
+        for branch in text_safe.get("not", {}).get("anyOf", []) or []:
+            pattern = branch.get("pattern") if isinstance(branch, dict) else None
+            if not isinstance(pattern, str):
+                continue
+            if "javascript" not in pattern.lower():
+                continue
+            patterns.append(re.compile(pattern))
+        self.scheme_patterns = tuple(patterns)
+
     def template_validator(self, name: str):
         if name not in self.cache:
             doc = {k: v for k, v in self.contract.items() if k != "oneOf"}
@@ -430,6 +460,12 @@ _IDENTIFIER_SUFFIXES = ("_id", "_profile")
 # S7: URI schemes text_safe does not blocklist.  Word boundary before the
 # scheme; the colon must immediately follow the scheme name.
 _SCHEME_RE = re.compile(r"(?i)(?<![0-9a-z_])(?:data|blob|vbscript):")
+
+# S7 (NOTE-A): the WHATWG URL parser deletes every ASCII tab, LF and CR before
+# it reads a scheme, so "da<TAB>ta:" opens as data: and "java<LF>script:" as
+# javascript:.  text_safe's control-character branch admits exactly these
+# three characters, and its scheme branch cannot see a scheme name they split.
+_URL_STRIPPED_CHARS = str.maketrans("", "", "\t\n\r")
 
 _ORDERED_BYTE_SUFFIXES = (("_start_byte", "_end_byte"), ("_start_char", "_end_char"))
 
@@ -776,14 +812,29 @@ def _s7_uri_schemes(payload, ctx: _Context) -> list[ValidationIssue]:
 
     The NFKC compatibility fold is tested too, so a full-width scheme
     (``\uff44\uff41\uff54\uff41\uff1a``) is refused like its ASCII form.
+
+    Both forms are also tested with ASCII tab, LF and CR deleted, as a URL
+    parser deletes them, so "da<TAB>ta:" is refused like "data:".  A scheme
+    that the contract's own URI-scheme branch refuses (javascript:, https:,
+    file: and the rest) is refused here too when those characters split it;
+    an unsplit one is left to the schema pass (raw form) or rule S14
+    (compatibility form), so one defect is reported once.
     """
     issues = []
     for pointer, key, value in _iter_governed_strings(payload, ctx):
-        if _SCHEME_RE.search(value) or \
-                _SCHEME_RE.search(unicodedata.normalize("NFKC", value)):
+        folded = unicodedata.normalize("NFKC", value)
+        stripped = (value.translate(_URL_STRIPPED_CHARS),
+                    folded.translate(_URL_STRIPPED_CHARS))
+        if any(_SCHEME_RE.search(form) for form in (value, folded) + stripped):
             issues.append(ValidationIssue(
                 INJECTION_PATTERN, pointer,
                 f"{key} carries a data:/vbscript:/blob: scheme (rule S7)"))
+        elif any(p.search(form) for p in ctx.scheme_patterns for form in stripped) and \
+                not any(p.search(value) or p.search(folded) for p in ctx.text_safe_patterns):
+            issues.append(ValidationIssue(
+                INJECTION_PATTERN, pointer,
+                f"{key} carries a URI scheme split by a tab or line break "
+                f"(rule S7)"))
     return issues
 
 
@@ -799,11 +850,22 @@ def _s8_split_role_markers(payload, ctx: _Context) -> list[ValidationIssue]:
     ONLY, and only when neither a nor b alone matches those branches (a
     field that already matches is rejected by the schema pass; re-reporting
     it here would double-count the same defect).
+
+    Every test reads the raw text and its NFKC compatibility fold, so a
+    full-width marker split across two fields ("... \uff53\uff59\uff53\uff54\uff45\uff4d" +
+    "\uff1a ...") is refused like its ASCII form.  A field whose fold alone
+    matches is skipped here: rule S14 reports it.
     """
     governed = [(pointer, value) for pointer, _key, value in _iter_governed_strings(payload, ctx)]
     issues = []
     if not ctx.role_marker_patterns:
         return issues
+
+    def hit(text: str) -> bool:
+        return _role_marker_hit(text, ctx.role_marker_patterns) or \
+            _role_marker_hit(unicodedata.normalize("NFKC", text), ctx.role_marker_patterns)
+
+    solo = [hit(value) for _pointer, value in governed]
     for i in range(len(governed)):
         for j in range(len(governed)):
             if i == j:
@@ -812,11 +874,9 @@ def _s8_split_role_markers(payload, ctx: _Context) -> list[ValidationIssue]:
             path_b, b = governed[j]
             if a == b:
                 continue
-            if _role_marker_hit(a, ctx.role_marker_patterns) or \
-                    _role_marker_hit(b, ctx.role_marker_patterns):
+            if solo[i] or solo[j]:
                 continue
-            if _role_marker_hit(a + b, ctx.role_marker_patterns) or \
-                    _role_marker_hit(a + " " + b, ctx.role_marker_patterns):
+            if hit(a + b) or hit(a + " " + b):
                 issues.append(ValidationIssue(
                     INJECTION_PATTERN, path_b,
                     "role marker split across text_safe-governed fields (rule S8)"))

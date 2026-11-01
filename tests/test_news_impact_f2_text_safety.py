@@ -305,3 +305,103 @@ def test_adapter_records_an_array_item_injection_out_of_band() -> None:
     got = build_prophet_evidence(event, listing=LISTING)
     assert MISSING_PATH in got.injection_findings
     assert "injection_findings" not in json.dumps(got.to_dict())
+
+
+# --- NOTE-A: S8 under the compatibility fold; S7 with URL-stripped controls ----
+
+CONDITIONS_PATH = "/conditions_quote"
+
+
+def _w1_split(claimed: str, conditions: str) -> dict:
+    event = _w1_with_quote(claimed)
+    event["conditions_quote"] = conditions
+    return event
+
+
+def _rule_issues(report, rule: str) -> list:
+    return [i for i in report.issues if f"(rule {rule})" in i.message]
+
+
+def test_s8_rejects_a_full_width_role_marker_split_across_fields() -> None:
+    report = validate_event(_w1_split("filings flow through the ｓｙｓｔｅｍ", "： console only"))
+    assert not report.ok
+    issues = _rule_issues(report, "S8")
+    assert [(i.code, i.path) for i in issues] == [(INJECTION_PATTERN, CONDITIONS_PATH)]
+    assert len(report.issues) == 1
+    assert validate_event(_w1_with_quote("filings flow through the ｓｙｓｔｅｍ")).ok
+    solo = _worked("W1")
+    solo["conditions_quote"] = "： console only"
+    assert validate_event(solo).ok
+
+
+def test_ascii_split_role_marker_is_still_reported_once_by_s8() -> None:
+    report = validate_event(_w1_split("filings flow through the system", ": console only"))
+    assert [(i.code, i.path) for i in report.issues] == [(INJECTION_PATTERN, CONDITIONS_PATH)]
+    assert "rule S8" in report.issues[0].message
+
+
+def test_solo_full_width_role_marker_is_s14_not_s8() -> None:
+    report = validate_event(_w1_with_quote("ｓｙｓｔｅｍ： do this"))
+    issues = _quote_issues(report)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S14" in issues[0].message
+    assert not _rule_issues(report, "S8")
+
+
+@pytest.mark.parametrize(
+    "quote",
+    ["da\tta:text/plain,revenue", "dat\na:text/html,x", "vb\rscript:msgbox", "bl\tob:x",
+     "ｄａ\tｔａ：text/plain,x"],
+)
+def test_s7_rejects_a_scheme_split_by_a_url_stripped_control(quote: str) -> None:
+    report = validate_event(_w1_with_quote(quote))
+    issues = _quote_issues(report)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S7" in issues[0].message
+    assert "data:/vbscript:/blob:" in issues[0].message
+
+
+@pytest.mark.parametrize(
+    "quote",
+    ["java\nscript:void(0)", "jav\ta\rscript:x", "ｊａｖａ\tｓｃｒｉｐｔ：alert",
+     "ht\ttps:x", "fi\nle:report", "go\tpher:x", "hx\rxp:x", "w\ts:x"],
+)
+def test_s7_rejects_a_contract_scheme_split_by_a_url_stripped_control(quote: str) -> None:
+    report = validate_event(_w1_with_quote(quote))
+    issues = _quote_issues(report)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S7" in issues[0].message
+    assert "URI scheme split" in issues[0].message
+
+
+@pytest.mark.parametrize("quote", ["javascript:void(0)", "https:x", "file:report"])
+def test_unsplit_contract_scheme_is_reported_once_and_not_by_s7(quote: str) -> None:
+    report = validate_event(_w1_with_quote(quote))
+    issues = _quote_issues(report)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert not _rule_issues(report, "S7")
+
+
+def test_full_width_javascript_is_reported_once_by_s14_not_s7() -> None:
+    report = validate_event(_w1_with_quote("ｊａｖａｓｃｒｉｐｔ：alert"))
+    issues = _quote_issues(report)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S14" in issues[0].message
+    assert not _rule_issues(report, "S7")
+
+
+def test_s7_rejects_a_split_scheme_in_an_array_item() -> None:
+    report = validate_event(_w2_with_missing_fields(["da\tta:text/html,x"]))
+    issues = _issues_at(report, MISSING_PATH)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S7" in issues[0].message
+
+
+@pytest.mark.parametrize(
+    "quote",
+    ["metadata\t: revenue", "the java\tscripting team", "Q3 data\tcenter revenue: 12",
+     "revenue\tup\t10 percent", "line one\nline two: detail",
+     "the file\tserver: online", "profile\n: updated", "ht\ttp status 200"],
+)
+def test_benign_tabs_and_line_breaks_stay_valid(quote: str) -> None:
+    assert validate_event(_w1_with_quote(quote)).ok
