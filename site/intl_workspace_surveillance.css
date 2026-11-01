@@ -701,6 +701,10 @@ html[data-lang="zh"] .intl-gs .intl-gs__pickergrouplabel{text-transform:none;let
 .intl-gs .intl-gs__extvuln__reason{color:var(--muted);}
 .intl-gs .intl-gs__cftable__label,.intl-gs .intl-gs__cftable__state,.intl-gs .intl-gs__cftable__reason{color:var(--text);}
 .intl-gs .intl-gs__edgetable__label{color:var(--text);}
+/* F12 (pin1): Typed-edges band head and graph-boundary chip share ONE head row */
+.intl-gs .intl-gs__edges__head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.intl-gs .intl-gs__edges__head > .intl-gs__bandhead{flex:1 1 auto;}
+.intl-gs .intl-gs__edges__head > [data-graph-boundary]{display:inline-flex;margin-left:auto;}
 /* ---- clocks and rights card ---- */
 .intl-gs .intl-gs__clocks{display:flex;flex-direction:column;gap:6px;}
 .intl-gs .intl-gs__clockrow{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;}

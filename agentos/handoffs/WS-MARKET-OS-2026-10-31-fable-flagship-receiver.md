@@ -170,6 +170,41 @@ and armed merge-on-green with a visible ARM comment (2026-10-31); the sweeper ow
 update-branch and the merge. Ladder reached: DELIVERED with a non-author ACCEPT at the
 current head, CI pending. Not reached: CI green, MERGED, PRODUCTION_PROOF, ACCEPTANCE.
 
+## Slice 1 merge and beta release (2026-11-01)
+
+Terminal PR 1189 merged as master db6168c2 with all 21 trusted checks green on the merge
+ref; master push checks (CodeQL, Vercel) are green. Charter PR 10230 and records PR 10239
+merged on Macro. Production `terminal.service` was released by another lane at
+2026-10-31 18:49Z to 05686904, which does not contain the slice; the production profile
+strips MMX_SHARED_SHELL, so Today is served only by the beta profile.
+
+Beta release custody: the compatibility lane is the recorded sole beta release owner
+(SHARED_SHELL_CEO_CONTINUATION_2026-10-21, item 3). Its workspace shows no active
+runtime operation or observer since 2026-10-24 and beta was still ec881d5e. Under the
+leadership-continuity rule this seat took the release and records the takeover here. It
+used the owner's only entrance on the provisioned carrier: `terminal-build.sh --target
+beta --target-sha db6168c20ce42217ed99d9fa53e6048683505da5`, launched once at
+2026-11-01 04:41:31Z as PID 3229194 after a check that no other build process ran. The
+owner acquired the shared build lock and runs its own W2A preflight, containment check,
+staged build, swap, health and identity checks, with its own pre-commit rollback.
+Log: `/opt/terminal/deploy-marketos-today-beta-db6168c2-20261101T044131Z.log`.
+
+Release result (observed 2026-11-01 04:53Z): the owner logged `DONE — target=beta live =
+origin/master @ db6168c20ce4`, committed transaction f89a01278f8940f293ed19676fc34203 with a
+CLEAN source preflight, and released the build lock. terminal-beta restarted at 04:52:39Z.
+Served evidence: beta `.deployment-id`, `/api/shared-shell/status` buildId and the `/today`
+`data-dpl-id` all read db6168c20ce42217ed99d9fa53e6048683505da5; `/today` returns 200; an
+anonymous POST to `/api/portfolio-changes` returns 401 `unauthenticated` (it was 404 before).
+Production `terminal.service` kept its PID and the production route still returns 404.
+Rung: DEPLOYED to beta. Not yet signed-in proven, PRODUCTION_PROOF or ACCEPTANCE.
+
+Signed-in proof gate: the built-in browser pane has no beta session (Today shows its
+signed-out gate) and no Claude in Chrome browser is connected. The signed-in proof needs
+Chris to sign in to beta in the pane, or to connect Claude in Chrome with 1Password.
+
+Producer contract dependency: Macro PRs 10199 and 10200 closed unmerged and 10203 is
+still open, so the deployed `portfolio_changes.v1` producer the slice pins is unchanged.
+
 ## Highest-risk dependencies
 
 1. Signed-in browser proof on beta needs a human sign-in (no saved credential, Chrome not

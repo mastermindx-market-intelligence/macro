@@ -235,3 +235,73 @@ test('abstain-all variant renders no market numeral and no horizontal scroll', a
     await browser.close();
   }
 });
+
+test('GB1 graph-boundary chip present, non-empty value and text, member + out-of-graph, EN + ZH', async () => {
+  // JP is a frozen structural-graph member; the specimen page's board-11
+  // Brazil article sits outside the structural graph. Both routes must carry
+  // the [data-graph-boundary] chip with a non-empty value, and its VISIBLE
+  // leg (innerText, so the hidden l-en/l-zh twin never flatters the check)
+  // must be non-empty in both languages.
+  const browser = await chromium.launch({headless: true});
+  try {
+    for (const {name, url, scope} of [
+      {name: 'JP member', url: 'http://fixture.local/intl.html?view=dossier&market=JP',
+       scope: page => activeScope(page)},
+      {name: 'specimen out-of-graph', url: 'http://fixture.local/intl-gs-dossier-specimen.html',
+       scope: page => page},
+    ]) {
+      const context = await browser.newContext({viewport: {width: 1440, height: 900}});
+      const page = await context.newPage();
+      await page.route('**/*', route => serveRoute(route, new URL(route.request().url()).pathname));
+      await page.goto(url, {waitUntil: 'load'});
+      await page.waitForTimeout(300);
+      const chip = await scope(page)
+        .locator('article:not([hidden]) [data-graph-boundary]').first();
+      assert.ok(await chip.count() >= 1, `${name}: chip present on the visible article`);
+      const value = await chip.getAttribute('data-graph-boundary');
+      assert.ok(value && value.length > 0, `${name}: chip value non-empty`);
+      for (const lang of ['en', 'zh']) {
+        await page.evaluate(l => document.documentElement.setAttribute('data-lang', l), lang);
+        await page.waitForTimeout(100);
+        const text = (await chip.innerText()).trim();
+        assert.ok(text.length > 0, `${name} ${lang}: chip text non-empty`);
+      }
+      await context.close();
+    }
+  } finally {
+    await browser.close();
+  }
+});
+
+test('F12 graph-boundary chip shares the Typed-edges head row, never a card-wide row', async () => {
+  // pin1: the chip span is the trailing element of ONE head row
+  // (.intl-gs__edges__head), so its top must sit within that row's box and
+  // its width must stay a chip, not the card-wide line-box row it was as a
+  // sibling of the band head.
+  const browser = await chromium.launch({headless: true});
+  try {
+    const context = await browser.newContext({viewport: {width: 1440, height: 900}});
+    const page = await context.newPage();
+    await page.route('**/*', route => serveRoute(route, new URL(route.request().url()).pathname));
+    await page.goto('http://fixture.local/intl.html?view=dossier&market=JP', {waitUntil: 'load'});
+    await page.waitForTimeout(300);
+    const chip = activeScope(page).locator('article:not([hidden]) [data-graph-boundary]').first();
+    assert.ok(await chip.count() >= 1, 'JP: chip present on the visible article');
+    const layout = await chip.evaluate(el => {
+      const head = el.closest('.intl-gs__edges__head');
+      const card = el.closest('.intl-gs__card');
+      return {chipTop: el.getBoundingClientRect().top,
+              headBottom: head ? head.getBoundingClientRect().bottom : null,
+              chipWidth: el.getBoundingClientRect().width,
+              cardWidth: card ? card.getBoundingClientRect().width : null};
+    });
+    assert.ok(layout.headBottom !== null, 'head row wrapper .intl-gs__edges__head present');
+    assert.ok(layout.chipTop < layout.headBottom,
+      `chip top ${layout.chipTop} must sit within the head row (bottom ${layout.headBottom})`);
+    assert.ok(layout.chipWidth < layout.cardWidth * 0.5,
+      `chip width ${layout.chipWidth} must stay under 50% of the card (${layout.cardWidth})`);
+    await context.close();
+  } finally {
+    await browser.close();
+  }
+});
