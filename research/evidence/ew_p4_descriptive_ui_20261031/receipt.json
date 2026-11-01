@@ -1,12 +1,12 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "637bcf63f1c95c4686c86ce0cf702f617dba767f",
+  "source_revision": "30998ca145bc247cbb6fb67e18ad6f06a3588a8a",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
-  "script_sha256": "acb94a249d597e9536ebcc0c6e140f89938dabc2840794aadfa07b8aeac6a5ad",
-  "band_template_sha256": "dc8ceb35c1b5c2dc0b7e1348feb2577d7c665672b0d96e20a109a7530a320f52",
+  "script_sha256": "b4289d262052e7c7ff26a019b16930410c4d541161916ad5973ed7d701b19639",
+  "band_template_sha256": "ea98fb3f2d677800629dd582de622a45286ff524e2631db4d803cba1447508f6",
   "fixtures": {
     "conflict_20s.json": "06d235e8980585e8daaa69bd6a06b036fb1643b11b9370e9d28423ef36a023d1",
     "corrected.json": "97b37a597b3da373925ff74fef57c74395499b39d4c2af226838d7d754b3563e",
@@ -986,12 +986,12 @@
   "pr_source_equivalence": {
     "note": "Shots were rendered by the Grey Deer early-warning CEO seat (local Playwright Chromium) at source_revision, the EW-P4-FU code commit on the PR branch; the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks the blob ids against the tested tree. Test-only and CI-manifest files are excluded from the render set.",
     "pr_branch": "claude/gd-ew-p4-fu-20261101",
-    "pr_parent_of_evidence_commit": "637bcf63f1c95c4686c86ce0cf702f617dba767f",
+    "pr_parent_of_evidence_commit": "30998ca145bc247cbb6fb67e18ad6f06a3588a8a",
     "render_files": [
       {
         "path": "site/rotation_events.js",
-        "blob_at_source_revision": "ef55cd7a7975684656807f0c69c91b40bce310c8",
-        "blob_on_pr_branch": "ef55cd7a7975684656807f0c69c91b40bce310c8",
+        "blob_at_source_revision": "c90c13d73e09a072646f4845ae683f811e8c6f6f",
+        "blob_on_pr_branch": "c90c13d73e09a072646f4845ae683f811e8c6f6f",
         "equal": true
       },
       {
@@ -1002,14 +1002,14 @@
       },
       {
         "path": "templates/_risk_envelope_band.html.j2",
-        "blob_at_source_revision": "b40205c718f30780300a8361b29db543bd547dd2",
-        "blob_on_pr_branch": "b40205c718f30780300a8361b29db543bd547dd2",
+        "blob_at_source_revision": "40ea00376e89055ab900d8d6de3de1f85ff595ff",
+        "blob_on_pr_branch": "40ea00376e89055ab900d8d6de3de1f85ff595ff",
         "equal": true
       },
       {
         "path": "templates/rotation_events.js",
-        "blob_at_source_revision": "ef55cd7a7975684656807f0c69c91b40bce310c8",
-        "blob_on_pr_branch": "ef55cd7a7975684656807f0c69c91b40bce310c8",
+        "blob_at_source_revision": "c90c13d73e09a072646f4845ae683f811e8c6f6f",
+        "blob_on_pr_branch": "c90c13d73e09a072646f4845ae683f811e8c6f6f",
         "equal": true
       },
       {
