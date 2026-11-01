@@ -258,3 +258,20 @@ test('review r1: explicit keys, non-object wrapper, monospace id', () => {
   assert.equal(stateOf(fn(undefined, null, '2026-10-30', 'en', NOW)), 'unavailable', 'missing wrapper stays absent');
   assert.match(src, /\.rc-ew-id\{user-select:all;font-family:var\(--font-mono\);\}/, 'selectable monospace id');
 });
+
+test('EW-P4-FU: blank pair_id and calendar-invalid dates are unreadable; real dates pass', () => {
+  const run = (patch, session) => {
+    const v = fixture('observed_rise');
+    Object.assign(v.notification, patch);
+    return stateOf(fn(v, null, session || v.notification.event_as_of, 'en', NOW));
+  };
+  for (const pid of ['   ', '\t', ' \n ']) assert.equal(run({ pair_id: pid }), 'unreadable', JSON.stringify(pid));
+  for (const d of ['2026-00-10', '2026-13-01', '2026-02-30', '2026-04-31', '2025-02-29', '0000-01-01']) {
+    assert.equal(run({ event_as_of: d, source_as_of: d }, '2026-10-30'), 'unreadable', d);
+  }
+  for (const d of ['2024-02-29', '2026-04-30', '2025-12-31']) {
+    assert.notEqual(run({ event_as_of: d, source_as_of: d }), 'unreadable', d);
+  }
+  assert.equal(stateOf(render('malformed_blank_pair', 'en')), 'unreadable');
+  assert.equal(stateOf(render('malformed_calendar', 'en', '2026-10-30')), 'unreadable');
+});

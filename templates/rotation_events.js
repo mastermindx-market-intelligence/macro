@@ -213,6 +213,13 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
   function E(s) { return escFn(String(s == null ? '' : s).slice(0, 2048)); }
   function L2(en, zh) { return '<span class="l-en">' + en + '</span><span class="l-zh">' + (zh == null ? en : zh) + '</span>'; }
   var ID_RE = /^rotobs_[0-9a-f]{40}$/, SYM_RE = /^[A-Z0-9][A-Z0-9.^=-]{0,19}$/, DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  // a real calendar day, as lib date.fromisoformat requires: 2026-02-30 and 2026-13-01 fail
+  function calOk(s) {
+    var y = +s.slice(0, 4), mo = +s.slice(5, 7), d = +s.slice(8, 10);
+    var leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+    var md = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    return y >= 1 && mo >= 1 && mo <= 12 && d >= 1 && d <= md[mo - 1];
+  }
   var ME = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var MZ = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
   function utcIso(s) { return typeof s === 'string' && s.length >= 20 && (s.slice(-6) === '+00:00' || s.slice(-1) === 'Z'); }
@@ -275,8 +282,8 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
         && typeof n.num === 'string' && SYM_RE.test(n.num)
         && typeof n.den === 'string' && SYM_RE.test(n.den)
         && n.num !== n.den
-        && typeof n.pair_id === 'string' && n.pair_id.length >= 1 && n.pair_id.length <= 128
-        && typeof n.event_as_of === 'string' && DATE_RE.test(n.event_as_of)
+        && typeof n.pair_id === 'string' && n.pair_id.length >= 1 && n.pair_id.length <= 128 && n.pair_id.trim().length >= 1
+        && typeof n.event_as_of === 'string' && DATE_RE.test(n.event_as_of) && calOk(n.event_as_of)
         && utcIso(n.observed_at) && utcIso(n.not_after)
         && String(n.not_after).slice(0, 19) > String(n.observed_at).slice(0, 19)) {
       // lib: source_as_of and values must be explicit keys, including nullable withdrawals
