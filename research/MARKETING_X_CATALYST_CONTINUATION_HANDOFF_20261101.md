@@ -57,9 +57,10 @@ sort_keys, `(",", ":")` separators, `ensure_ascii`, no trailing newline).
 |---|---|
 | 0 | COMPLETE — every issuer processed ok |
 | 2 | REFUSED — refusal before any SEC request (invalid user agent / universe / budget / store / prior index); nothing published |
-| 3 | TRUNCATED — the request budget ran out; later issuers are `not_checked`; the index is still published |
+| 3 | TRUNCATED — the request budget ran out, or SEC refused access (403) or rate-limited (429 after retries); later issuers are `not_checked` and carry their prior events; the index is still published |
 | 4 | PARTIAL — at least one issuer ended not ok |
 | 5 | PUBLISH_FAILED — the snapshot publish failed; the prior pointer stays as it was |
+| 6 | FAILED — no issuer was swept, or none was verified (only deferred/failed work, including a halt before anything was verified); nothing published; the prior pointer keeps serving; reason `no_issuer_swept` / `no_issuer_verified` / the halt reason; systemd records a failure |
 
 ## Request budget and rate
 

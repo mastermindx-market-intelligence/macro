@@ -282,6 +282,21 @@ def bootstrap(store, tmp_path, *, routes=None, universe=(PFE,), max_requests=150
     return result, session
 
 
+AAPL_URLS = frozenset(aapl_routes())
+
+
+def bootstrap_with_ok_peer(store, tmp_path, *, routes):
+    """Bootstrap PFE beside an ok AAPL so a PFE skip still publishes an index.
+
+    A cycle that verifies nothing ends FAILED and publishes nothing; the skip
+    tests need the published ``skipped`` rows, so they sweep an ok peer too.
+    Returns the result, the session and the non-AAPL URLs it fetched.
+    """
+    result, session = bootstrap(store, tmp_path, routes={**routes, **aapl_routes()},
+                                universe=(PFE, AAPL))
+    return result, session, [url for url in session.urls() if url not in AAPL_URLS]
+
+
 # ---------------------------------------------------------------------------
 # 1-3: bootstrap, carried cycle, integrity
 # ---------------------------------------------------------------------------
@@ -459,12 +474,13 @@ def test_no_ex99_1_row_skips_without_document_get(tmp_path):
         ("1", "8-K", f"{archive_dir(ACCESSION)}/{ACCESSION}-8k.htm", "8-K"),
         ("2", "EX-99.2", f"{archive_dir(ACCESSION)}/ex99-2.htm", "EX-99.2"),
     ])
-    result, session = bootstrap(store, tmp_path, routes=std_routes(index_bytes=only_ex99_2))
+    result, _, pfe_urls = bootstrap_with_ok_peer(
+        store, tmp_path, routes=std_routes(index_bytes=only_ex99_2))
     assert (result.outcome, result.exit_code) == ("PARTIAL", 4)
-    assert result.requests_used == 2
-    assert not any("ex99" in url for url in session.urls())
+    assert len(pfe_urls) == 2
+    assert not any("ex99" in url for url in pfe_urls)
     index = read_latest_index(store).index
-    assert index["events"] == []
+    assert [event for event in index["events"] if event["ticker"] == "PFE"] == []
     assert index["skipped"][0]["reason"] == "no_ex99_1"
 
 
@@ -491,9 +507,10 @@ def test_two_ex99_1_rows_are_ambiguous(tmp_path):
         ("1", "EX-99.1", f"{archive_dir(ACCESSION)}/ex99-1.htm", "EX-99.1"),
         ("2", "EX-99.1", f"{archive_dir(ACCESSION)}/ex99-1b.htm", "EX-99.1"),
     ])
-    result, session = bootstrap(store, tmp_path, routes=std_routes(index_bytes=doubled))
+    result, _, pfe_urls = bootstrap_with_ok_peer(
+        store, tmp_path, routes=std_routes(index_bytes=doubled))
     assert (result.outcome, result.exit_code) == ("PARTIAL", 4)
-    assert result.requests_used == 2
+    assert len(pfe_urls) == 2
     index = read_latest_index(store).index
     assert index["skipped"][0]["reason"] == "ambiguous_ex99_1"
 
@@ -505,10 +522,11 @@ def test_exhibit_href_under_foreign_cik_refused(tmp_path):
         ("1", "EX-99.1", "/Archives/edgar/data/9999999/000007800326000094/ex99-1.htm",
          "EX-99.1"),
     ])
-    result, session = bootstrap(store, tmp_path, routes=std_routes(index_bytes=foreign))
+    result, _, pfe_urls = bootstrap_with_ok_peer(
+        store, tmp_path, routes=std_routes(index_bytes=foreign))
     assert (result.outcome, result.exit_code) == ("PARTIAL", 4)
-    assert result.requests_used == 2
-    assert not any("ex99-1.htm" in url for url in session.urls())
+    assert len(pfe_urls) == 2
+    assert not any("ex99-1.htm" in url for url in pfe_urls)
     index = read_latest_index(store).index
     assert index["skipped"][0]["reason"] == "exhibit_cik_mismatch"
 
@@ -539,10 +557,10 @@ def test_amendment_lineage_attestation(tmp_path):
         pfe_row(accession="0000078003-26-000101", form="8-K/A",
                 accepted="2026-08-04T11:30:00Z", amends=None),
     ])
-    result, session = bootstrap(store, tmp_path, routes=std_routes(
+    result, _, pfe_urls = bootstrap_with_ok_peer(store, tmp_path, routes=std_routes(
         submissions_bytes=unattested, accession="0000078003-26-000101"))
     assert (result.outcome, result.exit_code) == ("PARTIAL", 4)
-    assert session.urls() == [endpoint_url(78003, "submissions")]
+    assert pfe_urls == [endpoint_url(78003, "submissions")]
     index = read_latest_index(store).index
     assert index["skipped"][0]["reason"] == "unattested_amendment"
 
@@ -1175,6 +1193,49 @@ def test_all_deferred_reverify_keeps_prior_pointer(tmp_path):
     assert after.index == prior.index
 
 
+def test_deferred_reverify_plus_new_skip_keeps_prior_pointer(tmp_path):
+    """Catches: a new filing's no-EX-99.1 skip counting as verified work, so an
+    index that serves nothing (issuer incomplete) replaces one that served it."""
+    store = open_local_store(tmp_path / "store")
+    bootstrap(store, tmp_path)
+    prior = read_latest_index(store)
+
+    new_accession = "0000078003-26-000099"
+    document = archive_document_url(78003, ACCESSION, "ex99-1.htm")
+    routes = {
+        endpoint_url(78003, "submissions"): [
+            ok(endpoint_url(78003, "submissions"), submissions_json([
+                pfe_row(),
+                pfe_row(accession=new_accession, accepted="2026-08-05T09:00:00Z"),
+            ]))],
+        document: [FakeResponse(status_code=503, url=document, headers={})] * 4,
+        index_url("0000078003", new_accession): [
+            ok(index_url("0000078003", new_accession), index_html([]))],
+    }
+    result, _ = run(store, FakeSession(routes),
+                    clock=make_clock(datetime(2026, 8, 5, 13, 0, 0, tzinfo=UTC)))
+    assert (result.outcome, result.exit_code) == ("FAILED", 6)
+    assert result.reason == "no_issuer_verified"
+    assert result.snapshot_id is None
+    after = read_latest_index(store)
+    assert after.snapshot_id == prior.snapshot_id
+    assert after.index == prior.index
+
+
+def test_lone_unattested_amendment_bootstrap_publishes_nothing(tmp_path):
+    """Catches: a cycle whose only work was a skip publishing an index that serves nothing."""
+    store = open_local_store(tmp_path / "store")
+    routes = {
+        endpoint_url(78003, "submissions"): [
+            ok(endpoint_url(78003, "submissions"),
+               submissions_json([pfe_row(form="8-K/A", amends=None)]))],
+    }
+    result, _ = run(store, FakeSession(routes))
+    assert (result.outcome, result.exit_code) == ("FAILED", 6)
+    assert result.reason == "no_issuer_verified"
+    assert read_latest_index(store) is None
+
+
 def _index_with_exhibit_cell(cell_html):
     return (
         "<html><body><table summary=\"Document Format Files\">"
@@ -1199,10 +1260,10 @@ def test_exhibit_row_href_must_be_the_issuer_direct_link(tmp_path):
     }
     for name, cell in cases.items():
         store = open_local_store(tmp_path / name)
-        result, session = bootstrap(
+        result, _, pfe_urls = bootstrap_with_ok_peer(
             store, tmp_path, routes=std_routes(index_bytes=_index_with_exhibit_cell(cell)))
         assert result.exit_code == 4, name
-        assert not any(url.endswith("ex99-1.htm") for url in session.urls()), name
+        assert not any(url.endswith("ex99-1.htm") for url in pfe_urls), name
         assert read_latest_index(store).index["skipped"][0]["reason"] == \
             "exhibit_cik_mismatch", name
 

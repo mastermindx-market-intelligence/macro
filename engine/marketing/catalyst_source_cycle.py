@@ -406,11 +406,14 @@ def run_cycle(
     """Run one catalyst SEC source cycle and publish the canonical index.
 
     Refusals (exit 2) make zero session calls and publish nothing.  A cycle
-    ends COMPLETE (0), TRUNCATED (3), PARTIAL (4) or PUBLISH_FAILED (5); a
-    cycle in which no issuer was swept ok or incomplete ends FAILED (6) and
-    publishes nothing, so the prior pointer keeps serving.  A 403, or a 429
-    that outlasts the retries, halts the cycle (TRUNCATED): no further SEC
-    request is made and every unswept issuer carries its prior events.
+    ends COMPLETE (0), TRUNCATED (3), PARTIAL (4) or PUBLISH_FAILED (5).  A
+    cycle in which no issuer was swept ok or incomplete, or in which no issuer
+    was verified (swept ok, or a prior event definitively withdrawn), ends
+    FAILED (6) and publishes nothing, so the prior pointer keeps serving; this
+    includes a budget/403/429 halt before anything was verified.  A 403, or a
+    429 that outlasts the retries, otherwise halts the cycle (TRUNCATED): no
+    further SEC request is made and every unswept issuer carries its prior
+    events.
     """
     if not _user_agent_ok(user_agent):
         return _refused("user_agent_invalid")
@@ -464,7 +467,7 @@ def run_cycle(
                 cycle, issuer, started, window_start, window_end, prior_for_issuer,
             )
         except (RequestBudgetExhausted, SecAccessHalted):
-            status = None
+            status, reason, issuer_events, issuer_skipped, verified = None, None, [], [], False
         if cycle.budget_exhausted or cycle.halt_reason is not None:
             # The interrupted issuer's in-flight work is discarded; it and
             # every later issuer are not_checked with prior in-window events
@@ -696,7 +699,7 @@ def _process_issuer(cycle: _Cycle, issuer: UniverseIssuer, started: datetime,
     events: list[dict] = []
     skipped: list[dict] = []
     incomplete = False
-    definitive = 0
+    withdrawn = 0
     for manifest in manifests:
         accepted = _parse_clock(manifest["clocks"]["accepted_at"])
         if accepted is None or not window_start <= accepted <= window_end:
@@ -730,14 +733,18 @@ def _process_issuer(cycle: _Cycle, issuer: UniverseIssuer, started: datetime,
             })
             incomplete = True
             continue
-        definitive += 1
         if event is None:
             incomplete = True
+            if prior_event is not None:
+                # A definitive withdrawal (integrity mismatch / document
+                # missing) changes what the reader serves, so it counts as
+                # verified work; an unattested or unparseable new filing does not.
+                withdrawn += 1
             continue
         events.append(event)
     status = "incomplete" if incomplete or skipped else "ok"
     reason = skipped[0]["reason"] if (incomplete and skipped) else None
-    return status, reason, events, skipped, status == "ok" or definitive > 0
+    return status, reason, events, skipped, status == "ok" or withdrawn > 0
 
 
 def _lineage_for(issuer: UniverseIssuer, manifest: dict) -> tuple[str, int] | None:
