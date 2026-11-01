@@ -326,5 +326,60 @@ def test_ruling_ci_consumes_exact_base_without_network_refetch():
     )
     assert "git fetch" not in cmd
     assert "TESTED_BASE_SHA" in cmd
+    assert "git rev-list --parents -n 1 HEAD" in cmd
     assert "git merge-base --is-ancestor" in cmd
     assert 'RULING_DIFF_BASE="$TESTED_BASE_SHA"' in cmd
+
+
+def test_trusted_pc_route_requires_two_parent_tested_merge(tmp_path):
+    """Missing env pin is safe only at a proved two-parent synthetic merge."""
+    manifest = yaml.safe_load(
+        (_REPO_ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
+    )
+    cmd = next(
+        step["run"] for step in manifest["jobs"]["ruling-graph"]["steps"]
+        if step.get("name", "").startswith("conflict checker (hard fail")
+    )
+    # Execute the exact pre-check from the manifest, not the full graph checker
+    # whose production inputs are intentionally absent from this temporary repo.
+    prefix = cmd.split('RULING_DIFF_BASE="$TESTED_BASE_SHA" python ', 1)[0]
+    script = prefix + '\nprintf "%s\\n" "$TESTED_BASE_SHA"\n'
+    env = os.environ.copy()
+    env.pop("TESTED_BASE_SHA", None)
+
+    def git(*args):
+        result = subprocess.run(
+            ["git", "-C", str(tmp_path), *args],
+            check=True, capture_output=True, text=True,
+        )
+        return result.stdout.strip()
+
+    git("init", "-b", "main")
+    git("config", "user.name", "CI Test")
+    git("config", "user.email", "ci-test@example.invalid")
+    (tmp_path / "base.txt").write_text("base\n", encoding="utf-8")
+    git("add", ".")
+    git("commit", "-m", "base")
+    single_parent = subprocess.run(
+        ["bash", "-eo", "pipefail", "-c", script],
+        cwd=tmp_path, env=env, capture_output=True, text=True,
+    )
+    assert single_parent.returncode != 0
+
+    git("checkout", "-b", "feature")
+    (tmp_path / "feature.txt").write_text("feature\n", encoding="utf-8")
+    git("add", ".")
+    git("commit", "-m", "feature")
+    git("checkout", "main")
+    (tmp_path / "main.txt").write_text("main\n", encoding="utf-8")
+    git("add", ".")
+    git("commit", "-m", "main")
+    expected_base = git("rev-parse", "HEAD")
+    git("merge", "--no-ff", "-m", "synthetic merge", "feature")
+
+    two_parent = subprocess.run(
+        ["bash", "-eo", "pipefail", "-c", script],
+        cwd=tmp_path, env=env, capture_output=True, text=True,
+    )
+    assert two_parent.returncode == 0, two_parent.stderr
+    assert two_parent.stdout.splitlines()[-1] == expected_base

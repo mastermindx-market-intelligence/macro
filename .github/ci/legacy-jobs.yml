@@ -16743,11 +16743,10 @@ jobs:
     #   - all test_ruling_graph.py assertions pass
     # The graph is display-only (RUL-CL-12: authority_ceiling A1_EXPLAIN).
     # Mirrors cycle-pattern-authority pattern.
-    # Hosted ci-pack already holds the exact tested merge and its planner-pinned
-    # base ancestry. A second unbounded fetch of moving origin/main is redundant
-    # and can fail with invalid index-pack on this very large repository.
-    # Require the exact CI-tested base locally and prove its ancestry. Never
-    # weaken the H1/H2/W1 changed-file guard for missing Git history.
+    # Hosted ci-pack has its plan-pinned base. The retained trusted PC executor
+    # instead pins the exact two-parent tested merge: its first parent is the
+    # planner-verified base. No moving-ref fetch is necessary in either route;
+    # refuse absent ancestry rather than skip H1/H2/W1 on a shallow checkout.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16762,7 +16761,17 @@ jobs:
         run: python scripts/build_ruling_graph.py --check
       - name: conflict checker (hard fail on new FDR family or privacy boundary violations)
         run: |
-          : "${TESTED_BASE_SHA:?missing authoritative CI-tested base SHA}"
+          # Hosted packs receive the planner-pinned base directly. The trusted
+          # PC executor pins the exact two-parent synthetic merge instead, and
+          # its first parent IS the planner's tested base. Never chase main.
+          if [ -z "${TESTED_BASE_SHA:-}" ]; then
+            read -r tested_tree fallback_base subject_head extra < <(git rev-list --parents -n 1 HEAD)
+            if [ "$tested_tree" != "$(git rev-parse HEAD)" ] || [ -z "${fallback_base:-}" ] || [ -z "${subject_head:-}" ] || [ -n "${extra:-}" ]; then
+              echo "::error::ruling-graph requires a verified two-parent tested merge or planner-pinned base"
+              exit 1
+            fi
+            TESTED_BASE_SHA="$fallback_base"
+          fi
           git cat-file -e "${TESTED_BASE_SHA}^{commit}"
           git merge-base --is-ancestor "$TESTED_BASE_SHA" HEAD
           RULING_DIFF_BASE="$TESTED_BASE_SHA" python scripts/check_ruling_conflicts.py
