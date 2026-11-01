@@ -18361,7 +18361,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- endif %}
       {% for s in health %}
       <tr>
-        <td class="l">{{ s.name }}</td>
+        {# Reviewed label, never the raw collector id (ids can name a provider). #}
+        <td class="l">{{ t(s.label, s.label_zh or s.label) if s.label else s.name }}</td>
         {# BIL-06: bilingual status pill #}
         {% set _sts_zh = {'ok':'正常','stale':'过期','failed':'失败','blocked':'已屏蔽','dead':'已停用','no_creds':'缺凭证','no_key':'缺密钥'} %}
         <td class="l"><span class="pill pill-{{ s.status }}"><span class="l-en">{{ s.status }}</span><span class="l-zh">{{ _sts_zh.get(s.status, s.status) }}</span></span></td>

@@ -44,6 +44,7 @@ from lib import config, site_assets, store  # noqa: E402
 from lib.chat_allowance import chat_allowance_view_model  # noqa: E402
 from lib.help_directory import help_page_view_model, refresh_disclosure  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from lib.source_health_labels import label_for, neutral_note  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_site")
@@ -4299,10 +4300,17 @@ def build_sector_pages(env: Environment, site: Path, generated: str,
 
 
 def health_rows() -> list[dict]:
+    # `name` stays the collector id (sort key, data contract); the panel shows
+    # the reviewed label so no provider name reaches the page.
     sources = store.read_status().get("sources", {})
-    return [{"name": k, "status": v.get("status", "?"), "rows": v.get("rows", 0),
-             "last_date": v.get("last_date"), "error": (v.get("error") or "")[:90]}
-            for k, v in sorted(sources.items())]
+    rows = []
+    for k, v in sorted(sources.items()):
+        label = label_for(k)
+        rows.append({"name": k, "label": label["en"], "label_zh": label["zh"],
+                     "status": v.get("status", "?"), "rows": v.get("rows", 0),
+                     "last_date": v.get("last_date"),
+                     "error": neutral_note(v.get("error") or "")[:90]})
+    return rows
 
 
 def regime_timeline(hist: pd.DataFrame) -> dict:

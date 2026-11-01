@@ -43577,6 +43577,13 @@ jobs:
       - "tests/test_mag7_tape_strip.py"
       - "tests/test_theme_tape.py"
       - "tests/test_us_board_priority_ui.py"
+      # Health-panel source labels: the label contract lives in lib/ (covered by
+      # lib/** below) and the suite also reads the page copy of these templates.
+      - "tests/test_source_health_labels.py"
+      - "templates/bonds.html.j2"
+      - "templates/canada_stock.html.j2"
+      - "templates/intl_stock.html.j2"
+      - "templates/stock.html.j2"
       # EW-P4.T1 descriptive observation UI (GD-EW-P4-B1): the suite reads the
       # band templates, the frozen lib contract it mirrors, the Sector Central
       # glance source it shares CSS discipline with, and shared fixtures.
@@ -43794,6 +43801,7 @@ jobs:
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_vsb_surface.py
           tests/test_macro_mtf_sort_key.py
+          tests/test_source_health_labels.py
           tests/test_ew_p4_descriptive_ui.py -q
 
   options-skew-engine:
