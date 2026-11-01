@@ -137,6 +137,7 @@ def _remove_stale_fixture() -> None:
 
 
 def _render_fixture_site(scratch: Path) -> None:
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 
     environment = Environment(
@@ -160,7 +161,7 @@ def _render_fixture_site(scratch: Path) -> None:
         source = _ROOT / "templates" / name
         if source.exists():
             shutil.copy(source, scratch / name)
-    (scratch / "am_edition.html").write_text(html, encoding="utf-8")
+    write_unshimmed_html(scratch / "am_edition.html", html, encoding="utf-8")
 
 
 def _git_head() -> str | None:

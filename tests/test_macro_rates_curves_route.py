@@ -715,6 +715,65 @@ def _t11_collapse_main_prior_label(html: str) -> str:
     )
 
 
+# Shapes ``date_pair`` / ``date_display_pair`` actually emit. Anything else
+# (a word, a raw ISO date, free text) must not collapse.
+_T11_DATE_EN = r"(\d{1,2} [A-Z][a-z]{2} \d{4})"
+_T11_DATE_ZH = r"(\d{4}年\d{1,2}月\d{1,2}日)"
+_T11_OLD_WHAT_CHANGED_NOTE = (
+    '<span class="mq-section-note">'
+    '<span class="l-en">Today against last time, measured the same way.</span>'
+    '<span class="l-zh">以相同方法将今天与上次对比。</span></span>'
+)
+_T11_DATED_NOTE_RE = re.compile(
+    r'<span class="mq-section-note">'
+    r'<span class="l-en">' + _T11_DATE_EN + r" against " + _T11_DATE_EN
+    + r", measured the same way\.</span>"
+    r'<span class="l-zh">' + _T11_DATE_ZH + r"与" + _T11_DATE_ZH
+    + r"对比，测算方法相同。</span>"
+    r"</span>"
+)
+_T11_UNDATED_NOTE_RE = re.compile(
+    r'<span class="mq-section-note">'
+    r'<span class="l-en">The latest reading against the one before it, '
+    r'measured the same way\.</span>'
+    r'<span class="l-zh">以相同方法将最新读数与上一读数对比。</span>'
+    r'</span>'
+)
+_T11_PRIOR_HEAD_DATE_RE = re.compile(
+    r'(<th scope="col"><span class="l-en">Prior</span><span class="l-zh">上期</span>)'
+    r'<span class="mq-owner-field"><span class="l-en">' + _T11_DATE_EN + r"</span>"
+    r'<span class="l-zh">' + _T11_DATE_ZH + r"</span></span>"
+)
+_T11_CURRENT_HEAD_DATE_RE = re.compile(
+    r'(<th scope="col"><span class="l-en">Current</span><span class="l-zh">当前</span>)'
+    r'<span class="mq-owner-field"><span class="l-en">' + _T11_DATE_EN + r"</span>"
+    r'<span class="l-zh">' + _T11_DATE_ZH + r"</span></span>"
+)
+
+
+def _t11_collapse_prior_date(html: str) -> str:
+    """Collapse the what-changed prior-date edit back onto the frozen golden.
+
+    The Change column now names the gap it covers. When the prior is an
+    earlier comparable reading, the note is "<current> against <prior>,
+    measured the same way." and each date is repeated under Prior and
+    Current. Otherwise the note is the undated sentence and the heads stay
+    bare. The T11 goldens froze the older "Today against last time" note
+    and those bare heads. They are never regenerated from this renderer
+    (tests/fixtures/macro_suite_t11/README): a golden refresh has to carry
+    its paired input generation, and this edit is not that refresh. Both
+    new note forms map back to that exact golden span, and a date span
+    directly after Prior or Current is removed. The date groups accept
+    only the shapes ``date_pair`` produces, inside that markup, so free
+    text, a non-date, or a date on any other head still fails the compare.
+    """
+    html = _T11_DATED_NOTE_RE.sub(_T11_OLD_WHAT_CHANGED_NOTE, html)
+    html = _T11_UNDATED_NOTE_RE.sub(_T11_OLD_WHAT_CHANGED_NOTE, html)
+    html = _T11_PRIOR_HEAD_DATE_RE.sub(r"\1", html)
+    html = _T11_CURRENT_HEAD_DATE_RE.sub(r"\1", html)
+    return html
+
+
 # T21 (reviewed 2026-10-17): the frozen T11 goldens in
 # tests/fixtures/macro_suite_t11/pages/ froze BASE e38026e9f4e's
 # rendering, in which the T21 label keys had no table entry and
@@ -851,12 +910,86 @@ def test_11_t21_label_collapse_does_not_mask_other_edits() -> None:
         _assert_same_macro_suite_region(golden, mutated, name)
 
 
+def test_11_prior_date_collapse_does_not_mask_other_edits() -> None:
+    """Rewriting a frozen golden into the new what-changed markup passes T11.
+
+    A character in the note, a non-date in a date span, a date span on a
+    head other than Prior or Current, or any other character in the region
+    still fails. The goldens stay frozen.
+    """
+    name = "macro_financial_conditions.html"
+    golden = (T11_PAGES / name).read_text(encoding="utf-8")
+    dated_note = (
+        '<span class="mq-section-note">'
+        '<span class="l-en">4 Sep 2026 against 1 Aug 2026, measured the same way.</span>'
+        '<span class="l-zh">2026年9月4日与2026年8月1日对比，测算方法相同。</span></span>'
+    )
+    undated_note = (
+        '<span class="mq-section-note">'
+        '<span class="l-en">The latest reading against the one before it, measured the same way.</span>'
+        '<span class="l-zh">以相同方法将最新读数与上一读数对比。</span></span>'
+    )
+    prior_span = (
+        '<span class="mq-owner-field"><span class="l-en">1 Aug 2026</span>'
+        '<span class="l-zh">2026年8月1日</span></span>'
+    )
+    current_span = (
+        '<span class="mq-owner-field"><span class="l-en">4 Sep 2026</span>'
+        '<span class="l-zh">2026年9月4日</span></span>'
+    )
+    prior_label = '<th scope="col"><span class="l-en">Prior</span><span class="l-zh">上期</span>'
+    current_label = '<th scope="col"><span class="l-en">Current</span><span class="l-zh">当前</span>'
+    metric_label = '<th scope="col"><span class="l-en">Metric</span><span class="l-zh">指标</span>'
+
+    rewritten = golden.replace(_T11_OLD_WHAT_CHANGED_NOTE, dated_note, 1)
+    rewritten = rewritten.replace(prior_label, prior_label + prior_span, 1)
+    rewritten = rewritten.replace(current_label, current_label + current_span, 1)
+    assert rewritten != golden
+    _assert_same_macro_suite_region(golden, rewritten, name)
+
+    undated = golden.replace(_T11_OLD_WHAT_CHANGED_NOTE, undated_note, 1)
+    assert undated != golden
+    _assert_same_macro_suite_region(golden, undated, name)
+
+    wording = rewritten.replace("measured the same way.", "measured the same way.X", 1)
+    assert wording != rewritten
+    with pytest.raises(AssertionError):
+        _assert_same_macro_suite_region(golden, wording, name)
+
+    nondate = rewritten.replace("1 Aug 2026", "yesterday", 1)
+    assert nondate != rewritten
+    with pytest.raises(AssertionError):
+        _assert_same_macro_suite_region(golden, nondate, name)
+
+    other_head = rewritten.replace(metric_label, metric_label + current_span, 1)
+    assert other_head != rewritten
+    with pytest.raises(AssertionError):
+        _assert_same_macro_suite_region(golden, other_head, name)
+
+    marker = _SUITE_REGION[0]
+    idx = rewritten.find(marker)
+    assert idx >= 0, "golden financial-conditions page must carry the suite-region start marker"
+    mutated = rewritten[:idx + len(marker)] + "X" + rewritten[idx + len(marker):]
+    with pytest.raises(AssertionError):
+        _assert_same_macro_suite_region(golden, mutated, name)
+
+
 def _assert_same_macro_suite_region(before_html: str, after_html: str, name: str) -> None:
+    """Byte-compare one macro-suite region after the accepted collapses.
+
+    ``_t11_collapse_prior_date`` folds this edit's dated Change column
+    back to the frozen "Today against last time" note. The goldens stay
+    as they are: a refresh has to carry its paired input generation
+    (tests/fixtures/macro_suite_t11/README), and this edit is not that
+    refresh. The missing-prior and T21 collapses still run, on both sides.
+    """
     before = _region(before_html, name)
     after = _region(after_html, name)
     assert before is not None and after is not None, f"{name}: no macro-suite region"
-    assert (_t11_collapse_t21_labels(_t11_collapse_main_prior_label(before))
-            == _t11_collapse_t21_labels(_t11_collapse_main_prior_label(after))), (
+    assert (_t11_collapse_t21_labels(_t11_collapse_main_prior_label(
+                _t11_collapse_prior_date(before)))
+            == _t11_collapse_t21_labels(_t11_collapse_main_prior_label(
+                _t11_collapse_prior_date(after)))), (
         f"{name}: the macro-suite region is NOT byte-identical to the committed "
         "page. That is a regression introduced by this packet's shared-surface "
         "edits, not main-side drift."
@@ -979,7 +1112,9 @@ def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> No
     before = _region(altered, name)
     after = _region((out / name).read_text(encoding="utf-8"), name)
     assert before is not None and after is not None
-    assert before == after
+    # The re-render carries this edit's dated Change column. Collapse it
+    # the same way T11 does; the altered stamp still has to match.
+    assert _t11_collapse_prior_date(before) == _t11_collapse_prior_date(after)
     assert altered_stamp in before
     assert stamp not in before
 
