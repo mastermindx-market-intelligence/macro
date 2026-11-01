@@ -26,6 +26,13 @@ def _saw(ampl=0.5, period=180, n=900, trend=0.0003):
 
 # ── ZigZag swing detection ───────────────────────────────────────────────────
 
+def test_cycle_tabs_wrap_on_a_phone() -> None:
+    # A string pin cannot prove layout. The 375 browser read in the PR carries that.
+    root = Path(__file__).resolve().parent.parent
+    rule = "@media (max-width: 560px) { .sc-tabs { flex-wrap: wrap; } }"
+    assert rule in (root / "templates" / "sector_cycles.css").read_text(encoding="utf-8")
+
+
 def test_zigzag_alternates_and_is_significant():
     s = _saw(ampl=0.5, period=180)
     turns = sc._detect_swings(s, pct=12.0)
