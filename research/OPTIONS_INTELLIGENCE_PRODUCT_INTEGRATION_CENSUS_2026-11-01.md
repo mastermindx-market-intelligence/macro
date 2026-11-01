@@ -29,7 +29,7 @@ Appendices live in `research/options_intelligence_product_integration_2026-11-01
 | B1 | L1A rows AC37–AC46. Fabric oi2-l1a-r1, `8cfdb77e…`. |
 | B2 | L1B rows AC47–AC56 and AC60. Fabric oi2-l1b-r2, `f88b2927…`. |
 | C | P09 `options_exposure_node`: activation-OFF switch dossier. |
-| D | AC40 W3B decision memo (the seat rules). |
+| D | AC40 W3B decision memo. The seat ruled **B** on 2026-11-01 ([ruling](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6556677418)); the memo's final section records it. |
 
 ## 1. L1 — row dispositions (AC37–AC56, AC60)
 
@@ -40,7 +40,7 @@ Each row has exactly one disposition. The evidence column cites the appendix lin
 | AC37 | DO_NOT_REDO_ACCEPTED | B1 L18. TERM `docs/OPTIONS_R1_PROGRAM.md`@69e8e9f0 L92. Compare 69e8e9f0…db6168c2 touches no W1A file. | The accepted live receipt still matches current source. |
 | AC38 | DO_NOT_REDO_ACCEPTED | B1 L19. Same doc, L79: investigation `f7874c02…`, revision 1, "Matches the saved source". | |
 | AC39 | DO_NOT_REDO_ACCEPTED | B1 L20. #1104 merged at 0aecf8e9. R15 = #1104 comment 6343024596. | |
-| AC40 | GATED | B1 L21. #1104 comment 6526883926 has no answer. Appendix D proves the premise for option B (macro `engine/options_hub.py:184,188-189,226`). | **The seat rules** (§6). |
+| AC40 | RULED_B_BUILD_PENDING | B1 L21 recorded GATED at delivery (question 6526883926 unanswered). The seat ruled **B** on 2026-11-01 ([ruling](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6556677418)); Appendix D proves its premise (macro `engine/options_hub.py:184,188-189,226`). | Ruled, **not ACCEPTED**: the Option B Terminal build is pending on its own draft PR and needs an independent non-authoring review. |
 | AC41 | GATED | B1 L22. R1 doc L119. The #599 scan has 0 w3c hits. | Needs signed-in production watch → review proof. |
 | AC42 | OWNER_HELD | B1 L23. #804 head `00cf938d`, draft, dirty. | Incumbent; read-only. |
 | AC43 | OWNER_HELD | B1 L24. #804 fields; no reconcile receipt in #599. | L1A records this as GATED on an original-operation reconcile. That gate sits inside the incumbent's #804 lane, so per the commission it is OWNER_HELD. |
@@ -59,7 +59,7 @@ Each row has exactly one disposition. The evidence column cites the appendix lin
 | AC56 | OWNER_HELD | B2 L18. coo-fable (R06 L16); macro #7728 / #10065. | |
 | AC60 | GATED | B2 L19. R02@820f33b5 L95 `decided_by: ceo-sol`. | Closeout by the existing decision owner. |
 
-Totals: 8 DO_NOT_REDO_ACCEPTED, 6 OWNER_HELD, 3 ACTIONABLE_NOW, 4 GATED, for 21 rows.
+Totals: 8 DO_NOT_REDO_ACCEPTED, 6 OWNER_HELD, 3 ACTIONABLE_NOW, 3 GATED, 1 RULED_B_BUILD_PENDING (AC40), for 21 rows.
 
 ## 2. L2 — ENTITLED-RENDER CHECKLIST (Journey A, D107 steps 1–4 and 6)
 
@@ -253,11 +253,11 @@ See Appendix C. The four activation-OFF switches plus the fifth delivery gate ar
 
 ## 6. L5 — AC40 W3B memo
 
-See Appendix D. Recommendation (interpreted): **B**, which anchors interpolated dates to the payload `asof`; **C** is the minimal alternative. Option B's premise is proven at macro `engine/options_hub.py:184,188-189,226`. The counterexample σ(7)=33.166247903554% (calculated) shows the mixed clock. The seat rules; ORCH-2 decides nothing.
+See Appendix D. Recommendation (interpreted): **B**, which anchors interpolated dates to the payload `asof`; **C** is the minimal alternative. Option B's premise is proven at macro `engine/options_hub.py:184,188-189,226`. The counterexample σ(7)=33.166247903554% (calculated) shows the mixed clock. The seat ruled **B** on 2026-11-01 ([ruling](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6556677418)); A is rejected and C is not chosen. ORCH-2 decided nothing. The ruling is recorded in Appendix D, "Seat ruling (2026-11-01)".
 
 ## 7. Lane table (Fabric only; 0 native Agent/Task/Workflow calls)
 
-14 of 14 lanes used: 5 DELIVERED (4 census and 1 build), 9 refused before any worker started. Fabric acceptance (observed, `fabric_task.py status`): oi2-l1a-r1, oi2-l1b-r2 and oi2-l2a-r1 are `ACCEPTED` by reviewer (`VALIDATED_OUTCOME`). oi2-l3-r1 is `NOT_ACCEPTED`; ORCH-2 deliberately did not accept it, because its independent review never ran. Every lane is C1_ROUTINE_BOUNDED on host ubuntu1. Unless noted, placement was pool `glm`, model `glm-5.3-flash`. That is observed in `ext/state/remote_sub/<id>.provider.json` (`provider: glm`, `model: glm-5.3-flash`) and in each request log's `LEASE_OK pool=glm`. Review lanes are placed on pool `grok` (`grok-4.7`) with `--subject-pool glm`, so the reviewer is on a different pool and model from the author.
+14 of 14 lanes used: 4 DELIVERED (3 census: oi2-l1a-r1, oi2-l1b-r2, oi2-l2a-r1; 1 build: oi2-l3-r1), 10 refused before any worker started (oi2-l1b-r1, oi2-l2b-r1, oi2-l4-r1/r2/r3, oi2-l5-r1, oi2-recrv-r1, oi2-rv-r1/r2/r3). 4 + 10 = 14, matching the rows below. Fabric acceptance (observed, `fabric_task.py status`): oi2-l1a-r1, oi2-l1b-r2 and oi2-l2a-r1 are `ACCEPTED` by reviewer (`VALIDATED_OUTCOME`). oi2-l3-r1 is `NOT_ACCEPTED`; ORCH-2 deliberately did not accept it, because its independent review never ran. Every lane was requested as C1_ROUTINE_BOUNDED. Every lane that got a placement was on host ubuntu1; oi2-l2b-r1 and oi2-rv-r2 were refused pre-dispatch with no placement. Unless noted, placement was pool `glm`, model `glm-5.3-flash`. That is observed in `ext/state/remote_sub/<id>.provider.json` (`provider: glm`, `model: glm-5.3-flash`) and in each request log's `LEASE_OK pool=glm`. Review lanes are placed on pool `grok` (`grok-4.7`) with `--subject-pool glm`, so the reviewer is on a different pool and model from the author.
 
 | Run id | Class | Final state | Digest (remote stdout sha256 / artifact) | Adjudication |
 |---|---|---|---|---|
@@ -310,6 +310,6 @@ See Appendix D. Recommendation (interpreted): **B**, which anchors interpolated 
 **Seat-only acts (not performed):**
 
 - the signed-in entitled render of §2;
-- the AC40 ruling;
+- the AC40 ruling (made by the seat on 2026-11-01: **B**, [ruling](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6556677418));
 - any switch activation;
 - marking a PR ready, labelling, arming, merging, or approving a review.

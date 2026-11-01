@@ -81,3 +81,22 @@ The rule this breaks is "stale is never live": a snapshot from seven days earlie
   - Acceptance follows the original W3B criterion: fresh and older snapshots, missing asof, supplied/interpolated/unsupported rows, both languages, and the three IA viewports.
 - **Ruling A:** a copy-only change. It still needs an explicit footnote that the IV is snapshot-relative. AC40 stays falsifiable by the same counterexample.
 - **No ruling:** AC40 stays GATED (owner adjudication). The counterexample keeps reproducing for any snapshot viewed after its own date.
+
+## 6. Seat ruling (2026-11-01)
+
+**The seat ruled Option B.** Source: [https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6556677418](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6556677418) (Options Intelligence completion seat, ruling under leadership continuity on the unanswered question 6526883926). This section transcribes the ruling; ORCH-2 decided nothing.
+
+Rule points, as ruled:
+
+1. **Interpolated date = asofDate + tenor.** When `asofDate` is a valid ISO day, an interpolated row's date is `addDays(asofDate, tenorDays)` (today `VolComparePanel.tsx:147` uses `addDays(todayIso, tenorDays)`).
+2. **Past label.** When that date is not after the viewer's ET today, the row is labeled as past and names the read date. EN and ZH match.
+3. **No date when asof is missing.** When `asof` is missing or invalid, interpolated rows show no calendar date, and the reason is stated in EN and ZH.
+4. **calDte on the same clock.** The skew fallback `calDte` (`:208`) counts from `asofDate` when it is valid, and falls back to `todayIso` only when `asof` is missing; that fallback is declared.
+5. **Unchanged list.** Supplied rows, unsupported rows, the accepted interpolation math (DO_NOT_REDO), the expected-move line (`:195-202`) and the events-inside-the-curve windows (`:220-228`) stay as they are.
+
+**A is rejected**: it relabels the error instead of removing it. **C is not chosen**: it is truthful but drops a true and useful date.
+
+Status: **RULED, build pending, not ACCEPTED.** The Option B build lands on its own Terminal draft PR from master and needs an independent non-authoring review before it can be marked ready. The ruling's acceptance cases are the discriminating tests in §4 (B column).
+
+Boundary note (interpreted): the ruling's text says "before the viewer's ET today", and its first acceptance case pins today to 2026-10-30 and expects the 2026-10-30 row (asof 2026-10-23 + 7) to be labeled past. The two agree only if a date equal to today counts as past, so point 2 above is written as "not after today". The build implements that and names it in its PR body so the seat can reverse it.
+
