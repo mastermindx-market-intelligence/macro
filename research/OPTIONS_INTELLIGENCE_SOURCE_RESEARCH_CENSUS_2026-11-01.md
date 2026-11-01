@@ -144,7 +144,9 @@ all empirical work is GATED.
 - **Pre-seal reads by ORCH-1.** ORCH-1 discloses one read made before the seal,
   of schema and row counts only, from a separate producer.
 - **Independent review.** WAITING_CAPACITY:
-  - Two review lanes were refused at admission on ubuntu1 before they started.
+  - Three review lanes were refused at admission on ubuntu1 before they
+    started. The last refusal record names
+    `host_temperature_at_or_above_limit`.
   - The router places the next review on ubuntu1/glm-5.3, which is still above
     its thermal admission threshold.
 
@@ -166,6 +168,7 @@ before start: the id is burned and nothing was retried under it.
 | oi1-l3a-r1 | fix_build | m1 / MiniMax-M3 | DONE rc 0 | `250c4968b61fed6e` | ACCEPTED as the draft that was sealed; independent review pending |
 | oi1-l3r-r1 | review | ubuntu1 / grok-4.7 | refused (not started) | none | n/a |
 | oi1-l3r-r2 | review | ubuntu1 / glm-5.3 | refused (not started) | none | n/a |
+| oi1-l3r-r3 | review | ubuntu1 / glm-frontier | refused (`host_temperature_at_or_above_limit`, not started) | none | n/a |
 
 ## Carried gaps
 
