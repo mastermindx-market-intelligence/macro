@@ -405,3 +405,68 @@ def test_s7_rejects_a_split_scheme_in_an_array_item() -> None:
 )
 def test_benign_tabs_and_line_breaks_stay_valid(quote: str) -> None:
     assert validate_event(_w1_with_quote(quote)).ok
+
+
+# NOTE-A review r1: the strip of tab, LF and CR applies only where a URL can
+# begin (value start, or right after < ( [ " ' = or a backtick).  These quotes
+# were valid before NOTE-A and must stay valid: a tab or line break inside
+# running prose begins no URL.
+@pytest.mark.parametrize(
+    "quote",
+    ["Source data\t: Bloomberg", "Key data\n: revenue up 3 percent",
+     "Market data\r\n: 5 percent", "Raw data\t:\t12.5", "Azure Blob\t: storage revenue",
+     "Region W\tS: 5", "Q3 Fi\nle: 10-K", "Big data\n: growth 20 percent"],
+)
+def test_prose_tab_or_line_break_before_a_colon_stays_valid(quote: str) -> None:
+    assert validate_event(_w1_with_quote(quote)).ok
+
+
+@pytest.mark.parametrize(
+    ("quote", "family"),
+    [("data\t:x", "data:/vbscript:/blob:"),
+     ("Data\t: revenue", "data:/vbscript:/blob:"),
+     (" \tda\tta:x", "data:/vbscript:/blob:"),
+     ("\tjava\nscript:x", "URI scheme split"),
+     ('<a href="java\tscript:x">', "URI scheme split"),
+     ('x="da\tta:text/html,y"', "data:/vbscript:/blob:"),
+     ("(da\tta:x)", "data:/vbscript:/blob:"),
+     ("[vb\nscript:x]", "data:/vbscript:/blob:"),
+     ("'bl\rob:x'", "data:/vbscript:/blob:"),
+     ("see (ht\ttps:x)", "URI scheme split"),
+     ("link=java\tscript:x", "URI scheme split")],
+)
+def test_s7_rejects_a_split_scheme_where_a_url_can_begin(quote: str, family: str) -> None:
+    report = validate_event(_w1_with_quote(quote))
+    issues = _quote_issues(report)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S7" in issues[0].message
+    assert family in issues[0].message
+
+
+def test_s7_reads_a_backtick_as_a_url_opener() -> None:
+    # The contract refuses a backtick itself, so test rule S7's own reading.
+    from engine.news_impact.validate import _s7_findings, _scheme_branches, load_contract
+    patterns = _scheme_branches(load_contract())
+    assert _s7_findings("`java\tscript:x", patterns) == (False, True)
+    assert _s7_findings("`da\tta:x", patterns) == (True, False)
+    assert _s7_findings("plain java\tscript:x", patterns) == (False, False)
+
+
+@pytest.mark.parametrize("quote", ["see java\tscript:x after a plain space",
+                                   "see da\tta:x in prose"])
+def test_split_scheme_inside_running_prose_is_not_a_url_start(quote: str) -> None:
+    # Documented scope: no URL parser reads this position, so nothing strips
+    # the tab and the text renders as text.  The unsplit forms stay refused.
+    assert validate_event(_w1_with_quote(quote)).ok
+    assert not validate_event(_w1_with_quote(quote.replace("\t", ""))).ok
+
+
+@pytest.mark.parametrize("value", ["(" * 50000 + " " * 50000, "<\t" * 30000,
+                                   "(\t" * 40000 + "x"])
+def test_s7_url_start_scan_is_linear(value: str) -> None:
+    import time
+    from engine.news_impact.validate import _s7_findings, _scheme_branches, load_contract
+    patterns = _scheme_branches(load_contract())
+    started = time.perf_counter()
+    _s7_findings(value, patterns)
+    assert time.perf_counter() - started < 2.0

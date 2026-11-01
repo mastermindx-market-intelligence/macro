@@ -32,11 +32,16 @@ reuses the existing code; REASON_CODES stay closed.
 
 F2 review NOTE-A (2026-11-01) widens two existing rules without a new code:
 S8 also tests the NFKC fold of each field and of each join, so a full-width
-role marker split across two fields is refused; S7 also tests each value
-with ASCII tab, LF and CR deleted (a URL parser deletes them), so a scheme
-name split by those characters is refused.  A split scheme taken from the
-contract's own URI-scheme branch is reported once, by S7, only when neither
-the schema pass nor S14 already reports the value.
+role marker split across two fields is refused.  S7 also reads each value
+where a URL can begin: the start of the value, or right after a character
+that opens a link target in markup (< ( [ " ' = or a backtick).  There it
+deletes ASCII tab, LF and CR, as a URL parser does inside a URL, so
+"da<TAB>ta:x" or "java<LF>script:x" at such a position is refused.  A tab
+or line break inside running prose ("Source data<TAB>: Bloomberg") begins
+no URL and is not read as one.  A split scheme taken from the contract's
+own URI-scheme branch is reported once, by S7, only when neither the schema
+pass nor S14 already reports the value.  project_display nulls every
+excerpt that S7 refuses.
 """
 
 from __future__ import annotations
@@ -343,24 +348,8 @@ class _Context:
         self.text_safe_patterns = tuple(patterns)
 
     def _index_scheme_patterns(self) -> None:
-        """The text_safe branches that refuse a URI scheme (rule S7).
-
-        A branch is a URI-scheme branch when its pattern names the
-        ``javascript`` scheme: the contract's
-        ``\\b(https?|ftps?|wss?|file|javascript|vbscript|gopher|hxxps?|hxtp)\\s*:``
-        branch.  S7 tests it against each value with ASCII tab, LF and CR
-        deleted, so a scheme name those characters split is refused.
-        """
-        text_safe = self.contract.get("$defs", {}).get("text_safe", {})
-        patterns = []
-        for branch in text_safe.get("not", {}).get("anyOf", []) or []:
-            pattern = branch.get("pattern") if isinstance(branch, dict) else None
-            if not isinstance(pattern, str):
-                continue
-            if "javascript" not in pattern.lower():
-                continue
-            patterns.append(re.compile(pattern))
-        self.scheme_patterns = tuple(patterns)
+        """The text_safe branches that refuse a URI scheme (rule S7)."""
+        self.scheme_patterns = _scheme_branches(self.contract)
 
     def template_validator(self, name: str):
         if name not in self.cache:
@@ -461,11 +450,80 @@ _IDENTIFIER_SUFFIXES = ("_id", "_profile")
 # scheme; the colon must immediately follow the scheme name.
 _SCHEME_RE = re.compile(r"(?i)(?<![0-9a-z_])(?:data|blob|vbscript):")
 
-# S7 (NOTE-A): the WHATWG URL parser deletes every ASCII tab, LF and CR before
-# it reads a scheme, so "da<TAB>ta:" opens as data: and "java<LF>script:" as
-# javascript:.  text_safe's control-character branch admits exactly these
-# three characters, and its scheme branch cannot see a scheme name they split.
+# S7 (NOTE-A): where a URL begins, the WHATWG URL parser strips leading C0
+# control or space characters and deletes every ASCII tab, LF and CR before
+# it reads the scheme, so a link written "da<TAB>ta:x" opens as data: and
+# "java<LF>script:x" as javascript:.  text_safe's control-character branch
+# admits exactly these three characters, and its scheme branch cannot see a
+# scheme name they split.  The deletion happens only inside a URL, so S7
+# reads it only where a URL can begin: offset 0, or right after a character
+# that opens a link target in markup.  A tab or line break in running prose
+# begins no URL, so "Source data<TAB>: Bloomberg" keeps the rule above (the
+# colon must immediately follow the scheme name) and stays valid.
 _URL_STRIPPED_CHARS = str.maketrans("", "", "\t\n\r")
+_LINK_OPENERS = frozenset("<([\"'=`")
+_SCHEME_AT_URL_START_RE = re.compile(r"(?i)(?:data|blob|vbscript):")
+
+
+def _scheme_branches(contract: dict) -> tuple:
+    """The text_safe branches that refuse a URI scheme (rule S7).
+
+    A branch is a URI-scheme branch when its pattern names the
+    ``javascript`` scheme: the contract's
+    ``\\b(https?|ftps?|wss?|file|javascript|vbscript|gopher|hxxps?|hxtp)\\s*:``
+    branch.  S7 matches it where a URL can begin once ASCII tab, LF and CR
+    are deleted, so a scheme name those characters split is refused there.
+    """
+    text_safe = contract.get("$defs", {}).get("text_safe", {})
+    patterns = []
+    for branch in text_safe.get("not", {}).get("anyOf", []) or []:
+        pattern = branch.get("pattern") if isinstance(branch, dict) else None
+        if isinstance(pattern, str) and "javascript" in pattern.lower():
+            patterns.append(re.compile(pattern))
+    return tuple(patterns)
+
+
+def _url_starts(text: str) -> tuple[str, list[int]]:
+    """``text`` with ASCII tab, LF and CR deleted, and the offsets in that
+    string where a URL can begin (rule S7).
+
+    The candidates are offset 0 and the offset after each link opener
+    (< ( [ " ' = or a backtick).  Each candidate moves past characters at or
+    below U+0020, as a URL parser strips them.  Tab, LF and CR are never
+    openers, so an opener keeps its meaning after the deletion.  The skip
+    table is built once, so the cost is linear in the length of the text.
+    """
+    kept = text.translate(_URL_STRIPPED_CHARS)
+    size = len(kept)
+    next_visible = [size] * (size + 1)
+    for index in range(size - 1, -1, -1):
+        next_visible[index] = next_visible[index + 1] if kept[index] <= " " else index
+    starts = {next_visible[0]}
+    starts.update(next_visible[index + 1] for index, char in enumerate(kept)
+                  if char in _LINK_OPENERS)
+    starts.discard(size)
+    return kept, sorted(starts)
+
+
+def _s7_findings(value: str, scheme_patterns: tuple) -> tuple[bool, bool]:
+    """(data/vbscript/blob scheme, contract URI scheme at a URL start) for one
+    string (rule S7).
+
+    Both tests read the raw text and its NFKC compatibility fold.  The first
+    is true when data:, vbscript: or blob: appears unsplit anywhere (word
+    boundary before it, colon right after it), or begins a URL once tab, LF
+    and CR are deleted.  The second is true when a scheme of the contract's
+    URI-scheme branch begins a URL once tab, LF and CR are deleted.
+    """
+    forms = (value, unicodedata.normalize("NFKC", value))
+    if any(_SCHEME_RE.search(form) for form in forms):
+        return True, False
+    starts = [_url_starts(form) for form in forms]
+    if any(_SCHEME_AT_URL_START_RE.match(kept, pos)
+           for kept, positions in starts for pos in positions):
+        return True, False
+    return False, any(pattern.match(kept, pos) for pattern in scheme_patterns
+                      for kept, positions in starts for pos in positions)
 
 _ORDERED_BYTE_SUFFIXES = (("_start_byte", "_end_byte"), ("_start_char", "_end_char"))
 
@@ -813,24 +871,28 @@ def _s7_uri_schemes(payload, ctx: _Context) -> list[ValidationIssue]:
     The NFKC compatibility fold is tested too, so a full-width scheme
     (``\uff44\uff41\uff54\uff41\uff1a``) is refused like its ASCII form.
 
-    Both forms are also tested with ASCII tab, LF and CR deleted, as a URL
-    parser deletes them, so "da<TAB>ta:" is refused like "data:".  A scheme
-    that the contract's own URI-scheme branch refuses (javascript:, https:,
-    file: and the rest) is refused here too when those characters split it;
-    an unsplit one is left to the schema pass (raw form) or rule S14
-    (compatibility form), so one defect is reported once.
+    Where a URL can begin (the start of the value, or right after
+    < ( [ " ' = or a backtick), both forms are also read with ASCII tab, LF
+    and CR deleted, as a URL parser deletes them inside a URL.  So
+    "da<TAB>ta:x" there is refused like "data:x".  A scheme that the
+    contract's own URI-scheme branch refuses (javascript:, https:, file: and
+    the rest) is refused here too when those characters split it at such a
+    position.  An unsplit one is left to the schema pass (raw form) or rule
+    S14 (compatibility form), so one defect is reported once.  A tab or line
+    break inside running prose begins no URL and is not read as one.
     """
     issues = []
     for pointer, key, value in _iter_governed_strings(payload, ctx):
-        folded = unicodedata.normalize("NFKC", value)
-        stripped = (value.translate(_URL_STRIPPED_CHARS),
-                    folded.translate(_URL_STRIPPED_CHARS))
-        if any(_SCHEME_RE.search(form) for form in (value, folded) + stripped):
+        data_scheme, contract_scheme = _s7_findings(value, ctx.scheme_patterns)
+        if data_scheme:
             issues.append(ValidationIssue(
                 INJECTION_PATTERN, pointer,
                 f"{key} carries a data:/vbscript:/blob: scheme (rule S7)"))
-        elif any(p.search(form) for p in ctx.scheme_patterns for form in stripped) and \
-                not any(p.search(value) or p.search(folded) for p in ctx.text_safe_patterns):
+            continue
+        if not contract_scheme:
+            continue
+        folded = unicodedata.normalize("NFKC", value)
+        if not any(p.search(value) or p.search(folded) for p in ctx.text_safe_patterns):
             issues.append(ValidationIssue(
                 INJECTION_PATTERN, pointer,
                 f"{key} carries a URI scheme split by a tab or line break "
@@ -1153,18 +1215,21 @@ def project_display(payload: dict, *, contract: dict | None = None) -> dict:
     whenever the owner excerpt would fail the contract's own
     ``source_span_v1.display_excerpt`` subschema: a text_safe not-clause
     (R1: URL-bearing, instruction-shaped, control characters, ...) or the
-    500-char cap (R2), or a data:/vbscript:/blob: scheme, which rule S7
-    makes part of text safety.  The excerpt is never truncated: a cut quote
-    shown without a marker would misstate the source, and the closed
-    source_span_v1 admits no truncation flag.  The input is never mutated.
+    500-char cap (R2), or anything rule S7 refuses (a data:/vbscript:/blob:
+    scheme, or a URI scheme split by tab, LF or CR where a URL can begin),
+    which rule S7 makes part of text safety.  The excerpt is never
+    truncated: a cut quote shown without a marker would misstate the
+    source, and the closed source_span_v1 admits no truncation flag.  The
+    input is never mutated.
     """
     root = contract if contract is not None else load_contract()
     rule = dict(root["$defs"]["source_span_v1"]["properties"]["display_excerpt"])
     rule["$defs"] = root["$defs"]
     admits_schema = _jsv.validator_for(root)(rule).is_valid
+    scheme_patterns = _scheme_branches(root)
 
     def admits(value: str) -> bool:
-        return admits_schema(value) and not _SCHEME_RE.search(value)
+        return admits_schema(value) and not any(_s7_findings(value, scheme_patterns))
     out = copy.deepcopy(payload)
 
     def walk(node):
