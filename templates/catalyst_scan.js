@@ -129,6 +129,7 @@
     SUPPORTED: "SOURCE-SUPPORTED",
     RIGHTS_BLOCKED: "RIGHTS-BLOCKED",
     NOT_COVERED: "NOT COVERED",
+    NO_QUALIFIED_EVENT: "NO QUALIFYING EVENT",
     TEMPORARILY_UNAVAILABLE: "TEMPORARILY UNAVAILABLE"
   })[state] || "COVERAGE UNKNOWN";
 
@@ -322,7 +323,7 @@
     try { tickers = parseTickers(input.value); }
     catch (e) { showError(e.message); input.focus(); return; }
     showError("");
-    scanRunning = true; scanSubmit.disabled = true;
+    scanRunning = true; scanSubmit.setAttribute("aria-disabled", "true");
     show(busy, true); show(results, false); resetSubscriberState();
     cards.replaceChildren();
     try {
@@ -339,7 +340,7 @@
       const message = e && typeof e.message === "string" ? e.message : "Evidence is unavailable.";
       showError(message);
     } finally {
-      show(busy, false); scanRunning = false; scanSubmit.disabled = false;
+      show(busy, false); scanRunning = false; scanSubmit.setAttribute("aria-disabled", "false");
     }
   });
 

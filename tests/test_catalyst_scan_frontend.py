@@ -820,3 +820,194 @@ def test_a07_hostile_urls_fail_closed_never_linked():
         assert hostile not in page
         assert "user:secret" not in page
         assert 'href="javascript:' not in page.lower()
+
+
+# ---------------------------------------------------------------- G1/G3 ------
+
+_G1_PILL_BODY = r"""
+const payload=JSON.parse(process.argv[2]);
+async function oneShot(){
+  return {ok:true,status:200,json:async()=>payload};
+}
+(async ()=>{
+  const dom=boot(oneShot);
+  dom.elements['cs-tickers'].value='PFE';
+  await dom.elements['cs-scan-form'].listeners.submit(SUBMIT);
+  const cards=dom.elements['cs-result-cards'];
+  assert.equal(cards.children.length,1,'one result card renders');
+  function findPill(node){
+    if(node.className==='cs-pill') return node;
+    for(const child of node.children||[]){const hit=findPill(child);if(hit)return hit;}
+    return null;
+  }
+  const pill=findPill(cards.children[0]);
+  assert.ok(pill,'result card must carry a .cs-pill node');
+  assert.equal(pill.textContent,'NO QUALIFYING EVENT');
+  assert.equal(pill.dataset.state,'NO_QUALIFIED_EVENT');
+  assert.equal(collect(cards).includes('COVERAGE UNKNOWN'),false,
+    'a checked-and-empty window must not be labelled COVERAGE UNKNOWN');
+  console.log('G1_PILL_FENCE=PASS');
+})().catch((e)=>{console.error(e.stack);process.exitCode=1;});
+"""
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
+def test_g1_no_qualified_event_pill_is_truthful_not_coverage_unknown():
+    """Catches: the NO_QUALIFIED_EVENT result-card pill falling through the
+    publicState map to the default COVERAGE UNKNOWN label."""
+    payload = _public_scan([], _coverage(returned_events=0))
+    done = subprocess.run(
+        [shutil.which("node"), "-e", _JS_DOM_PREAMBLE + _G1_PILL_BODY,
+         str(SOURCE_JS), json.dumps(payload)],
+        text=True, capture_output=True, timeout=30, check=False)
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert "G1_PILL_FENCE=PASS" in done.stdout
+
+
+_G3_FOCUS_BODY = r"""
+const payloads=JSON.parse(process.argv[2]);
+const calls=[]; const pending=[];
+async function deferredFetch(path,opts){
+  calls.push({path,body:JSON.parse(opts.body)});
+  return new Promise((resolve)=>pending.push(resolve));
+}
+(async ()=>{
+  const dom=boot(deferredFetch);
+  dom.elements['cs-tickers'].value='PFE';
+  const inFlight=dom.elements['cs-scan-form'].listeners.submit(SUBMIT);
+  assert.equal(calls.length,1);
+  // While the scan runs the button must stay focusable: a disabled control
+  // is skipped by focus and keyboard users land on <body> after a scan.
+  assert.equal(dom.elements['cs-scan-submit'].disabled,false);
+  assert.equal(dom.elements['cs-scan-submit']['aria-disabled'],'true');
+  // Double-submit protection stays on the scanRunning guard, not disabled.
+  await dom.elements['cs-scan-form'].listeners.submit(SUBMIT);
+  assert.equal(calls.length,1);
+  pending[0]({ok:true,status:200,json:async()=>payloads.pfe});
+  await inFlight;
+  assert.equal(dom.elements['cs-scan-submit']['aria-disabled'],'false');
+  assert.equal(dom.elements['cs-scan-submit'].disabled,false);
+  assert.equal(collect(dom.elements['cs-result-cards'])
+    .includes(payloads.pfe.results[0].headline),true);
+  console.log('G3_FOCUS_FENCE=PASS');
+})().catch((e)=>{console.error(e.stack);process.exitCode=1;});
+"""
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
+def test_g3_scan_submit_stays_focusable_while_running():
+    """Catches: #cs-scan-submit being disabled while a scan runs, which drops
+    keyboard focus to body after every scan submit."""
+    payloads = {"pfe": _wire_scan("PFE", "SYNTHETIC PFE fixture headline",
+                                  "SYNTHETIC PFE fixture claim.")}
+    done = subprocess.run(
+        [shutil.which("node"), "-e", _JS_DOM_PREAMBLE + _G3_FOCUS_BODY,
+         str(SOURCE_JS), json.dumps(payloads)],
+        text=True, capture_output=True, timeout=30, check=False)
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert "G3_FOCUS_FENCE=PASS" in done.stdout
+
+
+def test_g3_real_browser_320px_no_hscroll_and_focus_kept(tmp_path):
+    """Catches: a scan run dropping keyboard focus from #cs-scan-submit, or a
+    rendered result set introducing horizontal page scroll at 320px."""
+    sync_api = pytest.importorskip("playwright.sync_api")
+    from scripts.render_catalyst_scan import render_preview
+
+    page_file = render_preview(tmp_path / "preview")
+    root = page_file.parent
+    tickers = "NVDA AMD PFE AAPL MSFT TSLA META GOOGL AMZN INTC"
+
+    def fixture_scan(requested):
+        rows = []
+        for ticker in requested:
+            if ticker == "NVDA":
+                rows.append({
+                    "ticker": ticker, "status": "SUPPORTED",
+                    "relationship": "DIRECT",
+                    "headline": "Synthetic fixture headline that is intentionally very long to stress wrapping at narrow widths " * 2,
+                    "correction_state": "NONE",
+                    "as_of_utc": "2026-10-09T02:00:00Z",
+                    "what_changed": [{"text": "Synthetic change " + "x" * 120,
+                                      "evidence_ids": ["s1"]}],
+                    "scenarios": [], "invalidators": [],
+                    "sources": [{
+                        "source_id": "s1", "display_rights": "ALLOWED",
+                        "rights_receipt_id": "r", "title": "SYNTHETIC",
+                        "url": "https://www.sec.gov/Archives/edgar/data/0000000000/averyveryveryveryveryverylongpathsegmentwithoutbreaks0000000000000000.htm",
+                        "published_at_utc": "2026-10-09T01:30:00Z"}],
+                    "dossier_path": "/stocks/NVDA.html"})
+            elif ticker == "PFE":
+                rows.append({"ticker": ticker, "status": "NO_QUALIFIED_EVENT",
+                             "what_changed": [], "scenarios": [],
+                             "invalidators": [], "sources": []})
+            else:
+                rows.append({"ticker": ticker, "status": "NOT_COVERED",
+                             "what_changed": [], "scenarios": [],
+                             "invalidators": [], "sources": []})
+        return {"schema": "catalyst.scan/v1", "schema_version": 1,
+                "requested_tickers": requested, "results": rows,
+                "event_id": "fixture-e", "generation": 0,
+                "as_of_utc": "2026-10-09T02:00:00Z",
+                "publication_state": "PARTIAL", "coverage_note": "SYNTHETIC",
+                "scan_receipt": "synthetic-fixture-receipt-not-a-token"}
+
+    content_types = {".html": "text/html", ".js": "text/javascript",
+                     ".css": "text/css"}
+
+    def handler(route):
+        request = route.request
+        if request.method == "POST" and request.url.endswith("/api/catalyst/scan"):
+            body = request.post_data_json or {}
+            route.fulfill(status=200, content_type="application/json",
+                          body=json.dumps(fixture_scan(list(body.get("tickers") or []))))
+            return
+        if request.method == "GET":
+            name = request.url.split("http://catalyst.localhost/", 1)[1].split("?")[0]
+            candidate = (root / name).resolve()
+            if (str(candidate).startswith(str(root.resolve()))
+                    and candidate.is_file()):
+                route.fulfill(
+                    status=200,
+                    content_type=content_types.get(candidate.suffix,
+                                                   "application/octet-stream"),
+                    body=candidate.read_bytes())
+                return
+        route.fulfill(status=404, body="not found")
+
+    # playwright.sync_api exposes browsers only inside sync_playwright();
+    # a module-level .chromium does not exist, so the witness never ran.
+    with sync_api.sync_playwright() as pw:
+        try:
+            browser = pw.chromium.launch()
+        except Exception as exc:
+            pytest.skip(f"chromium unavailable: {exc}")
+        try:
+            for width in (320, 1280):
+                page = browser.new_page(viewport={"width": width, "height": 800})
+                page.route("http://catalyst.localhost/**", handler)
+                page.goto("http://catalyst.localhost/catalyst-scan.html")
+                assert page.evaluate(
+                    "document.documentElement.scrollWidth <= window.innerWidth + 1"), width
+                page.fill("#cs-tickers", tickers)
+                page.focus("#cs-scan-submit")
+                page.keyboard.press("Enter")
+                page.wait_for_selector("#cs-result-cards > *", timeout=5000)
+                page.wait_for_timeout(300)
+                assert page.evaluate(
+                    "document.documentElement.scrollWidth <= window.innerWidth + 1"), width
+                assert page.evaluate("document.activeElement.id") == "cs-scan-submit"
+                pill = page.evaluate(
+                    """() => {
+                        for (const card of document.querySelectorAll('#cs-result-cards > *')) {
+                            if (card.textContent.includes('PFE')) {
+                                const node = card.querySelector('.cs-pill');
+                                return node ? node.textContent : null;
+                            }
+                        }
+                        return null;
+                    }""")
+                assert pill == "NO QUALIFYING EVENT"
+                page.close()
+        finally:
+            browser.close()
