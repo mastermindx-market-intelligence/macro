@@ -409,8 +409,8 @@ def test_benign_tabs_and_line_breaks_stay_valid(quote: str) -> None:
 
 # NOTE-A review r1: the strip of tab, LF and CR applies only where a URL can
 # begin (value start, or right after < ( [ " ' = or a backtick).  These quotes
-# were valid before NOTE-A and must stay valid: a tab or line break inside
-# running prose begins no URL.
+# were valid before NOTE-A and must stay valid: a tab or line break elsewhere
+# in running prose, not right after an opener, begins no URL.
 @pytest.mark.parametrize(
     "quote",
     ["Source data\t: Bloomberg", "Key data\n: revenue up 3 percent",
@@ -470,3 +470,19 @@ def test_s7_url_start_scan_is_linear(value: str) -> None:
     started = time.perf_counter()
     _s7_findings(value, patterns)
     assert time.perf_counter() - started < 2.0
+
+
+# NOTE-A review r2 (D1): where a URL can begin, a split value gets the verdict
+# its unsplit text already gets.  Each value below is refused without the tab
+# or line break, so its split form is refused too; admitting it would make the
+# split form more permissive than the plain one.
+@pytest.mark.parametrize(
+    "quote",
+    ["Revenue (data\t: company filings) rose", "\uff08Blob\t\uff1a\u5b58\u50a8\u6536\u5165\uff09\u589e\u957f",
+     '"Data\n: as reported"', "(Data\t: unaudited)", "Total\t=\tdata\t: 5",
+     "<Blob\t: storage>", "=data\t: 5", "W\tS: 14", "Fi\nle: 10-K", "Ht\ntp: n/a"],
+)
+def test_s7_split_at_a_url_start_matches_the_unsplit_verdict(quote: str) -> None:
+    unsplit = quote.replace("\t", "").replace("\n", "").replace("\r", "")
+    assert not validate_event(_w1_with_quote(unsplit)).ok
+    assert not validate_event(_w1_with_quote(quote)).ok

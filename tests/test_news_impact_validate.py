@@ -499,7 +499,7 @@ def test_project_display_r1_any_text_safe_failure_nulled(text):
     "see java\tscript:x after a plain space",
 ])
 def test_project_display_keeps_a_benign_tab_or_line_break_excerpt(text):
-    """NOTE-A: a tab or line break in running prose begins no URL (rule S7)."""
+    """NOTE-A: a tab or line break in running prose, not right after an opener, begins no URL (rule S7)."""
     event = _w1_with_span(_mint_text("doc_benign_tab", text))
     assert V.validate_event(event, contract=CONTRACT).ok
     projected = V.project_display(event, contract=CONTRACT)

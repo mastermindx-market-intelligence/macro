@@ -36,9 +36,12 @@ role marker split across two fields is refused.  S7 also reads each value
 where a URL can begin: the start of the value, or right after a character
 that opens a link target in markup (< ( [ " ' = or a backtick).  There it
 deletes ASCII tab, LF and CR, as a URL parser does inside a URL, so
-"da<TAB>ta:x" or "java<LF>script:x" at such a position is refused.  A tab
-or line break inside running prose ("Source data<TAB>: Bloomberg") begins
-no URL and is not read as one.  A split scheme taken from the contract's
+"da<TAB>ta:x" or "java<LF>script:x" at such a position is refused.  At such
+a position a split value gets the verdict its unsplit text already gets:
+"(data<TAB>: unaudited)" is refused because "(data: unaudited)" is.  A tab
+or line break elsewhere in running prose, not right after an opener
+("Source data<TAB>: Bloomberg"), begins no URL and is not read as one.  A
+split scheme taken from the contract's
 own URI-scheme branch is reported once, by S7, only when neither the schema
 pass nor S14 already reports the value.  project_display nulls every
 excerpt that S7 refuses.
@@ -457,7 +460,9 @@ _SCHEME_RE = re.compile(r"(?i)(?<![0-9a-z_])(?:data|blob|vbscript):")
 # admits exactly these three characters, and its scheme branch cannot see a
 # scheme name they split.  The deletion happens only inside a URL, so S7
 # reads it only where a URL can begin: offset 0, or right after a character
-# that opens a link target in markup.  A tab or line break in running prose
+# that opens a link target in markup.  There a split value gets the verdict
+# of its unsplit text, so "(data<TAB>: unaudited)" is refused as
+# "(data: unaudited)" is.  A tab or line break elsewhere in running prose
 # begins no URL, so "Source data<TAB>: Bloomberg" keeps the rule above (the
 # colon must immediately follow the scheme name) and stays valid.
 _URL_STRIPPED_CHARS = str.maketrans("", "", "\t\n\r")
@@ -878,8 +883,10 @@ def _s7_uri_schemes(payload, ctx: _Context) -> list[ValidationIssue]:
     contract's own URI-scheme branch refuses (javascript:, https:, file: and
     the rest) is refused here too when those characters split it at such a
     position.  An unsplit one is left to the schema pass (raw form) or rule
-    S14 (compatibility form), so one defect is reported once.  A tab or line
-    break inside running prose begins no URL and is not read as one.
+    S14 (compatibility form), so one defect is reported once.  At a URL start
+    a split value gets the verdict of its unsplit text.  A tab or line break
+    elsewhere in running prose, not right after an opener, begins no URL and
+    is not read as one.
     """
     issues = []
     for pointer, key, value in _iter_governed_strings(payload, ctx):
