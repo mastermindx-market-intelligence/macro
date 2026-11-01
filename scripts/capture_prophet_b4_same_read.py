@@ -49,6 +49,36 @@ A write-time guard refuses to persist any availability state token, and any
 the SAME-READ envelope's own vocabulary (``EVALUATED`` / ``UNAVAILABLE_DATA``),
 not an availability verdict.
 
+TWO HOSTS, ONE STREAM (durable home; seat ruling 2026-10-31).  The facts this
+script reads live on two machines: the committed repo tree (candidates store,
+board as_of, B1 episode HEAD, alias reference) on every checkout, and the native
+live plane ``/var/lib/macro-live`` (``state/quotes_full.json`` +
+``public/live/prophet_live.json``) on the VPS only.  The VPS writes NOTHING under
+``data/`` (ledger law G0.2) and the nightly Mac runner has no live plane, so the
+same-read is SPLIT exactly like the incumbent Prophet Live lane (evaluator ->
+R2 event spool -> nightly reconciler), never duplicated:
+  ``--spool``                the VPS timer pass (app/deploy/macro-live-b4capture.timer,
+                             once per US session after the open): builds every row
+                             against the live plane, writes nothing under data/, and
+                             publishes ONE object per pass at
+                             ``live_flow/prophet_b4_capture/<stamp_date>/<captured_at>.json``
+                             (object-per-pass, never read-modify-write).  An
+                             unpublished pass is a typed refusal (exit 3), never a
+                             silent no-op: the spool IS this pass's only output.
+  ``--nightly --from-spool`` the Mac nightly (daily.yml ``us_prophet_ledgers``): lists
+                             the last N stamp_date prefixes, re-checks every row
+                             against the write fence, and keep-first merges them into
+                             the committed day files -- the SOLE durable advancer, still
+                             lane-gated, and the commit step lands the stream.  An
+                             EMPTY spool is a valid state (the VPS lane not enrolled
+                             yet, or a holiday), never a refusal.
+  ``--nightly`` alone        unchanged: a host that has BOTH the tree and the live
+                             plane (none exists today) captures and writes directly.
+No row is built twice and no verdict is persisted on either host; the row key,
+body digest, conflict law and ``captured_at`` (the VPS pass clock) are the same.
+
+Run (VPS pass):       python -m scripts.capture_prophet_b4_same_read --spool
+Run (nightly ingest): python -m scripts.capture_prophet_b4_same_read --nightly --from-spool
 Run (nightly / DAG):  python -m scripts.capture_prophet_b4_same_read --nightly
 Run (safe preview):   python -m scripts.capture_prophet_b4_same_read
 """
@@ -68,6 +98,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from engine import ledger_lane  # noqa: E402
+from engine.prophet_live import r2io  # noqa: E402
 from engine.prophet_b4_same_read import (  # noqa: E402
     evaluate_same_read_entry_availability,
 )
@@ -154,6 +185,15 @@ NATIVE_LIVE_ROOT = Path("/var/lib/macro-live")
 #: root, as a sibling of the W3 grain store.  W3's own files and grains are
 #: never written or edited here.
 CAPTURE_SUBDIR = "b4_capture"
+
+#: The R2 spool the VPS pass publishes to and the nightly ingests from (sibling of
+#: the Prophet Live event spool ``live_flow/prophet_live_events``).
+SPOOL_PREFIX = "live_flow/prophet_b4_capture"
+SPOOL_SCHEMA = "prophet.b4.capture_spool/v1"
+SPOOL_PRODUCER = "scripts/capture_prophet_b4_same_read.py"
+#: How many most-recent stamp_date prefixes one nightly ingest reads (keep-first
+#: makes a re-read a no-op, so this bounds GETs, not correctness).
+SPOOL_SESSIONS_DEFAULT = 5
 
 #: The three identity columns every durable candidates-store row must carry for
 #: the builder-identical source-key derivation to be lawful.
@@ -667,43 +707,18 @@ def _merge_and_write(target: Path, rows: list[dict[str, object]]) -> int:
     return written
 
 
-def run(
-    root: object = None,
-    *,
-    nightly: bool = False,
-    dry_run: bool = False,
-    live_root: object = None,
-) -> dict[str, object]:
-    """One capture run.  Returns the run document; raises TypedRefusal/CaptureConflictError."""
-    if nightly and live_root is not None:
-        raise TypedRefusal(
-            "LIVE_ROOT_OVERRIDE_FORBIDDEN_IN_NIGHTLY_MODE",
-            "--live-root is a report-mode inspection flag; the nightly lane reads "
-            "the publishers' fixed native live root only",
-        )
-    # --dry-run short-circuits the lane gate: it is the sanctioned no-write
-    # preview of the nightly shape and writes nothing, so it needs no lane.
-    if nightly and not dry_run and not ledger_lane.nightly_advance_enabled():
-        raise TypedRefusal(
-            "NIGHTLY_LANE_NOT_ARMED",
-            "nightly is the sole advancer: durable capture requires --nightly AND "
-            "engine.ledger_lane.nightly_advance_enabled() (COLLECT_LANE=nightly); "
-            "run report mode or --nightly --dry-run for a no-write preview",
-        )
+def spool_key(stamp_date: str, captured_at: str) -> str:
+    """``<SPOOL_PREFIX>/<stamp_date>/<captured_at digits>.json`` — one object per pass."""
+    stamp = "".join(ch for ch in str(captured_at) if ch.isalnum())
+    return f"{SPOOL_PREFIX}/{str(stamp_date)[:10]}/{stamp}.json"
 
-    root_path = Path(root).resolve() if root is not None else _repo_root()
-    if not root_path.is_absolute() or not root_path.is_dir():
-        raise TypedRefusal(
-            "REPO_ROOT_MISSING", f"repo root is not an existing directory: {root_path}"
-        )
-    live_root_path = Path(live_root) if live_root is not None else NATIVE_LIVE_ROOT
-    if not live_root_path.is_absolute() or not live_root_path.is_dir():
-        raise TypedRefusal(
-            "NATIVE_LIVE_ROOT_MISSING",
-            f"the native live owner root must be an existing absolute operator "
-            f"directory: {live_root_path}",
-        )
 
+def _build_rows(root_path: Path, live_root_path: Path, *, alias_required: bool) -> dict[str, object]:
+    """Every capture row for the committed stamp against the given live plane.
+
+    Shared by the direct nightly, the dry-run, report mode and the VPS spool pass:
+    one HEAD-backed snapshot, one alias table, one ``captured_at`` per run.
+    """
     stamp_date = resolve_board_as_of(root_path)
     if not stamp_date:
         raise TypedRefusal(
@@ -719,7 +734,7 @@ def run(
         )
     snapshot = _load_snapshot(root_path)
 
-    alias_table = resolve_alias_table(root_path, required=bool(nightly and not dry_run))
+    alias_table = resolve_alias_table(root_path, required=alias_required)
     alias_receipt = getattr(alias_table, "receipt", None)
     captured_at = _now_iso(_now())
     rows: list[dict[str, object]] = []
@@ -749,37 +764,256 @@ def run(
                     snapshot=snapshot,
                 )
             )
+    return {
+        "stamp_date": stamp_date,
+        "candidates": len(native_rows),
+        "snapshot": snapshot,
+        "alias_table": {
+            "bound": alias_table is not None,
+            "receipt": dict(alias_receipt) if isinstance(alias_receipt, Mapping) else None,
+        },
+        "captured_at": captured_at,
+        "rows": rows,
+    }
 
-    mode = "nightly" if nightly and not dry_run else ("dry-run" if nightly else "report")
-    target = capture_path(root_path, stamp_date) if nightly else None
-    rows_written = 0
-    if nightly and not dry_run:
-        rows_written = _merge_and_write(target, rows)
 
+def _counts(rows: list[dict[str, object]]) -> tuple[dict[str, int], dict[str, int]]:
     counts_by_state: dict[str, int] = {}
     counts_by_reason: dict[str, int] = {}
     for row in rows:
         counts_by_state[str(row["state"])] = counts_by_state.get(str(row["state"]), 0) + 1
         for reason in row["unavailable_reasons"]:
             counts_by_reason[str(reason)] = counts_by_reason.get(str(reason), 0) + 1
+    return dict(sorted(counts_by_state.items())), dict(sorted(counts_by_reason.items()))
+
+
+def _validate_spool_object(key: str, stamp_date: str, obj: object) -> list[dict[str, object]]:
+    """The ingest side's own check of one pass object: schema, producer, stamp,
+    closed row key set and the write fence, re-applied here because a spool object
+    is bytes from another host, not a row this process built."""
+    def refuse(detail: str) -> TypedRefusal:
+        return TypedRefusal(
+            "SPOOL_OBJECT_MALFORMED", f"spool object {key} refused, nothing written: {detail}"
+        )
+    if not isinstance(obj, Mapping):
+        raise refuse("not a JSON object (or unreadable)")
+    if obj.get("schema") != SPOOL_SCHEMA:
+        raise refuse(f"schema is not {SPOOL_SCHEMA}")
+    if obj.get("producer") != SPOOL_PRODUCER:
+        raise refuse(f"producer is not {SPOOL_PRODUCER}")
+    if str(obj.get("stamp_date")) != stamp_date:
+        raise refuse("stamp_date does not match its prefix")
+    rows = obj.get("rows")
+    if not isinstance(rows, list) or not rows:
+        raise refuse("rows is not a non-empty list")
+    out: list[dict[str, object]] = []
+    for number, row in enumerate(rows, 1):
+        if not isinstance(row, Mapping) or row.get("schema") != ROW_SCHEMA \
+                or set(row) != set(ROW_KEYS):
+            raise refuse(f"row {number} is not a {ROW_SCHEMA} row")
+        if str(row.get("stamp_date")) != stamp_date:
+            raise refuse(f"row {number} stamp_date does not match the object")
+        if str(row.get("captured_at")) != str(obj.get("captured_at")):
+            raise refuse(f"row {number} captured_at does not match the pass")
+        try:
+            _assert_row_is_lawful(row)
+        except Exception as exc:  # noqa: BLE001 — any fence failure is the same refusal
+            raise refuse(f"row {number} fails the write fence: {exc}") from exc
+        out.append(dict(row))
+    return out
+
+
+def _ingest_spool(
+    root_path: Path, *, dry_run: bool, sessions: int, root_override: bool
+) -> dict[str, object]:
+    """``--nightly --from-spool``: list, validate everything, then keep-first merge."""
+    s3 = r2io.client()
+    if s3 is None:
+        raise TypedRefusal(
+            "SPOOL_CLIENT_UNAVAILABLE",
+            "no R2 credentials: the capture spool cannot be listed, so nothing is "
+            "ingested and nothing is written",
+        )
+    by_stamp: dict[str, list[str]] = {}
+    for key in r2io.list_keys(SPOOL_PREFIX + "/", s3=s3):
+        parts = str(key)[len(SPOOL_PREFIX):].strip("/").split("/")
+        if len(parts) != 2 or not parts[1].endswith(".json"):
+            continue
+        by_stamp.setdefault(parts[0], []).append(str(key))
+    stamps = sorted(by_stamp)
+    if sessions > 0:
+        stamps = stamps[-sessions:]
+    # Phase 1 — read and validate every object; a single malformed object refuses
+    # the whole run before any write (never a partial day).
+    plan: list[tuple[str, str, list[dict[str, object]]]] = []
+    for stamp in stamps:
+        for key in sorted(by_stamp[stamp]):
+            obj = r2io.get_json(key, s3=s3, allow_public=False)
+            plan.append((stamp, key, _validate_spool_object(key, stamp, obj)))
+    # Phase 2 — keep-first merge per stamp day file (conflict law unchanged).
+    sessions_doc: dict[str, dict[str, object]] = {}
+    total_rows = 0
+    total_written = 0
+    for stamp in stamps:
+        rows = [row for s_, _k, rs in plan if s_ == stamp for row in rs]
+        target = capture_path(root_path, stamp)
+        written = 0
+        if not dry_run:
+            written = _merge_and_write(target, rows)
+        total_rows += len(rows)
+        total_written += written
+        sessions_doc[stamp] = {
+            "objects": sum(1 for s_, _k, _r in plan if s_ == stamp),
+            "rows": len(rows),
+            "rows_written": written,
+            "target": str(target),
+        }
+    if not stamps:
+        print(
+            "::notice title=prophet-b4-capture::capture spool is empty — no VPS pass "
+            f"has published under {SPOOL_PREFIX}/ (lane not enrolled, or no session); "
+            "nothing to ingest, nothing written",
+            file=sys.stderr, flush=True,
+        )
+    return {
+        "mode": "dry-run" if dry_run else "nightly",
+        "source": "spool",
+        "dry_run": bool(dry_run),
+        "root_override": root_override,
+        "data_root": str(root_path),
+        "spool": {
+            "prefix": SPOOL_PREFIX,
+            "sessions_requested": sessions,
+            "objects": len(plan),
+            "sessions": sessions_doc,
+        },
+        "rows": total_rows,
+        "rows_written": total_written,
+        "authority": "none — capture only",
+    }
+
+
+def run(
+    root: object = None,
+    *,
+    nightly: bool = False,
+    dry_run: bool = False,
+    live_root: object = None,
+    spool: bool = False,
+    from_spool: bool = False,
+    spool_sessions: int = SPOOL_SESSIONS_DEFAULT,
+) -> dict[str, object]:
+    """One capture run.  Returns the run document; raises TypedRefusal/CaptureConflictError."""
+    if spool and (nightly or from_spool or dry_run):
+        raise TypedRefusal(
+            "SPOOL_MODE_IS_NOT_NIGHTLY",
+            "--spool is the VPS pass: it reads the native live plane and publishes one "
+            "object; it never writes under data/ and never combines with --nightly, "
+            "--dry-run or --from-spool",
+        )
+    if spool and live_root is not None:
+        raise TypedRefusal(
+            "LIVE_ROOT_OVERRIDE_FORBIDDEN_IN_SPOOL_MODE",
+            "--live-root is a report-mode inspection flag; the spool pass reads the "
+            "publishers' fixed native live root only",
+        )
+    if from_spool and not nightly:
+        raise TypedRefusal(
+            "FROM_SPOOL_REQUIRES_NIGHTLY",
+            "--from-spool is the nightly ingest of the VPS spool; it has no report mode",
+        )
+    if nightly and live_root is not None:
+        raise TypedRefusal(
+            "LIVE_ROOT_OVERRIDE_FORBIDDEN_IN_NIGHTLY_MODE",
+            "--live-root is a report-mode inspection flag; the nightly lane reads "
+            "the publishers' fixed native live root only",
+        )
+    if nightly and not dry_run and not ledger_lane.nightly_advance_enabled():
+        raise TypedRefusal(
+            "NIGHTLY_LANE_NOT_ARMED",
+            "nightly is the sole advancer: durable capture requires --nightly AND "
+            "engine.ledger_lane.nightly_advance_enabled() (COLLECT_LANE=nightly); "
+            "run report mode or --nightly --dry-run for a no-write preview",
+        )
+
+    root_path = Path(root).resolve() if root is not None else _repo_root()
+    if not root_path.is_absolute() or not root_path.is_dir():
+        raise TypedRefusal(
+            "REPO_ROOT_MISSING", f"repo root is not an existing directory: {root_path}"
+        )
+    if from_spool:
+        return _ingest_spool(
+            root_path, dry_run=dry_run, sessions=int(spool_sessions),
+            root_override=root is not None,
+        )
+    live_root_path = Path(live_root) if live_root is not None else NATIVE_LIVE_ROOT
+    if not live_root_path.is_absolute() or not live_root_path.is_dir():
+        raise TypedRefusal(
+            "NATIVE_LIVE_ROOT_MISSING",
+            f"the native live owner root must be an existing absolute operator "
+            f"directory: {live_root_path}",
+        )
+
+    built = _build_rows(
+        root_path, live_root_path,
+        alias_required=bool((nightly and not dry_run) or spool),
+    )
+    stamp_date = str(built["stamp_date"])
+    rows = list(built["rows"])  # type: ignore[arg-type]
+    captured_at = str(built["captured_at"])
+    counts_by_state, counts_by_reason = _counts(rows)
+
+    spool_doc: dict[str, object] | None = None
+    if spool:
+        key = spool_key(stamp_date, captured_at)
+        payload = {
+            "schema": SPOOL_SCHEMA,
+            "producer": SPOOL_PRODUCER,
+            "stamp_date": stamp_date,
+            "captured_at": captured_at,
+            "snapshot_generation_id": str(built["snapshot"].generation_id),
+            "alias_table": built["alias_table"],
+            "candidates": built["candidates"],
+            "strategies": len(STRATEGY_DEFINITIONS),
+            "counts_by_state": counts_by_state,
+            "counts_by_reason": counts_by_reason,
+            "rows": rows,
+        }
+        if not r2io.put_json(key, payload):
+            raise TypedRefusal(
+                "SPOOL_NOT_PUBLISHED",
+                f"the pass built {len(rows)} rows but {key} was not published (no R2 "
+                "credentials, PROPHET_LIVE_NO_PUBLISH, or a PUT failure); nothing is "
+                "written anywhere else, so this decision instant is lost unless re-run",
+            )
+        spool_doc = {"key": key, "published": True}
+
+    if spool:
+        mode = "spool"
+    else:
+        mode = "nightly" if nightly and not dry_run else ("dry-run" if nightly else "report")
+    target = capture_path(root_path, stamp_date) if nightly else None
+    rows_written = 0
+    if nightly and not dry_run:
+        rows_written = _merge_and_write(target, rows)
+
     return {
         "mode": mode,
+        "source": "native_live_root",
         "dry_run": bool(nightly and dry_run),
         "root_override": root is not None,
         "data_root": str(root_path),
         "stamp_date": stamp_date,
-        "snapshot_generation_id": str(snapshot.generation_id),
-        "alias_table": {
-            "bound": alias_table is not None,
-            "receipt": dict(alias_receipt) if isinstance(alias_receipt, Mapping) else None,
-        },
-        "candidates": len(native_rows),
+        "snapshot_generation_id": str(built["snapshot"].generation_id),
+        "alias_table": built["alias_table"],
+        "candidates": built["candidates"],
         "strategies": len(STRATEGY_DEFINITIONS),
         "rows": len(rows),
-        "counts_by_state": dict(sorted(counts_by_state.items())),
-        "counts_by_reason": dict(sorted(counts_by_reason.items())),
+        "counts_by_state": counts_by_state,
+        "counts_by_reason": counts_by_reason,
         "rows_written": rows_written,
         "target": str(target) if target is not None else None,
+        "spool": spool_doc,
         "captured_at": captured_at,
         "authority": "none — capture only",
     }
@@ -807,6 +1041,20 @@ def main(argv: list[str] | None = None) -> int:
         "--root", default=None,
         help="repo root (default: this checkout; isolated/preview runs only)",
     )
+    parser.add_argument(
+        "--spool", action="store_true",
+        help="VPS pass: read the native live plane, write nothing under data/, "
+             "publish one object to the R2 capture spool (never with --nightly)",
+    )
+    parser.add_argument(
+        "--from-spool", action="store_true",
+        help="with --nightly: ingest the VPS capture spool from R2 instead of "
+             "reading the native live plane (the Mac nightly's durable path)",
+    )
+    parser.add_argument(
+        "--spool-sessions", type=int, default=SPOOL_SESSIONS_DEFAULT,
+        help="with --from-spool: how many most-recent stamp_date prefixes to read",
+    )
     args = parser.parse_args(argv)
     try:
         doc = run(
@@ -814,6 +1062,9 @@ def main(argv: list[str] | None = None) -> int:
             nightly=bool(args.nightly),
             dry_run=bool(args.dry_run),
             live_root=args.live_root,
+            spool=bool(args.spool),
+            from_spool=bool(args.from_spool),
+            spool_sessions=int(args.spool_sessions),
         )
     except TypedRefusal as exc:
         print(json.dumps({"refused": exc.token, "message": exc.message}, sort_keys=True))

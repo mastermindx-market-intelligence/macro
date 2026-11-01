@@ -1,0 +1,21 @@
+# Prophet B4 capture cadence: ONE pass per US session, after the open, once the live
+# plane has a real session behind it. systemd calendars have no ET, so 15:05Z is
+# chosen to sit inside the session in BOTH DST regimes (11:05 ET under EDT, 10:05 ET
+# under EST — the entry decision instant B4 preregistration #7751 observes is the
+# post-open state, not the close). Persistent=false: a missed pass is a missed
+# observation and is never replayed from a later clock (the row's captured_at IS the
+# observation instant). Holidays: the pass reads whatever the live plane last
+# published; the nightly ingest's write fence and the candidates-stamp check keep a
+# stale read from becoming a row for a session that did not happen.
+[Unit]
+Description=Run the Prophet B4 same-read capture pass once per US session
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 15:05:00 UTC
+AccuracySec=1s
+RandomizedDelaySec=30s
+Persistent=false
+Unit=macro-live-b4capture.service
+
+[Install]
+WantedBy=timers.target
