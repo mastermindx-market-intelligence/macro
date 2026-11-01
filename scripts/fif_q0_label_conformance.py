@@ -4,9 +4,12 @@
 Checks a held-out label set against the frozen Q0 quality protocol BEFORE the
 set is sealed: per-pack issuer applicability (section 5 — a positive label on
 a ``negative``-applicability issuer is a labeling error) and the held-out
-minimum-N rows (section 6). The report is counts-only: it carries counts and
-protocol vocabulary, never record payloads (no trial ids, accessions, targets,
-expected values, reasons or fiscal years).
+minimum-N rows (section 6), including the format-generalization row. The
+minimum-N checks mirror ``engine/fundamental_forensics/pack_evaluation.py``,
+so a conforming set meets the evaluator's per-cell floors. The report is
+counts-only: it carries counts, protocol vocabulary and fixed sentinels, never
+record payloads (no trial ids, accessions, targets, expected values, reasons,
+fiscal years, format classes or out-of-vocabulary polarities).
 
 The on-disk layout mirrors ``scripts/fif_held_out_evaluate.py``: each pack's
 labels live in ``<held-out-root>/packs/<PACK_ID>/labels/*.json`` (one JSON
@@ -28,6 +31,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from engine.fundamental_forensics.pack_evaluation import (  # noqa: E402
     NEGATIVE_LABEL_CLASSES,
+    POLARITIES,
 )
 
 SCHEMA = "fif_q0_label_conformance.v1"
@@ -40,15 +44,25 @@ DEFAULT_PROTOCOL_PATH = (
 SEALED_MARKER = "_SEALED"
 OUTSIDE_PROTOCOL_KEY = "<outside_protocol>"
 OUTSIDE_PACK_KEY = "<outside_pack>"
+OUTSIDE_VOCABULARY_KEY = "<outside_vocabulary>"
+# A pack whose section 5 ``forms`` or ``section_family_ids`` list is empty or
+# absent places no restriction on that field: its labels are tallied under
+# this sentinel and never counted as outside the pack.
+UNRESTRICTED_KEY = "<unrestricted>"
 # Held-out minimum-N row identifiers (Q0 protocol section 6). The two generic
-# rows are matched by their frozen cell wording; the per-pack negative-issuer
-# rows are the held-out rows whose cell starts "<PACK> x " (today "PK11 x
-# non-bank issuers" and "PK12 x all five issuers"). Pack ids and minimum-N
-# values always come from the protocol rows; neither is hardcoded here.
+# rows are matched by their frozen cell wording. The format row ("pack,
+# format_class != <primary>") is parsed so the primary format comes from the
+# protocol. The per-pack negative rows are the held-out rows whose cell is
+# "<PACK> x <group>" (today "PK11 x non-bank issuers" and "PK12 x all five
+# issuers"); as in the evaluator, an "all ..." group is one check per
+# protocol issuer and any other group is one aggregate check over the issuers
+# whose applicability for that pack is not "required". Pack ids, groups and
+# minimum-N values always come from the protocol rows; none is hardcoded here.
 HELD_OUT_SPLIT = "held_out"
 POSITIVE_ISSUER_CELL = "pack, applicable issuer, polarity=positive"
 PACK_NEGATIVE_CELL = "pack, polarity=negative"
-NEGATIVE_ISSUER_ROW_RE = re.compile(r"^(PK\d\d) x ")
+FORMAT_ROW_RE = re.compile(r"^pack, format_class != (\S+)$")
+NEGATIVE_ISSUER_ROW_RE = re.compile(r"^(PK\d\d) x (.+)$")
 # The only record keys this gate reads; every other LabelRecord field is
 # ignored and never reaches the output.
 REQUIRED_RECORD_KEYS = (
@@ -58,6 +72,7 @@ REQUIRED_RECORD_KEYS = (
     "section_family",
     "label_class",
     "polarity",
+    "format_class",
 )
 # Positive label classes of the Q0 vocabulary (section 5): the extract and
 # finding classes a negative-applicability issuer must never carry.
@@ -197,11 +212,21 @@ def _held_out_gates(protocol: dict) -> dict:
     held_out_rows = [
         row for row in protocol["minimum_n"] if row.get("split") == HELD_OUT_SPLIT
     ]
+    format_cell = None
+    for row in held_out_rows:
+        match = FORMAT_ROW_RE.match(row["cell"])
+        if match:
+            format_cell = (match.group(1), row["minimum_n"])
+            break
     return {
         "positive_cell": _row_minimum(held_out_rows, POSITIVE_ISSUER_CELL),
         "pack_negative": _row_minimum(held_out_rows, PACK_NEGATIVE_CELL),
+        "format_cell": format_cell,
         "negative_issuer": {
-            match.group(1): row["minimum_n"]
+            match.group(1): (
+                match.group(2).startswith("all "),
+                row["minimum_n"],
+            )
             for row in held_out_rows
             if (match := NEGATIVE_ISSUER_ROW_RE.match(row["cell"]))
         },
@@ -230,6 +255,7 @@ def _empty_pack_report() -> dict:
         "by_issuer": {},
         "by_family": {},
         "by_form": {},
+        "format_nonprimary": 0,
         "violations": {},
         "shortfalls": [],
     }
@@ -243,14 +269,20 @@ def _pack_shortfalls(
     by_issuer: dict,
     by_family: dict,
     pack_negatives: int,
+    format_nonprimary: int,
     min_positive_per_family: int | None,
     gates: dict,
 ) -> list[dict]:
     shortfalls: list[dict] = []
     positive_need = gates["positive_cell"]
     if positive_need is not None:
+        # Applicable issuers, as in the evaluator: every "required" issuer,
+        # plus each "optional" issuer that carries at least one label (every
+        # label adds exactly one polarity tally to its issuer's cell).
         for issuer in issuers:
-            if applicability.get(issuer) == "required":
+            state = applicability.get(issuer)
+            labeled = sum(by_issuer[issuer]["polarity"].values()) > 0
+            if state == "required" or (state == "optional" and labeled):
                 have = by_issuer[issuer]["positive"]
                 if have < positive_need:
                     shortfalls.append(
@@ -271,10 +303,21 @@ def _pack_shortfalls(
                 "need": negative_need,
             }
         )
-    issuer_row_need = gates["negative_issuer"].get(pack_id)
-    if issuer_row_need is not None:
-        for issuer in issuers:
-            if applicability.get(issuer) == "negative":
+    format_cell = gates["format_cell"]
+    if format_cell is not None and format_nonprimary < format_cell[1]:
+        shortfalls.append(
+            {
+                "code": "format_cell_short",
+                "scope": "pack",
+                "have": format_nonprimary,
+                "need": format_cell[1],
+            }
+        )
+    issuer_row = gates["negative_issuer"].get(pack_id)
+    if issuer_row is not None:
+        per_issuer, issuer_row_need = issuer_row
+        if per_issuer:
+            for issuer in issuers:
                 have = by_issuer[issuer]["negative"]
                 if have < issuer_row_need:
                     shortfalls.append(
@@ -285,6 +328,21 @@ def _pack_shortfalls(
                             "need": issuer_row_need,
                         }
                     )
+        else:
+            have = sum(
+                by_issuer[issuer]["negative"]
+                for issuer in issuers
+                if applicability.get(issuer) != "required"
+            )
+            if have < issuer_row_need:
+                shortfalls.append(
+                    {
+                        "code": "negative_group_short",
+                        "scope": "pack",
+                        "have": have,
+                        "need": issuer_row_need,
+                    }
+                )
     if min_positive_per_family is not None:
         for family in family_ids:
             have = by_family[family]["positive"]
@@ -328,11 +386,13 @@ def _scan_pack(
     form_ids = list(config.get("forms", []))
     form_set = set(form_ids)
 
-    by_issuer = {issuer: _issuer_cell(applicability.get(issuer)) for issuer in applicability}
+    by_issuer = {issuer: _issuer_cell(applicability.get(issuer)) for issuer in issuers}
     by_family = {family: _class_cell() for family in family_ids}
     by_form = {form: 0 for form in form_ids}
     violations: dict[str, int] = {}
     pack_negatives = 0
+    format_nonprimary = 0
+    primary_format = gates["format_cell"][0] if gates["format_cell"] else None
 
     def count(code: str) -> None:
         violations[code] = violations.get(code, 0) + 1
@@ -365,11 +425,21 @@ def _scan_pack(
             cell[bucket] += 1
             if bucket == "negative":
                 pack_negatives += 1
-        polarity_value = str(record["polarity"])
-        cell["polarity"][polarity_value] = cell["polarity"].get(polarity_value, 0) + 1
+        polarity = record["polarity"]
+        if polarity in POLARITIES:
+            polarity_key = polarity
+        else:
+            polarity_key = OUTSIDE_VOCABULARY_KEY
+            count("polarity_outside_vocabulary")
+        cell["polarity"][polarity_key] = cell["polarity"].get(polarity_key, 0) + 1
+
+        if primary_format is not None and record["format_class"] != primary_format:
+            format_nonprimary += 1
 
         section_family = record["section_family"]
-        if section_family in family_set:
+        if not family_set:
+            family_key = UNRESTRICTED_KEY
+        elif section_family in family_set:
             family_key = section_family
         else:
             family_key = OUTSIDE_PACK_KEY
@@ -379,7 +449,9 @@ def _scan_pack(
             family_cell[bucket] += 1
 
         form_type = record["form_type"]
-        if form_type in form_set:
+        if not form_set:
+            form_key = UNRESTRICTED_KEY
+        elif form_type in form_set:
             form_key = form_type
         else:
             form_key = OUTSIDE_PACK_KEY
@@ -393,6 +465,7 @@ def _scan_pack(
         "by_issuer": by_issuer,
         "by_family": by_family,
         "by_form": by_form,
+        "format_nonprimary": format_nonprimary,
         "violations": violations,
         "shortfalls": _pack_shortfalls(
             pack_id,
@@ -402,6 +475,7 @@ def _scan_pack(
             by_issuer,
             by_family,
             pack_negatives,
+            format_nonprimary,
             min_positive_per_family,
             gates,
         ),

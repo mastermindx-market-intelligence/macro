@@ -33,6 +33,16 @@ POSITIVE_MIN = next(
     if row["cell"] == "pack, applicable issuer, polarity=positive"
 )
 
+# The held-out format-generalization row ("pack, format_class != <primary>"):
+# the primary format and the minimum both come from the protocol.
+FORMAT_ROW = next(
+    row for row in HELD_OUT_ROWS if row["cell"].startswith("pack, format_class != ")
+)
+PRIMARY_FORMAT = FORMAT_ROW["cell"].rsplit(" ", 1)[1]
+FORMAT_MIN = FORMAT_ROW["minimum_n"]
+# A synthetic non-primary format; the gate counts it but must never echo it.
+NONPRIMARY_FORMAT = "zz-nonprimary-format"
+
 POSITIVE_CLASS = "extract_positive"
 NEGATIVE_CLASS = "extract_absent"
 SENTINEL = "ZZ-SENTINEL-VALUE-ZZ"
@@ -45,6 +55,7 @@ def make_record(
     section_family,
     form_type="10-K",
     polarity=None,
+    format_class=PRIMARY_FORMAT,
 ):
     """A synthetic label record carrying every LabelRecord key."""
     if polarity is None:
@@ -61,7 +72,7 @@ def make_record(
         "fiscal_year": "FY2025",
         "section_family": section_family,
         "polarity": polarity,
-        "format_class": "ixbrl_inline",
+        "format_class": format_class,
         "split": "held_out",
         "accession": "0000000000-00-000000",
         "label_class": label_class,
@@ -97,6 +108,13 @@ def report_of(result):
     return json.loads(result.stdout)
 
 
+def with_nonprimary_formats(records):
+    """Give the first FORMAT_MIN records a non-primary format_class."""
+    for record in records[:FORMAT_MIN]:
+        record["format_class"] = NONPRIMARY_FORMAT
+    return records
+
+
 def required_issuers(pack_id):
     return [
         issuer
@@ -127,7 +145,7 @@ def pk11_conforming_records():
         make_record("PK11", issuer, NEGATIVE_CLASS, family, form_type=form)
         for issuer in negative_issuers("PK11")
     ]
-    return records
+    return with_nonprimary_formats(records)
 
 
 def pk12_all_negative_records():
@@ -135,10 +153,12 @@ def pk12_all_negative_records():
     pack = PACKS["PK12"]
     family = pack["section_family_ids"][0]
     form = pack["forms"][0]
-    return [
-        make_record("PK12", issuer, NEGATIVE_CLASS, family, form_type=form)
-        for issuer in negative_issuers("PK12")
-    ]
+    return with_nonprimary_formats(
+        [
+            make_record("PK12", issuer, NEGATIVE_CLASS, family, form_type=form)
+            for issuer in negative_issuers("PK12")
+        ]
+    )
 
 
 # (1) a conforming PK11 set exits 0 with conforming true.
@@ -160,6 +180,7 @@ def test_conforming_pk11_set(tmp_path):
         negative_issuers("PK11")
     )
     assert pack["by_issuer"][required_issuers("PK11")[0]]["positive"] == POSITIVE_MIN
+    assert pack["format_nonprimary"] == FORMAT_MIN
     assert pack["by_issuer"][negative_issuers("PK11")[0]] == {
         "applicability": "negative",
         "positive": 0,
@@ -198,7 +219,12 @@ def test_pk12_negative_issuer_shortfall(tmp_path):
     write_labels(
         tmp_path,
         "PK12",
-        [make_record("PK12", issuer, NEGATIVE_CLASS, family, form_type=form) for issuer in labeled],
+        with_nonprimary_formats(
+            [
+                make_record("PK12", issuer, NEGATIVE_CLASS, family, form_type=form)
+                for issuer in labeled
+            ]
+        ),
     )
     row = next(row for row in HELD_OUT_ROWS if row["cell"].startswith("PK12 x "))
     expected = set(negative_issuers("PK12")) - set(labeled)
@@ -290,11 +316,12 @@ def test_no_record_payload_leak(tmp_path):
     out_path = tmp_path / "report.json"
     via_file = run_tool(tmp_path, "--packs", "PK11", "--out", str(out_path))
     assert via_file.returncode == 0
-    assert SENTINEL not in via_file.stdout
-    assert SENTINEL not in out_path.read_text(encoding="utf-8")
+    written = out_path.read_text(encoding="utf-8")
     via_stdout = run_tool(tmp_path, "--packs", "PK11")
     assert via_stdout.returncode == 0
-    assert SENTINEL not in via_stdout.stdout
+    for text in (via_file.stdout, written, via_stdout.stdout):
+        assert SENTINEL not in text
+        assert NONPRIMARY_FORMAT not in text
 
 
 # (8) --min-positive-per-family yields family_positive_short per family.
@@ -369,3 +396,167 @@ def test_form_outside_pack(tmp_path):
     pack = report_of(result)["packs"]["PK12"]
     assert pack["violations"] == {"form_outside_pack": 1}
     assert pack["by_form"] == {PACKS["PK12"]["forms"][0]: len(records) - 1, "<outside_pack>": 1}
+
+
+# (13) an out-of-vocabulary polarity is counted under a sentinel, never echoed.
+def test_polarity_outside_vocabulary_is_sentinel_tallied(tmp_path):
+    leak = "ZZLEAK-POLARITY"
+    records = pk11_conforming_records()
+    records[0]["polarity"] = leak
+    write_labels(tmp_path, "PK11", records)
+    out_path = tmp_path / "report.json"
+    result = run_tool(tmp_path, "--packs", "PK11", "--out", str(out_path))
+    assert result.returncode == 1
+    written = out_path.read_text(encoding="utf-8")
+    assert leak not in result.stdout
+    assert leak not in written
+    pack = json.loads(written)["packs"]["PK11"]
+    assert pack["violations"] == {"polarity_outside_vocabulary": 1}
+    issuer = records[0]["issuer"]
+    assert pack["by_issuer"][issuer]["polarity"]["<outside_vocabulary>"] == 1
+
+
+# (14) a pack whose labels are all in the primary format is format-short.
+def test_format_cell_shortfall(tmp_path):
+    records = pk12_all_negative_records()
+    for record in records:
+        record["format_class"] = PRIMARY_FORMAT
+    write_labels(tmp_path, "PK12", records)
+    result = run_tool(tmp_path, "--packs", "PK12")
+    assert result.returncode == 1
+    pack = report_of(result)["packs"]["PK12"]
+    assert pack["violations"] == {}
+    assert pack["format_nonprimary"] == 0
+    assert pack["shortfalls"] == [
+        {"code": "format_cell_short", "scope": "pack", "have": 0, "need": FORMAT_MIN}
+    ]
+
+
+def group_row_pack():
+    """The pack of the first "<PACK> x <group>" row that is not an "all" row."""
+    for row in HELD_OUT_ROWS:
+        head, sep, group = row["cell"].partition(" x ")
+        if sep and head in PACKS and not group.startswith("all "):
+            return head, row["minimum_n"]
+    raise AssertionError("protocol has no aggregate per-pack negative row")
+
+
+# (15) a non-"all" group row is ONE aggregate over the non-required issuers.
+def test_group_row_is_an_aggregate_over_non_required_issuers(tmp_path):
+    pack_id, need = group_row_pack()
+    pack = PACKS[pack_id]
+    family = pack["section_family_ids"][0]
+    form = pack["forms"][0]
+    group = [
+        issuer
+        for issuer in PROTOCOL["issuers"]
+        if pack["applicability"][issuer] != "required"
+    ]
+    assert len(group) > 1
+    positives = [
+        make_record(pack_id, issuer, POSITIVE_CLASS, family, form_type=form)
+        for issuer in required_issuers(pack_id)
+        for _ in range(POSITIVE_MIN)
+    ]
+    # `need` negatives, all on ONE issuer of the group, satisfy the row.
+    one_issuer = [
+        make_record(pack_id, group[0], NEGATIVE_CLASS, family, form_type=form)
+        for _ in range(need)
+    ]
+    write_labels(tmp_path / "a", pack_id, with_nonprimary_formats(positives + one_issuer))
+    met = run_tool(tmp_path / "a", "--packs", pack_id)
+    assert met.returncode == 0, met.stdout
+    assert report_of(met)["packs"][pack_id]["shortfalls"] == []
+    # With no negatives on the group, the row is short once, at pack scope.
+    write_labels(tmp_path / "b", pack_id, with_nonprimary_formats(list(positives)))
+    short = run_tool(tmp_path / "b", "--packs", pack_id)
+    assert short.returncode == 1
+    group_shorts = [
+        shortfall
+        for shortfall in report_of(short)["packs"][pack_id]["shortfalls"]
+        if shortfall["code"] in ("negative_group_short", "negative_issuer_short")
+    ]
+    assert group_shorts == [
+        {"code": "negative_group_short", "scope": "pack", "have": 0, "need": need}
+    ]
+
+
+def optional_issuer_pack():
+    for pack_id, pack in PACKS.items():
+        for issuer in PROTOCOL["issuers"]:
+            if pack["applicability"].get(issuer) == "optional":
+                return pack_id, issuer
+    raise AssertionError("protocol has no optional issuer")
+
+
+# (16) an optional issuer is held to the positive cell once it carries labels.
+def test_labeled_optional_issuer_gets_the_positive_cell(tmp_path):
+    pack_id, issuer = optional_issuer_pack()
+    pack = PACKS[pack_id]
+    family = pack["section_family_ids"][0]
+    form = pack["forms"][0]
+    write_labels(
+        tmp_path / "a",
+        pack_id,
+        [make_record(pack_id, issuer, POSITIVE_CLASS, family, form_type=form)],
+    )
+    labeled = run_tool(tmp_path / "a", "--packs", pack_id)
+    shorts = [
+        shortfall
+        for shortfall in report_of(labeled)["packs"][pack_id]["shortfalls"]
+        if shortfall["code"] == "positive_cell_short" and shortfall["scope"] == issuer
+    ]
+    assert shorts == [
+        {"code": "positive_cell_short", "scope": issuer, "have": 1, "need": POSITIVE_MIN}
+    ]
+    # An optional issuer with no labels is not an applicable issuer.
+    write_labels(tmp_path / "b", pack_id, pk12_like_negative(pack_id, issuer))
+    unlabeled = run_tool(tmp_path / "b", "--packs", pack_id)
+    assert not [
+        shortfall
+        for shortfall in report_of(unlabeled)["packs"][pack_id]["shortfalls"]
+        if shortfall["code"] == "positive_cell_short" and shortfall["scope"] == issuer
+    ]
+
+
+def pk12_like_negative(pack_id, skip_issuer):
+    pack = PACKS[pack_id]
+    other = next(i for i in PROTOCOL["issuers"] if i != skip_issuer)
+    return [
+        make_record(
+            pack_id,
+            other,
+            NEGATIVE_CLASS,
+            pack["section_family_ids"][0],
+            form_type=pack["forms"][0],
+        )
+    ]
+
+
+# (17) empty or absent forms / section_family_ids place no restriction.
+@pytest.mark.parametrize("mode", ["empty", "absent"])
+def test_unrestricted_forms_and_families(mode, tmp_path):
+    protocol = json.loads(PROTOCOL_PATH.read_text(encoding="utf-8"))
+    for pack in protocol["packs"]:
+        if pack["pack_id"] == "PK12":
+            if mode == "empty":
+                pack["forms"] = []
+                pack["section_family_ids"] = []
+            else:
+                pack.pop("forms", None)
+                pack.pop("section_family_ids", None)
+    protocol_path = tmp_path / "protocol.json"
+    protocol_path.write_text(json.dumps(protocol), encoding="utf-8")
+    records = pk12_all_negative_records()
+    records[0]["form_type"] = "zz-any-form"
+    records[0]["section_family"] = "zz-any-family"
+    root = tmp_path / "root"
+    write_labels(root, "PK12", records)
+    result = run_tool(root, "--packs", "PK12", "--protocol", str(protocol_path))
+    assert result.returncode == 0, result.stdout
+    pack = report_of(result)["packs"]["PK12"]
+    assert pack["violations"] == {}
+    assert pack["by_form"] == {"<unrestricted>": len(records)}
+    assert pack["by_family"]["<unrestricted>"]["negative"] == len(records)
+    assert "zz-any-form" not in result.stdout
+    assert "zz-any-family" not in result.stdout
