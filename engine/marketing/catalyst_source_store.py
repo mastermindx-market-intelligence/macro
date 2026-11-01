@@ -101,6 +101,11 @@ class NamespacedSourceStore:
         """The wrapped store, read-only accessor for diagnostics and tests."""
         return self._inner
 
+    @property
+    def prefix(self) -> str:
+        """The pinned namespace, read-only (the writer refuses any other)."""
+        return self._prefix
+
     def _k(self, key: object) -> str:
         if not isinstance(key, str) or not key:
             raise ValueError("store key must be a non-empty string")

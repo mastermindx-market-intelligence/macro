@@ -21,22 +21,18 @@ _RESULT_FIELDS = (
 
 
 def _resolve_user_agent(args: argparse.Namespace) -> str | None:
-    """UA precedence: --user-agent, env SEC_USER_AGENT, tracked repo config.
+    """UA precedence: --user-agent, then env SEC_USER_AGENT; nothing else.
 
-    Returns None when no lawful agent can be resolved (the cycle then refuses
-    without ever naming or echoing a value).
+    The writer's contact is an explicit operator setting, never inherited
+    from another collector's tracked config.  Returns None when neither is
+    set (the cycle then refuses without ever naming or echoing a value).
     """
     if args.user_agent:
         return args.user_agent
     env_agent = os.environ.get("SEC_USER_AGENT")
     if env_agent:
         return env_agent
-    from collectors.edgar_forensics import _user_agent
-
-    try:
-        return _user_agent(REPO_ROOT)
-    except Exception:  # noqa: BLE001 - a missing config agent is a refusal.
-        return None
+    return None
 
 
 def _emit(result) -> int:
@@ -107,6 +103,7 @@ def main(argv: list[str] | None = None) -> int:
         universe=universe,
         user_agent=user_agent,
         clock=cycle_module._utc_now,
+        max_requests=args.max_requests,
     )
     return _emit(result)
 

@@ -389,16 +389,38 @@ def test_budget_exhaustion_truncates_but_publishes(tmp_path):
     """Catches: budget exhaustion aborting publication or over-fetching."""
     store = open_local_store(tmp_path / "store")
     routes = {**std_routes(), **aapl_routes()}
-    result, _ = run(store, FakeSession(routes), universe=(PFE, AAPL), max_requests=2)
+    session = FakeSession(routes)
+    # PFE's bootstrap takes 3 GETs; AAPL's submissions GET is the 4th and its
+    # index GET would be the 5th, so the budget truncates mid-AAPL.
+    result, _ = run(store, session, universe=(PFE, AAPL), max_requests=4)
     assert (result.outcome, result.exit_code) == ("TRUNCATED", 3)
-    assert result.requests_used == 2
-    assert result.issuers_not_checked == 2
+    assert result.requests_used == 4
+    assert len(session.calls) == 4
+    assert result.issuers_ok == 1
+    assert result.issuers_not_checked == 1
     published = read_latest_index(store)
     assert published is not None
     assert published.index["outcome"] == "TRUNCATED"
     assert published.index["truncated"] is True
-    assert published.index["requests_used"] == 2
-    assert all(row["status"] == "not_checked" for row in published.index["issuers"])
+    assert published.index["requests_used"] == 4
+    rows = {row["ticker"]: row for row in published.index["issuers"]}
+    assert rows["PFE"]["status"] == "ok"
+    assert (rows["AAPL"]["status"], rows["AAPL"]["reason"]) == (
+        "not_checked", "budget_exhausted")
+    assert [event["ticker"] for event in published.index["events"]] == ["PFE"]
+
+
+def test_budget_exhausted_before_any_sweep_publishes_nothing(tmp_path):
+    """Catches: a cycle that swept nothing replacing the prior pointer."""
+    store = open_local_store(tmp_path / "store")
+    routes = {**std_routes(), **aapl_routes()}
+    result, _ = run(store, FakeSession(routes), universe=(PFE, AAPL), max_requests=2)
+    assert (result.outcome, result.exit_code) == ("FAILED", 6)
+    assert result.reason == "budget_exhausted"
+    assert result.requests_used == 2
+    assert result.issuers_not_checked == 2
+    assert result.snapshot_id is None
+    assert read_latest_index(store) is None
 
 
 def test_not_checked_issuer_carries_prior_event(tmp_path):
@@ -540,23 +562,44 @@ def test_amendment_lineage_attestation(tmp_path):
     }
 
 
+def _pfe_urls(session):
+    aapl = set(aapl_routes())
+    return [url for url in session.urls() if url not in aapl]
+
+
+def _issuer_reason(store, ticker):
+    rows = {row["ticker"]: row for row in read_latest_index(store).index["issuers"]}
+    return rows[ticker]["status"], rows[ticker]["reason"]
+
+
 def test_identity_mismatch_fails_issuer(tmp_path):
     """Catches: trusting a submissions payload that names a different issuer."""
     wrong_cik = submissions_json([pfe_row()], cik="39044")
     store = open_local_store(tmp_path / "store")
-    result, session = bootstrap(store, tmp_path, routes=std_routes(submissions_bytes=wrong_cik))
+    result, session = bootstrap(
+        store, tmp_path, universe=(PFE, AAPL),
+        routes={**std_routes(submissions_bytes=wrong_cik), **aapl_routes()})
     assert (result.outcome, result.exit_code) == ("PARTIAL", 4)
     assert result.issuers_failed == 1
-    assert session.urls() == [endpoint_url(78003, "submissions")]
-    assert read_latest_index(store).index["issuers"][0]["reason"] == "identity_mismatch"
+    assert _pfe_urls(session) == [endpoint_url(78003, "submissions")]
+    assert _issuer_reason(store, "PFE") == ("failed", "identity_mismatch")
+    assert _issuer_reason(store, "AAPL") == ("ok", None)
 
     wrong_ticker = submissions_json([pfe_row()], tickers=("XYZ",))
     store2 = open_local_store(tmp_path / "store2")
-    result2, session2 = bootstrap(store2, tmp_path,
-                                  routes=std_routes(submissions_bytes=wrong_ticker))
+    result2, session2 = bootstrap(
+        store2, tmp_path, universe=(PFE, AAPL),
+        routes={**std_routes(submissions_bytes=wrong_ticker), **aapl_routes()})
     assert (result2.outcome, result2.exit_code) == ("PARTIAL", 4)
-    assert session2.urls() == [endpoint_url(78003, "submissions")]
-    assert read_latest_index(store2).index["issuers"][0]["reason"] == "identity_mismatch"
+    assert _pfe_urls(session2) == [endpoint_url(78003, "submissions")]
+    assert _issuer_reason(store2, "PFE") == ("failed", "identity_mismatch")
+
+    # A single-issuer cycle that sweeps nothing publishes nothing (FAILED).
+    store3 = open_local_store(tmp_path / "store3")
+    result3, _ = bootstrap(store3, tmp_path, routes=std_routes(submissions_bytes=wrong_cik))
+    assert (result3.outcome, result3.exit_code) == ("FAILED", 6)
+    assert result3.reason == "no_issuer_swept"
+    assert read_latest_index(store3) is None
 
 
 def test_pagination_unproven_fails_issuer(tmp_path):
@@ -565,11 +608,13 @@ def test_pagination_unproven_fails_issuer(tmp_path):
     sharded = submissions_json(
         [pfe_row()],
         files=[{"name": "CIK0000078003-submissions-001.json"}])
-    result, session = bootstrap(store, tmp_path, routes=std_routes(submissions_bytes=sharded))
+    result, session = bootstrap(
+        store, tmp_path, universe=(PFE, AAPL),
+        routes={**std_routes(submissions_bytes=sharded), **aapl_routes()})
     assert (result.outcome, result.exit_code) == ("PARTIAL", 4)
     assert result.issuers_failed == 1
-    assert session.urls() == [endpoint_url(78003, "submissions")]
-    assert read_latest_index(store).index["issuers"][0]["reason"] == "pagination_unproven"
+    assert _pfe_urls(session) == [endpoint_url(78003, "submissions")]
+    assert _issuer_reason(store, "PFE") == ("failed", "pagination_unproven")
 
 
 # ---------------------------------------------------------------------------
@@ -804,6 +849,9 @@ def test_namespace_isolation_and_key_refusals(tmp_path):
             assert relative.startswith(NAMESPACE_PREFIX), relative
             assert not relative.startswith("fundamental_forensics/"), relative
     wrapper = NamespacedSourceStore(store.inner)
+    assert wrapper.prefix == NAMESPACE_PREFIX
+    with pytest.raises(AttributeError):
+        wrapper.prefix = "elsewhere/"
     for bad in ("../x", "/x", "a\\b", ""):
         with pytest.raises(ValueError):
             wrapper._k(bad)
@@ -987,3 +1035,229 @@ def test_index_validates_and_sorts_events(tmp_path):
     expected = sorted(by_filing, key=lambda event: event["acceptance_datetime"], reverse=True)
     assert order == [(event["acceptance_datetime"], event["filing_key"]) for event in expected]
     assert [event["ticker"] for event in index["events"]] == ["AAPL", "PFE"]
+
+
+# ---------------------------------------------------------------------------
+# Part-2a repairs: halts, carry, deferral, row-bound href, namespace, UA, CLI
+# ---------------------------------------------------------------------------
+
+def test_403_halts_cycle_and_publishes_swept_issuers(tmp_path):
+    """Catches: retrying or continuing to hit SEC after a 403 access refusal."""
+    store = open_local_store(tmp_path / "store")
+    routes = {**std_routes(), **aapl_routes()}
+    aapl_submissions = endpoint_url(320193, "submissions")
+    routes[aapl_submissions] = [FakeResponse(status_code=403, url=aapl_submissions,
+                                             headers={})]
+    session = FakeSession(routes)
+    result, sleeps = run(store, session, universe=(PFE, AAPL))
+    assert (result.outcome, result.exit_code) == ("TRUNCATED", 3)
+    assert session.calls_for(aapl_submissions) == 1
+    assert sleeps == []
+    assert result.requests_used == 4
+    assert _issuer_reason(store, "PFE") == ("ok", None)
+    assert _issuer_reason(store, "AAPL") == ("not_checked", "sec_access_refused")
+
+
+def test_403_before_any_sweep_stops_all_requests(tmp_path):
+    """Catches: a 403 on one issuer letting later issuers still be requested."""
+    store = open_local_store(tmp_path / "store")
+    routes = {**std_routes(), **aapl_routes()}
+    pfe_index = index_url("0000078003", ACCESSION)
+    routes[pfe_index] = [FakeResponse(status_code=403, url=pfe_index, headers={})]
+    session = FakeSession(routes)
+    result, _ = run(store, session, universe=(PFE, AAPL))
+    assert (result.outcome, result.exit_code) == ("FAILED", 6)
+    assert result.reason == "sec_access_refused"
+    assert session.urls() == [endpoint_url(78003, "submissions"), pfe_index]
+    assert not any(url in aapl_routes() for url in session.urls())
+    assert read_latest_index(store) is None
+
+
+def test_persistent_429_halts_after_backoff(tmp_path):
+    """Catches: a 429 that outlasts the retries not halting the cycle."""
+    store = open_local_store(tmp_path / "store")
+    routes = {**std_routes(), **aapl_routes()}
+    aapl_submissions = endpoint_url(320193, "submissions")
+    routes[aapl_submissions] = [FakeResponse(status_code=429, url=aapl_submissions,
+                                             headers={})] * 4
+    session = FakeSession(routes)
+    result, sleeps = run(store, session, universe=(PFE, AAPL))
+    assert (result.outcome, result.exit_code) == ("TRUNCATED", 3)
+    assert sleeps == [2, 4, 8]
+    assert session.calls_for(aapl_submissions) == 4
+    assert _issuer_reason(store, "AAPL") == ("not_checked", "sec_rate_limited")
+
+
+def test_failed_issuer_carries_prior_event_with_original_receipt(tmp_path):
+    """Catches: a failed sweep dropping an issuer's still-valid prior event."""
+    store = open_local_store(tmp_path / "store")
+    first, _ = bootstrap(store, tmp_path, universe=(PFE, AAPL),
+                         routes={**std_routes(), **aapl_routes()})
+    assert first.exit_code == 0
+    prior = {event["ticker"]: event for event in read_latest_index(store).index["events"]}
+
+    wrong_cik = submissions_json([pfe_row()], cik="39044")
+    routes = {
+        endpoint_url(78003, "submissions"): [
+            ok(endpoint_url(78003, "submissions"), wrong_cik)],
+        **{url: queue for url, queue in aapl_routes().items()
+           if "-index.htm" not in url},
+    }
+    result, _ = run(store, FakeSession(routes), universe=(PFE, AAPL),
+                    clock=make_clock(datetime(2026, 8, 5, 13, 0, 0, tzinfo=UTC)))
+    assert (result.outcome, result.exit_code) == ("PARTIAL", 4)
+    index = read_latest_index(store).index
+    assert _issuer_reason(store, "PFE") == ("failed", "identity_mismatch")
+    carried = {event["ticker"]: event for event in index["events"]}
+    assert carried["PFE"] == prior["PFE"]
+    assert (carried["PFE"]["retention"]["first_retained_receipt_id"]
+            == prior["PFE"]["retention"]["first_retained_receipt_id"])
+    assert _issuer_reason(store, "AAPL") == ("ok", None)
+
+
+def test_transient_reverify_failure_defers_without_dropping(tmp_path):
+    """Catches: a transient carried-document failure discarding the receipt."""
+    store = open_local_store(tmp_path / "store")
+    bootstrap(store, tmp_path, universe=(PFE, AAPL),
+              routes={**std_routes(), **aapl_routes()})
+    prior = {event["ticker"]: event for event in read_latest_index(store).index["events"]}
+
+    document = archive_document_url(78003, ACCESSION, "ex99-1.htm")
+    routes = {
+        endpoint_url(78003, "submissions"): [
+            ok(endpoint_url(78003, "submissions"), submissions_json([pfe_row()]))],
+        document: [FakeResponse(status_code=503, url=document, headers={})] * 4,
+        **{url: queue for url, queue in aapl_routes().items()
+           if "-index.htm" not in url},
+    }
+    result, sleeps = run(store, FakeSession(routes), universe=(PFE, AAPL),
+                         clock=make_clock(datetime(2026, 8, 5, 13, 0, 0, tzinfo=UTC)))
+    assert (result.outcome, result.exit_code) == ("PARTIAL", 4)
+    assert sleeps == [2, 4, 8]
+    index = read_latest_index(store).index
+    assert _issuer_reason(store, "PFE")[0] == "incomplete"
+    assert index["skipped"] == [{"ticker": "PFE", "accession": ACCESSION,
+                                 "reason": "reverify_deferred"}]
+    carried = {event["ticker"]: event for event in index["events"]}
+    assert carried["PFE"] == prior["PFE"]
+    assert _issuer_reason(store, "AAPL") == ("ok", None)
+
+
+def _index_with_exhibit_cell(cell_html):
+    return (
+        "<html><body><table summary=\"Document Format Files\">"
+        "<tr><th scope=\"col\">Seq</th><th scope=\"col\">Description</th>"
+        "<th scope=\"col\">Document</th><th scope=\"col\">Type</th>"
+        "<th scope=\"col\">Size</th></tr>"
+        "<tr><td scope=\"row\">1</td><td scope=\"row\">EX-99.1</td>"
+        f"<td scope=\"row\">{cell_html}</td><td scope=\"row\">EX-99.1</td>"
+        "<td scope=\"row\">1234</td></tr>"
+        "</table></body></html>"
+    ).encode("utf-8")
+
+
+def test_exhibit_row_href_must_be_the_issuer_direct_link(tmp_path):
+    """Catches: binding the CIK check to some other link than the EX-99.1 row's own."""
+    direct = f"{archive_dir(ACCESSION)}/ex99-1.htm"
+    foreign_accession = f"{archive_dir('0000078003-26-000001')}/ex99-1.htm"
+    cases = {
+        "two_links": (f"<a href=\"{direct}\">ex99-1.htm</a>"
+                      f"<a href=\"/Archives/edgar/data/9999999/x/ex99-1.htm\">x</a>"),
+        "foreign_accession": f"<a href=\"{foreign_accession}\">ex99-1.htm</a>",
+    }
+    for name, cell in cases.items():
+        store = open_local_store(tmp_path / name)
+        result, session = bootstrap(
+            store, tmp_path, routes=std_routes(index_bytes=_index_with_exhibit_cell(cell)))
+        assert result.exit_code == 4, name
+        assert not any(url.endswith("ex99-1.htm") for url in session.urls()), name
+        assert read_latest_index(store).index["skipped"][0]["reason"] == \
+            "exhibit_cik_mismatch", name
+
+    viewer = open_local_store(tmp_path / "viewer")
+    cell = f"<a href=\"/ix?doc={direct}\">ex99-1.htm</a>"
+    result, _ = bootstrap(viewer, tmp_path,
+                          routes=std_routes(index_bytes=_index_with_exhibit_cell(cell)))
+    assert (result.outcome, result.exit_code) == ("COMPLETE", 0)
+
+
+def test_store_outside_catalyst_namespace_refused(tmp_path):
+    """Catches: the writer publishing through a store not scoped to its namespace."""
+    store = open_local_store(tmp_path / "store")
+    session = FakeSession(std_routes())
+    result, _ = run(store.inner, session)
+    assert (result.outcome, result.exit_code) == ("REFUSED", 2)
+    assert result.reason in ("store_not_catalyst_namespace", "store_not_conditional_write")
+
+    class ForeignPrefix(NamespacedSourceStore):
+        @property
+        def prefix(self):
+            return "fundamental_forensics/"
+
+    foreign = ForeignPrefix(store.inner)
+    result2, _ = run(foreign, session)
+    assert (result2.outcome, result2.exit_code) == ("REFUSED", 2)
+    assert result2.reason == "store_not_catalyst_namespace"
+    assert session.calls == []
+    assert read_latest_index(store) is None
+
+
+@pytest.mark.parametrize("agent", [
+    "catalyst-test admin@example.invalid\r\nX-Injected: y",
+    "catalyst-" + "x" * 260 + " admin@example.invalid",
+    "admin@example.invalid",
+    "catalyst-test",
+    "catalyst-test admin@example.invalid\u00e9",
+])
+def test_user_agent_validator_refuses_unsafe_values(tmp_path, agent):
+    """Catches: header injection, unbounded or contactless SEC user agents."""
+    store = open_local_store(tmp_path / "store")
+    session = FakeSession(std_routes())
+    result, _ = run(store, session, user_agent=agent)
+    assert (result.outcome, result.exit_code) == ("REFUSED", 2)
+    assert result.reason == "user_agent_invalid"
+    assert agent not in str(result)
+    assert session.calls == []
+
+
+def test_cli_without_user_agent_refuses_and_never_reads_config(tmp_path, monkeypatch,
+                                                               capsys):
+    """Catches: the CLI inheriting another collector's tracked SEC contact."""
+    def forbidden():
+        raise AssertionError("no session may be built without a user agent")
+
+    universe_path = _write_universe(tmp_path, [("PFE", 78003, "Pfizer Inc.")])
+    monkeypatch.delenv("SEC_USER_AGENT", raising=False)
+    monkeypatch.setattr(csc, "new_session", forbidden)
+    from scripts.run_catalyst_source_cycle import main
+    code = main(["--local-store", str(tmp_path / "cli-store"),
+                 "--universe", str(universe_path)])
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out.strip().splitlines()[-1])
+    assert code == payload["exit_code"] == 2
+    assert payload["reason"] == "user_agent_unresolved"
+    assert payload["requests_used"] == 0
+    assert read_latest_index(open_local_store(tmp_path / "cli-store")) is None
+
+
+def test_cli_max_requests_reaches_the_cycle(tmp_path, monkeypatch, capsys):
+    """Catches: the CLI parsing --max-requests but running on the default budget."""
+    universe_path = _write_universe(tmp_path, [("PFE", 78003, "Pfizer Inc.")])
+    session = FakeSession(std_routes())
+    monkeypatch.setattr(csc, "new_session", lambda: session)
+    monkeypatch.setattr(csc, "_utc_now", make_clock())
+    from scripts.run_catalyst_source_cycle import main
+    code = main(["--local-store", str(tmp_path / "cli-store"), "--universe", str(universe_path),
+                 "--user-agent", UA, "--max-requests", "1"])
+    payload = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
+    assert code == payload["exit_code"] == 6
+    assert payload["reason"] == "budget_exhausted"
+    assert payload["requests_used"] == 1
+    assert len(session.calls) == 1
+    assert read_latest_index(open_local_store(tmp_path / "cli-store")) is None
+
+    code = main(["--local-store", str(tmp_path / "cli-store"), "--universe", str(universe_path),
+                 "--user-agent", UA, "--max-requests", "0"])
+    payload = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
+    assert code == payload["exit_code"] == 2
+    assert payload["reason"] == "max_requests_invalid"

@@ -854,9 +854,10 @@ else
 fi
 
 
-# Marketing X Catalyst SEC source writer (A3). Credentialed (R2 through
-# /etc/macro-api.env) and network-allowed for www.sec.gov only through its
-# pinned adapter; it records URL, sha256, figures, clocks and receipts below
+# Marketing X Catalyst SEC source writer (A3). Credentialed (R2 and its SEC
+# contact through /etc/macro-api.env); the unit allows IP sockets and the code
+# fetches only www.sec.gov URLs, rejects redirects and caps every response.
+# It records URL, sha256, figures, clocks and receipts below
 # marketing/catalyst-sec-source/v1/ and never document bytes. Arming it has no
 # public effect: the public reader stays unconfigured until its operator sets
 # CATALYST_PUBLIC_ENABLED on, and no other unit is restarted here.

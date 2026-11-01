@@ -23,7 +23,7 @@ from engine.marketing import catalyst_scan
 from engine.marketing import catalyst_source_store as css
 from engine.marketing.catalyst_packets import (
     STAGE_A_PACKET_SCHEMA, VerifiedDocumentObservation, VerifiedEarningsFigure)
-from engine.marketing.catalyst_source_adapter import build_admitted_source
+from engine.marketing.catalyst_source_adapter import EVENT_LIMIT, build_admitted_source
 from engine.marketing.catalyst_source_store import (
     LatestIndex, open_local_store, read_latest_index)
 from engine.research_vault import r2_store as r2_store_module
@@ -734,3 +734,60 @@ def test_28_d4_writer_persists_no_document_bytes(tmp_path, monkeypatch, target_r
     scan = ci.scan_with_reader(["PFE"], now_utc=now)
     assert _row(scan, "PFE")["status"] == "SUPPORTED"
     assert leaks == []
+
+
+# ---------------------------------------------------------------------------
+# Part-2b repairs: F4 filename refusals, caller-window coverage, pinned clock
+# ---------------------------------------------------------------------------
+
+_ARCHIVE = "https://www.sec.gov/Archives/edgar/data/78003/000007800326000094/"
+
+
+def test_29_f4_index_pages_and_submission_text_never_granted(tmp_path, target_registry):
+    # Catches: a filing index page, dot path or full submission text standing in
+    # for the issuer's EX-99.1 document.
+    now = NOW
+    control = _record(now, url=_ARCHIVE + "pfe-20261028-ex991.htm")
+    source, _ = _configure(_index(now, events=[control]), now)
+    assert source.public_grant(SOURCE_ID, now) is not None
+    for filename in (".ex99-1.htm",
+                     ACCESSION + "-index.htm",
+                     ACCESSION + "-index.html",
+                     ACCESSION + "-INDEX-HEADERS.HTML",
+                     ACCESSION + ".txt"):
+        event = _record(now, url=_ARCHIVE + filename)
+        source, _ = _configure(_index(now, events=[event]), now)
+        assert source.public_grant(SOURCE_ID, now) is None, filename
+        scan = _scan(["PFE"], now)
+        assert _row(scan, "PFE")["status"] != "SUPPORTED", filename
+        assert event["exhibit"]["source_url"] not in json.dumps(scan), filename
+
+
+def test_30_coverage_counts_only_the_callers_window(tmp_path, target_registry):
+    # Catches: events older than the caller's start marking a complete window TRUNCATED.
+    now = NOW
+    events = [_record(now, accession="0000078003-26-%06d" % i,
+                      accepted=now - timedelta(days=3, minutes=i))
+              for i in range(1, 22)]
+    events.append(_record(now))
+    source, _ = _configure(_index(now, events=events), now)
+    narrow = source.source_coverage(now - timedelta(days=1), now, now)
+    assert narrow.outcome == "COMPLETE"
+    assert narrow.truncated is False
+    assert narrow.returned_events == 1
+    wide = source.source_coverage(now - timedelta(days=7), now, now)
+    assert wide.outcome == "TRUNCATED"
+    assert wide.returned_events == EVENT_LIMIT
+
+
+def test_31_coverage_reads_the_state_at_the_callers_now(tmp_path, target_registry):
+    # Catches: coverage counting events through the reader clock instead of ``now``.
+    now = NOW
+    loader = _loader_for(_index(now))
+    source = build_admitted_source(object(), universe=UNIVERSE,
+                                   clock=lambda: now + timedelta(hours=1),
+                                   loader=loader)
+    coverage = source.source_coverage(now - timedelta(days=7), now, now)
+    assert coverage is not None
+    assert coverage.outcome == "COMPLETE"
+    assert coverage.returned_events == 1

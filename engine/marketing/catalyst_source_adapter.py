@@ -46,6 +46,7 @@ _WINDOW = timedelta(days=7)
 _SOURCE_URL_RE = re.compile(
     r"^https://www\.sec\.gov/Archives/edgar/data/(\d+)/(\d{18})/([A-Za-z0-9._-]+)$")
 _ACCESSION_RE = re.compile(r"^\d{10}-\d{2}-\d{6}$")
+_INDEX_PAGE_SUFFIXES = ("-index.htm", "-index.html", "-index-headers.html")
 _FILING_KEY_RE = re.compile(r"^\d{10}:\d{10}-\d{2}-\d{6}$")
 _HEX64_RE = re.compile(r"^[0-9a-f]{64}$")
 _CLOCK_FMT = "%Y-%m-%dT%H:%M:%SZ"
@@ -69,6 +70,12 @@ def _finite_number(value: object) -> float | None:
         return None
     number = float(value)
     return number if math.isfinite(number) else None
+
+
+def _events_in(state: object, start: datetime, end: datetime) -> list:
+    """Served events with acceptance in [start, min(end, t_start)], newest first."""
+    upper = min(end, state.t_start)
+    return [event for accepted, event in state.events if start <= accepted <= upper]
 
 
 def _f4_identity_ok(record: Mapping, universe_row: object) -> bool:
@@ -96,6 +103,12 @@ def _f4_identity_ok(record: Mapping, universe_row: object) -> bool:
     if isinstance(cik, bool) or not isinstance(cik, int) or cik <= 0:
         return False
     if match.group(1) != str(cik) or match.group(2) != accession.replace("-", ""):
+        return False
+    filename = match.group(3)
+    if (filename.startswith(".") or filename.lower().endswith(_INDEX_PAGE_SUFFIXES)
+            or filename == accession + ".txt"):
+        # Dot paths, the filing index pages and the full submission text
+        # are never the issuer's EX-99.1 document.
         return False
     if record.get("form") not in ("8-K", "8-K/A"):
         return False
@@ -461,9 +474,7 @@ class _Reader:
         state = self._read_state(self._clock())
         if state is None or state.t_start is None:
             return []
-        upper = min(end, state.t_start)
-        return [event for accepted, event in state.events
-                if start <= accepted <= upper][:limit]
+        return _events_in(state, start, end)[:limit]
 
     def document_observation(self, event: Mapping, now: datetime):
         state = self._read_state(now)
@@ -507,9 +518,12 @@ class _Reader:
         if state.window_start > start:
             return None
         tickers = frozenset(state.ok_tickers)
+        # Completeness is judged on the caller's own window (start .. t_start)
+        # read from the state pinned at ``now``, not the wider writer window.
+        window_events = _events_in(state, start, end)
         complete = (state.index_truncated is False
                     and state.index_outcome != "TRUNCATED"
-                    and state.in_window_count <= EVENT_LIMIT)
+                    and len(window_events) <= EVENT_LIMIT)
         return SourceCoverageReceipt(
             source="edgar_8k_202",
             receipt_id="catcov-" + hashlib.sha256(
@@ -523,7 +537,7 @@ class _Reader:
             outcome="COMPLETE" if complete else "TRUNCATED",
             pagination_exhausted=True,
             truncated=not complete,
-            returned_events=len(self.recent_events(start, end, EVENT_LIMIT)),
+            returned_events=min(len(window_events), EVENT_LIMIT),
             event_limit=EVENT_LIMIT,
         )
 

@@ -38,11 +38,22 @@ from engine.fundamental_forensics.source_sync import sync_source_roots
 from engine.marketing.catalyst_source_store import (
     INDEX_RELATIVE_PATH,
     INDEX_SCHEMA,
+    NAMESPACE_PREFIX,
     CatalystSourceUnavailable,
+    NamespacedSourceStore,
     read_latest_index,
     validate_index,
 )
-from engine.news_impact.edgar_body import index_url, parse_filing_index
+from engine.news_impact.edgar_body import (
+    _HREF_RE,
+    _TD_RE,
+    _TH_RE,
+    _TR_RE,
+    _cell_text,
+    _find_index_table,
+    index_url,
+    parse_filing_index,
+)
 from engine.research_vault.r2_store import StrictConditionalWriteStore
 
 UNIVERSE_SCHEMA = "marketing.catalyst_pilot_universe/v1"
@@ -58,6 +69,9 @@ _RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
 _MAX_ATTEMPTS = 4
 _TICKER_RE = re.compile(r"^[A-Z][A-Z0-9.\-]{0,9}$")
 _RETRYABLE_ITEM_FORMS = frozenset({"8-K", "8-K/A"})
+_MAX_USER_AGENT = 256
+_UA_EMAIL_RE = re.compile(
+    r"^[<(]?[A-Za-z0-9._%+\-]+@[A-Za-z0-9\-]+(\.[A-Za-z0-9\-]+)*\.[A-Za-z]{2,}[>)]?$")
 
 
 class RequestBudgetExhausted(RuntimeError):
@@ -66,6 +80,31 @@ class RequestBudgetExhausted(RuntimeError):
 
 class SecGetRefused(RuntimeError):
     """One bounded SEC GET was refused (status, redirect, size or shape)."""
+
+
+class SecAccessHalted(RuntimeError):
+    """SEC refused access (403) or kept rate-limiting (429): stop the cycle.
+
+    Fair access: once SEC says stop, the cycle makes no further request.
+    """
+
+
+def _user_agent_ok(value: object) -> bool:
+    """SEC fair-access User-Agent: a declared name plus a contact email.
+
+    Printable ASCII only (no CR/LF header injection), bounded length, one
+    token shaped like an email address and at least one other token naming
+    the requester.
+    """
+    if not isinstance(value, str) or not 1 <= len(value) <= _MAX_USER_AGENT:
+        return False
+    if any(not 0x20 <= ord(char) <= 0x7E for char in value):
+        return False
+    tokens = value.split()
+    emails = [token for token in tokens if _UA_EMAIL_RE.match(token)]
+    names = [token for token in tokens
+             if not _UA_EMAIL_RE.match(token) and any(c.isalpha() for c in token)]
+    return bool(emails) and bool(names)
 
 
 def _finite(value: object) -> float | None:
@@ -260,6 +299,7 @@ class _Cycle:
         self._pacer = SecRequestPacer(min_interval_seconds=min_interval_seconds)
         self.requests_used = 0
         self.budget_exhausted = False
+        self.halt_reason: str | None = None
 
     def _clock_now(self) -> datetime:
         return self._clock()
@@ -269,6 +309,8 @@ class _Cycle:
         attempt = 0
         while True:
             attempt += 1
+            if self.halt_reason is not None:
+                raise SecAccessHalted(self.halt_reason)
             if self.requests_used >= self._max_requests:
                 self.budget_exhausted = True
                 raise RequestBudgetExhausted("sec request budget exhausted")
@@ -290,9 +332,15 @@ class _Cycle:
                     raise SecGetRefused("redirect_refused")
                 if status == 404:
                     return None
+                if status == 403:
+                    self.halt_reason = "sec_access_refused"
+                    raise SecAccessHalted(self.halt_reason)
                 if status != 200 and status in _RETRY_STATUSES and attempt < _MAX_ATTEMPTS:
                     self._sleep(min(2 ** attempt, 8))
                     continue
+                if status == 429:
+                    self.halt_reason = "sec_rate_limited"
+                    raise SecAccessHalted(self.halt_reason)
                 if status != 200:
                     raise SecGetRefused("status_refused")
                 if getattr(response, "url", None) != url:
@@ -358,9 +406,13 @@ def run_cycle(
     """Run one catalyst SEC source cycle and publish the canonical index.
 
     Refusals (exit 2) make zero session calls and publish nothing.  A cycle
-    ends COMPLETE (0), TRUNCATED (3), PARTIAL (4) or PUBLISH_FAILED (5).
+    ends COMPLETE (0), TRUNCATED (3), PARTIAL (4) or PUBLISH_FAILED (5); a
+    cycle in which no issuer was swept ok or incomplete ends FAILED (6) and
+    publishes nothing, so the prior pointer keeps serving.  A 403, or a 429
+    that outlasts the retries, halts the cycle (TRUNCATED): no further SEC
+    request is made and every unswept issuer carries its prior events.
     """
-    if not isinstance(user_agent, str) or "@" not in user_agent:
+    if not _user_agent_ok(user_agent):
         return _refused("user_agent_invalid")
     if not isinstance(universe, (tuple, list)) or not 1 <= len(universe) <= MAX_UNIVERSE:
         return _refused("universe_out_of_range")
@@ -373,6 +425,8 @@ def run_cycle(
         return _refused("min_interval_seconds_invalid")
     if not isinstance(store, StrictConditionalWriteStore):
         return _refused("store_not_conditional_write")
+    if not isinstance(store, NamespacedSourceStore) or store.prefix != NAMESPACE_PREFIX:
+        return _refused("store_not_catalyst_namespace")
     try:
         prior = read_latest_index(store)
     except CatalystSourceUnavailable:
@@ -397,29 +451,31 @@ def run_cycle(
             prior_events_by_ticker.setdefault(str(event["ticker"]), {})[
                 str(event["filing_key"])] = event
 
-    exhausted_at: int | None = None
-    for position, issuer in enumerate(universe):
+    stop_reason: str | None = None
+    for issuer in universe:
         prior_for_issuer = prior_events_by_ticker.get(issuer.ticker, {})
-        if exhausted_at is not None:
-            issuer_rows.append(_issuer_row(issuer, "not_checked", "budget_exhausted"))
+        if stop_reason is not None:
+            issuer_rows.append(_issuer_row(issuer, "not_checked", stop_reason))
             events.extend(_carry_prior_events(prior_for_issuer, window_start, window_end))
             continue
         try:
             status, reason, issuer_events, issuer_skipped = _process_issuer(
                 cycle, issuer, started, window_start, window_end, prior_for_issuer,
             )
-        except RequestBudgetExhausted:
+        except (RequestBudgetExhausted, SecAccessHalted):
             status = None
-        if cycle.budget_exhausted:
+        if cycle.budget_exhausted or cycle.halt_reason is not None:
             # The interrupted issuer's in-flight work is discarded; it and
             # every later issuer are not_checked with prior in-window events
             # carried unchanged so first-retrieval identity survives.
             truncated = True
-            exhausted_at = position
-            issuer_rows.append(_issuer_row(issuer, "not_checked", "budget_exhausted"))
+            stop_reason = cycle.halt_reason or "budget_exhausted"
+            issuer_rows.append(_issuer_row(issuer, "not_checked", stop_reason))
             events.extend(_carry_prior_events(prior_for_issuer, window_start, window_end))
             continue
-        if status == "not_checked":
+        if status in ("not_checked", "failed"):
+            # A failed sweep proves nothing new: keep the prior in-window
+            # events (and their ORIGINAL receipts) instead of dropping them.
             events.extend(_carry_prior_events(prior_for_issuer, window_start, window_end))
         else:
             events.extend(issuer_events)
@@ -428,6 +484,16 @@ def run_cycle(
 
     counts = {status: sum(1 for row in issuer_rows if row["status"] == status)
               for status in ("ok", "incomplete", "failed", "not_checked")}
+    if counts["ok"] + counts["incomplete"] == 0:
+        # Nothing was swept: publishing would only replace the prior pointer
+        # with an index that proves less.  Keep the prior snapshot serving.
+        return CycleResult(
+            outcome="FAILED", exit_code=6, requests_used=cycle.requests_used,
+            events=(), issuers_ok=0, issuers_incomplete=0,
+            issuers_failed=counts["failed"],
+            issuers_not_checked=counts["not_checked"], snapshot_id=None,
+            reason=stop_reason or "no_issuer_swept",
+        )
     if truncated:
         outcome, exit_code = "TRUNCATED", 3
     elif counts["ok"] != len(issuer_rows):
@@ -465,7 +531,8 @@ def run_cycle(
         ).encode("utf-8")
         (raw_root / INDEX_RELATIVE_PATH).write_bytes(index_bytes)
         validate_index(index)
-        snapshot = sync_source_roots(            raw_root=raw_root,
+        snapshot = sync_source_roots(
+            raw_root=raw_root,
             archive_root=archive_root,
             store=store,
             snapshot_at=completed,
@@ -520,7 +587,12 @@ def _sorted_events(events: list[dict]) -> list[dict]:
 
 def _carry_prior_events(prior: dict[str, dict], window_start: datetime,
                         window_end: datetime) -> list[dict]:
-    """Copy a failed/not_checked issuer's in-window prior events unchanged."""
+    """Copy a failed/not_checked issuer's in-window prior events unchanged.
+
+    The reader serves only ``ok`` issuers, so a carried event is never shown
+    from this cycle; it exists so the next sweep re-verifies it under its
+    original first-retrieval receipt instead of minting a new one.
+    """
     carried: list[dict] = []
     for event in prior.values():
         accepted = _parse_clock(event.get("acceptance_datetime"))
@@ -536,8 +608,8 @@ def _process_issuer(cycle: _Cycle, issuer: UniverseIssuer, started: datetime,
     """Sweep one issuer; returns (status, reason, events, skipped)."""
     try:
         body = cycle._bounded_get(endpoint_url(issuer.cik, "submissions"), _SUBMISSIONS_CAP)
-    except RequestBudgetExhausted:
-        return "not_checked", "budget_exhausted", [], []
+    except (RequestBudgetExhausted, SecAccessHalted):
+        raise
     except Exception as exc:  # noqa: BLE001 - submissions failure fails the issuer.
         return "failed", type(exc).__name__, [], []
     if body is None:
@@ -624,9 +696,21 @@ def _process_issuer(cycle: _Cycle, issuer: UniverseIssuer, started: datetime,
                 event = _carry_filing(cycle, issuer, manifest, accepted, prior_event, skipped)
             else:
                 event = _new_filing(cycle, issuer, manifest, accepted, skipped)
-        except RequestBudgetExhausted:
+        except (RequestBudgetExhausted, SecAccessHalted):
             raise
         except Exception as exc:  # noqa: BLE001 - per-filing failure skips the filing.
+            if prior_event is not None:
+                # A transient re-verify failure is not evidence the document
+                # changed: keep the prior event (original receipt, prior
+                # last_verified_at) and mark the issuer incomplete.
+                events.append(dict(prior_event))
+                skipped.append({
+                    "ticker": issuer.ticker,
+                    "accession": manifest["filing"]["accession"],
+                    "reason": "reverify_deferred",
+                })
+                incomplete = True
+                continue
             skipped.append({
                 "ticker": issuer.ticker,
                 "accession": manifest["filing"]["accession"],
@@ -694,6 +778,27 @@ def _carry_filing(cycle: _Cycle, issuer: UniverseIssuer, manifest: dict,
     return carried
 
 
+def _ex99_1_row_hrefs(html: str) -> list[str]:
+    """Raw hrefs of the filing-index rows whose Type cell is exactly EX-99.1.
+
+    The CIK/accession check binds to the matched row's own link, never to
+    any link elsewhere on the page.
+    """
+    table = _find_index_table(html)
+    if table is None:
+        return []
+    hrefs: list[str] = []
+    for row in _TR_RE.findall(table):
+        if _TH_RE.search(row):
+            continue
+        cells = _TD_RE.findall(row)
+        if len(cells) < 4 or _cell_text(cells[3]) != "EX-99.1":
+            continue
+        links = _HREF_RE.findall(cells[2])
+        hrefs.append(links[0] if len(links) == 1 else "")
+    return hrefs
+
+
 def _new_filing(cycle: _Cycle, issuer: UniverseIssuer, manifest: dict,
                 accepted: datetime, skipped: list[dict]) -> dict | None:
     """Retrieve, hash, project and drop one NEW EX-99.1 in memory (D4)."""
@@ -748,12 +853,11 @@ def _new_filing(cycle: _Cycle, issuer: UniverseIssuer, manifest: dict,
         return None
     filename = matches[0].filename
     acc_nodash = accession.replace("-", "")
-    direct_href = f'href="/Archives/edgar/data/{issuer.cik}/{acc_nodash}/{filename}"'
-    inline_href = (
-        f'href="/ix?doc=/Archives/edgar/data/{issuer.cik}/{acc_nodash}/{filename}"')
+    direct_href = f"/Archives/edgar/data/{issuer.cik}/{acc_nodash}/{filename}"
+    row_hrefs = _ex99_1_row_hrefs(html)
     url = archive_document_url(issuer.cik, accession, filename)
-    if (direct_href not in html and inline_href not in html) or not url.startswith(
-            f"{ARCHIVE_ORIGIN}/{issuer.cik}/{acc_nodash}/"):
+    if (len(row_hrefs) != 1 or row_hrefs[0] not in (direct_href, "/ix?doc=" + direct_href)
+            or not url.startswith(f"{ARCHIVE_ORIGIN}/{issuer.cik}/{acc_nodash}/")):
         skipped.append({
             "ticker": issuer.ticker, "accession": accession,
             "reason": "exhibit_cik_mismatch",
