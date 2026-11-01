@@ -315,6 +315,59 @@ def test_engine_commit_script_carves_between_staging_and_the_locked_commit():
     assert broad_add < carve < empty_check < locked_commit
 
 
+def test_engine_commit_holds_an_oversize_blob_after_the_carve_and_reds_every_clean_exit():
+    text = ENGINE.read_text()
+    carve = text.index("qledger_carve_staged || exit 1")
+    hold = text.index("push_hold_oversize_staged $ENGINE_OVERSIZE || exit 1")
+    empty_check = text.index('echo "no engine output changes"')
+    assert carve < hold < empty_check
+    red = '[ -z "$PUSH_HELD_BACK" ] || exit 1; exit 0'
+    for line in text.splitlines():
+        if line.lstrip().startswith("#"):
+            continue
+        if "exit 0" in line:
+            assert red in line, f"a held file must not read as a clean run: {line}"
+    assert text.count(red) == 3
+
+
+def test_engine_oversize_prefilter_holds_the_staged_file_and_leaves_a_carved_one(tmp_path):
+    """The committer's own lines, against a real index: staged over the limit is held,
+    over the limit and not staged is untouched, the rest of the commit stays staged."""
+    text = ENGINE.read_text()
+    start = text.index("ENGINE_OVERSIZE=$(find")
+    block = text[start : text.index('if git diff --cached --quiet; then echo "no engine output changes"')]
+    repo = tmp_path / "repo"
+    (repo / "data").mkdir(parents=True)
+    (repo / "site").mkdir()
+    (repo / "reports").mkdir()
+    git = ["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@example.com"]
+    subprocess.run(["git", "init", "-q", "-b", "main", str(repo)], check=True)
+    (repo / "data" / "grows.jsonl").write_text("old\n")
+    (repo / "site" / "page.json").write_text("old\n")
+    subprocess.run([*git, "add", "."], check=True)
+    subprocess.run([*git, "commit", "-q", "-m", "seed"], check=True)
+    (repo / "data" / "grows.jsonl").write_text("x" * 51)
+    (repo / "site" / "page.json").write_text("new\n")
+    (repo / "reports" / "carved.jsonl").write_text("x" * 51)
+    subprocess.run([*git, "add", "data", "site"], check=True)
+    push_retry = ROOT / "scripts" / "ci" / "push_retry.sh"
+    script = f'. "{push_retry}"\nset -e\n{block}\necho "held=$PUSH_HELD_BACK"\n'
+    done = subprocess.run(
+        ["bash", "-c", script],
+        cwd=repo, env={**os.environ, "PUSH_BLOB_LIMIT": "50"},
+        capture_output=True, text=True, check=False,
+    )
+    assert done.returncode == 0, done.stderr
+    assert "held= data/grows.jsonl" in done.stdout
+    assert "::error title=file over GitHub's limit::" in done.stdout
+    staged = subprocess.run(
+        [*git, "diff", "--cached", "--name-only"], check=True, capture_output=True, text=True
+    ).stdout.split()
+    assert staged == ["site/page.json"]
+    assert (repo / "data" / "grows.jsonl").read_text() == "old\n"
+    assert (repo / "reports" / "carved.jsonl").read_text() == "x" * 51
+
+
 def _job_steps(job: str) -> list[dict]:
     return yaml.safe_load(DAILY.read_text())["jobs"][job]["steps"]
 

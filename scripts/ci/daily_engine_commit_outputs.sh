@@ -203,7 +203,21 @@ git add -f site/live/notify_state.json 2>/dev/null || true
 # lost engine commit must red the run (see the push_lost branch below).
 . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"
 qledger_carve_staged || exit 1
-if git diff --cached --quiet; then echo "no engine output changes"; exit 0; fi
+# GitHub decides GH001 per blob, so ONE staged file over the limit rejects this
+# whole commit, which is what the qledger carve above repairs for its own two
+# planes. data/us_board_ledger/snapshots.jsonl is the next file to get there: it
+# read 88,488,651 B on 2026-11-01 and takes about 2.5 MB a board, so the grader
+# above carries it over on the engine run of about 2026-11-10. Hold back whatever
+# is over, land the rest, and red the step (the always() steps below still run).
+# The find is a prefilter: the hold forks once per staged path and this index is
+# large. A file over the limit that is not staged, such as a carved plane, is left
+# alone, because the hold only reads staged paths.
+ENGINE_OVERSIZE=$(find data site reports -type f -size +"${PUSH_BLOB_LIMIT:-104857600}"c -print 2>/dev/null || true)
+if [ -n "$ENGINE_OVERSIZE" ]; then
+  # shellcheck disable=SC2086  # no tracked path contains whitespace
+  push_hold_oversize_staged $ENGINE_OVERSIZE || exit 1
+fi
+if git diff --cached --quiet; then echo "no engine output changes"; [ -z "$PUSH_HELD_BACK" ] || exit 1; exit 0; fi
 # Fail-closed conflict gate (P0 2026-08-01, d29e4dd44d / #4167): a conflicted
 # autostash apply anywhere upstream of this step leaves `Updated upstream /
 # Stashed changes` blocks that the broad `git add` above stages VERBATIM —
@@ -216,7 +230,7 @@ if git diff --cached --quiet; then echo "no engine output changes"; exit 0; fi
 if ! push_staged_heal data/ site/ reports/ templates/; then
   exit 1
 fi
-if git diff --cached --quiet; then echo "no engine output changes after conflict heal"; exit 0; fi
+if git diff --cached --quiet; then echo "no engine output changes after conflict heal"; [ -z "$PUSH_HELD_BACK" ] || exit 1; exit 0; fi
 bash scripts/ci/options_signal_nightly.sh commit-broad-candidate \
   "engine: regime update $(date -u +%F)"
 # best-effort push (see commit-data). The deploy below uses the uploaded
@@ -308,7 +322,7 @@ while push_attempt; do
     # This is the actual final candidate, including any render-sync commit.
     qledger_push_candidate=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
     python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref "$qledger_push_candidate" || exit 1
-    if push_do origin "$qledger_push_candidate:refs/heads/main"; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
+    if push_do origin "$qledger_push_candidate:refs/heads/main"; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; [ -z "$PUSH_HELD_BACK" ] || exit 1; exit 0; fi
   fi
   push_abort_rebase
   push_backoff
