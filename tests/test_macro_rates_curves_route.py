@@ -1183,8 +1183,8 @@ def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> No
         ROOT, page, data_root=data, out_dir=out, env=env,
         page_built_at=altered_stamp,
     )
-    before = _region(altered, name)
-    after = _region((out / name).read_text(encoding="utf-8"), name)
+    before = _region(_t11_collapse_t21_labels(altered), name)
+    after = _region(_t11_collapse_t21_labels((out / name).read_text(encoding="utf-8")), name)
     assert before is not None and after is not None
     # The re-render carries this edit's dated Change column. Collapse it
     # the same way T11 does; the altered stamp still has to match.

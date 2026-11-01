@@ -917,10 +917,12 @@ def _series(snapshot: Mapping[str, Any]) -> dict[str, Any]:
 def _drivers(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
     block = snapshot.get("drivers") or {}
     axis_by_index = list(axes)
+    trade_page = (snapshot.get("workspace") or {}).get("id") == "trade_flows"
     groups = []
-    for key, fallback_en, fallback_zh, axis_index in (
-        ("rate_side", "Rate-side drivers", "利率侧驱动", 0),
-        ("balance_sheet", "Balance-sheet drivers", "资产负债表驱动", 1),
+    for key, fallback_en, fallback_zh, trade_en, trade_zh, axis_index in (
+        ("rate_side", "Rate-side drivers", "利率侧驱动", "Trade prices", "贸易价格", 0),
+        ("balance_sheet", "Balance-sheet drivers", "资产负债表驱动",
+         "Dollar flows", "美元流量", 1),
     ):
         rows = []
         for driver in block.get(key) or []:
@@ -954,9 +956,15 @@ def _drivers(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> 
                 "coverage_tone": L.tone("presence", driver.get("coverage_state")),
             })
         axis = axis_by_index[axis_index] if axis_index < len(axis_by_index) else None
+        if trade_page:
+            title = _pair(trade_en, trade_zh)
+        elif axis and axis.get("label"):
+            title = axis["label"]
+        else:
+            title = _pair(fallback_en, fallback_zh)
         groups.append({
             "group_id": key,
-            "title": (axis["label"] if axis and axis.get("label") else _pair(fallback_en, fallback_zh)),
+            "title": title,
             "fallback_title": _pair(fallback_en, fallback_zh),
             "rows": rows,
             "absent": not rows,
@@ -1085,6 +1093,26 @@ def _diagnostics(snapshot: Mapping[str, Any], context: Mapping[str, Any],
 
 # --- evidence drawer ----------------------------------------------------------
 
+def _lineage_note_for_printed_dates(note: Any, effective_date: Any,
+                                    prior_effective_date: Any) -> Any:
+    """Use the later-period producer note when a no-change note's dates differ."""
+    eff = str(effective_date).strip() if effective_date else ""
+    prior = str(prior_effective_date).strip() if prior_effective_date else ""
+    if not eff or not prior or eff == prior:
+        return note
+    try:
+        kind = D.classify_lineage_kind(note)
+    except KeyError:
+        return note
+    if kind != "no_change_republication":
+        return note
+    return (
+        "Reference period differs from the predecessor print "
+        "(a new observation, not a revision of the same period); "
+        "no correction asserted."
+    )
+
+
 def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
               page_built_at: str, artifact: Mapping[str, Any]) -> dict[str, Any]:
     sources = []
@@ -1151,7 +1179,14 @@ def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             "changed_sources": D.changed_sources_pair(
                 corrections.get("changed_fingerprints")),
             "note": D.lineage_note_pair(
-                corrections.get("note"),
+                _lineage_note_for_printed_dates(
+                    corrections.get("note"),
+                    (snapshot.get("headline") or {}).get("effective_date"),
+                    (
+                        ((snapshot.get("headline") or {}).get("prior_state") or {})
+                        .get("effective_date")
+                    ),
+                ),
                 effective_date=(snapshot.get("headline") or {}).get("effective_date"),
                 prior_effective_date=(
                     ((snapshot.get("headline") or {}).get("prior_state") or {})
