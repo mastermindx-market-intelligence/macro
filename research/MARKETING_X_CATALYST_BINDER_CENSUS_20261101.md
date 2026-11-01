@@ -30,12 +30,13 @@ same PR answers a failure class named here, and each class has its own test.
 |---|---:|---:|
 | `parsed` (≥ 1 projected figure) | 10 | **31** |
 | Releases with ≥ 1 bound figure | 13 | 32 |
-| Bound figures (all concepts and bases) | 60 | 194 |
-| Projected public figures | 14 | 49 |
-| — `eps_actual` | 8 | 27 |
-| — `rev_actual` | 6 | 22 |
+| Bound figures (all concepts and bases) | 60 | 208 |
+| Projected public figures | 14 | 54 |
+| — `eps_actual` | 8 | 29 |
+| — `rev_actual` | 6 | 25 |
 
-No figure bound at the base is lost or changes value on this branch. Values
+These are the final run, after classes T and K and the review hardening
+below. No figure bound at the base is lost or changes value on this branch. Values
 gained were checked against their own statements. For example, KO revenue in
 each release reads from that release's income statement, with the
 prior-year comparative bound to its own period end.
@@ -51,10 +52,10 @@ the release exhibited. "residual" means it is still unparsed; see
 |---|---|---|---|---|---|---|
 | AAPL | [0000320193-26-000018](https://www.sec.gov/Archives/edgar/data/320193/000032019326000018/a8-kex991q3202606272026.htm) | 2026-07-30 | `ed1ab52e06f6fdccc362870ae4004cdd6a28d9db03b65832cd2cf0d52ad6e53a` | parsed 12/eps+rev | parsed 13/eps+rev | S |
 | AAPL | [0000320193-26-000011](https://www.sec.gov/Archives/edgar/data/320193/000032019326000011/a8-kex991q2202603282026.htm) | 2026-04-30 | `3a2116c1a23059ae7d5ecc22fd888c57777d2eec3b19c111c663ab67d330f9a7` | parsed 12/eps+rev | parsed 13/eps+rev | S |
-| MSFT | [0001193125-26-436122](https://www.sec.gov/Archives/edgar/data/789019/000119312526436122/msft-ex99_1.htm) | 2026-10-28 | `b83db6a9a1837f23f37a39055b140ef147cd59469096937c671f242b375df9cd` | no_figures 0/— | parsed 4/eps | A·E·G |
+| MSFT | [0001193125-26-436122](https://www.sec.gov/Archives/edgar/data/789019/000119312526436122/msft-ex99_1.htm) | 2026-10-28 | `b83db6a9a1837f23f37a39055b140ef147cd59469096937c671f242b375df9cd` | no_figures 0/— | parsed 6/eps+rev | A·E·G·T |
 | MSFT | [0001193125-26-323632](https://www.sec.gov/Archives/edgar/data/789019/000119312526323632/msft-ex99_1.htm) | 2026-07-29 | `42fe73a927cacb3e91f973640fb7defeff8945995486411cd9d2eddce5e07b22` | no_figures 0/— | parsed 6/eps+rev | A·E·G·S |
-| AMZN | [0001018724-26-000038](https://www.sec.gov/Archives/edgar/data/1018724/000101872426000038/amzn-20260930xex991.htm) | 2026-10-29 | `10c8c00a2d6199b091f0a86731f4da049d4f0c1ce358520787310421bd8ffc45` | no_figures 0/— | parsed 4/eps | A |
-| AMZN | [0001018724-26-000024](https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm) | 2026-07-30 | `a7dc40594ed93298068d4e149834f88aac743c10290aab17d8366a5991ad3ce0` | no_figures 0/— | parsed 4/eps | A |
+| AMZN | [0001018724-26-000038](https://www.sec.gov/Archives/edgar/data/1018724/000101872426000038/amzn-20260930xex991.htm) | 2026-10-29 | `10c8c00a2d6199b091f0a86731f4da049d4f0c1ce358520787310421bd8ffc45` | no_figures 0/— | parsed 6/eps+rev | A·T |
+| AMZN | [0001018724-26-000024](https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm) | 2026-07-30 | `a7dc40594ed93298068d4e149834f88aac743c10290aab17d8366a5991ad3ce0` | no_figures 0/— | parsed 6/eps+rev | A·T |
 | GOOGL | [0001652044-26-000080](https://www.sec.gov/Archives/edgar/data/1652044/000165204426000080/googexhibit991q32026.htm) | 2026-10-28 | `02f6caf32710c39c5d8d27474b49652da859c9c294cf33aae96b96e1b376b01c` | no_figures 0/— | parsed 7/eps+rev | A·B |
 | GOOGL | [0001652044-26-000066](https://www.sec.gov/Archives/edgar/data/1652044/000165204426000066/googexhibit991q22026.htm) | 2026-07-22 | `f40b58327d6404344f1346b2874b5f843e4ee8b0df613962ae044b177452fbd6` | no_figures 0/— | parsed 7/eps+rev | A·B |
 | META | [0001628280-26-066700](https://www.sec.gov/Archives/edgar/data/1326801/000162828026066700/meta-09302026xexhibit991.htm) | 2026-10-21 | `b894b80a76556b64a3ea4351ddaeb0b8da7b52c1aed3f94d2b67f851ad5e1377` | no_figures 0/— | parsed 9/eps+rev | A·B |
@@ -65,12 +66,12 @@ the release exhibited. "residual" means it is still unparsed; see
 | TSLA | [0001628280-26-064366](https://www.sec.gov/Archives/edgar/data/1318605/000162828026064366/exhibit991111111.htm) | 2026-10-02 | `6c7b09b30653556b2922c0b8cd70f54db312e4a723ed8b8d1554c8b5b1ec64bd` | no_figures 0/— | no_figures 0/— | F (residual) |
 | JPM | [0001628280-26-065582](https://www.sec.gov/Archives/edgar/data/19617/000162828026065582/a3q26erfexhibit991narrative.htm) | 2026-10-13 | `ce9882d22a25eba945e2c50142b333a39931278ebb72efdf39f9d11d035e3852` | no_figures 0/— | no_figures 0/— | residual |
 | JPM | [0001628280-26-048078](https://www.sec.gov/Archives/edgar/data/19617/000162828026048078/a2q26erfexhibit991narrative.htm) | 2026-07-14 | `1a591b869820d64f525ca855739bfc58309e5c57af6425c30548f4bddb09564b` | no_figures 0/— | no_figures 0/— | residual |
-| V | [0001403161-26-000126](https://www.sec.gov/Archives/edgar/data/1403161/000140316126000126/q42026earningsrelease.htm) | 2026-10-27 | `0bdbb53f100572d19c118303a37fe213378d41386e1605777336bbed6b547217` | parsed 3/rev | parsed 3/rev | A·S |
-| V | [0001403161-26-000103](https://www.sec.gov/Archives/edgar/data/1403161/000140316126000103/q32026earningsrelease.htm) | 2026-07-28 | `4feb24dd5d42e6c09ac6ac3a7f7e443405adcf27be8760346dcd08091a28d595` | parsed 3/rev | parsed 5/rev | A·S |
+| V | [0001403161-26-000126](https://www.sec.gov/Archives/edgar/data/1403161/000140316126000126/q42026earningsrelease.htm) | 2026-10-27 | `0bdbb53f100572d19c118303a37fe213378d41386e1605777336bbed6b547217` | parsed 3/rev | parsed 7/eps+rev | A·S·K |
+| V | [0001403161-26-000103](https://www.sec.gov/Archives/edgar/data/1403161/000140316126000103/q32026earningsrelease.htm) | 2026-07-28 | `4feb24dd5d42e6c09ac6ac3a7f7e443405adcf27be8760346dcd08091a28d595` | parsed 3/rev | parsed 7/eps+rev | A·S·K |
 | MA | [0001141391-26-000122](https://www.sec.gov/Archives/edgar/data/1141391/000114139126000122/ma09302026-exx991xearnings.htm) | 2026-10-29 | `c4ec0c55be46aa0d4607ae05a42d5cbdfe0e2d041568a1fe754866bdfb183b86` | no_figures 0/— | parsed 7/eps+rev | A·B·D·S |
 | MA | [0001141391-26-000081](https://www.sec.gov/Archives/edgar/data/1141391/000114139126000081/ma06302026-exx991xearnings.htm) | 2026-07-30 | `8810370e1207f420e072c25441f3be468382a25a40bcb28751d66aac04d46f06` | no_figures 0/— | parsed 7/eps+rev | A·B·D·S |
-| WMT | [0000104169-26-000145](https://www.sec.gov/Archives/edgar/data/104169/000010416926000145/earningsreleasefy27q2.htm) | 2026-08-20 | `2cf3dce9ae9d4dd77bf317fa64c9db29076b13212a0b224e8598cc25f51a7957` | no_figures 0/— | parsed 4/eps | B |
-| WMT | [0000104169-26-000095](https://www.sec.gov/Archives/edgar/data/104169/000010416926000095/earningsreleasefy27q1.htm) | 2026-05-21 | `65bfea1f87b0d4d1323595b45b4279d9617407d4e81138ad39784e1f9e58f88d` | no_figures 0/— | parsed 4/eps | B |
+| WMT | [0000104169-26-000145](https://www.sec.gov/Archives/edgar/data/104169/000010416926000145/earningsreleasefy27q2.htm) | 2026-08-20 | `2cf3dce9ae9d4dd77bf317fa64c9db29076b13212a0b224e8598cc25f51a7957` | no_figures 0/— | parsed 5/eps | B·T |
+| WMT | [0000104169-26-000095](https://www.sec.gov/Archives/edgar/data/104169/000010416926000095/earningsreleasefy27q1.htm) | 2026-05-21 | `65bfea1f87b0d4d1323595b45b4279d9617407d4e81138ad39784e1f9e58f88d` | no_figures 0/— | parsed 5/eps | B·T |
 | JNJ | [0000200406-26-000189](https://www.sec.gov/Archives/edgar/data/200406/000020040626000189/a2026q3exhibit991.htm) | 2026-10-13 | `a11efa1b84180d094aa826d93c19c84b495911a31998ed5ce31ffd0672604b91` | no_figures 0/— | no_figures 0/— | residual |
 | JNJ | [0000200406-26-000146](https://www.sec.gov/Archives/edgar/data/200406/000020040626000146/a2026q2exhibit991.htm) | 2026-07-15 | `9ba8856b1c3fd39e45401f51d3744a671546a3b171b865e8b18a497464a9f2ff` | no_figures 0/— | no_figures 0/— | residual |
 | PG | [0000080424-26-000250](https://www.sec.gov/Archives/edgar/data/80424/000008042426000250/fy2627q1jas8-kexhibit991.htm) | 2026-10-22 | `c41023c49a80ae2a6eab99485cc7cb3708b88f2a3f7b8ac4f807fa0cb9a123ba` | no_figures 0/— | parsed 8/eps+rev | A·B·E |
@@ -102,10 +103,59 @@ shape the census found and refuses anything wider.
 | **B** — units captions | A caption led by a currency sign ("$ in millions") declared neither units nor currency, so every amount was refused as unitless. | A `$`-led caption declares both units and currency. | `test_class_b_a_dollar_led_units_caption_declares_units_and_currency` |
 | **C** — value cells | A currency sign inside the value cell, or a negative typeset across two cells (an opening parenthesis in one cell and the number in the next), was not read as one value. | A currency in the cell is read as a currency. A split negative is joined into one value. | `test_class_c_a_currency_symbol_inside_the_value_cell_is_a_currency`, `test_class_c_a_negative_typeset_across_two_cells_reads_as_one_value` |
 | **D** — label variants | Common statement labels did not name their roster concept, so the row was not a candidate. | The roster label patterns are widened to the census variants only. | `test_class_d_census_label_variants_name_their_concept` |
-| **E** — basis scoping | A statement title did not declare GAAP. A basis named in prose kept governing later tables. A basis declared inside one table leaked to the next. A title typeset as a one-row table was ignored. | Statement titles declare GAAP. Prose that names a basis closes the section it follows. A basis declared inside a table governs that table only. A title typeset as a table governs like a caption. | `test_class_e_census_statement_titles_declare_gaap`, `test_class_e_prose_mentioning_a_basis_closes_the_section_it_follows`, `test_class_e_a_basis_declared_inside_a_table_speaks_for_that_table_only`, `test_class_e_a_title_typeset_as_a_table_governs_like_a_caption` |
+| **E** — basis scoping | A statement title did not declare GAAP. A basis named in prose kept governing later tables. A basis declared inside one table leaked to the next. | Statement titles declare GAAP. Prose that names a basis closes the section it follows. A basis declared inside a table governs that table only. | `test_class_e_census_statement_titles_declare_gaap`, `test_class_e_prose_mentioning_a_basis_closes_the_section_it_follows`, `test_class_e_a_basis_declared_inside_a_table_speaks_for_that_table_only`; regression guard `test_class_e_a_title_typeset_as_a_table_governs_like_a_caption` (the base already read a table-typeset title; the guard keeps class E from breaking it) |
 | **G** — split columns | Two columns under one dated header read as two disagreeing values. Sometimes these are a reconciliation (as reported / adjusted); sometimes an amount and its percent change. | A reconciliation split of one period is **refused** (`value_ambiguous`), never guessed. An amount-and-percent split narrows to the amount. | `test_class_g_a_reconciliation_split_of_one_period_is_refused`, `test_class_g_an_amount_and_percent_split_narrows_to_the_amount` |
 | **S** — span rule | A quarter column and a year-to-date column ending on the same date were refused as a restatement conflict, so net income was lost (AAPL, MSFT, V, MA, KO, PEP, COST). | In `_resolve_restatements`, readings for one (concept, basis, period end) that disagree are resolved to the shortest span only if **every** reading declares a span. Weeks round to months: 13 weeks count as 3 months and 52 weeks as 12. Otherwise the readings are refused as before. | `test_the_quarter_wins_over_the_year_on_one_period_end` (months, weeks, mixed), `test_disagreeing_readings_without_a_shorter_declared_span_are_refused` (undeclared, one-declared, same-span) |
 | **F** — silent empties | An empty figure list looked the same whether the release reported nothing or the binder could not read its layout. | `ReleaseFigureSet.outcome` names why (see below). | `test_class_f_an_empty_figure_list_names_why_it_is_empty` (prose, no-roster-row, undated, refused, bound) |
+| **T** — segment footing | A statement listed segment lines above their total, every one matching the revenue (or operating income, gross profit) label, so the readings disagreed and were refused (AMZN revenue and operating income, MSFT …-436122 revenue and operating income, WMT gross profit). | Among disagreeing readings of one concept, basis and period, the one that the others sum to exactly binds. Footing must hold in every period column, on one scale, with no elimination row and exactly one total. Otherwise the readings stay `value_ambiguous`. | `test_a_segment_breakdown_binds_the_line_its_segments_sum_to`, `test_a_breakdown_that_does_not_cleanly_foot_stays_ambiguous` (no-footing, two-amounts, elimination, mixed-scale) |
+| **K** — share-class EPS | EPS was stated per share class ("Class A common stock" and others) with no plain EPS row, so no EPS bound (V). | A share-class row binds as EPS only when the release's headline EPS names exactly one class whose value matches it. A direct EPS row always wins. A headline EPS alone binds nothing. | `test_the_headline_eps_names_which_share_class_is_the_release_eps`, `test_share_class_eps_without_one_matching_class_is_refused` (no-headline, two-classes-match, classes-disagree), `test_a_direct_eps_row_wins_over_share_class_rows`, `test_a_headline_eps_alone_binds_neither_basic_nor_diluted` |
+
+The live diagnosis also needed two narrower header rules: a bare "GAAP"
+heading opens a GAAP section (`test_a_bare_gaap_heading_opens_a_gaap_section`,
+V), and a "USD | YoY Change" sub-header narrows to the amount
+(`test_an_amount_and_change_split_narrows_to_the_amount`, MSFT).
+
+### Fail-closed hardening (first independent review)
+
+The first review attacked the new acceptance paths with synthetic tables and
+found shapes that bound a wrong basis or value. Each is now refused or read
+correctly, with a test. None of these changes the census yield.
+
+| Finding | Shape | Now | Test |
+|---|---|---|---|
+| 1, 2 | An EPS label with words after "EPS" ("Diluted EPS excluding special items", "Diluted EPS growth") bound as GAAP EPS. | The label tail is a closed list: a basis tag, an attribution or a colon. Anything else is not EPS. | `test_an_eps_label_naming_a_different_number_is_not_eps`, `test_an_eps_label_with_an_attribution_or_basis_tag_is_still_eps` |
+| 3 | A row with more values than period columns was mapped by position. | The row is refused. | `test_a_row_with_more_values_than_period_columns_is_refused` |
+| 4 | A statement title qualified as adjusted ("Adjusted …", "As Adjusted", "Excluding Special Items", "Pro Forma") declared GAAP. | The title declares non-GAAP. | `test_a_statement_title_qualified_as_adjusted_declares_non_gaap` |
+| 5 | A small negative after a currency cell ("$ \| (5)") was skipped as a footnote, so the prior-year value shifted into the current period (also at the base). | A parenthesised value after a currency cell is a negative. | `test_a_parenthesized_value_after_a_currency_cell_is_negative` |
+| 6 | A placeholder ("—") or unclosed value in the current period dropped the row, so the outcome said `no_candidate_rows`. | The row is a refused candidate with a typed absence, and the outcome is `all_refused`. | `test_a_placeholder_in_the_current_period_is_a_refused_roster_row` |
+| 7 | "Two Quarters Ended", "Q3 YTD" and "Three and Nine Months Ended" declared the wrong span. | A quarter count declares its span. A header that names two spans or a year to date declares none, so the span rule refuses rather than picks. | `test_a_quarter_count_header_declares_its_span`, `test_a_header_that_declares_no_single_span_is_never_the_longer_period` (two-spans, year-to-date) |
+| 8 | A class E test passed at the base. | Relabelled a regression guard (see class E). | — |
+| 9 | Short prose comparing against GAAP ("Compared with GAAP results") read as a GAAP caption. | Comparison prose is not a caption. | `test_prose_comparing_against_gaap_is_not_a_gaap_caption` |
+
+A release that truly does not state EPS still fails closed on EPS:
+`test_a_release_that_states_no_eps_fails_closed_on_eps` (no-eps-row,
+eps-placeholder) in the binder suite, and
+`test_projection_publishes_no_eps_a_release_does_not_state` in
+`tests/test_catalyst_source_cycle.py` (projects revenue only).
+
+## Live releases that production showed UNAVAILABLE
+
+Production bound these six with the binder on `main`. Re-fetched in memory
+through the writer's own path (`_Cycle._bounded_get`, the EX-99.1 row of the
+filing index, `project_release_figures`); D4 holds and only hashes and URLs
+were kept. On this branch every one is `parsed` / `figures_projected`.
+
+| Ticker | Accession | Production (main) | This branch: `eps_actual` | `rev_actual` | Classes |
+|---|---|---|---|---|---|
+| AMZN | 0001018724-26-000038 | EPS and revenue missing | 1.89 | 201,944M | A·T |
+| MA | 0001141391-26-000122 | EPS and revenue missing | 5.28 | 9,807M | A·B·D·S |
+| MSFT | 0001193125-26-436122 | EPS and revenue missing | 4.92 | 92,279M | A·E·G·T |
+| GOOGL | 0001652044-26-000080 | EPS and revenue missing | 2.12 | 127,577M | A·B |
+| KO | 0001628280-26-067403 | EPS and revenue missing | 0.93 | 13,380M | D·S |
+| V | 0001403161-26-000126 | EPS missing | 3.19 | 12,139M | A·S·K |
+
+Ablation (disable one rule, re-bind) confirms the attribution: without
+footing, AMZN and MSFT lose revenue; without share classes, V loses EPS.
 
 ## Outcome codes (follow-up "g")
 
@@ -174,9 +224,9 @@ tables / candidate rows.
 
 Other partial gaps on parsed releases:
 
-- V's EPS concepts read `concept_not_present`, so V projects revenue only.
-- MSFT …-436122 has 4 `value_ambiguous` refusals: class G reconciliation
-  splits, refused by design.
+- MSFT …-436122: class G reconciliation splits are still refused by design,
+  but no concept is left unbound by them now; revenue and operating income
+  bind through segment footing (class T).
 
 These are follow-ups, not regressions. None of them is fixed by widening a
 pattern; each needs its own evidence, and some need a source other than the

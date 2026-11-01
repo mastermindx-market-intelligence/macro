@@ -30,9 +30,10 @@ Output is ``context_only``.  Nothing here ranks, sizes, gates or escalates.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from enum import Enum
+import math
 import re
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -113,7 +114,10 @@ _GAAP_CAPTION_RE = re.compile(
     r"consolidated\s+statements?\s+of\s+(?:operations|income|earnings|cash\s+flows)|"
     r"consolidated\s+(?:income|earnings)\s+information|"
     r"\A\s*(?:consolidated\s+)?income\s+statements?\s*(?:\(unaudited\))?\s*\Z|"
-    r"\bU\.?S\.?\s+GAAP\b|\bGAAP\s+(?:results|measures|basis)\b",
+    r"\bU\.?S\.?\s+GAAP\b|\bGAAP\s+(?:results|measures|basis)\b|"
+    # A section heading that reads exactly "GAAP" (its "Non-GAAP" twin is a
+    # _NON_GAAP_CAPTION_RE caption): Visa's summary opens each half this way.
+    r"\A\s*GAAP\s*:?\s*\Z",
     re.I,
 )
 _NON_GAAP_CAPTION_RE = re.compile(
@@ -129,6 +133,14 @@ _NON_GAAP_INLINE_RE = re.compile(r"non-?GAAP|\badjusted\b", re.I)
 # real caption is at most nine words and none is punctuated as a sentence.
 _CAPTION_MAX_WORDS = 9
 _SENTENCE_PUNCTUATION_RE = re.compile(r";|\.\s*\Z")
+# "Compared with GAAP results" is a clause about two bases, not a heading.
+_COMPARISON_PHRASE_RE = re.compile(r"\bcompared\s+(?:with|to)\b|\bversus\b|\bvs\.?(?=\s)", re.I)
+# A GAAP statement title that is qualified is an adjusted presentation of that
+# statement: "Adjusted Consolidated Statements of Earnings", "... - As
+# Adjusted", "..., Excluding Special Items".  Kept apart from
+# _NON_GAAP_CAPTION_RE because only a GAAP-titled caption is read this way;
+# prose that merely says "excluding" declares nothing.
+_ADJUSTED_QUALIFIER_RE = re.compile(r"\badjusted\b|\bexcluding\b|\bpro\s+forma\b|\bspecial\s+items\b", re.I)
 
 _NUMERIC_CELL_RE = re.compile(r"\A\(?-?\d{1,3}(?:,\d{3})*(?:\.\d+)?\)?%?\Z")
 _BARE_NUMERIC_RE = re.compile(r"\A\(?-?\d+(?:\.\d+)?\)?%?\Z")
@@ -162,11 +174,24 @@ _QUARTER_SPAN_RE = re.compile(
     r"\bquarters?\s+(?:ended|ending)\b|\b(?:first|second|third|fourth)\s+quarter\b|\bQ[1-4]\b",
     re.I,
 )
+# "Three and Nine Months Ended" heads two spans; "Three Quarters Ended" is nine
+# months; a year-to-date column's length depends on the quarter it closes.
+_SPAN_PAIR_RE = re.compile(
+    r"\b(three|six|nine|twelve|thirteen|sixteen|\d{1,2})\s+and\s+"
+    r"(three|six|nine|twelve|thirteen|sixteen|\d{1,2})[\s-]+(month|week)s?\b",
+    re.I,
+)
+_QUARTER_COUNT_RE = re.compile(r"\b(two|three|four|[1-4])\s+quarters\b", re.I)
+_QUARTER_COUNTS = {"two": 2, "three": 3, "four": 4}
+_YEAR_TO_DATE_RE = re.compile(r"\bYTD\b|\byear[\s-]+to[\s-]+date\b", re.I)
 # A cell that holds a column's place but no value: "—", "n/m", "*".
 _PLACEHOLDER_CELL_RE = re.compile(r"\A(?:[-–—]+|n\.?/?m\.?|n\.?/?a\.?|\*+)\s*%?\Z", re.I)
 # The closing half of a value typeset across cells: "(0.12" + ")", "12.5" + "%".
 _SUFFIX_CELLS = frozenset({")", "%", ")%", "%)"})
 _PERCENT_HEADER_RE = re.compile(r"%|\bpercent", re.I)
+# "USD | YoY Change": a change column reports the difference between two
+# periods, never either period's amount, whether it is typeset in % or $.
+_CHANGE_HEADER_RE = re.compile(r"\bchange\b", re.I)
 # "Net revenues1": a footnote reference glued to the label word.
 _GLUED_FOOTNOTE_RE = re.compile(r"(?<=[a-z])\d{1,2}\Z")
 _EPS_LABEL_RE = re.compile(r"\bEPS\b", re.I)
@@ -192,6 +217,41 @@ _GUIDANCE_PERIOD_RE = re.compile(
     re.I,
 )
 _GUIDANCE_MAGNITUDE = {"thousand": "usd_thousands", "million": "usd_millions", "billion": "usd_billions"}
+# What may follow a per-share label and still name the reported figure itself:
+# a basis tag, an attribution to the parent, a trailing colon.  The tail is a
+# closed list because anything else names a different number: "Diluted EPS
+# excluding special items" is an adjusted measure and "Diluted EPS growth" is a
+# percentage, and both would otherwise bind as the GAAP per-share amount.
+_EPS_BASIS_TAG = r"(?:\s*\((?:GAAP|non-?GAAP|EPS)\))?"
+_EPS_LABEL_TAIL = (
+    _EPS_BASIS_TAG
+    + r"(?:\s*,?\s+attributable\s+to\s+"
+    r"(?![^()%:]*\b(?:excluding|before|after|from|growth|change)\b)[^()%:]{1,60}?)?"
+    + _EPS_BASIS_TAG
+    + r"\s*:?\Z"
+)
+# A multi-class issuer reports EPS once per class of common stock: "Class A
+# common stock" rows under a "Basic Earnings Per Share" scope.  No class row is
+# the release's EPS by its label, and the unqualified "Earnings per share" of
+# the summary, which says which class is, names neither basic nor diluted.
+# Both read as internal candidates that only _resolve_share_classes turns into
+# a roster figure; whatever it cannot resolve never reaches the caller.
+_SHARE_CLASS_LABEL_RE = re.compile(
+    r"\Aclass\s+[a-z](?:-\d{1,2})?\s+(?:common\s+|ordinary\s+)?(?:stock|shares?)\Z", re.I
+)
+_CLASS_EPS_SCOPE_RE = re.compile(
+    r"\A(?:GAAP\s+|non-?GAAP\s+|adjusted\s+)?(basic|diluted)\s+"
+    r"(?:(?:net\s+)?(?:income|earnings|loss)\s+per\s+(?:common\s+)?share|EPS)\s*:?\Z",
+    re.I,
+)
+_HEADLINE_EPS_LABEL_RE = re.compile(
+    r"\A(?:GAAP\s+|non-?GAAP\s+|adjusted\s+)?(?:net\s+)?(?:income|earnings)\s+per\s+"
+    r"(?:common\s+)?share" + _EPS_LABEL_TAIL,
+    re.I,
+)
+_BASIC_OR_DILUTED_RE = re.compile(r"\b(?:basic|diluted)\b", re.I)
+_HEADLINE_EPS = "_headline_eps"
+_CLASS_EPS_PREFIX = "_class_eps:"
 
 
 @dataclass(frozen=True)
@@ -259,7 +319,7 @@ _ROW_RULES: tuple[_RowRule, ...] = (
     _RowRule(
         re.compile(
             r"\A(?:adjusted\s+|non-?GAAP\s+)?basic\s+(?:net\s+)?"
-            r"(?:income|earnings|loss)\s+per\s+(?:common\s+)?share\b",
+            r"(?:income|earnings|loss)\s+per\s+(?:common\s+)?share" + _EPS_LABEL_TAIL,
             re.I,
         ),
         {ValueKind.PER_SHARE.value: "eps_basic"},
@@ -268,7 +328,7 @@ _ROW_RULES: tuple[_RowRule, ...] = (
     _RowRule(
         re.compile(
             r"\A(?:adjusted\s+|non-?GAAP\s+)?diluted\s+(?:net\s+)?"
-            r"(?:income|earnings|loss)\s+per\s+(?:common\s+)?share\b",
+            r"(?:income|earnings|loss)\s+per\s+(?:common\s+)?share" + _EPS_LABEL_TAIL,
             re.I,
         ),
         {ValueKind.PER_SHARE.value: "eps_diluted"},
@@ -277,14 +337,18 @@ _ROW_RULES: tuple[_RowRule, ...] = (
     # "Diluted EPS", "Adjusted diluted EPS", "EPS (diluted)", "EPS - diluted".
     _RowRule(
         re.compile(
-            r"\A(?:adjusted\s+|non-?GAAP\s+)?basic\s+EPS\b|\AEPS\s*[-–—(]\s*basic\)?\Z", re.I
+            r"\A(?:adjusted\s+|non-?GAAP\s+)?basic\s+EPS" + _EPS_LABEL_TAIL
+            + r"|\AEPS\s*[-–—(]\s*basic\)?\Z",
+            re.I,
         ),
         {ValueKind.PER_SHARE.value: "eps_basic"},
         scope_forbidden=_SHARE_COUNT_SCOPE_RE,
     ),
     _RowRule(
         re.compile(
-            r"\A(?:adjusted\s+|non-?GAAP\s+)?diluted\s+EPS\b|\AEPS\s*[-–—(]\s*diluted\)?\Z", re.I
+            r"\A(?:adjusted\s+|non-?GAAP\s+)?diluted\s+EPS" + _EPS_LABEL_TAIL
+            + r"|\AEPS\s*[-–—(]\s*diluted\)?\Z",
+            re.I,
         ),
         {ValueKind.PER_SHARE.value: "eps_diluted"},
         scope_forbidden=_SHARE_COUNT_SCOPE_RE,
@@ -483,7 +547,8 @@ class _Context:
         if _NON_GAAP_CAPTION_RE.search(text):
             declared = Basis.NON_GAAP.value
         elif _GAAP_CAPTION_RE.search(text):
-            declared = Basis.GAAP.value
+            declared = (Basis.NON_GAAP.value if _ADJUSTED_QUALIFIER_RE.search(text)
+                        else Basis.GAAP.value)
         else:
             return
         if _is_caption_shaped(text):
@@ -521,7 +586,8 @@ class _Context:
 def _is_caption_shaped(text: str) -> bool:
     stripped = text.strip()
     return (len(stripped.split()) <= _CAPTION_MAX_WORDS
-            and not _SENTENCE_PUNCTUATION_RE.search(stripped))
+            and not _SENTENCE_PUNCTUATION_RE.search(stripped)
+            and not _COMPARISON_PHRASE_RE.search(stripped))
 
 
 _INLINE_CURRENCY_RE = re.compile(r"\A(US\$|\$|€|£|¥)\s*")
@@ -655,7 +721,14 @@ def _row_is_header(cells: Sequence[TableCell]) -> bool:
     populated = _non_empty(cells)
     if not populated:
         return True
-    numeric = [cell for cell in populated if _is_value_cell(cell.text)]
+    # "$ | (5)" is minus five, not a footnote marker: see ``_row_groups``.
+    numeric = [
+        cell for previous, cell in zip((None, *populated), populated)
+        if _is_value_cell(cell.text) or (
+            previous is not None and previous.text.strip() in _CURRENCY_SYMBOL
+            and _FOOTNOTE_CELL_RE.match(cell.text.strip())
+        )
+    ]
     if not numeric:
         return True
     # A row of fiscal years ("2025   2024") under "September 30," is a column
@@ -809,7 +882,8 @@ def _header_layout(block: DisclosureBlock) -> _HeaderLayout:
             if sub_row > row and column.start <= sub_start and sub_end <= column.end
         ]
         if len(subs) >= 2:
-            amounts = [sub for sub in subs if not _PERCENT_HEADER_RE.search(sub[2])]
+            amounts = [sub for sub in subs if not _PERCENT_HEADER_RE.search(sub[2])
+                       and not _CHANGE_HEADER_RE.search(sub[2])]
             if len(amounts) == 1:
                 column = _Column(amounts[0][0], amounts[0][1], column.period_label,
                                  column.period_end)
@@ -907,7 +981,9 @@ def _row_groups(placed: Sequence[tuple[int, int, TableCell]]) -> list[_Group]:
         if text in _CURRENCY_SYMBOL:
             pending = (_CURRENCY_SYMBOL[text], start)
             continue
-        if _FOOTNOTE_CELL_RE.match(text):
+        if _FOOTNOTE_CELL_RE.match(text) and pending is None:
+            # "(1)" alone is a footnote marker, but "$ | (5)" is minus five:
+            # a currency symbol announces the next cell as a value.
             continue
         if text in _SUFFIX_CELLS:
             if groups:
@@ -920,6 +996,10 @@ def _row_groups(placed: Sequence[tuple[int, int, TableCell]]) -> list[_Group]:
             continue
         group_start = pending[1] if pending else start
         parsed = _parse_value_cell(text)
+        if parsed is None and pending is not None and _FOOTNOTE_CELL_RE.match(text):
+            signed = parse_numeric(text)
+            if signed is not None:
+                parsed = _ValueCell(signed[0], signed[1], None, (text,))
         if parsed is None and text.startswith("("):
             closed = parse_numeric(text + ")")
             if closed is not None:
@@ -984,11 +1064,14 @@ def _select_group(
         return (values[0], None, AbsenceReason.PERIOD_UNDECLARED,
                 "value cell does not sit under the period column it maps to")
     # A different grid (Workiva drops the "$" cells on inner rows): map by
-    # order, and only when every header slot has a position in this row.
-    if len(groups) < len(layout.slots):
+    # order, and only when the row has exactly one position per header slot.
+    # A row with MORE positions carries a column the header does not name (a
+    # "Note" reference, a leading line number), and counting from the left
+    # would read that column as the first period.
+    if len(groups) != len(layout.slots):
         return values[0], None, AbsenceReason.PERIOD_UNDECLARED, (
-            "the row has fewer value positions than the header has columns; "
-            "refusing to guess which period each reports"
+            f"the row has {len(groups)} value positions and the header has "
+            f"{len(layout.slots)} columns; refusing to guess which period each reports"
         )
     return groups[layout.slots.index(wanted)], target, None, ""
 
@@ -1084,6 +1167,23 @@ def _extract_table(
         # different period and would need its own concept namespace.
         group, column, refusal_reason, refusal = _select_group(groups, layout, target, row_width)
         if group.value is None or group.cell is None:
+            # The current-period cell holds a placeholder ("—", "n/m"): the row
+            # names a figure the release does not report for this period.  It
+            # is a candidate row with a finding, not a row that never existed,
+            # or a table of placeholders would read as "no candidate rows".
+            kind_hint = next(item.kind for item in groups if item.value is not None)
+            concept = _concept_for(label=label, scope=scope, kind=_observed_kind(
+                kind_hint=kind_hint, label=label, scope=scope, currency=None, context=context))
+            if concept is not None and concept != _HEADLINE_EPS:
+                absences.append(TypedAbsence(
+                    concept=concept,
+                    reason=AbsenceReason.CONCEPT_NOT_PRESENT.value,
+                    detail="the current-period cell is a placeholder; the row reports "
+                           "no value for this period",
+                    label=label,
+                ))
+                stats.candidate_rows += 1
+                stats.dated_candidate_rows += target is not None
             continue
         key = target.start if target is not None else 0
         if group.currency:
@@ -1144,7 +1244,9 @@ def _bind_row(
     """Bind one row's current-period value, or record why not.
 
     Returns True when the row names a roster concept — bound or refused — so
-    the caller can tell "no candidate rows" from "every candidate refused".
+    the caller can tell "no candidate rows" from "every candidate refused".  An
+    unqualified headline EPS row names none on its own: it is evidence for
+    _resolve_share_classes, never a candidate.
     """
     kind = _observed_kind(
         kind_hint=kind_hint, label=label, scope=scope, currency=currency, context=context
@@ -1152,6 +1254,7 @@ def _bind_row(
     concept = _concept_for(label=label, scope=scope, kind=kind)
     if concept is None:
         return False
+    counted = concept != _HEADLINE_EPS
 
     basis = _basis_for(label=label, scope=scope, context=context)
     if basis is None:
@@ -1161,7 +1264,7 @@ def _bind_row(
             detail="no GAAP or non-GAAP caption governs this row; refusing to default a basis",
             label=label,
         ))
-        return True
+        return counted
     if kind is None:
         absences.append(TypedAbsence(
             concept=concept,
@@ -1169,7 +1272,7 @@ def _bind_row(
             detail="no units caption and no currency symbol govern this value",
             label=label,
         ))
-        return True
+        return counted
     if kind == ValueKind.MONETARY.value:
         if context.units is None:
             absences.append(TypedAbsence(
@@ -1178,7 +1281,7 @@ def _bind_row(
                 detail="no '(In thousands/millions/billions)' caption governs this table",
                 label=label,
             ))
-            return True
+            return counted
         if currency is None:
             absences.append(TypedAbsence(
                 concept=concept,
@@ -1186,7 +1289,7 @@ def _bind_row(
                 detail="no currency symbol governs this column and no caption names one",
                 label=label,
             ))
-            return True
+            return counted
         units, scale = context.units, _SCALE_FACTOR[context.units]
     elif kind == ValueKind.PER_SHARE.value:
         if currency is None:
@@ -1196,7 +1299,7 @@ def _bind_row(
                 detail="a per-share amount with no currency symbol is not a price",
                 label=label,
             ))
-            return True
+            return counted
         # A per-share amount never inherits the statement's (In millions) scale.
         units, scale = "per_share", 1.0
     else:
@@ -1209,14 +1312,14 @@ def _bind_row(
             detail=period_refusal,
             label=label,
         ))
-        return True
+        return counted
 
     receipt = _receipt_or_absence(
         document=document, cell=cell, literals=literals,
         concept=concept, label=label, absences=absences,
     )
     if receipt is None:
-        return True
+        return counted
 
     figures.append(ReleaseFigure(
         concept=concept,
@@ -1230,7 +1333,7 @@ def _bind_row(
         receipt=receipt,
         scale_factor=scale,
     ))
-    return True
+    return counted
 
 
 def _concept_for(*, label: str, scope: str, kind: str | None) -> str | None:
@@ -1256,6 +1359,12 @@ def _concept_for(*, label: str, scope: str, kind: str | None) -> str | None:
             # the concept so the caller learns WHICH figure went unbound.
             return next(iter(rule.kind_to_concept.values()))
         return rule.kind_to_concept.get(kind)
+    if kind == ValueKind.PER_SHARE.value and not _SHARE_COUNT_SCOPE_RE.search(scope):
+        per_class = _CLASS_EPS_SCOPE_RE.match(scope)
+        if per_class and _SHARE_CLASS_LABEL_RE.match(label):
+            return f"{_CLASS_EPS_PREFIX}eps_{per_class.group(1).lower()}:{_slugify(label)}"
+        if _HEADLINE_EPS_LABEL_RE.match(label) and not _BASIC_OR_DILUTED_RE.search(scope):
+            return _HEADLINE_EPS
     if _NON_GAAP_CAPTION_RE.search(scope) and kind == ValueKind.MONETARY.value:
         return f"non_gaap_adjustment:{_slugify(label)}"
     return None
@@ -1373,16 +1482,135 @@ def _declared_period_months(period_label: str) -> int | None:
     Ended" and "Fourth Quarter" are all 3 and "52 Weeks Ended", "Twelve
     Months Ended" and "Fiscal Year Ended" are all 12: two names for one span
     stay one span, and readings that disagree on it stay a conflict.
+
+    A header that names more than one span ("Three and Nine Months Ended")
+    or a year-to-date column declares no single length, so it is None: the
+    shortest-period rule must not read a cumulative column as the quarter.
+    A year phrase ("Fiscal 2026") only counts when nothing shorter is named,
+    because "Fourth Quarter Fiscal 2026" is a quarter.
     """
-    match = _PERIOD_SPAN_RE.search(period_label)
-    if match is not None:
-        count = _SPAN_WORDS.get(match.group(1).lower()) or int(match.group(1))
-        return round(count * 7 / 30.44) if match.group(2).lower() == "week" else count
-    if _QUARTER_SPAN_RE.search(period_label):
-        return 3
-    if _YEAR_SPAN_RE.search(period_label):
-        return 12
-    return None
+    if _YEAR_TO_DATE_RE.search(period_label):
+        return None
+
+    def months(count: str, unit: str) -> int:
+        number = _SPAN_WORDS.get(count.lower()) or int(count)
+        return round(number * 7 / 30.44) if unit.lower() == "week" else number
+
+    spans: set[int] = set()
+    for match in _SPAN_PAIR_RE.finditer(period_label):
+        spans.update((months(match.group(1), match.group(3)),
+                      months(match.group(2), match.group(3))))
+    text = _SPAN_PAIR_RE.sub(" ", period_label)
+    for match in _PERIOD_SPAN_RE.finditer(text):
+        spans.add(months(match.group(1), match.group(2)))
+    for match in _QUARTER_COUNT_RE.finditer(text):
+        spans.add(3 * (_QUARTER_COUNTS.get(match.group(1).lower()) or int(match.group(1))))
+    if _QUARTER_SPAN_RE.search(_QUARTER_COUNT_RE.sub(" ", text)):
+        spans.add(3)
+    if not spans and _YEAR_SPAN_RE.search(text):
+        spans.add(12)
+    return spans.pop() if len(spans) == 1 else None
+
+
+def _footing_total(rows: Sequence[ReleaseFigure], values: set[float]) -> float | None:
+    """The one amount that the other conflicting amounts sum to, if exactly one does.
+
+    Only for currency amounts in one scale and currency, all positive, with at
+    least two components: a per-share amount or a percentage does not add up
+    across segments, a negative line is an elimination this rule cannot tell
+    from a component, and a single other amount equal to the total is a
+    restatement, not a breakdown.  The sum must be exact to float precision; a
+    breakdown that misses by rounding stays ambiguous.
+    """
+    if len(values) < 3 or min(values) <= 0:
+        return None
+    if len({(row.units, row.scale_factor, row.currency) for row in rows}) != 1:
+        return None
+    if rows[0].units not in _SCALE_FACTOR:
+        return None
+    grand = sum(values)
+    totals = [value for value in values if math.isclose(value, grand - value, rel_tol=1e-9)]
+    return totals[0] if len(totals) == 1 else None
+
+
+def _resolve_share_classes(
+    figures: list[ReleaseFigure], absences: list[TypedAbsence]
+) -> tuple[list[ReleaseFigure], list[TypedAbsence]]:
+    """Read per-class EPS as the release's EPS when its headline says which class.
+
+    A multi-class issuer reports basic and diluted EPS once per class of common
+    stock and headlines one unqualified "Earnings per share".  Within one basis
+    and period, when there is exactly one unqualified amount and exactly one
+    class's amount equals it, that class row is the release's eps_basic or
+    eps_diluted, and every such match must name the same class.  Anything else
+    refuses: no unqualified amount, two of them, two classes equal to it, or a
+    basic match and a diluted match that name different classes.  A direct
+    "Diluted EPS" row for the same basis and period is the release's own
+    statement, so class rows never compete with it.  Internal concepts never
+    leave this function: a class refusal is reported against its roster
+    concept, and headline rows are dropped.
+    """
+    headline: dict[tuple[str, str], set[float]] = {}
+    classed: dict[tuple[str, str, str], list[tuple[str, ReleaseFigure]]] = {}
+    kept: list[ReleaseFigure] = []
+    for figure in figures:
+        if figure.concept == _HEADLINE_EPS:
+            headline.setdefault((figure.basis, figure.period_end), set()).add(figure.value)
+        elif figure.concept.startswith(_CLASS_EPS_PREFIX):
+            concept, share_class = figure.concept[len(_CLASS_EPS_PREFIX):].split(":", 1)
+            classed.setdefault((concept, figure.basis, figure.period_end), []).append(
+                (share_class, figure)
+            )
+        else:
+            kept.append(figure)
+
+    direct = {(figure.concept, figure.basis, figure.period_end) for figure in kept}
+    picks: dict[tuple[str, str, str], list[ReleaseFigure]] = {}
+    refused: dict[tuple[str, str, str], str] = {}
+    for key, rows in classed.items():
+        if key in direct:
+            continue
+        concept, basis, period_end = key
+        heads = headline.get((basis, period_end), set())
+        matched = {share_class for share_class, row in rows if len(heads) == 1 and row.value in heads}
+        if len(matched) == 1:
+            picks[key] = [row for share_class, row in rows if share_class in matched]
+            continue
+        classes = len({share_class for share_class, _ in rows})
+        stated = ", ".join(format(value, "g") for value in sorted(heads)) or "none"
+        refused[key] = (
+            f"{classes} share classes report {concept} for {period_end or 'this period'} on "
+            f"a {basis} basis; the release's unqualified earnings per share ({stated}) "
+            f"matches {len(matched)} of them — refusing to pick a class"
+        )
+    chosen = {row.concept.rsplit(":", 1)[1] for rows in picks.values() for row in rows}
+    if len(chosen) > 1:
+        for key in picks:
+            refused[key] = (
+                f"the unqualified earnings per share matches different share classes for "
+                f"basic and diluted EPS ({', '.join(sorted(chosen))}) — refusing to pick one"
+            )
+        picks = {}
+    for (concept, _, _), rows in picks.items():
+        kept.extend(replace(row, concept=concept) for row in rows)
+
+    resolved: list[TypedAbsence] = []
+    for absence in absences:
+        if absence.concept == _HEADLINE_EPS:
+            continue
+        if absence.concept.startswith(_CLASS_EPS_PREFIX):
+            absence = replace(
+                absence, concept=absence.concept[len(_CLASS_EPS_PREFIX):].split(":", 1)[0]
+            )
+        resolved.append(absence)
+    for key, detail in refused.items():
+        resolved.append(TypedAbsence(
+            concept=key[0],
+            reason=AbsenceReason.VALUE_AMBIGUOUS.value,
+            detail=detail,
+            label=classed[key][0][1].label,
+        ))
+    return kept, resolved
 
 
 def _resolve_restatements(
@@ -1407,6 +1635,11 @@ def _resolve_restatements(
     in-table rule (the quarter precedes the year-to-date column) applied
     across tables.  The longer readings are cumulative facts that this
     figure's identity cannot hold, so they are not reported.
+
+    Nor is a segment breakdown.  A table that labels each segment's line
+    "Net sales" or "Revenue" under a segment-name heading reads as several
+    revenue rows; when exactly one of the amounts equals the sum of all the
+    others, the others are its components and that amount is the total.
     """
     grouped: dict[tuple[str, str, str], list[ReleaseFigure]] = {}
     for figure in figures:
@@ -1421,6 +1654,11 @@ def _resolve_restatements(
             if None not in lengths:
                 rows = [row for row, days in zip(rows, lengths) if days == min(lengths)]
                 values = {row.value for row in rows}
+        if len(values) > 1:
+            total = _footing_total(rows, values)
+            if total is not None:
+                rows = [row for row in rows if row.value == total]
+                values = {total}
         if len(values) == 1:
             kept.append(rows[0])
             continue
@@ -1465,6 +1703,7 @@ def extract_release_figures(
         if block.kind is BlockKind.PARAGRAPH:
             _extract_guidance(document, block, figures, absences, guidance_seen)
 
+    figures, absences = _resolve_share_classes(figures, absences)
     figures, absences = _resolve_restatements(figures, absences)
 
     bound = {figure.concept for figure in figures}

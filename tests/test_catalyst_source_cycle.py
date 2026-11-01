@@ -882,6 +882,24 @@ def test_projection_names_why_a_release_has_no_figures():
     assert _project(PROSE_RELEASE) == ("no_figures", (), "no_tables")
 
 
+REVENUE_ONLY_RELEASE = b"""<html><body>
+<div>CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)</div>
+<div>(In millions, except per share amounts)</div>
+<table>
+<tr><td></td><td colspan="2">Three Months Ended June 28, 2026</td></tr>
+<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>
+<tr><td>Diluted EPS</td><td>$</td><td>&#8212;</td></tr>
+</table></body></html>"""
+
+
+def test_projection_publishes_no_eps_a_release_does_not_state():
+    """Catches: the live-gap fixes projecting an EPS the release never reports."""
+    status, figures, outcome = _project(REVENUE_ONLY_RELEASE)
+    assert (status, outcome) == ("parsed", "figures_projected")
+    assert [(figure["field"], figure["value"]) for figure in figures] == [
+        ("rev_actual", 8412e6)]
+
+
 def test_projection_names_the_failed_step(monkeypatch):
     """Catches: a binder or replay exception publishing as an empty figure list."""
     import engine.earnings_release.binding as binding
