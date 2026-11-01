@@ -667,16 +667,23 @@ def nc_m11() -> None:
         render_glance_copy(adapt_batch([pt_event])[0])
     except ProphetAdapterError:
         pt_render_refused = True
-    rendered = render_glance_copy(adapt_batch([rec_event])[0])
-    subtitle = rendered["en"]["subtitle"]
-    rec_leaked = "strong buy" in subtitle
+    # A refused render cannot leak: count a TEXT_UNSAFE refusal as no leak,
+    # exactly as the price-target branch above counts its refusal.
+    rec_render_refused = False
+    try:
+        rendered = render_glance_copy(adapt_batch([rec_event])[0])
+    except ProphetAdapterError:
+        rec_render_refused = True
+        rec_leaked = False
+    else:
+        rec_leaked = "strong buy" in rendered["en"]["subtitle"]
     if pt_render_refused and not rec_leaked:
         verdict = "HELD"
     else:
         verdict = "BROKEN"
     report("M11", verdict,
            f"'price target': validator ok={pt_rep.ok} render refused={pt_render_refused}; "
-           f"'strong buy' subtitle leak={rec_leaked}")
+           f"'strong buy' render refused={rec_render_refused} subtitle leak={rec_leaked}")
 
 
 def nc_m12() -> None:

@@ -20,6 +20,7 @@ from __future__ import annotations
 import copy
 import json
 import re
+import unicodedata
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -160,6 +161,43 @@ THESIS_ID_RE = re.compile(r"^thesis_[0-9a-f]{24}$")
 TICKER_RE = re.compile(r"^[A-Z0-9][A-Z0-9.-]{0,14}$")
 COPY_KEY_RE = re.compile(r"^[a-z][a-z0-9_]{2,62}$")
 URL_RE = re.compile(r"(?i)\b(https?|ftps?|wss?|file|javascript|vbscript|gopher|hxxps?|hxtp)\s*:")
+
+# Analyst-rating / recommendation phrases a glance line must never carry (F2
+# control M11).  copy_templates.v1 bans price-target vocabulary but names no
+# rating vocabulary, and the contracts are frozen, so the adapter refuses these
+# itself.  Deliberately NOT matched: a bare "upgrade to" (firmware, products),
+# bare overweight/outperform and bare 增持/减持 (factual holdings and
+# relative-performance statements), and "buy signal" / 买入信号, which the
+# fixed stance line uses only to negate.
+_RATING_WORD = (
+    r"(?:buy|sell|hold|overweight|underweight|outperform|underperform|neutral"
+    r"|equal[\s-]?weight|market\s+perform|sector\s+perform)"
+)
+RECOMMENDATION_EN_RE = re.compile(
+    r"(?i)\b(?:strong\s+(?:buy|sell)"
+    r"|(?:buy|sell|hold|overweight|underweight|outperform|underperform|neutral)\s+rating"
+    r"|rated\s+(?:an?\s+)?" + _RATING_WORD +
+    r"|(?:up|down)grade[ds]?\s+to\s+(?:an?\s+)?(?:strong\s+)?" + _RATING_WORD +
+    r"|top\s+pick|conviction\s+buy)\b"
+)
+RECOMMENDATION_ZH = (
+    "强烈买入", "强烈卖出", "买入评级", "卖出评级",
+    "增持评级", "减持评级", "强烈推荐", "评级上调至", "评级下调至",
+)
+
+
+def recommendation_phrase(text: str) -> str | None:
+    """The first rating/recommendation phrase in ``text`` (raw or NFKC-folded)."""
+    for candidate in (text, unicodedata.normalize("NFKC", text)):
+        m = RECOMMENDATION_EN_RE.search(candidate)
+        if m:
+            return m.group(0)
+        for phrase in RECOMMENDATION_ZH:
+            if phrase in candidate:
+                return phrase
+    return None
+
+
 INJECTION_RE = re.compile(
     r"(?i)(ignore|disregard|forget|override)\s+(all\s+|any\s+|the\s+|every\s+)?"
     r"(previous|prior|above|preceding|earlier)|you\s+are\s+now|"
@@ -328,6 +366,15 @@ def _require_text_safe(value: str, *, path: str, schema: Mapping[str, Any] | Non
     errs = list(_text_safe_validator(schema).iter_errors(value))
     if errs or URL_RE.search(value):
         raise ProphetAdapterError("TEXT_UNSAFE", f"{path} fails text_safe")
+    # Full-width Latin and other compatibility forms fold to ASCII under NFKC;
+    # the folded form must pass the same gate (F2 control M01c).
+    folded = unicodedata.normalize("NFKC", value)
+    if folded != value and (
+        list(_text_safe_validator(schema).iter_errors(folded)) or URL_RE.search(folded)
+    ):
+        raise ProphetAdapterError(
+            "TEXT_UNSAFE", f"{path} fails text_safe after compatibility normalization"
+        )
     return value
 
 
@@ -472,7 +519,9 @@ def _scan_injection(node: Any, findings: list[str], path: str = "") -> None:
     elif isinstance(node, list):
         for i, item in enumerate(node):
             _scan_injection(item, findings, f"{path}/{i}")
-    elif isinstance(node, str) and INJECTION_RE.search(node):
+    elif isinstance(node, str) and (
+        INJECTION_RE.search(node) or INJECTION_RE.search(unicodedata.normalize("NFKC", node))
+    ):
         findings.append(path or "/")
 
 
@@ -1031,6 +1080,9 @@ def render_glance_copy(
         for token in banned:
             if token and _banned_token_hit(blob, token):
                 raise ProphetAdapterError("TEXT_UNSAFE", f"banned glance token {token!r}")
+        phrase = recommendation_phrase(blob)
+        if phrase:
+            raise ProphetAdapterError("TEXT_UNSAFE", f"recommendation phrase {phrase!r}")
         if locale == "en":
             title_words = [w for w in filled["title"].split() if w]
             sub_words = [w for w in filled["subtitle"].split() if w]

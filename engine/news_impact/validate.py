@@ -23,6 +23,12 @@ still carries exactly one code from the closed REASON_CODES; no new code
 was added.  Deterministic by construction: no clock reads, no randomness,
 no network, no module-level I/O; ``as_of``-style time never enters
 validation.
+
+F2 control M01c (2026-11-01) appends rule S14: a free string whose NFKC
+compatibility fold matches a frozen ``text_safe`` not-pattern that the raw
+string does not match is an injection_pattern issue (full-width or other
+compatibility forms cannot route around the schema's injection guard).  It
+reuses the existing code; REASON_CODES stay closed.
 """
 
 from __future__ import annotations
@@ -33,6 +39,7 @@ import json
 import math
 import re
 import sys
+import unicodedata
 from dataclasses import dataclass, field
 from datetime import date as _date, datetime as _datetime
 from hashlib import sha256
@@ -146,6 +153,7 @@ class _Context:
     text_safe_props: frozenset = frozenset()      # property names the contract types via text_safe
     calendar_props: dict = field(default_factory=dict)  # property name -> 'date'|'date-time'|'either'
     role_marker_patterns: tuple = ()              # compiled role-marker branches of text_safe
+    text_safe_patterns: tuple = ()                # every compiled text_safe branch (rule S14)
 
     @classmethod
     def build(cls, contract: dict) -> "_Context":
@@ -170,6 +178,7 @@ class _Context:
         ctx._index_text_safe_props()
         ctx._index_calendar_props()
         ctx._index_role_marker_patterns()
+        ctx._index_text_safe_patterns()
         return ctx
 
     # -- semantic-layer indices (pure walks over the frozen contract) ------
@@ -288,6 +297,16 @@ class _Context:
                 continue
             patterns.append(re.compile(pattern))
         self.role_marker_patterns = tuple(patterns)
+
+    def _index_text_safe_patterns(self) -> None:
+        """Every ``pattern`` branch of ``$defs.text_safe.not.anyOf`` (rule S14)."""
+        text_safe = self.contract.get("$defs", {}).get("text_safe", {})
+        patterns = []
+        for branch in text_safe.get("not", {}).get("anyOf", []) or []:
+            pattern = branch.get("pattern") if isinstance(branch, dict) else None
+            if isinstance(pattern, str):
+                patterns.append(re.compile(pattern))
+        self.text_safe_patterns = tuple(patterns)
 
     def template_validator(self, name: str):
         if name not in self.cache:
@@ -839,6 +858,39 @@ def _s13_period_bounds(payload, ctx: _Context) -> list[ValidationIssue]:
     return issues
 
 
+def _s14_compatibility_normalized(payload, ctx: _Context) -> list[ValidationIssue]:
+    """S14: a text_safe pattern hidden behind Unicode compatibility forms.
+
+    Full-width Latin (``\uff49\uff47\uff4e\uff4f\uff52\uff45``) and other
+    compatibility characters slip past the frozen text_safe patterns, which
+    are written in ASCII.  Each text_safe-governed string is folded with NFKC;
+    when the folded form differs and matches a text_safe branch while the raw
+    value matches none, one ``injection_pattern`` issue is emitted.  A raw
+    value that already matches is rejected by the schema pass and is not
+    reported twice.  Benign full-width CJK punctuation and digits fold to
+    strings no branch matches, so they stay valid.
+    """
+    issues = []
+    if not ctx.text_safe_patterns:
+        return issues
+    for obj, keys in _iter_objects(payload):
+        for key in sorted(obj):
+            value = obj.get(key)
+            if key not in ctx.text_safe_props or not isinstance(value, str):
+                continue
+            folded = unicodedata.normalize("NFKC", value)
+            if folded == value:
+                continue
+            if any(p.search(value) for p in ctx.text_safe_patterns):
+                continue
+            if any(p.search(folded) for p in ctx.text_safe_patterns):
+                issues.append(ValidationIssue(
+                    INJECTION_PATTERN, _pointer(list(keys) + [key]),
+                    f"{key} compatibility-normalized form matches a text_safe "
+                    f"injection pattern (rule S14)"))
+    return issues
+
+
 _SEMANTIC_RULES: tuple[Callable[[object, "_Context"], list[ValidationIssue]], ...] = (
     _s1_non_finite_numbers,
     _s2_ordered_pairs,
@@ -853,11 +905,12 @@ _SEMANTIC_RULES: tuple[Callable[[object, "_Context"], list[ValidationIssue]], ..
     _s11_range_bounds,
     _s12_self_counterparty,
     _s13_period_bounds,
+    _s14_compatibility_normalized,
 )
 
 
 def _semantic_issues(payload, ctx: _Context) -> list[ValidationIssue]:
-    """The S1-S13 semantic layer, merged after the schema pass.
+    """The S1-S14 semantic layer, merged after the schema pass.
 
     A rule that cannot evaluate (field absent, wrong type the schema already
     rejects) emits nothing and never raises: each rule runs under a guard
@@ -938,7 +991,7 @@ def validate_event(payload: dict, *, contract: dict | None = None) -> Validation
     top-level oneOf over templates is dispatched on each branch's ``schema``
     const so issues point at the real node; a payload naming no branch gets
     one ``schema_violation`` at ``/schema``.  After the schema pass the
-    semantic layer (S1-S13) merges its issues into the same sorted,
+    semantic layer (S1-S14) merges its issues into the same sorted,
     de-duplicated report.  Every issue carries exactly one of
     :data:`REASON_CODES`.  The payload is never mutated.
     """
