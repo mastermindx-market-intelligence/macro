@@ -2591,6 +2591,24 @@ def _isolate_pack_runner_planner_env(monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv(name, raising=False)
 
 
+@pytest.fixture(autouse=True)
+def _isolate_tested_tree_sha():
+    """F10 #10367: ``execute_pack`` publishes the plan tree into the runner's own
+    ``os.environ`` as ``TESTED_TREE_SHA`` (never overriding). Keep it out of the
+    ambient env between tests (review INTL-GS-F10-AUDIT-2, N5) with an explicit
+    snapshot/restore: ``monkeypatch.delenv`` records no undo for an absent key, so
+    a value set during the test would survive teardown (INTL-GS-F10-HYGIENE-AUDIT).
+    """
+    before = os.environ.pop("TESTED_TREE_SHA", None)
+    try:
+        yield
+    finally:
+        if before is None:
+            os.environ.pop("TESTED_TREE_SHA", None)
+        else:
+            os.environ["TESTED_TREE_SHA"] = before
+
+
 def _stub_planner_paths(
     monkeypatch: pytest.MonkeyPatch, paths: list[str] | None
 ) -> None:
@@ -4427,6 +4445,7 @@ CURATED_EXCLUSIVE = {
     # the code gate, closure audit and packing ceilings remain unchanged.
     "options-matrix-code",
     "push-retry-policy",
+    "sector-cycles-page",  # measured literal closure of its one suite
     # 2026-10-14 LR T17: the measured-group-read suite is pure-synthetic; the
     # exclusive scope is its measured literal closure (no fallback smear).
     "leadership-measured-read",
@@ -4550,6 +4569,10 @@ CURATED_EXCLUSIVE = {
     # public documents test_public_pages_fetch_nothing_under_paid_prefixes
     # actually reads; the other two probes are unmoved.
     "regwall-boundary",
+    # 2026-11-01, R-28. Same class as regwall-boundary: the static serving
+    # boundary moved onto the merge gate. Curated for coverage, and so that a
+    # bake does not wake it on an unrelated pull request.
+    "site-access-boundary",
     "quant-q11-episode-duration",  # Q11 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
@@ -4702,6 +4725,7 @@ CURATED_EXCLUSIVE = {
     "covenant-headroom",
     "cycle-consistency",
     "ftr-tape-surfaces",
+    "sector-basket-links",  # renders two template blocks alone, no bake input
     "market-ontology-f09-usgs-mcs",
     "research-screener",
     "sanctions-map-page",
@@ -5383,8 +5407,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_877),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_877),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_636),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5393,6 +5417,24 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-01 main-red repair after #10294 (ee5cd3e1a8a8), which split the
+    ``gate: data`` job ``tier-gate`` into ``tier-gate``, ``paywall-contracts``
+    and ``site-access-boundary``. Both new jobs infer tier-gate's closure, so
+    every probe selects two more jobs while the steps only move. Canonical
+    measurement on main fc36c6c03b1f, against the same tree with the
+    pre-#10294 manifest:
+
+        templates/index.html          135 -> 137 jobs, 5,833 -> 5,835 weight
+        scripts/build_free_content.py 136 -> 138 jobs, 5,853 -> 5,855 weight
+        engine/prophet/plan_book.py   128 -> 130 jobs, 5,583 -> 5,585 weight
+
+    Ten packs each. The two split jobs are the only entrants and no job
+    leaves. Both are ``gate: data`` and ci.yml packs ``--gate code``, so an
+    ordinary code PR runs neither: no runner cost moves. Only the two
+    breached job ceilings move, to their measured values (index 136 -> 137,
+    free-content 136 -> 138). Plan-book sits exactly at its 130 ceiling and
+    stays. Weight and pack ceilings, selectors and suites stay unchanged.
 
     2026-10-24 frozen-node canonical account reader (#10145): enroll the
     two-test suite once in incumbent CODE billing-emails/account-preferences,
