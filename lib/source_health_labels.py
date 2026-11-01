@@ -8,12 +8,12 @@ surface. The health panel therefore renders a reviewed ``{"en", "zh"}`` label
 per id instead of the id itself.
 
 This module is pure presentation. It never changes a status, a row count or a
-date. An id without a reviewed label degrades to a readable de-slugged form
-(or a generic label when the id itself names a provider) and is reported by
-:func:`unknown_ids`, so a new collector cannot ship a raw provider name to
-production unnoticed. :func:`neutral_note` applies the same law to the free-text
-note column, which repeats collector ids, provider names, hosts and URLs out of
-exception messages.
+date. It fails closed: an id without a reviewed label renders as the generic
+label, never as words derived from the id, because a provider token list cannot
+know every provider a future collector may be named after. The build lists such
+ids through :func:`unreviewed_ids` so they get a reviewed label. :func:`neutral_note`
+applies the same law to the free-text note column, which repeats collector ids,
+provider names, hosts and URLs out of exception messages.
 
 Bilingual law (house rule): a label is a PAIR. Exactly one language is visible
 at a time via the site's ``.l-en`` / ``.l-zh`` toggle; a page never shows both.
@@ -22,9 +22,6 @@ from __future__ import annotations
 
 import re
 from typing import Iterable
-
-# Ids seen by this process that had no reviewed label.
-_UNKNOWN: set[str] = set()
 
 
 def _pair(en: str, zh: str) -> dict[str, str]:
@@ -57,9 +54,14 @@ _LIBRARY_RE = re.compile(
 )
 _URL_RE = re.compile(r"https?://[^\s;,|)]+")
 _HOST_ARG_RE = re.compile(r"host='[^']*'")
+# Lowercase on purpose: tickers ("0700.HK") and attribute paths ("Ticker.info")
+# carry capitals. A short country or tech suffix also needs two labels in front
+# of it, so "0700.hk" and "pandas.io" stay readable while "api.example.io" does not.
 _DOMAIN_RE = re.compile(
-    r"(?i)(?<![A-Za-z0-9@.-])(?:[a-z0-9-]+\.)+"
-    r"(?:com|net|org|io|ai|dev|app|co|cn|hk|ca|uk|jp|gov|edu|info|space)(?![A-Za-z0-9-])"
+    r"(?<![A-Za-z0-9@.-])(?:"
+    r"(?:[a-z0-9-]+\.)+(?:com|net|org|gov|edu)"
+    r"|(?:[a-z0-9-]+\.){2,}(?:io|ai|dev|app|co|cn|hk|ca|uk|jp|space)"
+    r")(?![A-Za-z0-9-]|\.[a-z0-9])"
 )
 
 GENERIC = _pair("Market data source", "市场数据源")
@@ -259,21 +261,13 @@ LABELS: dict[str, dict[str, str]] = {
 
 
 def label_for(source_id: str) -> dict[str, str]:
-    """Return the ``{"en", "zh"}`` display label for a collector id."""
-    hit = LABELS.get(source_id)
-    if hit is not None:
-        return hit
-    _UNKNOWN.add(source_id)
-    if PROVIDER_RE.search(source_id.replace("_", " ").replace("-", " ")):
-        return GENERIC
-    words = re.sub(r"[_\-]+", " ", source_id).strip()
-    readable = (words[:1].upper() + words[1:]) if words else GENERIC["en"]
-    return _pair(readable, readable)
+    """Return the reviewed ``{"en", "zh"}`` label for a collector id, else :data:`GENERIC`."""
+    return LABELS.get(source_id, GENERIC)
 
 
-def unknown_ids() -> frozenset[str]:
-    """Ids this process rendered without a reviewed label."""
-    return frozenset(_UNKNOWN)
+def unreviewed_ids(ids: Iterable[str]) -> list[str]:
+    """The ids, sorted, that have no reviewed label and so render as :data:`GENERIC`."""
+    return sorted(i for i in ids if i not in LABELS)
 
 
 def _provider_ids(ids: Iterable[str]) -> list[str]:
@@ -291,16 +285,17 @@ _PROVIDER_ID_RE = re.compile(
 def neutral_note(text: str) -> str:
     """Strip provider names, hosts and URLs from a health note.
 
-    Provider-named collector ids become their reviewed label; client libraries
-    become "client library"; remaining provider names become "provider"; URLs,
-    ``host='...'`` arguments and bare domains become neutral placeholders.
+    URLs, ``host='...'`` arguments and bare domains become neutral placeholders
+    first, so a provider name inside a host can never leave a fragment behind.
+    Then provider-named collector ids become their reviewed label, client
+    libraries become "client library" and remaining provider names "provider".
     """
     if not text:
         return ""
-    out = _PROVIDER_ID_RE.sub(lambda m: LABELS[m.group(0)]["en"], text)
-    out = _URL_RE.sub("remote file", out)
+    out = _URL_RE.sub("remote file", text)
     out = _HOST_ARG_RE.sub("host=remote", out)
     out = _DOMAIN_RE.sub("remote host", out)
+    out = _PROVIDER_ID_RE.sub(lambda m: LABELS[m.group(0)]["en"], out)
     out = _LIBRARY_RE.sub("client library", out)
     out = PROVIDER_RE.sub("provider", out)
     return out

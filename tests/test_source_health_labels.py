@@ -42,14 +42,32 @@ def test_provider_named_ids_get_neutral_labels(sid, en):
     assert shl.label_for(sid)["en"] == en
 
 
-def test_unreviewed_provider_id_falls_back_to_generic_and_is_reported():
-    assert shl.label_for("acme_tushare_v9") == shl.GENERIC
-    assert "acme_tushare_v9" in shl.unknown_ids()
+# Fail closed: an unreviewed id may be named after a provider the token list
+# does not know, so it never contributes its own words to the page.
+@pytest.mark.parametrize("sid", ["acme_tushare_v9", "acme_stock_day", "bank_reserve-curve"])
+def test_unreviewed_id_renders_generic_label(sid):
+    assert shl.label_for(sid) == shl.GENERIC
 
 
-def test_unreviewed_plain_id_is_de_slugged():
-    assert shl.label_for("bank_reserve-curve")["en"] == "Bank reserve curve"
-    assert "bank_reserve-curve" in shl.unknown_ids()
+def test_unreviewed_ids_lists_only_ids_without_a_label():
+    assert shl.unreviewed_ids(["yahoo", "acme_stock_day", "breadth", "a_new_feed"]) == [
+        "a_new_feed", "acme_stock_day",
+    ]
+
+
+def test_health_rows_warns_about_unreviewed_ids(monkeypatch, caplog):
+    from scripts import build_site
+
+    monkeypatch.setattr(build_site.store, "read_status", lambda: {"sources": {
+        "acme_stock_day": {"status": "ok", "rows": 3},
+        "breadth": {"status": "ok", "rows": 5},
+    }})
+    with caplog.at_level("WARNING"):
+        rows = build_site.health_rows()
+    assert [(r["name"], r["label"]) for r in rows] == [
+        ("acme_stock_day", shl.GENERIC["en"]), ("breadth", "US market breadth"),
+    ]
+    assert "no reviewed label for acme_stock_day" in caplog.text
 
 
 @pytest.mark.parametrize("raw,want", [
@@ -60,6 +78,14 @@ def test_unreviewed_plain_id_is_de_slugged():
      "HTTPSConnectionPool(host=remote, port=443)"),
     ("404 for https://example.org/data/file.csv", "404 for remote file"),
     ("massive_stock_day stale", "US daily prices stale"),
+    ("yfinance: https://query1.finance.yahoo.com/v8/chart 429",
+     "client library: remote file 429"),
+    ("timeout from www.hkex.com.hk", "timeout from remote host"),
+    ("api.polygon.io timed out", "remote host timed out"),
+    # Tickers, attribute paths and module paths are not hosts.
+    ("no data for 0700.HK", "no data for 0700.HK"),
+    ("AttributeError: Ticker.info", "AttributeError: Ticker.info"),
+    ("pandas.io parser error", "pandas.io parser error"),
     ("", ""),
 ])
 def test_neutral_note_scrubs_providers_urls_and_hosts(raw, want):

@@ -44,7 +44,7 @@ from lib import config, site_assets, store  # noqa: E402
 from lib.chat_allowance import chat_allowance_view_model  # noqa: E402
 from lib.help_directory import help_page_view_model, refresh_disclosure  # noqa: E402
 from lib.pages import write_page  # noqa: E402
-from lib.source_health_labels import label_for, neutral_note  # noqa: E402
+from lib.source_health_labels import label_for, neutral_note, unreviewed_ids  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_site")
@@ -4303,6 +4303,9 @@ def health_rows() -> list[dict]:
     # `name` stays the collector id (sort key, data contract); the panel shows
     # the reviewed label so no provider name reaches the page.
     sources = store.read_status().get("sources", {})
+    missing = unreviewed_ids(sources)
+    if missing:
+        log.warning("data-health panel: no reviewed label for %s", ", ".join(missing))
     rows = []
     for k, v in sorted(sources.items()):
         label = label_for(k)

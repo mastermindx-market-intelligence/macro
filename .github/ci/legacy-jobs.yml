@@ -13874,6 +13874,7 @@ jobs:
       - "lib/global_regime_fragment.py"
       - "templates/theme.css"
       - "lib/help_directory.py"
+      - "lib/source_health_labels.py"
       - "lib/hk_calendar.py"
       - "lib/macro_suite_disclosure.py"
       - "lib/macro_suite_labels.py"
@@ -18156,6 +18157,7 @@ jobs:
       - lib/forex_link.py
       - lib/global_regime_fragment.py
       - lib/help_directory.py
+      - lib/source_health_labels.py
       - lib/hk_calendar.py
       - lib/intl_compare_mount.py
       - lib/intl_compare_view.py
@@ -23011,6 +23013,7 @@ jobs:
       - "lib/forex_link.py"
       - "lib/global_regime_fragment.py"
       - "lib/help_directory.py"
+      - "lib/source_health_labels.py"
       - "lib/hk_calendar.py"
       - "lib/illus.py"
       - "lib/macro_suite_disclosure.py"
@@ -33267,6 +33270,7 @@ jobs:
       - "lib/forex_link.py"
       - "lib/global_regime_fragment.py"
       - "lib/help_directory.py"
+      - "lib/source_health_labels.py"
       - "lib/hk_calendar.py"
       - "lib/intl_compare_mount.py"
       - "lib/intl_compare_view.py"
@@ -47637,6 +47641,7 @@ jobs:
       - "lib/global_regime_fragment.py"
       - "lib/growth_registry.py"
       - "lib/help_directory.py"
+      - "lib/source_health_labels.py"
       - "lib/hk_calendar.py"
       - "lib/intl_compare_mount.py"
       - "lib/intl_compare_view.py"
