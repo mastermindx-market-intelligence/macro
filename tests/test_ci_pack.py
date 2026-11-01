@@ -4569,6 +4569,10 @@ CURATED_EXCLUSIVE = {
     # public documents test_public_pages_fetch_nothing_under_paid_prefixes
     # actually reads; the other two probes are unmoved.
     "regwall-boundary",
+    # 2026-11-01, R-28. Same class as regwall-boundary: the static serving
+    # boundary moved onto the merge gate. Curated for coverage, and so that a
+    # bake does not wake it on an unrelated pull request.
+    "site-access-boundary",
     "quant-q11-episode-duration",  # Q11 quant assessment: suite imports importlib/subprocess; AST-derived closure
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
@@ -4721,6 +4725,7 @@ CURATED_EXCLUSIVE = {
     "covenant-headroom",
     "cycle-consistency",
     "ftr-tape-surfaces",
+    "sector-basket-links",  # renders two template blocks alone, no bake input
     "market-ontology-f09-usgs-mcs",
     "research-screener",
     "sanctions-map-page",
