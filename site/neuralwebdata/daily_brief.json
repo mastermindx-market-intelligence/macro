@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-11-01T11:16:31.009790+00:00",
+  "produced_at": "2026-11-01T23:04:45.011864+00:00",
   "as_of": "2026-10-20",
   "status": "degraded",
   "phase": "final",
@@ -823,7 +823,7 @@
   },
   "china_market_state": {
     "available": true,
-    "as_of": "2026-10-31",
+    "as_of": "2026-11-01",
     "phase": "REPAIR",
     "phase_confidence": 0.667,
     "who_controls": "mixed",

@@ -11102,3 +11102,724 @@ def test_pk02dev2_negative_allocated_alone_keeps_sign_limitation() -> None:
     assert any(
         line.startswith(_PKQ2_SIGN_LIMITATION) for line in result["limitations"]
     )
+# 50.9 §TESTS 9: diversified_v1 dev-corpus repair (widened B.2 fallbacks) -----
+#
+# The diversified_v1 development corpus (issuers disjoint from the held-out
+# set) showed two abstention causes the frozen B.2 declarations cannot reach:
+# acquisition notes titled "Note N. Acquisitions" / "NOTE N. ACQUISITIONS" /
+# "Note N: Business Combinations" — a period or colon separator instead of
+# the frozen en-dash/hyphen — with capitalised "On <Month D, YYYY>" openers
+# the lowercase-only frozen date pattern misses; and the year's consolidated
+# acquisition outflow tagged only as PaymentsToAcquireBusinessesNetOfCash-
+# Acquired (every per-deal ConsiderationTransferred1 fact is dimensioned
+# with a degenerate closing-day duration). The repair keeps each frozen
+# declaration byte-identical and first-priority; the widened tuples and
+# sections run only as finalize-hook fallbacks after the frozen search
+# abstained, so a pinned frozen envelope never moves.
+
+from engine.fundamental_forensics.specialist_packs import (  # noqa: E402
+    pk07_mna,
+)
+
+_PK07_DEV_SEGMENT_AXIS = "us-gaap:StatementBusinessSegmentsAxis"
+_PK07_DEV_CONTEXTS = {
+    **_TESTCO_CONTEXTS,
+    "seg-a": (
+        '<xbrli:context id="seg-a"><xbrli:entity><xbrli:identifier'
+        ' scheme="http://www.sec.gov/CIK">'
+        f"{TESTCO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:instant>2025-12-31</xbrli:instant></xbrli:period>"
+        '<xbrli:scenario><xbrldi:explicitMember'
+        f' dimension="{_PK07_DEV_SEGMENT_AXIS}">'
+        "us-gaap:EuropeMember</xbrldi:explicitMember></xbrli:scenario>"
+        "</xbrli:context>"
+    ),
+    "seg-b": (
+        '<xbrli:context id="seg-b"><xbrli:entity><xbrli:identifier'
+        ' scheme="http://www.sec.gov/CIK">'
+        f"{TESTCO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:instant>2025-12-31</xbrli:instant></xbrli:period>"
+        '<xbrli:scenario><xbrldi:explicitMember'
+        f' dimension="{_PK07_DEV_SEGMENT_AXIS}">'
+        "us-gaap:AmericasMember</xbrldi:explicitMember></xbrli:scenario>"
+        "</xbrli:context>"
+    ),
+}
+_PK07_DEV_IMPAIRMENT_NOTE = (
+    "Note 4 – Goodwill and Other Intangible Assets. The Company performs"
+    " its annual impairment test for goodwill and reviews intangible assets"
+    " whenever events or changes in circumstances indicate impairment."
+)
+
+
+def _pk07_dev_document(
+    facts: tuple[tuple[str, str, str, str], ...],
+    paragraphs: tuple[str, ...],
+) -> bytes:
+    """A TESTCO-shaped inline-XBRL 10-K with a custom narrative.
+
+    The narrative paragraphs are emitted verbatim between the ix:header and
+    the facts table, so heading forms and note ordering are fully controlled
+    by the caller; contexts come from ``_PK07_DEV_CONTEXTS`` (the frozen
+    TESTCO ones plus two segment-dimensioned instants).
+    """
+    rows = "\n".join(
+        f"<tr><td>item {index}</td><td>"
+        f'<ix:nonFraction id="f-{index}" name="{qname}"'
+        f' contextRef="{context}" unitRef="{unit}" decimals="0">{value}'
+        "</ix:nonFraction></td></tr>"
+        for index, (qname, context, value, unit) in enumerate(facts, start=1)
+    )
+    cited = {context for _q, context, _v, _u in facts}
+    contexts = "\n".join(
+        _PK07_DEV_CONTEXTS[context_id]
+        for context_id in ("c-ip", "c-i", "c-fy", "seg-a", "seg-b")
+        if context_id in cited
+    )
+    units = "\n".join(
+        _TESTCO_UNITS[unit_id]
+        for unit_id in ("usd", "eur")
+        if any(unit == unit_id for _q, _c, _v, unit in facts)
+    )
+    body = "\n".join(f"<p>{paragraph}</p>" for paragraph in paragraphs)
+    template = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml"'
+        ' xmlns:ix="http://www.xbrl.org/2013/inlineXBRL"'
+        ' xmlns:xbrli="http://www.xbrl.org/2003/instance"'
+        ' xmlns:xbrldi="http://xbrl.org/2006/xbrldi"'
+        ' xmlns:iso4217="http://www.xbrl.org/2003/iso4217"'
+        ' xmlns:us-gaap="http://fasb.org/us-gaap/2025">\n'
+        "<head><title>TESTCO 10-K</title></head>\n<body>\n"
+        '<div style="display:none"><ix:header><ix:resources>\n'
+        f"{contexts}\n{units}\n</ix:resources></ix:header></div>\n"
+        f"{body}\n"
+        f"<table>\n{rows}\n</table>\n</body></html>\n"
+    )
+    return template.encode("utf-8")
+
+
+def _pk07_dev_input(
+    facts: tuple[tuple[str, str, str, str], ...],
+    paragraphs: tuple[str, ...],
+) -> PackInput:
+    document = _pk07_dev_document(facts, paragraphs)
+    manifest = {
+        "entity_id": TESTCO_CIK,
+        "cik": TESTCO_CIK,
+        "legal_name": "TESTCO CORP",
+        "form": "10-K",
+        "period_of_report": "2025-12-31",
+        "filing_date": "2026-02-15",
+        "accession": "0000000001-26-000011",
+        "primary_document": TESTCO_DOC,
+        "source_accepted_at": "2026-02-15T16:00:00Z",
+        "fixture_recorded_at": "2026-02-15T16:05:00Z",
+        "members": [
+            {
+                "name": TESTCO_DOC,
+                "state": "stored",
+                "content_sha256": sha256(document).hexdigest(),
+            }
+        ],
+    }
+    package = GoldenFilingPackage(
+        manifest=manifest, members={TESTCO_DOC: document}
+    )
+    return PackInput(
+        packages=(package,),
+        entity=TESTCO_ENTITY,
+        query=PK07_QUERY,
+        issuer_sic=TESTCO_SIC,
+        sic_source="sec_submissions",
+    )
+
+
+def test_pk07_dev_payments_to_acquire_alias_is_not_the_consideration() -> None:
+    # Corrected (second lane): the cash-flow statement's net-of-cash-acquired
+    # payments fact is a different quantity from ASC 805 consideration
+    # transferred, so a filing carrying only that fact types the field's
+    # absence — it may never value the field, widened alias or not.
+    facts = (
+        ("us-gaap:PaymentsToAcquireBusinessesNetOfCashAcquired", "c-fy", "4037", "usd"),
+    )
+    result = produce_pack("PK07", _pk07_dev_input(facts, (_PK07_DEV_IMPAIRMENT_NOTE,)))
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "business_combination_consideration")
+    assert row["quality_state"] != "valued"
+    assert row["value"] is None and row["text_value"] is None
+
+
+def test_pk07_dev_frozen_consideration_alias_keeps_priority() -> None:
+    # Pin: an admissible undimensioned ConsiderationTransferred1 fact still
+    # outranks the added payments fallback alias.
+    facts = (
+        ("us-gaap:BusinessCombinationConsiderationTransferred1", "c-fy", "5000", "usd"),
+        ("us-gaap:PaymentsToAcquireBusinessesNetOfCashAcquired", "c-fy", "4037", "usd"),
+    )
+    result = produce_pack("PK07", _pk07_dev_input(facts, (_PK07_DEV_IMPAIRMENT_NOTE,)))
+    row = _row(result, "business_combination_consideration")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "5000"
+    assert row["concept"] == "us-gaap:BusinessCombinationConsiderationTransferred1"
+
+
+def test_pk07_dev_translation_adjustments_alias_values_fx_other() -> None:
+    # Repaired path: the fiscal year's only undimensioned goodwill movement
+    # tagged as the combined translation-and-purchase-accounting concept.
+    facts = (
+        ("us-gaap:Goodwill", "c-ip", "1000", "usd"),
+        ("us-gaap:Goodwill", "c-i", "1348", "usd"),
+        ("us-gaap:GoodwillTranslationAndPurchaseAccountingAdjustments", "c-fy", "348", "usd"),
+    )
+    result = produce_pack("PK07", _pk07_dev_input(facts, (_PK07_DEV_IMPAIRMENT_NOTE,)))
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "goodwill_fx_other")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "348"
+    assert row["concept"] == "us-gaap:GoodwillTranslationAndPurchaseAccountingAdjustments"
+    assert row["mapping_rule_digest"] == pack_base._mapping_digest(
+        pack_base.FactMapping(pk07_mna._GOODWILL_FX_OTHER_WIDENED)
+    )
+    # K3K4 soundness: the rollforward abstains typed — the absent acquired,
+    # disposals and impairment components are never zero-filled.
+    check = _pk07_check(result, "goodwill_rollforward_closed")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+
+
+def test_pk07_dev_frozen_fx_alias_keeps_priority() -> None:
+    # Pin: the frozen FX alias still outranks the added combined-movement
+    # fallback alias when both carry an admissible undimensioned fact.
+    facts = (
+        ("us-gaap:Goodwill", "c-ip", "1000", "usd"),
+        ("us-gaap:Goodwill", "c-i", "1160", "usd"),
+        ("us-gaap:GoodwillForeignCurrencyTranslationGainLoss", "c-fy", "10", "usd"),
+        ("us-gaap:GoodwillTranslationAndPurchaseAccountingAdjustments", "c-fy", "999", "usd"),
+    )
+    result = produce_pack("PK07", _pk07_dev_input(facts, (_PK07_DEV_IMPAIRMENT_NOTE,)))
+    row = _row(result, "goodwill_fx_other")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "10"
+    assert row["concept"] == "us-gaap:GoodwillForeignCurrencyTranslationGainLoss"
+
+
+def test_pk07_dev_widened_bc_period_heading_values_rows_the_frozen_form_cannot() -> None:
+    # Repaired path: "Note 12. Acquisitions" (period separator) with a TOC
+    # run and a capitalised "On <Month D, YYYY>" opener. The TOC line must
+    # not become the governing section; the body note must. The fiscal-year
+    # duration fact was added in the second lane: the widened date search
+    # now guards captures against the report's fiscal period, which the
+    # ledger must be able to state.
+    paragraphs = (
+        "Note 12. Acquisitions 66 Note 13. Leases 68 Note 14. Pension 70",
+        "Note 12. Acquisitions. On September 1, 2025, the company acquired"
+        " a filtration and separation business. The purchase price was"
+        " allocated to the assets acquired based on their fair values.",
+        "Note 13. Leases. The Company leases various facilities.",
+    )
+    facts = (
+        ("us-gaap:Goodwill", "c-i", "49362", "usd"),
+        ("us-gaap:GoodwillAcquiredDuringPeriod", "c-fy", "300", "usd"),
+    )
+    result = produce_pack("PK07", _pk07_dev_input(facts, paragraphs))
+    assert contract.validate_pack_result(result) == []
+    acquisition_date = _row(result, "acquisition_date")
+    assert acquisition_date["quality_state"] == "valued"
+    assert acquisition_date["text_value"] == "September 1, 2025"
+    assert acquisition_date["mapping_rule_digest"] == pack_base._text_span_digest(
+        pk07_mna._ACQUISITION_DATE_FALLBACK
+    )
+    purchase = _row(result, "purchase_accounting_note_span")
+    assert purchase["quality_state"] == "valued"
+    assert "purchase price was allocated" in purchase["text_value"]
+    assert purchase["mapping_rule_digest"] == pack_base._text_span_digest(
+        pk07_mna._PURCHASE_ACCOUNTING_FALLBACK
+    )
+
+
+def test_pk07_dev_widened_bc_section_ends_at_next_period_heading() -> None:
+    # Bounded-section guard (pin of the widened end heading): the body note
+    # carries no pattern wording, and the "purchase price" wording after the
+    # next period-form note heading must not leak into the section.
+    paragraphs = (
+        "Note 12. Acquisitions 66 Note 13. Leases 68",
+        "Note 12. Acquisitions. The company completed several tuck-in"
+        " acquisitions during the year ended December 31, 2025.",
+        "Note 13. Leases. The purchase price of leased equipment is"
+        " capitalised and amortised over the lease term.",
+    )
+    facts = (("us-gaap:Goodwill", "c-i", "49362", "usd"),)
+    result = produce_pack("PK07", _pk07_dev_input(facts, paragraphs))
+    purchase = _row(result, "purchase_accounting_note_span")
+    assert purchase["quality_state"] != "valued"
+    assert purchase["value"] is None and purchase["text_value"] is None
+    acquisition_date = _row(result, "acquisition_date")
+    assert acquisition_date["quality_state"] != "valued"
+    assert any(
+        "pk07.purchase_accounting_note_span: governing_section_not_supplied"
+        in line
+        for line in result["limitations"]
+    )
+
+
+def test_pk07_dev_widened_bc_caps_and_colon_forms_locate() -> None:
+    # Repaired path: the all-caps period form ("NOTE 2. ACQUISITIONS") and
+    # the colon form ("Note 4: Business Combinations") both locate. The caps
+    # note's completion date was moved inside the fiscal year in the second
+    # lane: a prior-period completion (the original fixture's prior-year
+    # date) is a typed absence under the acquisition-date guard, not a
+    # valued date, and the fiscal-year duration fact states the period.
+    caps_facts = (
+        ("us-gaap:Goodwill", "c-i", "21079", "usd"),
+        ("us-gaap:GoodwillAcquiredDuringPeriod", "c-fy", "300", "usd"),
+    )
+    caps = produce_pack(
+        "PK07",
+        _pk07_dev_input(
+            caps_facts,
+            (
+                "NOTE 2. ACQUISITIONS. On June 3, 2025, the Company completed"
+                " the acquisition of Testcorp Incorporated for cash.",
+            ),
+        ),
+    )
+    acquisition_date = _row(caps, "acquisition_date")
+    assert acquisition_date["quality_state"] == "valued"
+    assert acquisition_date["text_value"] == "June 3, 2025"
+    colon = produce_pack(
+        "PK07",
+        _pk07_dev_input(
+            caps_facts,
+            (
+                "Note 4: Business Combinations. The Company paid total"
+                " consideration of $1.0 billion in cash for the acquired"
+                " business.",
+            ),
+        ),
+    )
+    purchase = _row(colon, "purchase_accounting_note_span")
+    assert purchase["quality_state"] == "valued"
+    assert "consideration" in purchase["text_value"]
+
+
+def test_pk07_dev_frozen_and_widened_heading_forms_pinned() -> None:
+    # Pin: every heading form the frozen NOTE_BC pattern matches still
+    # matches, and the widened heading admits its new forms while rejecting
+    # table-of-contents runs (a next "Note N." heading within 80 chars).
+    frozen = pk07_mna.NOTE_BC.heading
+    widened = pk07_mna.NOTE_BC_WIDENED.heading
+    assert re.search(frozen, "Note 3 – Business Combinations") is not None
+    assert re.search(frozen, "Note 2 - Acquisitions") is not None
+    assert (
+        re.search(widened, "Note 3 – Business Combinations", re.IGNORECASE) is None
+    )
+    assert re.search(widened, "Note 12. Acquisitions Note 12 continued text") is not None
+    assert re.search(widened, "NOTE 2. ACQUISITIONS The Company", re.IGNORECASE) is not None
+    assert re.search(widened, "Note 3: Business Combinations and Asset Acquisitions") is not None
+    assert re.search(widened, "Note 12. Acquisitions 66 Note 13. Leases 68") is None
+    assert re.search(
+        widened,
+        "Note 2. Acquisitions, Divestitures, and Discontinued Operations"
+        " Note 3. Intangibles",
+    ) is None
+    assert re.search(widened, "Note 4: Goodwill and Intangible Assets") is None
+
+
+def test_pk07_dev_frozen_dash_heading_still_values_end_to_end() -> None:
+    # Pin: a dash-form acquisition note still resolves through the frozen
+    # mapping (unchanged bytes), carrying the frozen mapping's digest.
+    paragraphs = (
+        "Note 3 – Business Combinations. The acquisition of Testcorp"
+        " Incorporated was completed on March 15, 2025. The purchase price"
+        " was allocated to the assets acquired based on their fair values.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    facts = (("us-gaap:Goodwill", "c-i", "1160", "usd"),)
+    result = produce_pack("PK07", _pk07_dev_input(facts, paragraphs))
+    acquisition_date = _row(result, "acquisition_date")
+    assert acquisition_date["quality_state"] == "valued"
+    assert acquisition_date["text_value"] == "March 15, 2025"
+    assert acquisition_date["mapping_rule_digest"] == pack_base._text_span_digest(
+        pk07_mna._ACQUISITION_DATE_MAPPING
+    )
+
+
+def test_pk07_dev_no_acquisition_note_keeps_text_fields_typed_absent() -> None:
+    # Pin of the typed-absence shape the dev corpus asserts: a filing with
+    # no acquisition note at all (its goodwill note uses the colon form the
+    # widened BC heading must not adopt) keeps both BC text fields absent
+    # while the impairment note still resolves.
+    paragraphs = (
+        "Note 4: Goodwill and Intangible Assets. The Company performs its"
+        " annual impairment test for goodwill and intangible assets.",
+    )
+    facts = (("us-gaap:Goodwill", "c-i", "41276", "usd"),)
+    result = produce_pack("PK07", _pk07_dev_input(facts, paragraphs))
+    assert contract.validate_pack_result(result) == []
+    for field_id in ("acquisition_date", "purchase_accounting_note_span"):
+        row = _row(result, field_id)
+        assert row["quality_state"] == "not_evaluable"
+        assert row["value"] is None and row["text_value"] is None
+        assert row["reason"] == "missing_dependency"
+    impairment_note = _row(result, "impairment_testing_note_span")
+    assert impairment_note["quality_state"] == "valued"
+    assert "impairment test" in impairment_note["text_value"]
+
+
+def test_pk07_dev_segment_dimension_goodwill_is_never_summed() -> None:
+    # Segment-dimension guard (pin): goodwill present only with segment
+    # members stays a typed disallowed_dimension absence — the consolidated
+    # total is never the sum of the segment facts.
+    facts = (
+        ("us-gaap:Goodwill", "seg-a", "600", "usd"),
+        ("us-gaap:Goodwill", "seg-b", "300", "usd"),
+    )
+    result = produce_pack("PK07", _pk07_dev_input(facts, (_PK07_DEV_IMPAIRMENT_NOTE,)))
+    row = _row(result, "goodwill")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    check = _pk07_check(result, "goodwill_rollforward_closed")
+    assert check["status"] == "not_evaluable"
+
+
+# 50.3 §TESTS (second lane of the diversified_v1 repair): the consideration
+# quantity and the acquisition-date guard. The consideration field is the
+# ASC 805 consideration-transferred quantity: the cash-flow statement's
+# net-of-cash-acquired payments fact may never value it, and a filing whose
+# only consideration facts are per-acquisition (BusinessAcquisitionAxis)
+# members states the year's quantity exactly when one member's fact falls
+# inside the fiscal period — two or more in-period members are never summed
+# or picked by size. A widened-form date capture must come from a sentence
+# with a completion verb, no announcement/agreement/payment wording, and a
+# date inside the report's fiscal period. Fixtures marked "fail-on-parent"
+# assert behavior the pre-repair pack got wrong; fixtures marked "pin" hold
+# on both the pre- and post-repair pack.
+
+_PK07_BA_AXIS = "us-gaap:BusinessAcquisitionAxis"
+_PK07_DEAL_CONTEXTS = {
+    "deal-25": (
+        '<xbrli:context id="deal-25"><xbrli:entity><xbrli:identifier'
+        ' scheme="http://www.sec.gov/CIK">'
+        f"{TESTCO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:startDate>2025-06-06</xbrli:startDate>"
+        "<xbrli:endDate>2025-06-06</xbrli:endDate></xbrli:period>"
+        '<xbrli:scenario><xbrldi:explicitMember'
+        f' dimension="{_PK07_BA_AXIS}">'
+        "testco:TestcorpMember</xbrldi:explicitMember></xbrli:scenario>"
+        "</xbrli:context>"
+    ),
+    "deal-25b": (
+        '<xbrli:context id="deal-25b"><xbrli:entity><xbrli:identifier'
+        ' scheme="http://www.sec.gov/CIK">'
+        f"{TESTCO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:startDate>2025-03-01</xbrli:startDate>"
+        "<xbrli:endDate>2025-03-01</xbrli:endDate></xbrli:period>"
+        '<xbrli:scenario><xbrldi:explicitMember'
+        f' dimension="{_PK07_BA_AXIS}">'
+        "testco:OthercoMember</xbrldi:explicitMember></xbrli:scenario>"
+        "</xbrli:context>"
+    ),
+    "deal-24": (
+        '<xbrli:context id="deal-24"><xbrli:entity><xbrli:identifier'
+        ' scheme="http://www.sec.gov/CIK">'
+        f"{TESTCO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:startDate>2024-06-03</xbrli:startDate>"
+        "<xbrli:endDate>2024-06-03</xbrli:endDate></xbrli:period>"
+        '<xbrli:scenario><xbrldi:explicitMember'
+        f' dimension="{_PK07_BA_AXIS}">'
+        "testco:PriorcoMember</xbrldi:explicitMember></xbrli:scenario>"
+        "</xbrli:context>"
+    ),
+}
+_PK07_GUARD_FACTS = (
+    ("us-gaap:Goodwill", "c-i", "1160", "usd"),
+    ("us-gaap:GoodwillAcquiredDuringPeriod", "c-fy", "300", "usd"),
+)
+
+
+def _pk07_guard_input(
+    facts: tuple[tuple[str, str, str, str], ...],
+    paragraphs: tuple[str, ...],
+) -> PackInput:
+    """A dev-shaped TESTCO 10-K whose ledger may cite per-deal contexts.
+
+    Same shape as ``_pk07_dev_input`` plus the ``BusinessAcquisitionAxis``
+    deal contexts (degenerate closing-day durations inside and before the
+    fiscal year), so the consideration single-member rule can be exercised
+    without any filing bytes.
+    """
+    rows = "\n".join(
+        f"<tr><td>item {index}</td><td>"
+        f'<ix:nonFraction id="f-{index}" name="{qname}"'
+        f' contextRef="{context}" unitRef="{unit}" decimals="0">{value}'
+        "</ix:nonFraction></td></tr>"
+        for index, (qname, context, value, unit) in enumerate(facts, start=1)
+    )
+    available = {**_PK07_DEV_CONTEXTS, **_PK07_DEAL_CONTEXTS}
+    cited = {context for _q, context, _v, _u in facts}
+    contexts = "\n".join(
+        available[context_id]
+        for context_id in ("c-ip", "c-i", "c-fy", "deal-25", "deal-25b", "deal-24")
+        if context_id in cited
+    )
+    units = "\n".join(
+        _TESTCO_UNITS[unit_id]
+        for unit_id in ("usd", "eur")
+        if any(unit == unit_id for _q, _c, _v, unit in facts)
+    )
+    body = "\n".join(f"<p>{paragraph}</p>" for paragraph in paragraphs)
+    template = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml"'
+        ' xmlns:ix="http://www.xbrl.org/2013/inlineXBRL"'
+        ' xmlns:xbrli="http://www.xbrl.org/2003/instance"'
+        ' xmlns:xbrldi="http://xbrl.org/2006/xbrldi"'
+        ' xmlns:iso4217="http://www.xbrl.org/2003/iso4217"'
+        ' xmlns:us-gaap="http://fasb.org/us-gaap/2025"'
+        ' xmlns:testco="http://www.testco.com/20251231">\n'
+        "<head><title>TESTCO 10-K</title></head>\n<body>\n"
+        '<div style="display:none"><ix:header><ix:resources>\n'
+        f"{contexts}\n{units}\n</ix:resources></ix:header></div>\n"
+        f"{body}\n"
+        f"<table>\n{rows}\n</table>\n</body></html>\n"
+    )
+    document = template.encode("utf-8")
+    manifest = {
+        "entity_id": TESTCO_CIK,
+        "cik": TESTCO_CIK,
+        "legal_name": "TESTCO CORP",
+        "form": "10-K",
+        "period_of_report": "2025-12-31",
+        "filing_date": "2026-02-15",
+        "accession": "0000000001-26-000012",
+        "primary_document": TESTCO_DOC,
+        "source_accepted_at": "2026-02-15T16:00:00Z",
+        "fixture_recorded_at": "2026-02-15T16:05:00Z",
+        "members": [
+            {
+                "name": TESTCO_DOC,
+                "state": "stored",
+                "content_sha256": sha256(document).hexdigest(),
+            }
+        ],
+    }
+    package = GoldenFilingPackage(
+        manifest=manifest, members={TESTCO_DOC: document}
+    )
+    return PackInput(
+        packages=(package,),
+        entity=TESTCO_ENTITY,
+        query=PK07_QUERY,
+        issuer_sic=TESTCO_SIC,
+        sic_source="sec_submissions",
+    )
+
+
+def test_pk07_guard_payments_fact_alone_is_typed_absence() -> None:
+    # (a) fail-on-parent: the cash-flow payments-to-acquire fact alone is a
+    # different quantity — the field stays a typed absence.
+    facts = (
+        _PK07_GUARD_FACTS
+        + (("us-gaap:PaymentsToAcquireBusinessesNetOfCashAcquired", "c-fy", "4037", "usd"),)
+    )
+    result = produce_pack(
+        "PK07", _pk07_guard_input(facts, (_PK07_DEV_IMPAIRMENT_NOTE,))
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "business_combination_consideration")
+    assert row["quality_state"] != "valued"
+    assert row["value"] is None and row["text_value"] is None
+
+
+def test_pk07_guard_undimensioned_consideration_fact_values() -> None:
+    # (b) pin: an admissible undimensioned in-period consideration fact
+    # still values the field through the frozen alias.
+    facts = _PK07_GUARD_FACTS + (
+        ("us-gaap:BusinessCombinationConsiderationTransferred1", "c-fy", "5000", "usd"),
+    )
+    result = produce_pack(
+        "PK07", _pk07_guard_input(facts, (_PK07_DEV_IMPAIRMENT_NOTE,))
+    )
+    row = _row(result, "business_combination_consideration")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "5000"
+    assert row["concept"] == "us-gaap:BusinessCombinationConsiderationTransferred1"
+
+
+def test_pk07_guard_single_in_period_deal_member_values_consideration() -> None:
+    # Single-member rule: exactly one BusinessAcquisitionAxis member with an
+    # in-period fact values the field under its own rule id. (fail-on-parent:
+    # the pre-repair pack typed this fixture absent.)
+    facts = _PK07_GUARD_FACTS + (
+        ("us-gaap:BusinessCombinationConsiderationTransferred1", "deal-25", "2160", "usd"),
+    )
+    result = produce_pack(
+        "PK07", _pk07_guard_input(facts, (_PK07_DEV_IMPAIRMENT_NOTE,))
+    )
+    assert contract.validate_pack_result(result) == []
+    row = _row(result, "business_combination_consideration")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "2160"
+    assert row["concept"] == "us-gaap:BusinessCombinationConsiderationTransferred1"
+    assert row["mapping_rule_id"] == (
+        "pk07.business_combination_consideration.single_member/v1"
+    )
+    assert row["mapping_rule_digest"] == pack_base._mapping_digest(
+        pk07_mna._CONSIDERATION_SINGLE_MEMBER_MAPPING
+    )
+    assert row["dimensions"][0]["axis"] == _PK07_BA_AXIS
+    assert "Testcorp" in row["dimensions"][0]["member"]
+    assert row["period"] == {"kind": "duration", "start": "2025-06-06", "end": "2025-06-06"}
+
+
+def test_pk07_guard_two_in_period_deal_members_are_never_summed() -> None:
+    # Single-member rule (pin of the never-summed law): two in-period deal
+    # members keep the typed absence — never summed, never picked by size.
+    facts = _PK07_GUARD_FACTS + (
+        ("us-gaap:BusinessCombinationConsiderationTransferred1", "deal-25", "2160", "usd"),
+        ("us-gaap:BusinessCombinationConsiderationTransferred1", "deal-25b", "1500", "usd"),
+    )
+    result = produce_pack(
+        "PK07", _pk07_guard_input(facts, (_PK07_DEV_IMPAIRMENT_NOTE,))
+    )
+    row = _row(result, "business_combination_consideration")
+    assert row["quality_state"] != "valued"
+    assert row["value"] is None
+
+
+def test_pk07_guard_prior_period_deal_member_alone_is_typed_absence() -> None:
+    # Single-member rule (pin): only prior-period members keep the typed
+    # absence — a prior year's deal is not this year's consideration.
+    facts = _PK07_GUARD_FACTS + (
+        ("us-gaap:BusinessCombinationConsiderationTransferred1", "deal-24", "4913", "usd"),
+    )
+    result = produce_pack(
+        "PK07", _pk07_guard_input(facts, (_PK07_DEV_IMPAIRMENT_NOTE,))
+    )
+    row = _row(result, "business_combination_consideration")
+    assert row["quality_state"] != "valued"
+    assert row["value"] is None
+
+
+def test_pk07_guard_deal_member_beats_the_payments_fact() -> None:
+    # (fail-on-parent) The diversified shape the first repair misvalued: an
+    # undimensioned cash-flow payments fact plus the in-period deal member's
+    # consideration fact — the member's fact is the quantity that values.
+    facts = _PK07_GUARD_FACTS + (
+        ("us-gaap:PaymentsToAcquireBusinessesNetOfCashAcquired", "c-fy", "2211", "usd"),
+        ("us-gaap:BusinessCombinationConsiderationTransferred1", "deal-25", "2160", "usd"),
+    )
+    result = produce_pack(
+        "PK07", _pk07_guard_input(facts, (_PK07_DEV_IMPAIRMENT_NOTE,))
+    )
+    row = _row(result, "business_combination_consideration")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "2160"
+    assert row["concept"] == "us-gaap:BusinessCombinationConsiderationTransferred1"
+
+
+def test_pk07_guard_announcement_then_completion_picks_the_completion() -> None:
+    # (c) fail-on-parent: the announcement sentence precedes the completion
+    # sentence; the completion date is the acquisition date.
+    paragraphs = (
+        "Note 2. Acquisitions. On May 22, 2025, the Company announced its"
+        " agreement to acquire Testcorp Incorporated in an all-cash"
+        " transaction. On June 6, 2025, the Company acquired 100% of the"
+        " outstanding equity interests of Testcorp Incorporated for total"
+        " consideration of $2,160 million, net of cash acquired.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_guard_input(_PK07_GUARD_FACTS, paragraphs))
+    acquisition_date = _row(result, "acquisition_date")
+    assert acquisition_date["quality_state"] == "valued"
+    assert acquisition_date["text_value"] == "June 6, 2025"
+    assert acquisition_date["mapping_rule_digest"] == pack_base._text_span_digest(
+        pk07_mna._ACQUISITION_DATE_FALLBACK
+    )
+
+
+def test_pk07_guard_agreement_and_payment_sentences_are_typed_absence() -> None:
+    # (d) fail-on-parent: an agreement sentence and a payment sentence —
+    # neither is an acquisition completion, so the field stays absent.
+    agreement = produce_pack(
+        "PK07",
+        _pk07_guard_input(
+            _PK07_GUARD_FACTS,
+            (
+                "Note 2. Acquisitions. On May 22, 2025, the Company entered"
+                " into a definitive agreement to acquire Testcorp"
+                " Incorporated for total consideration of $1.0 billion,"
+                " subject to regulatory approvals.",
+                _PK07_DEV_IMPAIRMENT_NOTE,
+            ),
+        ),
+    )
+    row = _row(agreement, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+    payment = produce_pack(
+        "PK07",
+        _pk07_guard_input(
+            _PK07_GUARD_FACTS,
+            (
+                "Note 2. Acquisitions. The Company incurred transaction costs"
+                " of approximately $340 million, of which $310 million was"
+                " paid as of June 30, 2025 and the remainder is pending.",
+                _PK07_DEV_IMPAIRMENT_NOTE,
+            ),
+        ),
+    )
+    row = _row(payment, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+    assert any(
+        "pk07.acquisition_date:" in line for line in payment["limitations"]
+    )
+
+
+def test_pk07_guard_completion_before_the_fiscal_period_is_typed_absence() -> None:
+    # (e) fail-on-parent: a completion sentence dated before the fiscal
+    # period start (a prior-year deal re-narrated) is a typed absence.
+    paragraphs = (
+        "Note 2. Acquisitions. On December 6, 2023, the Company acquired"
+        " Testcorp Incorporated for a cash purchase price of approximately"
+        " $5.6 billion.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_guard_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None
+
+
+def test_pk07_guard_completion_inside_the_fiscal_period_values() -> None:
+    # (f) pin: a plain completion sentence inside the fiscal period still
+    # values the date through the widened fallback.
+    paragraphs = (
+        "Note 2. Acquisitions. On June 6, 2025, the Company acquired 100% of"
+        " the outstanding equity interests of Testcorp Incorporated for"
+        " total consideration of $2,160 million, net of cash acquired.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_guard_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "June 6, 2025"
+
+
+def test_pk07_guard_completion_after_the_fiscal_period_is_typed_absence() -> None:
+    # The subsequent-event shape: a completion after the period end (the
+    # closing happened in the next fiscal year) is a typed absence, never a
+    # post-period acquisition date for this report.
+    paragraphs = (
+        "Note 2. Acquisitions. On January 30, 2026, the Company completed"
+        " the acquisition of Testcorp Incorporated for total consideration"
+        " of $1.2 billion.",
+        _PK07_DEV_IMPAIRMENT_NOTE,
+    )
+    result = produce_pack("PK07", _pk07_guard_input(_PK07_GUARD_FACTS, paragraphs))
+    row = _row(result, "acquisition_date")
+    assert row["quality_state"] != "valued"
+    assert row["text_value"] is None

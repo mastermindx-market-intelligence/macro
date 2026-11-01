@@ -108,6 +108,7 @@ html[data-theme="dark"]{
 .tc-top{padding:16px 17px 4px}
 .tc-nameline{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .tc-name{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-.015em;line-height:1.2}
+.tc-nameline .tc-name{min-width:0;overflow-wrap:break-word}
 .stage-pill{flex:none;display:inline-block;padding:3px 10px;border-radius:8px;font-size:10.5px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;
   background:color-mix(in srgb,var(--sc,var(--quiet)) 15%,var(--panel));color:var(--sc,var(--quiet));border:1px solid color-mix(in srgb,var(--sc,var(--quiet)) 30%,var(--line))}
 .stage-WATCH{--sc:var(--lc-watch)} .stage-BROADENING{--sc:var(--lc-broad)} .stage-RE-RATING{--sc:var(--lc-rerate)}
