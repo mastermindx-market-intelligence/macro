@@ -4445,6 +4445,7 @@ CURATED_EXCLUSIVE = {
     # the code gate, closure audit and packing ceilings remain unchanged.
     "options-matrix-code",
     "push-retry-policy",
+    "sector-cycles-page",  # measured literal closure of its one suite
     # 2026-10-14 LR T17: the measured-group-read suite is pure-synthetic; the
     # exclusive scope is its measured literal closure (no fallback smear).
     "leadership-measured-read",
