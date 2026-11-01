@@ -739,6 +739,18 @@ def _catch_rate_sample_note(metric: Mapping[str, Any]) -> dict[str, str] | None:
     return L.CATCH_RATE_SAMPLE_NOTE
 
 
+def _tga_reserves_note(metric: Mapping[str, Any]) -> dict[str, str] | None:
+    """How a Treasury cash move hits bank reserves, or nothing."""
+    if metric.get("metric_id") != "tga_level":
+        return None
+    transformation = metric.get("transformation")
+    if not isinstance(transformation, str):
+        return None
+    if "DRAINS" not in transformation or "INJECTS" not in transformation:
+        return None
+    return L.TGA_RESERVES_NOTE
+
+
 def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> list[dict[str, Any]]:
     rows = []
     for metric in (snapshot.get("metrics") or {}).get("items") or []:
@@ -770,7 +782,7 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
             "owner_name": D.owner_display_pair(metric.get("owner_ref")),
             "model_version": metric.get("model_version"),
             "transformation": metric.get("transformation"),
-            "sample_note": _catch_rate_sample_note(metric),
+            "sample_note": _catch_rate_sample_note(metric) or _tga_reserves_note(metric),
             "coverage": L.fmt_ratio_pct(metric.get("coverage")),
             "authority_ceiling": D.authority_ceiling_pair(
                 metric.get("authority_ceiling")),
