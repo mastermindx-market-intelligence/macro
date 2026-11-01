@@ -315,6 +315,7 @@ def render_page(sga: dict | None = None) -> str:
 
 
 def write_fixture_site(scratch: Path) -> None:
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
     scratch.mkdir(parents=True, exist_ok=True)
     shutil.copy(TEMPLATES_DIR / "theme.js", scratch / "theme.js")
     shutil.copy(TEMPLATES_DIR / "theme.css", scratch / "theme.css")
@@ -323,7 +324,7 @@ def write_fixture_site(scratch: Path) -> None:
         shutil.copy(icons, scratch / "product-nav-icons.css")
     (scratch / "live.js").write_text("/* fixture stub */\n", encoding="utf-8")
     (scratch / "live_config.js").write_text("window.LIVE_CONFIG={};\n", encoding="utf-8")
-    (scratch / "stage_analysis_w7.html").write_text(render_page(), encoding="utf-8")
+    write_unshimmed_html(scratch / "stage_analysis_w7.html", render_page(), encoding="utf-8")
     staged = scratch / "stagedata"
     staged.mkdir(parents=True, exist_ok=True)
     payloads = {

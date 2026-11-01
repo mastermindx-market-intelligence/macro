@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FOXF-BULL-20260526",
-  "asof": "2026-10-31",
+  "asof": "2026-11-01",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 21.5,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 0.319,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 240.0,
+    "horizon_pct_used": 242.2,
     "p1": -0.4541,
     "p2": -0.2271,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-07-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 108,
-  "tau": 2.4,
+  "days_elapsed": 109,
+  "tau": 2.4222,
   "closed": true,
   "outcome": "EXPIRED"
 }
