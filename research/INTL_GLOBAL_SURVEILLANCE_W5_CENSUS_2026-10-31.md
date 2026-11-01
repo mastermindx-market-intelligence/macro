@@ -373,14 +373,14 @@ rows 14, 16, 18, 19, 20, 21.
   the ruling was made in the seat's 2026-10-31 local session and applied before the #10354 merge at
   2026-11-01T01:03:18Z; the exact UTC minute is not recorded, so the UTC calendar date may be 2026-11-01.
 
-## Addendum 2026-11-01 (r10) — F10 merged, test-hygiene follow-up merged, R2-01 focus cells, §14 rows 19/20/21
+## Addendum 2026-11-01 (r10) — F10 merged, test-hygiene follow-up merged, R2-01 merged, §14 rows 20/21 closed, row 19 stays PARTIAL
 
 - **F10 (structural CI-budget fetch fix).** PR #10367 MERGED → main c133b698b4960f5a2a8b4540e6b164c3c7c23e1b at 2026-11-01T07:40:51Z (squash pinned 5ac89fd3; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed). Reviews: INTL-GS-F10 `PASS_WITH_NOTES` at 8f1b1d5e (one
   SHOULD-FIX fixed in the follow-up) and INTL-GS-F10-AUDIT-2 `PASS_WITH_NOTES` at 5ac89fd3 (native Opus read-only
   auditors; fabric refused on every host). The `international-dislocation-explorer` legacy job now acquires canonical
   main through `prepare_canonical_main(..., frozen_paths=...)`; budgets 15 / 20 unchanged; the job's PR-side time is
   to be re-measured before any budget change (on 2026-11-01 one read of the F10 ci run's job list was deferred by the
-  CI read cooldown and a paginated read was refused by the shared-quota guard; not retried). Not a §14 row.
+  CI read cooldown and a paginated read was refused by the shared-quota guard; not retried; next receiver: the F10 `ci` run 41280629630 (pull_request, success, #10367 head 5ac89fd3): read its job list in ONE unpaginated page (`per_page=100`, no `--paginate`), outside the read cooldown; the paginated shape was refused by the shared-quota guard and is not to be repeated). Not a §14 row.
 - **F10 test hygiene (AUDIT-2 NITs N5/N6).** PR #10376 MERGED → main bacc2d765488de853291dc0f8d7c545d3b3ca29a at 2026-11-01T09:29:37Z (squash pinned d50f5839; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed). The first PR (#10370) was based on F10's branch and was
   auto-closed by GitHub three seconds after the F10 squash merge deleted that branch (not retargeted); the identical
   reviewed blobs were re-homed onto main as a fresh commit. Review INTL-GS-F10-HYGIENE: AUDIT-1 `FAIL` at db8183ef
@@ -389,7 +389,7 @@ rows 14, 16, 18, 19, 20, 21.
   7eae154c (auditor's own leak probe clean); carries by content identity. Two tests now prove `execute_pack`
   publishes the plan tree to the legacy step environment and never overrides an explicit `TESTED_TREE_SHA`
   (mutant-discriminating). Runtime unchanged.
-- **R2-01 (W2A NIT — scanner-abstain focus crop).** PR #10384 OPEN (head ee5ce58a7c63dbc1613df2235e58030de72f40fe on parent 021af584; review INTL-GS-R2-01 PASS; seat-only pinned merge via the durable watcher). Sibling pack
+- **R2-01 (W2A NIT — scanner-abstain focus crop).** PR #10384 MERGED → main 3d8ad3eb4c027126174fc2bf9f75c74f5bb04709 at 2026-11-01T09:36:34Z (squash pinned ee5ce58a; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed; review INTL-GS-R2-01 PASS). Sibling pack
   `mockups/evidence/intl-gs-w2a/scanner-abstain-focus/` (8 rest + 8 real focus cells, tool 1.4.0, fixture site,
   `--as-of 2026-11-01T08:00:00Z`). Focus target = the scanner panel's no-data disclosure
   `details.intl-gs__nodata > summary.intl-gs__disclosure` (`tabindex=0`), the only focusable element in the
@@ -400,22 +400,15 @@ rows 14, 16, 18, 19, 20, 21.
   floating-button deltas identical to the accepted scanner pack; the selector matches 40 summaries but the ring landed
   on the visible one. Evidence only; the reviewed `scanner-abstain` pack is untouched. Not a §14 row.
 - **§14 row 20 (Legacy continuity) → DONE.** The CI-owned browser suites ran on a playwright-capable host (seat Mac,
-  Node playwright@1.63.0 = CI's pin, `PLAYWRIGHT_CHROMIUM_CHANNEL=chrome`): `tests/intl_workspace_legacy_navigation.test.cjs`
+  Node playwright@1.63.0 = the same playwright version CI pins at `.github/ci/legacy-jobs.yml:10665`; `PLAYWRIGHT_CHROMIUM_CHANNEL=chrome` = the system Chrome channel, NOT CI's bundled Chromium from `npx playwright install --with-deps chromium`): `tests/intl_workspace_legacy_navigation.test.cjs`
   **14 pass / 0 fail** (12.4 s) and `tests/intl_workspace_library_controller.test.cjs` **18 pass / 0 fail** (60.5 s), on
   top of the 11 green `tests/test_intl_workspace_integration.py` cases already recorded; navlinks untouched. This is
   the exact gap the row named ("a green run quote of the cjs suite (CI or a playwright-capable host)").
-- **§14 row 21 (Bilingual/theme semantics) → DONE.** The row's gap was "browser-level both-themes/narrow-layout proof
-  for the GS boards after W3U/W4B land". Both packs are on main: `mockups/evidence/intl-gs-w3u/` (dislocations board,
-  16/16 cells = dark+light × desktop(1440)+mobile(390) × en+zh, plus `row-focus`) and `mockups/evidence/intl-gs-w4b/`
-  (transmission board, 16/16, plus `edge-focus`), alongside the W2A/W2B/W2F packs (8–24 cells each, all dual-theme and
-  dual-viewport). Vocabulary tests unchanged (98 + 11 green).
-- **§14 row 19 (Publication retention) → DONE.** `render.yml` is the only publisher of `site/` and is triggered by push
-  to main and workflow_dispatch (no cron); the post-merge publisher runs after gb1 (#10354) and pin1 (#10355) served
-  `mastermind-x.com/intl.html` with the accepted Graph-boundary chip intact — 640 chip spans at 2026-11-01T03:12Z and
-  640 head-row wrappers at 05:21:32Z (records r8/r9). That is the "normal subsequent publisher preserving the accepted
-  feature and its source qualification"; the former gap ("builders absent on main") closed when W4B/W3U/W2B/W2A merged.
+- **§14 row 21 (Bilingual/theme semantics) → DONE.** Records r8 had tightened the open gap to **served** both-themes/narrow proof for the Scanner / Dislocations boards; this closes it on a served pack: `mockups/evidence/intl-gs-r21-served/` — `scripts/capture_page_evidence.py` 1.4.0 with `--base-url https://mastermind-x.com` (`target.kind=base_url`; a live origin does not disclose the revision it serves), routes `/intl.html?view=scanner&market=JP` and `/intl.html?view=dislocations`, **16/16 cells** = dark+light × desktop(1440×900)+mobile(390×844) × en+zh, anonymous access, `--as-of 2026-11-01T10:00:00Z`, console errors `[]`, failed responses `[]`, horizontal overflow `false` at both viewports. `crops/` (8 PNGs + `crops.json` recording route, selector, visible index and bounding box): the scanner market table at 1440 (`table.intl-gs__table--scanner`, 794×1134) and the phone market cards at 390 (`.intl-gs__mcards`; the table is `display:none` at ≤900 by design), plus the dislocation ranking table (`table.intl-dislocations__table`, 1210×472 at 1440, 234×2162 at 390), each in dark and light. Seat read of the crops: signed direction keeps sign and colour across both themes and both locales (Australia +2.42 % local / +4.33 % USD, Japan −6.23 % / −6.40 %), the Abstain / Qualified / Display-permitted / Delayed-end-of-day qualifiers survive the 390 layout as chips and labels, and severity does not flip between themes. Disclosed bar change: the fixture-site packs `intl-gs-w3u/` (`site_dir`, crops present) and `intl-gs-w4b/` (`site_dir`, **no crops directory**) remain design-time evidence; the served pack is what closes the row. Vocabulary tests unchanged (98 + 11 green).
+- **§14 row 19 (Publication retention) stays PARTIAL.** Correction of the premise: `render.yml` is NOT the only publisher of `site/` — it is triggered by `workflow_dispatch` and by pushes to main **filtered to `templates/**`**, while `daily.yml` (nightly cron 22:30 / 23:30 UTC) commits `site/` paths and builds intl via a build_vector hook, `engine-render.yml` renders on `engine/**` pushes, and `pages.yml` deploys static `site/**` pushes. The gb1 chip was served at 2026-11-01T03:12:25Z (640 spans, 530 `structural_research` + 110 `structural_graph_member`) and the pin1 render served 640 head-row wrappers at 05:21:32Z — but pin1 shipped a change to the same feature, so it is not the "normal *subsequent* publisher cycle" r8 named, and the 530/110 split was not re-measured at 05:21. Missing for DONE: one probe of `mastermind-x.com/intl.html` after the next nightly (`daily.yml`) or an unrelated render showing the Graph-boundary chip with its source-qualification split and the GS views (scanner / dislocations / coverage) retained. R2-01 #10384 (merged 09:36:34Z) touched only `mockups/evidence/`, so it triggered no publisher.
 - **§14 row 18 (Served-path proof) stays PARTIAL.** `tests/intl_gs_foundation_browser.test.cjs` **18 pass / 0 fail**
   (194.7 s) on the same host covers the anonymous browser half; the entitled-browser journey still requires a human
   sign-in (Chris) and is not claimed.
-- **§14 recount after this addendum: 18 DONE / 3 PARTIAL (rows 14, 16, 18) / 0 GAP.** Rung reached: MERGED for every
-  lane, PRODUCTION_PROOF for row 4 content, not ACCEPTANCE by the commissioning authority.
+- **§14 recount after this addendum: 17 DONE / 4 PARTIAL (rows 14, 16, 18, 19) / 0 GAP.** Rung reached: MERGED for every
+  lane including R2-01 (#10384 at 09:36:34Z), PRODUCTION_PROOF for row 4 content, not ACCEPTANCE by the commissioning authority.
+- **Audit trail.** Independent read-only review INTL-GS-REC10 AUDIT-1 returned `FAIL` on the first r10 commit dd66d75d (3 major: stale workstream Remaining list; "MERGED for every lane" while #10384 was open; row 19 closed on a wrong publisher premise without a re-measured split; 4 minor: row 21 fixture-not-served + W4B without crops; row 20 CI-parity wording; F10 workstream clause dropped review facts; the dislocation re-measure named no run id). Every finding is applied in this pinned follow-up; the first commit was never merged.
