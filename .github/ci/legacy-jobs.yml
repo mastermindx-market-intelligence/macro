@@ -14514,6 +14514,48 @@ jobs:
       - name: trigger-closure guard unit tests
         run: python -m pytest tests/test_ci_trigger_closure.py -q
 
+  admin-research-tools:
+    if: ${{ false }}
+    gate: code
+    # The admin Research Tools directory, and the guard that stops a public template
+    # linking to a page served only on the admin host. That link is a 404 for the
+    # reader. The suite ran only in `unrun-ops-workers`, which is `gate: data`, and
+    # ci.yml packs `--gate code`, so a pull request could add such a link and still
+    # merge on green. The `unrun-ops-workers` line stays for the heartbeat.
+    #
+    # `scope: exclusive` so that these paths replace inference. `templates/**` is not
+    # listed on purpose: the suite walks every template, and naming the tree would wake
+    # this job on every template edit. The templates with a pinned link count are
+    # listed, because those counts are the contract, and a test holds that.
+    scope: exclusive
+    paths:
+      - ".github/ci/legacy-jobs.yml"
+      - "admin/__init__.py"
+      - "admin/static/app.js"
+      - "admin/static/styles.css"
+      - "app/__init__.py"
+      - "app/deploy/Caddyfile"
+      - "templates/alerts.html.j2"
+      - "templates/canada.html.j2"
+      - "templates/dashboard.html.j2"
+      - "templates/hk.html.j2"
+      - "templates/macro_context.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/seasonality.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_admin_research_tools.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: admin research tools and public links to internal pages
+        run: python -m pytest tests/test_admin_research_tools.py -q
+
   workflow-yaml:
     if: ${{ false }}
     gate: code
