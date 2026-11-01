@@ -90,9 +90,10 @@ Installation/enablement is an operator decision; this lane performed none of it.
   `R2_RESEARCH_SECRET_ACCESS_KEY` — production store credentials (presence on
   the host UNKNOWN; `open_production_store` refuses with a reason code when
   they do not yield an available R2Store).
-- `SEC_USER_AGENT` — optional SEC contact agent override (precedence:
-  `--user-agent` CLI flag, then this env, then the tracked repo config
-  `config.yml` `edgar.user_agent`). Its value is never printed or logged.
+- `SEC_USER_AGENT` — REQUIRED SEC contact agent (precedence: `--user-agent`
+  CLI flag, then this env; there is NO fallback to `config.yml` or any other
+  collector's config). When neither is set the writer refuses with exit 2,
+  reason `user_agent_unresolved`. Its value is never printed or logged.
 - `CATALYST_PUBLIC_ENABLED` — reader wiring flag, NOT used by this lane.
 - `RESEARCH_LOCAL_STORE` — when set, the production opener refuses
   (`research_local_store_set`); local dry-runs use `--local-store` instead.

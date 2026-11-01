@@ -452,6 +452,7 @@ def run_cycle(
                 str(event["filing_key"])] = event
 
     stop_reason: str | None = None
+    verified_issuers = 0
     for issuer in universe:
         prior_for_issuer = prior_events_by_ticker.get(issuer.ticker, {})
         if stop_reason is not None:
@@ -459,7 +460,7 @@ def run_cycle(
             events.extend(_carry_prior_events(prior_for_issuer, window_start, window_end))
             continue
         try:
-            status, reason, issuer_events, issuer_skipped = _process_issuer(
+            status, reason, issuer_events, issuer_skipped, verified = _process_issuer(
                 cycle, issuer, started, window_start, window_end, prior_for_issuer,
             )
         except (RequestBudgetExhausted, SecAccessHalted):
@@ -481,18 +482,23 @@ def run_cycle(
             events.extend(issuer_events)
         skipped.extend(issuer_skipped)
         issuer_rows.append(_issuer_row(issuer, status, reason))
+        if verified:
+            verified_issuers += 1
 
     counts = {status: sum(1 for row in issuer_rows if row["status"] == status)
               for status in ("ok", "incomplete", "failed", "not_checked")}
-    if counts["ok"] + counts["incomplete"] == 0:
-        # Nothing was swept: publishing would only replace the prior pointer
-        # with an index that proves less.  Keep the prior snapshot serving.
+    if counts["ok"] + counts["incomplete"] == 0 or verified_issuers == 0:
+        # Nothing was swept, or every swept issuer only deferred transient
+        # failures: publishing would only replace the prior pointer with an
+        # index that proves less.  Keep the prior snapshot serving.
+        swept = counts["ok"] + counts["incomplete"]
         return CycleResult(
             outcome="FAILED", exit_code=6, requests_used=cycle.requests_used,
-            events=(), issuers_ok=0, issuers_incomplete=0,
+            events=(), issuers_ok=counts["ok"],
+            issuers_incomplete=counts["incomplete"],
             issuers_failed=counts["failed"],
             issuers_not_checked=counts["not_checked"], snapshot_id=None,
-            reason=stop_reason or "no_issuer_swept",
+            reason=stop_reason or ("no_issuer_verified" if swept else "no_issuer_swept"),
         )
     if truncated:
         outcome, exit_code = "TRUNCATED", 3
@@ -544,7 +550,7 @@ def run_cycle(
             events=tuple(index["events"]), issuers_ok=counts["ok"],
             issuers_incomplete=counts["incomplete"], issuers_failed=counts["failed"],
             issuers_not_checked=counts["not_checked"],
-            snapshot_id=snapshot.snapshot_id, reason=None,
+            snapshot_id=snapshot.snapshot_id, reason=stop_reason,
         )
     except Exception as exc:  # noqa: BLE001 - publish failure keeps prior pointer.
         return CycleResult(
@@ -605,44 +611,49 @@ def _carry_prior_events(prior: dict[str, dict], window_start: datetime,
 def _process_issuer(cycle: _Cycle, issuer: UniverseIssuer, started: datetime,
                     window_start: datetime, window_end: datetime,
                     prior_by_key: dict[str, dict]):
-    """Sweep one issuer; returns (status, reason, events, skipped)."""
+    """Sweep one issuer; returns (status, reason, events, skipped, verified).
+
+    ``verified`` is False when the issuer failed, or when every in-window
+    filing raised a transient error: such an issuer proves nothing new and
+    never by itself justifies replacing the prior index pointer.
+    """
     try:
         body = cycle._bounded_get(endpoint_url(issuer.cik, "submissions"), _SUBMISSIONS_CAP)
     except (RequestBudgetExhausted, SecAccessHalted):
         raise
     except Exception as exc:  # noqa: BLE001 - submissions failure fails the issuer.
-        return "failed", type(exc).__name__, [], []
+        return "failed", type(exc).__name__, [], [], False
     if body is None:
-        return "failed", "submissions_missing", [], []
+        return "failed", "submissions_missing", [], [], False
     try:
         payload = json.loads(body.decode("utf-8"))
     except Exception as exc:  # noqa: BLE001 - undecodable submissions fail the issuer.
-        return "failed", type(exc).__name__, [], []
+        return "failed", type(exc).__name__, [], [], False
 
     try:
         if int(payload["cik"]) != issuer.cik:
-            return "failed", "identity_mismatch", [], []
+            return "failed", "identity_mismatch", [], [], False
         tickers = [str(t).upper() for t in (payload.get("tickers") or [])]
         if issuer.ticker not in tickers:
-            return "failed", "identity_mismatch", [], []
+            return "failed", "identity_mismatch", [], [], False
     except Exception as exc:  # noqa: BLE001 - malformed identity fails the issuer.
-        return "failed", type(exc).__name__, [], []
+        return "failed", type(exc).__name__, [], [], False
 
     filings = payload.get("filings")
     recent = filings.get("recent") if isinstance(filings, dict) else None
     if not isinstance(recent, dict):
-        return "failed", "submissions_shape", [], []
+        return "failed", "submissions_shape", [], [], False
     if recent:
         lengths = {len(values) if isinstance(values, list) else None
                    for values in recent.values()}
         if None in lengths or len(lengths) > 1:
-            return "failed", "submissions_shape", [], []
+            return "failed", "submissions_shape", [], [], False
 
     files = filings.get("files") if isinstance(filings, dict) else None
     if files is None:
         files = []
     if not isinstance(files, list):
-        return "failed", "submissions_shape", [], []
+        return "failed", "submissions_shape", [], [], False
     if files:
         raw_acceptances = recent.get("acceptanceDateTime")
         acceptances = [
@@ -651,7 +662,7 @@ def _process_issuer(cycle: _Cycle, issuer: UniverseIssuer, started: datetime,
         ]
         acceptances = [value for value in acceptances if value is not None]
         if not acceptances or min(acceptances) >= window_start:
-            return "failed", "pagination_unproven", [], []
+            return "failed", "pagination_unproven", [], [], False
 
     forms = recent.get("form") or []
     items = recent.get("items") or []
@@ -678,13 +689,14 @@ def _process_issuer(cycle: _Cycle, issuer: UniverseIssuer, started: datetime,
             recorded_at=started,
         )
     except FilingManifestError:
-        return "failed", "manifest_error", [], []
+        return "failed", "manifest_error", [], [], False
     except Exception as exc:  # noqa: BLE001 - any manifest failure fails the issuer.
-        return "failed", type(exc).__name__, [], []
+        return "failed", type(exc).__name__, [], [], False
 
     events: list[dict] = []
     skipped: list[dict] = []
     incomplete = False
+    definitive = 0
     for manifest in manifests:
         accepted = _parse_clock(manifest["clocks"]["accepted_at"])
         if accepted is None or not window_start <= accepted <= window_end:
@@ -718,13 +730,14 @@ def _process_issuer(cycle: _Cycle, issuer: UniverseIssuer, started: datetime,
             })
             incomplete = True
             continue
+        definitive += 1
         if event is None:
             incomplete = True
             continue
         events.append(event)
     status = "incomplete" if incomplete or skipped else "ok"
     reason = skipped[0]["reason"] if (incomplete and skipped) else None
-    return status, reason, events, skipped
+    return status, reason, events, skipped, status == "ok" or definitive > 0
 
 
 def _lineage_for(issuer: UniverseIssuer, manifest: dict) -> tuple[str, int] | None:

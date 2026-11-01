@@ -627,10 +627,11 @@ def test_redirect_and_url_mismatch_refused(tmp_path):
     redirected = std_routes()
     index = index_url("0000078003", ACCESSION)
     redirected[index] = [FakeResponse(status_code=301, url=index, headers={})]
-    result, _ = bootstrap(store, tmp_path, routes=redirected)
+    result, _ = bootstrap(store, tmp_path, routes={**redirected, **aapl_routes()},
+                          universe=(PFE, AAPL))
     assert result.exit_code == 4
     index_read = read_latest_index(store).index
-    assert index_read["events"] == []
+    assert [event["ticker"] for event in index_read["events"]] == ["AAPL"]
     assert index_read["skipped"][0]["reason"] == "SecGetRefused"
     assert index_read["issuers"][0]["status"] == "incomplete"
 
@@ -638,10 +639,11 @@ def test_redirect_and_url_mismatch_refused(tmp_path):
     document = archive_document_url(78003, ACCESSION, "ex99-1.htm")
     rewritten = std_routes()
     rewritten[document] = [ok(document + "x", FIXTURE.read_bytes())]
-    result2, _ = bootstrap(store2, tmp_path, routes=rewritten)
+    result2, _ = bootstrap(store2, tmp_path, routes={**rewritten, **aapl_routes()},
+                           universe=(PFE, AAPL))
     assert result2.exit_code == 4
     index2 = read_latest_index(store2).index
-    assert index2["events"] == []
+    assert [event["ticker"] for event in index2["events"]] == ["AAPL"]
     assert index2["skipped"][0]["reason"] == "SecGetRefused"
     assert index2["issuers"][0]["status"] == "incomplete"
 
@@ -662,7 +664,8 @@ def test_retry_backoff_and_limit(tmp_path):
     store2 = open_local_store(tmp_path / "store2")
     stuck = std_routes()
     stuck[index] = [FakeResponse(status_code=503, url=index, headers={})] * 4
-    result2, sleeps2 = run(store2, FakeSession(stuck))
+    result2, sleeps2 = run(store2, FakeSession({**stuck, **aapl_routes()}),
+                           universe=(PFE, AAPL))
     assert (result2.outcome, result2.exit_code) == ("PARTIAL", 4)
     assert sleeps2 == [2, 4, 8]
     index2 = read_latest_index(store2).index
@@ -679,7 +682,10 @@ def test_retry_limit_is_four_attempts(tmp_path):
     result, _ = run(store, session)
     assert session.calls_for(index) == 4
     assert result.requests_used == 1 + 4
-    assert read_latest_index(store).index["skipped"][0]["reason"] == "SecGetRefused"
+    # A lone issuer whose only filing failed transiently proves nothing new.
+    assert (result.outcome, result.exit_code) == ("FAILED", 6)
+    assert result.reason == "no_issuer_verified"
+    assert read_latest_index(store) is None
 
 
 # ---------------------------------------------------------------------------
@@ -1051,6 +1057,8 @@ def test_403_halts_cycle_and_publishes_swept_issuers(tmp_path):
     session = FakeSession(routes)
     result, sleeps = run(store, session, universe=(PFE, AAPL))
     assert (result.outcome, result.exit_code) == ("TRUNCATED", 3)
+    assert result.reason == "sec_access_refused"
+    assert result.snapshot_id is not None
     assert session.calls_for(aapl_submissions) == 1
     assert sleeps == []
     assert result.requests_used == 4
@@ -1083,6 +1091,7 @@ def test_persistent_429_halts_after_backoff(tmp_path):
     session = FakeSession(routes)
     result, sleeps = run(store, session, universe=(PFE, AAPL))
     assert (result.outcome, result.exit_code) == ("TRUNCATED", 3)
+    assert result.reason == "sec_rate_limited"
     assert sleeps == [2, 4, 8]
     assert session.calls_for(aapl_submissions) == 4
     assert _issuer_reason(store, "AAPL") == ("not_checked", "sec_rate_limited")
@@ -1143,6 +1152,29 @@ def test_transient_reverify_failure_defers_without_dropping(tmp_path):
     assert _issuer_reason(store, "AAPL") == ("ok", None)
 
 
+def test_all_deferred_reverify_keeps_prior_pointer(tmp_path):
+    """Catches: a cycle that only deferred re-verifies publishing an index that serves nothing."""
+    store = open_local_store(tmp_path / "store")
+    bootstrap(store, tmp_path)
+    prior = read_latest_index(store)
+
+    document = archive_document_url(78003, ACCESSION, "ex99-1.htm")
+    routes = {
+        endpoint_url(78003, "submissions"): [
+            ok(endpoint_url(78003, "submissions"), submissions_json([pfe_row()]))],
+        document: [FakeResponse(status_code=503, url=document, headers={})] * 4,
+    }
+    result, _ = run(store, FakeSession(routes),
+                    clock=make_clock(datetime(2026, 8, 5, 13, 0, 0, tzinfo=UTC)))
+    assert (result.outcome, result.exit_code) == ("FAILED", 6)
+    assert result.reason == "no_issuer_verified"
+    assert (result.issuers_ok, result.issuers_incomplete) == (0, 1)
+    assert result.snapshot_id is None
+    after = read_latest_index(store)
+    assert after.snapshot_id == prior.snapshot_id
+    assert after.index == prior.index
+
+
 def _index_with_exhibit_cell(cell_html):
     return (
         "<html><body><table summary=\"Document Format Files\">"
@@ -1187,7 +1219,7 @@ def test_store_outside_catalyst_namespace_refused(tmp_path):
     session = FakeSession(std_routes())
     result, _ = run(store.inner, session)
     assert (result.outcome, result.exit_code) == ("REFUSED", 2)
-    assert result.reason in ("store_not_catalyst_namespace", "store_not_conditional_write")
+    assert result.reason == "store_not_catalyst_namespace"
 
     class ForeignPrefix(NamespacedSourceStore):
         @property
