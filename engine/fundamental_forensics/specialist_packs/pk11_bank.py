@@ -23,17 +23,31 @@ The A30 limitation ids and the core ``revenue`` aliases are copied exactly
 from ``config/fundamental_forensics/metrics/v1/`` (metric_catalog.yaml and
 mappings/core.yaml): the core catalogue's own class gating is the declared
 source, never this producer's opinion.
+
+Dev-corpus banks_v1 (DEC-FIF-PACK-GENERALIZATION-DEV-CORPUS): the finalize
+hook additionally resolves three of the six reserved disclosed regulatory
+fields from the standard-taxonomy iXBRL facts that ARE the displayed
+capital-adequacy / credit-quality table cells of US bank filings — the facts
+carry exactly the consolidated-entity and regulatory-approach dimensions
+those tables display, so the evidence is a table cell with the fact's own
+occurrence ids and presentation-linkbase coordinates (see
+``_disclosed_table_cell``). ``lcr_disclosed``, ``nsfr_disclosed`` and
+``liquid_assets_disclosed`` stay reserved: the dev corpus carries no
+standard-taxonomy liquidity fact at all (those disclosures are prose-only,
+and R-K4' forbids scraping narrative).
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
-from decimal import Decimal, ROUND_HALF_EVEN
+from decimal import Decimal, ROUND_HALF_EVEN, InvalidOperation
+from hashlib import sha256
 from typing import Any, Mapping
+from xml.etree import ElementTree as ET
 
 from .. import detectors
 from .. import specialist_pack_contract as contract
-from ..raw_ledger import RawFactLedger, decimal_text
+from ..raw_ledger import RawFactLedger, canonical_json, decimal_text
 from .base import (
     MAX_DURATION_DAYS,
     CrossStatement,
@@ -46,6 +60,8 @@ from .base import (
     Rollforward,
     SpecialistPackError,
     TableMapping,
+    _unit_equivalents,
+    _unit_measure,
     formula_sum,
 )
 
@@ -56,8 +72,13 @@ SPEC = PackSpec(
     applicable_classes=None,
 )
 
-# B.2 concept aliases (us-gaap; priority order; undimensioned).
+# B.2 concept aliases (us-gaap; priority order; undimensioned). The first
+# allowance alias and the net write-off alias are the spellings the dev
+# corpus banks_v1 actually carries as UNDIMENSIONED totals (JPM/WFC/C/USB/PNC
+# filings inspected on the lane host); the historical spellings stay below
+# them in priority order.
 _ALLOWANCE_CONCEPTS = (
+    "us-gaap:FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest",
     "us-gaap:FinancingReceivableExcludingAccruedInterestAllowanceForCreditLoss",
     "us-gaap:FinancingReceivableAllowanceForCreditLosses",
 )
@@ -65,6 +86,11 @@ _PROVISION_FINANCING_CONCEPTS = (
     "us-gaap:FinancingReceivableExcludingAccruedInterestCreditLossExpenseReversal",
     "us-gaap:ProvisionForLoanLeaseAndOtherLosses",
     "us-gaap:ProvisionForLoanLossesExpensed",
+)
+_NET_WRITE_OFF_CONCEPTS = (
+    "us-gaap:FinancingReceivableExcludingAccruedInterestAllowanceForCreditLossWriteoffAfterRecovery",
+    "us-gaap:FinancingReceivableExcludingAccruedInterestAllowanceForCreditLossWriteoffNet",
+    "us-gaap:FinancingReceivableAllowanceForCreditLossesWriteOffsNet",
 )
 _TABLE_CELL_FIELDS = (
     "cet1_ratio_disclosed",
@@ -132,13 +158,15 @@ _FIELD_MAPPINGS = {
     "credit_loss_expense_off_balance_sheet": FactMapping(
         ("us-gaap:OffBalanceSheetCreditLossLiabilityCreditLossExpenseReversal",)
     ),
-    "allowance_for_credit_losses": FactMapping(_ALLOWANCE_CONCEPTS),
-    "net_write_offs": FactMapping(
-        (
-            "us-gaap:FinancingReceivableExcludingAccruedInterestAllowanceForCreditLossWriteoffNet",
-            "us-gaap:FinancingReceivableAllowanceForCreditLossesWriteOffsNet",
-        )
+    # ``precision_consistent`` (A.1): the dev filings' rounded summary tables
+    # repeat the disclosed allowance at a coarser scale/decimals (C's 10-K
+    # carries 19,247 at scale 6/decimals -6 next to 19.2 at scale 9/decimals
+    # -8 in the same undimensioned context); the most precise occurrence
+    # governs when every coarser duplicate rounds onto it.
+    "allowance_for_credit_losses": FactMapping(
+        _ALLOWANCE_CONCEPTS, duplicate_policy="precision_consistent"
     ),
+    "net_write_offs": FactMapping(_NET_WRITE_OFF_CONCEPTS),
     "loans_held_for_investment": FactMapping(
         (
             "us-gaap:FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLoss",
@@ -455,6 +483,392 @@ def _nii_row(
     return _check_row(catalogue_check, "pass", evidence=evidence)
 
 
+# ---------------------------------------------------------------------------
+# A.4v2 (dev corpus banks_v1): disclosed regulatory table cells.
+#
+# Three of the six reserved disclosed fields resolve from standard-taxonomy
+# iXBRL facts that are the displayed cells of the filing's capital-adequacy /
+# credit-quality tables. US bank filings dimension exactly those cells, so an
+# explicit rule — not the framework's undimensioned-only FactMapping — picks
+# the consolidated entity's cell:
+#
+#   entity rule (member local names, case-insensitive; no issuer extension
+#   namespace is ever named here): an undimensioned fact wins, else a member
+#   naming the consolidated entity — "ConsolidatedEntities" (srt), then
+#   "ParentCompany" (srt; the consolidated parent in these tables), then
+#   "BankHoldingCompan" (the standard regulator phrase for the top holding
+#   company). A fact whose only entity members match none of those (depositary
+#   subsidiaries, bank N.A. members, portfolio segments) is NOT the issuer's
+#   consolidated cell and never resolves the field.
+#
+#   methodology rule: when the disclosed cells carry the regulatory-approach
+#   dimension and both a "standardized" and an "advanced" member report
+#   different values, the LOWER ratio is taken (the binding constraint) and a
+#   limitation says so; any other conflicting reads leave the field reserved.
+#
+#   period rule: instant fields at the LATEST disclosed instant on or before
+#   period_of_report — the capital tables display the current period next to
+#   comparative columns, and the row reports the instant actually used.
+# ---------------------------------------------------------------------------
+
+_CET1_RATIO_CONCEPTS = (
+    # Dev corpus (WFC 10-Q, PNC 10-K) carries this 2018+ spelling; the
+    # 2011-2022 spelling stays second as the older equivalent.
+    "us-gaap:CommonEquityTierOneCapitalRatio",
+    "us-gaap:CapitalAdequacyCommonEquityTier1CapitalRatio",
+)
+_REGULATORY_MINIMUM_CONCEPTS = (
+    "us-gaap:BankingRegulationCommonEquityTierOneRiskBasedCapitalRatioCapitalAdequacyMinimum",
+)
+_NPL_CONCEPTS = (
+    "us-gaap:FinancingReceivableExcludingAccruedInterestNonaccrual",
+)
+# The disclosed-total marker the credit-quality tables carry on their
+# nonperforming row (a portfolio-segment member never matches it).
+_NPL_MEMBER_HINT = "nonperforming"
+
+_ENTITY_MEMBER_HINTS = (
+    ("consolidatedentities", 1),
+    ("parentcompany", 2),
+    ("bankholdingcompan", 3),
+)
+_METHODOLOGY_HINTS = ("standardized", "advanced")
+_ENTITY_OUT_TIER = 4
+_TABLE_CELL_RULE_SUFFIX = ".table/v1"
+_TABLE_ID_MAX_CHARS = 256
+XLINK = "{http://www.w3.org/1999/xlink}"
+
+
+def _member_local(qname: Any) -> str:
+    text = str(qname)
+    local = text.rsplit("}", 1)[-1] if text.startswith("{") else text.rsplit(":", 1)[-1]
+    return local.lower()
+
+
+def _dimension_pairs(dimensions: Any) -> list[tuple[str, str]]:
+    """(axis, member) pairs from a context's canonical pair tuple or mapping."""
+    if isinstance(dimensions, Mapping):
+        return [(str(axis), str(member)) for axis, member in dimensions.items()]
+    pairs: list[tuple[str, str]] = []
+    for item in dimensions or ():
+        try:
+            axis, member = item
+        except (TypeError, ValueError):
+            continue
+        pairs.append((str(axis), str(member)))
+    return pairs
+
+
+def _occurrence_members(occurrence: Any) -> list[str]:
+    context = occurrence.context
+    pairs = _dimension_pairs(context.explicit_dimensions)
+    pairs += _dimension_pairs(context.typed_dimensions)
+    return [_member_local(member) for _axis, member in pairs]
+
+
+def _entity_tier(occurrence: Any) -> int:
+    """0 = the consolidated entity's cell; 4 = a member that is not it."""
+    members = _occurrence_members(occurrence)
+    if not members:
+        return 0
+    tier = _ENTITY_OUT_TIER
+    for member in members:
+        if any(hint in member for hint in _METHODOLOGY_HINTS):
+            # A regulatory-approach member never decides the entity level.
+            continue
+        for hint, rank in _ENTITY_MEMBER_HINTS:
+            if hint in member:
+                tier = min(tier, rank)
+    return tier
+
+
+def _numeric_value(occurrence: Any) -> Decimal | None:
+    """The occurrence's numeric value; the ledger may carry it as text."""
+    if occurrence.is_nil:
+        return None
+    value = occurrence.parsed_value
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        return Decimal(str(value))
+    except (InvalidOperation, ValueError, TypeError, ArithmeticError):
+        return None
+
+
+def _unit_admitted(occurrence: Any, catalogue_unit: str | None) -> bool:
+    equivalents = _unit_equivalents(catalogue_unit)
+    if equivalents is None:
+        return True
+    return _unit_measure(occurrence.unit) in equivalents
+
+
+def _resolve_disclosed(
+    ledger: RawFactLedger,
+    concepts: tuple[str, ...],
+    por: date,
+    *,
+    catalogue_unit: str | None,
+    member_hint: str | None = None,
+) -> tuple[Decimal, Any, bool] | None:
+    """(value, occurrence, lower_of_approaches) for one disclosed cell.
+
+    ``member_hint`` switches the dimension rule from the consolidated-entity
+    tiers to a single marker member (the nonperforming-total row): only facts
+    whose EVERY member carries the hint (or that are undimensioned) are the
+    disclosed total; portfolio-segment members exclude a fact.
+    """
+    for concept in concepts:
+        tiered: dict[int, list[Any]] = {}
+        for occurrence in ledger.events:
+            if occurrence.concept_qname != concept:
+                continue
+            value = _numeric_value(occurrence)
+            if value is None or occurrence.context.instant is None:
+                continue
+            if occurrence.context.instant > por:
+                continue
+            if not _unit_admitted(occurrence, catalogue_unit):
+                continue
+            if member_hint is not None:
+                members = _occurrence_members(occurrence)
+                if members and not all(member_hint in m for m in members):
+                    continue
+                tier = 0
+            else:
+                tier = _entity_tier(occurrence)
+                if tier >= _ENTITY_OUT_TIER:
+                    continue
+            tiered.setdefault(tier, []).append(occurrence)
+        if not tiered:
+            continue
+        candidates = tiered[min(tiered)]
+        latest = max(item.context.instant for item in candidates)
+        at_instant = [item for item in candidates if item.context.instant == latest]
+        values = {_numeric_value(item) for item in at_instant}
+        if len(values) == 1:
+            return values.pop(), at_instant[0], False
+        if len(values) > 2:
+            continue  # a conflict the approach rule cannot name: stay reserved
+        members_at = {
+            member
+            for item in at_instant
+            for member in _occurrence_members(item)
+        }
+        approaches = [
+            member for member in members_at if any(h in member for h in _METHODOLOGY_HINTS)
+        ]
+        if len(approaches) < 2:
+            continue  # differing values without both approaches: never guess
+        # Both regulatory approaches disclosed different figures: the lower
+        # ratio is the binding constraint.
+        winner = min(at_instant, key=lambda item: (_numeric_value(item), item.occurrence_id))
+        return _numeric_value(winner), winner, True
+    return None
+
+
+def _presentation_table_coordinates(
+    members: Mapping[str, bytes] | None, concept_local: str
+) -> tuple[str, int] | None:
+    """(table_id, row) from the filing's own presentation linkbase.
+
+    The first presentation role (in linkbase order) that presents the concept
+    names the displayed table; the concept's position among that role's arcs
+    (sorted by the arcs' declared order) is its row. No presentation evidence
+    means no table-cell row — coordinates are never invented.
+    """
+    if not isinstance(members, Mapping):
+        return None
+    pre_bytes = next(
+        (payload for name, payload in sorted(members.items()) if name.endswith("_pre.xml")),
+        None,
+    )
+    if not pre_bytes:
+        return None
+    try:
+        root = ET.fromstring(pre_bytes)
+    except ET.ParseError:
+        return None
+    for link in root.iter():
+        if link.tag.rsplit("}", 1)[-1] != "presentationLink":
+            continue
+        table_id = link.get(f"{XLINK}role")
+        if not isinstance(table_id, str) or not table_id or len(table_id) > _TABLE_ID_MAX_CHARS:
+            continue
+        locals_by_id: dict[str, str] = {}
+        for loc in link:
+            if loc.tag.rsplit("}", 1)[-1] != "loc":
+                continue
+            href = loc.get(f"{XLINK}href") or ""
+            local = href.rsplit("_", 1)[-1] if "#" in href else ""
+            if local:
+                locals_by_id[loc.get(f"{XLINK}label") or ""] = local
+        ordered: list[tuple[float, str]] = []
+        for arc in link:
+            if arc.tag.rsplit("}", 1)[-1] != "presentationArc":
+                continue
+            target = locals_by_id.get(arc.get(f"{XLINK}to") or "")
+            if target is None:
+                continue
+            try:
+                order = float(arc.get("order") or 0.0)
+            except ValueError:
+                order = 0.0
+            ordered.append((order, target))
+        ordered.sort()
+        for row, (_order, target) in enumerate(ordered):
+            if target == concept_local:
+                return table_id, row
+    return None
+
+
+def _concept_instant_column(
+    ledger: RawFactLedger, concept: str, instant: date
+) -> int | None:
+    """0-based position of ``instant`` among the concept's instants, latest first."""
+    instants = sorted(
+        {
+            item.context.instant
+            for item in ledger.events
+            if item.concept_qname == concept
+            and item.context is not None
+            and item.context.instant is not None
+        },
+        reverse=True,
+    )
+    try:
+        return instants.index(instant)
+    except ValueError:
+        return None
+
+
+def _table_cell_digest(concepts: tuple[str, ...], *, member_hint: str | None) -> str:
+    payload = {
+        "concepts": list(concepts),
+        "entity_hints": [hint for hint, _rank in _ENTITY_MEMBER_HINTS]
+        if member_hint is None
+        else [member_hint],
+        "methodology": "lower_ratio_when_both_approaches_disclosed",
+        "period": "latest_disclosed_instant_on_or_before_period_of_report",
+        "table": "presentation_linkbase_first_role_v1",
+    }
+    return sha256(canonical_json(payload).encode("utf-8")).hexdigest()
+
+
+_DISCLOSED_FIELD_RULES = {
+    "cet1_ratio_disclosed": (_CET1_RATIO_CONCEPTS, None),
+    "regulatory_minimum_disclosed": (_REGULATORY_MINIMUM_CONCEPTS, None),
+    "npl_or_npa_disclosed": (_NPL_CONCEPTS, _NPL_MEMBER_HINT),
+}
+_DISCLOSED_FIELD_DIGESTS = {
+    field_id: _table_cell_digest(concepts, member_hint=member_hint)
+    for field_id, (concepts, member_hint) in _DISCLOSED_FIELD_RULES.items()
+}
+
+
+def _rewrite_disclosed_rows(
+    envelope: dict[str, Any],
+    pack_input: PackInput,
+    ledger: RawFactLedger,
+    por: date,
+    limitations: list[str],
+) -> None:
+    """Value the three resolvable disclosed fields as table-cell rows."""
+    catalogue = contract.load_pack_schema("PK11")
+    catalogue_fields = {
+        row["field_id"]: row for row in catalogue["fields"]
+    }
+    presentation_members = None
+    for package in pack_input.packages:
+        candidate = getattr(package, "members", None)
+        if isinstance(candidate, Mapping) and any(
+            name.endswith("_pre.xml") for name in candidate
+        ):
+            presentation_members = candidate
+            break
+    rows = {row["field_id"]: row for row in envelope["fields"]}
+    for field_id, (concepts, member_hint) in _DISCLOSED_FIELD_RULES.items():
+        row = rows.get(field_id)
+        if row is None or row["quality_state"] == "valued":
+            continue
+        catalogue_field = catalogue_fields[field_id]
+        resolved = _resolve_disclosed(
+            ledger,
+            concepts,
+            por,
+            catalogue_unit=catalogue_field.get("unit"),
+            member_hint=member_hint,
+        )
+        if resolved is None:
+            continue
+        value, occurrence, lower_of_approaches = resolved
+        concept_local = occurrence.concept_qname.rsplit(":", 1)[-1]
+        coordinates = _presentation_table_coordinates(
+            presentation_members, concept_local
+        )
+        column = _concept_instant_column(
+            ledger, occurrence.concept_qname, occurrence.context.instant
+        )
+        if coordinates is None or column is None:
+            continue  # no honest table evidence for this cell: stay reserved
+        table_id, table_row = coordinates
+        row.update(
+            {
+                "quality_state": "valued",
+                "non_value_state": None,
+                "coverage_state": "source_trace_complete",
+                "reason": None,
+                "value": decimal_text(value),
+                "text_value": None,
+                "evidence_kind": "table_cell",
+                "required_evidence_kind": "table_cell",
+                "concept": occurrence.concept_qname,
+                "taxonomy": occurrence.concept_qname.split(":", 1)[0],
+                "source_occurrence_ids": [occurrence.occurrence_id],
+                "dimensions": [
+                    {"axis": axis, "member": member}
+                    for axis, member in sorted(
+                        _dimension_pairs(occurrence.context.explicit_dimensions)
+                    )
+                ],
+                "mapping_rule_id": f"PK11.{field_id}{_TABLE_CELL_RULE_SUFFIX}",
+                "mapping_rule_digest": _DISCLOSED_FIELD_DIGESTS[field_id],
+                "table_cell": {
+                    "table_id": table_id,
+                    "row": table_row,
+                    "column": column,
+                },
+                "period": {
+                    "kind": "instant",
+                    "end": occurrence.context.instant.isoformat(),
+                },
+                "unit": catalogue_field.get("unit"),
+            }
+        )
+        if lower_of_approaches:
+            limitations.append(
+                f"pk11.{field_id}: standardized and advanced approaches both "
+                "disclosed; lower ratio taken"
+            )
+
+
+def _refresh_coverage(envelope: dict[str, Any]) -> None:
+    """Re-tally coverage from the field rows after finalize rewrites."""
+    counts = {key: 0 for key in (
+        "valued_fields",
+        "missing_fields",
+        "unsupported_fields",
+        "not_evaluable_fields",
+        "not_applicable_fields",
+    )}
+    for row in envelope["fields"]:
+        key = contract.QUALITY_TO_COVERAGE.get(row["quality_state"])
+        if key is not None:
+            counts[key] += 1
+    envelope["coverage"].update(counts)
+    if counts["valued_fields"] > 0:
+        envelope["coverage"]["disclosure_coverage_state"] = "present"
+
+
 @dataclass(frozen=True)
 class Pk11Producer(PackProducer):
     """PK11 declaration plus the bank-sector finalize hook (see module docstring)."""
@@ -485,6 +899,10 @@ class Pk11Producer(PackProducer):
                 "pk11.industrial_basis_excluded: "
                 + ",".join(_A30_EXCLUDED_CORE_METRICS)
             )
+        # Dev corpus banks_v1: value the resolvable disclosed regulatory table
+        # cells BEFORE the checks read them and before the reserved limitation
+        # is decided.
+        _rewrite_disclosed_rows(envelope, pack_input, ledger, por, limitations)
         reserved_not_valued = any(
             rows[field_id]["quality_state"] != "valued"
             for field_id in _TABLE_CELL_FIELDS
@@ -521,6 +939,7 @@ class Pk11Producer(PackProducer):
                 )
             )[:32]
 
+        _refresh_coverage(envelope)
         envelope["pack_content_sha256"] = contract.pack_content_digest(envelope)
         errors = contract.validate_pack_result(envelope)
         if errors:
