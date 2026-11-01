@@ -392,20 +392,60 @@ verified:
       empty spool as a valid state. Units macro-live-b4capture.{service,timer} are
       registered in live-setup.sh; daily.yml us_prophet_ledgers gains the step and the
       commit add-list; config/dag.yml gains the entry; no new test files.
+  - claim: >
+      Entry Timing W2 (frozen registration r8, PREREG.json, population file, estimator,
+      freeze script + tests, CI wiring) is ON MAIN: PR #10283 (head 915e50b3) MERGED
+      2026-11-01T04:26Z, merge commit 3b934c8, reviewDecision APPROVED.
+    command: one GraphQL read of pullRequest(10283){state mergedAt mergeCommit reviewDecision}
+    result: MERGED / 2026-11-01T04:26Z / 3b934c8 / APPROVED.
+  - claim: >
+      PR #10363 (B4 capture durable home) survives three rounds of independent
+      non-author review (Opus, read-only, agent a63f7ee151effffa7): round 1 REVISE
+      (4 MUST-FIX: holiday/stale-board passes, lenient R2 listing swallowed failures,
+      partial write across stamps, unvalidated prefixes + lost backlog) repaired at
+      3f5c84d1a149; round 2 REVISE (same-day stamp still admitted; two clock/board
+      reads; ingest trusted the declared pass_date) repaired at 28f92964324b; round 3
+      ACCEPT on the delta.
+    command: >
+      python3 -m pytest tests/test_capture_prophet_b4_same_read.py
+      tests/test_prophet_off_engine_lane.py tests/test_prophet_live_vps_lane.py -q;
+      python3 scripts/check_dag_conformance.py; python3 scripts/check_contract_delta.py --base c3f5994bf286
+    result: >
+      129 passed / 1 skipped; DAG conformance OK; contract-delta 0 introduced / 0
+      inherited at both 3f5c84d1 and 28f92964 (wall 347 s). READY + merge-on-green
+      ARMED at 28f92964 on 2026-11-01 with a visible comment. Rules now in
+      source: --spool SESSION GUARD (ET pass date must be an NYSE session ->
+      NOT_A_SESSION; committed stamp must be EXACTLY the prior session ->
+      STALE_BOARD_STAMP; one clock read and one board read per pass; the object
+      carries pass_date); ingest lists strictly via s3.list_objects_v2 (failure ->
+      SPOOL_LIST_FAILED, never "empty"), admits calendar-date prefixes only, selects
+      the last N stamps plus every older stamp without a committed day file, takes the
+      EARLIEST pass per stamp as the observation (later passes recorded as superseded),
+      requires the ET date of the zoned captured_at to equal pass_date, and plans every
+      day-file merge before the first write; timer 15:06:30Z; r2io.py + nyse_calendar.py
+      added to the washout-turn-organ CI path filter.
+  - claim: >
+      PR #10277's ci.yml conflict with main (both W1 and W2 #10283 inserted prophet-lab
+      path-filter entries at the same point) is resolved by keeping both blocks; new
+      head 9d57334b0e1a; the reviewed W1 artifacts are byte-unchanged (diff vs main =
+      the four W1 files + the path-filter lines).
+    command: git merge origin/main (044d1cc63923) on claude/entry-timing-w1-denominator-20261031; python3 -m pytest tests/test_report_us_candidate_episode_waterfall.py -q
+    result: >
+      7 passed; ci.yml parses. The merge-blocked label had been RE-APPLIED by
+      chriswong6031-creator (2026-11-01 01:56Z, infrastructure_blocked semantic-proof
+      refusal on 8f3089a0 whose merge-main commits were not the sweeper's); it is NOT
+      stripped — its condition is a real hosted green on this head.
 unverified:
   - claim: >
-      PR #10363 survives independent non-author review, hosted CI is green at its head,
-      and it merges through the sweeper; VPS enrollment (live-setup.sh as root after
-      macro-update pulls the merge) is a separate operator step, and the first non-empty
-      nightly ingest is the production proof.
-  - claim: W2 freeze PR #10283 (head 915e50b3) merges to main through the sweeper against that exact head.
-    what_would_verify: green hosted CI on 915e50b3, reviewDecision, then merge --match-head-commit 915e50b3 by the sweeper; until then no freeze and no outcome read. T3 gate (union_admission reads completed closes only, asof-capable) is evaluated at freeze.
+      PR #10363 (head 28f92964) is green in hosted CI, READY, armed merge-on-green and
+      merges through the sweeper against that exact head; VPS enrollment (live-setup.sh
+      as root after macro-update pulls the merge) is a separate operator step, and the
+      first non-empty nightly --from-spool ingest is the production proof.
+    what_would_verify: the sweeper's merge commit on origin/main; then a nightly us_prophet_ledgers run whose capture step reports rows_written > 0 after the VPS timer has published at least one object (requires the operator enrollment first).
   - claim: PR #10267 (head 750dd2c2) hosted CI green and merged by the merge-on-green sweeper against that exact head.
     what_would_verify: the sweeper's merge commit on origin/main; mergeStateStatus read once via the bound PR status, not by polling.
-  - claim: PR #10277 (head 82812b81) and PR #10255 (head 6454a74a) merge through the sweeper against those exact heads.
-    what_would_verify: the sweeper's merge commits on origin/main; #10277 first needs ci-pack + ci-gate green at 82812b81 and the merge-blocked marker removed with a visible comment (the guard's condition: green under the pre-existing standard, not a semantic excuse); #10255 additionally needs the fresh bounded round-2 non-author review (the first round-2 reviewer stalled 70 min without a verdict and was stopped) and green hosted CI at 6454a74a before arming.
-  - claim: W2 registration revision 2 is READY TO FREEZE.
-    what_would_verify: the round-2 independent review verdict on 549d416f; then the census re-run with the W1 r2 session + VendorAliasTable join, k*, the T3 gate, the price-panel commit SHA, the Data OS exclusion list, and a machine freeze mirroring §2-§7. No outcome may be read before that.
+  - claim: PR #10277 (head 9d57334b) and PR #10255 (head moves with the sweeper's update-branch; 022026a5 at the last read) merge through the sweeper against their exact heads.
+    what_would_verify: the sweeper's merge commits on origin/main; #10277 first needs ci-pack + ci-gate green at 9d57334b and the re-applied merge-blocked marker removed by its applier or with a visible comment naming the green evidence (the guard's condition: green under the pre-existing standard, not a semantic excuse; never strip it a second time from this seat).
   - claim: >
       The next scheduled nightly lands the "engine: regime update <date>" commit,
       the curated tier rows (~2,900) for that session, and the collect_tail and
@@ -451,16 +491,18 @@ next_actions:
     2. Production proof on the next scheduled nightly (see unverified); record it
     here and in the W3 ledger; do not dispatch daily.yml manually.
   - >
-    3. #10267 (B4 seam, 750dd2c2) and #10277 (W1, now 82812b81 after the
-    contract-delta repair; reviewed APPROVE-READY at d03acfd0, the repair touches CI
-    wiring only) are armed merge-on-green; #10277 also carries merge-blocked from the
-    semantic-proof guard: consume its checks once at a real boundary, and when
-    ci-pack + ci-gate are green at 82812b81 remove merge-blocked with a visible
-    comment naming this session and the green evidence; if hosted CI reds, repair on
-    the branch (never relabel silently, #5291). Never self-approve or self-merge.
+    3. #10267 MERGED 31ab1d32. #10277 (W1, head 9d57334b after the ci.yml conflict
+    repair; reviewed APPROVE-READY at d03acfd0, every later change is CI wiring or
+    merge-from-main) is armed merge-on-green and carries a RE-APPLIED merge-blocked
+    (chriswong6031-creator, infrastructure_blocked): consume its checks once at a real
+    boundary; when ci-pack + ci-gate are green at 9d57334b, ask the applier or remove
+    the marker ONCE with a visible comment naming the green evidence — this seat has
+    already lifted it once and will not strip it again on a stale head; if hosted CI
+    reds with the same infrastructure signature, that is the CI-authority owner's lane,
+    not a branch defect. Never self-approve or self-merge.
   - >
-    4. B4 durable home = Draft PR #10363 (head 6146ef6b): consume the independent
-    review once, repair findings on the branch, `gh pr ready`, arm merge-on-green
+    4. B4 durable home = PR #10363 (head 28f92964, review round 3 ACCEPT, READY,
+    ARMED merge-on-green 11-01): consume the sweeper outcome once at a real boundary
     (never self-approve or self-merge); after the merge, name the VPS enrollment
     (`bash /opt/macro/app/deploy/live-setup.sh` as root, after the nightly
     macro-update pulls it) as the operator step — never claim it — and record the
@@ -473,9 +515,8 @@ next_actions:
     one hosted CI run, arm merge-on-green (never self-merge). ci-authority/main's
     unsupported_base_ref is expected while stacked. Do not re-run the fabric operation.
   - >
-    6. Entry Timing W2 is FROZEN (PR #10283, head 915e50b3, ready): consume hosted CI once;
-    arm merge-on-green after the local contract-delta gate is green; the sweeper merges on
-    green + reviewDecision. P looks begin only once the nightly producer commits every
+    6. Entry Timing W2 is FROZEN AND ON MAIN (PR #10283 MERGED 3b934c8, 2026-11-01
+    04:26Z). P looks begin only once the nightly producer commits every
     session (#10255) and the §2 floors are reached (300 units / 100 pairs / 5 full blocks of
     44); the single R look is no earlier than 2026-11-19 (PREREG.json r_maturity) and reads
     outcomes through the frozen estimator only; T3 is in the P family; the entitlement pin
