@@ -46,18 +46,36 @@
     "scoring.by_status": {}
    },
    "attempted": 103893,
-   "graded_ok": 0,
-   "not_matured": 18225,
-   "split_seam": 0,
-   "errors": 65,
-   "unavailable_total": 65,
-   "unavailable_by_reason": {
-    "no_price_data": 65
+   "attempted_scope": "CUMULATIVE: gate ledger.n_rows; equals the ledger.parquet and grades.parquet row counts.",
+   "grader_per_run": {
+    "scope": "PER_RUN: the gate.json grader block describes the one grading run that wrote this blob, not the cumulative ledger.",
+    "run_id": null,
+    "run_id_null_reason": "gate.json (flow_signals.gate/v2) carries no run_id field. The run is identified by the commit that wrote the blob.",
+    "writing_commit": "6ef6fe67976bf0c66ac637e451d975c95acf57f7",
+    "writing_commit_author": "dashboard-bot",
+    "writing_commit_committed_utc": "2026-10-18T07:09:10Z",
+    "writing_commit_subject": "engine: regime update 2026-10-18",
+    "gate_blob": "482412237b95d45f215110082af3d585f0e1f21f",
+    "gate_asof": "2026-10-18",
+    "grader_elapsed_sec": 2.86,
+    "n_graded_ok": 0,
+    "n_not_matured": 18225,
+    "n_split_seam": 0,
+    "n_errors": 65
    },
-   "pending_by_reason": {
-    "not_yet_matured": 18225
+   "cumulative": {
+    "source": "grades.parquet reason_code value counts (stage flow_signal_parquet)",
+    "attempted": 103893,
+    "graded_ok": 85603,
+    "unavailable_total": 65,
+    "unavailable_by_reason": {
+     "no_price_data": 65
+    },
+    "pending_by_reason": {
+     "not_yet_matured": 18225
+    }
    },
-   "arithmetic_check": "NOT COMPARABLE as a cumulative partition: 0 + 18225 + 0 + 65 = 18290 != 103893. INTERPRETED: the gate grader block reports the latest grading run (harvest.n_new_this_run = 0), which re-examined the 18290 still-ungraded rows and graded none of them ok; the cumulative partition is in the grades table (next stage), whose non-ok classes equal these two counts exactly (18225 not_yet_matured, 65 no_price_data). grader.n_graded_ok = 0 is therefore a per-run count, not a cumulative zero."
+   "arithmetic_check": "CALCULATED cumulative identity: 85603 graded_ok + 18225 not_yet_matured + 65 no_price_data = 103893 = attempted (gate ledger.n_rows = ledger.parquet rows = grades.parquet rows). The per-run grader counts (0 + 18225 + 0 + 65 = 18290) are not a partition of attempted. INTERPRETED: that run (harvest.n_new_this_run = 0) re-examined the 18290 still-ungraded rows and graded none of them ok, and its two non-ok counts equal the cumulative non-ok classes exactly. grader n_graded_ok = 0 is a per-run count, not a cumulative zero."
   },
   {
    "stage": "flow_signal_parquet",

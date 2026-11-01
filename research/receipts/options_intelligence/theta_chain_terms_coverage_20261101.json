@@ -7,6 +7,10 @@
   "repository_commit": "021af584204c9fb00ad516c2dbc9467503a84083",
   "cohort": {
     "source": "flow_meta_20261101T043626Z.json (live_flow.meta/v2)",
+    "source_capture_path": "research/receipts/options_intelligence/flow_meta_20261101T043626Z.json",
+    "source_capture_sha256": "c03eab46584b0c5ddd9efee32834b61c2423bd1952002dfe536164e0d77dd9db",
+    "source_capture_bytes": 193559,
+    "source_capture_origin": "ORCH-1 annotation: the D107 one-shot capture of /api/flow/meta (capture time 2026-11-01T04:36:26Z per the filename) from the incumbent session f77d3f70 OPT-005 ruling scratch, committed byte-exact by ORCH-1; it holds no credential, token or URL. Its root_catalog has 30 entries, 27 of tier core; core minus QQQ gives the 26 roots below.",
     "source_asof": "2026-10-30T20:11:27.962419Z",
     "derivation": "root_catalog tier==core minus QQQ",
     "catalog_entries": 30,
@@ -123,6 +127,49 @@
       ]
     }
   },
+  "per_root_selection_rule": {
+    "annotated_by": "ORCH-1; not part of the lane's frozen key set",
+    "store_as_of": "2026-10-29 for all 26 roots: the max date in each root's newest eod year file (2026.parquet), as stated in the lane oi1-l2-r1 report. It is the newest date the store holds, not a chosen trading-date policy.",
+    "terminal_strikes_expiration": "Per root, the first listed expiration on or after 2026-11-01 (the receipt date), taken from that root's saved list/expirations response, as stated in the lane oi1-l2-r1 report.",
+    "per_root_expiration": {
+      "2026-11-02": [
+        "SPY",
+        "NVDA",
+        "TSLA",
+        "META",
+        "IWM",
+        "SMH",
+        "MSFT",
+        "GLD",
+        "SLV",
+        "TLT",
+        "XLE",
+        "XLF"
+      ],
+      "2026-11-04": [
+        "AAPL"
+      ],
+      "2026-11-06": [
+        "XLK",
+        "DIA",
+        "XLP",
+        "HYG",
+        "XLV",
+        "XBI",
+        "ARKK",
+        "XLU",
+        "XLI",
+        "KRE",
+        "XLY",
+        "XLB"
+      ],
+      "2026-11-20": [
+        "XLRE"
+      ]
+    },
+    "verification": "OBSERVED: each per_root query URL carries exactly the expiration listed here, and every one is on or after 2026-11-01. NOT re-verified: that each is the first listed one, because the lane's saved list/expirations bodies were not retained in the repository."
+  },
+  "strikes_endpoint_disclosure": "ORCH-1 annotation: the strike counts in per_root.query came from the local ThetaData Terminal endpoint /v3/option/list/strikes. collectors/thetadata.py at 021af584 never calls list/strikes: its only list/* calls are list/symbols (:279) and list/expirations (:296), and no file under collectors/ or engine/ names list/strikes. Same local Terminal (127.0.0.1:25503), no new provider, no paid call.",
   "per_root": [
     {
       "root": "SPY",

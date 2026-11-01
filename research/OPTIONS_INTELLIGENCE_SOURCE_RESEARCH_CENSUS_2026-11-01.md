@@ -40,7 +40,7 @@ Each row has exactly one disposition:
 | AC07 | Failed read vs quiet board | DO_NOT_REDO_ACCEPTED | `scripts/build_intraday_flow.py:1396` (read_failed distinct from no_data); #10003 merged as `8f6bca2ad1c22ca9491c274d190c37bd0b52bf1c`; focused test `tests/test_intraday_flow.py:1097` | None. The #10003 production-proof watcher belongs to the incumbent session and is not touched. |
 | AC08 | Population manifest v0 | DO_NOT_REDO_ACCEPTED | `engine/options_capability_manifest.py:34,37`; OPT-011 #10248 merged as `fa06210782d5a34e19fc527e829baf6e85042fc0` (PRODUCTION_PROOF per the commission) | None. Neither a second manifest nor a widened v0 family exists on main. |
 | AC12 | Qualified premium | GATED | `research/options_estate/options_alpha_candidate_formation_policy_v2.json:5` (`preregistered_inactive_until_activation`), `:17`, `:20-25` (four activation preconditions); `research/options_intelligence/2026-10-03/SOURCE_ADMISSION_REVIEW.md:24` | Validated contract units plus positive qualified coverage are absent. Gate: the policy-v2 activation preconditions and the AC21 activation receipt. Owner: OA-1C. |
-| AC13 | Latency diagnosis | GATED | #10201 OPEN draft, head `87035e8928`; writer/root `01a10340-ddc1-7e41-9b42-9c8543c28c3d` | See the L4 section. |
+| AC13 | Latency diagnosis | OWNER_HELD | #10201 OPEN draft, head `87035e8928`, no labels; hold record: the #10201 PR body ("DRAFT / release hold" paragraph) | Holder: writer/root `01a10340-ddc1-7e41-9b42-9c8543c28c3d`, under its META-CEO commission. Release act: the holder's own. See the L4 section. |
 | AC14 | Coverage expansion | OWNER_HELD | #8191 head `6753d5622555e110a107bd4fd706f478f73b1d24`: `research/options_estate/COVERAGE_EXPANSION_R1_2026-09-29.md:131,135` | Owner: coo-fable (#8191 hold). The 1000/1500 coverage ambition is not reported as actual coverage. |
 | AC15 | Measured washout | OWNER_HELD | #6867 (sol/* DRAFT/HOLD) head `1ba8321db28c7ff8458ac2931bd5bcf9bde66809`; main `templates/intraday_flow.html.j2:699-707,729`; `git grep` for the repaired consumer at baseline returns 0 matches | Owner: the #6867 Sol lane. A hold is a merge barrier; read only. |
 | AC16 | Known trap | OWNER_HELD | Same #6867 head; `templates/intraday_flow.html.j2:653,660` | Same owner and hold as AC15. |
@@ -70,20 +70,36 @@ Each row has exactly one disposition:
 | Disposition | Rows | Which rows |
 | --- | --- | --- |
 | DO_NOT_REDO_ACCEPTED | 4 | AC07, AC08, AC23, AC58 |
-| OWNER_HELD | 8 | AC14, AC15, AC16, AC17, AC19, AC25, AC36, AC57 |
-| GATED | 15 | AC12, AC13, AC18, AC20, AC21, AC22, AC24, AC28-AC35 |
+| OWNER_HELD | 9 | AC13, AC14, AC15, AC16, AC17, AC19, AC25, AC36, AC57 |
+| GATED | 14 | AC12, AC18, AC20, AC21, AC22, AC24, AC28-AC35 |
 | ACTIONABLE_NOW | 0 | The bounded acts available here (L2, L5, L3 seal) were executed in this PR and in #10390. |
-| **Total** | **27** | 4 + 8 + 15 = 27 |
+| **Total** | **27** | 4 + 9 + 14 = 27 |
 
 ## L2: ThetaData chain and terms coverage (D107 GAP 1-2)
 
 Receipt `research/receipts/options_intelligence/theta_chain_terms_coverage_20261101.json`
-(sha256 `ea879b7d…cce015f`), with its README alongside it.
+(sha256 `3c27e53553d4733fafaa6b807ba4b7deb9a74ae29f31651cf1a25e82308b9315`,
+26,660 B), with its README alongside it. The block as received from the lane
+hashed to `ea879b7d…cce015f` (24,245 B); the committed file is that block plus
+ORCH-1 annotation keys, named in the README.
 
 - **Path.** The existing ThetaData path only. No new provider, no paid call, and
-  no QQQ request.
+  no QQQ request. The strike counts came from the local Terminal endpoint
+  `list/strikes`, which `collectors/thetadata.py` does not call at the baseline
+  (its only `list/*` calls are `list/symbols` at `:279` and `list/expirations`
+  at `:296`). It is the same local Terminal.
 - **Cohort.** 26 roots, taken from the `root_catalog` core tier of the D107
-  `/api/flow/meta` capture, minus QQQ. The cohort is led by SPY.
+  `/api/flow/meta` capture, minus QQQ. The cohort is led by SPY. The capture is
+  committed byte-exact as
+  `research/receipts/options_intelligence/flow_meta_20261101T043626Z.json`
+  (sha256 `c03eab46584b0c5ddd9efee32834b61c2423bd1952002dfe536164e0d77dd9db`,
+  193,559 B).
+- **Expiry selection.** Store chain as-of 2026-10-29 for every root (the newest
+  date the store holds). Terminal strikes use, per root, the first listed
+  expiration on or after 2026-11-01: 2026-11-02 for 12 roots, 2026-11-04 for
+  AAPL, 2026-11-06 for 12 roots, and 2026-11-20 for XLRE. The dates are
+  OBSERVED in the request URLs; that each is the first listed one rests on the
+  lane report, since the expirations bodies were not retained.
 - **Result (OBSERVED).** 26 of 26 roots observed. None is empty, unobserved or
   read-failed. `unavailable_roots` is empty, and no reason was manufactured.
 - **Contract terms.**
@@ -100,7 +116,11 @@ Receipt `research/receipts/options_intelligence/outcome_attrition_20261101.json`
 
 - **Flow-signal snapshot (HISTORICAL_COMMITTED, as-of 2026-10-18), CALCULATED.**
   103,893 attempted = 85,603 graded ok + 18,225 not yet matured + 65 with no
-  price data.
+  price data. This is the cumulative identity.
+- **Per-run gate counts.** The gate's grader block (0 ok, 18,225 not matured,
+  65 errors) is labelled per-run in the receipt. `gate.json` has no run id, so
+  the run is identified by the commit that wrote it, `6ef6fe67976b`
+  (2026-10-18T07:09:10Z).
 - **Horizons.** Graded rows split 51,838 at h5 only and 33,765 at h21 only. The
   h63 and h126 outcome columns are null on every row: unobserved, not zero.
 - **OA-3 exact-option stage: GAP.** No retained OA-3 outcome table is committed.
@@ -109,29 +129,39 @@ Receipt `research/receipts/options_intelligence/outcome_attrition_20261101.json`
 - **What was read.** No outcome value, return, score, hit rate or calibration
   value was read into the receipt.
 
-## L4: #10201 latency (AC13): GATED
+## L4: #10201 latency (AC13): OWNER_HELD
 
-- **State.** #10201 is an OPEN draft owned by writer/root
-  `01a10340-ddc1-7e41-9b42-9c8543c28c3d`, under a release hold.
-- **What is still missing.** An installed-source receipt and natural phase
+- **Holder.** Writer/root `01a10340-ddc1-7e41-9b42-9c8543c28c3d`, under its
+  META-CEO commission. #10201 is an OPEN draft by `mastermindxryan`, head
+  `87035e8928`, created 2026-10-30T14:14:31Z.
+- **Durable record of the hold (OBSERVED).** The #10201 PR body, read
+  2026-11-01T09:44:40Z. Its "DRAFT / release hold" paragraph says the current
+  META-CEO commission permits draft source delivery only. It forbids merge,
+  approval, auto-merge arming and deploy, and keeps the original runtime and
+  release holds.
+  - The PR carries no labels, so the body is the only record cited.
+  - `docs/ACTIVE_BUILD_MAP.md:75` lists #10201 as DRAFT. That corroborates the
+    draft state only, not the hold.
+  - No other durable hold record was found, and none is invented here. Memory
+    notes are not records and are not cited.
+- **Release act.** The holder's own: its commission is widened beyond draft
+  source delivery, and the widening is recorded on #10201. ORCH-1 holds no
+  such act.
+- **Still missing after release.** An installed-source receipt and natural phase
   timings. The 1261-second figure is not labelled network-only, and it is not
-  reported as already improved.
-- **Reachable resolution, in order:**
-  1. The holder (or the current receiver, under leadership continuity) releases
-     the hold.
-  2. #10201 merges.
-  3. The source is installed on the M1 Studio.
-  4. One natural weekday run completes.
-  5. A read-only phase-timing receipt is taken.
+  reported as already improved. In order, after the holder's release: #10201
+  merges; the source is installed on the M1 Studio; one natural weekday run
+  completes; a read-only phase-timing receipt is taken.
 - **Not done.** No comment and no push was made to #10201.
 
 ## L3: P1-P6 family preregistration (AC28-AC35): sealed, review pending
 
 | Item | Value |
 | --- | --- |
-| PR | DRAFT #10390, branch `claude/oi-orch1-prereg`, head `2a97665844be80c8a52a829c26dfb9511b139c0f` |
-| Document | `research/options_intelligence/2026-11-01/OIF_P1_P6_FAMILY_PREREG_V1.md`, sha256 `aea58e59bf9d2af190a603640a7039c35bed5dcb842fc6ec6e77cb0b613fb0cd` |
-| Seal | `OIF_P1_P6_FAMILY_PREREG_V1.seal.json`, sha256 `f68d28089e5e8aba79f4f219db57b4b0690259bb2dc95d0c379a4e08c851812d` |
+| PR | DRAFT #10390, branch `claude/oi-orch1-prereg`. It is cited by document sha256 and seal commit, not by PR head. |
+| Document | `research/options_intelligence/2026-11-01/OIF_P1_P6_FAMILY_PREREG_V1.md`, document_sha256 `aea58e59bf9d2af190a603640a7039c35bed5dcb842fc6ec6e77cb0b613fb0cd` |
+| Seal | `OIF_P1_P6_FAMILY_PREREG_V1.seal.json`, sha256 `f68d28089e5e8aba79f4f219db57b4b0690259bb2dc95d0c379a4e08c851812d`, at seal commit `2a97665844be80c8a52a829c26dfb9511b139c0f` |
+| Inputs addendum | `OIF_P1_P6_FAMILY_PREREG_V1.inputs_addendum.md`, sha256 `0f1f75cf1f47bbe32884e9c8c3cd994b78643f0c61dc058655217246683c9820`. It is a disclosure only and changes no part of the plan. Cite the seal together with the audit file and this addendum. |
 | Status | S0 family binding only. It is not an accepted G3 preregistration of dates and grants no fitting or evaluation authority. |
 
 **Open gates.** Gates G0-G6 (prereg §11.3, copied from R21 §9) remain open, so
@@ -145,10 +175,14 @@ all empirical work is GATED.
   of schema and row counts only, from a separate producer.
 - **Independent review.** WAITING_CAPACITY:
   - Three review lanes were refused at admission on ubuntu1 before they
-    started. The last refusal record names
-    `host_temperature_at_or_above_limit`.
-  - The router places the next review on ubuntu1/glm-5.3, which is still above
-    its thermal admission threshold.
+    started. The last refusal record (`ext/lanes/oi1-l3r-r3.remote.stdout`,
+    written 2026-11-01T09:20Z) names `host_temperature_at_or_above_limit`.
+  - The router placed the next review on ubuntu1/glm-5.3. The cached ubuntu1
+    telemetry (`ext/state/hosts/ubuntu1.json`) read tctl 78.0 °C at
+    2026-11-01T09:16:32Z, at or above the admission limit then.
+  - A later reading of the same file, at 2026-11-01T10:03:30Z, shows tctl
+    70.0 °C and risk NORMAL. The thermal block is therefore dated, not
+    standing. No review lane was launched after that reading.
 
 ## Fabric lane table (ORCH-1)
 

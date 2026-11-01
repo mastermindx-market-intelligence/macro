@@ -16,9 +16,19 @@ existing ThetaData path only (`engine/thetadata_store.py` resolver plus the
 local Terminal `list/expirations` and `list/strikes` endpoints). No new
 provider, no paid call, no QQQ request.
 
+**Strikes endpoint disclosure.** OBSERVED at the baseline:
+`collectors/thetadata.py` never calls `list/strikes`. Its only `list/*` calls
+are `list/symbols` (`:279`) and `list/expirations` (`:296`), and no file under
+`collectors/` or `engine/` names `list/strikes`. The lane called it on the same
+local Terminal (127.0.0.1:25503), with no new provider and no paid call.
+
 **Cohort derivation (CAT).** OBSERVED: the cohort is read from
 `flow_meta_20261101T043626Z.json` (schema `live_flow.meta/v2`, as-of
-2026-10-30T20:11:27Z), the D107 one-shot capture of `/api/flow/meta`. Its
+2026-10-30T20:11:27Z), the D107 one-shot capture of `/api/flow/meta`. The
+capture is committed here byte-exact from the incumbent session f77d3f70's
+OPT-005 ruling scratch: sha256
+`c03eab46584b0c5ddd9efee32834b61c2423bd1952002dfe536164e0d77dd9db`, 193,559 B.
+It holds no credential, token or URL. Its
 `root_catalog` has 30 entries, 27 of tier `core`. The cohort is the core tier
 minus QQQ (never requested), giving 26 roots led by SPY:
 SPY NVDA TSLA AAPL META IWM SMH MSFT GLD SLV TLT XLE XLK DIA XLP HYG XLV XBI
@@ -30,6 +40,16 @@ no reason was manufactured. Every `per_root` entry gives expirations and
 strikes counts from the store chain at as-of 2026-10-29, the exact
 `store.chain(...)` expression, and the two exact Terminal URLs with their
 response counts.
+
+**Expiry selection (`per_root_selection_rule`).**
+- Store: as-of 2026-10-29 for all 26 roots. This is the max date in each root's
+  newest eod year file (`2026.parquet`), not a chosen trading date.
+- Terminal strikes: per root, the first listed expiration on or after
+  2026-11-01. That gives 2026-11-02 for 12 roots, 2026-11-04 for AAPL,
+  2026-11-06 for 12 roots and 2026-11-20 for XLRE.
+- The dates are OBSERVED in the request URLs. That each is the first listed
+  one rests on the lane report, because the lane's saved `list/expirations`
+  bodies were not retained in the repository.
 
 **Terms source.** OBSERVED at the baseline:
 - The multiplier is a POLICY_CONSTANT (`MULTIPLIER = 100`,
@@ -53,8 +73,17 @@ response counts.
 The block received by the orchestrator is byte-count identical (24,245 B),
 parses, and every cited baseline line was re-checked. It hashes to
 `ea879b7d21888f747b8637dded766c8cb5894df722cd9d0366decdc65cce015f`. The
-committed file is the block as received. The lane's on-host copy was not
-re-fetched, so the declared-versus-received difference is unreconciled.
+lane's on-host copy was not re-fetched, so the declared-versus-received
+difference is unreconciled.
+
+**ORCH-1 annotations.** The committed file is the received block plus ORCH-1
+annotation keys; no lane-written value was changed. It hashes to
+`3c27e53553d4733fafaa6b807ba4b7deb9a74ae29f31651cf1a25e82308b9315`
+(26,660 B). The added keys are:
+- `cohort.source_capture_path`, `cohort.source_capture_sha256`,
+  `cohort.source_capture_bytes` and `cohort.source_capture_origin`;
+- `per_root_selection_rule`;
+- `strikes_endpoint_disclosure`.
 
 ## `outcome_attrition_20261101.json` — AC24 COUNT-ONLY (L5)
 
@@ -72,8 +101,14 @@ monitor value was read into the receipt.
 - Among graded rows, each carries exactly one horizon: 51,838 at h5 and
   33,765 at h21.
 - The h63 and h126 outcome columns are null on every row: unobserved, not zero.
-- The gate's `grader.n_graded_ok = 0` is a per-run count, not a cumulative zero
-  (INTERPRETED; see `arithmetic_check`).
+- The gate's grader counts sit under `grader_per_run`, labelled PER_RUN, and
+  `grader.n_graded_ok = 0` is a per-run count, not a cumulative zero
+  (INTERPRETED; see `arithmetic_check`). `gate.json` carries no run id, so
+  `run_id` is null with a reason. The run is identified by the commit that
+  wrote the blob, `6ef6fe67976bf0c66ac637e451d975c95acf57f7` (dashboard-bot,
+  2026-10-18T07:09:10Z), gate blob `482412237b95`.
+- The stage's cumulative fields sit under `cumulative`, from the grades table.
+  The identity holds: 85,603 + 18,225 + 65 = 103,893 = `attempted`.
 
 **OA-3 exact-option path: GAP.**
 - The evaluator can emit `pending`, `complete`, `unavailable`, `excluded` and
