@@ -409,8 +409,11 @@ def run_cycle(
     ends COMPLETE (0), TRUNCATED (3), PARTIAL (4) or PUBLISH_FAILED (5).  A
     cycle in which no issuer was swept ok or incomplete, or in which no issuer
     was verified (swept ok, or a prior event definitively withdrawn), ends
-    FAILED (6) and publishes nothing, so the prior pointer keeps serving; this
-    includes a budget/403/429 halt before anything was verified.  A 403, or a
+    FAILED (6) and publishes nothing, leaving the prior pointer unchanged; this
+    includes a budget/403/429 halt before anything was verified.  The reader
+    serves that pointer only while it is younger than its freshness bound
+    (``MAX_SNAPSHOT_AGE`` in catalyst_source_adapter, 10 minutes), so repeated
+    FAILED cycles take the catalyst surface dark.  A 403, or a
     429 that outlasts the retries, otherwise halts the cycle (TRUNCATED): no
     further SEC request is made and every unswept issuer carries its prior
     events.
