@@ -1,0 +1,4 @@
+WARNING: theme.js bake unavailable (No module named 'rjsmin') — theme verification will fail closed
+::error title=theme emitter unavailable::Cannot verify site/theme.js without the canonical emitter; install PyYAML and rjsmin==1.2.5 (or requirements.txt), then rerun this guard.
+DIVERGED: site/theme.js != templates/theme.js (site copies are derived — edit templates/theme.js and re-copy, or run: python -m scripts.check_template_site_sync --fix)
+template↔site sync FAILED: 1 of 129 pairs diverged

@@ -14,6 +14,7 @@ way around, so the static site build never drags in FastAPI.
 """
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from dataclasses import dataclass
 from html import unescape
 from pathlib import Path
@@ -623,3 +624,48 @@ def help_page_view_model(root: Path) -> dict[str, Any]:
     vm["changelog"] = product_changelog(root)
     vm.update(support_routing_view_model())
     return vm
+
+
+
+def refresh_disclosure(root: Path, generated_utc: str | None, *,
+                       now: datetime | None = None,
+                       stale_after_hours: int = 36) -> dict[str, Any]:
+    """Describe only the Help build clock, never market data or scheduler success.
+
+    Legacy builder stamps are minute-resolution UTC. Other accepted ISO stamps
+    must declare their offset. ``root`` is intentionally unread. Browser readers
+    recompute age on opening; static no-script markup makes no relative-age claim.
+    """
+    if not isinstance(stale_after_hours, int) or isinstance(stale_after_hours, bool) or stale_after_hours < 1:
+        raise ValueError("stale_after_hours must be a positive integer")
+    current = now if now is not None else datetime.now(timezone.utc)
+    parsed = None
+    try:
+        if not isinstance(generated_utc, str):
+            raise ValueError("missing stamp")
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}", generated_utc):
+            parsed = datetime.strptime(generated_utc, "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
+        elif re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})", generated_utc):
+            parsed = datetime.fromisoformat(generated_utc.replace("Z", "+00:00"))
+        if parsed is None or current.tzinfo is None or current.utcoffset() is None or parsed > current:
+            raise ValueError("unusable clock")
+    except (TypeError, ValueError, OverflowError):
+        parsed = None
+    age = int((current - parsed).total_seconds() // 3600) if parsed else None
+    state = "unknown" if age is None else "stale" if age >= stale_after_hours else "fresh"
+    if age is None:
+        en = "The build time for this Help page is unavailable. Data pages show their own update times."
+        zh = "本帮助页的构建时间不可用。数据页面会分别显示各自的更新时间。"
+    elif state == "stale":
+        en = f"This Help page was built {age} hours ago. Its content may be behind recent product changes."
+        zh = f"本帮助页于 {age} 小时前构建，内容可能尚未反映最近的产品变化。"
+    elif age == 0:
+        en = "This Help page was built less than an hour ago. Data pages show their own update times."
+        zh = "本帮助页于不到一小时前构建。数据页面会分别显示各自的更新时间。"
+    else:
+        en = f"This Help page was built {age} {'hour' if age == 1 else 'hours'} ago. Data pages show their own update times."
+        zh = f"本帮助页于 {age} 小时前构建。数据页面会分别显示各自的更新时间。"
+    return {"state": state, "stamp_utc": generated_utc if parsed else None,
+            "age_hours": age, "line_en": en, "line_zh": zh,
+            "action_en": "Check the product page for its latest status." if state == "stale" else None,
+            "action_zh": "请查看产品页面了解最新状态。" if state == "stale" else None}

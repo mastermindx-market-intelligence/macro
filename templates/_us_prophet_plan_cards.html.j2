@@ -11,6 +11,7 @@
 {%- set _LIFE_LABEL_ZH = {'watch':'观察','ready':'就绪','entered':'入场','delivering':'达标','overtime':'超时','invalidated':'失效','resolved':'已结'} -%}
 {% macro life_label_en(code) -%}{{ {'watch':'Watch','ready':'Ready','entered':'Entered','delivering':'Delivering','overtime':'Overtime','invalidated':'Invalidated','resolved':'Resolved'}.get(code, 'Unmapped status') }}{%- endmacro %}
 {% macro life_label_zh(code) -%}{{ {'watch':'观察','ready':'就绪','entered':'入场','delivering':'达标','overtime':'超时','invalidated':'失效','resolved':'已结'}.get(code, '状态未映射') }}{%- endmacro %}
+{%- set _MON_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] -%}
 {% for p in items %}
 {%- set _candidate = cand_map.get(p.asset) -%}
 {%- set cand = _candidate if _candidate is mapping else {} -%}
@@ -39,6 +40,25 @@
   {%- set _marks.rows = _marks.rows + [{'k':'lane',
     'en': ('Episode ' ~ _epi.ep ~ (' · opened ' ~ _epi.dopen_en if _epi.get('dopen_en') else ''))|e,
     'zh': ('第 ' ~ _epi.ep ~ ' 轮' ~ (' · ' ~ _epi.dopen_zh ~ '启动' if _epi.get('dopen_zh') else ''))|e}] -%}
+{%- endif -%}
+{#- R7 Wave A §12/§13 (2026-10-21): record-card state marks. These are history
+    facts on an immutable record, never decisions — dated text marks only, no
+    verb, no stage, no glyph. The reconstructed condition mirrors
+    engine/prophet_integrity.py::is_reconstructed exactly; recorded_at is the
+    field that names the original plan's date (the origination day being
+    replayed — engine/prophet_bridge.py::origination_note), gated by the same
+    strict YYYY-MM-DD check as _screen_ok above. 'lane' is the base neutral
+    chip this row already uses for its history marks; 'nck' is the shared
+    dashed absence mark the R7 glyph table assigns to Older signal only. -#}
+{%- if p.get('origination_mode') is string and p.get('origination_mode').startswith('outage_backfill') -%}
+  {%- set _rdt = p.get('recorded_at') -%}
+  {%- set _rd_ok = _rdt is string and _rdt|length == 10 and _rdt[4] == '-' and _rdt[7] == '-' and _rdt[:4].isdigit() and _rdt[5:7].isdigit() and _rdt[8:10].isdigit() and 1 <= _rdt[5:7]|int <= 12 and 1 <= _rdt[8:10]|int <= 31 -%}
+  {%- set _marks.rows = _marks.rows + [{'k':'lane',
+    'en': ('Reconstructed from the ' ~ _MON_EN[(_rdt[5:7]|int) - 1] ~ ' ' ~ (_rdt[8:10]|int) ~ ' plan')|e if _rd_ok else 'Reconstructed plan, original date not supplied',
+    'zh': ('依据 ' ~ (_rdt[5:7]|int) ~ '月' ~ (_rdt[8:10]|int) ~ '日计划重建')|e if _rd_ok else '重建的计划，原始日期未提供'}] -%}
+{%- endif -%}
+{%- if p.get('signal_date_basis') == 'legacy_formation_alias' and _candidate is not mapping -%}
+  {%- set _marks.rows = _marks.rows + [{'k':'nck', 'en':'Older signal only', 'zh':'仅有旧信号'}] -%}
 {%- endif -%}
 {#- Packet 2: source-safe plan detail. Everything below already rides on the
    canonical plans[] row; no new fetch, identity join, management owner, or

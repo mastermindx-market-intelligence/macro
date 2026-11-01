@@ -1,0 +1,13 @@
+{
+  "approval_ref": "https://github.com/mastermindx-market-intelligence/macro/pull/9996#issuecomment-6331071428",
+  "licensing_product_use": "COMPLETE_CHAIRMAN_ATTESTED",
+  "matching_receipts": [],
+  "new_api_requests": 0,
+  "observed_at_utc": "2026-10-22T02:37:46.718343+00:00",
+  "plan_sha256": "a6928907a2ea1d062a275dc6a8b634ffda5c7ec885e653b77a54cc469f59b552",
+  "receipt_scope": "receipts/forex-bars/*/*.json",
+  "receipts_scanned": 10,
+  "schema": "forex_r26.near_capture_preflight.v1",
+  "source_head": "a1ff21e17ab43872758d653e4295f9a805fca350",
+  "truncated": false
+}

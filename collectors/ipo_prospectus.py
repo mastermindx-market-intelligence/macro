@@ -194,6 +194,12 @@ def fetch_lockups(tickers: list[str], cap: int = 12, refresh_days: int = 30) -> 
     def fresh(t: str) -> bool:
         if existing.empty or t not in existing.index:
             return False
+        # Retained final-filing bytes are an immutable documentary observation,
+        # not a TTL-based day-count hint. The legacy refresh cannot replace them
+        # with an unbound scalar or a failed request. The terms consumer still
+        # verifies the receipt, identity, clocks and content before displaying it.
+        if isinstance(existing.loc[t].get("prospectus_archive_content"), bytes):
+            return True
         ts = existing.loc[t].get("as_of")
         try:
             return (datetime.now(timezone.utc) - pd.to_datetime(ts)).days < refresh_days

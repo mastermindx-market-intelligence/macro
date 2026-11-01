@@ -1,0 +1,147 @@
+{
+  "accessions": [
+    {
+      "accession": "0000070858-23-000092",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000070858",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "6021",
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 1,
+        "typed_absence": 5
+      },
+      "predictions": 6,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "commitments_and_contingencies_bs_state",
+        "commitments_text_block",
+        "legal_proceedings_item3",
+        "loss_contingency_accrual"
+      ]
+    },
+    {
+      "accession": "0000320193-24-000069",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "3571",
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2024-03-30",
+      "prediction_states": {
+        "emitted": 1,
+        "not_evaluable": 4,
+        "typed_absence": 3
+      },
+      "predictions": 8,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "contingency_nature",
+        "legal_proceedings_item3"
+      ]
+    },
+    {
+      "accession": "0000320193-24-000123",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000320193",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "3571",
+      "labels": 9,
+      "outcome": "ADMITTED",
+      "period_of_report": "2024-09-28",
+      "prediction_states": {
+        "emitted": 5,
+        "typed_absence": 4
+      },
+      "predictions": 9,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "contingency_nature"
+      ]
+    },
+    {
+      "accession": "0001652044-23-000016",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "7370",
+      "labels": 5,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 1,
+        "not_evaluable": 1,
+        "typed_absence": 3
+      },
+      "predictions": 5,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "commitments_and_contingencies_bs_state",
+        "commitments_text_block",
+        "contingency_nature",
+        "loss_contingency_range_high",
+        "loss_contingency_range_low"
+      ]
+    }
+  ],
+  "exclusions": [],
+  "label_count": 28,
+  "labels_status": "labelled",
+  "pack_id": "PK08",
+  "sic_binding": {
+    "contract_id": "fif-held-out-v1",
+    "order": [
+      "held_out_contract",
+      "sec_submissions_witness"
+    ]
+  },
+  "trial_field_map": {
+    "PK08|0000070858-23-000092|extract|allegation_span": "allegation_span",
+    "PK08|0000070858-23-000092|extract|contingency_nature": "contingency_nature",
+    "PK08|0000070858-23-000092|extract|loss_contingency_range_disclosed": "loss_contingency_range_disclosed",
+    "PK08|0000070858-23-000092|extract|loss_contingency_range_high": "loss_contingency_range_high",
+    "PK08|0000070858-23-000092|extract|loss_contingency_range_low": "loss_contingency_range_low",
+    "PK08|0000070858-23-000092|extract|procedural_status_span": "procedural_status_span",
+    "PK08|0000320193-24-000069|extract|allegation_span": "allegation_span",
+    "PK08|0000320193-24-000069|extract|commitments_and_contingencies_bs_state": "commitments_and_contingencies_bs_state",
+    "PK08|0000320193-24-000069|extract|commitments_text_block": "commitments_text_block",
+    "PK08|0000320193-24-000069|extract|loss_contingency_accrual": "loss_contingency_accrual",
+    "PK08|0000320193-24-000069|extract|loss_contingency_range_disclosed": "loss_contingency_range_disclosed",
+    "PK08|0000320193-24-000069|extract|loss_contingency_range_high": "loss_contingency_range_high",
+    "PK08|0000320193-24-000069|extract|loss_contingency_range_low": "loss_contingency_range_low",
+    "PK08|0000320193-24-000069|extract|procedural_status_span": "procedural_status_span",
+    "PK08|0000320193-24-000123|extract|allegation_span": "allegation_span",
+    "PK08|0000320193-24-000123|extract|commitments_and_contingencies_bs_state": "commitments_and_contingencies_bs_state",
+    "PK08|0000320193-24-000123|extract|commitments_text_block": "commitments_text_block",
+    "PK08|0000320193-24-000123|extract|legal_proceedings_item3": "legal_proceedings_item3",
+    "PK08|0000320193-24-000123|extract|loss_contingency_accrual": "loss_contingency_accrual",
+    "PK08|0000320193-24-000123|extract|loss_contingency_range_disclosed": "loss_contingency_range_disclosed",
+    "PK08|0000320193-24-000123|extract|loss_contingency_range_high": "loss_contingency_range_high",
+    "PK08|0000320193-24-000123|extract|loss_contingency_range_low": "loss_contingency_range_low",
+    "PK08|0000320193-24-000123|extract|procedural_status_span": "procedural_status_span",
+    "PK08|0001652044-23-000016|extract|allegation_span": "allegation_span",
+    "PK08|0001652044-23-000016|extract|legal_proceedings_item3": "legal_proceedings_item3",
+    "PK08|0001652044-23-000016|extract|loss_contingency_accrual": "loss_contingency_accrual",
+    "PK08|0001652044-23-000016|extract|loss_contingency_range_disclosed": "loss_contingency_range_disclosed",
+    "PK08|0001652044-23-000016|extract|procedural_status_span": "procedural_status_span"
+  }
+}

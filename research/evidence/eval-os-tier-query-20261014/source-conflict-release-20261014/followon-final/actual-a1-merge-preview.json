@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-10-14T13:27:27.638110+00:00",
+  "source": "6aef75a732cc8fd0085d4f724d2f403ace7470b5",
+  "github_composed_merge": "7c610b6d8a771cc66d8c2a43548a0328c817b79c",
+  "parents": [
+    "b4a515dcbab349be7636ad8cb7a8ef8367240d8b",
+    "1b7916353dd4609e2e092e16d466e93ca1597fd1"
+  ],
+  "rc": 1,
+  "tree": "dafd6ed3f3263b23aa74772d866dc03a8de94fb4",
+  "conflicts": [
+    "CONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml"
+  ],
+  "scope": "Read-only preview with the actual GitHub-composed A1 PR revision, not root base refresh or qualification of hosted checks."
+}

@@ -19,7 +19,7 @@ const END = SOURCE.indexOf('\n})();', START);
 assert(END > START, 'canonical shared loader boundary missing');
 const CODE = SOURCE.slice(START, END + '\n})();'.length);
 const MM_DEFAULT = 'https://app.mastermind-x.com';
-const RELEASE_KEY = 'account.js?v=20261015-mm-return-language';
+const RELEASE_KEY = 'account.js?v=20261018-shared-shell-source-join';
 
 /* ---- fakes ------------------------------------------------------------- */
 function makeTimers() {

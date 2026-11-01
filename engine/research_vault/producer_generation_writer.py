@@ -27,6 +27,82 @@ from engine.research_vault import producer_generation as contract
 # append other operations between that intent and its acknowledgement records.
 CATALOG_VERSION_MAX_BYTES = 4096
 POST_EFFECT_EVIDENCE_BYTES = 64 * 1024
+FULLTEXT_SOURCE_CUT_KEY = "producer_fulltext_source_cut"
+
+
+def record_fulltext_source_cut(conn, document, sources, *, receipt_digests=None, record_digests=None):
+    """Retain this explicit staged cut in the same private corpus transaction."""
+    ids = contract.admitted_cohort_from_catalog(document)
+    if (type(sources) is not dict or set(sources) != set(ids)
+            or any(value is not None and (type(value) is not str or len(value) != 64
+                or any(c not in "0123456789abcdef" for c in value))
+                for value in sources.values())):
+        raise GenerationWriteUnavailable("invalid fulltext source cut")
+    cut = {
+            "schema": "research_vault.producer_fulltext_source_cut.v1",
+            "catalog_payload_sha256": contract.compute_catalog_payload_digest(document),
+            "sources": sources}
+    if receipt_digests is not None or record_digests is not None:
+        if (type(receipt_digests) is not dict or set(receipt_digests) != set(ids)
+                or type(record_digests) is not dict or not set(record_digests) <= set(ids)
+                or any(value is None for value in record_digests.values())
+                or any(v is not None and (type(v) is not str or len(v) != 64
+                    or any(c not in "0123456789abcdef" for c in v))
+                    for v in (*receipt_digests.values(), *record_digests.values()))):
+            raise GenerationWriteUnavailable("invalid cached source cut")
+        cut.update(schema="research_vault.producer_fulltext_source_cut.v2",
+                   receipts=receipt_digests, records=record_digests)
+    conn.execute("INSERT INTO meta(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        (FULLTEXT_SOURCE_CUT_KEY, json.dumps(cut, sort_keys=True, separators=(",", ":"))))
+
+
+def _validate_fulltext_source_cut(blob, document, members):
+    """Check the staged PDF cut again before COMPLETE, including continuation.
+
+    The original publication journal already binds these exact corpus bytes.
+    Keeping the cut in that image preserves the same check when the original
+    parent resumes a wholly unissued completion tail; no new journal protocol
+    or replay authority is introduced. Older prefix-only images have no cut.
+    """
+    if not blob.startswith(b"SQLite format 3\x00"):
+        return  # Existing pre-composition callers may publish opaque fixtures.
+    import sqlite3
+    conn = sqlite3.connect(":memory:")
+    try:
+        conn.deserialize(blob)
+        conn.execute("PRAGMA trusted_schema=OFF")
+        conn.execute("PRAGMA query_only=ON")
+        if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='meta'").fetchone() is None:
+            return
+        row = conn.execute("SELECT value FROM meta WHERE key=?", (FULLTEXT_SOURCE_CUT_KEY,)).fetchone()
+        if row is None:
+            return
+        cut = json.loads(row[0])
+        expected = {m["report_id"]: m["source_pdf_sha256"] for m in members}
+        version = cut.get('schema') if type(cut) is dict else None
+        fields = {"schema", "catalog_payload_sha256", "sources"}
+        if version == "research_vault.producer_fulltext_source_cut.v2":
+            fields |= {"receipts", "records"}
+        if (type(cut) is not dict or set(cut) != fields
+                or version not in {"research_vault.producer_fulltext_source_cut.v1", "research_vault.producer_fulltext_source_cut.v2"}
+                or cut["catalog_payload_sha256"] != contract.compute_catalog_payload_digest(document)
+                or type(cut["sources"]) is not dict or cut["sources"] != expected):
+            raise GenerationWriteUnavailable("fulltext source cut changed before COMPLETE")
+        if version == "research_vault.producer_fulltext_source_cut.v2":
+            receipts = {m['report_id']: m['receipt_sha256'] for m in members}
+            records = {m['report_id']: m['derivative_record_sha256'] for m in members}
+            bound_rows = {row[0] for row in conn.execute(
+                'SELECT doc_id FROM documents WHERE fulltext_binding IS NOT NULL AND doc_id IN (SELECT value FROM json_each(?))',
+                (json.dumps(sorted(expected)),))}
+            if (type(cut['receipts']) is not dict or cut['receipts'] != receipts
+                    or type(cut['records']) is not dict or set(cut['records']) != bound_rows
+                    or any(type(value) is not str or len(value) != 64
+                        or any(c not in '0123456789abcdef' for c in value)
+                        for value in cut['records'].values())
+                    or any(digest != records[rid] for rid, digest in cut['records'].items())):
+                raise GenerationWriteUnavailable("cached canonical source cut changed before COMPLETE")
+    finally:
+        conn.close()
 
 
 class GenerationWriteUnavailable(RuntimeError):
@@ -67,7 +143,7 @@ def _catalog_read(store: Any):
     return value
 
 
-def _census_member(store: Any, report_id: str) -> dict:
+def _census_member(store: Any, report_id: str, *, read_cache=None) -> dict:
     receipt = _read(store, fulltext_store.receipt_key(report_id),
                     fulltext_store.RECEIPT_MAX_BYTES)
     source = (fulltext_store.parse_receipt_digest(receipt, report_id)
@@ -84,6 +160,8 @@ def _census_member(store: Any, report_id: str) -> dict:
     else:
         decoded = fulltext_store.decode_record(record, report_id, source)
         layer = "corrupt" if decoded is None else decoded["text_layer_state"]
+    if read_cache is not None:
+        read_cache.capture(report_id, receipt, record)
     return {"report_id": report_id,
             "source_pdf_sha256": source,
             "receipt_sha256": None if receipt is None else _sha(receipt),
@@ -91,7 +169,7 @@ def _census_member(store: Any, report_id: str) -> dict:
             "layer": layer}
 
 
-def _census(store: Any, document: dict) -> list[dict]:
+def _census(store: Any, document: dict, *, read_cache=None) -> list[dict]:
     ids = contract.admitted_cohort_from_catalog(document)
     if not ids:
         raise GenerationWriteUnavailable("adopted generation needs admitted cohort")
@@ -101,7 +179,7 @@ def _census(store: Any, document: dict) -> list[dict]:
     # no writes and create no clients. Injected, wrapped and subclass stores
     # remain serial; duck typing does not establish thread safety.
     if type(store) is not R2Store or store._receipt_reads_thread_safe is not True:
-        return [_census_member(store, report_id) for report_id in sorted(ids)]
+        return [_census_member(store, report_id, read_cache=read_cache) for report_id in sorted(ids)]
     members, pending = [], deque()
     keys = iter(sorted(ids))
     pool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="rv-census")
@@ -112,7 +190,7 @@ def _census(store: Any, document: dict) -> list[dict]:
                     report_id = next(keys)
                 except StopIteration:
                     break
-                pending.append(pool.submit(_census_member, store, report_id))
+                pending.append(pool.submit(_census_member, store, report_id, read_cache=read_cache))
             if not pending:
                 break
             # Deterministic report order, at most four member reads admitted.
@@ -130,7 +208,7 @@ class ProducerGenerationSession:
 
     @classmethod
     def begin(cls, store: Any, catalog: dict, identity: dict, *, now: datetime,
-              evidence=None):
+              evidence=None, read_cache=None):
         if not isinstance(now, datetime) or now.tzinfo is None:
             raise GenerationWriteUnavailable("explicit aware producer clock required")
         if (not isinstance(identity, dict)
@@ -162,7 +240,14 @@ class ProducerGenerationSession:
             contract.validate_generation(prior)
             if prior["state"] != contract.GENERATION_STATE_COMPLETE:
                 raise GenerationWriteUnavailable("original BUILDING owner must settle")
-        members = _census(store, selected)
+        members = None if read_cache is None else read_cache.inherited_members(
+            selected, prior, store, producer_commit=identity['source_commit'])
+        if members is None:
+            if read_cache is not None:
+                read_cache.reset()
+            members = _census(store, selected, read_cache=read_cache)
+        if read_cache is not None:
+            read_cache.seal(members)
         session = cls()
         session.store = store
         session.catalog_version = current.version
@@ -230,11 +315,16 @@ class ProducerGenerationSession:
         This is evidence for the original owner, not a replay or completion API.
         An unavailable sink refuses before this publication batch begins.
         """
-        if self.evidence is None:
-            return
         from pathlib import Path
         self.assert_current()
         path = Path(corpus_path)
+        # The native image budget also binds direct library callers; lack of a
+        # journal must not allow an oversized image to be written before COMPLETE
+        # notices the bounded readback failure.
+        if path.stat().st_size > contract.CORPUS_MAX_BYTES:
+            self._fail("publication corpus outside evidence bound")
+        if self.evidence is None:
+            return
         try:
             if type(catalog_bytes) is not bytes or len(catalog_bytes) > contract.CATALOG_MAX_BYTES:
                 self._fail("publication catalog outside evidence bound")
@@ -379,6 +469,7 @@ class ProducerGenerationSession:
         if corpus is None:
             self._fail("current corpus absent")
         members = _census(self.store, document)
+        _validate_fulltext_source_cut(corpus, document, members)
         record = copy.deepcopy(self.record)
         record.update(state=contract.GENERATION_STATE_COMPLETE,
                       completed_at=int(now.timestamp()), corpus_sha256=_sha(corpus),

@@ -1,0 +1,383 @@
+{
+  "aapl_golden_used_as_held_out": false,
+  "builders_read_held_out": false,
+  "cells": [
+    {
+      "exclusion_reasons": [
+        "no_prediction"
+      ],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 3,
+      "n_labeled": 3,
+      "n_predicted": 0,
+      "polarity": "positive",
+      "section_family": "auditor_opinion",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [
+        "no_prediction"
+      ],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": false,
+      "n_excluded": 1,
+      "n_labeled": 1,
+      "n_predicted": 0,
+      "polarity": "positive",
+      "section_family": "going_concern_wording",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [
+        "no_prediction"
+      ],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 3,
+      "n_labeled": 3,
+      "n_predicted": 0,
+      "polarity": "positive",
+      "section_family": "icfr_opinion",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "negative",
+      "section_family": "auditor_opinion",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 4,
+      "n_predicted": 4,
+      "polarity": "positive",
+      "section_family": "icfr_opinion",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [
+        "not_evaluable"
+      ],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 1,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "auditor_opinion",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": false,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "positive",
+      "section_family": "going_concern_wording",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "icfr_opinion",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "negative",
+      "section_family": "auditor_opinion",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "CAT",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 4,
+      "n_predicted": 4,
+      "polarity": "positive",
+      "section_family": "icfr_opinion",
+      "split": "held_out"
+    }
+  ],
+  "evaluated_at": "2026-10-31T10:32:45Z",
+  "evaluator_role": "independent_q1",
+  "failed_families": [
+    {
+      "blocks": [
+        "PK09"
+      ],
+      "disposition": "unavailable_research_only",
+      "does_not_block": [
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK08",
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "numerator_denominator": {
+        "abstention": "5/10",
+        "false_positive_rate": "0/4",
+        "precision": "2/2",
+        "recall": "2/6",
+        "source_fidelity_error": "0/2"
+      },
+      "pack_id": "PK09",
+      "reason_codes": [
+        "precision_below_floor"
+      ],
+      "relabel_forbidden": true,
+      "reopen_requires": "fresh held-out labels under a new Q0 split decision",
+      "section_family": "auditor_opinion"
+    },
+    {
+      "blocks": [
+        "PK09"
+      ],
+      "disposition": "unavailable_research_only",
+      "does_not_block": [
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK08",
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "numerator_denominator": {
+        "abstention": "0/2",
+        "false_positive_rate": null,
+        "precision": "1/1",
+        "recall": "1/2",
+        "source_fidelity_error": "0/1"
+      },
+      "pack_id": "PK09",
+      "reason_codes": [
+        "precision_below_floor",
+        "underpowered"
+      ],
+      "relabel_forbidden": true,
+      "reopen_requires": "fresh held-out labels under a new Q0 split decision",
+      "section_family": "going_concern_wording"
+    },
+    {
+      "blocks": [
+        "PK09"
+      ],
+      "disposition": "unavailable_research_only",
+      "does_not_block": [
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK08",
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "numerator_denominator": {
+        "abstention": "5/14",
+        "false_positive_rate": null,
+        "precision": "6/6",
+        "recall": "6/14",
+        "source_fidelity_error": "0/6"
+      },
+      "pack_id": "PK09",
+      "reason_codes": [
+        "precision_below_floor"
+      ],
+      "relabel_forbidden": true,
+      "reopen_requires": "fresh held-out labels under a new Q0 split decision",
+      "section_family": "icfr_opinion"
+    }
+  ],
+  "false_positives": [],
+  "head_commit": "761e814eda8460d09ad6c53adc8ee495b4283cf1",
+  "language_gate": {
+    "guarded_token_count": 0,
+    "hyphen_guarded_count": 0
+  },
+  "metrics": {
+    "extraction": {
+      "abstention": {
+        "denominator": 26,
+        "exclusions": [
+          "insufficient_evidence:1",
+          "not_applicable:9"
+        ],
+        "numerator": 10,
+        "wilson95": [
+          0.2243,
+          0.5747
+        ]
+      },
+      "false_positive_rate": {
+        "denominator": 4,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.4899
+        ]
+      },
+      "precision": {
+        "denominator": 9,
+        "exclusions": [
+          "PK09|0000018230-23-000011|extract|auditor_opinion_icfr"
+        ],
+        "numerator": 9,
+        "wilson95": [
+          0.7008,
+          1.0
+        ]
+      },
+      "recall": {
+        "denominator": 22,
+        "exclusions": [],
+        "numerator": 9,
+        "wilson95": [
+          0.2326,
+          0.6127
+        ]
+      },
+      "source_fidelity_error": {
+        "denominator": 9,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.2992
+        ]
+      }
+    },
+    "findings": {
+      "abstention": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "false_positive_rate": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "precision": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "recall": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      }
+    },
+    "refusal": {
+      "abstention": {
+        "denominator": 4,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.4899
+        ]
+      },
+      "precision": {
+        "denominator": 9,
+        "exclusions": [],
+        "numerator": 4,
+        "wilson95": [
+          0.1888,
+          0.7334
+        ]
+      },
+      "recall": {
+        "denominator": 4,
+        "exclusions": [],
+        "numerator": 4,
+        "wilson95": [
+          0.5101,
+          1.0
+        ]
+      }
+    }
+  },
+  "numerator_denominator_note": "Every rate is numerator/denominator with exclusions listed; truthful refusal is excluded from positive coverage.",
+  "pack_id": "PK09",
+  "pack_name": "Controls, auditor and going concern",
+  "protocol_id": "fif-q0-quality-protocol/v1",
+  "quality_label": "underpowered",
+  "schema": "fundamental_forensics.pack_quality_report/v1",
+  "split_roots": {
+    "gold": "tests/fixtures/fundamental_forensics/",
+    "held_out": "tests/fixtures/fundamental_forensics_held_out/"
+  }
+}

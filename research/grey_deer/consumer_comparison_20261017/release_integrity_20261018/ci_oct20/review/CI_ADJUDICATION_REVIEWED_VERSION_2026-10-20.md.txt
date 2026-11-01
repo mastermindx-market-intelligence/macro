@@ -1,0 +1,37 @@
+# Macro #9595 — exact failed-head CI adjudication, 20 October 2026
+
+**Disposition: preserve the failed ac08 CI result; no additional RIG repair belongs in this carrier. The existing main repair retains the three unapproved designs as drafts. The next substantive evidence commit must obtain its own actual integrated CI result.**
+
+## Exact observed failure
+
+Carrier [#9595](https://github.com/mastermindx-market-intelligence/macro/pull/9595) remains draft at head `ac08d5bd630d480a97fcbd0d9814946724250011`. Its [CI run 39118765804](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39118765804) failed. The separate fences run 39118765782 succeeded. Contract-delta and eleven of twelve packs succeeded; **ci-pack-1**, job **117650324539**, failed only the `reference-integrity` legacy job. The downstream ci-gate therefore failed its semantic enforcement. This is not a passing whole pack.
+
+The actual failed job checked out merge revision **`3d1a4e0df8faa6719edd8a59c467646516faf1c7`**, explicitly logged as **ac08 merged into base `b912fd97827cca925a7123aa2012e9765077f3f7`**. The tested integration base is not the later current main or the branch's original admitted base.
+
+The complete [decoded failed-pack log](AC08_FAILED_CI_PACK_1_117650324539.log) records exactly three `packet-without-rig-receipt` findings at 10:28:53 and again during the pack's own second attempt at 10:34:12 UTC on October 18. No new rerun was requested by this continuation.
+
+| Packet basename under the then-current migration-packet namespace | Failed-base blob | Current retained draft blob |
+|---|---|---|
+| MP-20261018-sector-central-capability-crosswalk.md | `fa2b3f3941d3757f9a18545a616003e3aa8428b3` | Same |
+| MP-20261018-sector-central-paper-and-acceptance.md | `19fa4a5f9758e22294357cd10dea7520b02aa1bc` | Same |
+| MP-20261018-sector-central.md | `f23be13d107e0d05be2dd580f2439271da6cae88` | Same |
+
+The earlier f11 archived-Python import/collection failures do not appear in this current result. The inert .txt packaging repair has therefore removed those observed failures in the ac08 integrated run; this does not waive the remaining reference gate.
+
+## Current source disposition
+
+A fresh fixed-source read of Macro main **`247677efade31ea32d6b6ef5b701de61c47392cd`** establishes that all three old migration-packet paths are absent. They are also absent from ac08 itself. They entered the failed integrated candidate through its then-current base.
+
+Git history records their addition in **`2cca92fb3f6ca34c5ab53f1e167a05a1375f6b37` / #9592**, and their relocation in **`b91514a3a4301edff33ced2644e4cea7cdfef716` / #7100**, committed **2026-10-19 08:21:41 UTC**. That merge explicitly includes “retain unapproved sector plans as design drafts.”
+
+All three documents are now under **`research/design_candidates/sector_central_20261018/`** with exactly the same Git blobs as the failed-base originals. Their content still labels them design/prepared/integration candidates, with production and Paper acceptance pending. The current design and its failure history are preserved; no approval receipt has been fabricated.
+
+Current guard `scripts/check_reference_integrity.py`, blob `a9e65aec9531c970554bc83b82a6f5bd76927b60`, still enforces L8 on `research/migration_packets` and accepts only genuinely approved reference IDs. Its exemption set was not modified by this continuation. The current ACTIVE_BUILD_MAP, blob `b5a2a4a3a1d5a8c6c405348f46e72a23f9eeca40`, was inspected before considering a repair; it retains #9595 as the existing draft carrier and shows the active Sector Central work separately.
+
+## Decision and remaining gate
+
+No source repair, speculative RIG citation, exception, migration-packet deletion or competing main-red lane is needed in #9595: the relevant paths are absent from this branch and legitimately retained elsewhere on current main. No ancestry-only merge/rebase or unchanged-head CI rerun is justified by this finding.
+
+Continue the already authorized substantive evidence update in the existing draft carrier. Its new native CI must test its actual enclosing revision and current integration. Keep the previous ac08 failure visible; current-path analysis is not a retroactive green result and does not guarantee that a future whole pack will pass. Keep the PR unarmed while required evidence is pending or red.
+
+This adjudication uses completed root GitHub/native read observations. The earlier advisory agent's unreturned read was stopped and does not supply any of these facts. No tests, provider calls, workflow reruns, release or production changes were performed for this adjudication.

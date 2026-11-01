@@ -124,6 +124,9 @@ def event_view(row: dict, basket_labels: dict | None = None) -> dict:
         "date": _s(pd.Timestamp(row["date"]).strftime("%Y-%m-%d")) if row.get("date") is not None else None,
         "side": _s(row.get("side")),
         "era": _s(row.get("era")),
+        # Native harvest session, not wall-clock observation/availability time.
+        "harvested_asof": _s(row.get("harvested_asof")),
+        "engine_version": _s(row.get("engine_version")),
         "sector": _s(row.get("sector")),
         "family": fam,
         "family_label": FAMILY_LABELS.get(fam, fam),

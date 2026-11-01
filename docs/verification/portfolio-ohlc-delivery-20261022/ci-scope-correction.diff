@@ -1,0 +1,198 @@
+diff --git a/.github/ci/legacy-jobs.yml b/.github/ci/legacy-jobs.yml
+index 241af3d6e9a3..6ceefc2d8bcf 100644
+--- a/.github/ci/legacy-jobs.yml
++++ b/.github/ci/legacy-jobs.yml
+@@ -5604,6 +5604,9 @@ jobs:
+     # suites read can still start this job.
+     scope: exclusive
+     paths:
++      - app/__init__.py
++      - app/deploy/ohlc_origin_known_hosts
++      - scripts/publish_ohlc.py
+       - "lib/shared_shell.py"
+       - "tests/test_ipo_prospectus_terms.py"
+       - "data/ipo/lockups.parquet"
+@@ -8205,6 +8208,9 @@ jobs:
+     gate: code
+     scope: exclusive
+     paths:
++      - app/__init__.py
++      - app/deploy/ohlc_origin_known_hosts
++      - scripts/publish_ohlc.py
+       - "lib/shared_shell.py"
+       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
+       - "engine/rates_command_basis.py"
+@@ -8536,6 +8542,9 @@ jobs:
+     gate: code
+     scope: exclusive
+     paths:
++      - app/__init__.py
++      - app/deploy/ohlc_origin_known_hosts
++      - scripts/publish_ohlc.py
+       - "lib/shared_shell.py"
+       - "engine/intl_performance_charts.py"
+       - "lib/intl_chart_geometry.py"
+@@ -11685,6 +11694,8 @@ jobs:
+     # narrow those.
+     scope: exclusive
+     paths:
++      - app/deploy/ohlc_origin_known_hosts
++      - scripts/publish_ohlc.py
+       - "lib/shared_shell.py"
+       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+       - "engine/liquidity_profile.py"
+@@ -12131,6 +12142,8 @@ jobs:
+     runs-on: ubuntu-latest
+     scope: exclusive
+     paths:
++      - app/__init__.py
++      - app/deploy/ohlc_origin_known_hosts
+       - "lib/us_cash_calendar.py"
+       - "lib/exchange_holidays.py"
+       - "lib/hk_calendar.py"
+@@ -16943,6 +16956,9 @@ jobs:
+     # Explicit measured closure: avoid unrelated opaque fallback selection.
+     scope: exclusive
+     paths:
++      - app/__init__.py
++      - app/deploy/ohlc_origin_known_hosts
++      - scripts/publish_ohlc.py
+       - "lib/shared_shell.py"
+       - "engine/intl_performance_charts.py"
+       - "lib/intl_chart_geometry.py"
+@@ -17262,6 +17278,9 @@ jobs:
+     # Curated named closure: integrity fixtures scan only pytest tmp_path;
+     # opaque artifact traversal must not claim unrelated template ownership.
+     paths:
++      - app/__init__.py
++      - app/deploy/ohlc_origin_known_hosts
++      - scripts/publish_ohlc.py
+       - "lib/shared_shell.py"
+       # Native IPO terms consumer extends this job's measured import closure.
+       - "engine/ipo_prospectus_terms.py"
+@@ -20608,6 +20627,8 @@ jobs:
+     # genuine import edges.
+     scope: exclusive
+     paths:
++      - app/deploy/ohlc_origin_known_hosts
++      - scripts/publish_ohlc.py
+       - "engine/research_intelligence/__init__.py"
+       - "engine/research_intelligence/projection.py"
+       - "engine/research_intelligence/vault_adapter.py"
+@@ -21923,6 +21944,45 @@ jobs:
+       - name: BioCatalyst D0a finite reference integrity
+         run: python scripts/verify_biocatalyst_d0a_references.py --reference-integrity
+ 
++  ohlc-origin-delivery:
++    # Synthetic retained-artifact delivery contracts must execute on the PR code gate.
++    # Exact import/read closure prevents an unrelated renderer/Prophet probe rider.
++    if: ${{ false }}
++    gate: code
++    scope: exclusive
++    paths:
++      - ".github/workflows/daily.yml"
++      - "app/__init__.py"
++      - "app/deploy/ohlc_origin_known_hosts"
++      - "app/deploy/update.sh"
++      - "config/dag.yml"
++      - "config.yml"
++      - "engine/__init__.py"
++      - "engine/bar_derive.py"
++      - "engine/ohlc_reconstruct.py"
++      - "engine/session_anchor.py"
++      - "lib/__init__.py"
++      - "lib/config.py"
++      - "lib/nyse_calendar.py"
++      - "lib/store.py"
++      - "scripts/__init__.py"
++      - "scripts/build_chart_data.py"
++      - "scripts/publish_ohlc.py"
++      - "tests/__init__.py"
++      - "tests/conftest.py"
++      - "tests/test_publish_ohlc.py"
++    timeout-minutes: 5
++    runs-on: ubuntu-latest
++    steps:
++      - uses: actions/checkout@v4
++      - uses: actions/setup-python@v5
++        with:
++          python-version: "3.12"
++      - name: install synthetic OHLC test dependencies
++        run: pip install pytest pandas numpy pyarrow pyyaml
++      - name: producer completion and atomic origin delivery
++        run: python -m pytest tests/test_publish_ohlc.py -q
++
+   biocatalyst-deploy-integration:
+     if: ${{ false }}
+     gate: code
+@@ -24393,6 +24453,9 @@ jobs:
+     gate: code
+     scope: exclusive
+     paths:
++      - app/__init__.py
++      - app/deploy/ohlc_origin_known_hosts
++      - scripts/publish_ohlc.py
+       - "lib/shared_shell.py"
+       # Native IPO terms consumer extends this job's measured import closure.
+       - "engine/ipo_prospectus_terms.py"
+@@ -26684,7 +26747,7 @@ jobs:
+       - name: install minimal deps
+         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+       - name: page/render builders whose output ships to the site
+-        run: python -m pytest tests/test_ai_desk_page.py tests/test_build_chart_data.py tests/test_publish_ohlc.py tests/test_build_odds_observability.py tests/test_build_sector_map.py tests/test_committee_template.py tests/test_confluence_screener_page.py tests/test_contagion_card_render.py tests/test_darkpool_desk.py tests/test_options_estate_redirect_stubs.py tests/test_macro_signals_render.py tests/test_nav_icon_refresh.py tests/test_nav_submenu_icons.py tests/test_sector_nav_links.py tests/test_site_semantics_refs.py tests/test_sp500_heatmap_caps.py tests/test_stage_analysis_page.py tests/test_stocktable_data.py tests/test_template_items_footgun.py tests/test_trading_journal_xlsx.py tests/test_us_stocks_w8g_table.py tests/test_factor_seasonality.py tests/test_seasonality_now_call_strip.py tests/test_methodology_disclosures.py tests/test_seasonality_page_claims.py -q
++        run: python -m pytest tests/test_ai_desk_page.py tests/test_build_chart_data.py tests/test_build_odds_observability.py tests/test_build_sector_map.py tests/test_committee_template.py tests/test_confluence_screener_page.py tests/test_contagion_card_render.py tests/test_darkpool_desk.py tests/test_options_estate_redirect_stubs.py tests/test_macro_signals_render.py tests/test_nav_icon_refresh.py tests/test_nav_submenu_icons.py tests/test_sector_nav_links.py tests/test_site_semantics_refs.py tests/test_sp500_heatmap_caps.py tests/test_stage_analysis_page.py tests/test_stocktable_data.py tests/test_template_items_footgun.py tests/test_trading_journal_xlsx.py tests/test_us_stocks_w8g_table.py tests/test_factor_seasonality.py tests/test_seasonality_now_call_strip.py tests/test_methodology_disclosures.py tests/test_seasonality_page_claims.py -q
+ 
+   macro-signals-conditions:
+     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+@@ -27154,6 +27217,8 @@ jobs:
+     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
+     scope: exclusive
+     paths:
++      - app/deploy/ohlc_origin_known_hosts
++      - scripts/publish_ohlc.py
+       - "lib/shared_shell.py"
+       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+       - "engine/liquidity_profile.py"
+@@ -28473,6 +28538,9 @@ jobs:
+     runs-on: ubuntu-latest
+     scope: exclusive
+     paths:
++      - app/__init__.py
++      - app/deploy/ohlc_origin_known_hosts
++      - scripts/publish_ohlc.py
+       - "lib/us_cash_calendar.py"
+       - "lib/exchange_holidays.py"
+       - "lib/hk_calendar.py"
+@@ -28622,6 +28690,8 @@ jobs:
+     # the declared-scope coverage audit re-checks them on every load.
+     scope: exclusive
+     paths:
++      - app/deploy/ohlc_origin_known_hosts
++      - scripts/publish_ohlc.py
+       # Native IPO terms consumer extends this job's measured import closure.
+       - "engine/ipo_prospectus_terms.py"
+       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+@@ -36897,6 +36967,9 @@ jobs:
+     # An unlisted closure file is an uncovered path. No tests/** catch-all.
+     scope: exclusive
+     paths:
++      - app/__init__.py
++      - app/deploy/ohlc_origin_known_hosts
++      - scripts/publish_ohlc.py
+       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+       - "engine/liquidity_profile.py"
+       - "scripts/stock_liquidity_profile.py"
+diff --git a/tests/test_ci_pack.py b/tests/test_ci_pack.py
+index 99c1cdaceab6..bbc682648a81 100644
+--- a/tests/test_ci_pack.py
++++ b/tests/test_ci_pack.py
+@@ -5009,6 +5009,9 @@ CURATED_EXCLUSIVE = {
+     "options-r1-rotation-relative-trend",
+     # Options R1 W2B: exact import/read closure of the holdings-coverage suite, which reads and imports scripts/build_sector_central.py for the additive-hook proof.
+     "options-r1-sector-holdings-coverage",
++    # Synthetic OHLC delivery has an exact import/read closure; preserve every
++    # packing ceiling and keep this new code gate off unrelated render probes.
++    "ohlc-origin-delivery",
+ }
+ 
+ 

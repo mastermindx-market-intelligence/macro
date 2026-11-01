@@ -1,0 +1,174 @@
+{
+  "correction_decision": {
+    "edition": {
+      "byte_length": 1461,
+      "schema": "company_intelligence.sec_disclosure_edition/v1",
+      "sha256": "49cbd4aac98292e5889e0af7b6f868b337223dd2b3a8ae5c367cabde2b4c678c"
+    },
+    "fact": {
+      "byte_length": 1398,
+      "schema": "company_intelligence.disclosed_supplier_fact/v1",
+      "sha256": "24185935320d4ff8fe852584b1497f16f000f4af4cb5e9f195f61c7a2ff9948b"
+    },
+    "status": "current"
+  },
+  "edition": {
+    "disclosure_id": "disclosure:08b6a71b404deae9af33afa2058464b36f40207741b6ccbad3deede0f3285eda",
+    "issuer_id": "ISS:US-XNAS-NVDA",
+    "known_at": "2026-10-09T03:53:33.331285Z",
+    "previous": null,
+    "publication_precision": "date",
+    "published_at": null,
+    "published_date": "2026-02-25",
+    "revision": 1,
+    "schema": "company_intelligence.sec_disclosure_edition/v1",
+    "sec_source": {
+      "accepted_at": "2026-02-25T21:42:19.000000Z",
+      "accession": "0001045810-26-000021",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+      "document_id": "sec_document_5b75587074cf7849d010ec05a7ae7a18d305326a50418897d5d0bc75423bb26a",
+      "issuer_cik": "0001045810",
+      "manifest_key": "manifests/0001045810/0001045810-26-000021/ffsec_manifest_f050d1fb989d8f840c4291c5eb8b12788f1110bea58bf3b5b4ce239c8a771a61.json",
+      "recorded_at": "2026-10-09T03:53:33.214726Z",
+      "retrieval_receipt_id": "sec_archive_receipt_8999c2175a87c8a0810a2e01965f3d2007d122a590c4fed80e7f09f70d9dba5d",
+      "retrieved_at": "2026-10-09T03:53:33.185441Z",
+      "snapshot_at": "2026-10-09T03:53:33.331285Z",
+      "snapshot_id": "ffsecsrc_520d816415a2d1dbde1fcf348abef2cbfdd8b28b88b4bf847a549613002d02ee",
+      "span_end_byte": 243668,
+      "span_sha256": "13a4750ac1264fdc31b6a3569e9a0c1672d0bffb798ff11539b8c289d6665b48",
+      "span_start_byte": 243494
+    },
+    "source_byte_length": 1967931,
+    "source_key": "sec_document_5b75587074cf7849d010ec05a7ae7a18d305326a50418897d5d0bc75423bb26a",
+    "source_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e"
+  },
+  "fact": {
+    "amount": null,
+    "claim_key": "supplier:daf2f0b909da4cea59359af57c21b68e7698747fa8203773212ed0b436b18d9c",
+    "disclosure_id": "disclosure:08b6a71b404deae9af33afa2058464b36f40207741b6ccbad3deede0f3285eda",
+    "economic_share": null,
+    "edition": {
+      "byte_length": 1461,
+      "schema": "company_intelligence.sec_disclosure_edition/v1",
+      "sha256": "49cbd4aac98292e5889e0af7b6f868b337223dd2b3a8ae5c367cabde2b4c678c"
+    },
+    "fact_id": "integration:74c356cdba9e53b25ed1546b011232aad16e263a978a00cfe939839f7f1d1db8",
+    "kind": "disclosed_supplier",
+    "known_at": "2026-10-19T15:51:28.271107+00:00",
+    "lifecycle": "reported_use",
+    "object_id": "ISS:US-XNYS-TSM",
+    "object_identity": "100736c3ba9ec88284a4f03ae3a357d03f61351194a9b8b200d60de282ea6513",
+    "platform": "foundry_services",
+    "previous": null,
+    "product": "semiconductor wafers",
+    "qualification": {
+      "direction": "object_supplies_subject",
+      "evidence_revision": "ea0684e99fc46d8ce78cac2add48566be22cae58cbe53a0fa7e40f1b67f6c87a",
+      "identity_mode": "current",
+      "identity_observed_at": "2026-10-19T15:35:16.886223+00:00"
+    },
+    "review_revision": "dc4be6d5069aecf4aaf12fe58c0db5eaf8ec47e671f70877f795a8c62e676863",
+    "revision": 1,
+    "schema": "company_intelligence.disclosed_supplier_fact/v1",
+    "span": {
+      "end_byte": 243668,
+      "start_byte": 243494,
+      "text_sha256": "13a4750ac1264fdc31b6a3569e9a0c1672d0bffb798ff11539b8c289d6665b48"
+    },
+    "subject_id": "ISS:US-XNAS-NVDA",
+    "subject_identity": "3766a094f8d199ffc7c392eb7aa18bbf22899dd2940939bba4221144d3522446"
+  },
+  "identities": {
+    "object": {
+      "evidence_snapshot": "2026-08-18",
+      "evidence_source": "sec_company_tickers",
+      "evidenced_cik": "0001046179",
+      "identity_mode": "current",
+      "issuer_id": "ISS:US-XNYS-TSM",
+      "schema": "company_intelligence.current_issuer_identity/v1",
+      "source_commit": "cdab77c46a9e34184617c9c7f7a2158528b285a9",
+      "sources": {
+        "issuer_master": {
+          "byte_length": 43844,
+          "sha256": "8d2d136a1ed8466f1a1c57ebbb14b438f27c9a0d4e1ea17214b4ef3e79877402"
+        },
+        "security_master": {
+          "byte_length": 79534,
+          "sha256": "23b92f9cdd672425bceeece8709185fdfcc8014967408be50874d5e106fce22e"
+        },
+        "vendor_aliases": {
+          "byte_length": 50724,
+          "sha256": "0bf122a6df17e54865c8d78e12aca592c8832c4de984972fae8658b6e696741f"
+        }
+      }
+    },
+    "subject": {
+      "evidence_snapshot": "2026-08-18",
+      "evidence_source": "sec_company_tickers",
+      "evidenced_cik": "0001045810",
+      "identity_mode": "current",
+      "issuer_id": "ISS:US-XNAS-NVDA",
+      "schema": "company_intelligence.current_issuer_identity/v1",
+      "source_commit": "cdab77c46a9e34184617c9c7f7a2158528b285a9",
+      "sources": {
+        "issuer_master": {
+          "byte_length": 43844,
+          "sha256": "8d2d136a1ed8466f1a1c57ebbb14b438f27c9a0d4e1ea17214b4ef3e79877402"
+        },
+        "security_master": {
+          "byte_length": 79534,
+          "sha256": "23b92f9cdd672425bceeece8709185fdfcc8014967408be50874d5e106fce22e"
+        },
+        "vendor_aliases": {
+          "byte_length": 50724,
+          "sha256": "0bf122a6df17e54865c8d78e12aca592c8832c4de984972fae8658b6e696741f"
+        }
+      }
+    }
+  },
+  "identity_continuity": {
+    "parties": [
+      "subject",
+      "object"
+    ],
+    "policy": "provenance_refresh",
+    "provenance_fields": [
+      "source_commit",
+      "sources"
+    ],
+    "schema": "company_intelligence.identity_continuity_policy/v1",
+    "semantic_fields": [
+      "schema",
+      "identity_mode",
+      "issuer_id",
+      "evidenced_cik",
+      "evidence_source",
+      "evidence_snapshot"
+    ]
+  },
+  "identity_queries": {
+    "object": "TSM",
+    "subject": "NVDA"
+  },
+  "ruling_reference": {
+    "byte_length": 3140,
+    "sha256": "8d66a658f95c7a97365e263075b700de188b189c1d166f42da34ea5c275f522c"
+  },
+  "schema": "company_intelligence.sec_supplier_owner_decision/v1",
+  "semantic_review": {
+    "candidate_id": "sec-disclosed-supplier:13a4750ac1264fdc31b6a3569e9a0c1672d0bffb798ff11539b8c289d6665b48",
+    "decision": "supported_disclosed_supplier_in_selected_filing",
+    "direction": "object_supplies_subject",
+    "reviewed_at": "2026-10-19T15:38:03.361197+00:00",
+    "snapshot_id": "ffsecsrc_520d816415a2d1dbde1fcf348abef2cbfdd8b28b88b4bf847a549613002d02ee",
+    "source_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e",
+    "span_sha256": "13a4750ac1264fdc31b6a3569e9a0c1672d0bffb798ff11539b8c289d6665b48",
+    "supplier_label": "Taiwan Semiconductor Manufacturing Company Limited"
+  },
+  "temporal_decision": {
+    "adopted_at": "2026-10-19T15:51:28.271107+00:00",
+    "historical_admitted": false,
+    "identity_mode": "current",
+    "identity_observed_at": "2026-10-19T15:35:16.886223+00:00"
+  }
+}

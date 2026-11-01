@@ -1094,6 +1094,26 @@ def test_grounded_system_prompt_forbids_general_knowledge_and_names_ceiling():
     assert gw._CONTRADICTION_DIRECTIVE in prompt
 
 
+@pytest.mark.parametrize("stream", [False, True], ids=["chat", "chat_stream"])
+def test_grounded_provider_gets_body_attribution_contract(tmp_path, stream):
+    """A trailer-only citation is discarded, so the provider must be told to cite in prose.
+
+    Live Analysis Research returned the coverage null for a broad question, while the
+    same readable corpus answered once the user explicitly requested body attribution.
+    This requirement belongs in the provider contract, not in every user's question.
+    """
+    answer = "The Daily briefing (as of 2026-10-01) says the US session was mixed."
+    turn = _drive(tmp_path, stream=stream, context=GROUNDED_CTX, answer=answer)
+    assert turn.calls
+    prompt = _system_text(turn.calls[0])
+    assert "Attribute each substantive observation in the answer body" in prompt
+    assert "exact plain English or Chinese artifact name" in prompt
+    assert "A name only in a source list or heading is not body attribution" in prompt
+    assert "If a date is unknown, say so" in prompt
+    assert answer in turn.reply and not turn.reply.startswith(NULL_EN)
+    assert USED_EN in turn.reply and CEILING_EN in turn.reply
+
+
 def test_global_research_directive_is_untouched():
     """Global Deep Research regression: _build_system_prompt('research') is today's prompt."""
     prompt = gw._build_system_prompt("research")

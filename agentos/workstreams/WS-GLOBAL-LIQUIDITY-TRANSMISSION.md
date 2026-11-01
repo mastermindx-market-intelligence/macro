@@ -68,8 +68,9 @@ waves:
       Mastermind PR #124 (OPEN DRAFT, codex/mas120-wliq3-20260822, head 23f97360131d)
       shows 1,239 paths only because of a stale base; its owned delta is 19
       brain/liquidity_lab paths. W-LIQ.7 task T02 carved exactly those 19 paths onto
-      fresh Mastermind master as branch claude/ssd-glt-w1-124-reconcile-780fa4898b1ac424
-      (head 8e906193a15e, PR not yet opened). Lab scope continues inside W-LIQ.7.
+      fresh Mastermind master and merged them as Mastermind #1412 (squash
+      5bcc656bbe04, byte-identical). #124 stays open and untouched by GLT. Lab scope
+      continues inside W-LIQ.7.
   - id: W-LIQ.4
     title: Repricing gap engine
     status: todo
@@ -90,11 +91,13 @@ waves:
     status: in_progress
     depends_on: [W-LIQ.1, W-LIQ.2]
     next_action: >
-      Wave 1 = T01 custody records (this record), T02 #124 qualified carve-out
-      (Mastermind branch pushed), T06 nightly wiring of the #6296 producer (macro
-      PR from claude/ssd-glt-w1-custody-liveness-90b27f4e76d124a3), plus T03/T04/T05
-      source, accounting/FX and knowledge-time qualification on the sibling
-      orchestrator. Next ready on the DAG once T02/T04/T05 return: T07, T08, T12.
+      As of 2026-10-19, T01-T16 and T21/T23 are merged in both repos (table under
+      "Current result (2026-10-19)"). T17 (Mastermind #1641) and T18+T19 (Mastermind
+      #1639) are green and in the Mastermind merge queue. Next: T22 after #1639
+      lands; the read-only T20/T24 audit after #1639 and #1641 land; the T25
+      exact-head review after T22; then T26 (prospective issue or a qualified
+      durable wait), T27 (browser-observed production journey) and T28 (scoped
+      closure). Handoff: agentos/handoffs/GLOBAL-LIQUIDITY-TRANSMISSION-2026-10-19.md.
 landmines:
   - "The existing engine/global_liquidity.py uses JPNASSETS provider labels directly; do not reuse its monthly timestamp kernel for causal work."
   - "Availability lag is not a vintage archive: ECB and BoJ historical revisions remain a declared limitation."
@@ -113,10 +116,11 @@ do_not_redo:
   - "Do not cite Mastermind #117 as merged or protected law: it closed unmerged on 2026-09-24 and is historical architecture only."
   - "Do not rebuild accepted #6296, replace #124, weaken Executive security checks to green a native fixture, or call CI/merge a production outcome. (Carried from macro #7191.)"
 next_action: >
-  Seat opens the two wave-1 PRs (macro claude/ssd-glt-w1-custody-liveness-90b27f4e76d124a3,
-  Mastermind claude/ssd-glt-w1-124-reconcile-780fa4898b1ac424), integrates the T03/T04/T05
-  returns, then commissions T07 (join producer, sole reader and lab without new truth
-  owners) followed by T08 and T12.
+  After Mastermind #1639 (T18+T19) lands, prove its blobs on master and commission
+  T22 (the accepted product surface, macro). After #1639 and #1641 (T17) both land,
+  commission the read-only T20/T24 audit against the two pinned heads. Open the T25
+  exact-head review once T22 merges. The handoff dated 2026-10-19 holds the ordered
+  steps.
 ---
 
 ## Boundary
@@ -126,7 +130,45 @@ authority. Display tier only (`validated=False`). Observed state, the future-liq
 outlook and asset responses are separate capabilities with separate clocks; none
 infers authority from the presence of another's artifact.
 
-## Current result (2026-10-13)
+## Current result (2026-10-19)
+
+Each merge below was checked against its repository's default-branch history on
+2026-10-19. A merge is a source fact. It does not prove production behaviour, which
+is T27's job.
+
+| Tasks | Carrier | Squash on default branch |
+|---|---|---|
+| T01 + T02 + T06 | macro #9145 | `5a47995fd05d` |
+| T02 carve-out (19 lab paths) | Mastermind #1412 | `5bcc656bbe04` |
+| T03 + T04 + T05 | macro #9157 | `eb57d3db6448` |
+| T07 + T12 | Mastermind #1444 | `3a265caa9b0f` |
+| T08 | macro #9532 | `919711cb463b` |
+| T10 | macro #9647 | `41428a110bb8` |
+| T11 + T13 | Mastermind #1578 | `5a58243ac` |
+| T14 | Mastermind #1633 | `2d7021dd8` |
+| T21 + T23 | macro #9657 | `1390debab5e7` |
+| T15 + T16 | Mastermind #1635 | `0c8cb6b46` |
+| T09 | macro #9729 | `0221d6e17175` |
+
+In flight on 2026-10-19:
+
+- **T18 + T19:** Mastermind #1639, head `9355319c7208`, is green and in the merge
+  queue. The first independent review found F1 (an issued percent could sit over a
+  zero-straddling interval). The repair binds the interval to the sealed
+  qualification, refuses a straddle, and HMAC-seals the decided percent. A second,
+  non-author delta review passed every attack.
+- **T17:** Mastermind #1641, head `fa6b57e2e9d7`, is green and in the merge queue.
+  The identification card was frozen before the first fit. The real cell returns
+  NOT_IDENTIFIED, because no rights-proven point-in-time policy-surprise tape exists,
+  so no causal label is issued. The independent review passed with six minor gaps,
+  which are routed to the T20/T24 audit.
+- **Not started:** T20, T22, T24, T25, T26, T27, T28.
+
+Scientific state: T09 issues zero forecast cells (measurement only). T17 is
+NOT_IDENTIFIED. T18 abstains with no issued forward forecast. No GLT surface may
+therefore make a positive forward-performance claim.
+
+## Result as of 2026-10-13 (historical)
 
 - **Producer (W-LIQ.1):** macro #6296 merged 2026-09-04 as `38fd57a676de`. The earlier
   "not merged" body was stale. No workflow ran the producer, so the tracked artifact

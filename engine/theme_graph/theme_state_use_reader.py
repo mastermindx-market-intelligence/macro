@@ -76,3 +76,46 @@ def validate_read_receipt_at_use(receipt):
             production._validate_qualification(leg, subject_id=receipt["subject_id"], query=receipt["query"])
             production._validate_records(leg, name=name, query=receipt["query"])
     return receipt
+
+
+def read_divergence_gap_at_use(state, *, node_id, flag_asof, effective_at, known_at, use_at,
+                               purpose="research_internal"):
+    """Compose native condition/lag from the existing validated production leg.
+
+    Does not capture or rebuild a bundle, read owner files or accept publication.
+    The ordinary use reader retains its current-source purpose/eligibility gates.
+    """
+    from . import theme_state_gap as gap
+    read = read_subject_at_use(state, node_id=node_id, effective_at=effective_at,
+                              known_at=known_at, use_at=use_at, purpose=purpose)
+    if read["status"] != "DESCRIPTIVE":
+        return gap.unavailable(subject_id=node_id, effective_at=effective_at, known_at=known_at,
+                               use_at=use_at, reason=read["reason_codes"][0])
+    return gap.compose_divergence_gap(read["subject"]["legs"]["divergence_log"],
+        subject_id=node_id, flag_asof=flag_asof, effective_at=effective_at, known_at=known_at,
+        use_at=use_at, state_ref={"schema": state["schema"], "generation_id": state["generation_id"],
+                                "state_sha256": state["state_sha256"]})
+
+
+def read_native_divergence_gap(root, *, node_id, flag_asof, effective_at, purpose="research_internal"):
+    """Current read of retained native history; no state/publication is invented.
+
+    Reuses the same leg builder and pure gap composer as an existing ThemeState
+    read. It captures only the complete native ledger/crosswalk/purpose inputs,
+    not graph companies or a narrowed substitute ThemeState population.
+    """
+    from . import theme_state_gap as gap
+    if purpose != "research_internal":
+        return gap.unavailable(subject_id=node_id, effective_at=effective_at, known_at=None,
+                               use_at=None, reason="S1_UNMATERIALIZED_CURRENT_SOURCE_PURPOSE_GRANT_REQUIRED")
+    from engine.neuralweb import theme_state_adapter as adapter
+    try:
+        capture = adapter.capture_native_divergence_leg(root, node_id=node_id, effective_at=effective_at)
+    except (ValueError, TypeError, KeyError, OSError):
+        return gap.unavailable(subject_id=node_id, effective_at=effective_at, known_at=None,
+                               use_at=None, reason="NATIVE_DIVERGENCE_CAPTURE_UNAVAILABLE")
+    # Capture's actual completed observation is the current read cutoff, never
+    # the old ledger ts or an asserted historical availability clock.
+    use_at = production.dt.datetime.now(production.dt.timezone.utc).isoformat()
+    return gap.compose_divergence_gap(capture["leg"], subject_id=node_id, flag_asof=flag_asof,
+        **capture["query"], use_at=use_at, input_refs=capture["input_refs"])

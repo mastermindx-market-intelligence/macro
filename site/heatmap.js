@@ -660,7 +660,7 @@
     // On touch the card is a tap-preview: a tap anywhere on it opens the full read
     // (Terminal / analyzer). _cardTapHref is set only in that mode, so desktop hover
     // cards stay inert.
-    _card.addEventListener('click', function () { if (_cardTapHref) window.location.href = _cardTapHref; });
+    _card.addEventListener('click', function () { if (_cardTapHref) { var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_cardTapHref, 'push'); } else { window.location.href = _cardTapHref; } } });
     document.body.appendChild(_card);
     return _card;
   }
@@ -1693,7 +1693,7 @@
       var el = e.target.closest && e.target.closest('.hm-tile');
       if (!el) return;
       var rec = tileEls[+el.getAttribute('data-i')];
-      if (rec) window.location.href = STOCK_URL + encodeURIComponent(rec.t.t);
+      if (rec) { var _d = STOCK_URL + encodeURIComponent(rec.t.t); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { window.location.href = _d; } }
     }
     function onLeave() { hideCard(); scheduleMemHide(); }
     tm.addEventListener('mousemove', onMove);
@@ -2153,7 +2153,7 @@
         e.preventDefault(); e.stopPropagation();
         return;
       }
-      window.location.href = scUrl + encodeURIComponent(rec.t.t);
+      var _d = scUrl + encodeURIComponent(rec.t.t); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { window.location.href = _d; }
     }
     tm.addEventListener('mousemove', onMove);
     tm.addEventListener('mouseleave', onLeave);

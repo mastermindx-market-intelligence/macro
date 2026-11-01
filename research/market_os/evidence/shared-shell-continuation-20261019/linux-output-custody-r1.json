@@ -1,0 +1,15 @@
+{
+  "started_at": "2026-10-19T13:22:43.584002+00:00",
+  "owner_sha256": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+  "tests_sha256": "8ef2f73c6ba53710ef6d25338539b5856ff72cfa535f7a2ddd0ac8e5be010add",
+  "platform": "linux",
+  "pytest": "8.3.5",
+  "args": [
+    "-q",
+    "tests/test_terminal_beta_build_output_custody.py",
+    "--basetemp=/tmp/shared-shell-linux-output-custody-r1"
+  ],
+  "finished_at": "2026-10-19T13:23:08.771543+00:00",
+  "exit": 0,
+  "log_sha256": "649ab1cfc28b1ca4f33972abb655d130f6d55aa42b8f4e655fd472a9d5ec3e0f"
+}

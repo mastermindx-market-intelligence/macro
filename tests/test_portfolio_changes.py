@@ -49,7 +49,7 @@ from tests.test_portfolio_brief import BOOKS, TODAY, _ctx  # noqa: E402
 # The install set of the CI job that runs this file (portfolio-ctx). An import outside
 # this set passes locally and ERRORs on CI; pinned below against the workflow itself.
 PACK_DEPS = {"pytest", "pandas", "pyarrow", "jinja2", "fastapi", "httpx", "pydantic",
-             "yaml", "requests"}
+             "yaml", "requests", "rjsmin==1.2.5"}
 
 TICKERS = ["NVDA", "AVGO", "SMCI", "XOM"]
 

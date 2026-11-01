@@ -163,6 +163,14 @@ if ! "$VENV/bin/python" "$APP_DIR/app/deploy/company-intelligence-private-roots.
 fi
 # END COMPANY_INTELLIGENCE_PRIVATE_ROOTS
 
+# BEGIN MEDTECH_PRIVATE_ROOTS
+# Empty identity/anchors only; dedicated refresh installation and activation stay explicit.
+if ! "$VENV/bin/python" "$APP_DIR/app/deploy/medtech-prereqs.py"; then
+  echo "api-setup.sh: MedTech provisioning failed; refusing API readiness" >&2
+  exit 1
+fi
+# END MEDTECH_PRIVATE_ROOTS
+
 REVIEWED_UNIT_NAMES=(
   macro-api.service
   macro-market-memory-source.service macro-market-memory-source.timer

@@ -690,8 +690,35 @@
               var T = window.MDXTerminal;
               if (T && T.on && T.on() && T.open) {
                 T.open(row.ticker || '', tr);
+              } else if (window.MMXSharedShell) {
+                /* Shared Shell candidate (defect B): the incumbent fallback handed the
+                   absolute app /terminal URL to the bridge, which can never admit it -
+                   and admitting it would nest native Terminal inside the shell. Route
+                   the launch through the same centralized candidate handoff as the
+                   overlay, to the admitted relative /terminal destination, and never
+                   raw-write Location once a candidate owns this document. */
+                var _ss = window.MMXSharedShell;
+                if (T && T.on && T.on()) {
+                  var _O = window.MDXTerminalOverlay;
+                  if (_O && typeof _O.terminalHandoff === 'function') {
+                    _O.terminalHandoff({ url: T.url(row.ticker || ''), symbol: row.ticker || '' });
+                  } else {
+                    // The overlay controller is not loaded in this build; the admitted
+                    // relative native route is still the only destination we may offer.
+                    var _params = new URLSearchParams();
+                    var _sym = String(row.ticker || '').slice(0, 64);
+                    if (_sym) _params.set('symbol', _sym);
+                    _params.set('from', 'macro');
+                    if (location.origin === 'https://www.mastermind-x.com' ||
+                        location.origin === 'https://mastermind-x.com') _params.set('ret', location.origin + location.pathname);
+                    _ss.navigate('/terminal?' + _params.toString(), 'push');
+                  }
+                } else {
+                  _ss.navigate(link, 'push');
+                }
               } else {
-                window.location.href = (T && T.on && T.on()) ? T.url(row.ticker || '') : link;
+                var _d = (T && T.on && T.on()) ? T.url(row.ticker || '') : link;
+                window.location.href = _d;
               }
             });
           }

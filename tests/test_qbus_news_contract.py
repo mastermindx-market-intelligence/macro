@@ -199,3 +199,18 @@ def test_normalizer_does_not_mutate_payload():
     before = repr(p)
     normalize_news(p, transport="benzinga_ws", received_at=RECEIVED)
     assert repr(p) == before
+
+
+@pytest.mark.parametrize("created, expected", [
+    ("Tue, 20 Oct 2026 06:00:00 -0400", "2026-10-20T10:00:00+00:00"),
+    ("Thu, 22 Oct 2026 06:00:00 -0400", "2026-10-22T10:00:00+00:00"),
+])
+def test_rfc_weekday_t_is_not_mistaken_for_iso_separator(created, expected):
+    from engine.qbus_news_contract import normalize_news
+    from datetime import datetime
+    revision = normalize_news({
+        "id": "weekday-fixture", "title": "Issuer announces earnings",
+        "created": created, "updated": created, "stocks": ["NVDA"],
+        "url": "https://benzinga.com/weekday-fixture",
+    }, transport="benzinga_rest", received_at=datetime.fromisoformat(expected))
+    assert revision.published_at.isoformat() == expected

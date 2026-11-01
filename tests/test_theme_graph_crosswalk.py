@@ -163,34 +163,62 @@ def test_the_unmapped_concepts_are_not_enumerated_in_this_file():
 
 
 def test_production_crosswalk_hierarchy_is_the_frozen_r_c3_table():
+    # Date-scoped (2026-10-21 micro expansion): the production block now carries
+    # the additive display tier on top of the frozen R-C3/L17 table, so every
+    # frozen-world assertion below runs on the rows asserted before the
+    # expansion date (engine.theme_graph.membership_evidence.
+    # MICRO_EXPANSION_ASSERTED_ON). The frozen subset itself must remain exactly
+    # the frozen table, and every appended row must be expansion-dated; the
+    # appended rows are asserted in
+    # tests/test_theme_graph_micro_expansion_20261021.py.
     from engine.theme_graph.materialize import HIERARCHY_EPOCH, validate_theme_hierarchy
+    from engine.theme_graph.membership_evidence import MICRO_EXPANSION_ASSERTED_ON
 
     assert DOC["version"] == 3
     assert DOC["date"] == "2026-07-09"
     assert HIERARCHY_EPOCH == "2026-10-07"
     validated = validate_theme_hierarchy(DOC)
-    assert {k: len(v) for k, v in validated.items()} == {
-        "categories": 10, "sub_themes": 12, "micro_themes": 68, "parents": 132}
     hierarchy = DOC["hierarchy"]
-    # The R-C3 world: categories + micro_themes share one date R >= the epoch,
-    # and exactly 93 parents (21 category->theme + 72 theme->micro) carry it.
+
+    def frozen(section):
+        return [row for row in hierarchy[section]
+                if row["asserted_on"] < MICRO_EXPANSION_ASSERTED_ON]
+
+    # The frozen R-C3/L17 table is unchanged: 10 categories, 12 sub_themes,
+    # 68 micro_themes, 132 parents.
+    frozen_counts = {k: len(frozen(k)) for k in
+                     ("categories", "sub_themes", "micro_themes", "parents")}
+    assert frozen_counts == {
+        "categories": 10, "sub_themes": 12, "micro_themes": 68, "parents": 132}
+    # ... and production == frozen + expansion-dated rows, nothing else.
+    for section in ("categories", "sub_themes", "micro_themes", "parents"):
+        appended = [row for row in hierarchy[section]
+                    if row["asserted_on"] >= MICRO_EXPANSION_ASSERTED_ON]
+        assert len(hierarchy[section]) == len(frozen(section)) + len(appended)
+        assert all(row["asserted_on"] >= MICRO_EXPANSION_ASSERTED_ON for row in appended)
+    assert {k: len(v) for k, v in validated.items()} == {
+        k: len(hierarchy[k]) for k in validated}
+    # The R-C3 world: frozen categories + frozen micro_themes share one date
+    # R >= the epoch, and exactly 93 parents (21 category->theme + 72
+    # theme->micro) carry it.
     asserted_dates = set()
     for section in ("categories", "micro_themes"):
-        for row in hierarchy[section]:
+        for row in frozen(section):
             asserted_dates.add(row["asserted_on"])
     assert len(asserted_dates) == 1
     r_c3 = asserted_dates.pop()
     assert r_c3 >= HIERARCHY_EPOCH
-    dated_r_c3 = [row for row in hierarchy["parents"] if row["asserted_on"] == r_c3]
+    dated_r_c3 = [row for row in frozen("parents") if row["asserted_on"] == r_c3]
     assert len(dated_r_c3) == 93
-    category_ids = {row["id"] for row in hierarchy["categories"]}
+    category_ids = {row["id"] for row in frozen("categories")}
     cat_to_theme = sum(1 for row in dated_r_c3 if row["parent"] in category_ids)
     assert cat_to_theme == 21
     assert len(dated_r_c3) - cat_to_theme == 72
-    # The L17 sub_theme world: sub rows and the parents NOT dated R share one
-    # later date — the sub_theme tier populates strictly after R-C3 (PIT law).
-    sub_dates = {row["asserted_on"] for row in hierarchy["sub_themes"]}
-    later_parents = [row for row in hierarchy["parents"] if row["asserted_on"] != r_c3]
+    # The L17 sub_theme world: frozen sub rows and the frozen parents NOT dated
+    # R share one later date — the sub_theme tier populates strictly after
+    # R-C3 (PIT law).
+    sub_dates = {row["asserted_on"] for row in frozen("sub_themes")}
+    later_parents = [row for row in frozen("parents") if row["asserted_on"] != r_c3]
     later_dates = sub_dates | {row["asserted_on"] for row in later_parents}
     assert len(later_dates) == 1
     assert later_dates.pop() > r_c3

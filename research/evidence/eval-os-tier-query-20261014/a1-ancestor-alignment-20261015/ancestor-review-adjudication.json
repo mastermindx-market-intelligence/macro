@@ -1,0 +1,27 @@
+{
+  "schema": "eval_os.a1_ancestor_review_adjudication.v1",
+  "observed_at": "2026-10-15T06:45:46.621896+00:00",
+  "source": "2d0e6e334986eb73496c102a939ee4e24a688c63",
+  "run_id": "eval-a1-ancestor-review-01a1333d-c1",
+  "root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "author": "native Codex/OpenAI",
+  "reviewer": "Fabric MiniMax / ubuntu1",
+  "result_sha256": "18998d79ad21380cdd5d5da4c956eabaceffc146f274ca010177fec54617f81a",
+  "result_bytes": 4631,
+  "verdict": "ACCEPTED_WITH_REPORT_QUALIFIERS",
+  "material_defects": [],
+  "qualifiers": [
+    "Three diagnostic lists share one underlying census and are not three independent measurements.",
+    "Representative declared paths include a test file and a nested init; they are not thirteen production files.",
+    "Non-substantive excludes future-only/empty modules as well as docstring-only; no per-file shape claim made from the packet.",
+    "List order is immaterial to selection but matters for merge compatibility. Current insertion order is retained; follow-on alignment is a separate source preparation obligation."
+  ],
+  "actual_local_evidence": {
+    "focused_passed": 3,
+    "closure_misses": {},
+    "strict_probe_breaches": [],
+    "ancestor_total_rows": 344,
+    "a1_ancestor_rows": 0
+  },
+  "claim_limit": "Independent bounded source review plus parent actual validation; no hosted current-candidate, merge or production acceptance."
+}

@@ -1,0 +1,65 @@
+{
+  "scope": "Hashes of locally preserved bytes from completed responses; no new remote or native read. Computed Git blob IDs are distinct from separately fetched Git metadata. This manifest excludes its own bytes.",
+  "files": [
+    {
+      "path": "INTERRUPTED_REQUEST.json",
+      "bytes": 2513,
+      "sha256": "0250a7046f0a3d6ff9fed64702c659e57eae891f555c9d59bd6861513bb638e2",
+      "computed_git_blob_sha1": "9e91e01dd5ab71e4c9fec7df1598c8f7d3354c59"
+    },
+    {
+      "path": "OBSERVATION_METADATA.json",
+      "bytes": 7558,
+      "sha256": "996dcf4dbdf26bac22c958fd57797ccedcca702a393112b69beb52708c3944ae",
+      "computed_git_blob_sha1": "cd09c8ab7b4995c76877413256db513093b0d7e9"
+    },
+    {
+      "path": "README.md",
+      "bytes": 8278,
+      "sha256": "d887e74b1bb022d634429531043746b8aa0ef257404a50f672cd6f9a3e52b5c3",
+      "computed_git_blob_sha1": "dc32d4fad20ae7bad20f9d309d38c88da831d39c"
+    },
+    {
+      "path": "SOURCE_QUERY_METADATA.json",
+      "bytes": 3274,
+      "sha256": "2f42ef12f410aa4f8e3f3f8b1ff089f3f9f124e95d32a35784ce890385473124",
+      "computed_git_blob_sha1": "ccd6a03e67de87da3ee9490194aab5c49b16a280"
+    },
+    {
+      "path": "evidence/forward_log.snapshot.jsonl",
+      "bytes": 34474,
+      "sha256": "a5a6bd895926aad829c1c09cc6a01f95949744f58e85388fd1c73d38cf679f9e",
+      "computed_git_blob_sha1": "1f084a0b698c53052376375bb1f1f201e292318b"
+    },
+    {
+      "path": "evidence/forward_log_refusals.snapshot.jsonl",
+      "bytes": 2059,
+      "sha256": "ebbded69d2383ff77a40dbd7f8f653d70d8bc234fefa5222edc2687d2e296f70",
+      "computed_git_blob_sha1": "9397f2e4784a114eecb7c20007fb63aca6531485"
+    },
+    {
+      "path": "source/engine__grey_deer_pullback_forward.py.txt",
+      "bytes": 32655,
+      "sha256": "875eba9e1cd1c0068f478b82eab63c2da8fb2ec58220f6f174e901f2a262ee41",
+      "computed_git_blob_sha1": "bbb7ce83113bdbe6c65147beec4ca4fd896cfdbd",
+      "prior_9128_file_metadata_blob": "bbb7ce83113bdbe6c65147beec4ca4fd896cfdbd",
+      "matches_prior_9128_file_metadata_blob": true
+    },
+    {
+      "path": "source/scripts__ci__daily_engine_regional_desk_builders.sh.txt",
+      "bytes": 22737,
+      "sha256": "4ada20301de940695bf6ff38a7cb755738f00b8d43141868b7353cdea13679d0",
+      "computed_git_blob_sha1": "c46ded27a832c0d3052342bc12e126978cef1858",
+      "prior_9128_file_metadata_blob": "c46ded27a832c0d3052342bc12e126978cef1858",
+      "matches_prior_9128_file_metadata_blob": true
+    },
+    {
+      "path": "source/scripts__grey_deer_pullback_nightly.py.txt",
+      "bytes": 5985,
+      "sha256": "ffff822cdec270f7a1f971a34c31a3cac97b02b8d77774feae3844e6fb75ef42",
+      "computed_git_blob_sha1": "0460443c1a756627535a2d0026cf0d5db0d3d499",
+      "prior_9128_file_metadata_blob": "0460443c1a756627535a2d0026cf0d5db0d3d499",
+      "matches_prior_9128_file_metadata_blob": true
+    }
+  ]
+}

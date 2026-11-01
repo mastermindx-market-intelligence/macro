@@ -1,0 +1,58 @@
+{
+  "schema": "company_intelligence.source_purpose_basis/v1",
+  "basis_id": "SEC-PUBLIC-FILING-FACT-USE-20261019",
+  "recorded_at": "2026-10-19T15:28:35.807539+00:00",
+  "reviewer": "MarketOntology A original root 01a128b5-e26b-7b12-94b5-231bfe0b8036",
+  "evidence_kind": "published_source_reuse_policy",
+  "decision": "covered_for_described_use",
+  "rights_family": "sec_public_filing_facts",
+  "source_policy_evidence": [
+    {
+      "url": "https://www.sec.gov/about/webmaster-frequently-asked-questions",
+      "section": "General Questions: Is content on sec.gov free? Do I need permission to reuse EDGAR content?",
+      "finding": "The SEC expressly includes EDGAR public filing content in content free to access and reuse.",
+      "verification": "Official page opened and read on 2026-10-19; not inferred from public accessibility."
+    },
+    {
+      "url": "https://www.sec.gov/about/privacy-information#dissemination",
+      "section": "Website Dissemination",
+      "finding": "The SEC permits copying and distribution of information on its site without separate SEC permission, with appropriate source citation; logos, artwork and trademarks have separate restrictions.",
+      "verification": "Official page opened and read on 2026-10-19."
+    }
+  ],
+  "source": {
+    "accession": "0001045810-26-000021",
+    "reporting_cik": "0001045810",
+    "archive_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+    "raw_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e",
+    "byte_start": 243494,
+    "byte_end": 243668,
+    "span_sha256": "13a4750ac1264fdc31b6a3569e9a0c1672d0bffb798ff11539b8c289d6665b48"
+  },
+  "permitted_use": {
+    "purpose": "private_company_intelligence_context",
+    "audience": "company_intelligence_entitled",
+    "paid_product_display": true,
+    "fact_retention": true,
+    "source_attribution_required": true,
+    "kind": "disclosed_supplier",
+    "lifecycle": "reported_use",
+    "subject": "NVIDIA",
+    "object": "Taiwan Semiconductor Manufacturing Company Limited",
+    "direction": "object_supplies_subject",
+    "product_scope": "semiconductor wafers",
+    "amount": null,
+    "economic_share": null,
+    "source_quotation": false,
+    "source_body_export": false,
+    "reviewer_text": false
+  },
+  "scope_limits": [
+    "Descriptive role stated in the selected filing only; no current relationship, deliveries, quantities, exclusivity, financial magnitude or causal effect is inferred.",
+    "Current native identity qualification is separate from filing-time identity; acceptance and retrieval clocks do not establish historical system availability.",
+    "This record supplies a source-policy basis, not a Chairman confirmation or independently inspected commercial license.",
+    "No C01 ruling is reused or modified. No other source family or third-party licensed dataset is admitted.",
+    "No SEC endorsement, artwork, logos or trademark branding. Link to the original public filing.",
+    "No live publication, installation, API acceptance, trade authority or training permission is established by this record."
+  ]
+}

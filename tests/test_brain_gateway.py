@@ -235,14 +235,55 @@ def test_pro_lane_high_intensity_config():
     assert pro.get("thinking") == "adaptive"
 
 
-def test_pro_lane_has_no_lower_quality_fallbacks():
-    """The shipped Pro waterfall ends at Opus 5 rather than Sonnet/DS/Haiku."""
+def test_missing_config_does_not_implicitly_enable_degraded_providers():
+    """A missing config retains the original subscription-only default."""
     root = _make_temp_root()
     cfg = gw._load_brain_config(root)
     pro = cfg["lanes"]["pro"]
     assert "fallback_model" not in pro
     assert not pro.get("degraded_models")
     assert pro.get("weekly_ceiling_pct") == 95
+
+
+@pytest.mark.parametrize("status", [401, 403, 429])
+def test_shipped_pro_config_serves_after_subscription_provider_failure(status):
+    """The actual Research/Pro config reaches its independent production fallback."""
+    from engine import llm_auth
+
+    class Unavailable(Exception):
+        status_code = status
+
+    error_kind = {401: "authentication_error", 403: "permission_error",
+                  429: "rate_limit_error"}[status]
+    failed = _RaiseThenClient(exc=Unavailable(
+        f"Error code: {status} - {{'type': '{error_kind}'}}"))
+    served = _RaiseThenClient(resp=_MockResponse([_MockBlock("text", "sourced answer")]))
+    primary = {"name": "oauth", "env_var": "TEST_OAUTH", "client": failed,
+               "model": "claude-opus-5"}
+    fallback = {"name": "deepseek", "env_var": "TEST_DEEPSEEK", "client": served,
+                "model": "deepseek-v4-pro"}
+    builds = []
+
+    def build(cfg, **kwargs):
+        builds.append(cfg)
+        return [fallback] if cfg["provider_order"] == ["deepseek"] else [primary]
+
+    root = pathlib.Path(__file__).resolve().parents[1]
+    with patch.object(llm_auth, "build_providers", side_effect=build), \
+         patch.object(gw, "_skip_ahead_cooled_opus", side_effect=lambda p, m: p), \
+         patch.object(gw, "_mark_provider_dead_if_auth"), \
+         patch.object(gw, "_pool_cool_for_exc"), \
+         patch.object(gw, "_pool_record_success"):
+        providers = gw._build_lane_providers("pro", root)
+        assert [p["model"] for p in providers] == ["claude-opus-5", "deepseek-v4-pro"]
+        response, model = gw._create_failover(
+            providers, max_tokens=100, system="Use cited sources.", tools=[], messages=[])
+
+    assert model == "deepseek-v4-pro"
+    assert response.content[0].text == "sourced answer"
+    assert builds[-1]["usage_lane"] == "brain-pro"
+    assert builds[-1]["client_max_retries"] == 0
+    assert builds[-1]["deepseek_base_url"] == "https://api.deepseek.com/anthropic"
 
 
 def test_pro_degraded_providers_builds_deepseek_and_haiku():
@@ -1838,8 +1879,10 @@ def test_chart_command_tools_offered_on_terminal_page(tmp_path):
     chat_names = {s["name"] for s in schemas_chat}
     empty_names = {s["name"] for s in schemas_empty}
 
-    # All four chart-command tools must appear on terminal page
-    for tool in ("set_chart_symbol", "set_chart_timeframe", "toggle_chart_indicator", "run_chart_detection"):
+    assert "run_chart_detection" not in terminal_names
+    assert "annotate_chart" not in terminal_names
+    # Compatibility names and native commands share the bound v2 path.
+    for tool in ("set_chart_symbol", "set_chart_timeframe", "toggle_chart_indicator", "emit_chart_command"):
         assert tool in terminal_names, f"{tool} not in terminal schemas"
         assert tool not in chat_names, f"{tool} leaked into chat schemas"
         assert tool not in empty_names, f"{tool} leaked into empty-page schemas"
@@ -1861,7 +1904,7 @@ def test_set_chart_symbol_requires_symbol():
 
 def test_set_chart_timeframe_valid(tmp_path):
     """set_chart_timeframe accepts known timeframes."""
-    for tf in ("1m", "5m", "D", "W", "1M"):
+    for tf in ("1m", "5m", "12h", "D", "W", "1M"):
         result = gw._tool_set_chart_timeframe({"tf": tf})
         assert result.get("client_executed") is True
         assert result.get("action") == "set_timeframe"
@@ -1933,7 +1976,7 @@ def test_chart_command_emitted_as_sse_event_in_stream(tmp_path):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         events = list(gw.chat_stream(
                             "Switch to AAPL", "user1", lane="fast",
-                            context={"page": "terminal"},
+                            context=_cmx_terminal_context(user_id="user1"),
                             root=root,
                         ))
 
@@ -1941,17 +1984,18 @@ def test_chart_command_emitted_as_sse_event_in_stream(tmp_path):
     command_events = [p for p in parsed if p.get("type") == "command"]
     assert command_events, f"No 'command' SSE events emitted: {parsed}"
     cmd = command_events[0]
-    # FLAT shape (mirrors annotate) — fields at top level, NOT nested under 'payload'.
-    assert cmd.get("action") == "set_symbol"
-    assert cmd.get("symbol") == "AAPL", f"symbol must be flat/top-level: {cmd}"
-    assert "payload" not in cmd, f"command event must not nest under 'payload': {cmd}"
+    assert cmd["v"] == 2 and cmd["op"] == "chart.set_symbol"
+    assert cmd["args"]["symbol"] == "AAPL"
+    assert cmd["target"]["symbol"] == "NVDA"
+    assert "action" not in cmd and "payload" not in cmd
 
 
-def test_chart_command_returned_in_chat_result(tmp_path):
+@pytest.mark.parametrize("tf", ["W", "12h"])
+def test_chart_command_returned_in_chat_result(tmp_path, tf):
     """chat() returns commands list when chart-command tools are called (terminal context)."""
     root = _make_temp_root()
 
-    chart_cmd_block = _MockBlock("tool_use", name="set_chart_timeframe", input_={"tf": "W"}, id_="tf1")
+    chart_cmd_block = _MockBlock("tool_use", name="set_chart_timeframe", input_={"tf": tf}, id_="tf1")
     turn1 = _MockResponse([chart_cmd_block], "tool_use")
     turn2 = _MockResponse([_MockBlock("text", "Switched to weekly timeframe. is_context_only: true — all signals are display-tier pending FDR.")], "end_turn")
 
@@ -1963,16 +2007,17 @@ def test_chart_command_returned_in_chat_result(tmp_path):
                 with patch.object(gw, "_ensure_thread", return_value=None):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         result = gw.chat(
-                            "Show weekly chart", "user1", lane="fast",
-                            context={"page": "terminal"},
+                            f"Show {tf} chart", "user1", lane="fast",
+                            context=_cmx_terminal_context(user_id="user1"),
                             root=root,
                         )
 
     assert result.get("ok") is True
     commands = result.get("commands", [])
     assert commands, f"No commands in chat() result: {result}"
-    assert commands[0].get("action") == "set_timeframe"
-    assert commands[0].get("tf") == "W"
+    assert commands[0]["v"] == 2 and commands[0]["op"] == "chart.set_tf"
+    assert commands[0]["args"]["tf"] == tf
+    assert commands[0]["target"]["tf"] == "D"
 
 
 # ---------------------------------------------------------------------------
@@ -2239,7 +2284,7 @@ def test_terminal_system_prompt_describes_chart_tools_as_display_only():
     prompt = gw._build_system_prompt("chat", page="terminal")
     assert "CHART CONTROL" in prompt
     assert "set_chart_symbol" in prompt
-    assert "run_chart_detection" in prompt
+    assert "emit_chart_command" in prompt
     # display-only framing, never a recommendation
     assert "DISPLAY ACTIONS ONLY" in prompt or "display action" in prompt.lower()
     assert "recommendation" in prompt.lower()
@@ -2289,7 +2334,7 @@ def test_unknown_sse_event_type_ignored_gracefully(tmp_path):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         events = list(gw.chat_stream(
                             "Switch to TSLA", "user_cmd",
-                            context={"page": "terminal"},
+                            context=_cmx_terminal_context(user_id="user_cmd"),
                             root=root,
                         ))
 
@@ -2299,11 +2344,11 @@ def test_unknown_sse_event_type_ignored_gracefully(tmp_path):
     assert "meta" in event_types
     assert "done" in event_types
     assert "command" in event_types, f"Expected 'command' event type, got: {event_types}"
-    # Verify 'command' event has the FLAT expected shape (fields top-level, no 'payload')
     cmd_ev = next(p for p in parsed if p.get("type") == "command")
-    assert cmd_ev.get("action") == "set_symbol"
-    assert cmd_ev.get("symbol"), f"command event must carry a flat 'symbol': {cmd_ev}"
-    assert "payload" not in cmd_ev
+    assert cmd_ev["v"] == 2 and cmd_ev["op"] == "chart.set_symbol"
+    assert cmd_ev["args"]["symbol"] == "TSLA"
+    assert cmd_ev["target"]["symbol"] == "NVDA"
+    assert "action" not in cmd_ev and "payload" not in cmd_ev
 
 
 # ---------------------------------------------------------------------------
@@ -3882,7 +3927,9 @@ def test_run_brain_loop_accepts_user_id_kwarg(tmp_path):
     def _spy_dispatch(
         name, params, root_, tdd, thu, user_id="", internals_ok=False,
         chart_client="", chart_origin_id="", chart_context_revision=None,
+        allowed_tool_names=None,
     ):
+        seen["allowed_tools"] = allowed_tool_names
         seen["user_id"] = user_id
         return {"available": False, "note": "stub"}
 
@@ -3892,6 +3939,7 @@ def test_run_brain_loop_accepts_user_id_kwarg(tmp_path):
             client, "deepseek-chat", 2000, 5, user_id="user-77",
         )
     assert seen.get("user_id") == "user-77"
+    assert "get_watchlist" in seen["allowed_tools"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -4331,6 +4379,80 @@ def test_get_user_quotas_unlimited_operator():
 
 # ── v2 command envelope validation (accept/reject matrix) ─────────────────────
 
+
+def test_v2_model_cannot_supply_command_target():
+    """Target identity is host-owned; model input is stripped before the wire boundary."""
+    forged = {
+        "schema": "chart.command_target.v1",
+        "origin_id": "forged-origin",
+        "context_revision": 999,
+        "pane_id": 9,
+        "symbol": "AAPL",
+        "tf": "W",
+    }
+    res = gw._tool_chart_command({
+        "op": "chart.set_indicators",
+        "args": {"mode": "patch", "indicators": [{"name": "structure"}]},
+        "target": forged,
+    })
+    assert res.get("client_executed") is True
+    assert "target" not in res
+
+
+def test_v2_host_target_binds_exact_chart_state():
+    origin = "target-origin"
+    gw.put_chart_state(
+        "u-target", "terminal",
+        {"symbol": "NVDA", "tf": "D", "pane_id": 2, "capabilities": {
+            "command_target": {"schema": "chart.command_target.v1", "required_for": ["all_effectful_v2"]}}},
+        origin_id=origin, context_revision=7,
+    )
+    result = gw._tool_chart_command({
+        "op": "chart.set_indicators",
+        "args": {"mode": "patch", "indicators": [{"name": "structure"}]},
+    })
+    target = gw._chart_command_target_for_result(
+        "u-target", origin, 7, result)
+    assert target == {
+        "schema": "chart.command_target.v1",
+        "origin_id": origin,
+        "context_revision": 7,
+        "pane_id": 2,
+        "symbol": "NVDA",
+        "tf": "D",
+    }
+    wire = gw._flat_command(
+        result, batch_id="brain_target_1", seq=0, target=target)
+    assert wire["target"] == target
+
+
+def test_v2_host_target_refuses_revision_drift():
+    origin = "target-drift"
+    gw.put_chart_state(
+        "u-target-drift", "terminal",
+        {"symbol": "NVDA", "tf": "W", "pane_id": 0, "capabilities": {
+            "command_target": {"schema": "chart.command_target.v1", "required_for": ["all_effectful_v2"]}}},
+        origin_id=origin, context_revision=8,
+    )
+    result = gw._tool_chart_command({
+        "op": "ai.clear",
+        "args": {"ids": ["ai_old"]},
+    })
+    assert gw._chart_command_target_for_result(
+        "u-target-drift", origin, 7, result) is None
+
+
+def test_v2_plain_draw_requires_exact_host_target():
+    result = gw._tool_chart_command({
+        "op": "draw.hline", "id": "ai_plain", "args": {"p": 100.0},
+    })
+    assert gw._chart_command_requires_target(result) is True
+    with pytest.raises(ValueError, match="host target"):
+        gw._flat_command(result, batch_id="brain_plain", seq=0)
+    wire = gw._flat_command(result, batch_id="brain_plain", seq=0, target=_cmx_host_target())
+    assert wire["target"] == _cmx_host_target()
+
+
 def test_v2_command_accepts_valid_trendline():
     """A well-formed draw.trendline envelope is accepted and emits client_executed=True."""
     res = gw._tool_chart_command({
@@ -4346,7 +4468,7 @@ def test_v2_command_accepts_valid_trendline():
     assert res.get("caption")
     # Raw tool output is model-facing validation only; host wire identity is bound later.
     assert "on" not in res and "batch_id" not in res and "seq" not in res
-    flat = gw._flat_command(res, batch_id="brain_test_0", seq=0)
+    flat = gw._flat_command(res, batch_id="brain_test_0", seq=0, target=_cmx_host_target())
     assert "client_executed" not in flat and "note" not in flat
     assert flat["op"] == "draw.trendline" and flat["v"] == 2
     assert flat["on"] is True and flat["batch_id"] == "brain_test_0" and flat["seq"] == 0
@@ -4362,7 +4484,7 @@ def test_v2_command_ignores_model_supplied_wire_identity():
     })
     assert res.get("client_executed") is True
     assert "on" not in res and "batch_id" not in res and "seq" not in res
-    wire = gw._flat_command(res, batch_id="brain_host_batch", seq=3)
+    wire = gw._flat_command(res, batch_id="brain_host_batch", seq=3, target=_cmx_host_target())
     assert wire["on"] is True
     assert wire["batch_id"] == "brain_host_batch"
     assert wire["seq"] == 3
@@ -4456,6 +4578,450 @@ def test_v2_batch_rejects_bad_member():
 
 # ── emit_chart_command in the tool loop → 'command' SSE event ─────────────────
 
+
+def _cmx_host_target(origin_id: str = "cmx-stream-origin", revision: int = 7, pane_id: int = 0) -> dict:
+    return {"schema": "chart.command_target.v1", "origin_id": origin_id,
+            "context_revision": revision, "pane_id": pane_id, "symbol": "NVDA", "tf": "D"}
+
+
+def _cmx_terminal_context(origin_id: str = "cmx-stream-origin", revision: int = 7, user_id: str = "userX") -> dict:
+    """Seed a connected, capable chart fixture before testing command transport."""
+    from copy import deepcopy
+    previous = gw.get_chart_state_record(user_id, "terminal", origin_id=origin_id)
+    session = deepcopy(previous["session"]) if previous else {"symbol": "NVDA", "tf": "D", "pane_id": 0}
+    session.setdefault("capabilities", {})["command_target"] = {
+        "schema": "chart.command_target.v1", "required_for": ["all_effectful_v2"]}
+    gw.put_chart_state(user_id, "terminal", session, origin_id=origin_id, context_revision=revision)
+    return {
+        "page": "terminal",
+        "ai_context": {
+            "schema": "ai_context_client.v1",
+            "origin_id": origin_id,
+            "context_revision": revision,
+            "captured_at": "2026-09-25T09:10:00Z",
+            "pinned": [],
+            "active": {"type": "security", "id": "NVDA"},
+            "ambient": {
+                "symbol": "NVDA",
+                "timeframe": "D",
+                "page": "terminal",
+                "panel": None,
+            },
+        },
+    }
+
+
+def _tool_result_payload(
+    client: _MockClient,
+    call_index: int = 1,
+    result_index: int = 0,
+    *,
+    tool_use_id: str | None = None,
+) -> dict:
+    """Find a tool result robustly even though the mock retains the mutable messages list."""
+    for message in reversed(client.calls[call_index]["messages"]):
+        if not isinstance(message, dict):
+            continue
+        content = message.get("content")
+        if not isinstance(content, list):
+            continue
+        rows = [
+            row for row in content
+            if isinstance(row, dict)
+            and row.get("type") == "tool_result"
+            and (tool_use_id is None or row.get("tool_use_id") == tool_use_id)
+        ]
+        if rows:
+            return json.loads(rows[result_index]["content"])
+    raise AssertionError(f"provider call contains no tool_result for {tool_use_id!r}")
+
+
+
+def test_v2_stream_patch_emits_host_target_and_waits_for_ack(tmp_path):
+    root = _make_temp_root()
+    origin = "cmx-target-stream"
+    gw.put_chart_state(
+        "userX", "terminal",
+        {
+            "symbol": "NVDA",
+            "tf": "D",
+            "pane_id": 1,
+            "indicators": [{"name": "structure", "params": {"sr.on": True}}],
+            "capabilities": {
+                "indicator_edit": {
+                    "op": "chart.set_indicators",
+                    "modes": ["replace", "patch"],
+                },
+            },
+        },
+        origin_id=origin,
+        context_revision=7,
+    )
+    cmd = _MockBlock(
+        "tool_use", name="emit_chart_command",
+        input_={
+            "op": "chart.set_indicators",
+            "args": {
+                "mode": "patch",
+                "indicators": [{"name": "structure", "params": {"sr.labels": False}}],
+            },
+            "target": {
+                "schema": "chart.command_target.v1",
+                "origin_id": "forged",
+                "context_revision": 999,
+                "pane_id": 9,
+                "symbol": "AAPL",
+                "tf": "W",
+            },
+        },
+        id_="patch1",
+    )
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([
+        _MockBlock("text", "Patched. is_context_only: true — display-tier pending FDR.")
+    ], "end_turn")
+    client = _MockClient([turn1, turn2])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    command_event = None
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={
+                "tier": "pro", "status": "active", "current_period_end": None,
+            }):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        for event in gw.chat_stream(
+                            "hide structure labels only", "userX", lane="fast",
+                            context=_cmx_terminal_context(origin, 7), root=root,
+                        ):
+                            if not event.startswith("data: "):
+                                continue
+                            parsed = json.loads(event[6:])
+                            if parsed.get("type") == "command" and parsed.get("v") == 2:
+                                command_event = parsed
+                                assert parsed["target"] == {
+                                    "schema": "chart.command_target.v1",
+                                    "origin_id": origin,
+                                    "context_revision": 7,
+                                    "pane_id": 1,
+                                    "symbol": "NVDA",
+                                    "tf": "D",
+                                }
+                                gw.put_chart_state(
+                                    "userX", "terminal",
+                                    {
+                                        "symbol": "NVDA",
+                                        "tf": "D",
+                                        "pane_id": 1,
+                                        "indicators": [{
+                                            "name": "structure",
+                                            "params": {"sr.on": True, "sr.labels": False},
+                                        }],
+                                        "capabilities": {
+                                            "indicator_edit": {
+                                                "op": "chart.set_indicators",
+                                                "modes": ["replace", "patch"],
+                                            },
+                                        },
+                                    },
+                                    origin_id=origin,
+                                    context_revision=7,
+                                    acks=[{
+                                        "batch_id": parsed["batch_id"],
+                                        "seq": parsed["seq"],
+                                        "id": None,
+                                        "ok": True,
+                                    }],
+                                )
+
+    assert command_event is not None
+    receipt = _tool_result_payload(client, 1, tool_use_id="patch1")
+    assert receipt["command_status"] == "accepted"
+    assert receipt["verified_by"] == "terminal_ack"
+    assert receipt["observed_state"]["indicator_names"] == ["structure"]
+
+
+def test_v2_stream_tool_result_waits_for_exact_terminal_ack(tmp_path):
+    """The next model round sees Terminal ACK truth, not the pre-client validation result."""
+    root = _make_temp_root()
+    origin = "cmx-stream-accept"
+    cmd = _MockBlock("tool_use", name="emit_chart_command",
+                     input_={"op": "draw.hline", "id": "ai_ack_h1", "args": {"p": 112.5}}, id_="ack1")
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Verified. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    client = _MockClient([turn1, turn2])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        events = []
+                        for event in gw.chat_stream(
+                            "mark the prior high", "userX", lane="fast",
+                            context=_cmx_terminal_context(origin, 7), root=root,
+                        ):
+                            events.append(event)
+                            if not event.startswith("data: "):
+                                continue
+                            parsed = json.loads(event[6:])
+                            if parsed.get("type") == "command" and parsed.get("v") == 2:
+                                gw.put_chart_state(
+                                    "userX", "terminal",
+                                    {"symbol": "NVDA", "tf": "D", "pane_id": 0,
+                                     "drawings": [{"id": "ai_ack_h1", "by": "ai"}]},
+                                    origin_id=origin,
+                                    context_revision=7,
+                                    acks=[{
+                                        "batch_id": parsed["batch_id"], "seq": parsed["seq"],
+                                        "id": "ai_ack_h1", "ok": True,
+                                    }],
+                                )
+
+    receipt = _tool_result_payload(client)
+    assert receipt["command_status"] == "accepted"
+    assert receipt["verified_by"] == "terminal_ack"
+    assert receipt["batch_id"].startswith("brain_")
+    assert receipt["seq"] == 0
+    assert receipt["ack"]["ok"] is True
+    assert receipt["observed_state"]["drawing_ids"] == ["ai_ack_h1"]
+    assert receipt["context_changed"] is False
+
+
+def test_v2_stream_tool_result_reports_terminal_rejection(tmp_path):
+    root = _make_temp_root()
+    origin = "cmx-stream-reject"
+    cmd = _MockBlock("tool_use", name="emit_chart_command",
+                     input_={"op": "chart.set_tf", "args": {"tf": "7D"}}, id_="rej1")
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Rejected. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    client = _MockClient([turn1, turn2])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        for event in gw.chat_stream(
+                            "switch to 7D", "userX", lane="fast",
+                            context=_cmx_terminal_context(origin, 7), root=root,
+                        ):
+                            if not event.startswith("data: "):
+                                continue
+                            parsed = json.loads(event[6:])
+                            if parsed.get("type") == "command" and parsed.get("v") == 2:
+                                gw.put_chart_state(
+                                    "userX", "terminal", {"symbol": "NVDA", "tf": "D"},
+                                    origin_id=origin, context_revision=7,
+                                    acks=[{
+                                        "batch_id": parsed["batch_id"], "seq": parsed["seq"],
+                                        "id": None, "ok": False, "error": "unsupported_tf",
+                                    }],
+                                )
+
+    receipt = _tool_result_payload(client)
+    assert receipt["command_status"] == "rejected"
+    assert receipt["ack"] == {"ok": False, "error": "unsupported_tf"}
+    assert receipt["verified_by"] == "terminal_ack"
+
+
+def test_v2_stream_ack_survives_expected_context_revision_transition(tmp_path):
+    """Symbol/TF setters may ACK on the new revision; exact batch/seq still identifies the command."""
+    root = _make_temp_root()
+    origin = "cmx-stream-revision"
+    cmd = _MockBlock("tool_use", name="emit_chart_command",
+                     input_={"op": "chart.set_tf", "args": {"tf": "W"}}, id_="rev1")
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Weekly is active. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    client = _MockClient([turn1, turn2])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        for event in gw.chat_stream(
+                            "switch weekly", "userX", lane="fast",
+                            context=_cmx_terminal_context(origin, 7), root=root,
+                        ):
+                            if not event.startswith("data: "):
+                                continue
+                            parsed = json.loads(event[6:])
+                            if parsed.get("type") == "command" and parsed.get("v") == 2:
+                                gw.put_chart_state(
+                                    "userX", "terminal",
+                                    {"symbol": "NVDA", "tf": "W", "pane_id": 0},
+                                    origin_id=origin, context_revision=8,
+                                    acks=[{
+                                        "batch_id": parsed["batch_id"], "seq": parsed["seq"],
+                                        "id": None, "ok": True,
+                                    }],
+                                )
+
+    receipt = _tool_result_payload(client)
+    assert receipt["command_status"] == "accepted"
+    assert receipt["observed_context_revision"] == 8
+    assert receipt["expected_context_revision"] == 7
+    assert receipt["context_changed"] is True
+    assert receipt["observed_state"]["tf"] == "W"
+
+
+
+@pytest.mark.parametrize("ack_mode", ["applied", "unproven", "rejected", "manual"])
+def test_v2_stream_only_applied_successor_advances_followup_chart_read(tmp_path, ack_mode):
+    """A later observation cannot inherit the turn authority of an applied command."""
+    root = _make_temp_root()
+    # Each scenario owns a distinct session; chart revisions intentionally never regress.
+    origin = "cmx-stream-followup-" + ack_mode
+    set_tf = _MockBlock(
+        "tool_use", name="emit_chart_command",
+        input_={"op": "chart.set_tf", "args": {"tf": "W"}}, id_="set-tf",
+    )
+    read = _MockBlock("tool_use", name="read_chart_state", input_={}, id_="read-new")
+    turn1 = _MockResponse([set_tf], "tool_use")
+    turn2 = _MockResponse([read], "tool_use")
+    turn3 = _MockResponse([
+        _MockBlock("text", "Weekly confirmed. is_context_only: true — display-tier pending FDR.")
+    ], "end_turn")
+    client = _MockClient([turn1, turn2, turn3])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={
+                "tier": "pro", "status": "active", "current_period_end": None,
+            }):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        for event in gw.chat_stream(
+                            "switch weekly then verify", "userX", lane="fast",
+                            context=_cmx_terminal_context(origin, 7), root=root,
+                        ):
+                            if not event.startswith("data: "):
+                                continue
+                            parsed = json.loads(event[6:])
+                            if parsed.get("type") == "command" and parsed.get("v") == 2:
+                                gw.put_chart_state(
+                                    "userX", "terminal",
+                                    {
+                                        "symbol": "NVDA", "tf": "W", "pane_id": 0,
+                                        "visible_range": {"from": 1.0, "to": 2.0},
+                                    },
+                                    origin_id=origin,
+                                    context_revision=9 if ack_mode == "manual" else 8,
+                                    acks=[{
+                                        "batch_id": parsed["batch_id"],
+                                        "seq": parsed["seq"],
+                                        "id": None,
+                                        "ok": ack_mode != "rejected",
+                                        **({"error": "command_target_revision_mismatch"} if ack_mode == "rejected" else {}),
+                                        **({"application": {
+                                            "schema": "chart.command_application.v1",
+                                            "predecessor": parsed["target"],
+                                            "successor": {**parsed["target"], "tf": "W", "context_revision": 8},
+                                        }} if ack_mode in {"applied", "manual"} else {}),
+                                    }],
+                                )
+
+    first_receipt = _tool_result_payload(client, 1, tool_use_id="set-tf")
+    assert first_receipt["command_status"] == ("rejected" if ack_mode == "rejected" else "accepted")
+    assert first_receipt["observed_context_revision"] == (9 if ack_mode == "manual" else 8)
+    second_receipt = _tool_result_payload(client, 2, tool_use_id="read-new")
+    if ack_mode == "applied":
+        assert second_receipt["connected"] is True
+        assert second_receipt["context_revision"] == 8
+        assert second_receipt["session"]["tf"] == "W"
+    else:
+        assert second_receipt["connected"] is False
+        assert second_receipt["reason"] == "context_revision_mismatch"
+
+
+def test_v2_stream_timeout_is_explicitly_unverified(tmp_path):
+    root = _make_temp_root()
+    origin = "cmx-stream-timeout"
+    cmd = _MockBlock("tool_use", name="emit_chart_command",
+                     input_={"op": "draw.hline", "id": "ai_timeout", "args": {"p": 100}}, id_="tmo1")
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Unverified. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    client = _MockClient([turn1, turn2])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    with patch.object(gw, "_CHART_ACK_WAIT_SECONDS", 0.01, create=True):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", return_value=providers):
+                with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                    with patch.object(gw, "_ensure_thread", return_value=None):
+                        with patch("lib.ai_costs.record_usage", return_value=True):
+                            list(gw.chat_stream(
+                                "mark 100", "userX", lane="fast",
+                                context=_cmx_terminal_context(origin, 7), root=root,
+                            ))
+
+    receipt = _tool_result_payload(client)
+    assert receipt["command_status"] == "unverified"
+    assert receipt["reason"] == "ack_timeout"
+    assert receipt["note"].startswith("Do not claim")
+
+
+def test_v2_ack_wait_uses_one_collective_deadline_for_full_batch():
+    """Twenty-four missing ACKs consume one bounded wait, not 24 serial waits."""
+    clock = [0.0]
+
+    def fake_monotonic():
+        return clock[0]
+
+    def fake_sleep(seconds):
+        clock[0] += seconds
+
+    wires = [
+        {"v": 2, "on": True, "batch_id": "brain_collective", "seq": i,
+         "op": "draw.hline", "id": f"ai_collective_{i}", "args": {"p": 100 + i}}
+        for i in range(24)
+    ]
+    with patch.object(gw, "_CHART_ACK_WAIT_SECONDS", 2.0):
+        with patch.object(gw, "_CHART_ACK_POLL_SECONDS", 0.05):
+            with patch.object(gw.time, "monotonic", side_effect=fake_monotonic):
+                with patch.object(gw.time, "sleep", side_effect=fake_sleep):
+                    receipts = gw._wait_for_chart_command_acks(
+                        "u-collective", "origin-collective", 4, wires)
+
+    assert len(receipts) == 24
+    assert all(row["reason"] == "ack_timeout" for row in receipts)
+    assert 2.0 <= clock[0] < 2.051
+
+
+def test_v2_nonstream_model_result_is_deferred_not_executed(tmp_path):
+    """chat() cannot receive a client ACK before the HTTP response carrying the command exists."""
+    root = _make_temp_root()
+    cmd = _MockBlock("tool_use", name="emit_chart_command",
+                     input_={"op": "draw.hline", "id": "ai_nonstream", "args": {"p": 101}}, id_="ns1")
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Deferred. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    client = _MockClient([turn1, turn2])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        out = gw.chat(
+                            "mark 101", "userX", lane="fast",
+                            context=_cmx_terminal_context("cmx-nonstream", 3), root=root,
+                        )
+
+    assert out["commands"][0]["v"] == 2
+    receipt = _tool_result_payload(client)
+    assert receipt["command_status"] == "unverified"
+    assert receipt["reason"] == "nonstream_client_not_yet_received"
+    assert receipt["note"].startswith("Do not claim")
+
+
+
 def test_v2_command_emitted_as_sse_event_in_stream(tmp_path):
     """emit_chart_command on the terminal page emits a v2 'command' SSE event."""
     root = _make_temp_root()
@@ -4471,7 +5037,7 @@ def test_v2_command_emitted_as_sse_event_in_stream(tmp_path):
                 with patch.object(gw, "_ensure_thread", return_value=None):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         events = list(gw.chat_stream("mark the prior high", "userX", lane="fast",
-                                                     context={"page": "terminal"}, root=root))
+                                                     context=_cmx_terminal_context(), root=root))
     parsed = [json.loads(e[6:]) for e in events if e.startswith("data: ")]
     cmds = [p for p in parsed if p.get("type") == "command" and p.get("v") == 2]
     assert cmds, f"no v2 command event: {parsed}"
@@ -4499,7 +5065,7 @@ def test_v2_same_round_commands_share_host_batch_and_sequence(tmp_path):
                 with patch.object(gw, "_ensure_thread", return_value=None):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         events = list(gw.chat_stream("mark both", "userX", lane="fast",
-                                                     context={"page": "terminal"}, root=root))
+                                                     context=_cmx_terminal_context(), root=root))
     parsed = [json.loads(e[6:]) for e in events if e.startswith("data: ")]
     cmds = [p for p in parsed if p.get("type") == "command" and p.get("v") == 2]
     assert len(cmds) == 2
@@ -4525,7 +5091,7 @@ def test_v2_commands_across_rounds_share_turn_batch_and_monotone_sequence(tmp_pa
                 with patch.object(gw, "_ensure_thread", return_value=None):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         events = list(gw.chat_stream("mark in two steps", "userX", lane="fast",
-                                                     context={"page": "terminal"}, root=root))
+                                                     context=_cmx_terminal_context(), root=root))
     parsed = [json.loads(e[6:]) for e in events if e.startswith("data: ")]
     cmds = [p for p in parsed if p.get("type") == "command" and p.get("v") == 2]
     assert len(cmds) == 2
@@ -4547,7 +5113,7 @@ def test_v2_command_returned_in_nonstream_has_strict_wire_identity(tmp_path):
                 with patch.object(gw, "_ensure_thread", return_value=None):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         out = gw.chat("mark 113", "userX", lane="fast",
-                                      context={"page": "terminal"}, root=root)
+                                      context=_cmx_terminal_context(), root=root)
     cmds = [c for c in out.get("commands", []) if c.get("v") == 2]
     assert len(cmds) == 1
     assert cmds[0]["on"] is True
@@ -4569,7 +5135,7 @@ def test_v2_invalid_command_not_emitted(tmp_path):
                 with patch.object(gw, "_ensure_thread", return_value=None):
                     with patch("lib.ai_costs.record_usage", return_value=True):
                         events = list(gw.chat_stream("do a barrel roll", "userX", lane="fast",
-                                                     context={"page": "terminal"}, root=root))
+                                                     context=_cmx_terminal_context(), root=root))
     parsed = [json.loads(e[6:]) for e in events if e.startswith("data: ")]
     cmds = [p for p in parsed if p.get("type") == "command"]
     assert cmds == [], f"invalid command leaked to SSE: {cmds}"
@@ -4734,6 +5300,87 @@ def test_chart_state_ack_history_sanitizes_and_bounds():
     assert all(len(a.get("error", "")) <= gw._CHART_ACK_ERROR_MAX for a in rec["acks"])
 
 
+
+def test_read_chart_state_preserves_data_readout_and_routes_native_lessons():
+    origin = "origin-native-readout"
+    marker = "SECRET_NUMERIC_FIELD_DO_NOT_PROMPT"
+    session = {
+        "symbol": "NVDA",
+        "tf": "D",
+        "pane_id": 0,
+        "indicators": [
+            {"name": "structure", "params": {"sr.on": True}},
+            {"name": "rsix", "params": {"eng.on": True}},
+            {"name": "macdx", "params": {"hist.on": True}},
+        ],
+        "capabilities": {
+            "indicators": ["structure", "rsix", "macdx"],
+            "native_study_context": {
+                "schema": "chart.native_study_context.v1",
+                "status": "complete",
+                "omitted_modules": [],
+                "modules": [
+                    {"id": "structure/sr", "suite": "structure", "module": "sr", "enabled": True},
+                    {"id": "rsix/eng", "suite": "rsix", "module": "eng", "enabled": True},
+                    {"id": "macdx/hist", "suite": "macdx", "module": "hist", "enabled": True},
+                ],
+            },
+        },
+        "data_readout": {
+            "schema": "chart.data_readout.v1",
+            "status": "available",
+            "basis": {
+                "source": "existing_chart_data_window",
+                "data_status": "loaded_chart_cache_not_live_attestation",
+                "native_coverage": "not_all_native_studies",
+                "empty_result": "not_a_no_setup_judgment",
+            },
+            "latest_loaded": {
+                "time": "2026-09-24",
+                "readouts": [{"id": marker, "value": 61.25}],
+            },
+        },
+    }
+    gw.put_chart_state(
+        "u-native-readout", "terminal", session,
+        origin_id=origin, context_revision=9,
+    )
+
+    state = gw._tool_read_chart_state(
+        "u-native-readout", "terminal",
+        origin_id=origin, context_revision=9,
+    )
+    assert state["connected"] is True
+    assert state["session"]["data_readout"] == session["data_readout"]
+    assert state["study_context"]["native_module_ids"] == [
+        "macdx/hist", "rsix/eng", "structure/sr",
+    ]
+
+    terms = gw._chart_doctrine_terms(state)
+    assert "native[rsix/eng]" in terms
+    assert "native[macdx/hist]" in terms
+    assert "native[structure/sr]" in terms
+
+    block = gw._doctrine_block_for(
+        "terminal", "analyze this",
+        user_id="u-native-readout", chart_state=state,
+    )
+    assert "NATIVE MOMENTUM" in block
+    assert "NATIVE STRUCTURE" in block
+    assert marker not in block
+    assert "61.25" not in block
+
+
+def test_read_chart_state_schema_describes_data_readout_as_bounded_nonlive_evidence():
+    root = _make_temp_root()
+    schemas = {s["name"]: s for s in gw._all_brain_tool_schemas(root, page="terminal")}
+    desc = schemas["read_chart_state"]["description"].lower()
+    assert "data_readout" in desc
+    assert "not live" in desc or "not live-attested" in desc
+    assert "not all native" in desc
+    assert "no setup" in desc
+
+
 def test_read_chart_state_requires_exact_origin_and_revision():
     gw.put_chart_state("u-exact", "terminal", {"symbol": "NVDA", "tf": "1D"},
                        origin_id="origin-exact", context_revision=4,
@@ -4808,6 +5455,16 @@ def test_read_chart_state_default_disconnected():
     assert gw._tool_read_chart_state("anyone", "dashboard") == {"connected": False}
     # Terminal client with no stored session → disconnected.
     assert gw._tool_read_chart_state("ghost-user-xyz", "terminal") == {"connected": False}
+
+
+@pytest.mark.parametrize("user_id", ["guest:chart-example", "unknown", ""])
+def test_guest_chart_read_explains_sign_in_without_reading_private_state(user_id):
+    with patch.object(gw, "get_chart_state_record") as read_state:
+        result = gw._tool_read_chart_state(user_id, "terminal", origin_id="visible-guest-chart")
+    read_state.assert_not_called()
+    assert result["connected"] is False
+    assert result["reason"] == "sign_in_required"
+    assert "General chat is available" in result["note"]
 
 
 def test_read_chart_state_connected_returns_session():
@@ -5295,6 +5952,8 @@ def test_tool_label_whitelist_covers_every_tool():
             internals_allowed=True,
             user_id="label-audit-member",
         )]
+        names += [t["name"] for t in gw._all_brain_tool_schemas(
+            root, page="chat", internals_allowed=True, user_id="label-audit-member")]
     assert names, "tool schema enumeration must not be empty"
     assert [n for n in names if n not in gw._TOOL_LABELS] == []
     assert [k for k in gw._TOOL_LABELS if k not in names] == [], "stale label rows"
@@ -5512,7 +6171,7 @@ def test_brain_yml_fast_lane_uses_v4_pro_with_native_thinking():
 
 
 def test_brain_yml_pro_lane_latency_guards():
-    """Shipped Pro is Sol High first, then high-effort Opus, with a long timeout."""
+    """Preferred Pro models retain their latency guards with independent capacity last."""
     root = pathlib.Path(__file__).resolve().parent.parent
     pro = gw._load_brain_config(root)["lanes"]["pro"]
     assert pro["provider_order"] == ["codex", "oauth", "anthropic"]
@@ -5520,7 +6179,7 @@ def test_brain_yml_pro_lane_latency_guards():
     assert pro["codex_reasoning_effort"] == "high"
     assert pro["opus_model"] == "claude-opus-5"
     assert "fallback_model" not in pro
-    assert not pro.get("degraded_models")
+    assert pro.get("degraded_models") == ["deepseek-v4-pro"]
     assert pro["client_max_retries"] == 0
     assert pro["client_timeout_s"] == 600  # covers a full 8k-token NO-TOOL answer (review MAJOR-1)
     assert "deepseek_thinking" not in pro

@@ -1,0 +1,528 @@
+{
+  "source_head": "642dbedeb5deb1bbb156bda4c1dbaeb518c558df",
+  "observed_at_utc": "2026-10-21T13:28:03.923548+00:00",
+  "plan_sha256": "e74695a22d465b40c0bac61a84d79c97deb5251f32f8124e6506a24326f80d16",
+  "expected_pairs": 9,
+  "receipt_scan_count": 9,
+  "truncated": false,
+  "acquisition": {
+    "command": "scripts.tiingo_ingest collect --sources forex-bars --symbols eurusd,gbpusd,usdjpy,usdchf,audusd,usdcad,usdmxn,usdbrl,usdcnh --start 2026-10-19 --end 2026-10-20 --max-requests 9 --pause-seconds 1.25",
+    "exit_code": 0,
+    "process_runtime_seconds": 19.93,
+    "result": {
+      "attempted": 9,
+      "ok": 9,
+      "new": 9,
+      "failed": 0,
+      "row_hints": 17011,
+      "bytes": 1973450,
+      "errors": []
+    }
+  },
+  "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+  "dataos_identity_admitted": false,
+  "pit_backtest_eligible": false,
+  "redistribution_admitted": false,
+  "qualified_finalized_4h_observations": 0,
+  "pairs": [
+    {
+      "pair_candidate": "EURUSD",
+      "vendor_symbol_requested": "eurusd",
+      "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-20&resampleFreq=1min&startDate=2026-10-19",
+      "matching_receipts": 1,
+      "receipt_id": "ab3276b37deb0e5fc9d70717dedc80aaa8fdcf2dae4f9862d7507436bbd5e9bd",
+      "receipt_path": "receipts/forex-bars/2026-10-21/d79ea7c037b404f8-143f4ae027787150539667ba.json",
+      "raw_sha256": "143f4ae027787150539667ba057147e474d8f725bd1e9719095d54f6fd58d989",
+      "raw_bytes": 250069,
+      "http_status": 200,
+      "source_observed_at_utc": "2026-10-21T13:23:36.315793+00:00",
+      "publication_time_status": "UNVERIFIED_HISTORICALLY",
+      "source_modified_at": null,
+      "raw_shape": "list",
+      "vendor_row_count": 2159,
+      "returned_tickers": [
+        "eurusd"
+      ],
+      "materialization": {
+        "status": "WRITTEN",
+        "source": "forex-bars",
+        "rows": 2159,
+        "path": "normalized/forex-bars/2026-10-21/143f4ae027787150539667ba057147e474d8f725bd1e9719095d54f6fd58d989.parquet"
+      },
+      "status": "VERIFIED_RESEARCH_VIEW",
+      "view_metadata": {
+        "source": "forex-bars",
+        "source_sha256": "143f4ae027787150539667ba057147e474d8f725bd1e9719095d54f6fd58d989",
+        "source_observed_at_utc": "2026-10-21T13:23:36.315793+00:00",
+        "purpose": "INSPECTION",
+        "pit_backtest_eligible": false,
+        "redistribution_admitted": false,
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "row_count": 2159
+      },
+      "first_vendor_timestamp": "2026-10-19T11:52:00.000Z",
+      "last_vendor_timestamp": "2026-10-20T23:59:00.000Z",
+      "timestamp_utc_offsets_seconds": [
+        0
+      ],
+      "duplicate_timestamp_rows": 0,
+      "timestamps_out_of_order": 0,
+      "timestamp_steps_gt_60_seconds": 7,
+      "maximum_timestamp_step_seconds": 180.0,
+      "off_minute_timestamps": 0,
+      "invalid_ohlc_rows": 0,
+      "requested_resample_frequencies": [
+        "1min"
+      ],
+      "rows_outside_requested_utc_dates": 0,
+      "withheld_reasons": [
+        "historical_ohlc_basis_unqualified",
+        "vendor_timestamp_start_end_unqualified",
+        "4h_calendar_and_completeness_unqualified",
+        "finalization_and_correction_contract_unqualified",
+        "historical_availability_unverified",
+        "live_feed_and_freshness_not_admitted"
+      ]
+    },
+    {
+      "pair_candidate": "GBPUSD",
+      "vendor_symbol_requested": "gbpusd",
+      "request_path": "/tiingo/fx/gbpusd/prices?endDate=2026-10-20&resampleFreq=1min&startDate=2026-10-19",
+      "matching_receipts": 1,
+      "receipt_id": "00600b14c8918112087da35944da842b01c98dba4090222f1f010107a6486785",
+      "receipt_path": "receipts/forex-bars/2026-10-21/2a72012cba242b0d-2f6dcda5403a0879c2333282.json",
+      "raw_sha256": "2f6dcda5403a0879c2333282b67afc23d06521a06d339b6f99d5538d9f61e323",
+      "raw_bytes": 248565,
+      "http_status": 200,
+      "source_observed_at_utc": "2026-10-21T13:23:41.467039+00:00",
+      "publication_time_status": "UNVERIFIED_HISTORICALLY",
+      "source_modified_at": null,
+      "raw_shape": "list",
+      "vendor_row_count": 2145,
+      "returned_tickers": [
+        "gbpusd"
+      ],
+      "materialization": {
+        "status": "WRITTEN",
+        "source": "forex-bars",
+        "rows": 2145,
+        "path": "normalized/forex-bars/2026-10-21/2f6dcda5403a0879c2333282b67afc23d06521a06d339b6f99d5538d9f61e323.parquet"
+      },
+      "status": "VERIFIED_RESEARCH_VIEW",
+      "view_metadata": {
+        "source": "forex-bars",
+        "source_sha256": "2f6dcda5403a0879c2333282b67afc23d06521a06d339b6f99d5538d9f61e323",
+        "source_observed_at_utc": "2026-10-21T13:23:41.467039+00:00",
+        "purpose": "INSPECTION",
+        "pit_backtest_eligible": false,
+        "redistribution_admitted": false,
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "row_count": 2145
+      },
+      "first_vendor_timestamp": "2026-10-19T12:00:00.000Z",
+      "last_vendor_timestamp": "2026-10-20T23:59:00.000Z",
+      "timestamp_utc_offsets_seconds": [
+        0
+      ],
+      "duplicate_timestamp_rows": 0,
+      "timestamps_out_of_order": 0,
+      "timestamp_steps_gt_60_seconds": 9,
+      "maximum_timestamp_step_seconds": 300.0,
+      "off_minute_timestamps": 0,
+      "invalid_ohlc_rows": 0,
+      "requested_resample_frequencies": [
+        "1min"
+      ],
+      "rows_outside_requested_utc_dates": 0,
+      "withheld_reasons": [
+        "historical_ohlc_basis_unqualified",
+        "vendor_timestamp_start_end_unqualified",
+        "4h_calendar_and_completeness_unqualified",
+        "finalization_and_correction_contract_unqualified",
+        "historical_availability_unverified",
+        "live_feed_and_freshness_not_admitted"
+      ]
+    },
+    {
+      "pair_candidate": "USDJPY",
+      "vendor_symbol_requested": "usdjpy",
+      "request_path": "/tiingo/fx/usdjpy/prices?endDate=2026-10-20&resampleFreq=1min&startDate=2026-10-19",
+      "matching_receipts": 1,
+      "receipt_id": "1170c87ecfe8c1f0b518c613293def910efb223d54a4ac2cd7eb1f96e7535b36",
+      "receipt_path": "receipts/forex-bars/2026-10-21/eef6608203054308-6a1bbb39dab7b6f3ade0661c.json",
+      "raw_sha256": "6a1bbb39dab7b6f3ade0661c75cee9db6ab446db727ceed3e5b5cf7d4b403955",
+      "raw_bytes": 241118,
+      "http_status": 200,
+      "source_observed_at_utc": "2026-10-21T13:23:43.304601+00:00",
+      "publication_time_status": "UNVERIFIED_HISTORICALLY",
+      "source_modified_at": null,
+      "raw_shape": "list",
+      "vendor_row_count": 2082,
+      "returned_tickers": [
+        "usdjpy"
+      ],
+      "materialization": {
+        "status": "WRITTEN",
+        "source": "forex-bars",
+        "rows": 2082,
+        "path": "normalized/forex-bars/2026-10-21/6a1bbb39dab7b6f3ade0661c75cee9db6ab446db727ceed3e5b5cf7d4b403955.parquet"
+      },
+      "status": "VERIFIED_RESEARCH_VIEW",
+      "view_metadata": {
+        "source": "forex-bars",
+        "source_sha256": "6a1bbb39dab7b6f3ade0661c75cee9db6ab446db727ceed3e5b5cf7d4b403955",
+        "source_observed_at_utc": "2026-10-21T13:23:43.304601+00:00",
+        "purpose": "INSPECTION",
+        "pit_backtest_eligible": false,
+        "redistribution_admitted": false,
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "row_count": 2082
+      },
+      "first_vendor_timestamp": "2026-10-19T13:15:00.000Z",
+      "last_vendor_timestamp": "2026-10-20T23:59:00.000Z",
+      "timestamp_utc_offsets_seconds": [
+        0
+      ],
+      "duplicate_timestamp_rows": 0,
+      "timestamps_out_of_order": 0,
+      "timestamp_steps_gt_60_seconds": 2,
+      "maximum_timestamp_step_seconds": 180.0,
+      "off_minute_timestamps": 0,
+      "invalid_ohlc_rows": 0,
+      "requested_resample_frequencies": [
+        "1min"
+      ],
+      "rows_outside_requested_utc_dates": 0,
+      "withheld_reasons": [
+        "historical_ohlc_basis_unqualified",
+        "vendor_timestamp_start_end_unqualified",
+        "4h_calendar_and_completeness_unqualified",
+        "finalization_and_correction_contract_unqualified",
+        "historical_availability_unverified",
+        "live_feed_and_freshness_not_admitted"
+      ]
+    },
+    {
+      "pair_candidate": "USDCHF",
+      "vendor_symbol_requested": "usdchf",
+      "request_path": "/tiingo/fx/usdchf/prices?endDate=2026-10-20&resampleFreq=1min&startDate=2026-10-19",
+      "matching_receipts": 1,
+      "receipt_id": "ed26f6cd48a1ce1f5cc2cc26507562da3cd7e17178173b3464e3858cca7de88d",
+      "receipt_path": "receipts/forex-bars/2026-10-21/187d1387ab4ce8dd-489259b35bbe093091cc9f77.json",
+      "raw_sha256": "489259b35bbe093091cc9f77ed7ddd4a468fb3547b5378eef2f4e9d15748388a",
+      "raw_bytes": 247236,
+      "http_status": 200,
+      "source_observed_at_utc": "2026-10-21T13:23:45.391358+00:00",
+      "publication_time_status": "UNVERIFIED_HISTORICALLY",
+      "source_modified_at": null,
+      "raw_shape": "list",
+      "vendor_row_count": 2136,
+      "returned_tickers": [
+        "usdchf"
+      ],
+      "materialization": {
+        "status": "WRITTEN",
+        "source": "forex-bars",
+        "rows": 2136,
+        "path": "normalized/forex-bars/2026-10-21/489259b35bbe093091cc9f77ed7ddd4a468fb3547b5378eef2f4e9d15748388a.parquet"
+      },
+      "status": "VERIFIED_RESEARCH_VIEW",
+      "view_metadata": {
+        "source": "forex-bars",
+        "source_sha256": "489259b35bbe093091cc9f77ed7ddd4a468fb3547b5378eef2f4e9d15748388a",
+        "source_observed_at_utc": "2026-10-21T13:23:45.391358+00:00",
+        "purpose": "INSPECTION",
+        "pit_backtest_eligible": false,
+        "redistribution_admitted": false,
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "row_count": 2136
+      },
+      "first_vendor_timestamp": "2026-10-19T11:33:00.000Z",
+      "last_vendor_timestamp": "2026-10-20T23:59:00.000Z",
+      "timestamp_utc_offsets_seconds": [
+        0
+      ],
+      "duplicate_timestamp_rows": 0,
+      "timestamps_out_of_order": 0,
+      "timestamp_steps_gt_60_seconds": 12,
+      "maximum_timestamp_step_seconds": 480.0,
+      "off_minute_timestamps": 0,
+      "invalid_ohlc_rows": 0,
+      "requested_resample_frequencies": [
+        "1min"
+      ],
+      "rows_outside_requested_utc_dates": 0,
+      "withheld_reasons": [
+        "historical_ohlc_basis_unqualified",
+        "vendor_timestamp_start_end_unqualified",
+        "4h_calendar_and_completeness_unqualified",
+        "finalization_and_correction_contract_unqualified",
+        "historical_availability_unverified",
+        "live_feed_and_freshness_not_admitted"
+      ]
+    },
+    {
+      "pair_candidate": "AUDUSD",
+      "vendor_symbol_requested": "audusd",
+      "request_path": "/tiingo/fx/audusd/prices?endDate=2026-10-20&resampleFreq=1min&startDate=2026-10-19",
+      "matching_receipts": 1,
+      "receipt_id": "686500ab71b851425ae4f839398a3beeb4d4f1c749c97919c0c47ca12493d116",
+      "receipt_path": "receipts/forex-bars/2026-10-21/c615d1062a019f5f-af5e9663e64c229ae98b121f.json",
+      "raw_sha256": "af5e9663e64c229ae98b121f73a2af05a723df56325d88dfde394e1e2acc4763",
+      "raw_bytes": 249230,
+      "http_status": 200,
+      "source_observed_at_utc": "2026-10-21T13:23:47.440427+00:00",
+      "publication_time_status": "UNVERIFIED_HISTORICALLY",
+      "source_modified_at": null,
+      "raw_shape": "list",
+      "vendor_row_count": 2153,
+      "returned_tickers": [
+        "audusd"
+      ],
+      "materialization": {
+        "status": "WRITTEN",
+        "source": "forex-bars",
+        "rows": 2153,
+        "path": "normalized/forex-bars/2026-10-21/af5e9663e64c229ae98b121f73a2af05a723df56325d88dfde394e1e2acc4763.parquet"
+      },
+      "status": "VERIFIED_RESEARCH_VIEW",
+      "view_metadata": {
+        "source": "forex-bars",
+        "source_sha256": "af5e9663e64c229ae98b121f73a2af05a723df56325d88dfde394e1e2acc4763",
+        "source_observed_at_utc": "2026-10-21T13:23:47.440427+00:00",
+        "purpose": "INSPECTION",
+        "pit_backtest_eligible": false,
+        "redistribution_admitted": false,
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "row_count": 2153
+      },
+      "first_vendor_timestamp": "2026-10-19T11:56:00.000Z",
+      "last_vendor_timestamp": "2026-10-20T23:59:00.000Z",
+      "timestamp_utc_offsets_seconds": [
+        0
+      ],
+      "duplicate_timestamp_rows": 0,
+      "timestamps_out_of_order": 0,
+      "timestamp_steps_gt_60_seconds": 6,
+      "maximum_timestamp_step_seconds": 360.0,
+      "off_minute_timestamps": 0,
+      "invalid_ohlc_rows": 0,
+      "requested_resample_frequencies": [
+        "1min"
+      ],
+      "rows_outside_requested_utc_dates": 0,
+      "withheld_reasons": [
+        "historical_ohlc_basis_unqualified",
+        "vendor_timestamp_start_end_unqualified",
+        "4h_calendar_and_completeness_unqualified",
+        "finalization_and_correction_contract_unqualified",
+        "historical_availability_unverified",
+        "live_feed_and_freshness_not_admitted"
+      ]
+    },
+    {
+      "pair_candidate": "USDCAD",
+      "vendor_symbol_requested": "usdcad",
+      "request_path": "/tiingo/fx/usdcad/prices?endDate=2026-10-20&resampleFreq=1min&startDate=2026-10-19",
+      "matching_receipts": 1,
+      "receipt_id": "8f8800df8ef99198d2f8aa3bdf649f2806563b0524ee5ca00501aa451f4841c2",
+      "receipt_path": "receipts/forex-bars/2026-10-21/a696c9400257fb30-f291ad33b108867b116bcd66.json",
+      "raw_sha256": "f291ad33b108867b116bcd662baeb501c1014b99f170995670eae23dc17d4889",
+      "raw_bytes": 243410,
+      "http_status": 200,
+      "source_observed_at_utc": "2026-10-21T13:23:49.536355+00:00",
+      "publication_time_status": "UNVERIFIED_HISTORICALLY",
+      "source_modified_at": null,
+      "raw_shape": "list",
+      "vendor_row_count": 2103,
+      "returned_tickers": [
+        "usdcad"
+      ],
+      "materialization": {
+        "status": "WRITTEN",
+        "source": "forex-bars",
+        "rows": 2103,
+        "path": "normalized/forex-bars/2026-10-21/f291ad33b108867b116bcd662baeb501c1014b99f170995670eae23dc17d4889.parquet"
+      },
+      "status": "VERIFIED_RESEARCH_VIEW",
+      "view_metadata": {
+        "source": "forex-bars",
+        "source_sha256": "f291ad33b108867b116bcd662baeb501c1014b99f170995670eae23dc17d4889",
+        "source_observed_at_utc": "2026-10-21T13:23:49.536355+00:00",
+        "purpose": "INSPECTION",
+        "pit_backtest_eligible": false,
+        "redistribution_admitted": false,
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "row_count": 2103
+      },
+      "first_vendor_timestamp": "2026-10-19T12:33:00.000Z",
+      "last_vendor_timestamp": "2026-10-20T23:59:00.000Z",
+      "timestamp_utc_offsets_seconds": [
+        0
+      ],
+      "duplicate_timestamp_rows": 0,
+      "timestamps_out_of_order": 0,
+      "timestamp_steps_gt_60_seconds": 15,
+      "maximum_timestamp_step_seconds": 240.0,
+      "off_minute_timestamps": 0,
+      "invalid_ohlc_rows": 0,
+      "requested_resample_frequencies": [
+        "1min"
+      ],
+      "rows_outside_requested_utc_dates": 0,
+      "withheld_reasons": [
+        "historical_ohlc_basis_unqualified",
+        "vendor_timestamp_start_end_unqualified",
+        "4h_calendar_and_completeness_unqualified",
+        "finalization_and_correction_contract_unqualified",
+        "historical_availability_unverified",
+        "live_feed_and_freshness_not_admitted"
+      ]
+    },
+    {
+      "pair_candidate": "USDMXN",
+      "vendor_symbol_requested": "usdmxn",
+      "request_path": "/tiingo/fx/usdmxn/prices?endDate=2026-10-20&resampleFreq=1min&startDate=2026-10-19",
+      "matching_receipts": 1,
+      "receipt_id": "c037efa886a4885b5d1e932255de97e66f31a0309136db3383a176db08cefcac",
+      "receipt_path": "receipts/forex-bars/2026-10-21/3ca15e82ee4d3076-49783c38ebc6e1a1478beab5.json",
+      "raw_sha256": "49783c38ebc6e1a1478beab57c244f0c75c1d58d600a0dd92ec9a491b8570205",
+      "raw_bytes": 246564,
+      "http_status": 200,
+      "source_observed_at_utc": "2026-10-21T13:23:51.705390+00:00",
+      "publication_time_status": "UNVERIFIED_HISTORICALLY",
+      "source_modified_at": null,
+      "raw_shape": "list",
+      "vendor_row_count": 2096,
+      "returned_tickers": [
+        "usdmxn"
+      ],
+      "materialization": {
+        "status": "WRITTEN",
+        "source": "forex-bars",
+        "rows": 2096,
+        "path": "normalized/forex-bars/2026-10-21/49783c38ebc6e1a1478beab57c244f0c75c1d58d600a0dd92ec9a491b8570205.parquet"
+      },
+      "status": "VERIFIED_RESEARCH_VIEW",
+      "view_metadata": {
+        "source": "forex-bars",
+        "source_sha256": "49783c38ebc6e1a1478beab57c244f0c75c1d58d600a0dd92ec9a491b8570205",
+        "source_observed_at_utc": "2026-10-21T13:23:51.705390+00:00",
+        "purpose": "INSPECTION",
+        "pit_backtest_eligible": false,
+        "redistribution_admitted": false,
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "row_count": 2096
+      },
+      "first_vendor_timestamp": "2026-10-19T11:30:00.000Z",
+      "last_vendor_timestamp": "2026-10-20T23:56:00.000Z",
+      "timestamp_utc_offsets_seconds": [
+        0
+      ],
+      "duplicate_timestamp_rows": 0,
+      "timestamps_out_of_order": 0,
+      "timestamp_steps_gt_60_seconds": 61,
+      "maximum_timestamp_step_seconds": 300.0,
+      "off_minute_timestamps": 0,
+      "invalid_ohlc_rows": 0,
+      "requested_resample_frequencies": [
+        "1min"
+      ],
+      "rows_outside_requested_utc_dates": 0,
+      "withheld_reasons": [
+        "historical_ohlc_basis_unqualified",
+        "vendor_timestamp_start_end_unqualified",
+        "4h_calendar_and_completeness_unqualified",
+        "finalization_and_correction_contract_unqualified",
+        "historical_availability_unverified",
+        "live_feed_and_freshness_not_admitted"
+      ]
+    },
+    {
+      "pair_candidate": "USDBRL",
+      "vendor_symbol_requested": "usdbrl",
+      "request_path": "/tiingo/fx/usdbrl/prices?endDate=2026-10-20&resampleFreq=1min&startDate=2026-10-19",
+      "matching_receipts": 1,
+      "receipt_id": "1046dda4d4efc52cceb66733afe157b990f3b46c68bde5e600b814295ae91284",
+      "receipt_path": "receipts/forex-bars/2026-10-21/6249f23d20f2182a-4f53cda18c2baa0c0354bb5f.json",
+      "raw_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "raw_bytes": 2,
+      "http_status": 200,
+      "source_observed_at_utc": "2026-10-21T13:23:53.349766+00:00",
+      "publication_time_status": "UNVERIFIED_HISTORICALLY",
+      "source_modified_at": null,
+      "raw_shape": "list",
+      "vendor_row_count": 0,
+      "returned_tickers": [],
+      "materialization": {
+        "status": "EMPTY_NORMALIZED",
+        "rows": 0,
+        "source": "forex-bars"
+      },
+      "status": "EMPTY_CAPTURED"
+    },
+    {
+      "pair_candidate": "USDCNH",
+      "vendor_symbol_requested": "usdcnh",
+      "request_path": "/tiingo/fx/usdcnh/prices?endDate=2026-10-20&resampleFreq=1min&startDate=2026-10-19",
+      "matching_receipts": 1,
+      "receipt_id": "b2ad25582436fe4ca7a0e699c5a5a58d069fbd7d681f7a6c00bc6cbcd284961c",
+      "receipt_path": "receipts/forex-bars/2026-10-21/b3d3a7b52b349db3-92bdb61a778a0c4068488f75.json",
+      "raw_sha256": "92bdb61a778a0c4068488f75db0a1b86116914346e310544e2d3cab09f449202",
+      "raw_bytes": 247256,
+      "http_status": 200,
+      "source_observed_at_utc": "2026-10-21T13:23:55.366112+00:00",
+      "publication_time_status": "UNVERIFIED_HISTORICALLY",
+      "source_modified_at": null,
+      "raw_shape": "list",
+      "vendor_row_count": 2137,
+      "returned_tickers": [
+        "usdcnh"
+      ],
+      "materialization": {
+        "status": "WRITTEN",
+        "source": "forex-bars",
+        "rows": 2137,
+        "path": "normalized/forex-bars/2026-10-21/92bdb61a778a0c4068488f75db0a1b86116914346e310544e2d3cab09f449202.parquet"
+      },
+      "status": "VERIFIED_RESEARCH_VIEW",
+      "view_metadata": {
+        "source": "forex-bars",
+        "source_sha256": "92bdb61a778a0c4068488f75db0a1b86116914346e310544e2d3cab09f449202",
+        "source_observed_at_utc": "2026-10-21T13:23:55.366112+00:00",
+        "purpose": "INSPECTION",
+        "pit_backtest_eligible": false,
+        "redistribution_admitted": false,
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "row_count": 2137
+      },
+      "first_vendor_timestamp": "2026-10-19T12:05:00.000Z",
+      "last_vendor_timestamp": "2026-10-20T23:59:00.000Z",
+      "timestamp_utc_offsets_seconds": [
+        0
+      ],
+      "duplicate_timestamp_rows": 0,
+      "timestamps_out_of_order": 0,
+      "timestamp_steps_gt_60_seconds": 13,
+      "maximum_timestamp_step_seconds": 300.0,
+      "off_minute_timestamps": 0,
+      "invalid_ohlc_rows": 0,
+      "requested_resample_frequencies": [
+        "1min"
+      ],
+      "rows_outside_requested_utc_dates": 0,
+      "withheld_reasons": [
+        "historical_ohlc_basis_unqualified",
+        "vendor_timestamp_start_end_unqualified",
+        "4h_calendar_and_completeness_unqualified",
+        "finalization_and_correction_contract_unqualified",
+        "historical_availability_unverified",
+        "live_feed_and_freshness_not_admitted"
+      ]
+    }
+  ],
+  "dispositions": {
+    "VERIFIED_RESEARCH_VIEW": 8,
+    "EMPTY_CAPTURED": 1
+  }
+}

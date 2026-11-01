@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-10-19T23:47:33.406720+00:00",
+  "platform": "linux",
+  "python": "3.12.14",
+  "pytest": "8.3.5",
+  "inputs": {
+    "ops/terminal-build.sh": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+    "tests/test_terminal_beta_build_output_custody.py": "f16f256e0d97274c1d0c878f2832b0e596bf56d632f277a8983ead106231c020",
+    "tests/test_terminal_beta_bootstrap.py": "8a70af6ca1d1dabaa3da11613eaa9d337b59fb1e4aba12202c4a44c85188ae14"
+  },
+  "args": [
+    "-q",
+    "tests/test_terminal_beta_build_output_custody.py",
+    "tests/test_terminal_beta_bootstrap.py",
+    "--basetemp=/tmp/shared-shell-linux-output-custody-r2"
+  ],
+  "finished_at": "2026-10-19T23:49:47.781654+00:00",
+  "exit": 0,
+  "log_sha256": "083b7c43d6a30c68550711f459f966b2bb1cb985fc097c8ae53fe556c38decf1"
+}

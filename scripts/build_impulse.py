@@ -153,6 +153,10 @@ def _regime() -> dict:
         vix = vr.get("vix")
         out["vix"] = vix
         out["risk_score"] = rs
+        out["regime"] = vr.get("regime")
+        out["flags"] = list(vr.get("flags") or [])
+        out["fragility_confluence"] = vr.get("fragility_confluence")
+        out["asof"] = vr.get("asof")
         if rs is None:
             return out
         if rs < 0.33:

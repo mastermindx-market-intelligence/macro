@@ -1,0 +1,268 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-10-19T18:56:58.495554+00:00",
+  "tool": {
+    "name": "native CUA browser3; visible Settings controls; actual element crop",
+    "provenance": "Native hosted CUA API; no local tool module hash available. Actual protocol in CAPTURE.md; image hashes bind original native bytes."
+  },
+  "honesty": {
+    "access": "controlled anonymous local preview; actual native public USGS sentences; no production data claim",
+    "authority": "annual context only; no financial promotion",
+    "gaps": "inherited outer fixture mobile overflow disclosed in CAPTURE.md"
+  },
+  "source_sha256": {
+    "templates/commodities.html.j2": "7980835562bfd6304a78d13424fe1a02b68495cd316caca779dcb460b8bd6ca2",
+    "templates/_critical_minerals_context.html.j2": "9d34f077628d8913a20be715e01a35f64290633a834109de0c0bdf4603aaa78c",
+    "tests/fixtures/usgs_mcs/display_context.json": "4aa75925b2e972e46ea74edbc7c32f7d5af6a80ccf005f0a311c264be13d0d13"
+  },
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "force_states": [
+      {
+        "name": "source_keyboard_focus",
+        "kind": "focus",
+        "action": "focus(#critical-minerals summary)"
+      }
+    ]
+  },
+  "pages": [
+    {
+      "page_id": "commodities.html#critical-minerals",
+      "route": "/commodities.html#critical-minerals",
+      "states": [
+        {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "en-dark-1440.jpg",
+          "sha256": "8d3de6bc0fc6e852c66f77f2dd8d23330cc2b48fcab8f238e687d62a7b2c8248",
+          "bytes": 60155,
+          "width": 1140,
+          "height": 598,
+          "force_state": null,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "en-dark-390.jpg",
+          "sha256": "c14d6d6cbd642e25472a8f49e615e1227a5b5119635c5d72734f98fe1500a8ef",
+          "bytes": 52118,
+          "width": 350,
+          "height": 961,
+          "force_state": null,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "en-light-1440.jpg",
+          "sha256": "3d3e3ed9327220eab82e65730386cd4e5ae5753daa89ffd97821938e7155eae0",
+          "bytes": 70204,
+          "width": 1140,
+          "height": 598,
+          "force_state": null,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "en-light-390.jpg",
+          "sha256": "a4a1ba95f40253f282c4c2f981821e1136d5b31addd2fdcde8d3d69f5510bc0e",
+          "bytes": 58771,
+          "width": 350,
+          "height": 961,
+          "force_state": null,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "access": "anonymous",
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "zh-dark-1440.jpg",
+          "sha256": "b41567860599a7fbcd4ef74787c40e4d6f54af496788b6d47bee2d54d535a5a5",
+          "bytes": 46189,
+          "width": 1140,
+          "height": 598,
+          "force_state": null,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "access": "anonymous",
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "zh-dark-390.jpg",
+          "sha256": "1aaa95a05a90ad0c33214bd9338955b7b356d0fac30c5fb5ec401633720fa587",
+          "bytes": 37231,
+          "width": 350,
+          "height": 822,
+          "force_state": null,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "access": "anonymous",
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "zh-light-1440.jpg",
+          "sha256": "f5f397b89fb663e6d63c7bf7045eed399c7a2707c89b2aa7c277d490d8b8de07",
+          "bytes": 52505,
+          "width": 1140,
+          "height": 598,
+          "force_state": null,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "access": "anonymous",
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "zh-light-390.jpg",
+          "sha256": "091bf07f15041271ac8079755a804453dad7ff4bc1af684bcf57410a3a0b83f3",
+          "bytes": 41846,
+          "width": 350,
+          "height": 822,
+          "force_state": null,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "force_state": "source_keyboard_focus",
+          "applied_force_state": "source_keyboard_focus",
+          "captured": true,
+          "file": "focus-dark.jpg",
+          "sha256": "b17f5643569f34fae1f201256ee819fc50faafbc673fed1372cfb1d2316bf49f",
+          "bytes": 64703,
+          "width": 1140,
+          "height": 598,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "force_state": "source_keyboard_focus",
+          "applied_force_state": "source_keyboard_focus",
+          "captured": true,
+          "file": "focus-light.jpg",
+          "sha256": "00bfdfd2d788aa0d5ef4c58bcc88a12a86f233887db6c73420eac15d25b462c8",
+          "bytes": 73855,
+          "width": 1140,
+          "height": 598,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "force_state": "native_source_unavailable",
+          "applied_force_state": "native_source_unavailable",
+          "captured": true,
+          "file": "native-unavailable.jpg",
+          "sha256": "5c66a8bb0802762914a52a73b02bae15d20720d3172dd2e5fd082717fd0d0395",
+          "bytes": 12123,
+          "width": 1140,
+          "height": 141
+        }
+      ],
+      "gaps": [],
+      "metrics": {
+        "panel_horizontal_overflow": false,
+        "outer_fixture_mobile_horizontal_overflow": true
+      }
+    }
+  ],
+  "outcome": "captured",
+  "totals": {
+    "captured": 8
+  },
+  "source_equivalence": {
+    "kind": "whitespace-only indentation of Jinja control lines",
+    "previous_partial_sha256": "3ea83358483aec3ec2bdc41ba6332f1f95a99531adafd5b1f6d9d6426d8dca6e",
+    "current_partial_sha256": "9d34f077628d8913a20be715e01a35f64290633a834109de0c0bdf4603aaa78c",
+    "verification": "Parsed rendered element names/attributes/visible strings equal for actual four-row producer and unavailable states; CSS unchanged"
+  }
+}

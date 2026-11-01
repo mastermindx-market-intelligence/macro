@@ -1,0 +1,37 @@
+{
+  "status": "ok",
+  "requests": [
+    {
+      "url": "https://www.sciencebase.gov/catalog/items",
+      "status": 200,
+      "bytes": 8268
+    },
+    {
+      "url": "https://www.sciencebase.gov/catalog/item/696a75d5d4be0228872d3bf8",
+      "status": 200,
+      "bytes": 27330
+    },
+    {
+      "url": "https://www.sciencebase.gov/catalog/file/get/696a75d5d4be0228872d3bf8",
+      "status": 200,
+      "bytes": 4721
+    },
+    {
+      "url": "https://www.sciencebase.gov/catalog/file/get/696a75d5d4be0228872d3bf8",
+      "status": 200,
+      "bytes": 7095
+    },
+    {
+      "url": "https://www.sciencebase.gov/catalog/file/get/696a75d5d4be0228872d3bf8",
+      "status": 200,
+      "bytes": 3189010
+    }
+  ],
+  "rows_parsed": {
+    "t7": 117,
+    "fig3_import_sources": 191,
+    "world_production": 2028
+  },
+  "unparsed_rows": 0,
+  "edition_year": 2026
+}

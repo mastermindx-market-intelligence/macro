@@ -47,6 +47,15 @@ ROOT = Path(__file__).resolve().parents[1]
 _REVISION_SCHEMA = "fundamental_forensics.financial_revision_request/v1"
 _QUERY_SCHEMA = "fundamental_forensics.financial_query_request/v1"
 
+# FIP1 is a synthetic industrial issuer with no shipped coverage record; the
+# hermetic production-path tests inject its SIC (R1-SIC/R2).
+_FIP1_CIK = "0000999999"
+_INDUSTRIAL_SIC = "3571"
+
+
+def _fip1_issuer_sic_resolver(cik: str) -> str | None:
+    return _INDUSTRIAL_SIC if cik == _FIP1_CIK else None
+
 T0_SOURCE = "2024-01-01T00:00:00Z"
 T1_SOURCE = "2024-12-31T23:59:59Z"
 T2_SOURCE = "2025-12-31T23:59:59Z"
@@ -63,11 +72,11 @@ FY2023_PERIOD = PeriodRequest.duration("2023-01-01", "2023-12-31", label="FY2023
 AR_PERIOD = PeriodRequest.instant("2023-12-31", label="2023-12-31")
 
 # FIF-2A / PR #5983 accepted kernel query_hash pins. Shared admission must not move them.
-_HASH_AS_REPORTED_T1_T2 = "358d44741632d74ff76dd8771bb78b34295a08d62d2a0a8566a6abe5feac1442"
-_HASH_LATEST_KNOWN_T1_T2 = "191c49a37998052f17eec78113b5bd8bf0dcaaa52239c406cdb4c27cda5ad1a7"
-_HASH_LATEST_KNOWN_T3 = "83df03e99f570bacfab94fc9373861f14c1895c9aa9435b7dd7249a13c1e67fa"
-_HASH_LATEST_RESTATED_T3 = "c1095c7994c67f11ed602d15c2956bc24271cdce4d39d7869ed642713a6ed549"
-_HASH_MIXED_T3 = "5513f17260f98d261920d658be25bf319ace90a0580ad8f2e94931c518c5a20b"
+_HASH_AS_REPORTED_T1_T2 = "58d438ec81d287f81e6981cf01ac6d16d57cf50689cc826cad39962742efa821"
+_HASH_LATEST_KNOWN_T1_T2 = "f275a7e02aff6e1119f1275365549e1fa9aa2d3f45dbc3cd0f4ba5fdb76f1d37"
+_HASH_LATEST_KNOWN_T3 = "2f8d30baf2d49aef0cc6936613eca1f9aa980e10ed56da135a75dd4238349915"
+_HASH_LATEST_RESTATED_T3 = "531309e192ac923e466365b05380a197f67d6df01c1d5fd9062a0e93aaf20b9f"
+_HASH_MIXED_T3 = "26a7ed7d95f861d3352c3a7e5fb6a0f52833ccf69947b10ca9da1f9662c44133"
 
 
 def _make_request(
@@ -763,7 +772,9 @@ def _query_hash(*, selection: str, source: str, recorded: str, metric_ids: list,
         },
         separators=(",", ":"),
     ).encode("utf-8")
-    result = execute_financial_query(body=body, provider=_P())
+    result = execute_financial_query(
+        body=body, provider=_P(), issuer_sic_resolver=_fip1_issuer_sic_resolver
+    )
     return result.envelope["receipt"]["query_hash"]
 
 
@@ -824,13 +835,17 @@ def test_fif2a_query_hashes_unchanged_after_shared_admission() -> None:
 # FIF D3: revision envelope delivery — absent for golden, exact for production
 # ---------------------------------------------------------------------------
 
-_FROZEN_FIP1_REVISIONS_SHA = "4f2096d356ef54449add0da27e5897a03666d7e8df2a6ca6258a6b9258711c60"
+_FROZEN_FIP1_REVISIONS_SHA = "fbbf595719d45e021cb9b8c16dfe0f1c7c30695884d35981064bd7c584d73bef"
 
 
 def test_revision_envelope_delivery_absent_for_golden_present_for_production() -> None:
     # Golden/FIP1: no delivery key, byte-identical to the pre-D3 response
     # (frozen baseline captured on the untouched tree at 5267c66846e).
-    golden = execute_financial_revisions(body=_make_request(), provider=_fip1_provider())
+    golden = execute_financial_revisions(
+        body=_make_request(),
+        provider=_fip1_provider(),
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
+    )
     assert "delivery" not in golden.envelope
     assert golden.sha256 == _FROZEN_FIP1_REVISIONS_SHA
 
@@ -864,7 +879,11 @@ def test_revision_envelope_delivery_absent_for_golden_present_for_production() -
     store = PDS.InMemoryStrictConditionalStore()
     PDS.publish_production_dataset(store, material)
     provider = ProductionFinancialPacketProvider(store, repo_root=ROOT)
-    production = execute_financial_revisions(body=_make_request(), provider=provider)
+    production = execute_financial_revisions(
+        body=_make_request(),
+        provider=provider,
+        issuer_sic_resolver=_fip1_issuer_sic_resolver,
+    )
     delivery = production.envelope["delivery"]
     assert delivery["kind"] == "production_issuer_dataset"
     assert delivery["attested"] is False

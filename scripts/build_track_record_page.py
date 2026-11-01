@@ -287,6 +287,9 @@ def _compute_cohort_rollup(df) -> dict:
         return {"accruing": True, "reason": str(exc), "horizons": {}}
 
 
+_BOARD_LANES = ("buy", "watch", "leaders", "ran", "laggards")
+
+
 def _compute_board_series(snapshots_path: Path) -> dict:
     """Board-size + lane-mix series from snapshots.jsonl, ordered by ``as_of``.
 
@@ -313,15 +316,22 @@ def _compute_board_series(snapshots_path: Path) -> dict:
                     continue
                 snap = json.loads(line)
                 as_of = snap.get("as_of", "")
-                board = snap.get("board", [])
-                by_lane: dict[str, int] = {}
-                for entry in board:
-                    lane = entry.get("lane", "unknown")
-                    by_lane[lane] = by_lane.get(lane, 0) + 1
+                board = snap.get("board")
+                if isinstance(board, list):
+                    by_lane: dict[str, int] = {}
+                    for entry in board:
+                        lane = entry.get("lane", "unknown")
+                        by_lane[lane] = by_lane.get(lane, 0) + 1
+                    total = len(board)
+                else:
+                    # Real rows carry lane LISTS, not a board list (TR-3).
+                    by_lane = {ln: len(snap[ln]) for ln in _BOARD_LANES
+                               if isinstance(snap.get(ln), list)}
+                    total = sum(by_lane.values())
                 series.append(
                     {
                         "as_of": as_of,
-                        "total": len(board),
+                        "total": total,
                         "by_lane": by_lane,
                     }
                 )
@@ -360,10 +370,45 @@ def _compute_failure_mix(attr_path: Path) -> dict:
         for col in outcome_cols[:4]:
             vc = df[col].value_counts(dropna=True).to_dict()
             mix[col] = {str(k): int(v) for k, v in vc.items()}
-        return {"data_gap": False, "mix": mix, "raw_n": len(df)}
+        as_of_min = as_of_max = None
+        if "as_of" in df.columns and df["as_of"].notna().any():
+            _as = df["as_of"].dropna().astype(str)
+            as_of_min, as_of_max = str(_as.min()), str(_as.max())
+        lanes = ({} if "lane" not in df.columns else
+                 {str(k): int(v) for k, v in
+                  df["lane"].value_counts(dropna=True).to_dict().items()})
+        horizons = ([] if "horizon" not in df.columns else
+                    sorted({str(v) for v in df["horizon"].dropna().tolist()}))
+        return {"data_gap": False, "mix": mix, "raw_n": len(df),
+                "as_of_min": as_of_min, "as_of_max": as_of_max,
+                "lanes": lanes, "horizons": horizons}
     except Exception as exc:  # noqa: BLE001
         log.warning("_compute_failure_mix failed: %s", exc)
         return {"data_gap": True, "reason": str(exc), "mix": []}
+
+
+def _compute_price_basis_mix(df, era_from):
+    """Price-basis bucket counts over the era rows of retro_grades.
+
+    SA-R16 never-raise: any missing input returns None, so the footnote renders
+    exactly as it did before this helper existed.
+    """
+    try:
+        if df is None or df.empty or not era_from:
+            return None
+        if "price_basis" not in df.columns or "as_of" not in df.columns:
+            return None
+        era = df[df["as_of"].astype(str) >= str(era_from)]
+        if era.empty:
+            return None
+        counts = era["price_basis"].fillna("unstamped").astype(str)
+        counts = counts.value_counts(dropna=False).to_dict()
+        return {"total": int(len(era)),
+                "counts": {str(k): int(v) for k, v in counts.items()},
+                "era_from": str(era_from)}
+    except Exception as exc:  # noqa: BLE001
+        log.warning("_compute_price_basis_mix failed: %s", exc)
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -387,6 +432,8 @@ def build() -> int:
     cohort_rollup = _compute_cohort_rollup(df_grades)
     board_series = _compute_board_series(SNAPSHOTS_JSONL)
     failure_mix = _compute_failure_mix(US_ATTRIBUTION)
+    price_basis_mix = _compute_price_basis_mix(
+        df_grades, ((board_track_json or {}).get("history") or {}).get("era_from"))
 
     # ── 3. Assemble us_track_history.json ────────────────────────────────────
     track_history: dict = {
@@ -466,7 +513,14 @@ def build() -> int:
         per_h = board_track_json.get("per_horizon", {})
         for h_key in ["h5", "h10", "h21", "h63"]:
             cell = per_h.get(h_key, {})
-            ovs = cell.get("overall_vs_spy", {})
+            all_vs = cell.get("overall_vs_spy") or {}
+            buy_vs = (cell.get("buy_lane") or {}).get("vs_spy") or {}
+            use_buy = bool(buy_vs.get("n"))
+            ovs = buy_vs if use_buy else all_vs
+            sec_buy = (cell.get("buy_lane") or {}).get("vs_sector") or {}
+            sec_all = cell.get("overall_vs_sector") or {}
+            use_sec_buy = bool(sec_buy.get("n"))
+            sec = sec_buy if use_sec_buy else sec_all
             raw_n = ovs.get("n", 0)
             # Also get effective_n from cohort_rollup
             cr_cell = cohort_rollup.get("horizons", {}).get(h_key, {})
@@ -484,6 +538,14 @@ def build() -> int:
                     "median_excess": ovs.get("median_excess"),
                     "mean_excess": ovs.get("mean_excess"),
                     "accruing": accruing,
+                    "lane": "buy" if use_buy else "all",
+                    "all_n": all_vs.get("n", 0),
+                    "all_hit_rate": all_vs.get("hit_rate"),
+                    "sector_hit_rate": sec.get("hit_rate"),
+                    "sector_n": sec.get("n", 0),
+                    "sector_mean_excess": sec.get("mean_excess"),
+                    "sector_lane": ("buy" if use_sec_buy else
+                                    "all" if sec_all.get("n") else None),
                 }
             )
 
@@ -503,6 +565,24 @@ def build() -> int:
 
     # Outcomes table rows (top 60 shown)
     outcomes_rows = (outcomes_json or {}).get("rows", [])
+
+    # Buy-board size span over the sorted snapshot series (TR-3, display-only).
+    _bs = board_series.get("series", [])
+    board_buy_span = None
+    if len(_bs) >= 2:
+        _b0 = _bs[0].get("by_lane", {}).get("buy", 0)
+        _b1 = _bs[-1].get("by_lane", {}).get("buy", 0)
+        if _b0 > 0 and _b1 > 0:
+            board_buy_span = {"first_as_of": _bs[0].get("as_of"),
+                              "first_n": _b0,
+                              "last_as_of": _bs[-1].get("as_of"),
+                              "last_n": _b1,
+                              "snapshots": len(_bs)}
+
+    # 21-day accrual counts for the clock sentence (TR-2, display-only).
+    _h21 = (cohort_rollup.get("horizons") or {}).get("h21") or {}
+    clock_h21 = {"raw_n": int(_h21.get("raw_n") or 0),
+                 "effective_n": int(_h21.get("effective_n") or 0)}
 
     # Survivorship note
     survivorship = (board_track_json or {}).get("survivorship", {})
@@ -537,9 +617,18 @@ def build() -> int:
         "board_series_accruing": board_series.get("accruing", True),
         # Outcomes table
         "outcomes_rows": outcomes_rows,
+        "n_flat": outcomes_summary.get("n_flat"),
+        "n_total_exits": outcomes_summary.get("n_total"),
+        "board_buy_span": board_buy_span,
+        "clock_h21": clock_h21,
         # Failure mix
         "failure_mix_data_gap": failure_mix.get("data_gap", True),
         "failure_mix": failure_mix.get("mix", {}),
+        "failure_mix_scope": (None if failure_mix.get("data_gap", True) else
+                              {k: failure_mix.get(k) for k in
+                               ("raw_n", "as_of_min", "as_of_max", "lanes",
+                                "horizons")}),
+        "price_basis_mix": price_basis_mix,
         # Coverage monitor
         "coverage_monitor": coverage_monitor,
         "gate_suppressed": gate_suppressed,

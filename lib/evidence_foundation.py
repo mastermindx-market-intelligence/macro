@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from datetime import date, datetime, timezone
+from functools import lru_cache
 from hashlib import sha256
 import json
 from pathlib import Path
@@ -345,6 +346,9 @@ def _validate_subject_native_rule(
             and isinstance(rule.get("field"), str)
             and rule["field"] in identity_fields
         )
+    elif kind == "drl_event_tuple":
+        valid = (set(rule) == {"kind"} and subject_type == "drl_event_key"
+                 and identity_fields == {"date", "ticker", "side"})
     elif kind == "earnings_event_cik_equal":
         valid = (
             set(rule) == {"kind", "field"}
@@ -622,6 +626,9 @@ def _subject_native_parity_violation(
             if subject_value == native_value
             else f"subject_native_identity_mismatch:{subject_type}"
         )
+    if kind == "drl_event_tuple":
+        expected = json.dumps([native_identity.get(k) for k in ("date", "ticker", "side")], separators=(",", ":"))
+        return None if subject_value == expected else f"subject_native_identity_mismatch:{subject_type}"
     if kind == "earnings_event_cik_equal":
         try:
             from engine.company_intelligence import event_workspace
@@ -856,6 +863,33 @@ def semantic_violations(reference: Mapping[str, Any]) -> tuple[str, ...]:
     for field in sorted(set(bindings) - set(clock_fields)):
         violations.append(f"clock_field_missing:{field}")
 
+    if owner_store == "price_pressure.event":
+        # A retained display capture is research evidence only. The required
+        # loader live/unavailable capability is not permission to relabel it.
+        replay = reference.get("replay") or {}
+        digest = reference.get("native_digest") or {}
+        if (replay.get("mode") != "retrospective_research" or replay.get("vintage_state") != "owner_native"
+                or digest.get("state") != "known" or replay.get("input_digest") != digest.get("sha256")):
+            violations.append("drl_capture_replay_binding_invalid")
+        if reference.get("rights") != {"state": "unknown", "policy_id": None}:
+            violations.append("drl_capture_rights_policy_unqualified")
+        if reference.get("freshness") != {"state": "unknown", "clock_field": None, "policy_id": None}:
+            violations.append("drl_capture_freshness_policy_unqualified")
+        if any(clock_fields.get(field, {}).get("value_state") != "known" for field in bindings):
+            violations.append("drl_capture_clock_unknown")
+        event_clock = clock_fields.get("native_identity.date") or {}
+        if event_clock.get("value") != (reference.get("native_identity") or {}).get("date"):
+            violations.append("drl_capture_event_clock_mismatch")
+        capture_value = clock_fields.get("capture.captured_at", {}).get("value")
+        event_value = event_clock.get("value")
+        if isinstance(event_value, str) and isinstance(capture_value, str) and event_value > capture_value[:10]:
+            violations.append("drl_capture_event_after_capture")
+        build_clock = clock_fields.get("source.generated_utc") or {}
+        capture_clock = clock_fields.get("capture.captured_at") or {}
+        if (build_clock.get("value_state") == "known" and capture_clock.get("value_state") == "known"
+                and _beyond_cutoff(build_clock, {**capture_clock, "state": "known"}) is not False):
+            violations.append("drl_capture_build_after_capture")
+
     freshness = reference.get("freshness")
     if not isinstance(freshness, Mapping):
         violations.append("freshness_invalid")
@@ -1056,12 +1090,24 @@ def semantic_violations(reference: Mapping[str, Any]) -> tuple[str, ...]:
     return tuple(dict.fromkeys(violations))
 
 
+@lru_cache(maxsize=8)
+def _check_contract_schema(raw: str) -> None:
+    """Memoize only successful meta-schema checks of the exact contract text.
+
+    Keep payload verdicts, parsed schemas and validator instances out of the
+    cache. Each call below still reads the current file and validates its own
+    payload; changed or unreadable contracts cannot reuse a path/mtime verdict.
+    """
+    Draft202012Validator.check_schema(json.loads(raw))
+
+
 def _contract_schema_violations(
     value: Mapping[str, Any], *, path: Path, label: str
 ) -> tuple[str, ...]:
     try:
-        schema = json.loads(path.read_text(encoding="utf-8"))
-        Draft202012Validator.check_schema(schema)
+        raw = path.read_text(encoding="utf-8")
+        _check_contract_schema(raw)
+        schema = json.loads(raw)
     except (
         OSError,
         UnicodeDecodeError,

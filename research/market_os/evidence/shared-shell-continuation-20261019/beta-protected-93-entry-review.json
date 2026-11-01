@@ -1,0 +1,19 @@
+{
+  "schema": "mastermind.attended.bounded_consultation.v1",
+  "reviewer": "original sector_rig_counsel",
+  "scope": "Complete local observational entry fence and exact execv source",
+  "artifact_sha256": "13f0a8b871f3b33a8e51645c56cac7ee95a99e3545644b1c3d16f45ee35182a5",
+  "artifact_bytes": 10784,
+  "result": "NONBLOCKING",
+  "execution": false,
+  "host_calls": false,
+  "protected_owner_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+  "application_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "limits": [
+    "Process enumeration covers ordinary executable/script argv, not every possible shell invocation; canonical atomic shared lock retains authority.",
+    "Checks are sequential observations and root-only private custody, not atomic protection against another authorized root writer.",
+    "Exact production and dependency metadata must refuse on changed state; no blind retry or auto-refresh of constants.",
+    "No runtime, deployment or public acceptance is granted by this review."
+  ],
+  "recorded_at": "2026-10-20 01:06:01 UTC"
+}

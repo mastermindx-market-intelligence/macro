@@ -1,0 +1,22 @@
+{
+  "schema": "mastermind.attended.canonical_beta_bootstrap_invocation.v1",
+  "started_at": "2026-10-20T01:22:30.178711+00:00",
+  "protected_owner_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+  "application_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "protected_owner_artifact": "/root/mastermind-beta-owner-93e303cc-ucmhwhpm/terminal-build.sh",
+  "owner_sha256": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+  "entry_program_sha256": "13f0a8b871f3b33a8e51645c56cac7ee95a99e3545644b1c3d16f45ee35182a5",
+  "postreader_program_sha256": "b0b87c37bc3cdf07900b51fc60025f756ac40a6663bddbafda027dc30a51d899",
+  "entry_review": "NONBLOCKING static source13f0a8; canonical installer retains atomic gates",
+  "postreader_review": "NONBLOCKING static sourceb0b87c37 against canonical ownerc6759; no operational acceptance yet",
+  "canonical_arguments": [
+    "--target",
+    "beta",
+    "--bootstrap",
+    "--target-sha",
+    "e45bde2cac07ac3b29285ff70c40d68900fad62c"
+  ],
+  "single_invocation": true,
+  "log": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-93-bootstrap.log",
+  "production_mutation_requested": false
+}

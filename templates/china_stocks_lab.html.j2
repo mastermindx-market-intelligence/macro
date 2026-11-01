@@ -179,7 +179,16 @@
 
   <!-- ── Page header ── -->
   <div class="pl-hd">
+    {% set sc_books = (scoreboard or [])|rejectattr('is_random')|list %}
+    {% set n_sc = sc_books|selectattr('status_badge.label_en', 'equalto', 'SCOREABLE')
+                          |list|length %}
+    {% set n_bk = sc_books|length %}
+    {% if n_sc %}
+    <p class="pl-eyebrow">{{ t('CN Pick Lab · Display-only', 'CN选股实验室 · 仅展示') }} · {{
+      t(n_sc ~ ' of ' ~ n_bk ~ ' books SCOREABLE', n_bk ~ '本书中' ~ n_sc ~ '本可评分') }}</p>
+    {% else %}
     <p class="pl-eyebrow">{{ t('CN Pick Lab · Display-only · ACCRUING', 'CN选股实验室 · 仅展示 · 累积中') }}</p>
+    {% endif %}
     <h1 class="pl-title">{{ t('A-Share Candidate Pick Engines', 'A股候选选股引擎') }}</h1>
     <p class="pl-sub">{{ t('20 shadow books running on forward ledgers — measured against a random-control yardstick and the CSI 300. Ruler: 21-session CSI 300 excess (T+1 fill, hl2 proxy). All data is display-only; nothing here drives live selection or gating.', '20个影子书在前向账本上运行 — 与随机控制基准和沪深300对比衡量。标尺：21节沪深300超额（T+1入场，最高最低均价代理）。所有数据仅供展示；这里没有任何内容会影响实时选股。') }}</p>
     {% if as_of %}<p class="pl-asof">{{ t('As of', '截至') }} {{ as_of }} · {{ t('Built', '生成时间') }} {{ built }}</p>{% endif %}
@@ -215,7 +224,7 @@
     {% endif %}
     <div class="sb-note">
       <b>{{ t('How to read this table:', '如何阅读此表：') }}</b>
-      {{ t('All 20 CN entry books measured against the Random Control yardstick (pinned at bottom) and CSI 300. ACCRUING = fewer than 25 fires across 3 months — do not act on these numbers yet. Store-dependent books (Block Discount, LHB Inst) show DATA GAP when the runner-local store is absent. The Chase Avoid book is an INVERSE book — expected negative excess. Do not treat Chase Avoid picks as buy signals.', '所有20本CN入场书均与随机控制基准（固定在底部）和沪深300对比。ACCRUING = 3个月内少于25次触发 — 暂不据此行动。依存数据的书（大宗折价、龙虎榜）在本地数据库缺失时显示数据缺失。追涨规避书是反向书 — 预期负超额。切勿将追涨规避选择视为买入信号。') }}
+      {{ t('All 20 CN entry books measured against the Random Control yardstick (pinned at bottom) and CSI 300. SCOREABLE = past the sample floor (at least 25 fires spanning 3+ calendar months and 6+ distinct fire dates): the numbers are descriptive summaries, not a verdict. ACCRUING = below that floor — do not act on these numbers yet. Store-dependent books (Block Discount, LHB Inst) show DATA GAP when the runner-local store is absent. The Chase Avoid book is an INVERSE book — expected negative excess. Do not treat Chase Avoid picks as buy signals.', '所有20本CN入场书均与随机控制基准（固定在底部）和沪深300对比。可评分 = 已过样本门槛（至少25次触发，跨越3个以上日历月，且有6个以上不同触发日）：数字仅为描述性汇总，并非结论。累积中 = 未达该门槛 — 暂不据此行动。依存数据的书（大宗折价、龙虎榜）在本地数据库缺失时显示数据缺失。追涨规避书是反向书 — 预期负超额。切勿将追涨规避选择视为买入信号。') }}
     </div>
     <div class="tbl-scroll">
       <table class="sb-tbl" aria-label="CN Scoreboard">
@@ -232,9 +241,9 @@
             <th>{{ t('WR21 abs', 'WR21绝对') }}</th>
             <th>{{ t('WR21 CSI exc', 'WR21沪深超额') }}</th>
             <th>{{ t('Med exc21', '中位超额21') }}</th>
-            <th>{{ t('MFE med', 'MFE中位') }}</th>
-            <th>{{ t('MAE med', 'MAE中位') }}</th>
-            <th>{{ t('Asym', '非对称') }}</th>
+            <th>{{ t('MFE med 25d', 'MFE中位25日') }}</th>
+            <th>{{ t('MAE med 25d', 'MAE中位25日') }}</th>
+            <th>{{ t('Asym 25d', '非对称25日') }}</th>
             <th>{{ t('NAV exc cum', 'NAV累积超额') }}</th>
             <th>{{ t('Max DD', '最大回撤') }}</th>
             <th>{{ t('vs Rand', '对比随机') }}</th>
@@ -274,9 +283,10 @@
             <td class="{{ 'pos' if row.wr21_abs is not none and row.wr21_abs >= 0.5 else '' }}">{{ row.wr21_abs_fmt }}</td>
             <td class="{{ 'pos' if row.wr21_excess is not none and row.wr21_excess > 0 else ('neg' if row.wr21_excess is not none and row.wr21_excess < 0 else '') }}">{{ row.wr21_excess_fmt }}</td>
             <td class="{{ 'pos' if row.med_excess21 is not none and row.med_excess21 > 0 else ('neg' if row.med_excess21 is not none and row.med_excess21 < 0 else '') }}">{{ row.med_excess21_fmt }}</td>
-            <td>{{ row.mfe_med_fmt }}</td>
-            <td>{{ row.mae_med_fmt }}</td>
-            <td>{{ row.asym_fmt }}</td>
+            <td>{{ row.path25_med_mfe_fmt }}</td>
+            <td>{{ row.path25_med_abs_mae_fmt }}</td>
+            <td>{{ row.path25_asym_fmt }}{% if row.path25_n is number and row.path25_n > 0 %}{#
+            #} <span class="neu">n {{ row.path25_n_fmt }}</span>{% endif %}</td>
             <td class="{{ 'pos' if row.nav_excess_cum is not none and row.nav_excess_cum > 0 else ('neg' if row.nav_excess_cum is not none and row.nav_excess_cum < 0 else '') }}">{{ row.nav_excess_cum_fmt }}</td>
             <td class="neg">{{ row.max_dd_fmt }}</td>
             <td class="{{ 'pos' if row.vs_random_lift is not none and row.vs_random_lift > 0 else ('neg' if row.vs_random_lift is not none and row.vs_random_lift < 0 else '') }}">{{ row.vs_random_lift_fmt }}</td>
@@ -528,18 +538,45 @@
   <!--          coverage_monitor / buy_lane_rows).                       -->
   <!-- ================================================================ -->
   <section data-tab-panel="accountability" style="display:none">
+    {%- set acct_n = accountability.get('total_matured') %}
+    {%- set acct_cells = accountability.get('cells') or [] %}
+    {%- set acct_open = not acct_cells
+         or acct_cells|selectattr('state', 'equalto', 'ACCRUING')|list|length > 0 %}
+    {%- set acct_of_en = ' (of ' ~ acct_n ~ ')' if acct_n is number else '' %}
+    {%- set acct_of_zh = '（共' ~ acct_n ~ '）' if acct_n is number else '' %}
     <div class="acct-header">
       <div class="acct-title">
         <span class="l-en">Board Record</span>
         <span class="l-zh">选板记录</span>
       </div>
       <p class="acct-sub">
-        <span class="l-en">How well has the CN Buy Board identified winners before they moved? Record is measuring — first read expected ~Oct 15 2026 when cluster-unit floors are met (SA-R10).</span>
-        <span class="l-zh">中国买入板过去是否提前识别到赢家？记录正在累积中——首次读取预计2026年10月15日（集群单元下限达到，SA-R10）。</span>
+        <span class="l-en">How well has the CN Buy Board identified winners before they
+          moved?</span>
+        <span class="l-zh">中国买入板过去是否提前识别到赢家？</span>
+        {%- if acct_n is number and acct_open %}
+        <span class="l-en">{{ acct_n }} rows matured; at least one cell is below its
+          cluster-unit floor (SA-R10).</span>
+        <span class="l-zh">已有{{ acct_n }}行成熟；至少一个单元低于集群单元下限（SA-R10）。</span>
+        {%- elif acct_n is number %}
+        <span class="l-en">{{ acct_n }} rows matured; every cell meets its cluster-unit floor
+          (SA-R10).</span>
+        <span class="l-zh">已有{{ acct_n }}行成熟；所有单元均达到集群单元下限（SA-R10）。</span>
+        {%- else %}
+        <span class="l-en">Rows accrue as 21d windows close (SA-R10).</span>
+        <span class="l-zh">行随21日窗口关闭而累积（SA-R10）。</span>
+        {%- endif %}
       </p>
       <span class="acct-clock">
-        <span class="l-en">ACCRUING — first read ~Oct 15 2026</span>
-        <span class="l-zh">累积中 — 首次读取约2026年10月15日</span>
+        {%- if acct_n is number and acct_open %}
+        <span class="l-en">ACCRUING — {{ acct_n }} rows matured</span>
+        <span class="l-zh">累积中 — {{ acct_n }}行已成熟</span>
+        {%- elif acct_n is number %}
+        <span class="l-en">{{ acct_n }} rows matured</span>
+        <span class="l-zh">{{ acct_n }}行已成熟</span>
+        {%- else %}
+        <span class="l-en">ACCRUING</span>
+        <span class="l-zh">累积中</span>
+        {%- endif %}
       </span>
     </div>
 
@@ -598,8 +635,8 @@
       <div class="acct-empty-state">
         <div style="font-size:32px;margin-bottom:8px">📊</div>
         <p>
-          <span class="l-en">No matured rows yet. Rows accrue as 21d windows close — first read ~Oct 15 2026.</span>
-          <span class="l-zh">暂无成熟行。行随21日窗口关闭而累积——首次读取约2026年10月15日。</span>
+          <span class="l-en">No matured rows yet. Rows accrue as 21d windows close.</span>
+          <span class="l-zh">暂无成熟行。行随21日窗口关闭而累积。</span>
         </p>
         {% if acct.get('present') and acct.get('us_proxy_note') %}
         <p style="font-size:11px;color:var(--muted);margin-top:8px">
@@ -622,7 +659,7 @@
           <table class="acct-tbl">
             <thead><tr>
               <th><span class="l-en">Cause</span><span class="l-zh">原因</span></th>
-              <th><span class="l-en">Count</span><span class="l-zh">数量</span></th>
+              <th>{{ t('Count' ~ acct_of_en, '数量' ~ acct_of_zh) }}</th>
             </tr></thead>
             <tbody>
               {% for cause, val in (acct.get('outcome_cause_mix') or {}).items() %}
@@ -651,7 +688,7 @@
           <table class="acct-tbl">
             <thead><tr>
               <th><span class="l-en">Fault</span><span class="l-zh">缺陷</span></th>
-              <th><span class="l-en">Count</span><span class="l-zh">数量</span></th>
+              <th>{{ t('Count' ~ acct_of_en, '数量' ~ acct_of_zh) }}</th>
             </tr></thead>
             <tbody>
               {% for fault, val in (acct.get('process_fault_mix') or {}).items() %}
@@ -676,6 +713,8 @@
       <span class="l-en">Authority: display_only. All numbers from committed CN audit artifacts (SA-W2). Cluster-unit CIs per SA-R10. No verdict language before floor.</span>
       <span class="l-zh">授权：仅展示。所有数字来自已提交CN审计工件（SA-W2）。集群单元置信区间按SA-R10。下限前无结论语言。</span>
       {% if acct.get('taxonomy_version') %} · taxonomy {{ acct.taxonomy_version }}{% endif %}
+      {%- if acct.get('board_definition') %} · {{ t('board definition', '选板定义') }}
+      {{ acct.board_definition }}{% endif %}
       {% if acct.get('as_of') %}· <span class="l-en">As of</span><span class="l-zh">截至</span> {{ acct.as_of }}{% endif %}
     </p>
   </section>

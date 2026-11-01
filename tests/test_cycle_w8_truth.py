@@ -610,3 +610,230 @@ def test_strict_iso_as_of_assertion_fail_closed():
         build_cycle._assert_strict_iso_date("", "asOf")
     with pytest.raises(ValueError, match="missing"):
         build_cycle._assert_strict_iso_date(None, "asOf")
+
+
+# ── W21E · server-side disclosure lines on templates/cycle.html.j2 ───────────
+
+_WATCH_ROWS = {                                                   # F1 + F2 row shapes
+    "memory": [{"state": "MANUAL", "coverage": "none", "overdue_days": 19, "manual": {
+        "ttl_days": 90, "last_reviewed": "2026-07-02", "note": "Paywalled DRAM ASP."},
+        "claim_zh": "内存价格跌破前低"}],
+    "shipping": [{"state": "MANUAL", "coverage": "none", "overdue_days": 7, "manual": {
+        "ttl_days": 90, "last_reviewed": "2026-07-14", "note": "BDI is paywalled."}}],
+    "oil": [{"state": "DATA_MISSING", "legs": [{"series": "fred:DCOILWTICO",
+             "stale_trading_days": 9, "error": "tape stale 9 trading days"}]}],
+    "gold": [{"state": "ARMED"}, {"state": "ARMED"}], "silver": [{"state": "FIRED"}]}
+
+_WATCH_CENSUS = {"evaluated": 11, "crossed": 3, "by_hand": 5, "not_evaluable": 4,
+                 "overdue_days": 19, "overdue_n": 2, "ttl_days": 90,
+                 "last_reviewed": "2026-07-02",
+                 "title_en": "memory: Paywalled DRAM ASP.; oil: tape stale 9 trading days"}
+
+
+def _render_cycle(**ctx) -> str:
+    """Render cycle.html.j2 the way build_cycle.main() does (same env + i18n globals)."""
+    from jinja2 import Environment, FileSystemLoader
+    from engine import i18n
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)
+    env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
+    return env.get_template("cycle.html.j2").render(**ctx)
+
+
+def _langs(block: str) -> tuple[str, str]:
+    """(EN, ZH) halves of a bilingual block, whitespace-collapsed, so a pin on one
+    language cannot be satisfied by the other."""
+    en = block[block.index('class="l-en"'):block.index('class="l-zh"')]
+    zh = block[block.index('class="l-zh"'):]
+    return " ".join(en.split()), " ".join(zh.split())
+
+
+def _block(html: str, block_id: str) -> str:
+    """The one <div id=...>…</div> disclosure block, so copy pins stay scoped to it."""
+    at = html.index(f'id="{block_id}"')
+    return html[html.rindex("<div", 0, at):html.index("</div>", at) + 6]
+
+
+def test_watch_census_counts_states_and_takes_max_overdue():
+    census = build_cycle._watch_census(_WATCH_ROWS)
+    assert (census["evaluated"], census["crossed"]) == (2, 1)
+    assert (census["by_hand"], census["not_evaluable"]) == (2, 1)
+    assert census["overdue_days"] == 19 and census["ttl_days"] == 90     # max, not min
+    assert census["overdue_n"] == 2
+    assert ("oil", "fred:DCOILWTICO", "tape stale 9 trading days") in census["missing_reasons"]
+    assert build_cycle._watch_census({}) is None
+
+
+def test_template_renders_watch_evidence_from_committed_shape():
+    html = _render_cycle(watch_census=_WATCH_CENSUS)
+    block = _block(html, "cyc-watch-evidence")
+    assert "11" in block and "19" in block and "90" in block
+    assert "tape stale 9 trading days" in html
+    for enum in ("MANUAL", "DATA_MISSING", "ARMED", "FIRED", "EXPIRED", "falsifier"):
+        assert enum not in html, f"state enum {enum} reached the DOM"
+
+
+def test_watch_evidence_counts_overdue_rows_instead_of_claiming_all():
+    rows = {**_WATCH_ROWS, "power": [{"state": "MANUAL", "overdue_days": 0,
+                                      "manual": {"ttl_days": 90}}]}
+    census = build_cycle._watch_census(rows)
+    assert (census["by_hand"], census["overdue_n"]) == (3, 2)
+    block = _block(_render_cycle(watch_census=census), "cyc-watch-evidence")
+    assert "3 tracked by" in " ".join(block.split())
+    assert "2 past their 90-day review window" in " ".join(block.split())
+    assert "all past" not in block and "均已" not in block
+    fresh = build_cycle._watch_census({"power": rows["power"]})
+    assert fresh["overdue_n"] == 0
+    assert "review window" not in _block(_render_cycle(watch_census=fresh),
+                                         "cyc-watch-evidence")
+
+
+def test_watch_evidence_title_escapes_free_text_notes():
+    rows = {"memory": [{"state": "MANUAL", "overdue_days": 3, "manual": {
+        "ttl_days": 90, "note": 'DRAM "spot" <ASP> & contract'}}]}
+    block = _block(_render_cycle(watch_census=build_cycle._watch_census(rows)),
+                   "cyc-watch-evidence")
+    assert "&#34;spot&#34;" in block and "&lt;ASP&gt;" in block and "&amp;" in block
+    assert '"spot"' not in block and "<ASP>" not in block
+
+
+def test_watch_evidence_absent_context_renders_nothing():
+    html = _render_cycle()
+    assert 'id="cyc-watch-evidence"' not in html
+    assert "E.tape_as_of" in html and 'id="cyc-asof"' in html
+
+
+def test_watch_evidence_title_attribute_is_english_only():
+    import re
+    census = build_cycle._watch_census(_WATCH_ROWS)
+    block = _block(_render_cycle(watch_census=census), "cyc-watch-evidence")
+    title = re.search(r'title="([^"]*)"', block).group(1)
+    assert "tape stale 9 trading days" in title
+    assert not re.search(r"[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]", title)
+
+
+_CENSUS_23 = {"cards": 23, "measured_cards": 19, "frame_cards": 4, "dual_cards": 6,
+              "stale_bands": 2, "tripwires_total": 23, "tripwires_fired": 3}
+
+
+def test_seo_title_carries_the_real_card_count():
+    html = _render_cycle(cycle_census=_CENSUS_23)
+    assert 'content="Cycle Intelligence — 23 Boom-Bust Cycles on One Clock | Mastermind"' in html
+    assert "15 Boom-Bust" not in html and "Fifteen boom-bust" not in html
+
+
+def test_seo_title_is_derived_not_hardcoded():
+    bare = _render_cycle(cycle_census={**_CENSUS_23, "cards": 7})
+    assert bare != _render_cycle(cycle_census=_CENSUS_23)
+    assert "7 Boom-Bust Cycles on One Clock" in bare
+
+
+def test_subhead_states_the_measured_frame_split():
+    html = _render_cycle(cycle_census=_CENSUS_23)
+    sub = html[html.index('class="cyc-sub"'):html.index("</p>")]
+    en = sub[sub.index('class="l-en"'):sub.index('class="l-zh"')]
+    assert "19" in en and "4" in en and "Two dozen" not in html
+
+
+def test_seo_title_survives_a_bare_render():
+    import re
+    og = re.search(r'property="og:title" content="([^"]*)"', _render_cycle()).group(1)
+    assert "Cycle Intelligence" in og and "{{" not in og and "None" not in og
+    assert not any(ch.isdigit() for ch in og)          # number-free fallback, never empty
+
+
+_FITNESS_ROWS = {                      # data/cycle_ontology/proxy_fitness.json verdicts
+    "memory": {"cycle": "memory", "ref": "MU", "kind": "dram", "n_hand": 10, "matched": 8,
+               "match_rate": 0.8, "match_rate_wilson_lo": 0.49, "median_offset_months": 1.62,
+               "tol_years": 0.438, "gate": {"match_rate_min": 0.7, "offset_max_months": 6},
+               "pass": True, "low_confidence": True,
+               "detail": [{"hand": "2019-09", "offset_months": 6.0, "matched": False}]},
+    "uranium": {"cycle": "uranium", "ref": "CCJ", "kind": "u3o8", "n_hand": 4, "matched": 4,
+                "match_rate": 1.0, "match_rate_wilson_lo": 0.51, "median_offset_months": 0.59,
+                "tol_years": 1.0, "gate": {"match_rate_min": 0.7, "offset_max_months": 6},
+                "pass": True, "low_confidence": False, "detail": []}}
+
+
+def _proxy_rows() -> list[dict]:
+    return build_cycle._proxy_evidence(_FITNESS_ROWS)
+
+
+def test_proxy_evidence_is_extracted_from_the_fitness_verdicts():
+    rows = {r["cycle"]: r for r in _proxy_rows()}
+    mem = rows["memory"]
+    assert mem["match_rate_wilson_lo"] == 0.49 and mem["gate"]["match_rate_min"] == 0.7
+    assert (mem["matched"], mem["n_hand"], mem["ref"]) == (8, 10, "MU")
+    assert "detail" not in mem and "tol_years" not in mem      # the bloat keys stay out
+
+
+def test_template_prints_the_wilson_floor_and_the_gate():
+    block = _block(_render_cycle(proxy_evidence=_proxy_rows()), "cyc-proxy-evidence")
+    for half in _langs(block):
+        for needle in ("0.49", "0.51", "0.7", "memory", "MU", "uranium", "CCJ", "1.62", "0.59"):
+            assert needle in half, needle
+    assert "95% lower bound 0.49 against a 0.7 gate" in _langs(block)[0]
+
+
+def test_proxy_note_names_the_ticker_and_the_low_confidence_flag():
+    rows = _proxy_rows()
+    rows[0] = {**rows[0], "ref": "yahoo:MU"}
+    block = _block(_render_cycle(proxy_evidence=rows), "cyc-proxy-evidence")
+    assert "yahoo:" not in block and "(MU)" in block and "（MU）" in block
+    en = block[block.index('class="l-en"'):block.index('class="l-zh"')]
+    assert en.count("low-confidence") == 1 and "低置信度" in block   # memory only
+
+
+def test_proxy_evidence_never_renders_without_a_context():
+    html = _render_cycle()
+    assert 'id="cyc-proxy-evidence"' not in html and 'id="cyc-asof"' in html
+
+
+def test_proxy_evidence_copy_carries_no_banned_tokens():
+    block = _block(_render_cycle(proxy_evidence=_proxy_rows()), "cyc-proxy-evidence").lower()
+    for bad in ("falsifier", "refuted", "z-score", "z=", "percentile", "validated",
+                "probability", "证伪", "申报", "实时", "概率"):
+        assert bad not in block, bad
+
+
+_PRIOR_FLIP = {"quad": "Q2", "confidence": 0.221, "transition_state": "TRANSITIONING",
+               "flip_condition": {"axis": "growth", "component": "breadth_direction", "z": 0.49,
+                                  "threshold": 0.45, "margin": 0.04, "label_unsupported": False,
+                                  "displayed_quad": "Q2", "raw_quad": "Q2",
+                                  "note": "growth axis flips risk: breadth_direction z=0.49"}}
+
+
+def test_regime_flip_is_extracted_from_the_prior():
+    flip = build_cycle._regime_flip(_PRIOR_FLIP)
+    assert (flip["margin"], flip["threshold"], flip["axis"]) == (0.04, 0.45, "growth")
+    assert flip["component"] == "breadth_direction" and flip["displayed_quad"] == "Q2"
+    assert "note" not in flip and "z" not in flip
+    assert build_cycle._regime_flip({"flip_condition": {}}) is None
+    fc = _PRIOR_FLIP["flip_condition"]
+    for bad in ({**fc, "label_unsupported": True}, {**fc, "raw_quad": "Q3"}):
+        assert build_cycle._regime_flip({"flip_condition": bad}) is None
+
+
+def test_template_prints_the_flip_margin_without_a_z_token():
+    block = _block(_render_cycle(regime_flip=build_cycle._regime_flip(_PRIOR_FLIP)),
+                   "cyc-regime-flip")
+    for half in _langs(block):
+        assert "0.04" in half and "breadth" in half and "0.45" in half
+    assert "sits 0.04 past its ±0.45 cutoff" in _langs(block)[0]
+    assert "from flipping" not in block and "距翻转" not in block   # a component margin
+    for bad in ("z-score", "z=0.49", "flips risk", "TRANSITIONING"):
+        assert bad not in block, bad
+
+
+def test_regime_flip_absent_or_unsupported_renders_nothing():
+    unsupported = {**build_cycle._regime_flip(_PRIOR_FLIP), "label_unsupported": True}
+    for ctx in ({}, {"regime_flip": None}, {"regime_flip": unsupported}):
+        html = _render_cycle(**ctx)
+        assert 'id="cyc-regime-flip"' not in html
+        assert 'id="cyc-stale-banner"' in html and "regime-prior-banner" not in html
+
+
+def test_no_second_banner_host_is_introduced():
+    tpl = TPL.read_text(encoding="utf-8")
+    assert "regime-prior-banner" not in tpl and 'id="cyc-stale-banner"' in tpl
+    at = tpl.index('id="cyc-regime-flip"')
+    tag = tpl[tpl.rindex("<div", 0, at):at]
+    assert "stale-banner" not in tag and "cyc-howline" in tag

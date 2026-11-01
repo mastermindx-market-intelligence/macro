@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-14T14:19:57.478361+00:00",
+  "main": "1221afa9d87a36413b87b43bbfe75ed4d4fa4c13",
+  "scope": "next inherited closure dependency inspection; no main merge or CI read",
+  "leadership_rotation_science_covers_rates": true,
+  "job_gate": "code",
+  "matching_paths": [
+    "engine/rates_command_basis.py"
+  ],
+  "manifest_sha256": "457e29c61305676902b0b0043b17388d14203111e2f0d134ab28027921036b9b"
+}

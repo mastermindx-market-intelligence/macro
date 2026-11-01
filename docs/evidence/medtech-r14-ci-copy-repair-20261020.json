@@ -1,0 +1,60 @@
+{
+  "schema": "medtech.r14_ci_repair/v1",
+  "recorded_at": "2026-10-20T16:43:16.074Z",
+  "parent": "eeb0a4ffedec7610c1346cbac88753e8cfef9092",
+  "reason": "Normal CI39449846662 pack10 failed the binding Macro Suite copy checks; tested merge02c95657 used base44c244f0, and an independent base replay also reproduced axis-coverage wording. Repair source; no guard waiver.",
+  "reused_source": {
+    "pr": 9852,
+    "head": "a20bc3d3b09eee473c86f99d428627993350d4f6",
+    "scope": "Exact three hunks only: producer-copy mapping, discriminating regression test, corresponding bilingual paragraph in current generated labor page. Existing timestamps and theme code retained."
+  },
+  "files": {
+    "lib/macro_suite_labels.py": "7f026b89624046e8f508b4f4fab463d1a4c15766ba3803fa5f6f5dc86f735a35",
+    "tests/test_macro_command_copy_law.py": "8236098015e49108ddab6dc36e045236f74e7c94c1a9241124e16c4aad4ffbcf",
+    "site/macro_labor_markets.html": "ee90301e431d8762a4f1e785cf27f9467f7895acc7568b0bacc6750541aa0991"
+  },
+  "verification": {
+    "negative_control": "New test without mapping failed reading == source; one failed.",
+    "suite": "559 passed in116.85s; full nine-file logical Macro Suite job.",
+    "rates": "57 passed in8.27s",
+    "hub": "29 passed in12.26s",
+    "renderer": "scripts.build_macro_suite_pages completed exit0",
+    "source_semantics": "Producer source unchanged; missing labor data remains unavailable and is never neutral. No math, threshold, guard, waiver or baseline change."
+  },
+  "logs": {
+    "medtech-r14-labor-negative-control-20261020.log": {
+      "sha256": "5f9e84adeb94e6ce4e6dda42e59791b9afe5d93ad53a3f71f2183d5523e53154",
+      "bytes": 6951
+    },
+    "medtech-r14-labor-rates-20261020.log": {
+      "sha256": "8ab46dff91c4986c4a23d2ff994a7dc44192a4c9ca96619f50f6f94c0e5fd533",
+      "bytes": 4776
+    },
+    "medtech-r14-labor-suite-full-20261020.log": {
+      "sha256": "61a30a3609d9653e27e14e21f8708f198201ae8d959788b215b3a9ab777f9589",
+      "bytes": 5349
+    },
+    "medtech-r14-labor-hub-full-20261020.log": {
+      "sha256": "5de96f35d8714bfcc57e46de6f8119fead0bd4b483500c957e950a50771adce3",
+      "bytes": 4777
+    },
+    "medtech-r14-labor-render-20261020.log": {
+      "sha256": "abe973f10563dc46e427b7d96a0a1480584017a87220b87ea746120c9d4f7a7a",
+      "bytes": 2917
+    }
+  },
+  "environment": "Earlier local suite could not find sparse-checkout mockups/evidence/macro-command-p3 fixtures. Canonical scripts/worktree_sparse.py full restored tracked fixtures; the complete rerun passed without skips.",
+  "review": "Native principal accepted parent eeb two-parent composition and exact bounded repair choice; resulting published head requires immutable readback and normal binding CI.",
+  "limits": [
+    "Not canonical merge or production deployment.",
+    "Two scoped0037 policies remain ineffective until canonical Macro acceptance."
+  ],
+  "direct_execution_reason": [
+    "CRITICAL_PATH_SHORTCUT",
+    "LOWER_TOTAL_OVERHEAD"
+  ],
+  "render_artifact": {
+    "path": "/tmp/medtech-r14-labor-copy-render-20261020-qualified",
+    "files": 33
+  }
+}

@@ -907,6 +907,7 @@
       window.MMOnboard.open('upgrade', { plan: 'essential', period: 'annual' });
       return;
     }
+    if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('billing'); return; }
     window.location.href = '/plans.html';
   }
 
@@ -919,6 +920,7 @@
       window.MDXAuth.open('signin');
       return;
     }
+    if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('signin'); return; }
     window.location.href = '/?signin=1';
   }
 
@@ -2635,7 +2637,12 @@
     'A35-B1': ['This metric does not apply', '该指标不适用'],
     'A35-W1': ['Statement not rebuilt from this filing', '未能从该财报重建此报表'],
     'A35-P1': ['Reporting period does not line up', '报告期未对齐'],
-    'A35-P2': ['Shifted period', '期间已平移']
+    'A35-P2': ['Shifted period', '期间已平移'],
+    'A35-R1': ['No comparable reference for this company', '本公司无可比基准'],
+    'A35-K1': ['Period type differs from the reference', '期间类型与基准不同'],
+    'A35-U1': ['Unit differs from the reference', '单位与基准不同'],
+    'A35-D1': ['Period length differs from the reference', '期间长度与基准不同'],
+    'A35-V1': ['Metric definition version differs', '指标定义版本不同']
   };
 
   function peerExclusionCopy(code) {
@@ -2723,6 +2730,12 @@
         'Not enough peers to rank', '同业数量不足以排名',
         'The qualifying group is smaller than the minimum, so no rank or average is computed.',
         '符合条件的公司数量低于最小值，因此不计算排名或平均值。', '▦'
+      );
+    } else if (String(emission.emission_state || '') === 'anchor_unavailable') {
+      includedNode.innerHTML = selector + emptyState(
+        'No comparable reference for this company', '本公司无可比基准',
+        'This company has no usable value for this metric, so peers are not ranked against it.',
+        '本公司在此指标上没有可用数值，因此不对同业排名。', '▦'
       );
     } else {
       var anchorId = anchorIssuerId(cohort);

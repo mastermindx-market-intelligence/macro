@@ -1,0 +1,149 @@
+{
+  "started_at": "2026-10-20T19:22:18.318079+00:00",
+  "before": {
+    "head": "608dfad299e2e48ab7703bf0b180e0dca1318229",
+    "merge_head": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+    "index_tree": "17f8cca6de011cb467cd13246c3cf076e56b9e05",
+    "unstaged": [],
+    "unmerged": ""
+  },
+  "scope": "Actual df3 composed CI-scope/packing and affected updater, Shell, Sector, labor-copy checks. Unchanged P0B producing proof reused via separate exact lineage; local checks do not confer hosted/public/Terminal acceptance.",
+  "python": "Python 3.14.7",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "83e30f996fd43532cd4e39bcf491c02796c8cea4b2002d87d21d7801be976b0e",
+    "tests/test_ci_pack.py": "e5ec9cf0f8f48687ce45e65cd31e5088f2901d3789bca6dd5b76b1769dde6332",
+    "app/deploy/update.sh": "337c48b56642740a5d9afea58d5c824b7ed32b51f0695e3881c06936978b1c6c",
+    "templates/stock.html.j2": "0f4d827b30750f2f538ad7b571e33fa98953a6d1906686137fe5f846995bfd62",
+    "lib/macro_suite_labels.py": "06cdb700046b781b6195dcaf12a3ed48ed7c0280face297c83f26e96f936e9f2",
+    "site/macro_labor_markets.html": "7f8184b0cedcc9c91405b191a9122e714e6de82fc72e34ab6d9cd36a496fdf3d",
+    "tests/test_macro_command_copy_law.py": "d186ad6d154df9170f3eca2c4e812aefa87254c289b683ee400937f9caad620a",
+    "site/etfs.html": "e99613aa5858befcf50c77014d19aa5b822900e84c285755a7758d4ff0d8b26b",
+    "site/us_stocks.html": "c006e40ee9023bb79896c51b0ae525855044899ffb696021161b41f133c1b7b1",
+    "templates/sector_central.html.j2": "2c1728c368f99ad5dd75bd2638f1ffeb54006ef5c85671912eb599e5df09779b",
+    "site/sector_central.html": "595b4edf3bb13318ff66c3980745def70444ada036bd73d0335f74ed28cf8c5f"
+  },
+  "commands": [
+    {
+      "name": "packing",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "tests/test_ci_pack.py::test_curated_exclusivity_drops_only_the_opaque_fallback_tier",
+        "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+      ],
+      "started_at": "2026-10-20T19:22:18.331008+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-composed-packing.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T19:26:04.352573+00:00",
+      "log_bytes": 4691,
+      "log_sha256": "6e6c12be6572cf3514da3b297e9f5ee8a610eb757aef234b7abedf4cf5b4509c"
+    },
+    {
+      "name": "affected-source",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "tests/test_deploy_update_self_heal.py",
+        "tests/test_export_shared_shell_routes.py",
+        "tests/test_shared_shell_injection.py",
+        "tests/test_sector_central_gate.py",
+        "tests/test_macro_command_copy_law.py"
+      ],
+      "started_at": "2026-10-20T19:26:04.356581+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-composed-affected-source.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T19:27:39.669834+00:00",
+      "log_bytes": 5252,
+      "log_sha256": "f2061c0a643959e9138e3f3e7fc177a402b36bf8952d2b5d1121f301a0bee05c"
+    },
+    {
+      "name": "shell-js",
+      "args": [
+        "node",
+        "--test",
+        "tests/js/shared_shell_bridge.test.cjs",
+        "tests/js/shared_shell_navigation_adapters.test.cjs",
+        "tests/js/shared_shell_owner_adapters.test.cjs",
+        "tests/js/shared_shell_terminal_handoff.test.cjs"
+      ],
+      "started_at": "2026-10-20T19:27:39.670955+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-composed-shell-js.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T19:27:41.105382+00:00",
+      "log_bytes": 18090,
+      "log_sha256": "6b60b64c50fae5b5b8af1d145e6c5228d261879b89d06ba1a026b3a6005d1eb1"
+    },
+    {
+      "name": "p0b-closure",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "scripts/check_p0b_receipt_closure.py",
+        "--diff-file",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-source-changed-paths.txt",
+        "--event",
+        "pull_request"
+      ],
+      "started_at": "2026-10-20T19:27:41.106182+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-composed-p0b-closure.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T19:27:41.198178+00:00",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "template-sync",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "scripts/check_template_site_sync.py"
+      ],
+      "started_at": "2026-10-20T19:27:41.199099+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-composed-template-sync.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T19:27:42.558540+00:00",
+      "log_bytes": 44,
+      "log_sha256": "7be02fbfb822b2aa4932edd1ce4182f7ea3bca92e180bcfa398d26f97aeb02b3"
+    },
+    {
+      "name": "owned-whitespace",
+      "args": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "diff",
+        "--cached",
+        "--check",
+        "df3cba80e5ff43e3411209381b32d9d4df06bd1f"
+      ],
+      "started_at": "2026-10-20T19:27:42.559071+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-composed-owned-whitespace.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T19:27:44.099220+00:00",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "after": {
+    "head": "608dfad299e2e48ab7703bf0b180e0dca1318229",
+    "merge_head": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+    "index_tree": "17f8cca6de011cb467cd13246c3cf076e56b9e05",
+    "unstaged": [],
+    "unmerged": ""
+  },
+  "index_unchanged": true,
+  "source_unchanged": true,
+  "pass": true,
+  "finished_at": "2026-10-20T19:27:45.519012+00:00"
+}

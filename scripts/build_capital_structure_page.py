@@ -2,8 +2,8 @@
 
 The browser receives its issuer rows and filing evidence only through the
 authenticated Capital Structure API. This builder deliberately writes no data
-projection of its own and still copies only `_ASSETS`. Two read-only
-exceptions, both display-only (no score/rank/direction):
+projection of its own and still copies only `_ASSETS`. Read-only public-fact
+exceptions, all display-only (no score/rank/direction):
 
 - B-F09-4: it reads the nightly-written `premium_featured.json` receipt so the
   desk can show one classified deal's dated premium. That receipt is
@@ -13,6 +13,10 @@ exceptions, both display-only (no score/rank/direction):
   anonymously verified.
 - B-F09-6 (MO-PAID-067): a read-only Policy watch chip that cites a single
   dated policy_calendar step.
+- B-F09 covenant terms: a literal, public filing threshold from the native
+  immutable ledger. A threshold alone never supplies calculated headroom.
+- B-F09 bond pricing: two historical SEC pricing sheets retained in the native
+  corporate-bond cache, qualified against their archive receipts and filing indexes.
 
 Usage:
     python -m scripts.build_capital_structure_page
@@ -35,6 +39,102 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_REPO_ROOT))
 _ASSETS = ("capital_structure_boot.js", "capital_structure.css", "capital_structure.js")
 _PREMIUM_RECEIPT = ("data", "special_situations", "premium_featured.json")
+
+
+def _covenant_headroom(root: Path) -> dict:
+    """Read the native immutable ledger; publish only permitted filing facts.
+
+    No source fetch, ledger write, issuer allocation, or inferred financial
+    inputs. The native producer verifies retained source bytes; this consumer
+    checks ledger lineage and transcription consistency, not a second source
+    extraction. An absent ledger remains an explicit unavailable.
+    """
+    from datetime import datetime, timezone
+    import re
+    from urllib.parse import urlsplit
+    from engine.covenant_headroom import compute_headroom
+    from engine.capital_structure.covenant_terms import (
+        logical_observation_id_for, observation_id_for, validate_locator,
+    )
+    from scripts.compile_capital_structure_covenant_terms import (
+        _load_contract, _load_existing_observations, _validate_observation_lineage,
+        _find_orphaned_lineage, read_source_ledger, source_ledger_path,
+        validate_manifest_content_binding, validate_manifest_ledger,
+    )
+    data = root / "data" / "capital_structure"
+    schema = _load_contract("capital_structure_covenant_term_observation.schema.json")
+    observations, quarantined = _load_existing_observations(
+        data / "covenant_term_observations.parquet",
+        data / "covenant_term_observations.quarantined.parquet", schema,
+    )
+    if not observations:
+        return compute_headroom([], {}, {})
+    manifests = read_source_ledger(source_ledger_path(data))
+    validate_manifest_ledger(manifests)
+    _validate_observation_lineage(observations, manifests, schema)
+    if _find_orphaned_lineage(observations, quarantined):
+        raise ValueError("covenant source correction lineage is incomplete")
+    by_id = {m["manifest_id"]: m for m in manifests}
+    now = datetime.now(timezone.utc)
+    latest = {}
+    for obs in observations:
+        if observation_id_for(obs) != obs["observation_id"]:
+            raise ValueError("covenant observation identity does not match its source/version")
+        manifest = by_id[obs["document"]["source_manifest_id"]]
+        validate_manifest_content_binding(manifest)
+        if logical_observation_id_for(manifest["manifest_id"], obs["clause"]["clause_id"], obs["term"]["name"]) != obs["logical_observation_id"]:
+            raise ValueError("covenant logical identity does not match its clause")
+        if obs["issuer_id"] != manifest["issuer"]["issuer_id"]:
+            raise ValueError("covenant issuer differs from its source manifest")
+        if (obs["document"]["canonical_url"] != manifest["document"]["canonical_url"]
+                or any(obs["filing"][key] != manifest["filing"][key]
+                       for key in ("accession", "form", "filing_date", "accepted_at"))):
+            raise ValueError("covenant citation differs from its source manifest")
+        known = datetime.fromisoformat(obs["point_in_time"]["available_at"].replace("Z", "+00:00"))
+        if known > now:
+            continue
+        key = obs["logical_observation_id"]
+        previous = latest.get(key)
+        if previous is None or obs["version"]["correction_version"] > previous["version"]["correction_version"]:
+            latest[key] = obs
+    public = []
+    tickers, names = {}, {}
+    for obs in latest.values():
+        evidence = obs["evidence"]
+        manifest = by_id[obs["document"]["source_manifest_id"]]
+        if (evidence["rights_class"] != "public_source_link"
+                or evidence["privacy_classification"] != "public"
+                or evidence["publication"]["disposition"] != "public_fact_only"
+                or manifest["rights"]["redistribution_class"] != "public_source_link"
+                or manifest["privacy"]["classification"] != "public"):
+            continue
+        url = urlsplit(obs["document"]["canonical_url"])
+        if url.scheme != "https" or url.hostname != "www.sec.gov" or not url.path.startswith("/Archives/edgar/data/") or url.username or url.password:
+            raise ValueError("covenant source link is not the retained SEC origin")
+        if obs["state"]["disposition"] == "direct":
+            # public_fact_only permits a ratio, not arbitrary filing prose.
+            # Native extraction deliberately keeps reported == normalized and
+            # value null. Its ID is a source/version key, NOT a value digest.
+            reported = obs["reported"]
+            if (reported != obs["normalized"] or reported["unit"] != "ratio"
+                    or reported["value"] is not None
+                    or not re.fullmatch(r"\d{1,2}\.\d{2} to 1\.00", reported["raw"] or "")
+                    or obs["extraction"]["method"] != "deterministic"
+                    or obs["extraction"]["review_status"] != "final"
+                    or not evidence["spans"]):
+                raise ValueError("covenant transcription is not a final literal ratio")
+            for span in evidence["spans"]:
+                validate_locator(span["locator"], manifest["document"]["byte_length"])
+        public.append(obs)
+        issuer = by_id[obs["document"]["source_manifest_id"]]["issuer"]
+        cik = str(issuer["cik"]).zfill(10)
+        tickers[cik] = issuer.get("ticker")
+        names[cik] = (issuer.get("aliases") or [None])[0]
+    # A filing threshold alone does not supply agreement-defined earnings,
+    # charges or the operative schedule. Keep the existing typed refusal.
+    result = compute_headroom(public, {}, tickers)
+    result["issuer"]["name"] = names.get(result["issuer"]["cik"])
+    return result
 
 
 def _featured_premium(root: Path) -> dict | None:
@@ -297,10 +397,16 @@ def render(root: Path) -> Path:
         payload = _policy_projection(today=day)
     finally:
         _pc.compute_policy_calendar = _orig_cal
+    from engine.ma_agreement_context import featured_agreement
+    from engine.bond_issue_terms import native_comparison
+    premium = _featured_premium(root)
     html = env.get_template("capital_structure.html.j2").render(
         active_section="research",
         active_page="capital_structure",
-        premium=_featured_premium(root),
+        premium=premium,
+        agreement=featured_agreement(root, premium or {}),
+        bond_comparison=native_comparison(root),
+        covenant_headroom=_covenant_headroom(root),
         policy_watch=watch,
         policy_projection=payload,
     )

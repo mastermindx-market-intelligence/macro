@@ -1,0 +1,62 @@
+{
+  "source_commit": "247677efade31ea32d6b6ef5b701de61c47392cd",
+  "source_sha256": "4628a0de7c489988d30e7b52843d6f25d520b553f140d17ef5a42ccf39c70ff4",
+  "rows": [
+    {
+      "date": "2026-09-18",
+      "close": 761.6900024414062,
+      "close_price": 761.6900024414062
+    },
+    {
+      "date": "2026-10-09",
+      "close": 778.5700073242188,
+      "close_price": 778.5700073242188
+    },
+    {
+      "date": "2026-10-15",
+      "close": 771.7899780273438,
+      "close_price": 771.7899780273438
+    },
+    {
+      "date": "2026-10-16",
+      "close": 763.25,
+      "close_price": 763.25
+    }
+  ],
+  "primary_issuer_closing_price_2026_10_16": 763.25,
+  "issuer_vs_retained_close_price_difference": 0,
+  "recorded_session_date": "2026-10-20",
+  "scope": "ONE_SPY_CLOSE_AND_QQQ_INSTRUMENT_IDENTITY",
+  "native_process": {
+    "pid": 28137,
+    "exit_code": 0,
+    "runtime_seconds": 1.41
+  },
+  "primary_sources": [
+    {
+      "url": "https://www.ssga.com/us/en/intermediary/etfs/state-street-spdr-sp-500-etf-trust-spy",
+      "displayed_asof": "2026-10-16",
+      "currency": "USD",
+      "closing_price": 763.25,
+      "nav": 763.37,
+      "bid_ask_midpoint": 763.3,
+      "day_low": 760.66
+    },
+    {
+      "url": "https://www.invesco.com/qqq-etf/en/about.html",
+      "supports": "QQQ_NASDAQ_100_IDENTITY"
+    },
+    {
+      "url": "https://indexes.nasdaq.com/Index/Overview/NDX",
+      "supports": "NASDAQ_100_DEFINITION",
+      "daily_price_admitted": false,
+      "reason": "Retrieved body October 19; search extract October 16"
+    }
+  ],
+  "full_daily_series_authenticated": false,
+  "historical_available_at": null,
+  "first_user_publication_at": null,
+  "source_purpose_change": false,
+  "policy_authority": false
+}
+

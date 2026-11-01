@@ -132,7 +132,41 @@ def _validate_receipt(receipt: Mapping[str, Any], *, subject_id: str | None = No
         raise ValueError("owner unavailable status disagrees with payload")
 
 
-def _eligibility(receipt: Mapping[str, Any] | None, reasons: Sequence[str]) -> dict:
+ELIGIBILITY_APPLICABILITY_BASES = ("ORIGINAL_PROGRAM_ACCEPTANCE", "CURRENT_DATA_QUALIFICATION")
+_ELIGIBILITY_APPLICABILITY_KEYS = frozenset({"basis", "qualified_graph_generation_id", "subject_id"})
+
+
+def _eligibility_applicability_reasons(payload: Mapping[str, Any], *, subject_id: str | None,
+                                       graph_generation_id: str | None,
+                                       require_applicability: bool) -> list[str]:
+    """Generation-specific applicability of an owner eligibility verdict.
+
+    Old program acceptance (the original D2E run / graph publication) is a historical
+    program fact and never qualifies current data; a current-data qualification
+    applies only to the exact subject and graph generation it was computed over.
+    Absent a declaration, legacy callers keep legacy semantics unless strict.
+    """
+    if "applicability" not in payload:
+        return ["ELIGIBILITY_APPLICABILITY_UNDECLARED"] if require_applicability else []
+    declared = payload["applicability"]
+    if (not isinstance(declared, Mapping) or set(declared) != _ELIGIBILITY_APPLICABILITY_KEYS
+            or declared["basis"] not in ELIGIBILITY_APPLICABILITY_BASES
+            or any(not isinstance(declared[key], str) or not declared[key]
+                   for key in ("qualified_graph_generation_id", "subject_id"))):
+        raise ValueError("invalid eligibility applicability")
+    if declared["basis"] == "ORIGINAL_PROGRAM_ACCEPTANCE":
+        return ["ORIGINAL_PROGRAM_ACCEPTANCE_NOT_CURRENT_QUALIFICATION"]
+    reasons = []
+    if graph_generation_id is None or declared["qualified_graph_generation_id"] != graph_generation_id:
+        reasons.append("ELIGIBILITY_GENERATION_NOT_APPLICABLE")
+    if subject_id is None or declared["subject_id"] != subject_id:
+        reasons.append("ELIGIBILITY_SUBJECT_NOT_APPLICABLE")
+    return reasons
+
+
+def _eligibility(receipt: Mapping[str, Any] | None, reasons: Sequence[str], *,
+                 subject_id: str | None = None, graph_generation_id: str | None = None,
+                 require_applicability: bool = False) -> dict:
     unqualified = {"status": "NOT_QUALIFIED", "policy_revision": None, "reason_codes": ["D2E_UNSEALED"]}
     if receipt is None or receipt["availability"] != "AVAILABLE":
         return unqualified
@@ -143,8 +177,12 @@ def _eligibility(receipt: Mapping[str, Any] | None, reasons: Sequence[str]) -> d
     supplied_reasons = payload.get("reason_codes", [])
     if not isinstance(supplied_reasons, list) or any(not isinstance(r, str) or not r for r in supplied_reasons):
         raise ValueError("invalid eligibility owner reasons")
+    applicability = _eligibility_applicability_reasons(
+        payload, subject_id=subject_id, graph_generation_id=graph_generation_id,
+        require_applicability=require_applicability)
     if status in {"QUALIFIED", "INELIGIBLE"} and (not isinstance(policy, str) or not policy):
         return unqualified
+    reasons = list(reasons) + applicability
     if reasons:
         return {"status": "NOT_QUALIFIED", "policy_revision": policy,
                 "reason_codes": sorted(set(supplied_reasons) | set(reasons))}
@@ -153,7 +191,8 @@ def _eligibility(receipt: Mapping[str, Any] | None, reasons: Sequence[str]) -> d
 
 
 def _subject(raw: Mapping[str, Any], *, graph_generation_id: str,
-             owner_generations: Mapping[str, str], query: Mapping[str, str]) -> dict:
+             owner_generations: Mapping[str, str], query: Mapping[str, str],
+             require_eligibility_applicability: bool = False) -> dict:
     keys = {"node_id", "kind", "name_en", "name_zh", "source_family", "native_id",
             "owners", "observations", "canonical_aggregation"}
     if not isinstance(raw, Mapping) or set(raw) != keys:
@@ -279,7 +318,10 @@ def _subject(raw: Mapping[str, Any], *, graph_generation_id: str,
     result = {key: copy.deepcopy(raw[key]) for key in
               ("node_id", "kind", "name_en", "name_zh", "source_family", "native_id")}
     result.update(mapping=mapping, availability="UNAVAILABLE" if reasons else "AVAILABLE",
-                  reason_codes=sorted(set(reasons)), eligibility=_eligibility(eligibility_receipt, eligibility_reasons),
+                  reason_codes=sorted(set(reasons)),
+                  eligibility=_eligibility(eligibility_receipt, eligibility_reasons, subject_id=node,
+                                           graph_generation_id=graph_generation_id,
+                                           require_applicability=require_eligibility_applicability),
                   owner_receipts=copy.deepcopy(owners), observations=observations, aggregation=aggregation)
     return result
 
@@ -314,6 +356,12 @@ def validate_state(artifact: Mapping[str, Any]) -> None:
             rebuilt = _subject(raw, graph_generation_id=artifact["graph_generation_id"],
                                owner_generations=artifact["owner_generations"], query=query)
             if rebuilt != result:
+                # A strict-applicability composition only adds refusals; it is
+                # accepted when it is exactly the strict rebuild of the same receipts.
+                rebuilt = _subject(raw, graph_generation_id=artifact["graph_generation_id"],
+                                   owner_generations=artifact["owner_generations"], query=query,
+                                   require_eligibility_applicability=True)
+            if rebuilt != result:
                 raise ValueError("state disagrees with owner receipt semantics")
             if result["eligibility"]["status"] == "QUALIFIED" and result["availability"] != "AVAILABLE":
                 raise ValueError("unavailable subject cannot qualify")
@@ -335,15 +383,23 @@ def validate_state(artifact: Mapping[str, Any]) -> None:
 
 def compose_state(subject_inputs: Sequence[Mapping[str, Any]], *, graph_generation_id: str,
                   owner_generations: Mapping[str, str], effective_at: str, known_at: str,
-                  generated_at: str, previous: Mapping[str, Any] | None = None) -> dict:
-    """Compose a deterministic shadow generation; selection/admission stays in owners."""
+                  generated_at: str, previous: Mapping[str, Any] | None = None,
+                  require_eligibility_applicability: bool = False) -> dict:
+    """Compose a deterministic shadow generation; selection/admission stays in owners.
+
+    ``require_eligibility_applicability`` (default False = legacy bytes) refuses an
+    eligibility verdict that does not declare the exact subject/graph generation it
+    qualified; an old program acceptance never qualifies current data either way.
+    """
     query = {"effective_at": effective_at, "known_at": known_at}
     for value in (effective_at, known_at, generated_at):
         _clock(value)
     if _clock(generated_at)[1]:
         raise ValueError("state generation clock must be precise")
     subjects = [_subject(raw, graph_generation_id=graph_generation_id,
-                         owner_generations=owner_generations, query=query) for raw in subject_inputs]
+                         owner_generations=owner_generations, query=query,
+                         require_eligibility_applicability=require_eligibility_applicability)
+                for raw in subject_inputs]
     identities = [s["node_id"] for s in subjects]
     if len(identities) != len(set(identities)):
         raise ValueError("duplicate subject identity")
@@ -522,3 +578,41 @@ def legacy_projection(artifact: Mapping[str, Any]) -> dict:
             "lineage": {"source_schema": SCHEMA, "generation_id": artifact["generation_id"],
                         "state_sha256": artifact["state_sha256"], "mode": "shadow",
                         "historical_reclassification": False}}
+
+
+_VENDOR_RIGHTS_FAMILIES = frozenset({"finviz_themes", "ths_concepts"})
+_VENDOR_LOCAL_FAMILIES = frozenset({"finviz", "ths"})
+
+
+def publication_applicability(artifact: Mapping[str, Any], *, subject_id: str, generation_id: str,
+                              state_sha256: str) -> dict:
+    """Refusal-only diagnostic read of whether ONE exact generation could publish ONE subject.
+
+    This is never a grant: ``may_publish`` is always False, and the publication owner
+    remains ``engine/neuralweb/theme_state_generation*``. Applicability is bound to the
+    exact requested generation/state digest, so an older generation's acceptance can
+    never be read as applying to a later one. Every v1 artifact is shadow-mode, so a
+    v1 answer is always not applicable.
+    """
+    from engine.theme_graph import rights  # read-only family lookup; no resolver
+
+    validate_state(artifact)
+    reasons = []
+    if artifact["generation_id"] != generation_id or artifact["state_sha256"] != state_sha256:
+        reasons.append("PUBLICATION_GENERATION_NOT_APPLICABLE")
+    if artifact["mode"] == "shadow":
+        reasons.append("SHADOW_MODE_NOT_PUBLISHABLE")
+    if artifact["authority"].get("may_publish") is not True:
+        reasons.append("AUTHORITY_DENIES_PUBLICATION")
+    subject = next((s for s in artifact["subjects"] if s["node_id"] == subject_id), None)
+    if subject is None:
+        reasons.append("PUBLICATION_SUBJECT_ABSENT")
+    elif subject["eligibility"]["status"] != "QUALIFIED":
+        reasons.append("SUBJECT_NOT_QUALIFIED")
+    vendor_local = (subject_id.startswith("ltheme:") and subject is not None
+                    and subject.get("source_family") in _VENDOR_LOCAL_FAMILIES)
+    if (rights.family_for_node_id(subject_id) in _VENDOR_RIGHTS_FAMILIES or vendor_local
+            or subject_id.startswith("basket:baskets_china_ths:")):
+        reasons.append("VENDOR_FAMILY_NOT_PUBLISHABLE")
+    return {"subject_id": subject_id, "generation_id": generation_id, "state_sha256": state_sha256,
+            "applicable": not reasons, "may_publish": False, "reason_codes": sorted(set(reasons))}

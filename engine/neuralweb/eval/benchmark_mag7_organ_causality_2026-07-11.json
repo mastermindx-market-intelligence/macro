@@ -1,0 +1,65 @@
+{
+  "benchmark_id": "mag7_organ_causality_2026-07-11",
+  "frozen": true,
+  "source": "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2026-07-11",
+    "session_label": "date only",
+    "adjudication_date": "2026-07-11",
+    "historical_source_availability": "unverified",
+    "dependence_group": "mag7-june-july-2026-turn",
+    "source": {
+      "path": "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
+      "sha256": "feb1ab9da314c452fefe3bc49b1a05dadf9dffe25fed6f01ee956d2de1da51d7"
+    },
+    "input_facts": [
+      {
+        "event_date": "2026-07-11",
+        "source_lines": [
+          21,
+          47
+        ],
+        "text": "**F1 — The dedicated turn organs did not exist during the window** (verified birth\ndates on origin/main): real engine-produced `turn_watch` 07-10 (the 07-09 file was a\nsynthetic fixture, immediately untracked); `mtf_upturn` ledger's first session rows\n06-29/07-10, committed 07-11; `ignition_radar` born 07-11; the EOD options-flow summary\nstore born 07-02; the live flow poller TCC-dead until the 07-06 plist fix (first\nday_state 07-07). `notify_state.json` shows all seven `mtf_upturn_mag7_last` keys =\nNONE and zero ignition/tape_disagreement dedup keys — **no Mag-7 turn alert was ever\ndispatched**. Scope note (red-team): this exculpates only the *absent* organs; it does\nnot cover the pieces that existed (F2, F3) — those are design findings.\n\n**F2 — Pre-existing signals fired in-window and were never synthesized.** Verified rows\nin `data/alerts/alerts_log.parquet`: 06-23 XLK holdings accumulation NVDA +2.31pp and\nAAPL +2.04pp, both labeled \"cycle NEARING A LOW · GET READY\"; 06-25 \"XLK RS vs SPY\ncrossed above 90th pctile (now 91)\" — the session before the low; 06-26 \"Net liquidity\n4-week RoC flipped positive… −31bn → +69bn\" — on the turn date; 06-30 XLK RS again (93).\nFour rule families, info/warn severity, no cohort frame, no synthesis — while the\nbasket layer simultaneously labeled mag7 deteriorating→avoid (EW pct50 quantization +\n20d-window straddle; see the Mag-7 Command masterplan L2 for the mechanics and the\nmerged fixes).\n\n**F3 — Where an anticipation organ existed, it pointed at the wrong cohort.** The one\nmomentum-turn organ alive in the window (`mtf_upturn`, session 06-29) fired\nUPTURN_CONFIRMED for four defensives — DGX, FIS, JNJ, REG — and zero Mag-7 members.\nThe EW-breadth and 20d-window constructions that suppressed the basket labels are\n**design choices that predate the window**, not laws of nature (red-team correction of\nour own first framing). Weekly/monthly MTF legs cannot confirm a 15-session V by\nconstruction — that part is real physics — but the cohort-blindness was chosen.",
+        "sha256": "5cba03445a0b7e50b2a267cd78c2297d3be2f4cf117f7afdde15d72db1393c2b"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        125,
+        134
+      ],
+      "text": "## 5. Standing lessons (memory-bound)\n\n1. **Cohort visibility beats signal cleverness**: the rotation was visible in magnitude\n   and P/C primitives we already trusted; it was the *aggregation frame* that was missing.\n2. **A quiet state must never bury a persistent one** (freshness gates penalizing\n   persistence is a recurring class — fixed twice this week).\n3. **Post-mortems must separate absent organs from mis-designed ones** — \"it didn't\n   exist yet\" and \"it existed and pointed elsewhere\" demand different fixes.\n4. Verification pays: two recompute lanes + a red-team overturned three census numbers\n   and one causal frame before publication (§6).",
+      "sha256": "1556636c1863939641d1d18d805144cc964c1f8520e8446d8e984c3823ebf35b"
+    }
+  },
+  "question_en": "As a diagnostic reading of the supplied July 11 postmortem, separate organs that did not exist from signals that existed but were not synthesized, and from an organ aimed at another cohort. What distinct repairs are supported?",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2026-07-11 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2026-07-11] **F1 — The dedicated turn organs did not exist during the window** (verified birth\ndates on origin/main): real engine-produced `turn_watch` 07-10 (the 07-09 file was a\nsynthetic fixture, immediately untracked); `mtf_upturn` ledger's first session rows\n06-29/07-10, committed 07-11; `ignition_radar` born 07-11; the EOD options-flow summary\nstore born 07-02; the live flow poller TCC-dead until the 07-06 plist fix (first\nday_state 07-07). `notify_state.json` shows all seven `mtf_upturn_mag7_last` keys =\nNONE and zero ignition/tape_disagreement dedup keys — **no Mag-7 turn alert was ever\ndispatched**. Scope note (red-team): this exculpates only the *absent* organs; it does\nnot cover the pieces that existed (F2, F3) — those are design findings.\n\n**F2 — Pre-existing signals fired in-window and were never synthesized.** Verified rows\nin `data/alerts/alerts_log.parquet`: 06-23 XLK holdings accumulation NVDA +2.31pp and\nAAPL +2.04pp, both labeled \"cycle NEARING A LOW · GET READY\"; 06-25 \"XLK RS vs SPY\ncrossed above 90th pctile (now 91)\" — the session before the low; 06-26 \"Net liquidity\n4-week RoC flipped positive… −31bn → +69bn\" — on the turn date; 06-30 XLK RS again (93).\nFour rule families, info/warn severity, no cohort frame, no synthesis — while the\nbasket layer simultaneously labeled mag7 deteriorating→avoid (EW pct50 quantization +\n20d-window straddle; see the Mag-7 Command masterplan L2 for the mechanics and the\nmerged fixes).\n\n**F3 — Where an anticipation organ existed, it pointed at the wrong cohort.** The one\nmomentum-turn organ alive in the window (`mtf_upturn`, session 06-29) fired\nUPTURN_CONFIRMED for four defensives — DGX, FIS, JNJ, REG — and zero Mag-7 members.\nThe EW-breadth and 20d-window constructions that suppressed the basket labels are\n**design choices that predate the window**, not laws of nature (red-team correction of\nour own first framing). Weekly/monthly MTF legs cannot confirm a 15-session V by\nconstruction — that part is real physics — but the cohort-blindness was chosen.",
+  "expected_properties": [
+    {
+      "tag": "absence",
+      "check": "Name the absent or later-born dedicated organs without attributing an earlier missed alert to them."
+    },
+    {
+      "tag": "synthesis",
+      "check": "Retain the in-window holdings, RS and liquidity observations; absence of newer organs does not excuse failure to synthesize existing signals."
+    },
+    {
+      "tag": "design",
+      "check": "Distinguish the defensive-cohort upturn and chosen EW/window design from the genuinely slower weekly/monthly horizon."
+    },
+    {
+      "tag": "authority",
+      "check": "Diagnostic repair hypotheses are not a new live signal, a promotion or permission to rebuild already-landed fixes."
+    }
+  ],
+  "known_failure_modes": [
+    "Treat retrospective supplied diagnostic text as a historically served point-in-time snapshot.",
+    "Turn a distinct population, selected anecdote or failed calibration into a validated execution signal.",
+    "Import later observations absent from the supplied cutoff slice or count related cases as independent trials."
+  ],
+  "gold_standard_sentence": "Absent organs, unsynthesized existing signals and a cohort-misaligned detector are three different failure mechanisms. Their remedies differ; the slow horizon does not excuse chosen cohort blindness, and this diagnosis grants no new trade authority.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

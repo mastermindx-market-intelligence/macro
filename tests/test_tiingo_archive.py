@@ -328,3 +328,368 @@ def test_mock_boats_auth_rejection_stops_before_archive(lake, monkeypatch):
                          batch_messages=100, flush_seconds=2, archive=lake)
     assert "DO_NOT_LOG" not in str(exc.value)
     assert not (lake.root / "raw" / "boats-firehose").exists()
+
+
+def test_news_publisher_filter_uses_singular_wire_parameter():
+    assert a.request_path("news", None, {
+        "source": "bloomberg.com,cnbc.com", "limit": 250,
+        "onlyWithTickers": "true", "sortBy": "crawlDate",
+        "startDate": "2026-10-21", "endDate": "2026-10-22",
+    }) == (
+        "/tiingo/news?endDate=2026-10-22&limit=250&onlyWithTickers=true"
+        "&sortBy=crawlDate&source=bloomberg.com,cnbc.com&startDate=2026-10-21"
+    )
+
+
+@pytest.mark.parametrize("source,symbol", [
+    ("eod-bars", "NVDA"), ("news-bulk-index", None), ("crypto-bars", None),
+])
+def test_news_publisher_filter_is_not_a_global_parameter(source, symbol):
+    with pytest.raises(ValueError):
+        a.request_path(source, symbol, {"source": "cnbc.com"})
+
+
+@pytest.mark.parametrize("params", [
+    {"sources": "cnbc.com"},
+    {"source": "cnbc.com", "sources": "bloomberg.com"},
+])
+def test_news_publisher_filter_rejects_plural_before_collection(monkeypatch, params):
+    def forbidden(*args, **kwargs):
+        pytest.fail("invalid new query reached network or archive storage")
+
+    class NoStorage:
+        store_response = staticmethod(forbidden)
+
+    monkeypatch.setattr(a.urllib.request, "urlopen", forbidden)
+    with pytest.raises(ValueError):
+        a.collect_one(NoStorage(), "news", None, "synthetic-test-key", params)
+
+
+def test_news_publisher_filter_collection_keeps_wire_and_receipt_equal(lake, monkeypatch):
+    class Response:
+        headers = {"Content-Type": "application/json"}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return None
+
+        def read(self, _):
+            return b"[]"
+
+    requests = []
+
+    def stub(req, timeout):
+        requests.append(req)
+        return Response()
+
+    monkeypatch.setattr(a.urllib.request, "urlopen", stub)
+    monkeypatch.setattr(a, "utc_now", lambda: "2026-10-22T00:00:00+00:00")
+    result = a.collect_one(lake, "news", None, "synthetic-test-key", {
+        "source": "bloomberg.com,cnbc.com", "limit": 250,
+    })
+    expected = "/tiingo/news?limit=250&source=bloomberg.com,cnbc.com"
+    assert requests[0].full_url == a.API_ORIGIN + expected
+    assert requests[0].get_header("Authorization") == "Token synthetic-test-key"
+    receipt_bytes = next((lake.root / "receipts").rglob("*.json")).read_bytes()
+    receipt = json.loads(receipt_bytes)
+    assert receipt["request_path"] == expected
+    assert receipt["receipt_id"] == result["receipt_id"]
+    assert a.validate_receipt(receipt) == result["receipt_id"]
+    assert b"synthetic-test-key" not in receipt_bytes
+    assert b"synthetic-test-key" not in gzip.decompress((lake.root / result["path"]).read_bytes())
+
+
+@pytest.fixture
+def legacy_news_receipt(lake):
+    # Frozen synthetic output from the pre-fix owner at a92ee6e9. Do not rebuild
+    # this identity using the current constructor or silently rename its query.
+    raw = b'[{"id":"synthetic-news","source":"cnbc.com"}]'
+    receipt = {
+        "schema": "mastermind.tiingo.raw_receipt.v1",
+        "source": "news", "vendor": "tiingo", "symbol": None,
+        "request_path": "/tiingo/news?limit=250&sources=cnbc.com",
+        "observed_at_utc": "2026-10-22T00:00:00+00:00",
+        "publication_time_status": "UNVERIFIED_HISTORICALLY",
+        "rights_status": "PER_PRODUCT_REDISTRIBUTION_NOT_VERIFIED",
+        "http_status": 200, "content_type": "application/json",
+        "raw_path": "raw/news/2026-10-22/all/4b6379df264c6ec0-e2577d5783da4b276ad65ee6.raw.gz",
+        "raw_sha256": "e2577d5783da4b276ad65ee6bedd39ce4a6be906dbf396e12bc5ca4649238417",
+        "raw_bytes": 45, "compressed_bytes": 64, "record_count_hint": 1,
+        "source_modified_at": None,
+        "correction_policy": "APPEND_VINTAGE_NEVER_IN_PLACE",
+        "price_basis_policy": "PRESERVE_VENDOR_RAW_AND_ADJUSTED_AS_DIFFERENT_FIELDS",
+        "receipt_id": "ef027895644252301c09d4b428776475a63f494a344ce89378745d944e833b89",
+    }
+    raw_path = lake.root / receipt["raw_path"]
+    raw_path.parent.mkdir(parents=True)
+    raw_path.write_bytes(gzip.compress(raw, mtime=0))
+    receipt_path = lake.root / "receipts/news/2026-10-22/4b6379df264c6ec0-e2577d5783da4b276ad65ee6.json"
+    receipt_path.parent.mkdir(parents=True)
+    receipt_path.write_text(json.dumps(receipt, sort_keys=True) + "\n")
+    return receipt, raw, raw_path, receipt_path
+
+
+def test_legacy_news_filter_receipt_remains_readable_without_rewriting(lake, legacy_news_receipt):
+    from scripts.tiingo_materialize import verified_raw
+
+    receipt, raw, raw_path, receipt_path = legacy_news_receipt
+    before = raw_path.read_bytes(), receipt_path.read_bytes()
+    assert a.validate_receipt(receipt) == "ef027895644252301c09d4b428776475a63f494a344ce89378745d944e833b89"
+    assert verified_raw(lake.root, receipt) == raw
+    assert (raw_path.read_bytes(), receipt_path.read_bytes()) == before
+
+
+def test_legacy_news_filter_cannot_be_newly_stored(lake, legacy_news_receipt):
+    receipt, raw, raw_path, receipt_path = legacy_news_receipt
+    before = {p.relative_to(lake.root): p.read_bytes()
+              for p in lake.root.rglob("*") if p.is_file()}
+    with pytest.raises(a.TiingoArchiveError):
+        lake.store_response("news", None, receipt["request_path"], raw,
+                            received_at="2026-10-22T01:00:00+00:00")
+    assert {p.relative_to(lake.root): p.read_bytes()
+            for p in lake.root.rglob("*") if p.is_file()} == before
+
+
+def test_legacy_news_filter_renaming_does_not_inherit_receipt_identity(legacy_news_receipt):
+    receipt, _, _, _ = legacy_news_receipt
+    renamed = {**receipt, "request_path": "/tiingo/news?limit=250&source=cnbc.com"}
+    with pytest.raises(a.TiingoArchiveError, match="original receipt identity mismatch"):
+        a.validate_receipt(renamed)
+
+
+def test_legacy_news_filter_and_corrected_capture_keep_distinct_identities(lake, legacy_news_receipt):
+    receipt, raw, raw_path, receipt_path = legacy_news_receipt
+    before = raw_path.read_bytes(), receipt_path.read_bytes()
+    path = a.request_path("news", None, {"limit": 250, "source": "cnbc.com"})
+    result = lake.store_response("news", None, path, raw,
+                                received_at=receipt["observed_at_utc"])
+    assert result["receipt_id"] != receipt["receipt_id"]
+    assert result["path"] != receipt["raw_path"]
+    assert result["raw_sha256"] == receipt["raw_sha256"]
+    assert (raw_path.read_bytes(), receipt_path.read_bytes()) == before
+
+
+def test_legacy_news_filter_compatibility_preserves_old_non_news_paths():
+    # Old construction allowed plural sources globally; historical readers must
+    # retain those exact bytes without admitting that syntax for new requests.
+    path = "/tiingo/daily/NVDA/prices?sources=cnbc.com"
+    assert a.validate_request("eod-bars", "NVDA", path) is None
+    with pytest.raises(ValueError):
+        a.request_path("eod-bars", "NVDA", {"sources": "cnbc.com"})
+
+
+@pytest.mark.parametrize("path", [
+    "/tiingo/news?source=cnbc.com&sources=bloomberg.com",
+    "/tiingo/news?source=cnbc.com&source=bloomberg.com",
+    "/tiingo/news?sources=cnbc.com&sources=bloomberg.com",
+    "/tiingo/news?source=cnbc.com&limit=250",
+    "/tiingo/news?sources=cnbc.com&limit=250",
+    "/tiingo/news?source=cnbc.com&token=synthetic-test-key",
+    "/tiingo/news?source=cnbc.com&unknown=value",
+    "/tiingo/news?source=cnbc.com#fragment",
+    "https://api.tiingo.com/tiingo/news?source=cnbc.com",
+    "/tiingo/daily/NVDA/prices?source=cnbc.com",
+])
+def test_news_publisher_filter_history_does_not_weaken_path_validation(path):
+    with pytest.raises(a.TiingoArchiveError):
+        a.validate_request("news", None, path)
+
+def test_legacy_news_filter_plan_preserves_frozen_digest_offline(monkeypatch):
+    import scripts.tiingo_ingest as ing
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("offline historical plan attempted collection")
+
+    monkeypatch.setattr(ing, "collect", forbidden)
+    monkeypatch.setattr(ing, "read_key", forbidden)
+    monkeypatch.setattr(a.urllib.request, "urlopen", forbidden)
+    tasks = [ing.Task("news", None, {"limit": 250, "sources": "cnbc.com"})]
+    # Frozen from plan_page at a92ee6e9, before the HTTP parameter correction.
+    digest = "39ca53761298a38c9c32e71b9a1e488199cd2fe0dcc41df11c66d5e193e21c0d"
+    page = ing.plan_page(tasks, expected_digest=digest)
+    assert page["plan_sha256"] == digest
+    assert page["items"] == [{
+        "ordinal": 0, "source": "news", "symbol": None,
+        "request_path": "/tiingo/news?limit=250&sources=cnbc.com",
+    }]
+    assert page["network"] is False
+    assert page["execution_authorized"] is False
+
+
+def test_legacy_news_filter_corpus_audit_matches_original_plan_without_writes(
+        lake, legacy_news_receipt, monkeypatch):
+    import scripts.tiingo_ingest as ing
+    from scripts.tiingo_corpus_audit import audit_corpus
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("read-only historical audit attempted collection or storage")
+
+    monkeypatch.setattr(ing, "read_key", forbidden)
+    monkeypatch.setattr(a.urllib.request, "urlopen", forbidden)
+    monkeypatch.setattr(a.Archive, "store_response", forbidden)
+    before = {p.relative_to(lake.root): p.read_bytes()
+              for p in lake.root.rglob("*") if p.is_file()}
+    result = audit_corpus(
+        [ing.Task("news", None, {"limit": 250, "sources": "cnbc.com"})],
+        root=lake.root, observed_before="2026-10-22T01:00:00+00:00",
+        check_mount=False,
+    )
+    assert result["plan_sha256"] == "39ca53761298a38c9c32e71b9a1e488199cd2fe0dcc41df11c66d5e193e21c0d"
+    assert result["request_status_counts"] == {"RAW_RECORDS_CAPTURED": 1}
+    assert result["requests"][0]["request_path"] == "/tiingo/news?limit=250&sources=cnbc.com"
+    assert result["scan"]["verified_raw_responses"] == 1
+    assert result["network"] is False
+    assert result["writes"] is False
+    assert result["execution_authorized"] is False
+    assert result["canonical_identity_admitted"] is False
+    assert result["source_authenticity_proven"] is False
+    assert {p.relative_to(lake.root): p.read_bytes()
+            for p in lake.root.rglob("*") if p.is_file()} == before
+
+
+@pytest.mark.parametrize("read_at,closed_at,storage_at,capture_date", [
+    ("2026-10-22T03:59:59.900000+00:00", "2026-10-22T04:00:00.100000+00:00",
+     "2026-10-22T04:00:01+00:00", "2026-10-22"),
+    ("2026-10-22T23:59:59.900000+00:00", "2026-10-23T00:00:00.100000+00:00",
+     "2026-10-23T00:00:01+00:00", "2026-10-22"),
+])
+def test_response_observation_precedes_teardown_and_storage(
+        lake, monkeypatch, read_at, closed_at, storage_at, capture_date):
+    # Model real ordering: response bytes finish first, HTTP teardown and the
+    # storage reserve check each finish later. Only the first clock belongs to
+    # the response; the midnight case also checks the actual archive partition.
+    clock = {"now": read_at}
+    samples, reads = [], []
+    raw = b'[{"date":"2026-10-22T00:00:00Z","open":1,"high":1,"low":1,"close":1}]'
+
+    class Response:
+        headers = {"Content-Type": "application/json"}
+
+        def __enter__(self):
+            return self
+
+        def read(self, limit):
+            reads.append(limit)
+            clock["now"] = read_at
+            return raw
+
+        def __exit__(self, *args):
+            clock["now"] = closed_at
+
+    def now():
+        samples.append(clock["now"])
+        return clock["now"]
+
+    def delayed_storage_check(root, *, floor):
+        clock["now"] = storage_at
+
+    monkeypatch.setattr(a.urllib.request, "urlopen", lambda req, timeout: Response())
+    monkeypatch.setattr(a, "utc_now", now)
+    monkeypatch.setattr(a, "require_space", delayed_storage_check)
+    saved = a.collect_one(lake, "forex-bars", "EURUSD", "synthetic-test-key",
+                          {"resampleFreq": "1min"})
+
+    assert saved["observed_at_utc"] == read_at
+    assert samples == [read_at]
+    assert reads == [a.MAX_RESPONSE_BYTES + 1]
+    assert clock["now"] == storage_at
+    assert Path(saved["path"]).parts[2] == capture_date
+    assert gzip.decompress((lake.root / saved["path"]).read_bytes()) == raw
+    receipts = list((lake.root / "receipts").rglob("*.json"))
+    assert len(receipts) == 1 and receipts[0].parent.name == capture_date
+    receipt = json.loads(receipts[0].read_bytes())
+    assert receipt["observed_at_utc"] == read_at
+    assert a.validate_receipt(receipt) == saved["receipt_id"]
+
+
+def test_response_observation_keeps_first_receipt_bytes_and_clock(lake, monkeypatch):
+    raw = b'[{"date":"2026-10-22T00:00:00Z","close":1}]'
+    params = {"resampleFreq": "1min"}
+    path = a.request_path("forex-bars", "EURUSD", params)
+    first = lake.store_response("forex-bars", "EURUSD", path, raw,
+                                received_at="2026-10-22T03:30:00+00:00")
+    before = {p.relative_to(lake.root): p.read_bytes()
+              for p in lake.root.rglob("*") if p.is_file()}
+
+    class Response:
+        headers = {"Content-Type": "application/json"}
+
+        def __enter__(self):
+            return self
+
+        def read(self, _):
+            return raw
+
+        def __exit__(self, *args):
+            return None
+
+    monkeypatch.setattr(a.urllib.request, "urlopen", lambda req, timeout: Response())
+    monkeypatch.setattr(a, "utc_now", lambda: "2026-10-22T06:00:00+00:00")
+    repeated = a.collect_one(lake, "forex-bars", "EURUSD", "synthetic-test-key", params)
+
+    assert repeated["new_raw"] is False
+    assert repeated["observed_at_utc"] == first["observed_at_utc"]
+    assert repeated["receipt_id"] == first["receipt_id"]
+    assert repeated["path"] == first["path"]
+    assert {p.relative_to(lake.root): p.read_bytes()
+            for p in lake.root.rglob("*") if p.is_file()} == before
+
+
+@pytest.mark.parametrize("raw,oversize", [(b"[]", False), (b"[ ]", True)])
+def test_response_observation_preserves_public_pair_and_read_limit(monkeypatch, raw, oversize):
+    reads, requests = [], []
+
+    class Response:
+        headers = {"Content-Type": "application/json"}
+
+        def __enter__(self):
+            return self
+
+        def read(self, limit):
+            reads.append(limit)
+            return raw
+
+        def __exit__(self, *args):
+            return None
+
+    def open_response(req, timeout):
+        requests.append((req, timeout))
+        return Response()
+
+    monkeypatch.setattr(a.urllib.request, "urlopen", open_response)
+    monkeypatch.setattr(a, "utc_now", lambda: "2026-10-22T03:59:59.900000+00:00")
+    if oversize:
+        with pytest.raises(a.TiingoArchiveError, match="response exceeded bounded archive size"):
+            a.fetch_json_bytes("/boats", "synthetic-test-key", timeout=7, max_bytes=2)
+    else:
+        result = a.fetch_json_bytes("/boats", "synthetic-test-key", timeout=7, max_bytes=2)
+        assert type(result) is tuple
+        assert result == (b"[]", "application/json")
+    assert reads == [3]
+    assert len(requests) == 1 and requests[0][1] == 7
+    assert requests[0][0].get_header("Authorization") == "Token synthetic-test-key"
+    assert "synthetic-test-key" not in requests[0][0].full_url
+
+
+def test_response_observation_teardown_failure_does_not_store(lake, monkeypatch):
+    class Response:
+        headers = {"Content-Type": "application/json"}
+
+        def __enter__(self):
+            return self
+
+        def read(self, _):
+            return b"[]"
+
+        def __exit__(self, *args):
+            raise a.urllib.error.URLError("sensitive transport detail")
+
+    monkeypatch.setattr(a.urllib.request, "urlopen", lambda req, timeout: Response())
+    monkeypatch.setattr(a, "utc_now", lambda: "2026-10-22T03:59:59.900000+00:00")
+    with pytest.raises(a.TiingoArchiveError) as exc:
+        a.collect_one(lake, "forex-bars", "EURUSD", "synthetic-test-key",
+                      {"resampleFreq": "1min"})
+    assert str(exc.value) == "Tiingo transport unavailable"
+    assert not [p for p in lake.root.rglob("*") if p.is_file()]

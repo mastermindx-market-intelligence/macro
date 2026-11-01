@@ -1,0 +1,87 @@
+{
+  "schema": "mastermind.bounded_heartbeat_source_review.v1",
+  "reviewer": "/root/news_delivery_ruling",
+  "recorded_at_utc": "2026-10-20T19:02:32Z",
+  "disposition": "APPROVE",
+  "source_only": true,
+  "repository": "mastermindx-market-intelligence/macro",
+  "base_commit": "aedcfebdee929fb1076a771ac9e89545aa607ed6",
+  "candidate_binding": {
+    "status": "SOURCE_HASH_BOUND_AWAITING_PUBLISHED_HEAD",
+    "published_commit": null,
+    "patch_path": "candidate.patch",
+    "patch_sha256": "ff5224dd401a2679dd837fd6ed8184a6afac3169907413b89abbadc8e237e2d5",
+    "files": [
+      {
+        "path": "app/ticker_news.py",
+        "base_git_blob": "bb0b72f04e73850c5a44d151ca30db42cad8526b",
+        "candidate_sha256": "3cebb791f0900af96b1019e6e59edc9a6b079a2f4c14e87b3a081723c6c8d08e"
+      },
+      {
+        "path": "tests/test_ticker_news_api.py",
+        "base_git_blob": "f6e530d6bf5688999bb12a496e35816aea88b4ce",
+        "candidate_sha256": "862b0cad2785043486a7632d8a9de3e919286d89d522fcfdfcae34d1eff2e4f6"
+      }
+    ],
+    "method": "Fetched both exact-base files through GitHub; checked every patch context and hunk count and applied the patch in memory; independently computed both candidate SHA256 hashes. Rechecked the retained patch hash before saving this receipt."
+  },
+  "runtime_assessment": [
+    "No blocking finding in the bounded source delta.",
+    "The only runtime change is the quiet-stream heartbeat interval from 15.0 to 5.0 seconds, accompanied by two explanatory comments.",
+    "Initial heartbeat flushing, permission checks, shared read behavior, polling interval, cursor advancement, data frames, retries and timeout behavior are otherwise unchanged.",
+    "Five-second quiet-stream heartbeats provide margin before EdgeOne's documented default 15-second HTTP/1 origin response idle timeout, while retaining existing polling and authorization behavior.",
+    "The cadence still depends on the existing event loop and awaited reads making progress; this change does not establish a hard upper bound under arbitrary scheduling or IO delay."
+  ],
+  "regression_assessment": [
+    "The new test invokes the actual _sse_events async generator with a deterministic clock and substitutes narrow scope/read/sleep fixtures.",
+    "It requires immediate initial output, at least five frames over 201 simulated 0.1-second cycles, and a maximum inter-frame gap of 5.1 seconds.",
+    "Every output must be the SSE heartbeat comment, not a data or control event.",
+    "It checks all 201 store-read keys retain cursor 7, exactly 201 fresh scope checks occur, and all 201 polling delays remain 0.1 seconds.",
+    "It verifies the unused fixture database path was not created.",
+    "The test meaningfully discriminates the prior 15-second cadence without wall-clock sleeps or real database/provider execution."
+  ],
+  "primary_reference": {
+    "url": "https://edgeone.ai/document/63618",
+    "title": "Origin-Pull Timeout",
+    "read_by_reviewer": true,
+    "supported_facts": [
+      "Default HTTP origin response timeout is 15 seconds.",
+      "The timeout includes interrupted partial data responses.",
+      "The documentation explicitly distinguishes HTTP/2 origin-pull behavior."
+    ]
+  },
+  "parent_owned_evidence": {
+    "independently_executed_or_observed_by_reviewer": false,
+    "old_code_regression": {
+      "result": "FAIL",
+      "observed_frame_times": [
+        100,
+        115
+      ]
+    },
+    "focused_tests": {
+      "result": "PASS",
+      "passed": 132
+    },
+    "predeployment_observation": [
+      "DNS and Server header identify Tencent EdgeOne.",
+      "Paired Caddy/API observations show stream HTTP 200 followed by cancellation around 15 seconds and native reconnection approximately 3 seconds later.",
+      "All 180 read-only canonical store opens passed during that observation window."
+    ],
+    "cause_disposition": "Strong inference; not established by a live after-deployment comparison.",
+    "parent_reported_private_merge_commit": "e98d4e53265d2fb6d893c3286ddd6ca55df736d2",
+    "parent_reported_fast_forward": "Heartbeat hunks unchanged; published heartbeat commit binding still pending."
+  },
+  "evidence_limits": [
+    "No tests, full audit, live provider call, Studio call, deployment, or production mutation was performed by this reviewer for this heartbeat task.",
+    "The reported red-to-green regression and 132 passing tests belong to the parent.",
+    "This source approval does not prove the live connection is fixed, the exact deployed origin protocol/configuration, or buffering behavior.",
+    "Live after-deployment observation remains necessary to establish sustained quiet-stream behavior through the actual edge.",
+    "The published heartbeat commit must be independently bound to the reviewed source hashes when available.",
+    "This local receipt becomes durable when retained by the parent in the owned project carrier."
+  ],
+  "remote_mutations_by_reviewer": false,
+  "release_authorized_by_this_receipt": false,
+  "parent_mission_complete": false
+}
+

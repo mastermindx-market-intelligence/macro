@@ -1,0 +1,495 @@
+{
+  "code_sha256": {
+    "lib/dataos/tiingo_reader.py": "f563efc37718fc509bc86159ff0bead4eb55ab2f6b4e5c1118088f606a6b54b3",
+    "lib/dataos/tiingo_views.py": "62e98c024b9c9019ed4b5d25818873463a6a0c1d4464ef3f3961f05677c6deb1",
+    "scripts/tiingo_materialize.py": "c554f9693cec7287d6953dc5a1a6d28c13012c85000af38fc0b607c0dc411500"
+  },
+  "new_api_requests_in_readback": 0,
+  "observed_at_utc": "2026-10-22T02:44:24.107200+00:00",
+  "plan_sha256": "edc99ec670790134596f79efcbc00400352857046136e0319201481191fa5bb6",
+  "records": [
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "1min",
+      "last_vendor_label": "2026-10-21T23:59:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/11a22820129bf83dc0dc1560c61c0e078f797f2a57583cc26b3ad6e3ee202f7b.parquet",
+        "rows": 1435,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "USDCAD",
+      "raw_bytes_verified": true,
+      "raw_rows": 1435,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 1435
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:35.765357+00:00",
+        "raw_bytes": 166197,
+        "raw_sha256": "11a22820129bf83dc0dc1560c61c0e078f797f2a57583cc26b3ad6e3ee202f7b",
+        "receipt_id": "ba56dd076611a4b2a02f920b268eb3d1d250e3cc286cb40b0dd522b6f395fff1",
+        "request_path": "/tiingo/fx/usdcad/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "usdcad"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/7a4c0dbf697f469e-11a22820129bf83dc0dc1560.json"
+    },
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "4hour",
+      "last_vendor_label": "2026-10-21T20:00:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/0a6058d1674d5ecc8d08d35fd0f7c66bb24e1636ac582626af1326d9218793e4.parquet",
+        "rows": 6,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "USDCHF",
+      "raw_bytes_verified": true,
+      "raw_rows": 6,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 6
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:29.593422+00:00",
+        "raw_bytes": 690,
+        "raw_sha256": "0a6058d1674d5ecc8d08d35fd0f7c66bb24e1636ac582626af1326d9218793e4",
+        "receipt_id": "823a0341a4493c61b94a9d741d2cb993280d752fab013ab9518fee329a61af26",
+        "request_path": "/tiingo/fx/usdchf/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "usdchf"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/6c424187ae8f3062-0a6058d1674d5ecc8d08d35f.json"
+    },
+    {
+      "first_vendor_label": null,
+      "frequency": "4hour",
+      "last_vendor_label": null,
+      "materialization": {
+        "rows": 0,
+        "source": "forex-bars",
+        "status": "EMPTY_NORMALIZED"
+      },
+      "pair": "USDBRL",
+      "raw_bytes_verified": true,
+      "raw_rows": 0,
+      "reader": null,
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:46.752879+00:00",
+        "raw_bytes": 2,
+        "raw_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receipt_id": "c767b746649b4f4d942a24f52c0b34aff9a6d8cad83a7684ec546b9e7e5608d3",
+        "request_path": "/tiingo/fx/usdbrl/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "usdbrl"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/319ddbd05c68f13d-4f53cda18c2baa0c0354bb5f.json"
+    },
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "1min",
+      "last_vendor_label": "2026-10-21T23:59:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/8528bfb0036b99664edabe24ded397844fb0220c1ca1c8fd0d1cc59093192322.parquet",
+        "rows": 1438,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "USDJPY",
+      "raw_bytes_verified": true,
+      "raw_rows": 1438,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 1438
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:24.002900+00:00",
+        "raw_bytes": 166459,
+        "raw_sha256": "8528bfb0036b99664edabe24ded397844fb0220c1ca1c8fd0d1cc59093192322",
+        "receipt_id": "7710a239ddc663d78eb919452a9903397c87e161216a6af0a5886add7bd46712",
+        "request_path": "/tiingo/fx/usdjpy/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "usdjpy"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/43595dc023785c06-8528bfb0036b99664edabe24.json"
+    },
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "4hour",
+      "last_vendor_label": "2026-10-21T20:00:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/7e355fd950b3ab6a5d3a6a3d6fb235ddec7a6552d1aa69017a1a953272e9aed2.parquet",
+        "rows": 6,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "USDMXN",
+      "raw_bytes_verified": true,
+      "raw_rows": 6,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 6
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:43.601320+00:00",
+        "raw_bytes": 705,
+        "raw_sha256": "7e355fd950b3ab6a5d3a6a3d6fb235ddec7a6552d1aa69017a1a953272e9aed2",
+        "receipt_id": "7c5be0ec19a3f33bef10a1869f299e6cf6895ca7b9e574a9398364419afceaf1",
+        "request_path": "/tiingo/fx/usdmxn/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "usdmxn"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/dc9d4163211aa2c3-7e355fd950b3ab6a5d3a6a3d.json"
+    },
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "4hour",
+      "last_vendor_label": "2026-10-21T20:00:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/2334f9bbf3617f6e5d3f4e87ba95a726f50147405ae1ed83860cc0f3c86e2e07.parquet",
+        "rows": 6,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "USDCNH",
+      "raw_bytes_verified": true,
+      "raw_rows": 6,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 6
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:51.689907+00:00",
+        "raw_bytes": 695,
+        "raw_sha256": "2334f9bbf3617f6e5d3f4e87ba95a726f50147405ae1ed83860cc0f3c86e2e07",
+        "receipt_id": "8d06ffb50fb06a428e56842c93b86c0bc978306b1191cb79fb0c7d90879a2f07",
+        "request_path": "/tiingo/fx/usdcnh/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "usdcnh"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/c81afb713dc13321-2334f9bbf3617f6e5d3f4e87.json"
+    },
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "1min",
+      "last_vendor_label": "2026-10-21T23:58:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/05bbf922cb3e84dfd5c730c47afa3ba5475a6209822b20ba56fe9cc73fba436d.parquet",
+        "rows": 1412,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "USDMXN",
+      "raw_bytes_verified": true,
+      "raw_rows": 1412,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 1412
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:42.050723+00:00",
+        "raw_bytes": 166124,
+        "raw_sha256": "05bbf922cb3e84dfd5c730c47afa3ba5475a6209822b20ba56fe9cc73fba436d",
+        "receipt_id": "c445387ac84fbf3d98999864f4fb04ea2e30016d262200e024e629c2e37d1f6d",
+        "request_path": "/tiingo/fx/usdmxn/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "usdmxn"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/66022e694cc425c7-05bbf922cb3e84dfd5c730c4.json"
+    },
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "1min",
+      "last_vendor_label": "2026-10-21T23:59:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/ea0b984b5efbef273b755c28e2cdfc308e601068ca89f997aa3397e9201446c1.parquet",
+        "rows": 1438,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "USDCNH",
+      "raw_bytes_verified": true,
+      "raw_rows": 1438,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 1438
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:50.117082+00:00",
+        "raw_bytes": 166458,
+        "raw_sha256": "ea0b984b5efbef273b755c28e2cdfc308e601068ca89f997aa3397e9201446c1",
+        "receipt_id": "e9bc8cc44101c777599c17169873386e486646f7baed5f9a7ff34bd7a89c4b81",
+        "request_path": "/tiingo/fx/usdcnh/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "usdcnh"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/bfd30afe0c8eb0a6-ea0b984b5efbef273b755c28.json"
+    },
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "4hour",
+      "last_vendor_label": "2026-10-21T20:00:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/848a6904584cd3143c285c6fc6d011e8abd84ebac7aec5e9aabcf87b2596aa6c.parquet",
+        "rows": 6,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "AUDUSD",
+      "raw_bytes_verified": true,
+      "raw_rows": 6,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 6
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:33.281591+00:00",
+        "raw_bytes": 696,
+        "raw_sha256": "848a6904584cd3143c285c6fc6d011e8abd84ebac7aec5e9aabcf87b2596aa6c",
+        "receipt_id": "0bfe2e184838629475ef13a27608c2caf3cd793b998459811d04af82b76062eb",
+        "request_path": "/tiingo/fx/audusd/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "audusd"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/8ed41bdc456d2521-848a6904584cd3143c285c6f.json"
+    },
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "4hour",
+      "last_vendor_label": "2026-10-21T20:00:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/9d032a7d1c120071a1e96a969eef39c7921da45653f063249c3c825c83f0ea3a.parquet",
+        "rows": 6,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "USDJPY",
+      "raw_bytes_verified": true,
+      "raw_rows": 6,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 6
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:25.766754+00:00",
+        "raw_bytes": 693,
+        "raw_sha256": "9d032a7d1c120071a1e96a969eef39c7921da45653f063249c3c825c83f0ea3a",
+        "receipt_id": "c44a1f21d65d072917e0e8f3acad1669b1df2320f0b8eeb03d07ca68531efbbe",
+        "request_path": "/tiingo/fx/usdjpy/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "usdjpy"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/5de2bd0d7bf15981-9d032a7d1c120071a1e96a96.json"
+    },
+    {
+      "first_vendor_label": null,
+      "frequency": "1min",
+      "last_vendor_label": null,
+      "materialization": {
+        "rows": 0,
+        "source": "forex-bars",
+        "status": "EMPTY_NORMALIZED"
+      },
+      "pair": "USDBRL",
+      "raw_bytes_verified": true,
+      "raw_rows": 0,
+      "reader": null,
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:45.200506+00:00",
+        "raw_bytes": 2,
+        "raw_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receipt_id": "dfbb348d1949b5027c449b48bcfea86d0813154bb8ff3aa6cf94a977ae3df59b",
+        "request_path": "/tiingo/fx/usdbrl/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "usdbrl"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/91fcc6562728bf3d-4f53cda18c2baa0c0354bb5f.json"
+    },
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "1min",
+      "last_vendor_label": "2026-10-21T23:59:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/cd5c3de091f3442758d213dcf0a0e21658162c0c5a16421be837ece49c993a87.parquet",
+        "rows": 1435,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "AUDUSD",
+      "raw_bytes_verified": true,
+      "raw_rows": 1435,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 1435
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:31.495457+00:00",
+        "raw_bytes": 166127,
+        "raw_sha256": "cd5c3de091f3442758d213dcf0a0e21658162c0c5a16421be837ece49c993a87",
+        "receipt_id": "0e122003cb19e6479f16e860ca803b21cb357f6cea64f908aa2b88bc7697cfce",
+        "request_path": "/tiingo/fx/audusd/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "audusd"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/c5a5c7d873aa986e-cd5c3de091f3442758d213dc.json"
+    },
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "4hour",
+      "last_vendor_label": "2026-10-21T20:00:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/c05529d6a94c3251802dd05676fa202a25bd0ff5314f12a1193ffe3d2b73618d.parquet",
+        "rows": 6,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "USDCAD",
+      "raw_bytes_verified": true,
+      "raw_rows": 6,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 6
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:37.563992+00:00",
+        "raw_bytes": 697,
+        "raw_sha256": "c05529d6a94c3251802dd05676fa202a25bd0ff5314f12a1193ffe3d2b73618d",
+        "receipt_id": "8787878a6b8548c08fc3a9ec2f47bae4a084bfdc2bac87ea37a2d6e309b363d6",
+        "request_path": "/tiingo/fx/usdcad/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "usdcad"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/f6d9e54db4df57bc-c05529d6a94c3251802dd056.json"
+    },
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "4hour",
+      "last_vendor_label": "2026-10-21T20:00:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/8adc1bdd1feed434d8866e33d211a5b609eb3335234abb6d2fafce953af77e5a.parquet",
+        "rows": 6,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "GBPUSD",
+      "raw_bytes_verified": true,
+      "raw_rows": 6,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 6
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:22.158996+00:00",
+        "raw_bytes": 693,
+        "raw_sha256": "8adc1bdd1feed434d8866e33d211a5b609eb3335234abb6d2fafce953af77e5a",
+        "receipt_id": "d91d6d4ee1ce718b1746af66a95eec1d7ad27db8ea182c04cca7173e7518d457",
+        "request_path": "/tiingo/fx/gbpusd/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "gbpusd"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/6e2ebf66f78a5757-8adc1bdd1feed434d8866e33.json"
+    },
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "1min",
+      "last_vendor_label": "2026-10-21T23:59:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/aa8dfb56d85429fe4ea3a43f2c41c81362f341f33405747e56e4936e988f7f0e.parquet",
+        "rows": 1434,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "GBPUSD",
+      "raw_bytes_verified": true,
+      "raw_rows": 1434,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 1434
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:20.409135+00:00",
+        "raw_bytes": 165996,
+        "raw_sha256": "aa8dfb56d85429fe4ea3a43f2c41c81362f341f33405747e56e4936e988f7f0e",
+        "receipt_id": "48e3c2eccee373af34603f520aaef04cba428ae2fc4e5cc7f7f191e0487550f3",
+        "request_path": "/tiingo/fx/gbpusd/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "gbpusd"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/09ecf41ed57b1e77-aa8dfb56d85429fe4ea3a43f.json"
+    },
+    {
+      "first_vendor_label": "2026-10-21T00:00:00.000Z",
+      "frequency": "1min",
+      "last_vendor_label": "2026-10-21T23:59:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/bbf55f46cc9dc06ebb09413e62fb9e8a31656268f15939a3ff3383e661007521.parquet",
+        "rows": 1435,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "pair": "USDCHF",
+      "raw_bytes_verified": true,
+      "raw_rows": 1435,
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false,
+        "rows": 1435
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:43:27.858087+00:00",
+        "raw_bytes": 166039,
+        "raw_sha256": "bbf55f46cc9dc06ebb09413e62fb9e8a31656268f15939a3ff3383e661007521",
+        "receipt_id": "8864d65acbfdf37f0188d7771763a736348fe49279d471d52e00ab7ef2f5ad0c",
+        "request_path": "/tiingo/fx/usdchf/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+        "source": "forex-bars",
+        "symbol": "usdchf"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/f4eb6b7c2999cf2c-bbf55f46cc9dc06ebb09413e.json"
+    }
+  ],
+  "schema": "forex_r26.remaining_paired_receipts.v1"
+}

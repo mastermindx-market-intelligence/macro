@@ -1,0 +1,60 @@
+{
+  "record_type": "attended_readonly_counsel",
+  "programme": "WS:MARKET-OS",
+  "original_root": "market-os-shared-shell-design-20260924-sol-001",
+  "attended_parent": "shared-shell-production-20261018-c1",
+  "macro_source": "b4255da8c14a14d5654a03b466ebabe943f2c24e",
+  "incoming_main": "fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd",
+  "incoming_review_base": "69dd6e774cc48223005426765e74aed193d55954",
+  "ci_resolution": {
+    "counsel": "sni_receipt_counsel",
+    "mode": "GitHub immutable compare patches; no effects",
+    "base_blob": "5b8263c086ee493b1dc4b4fdb8a6fb01775ead4c",
+    "ours_blob": "73a2d1fea3ec3eabb34c5b79501c9840fc20b483",
+    "incoming_blob": "3a4cf83d05ced9b974d7a3b4bec99ca0b7128c13",
+    "complete_patch_totals": {
+      "ours": {
+        "additions": 84,
+        "deletions": 2
+      },
+      "incoming": {
+        "additions": 46,
+        "deletions": 4
+      }
+    },
+    "ruling": "Seven compatible additive paths-list conflicts. Preserve both libraries plus incoming activity-membership schema in six; shared_shell.py plus schema in one. Preserve all nonconflicting suite/command/closure additions. Root actual resolution separately proves normalized old-base-to-ours deltas equal new-incoming-to-resolved deltas, all path sets are unions, and 327 unchanged job identities."
+  },
+  "capture_reuse": {
+    "counsel": "sector_rig_counsel",
+    "mode": "Complete untruncated directory trees and relevant blobs; initial 300-file compare ceiling not treated as exhaustive",
+    "captured_macro": "b2ff80dfb558ea05d6c749391ca37b8ea4ad6df4",
+    "reviewed_incoming": "fc44c814c19228d1d19964a34dcf40ce0593eb87",
+    "ruling": "Reuse only narrow historical duplicate-nav suppression proof with original source/fixture/PNG/measurement identities. About presentation/capture owner unchanged. site/macro.html incoming change is generated content with identical external asset tags and unchanged authored dashboard template. Do not relabel pixels/metrics as exact merged Macro page acceptance. Subsequent fe7 changes only valuation_assumptions.py and test_valuation_event_bridge.py.",
+    "retained_findings": [
+      "88 blocked request/console observations",
+      "24 blocked WebSocket streams",
+      "two mobile English About footer-overflow cells",
+      "About inherited light-only landing CSS",
+      "Paper REVISE; existing Sector six views retained"
+    ],
+    "recapture_gate": "Material change to relevant authored style, structure, state, bridge or capture semantics, or a requested exact-new-page visual claim."
+  },
+  "beta_publication": {
+    "counsel": "beta_recovery_counsel",
+    "owner_candidate": "b4fc1744b38431871b0f6873e62472664d842eb2",
+    "owner_blob": "016d6744123764a9f55c80cf761c6e2d63f4a5a4",
+    "owner_sha256": "6d05d3d5745e0e0a29262c89ba61cf881c2605201cce5b0fc85a52bde0e42ec8",
+    "candidate_is_protected_R": false,
+    "ruling": "Keep Macro unarmed until protected-R bootstrap A has durably accepted healthy beta. Macro's existing updater automatically installs reviewed Caddy configuration when source reaches main and has no beta-health check. Consume original renderer/generated-main and actual served publication separately. Reconcile live DNS before arming; public TLS/auth/browser acceptance remains distinct.",
+    "rollback_boundary": "First-install stop/quarantine/source-only containment has no previous accepted runtime to restore. No standalone --rollback CLI. Internal upgrade rollback is conditional before live-input dirtiness and before acceptance pointer commits. Caddy/DNS restoration is not part of the Terminal transaction. Do not manufacture an unrelated B deployment to claim rollback."
+  },
+  "source_urls": [
+    "https://github.com/mastermindx-market-intelligence/macro/compare/69dd6e774cc48223005426765e74aed193d55954...0905751badd88752cbab19ffedac51e610488035",
+    "https://github.com/mastermindx-market-intelligence/macro/compare/69dd6e774cc48223005426765e74aed193d55954...fc44c814c19228d1d19964a34dcf40ce0593eb87",
+    "https://github.com/mastermindx-market-intelligence/macro/compare/fc44c814c19228d1d19964a34dcf40ce0593eb87...fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd",
+    "https://github.com/mastermindx-market-intelligence/macro/blob/b2ff80dfb558ea05d6c749391ca37b8ea4ad6df4/app/deploy/update.sh",
+    "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b4fc1744b38431871b0f6873e62472664d842eb2/ops/SHARED_SHELL_BETA_DEPLOYMENT.md"
+  ],
+  "effects": [],
+  "programme_complete": false
+}

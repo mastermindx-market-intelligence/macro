@@ -24,6 +24,7 @@ import urllib.request
 import zipfile
 
 import govrev_candidate_proof as proof
+import govrev_source_binding as source_binding
 
 REPOSITORY = 'mastermindx-market-intelligence/macro'
 FAMILIES = {'government-revenue-live.yml': 'refresh',
@@ -34,6 +35,8 @@ BASELINE = 'research/defense_intelligence/e2e_20261011/PUBLISHER_RECOVERY_BASELI
 CASE = 'govrev-candidate-proof.run-case.json'
 CHECKPOINT = 'govrev-candidate-proof.preflight.json'
 SOURCE_PATHS = ('scripts/ci/govrev_publisher_preflight.py', 'scripts/ci/govrev_candidate_proof.py',
+                'scripts/ci/govrev_source_binding.py',
+                'scripts/ci/fms_persist.py',
                 '.github/workflows/government-revenue-live.yml', '.github/workflows/daily.yml',
                 '.github/workflows/fms-acquire.yml')
 
@@ -493,6 +496,7 @@ def main(argv=None):
         if case['repository'] != REPOSITORY or not case['run_id'] or case['run_attempt'] != 1:
             raise Refused('current_native_actions_identity_missing')
         case.update({'checkout_commit': proof._head_commit(root), 'source_closure': source_closure(root)})
+        case['execution_source_binding'] = source_binding.check_checkout(os.environ, case['checkout_commit'])
         proof._atomic_write(out_dir / CASE, proof._canonical(case) + '\n')
         api = GitHub(os.environ.get('GITHUB_TOKEN'))
         baseline = read_baseline(root)
@@ -514,7 +518,7 @@ def main(argv=None):
         print('GovRev prior publisher effects reconciled; no new build/write began in preflight')
         return 0
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError, zipfile.BadZipFile) as exc:
-        case['reason'] = str(exc) if isinstance(exc, Refused) else 'required_evidence_unavailable_or_unqualified'
+        case['reason'] = str(exc) if isinstance(exc, (Refused, source_binding.BindingRefused)) else 'required_evidence_unavailable_or_unqualified'
         case['phase'] = 'preflight_refused_before_effect'
         proof._atomic_write(out_dir / CASE, proof._canonical(case) + '\n')
         print('::error title=GovRev publication preflight::publication frozen: ' + case['reason'])

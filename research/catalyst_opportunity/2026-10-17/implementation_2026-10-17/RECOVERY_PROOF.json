@@ -1,0 +1,75 @@
+{
+  "status": "LOCAL_VERIFIED_RELEASE_GATED",
+  "classification": "EXACT_HUMAN_GATE",
+  "full_program_complete": false,
+  "source_manifest": {
+    "path": "research/catalyst_opportunity/2026-10-17/implementation_2026-10-17/RECOVERY_SOURCE_MANIFEST.json",
+    "sha256": "cb19e60e20104330eb61ac03a3522d51b74a12ef7cb40cfc9689e237a5993d55"
+  },
+  "macro_checks": [
+    {
+      "name": "macro_source_api_isolated",
+      "verdict": "PASS",
+      "log_path": "/Volumes/Mastermind 2/evidence/catalyst-opportunity-e2e-20261017/recovery-ci-isolated.log",
+      "log_sha256": "532390b4e5e55acdc11c64842744345ebd1f276cee6ea95575996b5c0d9cf78c"
+    },
+    {
+      "name": "deployment_update_contracts",
+      "verdict": "PASS",
+      "log_path": "/Volumes/Mastermind 2/evidence/catalyst-opportunity-e2e-20261017/recovery-deploy-contracts.log",
+      "log_sha256": "827e42f146b72750d4f9c7dd1e0732904a8138234c652491aa865264243f0889"
+    },
+    {
+      "name": "full_contract_delta",
+      "verdict": "PASS",
+      "log_path": "/Volumes/Mastermind 2/evidence/catalyst-opportunity-e2e-20261017/recovery-contract-delta-complete.log",
+      "log_sha256": "f137a502aa3cb64b851d07c7554696a3d51e651d9385891cc3ce7d2d1dfe9565"
+    }
+  ],
+  "dependency_proof_scope": "Fresh isolated local Python environment with exactly the CI-declared pip dependencies; not a GitHub Actions execution claim.",
+  "contract_delta_base": "cc550eeca53721eacdcb21911cff8feb31fb8a5c",
+  "packing_limits_unchanged": true,
+  "terminal_receipt": {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "path": "terminal/docs/catalyst-opportunity/recovery-2026-10-17/receipt.json",
+    "sha256": "a80cf9a7d010a667e0bf7a5d49c5a57976d8e800591736ebb03f24f9ac69e2ec"
+  },
+  "paper": {
+    "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+    "page_id": "p-1Z-1",
+    "boards": [
+      "6B2C-1",
+      "6B64-1",
+      "6C1T-1",
+      "6CF9-1",
+      "6D07-1"
+    ],
+    "finish_operation": "catalyst-opportunity-e2e-20261017-paper-finish-five-references",
+    "verdict": "APPLIED_RESPONSE_OBSERVED_OK",
+    "all_five_final_screenshots_inspected": true,
+    "exports": false
+  },
+  "independent_review": {
+    "run_id": "catalyst-access-temporal-review-20261017",
+    "formal_state": "NOT_ACCEPTED_NO_OUTCOME",
+    "original_two_low_findings_repaired": true,
+    "new_defense_delta_accepted": false,
+    "refused_export_preserved": true
+  },
+  "publisher": {
+    "effect": "NOT_APPLIED",
+    "status": "TYPED_GIT_PRECHECK_REFUSED",
+    "required_control": "Enable --enable-repository-workspaces on the same Studio Direct service and review/refresh the same connected approved action snapshot.",
+    "commit_attempted": false,
+    "push_attempted": false,
+    "deployment_attempted": false
+  },
+  "agentos": {
+    "last_canonical_commit": "bb0f626bbaa316aeae466e6ae2a39e491b638549",
+    "new_frontier_path": "agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-10-17-catalyst-defense-frontier.md",
+    "new_frontier_status": "NOT_CANONICALLY_PERSISTED"
+  },
+  "uncertain_effects": [],
+  "active_validation_processes": [],
+  "production_acceptance": false
+}

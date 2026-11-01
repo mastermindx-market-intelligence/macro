@@ -213,6 +213,16 @@ def test_no_history_at_all_still_answers_and_still_flags(data_root):
     assert "no PIT history yet" in got["note"]
 
 
+def test_coverage_of_a_corrupt_store_raises_never_reports_empty(data_root):
+    """Q02-F1 gap A1: an existing but unreadable store is not an empty one."""
+    assert pit.coverage(THS)["snapshots"] == 0          # absent = honest empty
+    p = pit.history_path(THS)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(b"not a parquet file")
+    with pytest.raises(pit.HistoryIntegrityError):
+        pit.coverage(THS)
+
+
 def test_unknown_basket_is_not_reported_as_an_authoritative_empty(data_root):
     """An empty member list with pit=True would read as 'this basket was empty
     that day'. A typo must not be able to say that."""
@@ -393,3 +403,51 @@ def test_new_unreceipted_snapshot_cannot_prove_an_absent_basket(data_root):
     got = pit.members_asof("ths_new", "2026-07-08", suite=THS)
     assert got["pit"] is False and got["members"] == []
     assert got["note"] == "no basket-scoped observation"
+
+
+# ---------------------------------------------------------------------------
+# 6. an existing-but-unreadable store (Q02-F1) — corruption is a third outcome,
+#    never absence and never current membership
+# ---------------------------------------------------------------------------
+
+def test_a_corrupt_store_answers_unreadable_never_current(data_root):
+    """Garbage parquet bytes where the history lives are neither a store that
+    never had history nor an observation of current membership."""
+    _write_membership(data_root, THS, _doc({"ths_ai": [_m("A.SZ")]}))
+    p = pit.history_path(THS)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(b"broken")
+    got = pit.members_asof("ths_ai", "2026-07-08", suite=THS)  # must not raise
+    assert got["basis"] == "membership_unreadable"
+    assert got["members"] == []
+    assert got["pit"] is False
+    assert got["snapshot_date"] is None
+
+
+def test_a_read_failure_after_a_pit_hit_never_leaves_a_pit_flag(data_root, monkeypatch):
+    """The handler RESETS the answer it may already have half-filled: an
+    exception after ``out`` was marked pit=True must land on
+    basis=membership_unreadable with no members and no pit flag.
+    The half-fill also stamps ``source_shape``, so its reset is pinned too."""
+    _write_membership(data_root, THS, _doc({"ths_ai": [_m("A.SZ")]}))
+    assert pit.append_snapshot(THS, asof="2026-07-08", lane="asia")["written"]
+    # append_snapshot stamps versioned (member.v2) rows, so the covered path is
+    # _members_asof_versioned (probed: record_kind present on every row).
+    assert pit.read_history(THS, include_collection_records=True)[
+        "record_kind"].notna().any()
+
+    def boom(out, covered, date):
+        out.update(pit=True, basis="pit_snapshot", snapshot_date=date,
+                   members=["SYNTH.X"], source_shape=pit.SHAPE_MEMBERSHIP)
+        raise RuntimeError("boom")
+
+    assert pit.SHAPE_MEMBERSHIP is not None
+
+    monkeypatch.setattr(pit, "_members_asof_versioned", boom)
+    got = pit.members_asof("ths_ai", "2026-07-08", suite=THS)
+    assert got["pit"] is False
+    assert got["basis"] == "membership_unreadable"
+    assert got["members"] == []
+    assert got["snapshot_date"] is None
+    assert got["source_shape"] is None
+    assert got["note"] == "read failed (RuntimeError)"

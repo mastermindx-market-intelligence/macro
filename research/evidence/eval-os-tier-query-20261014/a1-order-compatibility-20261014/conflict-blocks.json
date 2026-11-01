@@ -1,0 +1,6 @@
+[
+  {
+    "job": "eval-os-a1",
+    "block": "<<<<<<< d15e7ac3f0bd9ea7ee9f203f96f0a9469c6357fb\n      - engine/neuralweb/market_memory_brain_citations.py\n      - engine/rates_command_basis.py\n      - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md\n      - research/FOMC_QT_CLOCK_CASE_2024_05_01.md\n      - research/MAG7_TURN_POSTMORTEM_BY_FABLE.md\n      - engine/neuralweb/eval/benchmark_risk_breadth_2026-07-08.json\n      - engine/neuralweb/eval/benchmark_treasury_liquidity_2026-07-02.json\n      - engine/neuralweb/eval/benchmark_fomc_qt_clock_2024-05-01.json\n      - engine/neuralweb/eval/benchmark_semiconductor_divergence_2026-07-08.json\n      - engine/neuralweb/eval/benchmark_mag7_organ_causality_2026-07-11.json\n      - engine/neuralweb/eval/benchmark_mag7_flow_calibration_2026-07-11.json\n      - engine/neuralweb/eval/benchmark_mag7_narrative_denominator_2026-07-11.json\n=======\n      - engine/rates_command_basis.py\n      - engine/neuralweb/market_memory_brain_citations.py\n>>>>>>> b1db2fc7510b3121bb9494f7f55a4351e6a48c77"
+  }
+]

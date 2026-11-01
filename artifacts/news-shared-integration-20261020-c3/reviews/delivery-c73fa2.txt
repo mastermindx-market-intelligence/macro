@@ -1,0 +1,84 @@
+STATUS: COMPLETE
+
+**Source Verified**
+- Remote `refs/heads/sol/web-news-shared-integration-20261020-c3` = `c73fa2c3d08e777221fe1ee73f3b87dd479f1fb8`; `refs/pull/9846/head` = same SHA.
+- GitHub PR 9846: `state=open`, `draft=True`, head `c73fa2c3`, base.ref `main`, **base.sha `d59b99b9afbe99ef528ce80db0ff66f0d9846abc`** — the PR base is actual main, which is the direct disposition of the prior "base contamination" finding.
+- `c73fa2c3` parents = `9eb6198c` (repair, "Fix news publication windows and bound stream permission reads") + `d59b99b9`. `9eb6198c`'s parent is `111753b2` = merge(`b644688c`, `a815e54f`). `d59b99b9` is an ancestor of `origin/main`; `a815e54f` and `b644688c` are ancestors of HEAD.
+- Reviewed in an isolated scratch clone `/tmp/pr9846-review/src` at exact HEAD (tree `9ec9d9d4`), `git status --porcelain` = 0 lines. Both real local clones untouched (`/home/ubuntu0/lanes/repos/macro` @ `40abd9bd`, `/home/ubuntu0/Documents/GitHub/macro` @ `0c7ec71b`, both clean). Root `AGENTS.md` (414 lines) read; it is the only AGENTS.md in the tree.
+
+**Deltas**
+- Repair `111753b2..9eb6198c`: 24 files, +1295/−75.
+- Vs prior reviewed `b644688c..9eb6198c`, restricted to the 46 feature source paths: 19 files, +693/−57 (includes main carry-in from the `111753b2` merge).
+- Release delta `d59b99b9..c73fa2c3`: 67 files, +9036/−194.
+
+**Merge Integrity**
+- `git diff-tree --cc c73fa2c3` shows exactly one merge-resolved path: `.github/ci/legacy-jobs.yml`.
+- 66 of the 67 release-delta files are byte-identical between `9eb6198c` and `c73fa2c3` → no feature bytes changed by the merge.
+- Independent `git merge-file` 3-way reconstruction reproduces exactly one conflict region (feature side: `- engine/qbus_news_quality.py`; main side: 27 entries). Merged blob keeps **both** path sets, markers removed; line arithmetic exact (36986 base + 47 feature + 331 main = 37364 merged).
+- `scripts/check_ci_trigger_closure.py`: 3171 gated suites, all closures reachable, **0 TRIGGER GAP**.
+- `scripts/check_contract_delta.py --base d59b99b9`: **0 introduced, 0 inherited**, ceilings held (135/5822/10 vs 136/5822/10), wall 253.5 s. This closes the docs' open "requalify the differential contract" item.
+
+**BlockingReadPool — `app/ticker_news_stream.py:68`**
+- Capacity 8 default, `ValueError("invalid_blocking_read_bound")` below 1; per-event-loop via `_loop` identity reset, and `finished` closes over the captured `pending` local so stale-loop tasks cannot mutate a new loop's set.
+- Slot released only in the done callback → a cancelled caller cannot free a still-running read.
+- Admission is `while len(pending) >= concurrency: await asyncio.wait(...)` then `create_task` + `pending.add` with **no await between recheck and insert** → no over-admission window; `asyncio.wait` is never handed an empty set for the same reason.
+- `await asyncio.shield(task)`; `pending.discard` then `completed.exception()` guarded by `not cancelled()`. No TTL/key cache, unlike `SharedChangeReader`.
+
+**Uses — `app/ticker_news.py`**
+- `_stream_scope` (`:863`) reads rights + derivative in one synchronous callback; submitted as `lambda: _stream_scope(user)`.
+- Initial security lookup offloaded (`:878`) with `now=datetime.now(...)` evaluated **inside** the lambda → no captured earlier time.
+- Fresh scope every cycle (`:889`) and every row (`:932`); quiet-expiry heartbeat preserved (`:946`); rights are part of the `SharedChangeReader` key (`:919`), so a revoked audience cannot reuse an earlier grant.
+- No permission cache: zero `lru_cache`/`@cache`/`_CACHE`/`cached_property` in `engine/qbus_news_receipts.py`, `qbus_news_universe.py`, `qbus_news_quality.py`, `app/ticker_news.py`, `app/ticker_news_stream.py`; `load_rights_set` (`:474`) re-reads and re-parses every receipt per call with the caller-supplied `now`.
+- No nested pool acquisition (`_stream_scope`, `read_page`) → no deadlock.
+- `_rights_generation`: exactly 1 hit (the definition) at `111753b2` and `b644688c`; **0 hits at HEAD** — dead helper confirmed and removed.
+
+**Findings Disposition (delivery-review-b644-r1, SHA1cd69b88…)**
+- Base contamination → **FIXED**: PR base is now real main `d59b99b9`, verified ancestor of `origin/main`.
+- Blocking permission IO → **FIXED**: rights/universe reads go through the bounded pool; `test_receipt_read_keeps_event_loop_responsive_and_rechecks_revocation` asserts `threading.get_ident() != event_loop_thread` inside the read.
+- Invented hourly cadence → **FIXED**: `"upstream_recency": "hourly"` deleted from `parse_health_receipt` (`engine/qbus_news_receipts.py:364`), replaced by bounded `configured_publishers` (≤64 validated domains) and `accepted_reports_since_start` (exact int, ≤2^53−1), with an explicit comment scoping them to admission and this writer process.
+- Source-unbound latency → **FIXED**: `source_digests()` + excluded warmup arm + `sources_before != sources_after` → `RuntimeError`.
+- 3 trivial browser assertions → **FIXED**: no `check(True` remains; replacements assert `get_by_text(...).count() == 1`, `locator('.tn-row[data-story="story-70"]').is_visible()`, and `get_attribute("data-state") == "degraded"`.
+- Dead helper → **FIXED** as above.
+
+**My Independent Tests (not parent-reported)**
+- `pytest tests/test_shared_news_intelligence.py -q` → **34 passed** (5.23 s).
+- Exact registered CI job `ticker-news-qbus`, suite list extracted verbatim from `.github/ci/legacy-jobs.yml:34534`–`34578` (**45 suites**) → **770 passed, 14 warnings, 123.46 s**. Warnings are pre-existing FastAPI deprecation / duplicate-operation-ID notices in `app/forensics.py`, `app/institutional_research.py`, `app/paywall.py` — not feature bytes. I reproduced the 770 count independently.
+- Own adversarial pool probe (`/tmp/pr9846-review/probe/probe_pool.py`), cap 3, 6 workers, 1200 submissions, 25 % caller cancellation, 1-in-17 raising `OSError`, 5 seeds: peak in-flight never exceeded cap (0 over-admission), every started reader completed, `_pending` drained to 0, worst event-loop yield 0.14–0.21 ms under saturation, pool reusable afterwards.
+- Own edge probe: cap 1 with 40 tasks / 12 cancelled → peak 1, drained; a caller cancelled **while queued** holds no slot and the running holder keeps its slot and completes; per-loop capacity survives a loop switch; invalid bounds rejected.
+- Own per-frame SSE probe on a 3-row page: stable rights → all 3 rows; revocation after row 1 → exactly `upsert` + `restricted`, rows 2–3 suppressed, no `$11`/`$12` leak; quiet expiry (clock advance only, receipt file untouched) after row 1 → same fencing. **3 passed.**
+- The 49-check Chromium harness I did **not** run (manual explicit gate). I corroborated it against HEAD source instead: 49 `check(...)` call sites (50 `check(` minus `def check(`), 49 labels in `stream-ui/verification.json`, `scenario_failures: []`, `page_errors: []`, `observed_at 2026-10-20T13:36:31Z`, self-gate `len(checks) < 45 → SystemExit(1)`, all 3 formerly-trivial labels present. In CI, `verify_ticker_news_stream_ui.py` appears only as a `paths:` trigger (`:34232`), never in a `run:` step anywhere under `.github/` → still manual, no expensive CI added, no contract weakened.
+
+**Benchmark and Artifacts**
+- `latency.json`: `observed_at 2026-10-20T13:28:06Z`, `source_sha256` = **25 files**, `source_stable_during_run: true`, warmup recorded `excluded_from_results: true`. I recomputed all 25 digests against the worktree at exact HEAD: **0 mismatches, 0 missing**.
+- Control p95 `receive_before_commit_to_sse` = **1501.70 ms**; candidate = **156.91 ms** — exact. `commit_duration` p95 16.56 → **61.34 ms (worse)**, which the docs state plainly ("faster fanout does not establish lower commit cost"). Module docstring line 1 and `proof_scope` both exclude vendor, WAN, Terminal BFF and browser paint; docs forbid SLA extrapolation. The benchmark stubs `_security_or_404` and `_STREAM_CHANGE_READER` but **not** `_STREAM_BLOCKING_READER`, so the real pool is on the measured path.
+- `retrieval/review-candidate.json`: all 3 source digests **match HEAD**. `review-baseline.json` digests intentionally differ — I proved they are the sha256 of those files at commit `4d5f0e70` (`b644688c`'s parent), with `qbus_news_retrieval.py = None` because the module does not exist there. The baseline arm is bound to real identifiable source, not drift.
+- Every doc number corroborated: 2048-report duplicate full-commit median 8.785 vs 1.336 ms; distinct-report ingest 3.26 s vs 14.63 s; largest candidate 256-item commit 2.19 s; cold derived-index rebuild 1.13 s, warm opens 4.145–4.51 ms. The worse small-fixture ingest (470.98 vs 127.21 ms at size 128) is disclosed as the writer-work tradeoff.
+- JS/CSS independently hashed: `site/ticker_news.js` = `templates/ticker_news.js` = `fe8322cda6e282e08633bee34185200a26905a01fd068aec8b80b6001359fa56`; `site/ticker_news.css` = `templates/ticker_news.css` = `b3ff2176393c29afb524d08a925b1df0049e15d08d9897bc211b6ac7649fc462`. Both exactly as stated.
+
+**Prior `evidence_for_security` Hypothesis — UNCONFIRMED**
+No valid canonical-state repro exists. At `engine/qbus_news_store.py:1876`, `if not reports: break` (`:1916`) can only omit later stories silently if `reports == []` with `text_limited == False` and `snapshot.has_more == False`. Every path is closed:
+- `story()` (`:2046`) joins `news_states s ... AND s.status='active'` on `self._conn`, inside `evidence_for_security`'s own `BEGIN` (`:1884`; `open_readonly` uses `isolation_level=None` + `PRAGMA query_only=ON`), and returns `None` when no rows → the caller `continue`s, never `break`s.
+- `_load_state` (`:1034`) re-reads on the same connection/transaction. The repo's only `news_states` writer is `_write_state` (`:1136`), one atomic upsert writing `status=state.status` and `state_json=_stable_json(_state_dict(state))` where `_state_dict = asdict(state)`; `_state_from_json` rebuilds `NewsState(**obj)`. Column and JSON cannot disagree and the row cannot be absent, so the `state is None or status != "active"` `continue` is unreachable for members `story()` just returned.
+- `_projection_story` (`:611`) preserves `source`/`source_item_id` verbatim → no key rewriting that could yield a spurious `None`.
+- `representatives_in_display_order` (`engine/qbus_news_quality.py:91`) is a pure sort → `members` is non-empty whenever `story()` is non-None.
+- Rights-redacted titles become `""`, which still appends a report.
+- The only reachable empty `reports` is the text-budget `break` on the first member, which sets `text_limited = True` → `has_more = True`. Signalled, not silent.
+
+**Blockers**
+- None found in the repair scope. No async, backpressure or cancellation regression reproduced across 770 committed tests plus my own stress, edge and per-frame probes.
+
+**Residuals (non-blocking)**
+- Shared default executor: both pools submit via `asyncio.to_thread` → the loop's default executor (`min(32, cpu+4)`). The 8-slot bound limits concurrency but reserves no threads, so a pool task can hold a slot while queued behind unrelated `to_thread` traffic (head-of-line blocking on SSE admission) and conversely delay it. No deadlock — no nested acquisition. The artifact shows this coupling (commit p95 16.56 → 61.34 ms at 32 subscribers). A dedicated executor would decouple it.
+- No admission fairness: waiters race on `FIRST_COMPLETED` with no FIFO, so a waiter can be starved under sustained saturation. Not observed in my probes.
+- Inherited per-cycle `Path.resolve()` on the event loop at `app/ticker_news.py:919` — present unchanged at `b644688c:925`, so not a regression, but it is the last blocking filesystem call inside the async generator.
+- `evidence_for_security`'s `break` leans on the single-writer / status-column invariant; `continue` plus an explicit truncation flag would be sturdier defense-in-depth.
+- Per-row thread offload makes stream throughput scale as rows × subscribers against a fixed 8-slot cap — deliberate, but worth a production-sizing note.
+
+**Outstanding Release Gates (not source defects)**
+- PR 9846 is `draft=True`; binding hosted CI has not run on these unpublished repairs.
+- Generated dossier / normal production render still required: no artifact proves Macro production identity at `c73fa2c3`. `terminal-release.json` is a Terminal-side receipt (`pr 1088`, `target_sha 8b8b217f`, observed 10:39:58Z) and does not cover this Macro head. `docs/ops/shared-news-intelligence.md:227` correctly frames merge, production source identity, generated dossier pages and authenticated browser checks as separate gates with six post-release verifications.
+- `activation/` receipts are prepared, not installed, and carry no credential material (scanned all four for key/secret/token/password/bearer/authorization — none present).
+- Sibling owners untouched: Macro #9612 (`8d76db52`), Terminal #1081 (`a10657ee`).
+
+**Disposition**
+Implementation **APPROVED** at source level for the repair scope, with release **HOLD** pending the pre-existing non-source gates: binding hosted CI on the published head, and the normal Macro production render / generated-dossier proof. Native principal design concurrence is correctly not treated as implementation acceptance, and the 49-check browser run plus the 770-test news job remain the parent's reported evidence except where I re-ran them above (I re-ran the 770; I did not re-run the Chromium harness). No source edits, no push/merge/deploy, no Slack/email, no production config or secrets touched. Scratch clone and probes left at `/tmp/pr9846-review` for re-verification; safe to delete.

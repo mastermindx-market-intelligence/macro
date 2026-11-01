@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-19T05:48:05.548353+00:00",
+  "force_used": false,
+  "head": "ad65b00bb0330ccdaa3042ce3a7697cc1cc85554",
+  "new_branch_or_pr": false,
+  "prior_remote": "b84eeee5976bf3f315c55ea286157f77b11e8ee3",
+  "push": {
+    "error": "To https://github.com/mastermindx-market-intelligence/macro.git\n   b84eeee5976b..ad65b00bb033  ad65b00bb0330ccdaa3042ce3a7697cc1cc85554 -> sol/market-os-shared-shell-design-20260924",
+    "exit": 0,
+    "out": ""
+  },
+  "remote_readback": {
+    "error": "",
+    "exit": 0,
+    "out": "ad65b00bb0330ccdaa3042ce3a7697cc1cc85554\trefs/heads/sol/market-os-shared-shell-design-20260924"
+  },
+  "workspace": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27"
+}

@@ -1,0 +1,89 @@
+{
+  "schema": "news.live-cluster-window-audit.v1",
+  "observed_at": "2026-10-20T17:47:14.202675+00:00",
+  "source_head": "1aed18a0f066ecd82ece1473fbe7aca172696f54",
+  "read_only": true,
+  "method": "One SQLite query_only transaction; compare the original first accepted member and immutable anchor journal revision, not mutable corrected publication timestamps. Limit admission checks to first changes after source deployment.",
+  "cutoff": "2026-10-20T17:10:00+00:00",
+  "cluster_policy_counts": {
+    "legacy_unknown": 770,
+    "qbus_news_cluster.v2": 5897,
+    "qbus_news_cluster.v3": 457
+  },
+  "new_members": 457,
+  "new_fuzzy_members": 0,
+  "known_anchor_clock_pairs": 0,
+  "unknown_anchor_clock_pairs": 0,
+  "publication_window_violations": [],
+  "receipt_window_violations": [],
+  "max_publication_gap_seconds": 0,
+  "max_receipt_gap_seconds": 0,
+  "active_reports": [
+    {
+      "source": "benzinga",
+      "active_reports": 6707
+    },
+    {
+      "source": "massive:fool.com",
+      "active_reports": 123
+    },
+    {
+      "source": "massive:globenewswire.com",
+      "active_reports": 96
+    },
+    {
+      "source": "massive:zacks.com",
+      "active_reports": 201
+    }
+  ],
+  "globe_company_ticker_counts": [
+    [
+      "GDDY",
+      3
+    ],
+    [
+      "CRM",
+      2
+    ],
+    [
+      "QBTS",
+      2
+    ],
+    [
+      "GOOG",
+      2
+    ],
+    [
+      "GOOGL",
+      2
+    ],
+    [
+      "GOOGM",
+      2
+    ],
+    [
+      "GOOGN",
+      2
+    ],
+    [
+      "VCISY",
+      2
+    ],
+    [
+      "VLMTY",
+      2
+    ],
+    [
+      "XBIT",
+      2
+    ],
+    [
+      "INV",
+      2
+    ],
+    [
+      "MSFT",
+      2
+    ]
+  ]
+}

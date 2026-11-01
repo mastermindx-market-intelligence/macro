@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-lang="en" data-gmi-lens="coverage">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GMI Explorer — Documented relationships (reference)</title>
+<!-- REFERENCE SPECIMEN (mockups/refs/gmi_explorer). Not product code. -->
+<link rel="stylesheet" href="../../../templates/theme.css">
+<link rel="stylesheet" href="../../../templates/navigation-refresh.css">
+<link rel="stylesheet" href="gmi_explorer.css">
+<script>(function(){var h=new URLSearchParams(location.hash.slice(1)),r=document.documentElement;
+var th=h.get('theme'),lg=h.get('lang'),ln=h.get('lens');
+if(th)r.setAttribute('data-theme',th);
+if(lg){r.setAttribute('data-lang',lg);r.setAttribute('lang',lg==='zh'?'zh-Hans':'en');}
+if(ln)r.setAttribute('data-gmi-lens',ln);})();</script>
+</head>
+<body class="gmi-page">
+<nav class="site-nav">
+
+<div class="nav-links">
+<a aria-label="MASTERMINDX — Home" class="nav-brand" href="start.html">
+<svg aria-hidden="true" class="brand-glyph" height="29" viewbox="0 0 40 40" width="29" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="mbTile" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#5b9dff"></stop><stop offset=".42" stop-color="#3b82f6"></stop>
+<stop offset=".74" stop-color="#6366f1"></stop><stop offset="1" stop-color="#7c5cff"></stop></lineargradient>
+<lineargradient id="mbSheen" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0" stop-color="#ffffff" stop-opacity=".34"></stop><stop offset=".55" stop-color="#ffffff" stop-opacity="0"></stop></lineargradient>
+<radialgradient cx=".5" cy=".4" id="mbGlow" r=".65">
+<stop offset="0" stop-color="#ffffff" stop-opacity=".22"></stop><stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop></radialgradient>
+<lineargradient id="mbInk" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0" stop-color="#ffffff"></stop><stop offset="1" stop-color="#dbe7ff"></stop></lineargradient>
+</defs>
+<rect fill="url(#mbTile)" height="34" rx="10.5" width="34" x="3" y="3"></rect>
+<rect fill="url(#mbGlow)" height="34" rx="10.5" width="34" x="3" y="3"></rect>
+<rect fill="url(#mbSheen)" height="34" rx="10.5" width="34" x="3" y="3"></rect>
+<rect fill="none" height="32.6" rx="9.9" stroke="#ffffff" stroke-opacity=".28" width="32.6" x="3.7" y="3.7"></rect>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.3">
+<path d="M13 28 L13 14.5 L20 22 L27 12.5 L27 28" stroke="#15205a" stroke-opacity=".30" transform="translate(0,1.1)"></path>
+<path d="M13 28 L13 14.5 L20 22 L27 12.5 L27 28" stroke="url(#mbInk)"></path>
+</g>
+</svg>
+<span class="brand-word">MASTERMINDX</span>
+</a>
+<div class="nav-dd">
+<a class="nav-link" href="macro.html"><span aria-hidden="true" class="menu-icon menu-icon-flag menu-icon-us"></span><span class="l-en">United States</span><span class="l-zh">美国</span> <span class="caret">▾</span></a>
+
+</div>
+<div class="nav-dd">
+<a class="nav-link" href="china.html"><span aria-hidden="true" class="menu-icon menu-icon-flag menu-icon-cn"></span><span class="l-en">China</span><span class="l-zh">中国</span> <span class="caret">▾</span></a>
+
+</div>
+<div class="nav-dd">
+<a class="nav-link" href="hk.html"><span aria-hidden="true" class="menu-icon menu-icon-flag menu-icon-hk"></span><span class="l-en">Hong Kong</span><span class="l-zh">香港</span> <span class="caret">▾</span></a>
+
+</div>
+<div class="nav-dd">
+<a class="nav-link" href="canada.html"><span aria-hidden="true" class="menu-icon menu-icon-flag menu-icon-ca"></span><span class="l-en">Canada</span><span class="l-zh">加拿大</span> <span class="caret">▾</span></a>
+
+</div>
+<div class="nav-dd">
+<a class="nav-link" href="intl.html"><span aria-hidden="true" class="menu-icon menu-icon-intl"></span><span class="l-en">International</span><span class="l-zh">国际</span> <span class="caret">▾</span></a>
+
+</div>
+<div class="nav-dd">
+<a class="nav-link" href="javascript:void(0)"><span aria-hidden="true" class="menu-icon menu-icon-assets"></span><span class="l-en">Other Assets</span><span class="l-zh">其他资产</span> <span class="caret">▾</span></a>
+
+</div>
+<div class="nav-dd nav-mega-dd">
+<a class="nav-link" href="intelligence_hub.html"><span aria-hidden="true" class="menu-icon menu-icon-research"></span><span class="l-en">Research</span><span class="l-zh">研究</span> <span class="caret">▾</span></a>
+
+</div>
+</div>
+
+
+
+
+<div class="nav-search">
+<span aria-hidden="true" class="mag"><svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 20 20" width="14"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
+<input aria-label="Search stocks" autocomplete="off" data-ph-zh="搜索任意股票 — 美股、A 股、港股、加股等…" placeholder="Search any stock — US, China, HK, Canada &amp; more…" type="text"/>
+<div class="nav-sugg"></div>
+</div>
+<div class="nav-ctrls">
+<a class="ai-brief-link terminal-link" href="https://app.mastermind-x.com" rel="noopener" target="_blank"><span aria-hidden="true" class="product-icon product-icon-terminal"></span><span class="l-en">Terminal</span><span class="l-zh">终端</span></a>
+<button aria-label="Toggle dark / light mode" class="theme-switch">
+<span class="ic sun">☀️</span><span class="ic moon">🌙</span><span class="knob"></span>
+</button>
+<div aria-label="Language" class="lang-toggle" role="group">
+<span class="pill"></span>
+<span class="opt en-opt" data-l="en">EN</span>
+<span class="opt zh-opt" data-l="zh">中文</span>
+</div>
+</div>
+</nav>
+<main class="gmi-wrap" id="main">
+<header class="gmi-head">
+  <div class="gmi-head-main">
+    <nav class="gmi-crumb" aria-label="Breadcrumb"><span class="l-en">Research</span><span class="l-zh">研究</span><i aria-hidden="true">›</i><span class="l-en">Relationships</span><span class="l-zh">关系</span></nav>
+    <h1 class="gmi-h1"><span class="l-en">Documented relationships</span><span class="l-zh">已记录的关系</span></h1>
+    <p class="gmi-sub"><span class="l-en">Links a company names in its own filings. One documented so far.</span><span class="l-zh">公司在自身申报文件中写明的关联。目前已记录一条。</span></p>
+  </div>
+  <div class="gmi-head-side"><span class="gmi-asof"><span class="l-en">Read as of 21 Oct 2026</span><span class="l-zh">数据截至2026年10月21日</span></span></div>
+</header>
+<div class="gmi-species"><button type="button" class="gmi-spec gmi-spec--on" aria-pressed="true"><span class="l-en">Supplier → customer</span><span class="l-zh">供应商 → 客户</span><b>1</b></button><button type="button" class="gmi-spec gmi-spec--zero" aria-pressed="false"><span class="l-en">Contract manufacturing (foundry, CDMO)</span><span class="l-zh">代工制造（晶圆代工、CDMO）</span><b>0</b></button><button type="button" class="gmi-spec gmi-spec--zero" aria-pressed="false"><span class="l-en">Licensing</span><span class="l-zh">授权许可</span><b>0</b></button><button type="button" class="gmi-spec gmi-spec--zero" aria-pressed="false"><span class="l-en">Distribution</span><span class="l-zh">分销</span><b>0</b></button><button type="button" class="gmi-spec gmi-spec--zero" aria-pressed="false"><span class="l-en">Component dependency</span><span class="l-zh">零部件依赖</span><b>0</b></button></div>
+<p class="gmi-foot"><span class="l-en">Zero means none documented yet, not none exist.</span><span class="l-zh">为零表示尚未记录，而非不存在。</span></p>
+<section class="gmi-band" aria-labelledby="rel-h"><div class="gmi-band-card">
+<div class="gmi-relgrid"><div class="gmi-relgrid-a">
+<div class="gmi-rel-head" id="rel-h"><span class="gmi-party"><span class="l-en">Skyworks</span><span class="l-zh">思佳讯</span></span>
+<span class="gmi-arrow"><svg viewBox="0 0 28 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 6h25M21 1.5L26 6l-5 4.5"/></svg><span class="l-en">supplies</span><span class="l-zh">供货</span></span><span class="gmi-party"><span class="l-en">Apple</span><span class="l-zh">苹果</span></span>
+<span class="gmi-kind">· <span class="l-en">Supplier → customer</span><span class="l-zh">供应商 → 客户</span></span></div>
+<div class="gmi-ident"><span class="gmi-ink-info" style="font-weight:600;font-size:var(--fs-sm)"><span class="l-en">Proposed · not reviewed yet</span><span class="l-zh">拟议 · 尚未审核</span></span>
+<span class="gmi-chip gmi-chip--upd"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v4h-4"/></svg><span class="l-en">Read updated · 30 Jan 2026</span><span class="l-zh">读取已更新 · 2026年1月30日</span></span></div>
+<div class="gmi-mag"><div><div class="gmi-mag-num">67<small>%</small></div>
+<div class="gmi-mag-cap"><span class="l-en">of Skyworks’ revenue came from Apple in FY2025</span><span class="l-zh">思佳讯2025财年营收来自苹果的占比</span></div></div>
+<div class="gmi-hist" aria-hidden="true"><div class="gmi-hist-col"><span class="gmi-hist-v">58%</span><span class="gmi-hist-bar" style="height:52px"></span><span class="gmi-hist-p"><span class="l-en">FY22</span><span class="l-zh">2022财年</span></span></div><div class="gmi-hist-col"><span class="gmi-hist-v">66%</span><span class="gmi-hist-bar" style="height:59px"></span><span class="gmi-hist-p"><span class="l-en">FY23</span><span class="l-zh">2023财年</span></span></div><div class="gmi-hist-col"><span class="gmi-hist-v">69%</span><span class="gmi-hist-bar" style="height:62px"></span><span class="gmi-hist-p"><span class="l-en">FY24</span><span class="l-zh">2024财年</span></span></div><div class="gmi-hist-col gmi-hist-col--now"><span class="gmi-hist-v">67%</span><span class="gmi-hist-bar" style="height:60px"></span><span class="gmi-hist-p"><span class="l-en">FY25</span><span class="l-zh">2025财年</span></span></div></div></div>
+<p class="gmi-scope"><span class="l-en">Skyworks disclosed that net revenue from Apple in aggregate, through distributors, contract manufacturers and direct sales was 67% of Skyworks consolidated net revenue for FY2025.</span><span class="l-zh">思佳讯披露，2025财年期间net revenue from Apple in aggregate, through distributors, contract manufacturers and direct sales占Skyworks consolidated net revenue的67%。</span><span class="l-zh"> 分子/分母范围文字为申报文件英文原文。</span></p>
+</div><div class="gmi-relgrid-b"><dl class="gmi-dl"><div><dt><span class="l-en">Direction</span><span class="l-zh">方向</span></dt><dd><span class="l-en">Skyworks supplies Apple</span><span class="l-zh">思佳讯向苹果供货</span></dd></div><div><dt><span class="l-en">Period covered</span><span class="l-zh">覆盖期间</span></dt><dd><span class="l-en">Oct 2021 – Oct 2025</span><span class="l-zh">2021年10月 – 2025年10月</span></dd></div><div><dt><span class="l-en">Conditions</span><span class="l-zh">条件</span></dt><dd><span class="l-en">None stated in the filing</span><span class="l-zh">申报文件未列明条件</span></dd></div><div><dt><span class="l-en">First known</span><span class="l-zh">首次获知</span></dt><dd><span class="l-en">15 Nov 2024</span><span class="l-zh">2024年11月15日</span></dd></div><div><dt><span class="l-en">Last stated</span><span class="l-zh">最近一次陈述</span></dt><dd><span class="l-en">7 Nov 2025</span><span class="l-zh">2025年11月7日</span></dd></div><div><dt><span class="l-en">Last checked</span><span class="l-zh">最近核对</span></dt><dd><span class="l-en">30 Jan 2026</span><span class="l-zh">2026年1月30日</span></dd></div><div><dt><span class="l-en">Source</span><span class="l-zh">来源</span></dt><dd><a href="#excerpt">10-K <span class="gmi-mono">0000004127-25-000085</span> <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4.5h5.5V10M19.5 4.5L11 13"/><path d="M17.5 14v5.5h-13v-13H10"/></svg></a></dd></div></dl></div></div>
+<details class="mx-disc" id="excerpt"><summary><span class="l-en">The filing’s words</span><span class="l-zh">申报文件原文</span><small>10-K <span class="gmi-mono">0000004127-25-000085</span></small></summary>
+<div class="mx-disc-body"><blockquote class="gmi-quote"><span class="gmi-quote-lead"><span class="l-en">the filing says:</span><span class="l-zh">申报文件原文：</span></span>“During fiscal 2025, fiscal 2024, and fiscal 2023, Apple, through sales to multiple distributors, contract manufacturers, and direct sales for multiple applications including smartphones, tablets, desktop, and notebook computers, watches and other devices, in the aggregate accounted for 67%, 69%, and 66% of the Company’s net revenue, respectively.”</blockquote>
+<p class="gmi-foot" style="margin-top:8px"><span class="l-en">Quoted from the filing; nothing is inferred beyond the quoted text.</span><span class="l-zh">引自申报文件原文；除引文外未作任何推断。</span> <span class="gmi-mono">swks-20251003.htm · bytes 1,500,407–1,501,205</span></p></div></details>
+</div></section>
+<div class="gmi-cols"><div class="gmi-col-main"><section class="gmi-panel"><div class="mx-sec"><h2><span class="l-en">How this figure was read over time</span><span class="l-zh">该数值的历次读取</span></h2></div><p class="gmi-note" style="color:var(--text);font-weight:600"><span class="l-en">As known at 30 Jan 2026:</span><span class="l-zh">截至2026年1月30日已知：</span></p><ul class="gmi-thread"><li><span class="gmi-node"></span><div><time><span class="l-en">15 Nov 2024</span><span class="l-zh">2024年11月15日</span></time><span class="l-en">Skyworks first published 69% for FY2024 in 10-K <span class="gmi-mono">0000004127-24-000131</span> (known 15 Nov 2024).</span><span class="l-zh">思佳讯在10-K <span class="gmi-mono">0000004127-24-000131</span>（已知日期2024年11月15日）中首次公布2024财年的数值为69%。</span></div></li><li><span class="gmi-node gmi-node--re"></span><div><time><span class="l-en">7 Nov 2025</span><span class="l-zh">2025年11月7日</span></time><span class="l-en">The next publication, 10-K <span class="gmi-mono">0000004127-25-000085</span> (known 7 Nov 2025), repeated the same value 69%.</span><span class="l-zh">下一份申报文件10-K <span class="gmi-mono">0000004127-25-000085</span>（已知日期2025年11月7日）重复了相同数值69%。</span></div></li><li><span class="gmi-node"></span><div><time><span class="l-en">7 Nov 2025</span><span class="l-zh">2025年11月7日</span></time><span class="l-en">Skyworks first published 67% for FY2025 in 10-K <span class="gmi-mono">0000004127-25-000085</span> (known 7 Nov 2025).</span><span class="l-zh">思佳讯在10-K <span class="gmi-mono">0000004127-25-000085</span>（已知日期2025年11月7日）中首次公布2025财年的数值为67%。</span></div></li><li><span class="gmi-node gmi-node--am"></span><div><time><span class="l-en">30 Jan 2026</span><span class="l-zh">2026年1月30日</span></time><span class="l-en"><span class="gmi-mono">0000004127-26-000003</span> amends <span class="gmi-mono">0000004127-25-000085</span>; it does not restate this figure (Part III only amendment).</span><span class="l-zh"><span class="gmi-mono">0000004127-26-000003</span>修订了<span class="gmi-mono">0000004127-25-000085</span>；该修订未重述此数值（仅修订第三部分）。</span></div></li></ul></section>
+<section class="gmi-panel"><div class="mx-sec"><h2><span class="l-en">Where this link leads</span><span class="l-zh">关联路径</span></h2></div>
+<ol class="gmi-chain gmi-chain--edges"><li class="gmi-chain-step"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--doc"></span></span><div class="gmi-chain-body"><span class="gmi-chain-lvl"><span class="l-en">Supplier</span><span class="l-zh">供应商</span></span><span class="gmi-chain-name"><span class="l-en">Skyworks</span><span class="l-zh">思佳讯</span></span></div><span class="gmi-chain-edge"><span class="l-en">supplies · no condition stated</span><span class="l-zh">供货 · 未列明条件</span></span></li><li class="gmi-chain-step gmi-chain-step--to-none"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--doc"></span></span><div class="gmi-chain-body"><span class="gmi-chain-lvl"><span class="l-en">Customer</span><span class="l-zh">客户</span></span><span class="gmi-chain-name"><span class="l-en">Apple</span><span class="l-zh">苹果</span></span></div><span class="gmi-chain-edge"><span class="l-en">next step</span><span class="l-zh">下一步</span></span></li><li class="gmi-chain-step gmi-chain-step--none"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--none"></span></span><div class="gmi-chain-body"><span class="gmi-chain-name"><span class="l-en">No documented links from Apple yet</span><span class="l-zh">尚无苹果的已记录关联</span></span></div></li></ol>
+<p class="gmi-note"><span class="l-en">Paths list documented links only. They do not estimate how far an effect spreads.</span><span class="l-zh">路径仅列出已记录的关联，不估算影响的传导范围。</span></p></section></div><div class="gmi-col-side"><section class="gmi-panel"><div class="mx-sec"><h2><span class="l-en">Held for review</span><span class="l-zh">待审核</span></h2><button class="lens-q gmi-tip" type="button" data-tip-en="A proposed link waiting for a curator. Held links are not members and are left out of every count." data-tip-zh="等待审核员处理的拟议关联。待审核关联不是成员，不计入任何统计。" data-tip-rc-en="Micron → HBM &amp; advanced packaging · first seen 11 Oct 2026" data-tip-rc-zh="美光科技 → HBM 与先进封装 · 首次收录2026年10月11日"><span aria-hidden="true">?</span><span class="gmi-vh"><span class="l-en">More detail</span><span class="l-zh">更多说明</span></span></button></div>
+<div class="gmi-status"><span class="gmi-sm gmi-sm--held gmi-sm--xl" aria-hidden="true"></span><div><div class="gmi-status-t"><span class="l-en">Micron → HBM &amp; advanced packaging</span><span class="l-zh">美光科技 → HBM 与先进封装</span></div>
+<div class="gmi-status-s"><span class="l-en">A proposed theme link, not a member. Not shown on the map.</span><span class="l-zh">拟议主题关联，尚非成员，不在主题地图上显示。</span></div></div></div>
+<dl class="gmi-dl"><div><dt><span class="l-en">Named customer</span><span class="l-zh">所提及客户</span></dt><dd><span class="l-en">NVIDIA · H200 platform</span><span class="l-zh">英伟达 · H200 平台</span></dd></div>
+<div><dt><span class="l-en">Stage</span><span class="l-zh">阶段</span></dt><dd><span class="l-en">Planned</span><span class="l-zh">计划中</span></dd></div>
+<div><dt><span class="l-en">Size</span><span class="l-zh">规模</span></dt><dd><span class="l-en">Not disclosed</span><span class="l-zh">未披露</span></dd></div>
+<div><dt><span class="l-en">Use on the map</span><span class="l-zh">用于主题地图</span></dt><dd><span class="l-en">Not permitted yet</span><span class="l-zh">暂不允许</span></dd></div></dl>
+<div><a class="gmi-btn gmi-btn--quiet" href="s1_issuer.html"><span class="l-en">Open Micron</span><span class="l-zh">查看美光科技</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12h15M13.5 6l6 6-6 6"/></svg></a></div></section><section class="gmi-panel"><div class="mx-sec"><h2><span class="l-en">How complete is this?</span><span class="l-zh">覆盖程度</span></h2></div>
+<div class="mx-empty" style="padding:8px 0;text-align:left"><div class="mx-empty-line"><span class="l-en">Not measured yet</span><span class="l-zh">尚未衡量</span></div>
+<div class="mx-empty-why"><span class="l-en">Filings from one company have been read so far. Zero elsewhere means none documented yet, not none exist.</span><span class="l-zh">目前仅读取了一家公司的申报文件。其他处为零，表示尚未记录，而非不存在。</span></div></div></section></div></div>
+</main>
+<script>(function(){var r=document.documentElement,bs=[].slice.call(document.querySelectorAll('[data-gmi-set-lens]'));
+function sync(){bs.forEach(function(b){b.setAttribute('aria-selected',String(r.getAttribute('data-gmi-lens')===b.getAttribute('data-gmi-set-lens')));});}
+bs.forEach(function(b){b.addEventListener('click',function(){var v=b.getAttribute('data-gmi-set-lens');r.setAttribute('data-gmi-lens',v);sync();
+var h=new URLSearchParams(location.hash.slice(1));h.set('lens',v);history.replaceState(null,'','#'+h.toString());});});sync();})();</script>
+</body>
+</html>

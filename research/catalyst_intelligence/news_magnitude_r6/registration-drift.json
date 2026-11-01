@@ -1,0 +1,13 @@
+{
+  "schema": "catalyst.r6_registration_drift.v1",
+  "frozen_path": "research/prophet_v4/news_to_business_impact_20261006/benchmark/section11/registration.json",
+  "frozen_source_head": "a073abedc58d945b10eb27380d49b879754c5bcc",
+  "frozen_sha256": "5637cbea2d44533db77d7c77051996cd27dad5e1bb16ba483fd5b1ffeb02a71a",
+  "current_rebuild_sha256": "f0dffd68e46b488a177d98e1163bd2650ea712d9adc278126cf7f7788b3f61fe",
+  "only_changed_json_path": "code_versions.producer_facts",
+  "frozen": "ni-producer-facts-1",
+  "current": "ni-producer-facts-2",
+  "frozen_artifact_unchanged": true,
+  "check_unchanged": true,
+  "disposition": "INTEGRATION_HELD"
+}

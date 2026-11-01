@@ -1,0 +1,25 @@
+{
+  "started_at": "2026-10-20T04:49:34.676277+00:00",
+  "finished_at": "2026-10-20T04:49:36.456324+00:00",
+  "source_index": "23a29d0e67c61f9e62c3d3ae5987878af34f6b96",
+  "agentos_command": [
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+    "scripts/agentos.py",
+    "validate"
+  ],
+  "agentos_exit": 0,
+  "agentos_log_sha256": "ff637615abb1ad2387af0f1738f4b9db0dbd5e7ebf28a7f1d28e589fc4c0e0e6",
+  "owned_whitespace_command": [
+    "git",
+    "-C",
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+    "diff",
+    "--cached",
+    "--check",
+    "0f058428717ac7c96c11e5a3ebc960db6a61edab"
+  ],
+  "owned_whitespace_exit": 0,
+  "owned_whitespace_stdout": "",
+  "owned_whitespace_stderr": "",
+  "index_unchanged": true
+}

@@ -18,6 +18,7 @@ from xml.etree import ElementTree as ET
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
+from collectors.sec_request_pacer import SecRequestPacer
 from engine.fundamental_forensics.statement_graph import mint_fixture_recorded_at
 
 CIK = "0000320193"
@@ -65,11 +66,22 @@ RELATED_EVENT_REF = {
 }
 
 
-def _get(url: str) -> tuple[bytes, str | None]:
+# FIF A20: ONE shared SEC request budget for the whole process — 0.5 s floor
+# = at most 2 requests/second to public EDGAR no matter how many operators
+# fetch concurrently. Built once per process; `_get` accepts an injectable
+# pacer so tests can observe the acquire order without any network.
+SHARED_SEC_REQUEST_PACER = SecRequestPacer(min_interval_seconds=0.5)
+
+
+def _get(
+    url: str, pacer: SecRequestPacer | None = None
+) -> tuple[bytes, str | None]:
+    pacer = pacer if pacer is not None else SHARED_SEC_REQUEST_PACER
     req = urllib.request.Request(
         url,
         headers={"User-Agent": USER_AGENT, "Accept": "*/*"},
     )
+    pacer.acquire()
     with urllib.request.urlopen(req, timeout=60) as resp:
         last_modified = resp.headers.get("Last-Modified")
         return resp.read(), last_modified

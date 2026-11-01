@@ -1,0 +1,22 @@
+{
+  "completed_at_utc": "2026-10-22T04:41:20.117168+00:00",
+  "failure_retry": false,
+  "finalized_source_admitted": false,
+  "owner": "scripts.tiingo_ingest.collect",
+  "pause_seconds": 1.25,
+  "plan_sha256": "96353712a898d1a4e3b7846763e00794cb558c70ed62471a509e1f9debf2a1bc",
+  "request_budget": 2,
+  "result": {
+    "attempted": 2,
+    "bytes": 32851,
+    "errors": [],
+    "failed": 0,
+    "new": 2,
+    "ok": 2,
+    "row_hints": 284
+  },
+  "schedule_created": false,
+  "schema": "forex_r26.post_boundary_capture.v1",
+  "source_head": "d0df72c4fa3edc95455ffd5c0524e542873ddea4",
+  "started_at_utc": "2026-10-22T04:41:18.180154+00:00"
+}

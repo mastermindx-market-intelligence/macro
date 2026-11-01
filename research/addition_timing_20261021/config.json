@@ -1,0 +1,26 @@
+{
+  "study": "addition_timing_20261021",
+  "previous_merge": "56a05ecb5146a01119bb04ddb6b8f40e82c6cd57",
+  "source_manifest_sha256": "f7677fffb9d431797d75d5709bfede909b217c3642aaae00e05c43122ee8c5e3",
+  "source_roster_sha256": "36e77aa7867e5a7e3da3fbb47428eaa00004821f31699f69219a67867f8e6223",
+  "start": "2020-01-01",
+  "cutoff": "2026-10-08",
+  "monthly_contribution": 1000.0,
+  "cohort_sessions": 126,
+  "block_months": 12,
+  "bootstrap_draws": 2000,
+  "seed": 20261021,
+  "source_symbols": ["XLK", "XLF", "XLE", "XLI", "XLY", "XLP", "XLU", "XLV", "XLB", "XLRE", "XLC", "SOXX"],
+  "baskets": {
+    "SPY": ["SPY"],
+    "SECTOR11": ["XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE", "XLU", "XLV", "XLY"],
+    "CORE5": ["MCD", "WMT", "WM", "COST", "PG"],
+    "PEERS13": ["RSG", "KO", "PEP", "CL", "CHD", "KMB", "MDLZ", "HSY", "CLX", "JNJ", "ADP", "CTAS", "KR"]
+  },
+  "policies": ["IMMEDIATE", "SIGNAL", "MONTH_END"],
+  "scenarios": {
+    "PRIMARY": {"fee": 0.001, "cash_rate": 0.0},
+    "CASH3": {"fee": 0.001, "cash_rate": 0.03},
+    "COST50": {"fee": 0.0025, "cash_rate": 0.0}
+  }
+}

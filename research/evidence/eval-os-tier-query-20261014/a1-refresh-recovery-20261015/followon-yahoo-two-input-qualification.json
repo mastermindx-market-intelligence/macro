@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-15T18:16:09.704127+00:00",
+  "parent": "ce701527b214b07e7980db94d34b496dd3af9703",
+  "focused_exit": 0,
+  "packing_selection_parity": [
+    {
+      "job": "eval-os-a1",
+      "path": "templates/index.html",
+      "before": false,
+      "after": false
+    },
+    {
+      "job": "eval-os-a1",
+      "path": "scripts/build_free_content.py",
+      "before": true,
+      "after": true
+    },
+    {
+      "job": "eval-os-a1",
+      "path": "engine/prophet/plan_book.py",
+      "before": false,
+      "after": false
+    },
+    {
+      "job": "qledger-cluster-honest-ci",
+      "path": "templates/index.html",
+      "before": false,
+      "after": false
+    },
+    {
+      "job": "qledger-cluster-honest-ci",
+      "path": "scripts/build_free_content.py",
+      "before": false,
+      "after": false
+    },
+    {
+      "job": "qledger-cluster-honest-ci",
+      "path": "engine/prophet/plan_book.py",
+      "before": false,
+      "after": false
+    }
+  ],
+  "reused": "Unchanged runtime/CI definitions and prior full source closure/strict134-134-128 packing; prospective actual new-main closure1240/922 has zero misses after these additions.",
+  "all_314_definitions_preserved": true,
+  "focused_count": 2,
+  "invocation_correction": "Ancestor census test exists only on incoming main, where main5bb-two-input-qualification.json proves all3 controls. The older follow-on branch has only the other2 selected controls; initial invocation collected no tests."
+}

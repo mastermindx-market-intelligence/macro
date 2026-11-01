@@ -26,6 +26,10 @@ import pytest
 from scripts import build_research_vault as bld
 
 
+EMPTY_SUMMARY_EN = "No summary is available for this report. The full report is available to read."
+EMPTY_SUMMARY_ZH = "本篇暂无摘要。全文已可查看。"
+
+
 # --- fixtures ---------------------------------------------------------------
 
 _SEED = {
@@ -178,8 +182,20 @@ def test_ssr_cards_baked_when_seeded(page_seeded):
     js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
     assert "T('Highlighted', '精选')" in js
     assert "rep glass needs" in page_seeded              # needs-metadata card
-    assert "Summary pending" in page_seeded              # empty-summary fallback
+    assert EMPTY_SUMMARY_EN in page_seeded               # empty-summary fallback
+    assert EMPTY_SUMMARY_ZH in page_seeded
     assert 'class="rep-titlelink"' not in page_seeded
+
+
+def test_empty_summary_wording_promises_nothing_on_either_surface(page_seeded):
+    """Upstream never summarized these records, so no summary is on its way."""
+    js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
+    assert f"T('{EMPTY_SUMMARY_EN}', '{EMPTY_SUMMARY_ZH}')" in js
+    assert f'<span class="l-en">{EMPTY_SUMMARY_EN}</span>' in page_seeded
+    assert f'<span class="l-zh">{EMPTY_SUMMARY_ZH}</span>' in page_seeded
+    for surface in (page_seeded, js):
+        for promise in ("Summary pending", "摘要生成中", "still being prepared", "整理中"):
+            assert promise not in surface, promise
 
 
 def test_public_ssr_preview_stops_at_three_and_shows_pro_gate(monkeypatch):
@@ -318,10 +334,8 @@ def test_boot_waits_for_authoritative_catalog_before_ingesting_bake():
 
 
 # --- Wave 4 PR A: the status line may only claim what the clock supports -----
-# "Updated hourly" is a claim about the PRODUCER, and before Wave 4 the client
-# made it whenever the API request had not thrown — so an arbitrarily old catalog
-# read as live. Freshness now comes from generated_at, and every non-fresh outcome
-# states the data is saved AND prints the clock it was generated on.
+# Catalog freshness comes from generated_at. A fresh catalog does not prove
+# hourly full-text ingestion; every non-fresh outcome shows its saved clock.
 
 def test_live_label_is_gated_on_a_fresh_producer_clock():
     js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
@@ -331,9 +345,11 @@ def test_live_label_is_gated_on_a_fresh_producer_clock():
     assert ("CATALOG_FRESH = source === 'live' && isFresh(" in js)
     assert "} else if (CATALOG_FRESH) {" in js
     live = js.index("} else if (CATALOG_FRESH) {")
-    assert js.index("'This week · Updated hourly'") > live, (
-        "the hourly label must sit inside the freshness branch"
+    assert js.index("'Catalog recently updated'") > live, (
+        "the catalog freshness label must sit inside the freshness branch"
     )
+    assert "'This week · Updated hourly'" not in js
+    assert js.index("'目录近期已更新'") > live
     # Every other outcome shows the real generation time rather than an adjective.
     assert "'Saved snapshot · live update delayed'" in js
     assert "' · updated ' + fmtStamp(iso, false)" in js
@@ -586,3 +602,17 @@ def test_status_timestamp_is_rendered_per_language():
     assert "function fmtStamp(iso, useZh)" in js
     assert "fmtStamp(iso, false)" in js and "fmtStamp(iso, true)" in js
     assert "useZh ? p[0] + '年'" in js
+
+
+def test_hero_freshness_runtime_contract():
+    """Exercise the real hero function for stale, loading and entitled states."""
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    assert node, "Node is required for the Research Vault hero contract"
+    result = subprocess.run(
+        [node, "--test", str(bld.ROOT / "tests/js/research_vault_hero_freshness.test.mjs")],
+        cwd=bld.ROOT, capture_output=True, text=True, timeout=45,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

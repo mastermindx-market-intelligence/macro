@@ -297,8 +297,9 @@ jobs:
       - name: membership snapshot freshness tripwire (advisory)
         run: python3 scripts/check_membership_snapshot_freshness.py
       - name: commit collected asia data
+        id: commitdata
         run: |
-          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+          echo "committed=false" >> "$GITHUB_OUTPUT"
           git config user.name "dashboard-bot"
           git config user.email "actions@users.noreply.github.com"
           # Stage collected data + the qledger grader's tracked
@@ -314,34 +315,133 @@ jobs:
           bash scripts/ci/options_signal_nightly.sh exclude-broad
           git add data/ site/qledger/
           bash scripts/ci/options_signal_nightly.sh exclude-broad
+          # QLEDGER OVERSIZE CARVE-OUT (2026-10-17). data/qledger/claims.jsonl is an
+          # append-only monolith; once it crossed GitHub's 100 MiB file limit, GH001
+          # rejected this WHOLE commit and the market plane (data/baskets/ohlcv,
+          # data/stocks, breadth, macro) stopped publishing on 2026-10-16 and 10-17
+          # (jobs 116748357565, 117262684428). When any staged qledger blob is within
+          # 1 MiB of the limit (headroom for the rebase onto a moving main), unstage ALL
+          # of data/qledger + site/qledger (one plane: published together or not at
+          # all) and warn. Unstage only, never revert; the ledger's size belongs to the
+          # qledger publication program.
+          qledger_limit=104857600
+          qledger_margin=1048576
+          qledger_over=""
+          while IFS= read -r -d '' qpath; do
+            qsize=$(git cat-file -s ":$qpath" 2>/dev/null || echo unmeasured)
+            case "$qsize" in
+              ''|*[!0-9]*) qledger_over="$qledger_over $qpath=unmeasured" ;;
+              *) if [ "$qsize" -gt $((qledger_limit - qledger_margin)) ]; then qledger_over="$qledger_over $qpath=${qsize}B"; fi ;;
+            esac
+          done < <(git diff --cached --name-only -z --no-renames --diff-filter=d -- data/qledger site/qledger)
+          if [ -n "$qledger_over" ]; then
+            # Custody snapshot BEFORE the unstage: an unreachable, runner-local commit of
+            # the full staged index (parent = this HEAD). No ref names it and nothing
+            # pushes it — the same object class as git's own autostash entry. The push
+            # loop's --autostash can discard dirty bytes on a conflicted re-apply, so
+            # the steps around `push market data` park these paths at HEAD and restore
+            # them from this snapshot afterwards (#9556 review 5566188238).
+            qledger_snapshot=$(git commit-tree "$(git write-tree)" -p HEAD -m "qledger carve custody snapshot (runner-local; never pushed)" 2>/dev/null) || qledger_snapshot=""
+            if [ -z "$qledger_snapshot" ]; then
+              # FAIL CLOSED ON PUBLICATION: with no snapshot, park/restore cannot run and the
+              # push loop's --autostash would carry the dirty qledger bytes unprotected. So
+              # withhold the WHOLE market commit (committed stays false: neither push step
+              # runs), leave index + worktree untouched, and keep collect green.
+              echo "qledger_withheld=true" >> "$GITHUB_OUTPUT"
+              echo "::error title=market publication withheld (qledger carve snapshot failed)::could not snapshot the carved qledger bytes:${qledger_over}; NEITHER market data NOR data/qledger + site/qledger is published by this run (no market commit, no push). The collected bytes are left untouched in this runner workspace (runner-local; gone at the next clean checkout)."
+              if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+                {
+                  echo "### Market publication withheld: qledger carve snapshot failed"
+                  echo ""
+                  echo "- oversize qledger blob(s):${qledger_over}"
+                  echo "- market data: NOT committed and NOT pushed by this run"
+                  echo "- data/qledger + site/qledger: NOT published; collected bytes left untouched in this runner workspace (runner-local)"
+                  echo "- owner: qledger publication program"
+                } >> "$GITHUB_STEP_SUMMARY" || true
+              fi
+              exit 0
+            fi
+            git reset -q -- data/qledger site/qledger
+            echo "qledger_carved=true" >> "$GITHUB_OUTPUT"
+            echo "qledger_snapshot=$qledger_snapshot" >> "$GITHUB_OUTPUT"
+            echo "::warning title=qledger carved out of market commit::staged qledger blob(s) within ${qledger_margin}B of GitHub's ${qledger_limit}B file limit:${qledger_over}; this run's data/qledger + site/qledger are NOT published (owner: qledger publication program); the market commit, if any, excludes them."
+          fi
           if git diff --cached --quiet; then echo "no asia data changes"; else
             git commit -m "data: asia collection $(date -u +%F)"
-            push_retry_init "asia data"
-            while push_attempt; do
-              # pre-sync collision sweep (render.yml / #2252): a mid-run commit on origin/main can
-              # TRACK a path this job wrote as an UNTRACKED side-effect — the rebase checkout then
-              # refuses ("untracked working tree files would be overwritten") and --autostash can't
-              # clear it (it parks tracked modifications only), so every retry dies identically.
-              # Everything this step publishes is already committed above, so a path untracked HERE
-              # but tracked on origin/main is a throwaway local write — origin/main is authoritative.
-              # Gitignored files and untracked paths origin/main doesn't track never enter the
-              # intersection (runner-local stores and caches are untouched).
-              git fetch origin main || true
-              comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
-                       <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
-                | while IFS= read -r f; do rm -f -- "$f" || true; done
-              # push_autostash_ok (P0 d29e4dd44d/#4167): a conflicted autostash apply
-              # here would leave marker blocks that the broad "commit engine outputs"
-              # add later in THIS job stages verbatim — the exact chronicle-step shape
-              # that polluted the US nightly. Detect, discard, retry clean.
-              if git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-                if push_do; then echo "pushed asia data (attempt $PUSH_ATTEMPT)"; push_won; break; fi
-              fi
-              push_abort_rebase
-              push_backoff
-            done
-            push_lost
+            echo "committed=true" >> "$GITHUB_OUTPUT"
           fi
+      # QLEDGER CARVE CUSTODY (#9556 review 5566188238), part 1. The carve-out in
+      # `commit collected asia data` leaves data/qledger + site/qledger DIRTY, and the push
+      # below rebases with --autostash: a conflicted re-apply (e.g. a concurrent
+      # site/qledger/track_record.json, which is not merge=union) makes
+      # push_autostash_ok drop the stash and reset hard — the unpublished claims
+      # append would vanish while the market push still reported success. So those
+      # paths sit the push out at HEAD's committed bytes (the autostash carries what
+      # it carried before the carve-out existed) and part 2 below (after the build china spine step) restores them
+      # byte-identical from commitdata's snapshot. Only when that snapshot exists;
+      # never fails the job. A park it cannot VERIFY (#9556 review 5570764032)
+      # writes parked=false and withholds the push: no
+      # fetch, rebase or push may run against dirty carved bytes.
+      - name: park carved qledger bytes outside the push autostash
+        id: park
+        if: steps.commitdata.outputs.committed == 'true' && steps.commitdata.outputs.qledger_snapshot != ''
+        env:
+          QLEDGER_SNAPSHOT: ${{ steps.commitdata.outputs.qledger_snapshot }}
+        run: |
+          if ! git diff --quiet HEAD -- data/qledger site/qledger; then
+            git restore --source=HEAD --worktree -- data/qledger site/qledger || true
+          fi
+          # Verify the parked state itself; a restore exit code is not evidence.
+          if git diff --quiet HEAD -- data/qledger site/qledger && git diff --cached --quiet -- data/qledger site/qledger; then
+            echo "parked=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "parked=false" >> "$GITHUB_OUTPUT"
+            echo "::error title=market publication withheld (qledger park failed)::could not park data/qledger + site/qledger at HEAD before the push; NEITHER market data NOR data/qledger + site/qledger is published by this run. The market commit stays runner-local and unpushed (no fetch, rebase or push runs against the dirty carved bytes); snapshot $QLEDGER_SNAPSHOT and the collected bytes stay in this runner workspace (runner-local; gone at the next clean checkout). Owner: qledger publication program."
+            if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+              {
+                echo "### Market publication withheld: qledger park failed"
+                echo ""
+                echo "- market data: committed locally but NOT pushed by this run"
+                echo "- data/qledger + site/qledger: NOT published; restored from snapshot \`$QLEDGER_SNAPSHOT\` by the restore step (runner-local)"
+                echo "- owner: qledger publication program"
+              } >> "$GITHUB_STEP_SUMMARY" || true
+            fi
+          fi
+      # A carved night publishes only after a verified park (#9556 review 5570764032).
+      # The rebase-retry loop below is the SAME loop that used to sit inside
+      # `commit collected asia data`, moved out VERBATIM so the park step can sit
+      # between the commit and the push exactly as daily.yml's `push market data`
+      # does (#9556); the gate reads the same commitdata/park outputs.
+      - name: push asia data
+        id: pushdata
+        if: steps.commitdata.outputs.committed == 'true' && (steps.commitdata.outputs.qledger_carved != 'true' || steps.park.outputs.parked == 'true')
+        run: |
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+          push_retry_init "asia data"
+          while push_attempt; do
+            # pre-sync collision sweep (render.yml / #2252): a mid-run commit on origin/main can
+            # TRACK a path this job wrote as an UNTRACKED side-effect — the rebase checkout then
+            # refuses ("untracked working tree files would be overwritten") and --autostash can't
+            # clear it (it parks tracked modifications only), so every retry dies identically.
+            # Everything this step publishes is already committed above, so a path untracked HERE
+            # but tracked on origin/main is a throwaway local write — origin/main is authoritative.
+            # Gitignored files and untracked paths origin/main doesn't track never enter the
+            # intersection (runner-local stores and caches are untouched).
+            git fetch origin main || true
+            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
+                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
+              | while IFS= read -r f; do rm -f -- "$f" || true; done
+            # push_autostash_ok (P0 d29e4dd44d/#4167): a conflicted autostash apply
+            # here would leave marker blocks that the broad "commit engine outputs"
+            # add later in THIS job stages verbatim — the exact chronicle-step shape
+            # that polluted the US nightly. Detect, discard, retry clean.
+            if git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
+              if push_do; then echo "pushed asia data (attempt $PUSH_ATTEMPT)"; push_won; break; fi
+            fi
+            push_abort_rebase
+            push_backoff
+          done
+          push_lost
       - name: timings band — build-china (W2)
         run: python3 scripts/nightly_timings.py mark --band build-china || echo "::warning::timings band mark failed (non-fatal)"
       - name: build china a-share dashboard (spine — serial head, every CN surface reads it)
@@ -396,6 +496,63 @@ jobs:
             { echo "### ❌ build china a-share dashboard (build_china) failed (rc=$rc)"; echo '```'; tail -n 40 "$RUNNER_TEMP/step.log"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           fi
           exit 0
+      # QLEDGER CARVE CUSTODY, part 2: put the carved bytes back exactly as collected
+      # and say loudly that they were NOT published. Runs after the push on every
+      # outcome — including the deferred-only night where
+      # nothing was committed. It never stages, commits or pushes: the snapshot is a
+      # runner-local unreachable object and these bytes die with this workspace at
+      # the next clean checkout (durable retention belongs to the qledger
+      # publication program). A path it cannot restore is reported LOST (::error +
+      # step summary), never as success. The step never fails the job:
+      # every builder below needs collect to succeed.
+      # Asia placement note (#9556 port): this step sits after the build china
+      # spine step rather than immediately after the push — the lane pins
+      # (tests/test_tushare_freshness_tripwire.py) that no `if: always()` step may
+      # sit between the collect commit and the build, so a failed collect still
+      # propagates to every builder. Custody is unchanged: the park already sat
+      # those bytes out of the push's autostash, and this step still runs on every
+      # outcome of the push and the build above.
+      - name: restore carved qledger bytes (runner-local, never published here)
+        if: always() && steps.commitdata.outputs.qledger_snapshot != ''
+        env:
+          QLEDGER_SNAPSHOT: ${{ steps.commitdata.outputs.qledger_snapshot }}
+        run: |
+          restored=""
+          lost=""
+          qpaths=$(git -c core.quotePath=false diff --name-only --no-renames "$QLEDGER_SNAPSHOT^" "$QLEDGER_SNAPSHOT" -- data/qledger site/qledger 2>/dev/null) || qpaths=""
+          if [ -z "$qpaths" ]; then lost=" snapshot-unreadable:$QLEDGER_SNAPSHOT"; fi
+          while IFS= read -r qpath; do
+            [ -n "$qpath" ] || continue
+            if git cat-file -e "$QLEDGER_SNAPSHOT:$qpath" 2>/dev/null; then
+              want=$(git rev-parse "$QLEDGER_SNAPSHOT:$qpath" 2>/dev/null) || want=""
+              have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
+              if [ -n "$want" ] && [ "$have" != "$want" ]; then
+                mkdir -p -- "$(dirname -- "$qpath")" 2>/dev/null || true
+                git cat-file blob "$QLEDGER_SNAPSHOT:$qpath" > "$qpath" 2>/dev/null || true
+                have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
+              fi
+              if [ -n "$want" ] && [ "$have" = "$want" ]; then restored="$restored $qpath"; else lost="$lost $qpath"; fi
+            else
+              rm -f -- "$qpath" 2>/dev/null || true
+              if [ -e "$qpath" ]; then lost="$lost $qpath(deleted)"; else restored="$restored $qpath(deleted)"; fi
+            fi
+          done <<< "$qpaths"
+          if [ -n "$lost" ]; then
+            echo "::error title=qledger carve custody LOST::carved qledger bytes could not be restored in this workspace:${lost}; they survive only in the unreachable runner-local snapshot $QLEDGER_SNAPSHOT until git gc, and were NOT published (owner: qledger publication program)."
+          fi
+          if [ -n "$restored" ]; then
+            echo "::warning title=qledger carve-out not published::NOT published by this run:${restored} — restored byte-identical in this runner's workspace from snapshot $QLEDGER_SNAPSHOT; runner-local only, gone at the next clean checkout (owner: qledger publication program)."
+          fi
+          if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+            {
+              echo "### QLedger carve-out — NOT published by this run"
+              echo ""
+              echo "- snapshot (runner-local, never pushed): \`$QLEDGER_SNAPSHOT\`"
+              echo "- restored byte-identical in this workspace:${restored:- none}"
+              echo "- LOST (not restorable here):${lost:- none}"
+              echo "- owner: qledger publication program; this job does not durably retain these bytes"
+            } >> "$GITHUB_STEP_SUMMARY" || true
+          fi
       - name: publish China heatmap from the settled close (payload + matching SSR shell)
         timeout-minutes: 5
         continue-on-error: true
@@ -841,6 +998,10 @@ jobs:
         run: python3 scripts/nightly_timings.py mark --band commit-publish || echo "::warning::timings band mark failed (non-fatal)"
       - name: commit engine outputs
         if: always()
+        env:
+          # 'true' only on a night the collect commit carved the qledger plane out
+          # of the asia collection commit (#9556 port).
+          QLEDGER_CARVED: ${{ steps.commitdata.outputs.qledger_carved }}
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
           git config user.name "dashboard-bot"
@@ -894,6 +1055,14 @@ jobs:
           # templates/ would abort the commit and lose the whole render rather than
           # just the stamp. Staging site/ keeps its hard-fail semantics.
           git add templates/ 2>/dev/null || true
+          # QLEDGER CARVE-OUT tail guard (#9556 port): the restore step above put the
+          # carved data/qledger + site/qledger bytes back in this worktree, and the
+          # broad add above just swept them into the index again. Un-stage them
+          # after the broad add (daily.yml's engine-commit idiom) so the oversized
+          # blob cannot ride THIS commit and die on GH001 all over again.
+          if [ "$QLEDGER_CARVED" = 'true' ]; then
+            git reset -q -- data/qledger site/qledger 2>/dev/null || true
+          fi
           # force-add the gitignored per-market search libraries + reconstructed candles
           if git diff --cached --quiet; then echo "no engine output changes"; exit 0; fi
           # Fail-closed conflict gate (P0 2026-08-01, d29e4dd44d / #4167): the broad

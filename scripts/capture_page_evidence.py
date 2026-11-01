@@ -56,6 +56,10 @@ Contract
    directory that answered alongside the sha, and the manifest prints both — the
    walk finds the *nearest* ``.git`` above ``--site-dir``, which is not proof that
    that checkout produced the directory being served.
+10. **Timing numbers are lab numbers.** ``timing_basis`` is ``"lab"`` in every
+   manifest: LCP, CLS, the INP proxy and resource timing are measured inside this
+   local, anonymous, synthetic-viewport capture and are never numbers from real
+   users. A value the driver could not observe is ``null``, never a zero.
 
 Locale/theme are applied the way the site's own toggle applies them
 (``templates/theme.js``): ``setTheme`` sets ``data-theme`` on ``<html>`` and
@@ -73,6 +77,8 @@ Usage::
         --routes /index.html --viewports desktop --themes light,dark --max-pages 1
     python3 scripts/capture_page_evidence.py --site-dir site --routes /macro.html \\
         --force-state "empty:.is-empty" --force-state "error:[data-state=error]"
+    python3 scripts/capture_page_evidence.py --site-dir site --routes /macro.html \\
+        --viewports narrow-320,tablet-768
 """
 
 from __future__ import annotations
@@ -99,9 +105,11 @@ MODULE_REF = "scripts/capture_page_evidence.py"
 # 1.1.0: attributed console errors, failed_responses, honest --routes selection.
 # 1.2.0: failed-load evidence is kept, and target gains resolved_gitdir_or_none.
 # 1.3.0: force_state can capture real hover/focus interaction states by selector.
+# 1.4.0: per-cell lab timing block (LCP / CLS / INP proxy / resource timing) with
+#        a manifest-wide timing_basis, plus the narrow-320 and tablet-768 viewports.
 # This is stamped into every artifact as provenance, so it moves whenever the
 # emitted shape does — two byte-different manifests must never claim one version.
-TOOL_VERSION = "1.3.0"
+TOOL_VERSION = "1.4.0"
 
 # v2: a console error carries the asset it came from, and a page carries the
 # responses that failed. v1 recorded bare error strings, which the census could
@@ -119,13 +127,37 @@ DEFAULT_SMELLS = "data/product_experience/ux_smell_report.json"
 # hard page cap, sleeps between loads, and only ever requests registry routes.
 USER_AGENT = "mastermind-page-census/1.0 (internal product observability)"
 
+# narrow-320 and tablet-768 exist for the latency-release program's small-screen
+# evidence cells. They are opt-in keys, never part of the default --viewports
+# triple, so a default run's axes stay byte-identical to what they always were.
+# The program design names widths only; the heights are the B23 fallback pair
+# (720 / 1024) because no design line states otherwise.
 VIEWPORTS: Mapping[str, tuple[int, int]] = {
     "desktop": (1440, 900),
     "tablet": (820, 1180),
     "mobile": (390, 844),
+    "narrow-320": (320, 720),
+    "tablet-768": (768, 1024),
 }
 SUPPORTED_LOCALES: tuple[str, ...] = ("en", "zh")
 SUPPORTED_THEMES: tuple[str, ...] = ("light", "dark")
+
+# Every timing number this tool records is a LAB number: measured in this local,
+# anonymous, synthetic-viewport capture, never telemetry from real users. The
+# manifest declares the basis once, and a value the driver could not observe is
+# null — never a synthesized 0.
+TIMING_BASIS = "lab"
+# inp_proxy_ms is the max Event Timing duration among the interactions the driver
+# actually scripted (the force-state hover/focus calls); null when there were
+# none. server_timing travels as the raw list the Performance API reported.
+TIMING_KEYS: tuple[str, ...] = (
+    "lcp_ms",
+    "cls",
+    "inp_proxy_ms",
+    "resource_count",
+    "transfer_bytes",
+    "server_timing",
+)
 
 ACCESS_ANONYMOUS = "anonymous"
 GATED_ACCESS_STATES: tuple[str, ...] = ("free", "essential", "pro")
@@ -372,6 +404,10 @@ class CellObservation:
     # A page that strips the hook is disclosed, never filed under a state it never
     # entered — the same discipline the theme/locale mismatch gap already applies.
     applied_force_state: str | None = None
+    # Lab timing the driver observed for this cell (TIMING_KEYS), or None when the
+    # driver cannot observe timing at all. Absence is honest: it serializes as
+    # nulls, never as zeros, and it is never filled in from anything else.
+    timing: Mapping[str, Any] | None = None
 
 
 class PageDriver(Protocol):
@@ -856,6 +892,34 @@ def _null_metrics() -> dict[str, Any]:
     return metrics
 
 
+def _null_timing() -> dict[str, Any]:
+    """Every timing key present, all null. An unobserved value is null, not 0."""
+
+    return {key: None for key in TIMING_KEYS}
+
+
+def _timing_from(observation: CellObservation) -> dict[str, Any]:
+    """Copy the six lab timing numbers out of an observation, nulls for the rest.
+
+    Values pass through untouched — a driver's honest 0 stays 0 — and a driver
+    that reported no timing at all yields the all-null block. Only server_timing
+    is normalized (tuple -> list) so canonical JSON stays deterministic; its
+    entries travel exactly as the Performance API shaped them.
+    """
+
+    timing = _null_timing()
+    reported = observation.timing
+    if not reported:
+        return timing
+    for key in ("lcp_ms", "cls", "inp_proxy_ms", "resource_count", "transfer_bytes"):
+        timing[key] = reported.get(key)
+    raw_server_timing = reported.get("server_timing")
+    # None means "could not observe"; an empty list is an observed empty and must
+    # survive as one, so only a genuine None stays null.
+    timing["server_timing"] = None if raw_server_timing is None else list(raw_server_timing)
+    return timing
+
+
 def _metrics_from(observed: Mapping[str, Any]) -> dict[str, Any]:
     hits = list(observed.get("raw_slug_hits") or ())
     todos = list(observed.get("todo_placeholder_hits") or ())
@@ -1011,6 +1075,9 @@ def run_capture(
                 # null on the page at rest; the state's name on a forced shot, so a
                 # reader never has to infer which row is the forced one.
                 "force_state": None if cell.force_state is None else cell.force_state.name,
+                # Present on every row for shape, all null until a driver observes
+                # lab timing for this cell.
+                "timing": _null_timing(),
             }
             if page_failure is not None:
                 entry.update(
@@ -1035,7 +1102,10 @@ def run_capture(
             # Evidence is harvested from EVERY observation, before any state is
             # skipped: an auth-gated page that 401s and then times out settling is
             # the exact page this feature exists for, and harvesting below the
-            # ``continue``s published an empty console_errors for it.
+            # ``continue``s published an empty console_errors for it. Lab timing
+            # follows the same discipline — a load that failed late may still have
+            # observed an LCP, and a driver that observed nothing keeps its nulls.
+            entry["timing"] = _timing_from(observation)
             for error in observation.console_errors:
                 text = str(error.get("text") or "")
                 source_url = error.get("source_url") or None
@@ -1181,6 +1251,9 @@ def run_capture(
             "access": [ACCESS_ANONYMOUS],
             "force_states": [state.as_payload() for state in force_states],
         },
+        # Declares the basis of every timing number below: measured in this local
+        # anonymous capture, so a reader cannot mistake it for production traffic.
+        "timing_basis": TIMING_BASIS,
         "selection": dict(selection or {}),
         "excluded": [dict(item) for item in excluded],
         "outcome": outcome,
@@ -1499,6 +1572,96 @@ _OBSERVER_SCRIPT = r"""
 """
 
 
+# Seeded before any page script (an init script, like the state seed) so the
+# buffered observers see the whole load. Each entry type is subscribed
+# individually and each subscription is individually optional: an engine that
+# rejects one type must not lose the others, and a context where the whole store
+# is absent harvests nulls, never zeros. Everything buffered here is a LAB
+# measurement of this synthetic load.
+_TIMING_INIT_SCRIPT = """
+() => {
+  if (window.__cpeTiming) { return; }
+  const store = {lcp: null, cls: 0.0, events: []};
+  window.__cpeTiming = store;
+  try {
+    new PerformanceObserver((list) => {
+      const entries = list.getEntries();
+      for (let i = 0; i < entries.length; i += 1) {
+        const entry = entries[i];
+        if (store.lcp === null || entry.startTime > store.lcp) { store.lcp = entry.startTime; }
+      }
+    }).observe({type: 'largest-contentful-paint', buffered: true});
+  } catch (e) {}
+  try {
+    new PerformanceObserver((list) => {
+      const entries = list.getEntries();
+      for (let i = 0; i < entries.length; i += 1) {
+        const entry = entries[i];
+        if (!entry.hadRecentInput) { store.cls += entry.value; }
+      }
+    }).observe({type: 'layout-shift', buffered: true});
+  } catch (e) {}
+  try {
+    new PerformanceObserver((list) => {
+      const entries = list.getEntries();
+      for (let i = 0; i < entries.length; i += 1) { store.events.push(entries[i]); }
+    }).observe({type: 'event', buffered: true, durationThreshold: 16});
+  } catch (e) {}
+}
+"""
+
+
+def timing_init_source() -> str:
+    """The init-script source that starts the buffered timing observers.
+
+    Wrapped and terminated exactly like ``state_seed_source``: init scripts are
+    plain text callers concatenate onto, and an unterminated call is the
+    documented parse hazard (see that function's docstring).
+    """
+
+    return f"({_TIMING_INIT_SCRIPT.strip()})();"
+
+
+# Evaluated once, after load settles, to drain the buffered observers and the
+# resource-timing buffer into the six lab timing numbers. Returns null (not a
+# partial dict) when the init script never ran, so the whole block stays null.
+_TIMING_SNAPSHOT_SCRIPT = r"""
+() => {
+  const store = window.__cpeTiming || null;
+  if (!store) { return null; }
+  const nav = (performance.getEntriesByType('navigation') || [])[0] || null;
+  const resources = performance.getEntriesByType('resource') || [];
+  const serverTiming = [];
+  if (nav && nav.serverTiming) {
+    for (const st of nav.serverTiming) { serverTiming.push(st); }
+  }
+  for (const resource of resources) {
+    if (resource.serverTiming) {
+      for (const st of resource.serverTiming) { serverTiming.push(st); }
+    }
+  }
+  // INP proxy: the longest Event Timing duration among entries the browser
+  // attributes to an interaction. The only interactions this driver scripts are
+  // the force-state hover/focus calls, so with none of those the list is empty
+  // and the value is null — never a synthesized 0.
+  const interactions = [];
+  for (const entry of store.events) {
+    if (entry.interactionId) { interactions.push(entry.duration); }
+  }
+  return {
+    lcp_ms: store.lcp,
+    cls: store.cls,
+    inp_proxy_ms: interactions.length ? Math.max.apply(null, interactions) : null,
+    resource_count: resources.length,
+    transfer_bytes: resources.reduce((total, r) => total + (r.transferSize || 0), 0),
+    server_timing: serverTiming.map((st) => ({
+      name: st.name, duration: st.duration, description: st.description,
+    })),
+  };
+}
+"""
+
+
 def playwright_page_driver(
     *,
     headless: bool = True,
@@ -1559,6 +1722,9 @@ class _PlaywrightDriver:  # pragma: no cover - needs a browser
         )
         # Terminated IIFE source (see state_seed_source): safe to concatenate onto.
         context.add_init_script(state_seed_source(state))
+        # Buffered timing observers must exist before any page script runs, or the
+        # load's LCP/shift/event entries are gone before anything can buffer them.
+        context.add_init_script(timing_init_source())
         page = context.new_page()
         console_errors: list[dict[str, Any]] = []
         failed_responses: list[dict[str, Any]] = []
@@ -1649,6 +1815,10 @@ class _PlaywrightDriver:  # pragma: no cover - needs a browser
                 _wait_transient_fx_gone(page)
                 page.wait_for_timeout(self._settle_ms)
             observed = page.evaluate(_OBSERVER_SCRIPT.strip(), dict(self._observer_config)) or {}
+            # Drained after the same settles the observer waited out, so late LCP
+            # candidates and trailing shifts are inside the numbers. A page where
+            # the init script never took yields None and stays all-null.
+            timing = page.evaluate(_TIMING_SNAPSHOT_SCRIPT.strip()) or None
             screenshot = page.screenshot(full_page=True)
             return CellObservation(
                 cell_id=cell.cell_id,
@@ -1662,6 +1832,7 @@ class _PlaywrightDriver:  # pragma: no cover - needs a browser
                 applied_theme=applied.get("theme"),
                 applied_locale=applied.get("locale"),
                 applied_force_state=applied_force,
+                timing=timing,
             )
         except Exception as exc:
             return _failed(f"{type(exc).__name__}: {exc}")
@@ -1740,6 +1911,20 @@ class _SelfCheckDriver:
             applied_theme=cell.theme,
             applied_locale=cell.locale,
             applied_force_state=None if cell.force_state is None else cell.force_state.name,
+            # Deterministic lab numbers, constants like every other canned value
+            # above. inp_proxy_ms stays null on purpose: this driver scripts no
+            # interaction, and a null — not a 0 — is what an unobserved timing
+            # value must look like.
+            timing={
+                "lcp_ms": 1180.5,
+                "cls": 0.01,
+                "inp_proxy_ms": None,
+                "resource_count": 27,
+                "transfer_bytes": 640_512,
+                "server_timing": (
+                    {"name": "edge", "duration": 12.5, "description": "cache miss"},
+                ),
+            },
         )
 
 
@@ -1828,6 +2013,8 @@ def self_check() -> tuple[bool, dict[str, Any]]:
             )
         if totals["pages"] <= 0:
             findings.append("the self-check produced no page at all")
+        if manifest.get("timing_basis") != TIMING_BASIS:
+            findings.append(f"the manifest must declare timing_basis {TIMING_BASIS!r}")
 
         pages = {page["page_id"]: page for page in manifest["pages"]}
         dark_only = pages.get("dark_only")
@@ -1848,6 +2035,21 @@ def self_check() -> tuple[bool, dict[str, Any]]:
             missing = [key for key in METRIC_KEYS if key not in page["metrics"]]
             if missing:
                 findings.append(f"{page['page_id']}: metrics missing {missing}")
+            for state in page["states"]:
+                timing = state.get("timing")
+                if not isinstance(timing, dict) or set(timing) != set(TIMING_KEYS):
+                    findings.append(f"{page['page_id']}: a state lost its lab timing shape")
+                    continue
+                if state.get("captured") and timing["lcp_ms"] is None:
+                    findings.append(
+                        f"{page['page_id']}: the canned driver reports lcp_ms, but a captured "
+                        "state recorded null"
+                    )
+                if timing["inp_proxy_ms"] is not None:
+                    findings.append(
+                        f"{page['page_id']}: no interaction is scripted by the canned driver, "
+                        "so inp_proxy_ms must be null, not a number"
+                    )
             access_gaps = {gap["value"] for gap in page["gaps"] if gap["dimension"] == "access"}
             if set(GATED_ACCESS_STATES) - access_gaps:
                 findings.append(f"{page['page_id']}: gated access states not recorded as gaps")
@@ -2081,6 +2283,8 @@ def self_check() -> tuple[bool, dict[str, Any]]:
         "viewports": {name: list(dims) for name, dims in VIEWPORTS.items()},
         "locales": list(SUPPORTED_LOCALES),
         "themes": list(SUPPORTED_THEMES),
+        "timing_basis": TIMING_BASIS,
+        "timing_keys": list(TIMING_KEYS),
         "access_captured": [ACCESS_ANONYMOUS],
         "access_gaps": {state: GATED_ACCESS_REASON for state in GATED_ACCESS_STATES},
         "page_state_gaps": {state: SYNTHETIC_PAGE_STATE_REASON for state in SYNTHETIC_PAGE_STATES},

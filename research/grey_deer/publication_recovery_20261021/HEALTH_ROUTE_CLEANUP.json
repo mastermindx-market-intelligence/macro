@@ -1,0 +1,29 @@
+{
+  "schema": "grey_deer.isolated_health_route_cleanup.v1",
+  "initial_cleanup": {
+    "process": 20097,
+    "exit_code": 1,
+    "failure": "Host path verifier rejected macOS /tmp resolving to /private/tmp after remote cleanup had completed; host deletion had not started.",
+    "remote_cleanup_retried": false
+  },
+  "vps": {
+    "reconciled_at": "2026-10-21T12:22:16.779143+00:00",
+    "removed_stage": "/tmp/rr-publication-rehearsal-20261021-d8ee2efa61d1",
+    "stage_removed": true,
+    "retained_complete_health_inputs_and_support": "/tmp/rr-health-route-input-evidence-20261021-8b67ea221661",
+    "retained_file_count": 34,
+    "manifest_sha256": "81e6e319ba6d0bcf14d9949fdd7cac33c8ec6e97dbc5b64e3e9f28e07627d5b0",
+    "all_retained_files_hash_verified": true,
+    "production_operation": false
+  },
+  "host": {
+    "removed_stage": "/tmp/rr-health-route-20261021-k_t8bqhu",
+    "retained_support": "/tmp/rr-health-route-support-20261021-238o6u4z",
+    "manifest_sha256": "e7a06f94ef348b7781893cf11ea9e8bec10cadbc0b68d5449400bdf180cb8d3e",
+    "stage_removed": true,
+    "no_other_process_reference": true
+  },
+  "canonical_full_report_sha256": "20fcbded4f383dbe33f1cfcf0351f1f1bbc9862bdfa7e61a08c472485417d166",
+  "production_operation": false,
+  "completed_at": "2026-10-21T12:22:17.091621+00:00"
+}

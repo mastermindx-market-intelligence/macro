@@ -1,0 +1,18 @@
+{
+  "observed_at": "2026-10-21T22:37:16.055195+00:00",
+  "head": "57bb2f29a4bb341ef32eaa04d5cd058e1045b53d",
+  "reviewed_base": "2fed30a5a14f6bdd5e69d42c5bfcbac5814b3915",
+  "current_base": "cf7e7536c24303c750768b6a49982e00acd31dc8",
+  "delta_count": 5,
+  "non_generated": [
+    "research/ci_commit_inventory_20261021/README.md",
+    "research/ci_commit_inventory_20261021/evidence.json",
+    "research/ci_commit_inventory_20261021/isolated-replay.json",
+    "scripts/merge_on_green.py",
+    "tests/test_merge_on_green.py"
+  ],
+  "candidate_path_overlap": [],
+  "merge_tree_rc": 0,
+  "merge_tree": "d02e6970facf525588170874af1d068dc55e2bbc\n",
+  "workspace_clean": true
+}

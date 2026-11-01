@@ -1,0 +1,35 @@
+........................................................................ [ 52%]
+..................................................................       [100%]
+=============================== warnings summary ===============================
+../../../../../../opt/homebrew/Caskroom/miniconda/base/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-31fd4804-1ad2-48f9-86e7-ad6efe4d3b81/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-31fd4804-1ad2-48f9-86e7-ad6efe4d3b81/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../opt/homebrew/Caskroom/miniconda/base/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-31fd4804-1ad2-48f9-86e7-ad6efe4d3b81/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-31fd4804-1ad2-48f9-86e7-ad6efe4d3b81/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+../../../../../../opt/homebrew/Caskroom/miniconda/base/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-50a49b7f-2bc6-4486-a68a-27e6c5812422/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-50a49b7f-2bc6-4486-a68a-27e6c5812422/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../opt/homebrew/Caskroom/miniconda/base/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-50a49b7f-2bc6-4486-a68a-27e6c5812422/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-50a49b7f-2bc6-4486-a68a-27e6c5812422/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+../../../../../../opt/homebrew/Caskroom/miniconda/base/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-ac8759e4-b373-4838-8117-d39e3948e789/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-ac8759e4-b373-4838-8117-d39e3948e789/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../opt/homebrew/Caskroom/miniconda/base/lib/python3.12/site-packages/_pytest/pathlib.py:95
+  /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-ac8759e4-b373-4838-8117-d39e3948e789/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-ac8759e4-b373-4838-8117-d39e3948e789/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+138 passed, 6 warnings in 7.71s

@@ -1,0 +1,41 @@
+{
+  "head_before": "213d5f29105e21d20e7b05b7ee9df94c3d85477e",
+  "integrated_main": "595a89279c50bf8d697fa9eb068d15308c4d38ce",
+  "failed_ci": 38368483974,
+  "path_pairs_added": 16,
+  "additions": {
+    "biocatalyst-history": [
+      "engine/k3e_eval1_forward.py",
+      "engine/pick_forward_dist.py"
+    ],
+    "biocatalyst-serving": [
+      "engine/k3e_eval1_forward.py",
+      "engine/pick_forward_dist.py"
+    ],
+    "fif-kernel-guards": [
+      "engine/k3e_eval1_forward.py",
+      "engine/pick_forward_dist.py",
+      "engine/seasonality/multiplicity.py"
+    ],
+    "flow-surface": [
+      "engine/k3e_eval1_forward.py",
+      "engine/pick_forward_dist.py"
+    ],
+    "ticker-news-qbus": [
+      "engine/k3e_eval1_forward.py",
+      "engine/pick_forward_dist.py",
+      "engine/seasonality/multiplicity.py"
+    ],
+    "unrun-government-revenue-candidate-projection": [
+      "engine/k3e_eval1_forward.py",
+      "engine/pick_forward_dist.py"
+    ],
+    "unrun-government-revenue-grader": [
+      "engine/k3e_eval1_forward.py",
+      "engine/pick_forward_dist.py"
+    ]
+  },
+  "job_count": 295,
+  "all_other_job_fields_preserved": true,
+  "manifest_sha256": "acfe6050b9ec63219a97f4dce924f333de562e12207da6489830238ed5f39f67"
+}

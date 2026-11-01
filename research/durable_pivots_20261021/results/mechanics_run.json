@@ -1,0 +1,8 @@
+{
+  "standardized_rows": 720,
+  "waiting_policies": 120,
+  "waiting_event_policy_rows": 36510,
+  "waiting_reference_pivots": 773,
+  "selection_lock_sha256": "6744d7b85f78dac077bfddfe75537f263d80ee5c070f6d81b23dc7eb89d3b075",
+  "protocol_sha256": "f98e459ae255eebf382a332fbb21d6a57d16e56bbc491ac195f5721d6e0949da"
+}

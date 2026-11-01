@@ -747,6 +747,37 @@ html[data-theme="light"] .tip-q{background:var(--panel)}
           <span class="l-en">{{ '{:,}'.format(population.current) }} current · {{ '{:,}'.format(population.stale) }} stale · {{ '{:,}'.format(population.unknown) }} unresolved</span>
           <span class="l-zh">{{ '{:,}'.format(population.current) }} 当前 · {{ '{:,}'.format(population.stale) }} 过时 · {{ '{:,}'.format(population.unknown) }} 未能判定</span>
         </div>
+        {% if population.status == 'warn' %}
+          {# W18-E Spec 1 (F1): print the warn receipt's recorded values; invent no cause. #}
+          {% set w18e1_spy = population.spy_stage_week %}
+          {% set w18e1_modal = population.population_modal_week %}
+          {% set w18e1_pct = population.current_coverage_pct %}
+          {% set w18e1_diverge = ('benchmark_week_divergence' in (population.issues or [])
+            and w18e1_spy and w18e1_modal) %}
+          <div class="popreceipt">
+            {% if w18e1_diverge %}
+              <span class="l-en">SPY's completed week is {{ w18e1_spy }}; most names'
+                latest completed week is {{ w18e1_modal }}.
+                The cross-section uses the names' own week.</span>
+              <span class="l-zh">SPY 的已完成周为 {{ w18e1_spy }}；多数股票
+                最新的已完成周为 {{ w18e1_modal }}。
+                截面以股票自身的周为准。</span>
+            {% endif %}
+            {% if w18e1_pct is not none %}
+              <span class="l-en">{{ w18e1_pct }}% of names are on the current week.</span>
+              <span class="l-zh">{{ w18e1_pct }}% 的股票处于当前周。</span>
+            {% endif %}
+            {% if w18e1_diverge and population.week_histogram %}
+              {% set w18e1_h = namespace(s='') %}
+              {%- for w18e1_b in (population.week_histogram or [])[:3] -%}
+              {%- set w18e1_h.s = (w18e1_h.s ~ ' · ') if not loop.first else w18e1_h.s -%}
+              {%- set w18e1_h.s = w18e1_h.s ~ w18e1_b.week ~ ': ' ~ '{:,}'.format(w18e1_b.n) -%}
+              {%- endfor -%}
+              <span class="l-en">Names by completed week: {{ w18e1_h.s }}</span>
+              <span class="l-zh">按已完成周统计股票数：{{ w18e1_h.s }}</span>
+            {% endif %}
+          </div>
+        {% endif %}
       {% endif %}
     </div>
   </div>
@@ -1534,7 +1565,11 @@ html[data-theme="light"] .tip-q{background:var(--panel)}
     var d=BOARD[boardCadence];
     /* honesty: daily currently mirrors the weekly stage read. */
     var honesty=boardCadence==='daily'
-      ? TT('Daily view: the stage read is still the weekly classification — a daily-specific read lands once intraday history is wired.','日线视图：阶段判定目前仍沿用周线分类 —— 待接入日内历史后才有专属的日线判定。')
+      ? TT('Daily view: the classifier reads completed weekly bars, so this daily board '
+        + 'shares the weekly stages — there is no separate daily stage read yet.',
+        '日线视图：分类器读取已完成的周线，因此日线看板'
+        + '与周线共用同一阶段 —— 目前还没有单独的'
+        + '日线阶段判定。')
       : TT('Weekly stage read — the primary Weinstein classification.','周线阶段判定 —— 主要的温斯坦分类。');
     /* Wave 8 observation-truth clock (replaces the retired build-date-only
        label): the completed Stage week the board is anchored to, plus the
@@ -1601,6 +1636,20 @@ html[data-theme="light"] .tip-q{background:var(--panel)}
     return '<span class="delta '+cls+'" data-tip-en="'+esc(tE)+'" data-tip-zh="'+esc(tZ)+'">'+s+'</span>';
   }
 
+  /* SGA-W18E-4: the producer records its own agreement against an outside
+     yardstick on the ranks/flows artifacts. State those strings verbatim:
+     EN-only source text, so the zh lane carries a template-authored label
+     plus the same words (ernTagLabel precedent). Never render the target
+     identity or the method block. */
+  function indCalibNote(cal,kind){
+    if(!cal||typeof cal.note!=='string'||!cal.note)return '';
+    var text=cal.note;
+    if(kind!=='flows'&&typeof cal.yardstick==='string'&&cal.yardstick)
+      text+=' '+cal.yardstick;
+    return ' '+LT('How this compares with an outside yardstick: '+text,
+      '与外部参照的比较（英文原文）：'+text);
+  }
+
   function indRanking(){
     var rows=(pickRegion(IND.ranks&&IND.ranks.regions)||[]).slice();
     if(!rows.length)return indEmpty();
@@ -1624,7 +1673,7 @@ html[data-theme="light"] .tip-q{background:var(--panel)}
         '<td class="num">'+(r.n==null?'—':r.n)+'</td>'+
       '</tr>';
     }).join('');
-    return '<p class="subcap">'+LT('Every industry group ranked by trend strength inside the selected region — leaders at the top.','按趋势强度对所选地区的每个行业组排名 —— 领先者居前。')+'</p>'+
+    return '<p class="subcap">'+LT('Every industry group ranked by trend strength inside the selected region — leaders at the top.','按趋势强度对所选地区的每个行业组排名 —— 领先者居前。')+indCalibNote(IND.ranks&&IND.ranks.calibration,'ranking')+'</p>'+
       '<div class="tbl-scroll"><table class="screener" style="min-width:720px"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>';
   }
 
@@ -1700,12 +1749,19 @@ html[data-theme="light"] .tip-q{background:var(--panel)}
       return '<tr><th class="hind">'+esc(row.industry||'')+'</th>'+cells+'</tr>';
     }).join('');
     return '<div class="subtabs"><div class="subseg" id="ec-mode" role="group" aria-label="Earnings heatmap metric">'+
-        '<button data-ecm="combined" aria-pressed="'+(indEcMode==='combined')+'">'+LT('Call tone','电话会语气')+'</button>'+
+        '<button data-ecm="combined" aria-pressed="'+(indEcMode==='combined')+'" '+
+        'data-tip-en="Tone and result added together for each call, averaged by '+
+        'industry — not the 0–100 tone scale used in the Screener." '+
+        'data-tip-zh="每场电话会的语气分与表现分相加后按行业取平均 —— 不是选股器中 0–100 的语气刻度。" '+
+        '>'+LT('Call score (tone + result)','电话会综合分（语气＋表现）')+'</button>'+
         '<button data-ecm="count" aria-pressed="'+(indEcMode==='count')+'">'+LT('Fresh calls','新增电话会')+'</button></div></div>'+
-      '<p class="subcap"><b>'+LT('Recent earnings-call tone by industry.','各行业近期财报电话会的语气。')+'</b> '+
-        (indEcMode==='combined'?LT('Greener = more upbeat calls that week; redder = more cautious.','越绿＝当周语气越正面；越红＝越谨慎。'):LT('How many companies reported fresh earnings that week.','当周有多少公司发布了新财报。'))+'</p>'+
+      '<p class="subcap"><b>'+LT('Recent earnings calls by industry.','各行业近期的财报电话会。')+'</b> '+
+        (indEcMode==='combined'
+          ?LT('Greener = higher combined score that week; redder = lower.','越绿＝当周综合分越高；越红＝越低。')
+          :LT('How many companies reported fresh earnings that week.','当周有多少公司发布了新财报。'))+'</p>'+
       '<div class="heatscroll"><table class="heat"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'+
-      '<div class="heatlegend"><span>'+LT('cautious','谨慎')+'</span><span class="grad rev"></span><span>'+LT('upbeat','正面')+'</span></div>';
+      '<div class="heatlegend"><span>'+LT('lower score','综合分较低')+'</span>'+
+      '<span class="grad rev"></span><span>'+LT('higher score','综合分较高')+'</span></div>';
   }
 
   var FLOWCOLS=[
@@ -1714,6 +1770,10 @@ html[data-theme="light"] .tip-q{background:var(--panel)}
     {k:'n',en:'N',zh:'数量',num:true,tip:['Names in the group.','组内股票数。']},
     {k:'sata_mean',en:'Trend',zh:'趋势',num:true,tip:['Average trend quality (SATA), 0–10.','平均趋势质量（SATA），0–10。']},
     {k:'rs_chg_4w_median',en:'RS Δ4w',zh:'RS变化4周',num:true,tip:['Median relative-strength change over 4 weeks. Green = rotating in.','相对强度4周中位变化。绿＝资金流入。']},
+    {k:'rs_level_median',en:'RS level',zh:'相对强度水平',num:true,
+      tip:['Median relative-strength level of the names — a level, not a change. '
+        + 'Above 0 = stronger than the market.',
+        '组内股票相对强度水平的中位数 —— 是水平，不是变化。大于 0＝强于大盘。']},
     {k:'breadth_4w_pct',en:'Breadth 4w',zh:'广度4周',num:true,tip:['Share of names advancing over 4 weeks.','近4周上涨股票的占比。']},
     {k:'_div',en:'Stage 2 vs 4',zh:'二阶段vs四阶段',tip:['Green = names advancing (Stage 2), red = declining (Stage 4).','绿＝上升（第二阶段），红＝下行（第四阶段）。']},
     {k:'stage2_stage4_ratio',en:'S2/S4',zh:'二/四比',num:true,tip:['Advancing-to-declining ratio. Above 1 = more advancing.','上升对下行之比。大于1＝上升居多。']},
@@ -1784,6 +1844,8 @@ html[data-theme="light"] .tip-q{background:var(--panel)}
         '<td class="num">'+(r.n==null?'—':r.n)+'</td>'+
         '<td class="num">'+sataChip(r.sata_mean==null?null:Math.round(r.sata_mean*10)/10)+'</td>'+
         rsDeltaCell(r.rs_chg_4w_median)+
+        '<td class="num">'+(r.rs_level_median==null?'—':
+          ((r.rs_level_median>0?'+':'')+(Math.round(r.rs_level_median*10)/10)))+'</td>'+
         breadthCell(r.breadth_4w_pct)+
         '<td>'+divBar(r)+'</td>'+
         '<td class="num">'+(r.stage2_stage4_ratio==null?'—':(Math.round(r.stage2_stage4_ratio*10)/10))+'</td>'+
@@ -1794,12 +1856,40 @@ html[data-theme="light"] .tip-q{background:var(--panel)}
     return '<div class="subtabs"><div class="subseg" id="flow-grain" role="group" aria-label="Flows grain">'+
         '<button data-grain="industry" aria-pressed="'+(indFlowGrain==='industry')+'">'+LT('Industry','行业')+'</button>'+
         '<button data-grain="sub" aria-pressed="'+(indFlowGrain==='sub')+'">'+LT('Sub-industry','子行业')+'</button></div></div>'+
-      '<p class="subcap"><b>'+LT('Where the money is rotating, by stage.','按阶段看资金轮动去向。')+'</b> '+LT('Leading groups have money flowing in; breaking groups are rolling over. Sorted by 4-week relative-strength change.','领先组资金流入；转弱组开始走弱。默认按相对强度4周变化排序。')+'</p>'+
+      '<p class="subcap"><b>'+LT('Where the money is rotating, by stage.','按阶段看资金轮动去向。')+'</b> '+LT('Leading groups have money flowing in; breaking groups are rolling over. Sorted by 4-week relative-strength change.','领先组资金流入；转弱组开始走弱。默认按相对强度4周变化排序。')+indCalibNote(IND.flows&&IND.flows.calibration,'flows')+'</p>'+
       '<div class="tbl-scroll"><table class="screener" id="flow-table" style="min-width:1000px"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>';
   }
 
   function indEmpty(){
     return '<div class="empty soon"><div class="ico"></div><h3>'+TT('Industry rankings aren\'t available','行业排名暂不可用')+'</h3><p>'+TT('The file for this view didn\'t load. The Screener and Stage Board still work.','该视图的数据文件未能加载。选股器与阶段异动仍可用。')+'</p></div>';
+  }
+  function indCoverageNote(){
+    /* Spec 2: one provenance line for the whole Industries tab, read from
+       the fetched artifact's own coverage receipt; silent when absent. */
+    var src=indView==='ranking'?IND.ranks:indView==='flows'?IND.flows:null;
+    var c=src&&src.coverage;
+    if(!c||c.non_vacuous!==true)return '';
+    if(c.taxonomy_rows==null||c.input_rows==null)return '';
+    if(c.taxonomy_coverage_pct==null)return '';
+    var tax=Number(c.taxonomy_rows).toLocaleString('en-US');
+    var tot=Number(c.input_rows).toLocaleString('en-US');
+    var pct=c.taxonomy_coverage_pct+'%';
+    var en='Coverage: '+tax+' of '+tot+' names ('+pct+') have an industry;';
+    en+=' names without one are left out.';
+    var zh='覆盖：'+tot+' 只股票中有 '+tax+' 只（'+pct+'）有行业归属，';
+    zh+='没有行业归属的股票不计入。';
+    var tails=[],zhTails=[];
+    if(c.output_rows!=null){
+      var n=Number(c.output_rows).toLocaleString('en-US');
+      tails.push(n+' groups shown');zhTails.push('显示 '+n+' 个组');
+    }
+    var wk=c.freshness&&c.freshness.source_stage_week;
+    if(wk){tails.push('stage week ended '+wk);zhTails.push('阶段周截至 '+wk);}
+    if(tails.length){en+=' '+tails.join(', ')+'.';zh+=zhTails.join('，')+'。';}
+    if(Array.isArray(c.issues)&&c.issues.length){
+      var fl=c.issues.join(', ');en+=' Flags: '+fl;zh+=' 标记：'+fl;
+    }
+    return '<p class="provfoot">'+LT(en,zh)+'</p>';
   }
   function renderIndustries(){
     var host=qs('#ind-body');if(!host)return;
@@ -1808,7 +1898,7 @@ html[data-theme="light"] .tip-q{background:var(--panel)}
     else if(indView==='heatmap')html=indHeatmap();
     else if(indView==='echeat')html=indEcHeat();
     else html=indFlows();
-    host.innerHTML=html;
+    host.innerHTML=html+indCoverageNote();
     /* wire sub-controls that live inside the rendered fragment */
     qsa('#flow-grain button').forEach(function(b){b.addEventListener('click',function(){indFlowGrain=b.getAttribute('data-grain');renderIndustries();});});
     qsa('#ec-mode button').forEach(function(b){b.addEventListener('click',function(){indEcMode=b.getAttribute('data-ecm');renderIndustries();});});

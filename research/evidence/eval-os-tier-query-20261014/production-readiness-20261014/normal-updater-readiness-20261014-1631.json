@@ -1,0 +1,51 @@
+{
+  "at": "2026-10-14T16:31:03.989579+00:00",
+  "purpose": "Pre-release transport readiness only; no A1 installation or final probe binding",
+  "installed_head": {
+    "returncode": 0,
+    "stdout": "b4e1d4c724a91a608448b468baf94d4558bf91e8"
+  },
+  "tracked_change_count": 8,
+  "admin": {
+    "returncode": 0,
+    "stdout": "MainPID=1756456\nExecMainStartTimestamp=Wed 2026-10-14 09:27:15 UTC\nActiveState=active\nSubState=running"
+  },
+  "installed_updater_sha256": "9943a824deef6c7f1a346c9f48ff4b64447e888c186fc4f676d368f103036e9d",
+  "normal_updater_schedule_present": true,
+  "updater_log_mtime": "2026-10-14T16:30:17.562594+00:00",
+  "recent_revision_transitions": [
+    [
+      "6201661c",
+      "c82a4d781d2"
+    ],
+    [
+      "c82a4d78",
+      "74a26d30eaf"
+    ],
+    [
+      "74a26d30",
+      "40568df0a48"
+    ],
+    [
+      "40568df0",
+      "b355075be34"
+    ],
+    [
+      "b355075b",
+      "64fd518beeb"
+    ],
+    [
+      "64fd518b",
+      "18c4805cea6"
+    ],
+    [
+      "18c4805c",
+      "1302e876d40"
+    ],
+    [
+      "1302e876",
+      "b4e1d4c724a"
+    ]
+  ],
+  "no_mutations": true
+}

@@ -1,0 +1,12 @@
+/* Dormant until the bridge accepts the exact parent INIT. */
+html[data-mmx-shared-shell="1"] .site-nav,
+html[data-mmx-shared-shell="1"] [data-mmx-all-tools],
+html[data-mmx-shared-shell="1"] #mmx-all-tools,
+html[data-mmx-shared-shell="1"] .public-nav,
+html[data-mmx-shared-shell="1"] body > nav.nav[aria-label="Main"],
+html[data-mmx-shared-shell="1"] .landing-nav {
+  display: none !important;
+}
+html[data-mmx-shared-shell="1"] {
+  --mmx-shared-shell-css-ready: 1;
+}

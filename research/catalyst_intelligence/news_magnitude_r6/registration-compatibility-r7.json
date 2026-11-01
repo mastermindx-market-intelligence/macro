@@ -1,0 +1,56 @@
+{
+  "schema": "catalyst.r7_registration_compatibility_verification.v1",
+  "operation_id": "catalyst-news-delta-r4-20261019",
+  "parent_source_head": "d62eade5b581b8613ea0cb2272c63495f7117358",
+  "proof_date_utc": "2026-10-20",
+  "source_sha256": {
+    "engine/news_impact/section11_registration.py": "77ea1b465a28a643b55de139305381a28924fc0a39282807419c7082a3a8eb38",
+    "tests/test_news_impact_section11.py": "7e192cfe4c60484aef023c1f092a4cbe3646fb1e576539f626fe85efddc268db",
+    "engine/news_impact/producer_facts.py": "712796386c750a949ea5e0d1d30ed8e26a27048164a5393b52cb2ed2e6273b17",
+    "engine/news_impact/thesis.py": "ae862a16afb7e8cc51debabc3c81615f16218b0f66351264c71d2696e64096bd"
+  },
+  "historical_registration": {
+    "path": "research/prophet_v4/news_to_business_impact_20261006/benchmark/section11/registration.json",
+    "sha256": "5637cbea2d44533db77d7c77051996cd27dad5e1bb16ba483fd5b1ffeb02a71a",
+    "changed": false,
+    "producer_facts": "ni-producer-facts-1",
+    "historical_check": "PASS_METADATA_INTEGRITY_ONLY"
+  },
+  "current_implementation": {
+    "producer_facts": "ni-producer-facts-2",
+    "registration_eligibility": "REFUSED",
+    "refusal_code": "REGISTERED_IMPLEMENTATION_MISMATCH"
+  },
+  "focused": {
+    "command": "python -m pytest -q tests/test_news_impact_section11.py tests/test_news_impact_producer_facts.py tests/test_news_impact_thesis.py",
+    "process_id": 16321,
+    "exit_code": 0,
+    "passed": 198,
+    "failed": 0,
+    "section11_cases": 60,
+    "producer_and_thesis_cases": 138,
+    "pytest_seconds": 70,
+    "warnings": 2,
+    "warning_scope": "inherited pytest temporary-directory cleanup",
+    "full_prior_composed_campaign_rerun": false
+  },
+  "checks": {
+    "process_id": 28444,
+    "diff_check_exit": 0,
+    "source_claim_check_exit": 0
+  },
+  "review": {
+    "reviewer": "C3 biocatalyst_integration_judgment",
+    "verdict": "SOURCE_CONCURRENCE",
+    "scope": "specified R7 builder and regression-test source changes",
+    "tests_executed_by_reviewer": false,
+    "whole_file_hashes_computed_by_reviewer": false,
+    "root_adopted_review": true
+  },
+  "compatibility_guard_scope": "registered component version identifiers and exact original metadata; not historical executable attestation",
+  "scientific_qualification_changed": false,
+  "native_admission_established": false,
+  "published_runtime": false,
+  "source_merge_authorized_by_this_record": false,
+  "disposition": "DRAFT_HOLD_FOR_SOL"
+}

@@ -18,6 +18,13 @@ from tests.test_market_memory_retained_context_cohort import capture, owner, CUT
 ROOT = Path(__file__).resolve().parents[1]
 
 
+@pytest.fixture(autouse=True)
+def bounded_cohort_reuse(monkeypatch):
+    from engine.neuralweb import market_memory_retained_cohort_reuse as reuse
+    monkeypatch.setattr(reuse, "_CACHE", reuse.BoundedCohortCache())
+    return reuse
+
+
 @pytest.fixture
 def original(tmp_path, monkeypatch):
     old = capture(tmp_path, monkeypatch, session="2026-08-01", growth=0.1)
@@ -222,3 +229,220 @@ def test_existing_user_rate_limit_applies_to_both_entry_points(original):
     with pytest.raises(HTTPException) as error:
         api.retained_macro_for_user(root, "member", spec)
     assert error.value.status_code == 429
+
+
+def test_exact_cohort_reuse_reduces_owner_reads_and_recomputes_result(original, monkeypatch):
+    """One miss/two hits on the same synthetic owner fixture, not a load SLA."""
+    import time
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+    read = cohort.read_retained_context_cohort
+    builds = []
+    def counted(*args, **kwargs):
+        value = read(*args, **kwargs)
+        builds.append(value)
+        return value
+    monkeypatch.setattr(cohort, "read_retained_context_cohort", counted)
+    measurements = []
+    results = []
+    for phase in ("miss", "exact_hit", "exact_hit"):
+        wall, cpu = time.monotonic(), time.thread_time()
+        with pit.bounded_owner_reads(maximum_bytes=64 * 1024 * 1024) as budget:
+            results.append(call(original))
+        measurements.append({"phase": phase, "wall_ms": (time.monotonic() - wall) * 1000,
+            "thread_cpu_ms": (time.thread_time() - cpu) * 1000,
+            "owner_bytes": budget.bytes_read, "owner_objects": budget.objects_opened})
+    assert len(builds) == 1
+    assert results[0] == results[1] == results[2]
+    for hit in measurements[1:]:
+        assert 0 < hit["owner_objects"] < measurements[0]["owner_objects"]
+        assert 0 < hit["owner_bytes"] < measurements[0]["owner_bytes"]
+    # A different k must recompute retrieval/output rather than return cached JSON.
+    limited = call(original, limit=1)
+    assert limited["denominator"]["returned"] == 1
+    assert len(builds) == 1
+    results[0]["source_cards"].clear()
+    assert call(original)["source_cards"]
+    print("EXACT_COHORT_FIXTURE_MEASUREMENT " + json.dumps({
+        "fixture_only": True, "captures": 5, "samples": measurements,
+        "p95_or_concurrency_claim": False}, sort_keys=True))
+
+
+@pytest.mark.parametrize("action", ["disclose_retained_macro_capture", "verify_retained_macro_retention"])
+def test_cached_unreturned_source_rechecks_current_policy_and_never_falls_back(
+        original, monkeypatch, bounded_cohort_reuse, action):
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+    call(original)
+    unreturned = original[-1][-1].capture_receipt
+    check = use.RetainedHouseUsePolicy.check
+    def deny(self, name, resource):
+        check(self, name, resource)
+        if name == action and resource.get("capture_id") == unreturned["capture_id"]:
+            assert resource["source_receipt_ids"] == unreturned["source_receipt_ids"]
+            raise use.RetainedUseError("fixture_current_source_revoked")
+    monkeypatch.setattr(use.RetainedHouseUsePolicy, "check", deny)
+    monkeypatch.setattr(cohort, "read_retained_context_cohort",
+                        lambda *a, **k: pytest.fail("cache denial must not trigger source fallback"))
+    with pytest.raises(HTTPException) as error:
+        call(original)
+    assert error.value.status_code == 403
+
+
+@pytest.mark.parametrize("revoke", ["entitlement", "registration"])
+def test_current_rights_change_during_cache_hit_fails_closed(original, monkeypatch, bounded_cohort_reuse, revoke):
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+    call(original)
+    get = bounded_cohort_reuse.BoundedCohortCache.get
+    def changing_get(self, key):
+        value = get(self, key)
+        assert value is not None
+        if revoke == "entitlement":
+            monkeypatch.setattr(use, "_enforce_current_site_user",
+                lambda uid: (_ for _ in ()).throw(HTTPException(403)))
+        else:
+            path = original[0] / use.REGISTRATION
+            changed = json.loads(path.read_text())
+            changed["enabled"] = False
+            path.write_text(json.dumps(changed))
+        return value
+    monkeypatch.setattr(bounded_cohort_reuse.BoundedCohortCache, "get", changing_get)
+    monkeypatch.setattr(cohort, "read_retained_context_cohort",
+                        lambda *a, **k: pytest.fail("refused hit must not become a miss"))
+    with pytest.raises(HTTPException) as error:
+        call(original)
+    assert error.value.status_code == 403
+
+
+def test_cached_cohort_does_not_bypass_live_pin_integrity_or_request_budget(original, monkeypatch):
+    call(original)
+    with pit.bounded_owner_reads(maximum_bytes=10):
+        with pytest.raises(HTTPException) as error:
+            call(original)
+    assert error.value.detail["state"] == "OWNER_READ_BUDGET_EXCEEDED"
+    # Fresh pinning still authenticates backing generation bytes on every hit.
+    _root, reader, pin, _spec, _captures = original
+    pit._generation_path(reader.root, pin.generation_id).write_bytes(b"corrupted generation")
+    with pytest.raises(HTTPException) as error:
+        call(original)
+    assert error.value.status_code == 503
+
+
+def test_cached_cohort_preserves_slots_and_current_head_capture_bound(original, monkeypatch):
+    call(original)
+    assert api._playback_slots.acquire(blocking=False)
+    assert api._playback_slots.acquire(blocking=False)
+    try:
+        with pytest.raises(HTTPException) as error:
+            call(original)
+        assert error.value.detail["state"] == "BUSY"
+    finally:
+        api._playback_slots.release()
+        api._playback_slots.release()
+    def over_budget(self, *, generation_id=None, maximum_capture_count=None):
+        assert maximum_capture_count == 256
+        raise pit.MarketMemoryStoreError("fixture_current_head_exceeds_capture_bound")
+    monkeypatch.setattr(trusted.TrustedFileAsKnownAtReader, "read_pinned_generation", over_budget)
+    with pytest.raises(HTTPException) as error:
+        call(original)
+    assert error.value.status_code == 503
+
+
+def test_exact_cutoff_mode_and_method_cannot_select_another_cached_cohort(original, monkeypatch):
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+    read = cohort.read_retained_context_cohort
+    builds = []
+    def counted(*args, **kwargs):
+        builds.append((kwargs["query_cutoff"], kwargs["policy"].mode))
+        return read(*args, **kwargs)
+    monkeypatch.setattr(cohort, "read_retained_context_cohort", counted)
+    before = call(original)
+    current = api.retained_method_catalog(original[0])[1]
+    assert call(original, method_spec_id=current["method_spec_id"])["mode"] == "current_contextual_support"
+    assert call(original, query_cutoff="2026-08-20T12:00:01Z")["available"] is True
+    assert call(original) == before
+    assert len(builds) == 3
+
+
+@pytest.mark.parametrize("policy_type", [use.RetainedFactoryUsePolicy,
+    type("OtherHousePolicy", (use.RetainedHouseUsePolicy,), {})])
+def test_factory_and_other_application_policies_do_not_enter_site_cache(
+        original, monkeypatch, bounded_cohort_reuse, policy_type):
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+    from engine.neuralweb import market_memory_episode_retrieval as retrieval
+    sentinel = object()
+    # Dispatch test only: these uninitialized objects grant no rights.
+    policy = object.__new__(policy_type)
+    monkeypatch.setattr(cohort, "read_retained_context_cohort", lambda *a, **k: sentinel)
+    monkeypatch.setattr(bounded_cohort_reuse, "read_exact_retained_cohort",
+                        lambda *a, **k: pytest.fail("nonexact House owner entered site cache"))
+    value = policy._read_retained_context_cohort(
+        original[1], original[2], subject_id=original[3]["subject_id"],
+        query_cutoff=original[3]["query_cutoff"],
+        method=retrieval.RetainedContextMethodSpec(5, 5, "historical_hypothetical"))
+    assert value is sentinel
+
+
+def test_generic_owner_policy_uses_original_issuance_without_site_reader(
+        original, monkeypatch, bounded_cohort_reuse):
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+    from engine.neuralweb import market_memory_episode_retrieval as retrieval
+    root, reader, pin, spec, _ = original
+    bound = use.RetainedHouseUsePolicy(root, user_id="member", mode="historical_hypothetical",
+        **{k: spec[k] for k in ("subject_id", "generation_id", "generation_sha256", "query_cutoff")},
+        store_id=pin.store_id)
+    class GenericPolicy:
+        # This supplies only the incumbent policy protocol, never a reader hook.
+        policy_id, expected = bound.policy_id, bound.expected
+        check = staticmethod(bound.check)
+    policy = GenericPolicy()
+    read = cohort.read_retained_context_cohort
+    reads = []
+    def counted(*args, **kwargs):
+        reads.append(kwargs["policy"])
+        return read(*args, **kwargs)
+    monkeypatch.setattr(cohort, "read_retained_context_cohort", counted)
+    monkeypatch.setattr(bounded_cohort_reuse, "read_exact_retained_cohort",
+                        lambda *a, **k: pytest.fail("generic owner entered site cache"))
+    for _ in range(2):
+        selection, packet = mm.compose_retained_macro_capabilities(reader, policy=policy,
+            **{k: spec[k] for k in ("query_id", "subject_id", "generation_id", "generation_sha256", "query_cutoff")},
+            method=retrieval.RetainedContextMethodSpec(5, 5, "historical_hypothetical"), limit=8)
+        assert selection is not None and packet is not None
+    assert reads == [policy, policy]
+
+
+def test_finite_cohort_storage_lru_bytes_replacement_and_identity_discard(original, bounded_cohort_reuse):
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+    from tests.test_market_memory_episode_features import Policy
+    kwargs = {"subject_id": original[3]["subject_id"], "query_cutoff": original[3]["query_cutoff"],
+              "policy": Policy()}
+    first = cohort.read_retained_context_cohort(original[1], original[2], **kwargs)
+    second = cohort.read_retained_context_cohort(original[1], original[2], **kwargs)
+    storage = bounded_cohort_reuse.BoundedCohortCache(max_entries=2)
+    assert storage.put(("a",), first)
+    assert storage.put(("b",), second)
+    assert storage.get(("a",)) is first
+    assert storage.put(("c",), second)
+    assert storage.get(("b",)) is None
+    assert storage.get(("c",)) is second
+    # This independently computes the exact retained payload accounting contract.
+    def payload_size(capability):
+        values = [capability, *(item for item in capability._features if item is not None)]
+        return sum(len(item._body) + len(item._resource) + len(item._digest.encode()) for item in values)
+    weight = payload_size(first) + len("a".encode())
+    exact = bounded_cohort_reuse.BoundedCohortCache(max_entries=2, max_bytes=weight)
+    assert exact.put(("a",), first)
+    assert exact.put(("a",), second)  # Replacement cannot double-charge bytes.
+    assert not exact.put(("too-large-key",), first)
+    assert exact.get(("a",)) is second  # An uncacheable value cannot evict it.
+    exact.discard(("a",), first)
+    assert exact.get(("a",)) is second  # Delayed refusal cannot remove replacement.
+    exact.discard(("a",), second)
+    assert exact.get(("a",)) is None
+
+
+@pytest.mark.parametrize("kwargs", [{"max_entries": 0}, {"max_entries": True}, {"max_entries": 9},
+    {"max_bytes": 0}, {"max_bytes": True}, {"max_bytes": 16 * 1024 * 1024 + 1}])
+def test_cohort_storage_limits_are_fixed_positive_exact_integers(bounded_cohort_reuse, kwargs):
+    from engine.neuralweb.market_memory_retained_cohort_cache import BoundedCohortCacheError
+    with pytest.raises(BoundedCohortCacheError):
+        bounded_cohort_reuse.BoundedCohortCache(**kwargs)

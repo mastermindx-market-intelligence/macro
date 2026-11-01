@@ -117,7 +117,10 @@ def _run_one(key: str, cls, full_history: bool):
         return None
     t0 = time.perf_counter()
     try:
-        res = run_adapter(adapter, full_history=full_history)
+        # The ordinary Yahoo batch already includes CL=F (config.yml fx_commod).
+        # Capture that same returned observation; no extra fetch, ticker or trial.
+        capture_kw = {"capture_wti_receipts": True} if key == "yahoo" else {}
+        res = run_adapter(adapter, full_history=full_history, **capture_kw)
     except Exception as e:  # noqa: BLE001 — degrade, never crash the pass
         # run_adapter's internal except is the per-source boundary, but an
         # exception can still ESCAPE it: its pre-try attribute reads

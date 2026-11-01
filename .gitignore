@@ -27,6 +27,8 @@ admin/brain_guest_access.json
 # living OUTSIDE the git work-tree so `git reset --hard` can't expose a partial
 # file (app/deploy/update.sh + Caddyfile). Box-only; never committed.
 site.served/
+# Box-only OHLC release generations and atomic current selection.
+ohlc.served/
 # retired 2026-07-05: Pages has no custom domain and workflow-type Pages deploys
 # ignore CNAME files anyway — listed here so an in-flight render on pre-removal
 # code can't re-commit it (git add skips ignored files).
@@ -40,7 +42,7 @@ site/go/**/.tmp_*
 # symlink reached a commit (a crop harness links the nightly artifacts in from the
 # main checkout, an aborted run left it behind, and a broad `git add` swept it up).
 site/stockdata
-site/ohlc/
+site/ohlc
 site/stockbrief/
 site/chinastockdata/
 site/chinamechanicsdata/
@@ -751,3 +753,11 @@ data/qledger/control_evidence_clock_start/
 # E3-A eval shards. Bounded proof lives in the eval receipt, not the global ledger.
 /data/ai_costs/usage.d/e3a-pr6245-*.jsonl
 /research/earnings_intelligence/e3/gold/provider_health_*.jsonl
+
+# MedTech qualification receipts contain raw source bytes and a private SQLite store.
+/reports/medtech-r14-runtime/
+
+# Private Yahoo capture objects require0700/0600 and must never be Git checkout
+# inputs. WTI's bounded CL_F.observation.json export rides normal data publication.
+data/yahoo/.availability_capture/
+data/yahoo/.CL_F.observation-*

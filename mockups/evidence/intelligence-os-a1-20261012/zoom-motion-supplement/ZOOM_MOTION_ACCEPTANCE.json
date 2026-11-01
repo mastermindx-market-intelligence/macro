@@ -1,0 +1,158 @@
+{
+  "schema": "eval-os.zoom-motion-supplement/v1",
+  "recorded_at_utc": "2026-10-13T10:53:34.512024+00:00",
+  "root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "assigning_native_coordinator": "01a1335a-cb84-70c2-8e6b-cbc7f62e931a",
+  "candidate_at_commission": "213d5f29105e21d20e7b05b7ee9df94c3d85477e",
+  "scope": "Only named actual browser zoom and observed reduced-motion requirements; SYNTHETIC local actual admin handler/renderer; no production or broad accessibility acceptance",
+  "tool": "mcp__cua_repl; supported Chrome extension tab + native Chrome AX zoom controls + scoped developer CDP media emulation",
+  "fixture": {
+    "url": "http://127.0.0.1:57042/fixture-session",
+    "pid": 37713,
+    "exec_session": 92755,
+    "script_sha256": "39eff7ba8ccb457750587e9eb9222e8142d9589304f409c37397797434074cea",
+    "previous_pid": 68910,
+    "previous_port": 61519,
+    "previous_effect": "process absent; no current bytes claimed; same owned script restarted"
+  },
+  "served_assets": {
+    "app.js": {
+      "status": 200,
+      "bytes": 1021692,
+      "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+    },
+    "styles.css": {
+      "status": 200,
+      "bytes": 231367,
+      "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+    },
+    "preferences.js": {
+      "status": 200,
+      "bytes": 3173,
+      "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+    },
+    "theme-tokens.css": {
+      "error": "HTTP Error 401: Unauthorized"
+    }
+  },
+  "zoom": {
+    "ruling": "PASS scoped",
+    "mechanism": "Native Chrome Make Text Larger control:100->110->125->150->175->200%; native popup explicitly shows200%. No CSS transform, page scale override, viewport override or deviceScaleFactor used.",
+    "native_indicator": "The following is a diff from the previous accessibility tree for Window: \"\" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t\t380 container Zoom: 200%",
+    "baseline": {
+      "documentWidth": 1721,
+      "dpr": 1,
+      "height": 694,
+      "reduced": false,
+      "scale": 1,
+      "url": "http://127.0.0.1:57042/#/page/intelligence_os",
+      "width": 1728
+    },
+    "panel_dark_en": {
+      "bodyWidth": 857,
+      "documentWidth": 857,
+      "dpr": 2,
+      "height": 347,
+      "outerHeight": 871,
+      "outerWidth": 1728,
+      "overflow": [],
+      "scale": 1,
+      "url": "http://127.0.0.1:57042/#/page/intelligence_os",
+      "width": 864
+    },
+    "detail_dark_en": {
+      "documentWidth": 857,
+      "dpr": 2,
+      "overflow": [],
+      "scale": 1,
+      "url": "http://127.0.0.1:57042/#/engine/engine%2Fsynthetic-immature.py%3A%3Asynthetic-fixture",
+      "width": 864
+    },
+    "detail_light_zh": {
+      "documentWidth": 857,
+      "dpr": 2,
+      "lang": "zh",
+      "overflow": [],
+      "scale": 1,
+      "theme": "light",
+      "width": 864
+    },
+    "pixel_review": "Actual viewport panel and settled detail pixels read; header/menu/preferences remain accessible, hierarchy wraps; no horizontal overflow in measured panel/detail elements. Light ZH viewport pixels confirm complete width.",
+    "limitation": "Bounded representative contexts at physical browser width1728, effective CSS viewport864; accepted42states unchanged, not rerun. Fullpage screenshot backend returned halfwidth429 at200%; retained as rejected tool artifact and excluded from acceptance; replaced by valid857px viewport capture."
+  },
+  "reduced_motion": {
+    "ruling": "PASS scoped",
+    "mechanism": "Supported CDP Emulation.setEmulatedMedia prefers-reduced-motion:reduce; actual matchMedia true, not an unobserved launch option.",
+    "observed_styles": {
+      "reduced": true,
+      "samples": [
+        {
+          "animation": "1e-05s",
+          "iterations": "1",
+          "selector": ".sidebar",
+          "transition": "1e-05s"
+        },
+        {
+          "absent": true,
+          "selector": ".chip"
+        },
+        {
+          "animation": "1e-05s",
+          "iterations": "1",
+          "selector": ".btn",
+          "transition": "1e-05s"
+        },
+        {
+          "animation": "1e-05s",
+          "iterations": "1",
+          "selector": "select",
+          "transition": "1e-05s"
+        }
+      ]
+    },
+    "drawer_open": {
+      "reduced": true,
+      "sidebar": {
+        "left": 0,
+        "transition": "1e-05s"
+      },
+      "animations": [],
+      "active": null
+    },
+    "drawer_closed_escape": {
+      "reduced": true,
+      "sidebarLeft": -316.20001220703125,
+      "animations": [],
+      "active": "Open navigation"
+    },
+    "behavior": "Drawer completes open left0 and close left-316.2; no active document animations after each observed action; Escape restores focus to Open navigation.",
+    "limitation": "Media preference emulation, not OS settings change; observed settled interactions and computed0.01ms suppression, not frame-by-frame high-speed motion analysis."
+  },
+  "restoration": {
+    "dpr": 1,
+    "height": 694,
+    "lang": "en",
+    "reduced": false,
+    "scale": 1,
+    "theme": "dark",
+    "width": 1728
+  },
+  "unchanged_lanes": [
+    "accepted42state matrix",
+    "application source",
+    "Git",
+    "Fabric eval-experience-01a1335a-a1 unknown same carrier",
+    "reserved release hold"
+  ],
+  "artifact_sha256": {
+    "browser-zoom-200-detail.png": "f8ed5240e71552db81616bed49135f4683d0dbb6a9b777470d95de91bd4b4061",
+    "browser-zoom-200-light-zh-detail-full.png": "aa9597cc433308894a09c5132ff4cdd64309fe2e4a3153e2ccf6a81bc595b657",
+    "browser-zoom-200-light-zh-detail-viewport.png": "07dcbe13d4814c2c7624f7ac62844442de7d2c9d52d2e5cfea697dfda15b1697",
+    "browser-zoom-200-native.png": "09dea0e60148da44069dfb0d48db1924bad3b3ab1b6cb0650919e706b5a5a9f7",
+    "browser-zoom-200-panel.png": "007896755aa10a071529900b94f1385d8f0f71cce6c0c49e562493f2acc6443a",
+    "observations.json": "c83cdc4fd18189dc4ced92ace97f502bad2eeb61ed3d05bbfb99fe04a46f5ead",
+    "reduced-motion-navigation-open.png": "3f7cfc3369643ccf87a2cb2cae98dc6b1212dd7ba87d59b054157dcced44f608",
+    "restored.json": "95e4b47b5d3efcacaff9b8c81a74d724cc17d4da182d02da5747a52f181eb393",
+    "served-assets.json": "76663621962d8032d86d5f40c7edcee41408700d21e81e0f6d1913c853e02370"
+  }
+}

@@ -1,10 +1,12 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" data-lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Mastermind Admin</title>
+  <script src="preferences.js"></script>
+  <link rel="stylesheet" href="/assets/theme-tokens.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="research-diagnostic-tokens.css">
 </head>
@@ -13,11 +15,11 @@
   <div class="login-wrap" id="login">
     <div class="login-card">
       <h1><span style="color:var(--accent)">●</span> Mastermind Admin</h1>
-      <div class="sub">Sign in to the control console.</div>
+      <div class="sub" data-admin-en="Sign in to the control console." data-admin-zh="登录管理控制台。">Sign in to the control console.</div>
       <form id="loginForm" autocomplete="off">
-        <input type="password" id="pw" placeholder="Password" autocomplete="current-password" autofocus>
+        <input type="password" id="pw" placeholder="Password" data-admin-placeholder-en="Password" data-admin-placeholder-zh="密码" autocomplete="current-password" autofocus>
         <div class="err" id="loginErr"></div>
-        <button class="btn primary" type="submit">Sign in</button>
+        <button class="btn primary" type="submit" data-admin-en="Sign in" data-admin-zh="登录">Sign in</button>
       </form>
     </div>
   </div>
@@ -37,9 +39,21 @@
       <div class="shell-right">
         <!-- Topbar -->
         <div class="topbar" id="topbar">
-          <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false"><span></span><span></span><span></span></button>
+          <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Open navigation" data-admin-aria-en="Open navigation" data-admin-aria-zh="打开导航" aria-controls="sidebar" aria-expanded="false"><span></span><span></span><span></span></button>
           <span class="topbar-title" id="topbar-title">Overview</span>
           <span class="spacer"></span>
+          <div class="admin-preferences">
+            <label for="adminTheme" data-admin-en="Theme" data-admin-zh="主题">Theme</label>
+            <select id="adminTheme">
+              <option value="dark" data-admin-en="Dark" data-admin-zh="深色">Dark</option>
+              <option value="light" data-admin-en="Light" data-admin-zh="浅色">Light</option>
+            </select>
+            <label for="adminLanguage" data-admin-en="Language" data-admin-zh="语言">Language</label>
+            <select id="adminLanguage">
+              <option value="en">English</option>
+              <option value="zh">中文</option>
+            </select>
+          </div>
           <div id="hmeta" class="hmeta" style="margin-left:0"><span class="muted">loading…</span></div>
         </div>
 
@@ -51,7 +65,9 @@
       </div>
     </div>
   </div>
-  <button class="sidebar-scrim" id="sidebarScrim" type="button" aria-label="Close navigation"></button>
+  <button class="sidebar-scrim" id="sidebarScrim" type="button" aria-label="Close navigation" data-admin-aria-en="Close navigation" data-admin-aria-zh="关闭导航"></button>
+
+  <noscript><p>JavaScript is required to inspect evidence. / 查看证据需要启用 JavaScript。</p></noscript>
 
   <div class="toast" id="toast"></div>
   <script src="app.js"></script>

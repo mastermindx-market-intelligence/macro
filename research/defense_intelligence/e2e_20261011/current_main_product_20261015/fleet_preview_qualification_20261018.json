@@ -1,0 +1,137 @@
+{
+  "state": "LOCAL_CANDIDATE_PRODUCT_PREVIEW_ONLY_NOT_PUBLISHED",
+  "generation": "ddf2323534053bce00dcd643",
+  "source_clock": "2026-10-18T02:27:21.264882+00:00",
+  "unchanged_selected_references": [
+    "golden_dome/funding_stage/0",
+    "munitions_replenishment/contrary_case/0",
+    "munitions_replenishment/economics/3",
+    "munitions_replenishment/economics/4",
+    "munitions_replenishment/economics/5",
+    "munitions_replenishment/funding_stage/0",
+    "munitions_replenishment/next_event/0",
+    "space/contrary_case/0",
+    "space/contrary_case/1",
+    "space/economics/0",
+    "space/economics/1",
+    "space/economics/2",
+    "space/economics/3",
+    "space/economics/4",
+    "space/economics/5",
+    "space/economics/6",
+    "nato_fms_demand/exposure/0",
+    "nato_fms_demand/funding_stage/0",
+    "nato_fms_demand/funding_stage/1",
+    "nato_fms_demand/next_event/0",
+    "fleet_sustainment_upgrades/exposure/0",
+    "fleet_sustainment_upgrades/funding_stage/0",
+    "fleet_sustainment_upgrades/next_event/0",
+    "shipbuilding/contrary_case/0",
+    "shipbuilding/economics/0",
+    "shipbuilding/economics/1",
+    "shipbuilding/economics/2",
+    "shipbuilding/economics/3",
+    "shipbuilding/economics/4",
+    "shipbuilding/economics/5",
+    "shipbuilding/economics/6",
+    "shipbuilding/economics/7",
+    "shipbuilding/exposure/0",
+    "shipbuilding/exposure/1",
+    "shipbuilding/funding_stage/0",
+    "shipbuilding/next_event/0"
+  ],
+  "changed_selected_references": [
+    {
+      "token": "golden_dome/market_context/0",
+      "prior": "085bc6df4835cd112ad11cc05deb9536d849c5a1035b1558a4a43c9535d8c1de",
+      "proposed": "9da5bf1dc26506c10e35c73308bd6d69909a2c18aac3bcebb6b7231fc7995456",
+      "qualification": "native_current_shared_basket_requalified"
+    },
+    {
+      "token": "munitions_replenishment/economics/0",
+      "prior": "e9d81533dc120821131e1a31445a62c6c636c1e3db40159597fc75d14f7d2308",
+      "proposed": "b0cd4af2c427a7e0cc3e8376d09eb6e5e83437c168a2e7fd46a01d96539b60cf",
+      "qualification": "unchanged_selected_MFC_fact_and_binding_new_RMS_axis_observation"
+    },
+    {
+      "token": "munitions_replenishment/economics/1",
+      "prior": "317b4e4e19751308e3c335da13cd626a17c529da06415b6b341fb2ed3a7b31cb",
+      "proposed": "bb4dd4564624b550a4afada252449e3432ad44ef20b0682f966027039d2301ff",
+      "qualification": "unchanged_selected_MFC_fact_and_binding_new_RMS_axis_observation"
+    },
+    {
+      "token": "munitions_replenishment/economics/2",
+      "prior": "f869416f404c0e69256c2a059e2ba1d8073acb685f5386373a2125df15aa5678",
+      "proposed": "8e5c407309a265c2327ab910f3c6b1860b66902bb98a657d204c742ded1bdcdf",
+      "qualification": "unchanged_selected_MFC_fact_and_binding_new_RMS_axis_observation"
+    },
+    {
+      "token": "munitions_replenishment/market_context/0",
+      "prior": "085bc6df4835cd112ad11cc05deb9536d849c5a1035b1558a4a43c9535d8c1de",
+      "proposed": "9da5bf1dc26506c10e35c73308bd6d69909a2c18aac3bcebb6b7231fc7995456",
+      "qualification": "native_current_shared_basket_requalified"
+    },
+    {
+      "token": "space/market_context/0",
+      "prior": "085bc6df4835cd112ad11cc05deb9536d849c5a1035b1558a4a43c9535d8c1de",
+      "proposed": "9da5bf1dc26506c10e35c73308bd6d69909a2c18aac3bcebb6b7231fc7995456",
+      "qualification": "native_current_shared_basket_requalified"
+    },
+    {
+      "token": "nato_fms_demand/market_context/0",
+      "prior": "085bc6df4835cd112ad11cc05deb9536d849c5a1035b1558a4a43c9535d8c1de",
+      "proposed": "9da5bf1dc26506c10e35c73308bd6d69909a2c18aac3bcebb6b7231fc7995456",
+      "qualification": "native_current_shared_basket_requalified"
+    },
+    {
+      "token": "fleet_sustainment_upgrades/market_context/0",
+      "prior": "085bc6df4835cd112ad11cc05deb9536d849c5a1035b1558a4a43c9535d8c1de",
+      "proposed": "9da5bf1dc26506c10e35c73308bd6d69909a2c18aac3bcebb6b7231fc7995456",
+      "qualification": "native_current_shared_basket_requalified"
+    },
+    {
+      "token": "shipbuilding/market_context/0",
+      "prior": "085bc6df4835cd112ad11cc05deb9536d849c5a1035b1558a4a43c9535d8c1de",
+      "proposed": "9da5bf1dc26506c10e35c73308bd6d69909a2c18aac3bcebb6b7231fc7995456",
+      "qualification": "native_current_shared_basket_requalified"
+    }
+  ],
+  "all_source_inputs_native_qualified": true,
+  "theme_states": [
+    {
+      "theme": "golden_dome",
+      "state": "EVIDENCE_INSUFFICIENT"
+    },
+    {
+      "theme": "munitions_replenishment",
+      "state": "EVIDENCE_INSUFFICIENT"
+    },
+    {
+      "theme": "space",
+      "state": "EVIDENCE_INSUFFICIENT"
+    },
+    {
+      "theme": "nato_fms_demand",
+      "state": "EVIDENCE_INSUFFICIENT"
+    },
+    {
+      "theme": "fleet_sustainment_upgrades",
+      "state": "EVIDENCE_INSUFFICIENT"
+    },
+    {
+      "theme": "shipbuilding",
+      "state": "EVIDENCE_INSUFFICIENT"
+    }
+  ],
+  "upstream_writes": 0,
+  "workspace_owner_marker_mutations": 0,
+  "financial_source_read": {
+    "url": "https://www.sec.gov/Archives/edgar/data/936468/000162828026049277/ex991q22026.htm",
+    "sha256": "24573d49fd95471d2fbdbe2e6ffd99256acac84340b51b6c8c51ee2ac28a163d",
+    "observed_at": "2026-10-18T01:16:08.505821+00:00"
+  },
+  "RMS_source_available_at": "2026-10-18T01:16:09Z",
+  "candidate_only": "NOT_PUBLISHED:currentcanonicalc0complete5preservedbyread-onlypreflight;source9572releaseandinstalledgatesstillrequired;no replay5a",
+  "checks": "54nativeaffecteddisclosurePASS;16nativeUIwiringPASS;all6publicthemeEVIDENCE_INSUFFICIENT",
+  "current_product_source": "cd554be86d2c898664b0b42080bdff62d747e261"
+}

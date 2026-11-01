@@ -468,3 +468,421 @@ def test_contract_self_documents_both_vocabularies(monkeypatch, tmp_path) -> Non
     assert event["direction_label"] in event["direction_label_enum"]
     assert event["quality"] in event["quality_enum"]
     assert payload["quality"]["event_quality"] in payload["quality"]["event_quality_enum"]
+
+
+# --------------------------------------------------------------------------
+# T23 — the nightly builder is atomic, idempotent, refuses stale/backdated
+# promotion with visible receipts, and bounds --asof replay.
+# --------------------------------------------------------------------------
+
+import copy
+import hashlib
+import os
+import sys
+from datetime import timedelta
+
+import scripts.build_global_liquidity_transmission as glt_builder_mod
+from engine.market_os.macro_workspaces import liquidity_central_banks as lcb
+
+
+def _t23_history():
+    idx = pd.date_range("2018-01-03", periods=40, freq="W-WED")
+    return pd.DataFrame(
+        {
+            "monetary_stance": np.linspace(-1.0, 1.0, 40),
+            "monetary_impulse": np.sin(np.arange(40) / 5.0),
+        },
+        index=idx,
+    )
+
+
+def _t23_payload() -> dict:
+    clocks = {
+        "first_known_at": "2026-10-08T06:00:00Z",
+        "evidence_available_at": "2026-10-08T00:00:00Z",
+        "monetary_release_at": "2026-10-07T00:00:00Z",
+        "release_at": "2026-10-08T00:00:00Z",
+        "adapter_observed_at_field": "evidence_available_at",
+        "adapter_known_at_field": "first_known_at",
+    }
+    return {
+        "meta": {
+            "schema": "global_liquidity_transmission.v1",
+            "producer_version": "t23stub.1",
+            "model_version": "glt_state.v1",
+            "data_version": "glt_data:t23stub",
+            "source_snapshot_hash": "a" * 64,
+            "config_hash": "c0ffee01",
+            "pit_policy": "stub",
+            "revision_law": "append_only",
+        },
+        "state": {
+            "asof": "2026-10-07",
+            "monetary_impulse": 0.2,
+            "monetary_impulse_z": 1.1,
+            "monetary_stance": 0.4,
+            "liquidity_breadth": 1.0,
+            "usd_funding_impulse": -0.1,
+            "label": "expansion",
+            "event_reference": {
+                "producer_schema": "global_liquidity_transmission.v1",
+                "state_family": "monetary_impulse",
+                "shock_type": "policy_liquidity_impulse",
+                "direction": 1,
+                "direction_label": "expansion",
+                "quality": "ok",
+                "breadth": 1.0,
+                "confidence": 1.0,
+                "coverage": 1.0,
+                "freshness": "fresh",
+                "magnitude": 0.2,
+                "magnitude_z": 1.1,
+                "clocks": dict(clocks),
+                "source_snapshot_hash": "a" * 64,
+                "data_version": "glt_data:t23stub",
+            },
+        },
+        "quality": {
+            "status": "ok",
+            "degraded": False,
+            "confidence": 1.0,
+            "event_quality": "ok",
+            "missing_or_stale": [],
+        },
+        "freshness": {
+            "asof": "2026-10-07",
+            "status": "fresh",
+            "degraded": False,
+            "monetary_coverage_ratio": 1.0,
+            "funding_coverage_ratio": 1.0,
+            "component_snapshot": {},
+            "clocks": dict(clocks),
+            "components": {
+                "monetary": {
+                    "fed": {"reference_date": "2026-10-07", "available_date": "2026-10-08", "status": "usable"},
+                    "ecb": {"reference_date": "2026-10-07", "available_date": "2026-10-08", "status": "usable"},
+                },
+                "usd_funding": {
+                    "broad_dollar": {"reference_date": "2026-10-07", "available_date": "2026-10-08", "status": "usable"},
+                },
+            },
+        },
+    }
+
+
+class _T23Harness:
+    def __init__(self, mod, tmp_path):
+        self.mod = mod
+        self.tmp_path = tmp_path
+        self.next_payload = None
+
+    def payload(self) -> dict:
+        return copy.deepcopy(_t23_payload())
+
+    def set_next(self, payload: dict) -> None:
+        self.next_payload = payload
+
+    def run(self, asof=None, out=None):
+        return self.mod.build(asof=asof, out=out)
+
+    def contract(self) -> dict:
+        return json.loads(self.mod.CONTRACT_PATH.read_text())
+
+    def paths(self):
+        return [self.mod.CONTRACT_PATH, self.mod.HISTORY_PATH,
+                self.mod.HISTORY_META_PATH, self.mod.COMPARISON_PATH]
+
+
+@pytest.fixture
+def glt_builder(tmp_path, monkeypatch):
+    mod = glt_builder_mod
+    monkeypatch.setattr(mod, "CONTRACT_PATH", tmp_path / "global_liquidity_transmission.json")
+    monkeypatch.setattr(mod, "HISTORY_PATH", tmp_path / "state_history.parquet")
+    monkeypatch.setattr(mod, "HISTORY_META_PATH", tmp_path / "state_history_meta.json")
+    monkeypatch.setattr(mod, "COMPARISON_PATH", tmp_path / "factor_comparison_btc_4w.json")
+    monkeypatch.setattr(mod, "load_producer_config", lambda: {})
+    monkeypatch.setattr(mod.store, "read", lambda provider, sid: None)
+    harness = _T23Harness(mod, tmp_path)
+    harness.set_next(harness.payload())
+
+    def _stub_contract(**kwargs):
+        payload = copy.deepcopy(harness.next_payload)
+        payload["meta"]["generated_at"] = kwargs["generated_at"].isoformat()
+        return payload, _t23_history()
+
+    monkeypatch.setattr(mod, "build_contract", _stub_contract)
+    return harness
+
+
+def test_t23_atomic_write_leaves_no_partial_artifact(glt_builder, monkeypatch):
+    glt_builder.run()  # seed the stored artifact set
+    before = glt_builder.mod.CONTRACT_PATH.read_bytes()
+
+    real_replace = os.replace
+    contract_path = glt_builder.mod.CONTRACT_PATH
+
+    def _replace(src, dst):
+        if Path(dst) == contract_path:
+            raise OSError("simulated replace failure on the contract")
+        return real_replace(src, dst)
+
+    monkeypatch.setattr(os, "replace", _replace)
+    payload = glt_builder.payload()
+    payload["meta"]["source_snapshot_hash"] = "b" * 64  # force a fresh write
+    glt_builder.set_next(payload)
+    with pytest.raises(OSError):
+        glt_builder.run()
+
+    assert glt_builder.mod.CONTRACT_PATH.read_bytes() == before
+    leftovers = [p.name for p in glt_builder.tmp_path.iterdir() if ".tmp-" in p.name]
+    assert leftovers == []
+
+
+def test_t23_idempotent_same_asof_and_hash_writes_nothing(glt_builder, capsys):
+    glt_builder.run()
+    snap = {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in glt_builder.paths()}
+    rows_before = len(pd.read_parquet(glt_builder.mod.HISTORY_PATH))
+
+    capsys.readouterr()
+    glt_builder.run()  # identical asof + source_snapshot_hash
+    out = capsys.readouterr().out
+
+    for p in glt_builder.paths():
+        assert (p.read_bytes(), p.stat().st_mtime_ns) == snap[p]
+    assert len(pd.read_parquet(glt_builder.mod.HISTORY_PATH)) == rows_before
+    notices = [ln for ln in out.splitlines() if ln.startswith("::notice title=glt-nightly::")]
+    assert len(notices) == 1 and "outcome=unchanged" in notices[0]
+
+
+def test_t23_new_hash_same_evidence_carries_first_known_at(glt_builder):
+    glt_builder.run()
+    previous_fk = glt_builder.contract()["state"]["event_reference"]["clocks"]["first_known_at"]
+
+    payload = glt_builder.payload()
+    payload["meta"]["source_snapshot_hash"] = "b" * 64
+    payload["state"]["event_reference"]["source_snapshot_hash"] = "b" * 64
+    payload["state"]["event_reference"]["clocks"]["first_known_at"] = "2026-10-16T06:00:00Z"
+    payload["freshness"]["clocks"]["first_known_at"] = "2026-10-16T06:00:00Z"
+    glt_builder.set_next(payload)
+    glt_builder.run()
+
+    contract = glt_builder.contract()
+    assert contract["meta"]["source_snapshot_hash"] == "b" * 64
+    assert contract["state"]["event_reference"]["clocks"]["first_known_at"] == previous_fk
+    assert contract["freshness"]["clocks"]["first_known_at"] == previous_fk
+
+
+def test_t23_stale_source_promotion_refused(glt_builder, capsys):
+    glt_builder.run()
+    previous_bytes = glt_builder.mod.CONTRACT_PATH.read_bytes()
+
+    payload = glt_builder.payload()
+    payload["meta"]["source_snapshot_hash"] = "b" * 64
+    payload["freshness"]["clocks"]["evidence_available_at"] = "2026-10-07T00:00:00Z"
+    payload["state"]["event_reference"]["clocks"]["evidence_available_at"] = "2026-10-07T00:00:00Z"
+    glt_builder.set_next(payload)
+    capsys.readouterr()
+    glt_builder.run()
+    out = capsys.readouterr().out
+    refused = [ln for ln in out.splitlines() if ln.startswith("::warning title=glt-stale-source-refused::")]
+    assert len(refused) == 1
+    assert "evidence_available_at" in refused[0]
+    assert glt_builder.mod.CONTRACT_PATH.read_bytes() == previous_bytes
+    assert any(ln.startswith("::notice title=glt-nightly::") and "outcome=refused" in ln
+               for ln in out.splitlines())
+
+    payload = glt_builder.payload()
+    payload["meta"]["source_snapshot_hash"] = "c" * 64
+    payload["state"]["asof"] = "2026-10-06"
+    payload["freshness"]["asof"] = "2026-10-06"
+    glt_builder.set_next(payload)
+    capsys.readouterr()
+    glt_builder.run()
+    out = capsys.readouterr().out
+    refused = [ln for ln in out.splitlines() if ln.startswith("::warning title=glt-stale-source-refused::")]
+    assert len(refused) == 1 and "state.asof" in refused[0]
+    assert glt_builder.mod.CONTRACT_PATH.read_bytes() == previous_bytes
+
+
+def test_t23_backdated_receipt_refused_keeps_previous(glt_builder, capsys):
+    glt_builder.run()
+    previous_bytes = glt_builder.mod.CONTRACT_PATH.read_bytes()
+
+    payload = glt_builder.payload()
+    payload["meta"]["source_snapshot_hash"] = "b" * 64
+    payload["freshness"]["components"]["monetary"]["fed"]["available_date"] = "2026-10-06"
+    glt_builder.set_next(payload)
+    capsys.readouterr()
+    glt_builder.run()
+    out = capsys.readouterr().out
+    refused = [ln for ln in out.splitlines() if ln.startswith("::warning title=glt-backdated-receipt-refused::")]
+    assert len(refused) == 1 and "monetary.fed.available_date" in refused[0]
+    assert glt_builder.mod.CONTRACT_PATH.read_bytes() == previous_bytes
+    assert any(ln.startswith("::notice title=glt-nightly::") and "outcome=refused" in ln
+               for ln in out.splitlines())
+
+
+def test_t23_future_clock_not_inherited_c11(glt_builder, capsys):
+    glt_builder.run()
+    future_fk = (datetime.now(timezone.utc) + timedelta(days=2)).isoformat().replace("+00:00", "Z")
+    contract = glt_builder.contract()
+    contract["state"]["event_reference"]["clocks"]["first_known_at"] = future_fk
+    contract["freshness"]["clocks"]["first_known_at"] = future_fk
+    glt_builder.mod.CONTRACT_PATH.write_text(json.dumps(contract))
+
+    payload = glt_builder.payload()
+    payload["meta"]["source_snapshot_hash"] = "b" * 64
+    payload["state"]["event_reference"]["source_snapshot_hash"] = "b" * 64
+    glt_builder.set_next(payload)
+    capsys.readouterr()
+    glt_builder.run()
+    out = capsys.readouterr().out
+
+    assert len([ln for ln in out.splitlines()
+                if ln.startswith("::warning title=glt-future-clock-refused::")]) == 1
+    fresh = glt_builder.contract()
+    fresh_fk = _t23_payload()["state"]["event_reference"]["clocks"]["first_known_at"]
+    assert fresh["state"]["event_reference"]["clocks"]["first_known_at"] == fresh_fk
+    assert fresh["freshness"]["clocks"]["first_known_at"] == fresh_fk
+
+
+def test_t23_aged_rerun_keeps_first_known_and_reads_stale_c11(glt_builder):
+    glt_builder.run()
+    previous_fk = glt_builder.contract()["state"]["event_reference"]["clocks"]["first_known_at"]
+
+    payload = glt_builder.payload()  # same hash, asof moved
+    payload["state"]["asof"] = "2026-10-09"
+    payload["freshness"]["asof"] = "2026-10-09"
+    glt_builder.set_next(payload)
+    glt_builder.run()
+
+    contract = glt_builder.contract()
+    assert contract["state"]["asof"] == "2026-10-09"
+    assert contract["state"]["event_reference"]["clocks"]["first_known_at"] == previous_fk
+    assert contract["freshness"]["clocks"]["first_known_at"] == previous_fk
+
+    # The LCB composer, fed that artifact 12 days after its asof, reads STALE_SOURCE
+    # (same compose-call pattern as test_global_liquidity_transmission_liveness_v2).
+    body = lcb.compose(contract, {}, built_at="2026-10-21")
+    rows = {row.get("source_id"): row for row in body["sources"]["items"]}
+    assert rows["glt_state"]["freshness"] == "STALE_SOURCE"
+
+
+def test_t23_replay_asof_bounded_and_never_rewrites_store(glt_builder, monkeypatch, capsys):
+    mod = glt_builder.mod
+    glt_builder.run()
+    stored = glt_builder.paths()
+    digests = {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in stored}
+
+    def _main(*argv):
+        monkeypatch.setattr(sys, "argv", ["build_global_liquidity_transmission", *argv])
+        return mod.main()
+
+    out = glt_builder.tmp_path / "replay.json"
+    assert _main("--asof", "2015-01-01", "--out", str(out)) == 2  # before first_asof
+    assert not out.exists()
+    assert _main("--asof", "2026-10-07") == 2  # missing --out
+    assert _main("--asof", "2026-10-07", "--out", str(mod.ROOT / "site" / "liquiditydata" / "replay.json")) == 2
+    assert not (mod.ROOT / "site" / "liquiditydata" / "replay.json").exists()
+    assert capsys.readouterr().err.count("\n") >= 3  # one-line stderr error each
+
+    assert _main("--asof", "2018-02-07", "--out", str(out)) == 0
+    assert out.exists()
+    assert json.loads(out.read_text())["meta"]["source_snapshot_hash"] == "a" * 64
+    assert {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in stored} == digests
+    assert not any(".tmp-" in p.name for p in glt_builder.tmp_path.iterdir())
+
+
+def test_t23_exactly_one_notice_per_run(glt_builder, monkeypatch, capsys):
+    def _notices():
+        return [ln for ln in capsys.readouterr().out.splitlines()
+                if ln.startswith("::notice title=glt-nightly::")]
+
+    monkeypatch.setattr(sys, "argv", ["build_global_liquidity_transmission"])
+    capsys.readouterr()
+    assert glt_builder.mod.main() == 0  # written, through the nightly main() path
+    notices = _notices()
+    assert len(notices) == 1 and "outcome=written" in notices[0]
+
+    capsys.readouterr()
+    glt_builder.run()  # unchanged, through build()
+    notices = _notices()
+    assert len(notices) == 1 and "outcome=unchanged" in notices[0]
+
+    payload = glt_builder.payload()
+    payload["meta"]["source_snapshot_hash"] = "b" * 64
+    payload["freshness"]["clocks"]["evidence_available_at"] = "2026-10-07T00:00:00Z"
+    payload["state"]["event_reference"]["clocks"]["evidence_available_at"] = "2026-10-07T00:00:00Z"
+    glt_builder.set_next(payload)
+    capsys.readouterr()
+    glt_builder.run()  # refused, through build()
+    notices = _notices()
+    assert len(notices) == 1 and "outcome=refused" in notices[0]
+
+    capsys.readouterr()
+    glt_builder.run(asof="2018-02-07", out=str(glt_builder.tmp_path / "replay.json"))
+    notices = _notices()  # replayed, through build()
+    assert len(notices) == 1 and "outcome=replayed" in notices[0]
+
+
+def test_t23_unchanged_and_refused_notice_reports_the_kept_artifact(glt_builder, capsys):
+    """The run's one notice describes the artifact of record. The producer stamps a fresh
+    first_known_at on every candidate (the source hash excludes it), so an unchanged or a
+    refused run must never report the unwritten candidate's clock."""
+    glt_builder.run()
+    stored = glt_builder.contract()
+    stored_fk = stored["state"]["event_reference"]["clocks"]["first_known_at"]
+
+    def _notice_and_result(payload):
+        glt_builder.set_next(payload)
+        capsys.readouterr()
+        result = glt_builder.run()
+        notices = [ln for ln in capsys.readouterr().out.splitlines()
+                   if ln.startswith("::notice title=glt-nightly::")]
+        assert len(notices) == 1
+        return notices[0], result
+
+    rerun = glt_builder.payload()  # same asof + hash; candidate carries a re-stamped clock
+    rerun["state"]["event_reference"]["clocks"]["first_known_at"] = "2026-10-18T06:00:00Z"
+    rerun["freshness"]["clocks"]["first_known_at"] = "2026-10-18T06:00:00Z"
+    notice, result = _notice_and_result(rerun)
+    assert "outcome=unchanged" in notice
+    assert f"first_known_at={stored_fk} " in notice
+    assert result["first_known_at"] == stored_fk
+
+    stale = glt_builder.payload()  # new hash, regressed evidence clock: refused
+    stale["meta"]["source_snapshot_hash"] = "b" * 64
+    stale["freshness"]["clocks"]["evidence_available_at"] = "2026-10-07T00:00:00Z"
+    stale["state"]["event_reference"]["clocks"]["evidence_available_at"] = "2026-10-07T00:00:00Z"
+    stale["state"]["event_reference"]["clocks"]["first_known_at"] = "2026-10-18T06:00:00Z"
+    stale["freshness"]["clocks"]["first_known_at"] = "2026-10-18T06:00:00Z"
+    notice, result = _notice_and_result(stale)
+    assert "outcome=refused" in notice
+    assert f"source_snapshot_hash={stored['meta']['source_snapshot_hash']} " in notice
+    assert f"first_known_at={stored_fk} " in notice
+    assert result["first_known_at"] == stored_fk
+    assert glt_builder.contract() == stored
+
+
+def test_t23_same_hash_future_clocked_artifact_is_rewritten_not_kept_c11(glt_builder, capsys):
+    glt_builder.run()
+    future_fk = (datetime.now(timezone.utc) + timedelta(days=2)).isoformat().replace("+00:00", "Z")
+    contract = glt_builder.contract()
+    contract["state"]["event_reference"]["clocks"]["first_known_at"] = future_fk
+    contract["freshness"]["clocks"]["first_known_at"] = future_fk
+    glt_builder.mod.CONTRACT_PATH.write_text(json.dumps(contract))
+
+    glt_builder.set_next(glt_builder.payload())  # same asof + same source hash
+    capsys.readouterr()
+    result = glt_builder.run()
+    out = capsys.readouterr().out
+
+    assert len([ln for ln in out.splitlines()
+                if ln.startswith("::warning title=glt-future-clock-refused::")]) == 1
+    notices = [ln for ln in out.splitlines() if ln.startswith("::notice title=glt-nightly::")]
+    assert len(notices) == 1 and "outcome=written" in notices[0] and future_fk not in notices[0]
+    assert result["outcome"] == "written"
+    fresh_fk = _t23_payload()["state"]["event_reference"]["clocks"]["first_known_at"]
+    stored = glt_builder.contract()
+    assert stored["state"]["event_reference"]["clocks"]["first_known_at"] == fresh_fk
+    assert stored["freshness"]["clocks"]["first_known_at"] == fresh_fk

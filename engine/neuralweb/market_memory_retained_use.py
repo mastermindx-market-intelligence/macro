@@ -117,6 +117,23 @@ class RetainedHouseUsePolicy:
             generation_sha256=generation_sha256, subject_id=subject_id,
             query_cutoff=query_cutoff, mode=mode)
 
+    def _read_retained_context_cohort(self, reader, generation, *, subject_id,
+                                     query_cutoff, method):
+        """Trusted owner composition; inherited policies retain native issuance.
+
+        The generic composer depends only on this optional owner protocol. Site
+        authorization imports and bounded reuse remain in this concrete owner;
+        no request value selects a reader or grants reuse rights.
+        """
+        if type(self) is not RetainedHouseUsePolicy:
+            return cohort.read_retained_context_cohort(
+                reader, generation, subject_id=subject_id,
+                query_cutoff=query_cutoff, policy=self)
+        from engine.neuralweb import market_memory_retained_cohort_reuse as reuse
+        return reuse.read_exact_retained_cohort(
+            reader, generation, subject_id=subject_id,
+            query_cutoff=query_cutoff, policy=self, method=method)
+
     def _enforce_current_principal(self):
         _enforce_current_site_user(self.user_id)
 

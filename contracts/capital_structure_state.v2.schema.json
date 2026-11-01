@@ -23,7 +23,7 @@
   ],
   "properties": {
     "schema": {"const": "capital_structure.state.v2"},
-    "contract_version": {"const": "capital-structure-state-contracts/2.3.0"},
+    "contract_version": {"const": "capital-structure-state-contracts/2.4.0"},
     "state_id": {"type": "string", "pattern": "^state:cs:[A-Fa-f0-9]{32}$"},
     "request": {"$ref": "#/$defs/state_request"},
     "as_of": {"$ref": "#/$defs/timestamp"},
@@ -44,6 +44,604 @@
     "authority": {"$ref": "#/$defs/authority"}
   },
   "$defs": {
+    "action_check_status": {"enum": ["within_capacity", "infeasible", "infeasible_on_price_branch", "ineligible_route", "not_applied", "not_a_capacity_route", "not_modelled"]},
+    "joint_check_status": {"enum": ["feasible", "infeasible", "indeterminate", "no_capacity_actions"]},
+    "reconciliation_status": {"enum": ["agree", "disagree", "conflict", "funding_unpriced", "not_applicable"]},
+    "coverage_status": {"enum": ["covered", "shortfall", "indeterminate", "not_evaluated"]},
+    "action_owner": {"enum": ["capacity", "supply", "funding_only", "capacity_unmodelled"]},
+    "authorized_headroom_status": {"enum": ["not_evaluated", "known", "shortfall", "ceiling_only", "unknown", "contradicted", "invalid"]},
+    "result_id": {"type": "string", "pattern": "^scenario_result:cs:[A-Fa-f0-9]{32}$"},
+    "signed_decimal": {"type": "string", "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$"},
+    "nullable_signed_decimal": {"anyOf": [{"$ref": "#/$defs/signed_decimal"}, {"type": "null"}]},
+    "exact_number_text": {"type": "string", "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:/(?:0|[1-9][0-9]*))?$"},
+    "nullable_exact_number_text": {"anyOf": [{"$ref": "#/$defs/exact_number_text"}, {"type": "null"}]},
+    "scenario_share_quantity": {"allOf": [{"$ref": "#/$defs/quantity"}, {"properties": {"unit": {"const": "shares"}, "share_basis": {"const": "scenario_incremental_issuance"}}}]},
+    "signed_usd_quantity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unit",
+        "status",
+        "value",
+        "share_basis",
+        "security_class_id",
+        "applicability",
+        "provenance",
+        "note"
+      ],
+      "properties": {
+        "unit": {
+          "const": "usd"
+        },
+        "status": {
+          "$ref": "#/$defs/quantity_status"
+        },
+        "value": {
+          "$ref": "#/$defs/nullable_signed_decimal"
+        },
+        "share_basis": {
+          "type": "null"
+        },
+        "security_class_id": {
+          "$ref": "#/$defs/nullable_identifier"
+        },
+        "applicability": {
+          "$ref": "#/$defs/nullable_string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/nullable_provenance"
+        },
+        "note": {
+          "$ref": "#/$defs/nullable_string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "known"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "$ref": "#/$defs/signed_decimal"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "nullable_signed_usd_quantity": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/signed_usd_quantity"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "action_check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route_id",
+        "action",
+        "settlement",
+        "status",
+        "owner",
+        "fixed",
+        "blocker_ids",
+        "unknown_ids",
+        "note"
+      ],
+      "properties": {
+        "route_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "action": {
+          "$ref": "#/$defs/route_kind"
+        },
+        "settlement": {
+          "$ref": "#/$defs/settlement"
+        },
+        "status": {
+          "$ref": "#/$defs/action_check_status"
+        },
+        "owner": {
+          "$ref": "#/$defs/action_owner"
+        },
+        "fixed": {
+          "type": "boolean"
+        },
+        "blocker_ids": {
+          "$ref": "#/$defs/string_array"
+        },
+        "unknown_ids": {
+          "$ref": "#/$defs/string_array"
+        },
+        "note": {
+          "$ref": "#/$defs/nullable_string"
+        }
+      }
+    },
+    "joint_check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "aggregate_status",
+        "binding",
+        "blocker_ids",
+        "note"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/joint_check_status"
+        },
+        "aggregate_status": {
+          "$ref": "#/$defs/quantity_status"
+        },
+        "binding": {
+          "$ref": "#/$defs/identifier_array"
+        },
+        "blocker_ids": {
+          "$ref": "#/$defs/string_array"
+        },
+        "note": {
+          "$ref": "#/$defs/nullable_string"
+        }
+      }
+    },
+    "cash_reconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route_id",
+        "owner",
+        "canonical_gross",
+        "canonical_net",
+        "funding_amount",
+        "status",
+        "conflict_id"
+      ],
+      "properties": {
+        "route_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "owner": {
+          "$ref": "#/$defs/action_owner"
+        },
+        "canonical_gross": {
+          "$ref": "#/$defs/usd_quantity"
+        },
+        "canonical_net": {
+          "$ref": "#/$defs/usd_quantity"
+        },
+        "funding_amount": {
+          "$ref": "#/$defs/usd_quantity"
+        },
+        "status": {
+          "$ref": "#/$defs/reconciliation_status"
+        },
+        "conflict_id": {
+          "$ref": "#/$defs/nullable_identifier"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "disagree",
+                  "conflict"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "conflict_id": {
+                "$ref": "#/$defs/identifier"
+              }
+            },
+            "required": [
+              "conflict_id"
+            ]
+          },
+          "else": {
+            "properties": {
+              "conflict_id": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "issuance_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route_id",
+        "shares_low",
+        "shares_high",
+        "basis",
+        "unknown_id"
+      ],
+      "properties": {
+        "route_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "shares_low": {
+          "$ref": "#/$defs/scenario_share_quantity"
+        },
+        "shares_high": {
+          "$ref": "#/$defs/scenario_share_quantity"
+        },
+        "basis": {
+          "enum": [
+            "stated_share_quantity",
+            "fixed_price",
+            "path_start_price",
+            "path_window_low_high",
+            "supply_trace",
+            "not_priced",
+            "not_evaluated_by_owner"
+          ]
+        },
+        "unknown_id": {
+          "$ref": "#/$defs/nullable_identifier"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "shares_low": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              },
+              "shares_high": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            },
+            "required": [
+              "shares_low",
+              "shares_high"
+            ]
+          },
+          "then": {
+            "properties": {
+              "unknown_id": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "unknown_id": {
+                "$ref": "#/$defs/identifier"
+              }
+            },
+            "required": [
+              "unknown_id"
+            ]
+          }
+        }
+      ]
+    },
+    "price_basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component",
+        "basis",
+        "low",
+        "high",
+        "note"
+      ],
+      "properties": {
+        "component": {
+          "enum": [
+            "capacity",
+            "supply",
+            "funding"
+          ]
+        },
+        "basis": {
+          "enum": [
+            "fixed",
+            "path_start",
+            "path_window_low_high",
+            "path_horizon_end",
+            "unpriced"
+          ]
+        },
+        "low": {
+          "$ref": "#/$defs/nullable_exact_number_text"
+        },
+        "high": {
+          "$ref": "#/$defs/nullable_exact_number_text"
+        },
+        "note": {
+          "$ref": "#/$defs/nullable_string"
+        }
+      }
+    },
+    "authorized_headroom_disclosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "pool_id",
+        "capacity_status",
+        "note"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/authorized_headroom_status"
+        },
+        "pool_id": {
+          "$ref": "#/$defs/nullable_identifier"
+        },
+        "capacity_status": {
+          "anyOf": [
+            {
+              "enum": [
+                "known",
+                "shortfall",
+                "ceiling_only",
+                "unknown",
+                "contradicted",
+                "invalid"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "note": {
+          "$ref": "#/$defs/nullable_string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_evaluated"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "pool_id": {
+                "type": "null"
+              },
+              "capacity_status": {
+                "type": "null"
+              },
+              "note": {
+                "$ref": "#/$defs/nonempty_string"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "pool_id": {
+                "$ref": "#/$defs/identifier"
+              },
+              "note": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "coverage_period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "period_start",
+        "period_end",
+        "gap",
+        "scenario_net",
+        "scenario_balance",
+        "shortfall",
+        "status",
+        "note",
+        "gross_basis",
+        "net_basis"
+      ],
+      "properties": {
+        "period_start": {
+          "$ref": "#/$defs/date"
+        },
+        "period_end": {
+          "$ref": "#/$defs/date"
+        },
+        "gap": {
+          "$ref": "#/$defs/usd_quantity"
+        },
+        "scenario_net": {
+          "$ref": "#/$defs/signed_usd_quantity"
+        },
+        "scenario_balance": {
+          "$ref": "#/$defs/signed_usd_quantity"
+        },
+        "shortfall": {
+          "$ref": "#/$defs/usd_quantity"
+        },
+        "status": {
+          "$ref": "#/$defs/coverage_status"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gross_basis": {
+          "$ref": "#/$defs/nullable_signed_usd_quantity"
+        },
+        "net_basis": {
+          "$ref": "#/$defs/nullable_signed_usd_quantity"
+        }
+      }
+    },
+    "scenario_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "result_id",
+        "scenario_id",
+        "state_id",
+        "scenario_view",
+        "state_view_mode",
+        "as_of",
+        "capacity_envelope",
+        "supply_envelope",
+        "funding_schedule",
+        "action_checks",
+        "joint_check",
+        "cash_reconciliation",
+        "issuance_rows",
+        "scenario_new_shares_low",
+        "scenario_new_shares_high",
+        "price_bases",
+        "coverage",
+        "authorized_headroom",
+        "receipt",
+        "blockers",
+        "unknowns",
+        "notes",
+        "prophet_authority"
+      ],
+      "properties": {
+        "schema": {
+          "const": "capital_structure.scenario_result.v2"
+        },
+        "result_id": {
+          "$ref": "#/$defs/result_id"
+        },
+        "scenario_id": {
+          "$ref": "#/$defs/scenario_id"
+        },
+        "state_id": {
+          "$ref": "#/$defs/state_id"
+        },
+        "scenario_view": {
+          "$ref": "#/$defs/scenario_view"
+        },
+        "state_view_mode": {
+          "$ref": "#/$defs/view_mode"
+        },
+        "as_of": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "capacity_envelope": {
+          "$ref": "#/$defs/capacity_envelope"
+        },
+        "supply_envelope": {
+          "$ref": "#/$defs/supply_envelope"
+        },
+        "funding_schedule": {
+          "$ref": "#/$defs/funding_schedule"
+        },
+        "action_checks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/action_check"
+          }
+        },
+        "joint_check": {
+          "$ref": "#/$defs/joint_check"
+        },
+        "cash_reconciliation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cash_reconciliation"
+          }
+        },
+        "issuance_rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/issuance_row"
+          }
+        },
+        "scenario_new_shares_low": {
+          "$ref": "#/$defs/scenario_share_quantity"
+        },
+        "scenario_new_shares_high": {
+          "$ref": "#/$defs/scenario_share_quantity"
+        },
+        "price_bases": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/price_basis"
+          }
+        },
+        "coverage": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/coverage_period"
+          }
+        },
+        "authorized_headroom": {
+          "$ref": "#/$defs/authorized_headroom_disclosure"
+        },
+        "receipt": {
+          "$ref": "#/$defs/calculation_receipt"
+        },
+        "blockers": {
+          "$ref": "#/$defs/string_array"
+        },
+        "unknowns": {
+          "$ref": "#/$defs/unknown_array"
+        },
+        "notes": {
+          "$ref": "#/$defs/string_array"
+        },
+        "prophet_authority": {
+          "const": false
+        }
+      }
+    },
     "safe_property_name": {
       "type": "string",
       "not": {
@@ -98,7 +696,7 @@
         "projection_version_prefix": {"const": "capital-structure-event-projection/1."},
         "observed_event_reader": {"const": "engine.capital_structure.projection.build_projection_bundle"},
         "observed_event_reader_status": {"const": "preserved"},
-        "state_contract_version": {"const": "capital-structure-state-contracts/2.3.0"}
+        "state_contract_version": {"const": "capital-structure-state-contracts/2.4.0"}
       }
     },
     "sha256": {"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"},

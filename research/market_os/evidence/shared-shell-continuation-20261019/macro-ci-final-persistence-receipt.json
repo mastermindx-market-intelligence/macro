@@ -1,0 +1,17 @@
+{
+  "observed_at": "2026-10-19T23:49:53.849845+00:00",
+  "files": {
+    "macro-ci-final-39250500550-job118084669743.log": {
+      "bytes": 209074,
+      "sha256": "8f751ef9adc42502215c9badfdc12540a72eeb9a2698dbfe533854f36f2a957e"
+    },
+    "macro-ci-final-semantic-evidence-e22.json": {
+      "bytes": 236744,
+      "sha256": "a06976ad5d8528383263a2439d62e9a69d5358fbef28e08ec04497a9c645d81c"
+    }
+  },
+  "semantic_claimed_digest": "be68b9a2d3d2c576735eb9b2547ddf8c80560ff12c91bdeb8b85c9e140dae22a",
+  "canonical_without_digest_sha256": "be68b9a2d3d2c576735eb9b2547ddf8c80560ff12c91bdeb8b85c9e140dae22a",
+  "digest_matches": true,
+  "log_hash_domain": "UTF-8 bytes of exact decoded connector content, not original GitHub binary archive"
+}

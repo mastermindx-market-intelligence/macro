@@ -109,11 +109,24 @@
   @keyframes ws-chippulse { 0%,100%{ opacity:1 } 50%{ opacity:.35 } }
   @media (prefers-reduced-motion:reduce){ .ws-chip.is-saving i { animation:none; } }
 
+  /* ── R7 Wave A save outcomes (§10): the two live regions beside the chip.
+     Neutral surface hierarchy only — no colored edge of any kind (design
+     doctrine). waiting/uncertain/saved are polite; rejected is the one
+     assertive region. Copy arrives from watchlist.js, both locales. */
+  .ws-save-live, .ws-save-alert { max-width:360px; padding:8px 12px; border-radius:var(--r-card,12px);
+    border:1px solid var(--line-quiet, var(--line)); background:var(--panel);
+    font-size:12px; line-height:1.5; color:var(--text); }
+  .ws-save-live:empty, .ws-save-alert:empty { display:none; }
+  .ws-save-live p, .ws-save-alert p { margin:0 0 3px; }
+  .ws-save-live p:last-child, .ws-save-alert p:last-child { margin-bottom:0; }
+  .ws-save-live .so-t, .ws-save-alert .so-t { font-weight:700; }
+
   @media (max-width:720px){
     .ws-head { grid-template-columns:1fr; align-items:start; }
     .ws-headright { align-items:flex-start; width:100%; }
     .ws-modes { width:100%; }
     .ws-mode { flex:1; padding:8px 10px; }
+    .ws-save-live, .ws-save-alert { max-width:none; }
   }
 
   /* ── SECTION GRAMMAR — eyebrow + one dominant idea ───────────────────────── */
@@ -305,6 +318,19 @@
   .stg.s-none { color:var(--muted); }
   .stg.s-none i { border-style:dotted; opacity:.5; }
 
+  /* ── R7 Wave A: the Watchlists table's "When you saved" / "Tonight" pair.
+     The saved decision renders at muted weight beside tonight's live read —
+     history never shouts louder than tonight. `ton-na` is an ABSENCE (no
+     current state), so it is plain muted text: no stage mark, no glyph, and
+     structurally unable to carry a buy-type class. */
+  .c-wsv { font-size:12px; }
+  .c-wsv .wsv-dec { color:var(--muted); }
+  .c-wsv .wsv-d { display:block; font-size:11px; color:var(--muted); opacity:.8;
+    font-variant-numeric:tabular-nums; }
+  .c-ton .ton-na { color:var(--muted); font-size:12px; }
+  .wl-night-foot { padding:8px 10px 0; font-size:11.5px; line-height:1.5; color:var(--muted);
+    border-top:1px solid var(--line-quiet, var(--line)); }
+
   /* risk contribution — hairline share bar, honest shared scale, no magnitude lie */
   .rc { display:flex; align-items:center; gap:7px; justify-content:flex-end; }
   .rc .bar { width:34px; height:4px; border-radius:2px; background:var(--panel2);
@@ -351,7 +377,7 @@
   .wri-lrow .ln { font-weight:650; color:var(--muted); }
   .wri-lrow .st { font-size:9.5px; font-weight:750; letter-spacing:.07em;
     text-transform:uppercase; color:var(--muted); }
-  .wri-lrow .st.watch { color:var(--warn); }
+  .wri-lrow .st.watch { color:var(--ink-warn, var(--warn)); }
   .wri-lrow .st.elev  { color:var(--act); }
   .wri-lrow .st.info  { color:var(--ink-link); }
   .wri-lrow .st.na    { opacity:.62; }
@@ -452,7 +478,8 @@
     .hold .c-att { grid-area:att; text-align:right; }
     .hold .c-evt { grid-area:meta; }
     .hold .c-exp { grid-area:exp; text-align:right; }
-    .hold .c-day, .hold .c-since, .hold .c-rc, .hold .c-sect { display:none; }
+    .hold .c-day, .hold .c-since, .hold .c-rc, .hold .c-sect,
+    .hold .c-wsv, .hold .c-ton { display:none; }
     .hold .c-sym .co { max-width:none; }
     /* watchlist keeps a fourth slot: what changed since the last visit */
     #tbl_wl tbody tr { grid-template-areas:"sym val exp" "sig att exp" "meta chg exp"; }
@@ -829,6 +856,10 @@
       </div>
       <!-- the ONLY place sync is ever mentioned; the Account Sync panel is deleted -->
       <span class="ws-chip is-local" id="ws_savechip"><i></i><span id="ws_savechip_txt"></span></span>
+      <!-- R7 Wave A (§10) save outcomes: polite region for waiting/saved/uncertain,
+           assertive region for rejected. Painted by watchlist.js from ws-save-outcome. -->
+      <div id="ws_save_live" class="ws-save-live" role="status" aria-live="polite"></div>
+      <div id="ws_save_alert" class="ws-save-alert" role="alert"></div>
     </div>
   </header>
 
@@ -1145,9 +1176,9 @@
      depends on nothing else here, and must load before watchlist.js/portfolio.js, both
      of which read it. -->
 <script src="market_books.js?v=3"></script>
-<script src="portfolio_state.js?v=1"></script>
+<script src="portfolio_state.js" data-sync></script>
 <script src="stockdata.js?v=4"></script>
-<script src="watchlist.js?v=15"></script>
+<script src="watchlist.js?v=16"></script>
 <script src="factor_exposure.js?v=6"></script>
 <!-- pure book-structure math + the risk publisher. risk_core.js must precede
      watchlist_risk.js; both need SD + FX. Signed-in only — the anonymous shell

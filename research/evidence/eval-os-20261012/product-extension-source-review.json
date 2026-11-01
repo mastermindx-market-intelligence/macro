@@ -1,0 +1,59 @@
+{
+  "schema": "eval_os_independent_product_extension_review.v1",
+  "adjudication": "ACCEPTED_BOUNDED_SOURCE_CONTRACTS_CAPACITY_QUALIFICATION_OPEN",
+  "reviewed_at": "2026-10-13T05:39:05.989348+00:00",
+  "source_sha256": {
+    "admin/evidence_status.py": "9d87738feb4a9e59efcda263e0cdec275e77bdd41dfe5af6b3b2c10c6be24798",
+    "admin/intelligence_os.py": "3e93df7d2e55cec05f01b52af873dbd6e42ac04dabfba9e495987c2600f3d551",
+    "admin/static/app.js": "41a5568f89fe9147040de594db89d820a4eb0baa30781c37eb69fef08a18a7d8",
+    "engine/qledger_desk_adapter.py": "55f7304d9c422992cb5710a95c118c16cfd78999b7bb51095e0951b9018c11c4",
+    "tests/test_admin_intelligence_os.py": "725c760f476152dd39bf112bb5908474e22ebd217b922a3d3f398b406997a125",
+    "tests/test_admin_intelligence_os_ui.py": "5f3be57d6ff8e0e66d6fdfe58582fde5e909ffd3f13ae453680fa16140ee4df0",
+    "tests/test_qledger_desk_adapter.py": "a2c35c689d76c6a98529bb7c6161084d3aa0de97f5c4e5a5a1e1fa1e8e471da5"
+  },
+  "receipt_sha256": "5be01a388e975f9170786499f2691192e1fdf705e2396b991a5a291549690fce",
+  "consumed_tests": {
+    "prior_affected_suite": {
+      "command": "python3 -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_qledger_desk_adapter.py -q",
+      "passed": 171,
+      "seconds": 23.27,
+      "output": "owner-extension-final-tests.txt"
+    },
+    "ui_followup": {
+      "output": "owner-extension-final-ui-tests.txt",
+      "reason": "Known owner measurement basis labels now plain EN/ZH; data/raw technical keys unchanged",
+      "passed": 13,
+      "seconds": 58.2
+    },
+    "narrow_repair": {
+      "output": "source-link-size-guard-tests.txt",
+      "passed": 5,
+      "seconds": 87.96,
+      "actual_api_function_receipt": "source-link-size-guard-api-check.json",
+      "before_api_sha256": "fb4582cef22c08d57998f4e15c4388947c006f6b2314654c5f4c03a8703f58fa",
+      "after_api_sha256": "3e93df7d2e55cec05f01b52af873dbd6e42ac04dabfba9e495987c2600f3d551"
+    }
+  },
+  "closed_findings": [
+    {
+      "id": "PRODUCT-SOURCE-LINK-HEAD-BYTE-BOUND",
+      "witness": "Large HEAD declaration with dirty small working bytes previously caused unbounded git show capture.",
+      "closure": "cat-file -s HEAD:path refuses oversized HEAD before show under shared deadline/no-lazy-fetch/no-lock environment; actual synthetic HEAD-negative and actual imported positive API control consumed.",
+      "state": "CLOSED"
+    }
+  ],
+  "supported_contracts": [
+    "Exact incumbent native ledger accessor binding; decoy/backup/noncanonical names refused",
+    "Owner Wilson/baseline/support copied without new inference; cohort and whole-family denominators distinct",
+    "Zero versus unavailable preserved; homogeneous clock and direction scope preserved",
+    "Unqualified method/task/cohort cannot inherit owner lifecycle qualification",
+    "Immutable verified declaration links bind repo/HEAD/working bytes/generation; 8 references, 19 maximum Git calls, 262144 byte object check and shared3 second timeout; no lazy fetch or optional locks"
+  ],
+  "limits": [
+    "Synthetic source/handler evidence is not production or operator acceptance",
+    "104MB claims +76MB grades local metadata exceeds 2.65MB maximum synthetic read-cost fixture; cold/forced synchronous full-corpus RLock/capacity qualification pending existing owner",
+    "Browser normalized panel/detail agreement and final mobile CSS matrix still pending",
+    "Final semantic commit and exact-head CI/release remain owed"
+  ],
+  "source_writes": false
+}

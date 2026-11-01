@@ -562,15 +562,66 @@
       .finally(function () { ui.moreEvents.disabled = false; });
   }
 
+  function lookupNoticeFor(status, ticker) {
+    // Resolver failures are classified, never flattened into an outage: 404
+    // means the ticker is simply outside observed coverage, 409 means the desk
+    // must not choose an issuer for the reader, and only 5xx, network and
+    // unknown failures are a temporary outage. Each notice names the ticker
+    // that failed, so it can never be read as a statement about the issuer
+    // already on screen; the prior selection is left untouched.
+    if (status === 404) {
+      return {
+        kind: 'partial',
+        en: 'No observed issuer matched ticker "' + ticker + '"',
+        zh: '没有已观察发行人匹配代码“' + ticker + '”'
+      };
+    }
+    if (status === 400 || status === 422) {
+      return {
+        kind: 'partial',
+        en: '"' + ticker + '" is not a valid ticker symbol',
+        zh: '“' + ticker + '”不是有效的股票代码'
+      };
+    }
+    if (status === 409) {
+      return {
+        kind: 'partial',
+        en: 'Ticker "' + ticker + '" matches more than one observed issuer; refine the search to choose one.',
+        zh: '代码“' + ticker + '”匹配多个已观察发行人，请细化搜索后再选择。'
+      };
+    }
+    if (status === 401 || status === 403) {
+      return {
+        kind: 'degraded',
+        en: 'Sign in with an eligible account to search tickers.',
+        zh: '请使用符合条件的账户登录后搜索代码。'
+      };
+    }
+    return {
+      kind: 'degraded',
+      en: 'Ticker lookup is temporarily unavailable',
+      zh: '代码查找暂时不可用'
+    };
+  }
+
   function resolveTicker() {
     var ticker = state.query.trim();
     if (!ticker) return;
     api('/issuers/resolve?ticker=' + encodeURIComponent(ticker)).then(function (data) {
       var issuerId = resolveIssuerId(data);
-      if (issuerId) return selectIssuer(issuerId, { focus: true });
-      setNotice(copy('No observed issuer matched that ticker', '没有已观察发行人匹配该代码'), 'partial');
+      if (issuerId) {
+        // A resolved ticker ends the previous lookup error, without inventing
+        // freshness: restore the existing coverage response before selection.
+        renderCoverage();
+        return selectIssuer(issuerId, { focus: true });
+      }
+      var notice = lookupNoticeFor(404, ticker);
+      setNotice(copy(notice.en, notice.zh), notice.kind);
       return null;
-    }).catch(function () { setNotice(copy('Ticker lookup is temporarily unavailable', '代码查找暂时不可用'), 'degraded'); });
+    }).catch(function (error) {
+      var notice = lookupNoticeFor(error && error.status, ticker);
+      setNotice(copy(notice.en, notice.zh), notice.kind);
+    });
   }
 
   function resolveIssuerId(data) {

@@ -1,0 +1,67 @@
+{
+  "started_at": "2026-10-20T11:07:50.225009+00:00",
+  "before": {
+    "head": "e2d10f933587f58be8716505529a37f8839901f7",
+    "merge_head": "42c859546ececa797b400db0adeb8c5a22f96832",
+    "index_tree": "5cb74e747b76b3321e36f4392ac25c40c84a3aef",
+    "index_entry_list_sha256": "15e6d9a2d38fda715d4e055768b60143d4b90cac316c5421b475eaa7c22304a8",
+    "unstaged_paths": []
+  },
+  "diff": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-e2d-42c-p0b-closure-changed.txt",
+    "sha256": "0a532ac68ab0dbb2debf94c2cb1dc9b8c6649213849791cbb344f807b353011e",
+    "count": 13614
+  },
+  "commands": [
+    {
+      "name": "closure",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "scripts/check_p0b_receipt_closure.py",
+        "--diff-file",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-e2d-42c-p0b-closure-changed.txt",
+        "--event",
+        "pull_request"
+      ],
+      "started_at": "2026-10-20T11:07:50.227424+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-e2d-42c-p0b-closure-closure.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T11:07:50.329963+00:00",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "binding-tests",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "--basetemp",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-e2d-42c-p0b-closure-tmp",
+        "tests/test_stock_dashboard_first_frame.py::test_rendered_fixture_recipe_is_committed_self_binding_and_deterministic",
+        "tests/test_stock_dashboard_first_frame.py::test_committed_browser_receipts_are_self_binding_fixture_proof",
+        "tests/test_stock_dashboard_first_frame.py::test_visual_manifest_preserves_history_and_appends_bounded_repair"
+      ],
+      "started_at": "2026-10-20T11:07:50.330582+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-e2d-42c-p0b-closure-binding-tests.log",
+      "exit": 0,
+      "finished_at": "2026-10-20T11:08:02.558802+00:00",
+      "log_bytes": 99,
+      "log_sha256": "81a4a345da63b0593c856641f7565f96c59b523072d9fb8f2131530b6c9f17c2"
+    }
+  ],
+  "after": {
+    "head": "e2d10f933587f58be8716505529a37f8839901f7",
+    "merge_head": "42c859546ececa797b400db0adeb8c5a22f96832",
+    "index_tree": "5cb74e747b76b3321e36f4392ac25c40c84a3aef",
+    "index_entry_list_sha256": "15e6d9a2d38fda715d4e055768b60143d4b90cac316c5421b475eaa7c22304a8",
+    "unstaged_paths": []
+  },
+  "source_state_unchanged": true,
+  "finished_at": "2026-10-20T11:08:03.528008+00:00",
+  "pass": true
+}

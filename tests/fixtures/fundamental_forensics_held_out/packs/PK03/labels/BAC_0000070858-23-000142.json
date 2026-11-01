@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000070858-23-000142",
+    "expected_period_end": "2023-03-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "3108000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "bac-20230331.htm | us-gaap:NetIncomeLoss @ i8a1e17be4d83465e94042e9c6b7fb22a_D20230101-20230331 (ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember; StatementBusinessSegmentsAxis=bac:ConsumerBankingSegmentMember) | 'Net income $ 8,161 $ 7,067 $ 3,108 $ 2,978 $ 917 $ 1,134' | Segment net income for the largest segment by total revenue net of interest expense, Consumer Banking, for the three months ended March 31, 2023; Business Segment Information note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_profit_or_loss",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000070858-23-000142|extract|segment_profit_or_loss"
+  },
+  {
+    "accession": "0000070858-23-000142",
+    "expected_period_end": "2023-03-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "10706000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "bac-20230331.htm | bac:RevenuesNetOfInterestExpenseFullTaxEquivalentBasis @ i8a1e17be4d83465e94042e9c6b7fb22a_D20230101-20230331 (ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember; StatementBusinessSegmentsAxis=bac:ConsumerBankingSegmentMember) | 'Total revenue, net of interest expense 26,392 23,334 10,706 8,813 5,315 5,476' | Largest business segment by total revenue, net of interest expense, for the three months ended March 31, 2023: Consumer Banking (vs Global Banking 6,203; Global Markets 5,626; GWIM 5,315); Business Segment Information note, in millions, full tax-equivalent basis.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_revenue",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000070858-23-000142|extract|segment_revenue"
+  }
+]

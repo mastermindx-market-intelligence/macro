@@ -421,6 +421,7 @@
     if (t) load(t);
   }
   window.addEventListener('hashchange', fromHash);
+  window.addEventListener('mmx:shell-location', fromHash);
 
   q.addEventListener('input', function () {
     var v = q.value.trim().toLowerCase();
@@ -464,9 +465,9 @@
     q.value = items[i].t;
     // foreign market → bounce to the analyzer that owns it; same market → load in place
     if (items[i]._tgt && items[i]._tgt !== 'china_lookup.html') {
-      location.href = items[i]._tgt + '#' + encodeURIComponent(items[i].t); return;
+      var _d = items[i]._tgt + '#' + encodeURIComponent(items[i].t); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); return; } location.href = _d; return;
     }
-    location.hash = encodeURIComponent(items[i].t);
+    var _h = encodeURIComponent(items[i].t); var _ss2 = window.MMXSharedShell; if (_ss2) { if (_ss2.navigate('#' + _h, 'push') && (location.hash || '').slice(1) === _h) fromHash(); } else { location.hash = _h; }
   }
 
   function load(t) {

@@ -1,0 +1,59 @@
+{
+  "schema": "eval_os.t12_claim_metadata_consumer.v1",
+  "observed_at": "2026-10-15T17:46:25.544580+00:00",
+  "source_commit": "00efc25f4d9b0516bd9d8ea2a53c5f2abea4b39e",
+  "installed_source_head": "e973749f8bce217fa912817eafe0ad103e2b1fa1",
+  "consumer_location": "owned follow-on source checkout; not installed follow-on",
+  "source_claims_sha256": "6688c80b4b099d84b69b87ca1fdbfa734f271550a937b31431d59e244101d4a3",
+  "source_claims_bytes": 104827570,
+  "selection": {
+    "family": "whitehouse",
+    "producer": "scripts/build_whitehouse.py",
+    "engine_id": "scripts/build_whitehouse.py::whitehouse-desk",
+    "claim_count": 300,
+    "direction_counts": {
+      "1": 210,
+      "-1": 90
+    },
+    "canonical_binding_rule": 2,
+    "registry_inputs_complete": true
+  },
+  "rights_scope": "First-party generated claim-direction metadata for authorized internal metric-legality inspection; no supplier payload or grade/outcome exported.",
+  "metric_intent": "Assess eligibility of this observed family for an excess_mean report. This is not a claim that a report was published.",
+  "source_endpoint_stats_equal": true,
+  "atomicity_claim": false,
+  "source_hashes": {
+    "scripts/build_intelligence_registry.py": "22cf403f0d5b5d8c8077f165c5aa3410ac0b64f57517cbbc5a87a6a2c605bd89",
+    "engine/intelligence_registry.py": "ce2ccffd9473fe6f2e43fd9b5bb88be367845cda00b1810f3668f16d7b179980",
+    "engine/qledger_store.py": "b34edaad1cb5010093acbb4321b4ecf9287beea3422918f7e9f3b43f94584877"
+  },
+  "input": {
+    "path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/t12-claims-only-consumer-input.json",
+    "bytes": 1100133,
+    "sha256": "cf6c0f6e92e79d5c4069249a13306b07c27bf94e876691bc7c73c998cb8ee03f"
+  },
+  "result": {
+    "schema": "qledger.research_findings.v1",
+    "scope": "intended_report_metric_validity",
+    "evaluation_status": "not_assessed",
+    "issues": [
+      {
+        "engine": "scripts/build_whitehouse.py::whitehouse-desk",
+        "metric": "excess_mean",
+        "observed_change": "Snapshot of intended-report metric validity: family holds directions [-1, 1]; grades.excess is raw (not direction-signed), so a pooled signed excess_mean measures universe drift, not skill. Report hit_rate, mean |excess|, or split the mean per direction.",
+        "segment": "whitehouse",
+        "evidence_link": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/t12-claims-only-consumer-source.json",
+        "suggested_tier": "T0"
+      }
+    ],
+    "unresolved": []
+  },
+  "retained_source": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/t12-claims-only-consumer-source.json",
+  "retained_result": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/t12-claims-only-consumer-result.json",
+  "grades_read": false,
+  "sealed_outcomes_read": false,
+  "model_invoked": false,
+  "installed_followon_verified": false,
+  "discovery_publication_verified": false,
+  "programme_complete": false
+}

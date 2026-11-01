@@ -1,0 +1,89 @@
+{
+  "schema": "f10.lp.registration_receipt/v1",
+  "family": "f10_lp_alfred_cpi_payroll_descriptive",
+  "study_spec_sha256": "d70bbc156dc892dfbcf538dc712a5772ec2fb43cb5a3af3c41b7d0a5af7c4871",
+  "input_sha256": "4456ebeff9ebd0e218d5d3b58b643c9a4fdc2e96b8cecabca55736287e7d14a6",
+  "source_freeze_commit": "a44faea61cfcf8ca9e7e017f3bba0a54b5da5814",
+  "protected_harness_merge": "204164ab7edfae5c06a448a49654c8d5b8eca857",
+  "source_head": "7a310fff20e71666f4799657eab8c99189a6b8fe",
+  "driver_sha256": "020a134a41e22c86f91e8eb34c96db9684e9a46e224da8b432b40b1c6d6d606a",
+  "ledger_path": "data/trial_ledger.jsonl",
+  "before_sha256": "667def5066892d690151c45235b11f79f98245c000ca49cc5603143d51d9098d",
+  "after_sha256": "55202f565d10c71e4c87221bee751ca87f97e3af3cb31dd4d63973a87869ca13",
+  "new_rows": [
+    {
+      "ts": "2026-10-20T03:19:42.249321+00:00",
+      "family": "f10_lp_alfred_cpi_payroll_descriptive",
+      "config_hash": "2f299a1372e85acc",
+      "config": {
+        "harness": "mastermind.local_projection_run/v1",
+        "estimator_schema": "engine.local_projections.irf.v1",
+        "estimator_sha256": "fe6112dff9ba2caf0ebb89634421ac1b7ecf6418ed96ec9558e81fa8e3d07a9e",
+        "input_sha256": "4456ebeff9ebd0e218d5d3b58b643c9a4fdc2e96b8cecabca55736287e7d14a6",
+        "cutoff": "2026-10-17T00:00:00+00:00",
+        "period_start": "1998-02-24",
+        "period_end": "2025-09-11",
+        "n_rows": 332,
+        "horizons": 3,
+        "lags": 4,
+        "embargo": 1,
+        "min_obs": 60,
+        "fdr_alpha": 0.1,
+        "transform": "none; supplied y and shock values, ordered observation rows"
+      },
+      "source": "research/local_projections/ALFRED_CPI_PAYROLL_V2_STUDY_SPEC.json",
+      "info_cutoff": "2026-10-17T00:00:00+00:00",
+      "note": "All three prespecified lag configurations, before any estimation; frozen StudySpec SHA256 d70bbc156dc892dfbcf538dc712a5772ec2fb43cb5a3af3c41b7d0a5af7c4871"
+    },
+    {
+      "ts": "2026-10-20T03:19:42.249644+00:00",
+      "family": "f10_lp_alfred_cpi_payroll_descriptive",
+      "config_hash": "4105eb0c0796998e",
+      "config": {
+        "harness": "mastermind.local_projection_run/v1",
+        "estimator_schema": "engine.local_projections.irf.v1",
+        "estimator_sha256": "fe6112dff9ba2caf0ebb89634421ac1b7ecf6418ed96ec9558e81fa8e3d07a9e",
+        "input_sha256": "4456ebeff9ebd0e218d5d3b58b643c9a4fdc2e96b8cecabca55736287e7d14a6",
+        "cutoff": "2026-10-17T00:00:00+00:00",
+        "period_start": "1998-02-24",
+        "period_end": "2025-09-11",
+        "n_rows": 332,
+        "horizons": 3,
+        "lags": 2,
+        "embargo": 1,
+        "min_obs": 60,
+        "fdr_alpha": 0.1,
+        "transform": "none; supplied y and shock values, ordered observation rows"
+      },
+      "source": "research/local_projections/ALFRED_CPI_PAYROLL_V2_STUDY_SPEC.json",
+      "info_cutoff": "2026-10-17T00:00:00+00:00",
+      "note": "All three prespecified lag configurations, before any estimation; frozen StudySpec SHA256 d70bbc156dc892dfbcf538dc712a5772ec2fb43cb5a3af3c41b7d0a5af7c4871"
+    },
+    {
+      "ts": "2026-10-20T03:19:42.249661+00:00",
+      "family": "f10_lp_alfred_cpi_payroll_descriptive",
+      "config_hash": "fd153af70734c50a",
+      "config": {
+        "harness": "mastermind.local_projection_run/v1",
+        "estimator_schema": "engine.local_projections.irf.v1",
+        "estimator_sha256": "fe6112dff9ba2caf0ebb89634421ac1b7ecf6418ed96ec9558e81fa8e3d07a9e",
+        "input_sha256": "4456ebeff9ebd0e218d5d3b58b643c9a4fdc2e96b8cecabca55736287e7d14a6",
+        "cutoff": "2026-10-17T00:00:00+00:00",
+        "period_start": "1998-02-24",
+        "period_end": "2025-09-11",
+        "n_rows": 332,
+        "horizons": 3,
+        "lags": 8,
+        "embargo": 1,
+        "min_obs": 60,
+        "fdr_alpha": 0.1,
+        "transform": "none; supplied y and shock values, ordered observation rows"
+      },
+      "source": "research/local_projections/ALFRED_CPI_PAYROLL_V2_STUDY_SPEC.json",
+      "info_cutoff": "2026-10-17T00:00:00+00:00",
+      "note": "All three prespecified lag configurations, before any estimation; frozen StudySpec SHA256 d70bbc156dc892dfbcf538dc712a5772ec2fb43cb5a3af3c41b7d0a5af7c4871"
+    }
+  ],
+  "effective_n": 3,
+  "state_at_receipt": "ALL_THREE_REGISTERED_DURABLY_BEFORE_ANY_ESTIMATION"
+}

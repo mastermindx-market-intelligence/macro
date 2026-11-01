@@ -62,7 +62,7 @@ from engine.fundamental_forensics.statement_graph import (  # noqa: E402
     load_golden_aapl_package,
 )
 
-EXPECTED_BASE_COMMIT = "5267c66846e7733bc1eb30edc1524daff51598ca"
+EXPECTED_BASE_COMMIT = "a6bed4b64ff999077545bca3ee4157e02387a47a"
 MANIFEST_SCHEMA = "fundamental_forensics.t1_compatibility_seal_manifest/v1"
 DEFAULT_OUT = (
     ROOT / "tests" / "fixtures" / "fundamental_forensics"
@@ -103,20 +103,21 @@ PACKET_REQUEST_SCHEMA = "fundamental_forensics.financial_packet_request/v1"
 REVISION_REQUEST_SCHEMA = "fundamental_forensics.financial_revision_request/v1"
 STATEMENT_REQUEST_SCHEMA = "fundamental_forensics.financial_statement_request/v1"
 
-# --- producing sites (verified at the base commit) ---------------------------
+# --- producing sites (re-verified at the G0 commit; #8936 history carries the
+# pre-T1 5267c668 site map) ----------------------------------------------------
 
-SITE_QUERY_RESPONSE_SHA = "engine/fundamental_forensics/query_service.py:602-607"
-SITE_QUERY_HASH = "engine/fundamental_forensics/query.py:3439-3441"
+SITE_QUERY_RESPONSE_SHA = "engine/fundamental_forensics/query_service.py:752-759"
+SITE_QUERY_HASH = "engine/fundamental_forensics/query.py:3685-3687"
 SITE_LEDGER_SHA = "engine/fundamental_forensics/ixbrl_raw_ledger.py:446-448"
 SITE_OCCURRENCE_ID = "engine/fundamental_forensics/raw_ledger.py:494-497"
-SITE_LINEAGE_DISCLOSURE = "engine/fundamental_forensics/query_service.py:583-600"
-SITE_REVISION_RESPONSE_SHA = "engine/fundamental_forensics/revision_service.py:313-316"
-SITE_PACKET_RESPONSE_SHA = "engine/fundamental_forensics/packet_service.py:90-93"
-SITE_PACKET_IDENTITY = "engine/fundamental_forensics/financial_intelligence_packet.py:1047-1051"
-SITE_STATEMENT_RESPONSE_SHA = "engine/fundamental_forensics/statement_service.py:304-307"
-SITE_STATEMENT_PACKAGE = "engine/fundamental_forensics/statement_service.py:269-283"
-SITE_WITNESS_DIGESTS = "engine/fundamental_forensics/revision_service.py:111-119"
-SITE_API_HEADER = "app/forensics.py:870"
+SITE_LINEAGE_DISCLOSURE = "engine/fundamental_forensics/query_service.py:739-749"
+SITE_REVISION_RESPONSE_SHA = "engine/fundamental_forensics/revision_service.py:359-363"
+SITE_PACKET_RESPONSE_SHA = "engine/fundamental_forensics/packet_service.py:108-114"
+SITE_PACKET_IDENTITY = "engine/fundamental_forensics/financial_intelligence_packet.py:1070-1075"
+SITE_STATEMENT_RESPONSE_SHA = "engine/fundamental_forensics/statement_service.py:401-405"
+SITE_STATEMENT_PACKAGE = "engine/fundamental_forensics/statement_service.py:357-372"
+SITE_WITNESS_DIGESTS = "engine/fundamental_forensics/revision_service.py:123-131"
+SITE_API_HEADER = "app/forensics.py:1024"
 SITE_GOLDEN_PACKET_FIXTURE = (
     "tests/fixtures/fundamental_forensics/expected_financial_intelligence_packet_v1.json"
 )
@@ -125,17 +126,20 @@ SITE_GOLDEN_PACKET_FIXTURE = (
 # The tool compares every recomputation against these AT GENERATION TIME.
 
 PIN_LEDGER_SHA = "ba149bd55d929d843f353e91bbf68147791fb8b4a20c258426ea2eb7527019d8"
-PIN_AAPL_RESPONSE_SHA = "58972cb88f82483e86acc9d9fc3b1cbce046f466ff8665ae214909d90ab078b0"
-PIN_AAPL_QUERY_HASH = "f8f6dc3134592c817001738cbdefb09ee1b71798ef24a8e64dc75685a6f9c7a1"
+PIN_AAPL_RESPONSE_SHA = "fbae153c5fccd26b747be10239fe4b5fcd0e30113604597d16b01bf31b875c48"
+PIN_AAPL_QUERY_HASH = "a4b04952c3df3e50936d4229b018f0a7f7035edb24139ba936aa58f913515920"
 PIN_A1_OCCURRENCE = "rawfact_bc9355a292f06baaaf988b683106b2b02e3dd9c4a9555f1eb160a94643e4feaf"
 PIN_A2_OCCURRENCE = "rawfact_9669446bc8076fa26bca33a3d9a067093bddadbb28e4617318bb3de33a4eca29"
 
+# Kernel five sealed on the BARE production-default path (no injected SIC
+# resolver).  The source tests pin the injected 58d438ec... family by design,
+# so the seal no longer mirrors them for the kernel five (seat ruling G0-R2).
 PIN_KERNEL_HASHES = {
-    "as_reported_t1_t2": "358d44741632d74ff76dd8771bb78b34295a08d62d2a0a8566a6abe5feac1442",
-    "latest_known_t1_t2": "191c49a37998052f17eec78113b5bd8bf0dcaaa52239c406cdb4c27cda5ad1a7",
-    "latest_known_t3": "83df03e99f570bacfab94fc9373861f14c1895c9aa9435b7dd7249a13c1e67fa",
-    "latest_restated_t3": "c1095c7994c67f11ed602d15c2956bc24271cdce4d39d7869ed642713a6ed549",
-    "mixed_t3": "5513f17260f98d261920d658be25bf319ace90a0580ad8f2e94931c518c5a20b",
+    "as_reported_t1_t2": "f4ed662fda31a10e5d93930914263f86e3ff58abffa3f14100ad428eedd82959",
+    "latest_known_t1_t2": "6385734fbe500e88e2af76483c34200ea2609e888aa7f7425d3f43ec03c9b20d",
+    "latest_known_t3": "b5db79e8dc60619c19f6c3f1bfe62657226f1b9f78e2ac7bbfad74afa86d5471",
+    "latest_restated_t3": "4650f7985f438b04a4274053dd0c5e1721e7c12840eb077156fd4d745c574ac2",
+    "mixed_t3": "26a7ed7d95f861d3352c3a7e5fb6a0f52833ccf69947b10ca9da1f9662c44133",
 }
 
 PIN_STATEMENT_10K = {
@@ -153,32 +157,39 @@ PIN_STATEMENT_10Q = {
     "witness_sha256": "6727f5eb1815b2b6b580f69caa76fd644ad6fc651c6b7082f9045459f72f370c",
 }
 PIN_RICH_PACKET = {
-    "packet_id": "fip_49718dcaf4c6855592b6ba0a",
-    "content_sha256": "49718dcaf4c6855592b6ba0a160851c608b4733b44f8ac9a6cf7d907df7565e5",
-    "response_sha256": "310f6579ab0014e6af16a3341f005078eab3fdcc70ebe67ec83cf138b9e6c23a",
+    "packet_id": "fip_5d77c1349de4f829db2c422a",
+    "content_sha256": "5d77c1349de4f829db2c422a3000049cb12b6f0c16dbcd57686a0c0cd41c0af0",
+    "response_sha256": "a9c5a8657e7c5cb7e6789cd6d2ea4f78a1c14100c33a00d959856d7375045ca8",
 }
-PIN_GOLDEN_PACKET_ID = "fip_18e2f725f6ba20678d0612bb"
+PIN_GOLDEN_PACKET_ID = "fip_efe52d02d4a72a5a19f85a60"
 
 PIN_LATEST_KNOWN_VALUE = "359241000000"
 PIN_LATEST_RESTATED_REASON = "no eligible explicitly typed reported revision vintage"
 PIN_HISTORICAL_REASON = "unlinked source vintages require an explicit typed revision lineage"
 
+# Site strings re-derived at the G0 commit: the FIF G0-r1/r1p3 re-pins moved
+# the source-test literals (kernel five now at financial_revision_service:70-74
+# where the source pins the injected 58d438ec... family BY DESIGN, so the seal
+# no longer mirrors them for the kernel five — seat ruling G0-R2), and the
+# engine producing sites moved with the G0 kernel/catalog edits.  The pre-T1
+# seal at 5267c66846e7733bc1eb30edc1524daff51598ca is preserved in #8936
+# history.
 PIN_SITES = {
     "ledger_sha256": "tests/test_fundamental_forensics_cross_filing_lineage.py:48",
-    "aapl_response_sha256": "tests/test_fundamental_forensics_cross_filing_lineage.py:49",
-    "aapl_query_hash": "tests/test_fundamental_forensics_cross_filing_lineage.py:50",
-    "a1_occurrence": "tests/test_fundamental_forensics_cross_filing_lineage.py:51",
-    "a2_occurrence": "tests/test_fundamental_forensics_cross_filing_lineage.py:52",
-    "kernel_hashes": "tests/test_fundamental_forensics_financial_revision_service.py:61-65",
+    "aapl_response_sha256": "tests/test_fundamental_forensics_cross_filing_lineage.py:53",
+    "aapl_query_hash": "tests/test_fundamental_forensics_cross_filing_lineage.py:54",
+    "a1_occurrence": "tests/test_fundamental_forensics_cross_filing_lineage.py:55",
+    "a2_occurrence": "tests/test_fundamental_forensics_cross_filing_lineage.py:56",
+    "kernel_hashes": "tests/test_fundamental_forensics_financial_revision_service.py:70-74",
     "statement_10k": "tests/test_fundamental_forensics_financial_statement_service.py:50-56",
-    "statement_10q": "tests/test_fundamental_forensics_financial_statement_service.py:887-892",
-    "rich_packet": "tests/test_fundamental_forensics_financial_statement_service.py:63-65",
-    "golden_packet_id": "tests/test_fundamental_forensics_financial_statement_service.py:66",
-    "latest_known_cell": "tests/test_fundamental_forensics_cross_filing_lineage.py:328-332",
-    "as_reported_cell": "tests/test_fundamental_forensics_cross_filing_lineage.py:339-343",
-    "latest_restated_cell": "tests/test_fundamental_forensics_cross_filing_lineage.py:349-350",
-    "historical_cell": "tests/test_fundamental_forensics_cross_filing_lineage.py:289-291",
-    "pre_lineage_cell": "tests/test_fundamental_forensics_cross_filing_lineage.py:487-489",
+    "statement_10q": "tests/test_fundamental_forensics_financial_statement_service.py:925-931",
+    "rich_packet": "tests/test_fundamental_forensics_financial_statement_service.py:75-77",
+    "golden_packet_id": "tests/test_fundamental_forensics_financial_statement_service.py:81",
+    "latest_known_cell": "tests/test_fundamental_forensics_cross_filing_lineage.py:331-334",
+    "as_reported_cell": "tests/test_fundamental_forensics_cross_filing_lineage.py:342-345",
+    "latest_restated_cell": "tests/test_fundamental_forensics_cross_filing_lineage.py:353-354",
+    "historical_cell": "tests/test_fundamental_forensics_cross_filing_lineage.py:294-295",
+    "pre_lineage_cell": "tests/test_fundamental_forensics_cross_filing_lineage.py:491-492",
 }
 
 

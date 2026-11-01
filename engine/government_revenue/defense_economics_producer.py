@@ -17,6 +17,7 @@ from engine.company_intelligence.event_workspace import (
 from engine.company_intelligence.defense_profiles import DEFENSE_TICKERS, SEGMENTS, METRICS, defense_issuer
 from engine.earnings_release.figures import parse_numeric
 from engine.company_intelligence.defense_cash_profiles import financial_fact_rules
+from engine.company_intelligence.rms_segment_profile import numeric_rules as rms_numeric_rules
 from engine.government_revenue.defense_economics import compose_defense_economics
 from engine.government_revenue.defense_interpretation import build_defense_interpretation
 from engine.government_revenue.defense_government_context import load_government_context_inputs,qualify_government_context
@@ -34,6 +35,7 @@ _MARKET_RIGHTS_REF={
 }
 
 _SUPPLEMENT_METRICS={'msl_preferred_payout_terms','msl_qipo_conversion_terms','msl_nonipo_redemption_terms','space_business_sale_pending_terms','space_business_sale_pending_accounting','space_business_sale_completed_terms','space_business_sale_retained_scope'}
+_SUPPLEMENT_METRICS.update(rms_numeric_rules())
 _F2_NUMERIC={
  'defense_segment_prior_margin':('reported_segment_margin','percent','issuer_reported_segment:Defense Systems:reported','prior'),
  'siaw_unfavorable_eac':('reported_eac','USD_million','issuer_reported_program_cost_estimate:SiAW:unfavorable_EAC','current'),
@@ -94,28 +96,44 @@ def _project_fact(fact, workspace, source, *, owner_ref):
         period=f"{year}Q{workspace['fiscal_period']['quarter']}"
     if metric in financial_rules:
         fact_class,expected_unit,basis,period=financial_rules[metric]
+    numeric_supplement=False
     if supplement:
         from engine.company_intelligence.issuer_supplements import _rules,validate_supplement_source
         validate_supplement_source(source,event_id=workspace['event_id'])
-        if ticker!='LHX':raise ValueError('supplement_fact_subject_mismatch')
-        rules={v[0]:v for v in _rules(source['supplement_profile'])}
-        if metric not in rules:return None
-        _,phrase,second,fact_class,basis=rules[metric]
-        expected_unit='source_reported_terms'
-        period=source['source_document']['presented_fiscal_label']
+        if source['supplement_profile']=='LMT_RMS':
+            if ticker!='LMT':raise ValueError('supplement_fact_subject_mismatch')
+            if (workspace['fiscal_period']['year'],workspace['fiscal_period']['quarter'])!=(2026,2):
+                raise ValueError('RMS_workspace_fiscal_period_mismatch')
+            rules=rms_numeric_rules()
+            if metric not in rules:return None
+            fact_class,expected_unit,basis,period=rules[metric]
+            numeric_supplement=True
+            if fact.get('fact_class')!=fact_class:raise ValueError('RMS_fact_class_mismatch')
+        else:
+            if ticker!='LHX':raise ValueError('supplement_fact_subject_mismatch')
+            rules={v[0]:v for v in _rules(source['supplement_profile'])}
+            if metric not in rules:return None
+            _,phrase,second,fact_class,basis=rules[metric]
+            expected_unit='source_reported_terms'
+            period=source['source_document']['presented_fiscal_label']
     if fact.get('period')!=period or fact.get('unit')!=expected_unit or fact.get('basis')!=basis:raise ValueError('fact_basis_period_unit_mismatch')
     span=fact.get('source_span') or {};receipt=span.get('receipt') or {}
     if span.get('schema')!='source_span.v1' or span.get('receipt_state')!='byte_replayed' or span.get('rights_profile')!='rp_public_primary_v1':raise ValueError('fact_receipt_or_rights_unqualified')
     if span.get('document_id')!=source['document_id'] or receipt.get('source_sha256')!=source['source_sha256'] or receipt.get('segment_sha256')!=source['source_sha256']:raise ValueError('fact_source_document_mismatch')
     excerpt=span.get('display_excerpt')
-    if supplement:
+    if supplement and not numeric_supplement:
         from engine.fundamental_forensics.disclosure_diff import normalize_filing
         normalized=normalize_filing({'content':excerpt,'accession':source['document_id']})
         blocks=[b for b in normalized.blocks if not b.table and b.text==fact.get('value') and phrase in b.text and (second is None or second in b.text)]
         if len(blocks)!=1 or fact.get('fact_class')!=fact_class:raise ValueError('supplement_value_not_owner_clause')
     else:
-        parsed=parse_numeric(excerpt) if isinstance(excerpt,str) else None
-        if parsed is None or parsed[0]!=fact.get('value'):raise ValueError('fact_value_not_owner_literal')
+        if numeric_supplement:
+            from engine.company_intelligence.rms_segment_profile import receipt_value
+            parsed_value=receipt_value(excerpt,metric)
+            if parsed_value!=fact.get('value'):raise ValueError('fact_value_not_owner_literal')
+        else:
+            parsed=parse_numeric(excerpt) if isinstance(excerpt,str) else None
+            if parsed is None or parsed[0]!=fact.get('value'):raise ValueError('fact_value_not_owner_literal')
     excerpt_hash=sha256(excerpt.encode()).hexdigest()
     if span.get('text_sha256')!=excerpt_hash or receipt.get('text_sha256')!=excerpt_hash:raise ValueError('fact_text_hash_mismatch')
     start,end=receipt.get('span_start_byte'),receipt.get('span_end_byte')

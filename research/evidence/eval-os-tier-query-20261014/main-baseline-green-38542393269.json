@@ -1,0 +1,32 @@
+{
+  "schema": "eval_os.main_baseline_observation.v1",
+  "saved_at": "2026-10-14T09:51:46.546848+00:00",
+  "observed_window_utc": [
+    "2026-10-14T09:50:27Z",
+    "2026-10-14T09:51:04Z"
+  ],
+  "run": 38542393269,
+  "source_head": "eb7cae75aa7f7c6633bdd4fc843c34fecc2197d2",
+  "event": "push",
+  "status": "completed",
+  "conclusion": "success",
+  "completed_at": "2026-10-14T09:47:38Z",
+  "job": 115781675764,
+  "all_recorded_steps_success": true,
+  "relevant_steps": [
+    "workflow grammar selftest",
+    "every workflow must parse",
+    "transitional runner-routing policy",
+    "hosted-runner packing and merge-train contracts",
+    "skip-only detector selftest",
+    "no named suite may skip in every owning job"
+  ],
+  "repaired_merge": "152f5018dbae55bf67d0153108b24bbec29e22b0",
+  "repair_ancestor_of_tested_source": true,
+  "pr6651_at_observation": {
+    "state": "OPEN",
+    "head": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+    "merge_commit": null
+  },
+  "scope": "Repaired main baseline passed. This is not fresh A1 head proof, a PR merge, installation, production acceptance or programme completion."
+}

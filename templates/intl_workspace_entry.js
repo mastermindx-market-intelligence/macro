@@ -72,6 +72,7 @@
         else legacy.open = false;
       }
       window.addEventListener('hashchange', handleHashChange);
+      window.addEventListener('mmx:shell-location', handleHashChange);
       document.addEventListener('click', handleAnchorActivation);
       navigationListenersAdded = true;
     } catch (_) {
@@ -79,6 +80,7 @@
       if (languageListenerAdded) document.removeEventListener('langchange', relabel);
       if (navigationListenersAdded) {
         window.removeEventListener('hashchange', handleHashChange);
+        window.removeEventListener('mmx:shell-location', handleHashChange);
         document.removeEventListener('click', handleAnchorActivation);
       }
       controls.disabled = true;

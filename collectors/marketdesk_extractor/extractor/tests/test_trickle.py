@@ -759,3 +759,202 @@ def test_permanent_non_pdf_still_skipped_without_retry(tmp_path, monkeypatch):
         )
     finally:
         trickle._close_sessions([state]);conn.close()
+
+
+@pytest.mark.parametrize("phase", ["construct", "enter", "probe", "client"])
+def test_session_failure_classifies_only_browser_entry_as_unknown(
+    tmp_path, monkeypatch, phase,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+    events = []
+
+    class FailingSession(FakeSession):
+        def __init__(self, cfg):
+            events.append("construct")
+            if phase == "construct":
+                raise RuntimeError("construct failed")
+            super().__init__(cfg)
+
+        def __enter__(self):
+            events.append("enter")
+            if phase == "enter":
+                raise RuntimeError("enter failed")
+            return super().__enter__()
+
+        def is_authenticated(self):
+            events.append("probe")
+            if phase == "probe":
+                raise RuntimeError("probe failed")
+            return True
+
+        def __exit__(self, *exc):
+            events.append("close")
+
+    def make_client(context, cfg):
+        events.append("client")
+        if phase == "client":
+            raise RuntimeError("client failed")
+        return FakeClient(context, cfg)
+
+    monkeypatch.setattr(trickle, "BrowserSession", FailingSession)
+    monkeypatch.setattr(trickle, "MarketDeskClient", make_client)
+    state = trickle.AccountState(profile=cfg.profiles[0])
+
+    assert trickle._open_session(cfg, state) is False
+    assert state.browser_start_failed is (phase in {"construct", "enter"})
+    assert state.authed is False
+    assert state.session is None and state.client is None
+    assert events.count("close") == (0 if phase == "construct" else 1)
+
+
+@pytest.mark.parametrize("authenticated", [True, False])
+def test_successful_browser_reopen_clears_startup_unknown(
+    tmp_path, monkeypatch, authenticated,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class ReopenedSession(FakeSession):
+        def is_authenticated(self):
+            return authenticated
+
+    monkeypatch.setattr(trickle, "BrowserSession", ReopenedSession)
+    monkeypatch.setattr(trickle, "MarketDeskClient", FakeClient)
+    state = trickle.AccountState(profile=cfg.profiles[0], browser_start_failed=True)
+    try:
+        assert trickle._open_session(cfg, state) is authenticated
+        assert state.browser_start_failed is False
+        assert state.authed is authenticated
+    finally:
+        trickle._close_session(state)
+
+
+@pytest.mark.parametrize(
+    "flags,expected,reason",
+    [
+        ([], db.AUTH_UNKNOWN, "NO_CONFIGURED_PROFILE"),
+        ([(False, False)], db.AUTH_REQUIRED, "NO_AUTHENTICATED_PROFILE"),
+        ([(False, True)], db.AUTH_UNKNOWN, "BROWSER_START_FAILED"),
+        ([(False, False), (False, True)], db.AUTH_UNKNOWN, "BROWSER_START_FAILED"),
+        ([(False, True), (True, False)], db.AUTHENTICATED, ""),
+    ],
+)
+def test_producer_health_retains_unknown_until_authentication_is_observed(
+    tmp_path, monkeypatch, flags, expected, reason,
+):
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url)
+    db.init_db(conn)
+    states = [
+        trickle.AccountState(
+            profile=cfg.profiles[0], authed=authed, browser_start_failed=failed,
+        )
+        for authed, failed in flags
+    ]
+    try:
+        trickle._record_producer_auth_health(conn, states, NOW)
+        health = db.producer_auth_health(conn)
+        assert health["state"] == expected
+        assert health["reason"] == reason
+        if states and states[0].browser_start_failed:
+            plan = trickle.plan_account(cfg, conn, states[0], NOW)
+            assert "UNKNOWN" in plan.describe()
+            assert "BROWSER_START_FAILED" in plan.describe()
+            assert "NOT AUTHENTICATED" not in plan.describe()
+    finally:
+        conn.close()
+
+
+def test_dry_run_browser_start_failure_prints_unknown(tmp_path, monkeypatch, capsys):
+    cfg = _cfg(tmp_path, monkeypatch)
+
+    class CannotStart(FakeSession):
+        def __enter__(self):
+            raise RuntimeError("browser executable missing")
+
+    monkeypatch.setattr(trickle, "BrowserSession", CannotStart)
+    trickle.run_trickle(
+        cfg, once=True, dry_run=True, now_fn=lambda: NOW, sleep_fn=lambda _: None,
+    )
+    output = capsys.readouterr().out
+    assert "UNKNOWN" in output and "BROWSER_START_FAILED" in output
+    assert "NOT AUTHENTICATED" not in output
+
+
+@pytest.mark.parametrize("phase", ["launch", "setup"])
+@pytest.mark.parametrize("cleanup_fails", [False, True])
+def test_partial_browser_entry_releases_resources_and_preserves_original_error(
+    tmp_path, monkeypatch, phase, cleanup_fails,
+):
+    from types import SimpleNamespace
+
+    import playwright.sync_api
+    from marketdesk_extractor.auth import BrowserSession
+
+    cfg = _cfg(tmp_path, monkeypatch)
+    events = []
+
+    def close():
+        events.append("close")
+        if cleanup_fails:
+            raise RuntimeError("cleanup close failed")
+
+    def stop():
+        events.append("stop")
+        if cleanup_fails:
+            raise RuntimeError("cleanup stop failed")
+
+    def setup(timeout):
+        raise RuntimeError("setup original")
+
+    context = SimpleNamespace(close=close, set_default_timeout=setup)
+
+    def launch(**kwargs):
+        if phase == "launch":
+            raise RuntimeError("launch original")
+        return context
+
+    driver = SimpleNamespace(
+        chromium=SimpleNamespace(launch_persistent_context=launch), stop=stop,
+    )
+    monkeypatch.setattr(
+        playwright.sync_api, "sync_playwright",
+        lambda: SimpleNamespace(start=lambda: driver),
+    )
+    session = BrowserSession(cfg)
+    with pytest.raises(RuntimeError, match=f"{phase} original"):
+        session.__enter__()
+
+    assert events == (["stop"] if phase == "launch" else ["close", "stop"])
+    assert session.context is None and session._pw is None
+    session.__exit__(None, None, None)
+    assert events == (["stop"] if phase == "launch" else ["close", "stop"])
+
+
+@pytest.mark.parametrize("close_fails,stop_fails", [(False, False), (True, False), (True, True)])
+def test_browser_exit_stops_driver_and_is_idempotent(
+    tmp_path, monkeypatch, close_fails, stop_fails,
+):
+    from types import SimpleNamespace
+    from marketdesk_extractor.auth import BrowserSession
+
+    cfg = _cfg(tmp_path, monkeypatch)
+    events = []
+
+    def close():
+        events.append("close")
+        if close_fails:
+            raise RuntimeError("context close failed")
+
+    def stop():
+        events.append("stop")
+        if stop_fails:
+            raise RuntimeError("driver stop failed")
+
+    session = BrowserSession(cfg)
+    session.context = SimpleNamespace(close=close)
+    session._pw = SimpleNamespace(stop=stop)
+    session.__exit__(None, None, None)
+    session.__exit__(None, None, None)
+
+    assert events == ["close", "stop"]
+    assert session.context is None and session._pw is None

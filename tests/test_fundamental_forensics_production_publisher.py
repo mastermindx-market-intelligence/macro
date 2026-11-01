@@ -15,6 +15,7 @@ import ast
 import gzip
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -60,6 +61,16 @@ from engine.fundamental_forensics.query_service import CanonicalEntityBinding
 import scripts.publish_fif_production_datasets as producer
 
 ROOT = Path(__file__).resolve().parents[1]
+# Seat ruling R-9761-CLK (b): publisher-family runs use a byte-identical copy of
+# the metric registry 1.0.0 YAML (catalog / mappings / formulas as on main before
+# #9761) as --repo-root. The publisher reads --repo-root only for the registry
+# (snapshot_core_registry_payload + load_core_registry), and its CLOCK RULE
+# folds every registry available_at into admitted_at, so the live registry's
+# later rule clocks would refuse these 2026-10-13 fixture runs. These tests pin
+# publisher mechanics; registry drift is detected by the golden pins in
+# test_fundamental_forensics_admitted_filing_package.py and
+# test_fundamental_forensics_statement_grid.py, which stay on the live registry.
+PINNED_REGISTRY_ROOT = ROOT / "tests" / "fixtures" / "fundamental_forensics_registry_v1_0_0"
 
 FIRST_ACCEPTED_AT = "2025-10-31T10:01:26.000Z"   # real-shaped: accepted 2025
 SECOND_ACCEPTED_AT = "2024-07-31T10:01:26.000Z"  # real-shaped: accepted 2024
@@ -393,7 +404,7 @@ def _publish_cli(lane: dict, contract: Path, store: Path, report: Path, clock: s
             "--archive-root", str(lane["archive_root"]),
             "--recorded-at", clock,
             "--store-dir", str(store),
-            "--repo-root", str(ROOT),
+            "--repo-root", str(PINNED_REGISTRY_ROOT),
             "--report-path", str(report),
         ]
     )
@@ -523,6 +534,106 @@ def test_publishes_names_generation_and_reuses_capture_clocks(
     assert report2["published"][0]["admitted_at"] == row["admitted_at"]
     assert latest_path.read_bytes() == latest_before
     assert len(mint_calls) == 2  # once per publish run, still one issuer
+
+
+# ---------------------------------------------------------------------------
+# FIF publish phase timing (2026-10-19): ::notice observation lines on STDERR.
+# The nightly cancellation showed a 1,988 s plan-phase gap with NO per-phase
+# evidence; these notices are the measurement, so they must never touch the
+# stdout JSON report (D8 — stdout may be $(...)-captured by callers).
+# ---------------------------------------------------------------------------
+
+#: ``::notice title=fif_publish_timing::<phase> <ticker> <seconds with 1 decimal>s``
+_TIMING_NOTICE_RE = re.compile(
+    r"^::notice title=fif_publish_timing::(\S+) (\S+) (\d+\.\d)s$"
+)
+
+
+def _timing_notice_phases(err: str) -> list[tuple[str, str]]:
+    """Phases of every timing notice on stderr, each checked against the
+    exact wire format (phase, ticker-or-``-``, one-decimal seconds)."""
+    phases: list[tuple[str, str]] = []
+    for line in err.splitlines():
+        if not line.startswith("::notice title=fif_publish_timing::"):
+            continue
+        match = _TIMING_NOTICE_RE.match(line)
+        assert match is not None, f"malformed timing notice: {line!r}"
+        phases.append((match.group(1), match.group(2)))
+    return phases
+
+
+def test_publish_timing_notices_land_on_stderr_and_stdout_report_is_unchanged(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """(a) A passing publish run emits the timing notices on stderr, and its
+    stdout stays exactly the JSON report: it still parses and carries the same
+    keys/values the incumbent happy-path test asserts."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+
+    assert _capture_cli(lane, contract) == 0
+    capsys.readouterr()  # drop the capture subcommand's own streams
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    captured = capsys.readouterr()
+
+    phases = _timing_notice_phases(captured.err)
+    assert phases, "expected fif_publish_timing notices on stderr"
+    assert any(phase == "plan" for phase, _ in phases)
+    assert ("total_plan", "-") in phases
+    # First publication over an empty store: no comparison build, one
+    # authoritative build, then classification and a real commit — so every
+    # other phase family is observed here too.
+    for expected in (
+        "plan_convert",
+        "plan_lineage",
+        "plan_build",
+        "refusal_check",
+        "commit",
+        "total_commit",
+    ):
+        assert any(phase == expected for phase, _ in phases), expected
+    # Ticker field is the fixture issuer's own ticker (never a literal here).
+    assert {ticker for _, ticker in phases} <= {identity["ticker"], "-"}
+
+    # stdout is STILL the report: it parses, equals the --report-path file,
+    # and keeps the exact keys the happy-path test pins.
+    report = json.loads(captured.out)
+    assert report == json.loads(report_path.read_text(encoding="utf-8"))
+    assert [row["ticker"] for row in report["published"]] == [identity["ticker"]]
+    assert report["excluded"] == []
+    row = report["published"][0]
+    assert datetime.fromisoformat(
+        row["admitted_at"].replace("Z", "+00:00")
+    ) == datetime(2026, 10, 13, 2, 31, tzinfo=timezone.utc)
+    assert row["admitted_accessions"] == sorted(identity["accessions"])
+
+
+def test_publish_timing_never_appears_on_stdout(
+    tmp_path, monkeypatch, offline_collector, capsys
+) -> None:
+    """(b) No timing line ever rides stdout — the run must actually have
+    emitted notices (else this would pass vacuously) and none may be on the
+    stdout that carries the JSON report."""
+    lane = _materialize_lane(tmp_path)
+    identity = lane["identity"]
+    contract = _write_contract(tmp_path, identity, None)
+    store = tmp_path / "store"
+    report_path = tmp_path / "publish_report.json"
+
+    assert _capture_cli(lane, contract) == 0
+    capsys.readouterr()
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    captured = capsys.readouterr()
+
+    assert _timing_notice_phases(captured.err)
+    assert "fif_publish_timing" not in captured.out
+    assert not any(
+        line.startswith("::notice") for line in captured.out.splitlines()
+    )
+    assert json.loads(captured.out)["published"]
 
 
 def test_future_clock_refusal_writes_nothing(tmp_path, monkeypatch, offline_collector, capsys) -> None:
@@ -885,7 +996,7 @@ def test_fixture_tree_inputs_are_refused(tmp_path, monkeypatch, offline_collecto
         if subcommand == "capture-members":
             argv += ["--user-agent", USER_AGENT]
         else:
-            argv += ["--store-dir", str(tmp_path / "store"), "--repo-root", str(ROOT)]
+            argv += ["--store-dir", str(tmp_path / "store"), "--repo-root", str(PINNED_REGISTRY_ROOT)]
         rc = producer.main(argv)
         assert rc == 1
         assert any(
@@ -1516,7 +1627,7 @@ def test_d6_capture_report_files_member_capture_failure_not_no_retained_package(
             "--archive-root", str(lane["archive_root"]),
             "--recorded-at", RUN_CLOCK,
             "--store-dir", str(store),
-            "--repo-root", str(ROOT),
+            "--repo-root", str(PINNED_REGISTRY_ROOT),
             "--report-path", str(report_path),
             "--capture-report", str(capture_report),
         ]
@@ -2261,7 +2372,7 @@ def test_d13_t6_publish_report_carries_contract_acquire_block_and_moves_no_byte(
             "--archive-root", str(lane["archive_root"]),
             "--recorded-at", RUN_CLOCK,
             "--store-dir", str(store),
-            "--repo-root", str(ROOT),
+            "--repo-root", str(PINNED_REGISTRY_ROOT),
             "--report-path", str(report_path),
             "--capture-report", str(capture_report),
         ]
@@ -3195,7 +3306,14 @@ def test_c0c_q11_over_budget_primary_refused_before_storage(tmp_path) -> None:
 # ffprods_dacae5538dd6e3351fe52ec55f12629c665a2f63f6ac950fd58397e76578ab78,
 # while the retained package_manifest.json sha256 pins below are byte-identical
 # under both publishers (the stamp is in-memory, never written to the archive).
-_BASE_GENERATION_ID = "ffprods_5aec3b7a0adaa6ae4e752a7c9ced3dc3e9bd7ee4dd6bfa2f49a21262be1a556a"
+# G0 (code-identity re-pin, A0 R-4 precedent): the generation core binds
+# packet_builder_digest (bytes of financial_intelligence_packet.py) and
+# registry_content_sha256 (catalog/formulas/mappings snapshot). G0 edits both:
+# builder cbea8f589a89 -> 87e5e176efe4, registry 3c01f53f1db7 -> 3234dd4dab64
+# (python3.12.13 harness). With those inputs held at base the pin re-derives
+# ffprods_5aec3b7a0adaa6ae4e752a7c9ced3dc3e9bd7ee4dd6bfa2f49a21262be1a556a;
+# the manifest and witness sha256 pins below are unchanged by G0.
+_BASE_GENERATION_ID = "ffprods_14aa0f20ba4514f640e784094e7a1dcbc3c8c889e5f956fa63696205e5c86f8d"
 _BASE_MANIFEST_SHA = {
     "0000320193-25-000079": "4d9242653aa977a24b5bba955d3d695d4762042ca094ae742fad4453e984b4a8",
     "0000320193-26-000020": "3a9c046f500d542998e4fa7b02a42562e51b28647eb508c68c2a740f693d7f03",
@@ -3513,9 +3631,10 @@ def test_c0c_t8g_first_publish_eight_k_captured_after_ten_q_keeps_content_clock(
     assert row["outcome"] == "published"
     assert row["clock_basis"] == "content"
     # The content clock over the 10-Q's T1 plus the rule + registry clocks —
-    # nothing derived from the 8-K's later T2.
+    # nothing derived from the 8-K's later T2. The registry is the one this
+    # publish run read (--repo-root, R-9761-CLK (b)).
     registry_clocks = producer._registry_available_clocks(
-        producer.snapshot_core_registry_payload(ROOT)
+        producer.snapshot_core_registry_payload(PINNED_REGISTRY_ROOT)
     )
     t1 = producer.parse_utc(CAPTURE_CLOCK, field="capture clock")
     expected = producer.utc_text(producer._content_clock([t1], registry_clocks))
@@ -3643,7 +3762,7 @@ def test_c0c_t8d_coverage_row_for_eight_k_captured_admitted_not_served(
             "--archive-root", str(lane["archive_root"]),
             "--recorded-at", RUN_CLOCK,
             "--store-dir", str(tmp_path / "store"),
-            "--repo-root", str(ROOT),
+            "--repo-root", str(PINNED_REGISTRY_ROOT),
             "--capture-report", str(capture_report),
             "--report-path", str(report_path),
         ]
@@ -3810,7 +3929,7 @@ def test_c0c_p8_coverage_row_reports_shortfall_with_typed_codes(
             "--archive-root", str(lane["archive_root"]),
             "--recorded-at", RUN_CLOCK,
             "--store-dir", str(tmp_path / "store"),
-            "--repo-root", str(ROOT),
+            "--repo-root", str(PINNED_REGISTRY_ROOT),
             "--capture-report", str(capture_report),
             "--report-path", str(report_path),
         ]

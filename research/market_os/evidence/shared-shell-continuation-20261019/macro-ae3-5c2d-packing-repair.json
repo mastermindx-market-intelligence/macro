@@ -1,0 +1,65 @@
+{
+  "started_at": "2026-10-20T11:25:37.490056+00:00",
+  "head": "ae3e6bc547361b632223e7e9bde73128b399035e",
+  "incoming": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+  "index_before": "1a008b73af0ef56634ce89bb07c62b7a5e0a5988",
+  "before_sha256": "96e6548805d3b33f5d42aec9b8a66fa8813bed108edf439ef00213878b23f352",
+  "after_sha256": "f2518d13a01836559cfb244eba597c494883fa7f80f5c32bc8ae1351d1db5ac3",
+  "measured_rows": [
+    {
+      "probe": "templates/index.html",
+      "jobs": 135,
+      "weight": 5829,
+      "packs": 10,
+      "max_jobs": 136,
+      "max_weight": 5822,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 135/330 jobs (2 unscoped always-on, 133 scoped matches)"
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "jobs": 134,
+      "weight": 5704,
+      "packs": 10,
+      "max_jobs": 134,
+      "max_weight": 5697,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 134/330 jobs (2 unscoped always-on, 132 scoped matches)"
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "jobs": 128,
+      "weight": 5578,
+      "packs": 10,
+      "max_jobs": 130,
+      "max_weight": 5600,
+      "max_packs": 10,
+      "reason": "scoped to 1 changed file(s): 128/330 jobs (2 unscoped always-on, 126 scoped matches)"
+    }
+  ],
+  "changes": [
+    {
+      "probe": "templates/index.html",
+      "old": 5822,
+      "new": 5829
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "old": 5697,
+      "new": 5704
+    }
+  ],
+  "ast_only_two_weight_literals_plus_docstring": true,
+  "prior_docstring_retained": true,
+  "patch": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-packing-repair.patch",
+    "bytes": 2508,
+    "sha256": "3844d58b7312fa77f950ca0c62c2f194b683707e37caac1775492cada3b91eb5"
+  },
+  "source_write_attempted": true,
+  "index_after": "39477d0a200f63fe0d1fcf1eaa4f6d21873c86aa",
+  "finished_at": "2026-10-20T11:25:53.632147+00:00",
+  "staged_raw_equal": true,
+  "no_unstaged": true,
+  "owned_whitespace_exit": 0
+}

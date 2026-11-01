@@ -32,6 +32,7 @@ sys.path.insert(0, str(_ROOT))
 
 from app import mailer  # noqa: E402
 from engine import alert_delivery_drain as drain_mod  # noqa: E402
+from lib.frozen_delivery_client import from_environment  # noqa: E402
 
 
 def main(argv=None) -> int:
@@ -60,9 +61,12 @@ def main(argv=None) -> int:
         if now_utc.tzinfo is None:
             now_utc = now_utc.replace(tzinfo=timezone.utc)
 
+    # Separate explicit host capability; the ordinary drain opt-in cannot enable
+    # frozen delivery. Invalid configured composition fails, never falls back.
+    frozen_delivery = from_environment(os.environ)
     send_fn = None if dry_run else mailer.send_alert
     result = drain_mod.drain(send_fn=send_fn, now_utc=now_utc, limit=args.limit,
-                             dry_run=dry_run, fire_event_id=args.fire_event_id)
+                             dry_run=dry_run, fire_event_id=args.fire_event_id, frozen_delivery=frozen_delivery)
 
     selector_failed = args.fire_event_id is not None and (
         result.read_state == drain_mod.READ_UNAVAILABLE or result.selector_state is not None)

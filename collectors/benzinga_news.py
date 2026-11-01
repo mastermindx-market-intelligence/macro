@@ -404,6 +404,19 @@ def catch_up_once(
         cursor_epoch=current_epoch,
         observed_at=observed_at,
     )
+    return apply_catch_up_batch(
+        batch=batch, store=store, universe=universe, expected_cursor=current_text,
+    )
+
+
+def apply_catch_up_batch(
+    *, batch: DeltaBatch, store: NewsStore, universe: UniverseQualification,
+    expected_cursor: str | None,
+) -> CatchUpResult:
+    """Accept a completed network batch on the caller's store-owning thread."""
+    if universe.status != "qualified":
+        raise BenzingaRoutingError("universe_not_qualified")
+    current_text = expected_cursor
     if batch.gap_unresolved:
         if current_text is None:
             # First catch-up: hold the client's lookback base so the next

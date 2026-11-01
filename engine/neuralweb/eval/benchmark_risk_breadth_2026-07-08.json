@@ -1,0 +1,74 @@
+{
+  "benchmark_id": "risk_breadth_2026-07-08",
+  "frozen": true,
+  "source": "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2026-07-08",
+    "session_label": "date only",
+    "adjudication_date": "2026-07-12",
+    "historical_source_availability": "unverified",
+    "dependence_group": "june-july-2026-risk-on",
+    "source": {
+      "path": "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "sha256": "5c593990c373e2a14ff77e33824536d55b8c9f33c3dfdd40a995be7dda9c8568"
+    },
+    "input_facts": [
+      {
+        "event_date": "2026-07-08",
+        "source_lines": [
+          59,
+          65
+        ],
+        "text": "| Date | Advancers | Decliners | Tape interpretation |\n|---|---:|---:|---|\n| Jun 26 | 322 | 178 | Capitulation/rebound participation beginning |\n| Jun 29 | 231 | 270 | Index rally with negative breadth |\n| Jun 30 | 212 | 289 | Another narrow index-led session |\n| Jul 2 | 355 | 145 | Best genuine broad participation day in the sequence |\n| Jul 8 | 111 | 390 | Highly selective winners despite broad weakness |",
+        "sha256": "a664a420ba495c7ae7db40f369630d1c30122cc5acd071a53b274d99ea8b0b26"
+      },
+      {
+        "event_date": "2026-07-08",
+        "source_lines": [
+          48,
+          48
+        ],
+        "text": "| SPY | Jun 26 low/close zone | +1.65% | -0.31% | Common macro floor, but Jul 8 was not broad risk-on |",
+        "sha256": "711d946be42ff3f2a73f006c6ef38cf99414115e12e0557c841e58fc6ea5a53f"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        55,
+        67
+      ],
+      "text": "### Breadth proves this was selective\n\nThe local breadth feed does not show a broad all-clear:\n\n| Date | Advancers | Decliners | Tape interpretation |\n|---|---:|---:|---|\n| Jun 26 | 322 | 178 | Capitulation/rebound participation beginning |\n| Jun 29 | 231 | 270 | Index rally with negative breadth |\n| Jun 30 | 212 | 289 | Another narrow index-led session |\n| Jul 2 | 355 | 145 | Best genuine broad participation day in the sequence |\n| Jul 8 | 111 | 390 | Highly selective winners despite broad weakness |\n\nOn July 8, mainland Chinese benchmarks also declined while Hang Seng Tech rose about 5% and Alibaba rose 12.2%. That is rotation into cheap Hong Kong internet exposure, not proof of a broad Chinese growth boom. [Reuters Hong Kong market report](https://www.indopremier.com/ipotnews/newsDetail.php?group_news=IPOTNEWS&jdl=Hong+Kong+stocks+surge+as+dip-buyers+emerge%2C+mainland+benchmarks+at+one-month+low&news_id=223656)",
+      "sha256": "6ece65ec07362d44a2ad042e1dac48269c5b9ff666c29db29c7c4bc36796b5e6"
+    }
+  },
+  "question_en": "Using only the supplied breadth and SPY readings through July 8, distinguish an index rebound from broad participation. What can this evidence establish and what remains unproved?",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2026-07-08 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2026-07-08] | Date | Advancers | Decliners | Tape interpretation |\n|---|---:|---:|---|\n| Jun 26 | 322 | 178 | Capitulation/rebound participation beginning |\n| Jun 29 | 231 | 270 | Index rally with negative breadth |\n| Jun 30 | 212 | 289 | Another narrow index-led session |\n| Jul 2 | 355 | 145 | Best genuine broad participation day in the sequence |\n| Jul 8 | 111 | 390 | Highly selective winners despite broad weakness |\n[2026-07-08] | SPY | Jun 26 low/close zone | +1.65% | -0.31% | Common macro floor, but Jul 8 was not broad risk-on |",
+  "expected_properties": [
+    {
+      "tag": "breadth",
+      "check": "Contrast June 29 231/270, July 2 355/145 and July 8 111/390 advancers/decliners, retaining July 8 SPY -0.31%."
+    },
+    {
+      "tag": "regime",
+      "check": "Describe changing or selective participation rather than declaring a synchronized broad risk-on regime."
+    },
+    {
+      "tag": "causality",
+      "check": "Do not invent policy, flow, company catalysts or a causal mechanism absent from these inputs."
+    },
+    {
+      "tag": "limits",
+      "check": "No next-day return, durable-bottom, trade-sizing or historical availability claim."
+    }
+  ],
+  "known_failure_modes": [
+    "Treat retrospective supplied diagnostic text as a historically served point-in-time snapshot.",
+    "Turn a distinct population, selected anecdote or failed calibration into a validated execution signal.",
+    "Import later observations absent from the supplied cutoff slice or count related cases as independent trials."
+  ],
+  "gold_standard_sentence": "The participation changed: June 29 was narrow, July 2 broad, and July 8 strongly selective with SPY down. Those readings do not establish a durable broad recovery or its cause.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

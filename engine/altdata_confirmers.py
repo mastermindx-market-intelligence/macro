@@ -63,7 +63,7 @@ def _theme_confirmers(name: str, members: list[str], tickers: dict) -> dict | No
         if "gov_contract_accel" in chans or "gov_grant_accel" in chans:
             gov.append({"ticker": m, "accel_x": rec.get("gov_contract_accel"),
                         "usd": rec.get("gov_contract_usd_30d")})
-        for c in (chans & CONTEXT):
+        for c in sorted(chans & CONTEXT):
             context.setdefault(c, []).append(m)
     leading_members = sorted({d["ticker"] for d in insider} | {d["ticker"] for d in gov})
     if not leading_members and not context:
@@ -76,7 +76,7 @@ def _theme_confirmers(name: str, members: list[str], tickers: dict) -> dict | No
         bits.append(f"{len(insider)} insider cluster" + ("s" if len(insider) > 1 else ""))
     if gov:
         bits.append(f"{len(gov)} gov-award accel")
-    for c, ms in context.items():
+    for c, ms in sorted(context.items()):
         bits.append(f"{len(ms)} {c.replace('_', ' ')}")
     return {
         "name": name,

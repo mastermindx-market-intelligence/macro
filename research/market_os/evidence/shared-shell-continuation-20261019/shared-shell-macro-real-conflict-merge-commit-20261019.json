@@ -1,0 +1,26 @@
+{
+  "started_at": "2026-10-19T09:32:36.116363+00:00",
+  "completed_at": "2026-10-19T09:32:48.901513+00:00",
+  "head_before": "3261331f95371b96187ccbfd3fc055067d4a6945",
+  "incoming": "69dd6e774cc48223005426765e74aed193d55954",
+  "validated_tree": "dbcaadef4514bb614aa266992fa681b3fee2d6bf",
+  "commit_exit": 0,
+  "stdout": "[sol/market-os-shared-shell-design-20260924 c7867f1012877] Merge main into the original Shared Shell source\n",
+  "stderr": "",
+  "pr_before": {
+    "autoMergeRequest": null,
+    "headRefName": "sol/market-os-shared-shell-design-20260924",
+    "headRefOid": "3261331f95371b96187ccbfd3fc055067d4a6945",
+    "labels": [],
+    "state": "OPEN"
+  },
+  "pushed": false,
+  "armed": false,
+  "head_after": "c7867f101287788dc9aaf2ac0483e0c35426b59f",
+  "parents": [
+    "3261331f95371b96187ccbfd3fc055067d4a6945",
+    "69dd6e774cc48223005426765e74aed193d55954"
+  ],
+  "status": "",
+  "pr_source_paths_vs_incoming": 288
+}

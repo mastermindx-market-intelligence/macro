@@ -1,0 +1,19 @@
+{
+  "recorded_at": "2026-10-14T15:50:46.054747+00:00",
+  "run_id": "eval-a1-refresh-reachability-01a1333d-c1",
+  "root_id": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "result_bytes": 4615,
+  "result_sha256": "6015dd9b8d31f0e1de1e158c98c12da170bd35a49cf25eb706475a72424af385",
+  "verdict": "REVIEWER_ACCEPTED_WITH_CORRECTIONS",
+  "accepted_scope": "Packet-only static reachability audit: blocked semantic/current contract-delta red exits before ProofFreshness/reprove/capacity admission. More capacity alone cannot unblock the prepared A1 correction. Root diagnostic confirms two blocked cases and a clean-stale positive control.",
+  "corrections": [
+    "Removing or hiding v1 advertisement is NOT an admissible recovery; preserve proof protocol and all checks.",
+    "Legacy path discussion is descriptive only, no downgrade or alternative carrier authorized.",
+    "merge-blocked label residue is not itself a prohibition on the ordinary legacy refresh; that worker wording is unsupported.",
+    "A successful mark-only workflow is not a completed full sweep or base update.",
+    "This is an invalidated orchestration assumption, not a demonstrated controller defect; do not weaken the controller."
+  ],
+  "live_binding": "Current PR read at approximately15:44: observed1b OPEN/MERGEABLE; ci-gate terminal FAILURE with concrete run link and contract-delta FAILURE. Final ci-semantic-evidence artifact11904159758 exists; bytes not downloaded.",
+  "cadence_exception": "The15:49:27 structured diagnostic call may have been less than300seconds after the15:44 PR-check read (exact first call timestamp not retained). No raw logs, bypass flag or retry was used. Preserve the observation honestly and make no more CI read before15:55:00 plus a substantive source/owner event.",
+  "forbidden_effects_performed": false
+}

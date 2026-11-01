@@ -19,6 +19,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib.pages import externalize_css_text, externalize_js_text  # noqa: E402
@@ -440,13 +442,40 @@ def _referenced_css_names(site: Path) -> set:
     return refs
 
 
+def _reached_without_a_link(root: Path) -> set:
+    """Paired sheets a page reaches with no `<link>` of their own, read from what reaches them.
+
+    Two real routes. chat.html loads `mm_brain_presentation.js`, which builds a renderer
+    sheet's URL at run time from a stem. The Government Revenue page links one bundle that
+    `_government_revenue_critical_css` concatenates from its sheets, and those sheets ship
+    too because `tests/test_government_revenue_asset_publication.py` pins them. No page ever
+    linked these, so they are not the dropped-`<link>` shape this tripwire exists for. The
+    routes are read, not listed: a sheet leaves this set when its loader stops naming it.
+    """
+    import re as _re
+    site, out = root / "site", set()
+    chat, loader = site / "chat.html", site / "mm_brain_presentation.js"
+    if chat.is_file() and loader.is_file() and "mm_brain_presentation.js" in chat.read_text(errors="ignore"):
+        text = loader.read_text(errors="ignore")
+        if "stem+'.css'" in text:
+            for pair in _re.findall(r"stem=finance\?'([\w-]+)':'([\w-]+)'", text):
+                out.update(f"{stem}.css" for stem in pair)
+    builder = root / "scripts" / "build_government_revenue.py"
+    if builder.is_file() and "government-revenue-critical-theme.css" in _referenced_css_names(site):
+        found = _re.search(r"def _government_revenue_critical_css.*?names = \(([^)]*)\)",
+                           builder.read_text(errors="ignore"), _re.S)
+        if found:
+            out.update(_re.findall(r'"(government-revenue-[\w-]+\.css)"', found.group(1)))
+    return out
+
+
 def _orphaned_paired_stylesheets(root: Path) -> list:
     """Paired stylesheets (templates/<n>.css shipping as site/<n>.css) reached by nothing."""
     site, templates = root / "site", root / "templates"
     if not site.is_dir() or not templates.is_dir():
         return []
     paired = sorted(p.name for p in templates.glob("*.css") if (site / p.name).is_file())
-    refs = _referenced_css_names(site)
+    refs = _referenced_css_names(site) | _reached_without_a_link(root)
     return [n for n in paired if n not in refs]
 
 
@@ -797,3 +826,70 @@ def test_unenumerable_checkout_skips_both_prunes(tmp_path, monkeypatch):
     externalize(site)
 
     assert (css / "00000000.css").exists() and (js / "00000000.js").exists()
+
+
+def _paired_sheets(root: Path, *names: str) -> None:
+    (root / "templates").mkdir()
+    (root / "site").mkdir()
+    for side in ("templates", "site"):
+        for name in names:
+            (root / side / name).write_text(".c{color:red}", encoding="utf-8")
+
+
+_LOADER = "var stem=finance?'mm_brain_finance':'mm_brain_visuals';asset(stem+'.css','style',v);"
+_BUILDER = (
+    "def _government_revenue_critical_css(env):\n"
+    '    names = ("theme.css", "government-revenue-parity.css")\n'
+)
+
+
+def test_a_sheet_the_brain_loader_builds_is_reached(tmp_path):
+    _paired_sheets(tmp_path, "mm_brain_finance.css", "mm_brain_visuals.css")
+    (tmp_path / "site" / "chat.html").write_text('<script src="mm_brain_presentation.js?v=1"></script>', encoding="utf-8")
+    (tmp_path / "site" / "mm_brain_presentation.js").write_text(_LOADER, encoding="utf-8")
+    assert _orphaned_paired_stylesheets(tmp_path) == []
+
+
+@pytest.mark.parametrize("chat, loader", [
+    ("<html></html>", _LOADER),
+    ('<script src="mm_brain_presentation.js?v=1"></script>', "var stem=finance?'mm_brain_finance':'other';asset(stem+'.css','style',v);"),
+    ('<script src="mm_brain_presentation.js?v=1"></script>', "var stem=finance?'mm_brain_finance':'mm_brain_visuals';asset(stem+'.js','script',v);"),
+])
+def test_the_brain_route_stops_counting_when_the_loader_does(tmp_path, chat, loader):
+    """No page loads it, it names another sheet, or it no longer builds a sheet URL."""
+    _paired_sheets(tmp_path, "mm_brain_finance.css", "mm_brain_visuals.css")
+    (tmp_path / "site" / "chat.html").write_text(chat, encoding="utf-8")
+    (tmp_path / "site" / "mm_brain_presentation.js").write_text(loader, encoding="utf-8")
+    assert "mm_brain_visuals.css" in _orphaned_paired_stylesheets(tmp_path)
+
+
+def _bundle_tree(root: Path, page: str, builder: str) -> None:
+    _paired_sheets(root, "government-revenue-parity.css", "theme.css")
+    (root / "scripts").mkdir()
+    (root / "scripts" / "build_government_revenue.py").write_text(builder, encoding="utf-8")
+    (root / "site" / "government_revenue.html").write_text(page, encoding="utf-8")
+
+
+_BUNDLE_LINK = '<link rel="stylesheet" href="government-revenue-critical-theme.css?v=1">'
+
+
+def test_a_sheet_in_the_linked_bundle_is_reached(tmp_path):
+    _bundle_tree(tmp_path, _BUNDLE_LINK, _BUILDER)
+    assert "government-revenue-parity.css" not in _orphaned_paired_stylesheets(tmp_path)
+
+
+@pytest.mark.parametrize("page, builder", [
+    ("<html></html>", _BUILDER),
+    (_BUNDLE_LINK, _BUILDER.replace("government-revenue-parity.css", "government-revenue-other.css")),
+    (_BUNDLE_LINK, 'names = ("government-revenue-parity.css")\n'),
+])
+def test_the_bundle_route_stops_counting_when_the_bundle_does(tmp_path, page, builder):
+    """No page links the bundle, the bundle drops the sheet, or the names are some other list."""
+    _bundle_tree(tmp_path, page, builder)
+    assert "government-revenue-parity.css" in _orphaned_paired_stylesheets(tmp_path)
+
+
+def test_the_bundle_route_does_not_excuse_theme_css(tmp_path):
+    """theme.css is in the bundle's list, and every page must still link it."""
+    _bundle_tree(tmp_path, _BUNDLE_LINK, _BUILDER)
+    assert _orphaned_paired_stylesheets(tmp_path) == ["theme.css"]

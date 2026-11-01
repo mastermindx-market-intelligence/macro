@@ -1,0 +1,94 @@
+{
+  "schema": "portfolio.recovery_ci_repair.v1",
+  "operation": "portfolio-ohlc-delivery-20261022",
+  "pull_request": 10073,
+  "source_head_before_repair": "1ea5cee1707b807956485e35d5878abdeb537e39",
+  "original_ci": {
+    "run_id": 39777443219,
+    "attempt": 1,
+    "failed_job_id": 119820761551,
+    "logical_job": "biocatalyst-deploy-integration",
+    "failure": "test_movers_pre_mirror_guard_precedes_every_site_rsync expected an obsolete rsync literal without --exclude=/ohlc; 323 passed and one failed",
+    "semantic_evidence_sha256": "882d2c019752092aa41eab8b85b644827a16698034c15e0ce9e035d9d050c1c0"
+  },
+  "repair": "Update only the test mirror-command literal to include the existing production --exclude=/ohlc option. Preserve the original guard-order assertion and production updater unchanged.",
+  "full_job_validation": {
+    "started": "2026-10-22T13:45:48.521981+00:00",
+    "finished": "2026-10-22T13:46:12.652037+00:00",
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "tests/test_deploy_update_self_heal.py",
+      "-q",
+      "--tb=short",
+      "--basetemp",
+      "/tmp/portfolio-ohlc-delivery-20261022/ci-rsync-contract-repair-20261022/pytest"
+    ],
+    "exit_code": 0,
+    "before": {
+      "tests/test_deploy_update_self_heal.py": "b743f736f5bd21b59f615e73d7408bfd22c36f8870ba6612cc967c11550040b1",
+      "app/deploy/update.sh": "970a5008950ffcc7ffecc2d495c5aa88fa853c009f53b812c203cff37f0432e1"
+    },
+    "after": {
+      "tests/test_deploy_update_self_heal.py": "b743f736f5bd21b59f615e73d7408bfd22c36f8870ba6612cc967c11550040b1",
+      "app/deploy/update.sh": "970a5008950ffcc7ffecc2d495c5aa88fa853c009f53b812c203cff37f0432e1"
+    },
+    "falsifiers": {
+      "missing_ohlc_exclusion": "ValueError",
+      "guard_after_mirror": "AssertionError"
+    },
+    "log_sha256": "632f177d60f590baed03e098f39d32bf8059e78dbfea454b9329ad9b6c8e42c5",
+    "unchanged_during_run": true
+  },
+  "test_summary": "324 passed in 23.51s",
+  "environment_limit": "Local Python 3.14.7; hosted CI uses Python 3.12. This does not replace required final-head hosted CI.",
+  "independent_review": {
+    "role": "native read-only integration advisor",
+    "disposition": "PASS for the exact one-line delta, subject to immutable result/hash binding",
+    "scope": "Original frozen test and updater read; explicit exclusion and guard ordering remain required. Advisor did not run the tests."
+  },
+  "current_base_read_only_composition": {
+    "at": "2026-10-22T13:46:32.318500+00:00",
+    "fetch": {
+      "rc": 0,
+      "stdout": "",
+      "stderr": "From https://github.com/mastermindx-market-intelligence/macro\n * branch                        main       -> FETCH_HEAD\n"
+    },
+    "main": "2926e83157923c754751818026a4d0ce89a2a977",
+    "ohlc": {
+      "head": "1ea5cee1707b807956485e35d5878abdeb537e39",
+      "merge_tree": {
+        "rc": 0,
+        "stdout": "f1a262c8644b7e07290661deaa88e7b45317b9c4\n",
+        "stderr": ""
+      },
+      "tree": "f1a262c8644b7e07290661deaa88e7b45317b9c4",
+      "selected_blobs": "100644 blob 5b360e3941623fe4d9bd11a9991ae78e1c3ff863\t.github/ci/legacy-jobs.yml\n100644 blob a8e078e99def46c7dd351fc5891cab89a2e9a707\t.github/workflows/daily.yml\n100755 blob 5183831169300d5f88593c0f88366cdd00bb5ba7\tapp/deploy/update.sh\n100644 blob 9e26503c3818c1f30115e77d39da8bd4e7bd9240\tconfig/dag.yml\n100644 blob fabd7764e4264bd2683a1dcf9092918da6c2d430\ttests/test_deploy_update_self_heal.py\n"
+    },
+    "fred": {
+      "head": "59cbd1864e310b28cb17610d73a0c46a1db5da8d",
+      "merge_tree": {
+        "rc": 0,
+        "stdout": "3db1862919426a1f8e1c11c410cdb8957215f18e\n",
+        "stderr": ""
+      },
+      "tree": "3db1862919426a1f8e1c11c410cdb8957215f18e",
+      "selected_blobs": "100644 blob 755cb5908c0939817a256e3698b2e1bfd108fe44\t.github/ci/legacy-jobs.yml\n100644 blob 128f5104938095ee3f0a0b4391413700100f173c\t.github/workflows/daily.yml\n100755 blob 1017d6120fa948f2712a4d46a3d567c38bfebeda\tapp/deploy/update.sh\n100644 blob 92f02b4ea7c049601adb2e56e6e26fae377ee2f6\tconfig/dag.yml\n100644 blob bef207b72e573e732bd2937bf423ad7e23c5561d\ttests/test_deploy_update_self_heal.py\n"
+    }
+  },
+  "remaining_gates": [
+    "Final-head complete CI and semantic ci-gate on actual integrated candidate",
+    "Combined CI scopes and packing, preserving both reviewed three-file changes",
+    "Ordinary merge with actual source/tree readback",
+    "Installed updater/helper verification before genuine eligible daily payload",
+    "Authenticated Portfolio price-window and Treasury consumer proof"
+  ],
+  "do_not_redo": [
+    "Migration 0036",
+    "Completed seven-action account fixture and cleanup",
+    "Terminal PR 1114 deployment",
+    "Existing completed FRED attempt-two retry",
+    "Original ambiguous child append"
+  ]
+}

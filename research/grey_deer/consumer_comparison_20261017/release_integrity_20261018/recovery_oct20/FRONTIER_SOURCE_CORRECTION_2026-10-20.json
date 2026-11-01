@@ -1,0 +1,30 @@
+{
+  "schema": "grey_deer.frontier_source_correction.v1",
+  "reason": "Recovered completed source queue/landing receipts supersede stale pending-next-action text; preserve subsequent runtime observations separately.",
+  "files": {
+    "research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md": {
+      "old_sha256": "c360c24c02b563f9fef1a7da22a1d1d03b2630c906cc0d734876465e0fa75b47",
+      "new_sha256": "53c5cdf5b5700e2c846e865a548a136c8da76ad6bb9292ae8539831989146be2"
+    },
+    "agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md": {
+      "old_sha256": "cc09cd9d49cb935c05568e422143f12a50e880282e657e6df5c78d520f648e1c",
+      "new_sha256": "46e2c93a7af07a5d429ff342ab473595d54b3209b7f8bf38f77c7933055b4a22"
+    },
+    "research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md": {
+      "old_sha256": "3a0bb7d3288ecf4252e0f24e24f6645d07c71fafc1169eb3de019c97036f6100",
+      "new_sha256": "66d54522af74bad2dfbb3b99926f83072626d9f98a0929a301c860f5ff5e3c0a"
+    },
+    "research/grey_deer/risk_radar_source_consumer_audit_20261017.md": {
+      "old_sha256": "d6a238106519b716d4f9c3b4e153d047972a449634b65f27fbdfab129c5e5d30",
+      "new_sha256": "bc4151e5b51ad35151d7e9ccad347b75c7de45d70ff2d2c4a76f19d9f54f7b34"
+    },
+    "agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md": {
+      "old_sha256": "952fbde8096ed4687dbb3e1722c66022818a0f7ebd64066ead40cdd89fd358d9",
+      "new_sha256": "dbaf3774ffd6a204f4956e37ff39020e4ef5dfb3575378cd1cdbed9783570759"
+    },
+    "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/README.md": {
+      "old_sha256": "4e673631e8556d57251288554488c0d79e3e8fbc2b252033c6a97ffc207b71b8",
+      "new_sha256": "1ddfb84c5e6934f9a16ea88b12929564b5da2afd9258d648a07f1ff47c46c338"
+    }
+  }
+}

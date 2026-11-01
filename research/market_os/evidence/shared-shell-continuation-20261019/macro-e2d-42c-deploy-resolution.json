@@ -1,0 +1,34 @@
+{
+  "observed_at": "2026-10-20T10:28:18.228096+00:00",
+  "base": "92c51f1ff800b36fc63e7869243945996ac7315c",
+  "head": "e2d10f933587f58be8716505529a37f8839901f7",
+  "incoming": "42c859546ececa797b400db0adeb8c5a22f96832",
+  "resolution": "exact union of independent asset allowlist and API restart additions; other H bytes preserved",
+  "files": [
+    {
+      "path": "app/deploy/Caddyfile",
+      "base_sha256": "17aefed0146aad5e022062873c1a36fd5416176e8ae7c02cc965454c2bda3023",
+      "head_sha256": "8b155501adaf1fee04f703645655c6c97f4b205b6bfac12011ef74386173436a",
+      "main_sha256": "881f89bc4d1fc66ecb2a4b6281b332b4ee41d0d812ef5b8b64d6b5bff675190b",
+      "result_sha256": "cb8adb3ce636e956fdb58831b960495f6cfba4dc75c578c62bfae39a3b64af3a",
+      "result_bytes": 76055,
+      "main_delta_exactly_verified": true,
+      "head_other_bytes_preserved": true
+    },
+    {
+      "path": "app/deploy/update.sh",
+      "base_sha256": "d0c5fc92078310fab3f96653b312121411f54ceb97a02bc06f2e5e42141cdf88",
+      "head_sha256": "eae12bef34a5dbba1a986846fb3c59992ba228ca472a0316c042ced6e0e48d88",
+      "main_sha256": "e965f947852fae19b03b93c8074fc52b8e260656afe164d594bb813bb8344605",
+      "result_sha256": "337664e579503b69d3bd11d4aeba817c9393f90d165a6a7821b07a52ef905394",
+      "result_bytes": 141857,
+      "main_delta_exactly_verified": true,
+      "head_other_bytes_preserved": true
+    }
+  ],
+  "staged_paths": [
+    "app/deploy/Caddyfile",
+    "app/deploy/update.sh"
+  ],
+  "focused_diff_check_exit": 0
+}

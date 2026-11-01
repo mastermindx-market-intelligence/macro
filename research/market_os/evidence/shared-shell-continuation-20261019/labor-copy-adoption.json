@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-20T15:40:15.505470+00:00",
+  "head": "8b51fb46d18739a4d10d1ef07dce3ca0f989f0da",
+  "owner": "scripts.build_macro_suite_pages.render then incumbent optimize_assets.make_optimizer/lib.pages.write_page",
+  "suite_pages_produced": 15,
+  "adopted": [
+    "site/macro_labor_markets.html"
+  ],
+  "other_owner_outputs": "retained in temporary canonical preview; existing render owner will publish whole suite",
+  "raw_owner_sha256": "381d82b042929dbfbe4a0db8d16e0f94c1974069df80e7e965cc3a508b590e6c",
+  "previous_page_sha256": "8b2591a006d545c68d652fd02b2547890fdc45758eae080482ccd7d3a9001ce5",
+  "adopted_sha256": "235aebe912ad705fd53d420cc44c273410468efe64b9f4634f47fd2863cb4d8c",
+  "patch_sha256": "2e48adc5a04c5a0b06ef09dc49e8a3a3799a6a7d6d45a12aa4c3308988c764e4",
+  "guard": [],
+  "diff_stat": " lib/macro_suite_labels.py            | 12 ++++++++++++\n site/macro_labor_markets.html        | 20 +++++++++++---------\n tests/test_macro_command_copy_law.py | 30 ++++++++++++++++++++++++++++++\n 3 files changed, 53 insertions(+), 9 deletions(-)\n"
+}

@@ -279,13 +279,57 @@ def riskoff_factor(R: pd.Series | None, meta: dict, idx: pd.Index) -> pd.DataFra
     if R is None:
         return pd.DataFrame(index=idx)
     beta = RISK_BETA.get(meta.get("archetype"), 0.5)
-    f = (-beta * R.reindex(idx).ffill()).clip(-1, 1)          # +=bullish base (havens flip via beta<0)
+    f = (-beta * R.reindex(idx)).clip(-1, 1)          # +=bullish base (havens flip via beta<0)
     return pd.DataFrame({"riskoff": f})
 
 
 # --------------------------------------------------------------------------- #
 # dollar master frame
 # --------------------------------------------------------------------------- #
+
+def _finite_fx(value) -> bool:
+    """A numeric zero is evidence; booleans and non-finite values are not."""
+    return (not isinstance(value, (bool, np.bool_)) and
+            isinstance(value, (int, float, np.integer, np.floating)) and
+            bool(np.isfinite(value)))
+
+
+def _confirm_fx_regime(state: pd.Series, days: int = 5) -> pd.DataFrame:
+    """Forex-local confirmation; gaps cannot vote or bridge a candidate streak.
+
+    Valid-input behavior retains the existing five-observation confirmation.
+    After a gap, a different candidate stays unavailable until requalified.
+    Last-confirmed history is separate from the nullable current observation.
+    """
+    current = candidate = last_at = None
+    run = 0
+    recovering = False
+    rows = []
+    for ts, value in state.items():
+        if pd.isna(value):
+            candidate, run, recovering = None, 0, True
+            visible = None
+        elif current is None:
+            current, last_at = value, ts
+            candidate, run, recovering = None, 0, False
+            visible = current
+        elif value == current:
+            candidate, run, recovering = None, 0, False
+            last_at, visible = ts, current
+        else:
+            candidate, run = (value, run + 1) if value == candidate else (value, 1)
+            if run >= days:
+                current, last_at = value, ts
+                candidate, run, recovering = None, 0, False
+            visible = None if recovering else current
+        rows.append({"smile_regime": visible,
+                     "smile_last_confirmed": current,
+                     "smile_last_confirmed_asof": last_at,
+                     "smile_candidate": candidate,
+                     "smile_candidate_count": run})
+    return pd.DataFrame(rows, index=state.index)
+
+
 def dollar_master(drivers: dict, cfg: dict) -> pd.DataFrame:
     dxy = drivers.get("dxy")
     broad = drivers.get("broad_dollar")
@@ -306,12 +350,17 @@ def dollar_master(drivers: dict, cfg: dict) -> pd.DataFrame:
     out["dollar_day_z"] = _zraw(drv.pct_change()).abs()
     up = out["dollar_dir"] > 0
     ro = out["risk_off"] > 0
-    reg = pd.Series("Neutral", index=idx, dtype=object)
-    reg[up & ro] = "Risk-off haven bid"        # right of the smile
-    reg[up & ~ro] = "US growth premium"        # left of the smile
-    reg[~up & ~ro] = "Global reflation"        # bottom of the smile (USD weak)
-    reg[~up & ro] = "US-specific stress"       # smile breaking (USD weak + stress)
-    out["smile_regime"] = cs._confirm(reg, 5)
+    valid = out["dollar_roc"].map(_finite_fx) & out["risk_off"].map(_finite_fx)
+    reg = pd.Series(None, index=idx, dtype=object)
+    reg[valid & (up & ro)] = "Risk-off haven bid"        # right of the smile
+    reg[valid & (up & ~ro)] = "US growth premium"        # left of the smile
+    reg[valid & (~up & ~ro)] = "Global reflation"        # bottom of the smile (USD weak)
+    reg[valid & (~up & ro)] = "US-specific stress"       # smile breaking (USD weak + stress)
+    out = out.join(_confirm_fx_regime(reg, 5))
+    out["risk_off"] = out["risk_off"].where(out["risk_off"].map(_finite_fx))
+    out["smile_unavailable_reason"] = np.where(
+        ~valid, "missing_or_invalid_risk_or_direction",
+        np.where(out["smile_regime"].isna(), "requalifying_after_gap", None))
     return out
 
 

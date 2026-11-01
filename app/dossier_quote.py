@@ -50,6 +50,7 @@ from app.public_quote_projection import (
     QuoteProjectionError,
     finite_number as _shared_finite_number,
     project_regular_quote,
+    project_extended_quote,
 )
 from engine.company_intelligence.contracts import ContractError, safe_ticker
 
@@ -214,7 +215,9 @@ def _read_hub_quotes(symbol: str) -> Mapping[str, Any]:
     which is a better outcome than queueing work behind a wedged upstream.
     """
     _assert_loopback(_HUB_BASE)
-    url = f"{_HUB_BASE}/quotes?syms={urllib.parse.quote(symbol, safe='')}"
+    # Request-local eligibility closes BOTH legacy demand and read at the Hub.
+    # Public debranding alone would not prevent the default full-view demand.
+    url = f"{_HUB_BASE}/quotes?syms={urllib.parse.quote(symbol, safe='')}&extSource=primary_snapshot"
     req = urllib.request.Request(url, headers={"Accept": "application/json"})
     # _NO_REDIRECT_OPENER, not urlopen: urlopen FOLLOWS redirects, so a hub
     # answering `302 Location: http://elsewhere/` would make this app fetch a
@@ -292,6 +295,9 @@ def _public_projection(row: Mapping[str, Any], *, ticker: str, now: float) -> di
         ),
         "regular_session_date": projected.regular_session_date,
         "display_only": True,
+        "extended_quote": project_extended_quote(
+            row, now=now, max_age_seconds=_LIVE_MAX_AGE_SECONDS,
+        ),
     }
 
 

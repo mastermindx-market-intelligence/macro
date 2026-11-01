@@ -19,6 +19,7 @@ from engine.research_vault.r2_store import StrictConditionalWriteStore, Versione
 
 from .extractor import PROMPT_VERSION, SYSTEM_PROMPT, build_prompt, parse_model_output
 from .schema import SCHEMA, validate_rio
+from .selection import build_selector_prompt, source_context_receipt, validate_source_context_receipt
 
 ARTIFACT_SCHEMA = "mastermind.research_intelligence.artifact.v1"
 POINTER_SCHEMA = "mastermind.research_intelligence.pointer.v1"
@@ -41,6 +42,7 @@ _SUCCESS_FIELDS = frozenset(
         "prompt_version",
         "prompt_contract_sha256",
         "prompt_sha256",
+        "source_context",
     }
 )
 
@@ -319,6 +321,11 @@ def _normalize_successful_analysis(
         "prompt_sha256": _receipt_hash(analysis.get("prompt_sha256"), field="prompt_sha256"),
     }
     try:
+        receipt["source_context"] = validate_source_context_receipt(
+            analysis["source_context"], expected_content_sha256=receipt["document"]["content_sha256"], expected_document_id=receipt["document"]["id"])
+    except (TypeError, ValueError) as exc:
+        raise ResearchIntelligenceInvalid("analysis_receipt_invalid", "source-context receipt is invalid") from exc
+    try:
         rio = validate_rio(analysis["rio"])
     except (TypeError, ValueError) as exc:
         raise ResearchIntelligenceInvalid("rio_invalid", "submitted RIO violates schema") from exc
@@ -329,6 +336,7 @@ def _verify_source_and_receipt(
     receipt: dict[str, Any],
     rio: dict[str, Any],
     source_body: Any,
+    *, source_record=None, layout_scope=None,
 ) -> dict[str, Any]:
     if not isinstance(source_body, str) or not source_body.strip():
         raise ResearchIntelligenceInvalid(
@@ -354,7 +362,18 @@ def _verify_source_and_receipt(
             "source body does not match the prompt and RIO content identity",
         )
 
-    system, user = build_prompt(prompt_document, analyzed_body)
+    try:
+        system, user, catalog = build_selector_prompt(prompt_document, analyzed_body, source_record=source_record, layout_scope=layout_scope)
+        expected_context = source_context_receipt(catalog)
+    except (TypeError, ValueError) as exc:
+        raise ResearchIntelligenceInvalid("analysis_receipt_mismatch", "source context cannot be recomputed") from exc
+    if receipt["source_context"] != expected_context:
+        raise ResearchIntelligenceInvalid("analysis_receipt_mismatch", "source-context receipt does not match the exact body")
+    if "source_layout" in catalog:
+        admitted = {unit["text"] for unit in catalog["units"]}
+        if any(not claim["evidence"] or any(e["quote_span"] not in admitted for e in claim["evidence"])
+               for claim in rio["claims"]):
+            raise ResearchIntelligenceInvalid("grounding_invalid", "claim is outside the source-layout catalog")
     expected_contract_sha256 = _sha256_text(PROMPT_VERSION + "\n" + SYSTEM_PROMPT)
     expected_prompt_sha256 = _sha256_text(system + "\n" + user)
     if (
@@ -390,6 +409,7 @@ def _verify_source_and_receipt(
 def _build_artifact(
     analysis: Any,
     source_body: Any,
+    *, source_record=None, layout_scope=None,
 ) -> tuple[dict[str, Any], bytes, str, str, str]:
     receipt, rio = _normalize_successful_analysis(analysis)
     submitted_rio_bytes = _canonical_json_bytes(rio)
@@ -398,7 +418,7 @@ def _build_artifact(
             "rio_too_large",
             "grounded RIO exceeds the private artifact boundary",
         )
-    grounded = _verify_source_and_receipt(receipt, rio, source_body)
+    grounded = _verify_source_and_receipt(receipt, rio, source_body, source_record=source_record, layout_scope=layout_scope)
     rio_bytes = _canonical_json_bytes(grounded)
     rio_sha256 = _sha256_bytes(rio_bytes)
     artifact = {
@@ -557,6 +577,11 @@ def _normalize_stored_receipt(value: Any) -> dict[str, Any]:
         ),
         "prompt_sha256": _receipt_hash(value.get("prompt_sha256"), field="prompt_sha256"),
     }
+    try:
+        receipt["source_context"] = validate_source_context_receipt(
+            value["source_context"], expected_content_sha256=receipt["document"]["content_sha256"], expected_document_id=receipt["document"]["id"])
+    except (TypeError, ValueError) as exc:
+        raise ResearchIntelligenceInvalid("artifact_invalid", "stored source-context receipt is invalid") from exc
     expected_contract_sha256 = _sha256_text(PROMPT_VERSION + "\n" + SYSTEM_PROMPT)
     if (
         receipt["prompt_version"] != PROMPT_VERSION
@@ -904,10 +929,12 @@ def validate_analysis_for_persistence(
     *,
     source_body: Any,
     expected_current_artifact_sha256: str | None = None,
+    source_record=None,
+    layout_scope=None,
 ) -> None:
     """Validate one W1 envelope and source body without touching a store."""
     _validate_expected_predecessor(expected_current_artifact_sha256)
-    _build_artifact(analysis, source_body)
+    _build_artifact(analysis, source_body, source_record=source_record, layout_scope=layout_scope)
 
 
 def persist_analysis(
@@ -916,6 +943,8 @@ def persist_analysis(
     *,
     source_body: Any,
     expected_current_artifact_sha256: str | None = None,
+    source_record=None,
+    layout_scope=None,
 ) -> ResearchIntelligenceWriteReceipt:
     """Persist one successful grounded analysis and atomically advance its pointer."""
     checked = _require_store(store)
@@ -923,6 +952,7 @@ def persist_analysis(
     artifact, payload, artifact_sha256, rio_sha256, source_sha256 = _build_artifact(
         analysis,
         source_body,
+        source_record=source_record, layout_scope=layout_scope,
     )
     document_id = _canonical_document_id(artifact["rio"]["document"]["id"])
     object_key = artifact_object_key(document_id, artifact_sha256)

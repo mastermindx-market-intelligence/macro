@@ -38,6 +38,14 @@ ROOT = Path(__file__).resolve().parents[1]
 WATCHSTORE = ROOT / "templates" / "watchstore.js"
 WATCHLIST = ROOT / "templates" / "watchlist.js"
 
+
+@needs_node
+def test_private_watchlist_readonly_contract_and_lifecycle():
+    suite = ROOT / 'tests' / 'fixtures' / 'watchlist_readonly.mjs'
+    result = subprocess.run(['node', str(suite)], capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert 'ALL PASS: 16 scenarios; 0 unhandled rejections' in result.stdout
+
 SHIM = """
 var __sets = [];
 var __store = {};
@@ -1812,3 +1820,25 @@ def test_public_ws_save_vocabulary_and_plain_fallback_copy_match_shipped_consume
         assert block, state
         assert (block.group(1), block.group(2)) == (english, chinese)
     assert emitted == {"saved", "saving", "clean", "local", "offline"}
+
+
+@needs_node
+def test_exact_membership_observation_contract(tmp_path):
+    """The shared-shell status check is a read, never a replay of a save.
+
+    Reuse this module's existing provider double. The Node suite also retains
+    the unresolved auth-event attribution assertion documented in R18.
+    """
+    import os
+
+    fixture = tmp_path / "existing-watchstore-harness.json"
+    fixture.write_text(json.dumps({"SHIM": SHIM, "FAKE_DB": FAKE_DB}), encoding="utf-8")
+    env = dict(os.environ)
+    env["WATCHSTORE_SOURCE"] = str(WATCHSTORE)
+    env["WATCHSTORE_HARNESS"] = str(fixture)
+    result = subprocess.run(
+        [shutil.which("node"), "--test",
+         str(ROOT / "tests" / "watchstore_membership_observation.node.test.mjs")],
+        env=env, capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

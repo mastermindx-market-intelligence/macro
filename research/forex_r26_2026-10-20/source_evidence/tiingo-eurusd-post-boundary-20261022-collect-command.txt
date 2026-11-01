@@ -1,0 +1,18 @@
+cd '/Volumes/Mastermind 2/agent-workspaces/macro/web/forex-r26-source-qualification-20261022-sol-001' && /opt/homebrew/Caskroom/miniconda/base/bin/python3 - <<'PY'
+from pathlib import Path
+from datetime import datetime,timezone
+import json,hashlib
+from scripts.tiingo_ingest import Task,collect
+evidence=Path('research/forex_r26_2026-10-20/source_evidence')
+preflight=json.loads((evidence/'tiingo-eurusd-post-boundary-20261022-preflight.json').read_text())
+target=evidence/'tiingo-eurusd-post-boundary-20261022-collect.json'
+assert not target.exists()
+assert preflight['request_budget']==2 and preflight['frequencies_to_capture']==['1min','4hour']
+start=datetime.now(timezone.utc);assert datetime(2026,10,22,4,tzinfo=timezone.utc)<=start<datetime(2026,10,22,8,tzinfo=timezone.utc)
+tasks=[Task('forex-bars','eurusd',{'startDate':'2026-10-22','endDate':'2026-10-22','resampleFreq':f}) for f in preflight['frequencies_to_capture']]
+print(json.dumps({'started_at_utc':start.isoformat(),'owner':'scripts.tiingo_ingest.collect','request_budget':2,'purpose':'post-boundary source observation'}),flush=True)
+result=collect(tasks,max_requests=2,pause_seconds=1.25)
+receipt={'schema':'forex_r26.post_boundary_capture.v1','started_at_utc':start.isoformat(),'completed_at_utc':datetime.now(timezone.utc).isoformat(),'source_head':'d0df72c4fa3edc95455ffd5c0524e542873ddea4','plan_sha256':preflight['plan']['plan_sha256'],'owner':'scripts.tiingo_ingest.collect','request_budget':2,'pause_seconds':1.25,'result':result,'failure_retry':False,'schedule_created':False,'finalized_source_admitted':False}
+with target.open('x') as out:json.dump(receipt,out,indent=2,sort_keys=True);out.write('\n')
+print(json.dumps(receipt),flush=True)
+PY

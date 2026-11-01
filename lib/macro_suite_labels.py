@@ -286,6 +286,19 @@ DIRECTION: dict[str, dict[str, str]] = {
     "weak_to_strong": _pair("Weak to strong", "从弱到强"),
     "higher_more_inflationary": _pair("Higher more inflationary", "数值越高＝通胀压力越大"),
     "higher_more_persistent_broad": _pair("Higher more persistent broad", "数值越高＝越持久、越广泛"),
+    # GLT T21 (reviewed): per-leg / coverage direction tokens (used by the
+    # Liquidity & Central Banks workspace). The reviewed strings ship; the
+    # T11 byte-identity goldens froze BASE's deslug fallback, so
+    # tests/test_macro_rates_curves_route.py collapses exactly these
+    # strings back to the BASE text for that comparison only.
+    "higher_more_expansionary": _pair(
+        "Higher = more expansionary", "数值越高＝越扩张"),
+    "higher_easier_funding": _pair(
+        "Higher = easier dollar funding", "数值越高＝美元融资越宽松"),
+    "higher_more_accommodative": _pair(
+        "Higher = more accommodative", "数值越高＝越宽松"),
+    "higher_more_coverage": _pair(
+        "Higher = more coverage", "数值越高＝覆盖越全"),
 }
 
 # --- units -------------------------------------------------------------------
@@ -302,6 +315,16 @@ UNIT: dict[str, dict[str, str]] = {
     "index": _pair("index", "指数"),
     "count": _pair("count", "数量"),
     "ratio": _pair("ratio", "比率"),
+    # GLT T21 (reviewed): producer-native unit tokens used by the Liquidity
+    # & Central Banks workspace. The reviewed strings ship; the T11
+    # byte-identity goldens froze BASE's deslug fallback, so
+    # tests/test_macro_rates_curves_route.py collapses exactly these
+    # strings back to the BASE text for that comparison only.
+    "USD billions": _pair("USD bn", "十亿美元"),
+    "EUR billions": _pair("EUR bn", "十亿欧元"),
+    "JPY billions": _pair("JPY bn", "十亿日元"),
+    "ratio_0_1": _pair("share (0–1)", "占比（0–1）"),
+    "local currency": _pair("local currency", "本币"),
 }
 
 # --- basis -------------------------------------------------------------------
@@ -313,6 +336,24 @@ BASIS: dict[str, dict[str, str]] = {
         "Constant-maturity investment basis",
         "固定期限投资基准",
     ),
+    # GLT T21 (reviewed): per-leg contribution / impulse / translation
+    # basis tokens. The reviewed strings ship; the T11 byte-identity goldens
+    # froze BASE's deslug fallback, so tests/test_macro_rates_curves_route.py
+    # collapses exactly these strings back to the BASE text for that
+    # comparison only.
+    "fx_translation_not_fresh_money": _pair(
+        "Currency translation — not new central-bank money",
+        "汇率折算——非央行新增资金"),
+    "standardized_monetary_contribution": _pair(
+        "Standardized contribution to the central-bank money reading",
+        "对央行货币读数的标准化贡献"),
+    "standardized_funding_contribution": _pair(
+        "Standardized contribution to the dollar-funding reading",
+        "对美元融资读数的标准化贡献"),
+    "trailing_13w_pct_change": _pair(
+        "Change over the last 13 weeks", "近13周变化"),
+    "trailing_52w_pct_change": _pair(
+        "Change over the last 52 weeks", "近52周变化"),
 }
 
 # --- owner categorical readings ---------------------------------------------
@@ -490,6 +531,78 @@ METRIC: dict[str, dict[str, str]] = {
     "iorb": _pair("Interest on reserves", "准备金利息"),
     "production_utilization": _pair("Production utilization", "产能利用率"),
     "inventory_cycle_phase": _pair("Inventory cycle phase", "库存周期阶段"),
+    # GLT T21 (reviewed): per-leg / translation / level metric ids emitted
+    # by the Liquidity & Central Banks workspace composer. The reviewed
+    # strings ship; the T11 byte-identity goldens froze BASE's deslug
+    # fallback, so tests/test_macro_rates_curves_route.py collapses exactly
+    # these strings back to the BASE text for that comparison only.
+    # cb_fed_balance_sheet_impulse_13w is pre-existing (F01, unchanged).
+    "glt_fed_monetary_contribution_z": _pair(
+        "Fed balance sheet, against its own history",
+        "美联储资产负债表（对比自身历史）"),
+    "glt_ecb_monetary_contribution_z": _pair(
+        "ECB balance sheet, against its own history",
+        "欧洲央行资产负债表（对比自身历史）"),
+    "glt_boj_monetary_contribution_z": _pair(
+        "BoJ balance sheet, against its own history",
+        "日本央行资产负债表（对比自身历史）"),
+    "glt_broad_dollar_contribution_z": _pair(
+        "Broad dollar, against its own history",
+        "广义美元（对比自身历史）"),
+    "glt_high_yield_oas_contribution_z": _pair(
+        "High-yield spread, against its own history",
+        "高收益利差（对比自身历史）"),
+    "glt_real_yield_10y_contribution_z": _pair(
+        "10-year real yield, against its own history",
+        "10年期实际收益率（对比自身历史）"),
+    "glt_ecb_usd_translation": _pair(
+        "ECB balance sheet in US dollars",
+        "欧洲央行资产负债表（美元折算）"),
+    "glt_boj_usd_translation": _pair(
+        "BoJ balance sheet in US dollars",
+        "日本央行资产负债表（美元折算）"),
+    "cb_fed_balance_sheet_level": _pair(
+        "Fed balance sheet, local currency", "美联储资产负债表（本币）"),
+    "cb_ecb_balance_sheet_level": _pair(
+        "ECB balance sheet, local currency", "欧洲央行资产负债表（本币）"),
+    "cb_boj_balance_sheet_level": _pair(
+        "BoJ balance sheet, local currency", "日本央行资产负债表（本币）"),
+    "cb_ecb_balance_sheet_impulse_13w": _pair(
+        "ECB balance sheet, change over 13 weeks", "欧洲央行资产负债表（13周变化）"),
+    "cb_boj_balance_sheet_impulse_13w": _pair(
+        "BoJ balance sheet, change over 13 weeks", "日本央行资产负债表（13周变化）"),
+    "cb_fed_balance_sheet_impulse_52w": _pair(
+        "Fed balance sheet, change over 52 weeks", "美联储资产负债表（52周变化）"),
+    "cb_ecb_balance_sheet_impulse_52w": _pair(
+        "ECB balance sheet, change over 52 weeks", "欧洲央行资产负债表（52周变化）"),
+    "cb_boj_balance_sheet_impulse_52w": _pair(
+        "BoJ balance sheet, change over 52 weeks", "日本央行资产负债表（52周变化）"),
+    "glt_monetary_coverage_ratio": _pair(
+        "Central-bank coverage", "央行数据覆盖率"),
+    "glt_funding_coverage_ratio": _pair(
+        "Dollar-funding coverage", "美元融资数据覆盖率"),
+    # GLT T21: pre-existing metric ids the LCB composer has always emitted
+    # but whose reviewed labels live only in lib.macro_suite_zh_parity (the
+    # ZH text below matches what the parity table produces). Adding them
+    # here so that L.unknown_tokens() (T21 test (h)) is empty after
+    # presenting the composed snapshot — without them, the metric label
+    # lookup would deslug and record the token as unknown. The EN text
+    # matches the T11 byte-identity goldens (deslug form) so test_11 still
+    # passes.
+    "glt_monetary_stance": _pair(
+        "Glt monetary stance", "全球流动性货币立场"),
+    "glt_orthogonalised_impulse": _pair(
+        "Glt orthogonalised impulse", "全球流动性正交脉冲"),
+    "glt_policy_liquidity_impulse": _pair(
+        "Glt policy liquidity impulse", "全球政策流动性脉冲"),
+    "glt_credit_impulse_global": _pair(
+        "Glt credit impulse global", "全球信贷脉冲"),
+    "glt_state_label": _pair(
+        "Glt state label", "全球流动性状态标签"),
+    "glt_state_quality_label": _pair(
+        "Glt state quality label", "全球流动性质量标签"),
+    "glt_confidence": _pair(
+        "Glt confidence", "全球流动性置信度"),
 }
 
 # F01 Macro Command P3 — reviewed panel copy. Keyed (section_id, state_key).
@@ -1700,6 +1813,17 @@ def producer_trips_copy_guard(text: str) -> bool:
     return bool(machine_text_hits(text))
 
 PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
+    (
+        "US labor-market state cannot be classified: axis coverage is below the "
+        "disclosed floor. No quadrant is asserted rather than defaulting to a "
+        "neutral state.",
+        _pair(
+            "Labor-market data coverage is below the required minimum, so no "
+            "overall reading is shown. Missing data is not treated as a neutral reading.",
+            "劳动力市场数据覆盖未达到所需下限，因此不展示总体读数。"
+            "缺失数据不会被当作中性读数。",
+        ),
+    ),
     (
         "This page publishes no dual-axis state and no headline quadrant: the "
         "frozen Market Ontology architecture document defines twelve macro "

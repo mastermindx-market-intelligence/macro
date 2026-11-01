@@ -365,6 +365,57 @@ def share_basis(status: str = "selected", **over) -> c.ShareBasisResult:
     return c.ShareBasisResult(**kw)
 
 
+def scenario_result(**over) -> c.ScenarioResult:
+    """One valid S0 composed result, built from the three component factories above."""
+    sc = scenario()
+    st = state()
+    usd = lambda value: c.Quantity.known(value, "usd")  # noqa: E731 - fixture shorthand
+    issued = lambda value: shares(value, "scenario_incremental_issuance")  # noqa: E731
+    kw = dict(
+        result_id=c.stable_id(
+            "scenario_result", {"scenario_id": sc.scenario_id, "state_id": st.state_id}
+        ),
+        scenario_id=sc.scenario_id,
+        state_id=st.state_id,
+        scenario_view=sc.view,
+        state_view_mode=st.request.view_mode,
+        as_of=sc.as_of,
+        capacity_envelope=capacity(),
+        supply_envelope=supply(),
+        funding_schedule=funding(),
+        action_checks=(
+            c.ActionCheck("route:atm", "at_the_market", "cash", "within_capacity", "capacity", True),
+        ),
+        joint_check=c.JointCheck("feasible", "known", ("pool:shelf-s3",)),
+        cash_reconciliation=(
+            c.CashReconciliation(
+                "route:atm", "capacity", usd("8000000"), usd("7760000"), usd("8000000"), "agree"
+            ),
+        ),
+        issuance_rows=(c.IssuanceRow("route:atm", issued("3200000"), issued("3200000"), "fixed_price"),),
+        scenario_new_shares_low=issued("3200000"),
+        scenario_new_shares_high=issued("3200000"),
+        price_bases=(c.PriceBasis("capacity", "fixed", "2.50", "2.50"),),
+        coverage=(
+            c.CoveragePeriod(
+                "2026-10-01", "2026-12-31", usd("0"), c.SignedQuantity.known("7760000", "usd"),
+                c.SignedQuantity.known("12760000", "usd"), usd("0"),
+                "covered", c.COVERAGE_SCENARIO_ONLY_NOTE,
+            ),
+        ),
+        authorized_headroom=c.AuthorizedHeadroomDisclosure(
+            "not_evaluated", None, None,
+            "charter share limit not evaluated by capacity; requested share issuance is not checked",
+        ),
+        receipt=receipt(scenario_id=sc.scenario_id),
+        blockers=(),
+        unknowns=(),
+        notes=("scenario issuance rows are scenario-conditional and are never added to outstanding",),
+    )
+    kw.update(over)
+    return c.ScenarioResult(**kw)
+
+
 RECORD_FACTORIES = (
     ("state", state),
     ("state_request", request),
@@ -377,6 +428,7 @@ RECORD_FACTORIES = (
     ("instrument_set", instrument_set),
     ("share_basis_result", share_basis),
     ("calculation_receipt", receipt),
+    ("scenario_result", scenario_result),
 )
 
 
@@ -455,6 +507,12 @@ _ENUM_PINS = (
     ("accrual_day_count", c.ACCRUAL_DAY_COUNTS),
     ("accrual_compounding", c.ACCRUAL_COMPOUNDING),
     ("structure_kind", c.STRUCTURE_KINDS),
+    ("action_check_status", c.ACTION_CHECK_STATUSES),
+    ("joint_check_status", c.JOINT_CHECK_STATUSES),
+    ("reconciliation_status", c.RECONCILIATION_STATUSES),
+    ("coverage_status", c.COVERAGE_STATUSES),
+    ("action_owner", c.ACTION_OWNERS),
+    ("authorized_headroom_status", c.AUTHORIZED_HEADROOM_STATUSES),
 )
 
 
@@ -987,6 +1045,12 @@ def test_interface_ownership_matches_masterplan_section_nine():
         "engine/capital_structure/capacity.py": ("evaluate_capacity", ("CapitalState", "FinancingScenario", "RulePack"), "CapacityEnvelope"),
         "engine/capital_structure/supply_scenarios.py": ("evaluate_supply", ("InstrumentSet", "ShareBasisResult", "FinancingScenario"), "SupplyEnvelope"),
         "engine/capital_structure/funding.py": ("project_funding", ("FinancialInputs", "CommitmentInputs", "FinancingScenario"), "FundingSchedule"),
+        "engine/capital_structure/scenario_composition.py": (
+            "compose_scenario",
+            ("CapitalState", "InstrumentSet", "ShareBasisResult", "FinancialInputs",
+             "CommitmentInputs", "FinancingScenario", "RulePack", "pack", "listing"),
+            "ScenarioResult",
+        ),
     }
     assert {row[0]: tuple(row[1:]) for row in c.INTERFACE_OWNERSHIP} == expected
     assert c.INTERFACE_OWNER == "capital-structure-intelligence"
@@ -995,7 +1059,7 @@ def test_interface_ownership_matches_masterplan_section_nine():
     for path, function_name, parameters, result_type in c.INTERFACE_OWNERSHIP:
         assert hasattr(c, result_type), result_type
         for parameter in parameters:
-            assert parameter == "as_of" or hasattr(c, parameter), parameter
+            assert parameter in ("as_of", "pack", "listing") or hasattr(c, parameter), parameter
         if not (ROOT / path).exists():
             continue
         module = importlib.import_module(path[:-3].replace("/", "."))

@@ -595,7 +595,8 @@ def _probe_due(last_probe: str | None,
 
 def run_adapter(adapter: Adapter, full_history: bool = False,
                 stale_after_days: int | None = None, *,
-                capture_yahoo_receipts: bool = False) -> FetchResult:
+                capture_yahoo_receipts: bool = False,
+                capture_wti_receipts: bool = False) -> FetchResult:
     """Execute one adapter with circuit breaker + graceful degradation."""
     if stale_after_days is None:
         stale_after_days = adapter.stale_after_days
@@ -610,9 +611,9 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
         log.info("adapter %s breaker half-open: probing after %d fails", adapter.name, fails)
 
     try:
-        if type(capture_yahoo_receipts) is not bool:
-            raise ValueError("capture_yahoo_receipts must be boolean")
-        if capture_yahoo_receipts:
+        if type(capture_yahoo_receipts) is not bool or type(capture_wti_receipts) is not bool:
+            raise ValueError("capture flags must be boolean")
+        if capture_yahoo_receipts or capture_wti_receipts:
             from collectors.yahoo import YahooAdapter
             if type(adapter) is not YahooAdapter or adapter.group != "yahoo":
                 raise ValueError("availability capture requires incumbent Yahoo adapter")
@@ -677,6 +678,22 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
                         # Safe fixed notes: no private paths, raw provider data or exception text.
                         observation_notes.append(
                             f"yahoo availability: {series_name} refused; publication outcome unqualified")
+                if capture_wti_receipts and series_name == "CL=F":
+                    capture_attempted.add(series_name)
+                    try:
+                        capture = store.capture_yahoo_wti_observation(
+                            df, merged, lineage=adapter.wti_source_metadata(),
+                            adapter_return_known_by=adapter_known_by,
+                            temporal_context=adapter.wti_temporal_metadata())
+                        exported = store.export_yahoo_wti_observation(capture, df, merged)
+                        observation_notes.append(
+                            f"yahoo WTI observation: receipt={capture['receipt_sha256']}; "
+                            f"export={exported['sha256']}; scenario adoption unqualified")
+                    except Exception:
+                        # Preserve the canonical write and exact uncertain objects.
+                        # Do not retry acquisition/publication to manufacture a receipt.
+                        observation_notes.append(
+                            "yahoo WTI observation refused; publication outcome unqualified")
             health_frames[series_name] = merged
             series_last = merged.dropna(how="all").index.max()
             last = max(filter(None, [last, series_last]))
@@ -692,6 +709,8 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
             # the fetch window is a short recent slice and cannot say when a column
             # last had a value). Opt-in: adapters declaring no contracts are untouched.
             dark_found.extend(_contract_entries(adapter, series_name, merged, today))
+        if capture_wti_receipts and "CL=F" not in capture_attempted:
+            observation_notes.append("yahoo WTI observation: no qualified returned observation")
         if capture_yahoo_receipts:
             for name in sorted(store.YAHOO_CAPTURE_COHORT - capture_attempted):
                 observation_notes.append(f"yahoo availability: {name} no qualified returned observation")

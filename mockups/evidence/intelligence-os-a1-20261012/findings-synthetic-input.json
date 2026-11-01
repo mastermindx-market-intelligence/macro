@@ -1,0 +1,33 @@
+{
+  "schema": "neuralweb.confluence_graph.v1",
+  "artifact_id": "confluence-graph",
+  "produced_by": "engine/neuralweb/confluence.py",
+  "tier": "display",
+  "display_only": true,
+  "is_context_only": true,
+  "asof": "2026-10-11",
+  "produced_at": "2026-10-11T18:00:00+00:00",
+  "contradiction_records": [
+    {
+      "pair_id": "SYNTHETIC-cross-horizon-label-lag",
+      "kind": "label-lag",
+      "severity": "note",
+      "as_of": "2026-10-11",
+      "display_only": true,
+      "note": "SYNTHETIC recorded context: the short-window label changes before the slower structural label. This is not scientific falsification or current outcome evidence. / 合成记录：短窗口标签先于较慢的结构标签变化；这不是科学证伪，也不是当前结果证据。",
+      "a": {"artifact": "synthetic/synthetic-immature.json", "reading": "SYNTHETIC short-window label changed / 合成短窗口标签已变化"},
+      "b": {"artifact": "synthetic/synthetic-partial.json", "reading": "SYNTHETIC longer-window structural label unchanged / 合成长窗口结构标签未变化"}
+    },
+    {
+      "pair_id": "SYNTHETIC-unbound-label-tension",
+      "kind": "label-tension",
+      "severity": "tension",
+      "as_of": "2026-10-10",
+      "display_only": true,
+      "note": "SYNTHETIC recorded context whose paths have no canonical T4 owner. Preserve this gap; do not attach it to an engine by name similarity. / 此合成记录的路径没有登记的 T4 所有者；保留缺口，不按名称相似性归属引擎。",
+      "a": {"artifact": "synthetic/unregistered-short-window.json", "reading": "SYNTHETIC source reading A / 合成来源读数 A"},
+      "b": {"artifact": "synthetic/unregistered-long-window.json", "reading": "SYNTHETIC source reading B / 合成来源读数 B"}
+    }
+  ],
+  "gaps": ["SYNTHETIC recorded report: current source qualification and request-scoped numerical attribution are unavailable. / 合成记录：当前来源资格与本次请求范围的数值归因不可用。"]
+}

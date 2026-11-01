@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-20T15:37:20.523255+00:00",
+  "head": "8b51fb46d18739a4d10d1ef07dce3ca0f989f0da",
+  "delta": "new regression only, before labels repair",
+  "test_sha256": "d186ad6d154df9170f3eca2c4e812aefa87254c289b683ee400937f9caad620a",
+  "command": [
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_macro_command_copy_law.py::test_labor_coverage_refusal_is_plain_without_claiming_neutral"
+  ],
+  "exit": 1,
+  "finished_at": "2026-10-20T15:37:24.750005+00:00",
+  "log_sha256": "57ba5ba2567693a6eaf78e171d81914b848165c651251ee5ceba8a6786d463a2"
+}

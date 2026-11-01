@@ -1,0 +1,388 @@
+{
+  "observed_at": "2026-10-14T13:37:04.262984+00:00",
+  "run": 38568750084,
+  "job": 115868075914,
+  "reads": {
+    "job": {
+      "rc": 0,
+      "stderr": "",
+      "data": {
+        "id": 115868075914,
+        "run_id": 38568750084,
+        "workflow_name": "ci",
+        "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+        "run_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/runs/38568750084",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOS4LjIs8AAAAa-kaHig",
+        "head_sha": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/jobs/115868075914",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38568750084/job/115868075914",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-10-14T13:04:12Z",
+        "started_at": "2026-10-14T13:04:14Z",
+        "completed_at": "2026-10-14T13:18:34Z",
+        "name": "contract-delta",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-10-14T13:04:14Z",
+            "completed_at": "2026-10-14T13:04:15Z"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-10-14T13:04:15Z",
+            "completed_at": "2026-10-14T13:05:33Z"
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-10-14T13:05:33Z",
+            "completed_at": "2026-10-14T13:05:40Z"
+          },
+          {
+            "name": "install control-plane dependencies",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-10-14T13:05:40Z",
+            "completed_at": "2026-10-14T13:05:42Z"
+          },
+          {
+            "name": "resolve the exact tested PR merge base",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-10-14T13:05:42Z",
+            "completed_at": "2026-10-14T13:05:42Z"
+          },
+          {
+            "name": "fetch the exact tested PR merge base",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-10-14T13:05:42Z",
+            "completed_at": "2026-10-14T13:05:42Z"
+          },
+          {
+            "name": "differential contract-delta gate",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 7,
+            "started_at": "2026-10-14T13:05:42Z",
+            "completed_at": "2026-10-14T13:18:32Z"
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 13,
+            "started_at": "2026-10-14T13:18:32Z",
+            "completed_at": "2026-10-14T13:18:32Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14,
+            "started_at": "2026-10-14T13:18:32Z",
+            "completed_at": "2026-10-14T13:18:33Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15,
+            "started_at": "2026-10-14T13:18:33Z",
+            "completed_at": "2026-10-14T13:18:33Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/check-runs/115868075914",
+        "labels": [
+          "ubuntu-latest"
+        ],
+        "runner_id": 1000327667,
+        "runner_name": "GitHub Actions 1000327667",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      }
+    },
+    "check": {
+      "rc": 0,
+      "stderr": "",
+      "data": {
+        "id": 115868075914,
+        "name": "contract-delta",
+        "node_id": "CR_kwDOS4LjIs8AAAAa-kaHig",
+        "head_sha": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+        "external_id": "a4e9c462-44f4-561e-ab95-858aa975058c",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/check-runs/115868075914",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38568750084/job/115868075914",
+        "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38568750084/job/115868075914",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-10-14T13:04:14Z",
+        "completed_at": "2026-10-14T13:18:34Z",
+        "output": {
+          "title": null,
+          "summary": null,
+          "text": null,
+          "annotations_count": 10,
+          "annotations_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/check-runs/115868075914/annotations"
+        },
+        "check_suite": {
+          "id": 104509081850
+        },
+        "app": {
+          "id": 15368,
+          "client_id": "Iv1.05c79e9ad1f6bdfa",
+          "slug": "github-actions",
+          "node_id": "MDM6QXBwMTUzNjg=",
+          "owner": {
+            "login": "github",
+            "id": 9919,
+            "node_id": "MDEyOk9yZ2FuaXphdGlvbjk5MTk=",
+            "avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/github",
+            "html_url": "https://github.com/github",
+            "followers_url": "https://api.github.com/users/github/followers",
+            "following_url": "https://api.github.com/users/github/following{/other_user}",
+            "gists_url": "https://api.github.com/users/github/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/github/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/github/subscriptions",
+            "organizations_url": "https://api.github.com/users/github/orgs",
+            "repos_url": "https://api.github.com/users/github/repos",
+            "events_url": "https://api.github.com/users/github/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/github/received_events",
+            "type": "Organization",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "name": "GitHub Actions",
+          "description": "Automate your workflow from idea to production",
+          "external_url": "https://help.github.com/en/actions",
+          "html_url": "https://github.com/apps/github-actions",
+          "created_at": "2018-07-30T09:30:17Z",
+          "updated_at": "2026-06-18T16:17:48Z",
+          "permissions": {
+            "actions": "write",
+            "administration": "read",
+            "artifact_metadata": "write",
+            "attestations": "write",
+            "checks": "write",
+            "code_quality": "write",
+            "contents": "write",
+            "copilot_requests": "write",
+            "deployments": "write",
+            "discussions": "write",
+            "drives": "write",
+            "issues": "write",
+            "merge_queues": "write",
+            "metadata": "read",
+            "models": "read",
+            "packages": "write",
+            "pages": "write",
+            "pull_requests": "write",
+            "repository_hooks": "write",
+            "repository_projects": "write",
+            "security_events": "write",
+            "statuses": "write",
+            "vulnerability_alerts": "read"
+          },
+          "events": [
+            "branch_protection_rule",
+            "check_run",
+            "check_suite",
+            "create",
+            "delete",
+            "deployment",
+            "deployment_status",
+            "discussion",
+            "discussion_comment",
+            "fork",
+            "gollum",
+            "issues",
+            "issue_comment",
+            "label",
+            "merge_group",
+            "milestone",
+            "page_build",
+            "public",
+            "pull_request",
+            "pull_request_review",
+            "pull_request_review_comment",
+            "push",
+            "registry_package",
+            "release",
+            "repository",
+            "repository_dispatch",
+            "status",
+            "watch",
+            "workflow_dispatch",
+            "workflow_run"
+          ]
+        },
+        "pull_requests": [
+          {
+            "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/6651",
+            "id": 4390988004,
+            "number": 6651,
+            "head": {
+              "ref": "claude/eval-os-a1-evidence-view-20260828",
+              "sha": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+              "repo": {
+                "id": 1266869026,
+                "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro",
+                "name": "macro"
+              }
+            },
+            "base": {
+              "ref": "main",
+              "sha": "c3ade6fe509b6b3f0eb8bb0120d77a3574cf57e2",
+              "repo": {
+                "id": 1266869026,
+                "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro",
+                "name": "macro"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "annotations": {
+      "rc": 0,
+      "stderr": "",
+      "data": [
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/1b7916353dd4609e2e092e16d466e93ca1597fd1/.github",
+          "start_line": 2,
+          "start_column": null,
+          "end_line": 2,
+          "end_column": null,
+          "annotation_level": "warning",
+          "title": "",
+          "message": "Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/",
+          "raw_details": ""
+        },
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/1b7916353dd4609e2e092e16d466e93ca1597fd1/.github",
+          "start_line": 26,
+          "start_column": null,
+          "end_line": 26,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "",
+          "message": "Process completed with exit code 1.",
+          "raw_details": ""
+        },
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/1b7916353dd4609e2e092e16d466e93ca1597fd1/.github",
+          "start_line": 23,
+          "start_column": null,
+          "end_line": 23,
+          "end_column": null,
+          "annotation_level": "notice",
+          "title": "contract-delta",
+          "message": "leadership-rotation-science: engine/rates_command_basis.py is already uncovered on this PR's base \u2014 pre-existing, not introduced by this PR; heal separately",
+          "raw_details": ""
+        },
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/1b7916353dd4609e2e092e16d466e93ca1597fd1/.github",
+          "start_line": 22,
+          "start_column": null,
+          "end_line": 22,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "contract-delta",
+          "message": "packing probe scripts/build_free_content.py: an ordinary code PR touching it now selects 135 jobs, over the ceiling 134 (base 134); newly selected: eval-os-a1. tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs reds on this after merge \u2014 narrow the selection (curate the entrant with `scope: exclusive` and exact `paths:` in .github/ci/legacy-jobs.yml, or drop the edge that pulled it in), or, if the wider selection is intended, re-base that ceiling in tests/test_ci_pack.py PACKING_PROBES with the measurement recorded in the test's docstring",
+          "raw_details": ""
+        },
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/1b7916353dd4609e2e092e16d466e93ca1597fd1/.github",
+          "start_line": 21,
+          "start_column": null,
+          "end_line": 21,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "contract-delta",
+          "message": "eval-os-a1: import closure now reaches engine/rates_command_basis.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include engine/rates_command_basis.py (widening is always the safe direction)",
+          "raw_details": ""
+        },
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/1b7916353dd4609e2e092e16d466e93ca1597fd1/.github",
+          "start_line": 20,
+          "start_column": null,
+          "end_line": 20,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "contract-delta",
+          "message": "eval-os-a1: import closure now reaches engine/neuralweb/market_memory_retained_saved.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include engine/neuralweb/market_memory_retained_saved.py (widening is always the safe direction)",
+          "raw_details": ""
+        },
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/1b7916353dd4609e2e092e16d466e93ca1597fd1/.github",
+          "start_line": 19,
+          "start_column": null,
+          "end_line": 19,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "contract-delta",
+          "message": "eval-os-a1: import closure now reaches engine/neuralweb/market_memory_retained_legacy_guard.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include engine/neuralweb/market_memory_retained_legacy_guard.py (widening is always the safe direction)",
+          "raw_details": ""
+        },
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/1b7916353dd4609e2e092e16d466e93ca1597fd1/.github",
+          "start_line": 18,
+          "start_column": null,
+          "end_line": 18,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "contract-delta",
+          "message": "eval-os-a1: import closure now reaches engine/neuralweb/market_memory_retained_catalog.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include engine/neuralweb/market_memory_retained_catalog.py (widening is always the safe direction)",
+          "raw_details": ""
+        },
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/1b7916353dd4609e2e092e16d466e93ca1597fd1/.github",
+          "start_line": 17,
+          "start_column": null,
+          "end_line": 17,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "contract-delta",
+          "message": "eval-os-a1: import closure now reaches engine/neuralweb/market_memory_brain_citations.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include engine/neuralweb/market_memory_brain_citations.py (widening is always the safe direction)",
+          "raw_details": ""
+        },
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/1b7916353dd4609e2e092e16d466e93ca1597fd1/.github",
+          "start_line": 1,
+          "start_column": null,
+          "end_line": 1,
+          "end_column": null,
+          "annotation_level": "notice",
+          "title": "",
+          "message": "\"The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748\"",
+          "raw_details": ""
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "started_at": "2026-10-20T02:49:35.125509+00:00",
+  "script_sha256": "db1e96af04c496f8b04d8bdfe7be0883477cde6b415e011bc09bab9da47de46e",
+  "command": [
+    "python3",
+    "/tmp/rr-action-snapshot-20261020.py",
+    "/tmp/rr-action-snapshot-20261020.json"
+  ],
+  "purpose": "DESCRIPTIVE_EXISTING_RETAINED_GIT_ONLY",
+  "empirical_fits": 0,
+  "provider_calls": 0,
+  "exit_code": 0,
+  "completed_at": "2026-10-20T02:50:12.000445+00:00",
+  "rr-action-snapshot-20261020.json": {
+    "bytes": 51139,
+    "sha256": "ab28897bcae098669fb6f2391ce40fadebc64eb417bc2942815a87ba9470ef1d"
+  },
+  "rr-action-snapshot-20261020.log": {
+    "bytes": 5536,
+    "sha256": "937f360131ad52aa009815ea3e508172d2b1d30255e95fa3216feed397d62249"
+  }
+}

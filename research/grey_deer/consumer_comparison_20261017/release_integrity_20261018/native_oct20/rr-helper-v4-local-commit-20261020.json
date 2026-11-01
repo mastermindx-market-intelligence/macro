@@ -1,0 +1,39 @@
+{
+  "started_at": "2026-10-20T02:33:54.877243+00:00",
+  "workspace": "/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310",
+  "expected_head": "797c760f3e18eb6993579f56986103de9d9fdcb4",
+  "expected_files": {
+    "tests/test_deploy_provenance.py": "80ebb89997b575aed4b8986fdec11f27a1987c0ec5cb3e3d80ad8041c9ae7d10",
+    "tests/test_datadog_vps_install.py": "a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95",
+    "tests/test_forward_evaluation.py": "637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d",
+    "tests/test_portfolio_archival.py": "0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384"
+  },
+  "production_effects": false,
+  "staged_stat": " tests/test_datadog_vps_install.py |   8 --\n tests/test_deploy_provenance.py   | 210 ++++++++++++++++++++++++++++++++++++--\n tests/test_forward_evaluation.py  |  42 --------\n tests/test_portfolio_archival.py  |  17 ---\n 4 files changed, 204 insertions(+), 73 deletions(-)\n",
+  "commit": {
+    "rc": 0,
+    "stdout": "[sol/web-risk-radar-release-integrity-20261018-0310 7b5ccfffef] test(deploy): align companion contracts and portable launchers\n 4 files changed, 204 insertions(+), 73 deletions(-)\n",
+    "stderr": "Auto packing the repository in background for optimum performance.\nSee \"git help gc\" for manual housekeeping.\nwarning: The last gc run reported the following. Please correct the root cause\nand remove /Users/chriswong/Documents/GitHub/Mastermind/.git/worktrees/risk-radar-release-integrity-20261018-0310/gc.log\nAutomatic cleanup will not be performed until the file is removed.\n\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/mastermind-os-native-readiness-configured-artifact-20260921-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-agent-environment-storage-admission-20260915-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/web-paper-direct-chatgpt-mcp-20260926-sol-001' references pruned commits\nwarning: reflog of 'refs/heads/sol/fleet-mini-enrollment-release-20260923-sol-001' references prune\n"
+  },
+  "head": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+  "status": "",
+  "committed_files": {
+    "tests/test_deploy_provenance.py": {
+      "bytes": 50039,
+      "sha256": "80ebb89997b575aed4b8986fdec11f27a1987c0ec5cb3e3d80ad8041c9ae7d10"
+    },
+    "tests/test_datadog_vps_install.py": {
+      "bytes": 5991,
+      "sha256": "a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95"
+    },
+    "tests/test_forward_evaluation.py": {
+      "bytes": 31215,
+      "sha256": "637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d"
+    },
+    "tests/test_portfolio_archival.py": {
+      "bytes": 16993,
+      "sha256": "0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384"
+    }
+  },
+  "completed_at": "2026-10-20T02:33:55.288135+00:00"
+}

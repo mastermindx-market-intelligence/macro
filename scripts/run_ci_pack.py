@@ -63,6 +63,7 @@ from scripts.ci_semantic_proof import (  # noqa: E402
     PLAN_SCHEMA,
     FailureAtomCollector,
     SemanticProofError,
+    _validate_base_replay,
     effective_proof_id,
     job_exec_sha256,
     step_spec_sha256,
@@ -101,7 +102,7 @@ ALLOWED_JOB_KEYS = {
 #: `gate: data` jobs still run and still red something a human reads — the
 #: field never deletes a receipt.
 GATE_VALUES = ("code", "data")
-ALLOWED_STEP_KEYS = {"name", "proof_id", "run", "uses", "with"}
+ALLOWED_STEP_KEYS = {"name", "proof_id", "run", "uses", "with", "phase", "timeout-minutes", "acquisition"}
 
 # Changing any item in this string changes the job execution contract digest.
 # It deliberately describes only the infrastructure shared by all legacy jobs;
@@ -418,6 +419,12 @@ OBSERVED_COMMAND_SECONDS = {
     # render-lane contracts and the options/sparse suites: about 90 s including
     # its data-stack install.
     "ci-control-plane-contracts": 1400,
+    # Hosted command groups, 2026-10-19: FIF historical kernel median 1618 s
+    # plus ~13 s guards (nine runs); earnings 1071 s in full trial 39247388552.
+    # These calibrate balancing only; install/checkout/queue are excluded.
+    # Evidence and sensitivity replay: research/ci_pack_throughput_20261019/.
+    "fif-kernel-guards": 1630,
+    "earnings-economic-dossier": 1070,
     "workflow-yaml": 90,
     "market-memory-contract": 416,
     "unrun-government-revenue-grader": 322,
@@ -520,6 +527,14 @@ class CommandObservation:
     failure_signature: Mapping[str, Any] | None = None
     detail: str | None = None
     retryable_dependency_transport: bool = False
+    # Group signalling/reaping cannot prove detached descendants settled.
+    timeout_settlement: str | None = None
+
+
+class _ProcessSettlementUnknown(RuntimeError):
+    def __init__(self, detail: str, *, outcome: str = "timed_out"):
+        super().__init__(detail)
+        self.original_outcome = outcome
 
 
 @dataclass(frozen=True)
@@ -531,6 +546,7 @@ class JobExecution:
     infrastructure: Mapping[str, Any]
     steps: tuple[Mapping[str, Any], ...]
     failure: str | None
+    timeout_settlement: str | None = None
 
     def fragment_dict(self) -> dict[str, Any]:
         return {
@@ -575,6 +591,127 @@ def _bounded_detail(value: object, *, limit: int = SEMANTIC_DETAIL_MAX_BYTES) ->
     return (encoded[: max(0, limit - len(suffix))] + suffix).decode(
         "utf-8", "ignore"
     )
+
+
+def _browser_dependency_diagnostic_commands() -> tuple[str, ...]:
+    from scripts.ci_browser_dependency_capture import capture_commands
+
+    return capture_commands()
+
+
+# Native activation is closed to these existing owners and their original
+# TOTAL grants. Each setup still shares that total and its finite setup bound.
+NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 10
+NATIVE_BROWSER_LOGICAL_JOB_ID = "ontology-explorer"
+NATIVE_BRAIN_LOGICAL_JOB_ID = "unrun-brain-gateway"
+NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES = 15
+NATIVE_BEA_LOGICAL_JOB_ID = "bea-gvc-current-descriptive-consumer"
+NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES = 10
+
+
+def _incumbent_browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
+    """Opt-in attribution only; setup consumes the original logical deadline."""
+    if "phase" not in step:
+        if "timeout-minutes" in step:
+            raise ManifestError("browser setup timeout requires its explicit phase")
+        return None
+    if (
+        step.get("phase") != "browser_setup"
+        or set(step) - {"name", "phase", "timeout-minutes", "run"}
+        or not isinstance(step.get("run"), str)
+        or step["run"].strip() != "python -m playwright install --with-deps chromium"
+        or type(step.get("timeout-minutes")) is not int
+        or not 1 <= step["timeout-minutes"] <= 10
+    ):
+        raise ManifestError("browser setup must be the exact standalone installer with a finite <=10 minute bound")
+    return {
+        "phase": "browser_setup", "command": step["run"],
+        "timeout_minutes": step["timeout-minutes"],
+        "budget": "within_original_logical_job_deadline",
+    }
+
+def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
+    # Unmarked jobs retain the protected projection, validation and digest.
+    if "acquisition" not in step:
+        return _incumbent_browser_setup_spec(step)
+    if type(step.get("acquisition")) is not str or step.get("acquisition") != "native_parallel" or step.get("phase") != "browser_setup":
+        raise ManifestError("native acquisition requires its explicit browser setup phase")
+    incumbent = _incumbent_browser_setup_spec({key: value for key, value in step.items() if key != "acquisition"})
+    assert incumbent is not None
+    from scripts.ci_browser_native_setup import BOUND_FILES
+    return {
+        **incumbent,
+        "acquisition": "native_parallel",
+        "executed_strategy": "native_apt_transaction_download4_no_download_install_then_playwright_chromium",
+        "native_source_sha256": {
+            name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest() for name in BOUND_FILES
+        },
+        "diagnostics": _browser_dependency_diagnostic_commands(),
+        "diagnostic_source_sha256": {
+            name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest()
+            for name in ("ci_browser_dependency_inputs.py", "ci_browser_dependency_capture.py")
+        },
+    }
+
+
+def _run_native_browser_setup(
+    setup: Mapping[str, Any], *, job_deadline: float, setup_started_at: float, command_env: Mapping[str, str],
+) -> CommandObservation:
+    """Explicit owner capture/acquisition shares original job and setup deadlines."""
+    commands = (*setup["diagnostics"], setup["command"])
+    setup_deadline = min(job_deadline, setup_started_at + setup["timeout_minutes"] * 60)
+    for command_index, command in enumerate(commands):
+        now = setup_started_at if command_index == 0 else time.monotonic()
+        remaining = max(0.0, setup_deadline - now)
+        if remaining <= 0:
+            return CommandObservation(
+                outcome="timed_out", returncode=None, failure_signature=None,
+                detail="logical job timeout exhausted before this command started",
+                timeout_settlement="not_started",
+            )
+        if command_index == len(commands) - 1:
+            from scripts.ci_browser_native_setup import run_native_setup
+            return CommandObservation(**run_native_setup(
+                deadline=setup_deadline, command_env=command_env,
+                expected_sources=setup["native_source_sha256"], browser_stream=_stream_command,
+            ))
+        result = _stream_command(command, env=command_env, timeout_seconds=remaining)
+        if result.outcome == "timed_out" or result.timeout_settlement == "unknown":
+            return replace(result, detail="dependency input capture: " + (result.detail or result.outcome))
+        if result.outcome != "passed":
+            print("::warning title=browser-dependency-inputs::capture unavailable; required installation remains unchanged", flush=True)
+    raise AssertionError("native browser setup has no installer command")
+
+
+
+def _browser_setup_contract(job: LegacyJob) -> tuple[dict[str, Any], ...]:
+    contract = tuple(
+        {**spec, "step_index": index}
+        for index, step in enumerate(job.definition.get("steps", []))
+        if isinstance(step, Mapping) and (spec := _browser_setup_spec(step)) is not None
+    )
+    if len(contract) > 1:
+        raise ManifestError("browser setup may appear at most once per logical job")
+    if contract and (
+        type(job.definition.get("timeout-minutes")) is not int
+        or job.definition["timeout-minutes"] <= 0
+    ):
+        raise ManifestError("browser setup requires a finite original logical-job deadline")
+    if any(spec.get("acquisition") == "native_parallel" for spec in contract):
+        admitted_totals = {
+            NATIVE_BROWSER_LOGICAL_JOB_ID: NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES,
+            NATIVE_BRAIN_LOGICAL_JOB_ID: NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES,
+            NATIVE_BEA_LOGICAL_JOB_ID: NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES,
+        }
+        if job.job_id not in admitted_totals:
+            raise ManifestError("native browser acquisition is restricted to ontology-explorer, unrun-brain-gateway and bea-gvc-current-descriptive-consumer")
+        contract = tuple(
+            {**spec, "logical_job_timeout_minutes": admitted_totals[job.job_id],
+             "activation_job_id": job.job_id}
+            if spec.get("acquisition") == "native_parallel" else spec
+            for spec in contract
+        )
+    return contract
 
 
 def _is_dependency_step(step: Mapping[str, Any]) -> bool:
@@ -630,12 +767,13 @@ def semantic_step_specs(job: LegacyJob) -> tuple[SemanticStepSpec, ...]:
     Checkout/setup actions and the validated standalone dependency install are
     infrastructure.  They intentionally receive no proof identity.
     """
+    setup_indices = {spec["step_index"] for spec in _browser_setup_contract(job)}
     specs: list[SemanticStepSpec] = []
     seen: dict[str, int] = {}
     for index, step in enumerate(job.definition.get("steps", [])):
         if not isinstance(step, Mapping) or "run" not in step:
             continue
-        if _is_dependency_step(step):
+        if index in setup_indices or _is_dependency_step(step):
             continue
         try:
             proof_id = effective_proof_id(step)
@@ -674,10 +812,15 @@ def semantic_job_digest(job: LegacyJob) -> str:
             separators=(",", ":"),
         ).encode("utf-8")
     ).hexdigest()
+    setup = _browser_setup_contract(job)
+    setup_contract = ""
+    if setup:
+        setup_digest = hashlib.sha256(json.dumps(setup, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        setup_contract = f"/browser-setup-{setup_digest}"
     return job_exec_sha256(
         dependency_install_command=dependency_command(job),
         timeout_minutes=job.definition.get("timeout-minutes"),
-        runner_contract=f"{RUNNER_CONTRACT}/actions-{action_digest}",
+        runner_contract=f"{RUNNER_CONTRACT}/actions-{action_digest}{setup_contract}",
     )
 
 
@@ -1224,6 +1367,13 @@ def infer_job_scopes(jobs: Iterable[LegacyJob]) -> tuple[list[LegacyJob], str]:
 
             for reference in SCOPE_REFERENCE_RE.findall(command):
                 rel = reference.split("::", 1)[0].rstrip(".,;:'\")")
+                # Named suites already contributed their complete closure above.
+                # They also match the generic path scanner, sometimes repeatedly
+                # (multiple node IDs in one suite). Rewalking the same graph adds
+                # no ownership: pytest ambiguity was checked before either pass,
+                # and the final named_pytest filter applies to both fallbacks.
+                if rel in named_here:
+                    continue
                 path = Path(rel)
                 if not planner_path_is_file(path):
                     continue
@@ -1587,6 +1737,10 @@ def load_legacy_jobs(path: Path, *, gate: str | None = None) -> list[LegacyJob]:
                     f"{step_prefix} has unsupported keys: "
                     f"{', '.join(unknown_step_keys)}"
                 )
+            try:
+                _browser_setup_spec(step)
+            except ManifestError as exc:
+                findings.append(f"{step_prefix} {exc}")
             has_run = "run" in step
             has_uses = "uses" in step
             if has_run == has_uses:
@@ -1627,6 +1781,10 @@ def load_legacy_jobs(path: Path, *, gate: str | None = None) -> list[LegacyJob]:
                 f"{prefix} dependency install is not a standalone pip command"
             )
 
+        try:
+            _browser_setup_contract(LegacyJob(str(job_id), raw_definition, ordinal, 1))
+        except ManifestError as exc:
+            findings.append(f"{prefix} {exc}")
         scope, scope_findings = _validate_scope(prefix, raw_definition.get("paths"))
         findings.extend(scope_findings)
         if scope and not scope_findings:
@@ -3349,6 +3507,157 @@ def _tested_tree_ancestry_ready(
     return merge_base.returncode == 0 and bool(re.fullmatch(r"[0-9a-f]{40}", value))
 
 
+def prepare_canonical_main(
+    root: Path, *, tested_tree_sha: str, base_ref: str = "main"
+) -> str:
+    """Acquire actual main once, then deepen only its pinned history as needed.
+
+    The International frozen-file guard reads origin/main and its merge base
+    with HEAD. Its fetch-depth-0 preparation already establishes tested-tree
+    ancestry; an unrestricted second fetch need not reacquire unrelated history
+    or auto-follow tags. Retain that ancestry with relative deepening, explicitly
+    create origin/main, and never repin to a main tip that moves during this call.
+
+    The manifest runs each synchronous fetch under the logical job's existing
+    deadline and process group. A failed/unknown fetch propagates immediately: only a completed
+    acquisition with valid bindings but insufficient ancestry earns a deeper rung.
+    Filter only this canonical acquisition, with child-only declarations so Git
+    does not persist a partial-clone policy on the fully materialized checkout.
+    Required guard objects must be present offline before returning. There is no
+    transport retry, private timeout, workspace restoration, or replay.
+    """
+    if base_ref != "main":
+        raise RuntimeError("canonical-main preparation requires base_ref='main'")
+    if not isinstance(tested_tree_sha, str) or not re.fullmatch(
+        r"[0-9a-f]{40}", tested_tree_sha
+    ):
+        raise RuntimeError("canonical-main preparation requires an exact tested-tree SHA")
+
+    root = root.resolve()
+    # Only the explicit acquisition may use transport. All readiness/object
+    # probes fail closed rather than silently repairing a missing promisor blob.
+    fetch_env = _trusted_git_environment(root)
+    fetch_env.update({
+        "GIT_CONFIG_COUNT": "2",
+        "GIT_CONFIG_KEY_0": "remote.origin.promisor",
+        "GIT_CONFIG_VALUE_0": "true",
+        "GIT_CONFIG_KEY_1": "remote.origin.partialclonefilter",
+        "GIT_CONFIG_VALUE_1": "blob:none",
+    })
+    git_env = _trusted_git_environment(root)
+    git_env.update(GIT_NO_LAZY_FETCH="1", GIT_ALLOW_PROTOCOL="")
+    canonical_sha: str | None = None
+    previous_depth = 0
+
+    def commit(ref: str) -> str:
+        result = _git_cmd(root, git_env, "rev-parse", "--verify", f"{ref}^{{commit}}")
+        value = result.stdout.strip().lower()
+        if result.returncode != 0 or not re.fullmatch(r"[0-9a-f]{40}", value):
+            raise RuntimeError(f"canonical-main preparation cannot resolve {ref!r}")
+        return value
+
+    def check_bindings() -> None:
+        if commit("HEAD") != tested_tree_sha:
+            raise RuntimeError("canonical-main preparation changed/mismatched tested HEAD")
+        if canonical_sha is not None and commit("origin/main") != canonical_sha:
+            raise RuntimeError("canonical-main preparation lost its pinned origin/main")
+
+    def is_shallow() -> bool:
+        result = _git_cmd(root, git_env, "rev-parse", "--is-shallow-repository")
+        if result.returncode != 0 or result.stdout.strip() not in {"true", "false"}:
+            raise RuntimeError("canonical-main preparation cannot determine shallow state")
+        return result.stdout.strip() == "true"
+
+    def require_local_objects(canonical_base: str) -> None:
+        # These are the exact paths compared by the International frozen guard.
+        frozen_paths = (
+            "templates/theme.css",
+            "templates/_navlinks.html.j2",
+            "engine/intl_global_universe.py",
+            "engine/intl_global_observation.py",
+            "lib/intl_global_observation_adapter.py",
+        )
+
+        def required(*args: str) -> str:
+            result = _git_cmd(root, git_env, *args)
+            if result.returncode != 0:
+                raise RuntimeError("canonical-main required local object unavailable")
+            return result.stdout.strip()
+
+        raw = required("cat-file", "-p", tested_tree_sha)
+        parents = [line.split()[1] for line in raw.splitlines()
+                   if line.startswith("parent ")]
+        commits = {canonical_sha, tested_tree_sha, canonical_base, *parents}
+        if len(parents) == 2:
+            commits.add(required("merge-base", *parents))
+        for oid in commits:
+            if not isinstance(oid, str) or not re.fullmatch(r"[0-9a-f]{40}", oid):
+                raise RuntimeError("canonical-main required object identity unavailable")
+            required("cat-file", "-e", f"{oid}^{{commit}}")
+            required("cat-file", "-e", f"{oid}^{{tree}}")
+        for ref in (canonical_base, tested_tree_sha):
+            for path in frozen_paths:
+                entry = required("ls-tree", ref, "--", path)
+                fields = entry.split()
+                if (len(fields) != 4 or fields[1] != "blob" or fields[3] != path
+                        or not re.fullmatch(r"[0-9a-f]{40}", fields[2])):
+                    raise RuntimeError("canonical-main required frozen object unavailable")
+                required("cat-file", "-e", f"{fields[2]}^{{blob}}")
+
+    for depth in _EXACT_TESTED_TREE_DEPTHS:
+        check_bindings()
+        command = ["git", "fetch", "--no-recurse-submodules", "--no-tags",
+                   "--filter=blob:none"]
+        # Absolute --depth can shorten already-qualified tested-tree history.
+        # Reuse the existing finite ancestry ladder as *additional* generations.
+        increment = depth - previous_depth
+        if is_shallow():
+            command.append(f"--deepen={increment}")
+        canonical_want = (
+            "+refs/heads/main:refs/remotes/origin/main"
+            if canonical_sha is None else canonical_sha
+        )
+        command.extend(["origin", canonical_want, tested_tree_sha])
+        print(
+            "::notice title=international-workspace-browser::acquiring canonical "
+            f"main {'tip' if canonical_sha is None else canonical_sha}; "
+            f"additional ancestry limit {depth}",
+            flush=True,
+        )
+        subprocess.run(command, cwd=root, env=fetch_env, check=True)
+        fetched_sha = commit("FETCH_HEAD")
+        if canonical_sha is None:
+            canonical_sha = commit("origin/main")
+        if fetched_sha != canonical_sha:
+            raise RuntimeError("canonical-main acquisition did not retain its first fetched main")
+        check_bindings()
+
+        merge_base = _git_cmd(root, git_env, "merge-base", canonical_sha, tested_tree_sha)
+        value = merge_base.stdout.strip().lower()
+        if merge_base.returncode not in (0, 1) or (
+            merge_base.returncode == 0 and not re.fullmatch(r"[0-9a-f]{40}", value)
+        ):
+            raise RuntimeError("canonical-main merge-base probe failed")
+        if merge_base.returncode == 0 and _tested_tree_ancestry_ready(
+            root, git_env, tested_tree_sha
+        ):
+            require_local_objects(value)
+            check_bindings()
+            print(
+                "::notice title=international-workspace-browser::canonical main "
+                f"{canonical_sha}; tested tree {tested_tree_sha}; merge base {value}",
+                flush=True,
+            )
+            return canonical_sha
+        if not is_shallow():
+            raise RuntimeError("canonical-main ancestry is unavailable in a complete repository")
+        previous_depth = depth
+
+    raise RuntimeError(
+        "canonical-main ancestry remained unavailable after the bounded deepen ladder"
+    )
+
+
 def _prepare_provided_actions(
     job: LegacyJob,
     *,
@@ -3386,6 +3695,15 @@ def _prepare_provided_actions(
         )
 
     git_env = _trusted_git_environment(root)
+    # Recheck this exact repository/tree before fetching: a later consumer must
+    # not re-shallow history already established by an earlier consumer.
+    if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
+        print(
+            "::notice title=run-ci-pack::exact tested-tree ancestry already "
+            "complete; retaining local history",
+            flush=True,
+        )
+        return
     exact_fetch_failed = False
     for index, depth in enumerate(_EXACT_TESTED_TREE_DEPTHS):
         try:
@@ -3530,20 +3848,32 @@ def _run_job(
         semantic_env["GIT_NO_REPLACE_OBJECTS"] = "1"
     timeout_minutes = job.definition.get("timeout-minutes")
     timeout_seconds = int(timeout_minutes) * 60 if timeout_minutes else None
+    job_started_at = time.monotonic() if timeout_seconds is not None else None
     job_deadline = (
-        time.monotonic() + timeout_seconds if timeout_seconds is not None else None
+        job_started_at + timeout_seconds if timeout_seconds is not None else None
     )
     specs = semantic_step_specs(job)
     by_index = {spec.step_index: spec for spec in specs}
+    setups = {spec["step_index"]: spec for spec in _browser_setup_contract(job)}
+    native_limits = [spec["logical_job_timeout_minutes"] for spec in setups.values()
+                     if spec.get("acquisition") == "native_parallel"]
+    if native_limits:
+        timeout_minutes = min(timeout_minutes, *native_limits)
+        timeout_seconds = int(timeout_minutes) * 60
+        job_deadline = job_started_at + timeout_seconds
     observations: list[dict[str, Any]] = []
     failure: str | None = None
     infrastructure: dict[str, Any] = {"outcome": "passed"}
+    timeout_settlement = None
 
     for index, step in enumerate(job.definition["steps"]):
         spec = by_index.get(index)
-        if spec is None:
+        setup = setups.get(index)
+        if spec is None and setup is None:
             continue  # checkout/setup/dependency-install infrastructure.
         if failure is not None:
+            if spec is None:
+                continue
             infrastructure_failed = infrastructure.get("outcome") != "passed"
             observations.append(
                 {
@@ -3562,50 +3892,64 @@ def _run_job(
                 }
             )
             continue
-        step_name = spec.display_name or spec.proof_id
+        step_name = (spec.display_name or spec.proof_id) if spec is not None else str(step.get("name") or "browser setup")
         group_open = False
+        command_attempted = False
         try:
             command = render_command(
                 str(step["run"]), base_ref=base_ref, head_ref=head_ref
             )
             print(f"::group::{job.job_id} — {step_name}", flush=True)
             group_open = True
+            command_started_at = time.monotonic() if job_deadline is not None else None
             remaining = (
-                max(0.0, job_deadline - time.monotonic())
-                if job_deadline is not None
+                max(0.0, job_deadline - command_started_at)
+                if command_started_at is not None
                 else None
             )
+            if setup is not None and remaining is not None:
+                remaining = min(remaining, setup["timeout_minutes"] * 60)
             if remaining is not None and remaining <= 0:
                 result = CommandObservation(
                     outcome="timed_out",
                     returncode=None,
                     failure_signature=None,
                     detail="logical job timeout exhausted before this step started",
+                    timeout_settlement="not_started",
                 )
             else:
-                result = _stream_command(
-                    command,
-                    env=semantic_env,
-                    timeout_seconds=remaining,
-                )
+                command_attempted = True
+                if setup is not None and setup.get("acquisition") == "native_parallel":
+                    result = _run_native_browser_setup(
+                        setup, job_deadline=job_deadline, setup_started_at=command_started_at, command_env=semantic_env,
+                    )
+                else:
+                    result = _stream_command(
+                        command,
+                        env=semantic_env,
+                        timeout_seconds=remaining,
+                    )
         except Exception as exc:  # noqa: BLE001 — preserve earlier observations
+            if command_attempted:
+                timeout_settlement = "unknown"
             detail = _bounded_detail(exc)
             infrastructure = {"outcome": "unknown", "detail": detail}
-            observations.append(
-                {
-                    **spec.plan_dict(),
-                    "outcome": "infrastructure_blocked",
-                    "failure_signature": None,
-                    "detail": detail,
-                }
-            )
+            if spec is not None:
+                observations.append(
+                    {
+                        **(spec.plan_dict() if spec is not None else {}),
+                        "outcome": "infrastructure_blocked",
+                        "failure_signature": None,
+                        "detail": detail,
+                    }
+                )
             failure = f"{job.job_id}: infrastructure unknown ({detail})"
             continue
         finally:
             if group_open:
                 print("::endgroup::", flush=True)
         record: dict[str, Any] = {
-            **spec.plan_dict(),
+            **(spec.plan_dict() if spec is not None else {}),
             "outcome": result.outcome,
             "failure_signature": (
                 dict(result.failure_signature)
@@ -3615,10 +3959,19 @@ def _run_job(
         }
         if result.detail:
             record["detail"] = result.detail
-        if tested_tree_sha is not None:
-            # Always leave for-each-ref/rev-parse working for the next step.
-            # A timed-out step was SIGKILL'd and may have smashed packed-refs;
-            # heal first, then only a *passed* step can still hide a rewrite.
+        if result.timeout_settlement == "unknown" or (
+            result.outcome == "timed_out" and result.timeout_settlement != "not_started"
+        ):
+            timeout_settlement = "unknown"
+            infrastructure = {
+                "outcome": "unknown",
+                "detail": "command settlement unknown; original outcome retained",
+            }
+            if result.outcome not in {"failed", "timed_out"}:
+                failure = f"{job.job_id}: original {result.outcome} command has unknown settlement"
+        if tested_tree_sha is not None and timeout_settlement is None:
+            # Retain existing Git checks outside uncertain termination. Healing
+            # itself writes, so it is withheld while descendants may still act.
             try:
                 healed = _ensure_pack_git_usable(Path.cwd(), tested_tree_sha)
             except Exception:  # noqa: BLE001 — last-ditch; proof already lost
@@ -3644,12 +3997,25 @@ def _run_job(
                         _ensure_pack_git_usable(Path.cwd(), tested_tree_sha)
                     infrastructure = {"outcome": "unknown", "detail": detail}
                     record = {
-                        **spec.plan_dict(),
+                        **(spec.plan_dict() if spec is not None else {}),
                         "outcome": "infrastructure_blocked",
                         "failure_signature": None,
                         "detail": detail,
                     }
                     failure = f"{job.job_id}: infrastructure unknown ({detail})"
+        if setup is not None:
+            if result.outcome != "passed" and failure is None:
+                original = {
+                    "phase": "browser_setup", "outcome": result.outcome,
+                    "returncode": result.returncode, "failure_signature": result.failure_signature,
+                    "detail": result.detail,
+                }
+                infrastructure = {
+                    "outcome": "unknown" if timeout_settlement else "dependency_failed",
+                    "detail": _bounded_detail(json.dumps(original, sort_keys=True)),
+                }
+                failure = f"{job.job_id}: browser setup {result.outcome} (exit {result.returncode}); original outcome retained"
+            continue
         observations.append(record)
         if failure is not None and record["outcome"] == "infrastructure_blocked":
             continue
@@ -3665,6 +4031,7 @@ def _run_job(
         infrastructure=infrastructure,
         steps=tuple(observations),
         failure=failure,
+        timeout_settlement=timeout_settlement,
     )
 
 
@@ -3750,6 +4117,9 @@ def _stream_command(
                 collector.feed(bytes(pending))
         except Exception as exc:  # noqa: BLE001 — never hide child completion
             pump_error.append(_bounded_detail(exc))
+        finally:
+            with contextlib.suppress(OSError):
+                process.stdout.close()
 
     reader = threading.Thread(target=pump, name="ci-pack-output", daemon=True)
     reader.start()
@@ -3763,7 +4133,7 @@ def _stream_command(
         process.wait(timeout=wait_seconds)
     except subprocess.TimeoutExpired:
         timed_out = True
-        with contextlib.suppress(ProcessLookupError):
+        with contextlib.suppress(OSError):
             os.killpg(process.pid, signal.SIGKILL)
         with contextlib.suppress(subprocess.TimeoutExpired):
             process.wait(
@@ -3782,15 +4152,19 @@ def _stream_command(
             )
         )
         stream_incomplete = reader.is_alive()
-        with contextlib.suppress(OSError):
-            process.stdout.close()
+        # Closing a pipe from this thread can block behind a surviving child's
+        # inherited writer. The reader owns closing an incomplete stream.
+        if not stream_incomplete:
+            with contextlib.suppress(OSError):
+                process.stdout.close()
 
     if timed_out:
         return CommandObservation(
             outcome="timed_out",
             returncode=process.returncode,
             failure_signature=None,
-            detail="semantic step exceeded its job timeout",
+            detail="semantic step exceeded its job timeout; descendant settlement unknown",
+            timeout_settlement="unknown",
         )
     if pump_error:
         return CommandObservation(
@@ -3798,6 +4172,7 @@ def _stream_command(
             returncode=process.returncode,
             failure_signature=None,
             detail=f"output stream failed: {pump_error[0]}",
+            timeout_settlement="unknown",
         )
     if stream_incomplete:
         return CommandObservation(
@@ -3805,6 +4180,7 @@ def _stream_command(
             returncode=process.returncode,
             failure_signature=None,
             detail="output stream did not close with the semantic command",
+            timeout_settlement="unknown",
         )
     if process.returncode:
         signature = collector.signature()
@@ -3889,8 +4265,17 @@ def _dependency_environment(
                 timeout_seconds=None,
                 detect_retryable_dependency_transport=True,
             )
+        except Exception as exc:
+            raise _ProcessSettlementUnknown(
+                "dependency command did not return a settled observation", outcome="unavailable"
+            ) from exc
         finally:
             print("::endgroup::", flush=True)
+        if result.timeout_settlement == "unknown" or result.outcome == "timed_out":
+            raise _ProcessSettlementUnknown(
+                "dependency command settlement unknown; original outcome " + result.outcome,
+                outcome=result.outcome,
+            )
         if result.outcome == "passed":
             return command_env
         if attempt == 1 and result.retryable_dependency_transport:
@@ -4363,6 +4748,7 @@ def _exact_base_worktree(
     worktree = holder / "worktree"
     repository = holder / "repository.git"
     pinned_origin = holder / "origin.git"
+    preserve_unsettled = False
     try:
         common_dir_text = _git_run_bounded(
             ["git", "rev-parse", "--git-common-dir"],
@@ -4487,8 +4873,14 @@ def _exact_base_worktree(
                 f"{exact_sha}"
             )
         yield worktree
+    except _ProcessSettlementUnknown:
+        preserve_unsettled = True
+        raise
     finally:
-        _bounded_rmtree(holder, deadline=deadline)
+        if preserve_unsettled:
+            print(f"::warning title=ci-base-replay::settlement unknown; preserving original checkout {holder}", flush=True)
+        else:
+            _bounded_rmtree(holder, deadline=deadline)
 
 
 def _stream_process_with_deadline(
@@ -4511,11 +4903,22 @@ def _stream_process_with_deadline(
     try:
         return process.wait(timeout=_remaining_seconds(deadline)), False
     except subprocess.TimeoutExpired:
-        with contextlib.suppress(ProcessLookupError):
+        # A failed signal or second wait cannot erase the original timeout or
+        # escape the typed preservation boundary. Neither proves settlement.
+        with contextlib.suppress(Exception):
             os.killpg(process.pid, signal.SIGKILL)
-        with contextlib.suppress(subprocess.TimeoutExpired):
+        with contextlib.suppress(Exception):
             process.wait(timeout=_remaining_seconds(deadline))
-        return process.returncode, True
+        raise _ProcessSettlementUnknown(
+            "exact-base runner budget expired; original timed_out outcome; descendant settlement unknown"
+        )
+
+    except Exception as exc:
+        with contextlib.suppress(Exception):
+            os.killpg(process.pid, signal.SIGKILL)
+        raise _ProcessSettlementUnknown(
+            "base runner did not return a settled observation", outcome="unavailable"
+        ) from exc
 
 
 def _base_replay_unavailable(base_sha: str, detail: object) -> dict[str, Any]:
@@ -4546,6 +4949,7 @@ def _run_exact_base_replays(
         return
     deadline = time.monotonic() + max(1, budget_seconds)
     base_sha = plan.base_sha
+    current_steps: list[dict[str, Any]] = []
     try:
         with _exact_base_worktree(root, base_sha, deadline=deadline) as base_root:
             base_runner = base_root / "scripts" / "run_ci_pack.py"
@@ -4556,6 +4960,7 @@ def _run_exact_base_replays(
                     for step in record["steps"]
                     if step.get("outcome") in {"failed", "timed_out"}
                 ]
+                current_steps = target_steps
                 if _remaining_seconds(deadline) <= 0:
                     replay = {
                         "tested_tree_sha": base_sha,
@@ -4689,17 +5094,33 @@ def _run_exact_base_replays(
                     replay: dict[str, Any] = {
                         "tested_tree_sha": base_sha,
                         "outcome": "timed_out",
-                        "detail": "exact-base replay budget exhausted",
+                        "detail": "exact-base replay budget exhausted; settlement unknown",
                     }
+                    for step in target_steps:
+                        step["base_replay"] = replay
+                    raise _ProcessSettlementUnknown(replay["detail"])
                 elif not replay_path.is_file():
-                    replay = _base_replay_unavailable(
-                        base_sha,
-                        "base runner did not emit semantic replay evidence "
-                        "(the base may predate the semantic epoch)",
+                    raise _ProcessSettlementUnknown(
+                        "base runner did not emit original evidence; descendant settlement unproven",
+                        outcome="unavailable",
                     )
                 else:
                     try:
                         replay_doc = _load_json_object(replay_path)
+                        raw_jobs = replay_doc.get("jobs", [])
+                        old_timeout = isinstance(raw_jobs, list) and any(
+                            isinstance(job, dict) and isinstance(job.get("steps"), list)
+                            and any(isinstance(step, dict) and step.get("outcome") == "timed_out" for step in job["steps"])
+                            for job in raw_jobs
+                        )
+                        if old_timeout or any(
+                            isinstance(row, dict) and row.get("outcome") == "unknown"
+                            for row in replay_doc.get("infrastructure", [])
+                        ):
+                            raise _ProcessSettlementUnknown(
+                                f"base runner reported infrastructure unknown; retaining original result {replay_path}",
+                                outcome="unavailable",
+                            )
                         if replay_doc.get("schema") != FRAGMENT_SCHEMA:
                             raise ManifestError("base replay fragment schema mismatch")
                         if replay_doc.get("tested_tree_sha") != base_sha:
@@ -4722,26 +5143,48 @@ def _run_exact_base_replays(
                                     "base replay must contain exactly one logical job"
                                 )
                             base_job = replay_jobs[0]
+                            if not isinstance(base_job, dict):
+                                raise ManifestError("base replay logical job must be an object")
                             if base_job.get("logical_job_id") != record["logical_job_id"]:
                                 raise ManifestError("base replay logical job mismatch")
                             replay = {
                                 "tested_tree_sha": base_sha,
                                 "job_present": True,
                                 "logical_job_id": base_job["logical_job_id"],
-                                "job_exec_sha256": base_job["job_exec_sha256"],
-                                "infrastructure": base_job["infrastructure"],
-                                "steps": base_job["steps"],
+                                "job_exec_sha256": base_job.get("job_exec_sha256"),
+                                "infrastructure": base_job.get("infrastructure"),
+                                "steps": base_job.get("steps"),
                             }
-                    except (ManifestError, OSError, json.JSONDecodeError) as exc:
-                        replay = _base_replay_unavailable(base_sha, exc)
+                        # Reuse the existing exact-base evidence validator before
+                        # this original result can qualify safe teardown/reuse.
+                        _validate_base_replay(replay, expected_base_sha=base_sha)
+                    except _ProcessSettlementUnknown:
+                        raise
+                    except Exception as exc:  # qualification must preserve the original on any failure
+                        raise _ProcessSettlementUnknown(
+                            "base runner original result could not be qualified: " + _bounded_detail(exc),
+                            outcome="unavailable",
+                        ) from exc
                 for step in target_steps:
                     step["base_replay"] = replay
+    except _ProcessSettlementUnknown as exc:
+        for step in current_steps:
+            step.setdefault("base_replay", {
+                "tested_tree_sha": base_sha,
+                "outcome": exc.original_outcome,
+                "detail": _bounded_detail(exc),
+            })
+        unavailable = _base_replay_unavailable(base_sha, "an original replay has unknown descendant settlement")
+        for record in failed_records:
+            for step in record.get("steps", []):
+                if step.get("outcome") in {"failed", "timed_out"}:
+                    step.setdefault("base_replay", unavailable)
     except (RuntimeError, subprocess.SubprocessError, TimeoutError, OSError) as exc:
         replay = _base_replay_unavailable(base_sha, exc)
         for record in failed_records:
             for step in record.get("steps", []):
                 if step.get("outcome") in {"failed", "timed_out"}:
-                    step["base_replay"] = replay
+                    step.setdefault("base_replay", replay)
 
 
 def _find_repo_root(workflow_path: Path) -> Path:
@@ -4852,6 +5295,7 @@ def execute_pack(
     timing_observations: list[dict[str, Any]] = []
     current_dependency: object = object()
     dependency_error: str | None = None
+    unsettled_detail: str | None = None
     bound_tree_sha = plan.tested_tree_sha if plan is not None else os.environ.get(
         "CI_TESTED_TREE_SHA"
     )
@@ -5006,78 +5450,91 @@ def execute_pack(
             jobs, key=lambda job: (dependency_command(job) or "", job.ordinal)
         )
         for job in ordered_jobs:
-            dependency = dependency_command(job)
-            if dependency != current_dependency:
-                current_dependency = dependency
-                dependency_error = None
-                dependency_started = (
-                    time.monotonic_ns()
-                    if emit_timing_observations is not None
-                    else None
-                )
-                try:
-                    command_env = _dependency_environment(
-                        dependency,
-                        changed_files_file=changed_files_file,
-                    )
-                except Exception as exc:  # noqa: BLE001 — evidence must survive
-                    dependency_error = _bounded_detail(exc)
-                finally:
-                    if dependency_started is not None:
-                        timing_observations.append(
-                            _timing_observation(
-                                job.job_id,
-                                "dependency_install",
-                                dependency_started,
-                                time.monotonic_ns(),
-                            )
-                        )
-            if dependency_error is not None:
+            settlement_before = unsettled_detail
+            if unsettled_detail is not None:
                 execution = _blocked_job_execution(
-                    job,
-                    infrastructure_outcome="dependency_failed",
-                    detail=dependency_error,
+                    job, infrastructure_outcome="unknown", detail=unsettled_detail
                 )
             else:
-                test_started = (
-                    time.monotonic_ns()
-                    if emit_timing_observations is not None
-                    else None
-                )
-                try:
-                    execution = _coerce_job_execution(
-                        job,
-                        _run_job(
-                            job,
-                            base_ref=base_ref,
-                            head_ref=head_ref,
-                            command_env=command_env,
-                            tested_tree_sha=bound_tree_sha,
-                        ),
+                dependency = dependency_command(job)
+                if dependency != current_dependency:
+                    current_dependency = dependency
+                    dependency_error = None
+                    dependency_started = (
+                        time.monotonic_ns()
+                        if emit_timing_observations is not None
+                        else None
                     )
-                except Exception as exc:  # noqa: BLE001 — complete accounting
+                    try:
+                        command_env = _dependency_environment(
+                            dependency,
+                            changed_files_file=changed_files_file,
+                        )
+                    except _ProcessSettlementUnknown as exc:
+                        unsettled_detail = _bounded_detail(exc)
+                        dependency_error = unsettled_detail
+                    except Exception as exc:  # noqa: BLE001 — evidence must survive
+                        dependency_error = _bounded_detail(exc)
+                    finally:
+                        if dependency_started is not None:
+                            timing_observations.append(
+                                _timing_observation(
+                                    job.job_id,
+                                    "dependency_install",
+                                    dependency_started,
+                                    time.monotonic_ns(),
+                                )
+                            )
+                if dependency_error is not None:
                     execution = _blocked_job_execution(
                         job,
-                        infrastructure_outcome=(
-                            "timed_out"
-                            if isinstance(
-                                exc,
-                                (TimeoutError, subprocess.TimeoutExpired),
-                            )
-                            else "unknown"
-                        ),
-                        detail=exc,
+                        infrastructure_outcome="unknown" if unsettled_detail else "dependency_failed",
+                        detail=dependency_error,
                     )
-                finally:
-                    if test_started is not None:
-                        timing_observations.append(
-                            _timing_observation(
-                                job.job_id,
-                                "test",
-                                test_started,
-                                time.monotonic_ns(),
-                            )
+                else:
+                    test_started = (
+                        time.monotonic_ns()
+                        if emit_timing_observations is not None
+                        else None
+                    )
+                    try:
+                        execution = _coerce_job_execution(
+                            job,
+                            _run_job(
+                                job,
+                                base_ref=base_ref,
+                                head_ref=head_ref,
+                                command_env=command_env,
+                                tested_tree_sha=bound_tree_sha,
+                            ),
                         )
+                    except Exception as exc:  # noqa: BLE001 — complete accounting
+                        execution = _blocked_job_execution(
+                            job,
+                            infrastructure_outcome=(
+                                "timed_out"
+                                if isinstance(
+                                    exc,
+                                    (TimeoutError, subprocess.TimeoutExpired),
+                                )
+                                else "unknown"
+                            ),
+                            detail=exc,
+                        )
+                    finally:
+                        if test_started is not None:
+                            timing_observations.append(
+                                _timing_observation(
+                                    job.job_id,
+                                    "test",
+                                    test_started,
+                                    time.monotonic_ns(),
+                                )
+                            )
+            if execution.timeout_settlement == "unknown":
+                unsettled_detail = "original command settlement unknown; no reuse, restoration or replay permitted"
+            if settlement_before is None and unsettled_detail is not None:
+                pack_infrastructure.append({"outcome": "unknown", "detail": unsettled_detail})
             failure = execution.failure
             records.append(execution.fragment_dict())
             if failure:
@@ -5102,16 +5559,19 @@ def execute_pack(
                     flush=True,
                 )
     finally:
-        try:
-            _restore_workspace(bound_tree_sha)
-        except Exception as exc:  # noqa: BLE001 — fragment still gets written
-            detail = _bounded_detail(exc)
-            failures.append(f"ci-pack: final workspace restore failed ({detail})")
-            pack_infrastructure.append(
-                {"outcome": "unknown", "detail": f"workspace restore: {detail}"}
-            )
+        if unsettled_detail is None:
+            try:
+                _restore_workspace(bound_tree_sha)
+            except Exception as exc:  # noqa: BLE001 — fragment still gets written
+                detail = _bounded_detail(exc)
+                failures.append(f"ci-pack: final workspace restore failed ({detail})")
+                pack_infrastructure.append(
+                    {"outcome": "unknown", "detail": f"workspace restore: {detail}"}
+                )
+        else:
+            print("::warning title=run-ci-pack::original command settlement unknown; workspace restoration and base replay withheld", flush=True)
 
-    if plan is not None and enable_base_replay and not os.environ.get(
+    if unsettled_detail is None and plan is not None and enable_base_replay and not os.environ.get(
         "CI_DISABLE_BASE_REPLAY"
     ):
         try:

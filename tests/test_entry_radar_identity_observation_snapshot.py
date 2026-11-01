@@ -373,3 +373,116 @@ def test_real_clock_not_patched_produces_no_historical_availability(tmp_path):
 def test_no_remote_relative_or_coerced_root(directory):
     with pytest.raises(IdentityError, match="absolute local"):
         adapter.read_identity_snapshot(directory)
+
+
+@pytest.fixture
+def legacy(tmp_path):
+    root = tmp_path / "legacy"
+    generation(root)
+    (root / "_receipt.json").write_bytes(b'{"generated_at":"synthetic legacy fixture"}')
+    return root
+
+
+def test_legacy_complete_bytes_are_immutable_and_have_no_clock(legacy, monkeypatch):
+    from dataclasses import FrozenInstanceError
+    def forbidden():
+        raise AssertionError("LEGACY acquisition must not sample a clock")
+    monkeypatch.setattr(adapter.time, "time_ns", forbidden)
+    read = adapter.read_reference_generation(legacy)
+    assert read.mode == "LEGACY"
+    assert read.receipt_bytes == (legacy / "_receipt.json").read_bytes()
+    assert dict(read.artifact_bytes) == {n: (legacy / n).read_bytes() for n in NAMES}
+    with pytest.raises(FrozenInstanceError):
+        read.mode = "NATIVE"
+    old = dict(read.artifact_bytes)[NAMES[0]]
+    (legacy / NAMES[0]).write_bytes(b"later synthetic bytes")
+    assert dict(read.artifact_bytes)[NAMES[0]] == old
+
+
+def test_legacy_root_shared_lock_excludes_incumbent_writer_and_covers_every_read(legacy, monkeypatch):
+    import fcntl
+    fd = os.open(legacy, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with pytest.raises(IdentityError, match="busy"):
+            adapter.read_reference_generation(legacy)
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        original = adapter._read_file
+        calls = []
+        def under_lock(directory_fd, name, limit):
+            with pytest.raises(BlockingIOError):
+                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            calls.append(name)
+            return original(directory_fd, name, limit)
+        monkeypatch.setattr(adapter, "_read_file", under_lock)
+        adapter.read_reference_generation(legacy)
+        assert calls == ["_receipt.json", *NAMES, "_receipt.json"]
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    finally:
+        os.close(fd)
+
+
+def test_native_readback_preserves_incumbent_writer_owned_lock_behavior(prepared):
+    import fcntl
+    # The actual writer performs native readback while holding EX on a separate
+    # descriptor. Native acquisition must not introduce a competing SH lock.
+    fd = os.open(prepared, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        observed = adapter.read_identity_snapshot(prepared)
+        assert lookup(observed).security_id == "SEC:US-XNAS-MU"
+        with pytest.raises(IdentityError, match="busy"):
+            adapter.read_reference_generation(prepared)
+    finally:
+        os.close(fd)
+
+
+@pytest.mark.parametrize("defect", ["missing", "symlink", "oversize", "fifo", "torn", "root_replaced"])
+def test_legacy_acquisition_refuses_incomplete_or_unstable_input(legacy, monkeypatch, defect):
+    member = legacy / NAMES[0]
+    if defect == "missing":
+        member.unlink()
+    elif defect == "symlink":
+        other = legacy.parent / "other"
+        member.rename(other)
+        member.symlink_to(other)
+    elif defect == "oversize":
+        with member.open("wb") as stream:
+            stream.truncate(64 * 1024 * 1024 + 1)
+    elif defect == "fifo":
+        member.unlink()
+        os.mkfifo(member)
+    else:
+        original = adapter._read_file
+        count = 0
+        def unstable(fd, name, limit):
+            nonlocal count
+            raw = original(fd, name, limit)
+            if name == "_receipt.json":
+                count += 1
+                if count == 2:
+                    if defect == "torn":
+                        return raw + b" "
+                    legacy.rename(legacy.parent / "moved")
+                    legacy.mkdir()
+            return raw
+        monkeypatch.setattr(adapter, "_read_file", unstable)
+    with pytest.raises(IdentityError):
+        adapter.read_reference_generation(legacy)
+
+
+@pytest.mark.parametrize("raw", [b"[]", b'{"x":1,"x":2}', b'{"x":NaN}', b"not JSON",
+                                  b'{"publication":null}', b'{"identity_observations":null}'])
+def test_legacy_receipt_never_falls_back_from_native_or_invalid_context(legacy, raw):
+    (legacy / "_receipt.json").write_bytes(raw)
+    with pytest.raises(IdentityError):
+        adapter.read_reference_generation(legacy)
+
+
+def test_legacy_refuses_native_layout_without_reading_pointer_or_control(legacy, monkeypatch):
+    (legacy / ".identity").mkdir()
+    def forbidden(*args):
+        raise AssertionError("native layout must refuse before reading artifacts")
+    monkeypatch.setattr(adapter, "_read_file", forbidden)
+    with pytest.raises(IdentityError, match="native"):
+        adapter.read_reference_generation(legacy)

@@ -209,6 +209,26 @@ def _gold_vm(gcfg: dict) -> dict:
     }
 
 
+def _global_jodi_vm(raw: dict) -> dict:
+    """JODI world total + the vintage its reporters actually show.
+
+    Recency gate (a kept country's last report sits within 6 months of the
+    freshest one) then the aggregate, plus the months the KEPT reporters span and
+    the ISOs dropped as stale. Pure over `raw` (iso -> stored crude frame).
+    """
+    fresh = max((sr.series(d).index.max() for d in raw.values()), default=None)
+    jodi_map = ({iso: d for iso, d in raw.items()
+                 if (sr.series(d).index.max() >= fresh - pd.DateOffset(months=6))}
+                if fresh is not None else {})
+    agg = sr.global_aggregate(jodi_map)
+    agg["as_of"] = fresh.strftime("%Y-%m") if fresh is not None else ""
+    agg["oldest"] = (min(sr.series(d).index.max() for d in jodi_map.values()).strftime("%Y-%m")
+                     if jodi_map else "")
+    agg["excluded"] = sorted(set(raw) - set(jodi_map))
+    agg["n_excluded"] = len(agg["excluded"])
+    return agg
+
+
 def main() -> int:
     scfg = config.load()["strategic_reserves"]
     spr_df = store.read("eia", "spr_stocks")
@@ -229,11 +249,7 @@ def main() -> int:
         d = store.read("jodi", p.stem)
         if d is not None and not d.empty:
             raw[p.stem.replace("crude_", "").upper()] = d
-    fresh = max((sr.series(d).index.max() for d in raw.values()), default=None)
-    jodi_map = ({iso: d for iso, d in raw.items()
-                 if (sr.series(d).index.max() >= fresh - pd.DateOffset(months=6))}
-                if fresh is not None else {})
-    agg = sr.global_aggregate(jodi_map)
+    agg = _global_jodi_vm(raw)
 
     # oil-price overlay (Yahoo front futures, already in the store)
     def _px(t: str) -> pd.Series | None:
@@ -261,7 +277,8 @@ def main() -> int:
     html = env.get_template("spr.html.j2").render(
         C=C, as_of=as_of, built=built, us=us, countries=countries, agg=agg,
         charts=charts, scfg=scfg, caveat=sr.SPR_CAVEAT,
-        assess_word=sr.ASSESS_WORD, gold=gold)
+        assess_word=sr.ASSESS_WORD, assess_word_zh=sr.ASSESS_WORD_ZH,
+        gold=gold)
     site = config.ROOT / config.load()["storage"]["site_dir"]
     write_page(site / "spr.html", html)
     log.info("wrote %s/spr.html (%d KB)", site, len(html) // 1024)

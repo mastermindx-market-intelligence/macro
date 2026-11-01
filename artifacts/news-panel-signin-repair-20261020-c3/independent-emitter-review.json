@@ -1,0 +1,33 @@
+{
+  "schema": "news.signin_emitter_independent_review.v1",
+  "base_commit": "8128e4085d8aa346c969de186f05694afbbe6274",
+  "candidate_files": {
+    "templates/ticker_news_panel.html.j2": {
+      "base_sha256": "f9f8401d3ad4a2ff5eef095cc8abce692883e17d1a7d9748e7c355db0b377dea",
+      "candidate_sha256": "0532a8f610f4c681ba05430bc27c92c2a848a271ae1199c633f284f2d58095e2"
+    },
+    "tests/test_check_site_asset_refs.py": {
+      "base_sha256": "a05a18e892103cecc96cb78ec500f195de47c782da85100ccf4b2789ec4fccc8",
+      "candidate_sha256": "78bed7e789a8cc58ed08ad25923a6e14873764206f03e0541994b45a0f13e4c7"
+    }
+  },
+  "exact_diff_sha256": "213a740c334f4ddb3cee5481dbe6a7d1b43aed6cc99b75d3cb898c4a7a25ccb9",
+  "visual_guard_source_commit": "8128e4085d8aa346c969de186f05694afbbe6274",
+  "visual_guard_sha256": "c1604698d38e6f6bb8079f468e11caa581d8efacc9ed53413c6c34a96f1dcf1a",
+  "visual_guard_added_paths": [
+    "templates/ticker_news_panel.html.j2",
+    "tests/test_check_site_asset_refs.py"
+  ],
+  "visual_guard_material_paths": [],
+  "visual_guard_findings": [],
+  "visual_receipt_required_by_guard": false,
+  "prior_visual_evidence_action": "Preserve prior matrix and provenance unchanged; this nonvisual href-only repair does not require a new evidence receipt.",
+  "source_verdict": "APPROVE",
+  "scope": "One href target correction plus two real-Jinja page-depth regression cases. No auth authority, data, runtime JS, CSS, or guard implementation change.",
+  "independent_checks": "Exact base-to-candidate diff reviewed; current canonical existing sign-in entry verified; pinned guard run against complete exact diff and candidate template yields no material paths or findings.",
+  "parent_validation_reported": "Both new cases fail original panel with dangling account.html; full 21-test run started by parent, outcome awaited.",
+  "limitations": [
+    "Not a CI approval or immutable remote-head approval until the published candidate is bound to these file hashes.",
+    "No live website or navigation test claimed; normal future render/publication is still required."
+  ]
+}

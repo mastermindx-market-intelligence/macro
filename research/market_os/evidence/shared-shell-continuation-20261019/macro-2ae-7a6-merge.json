@@ -1,0 +1,43 @@
+{
+  "started_at": "2026-10-20T19:35:50.249302+00:00",
+  "head_before": "2ae6498d0b9f2a088af2e827abf6527799757f8c",
+  "incoming": "7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1",
+  "base": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "state": "MERGE_OPEN_FOR_ORIGINAL_OWNER_RESOLUTION",
+  "scope": "Same original worktree/branch, actual dirty PR and unarmed MOG, bounded changed-parent blob availability verified; no complete-history availability claim",
+  "finished_at": "2026-10-20T19:36:00.813290+00:00",
+  "command": [
+    "git",
+    "-C",
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+    "merge",
+    "--no-commit",
+    "--no-ff",
+    "7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1"
+  ],
+  "exit": 1,
+  "log_bytes": 603,
+  "log_sha256": "b1bf3290a7145bedce0672f00906f6ad22c394491028b0941b0cfde4c4ad8d9c",
+  "trace_bytes": 27288,
+  "head_after": "2ae6498d0b9f2a088af2e827abf6527799757f8c",
+  "merge_head": "7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1",
+  "unmerged": [
+    ".github/ci/legacy-jobs.yml",
+    "app/deploy/update.sh",
+    "lib/macro_suite_labels.py",
+    "site/macro_labor_markets.html",
+    "tests/test_macro_command_copy_law.py"
+  ],
+  "unstaged": [
+    ".github/ci/legacy-jobs.yml",
+    ".github/ci/legacy-jobs.yml",
+    "app/deploy/update.sh",
+    "app/deploy/update.sh",
+    "lib/macro_suite_labels.py",
+    "lib/macro_suite_labels.py",
+    "site/macro_labor_markets.html",
+    "site/macro_labor_markets.html",
+    "tests/test_macro_command_copy_law.py",
+    "tests/test_macro_command_copy_law.py"
+  ]
+}

@@ -2307,3 +2307,189 @@ def test_canada_armed_nightly_exception_remains_loud(monkeypatch, tmp_path):
     errors = [row for row in health if row.get("status") == "ERROR"]
     assert len(errors) == 1
     assert "FAILED" in errors[0]["en"]
+
+
+# ---------------------------------------------------------------------------
+# Canada zero-official-buy liveness (masterplan §10.4)
+# ---------------------------------------------------------------------------
+# The sole CA shadow write, the scorecard attach and the track_ledger emit all
+# used to sit behind an early return in scripts.build_canada._canada_board_ledger
+# that fired whenever the official buy subset was EMPTY — so a zero-buy session
+# silenced every registered CA challenger (they run inside write_shadow) and
+# deleted the honestly-empty track panel. A real board with zero official buys
+# must keep every read projection + the shadow substrate live; only the ledger
+# append is withheld (zero buys stay append-free by ledger semantics). A MISSING
+# board object (setups=None / non-dict) keeps the old SKIP-only behavior.
+_ZERO_BUY_SKIP_ROW = {"en": "Board ledger (no ranked names to log)",
+                      "zh": "榜单账本（无可记录个股）",
+                      "status": "SKIP", "rows": 0, "last": "—"}
+
+
+def _zero_buy_setups(watch_rows: list[dict]) -> dict:
+    """_canada_health_setups() with the official buy subset emptied and an
+    explicit watch strip substituted."""
+    setups = _canada_health_setups()
+    setups["buy"] = []
+    setups["watch"] = watch_rows
+    return setups
+
+
+_TWO_WATCH_ROWS = [
+    {"ticker": "W1.TO", "alpha": 0.4, "watch_reason": "knife",
+     "block_reason": "extended 2.1z vs 5d anchor"},
+    {"ticker": "W2.TO", "alpha": 0.3, "watch_reason": "blocked",
+     "block_reason": "alignment gate withheld"},
+]
+
+
+def _capture_shadow(monkeypatch, seen: dict) -> list[tuple[list[dict], dict]]:
+    """Replace the helper's counting write_shadow stub with one that also
+    captures the exact (calls, kwargs) population handed to the substrate.
+    Resolves the module the SAME way `_stub_canada_health_read_side` (and the
+    production `from engine import board_shadow`) does — K1's delitem+re-import
+    arm can leave the engine package attribute on a re-imported module object
+    that is not this file's top-level `bs` alias."""
+    from engine import board_shadow as active_shadow
+
+    payloads: list[tuple[list[dict], dict]] = []
+
+    def shadow_write(calls, **kwargs):
+        seen["shadow"] += 1
+        payloads.append((calls, kwargs))
+
+    monkeypatch.setattr(active_shadow, "write_shadow", shadow_write)
+    if active_shadow is not bs:
+        monkeypatch.setattr(bs, "write_shadow", shadow_write)
+    return payloads
+
+
+def test_ca_zero_buy_armed_nightly_keeps_shadow_track_and_scorecard_alive(
+    monkeypatch, tmp_path
+):
+    """T1 — zero official buys, two watch rows, armed nightly: append_board is
+    NEVER called; write_shadow runs exactly once on the watch-only calls; the
+    scorecard attaches, the track ledger emits; health is the honest SKIP row
+    alone (no ERROR). This is the exact assertion that fails at BASE, where the
+    early return skips the whole block."""
+    from scripts import build_canada
+    from scripts.build_canada_library import CA_BOARD_DEFINITION
+
+    setups = _zero_buy_setups(copy.deepcopy(_TWO_WATCH_ROWS))
+    seen = _stub_canada_health_read_side(monkeypatch, tmp_path)
+    shadow_payloads = _capture_shadow(monkeypatch, seen)
+    appends = []
+
+    def append_board(*args, **kwargs):
+        appends.append((args, kwargs))
+        return 1
+
+    monkeypatch.setattr(build_canada, "_ledger_advance_enabled", lambda: True)
+    monkeypatch.setattr(board_ledger, "append_board", append_board)
+
+    health = build_canada._canada_board_ledger(setups, {"date": ASOF})
+
+    assert appends == [], "zero official buys must never reach append_board"
+    assert len(shadow_payloads) == 1, (
+        f"write_shadow must run exactly once; got {len(shadow_payloads)}"
+    )
+    calls, kwargs = shadow_payloads[0]
+    assert kwargs == {"market": "CA", "asof": ASOF}
+    assert calls == [
+        {"ticker": "W1.TO", "group": "watch", "edge_z": 0.4,
+         "primary_rejection_reason": "knife_demote",
+         "block_reason": "extended 2.1z vs 5d anchor",
+         "knife_demoted": True, "board_definition": CA_BOARD_DEFINITION},
+        {"ticker": "W2.TO", "group": "watch", "edge_z": 0.3,
+         "primary_rejection_reason": None,
+         "block_reason": "alignment gate withheld",
+         "knife_demoted": False, "board_definition": CA_BOARD_DEFINITION},
+    ]
+    assert setups["board_track"] == {"status": "accruing"}
+    assert seen == {"scorecard": 1, "grade": 1, "track": 1, "shadow": 1}
+    assert health == [_ZERO_BUY_SKIP_ROW]
+
+
+def test_ca_zero_buy_zero_watch_still_writes_empty_shadow(monkeypatch, tmp_path):
+    """T2 — zero official buys AND zero watch rows: write_shadow still runs once
+    with an empty population; the scorecard still attaches; health is exactly
+    the SKIP row."""
+    from scripts import build_canada
+
+    setups = _zero_buy_setups([])
+    seen = _stub_canada_health_read_side(monkeypatch, tmp_path)
+    shadow_payloads = _capture_shadow(monkeypatch, seen)
+
+    monkeypatch.setattr(build_canada, "_ledger_advance_enabled", lambda: True)
+
+    health = build_canada._canada_board_ledger(setups, {"date": ASOF})
+
+    assert shadow_payloads == [([], {"market": "CA", "asof": ASOF})]
+    assert setups["board_track"] == {"status": "accruing"}
+    assert health == [_ZERO_BUY_SKIP_ROW]
+
+
+def test_ca_missing_board_object_is_skip_only_and_inert(monkeypatch, tmp_path):
+    """T3 — no board object at all (setups=None): the SKIP row and nothing
+    else; no scorecard/grade/track/shadow call runs and nothing raises."""
+    from scripts import build_canada
+
+    seen = _stub_canada_health_read_side(monkeypatch, tmp_path)
+
+    health = build_canada._canada_board_ledger(None, {"date": ASOF})
+
+    assert health == [_ZERO_BUY_SKIP_ROW]
+    assert seen == {"scorecard": 0, "grade": 0, "track": 0, "shadow": 0}
+
+
+def test_ca_zero_buy_shadow_failure_is_contained(monkeypatch, tmp_path):
+    """T4 — zero official buys with write_shadow raising: contained by the call
+    site's own guard — nothing escapes, no ERROR row, the honest SKIP row is
+    the whole health list, and the scorecard attach already happened."""
+    from scripts import build_canada
+
+    setups = _zero_buy_setups(copy.deepcopy(_TWO_WATCH_ROWS))
+    _stub_canada_health_read_side(monkeypatch, tmp_path)
+
+    def explode(*_args, **_kwargs):
+        raise RuntimeError("synthetic shadow failure")
+
+    from engine import board_shadow as active_shadow
+    monkeypatch.setattr(active_shadow, "write_shadow", explode)
+    if active_shadow is not bs:
+        monkeypatch.setattr(bs, "write_shadow", explode)
+    monkeypatch.setattr(build_canada, "_ledger_advance_enabled", lambda: True)
+
+    health = build_canada._canada_board_ledger(setups, {"date": ASOF})  # must not raise
+
+    assert health == [_ZERO_BUY_SKIP_ROW]
+    assert setups["board_track"] == {"status": "accruing"}
+
+
+def test_ca_zero_buy_off_nightly_still_writes_shadow(monkeypatch, tmp_path):
+    """T5 — zero official buys on an off-nightly render: identical to T1 — the
+    append is withheld either way (never called) and the shadow write still
+    runs exactly once on the watch-only calls."""
+    from scripts import build_canada
+
+    setups = _zero_buy_setups(copy.deepcopy(_TWO_WATCH_ROWS))
+    seen = _stub_canada_health_read_side(monkeypatch, tmp_path)
+    shadow_payloads = _capture_shadow(monkeypatch, seen)
+    appends = []
+
+    def append_board(*args, **kwargs):
+        appends.append((args, kwargs))
+        return 1
+
+    monkeypatch.setattr(build_canada, "_ledger_advance_enabled", lambda: False)
+    monkeypatch.setattr(board_ledger, "append_board", append_board)
+
+    health = build_canada._canada_board_ledger(setups, {"date": ASOF})
+
+    assert appends == []
+    assert len(shadow_payloads) == 1
+    _calls, kwargs = shadow_payloads[0]
+    assert kwargs == {"market": "CA", "asof": ASOF}
+    assert len(_calls) == 2
+    assert setups["board_track"] == {"status": "accruing"}
+    assert seen == {"scorecard": 1, "grade": 1, "track": 1, "shadow": 1}
+    assert health == [_ZERO_BUY_SKIP_ROW]

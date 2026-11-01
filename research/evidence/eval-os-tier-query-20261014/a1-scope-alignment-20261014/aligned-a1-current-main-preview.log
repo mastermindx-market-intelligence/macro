@@ -1,0 +1,10 @@
+698634adec4164618b230792f698cfc052b1d646
+100644 43e149c406af1e495a6f74d77a3febcbe7b45ab6 1	tests/test_ci_pack.py
+100644 51c4b5166a17708f91e24a0ece93f1d0717fb73a 2	tests/test_ci_pack.py
+100644 33f26506b88d309fe62d02aa898de9b43e2d9a42 3	tests/test_ci_pack.py
+
+Auto-merging .github/ci/legacy-jobs.yml
+Auto-merging app/deploy/update.sh
+Auto-merging tests/test_ci_pack.py
+CONFLICT (content): Merge conflict in tests/test_ci_pack.py
+Auto-merging tests/test_deploy_update_self_heal.py

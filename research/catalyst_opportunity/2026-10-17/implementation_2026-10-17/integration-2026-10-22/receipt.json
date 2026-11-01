@@ -1,0 +1,44 @@
+{
+  "schema": "catalyst.recovery.integration.v1",
+  "source_parent": "1a365105f2905d3d815670cf7cc9653392886737",
+  "compatibility_target": "2d6558b357bce8fc4c0554beb42529d20922a637",
+  "kind": "single_parent_content_compatibility_repair",
+  "principal_execution_reason": [
+    "UNIQUE_APPROVED_ACCESS",
+    "LOWER_TOTAL_OVERHEAD"
+  ],
+  "scope": [
+    ".github/ci/legacy-jobs.yml",
+    "app/deploy/update.sh",
+    "tests/test_deploy_update_self_heal.py"
+  ],
+  "yaml_job_values_unchanged": true,
+  "yaml_only_path_order_changed": true,
+  "individual_three_way_merges_rc": 0,
+  "whole_trigger_equivalence_cases": 88,
+  "whole_trigger_equivalence_passed": true,
+  "deployment_contracts": {
+    "command": "python3 -m pytest tests/test_deploy_update_self_heal.py -q --basetemp <fresh-owned-temp>",
+    "rc": 0,
+    "elapsed_seconds": 27.15,
+    "log": "deployment-contracts.log",
+    "log_sha256": "7071c3cd91026a38bbb5e232954b9cdee289030e7930791a211b33ce161b4d66"
+  },
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "15e2e0440f7a984a5c61bcadbd692bab59e837b608b95084cf1889f291d40d1b",
+    "app/deploy/update.sh": "3c4a72d30b70b640984a72a892d0672b75079bf035e9b4fb2678489d01273289",
+    "tests/test_deploy_update_self_heal.py": "384f5ea3fc3eac523f6418c5aa636d3b57fa25a9e6086c5a55941e44c4ee8772"
+  },
+  "publication": false,
+  "independent_review": false,
+  "production_acceptance": false,
+  "initial_deployment_contracts": {
+    "command": "python3 -m pytest tests/test_deploy_update_self_heal.py -q",
+    "rc": 1,
+    "elapsed_seconds": 21.54,
+    "log": "deployment-contracts-attempt1.log",
+    "log_sha256": "2994f05defe9ed1ce6233b2f52afd1a10190e78b038a21c73ab41502186048d9"
+  },
+  "guard_repair": "Run complete marked production trigger; existing first-regex-only helper missed separate condition. No exemptions or expected results changed.",
+  "guard_falsifier_passed": true
+}

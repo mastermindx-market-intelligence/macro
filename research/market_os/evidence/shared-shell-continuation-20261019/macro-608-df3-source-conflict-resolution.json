@@ -1,0 +1,83 @@
+{
+  "started_at": "2026-10-20T19:13:34.375514+00:00",
+  "head": "608dfad299e2e48ab7703bf0b180e0dca1318229",
+  "base": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+  "incoming": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "state": "THREE_SOURCE_CONFLICTS_RESOLVED_STAGED_MEASUREMENT_PENDING",
+  "checks": {
+    "manifest": {
+      "jobs": 341,
+      "concurrent_path_unions": [
+        "bea-gvc-current-descriptive-consumer",
+        "c19-wp32-integrated-answer-correction-denial-pins",
+        "c19-wp22-dhi-traversal",
+        "conviction-profile",
+        "fif-kernel-guards",
+        "nw-lobe-unfreeze",
+        "crypto-assistant-context",
+        "crypto-vector-r2-organs",
+        "research-price-panel",
+        "ticker-news-qbus"
+      ],
+      "all_parent_fields_preserved": true,
+      "path_multiplicities_bounded_by_exact_parent_additions": true
+    },
+    "test": {
+      "resolution": "Retain H template5829 and incoming free-content135/5795 pending actual joint measurement; other bounds unchanged",
+      "provisional_packing_probes": [
+        [
+          "templates/index.html",
+          136,
+          5829
+        ],
+        [
+          "scripts/build_free_content.py",
+          135,
+          5795
+        ],
+        [
+          "engine/prophet/plan_book.py",
+          130,
+          5600
+        ]
+      ]
+    },
+    "updater": {
+      "both_exact_additions_preserved": [
+        "lib/shared_shell.py",
+        "engine/news_common.py"
+      ],
+      "ordinary_other_changes_retained": true
+    }
+  },
+  "rows": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "before_sha256": "f4d484df45f6919c9763cfa8bd31b00776baec430f2faecdeb259599ca2c4651",
+      "candidate_sha256": "83e30f996fd43532cd4e39bcf491c02796c8cea4b2002d87d21d7801be976b0e",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-source-conflicts-before/.github_ci_legacy-jobs.yml"
+    },
+    {
+      "path": "tests/test_ci_pack.py",
+      "before_sha256": "d6d0c0813c95be5b3514ead74c9723d2275fdfae0afd94956b50e884bf347fcb",
+      "candidate_sha256": "15af084d773ba164646f2394df1c8657909ae4bfa396253a3af9f0eaa407c682",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-source-conflicts-before/tests_test_ci_pack.py"
+    },
+    {
+      "path": "app/deploy/update.sh",
+      "before_sha256": "8411c72dce04396ed86bd2ea8431559967b886bb65fadf817419730bd6f45e62",
+      "candidate_sha256": "337c48b56642740a5d9afea58d5c824b7ed32b51f0695e3881c06936978b1c6c",
+      "backup": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-df3-source-conflicts-before/app_deploy_update.sh"
+    }
+  ],
+  "updater_bash_syntax": {
+    "exit": 0,
+    "stderr": ""
+  },
+  "finished_at": "2026-10-20T19:13:36.587095+00:00",
+  "remaining_unmerged": [
+    "site/etfs.html",
+    "site/macro_labor_markets.html",
+    "site/us_stocks.html"
+  ]
+}

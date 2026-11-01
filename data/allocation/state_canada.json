@@ -4,6 +4,7 @@
   "eligible": [
     "ca_banks",
     "ca_consumer",
+    "ca_gold",
     "ca_insurers",
     "ca_oil_gas",
     "ca_pipelines",
@@ -11,8 +12,8 @@
   ],
   "held": [
     "ca_oil_gas",
+    "ca_gold",
     "ca_banks",
-    "ca_consumer",
     "ca_tech"
   ],
   "leader": "ca_oil_gas",

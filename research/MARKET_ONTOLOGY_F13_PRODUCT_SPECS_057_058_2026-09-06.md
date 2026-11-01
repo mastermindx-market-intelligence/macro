@@ -102,6 +102,34 @@ the amendment record the ruling asked for.
    measured (an overbroad OR-pattern matched unrelated comment text); the corrected invocation-only
    check still returns zero hits, so the DROP conclusion is unchanged.
 
+## 0.6 Source-clock correction — 2026-10-19 (MO-PAID-057 V1 implementation)
+
+Current source proves that `scripts/build_public_pages.py` creates a Help-page build
+stamp and `.github/workflows/public-render.yml` runs on relevant main pushes. That
+stamp cannot establish an overnight market-data refresh. A relative age frozen into
+static HTML also cannot establish age at a later visit. This correction supersedes
+A5/A6's overnight claims and A8's colored left rule; it retains A1's disclosure job,
+three states, seven-key pure helper, shared builders, pull-only scope and A2/A7 refusal.
+
+- Name the clock **Help page built**, and say data pages show their own update times.
+  At 36 hours, say this Help content may lag recent product changes. Do not infer
+  market-data staleness, nightly completion, a future refresh time or faster paid service.
+- Existing minute-resolution builder stamps are UTC. Other ISO input must include an
+  offset; invalid, missing, future or ambiguous timestamps return unknown and null age.
+- Recompute age from the validated stamp when opened, restored from browser history,
+  made visible, and once per minute. The static/no-JavaScript fallback says this browser
+  cannot determine the Help page's age. It makes no relative-age or refresh-success claim.
+- Reuse the existing `.help-empty` body paragraph in the Help hero, with its existing
+  dark muted treatment and light research-workspace tokens. Words convey state; no
+  new material, colored edge, badge, scheduler, release ledger or notification path.
+- The stale action is “Check the product page for its latest status.” / “请查看产品页面了解最新状态。”
+  Unknown states explain the missing clock without promising that waiting fixes it.
+- Clock regressions live in the already-invoked `tests/test_help_directory.py` suite.
+  Every clock case is retained; no new CI job, suite selector or packing ceiling is needed.
+- Acceptance additionally exercises a 48-hour later browser opening, a future clock,
+  back/forward restoration and an absent stamp. Whole MO-PAID-057 is not a claim of
+  priority-tier refresh, production health, a release notification or programme completion.
+
 **Title reconciliation.** The ledger rows read narrower than the packet's framing: `MO-PAID-057` asks for a priority-tier SLO / differentiated refresh (`acceptance_test`: "a PRO-tier refresh measurably completes first, logged"; `real_producer`: `.github/workflows/daily.yml` — no priority tiers); `MO-PAID-058` asks for tier-differentiated support routing/queue/SLA (`acceptance_test`: "a PRO ticket provably routes to a different queue/alert"). This spec answers the ledger rows because they are the closure target: 057's honest product is a **refresh/release disclosure**, not a sold-faster refresh; 058's honest product is **one channel, labelled**, not a second queue.
 
 **Governing copy law:** `agentos/decisions/DEC-CHAIRMAN-FRONTEND-PLAIN-LANGUAGE-LAW-2026-09-06.md` and the measured empty-state grammar in `research/MARKET_OS_UNIFIED_DASHBOARD_PATTERN_STUDY_2026-09-06.md` §1.12: **[what is absent, as a fact] → [the rule that explains why] → [the one action that would change it]**, three sentences max, one action only, three-way null vocabulary (em dash = no number yet; a plain two-word state = cannot be produced, with the reason; a real zero = a digit).
@@ -132,7 +160,7 @@ the amendment record the ruling asked for.
 | `scripts/build_public_pages.py` | inside the `.render(` call opened at `:121`, add `refresh=refresh_disclosure(config.ROOT, generated)` as a new kwarg alongside the existing two kwargs, which span `:122-123` (`generated_utc=generated,` at `:122`, `**help_vm,` at `:123`; the call closes at `:124`) |
 | `scripts/build_site.py` | same one-line addition at `:3742` |
 | `tests/test_help_directory.py` | extend (A9) |
-| `tests/test_refresh_disclosure.py` | new (A9) |
+| `tests/test_help_directory.py` | extend the existing Help suite with A9 clock regressions |
 
 **Not touched by V1:** `app/mailer.py`, `app/email_segments.py` — the email call site A7 originally proposed is dropped (see A7).
 
@@ -229,7 +257,7 @@ about the one mail path, kept so the next builder does not re-derive them):**
 - Evidence matrix required of the implementing builder (not of this records packet): dark/light × EN/ZH × 1440 / 390, `/help.html`.
 
 ## A9. Acceptance tests
-1. `tests/test_refresh_disclosure.py::test_unparseable_stamp_is_unknown_not_zero` — `refresh_disclosure(root, "")["age_hours"] is None`, `state == "unknown"`, no returned line contains a digit `0` for age.
+1. `tests/test_help_directory.py::test_unparseable_stamp_is_unknown_not_zero` — `refresh_disclosure(root, "")["age_hours"] is None`, `state == "unknown"`, no returned line contains a digit `0` for age.
 2. `…::test_states_are_exhaustive_and_bilingual` — all three states return non-empty `line_en` and `line_zh`, and `line_zh != line_en`.
 3. `…::test_copy_carries_no_machine_words` — none of `{"generated_utc","stale","SLO","tier","pipeline","artifact","refresh_disclosure"}` appears in any EN/ZH line.
 4. `tests/test_help_directory.py::test_help_page_prints_refresh_state` — builds the page via the real builder, asserts `data-refresh-state=` present with one of the three literals, and the raw ISO stamp does NOT appear in the hero text.

@@ -1,0 +1,94 @@
+# #1610 companion proposal v2 — checked forward CLI inputs
+
+**18 October 2026 UTC · Review-only successor · No test execution or native write**
+
+This is the narrow response to F1 in [CI_CONTRACT_COMPANION_SEMANTIC_REVIEW_2026-10-18.md](CI_CONTRACT_COMPANION_SEMANTIC_REVIEW_2026-10-18.md), SHA256 `318ec1f753d0540af6541e96deb35425f6a117f6c1d39d6f33677ac92f53c3b1`. It supersedes the prior proposal's claim that the fake CLI already checked the deploy helper's canonical routing. The original proposal, review, and all four proposed files remain unchanged and retain their earlier identities.
+
+## Four-file successor binding
+
+Only the deployment-owner file has a new separately named copy. Use the three unchanged companion copies with that successor for review; this table does not authorize native file replacement or resolve active writer custody.
+
+| Proposed destination | Review copy | Bytes | SHA256 |
+|---|---|---:|---|
+| `tests/test_datadog_vps_install.py` | [unchanged companion](ci_contract_candidate/tests/test_datadog_vps_install.py.txt) | 5,991 | `a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95` |
+| `tests/test_forward_evaluation.py` | [unchanged companion](ci_contract_candidate/tests/test_forward_evaluation.py.txt) | 31,215 | `637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d` |
+| `tests/test_portfolio_archival.py` | [unchanged companion](ci_contract_candidate/tests/test_portfolio_archival.py.txt) | 16,993 | `0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384` |
+| `tests/test_deploy_provenance.py` | [v2 deployment owner](ci_contract_candidate_v2/tests/test_deploy_provenance.py.txt) | 47,847 | `0da8a0d094b3b6f20bdedbdc427481a6425d709736621e7c5554a125cf78cc48` |
+
+The superseded deployment-owner proposal remains 46,634 bytes, SHA256 `90b872cb6de4d7b8b2c53cc91f747c0c24b6e1fc881526081c5369d9805aa59c`. The complete original four-file diff and ten-case guarantee mapping remain in [CI_CONTRACT_COMPANION_PROPOSAL_2026-10-18.md](CI_CONTRACT_COMPANION_PROPOSAL_2026-10-18.md), SHA256 `355a8d4f90d1b62246cddf4f2ec85698fd1bd50e5e2777ceb98a787bf9ab7e60`.
+
+## Exact boundary change
+
+Before recording or performing a fake forward CLI operation, the shim now reads the actual `MASTERMIND_FORWARD_EVALUATION_RELEASE_STATE_ROOT` environment value. It requires a nonempty absolute path whose strict resolution equals the fixture's admitted live-data directory. The marker path is constructed from that validated received root. Missing, blank, relative, nonexistent, or misrouted roots fail before the fake command event or marker write.
+
+For `init` and `finalize`, the shim collects the actual `--deployment-sha` options, accepting the separate-value and equals-value forms. It requires exactly one value equal to the fixture's expected target. Missing, empty, duplicate, conflicting, truncated, or incorrect values fail. New initialization and finalization fields use that validated received value. Status receives the root check and does not acquire an invented SHA requirement.
+
+The expected fixture path/SHA are comparison oracles. They no longer silently substitute for omitted CLI inputs. This checks the shell handoff to the fake boundary; the retained real-CLI unit owner separately checks receiver behavior. It does not establish real CLI execution, complete argument-parser equivalence, or actual cohort correctness.
+
+## Static checks and retained evidence
+
+Standard-library source parsing and comparisons established:
+
+- All **37 original deployment test functions / 49 literal parameter cases** remain unchanged in source and AST, including decorators and parameter values.
+- All **40 functions / 59 literal cases** in the first companion proposal remain unchanged. No cases or test assertions were added, removed, or skipped by this revision.
+- Every top-level deployment-owner AST node outside `_fake_transport` remains unchanged. Both predecessor and successor embedded transport strings parse successfully.
+- Ten prior file hashes were rechecked, covering the three unchanged companions, predecessor owner, frozen native owner/helper, original proposal/review, and static catalogue v1/v2. All matched their frozen identities.
+
+The new code was not imported or executed. No helper, fake transport, fixture case, pytest collection/run, real refresher, provider, native repository, Git operation or production action was invoked for this revision. The checks above are static enumeration and preservation checks, not 59 passing tests. The frozen 49-case native pass still belongs to helper `1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8` and owner `1e463a9116fb6c9bc6e6fe10ea23bf619d8674fd7e0ad6ce2392410e302a897c`; it is not transferred to this successor. The three hosted CI failures remain failed evidence.
+
+Missing or incorrect CLI-input counterexamples are reasoned source expectations, not executed mutation controls. Independent review of this delta, actual custody qualification, and native execution of the affected owners remain root's next gates. The coupled legacy-function removals are not accepted independently of their replacement coverage. Production helper bytes and runtime semantics are unchanged.
+
+## Full successor delta from the first proposal
+
+```diff
+--- ci_contract_candidate/tests/test_deploy_provenance.py
++++ ci_contract_candidate_v2/tests/test_deploy_provenance.py
+@@ -244,8 +244,28 @@
+ elif name == "python3":
+     if args[:2] != ["-m", "portfolio.forward_evaluation"] or len(args) < 3:
+         raise RuntimeError("only the fake forward CLI is admitted; no app import")
+-    command = args[2]; gate(command)
++    received_root = os.environ.get("MASTERMIND_FORWARD_EVALUATION_RELEASE_STATE_ROOT", "")
++    if not received_root or not pathlib.Path(received_root).is_absolute():
++        raise RuntimeError("fake forward CLI requires a nonempty absolute release-state root")
++    release_data = pathlib.Path(received_root).resolve(strict=True)
++    if release_data != data.resolve(strict=True):
++        raise RuntimeError("fake forward CLI release-state root is not the admitted live-data root")
++    marker = release_data / "portfolio_forward_evaluation/start.json"
++    command = args[2]
+     expected = os.environ["FAKE_EXPECTED"]
++    if command in {"init", "finalize"}:
++        supplied_shas = []
++        for index, value in enumerate(args[3:], start=3):
++            if value == "--deployment-sha":
++                if index + 1 >= len(args):
++                    raise RuntimeError("fake forward CLI deployment-sha has no value")
++                supplied_shas.append(args[index + 1])
++            elif value.startswith("--deployment-sha="):
++                supplied_shas.append(value.split("=", 1)[1])
++        if supplied_shas != [expected]:
++            raise RuntimeError("fake forward CLI requires exactly one expected deployment-sha")
++        deployment_sha = supplied_shas[0]
++    gate(command)
+     if command == "init":
+         marker.parent.mkdir(parents=True, exist_ok=True)
+         if flag("FAKE_FOREIGN_INIT"):
+@@ -255,7 +275,7 @@
+             payload = json.loads(marker.read_text())
+             output({**payload, "initialized": False})
+         else:
+-            payload = {"release_state": "pending_health", "deployment_sha": expected, "evaluation_start": "2026-08-11"}
++            payload = {"release_state": "pending_health", "deployment_sha": deployment_sha, "evaluation_start": "2026-08-11"}
+             marker.write_text(json.dumps(payload, sort_keys=True) + "\n")
+             if flag("FAKE_LOST_INIT_REPLY"): sys.exit(255)
+             output({**payload, "initialized": True})
+@@ -263,7 +283,7 @@
+         if not marker.exists(): sys.exit(2)
+         payload = json.loads(marker.read_text())
+         if payload.get("release_state") != "active":
+-            payload.update(release_state="active", health_verified_sha=expected)
++            payload.update(release_state="active", health_verified_sha=deployment_sha)
+             marker.write_text(json.dumps(payload, sort_keys=True) + "\n")
+         if flag("FAKE_LOST_FINALIZE_REPLY"): sys.exit(255)
+         output(payload)
+```

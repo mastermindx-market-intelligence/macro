@@ -34,8 +34,9 @@ class SelectionEntry:
 
     def validate(self) -> None:
         native._require(type(self.fact_id) is str and re.fullmatch(r"integration:[0-9a-f]{64}", self.fact_id) is not None, "SELECTION_INVALID")
-        native._require(type(self.fact_reference) is native.Reference and self.fact_reference.schema == native.FACT_SCHEMA, "SELECTION_INVALID")
-        native._require(type(self.edition_reference) is native.Reference and self.edition_reference.schema == native.EDITION_SCHEMA, "SELECTION_INVALID")
+        native._require(type(self.fact_reference) is native.Reference and self.fact_reference.schema in native.FACT_SCHEMAS, "SELECTION_INVALID")
+        native._require(type(self.edition_reference) is native.Reference and self.edition_reference.schema ==
+            (native.SEC_EDITION_SCHEMA if self.fact_reference.schema == native.SUPPLIER_FACT_SCHEMA else native.EDITION_SCHEMA), "SELECTION_INVALID")
 
 
 @dataclass(frozen=True)
@@ -159,8 +160,9 @@ def read_issuer_disclosure_bundle(
 def read_issuer_selection(owner: SelectionOwner, authority: native.DisclosureAuthority,
                           store_factory: Callable[[], object], issuer_id: str, *, purpose: str, audience: str) -> dict:
     """Existing exact metadata-only response, using the shared native read path."""
-    snapshot = read_issuer_disclosure_bundle(owner, authority, store_factory, issuer_id,
-        purpose=purpose, audience=audience).selection
+    bundle = read_issuer_disclosure_bundle(owner, authority, store_factory, issuer_id,
+        purpose=purpose, audience=audience)
+    snapshot = bundle.selection
     return {'schema': SCHEMA, 'generation': snapshot.generation, 'identity_mode': 'current',
             'issuer_role': 'subject_disclosing_company',
             'issuer_binding': {'issuer_id': issuer_id, 'evidenced_cik': snapshot.evidenced_cik,
@@ -169,4 +171,5 @@ def read_issuer_selection(owner: SelectionOwner, authority: native.DisclosureAut
                                    'byte_length': snapshot.identity_snapshot_byte_length}},
             'selections': [{'fact_id': e.fact_id, 'fact_reference': e.fact_reference.payload(),
                             'edition_reference': e.edition_reference.payload(),
-                            'kind': 'product_integration', 'lifecycle': 'planned'} for e in snapshot.selections]}
+                            'kind': item.payload['fact']['kind'], 'lifecycle': item.payload['fact']['lifecycle']}
+                           for e, item in zip(snapshot.selections, bundle.disclosures)]}

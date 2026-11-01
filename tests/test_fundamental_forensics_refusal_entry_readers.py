@@ -43,6 +43,7 @@ def _income_row(metric_id: str, end: str, value: str) -> dict:
         "standardized_metric_id": metric_id,
         "cells": [{
             "period": {"kind": "duration", "start": "2026-01-01", "end": end},
+            "unit": "USD",
             "value": value,
         }],
     }
@@ -67,8 +68,7 @@ def test_bff_tree_row_reader_ignores_refusal_entry_rows() -> None:
         generation,
         [accession],
         ("total_assets", "revenue"),
-        {},
-        "TST",
+        frozenset(),
         periods,
     )
     assert out is not None

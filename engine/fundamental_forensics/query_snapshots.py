@@ -30,6 +30,7 @@ from engine.research_vault.r2_store import (
     VersionedBytes,
 )
 
+from .issuer_sic import IssuerSicResolver
 from .query import (
     BitemporalPolicy,
     BitemporalMetricQueryEngine,
@@ -38,6 +39,7 @@ from .query import (
     MetricMatrix,
     QueryEntity,
     QueryValidationError,
+    _export_reason_text,
 )
 from .raw_ledger import (
     HARD_MAX_RAW_LEDGER_EVENTS,
@@ -497,7 +499,9 @@ def _projection_row(matrix: MetricMatrix, cell: Any) -> dict[str, str | None]:
         "state": cell.state.value,
         "value": decimal_text(cell.value),
         "unit": cell.unit,
-        "reason": cell.reason,
+        # Same reason-column text as the CSV/XLSX rows: a qualified sum carries
+        # the in-row not-presented qualifier marker (query._export_reason_text).
+        "reason": _export_reason_text(cell),
         "provenance_kind": provenance.kind.value,
         "accession": provenance.accession,
         "document_id": provenance.document_id,
@@ -717,10 +721,18 @@ def _validate_manifest(value: Mapping[str, Any]) -> None:
         raise QuerySnapshotError("query snapshot manifest entity membership is invalid")
     parsed_entities: list[QueryEntity] = []
     for raw_entity in raw_entities:
+        # The optional ``issuer_sic`` key widens the allowed shape only when
+        # the entity actually carries it (mirroring the kernel's own wire
+        # entity parsing), so a SIC-less manifest stays exactly the
+        # historical two-key shape.
+        if isinstance(raw_entity, Mapping) and "issuer_sic" in raw_entity:
+            entity_required = frozenset({"ticker", "entity_id", "issuer_sic"})
+        else:
+            entity_required = frozenset({"ticker", "entity_id"})
         entity = _strict_json_object(
             raw_entity,
             field="query snapshot manifest entity",
-            required=frozenset({"ticker", "entity_id"}),
+            required=entity_required,
         )
         try:
             parsed_entities.append(QueryEntity(**entity))
@@ -806,7 +818,16 @@ def _validate_manifest_matrix_binding(manifest: Mapping[str, Any], matrix: Metri
     binding = manifest["query_binding"]
     if binding["selection"] != matrix.policy.selection.value:
         raise QuerySnapshotError("query snapshot manifest selection does not match matrix")
-    if binding["entities"] != [item.to_dict() for item in matrix.entities]:
+    # Identity fields only: the matrix wire form deliberately binds
+    # ticker/entity_id membership, and an issuer SIC is an evaluation input
+    # (recorded in the manifest declaration, byte-inert in the receipt).
+    manifest_identities = [
+        {"ticker": entry["ticker"], "entity_id": entry["entity_id"]}
+        for entry in binding["entities"]
+    ]
+    if manifest_identities != [
+        {"ticker": item.ticker, "entity_id": item.entity_id} for item in matrix.entities
+    ]:
         raise QuerySnapshotError("query snapshot manifest entity membership does not match matrix")
     clocks = manifest["clocks"]
     if clocks["source_snapshot_at"] != utc_text(matrix.policy.source_snapshot_at):
@@ -1107,17 +1128,39 @@ def _replay_matrix(
     matrix: MetricMatrix,
     ledger: RawFactLedger,
     filing_metadata: Mapping[str, FilingMetadata],
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> MetricMatrix:
     """Re-run one receipt exclusively from its committed selection inputs."""
+    # R1-SIC: the matrix wire form deliberately binds identity fields only,
+    # so a wire-loaded entity arrives SIC-less and is re-resolved from the
+    # caller's resolver — by default the manifest's own declared SIC (the
+    # committed evaluation input), so replay reproduces exactly what was
+    # recorded and a later contract edit can never rewrite a receipt.  An
+    # entity that already carries a SIC (an in-process matrix under replay)
+    # is replayed exactly as recorded.
+    replay_entities = tuple(
+        entity
+        if entity.issuer_sic is not None
+        else QueryEntity(
+            ticker=entity.ticker,
+            entity_id=entity.entity_id,
+            issuer_sic=issuer_sic_resolver(entity.entity_id) if issuer_sic_resolver is not None else None,
+        )
+        for entity in matrix.entities
+    )
     try:
         engine = BitemporalMetricQueryEngine(
             ledger,
             matrix.governance_bundle,
-            entities=matrix.entities,
+            entities=replay_entities,
             filing_metadata=filing_metadata,
         )
         replayed = engine.query_matrix(
-            tickers=matrix.entities,
+            # The resolved entities ride the tickers argument: the kernel
+            # lets a caller-supplied (richer) entity win evaluation, so a
+            # SIC-less wire entity passed here would silently override the
+            # re-resolved ones built above.
+            tickers=replay_entities,
             metrics=matrix.metric_ids,
             periods=matrix.periods,
             policy=matrix.policy,
@@ -1271,6 +1314,7 @@ def publish_query_snapshot(
     prepared: PreparedQuerySnapshot,
     *,
     publish_latest: bool = True,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> QuerySnapshot:
     """Create immutable inputs then CAS-advance the one mutable latest pointer.
 
@@ -1312,7 +1356,11 @@ def publish_query_snapshot(
             collision_error="immutable query snapshot manifest collision",
             readback_error="private query snapshot manifest read-back mismatch",
         )
-        snapshot = verify_query_snapshot(store, snapshot_id=prepared.snapshot_id)
+        snapshot = verify_query_snapshot(
+            store,
+            snapshot_id=prepared.snapshot_id,
+            issuer_sic_resolver=issuer_sic_resolver,
+        )
         if publish_latest:
             _publish_pointer(store, snapshot)
         return snapshot
@@ -1336,19 +1384,62 @@ def load_query_snapshot(store: StrictReadStore, *, snapshot_id: str | None = Non
     return _snapshot_from_manifest(store, snapshot_id=_validate_snapshot_id(snapshot_id))
 
 
-def verify_query_snapshot(store: StrictReadStore, *, snapshot_id: str | None = None) -> QuerySnapshot:
+def verify_query_snapshot(
+    store: StrictReadStore,
+    *,
+    snapshot_id: str | None = None,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
+) -> QuerySnapshot:
     """Verify objects and the frozen-engine replay against the matrix receipt."""
     snapshot = load_query_snapshot(store, snapshot_id=snapshot_id)
-    replay_query_snapshot(snapshot)
+    replay_query_snapshot(snapshot, issuer_sic_resolver=issuer_sic_resolver)
     return snapshot
 
 
-def replay_query_snapshot(snapshot: QuerySnapshot) -> MetricMatrix:
+def _manifest_declared_sic_resolver(
+    manifest: Mapping[str, Any],
+) -> IssuerSicResolver:
+    """The replay-default SIC source: the manifest's own entity declarations.
+
+    The manifest's ``query_binding.entities`` records each entity's SIC at
+    prepare time (identity fields stay byte-inert in the matrix receipt).
+    Replaying from that declaration — not from today's coverage contract —
+    keeps a receipt reproducible forever: a later contract edit can never
+    rewrite a published matrix, and a pre-SIC manifest replays exactly as
+    SIC-less as it was recorded.
+    """
+
+    declared: dict[str, str | None] = {}
+    binding = manifest.get("query_binding")
+    if isinstance(binding, Mapping):
+        entries = binding.get("entities")
+        if isinstance(entries, list):
+            for entry in entries:
+                if isinstance(entry, Mapping):
+                    entity_id = entry.get("entity_id")
+                    if isinstance(entity_id, str):
+                        sic = entry.get("issuer_sic")
+                        declared[entity_id] = sic if isinstance(sic, str) and sic else None
+
+    def _resolver(entity_id: str) -> str | None:
+        return declared.get(entity_id)
+
+    return _resolver
+
+
+def replay_query_snapshot(
+    snapshot: QuerySnapshot,
+    *,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
+) -> MetricMatrix:
     """Re-evaluate a snapshot using only its committed ledger and governance.
 
     ``BitemporalMetricQueryEngine`` accepts a frozen ``GovernanceBundle`` in
     Wave 3B.  That support is intentionally required here: replaying against a
     current registry could make a later mapping mutation rewrite the past.
+    The issuer SIC rides the same law: the manifest's declared SIC is the
+    committed evaluation input, and an explicit ``issuer_sic_resolver``
+    (hermetic tests) overrides it.
     """
     if not isinstance(snapshot, QuerySnapshot):
         raise TypeError("snapshot must be QuerySnapshot")
@@ -1356,6 +1447,11 @@ def replay_query_snapshot(snapshot: QuerySnapshot) -> MetricMatrix:
         matrix=snapshot.matrix,
         ledger=snapshot.ledger,
         filing_metadata=snapshot.filing_metadata,
+        issuer_sic_resolver=(
+            issuer_sic_resolver
+            if issuer_sic_resolver is not None
+            else _manifest_declared_sic_resolver(snapshot.manifest)
+        ),
     )
 
 
