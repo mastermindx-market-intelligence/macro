@@ -7,7 +7,7 @@
     "path": "research/financial_intelligence_fabric/e2e_20261011/ACCEPTANCE_MATRIX.json",
     "case_count": 54
   },
-  "as_of": "2026-10-20",
+  "as_of": "2026-11-01",
   "verdicts": [
     "CLOSED",
     "PARTIAL",
@@ -28,8 +28,8 @@
     "records"
   ],
   "summary": {
-    "CLOSED": 30,
-    "PARTIAL": 17,
+    "CLOSED": 34,
+    "PARTIAL": 13,
     "OPEN": 0,
     "PENDING_LIVE": 3,
     "HUMAN_GATE": 4
@@ -240,22 +240,19 @@
       ],
       "condition": "Later filing, correction, mapping or rule available after query cutoff",
       "required_behavior": "Exclude from then-known view under each required source/system/policy clock.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_source_cutoff_between_filings_hides_the_unaccepted_tail",
         "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_recorded_cutoff_before_the_chain_rule_sees_no_v2_evidence",
         "tests/test_fundamental_forensics_query.py::test_system_cutoff_gates_mapping_compute_and_publication_clocks",
         "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a12_a_correction_recorded_after_the_cutoff_stays_out_of_the_then_known_view",
-        "tests/test_fundamental_forensics_finding_judgments.py::test_then_known_replay_returns_prior_value_before_the_correction"
+        "tests/test_fundamental_forensics_finding_judgments.py::test_then_known_replay_returns_prior_value_before_the_correction",
+        "tests/test_fundamental_forensics_mapping_pack_v1_1.py::test_a53_no_hindsight_bundle_before_rule_clock_equals_base_bundle",
+        "tests/test_fundamental_forensics_mapping_pack_v1_1.py::test_v1_1_pack_and_catalog_versions_and_cutoff_gated_rules",
+        "tests/test_fundamental_forensics_mapping_pack_v1_1.py::test_identity_alias_yields_value_after_rule_clock_and_base_state_before"
       ],
-      "obligations": [
-        {
-          "kind": "pending_merge",
-          "owner": "FIF seat",
-          "next_action": "Merge #9761 (mapping pack 1.1.0) in its window, then add the mapping-pack clock: a cutoff before 1.1.0 replays the 1.0.0 mapping."
-        }
-      ],
-      "note": "Source, accepted, recorded, compute and publication clocks are tested; a correction recorded after the cutoff stays out of both the source and the judgment then-known views."
+      "obligations": [],
+      "note": "Source, accepted, recorded, compute and publication clocks are tested; a correction recorded after the cutoff stays out of both the source and the judgment then-known views. 2026-11-01: #9761 (mapping pack 1.1.0) merged at 42c85954 with its mapping-pack clock: a recorded cutoff one second before the rule clock (2026-10-21T00:00Z) yields a governance bundle whose to_dict() and content_id equal the rebuilt pre-1.1.0 registry, and the alias rule yields its value only after the clock (fif-kernel-guards suite)."
     },
     {
       "id": "A13",
@@ -664,19 +661,19 @@
       ],
       "condition": "Four additional accounting stress issuers",
       "required_behavior": "Same general provider and kernel with governed packs; no ticker-specific patched answers.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_kernel_literal_guard.py::test_a33_kernel_has_no_ticker_or_cik_literals_outside_the_golden_layer",
         "tests/test_fundamental_forensics_kernel_literal_guard.py::test_a33_golden_layer_allowlist_is_still_live",
-        "tests/test_fundamental_forensics_kernel_literal_guard.py::test_a33_guard_detects_a_patched_ticker_branch"
+        "tests/test_fundamental_forensics_kernel_literal_guard.py::test_a33_guard_detects_a_patched_ticker_branch",
+        "tests/test_fif_a33_gold_replay_receipt.py::test_a33_receipt_schema_and_counts",
+        "tests/test_fif_a33_gold_replay_receipt.py::test_a33_receipt_covers_every_committed_pack",
+        "tests/test_fif_a33_gold_replay_receipt.py::test_a33_receipt_executed_every_kernel_group",
+        "tests/test_fif_a33_gold_replay_receipt.py::test_a33_receipt_every_ledger_defect_is_grouped",
+        "tests/test_fif_a33_gold_replay_receipt.py::test_a33_receipt_carries_no_path_or_identity"
       ],
-      "obligations": [
-        {
-          "kind": "ci_proof",
-          "owner": "FIF seat",
-          "next_action": "The kernel-vs-gold replays in test_fif_g_pack_kernel.py and test_fif_g_pack_gold.py skip without FIF_GSRC_STAGE_ROOT. Record a run where they execute (not skip) for SNOW, CAT, BAC and GOOGL."
-        }
-      ]
+      "obligations": [],
+      "note": "2026-11-01: the ci_proof landed in #9910 (6793df30): FIF_A33_GOLD_REPLAY_RECEIPT_2026-10-20.json records the kernel-vs-gold and staged-bytes replays executing (not skipping) over the four committed G-packs, and the hermetic guard pins the receipt to the committed packs with the executed and xfailed groups each pinned exactly."
     },
     {
       "id": "A34",
@@ -691,15 +688,21 @@
       "verdict": "PARTIAL",
       "evidence": [
         "tests/test_fundamental_forensics_specialist_pack_contract.py::test_a25_pack_authority_cannot_be_widened",
-        "tests/test_fundamental_forensics_pack_evaluation.py::test_a27_language_gate"
+        "tests/test_fundamental_forensics_pack_evaluation.py::test_a27_language_gate",
+        "tests/test_fif_a34_pack_proof_ledger.py::test_a34_ledger_lists_every_registered_pack_once",
+        "tests/test_fif_a34_pack_proof_ledger.py::test_a34_ledger_is_fresh",
+        "tests/test_fif_a34_pack_proof_ledger.py::test_a34_every_missing_proof_is_a_listed_gap",
+        "tests/test_fif_a34_pack_proof_ledger.py::test_a34_no_aggregate_can_hide_a_gap",
+        "tests/test_fif_a34_pack_proof_ledger.py::test_a34_ledger_reads_no_held_out_contents"
       ],
       "obligations": [
         {
           "kind": "implementation_gap",
           "owner": "FIF seat (pack lanes)",
-          "next_action": "All 12 packs are catalogue_state 'specified'. Each pack needs its own gold, held-out, review and live proof; the group summary must list per-pack gaps."
+          "next_action": "Close the per-pack gaps FIF_A34_PACK_PROOF_LEDGER.json lists (held-out precision below the 0.80 floor or not_measurable, review and live proofs); regenerate the ledger after each Q1 generation."
         }
-      ]
+      ],
+      "note": "2026-11-01: the group-summary half is met by #9901 (cca91862): the ledger lists every registered pack once with its own schema/gold/held-out/review/live proof and no aggregate can hide a gap; the per-pack proofs themselves remain open."
     },
     {
       "id": "A35",
@@ -965,20 +968,18 @@
       ],
       "condition": "Restart, lost publication, restore and rollback",
       "required_behavior": "Exact generation/receipt recovery, tenant protection, originals intact; no duplicate writers.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_recovery_drill.py::test_restart_new_store_object_sees_same_generation_and_clock",
         "tests/test_fundamental_forensics_recovery_drill.py::test_backup_restore_round_trip_is_exact_and_idempotent",
         "tests/test_fundamental_forensics_recovery_drill.py::test_restore_refuses_different_bytes_and_never_overwrites",
-        "tests/test_fundamental_forensics_recovery_drill.py::test_rollback_is_a_correction_the_owner_refuses_to_rewind"
+        "tests/test_fundamental_forensics_recovery_drill.py::test_rollback_is_a_correction_the_owner_refuses_to_rewind",
+        "tests/test_fif_a47_recovery_drill_receipts.py::test_a47_receipt_schema",
+        "tests/test_fif_a47_recovery_drill_receipts.py::test_a47_replay_matches_committed_receipt",
+        "tests/test_fif_a47_recovery_drill_receipts.py::test_a47_every_scenario_asserts_its_law"
       ],
-      "obligations": [
-        {
-          "kind": "live_proof",
-          "owner": "FIF seat",
-          "next_action": "Run the recovery drill (restart, lost publication, restore, rollback) against a non-production generation and record the receipts."
-        }
-      ]
+      "obligations": [],
+      "note": "2026-11-01: the drill ran in #9899 (5f997449) on local-directory, non-production generations (publish, restart, backup, lost publication, restore, refused rollback, corrupted target); FIF_A47_RECOVERY_DRILL_RECEIPTS_2026-10-20.json is the receipt and the guard replays run_drill() hermetically and pins every field except recorded_at."
     },
     {
       "id": "A48",
@@ -1086,18 +1087,15 @@
       ],
       "condition": "Historical query after a mapping/rule revision",
       "required_behavior": "Return the cutoff-valid policy version; no newest-rules hindsight contamination.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_metric_qualification.py::test_s1_a53_01_revision_append_cutoff_digest_unchanged",
-        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_recorded_cutoff_before_the_chain_rule_sees_no_v2_evidence"
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_recorded_cutoff_before_the_chain_rule_sees_no_v2_evidence",
+        "tests/test_fundamental_forensics_mapping_pack_v1_1.py::test_a53_no_hindsight_bundle_before_rule_clock_equals_base_bundle",
+        "tests/test_fundamental_forensics_mapping_pack_v1_1.py::test_a53_every_new_rule_carries_the_r_9761_clk_clock_and_is_cutoff_gated"
       ],
-      "obligations": [
-        {
-          "kind": "pending_merge",
-          "owner": "FIF seat",
-          "next_action": "Merge #9761 (mapping pack 1.1.0) in its window, then test that a cutoff before 1.1.0 returns the 1.0.0 policy version."
-        }
-      ]
+      "obligations": [],
+      "note": "2026-11-01: #9761 merged at 42c85954; a cutoff before the 1.1.0 rule clock returns the base policy content (bundle and content_id equal to the rebuilt pre-1.1.0 registry), and every 1.1.0 rule carries that clock and is cutoff-gated."
     },
     {
       "id": "A54",
