@@ -719,3 +719,14 @@ def test_o06_an_invalid_view_never_echoes_its_raw_id():
     assert state_of(dlg) == "unreadable"
     assert _observation_id_attr(dlg) == ""
     assert "rotobs_XYZ" not in dlg
+
+
+def test_o06_a_future_session_view_is_unreadable_and_claims_no_id():
+    """A lib-valid, receipted view for a later session must not echo its id either."""
+    fixture = _fixtures()["malformed_future"]
+    lib_validate(fixture["notification"])
+    assert fixture["notification"]["event_as_of"] > SESSION
+    dlg = render(envelope(fixture))
+    assert state_of(dlg) == "unreadable"
+    assert _observation_id_attr(dlg) == ""
+    assert fixture["notification"]["observation_id"] not in dlg

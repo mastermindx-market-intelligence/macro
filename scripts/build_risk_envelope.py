@@ -221,28 +221,36 @@ def _compact_early_context(early: Mapping[str, Any]) -> dict[str, Any]:
     return out
 
 
-def _observation_lift(early: Mapping[str, Any] | None, clock_reason: str | None,
+def _observation_lift(early: Mapping[str, Any] | None, clock_reasons: tuple[str | None, ...],
                       session: str | None, now: datetime | None) -> dict[str, Any]:
     """Carry the display-only latest observation view only if it existed at the cutoff.
 
-    The off-session clock path never inspects availability clocks, so the view's
-    own notification clocks are also checked: an observation recorded after the
-    cutoff, or for an event after the session, is withheld. A present non-object
-    (or an object without readable clocks) is carried verbatim; the consumer
-    mirror renders it unreadable. Never a stage, hazard or policy input.
+    Every clock reason is checked, the parent artifact's and the early context's
+    alike: a benign parent reason (stale, expired, off-session) must not hide an
+    early context that was not yet available at the cutoff. The off-session clock
+    path never inspects availability clocks, so the view's own notification
+    clocks are also checked: an observation recorded after the cutoff, or for an
+    event after the session, is withheld, and so is a notification whose event
+    session or observed instant cannot be read (a non-trading or malformed date,
+    a naive or malformed timestamp). A present non-object, or an object without
+    a notification object, is carried verbatim; the consumer mirror renders it
+    unreadable. Never a stage, hazard or policy input.
     """
     if early is None or "latest_observation" not in early:
         return {}
-    if clock_reason not in _OBSERVATION_LIFT_CLOCKS:
-        return {"latest_observation_withheld": clock_reason}
+    for clock_reason in clock_reasons:
+        if clock_reason not in _OBSERVATION_LIFT_CLOCKS:
+            return {"latest_observation_withheld": clock_reason}
     view = early["latest_observation"]
     note = view.get("notification") if isinstance(view, Mapping) else None
     if isinstance(note, Mapping):
         event_day, session_day = _day(note.get("event_as_of")), _day(session)
-        if event_day is not None and session_day is not None and event_day > session_day:
-            return {"latest_observation_withheld": "future_observation_session"}
         stamp = _instant(note.get("observed_at"))
-        if stamp is not None and now is not None and stamp > now.astimezone(timezone.utc):
+        if event_day is None or stamp is None:
+            return {"latest_observation_withheld": "observation_clock_unreadable"}
+        if session_day is not None and event_day > session_day:
+            return {"latest_observation_withheld": "future_observation_session"}
+        if now is not None and stamp > now.astimezone(timezone.utc):
             return {"latest_observation_withheld": "observation_not_available"}
     return {"latest_observation": copy.deepcopy(view)}
 
@@ -258,9 +266,10 @@ def _rotation_read(doc: Mapping[str, Any] | None, session: str | None, *,
     as_of = early.get("as_of") if early else confirmed_asof
     # The legacy confirmed-event date may be older than the early observation.
     # Its parent artifact's publication/availability clocks still constrain both.
-    reason = (_clock_reason(doc, as_of, session, now)
-              or _clock_reason(early or doc, as_of, session, now))
-    observation = _observation_lift(early, reason, session, now)
+    doc_reason = _clock_reason(doc, as_of, session, now)
+    early_reason = _clock_reason(early or doc, as_of, session, now)
+    reason = doc_reason or early_reason
+    observation = _observation_lift(early, (doc_reason, early_reason), session, now)
     if not early or early.get("schema") != "rotation_early_context/v1":
         reason = "early_context_missing_or_malformed"
     elif (not isinstance(early.get("definition_id"), str) or not early.get("definition_id")

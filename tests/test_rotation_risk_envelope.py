@@ -728,6 +728,22 @@ def test_older_or_stale_context_still_carries_its_view_for_the_consumer_to_judge
     (lambda d: d["early_context"].update(as_of="2026-10-05")
      or d["early_context"]["latest_observation"]["notification"].update(event_as_of="2026-10-07"),
      "future_observation_session"),
+    # A benign parent reason (expired, stale) must not short-circuit the early clock check.
+    (lambda d: d.update(stale_after="2026-10-07T00:00:00Z")
+     or d["early_context"].update(available_at="2026-10-07T13:00:00Z"), "source_not_available"),
+    (lambda d: d.update(freshness={"stale": True})
+     or d["early_context"].update(produced_at="2026-10-07T13:00:00Z"), "future_production_clock"),
+    # Notification clocks that cannot be read are withheld, never lifted unchecked.
+    (lambda d: d["early_context"]["latest_observation"]["notification"].update(
+        event_as_of="2026-10-04"), "observation_clock_unreadable"),
+    (lambda d: d["early_context"]["latest_observation"]["notification"].update(
+        event_as_of="06/10/2026"), "observation_clock_unreadable"),
+    (lambda d: d["early_context"]["latest_observation"]["notification"].update(
+        observed_at="2026-10-06T21:30:00"), "observation_clock_unreadable"),
+    (lambda d: d["early_context"]["latest_observation"]["notification"].update(
+        observed_at="yesterday"), "observation_clock_unreadable"),
+    (lambda d: d["early_context"]["latest_observation"]["notification"].update(
+        observed_at=None), "observation_clock_unreadable"),
 ])
 def test_view_not_available_at_the_cutoff_is_withheld(mutate, withheld):
     doc = rotation_with(observation_view())

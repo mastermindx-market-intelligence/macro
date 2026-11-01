@@ -136,6 +136,10 @@ def _publish_latest_observation(payload, data_dir, site):
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as out:
                 out.write(text)
+                out.flush()
+                os.fsync(out.fileno())
+            # mkstemp creates 0600; the published file must stay world-readable
+            os.chmod(tmp, 0o644)
             os.replace(tmp, target)
         except BaseException:
             try:

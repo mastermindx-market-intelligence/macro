@@ -98,6 +98,16 @@ test('O06: a view counts only with its source-owned ledger receipt', () => {
   assert.ok(h.includes('轮动记录未通过校验，未予显示。'));
 });
 
+test('a lib-valid, receipted view for a later session is unreadable and claims no id', () => {
+  const oid = fixture('malformed_future').notification.observation_id;
+  for (const lang of ['en', 'zh']) {
+    const h = render('malformed_future', lang);
+    assert.equal(stateOf(h), 'unreadable', lang);
+    assert.ok(h.includes('data-observation-id=""'), lang + ' future view claims no id');
+    assert.ok(!h.includes(oid), lang + ' future id never shown');
+  }
+});
+
 test('no observation: missing early_context is unavailable, aged context is stale', () => {
   assert.equal(stateOf(fn(null, null, null, 'en', NOW)), 'unavailable');
   const stale = fn(null, { as_of: '2026-10-20' }, '2026-10-30', 'en', NOW);

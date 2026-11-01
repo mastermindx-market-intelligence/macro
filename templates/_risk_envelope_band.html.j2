@@ -309,7 +309,8 @@
     {% elif _ew.kind == 'reversal' %}{% set _ew.state = 'reversal' %}
     {% else %}{% set _ew.state = 'observed' %}{% endif %}
   {% endif %}
-  {% if _ew.fail %}{% set _ew.state = 'unreadable' %}{% set _ew.oid = '' %}{% endif %}
+  {# an unreadable view (including a lib-valid one for a future session) claims no id #}
+  {% if _ew.fail or _ew.state == 'unreadable' %}{% set _ew.state = 'unreadable' %}{% set _ew.oid = '' %}{% endif %}
 {% else %}
   {# no observation: scoped unavailability, never a market verdict; a present
      non-object wrapper fails V1 and is unreadable, not absent (frozen §B.2) #}

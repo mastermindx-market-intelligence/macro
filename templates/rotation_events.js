@@ -349,6 +349,8 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
       if (isFinite(t) && nowOk && Math.floor((Math.floor(nowMs / DAY) * DAY - t) / DAY) >= STALE_DAYS) state = 'stale';
     }
   }
+  // an unreadable view (including a lib-valid one for a future session) claims no id
+  if (state === 'unreadable') oid = '';
   var word = WORDS[state] || WORDS.unavailable;
   var legs = valid && state !== 'withdrawn' && state !== 'stale' && state !== 'unreadable'
     && state !== 'unavailable' && win && winEndOk;
