@@ -45,15 +45,17 @@ verified:
       Exact old record plus one new artifacts entry, with no
       status/owner/wave/decision modifications.
   - claim: >
-      Fabric C2 source audit completed with a provider adapter error,
-      not an accepted review or implemented product.
+      Fabric C2 source audit terminated without a unique structured final
+      result; the warning was nonfatal and no audit was accepted.
     command: >
-      Read original Fabric result for
-      meta-ceo-cross-runtime-contract-audit-20261030-001
-      on root meta-ceo-open-harness-convergence-20261024-sol-001.
+      Reconcile original Fabric result and the incumbent owner closed-field
+      provider outcome in Slack thread 1793428662.054899 for the original
+      Meta-CEO audit run and root.
     result: >
-      TERMINAL rc=1, accepted=false, SDK unrecognized_model for
-      glm-5.3-flash, retry_allowed=false; no audit output accepted.
+      Underlying Claude CLI rc=0; Fabric fail-closed coerced rc=1 because
+      the complete stream lacked exactly one accepted type=result event.
+      SDK unrecognized_model is nonfatal, not a proven root cause. Original
+      run TERMINAL/UNVERIFIED and retry_allowed=false; no audit accepted.
 unverified:
   - claim: >
       A signed-in Chairman can send one authorized exact-session continuation
@@ -73,12 +75,12 @@ unresolved:
   - "Independent PR review and full exact-head CI remain unsettled."
   - "OpenClaw Gateway required RPC was unreachable despite existing Grok Bot app processes."
   - "No authorized real Hermes process canary or resident daemon passed; the attempted real pinned canary was explicitly safety denied."
-  - "Fabric unrecognized glm-5.3-flash SDK alias terminal failure is not retry-authorized."
+  - "Original Fabric audit: nonfatal SDK model warning, underlying CLI rc=0, Fabric rc=1 for no unique result event; exact event count/cause not yet determined; original retry forbidden."
   - "Grok read-only census and Pro review are ACKed but have no proven START or RESULT."
 next_actions:
   - "Qualify PR #1889 and #1891 exact-head CI, independent non-author reviews, then normal protected source merge in dependency order without self-approval."
   - "Verify original-owner native session and accepted worker-result source correlation in an actually signed-in Mastermind OS user path."
-  - "Resume Fabric only after the existing model alias owner repairs and a new authorized admission, never replay the terminal original audit."
+  - "Obtain one Chairman-authorized original-host read-only classified capture return via existing Fabric owner; do not infer model-alias causality, replay original run or install unreviewed candidate."
   - "Keep current Grok Secretary live; compare controlled Hermes/OpenClaw/Rakazo role path only after original owner and credential/effect gates."
 do_not_redo:
   - "Do not create a new company memory, task queue, identity, model router, scheduler, gateway or acceptance authority."
@@ -133,7 +135,7 @@ The Grok Bot app is not an open-source code donor. Never copy its proprietary co
 
 **Grok/OpenClaw:** Mastermind #188 and #624 original Grok/Secretary/MCP and OpenClaw boundary, plus Control Room `OCR-6` retained as existing source owner. Never commission another Secretaries gateway or independent OpenClaw actuator.
 
-**Reviews and workers:** Actual separate independent reviewers `mastermindx-3`, `mastermindxryan` requested for #1889 and earlier source PRs; request `!=` review/approval. A SINGLE source-only Fabric C2 audit was submitted `meta-ceo-cross-runtime-contract-audit-20261030-001`, root `meta-ceo-open-harness-convergence-20261024-sol-001`, controller PID 32973 created. **FINAL Fabric result:** canonical source audit run has exact root/parent lineage verified, TERMINAL rc=1, accepted=false. Actual error `[claude-code:unrecognized_model] {"model":"glm-5.3-flash","query_source":"sdk"}` after capacity preflight; provider terminal, **NO READ-ONLY AUDIT RESULT**, `retry_allowed=false`, no changed-model/cross-tool replay authorized. This is a blocked Fabric adapter/SDK model alias lane, not permission or tool safety denial. Grok Secretary read-only current-infrastructure census on `C0CBC6AEAQZ/1793397990.641949` now has **PICKUP_ACK only**, not START/RESULT. Distinct Pro independent review `C0CBC6AEAQZ/1793399479.191429` also has **PICKUP_ACK only**; ChatGPT1, Chris-Dot and Ryan-Dot Pro seats reported `Usage limit reached`, no review commissioned or accepted yet. Do not resend or infer START from ACK.
+**Reviews and workers:** Actual separate independent reviewers `mastermindx-3`, `mastermindxryan` requested for #1889 and earlier source PRs; request `!=` review/approval. A SINGLE source-only Fabric C2 audit was submitted `meta-ceo-cross-runtime-contract-audit-20261030-001`, root `meta-ceo-open-harness-convergence-20261024-sol-001`, controller PID 32973 created. **FINAL Fabric result (corrected Oct31 by original-owner readback):** canonical audit has exact root/parent lineage verified, TERMINAL Fabric rc=1 and accepted=false, but the underlying Claude CLI returned rc=0. The SDK `unrecognized_model` line is a **nonfatal catalog diagnostic**, not proven provider rejection. Fabric deliberately fail-closed coerced rc=1 because no **unique structured `type=result`** event was recognized; provider `kind=unknown`, `subtype`/`terminal_reason`/`api_error_status` null. The original 4,659,328-byte protected capture remains on the executing host; exact `type=result` count (zero OR multiple) and true cause remain UNKNOWN until the authorized same-owner one-time read. **NO ACCEPTED READ-ONLY AUDIT RESULT**; `retry_allowed=false`, no changed-model/cross-tool replay. This is a blocked Fabric adapter/SDK model alias lane, not permission or tool safety denial. Grok Secretary read-only current-infrastructure census on `C0CBC6AEAQZ/1793397990.641949` now has **PICKUP_ACK only**, not START/RESULT. Distinct Pro independent review `C0CBC6AEAQZ/1793399479.191429` also has **PICKUP_ACK only**; ChatGPT1, Chris-Dot and Ryan-Dot Pro seats reported `Usage limit reached`, no review commissioned or accepted yet. Do not resend or infer START from ACK.
 
 ## The smallest remaining integration to product
 
@@ -169,7 +171,7 @@ The Grok Bot app is not an open-source code donor. Never copy its proprietary co
 ## Concrete blockers and falsifiers
 
 - **Executive OS live read currently returns 429** to this caller. It is no evidence of Job/Attempt admission; no direct SQL/local bypass.
-- **Fabric source audit terminated rc=1 with unrecognized configured `glm-5.3-flash` model in claude-code SDK.** Exact original run recorded; no audit result and retry_allowed=false. Existing Fabric model-adapter owner must reconcile before any new execution; no second carrier or model rewrite.
+- **Fabric original audit CLI rc=0, Fabric rc=1 due no unique `type=result`**, with a separately nonfatal `glm-5.3-flash` SDK catalog warning. The original is terminal/unaccepted, retry disallowed. The one-time original-host read-only capture inspection was newly Chairman-authorized Oct31 and acknowledged by Grok Secretary; its evidence/host gate remains to be returned. Existing PR #1894 is source-only DRAFT/HOLD, not a verified fix.
 - **Grok Secretary acknowledged both distinct read-only requests but has not produced START/RESULT.** Pro web review capacity explicitly constrained for three seats. No guessed acceptance or extra run.
 - **OpenClaw Gateway RPC failed**, although Grok apps are active; do not infer computer-use readiness from process names.
 - **Hermes actual supervised process canary safety-denied pre-dispatch.** Do not bypass/rephrase/retry.
@@ -181,8 +183,21 @@ The Grok Bot app is not an open-source code donor. Never copy its proprietary co
 
 **DONE_WHEN:** one fully integrated signed-in Chairman Office + selected Conversation journey at approved host; exact Agent OS WS/Executive Job/Attempt/Worker/Result and true source currentness; one legitimate model inference under original quota/key owner; one accepted live Fabric delegation returned to original conversation; zero duplicate control/identity/memory; repeatable 24h/7d role continuity with Mac permission gates; independent review, actual source/host tests, acceptance and safe Grok service cutover. A dashboard full of green PRs alone is not DONE.
 
-**NEXT SAFE ACTION:** qualify exact-head #1889 and #1891 CI + independent reviews, and the exact Macro source handoff CI; release source through normal protected chain in source/consumer order, no self-merge. Complete the existing Executive native session-to-DSH/Grok correlation and original-parent result receipt bridge without a new owner in an authorized disjoint lane; do not launch the safety-denied Hermes process. Route `glm-5.3-flash` SDK alias incompatibility to the already-existing Fabric adapter owner, preserving the recorded non-retryable run. Inspect the awaited Grok Secretary START/RESULT only when it arrives; do not duplicate Grok requests. Re-measure live OpenClaw RPC only after an evidenced owner repair, not blind retry.
+**NEXT SAFE ACTION:** qualify exact-head #1889 and #1891 CI + independent reviews, and the exact Macro source handoff CI; release source through normal protected chain in source/consumer order, no self-merge. Complete the existing Executive native session-to-DSH/Grok correlation and original-parent result receipt bridge without a new owner in an authorized disjoint lane; do not launch the safety-denied Hermes process. Preserve original Fabric unaccepted run and pending one-time same-owner capture inspection; do not mistake the nonfatal SDK catalog notice for fatal cause. The #1894 candidate remains DRAFT/HOLD with failing exact-head CI, and #1696 launcher migration requires P1 concurrency repair after a nonauthor REQUEST_CHANGES review. Inspect the awaited Grok Secretary START/RESULT only when it arrives; do not duplicate Grok requests. Re-measure live OpenClaw RPC only after an evidenced owner repair, not blind retry.
 
 **Effects:** All work above is evidence/source changes. No live service, model keys, deployment, computer action, host permission, account realm or paid plan was modified by the Oct30 convergence initiative. This handoff is an Agent OS source proposal requiring protected review/readback before claiming canonical acceptance.
 
 **State classification:** `MORE_WORK_EXISTS / BUILT_NOT_PROVEN`. The continuing Chairman mission is incomplete; this document is not an automated handoff, live daemon or future-work promise.
+
+## 2026-10-31 source-linked Fabric recovery frontier (scope: original meta-CEO audit and native launcher)
+
+This dated addendum **supersedes only the older fatal-SDK-alias and Grok-ACK-only observations** above. It does not change the existing Control Room product mission, operational owner, handoff/acceptance, existing waves, or accepted company decisions. Current protected procedural pin: [Mastermind/master `c8b0c4d35f68d4f7261af8a5935703bb2766a906`](https://github.com/mastermindx-market-intelligence/Mastermind/commit/c8b0c4d35f68d4f7261af8a5935703bb2766a906), Skillpack v1.0.1. The `macro#10222` branch remains a proposed source record, **not protected-merged Agent OS current state**.
+
+- **Original audit** `meta-ceo-cross-runtime-contract-audit-20261030-001` on root `meta-ceo-open-harness-convergence-20261024-sol-001` is VERIFIED_TERMINAL/UNVERIFIED, no accepted work, no replay. [Prior incumbent-owner redacted outcome](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793428662054899): selected native seq23 generation `854dd545…6eed87`; underlying Claude CLI rc0; Fabric rc1 because `provider_outcome.py` found no unique `type=result` terminal event; SDK catalog warning is nonfatal. Protected capture (4,659,328 bytes, original sha256 `2a42b3c5da804ed9af3cedd1f16dff93eb097c7be1f9874fe06afcf3d5537e10`) was not exported; host-local classification remains necessary.
+- **Chairman-authorized one-time original-host read:** [new top-level Grok Secretary child](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793494296076979) PICKUP_ACK; existing host owner must prove exact original host/UID/transport, check file digest and return only enum/closed-field capture diagnostics. Distinguish **0 / 1 / >1** `type=result` events; parser returns `final=None` for both 0 and >1. No START/RESULT of the actual inspection verified at this source write. No raw content or other-host copy permitted; STOP/BLOCKED if read admission is unavailable.
+- **Source patch** [Mastermind PR #1894](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1894) head `49c9986a3ea7ac68d54a9be5180d317d79aa2358`: retained historical preimage and staged child-only `ANTHROPIC_CUSTOM_MODEL_OPTION` + aliases. Nonauthor `mastermindx-3` submitted diagnostic `COMMENTED`, explicitly not approved. Four hermetic unit tests executed, but exact-head CI `41177177837` **COMPLETED/FAILURE** (native inventory/manifests not composed with changed candidate, plus unrelated shared failures). The documented custom-model setting adds an interactive picker entry and is **not proven to fix** the missing terminal response; keep DRAFT/HOLD, do not install or merge.
+- **Original provider outcome owner** [Mastermind PR #1892](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1892) owns overlapping `candidate/provider_outcome.py`, `candidate/fabric_task.py`, and native release inventory; its `turn_limit` case concerns a **different original worker**. An [exact cross-workstream evidence comment](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1892#issuecomment-6540238994) records collision; no competing writer/second diagnostic plane.
+- **Launcher pin drift** Studio Fleet remained 8/8 gateways/tunnels READY but aggregate `FLEET_STATUS_FABRIC_LAUNCHER_DRIFT`. Existing protected dependency chain [#1668](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1668) → [#1671](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1671) → [#1696](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1696), all OPEN/unmerged. Nonauthor `mastermindx-3` formally submitted [CHANGES_REQUESTED on #1696](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1696#pullrequestreview-5721697548), identifying unsynchronized fleet publisher versus per-seat pin migration and crash-between-renames recovery. Grok Secretary has [PICKUP_ACK and START for a distinct source repair owner](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793494340086129); no new source head/test/review/installed pin proof at this write. #1668 historical branch writer-gate was explicitly denied and remains unresolved; no alternate carrier or merge bypass.
+- **Recovery proof gate:** original capture classification → narrowly evidenced true GLM CLI/provider repair on existing owner → exact CI and independent nonauthor review → protected native publisher/selection through original authorized owner → fresh **new** same-parent worker with START and useful source-backed output → accepted result. All of these are distinct. No live original WorkerResult or signed-in Chairman path was accepted by this records update.
+
+**Next exact action:** consume the one-time original-owner closed-field return under its bound Slack thread; if successful, adjudicate 0/1/>1 terminal events and bind true root cause to the *existing* provider-outcome/runtime writer. In parallel, consume the existing #1696 repair owner's exact-head test/CI/independent-review return. Do not replay failed attempts, bypass original source/host gates or infer merge/installation from green tests. If one-time read is blocked by the actual host/tool, report its exact separate human/permission gate; proceed only with independent safe work.
