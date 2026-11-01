@@ -600,3 +600,210 @@ def test_hazard_tooltip_revision_clause_reads_in_the_readers_language(lang, want
     got = _hz_tip(hz, "13w", True, lang)
     assert want in got and other not in got
     assert want not in _hz_tip({"epoch": "2031-Q1", "direction": "UP"}, "13w", True, lang)
+
+
+def _turn_fixture(path, tp, fp, n, as_of):
+    """Scorecard with made-up BACKTEST counts plus a second cohort and bad rows."""
+    import json
+
+    payload = {
+        "as_of": as_of,
+        "cohorts": {
+            "BACKTEST": {
+                "cohort": "BACKTEST",
+                "turn_pr": {
+                    "per_instrument": {
+                        "zzfake": {
+                            "tp": tp,
+                            "fp": fp,
+                            "n_truth_turns": n,
+                            "precision": 0.5,
+                            "verdict": "open",
+                        },
+                        "drift": {"tp": 1.5, "fp": 2, "n_truth_turns": 3},
+                        "flagged": {"tp": True, "fp": 4, "n_truth_turns": 5},
+                        "texty": {
+                            "tp": "nope",
+                            "fp": 1,
+                            "n_truth_turns": 1,
+                        },
+                    }
+                },
+            },
+            "OTHER": {
+                "cohort": "OTHER",
+                "turn_pr": {
+                    "per_instrument": {
+                        "zzfake": {
+                            "tp": 99,
+                            "fp": 99,
+                            "n_truth_turns": 99,
+                        },
+                    }
+                },
+            },
+        },
+    }
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def test_backtest_turn_record_uses_the_fixture_file(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    one = _turn_fixture(
+        tmp_path / "one.json", 41, 7, 19, "2031-04-05T11:22:33+00:00",
+    )
+    two = _turn_fixture(
+        tmp_path / "two.json", 53, 8, 23, "2032-06-07T04:05:06+00:00",
+    )
+    first = backtest_turn_record(one)
+    second = backtest_turn_record(two)
+    assert first["as_of"] == "2031-04-05"
+    assert second["as_of"] == "2032-06-07"
+    assert first["per_instrument"]["zzfake"] == {
+        "tp": 41, "fp": 7, "n_truth_turns": 19,
+    }
+    assert second["per_instrument"]["zzfake"] == {
+        "tp": 53, "fp": 8, "n_truth_turns": 23,
+    }
+    assert set(first["per_instrument"]) == {"zzfake"}
+    assert "precision" not in first["per_instrument"]["zzfake"]
+    assert "verdict" not in first["per_instrument"]["zzfake"]
+
+
+def test_backtest_turn_record_missing_or_unreadable_is_none(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    assert backtest_turn_record(tmp_path / "absent.json") is None
+    bad = tmp_path / "bad.json"
+    bad.write_text("{", encoding="utf-8")
+    assert backtest_turn_record(bad) is None
+    empty = tmp_path / "empty.json"
+    empty.write_text("{}", encoding="utf-8")
+    assert backtest_turn_record(empty) is None
+
+
+def test_backtest_turn_record_refuses_another_cohort(tmp_path):
+    import json
+
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    path = _turn_fixture(tmp_path / "c.json", 41, 7, 19, "2031-04-05T11:22:33+00:00")
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    raw["cohorts"]["BACKTEST"]["cohort"] = "OTHER"
+    path.write_text(json.dumps(raw), encoding="utf-8")
+    assert backtest_turn_record(path) is None
+
+
+def test_backtest_turn_record_refuses_a_date_too_short_to_print(tmp_path):
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    path = _turn_fixture(tmp_path / "d.json", 41, 7, 19, "2031-04")
+    assert backtest_turn_record(path) is None
+
+
+def test_builder_puts_turn_record_on_the_core_after_split():
+    text = (
+        Path(__file__).resolve().parents[1] / "scripts" / "build_sector_cycles.py"
+    ).read_text(encoding="utf-8")
+    split_at = text.find("split_cycles_payload(data)")
+    attach_at = text.find('core["turn_record"]')
+    assert split_at != -1
+    assert attach_at > split_at
+
+
+def _turn_call_source():
+    import re
+
+    text = _template_text("sector_cycles.js")
+    match = re.search(
+        r"\n  function turnCallLine\(s\) \{\n(?:.*\n)*?  \}\n",
+        text,
+    )
+    assert match is not None
+    return match.group(0)
+
+
+def test_turn_call_line_is_bilingual_and_types_no_count():
+    fn = _turn_call_source()
+    assert 'if (IS_CN) return "";' in fn
+    assert "book.per_instrument[s.id]" in fn
+    assert "cc-leg-lab" in fn
+    assert "Turn calls in the backtest: " in fn
+    assert "回测中的转折判断：正确 " in fn
+    assert " false, against " in fn
+    assert " 次，实际转折 " in fn
+    assert "precision" not in fn
+    assert "verdict" not in fn
+    assert "measurement" not in fn
+    assert not any(ch.isdigit() for ch in fn)
+    page = _template_text("sector_cycles.js")
+    nxt = page.find('L("Next "')
+    call = page.find("turnCallLine(s) +")
+    assert nxt != -1
+    assert call > nxt
+
+
+def _expect_turn_line(book, lang):
+    row = book["per_instrument"]["zzfake"]
+    tp = str(row["tp"])
+    fp = str(row["fp"])
+    n = str(row["n_truth_turns"])
+    dated = book["as_of"]
+    if lang == "zh":
+        body = (
+            "回测中的转折判断：正确 " + tp + " 次，错误 " + fp
+            + " 次，实际转折 " + n + " 次。记录日期 " + dated + "。"
+        )
+    else:
+        body = (
+            "Turn calls in the backtest: " + tp + " right, " + fp
+            + " false, against " + n
+            + " real turns. Record dated " + dated + "."
+        )
+    return '<div class="cc-leg-lab">' + body + "</div>"
+
+
+def _eval_turn_call(node, book, sector_id, region, lang):
+    import json
+    import subprocess
+
+    is_cn = "true" if region == "china" else "false"
+    source = "\n".join([
+        "var DATA = " + json.dumps({"turn_record": book}) + ";",
+        "var IS_CN = " + is_cn + ";",
+        "function L(en, zh) { return "
+        + json.dumps(lang) + ' === "zh" ? zh : en; }',
+        _turn_call_source(),
+        "console.log(turnCallLine({id: " + json.dumps(sector_id) + "}));",
+    ])
+    done = subprocess.run(
+        [node, "-e", source],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=True,
+    )
+    return done.stdout.strip()
+
+
+def test_card_line_paints_the_fixture_record(tmp_path):
+    import shutil
+
+    from scripts.build_sector_cycles import backtest_turn_record
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    path = _turn_fixture(
+        tmp_path / "card.json", 41, 7, 19, "2031-04-05T11:22:33+00:00",
+    )
+    book = backtest_turn_record(path)
+    assert book is not None
+    en = _eval_turn_call(node, book, "zzfake", "us", "en")
+    zh = _eval_turn_call(node, book, "zzfake", "us", "zh")
+    assert en == _expect_turn_line(book, "en")
+    assert zh == _expect_turn_line(book, "zh")
+    assert _eval_turn_call(node, book, "nosuch", "us", "en") == ""
+    assert _eval_turn_call(node, book, "zzfake", "china", "en") == ""

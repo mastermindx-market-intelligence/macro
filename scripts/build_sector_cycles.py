@@ -68,6 +68,46 @@ def _load_dna(root: Path) -> dict:
     return res["map"]
 
 
+def _int_turn_counts(row: dict) -> dict | None:
+    """tp, fp and n_truth_turns when every one is a real int. Else None."""
+    picked: dict = {}
+    for field in ("tp", "fp", "n_truth_turns"):
+        value = row.get(field)
+        if type(value) is not int:  # a bool is not a count
+            return None
+        picked[field] = value
+    return picked
+
+
+def backtest_turn_record(scorecard_path: Path) -> dict | None:
+    """BACKTEST turn counts for the US cards. None if the file cannot be read.
+
+    Reads only cohorts BACKTEST, turn_pr, per_instrument. A non-int count
+    drops that instrument. as_of is cut to its first 10 characters.
+    """
+    try:
+        raw = json.loads(Path(scorecard_path).read_text(encoding="utf-8"))
+        block = raw["cohorts"]["BACKTEST"]
+        if not isinstance(block, dict) or block.get("cohort") != "BACKTEST":
+            return None
+        per = block["turn_pr"]["per_instrument"]
+        as_of = raw["as_of"]
+    except Exception:  # noqa: BLE001 — missing or unreadable: no key, no raise
+        return None
+    if not isinstance(as_of, str) or len(as_of) < 10:
+        return None
+    if not isinstance(per, dict):
+        return None
+    kept: dict = {}
+    for name, row in per.items():
+        if not isinstance(row, dict):
+            continue
+        picked = _int_turn_counts(row)
+        if picked is not None:
+            kept[name] = picked
+    return {"as_of": as_of[:10], "per_instrument": kept}
+
+
 def main() -> int:
     root = config.ROOT
     try:
@@ -115,6 +155,11 @@ def main() -> int:
     # price everywhere and osc/turns from baskets/nasdaq/russell — see split_cycles_payload.
     from scripts._cycles_payload import split_cycles_payload
     core, series = split_cycles_payload(data)   # does not mutate `data` (features json stays full)
+    record = backtest_turn_record(
+        root / "data" / "sector_cycles" / "scorecards"
+        / "promises_price_v1_zz14_v0.json")
+    if record is not None:
+        core["turn_record"] = record
     (site / "sector_cycles_data.js").write_text(
         "window.SECTOR_CYCLES=" + json.dumps(core, separators=(",", ":")) + ";\n",
         encoding="utf-8")

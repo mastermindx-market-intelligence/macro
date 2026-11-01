@@ -941,6 +941,23 @@
       return pa !== pb ? pa - pb : a.now.pos - b.now.pos;
     });
   }
+  // US cards only. China shares this file; a name with no row prints nothing.
+  function turnCallLine(s) {
+    if (IS_CN) return "";
+    var book = DATA.turn_record;
+    if (!book || !book.per_instrument) return "";
+    var row = book.per_instrument[s.id];
+    if (!row) return "";
+    var tp = row.tp;
+    var fp = row.fp;
+    var n = row.n_truth_turns;
+    var dated = book.as_of;
+    var en = "Turn calls in the backtest: " + tp + " right, " + fp +
+      " false, against " + n + " real turns. Record dated " + dated + ".";
+    var zh = "回测中的转折判断：正确 " + tp + " 次，错误 " + fp +
+      " 次，实际转折 " + n + " 次。记录日期 " + dated + "。";
+    return '<div class="cc-leg-lab">' + L(en, zh) + "</div>";
+  }
   function mountCards() {
     var grid = document.getElementById("sc-cards");
     if (!grid) return;
@@ -979,6 +996,7 @@
             '<span>' + nextTxt + '</span>' +
             '<span class="cc-tilt ' + tilt.cls + '">' + tilt.ar + ' ' + L(tilt.lab[0], tilt.lab[1]) + '</span>' +
             rsTxt + '</div>' +
+          turnCallLine(s) +
           hazardCardChip(s) +
         '</div>';
       card.addEventListener("click", function () { isBasketRec(s) ? toggleBasket(s.id) : toggleFocus(s.id); });
