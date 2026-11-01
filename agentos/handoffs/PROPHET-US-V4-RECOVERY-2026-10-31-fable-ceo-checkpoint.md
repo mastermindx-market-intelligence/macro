@@ -528,11 +528,16 @@ next_actions:
     for historical sessions; consume the owner's return on #6805 once.
   - >
     8. R7 US journey (research/prophet_v4/R7_US_JOURNEY_TRACE_2026-11-01.md, PR
-    #10385 at cb255014): the J11 leak (raw engine decision codes under "Why it is
-    here" in every pool setup detail) is fixed at the macro seam with the pool's own
-    copy; one independent Opus read-only review commissioned, then ready + arm
-    merge-on-green (never self-merge); production proof = next scheduled nightly
-    render shows J11 PASS on CVCO under scripts/prophet_journey_reconcile.py. The J8
+    #10385 at 7ed3bbf9, READY and ARMED merge-on-green after one independent Opus
+    read-only review round — MAJOR record overclaim + two MINOR test gaps repaired;
+    contract-delta 0/0): the why-section leak (3 of 17 CVCO J11 hits: raw engine
+    decision codes under "Why it is here") is fixed at the macro seam with the pool's
+    own copy; the other 14 hits are the checker's frozen lifecycle words in the plan
+    record and counters — OPEN, routed to the journey-law owner on #6817; never claim
+    J11 PASS. Consume the sweeper outcome once; production proof = the next scheduled
+    nightly's CVCO J11 receipt has no why-section tokens. #10255 nits PR is DEFERRED
+    until that same nightly proves #10255 — a carve-helper change landed before the
+    proof would confound it. The J8
     finding (config/dag.yml runs build_site before build_prophet, so board
     plan relations are one night stale on a plan's first night) is recorded, not
     fixed: a DAG-order/two-pass change needs the render-budget analysis and an
