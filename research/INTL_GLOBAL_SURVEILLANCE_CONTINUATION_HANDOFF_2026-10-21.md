@@ -388,7 +388,7 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - Row 18 entitled-browser journey proof; row 19 next nightly cycle; row 20 CI-green quote; row 21 served
   both-themes proof for the remaining boards — each a records-only append to the census.
 
-## Checkpoint 2026-11-01 05:2x–06:1xZ — records r8 MERGED, pin1 SERVED, F10
+## Checkpoint 2026-11-01 05:2x–06:4xZ — records r8 MERGED, pin1 SERVED, F10
 
 - Records r8 #10362 reviewed by a native Opus read-only auditor (fabric admission refused on every host):
   `INTL-GS-REC8-AUDIT: PASS_WITH_NOTES 8dbc2d5cc852599eda988917a7195f8db85385f2`; standards 1–8 PASS; three NITs
@@ -400,7 +400,7 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
   graph-boundary chips = 640 (seat probe 06:1xZ) → PRODUCTION_PROOF for §14 row 4 in full; F12 closed in
   production. The earlier render anomaly (run 41259434450 `render` job in_progress >2 h) did not block
   publication; the production render lane stays fleet-ops custody — the seat cancelled or re-ran nothing.
-- F10: PR #10367 OPEN (draft) on claude/intl-gs-f10-canonical-main: head 5ac89fd395432d688e13e583d1c15591adba58b8 (follow-up to the reviewed 8f1b1d5e; review INTL-GS-F10 PASS_WITH_NOTES with one SHOULD-FIX fixed in the follow-up; re-read INTL-GS-F10-AUDIT-2 PASS_WITH_NOTES at 5ac89fd3 with two test-hygiene NITs N5/N6 deferred to a later test PR), CI rollup pending at 06:4xZ; merge seat-only pinned to 5ac89fd3 after the re-read and a green rollup including the international-dislocation-explorer check. Built seat-direct by plumbing from the seat tree (hash-object → temporary index → write-tree →
+- F10: PR #10367 OPEN (draft) on claude/intl-gs-f10-canonical-main: head 5ac89fd395432d688e13e583d1c15591adba58b8 (follow-up to the reviewed 8f1b1d5e; review INTL-GS-F10 PASS_WITH_NOTES with one SHOULD-FIX fixed in the follow-up; re-read INTL-GS-F10-AUDIT-2 PASS_WITH_NOTES at 5ac89fd3 with two test-hygiene NITs N5/N6 deferred to a later test PR), CI rollup pending at 06:4xZ; merge seat-only pinned to 5ac89fd3 after a green rollup including the international-dislocation-explorer check. Built seat-direct by plumbing from the seat tree (hash-object → temporary index → write-tree →
   commit-tree on main a5a2cbbb → push sha:ref), seat tree left clean; first attempt hard-coded the three guard
   paths in run_ci_pack.py and moved contract-delta to 245 introduced (the closure checker follows string
   literals → scripts/build_intl.py import graph into ci-control-plane-contracts); passing them from the manifest
@@ -408,5 +408,7 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - Seat tree: branch reset onto main f2a7fe74 after the squash (clean; sparse state unchanged).
 
 ### Next
+- F10 #10367: seat-only squash merge pinned to 5ac89fd3 once the rollup is green (ci-gate / ci-plan / fence-pack
+  SUCCESS incl. the international-dislocation-explorer check); then record the merge (records r10).
 - Row 18 entitled-browser journey proof; row 19 next nightly cycle; row 20 CI-green quote; row 21 served
   both-themes proof — records-only appends. R2-01 remains the one deferred product follow-up.

@@ -150,7 +150,7 @@ next_action: >
   W2B #10278, W2A #10288, gb1 #10354, pin1 #10355; records #10353) and §14 row 4 is served (640 chips on
   intl.html at 03:12:25 GMT); §14 recount 15 DONE / 6 PARTIAL / 0 GAP (census addendum 2026-11-01). Records r8
   merged (#10362 → f2a7fe74, 06:03:02Z); pin1 served at 05:21:32 GMT (intl-gs__edges__head = 640, r9 addendum);
-  F10 state: PR #10367 OPEN (draft) on claude/intl-gs-f10-canonical-main: head 5ac89fd395432d688e13e583d1c15591adba58b8 (follow-up to the reviewed 8f1b1d5e; review INTL-GS-F10 PASS_WITH_NOTES with one SHOULD-FIX fixed in the follow-up; re-read INTL-GS-F10-AUDIT-2 PASS_WITH_NOTES at 5ac89fd3 with two test-hygiene NITs N5/N6 deferred to a later test PR), CI rollup pending at 06:4xZ; merge seat-only pinned to 5ac89fd3 after the re-read and a green rollup including the international-dislocation-explorer check. Remaining:
+  F10 state: PR #10367 OPEN (draft) on claude/intl-gs-f10-canonical-main: head 5ac89fd395432d688e13e583d1c15591adba58b8 (follow-up to the reviewed 8f1b1d5e; review INTL-GS-F10 PASS_WITH_NOTES with one SHOULD-FIX fixed in the follow-up; re-read INTL-GS-F10-AUDIT-2 PASS_WITH_NOTES at 5ac89fd3 with two test-hygiene NITs N5/N6 deferred to a later test PR), CI rollup pending at 06:4xZ; merge seat-only pinned to 5ac89fd3 after a green rollup including the international-dislocation-explorer check. Remaining:
   row 18 entitled-browser journey
   proof on the served URL; row 19 next nightly publisher cycle retaining the GS views; row 20 CI-green quote of
   the legacy navigation suite; row 21 served both-themes proof for the Scanner / Dislocations boards; deferred
