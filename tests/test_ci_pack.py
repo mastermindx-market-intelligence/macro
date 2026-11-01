@@ -2587,6 +2587,9 @@ def _isolate_pack_runner_planner_env(monkeypatch: pytest.MonkeyPatch) -> None:
         "CI_TESTED_TREE_SHA",
         "CI_SUBJECT_HEAD_SHA",
         "CI_BASE_SHA",
+        # F10 #10367: execute_pack publishes the plan tree here (never overriding);
+        # keep it out of the ambient env between tests (review AUDIT-2, N5).
+        "TESTED_TREE_SHA",
     ):
         monkeypatch.delenv(name, raising=False)
 
