@@ -544,3 +544,59 @@ def test_sector_page_prints_the_rs_sentence_from_the_record():
 )
 def test_sector_page_prints_no_rs_sentence_when_it_would_be_wrong(history):
     assert _run_page_date_scripts({"asOf": "2026-10-30", "rs_history": history})["kids"] == []
+
+
+def _template_text(name):
+    """A page source by name, for the tests that run a shipped function in node."""
+    return (Path(__file__).resolve().parents[1] / "templates" / name).read_text(encoding="utf-8")
+
+
+def _hz_tip(hz, key, passed, lang):
+    """Run the shipped tooltip function in node with the page's picker for one language."""
+    import json
+    import re
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    text = _template_text("sector_cycles.js")
+    match = re.search(r"\n  function _hzTip\(hz, key, pass\) \{\n(?:.*\n)*?  \}\n", text)
+    assert match is not None
+    source = "\n".join([
+        "function L(en, zh) { return " + json.dumps(lang) + ' === "zh" ? zh : en; }',
+        match.group(0),
+        "console.log(_hzTip(" + json.dumps(hz) + ", " + json.dumps(key) + ", " + json.dumps(passed) + "));",
+    ])
+    done = subprocess.run([node, "-e", source], capture_output=True, text=True, timeout=30, check=True)
+    return done.stdout.strip()
+
+
+@pytest.mark.parametrize(
+    "passed,lang,present,absent",
+    [
+        (True, "en", ["PASSED the W4.2 gate", "UP/13w", "Epoch: 2031-Q1.", "Cohort still accruing.", "Not checked against later outcomes."], ["validated", "live", "校准"]),
+        (True, "zh", ["校准模型概率", "UP/13w", "Epoch: 2031-Q1。", "样本仍在累积。", "未用之后的结果核对。"], ["validated", "live", "Calibrated", "Not checked"]),
+        (False, "en", ["did NOT pass the W4.2 gate", "UP/13w", "not a model output.", "Not checked against later outcomes."], ["validated", "live", "Cohort still", "基准率"]),
+        (False, "zh", ["KM 基准率先验", "UP/13w", "不是模型输出。", "未用之后的结果核对。"], ["validated", "live", "样本仍在累积", "base-rate", "Not checked"]),
+    ],
+)
+def test_hazard_tooltip_says_what_the_figure_is_in_the_readers_language(passed, lang, present, absent):
+    got = _hz_tip({"epoch": "2031-Q1", "direction": "UP"}, "13w", passed, lang)
+    assert [p for p in present if p not in got] == []
+    assert [a for a in absent if a in got] == []
+
+
+@pytest.mark.parametrize(
+    "lang,want,other",
+    [
+        ("en", " · revision-optimistic (quad not PIT-vintaged)", "结果可能偏乐观"),
+        ("zh", " · 结果可能偏乐观（象限未按当时版本回放）", "revision-optimistic"),
+    ],
+)
+def test_hazard_tooltip_revision_clause_reads_in_the_readers_language(lang, want, other):
+    hz = {"epoch": "2031-Q1", "direction": "UP", "revision_optimistic": True}
+    got = _hz_tip(hz, "13w", True, lang)
+    assert want in got and other not in got
+    assert want not in _hz_tip({"epoch": "2031-Q1", "direction": "UP"}, "13w", True, lang)
