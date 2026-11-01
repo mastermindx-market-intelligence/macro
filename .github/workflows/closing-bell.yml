@@ -566,16 +566,28 @@ jobs:
           # Provisional snapshot pointers (same two artifacts earlyclose commits):
           # freshly recomputed regime + market-state latest.json ride to main so later
           # render/engine-render lanes read TODAY's provisional close instead of regressing
-          # to the prior one.  Everything else under data/ is discarded.
+          # to the prior one. The exact coherent GEX summary below is the sole
+          # additional non-ledger snapshot; other data/ writes remain discarded.
           # ONE FILE PER LINE: `git add a b` rejects ATOMICALLY when any pathspec is
           # missing — a single masked line would silently drop BOTH pointers.
           git add -f data/regime/latest.json 2>/dev/null || echo "::warning::regime latest.json not staged (missing?) — provisional pointer will not ride"
           git add -f data/market_state/latest.json 2>/dev/null || echo "::warning::market_state latest.json not staged (missing?) — provisional pointer will not ride"
+          SESSION_DATE=$(python3 -c "import sys; sys.path.insert(0,'.'); from lib.nyse_calendar import session_date; print(session_date().isoformat())")
+          # GEX archive admission — retain original producer bytes, never rebuild
+          # an archive from the site index. A failed/incoherent builder keeps the
+          # incumbent data exclusion; it cannot promote a mismatched snapshot.
+          GEX_ARCHIVE_BASE=$(git rev-parse HEAD)
+          GEX_ARCHIVE_ADMITTED=0
+          if python3 scripts/check_gex_archive_publication.py --session "$SESSION_DATE" --base-ref "$GEX_ARCHIVE_BASE"; then
+            git add -f data/gex/latest.json
+            GEX_ARCHIVE_ADMITTED=1
+          else
+            echo "::warning title=GEX archive withheld::original archive/site/session binding failed; canonical GEX input remains unchanged"
+          fi
           # THEN discard unstaged data/ writes (FT-R5) — same as earlyclose.yml.
           git checkout -- . 2>/dev/null || true
           git clean -fdq data/ 2>/dev/null || true
           if git diff --cached --quiet; then echo "no rendered-site changes to commit"; exit 0; fi
-          SESSION_DATE=$(python3 -c "import sys; sys.path.insert(0,'.'); from lib.nyse_calendar import session_date; print(session_date().isoformat())")
           MSG="closingbell: full close render ${SESSION_DATE} (scope=close)"$'\n\n'"provisional close render (full market scope); nightly is canonical"$'\n'"CLOSINGBELL=1 lane - site/ + regime/market-state snapshot pointers (fastpath idiom); ledgers discarded per FT-R5"$'\n\n'"Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
           # Fail-closed conflict gate (P0 2026-08-01, d29e4dd44d / #4167): refuse to
           # commit staged conflict markers or unmerged index entries.
@@ -638,6 +650,11 @@ jobs:
                   for f in $PUSH_STAGED_OFFENDERS; do git checkout HEAD -- "$f" 2>/dev/null || true; done
                   echo "::warning title=render-sync skipped::post-rebase site/templates scanned dirty (conflict markers) — follow-up commit skipped"
                 fi
+              fi
+              # Keep an admitted archive paired after rebase/normalization and
+              # refuse a concurrent same-path writer instead of overwriting it.
+              if [ "$GEX_ARCHIVE_ADMITTED" = 1 ]; then
+                python3 scripts/check_gex_archive_publication.py --session "$SESSION_DATE" --base-ref "$GEX_ARCHIVE_BASE" --accepted-ref origin/main --candidate-ref HEAD || exit 1
               fi
               if push_do; then echo "pushed closingbell rendered site on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
             fi

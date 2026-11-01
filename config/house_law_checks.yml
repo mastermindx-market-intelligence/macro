@@ -10,6 +10,41 @@ updated: "2026-10-21"
 
 checks:
 
+  - law_id: data.gex_archive_publication
+    summary: >
+      Before staging and before pushing an admitted GEX archive, validate the
+      original data/gex/latest.json against site/gex/index.json for the native
+      source, session, schema and core projection. Refuse session regression,
+      candidate-commit pair mismatch and concurrent accepted archive changes.
+    source_ref:
+      - scripts/check_gex_archive_publication.py
+      - tests/test_gex_archive_snapshot.py
+      - .github/workflows/closing-bell.yml
+    severity: hard
+    check_script: scripts/check_gex_archive_publication.py
+    ci_wiring:
+      - workflow: .github/workflows/closing-bell.yml
+        job: closingbell
+        lane: render
+    selftest: false
+    selftest_exempt_reason: >
+      No --selftest flag; tests/test_gex_archive_snapshot.py covers coherent
+      publication and malformed, session, source, candidate and concurrent-writer
+      refusals using local fixtures.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - The guard is invoked only by the normal closing-bell publication lane.
+      - The pre-staging call withholds a rejected archive; the pre-push call fails
+        publication for an already-admitted archive.
+      - Partial native core coverage remains supported; this does not qualify
+        scientific usefulness or prove a live publication.
+      - Prospective publication only; no historical reconstruction or producer replay.
+    owner_program: intelligence-network
+    notes: >
+      Register the existing PR #10182 guard and its actual publication wiring.
+      This registry entry changes no producer, staging, push or runtime behavior.
+
   # ── UI / rendering guards ──────────────────────────────────────────────────
 
   - law_id: ui.crypto_shelf_governor

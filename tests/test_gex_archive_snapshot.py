@@ -2,9 +2,15 @@
 from __future__ import annotations
 
 import json
+import copy
+import subprocess
+import sys
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
+import pytest
+import yaml
 
 from engine import signal_archive as sa
 from scripts import build_gex_board as bg
@@ -76,3 +82,138 @@ def test_empty_or_nonindex_manifest_writes_nothing(tmp_path):
         [{"key": "TSLA", "net_gex_bn": -0.4}], tmp_path, SESSION
     )
     assert not (tmp_path / "gex" / "latest.json").exists()        # no index/ETF -> no snapshot
+
+
+def _git(root, *args):
+    return subprocess.check_output(['git', '-C', str(root), *args], text=True).strip()
+
+
+@pytest.fixture
+def publication(tmp_path):
+    _git(tmp_path, 'init', '-q')
+    _git(tmp_path, 'config', 'user.email', 'fixture@example.invalid')
+    _git(tmp_path, 'config', 'user.name', 'fixture')
+    manifest = [dict(r, asof=SESSION.isoformat()) for r in _manifest()]
+    bg._write_archive_snapshot(manifest, tmp_path / 'data', SESSION)
+    site = tmp_path / 'site/gex'
+    site.mkdir(parents=True)
+    (site / 'index.json').write_text(json.dumps(manifest))
+    _git(tmp_path, 'add', '.')
+    _git(tmp_path, 'commit', '-qm', 'base')
+    return tmp_path, _git(tmp_path, 'rev-parse', 'HEAD')
+
+
+def _check(root, base, accepted=None):
+    from scripts.check_gex_archive_publication import check
+    return check(root, session=SESSION.isoformat(), base_ref=base, accepted_ref=accepted)
+
+
+def test_publication_accepts_original_partial_projection_without_writes(publication):
+    root, base = publication
+    files = [root / 'data/gex/latest.json', root / 'site/gex/index.json']
+    before = [p.read_bytes() for p in files]
+    assert _check(root, base)['indices'] == ['SPX', 'SPY']
+    assert [p.read_bytes() for p in files] == before
+
+
+@pytest.mark.parametrize('change', ['date', 'source', 'value', 'missing_core',
+                                  'single_name', 'duplicate_core', 'nan', 'symlink',
+                                  'raw_context', 'future_context'])
+def test_publication_refuses_mismatched_or_unbound_archive(publication, change):
+    root, base = publication
+    path = root / 'data/gex/latest.json'
+    snap = json.loads(path.read_text())
+    if change == 'date': snap['asof'] = '2026-07-30'
+    elif change == 'source': snap['source'] = 'unbound-provider'
+    elif change == 'value': snap['indices']['SPX']['net_gex_bn'] *= 1000
+    elif change == 'missing_core': snap['indices'].pop('SPY')
+    elif change == 'single_name': snap['indices']['TSLA'] = snap['indices']['SPY']
+    elif change == 'nan': snap['indices']['SPY']['net_gex_bn'] = float('nan')
+    elif change == 'raw_context': snap['market'] = {'raw_chains': [1, 2, 3]}
+    elif change == 'future_context': snap['market'] = {'skew_asof': '2026-08-03'}
+    elif change == 'duplicate_core':
+        manifest = root / 'site/gex/index.json'
+        rows = json.loads(manifest.read_text()); rows.append(copy.deepcopy(rows[0]))
+        manifest.write_text(json.dumps(rows))
+    elif change == 'symlink':
+        other = root / 'saved.json'; other.write_bytes(path.read_bytes())
+        path.unlink(); path.symlink_to(other)
+    if change not in {'duplicate_core', 'symlink'}: path.write_text(json.dumps(snap))
+    with pytest.raises(ValueError): _check(root, base)
+
+
+def test_publication_allows_nullable_producer_fields(publication):
+    root, _ = publication
+    p = root / 'data/gex/latest.json'; snap = json.loads(p.read_text())
+    q = root / 'site/gex/index.json'; manifest = json.loads(q.read_text())
+    snap['indices']['SPX']['gamma_flip'] = None
+    manifest[0]['gamma_flip'] = None
+    p.write_text(json.dumps(snap)); q.write_text(json.dumps(manifest))
+    _git(root, 'add', '.'); _git(root, 'commit', '-qm', 'nullable')
+    assert _check(root, 'HEAD')['indices'] == ['SPX', 'SPY']
+
+
+def test_publication_refuses_concurrent_same_session_archive(publication):
+    root, base = publication
+    p = root / 'data/gex/latest.json'; original = p.read_bytes()
+    snap = json.loads(original); snap['market'] = {'skew': 123, 'skew_asof': '2026-07-31'}
+    p.write_text(json.dumps(snap)); _git(root, 'add', '.'); _git(root, 'commit', '-qm', 'concurrent')
+    accepted = _git(root, 'rev-parse', 'HEAD')
+    p.write_bytes(original)
+    with pytest.raises(ValueError, match='concurrent'):
+        _check(root, base, accepted)
+
+
+def test_publication_accepts_already_identical_candidate(publication):
+    root, base = publication
+    p = root / 'data/gex/latest.json'; snap = json.loads(p.read_text())
+    snap['market'] = {'skew': 123, 'skew_asof': '2026-07-31'}
+    p.write_text(json.dumps(snap)); _git(root, 'add', '.'); _git(root, 'commit', '-qm', 'candidate')
+    assert _check(root, base, 'HEAD')['archive_sha256']
+
+
+def test_publication_refuses_uncommitted_pair_as_commit_proof(publication):
+    from scripts.check_gex_archive_publication import check
+    root, base = publication
+    p = root / 'data/gex/latest.json'; snap = json.loads(p.read_text())
+    snap['market'] = {'skew': 123, 'skew_asof': '2026-07-31'}
+    p.write_text(json.dumps(snap))
+    with pytest.raises(ValueError, match='candidate commit'):
+        check(root, session=SESSION.isoformat(), base_ref=base, candidate_ref='HEAD')
+
+
+def _publication_step():
+    root = Path(__file__).resolve().parents[1]
+    workflow = yaml.safe_load((root / '.github/workflows/closing-bell.yml').read_text())
+    return next(s['run'] for s in workflow['jobs']['closingbell']['steps']
+                if s.get('name') == 'commit rendered site + provisional snapshot pointers (ledgers discarded)')
+
+
+@pytest.mark.parametrize('valid', [False, True])
+def test_actual_closingbell_staging_obeys_archive_guard(publication, valid):
+    root, _ = publication
+    real = Path(__file__).resolve().parents[1]
+    run = _publication_step()
+    block = run.split('# GEX archive admission', 1)[1].split('\n', 1)[1].split('# THEN discard', 1)[0]
+    (root / 'scripts').symlink_to(real / 'scripts', target_is_directory=True)
+    path = root / 'data/gex/latest.json'; snap = json.loads(path.read_text())
+    snap['market'] = {'skew': 123, 'skew_asof': '2026-07-31'}
+    if not valid: snap['source'] = 'unbound-provider'
+    path.write_text(json.dumps(snap))
+    ledger = root / 'data/risk_radar/forward_log.jsonl'
+    ledger.parent.mkdir(); ledger.write_text('unrelated fixture ledger')
+    cmd = f'SESSION_DATE={SESSION.isoformat()}\n' + block
+    proc = subprocess.run(['bash', '-e', '-c', cmd], cwd=root, text=True, capture_output=True)
+    assert proc.returncode == 0, proc.stderr
+    staged = _git(root, 'diff', '--cached', '--name-only').splitlines()
+    assert ('data/gex/latest.json' in staged) is valid
+    assert 'data/risk_radar/forward_log.jsonl' not in staged
+    assert ledger.read_text() == 'unrelated fixture ledger'
+    assert path.read_text() == json.dumps(snap)
+
+
+def test_closingbell_checks_pair_again_after_rebase_before_push():
+    run = _publication_step()
+    guard = run.index('--accepted-ref origin/main')
+    assert run.index('git pull --rebase') < guard < run.index('if push_do;')
+    assert 'GEX_ARCHIVE_ADMITTED' in run[guard - 300:guard]
