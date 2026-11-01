@@ -73,7 +73,7 @@ unverified:
     what_would_verify: One bounded `gh pr checks 10219` after the CI-wait cooldown (REDUNDANT POLL blocked the second read).
 unresolved:
   - >-
-    EW-P1 acceptance: two natural nightly `engine: regime update` landings on main after the incumbent carve #10255 merges (#10333 closed as superseded 2026-10-31T20:14Z); observed by the seat's hourly git-only watcher, never dispatched or polled.
+    EW-P1 acceptance: two natural nightly `engine: regime update` landings on main after the incumbent carve #10255 (merged c2772cc4, 06:29:41Z) (#10333 closed as superseded 2026-10-31T20:14Z); observed by the seat's hourly git-only watcher, never dispatched or polled.
   - >-
     #10221's three engine-script hunks are not taken over; #10221 remains the orphaned carrier for the pair check until a successor is decided. QLedger publication (data/qledger + site/qledger) stays unpublished; owner #10079 (inert/NOT_CUT_OVER).
   - >-
@@ -85,7 +85,7 @@ unresolved:
     defects and gaps are EW-P5-FU; receipts at research/grey_deer/ew_completion_20261031/EW_P5_ACCEPTANCE_RECEIPTS.md.
 next_actions:
   - >-
-    Seat: EW-P5-FU repairs (S02/S12 live-overlay precedence in #10371, O06 publish-before-record, then O01, C05, U02, U09 and the sparse-tree guard), each as its own PR with a fresh non-authoring review. EW-P4-ACT (the latest_observation producer) needs its own activation gate and is not a UI fix.
+    Seat: EW-P5-FU repairs (S02/S12 live-overlay precedence merged as #10371 a7628775, O06 publish-before-record, then O01, C05, U02, U09 and the sparse-tree guard), each as its own PR with a fresh non-authoring review. EW-P4-ACT (the latest_observation producer) needs its own activation gate and is not a UI fix.
   - >-
     Seat: when the EW-P1 watcher reports two engine landings, record PRODUCTION_PROOF for EW-P1 in this workstream (never before; a merge of #10255 is not proof).
   - >-

@@ -25,7 +25,7 @@ Real checks for EW-P4-FU at the exact head: ci-plan, fence-pack, all twelve ci-p
 
 ## Pack census (run ew-p5-packs-20261101T071404Z-518ae7cd)
 
-This is the first EW-P5 execution. It runs every test the independent mapping cites, plus the seat's candidates below, at one exact head. It is a census of what the tests prove, not an acceptance grant.
+This is the first EW-P5 execution. It runs every test the independent mapping cites, plus the seat's candidates below, at one exact head. The mapping itself was made at an earlier head; see the mapping-head note. It is a census of what the tests prove, not an acceptance grant.
 
 | Field | Value |
 |---|---|
@@ -43,6 +43,8 @@ Skipped cases and their recorded reason:
 
 Mapping source: an independent native Opus read-only reviewer mapped all 63 catalogue rows to tests. Its dispositions are copied unchanged. The seat did not upgrade any row.
 
+Mapping-head note (added after the records r5 review): the mapping was made at main `2796abf7`, which is not an ancestor of the census head `d3fb043b`. #10255 merged between them as `c2772cc44ef5` at 2026-11-01T06:29:41Z and is on the census head. So every reason below that says #10255 is not on this tree is false at the census head. Rows S01, S03, S05, S06 and Q01 to Q05 are stale: their dispositions were not rechecked at the census head. #10255 added `tests/test_qledger_carve.py` (17 tests). It was neither mapped nor run here and joins the next named run, which re-maps these rows.
+
 A pack is PASS only when every row in it is COVERED_ISOLATED and every mapped test passed in this run. No pack meets that bar.
 
 | Pack | Rows | Isolated | Partial | Not covered | Not executable | Held external | Mapped cases run | Result |
@@ -53,9 +55,9 @@ A pack is PASS only when every row in it is COVERED_ISOLATED and every mapped te
 | C Consent and outbox | 16 | 1 | 4 | 2 | 7 | 2 | 8 passed | NOT PASS (15 of 16 rows lack isolated coverage) |
 | U Descriptive UI | 11 | 0 | 8 | 1 | 1 | 1 | 36 passed | NOT PASS (11 of 11 rows lack isolated coverage) |
 | R Science negatives | 8 | 0 | 3 | 1 | 4 | 0 | 4 passed | NOT PASS (8 of 8 rows lack isolated coverage) |
-| All | 63 | 4 | 20 | 10 | 13 | 16 | 88 passed | NOT PASS |
+| All | 63 | 4 | 20 | 10 | 13 | 16 | 88 passed (sum of row cells; a test shared by rows counts once per row) | NOT PASS |
 
-A passing mapped test does not make its row pass. For S02 and S12 the mapped test passes because it pins the behaviour the oracle forbids. The repair is open in #10371 and is not on this head.
+A passing mapped test does not make its row pass. For S02 and S12 the mapped test passes because it pins the behaviour the oracle forbids. The repair merged later as #10371 (`a7628775`, 2026-11-01T07:29:24Z) and is not on this head.
 
 ### Row census
 
@@ -63,23 +65,23 @@ Short names: ROS, ROB and ROI are the rotation observation state, builder and in
 
 | Row | Independent disposition | Mapped tests | Run result | Reviewer reason |
 |---|---|---|---|---|
-| S01 | HELD_EXTERNAL | None | No mapped test | Needs a natural eligible session and a paired public/durable commit identity, which depend on #10255 (another owner). |
+| S01 | HELD_EXTERNAL | None | No mapped test | Needs a natural eligible session and a paired public/durable commit identity, which depend on #10255 (another owner). Stale at the census head: see the mapping-head note. |
 | S02 | NOT_COVERED | `LRE::TestPrecedence::test_l_equal_s_clears_the_transition_on_settle_catch_up` | 1 passed | This test asserts the opposite of the row: matching session dates alone make the settled side win. Nothing tests that a label alone cannot grant settlement. |
-| S03 | HELD_EXTERNAL | None | No mapped test | Detecting the express/closing-bell split is the publisher path of #10255/#10221, which is not on this tree. |
+| S03 | HELD_EXTERNAL | None | No mapped test | Detecting the express/closing-bell split is the publisher path of #10255/#10221, which is not on this tree. Stale at the census head: see the mapping-head note. |
 | S04 | NOT_COVERED | None | No mapped test | No test for a partial write to one envelope target was found. `tests/test_risk_envelope.py` was not searched exhaustively. |
-| S05 | HELD_EXTERNAL | None | No mapped test | The final 40-hex pushed-commit check is the #10255 commit/publish path. |
-| S06 | HELD_EXTERNAL | None | No mapped test | The typed worktree/index/commit mismatch is the same #10255 path. |
+| S05 | HELD_EXTERNAL | None | No mapped test | The final 40-hex pushed-commit check is the #10255 commit/publish path. Stale at the census head: see the mapping-head note. |
+| S06 | HELD_EXTERNAL | None | No mapped test | The typed worktree/index/commit mismatch is the same #10255 path. Stale at the census head: see the mapping-head note. |
 | S07 | NOT_COVERED | None | No mapped test | No test checks that a same-session envelope revision is monotonic and keeps the original first-known time. |
 | S08 | PARTIAL | `ROS::test_future_source_and_older_observation_clock_never_roll_history_back`; `ROS::test_malformed_numeric_evidence_withdraws_without_coercion`; `ROS::test_half_day_settlement_and_holiday_follow_existing_calendar` | 23 passed | Future, malformed and holiday inputs are withheld at the observation layer. Missing: a wrong-market case, and an envelope-level "no calm replacement of the prior severity" check. |
 | S09 | PARTIAL | `UI::test_journey_c_exact_stale_strings`; `UI::test_fragile_headline_does_not_create_an_observation` | 2 passed | Stale rotation is scoped correctly ("latest is Oct 20"). The envelope's PARTIAL state is never asserted. |
 | S10 | HELD_EXTERNAL | None | No mapped test | Needs two natural nightly `engine: regime update` landings. |
 | S11 | NOT_COVERED | None | No mapped test | `lineage_roots` appears only in fixtures. No test checks that clues sharing the Yahoo root count as dependent. |
 | S12 | NOT_COVERED | `LRE::TestPrecedence::test_l_equal_s_clears_the_transition_on_settle_catch_up` | 1 passed | Precedence compares session dates only, and the test pins the suppression this oracle forbids. |
-| Q01 | HELD_EXTERNAL | None | No mapped test | Complete-generation certification belongs to #10079 (draft) and #10255; neither is on this tree. |
-| Q02 | HELD_EXTERNAL | None | No mapped test | Refusing a forged COMPLETE scope belongs to the same owners. |
-| Q03 | HELD_EXTERNAL | None | No mapped test | The historic-reader label belongs to the same owners. |
-| Q04 | HELD_EXTERNAL | None | No mapped test | Append versus atomic replace with an old open file descriptor belongs to the same owners. |
-| Q05 | HELD_EXTERNAL | None | No mapped test | Oversized-ledger custody is in the #10255 carve, which is not merged here. |
+| Q01 | HELD_EXTERNAL | None | No mapped test | Complete-generation certification belongs to #10079 (draft) and #10255; neither is on this tree. Stale at the census head: see the mapping-head note. |
+| Q02 | HELD_EXTERNAL | None | No mapped test | Refusing a forged COMPLETE scope belongs to the same owners. Stale at the census head: see the mapping-head note. |
+| Q03 | HELD_EXTERNAL | None | No mapped test | The historic-reader label belongs to the same owners. Stale at the census head: see the mapping-head note. |
+| Q04 | HELD_EXTERNAL | None | No mapped test | Append versus atomic replace with an old open file descriptor belongs to the same owners. Stale at the census head: see the mapping-head note. |
+| Q05 | HELD_EXTERNAL | None | No mapped test | Oversized-ledger custody is in the #10255 carve, which is not merged here. Stale at the census head: see the mapping-head note. |
 | Q06 | HELD_EXTERNAL | None | No mapped test | This is an agent-conduct rule (no replay of a refused native operation), which no test can exercise. |
 | Q07 | HELD_EXTERNAL | None | No mapped test | The native validator ceilings belong to the #10079 owner. |
 | Q08 | HELD_EXTERNAL | None | No mapped test | #10079 is a draft and no complete original cut exists. |
@@ -141,7 +143,7 @@ The mapping reviewer did not read three envelope test files in full. The seat fo
 
 Major:
 
-- **S02 and S12, live-overlay precedence.** `scripts/build_live_risk_envelope.py` lets the settled side win whenever the session dates match, and `LRE::TestPrecedence::test_l_equal_s_clears_the_transition_on_settle_catch_up` pins that. The oracle says a label or matching date alone must not suppress the live overlay. This is a candidate defect against the catalogue at this head. The EW-P5-FU repair is open in #10371 and is not on this head: a same-session settled copy must carry a settled or corrected revision, a produced_at at or after 16:00 New York time on the session, and a matching public copy before it suppresses the live overlay.
+- **S02 and S12, live-overlay precedence.** `scripts/build_live_risk_envelope.py` lets the settled side win whenever the session dates match, and `LRE::TestPrecedence::test_l_equal_s_clears_the_transition_on_settle_catch_up` pins that. The oracle says a label or matching date alone must not suppress the live overlay. This is a candidate defect against the catalogue at this head. The EW-P5-FU repair merged later as #10371 (`a7628775`, 07:29:24Z) and is not on this head: a same-session settled copy must carry a settled or corrected revision, a produced_at at or after 16:00 New York time on the session, and a matching public copy before it suppresses the live overlay.
 - **O06, published identity.** `ROB::test_actual_builder_calls_observer_only_after_json_publication` pins publish-before-record. The consumer checks only the id's format, so nothing refuses an id that lacks a source-owned published reference.
 - **U pack is fixture-only.** No producer writes `latest_observation`, so every U test runs against `tests/fixtures/ew_p4_observation/`. Production shows the unavailable state until an activation gate exists.
 
@@ -153,14 +155,16 @@ Minor:
 - **U09.** The 46 screenshots are hash-bound to the source, but there is no separate dark or light design judgement. The vision review lane was refused.
 - **Sparse trees.** `ROI::test_real_category_click_preserves_topics_owned_by_other_surfaces` reads `site/account.js` with no skip guard, so it errors on a sparse checkout.
 
-Mapping gaps: the reviewer did not read the `test_qledger_*` files, three envelope test files in full, or the quiet-hours, `test_p1_*` and expiry tests it saw by name.
+Mapping gaps: the reviewer did not read the `test_qledger_*` files, three envelope test files in full, or the quiet-hours, `test_p1_*` and expiry tests it saw by name. It mapped at `2796abf7`, before #10255 merged, so `tests/test_qledger_carve.py` is unmapped.
+
+Records r5 review of the seat-found candidates (independent, read-only): S08 stays PARTIAL; no wrong-market case and no test against calm replacement of an earlier qualified severity. S11 rates PARTIAL on `test_duplicate_alias_and_source_permutation_never_add_corroboration`, which shows two price sources sharing a root collapse to one component; no test uses a real price-derived Yahoo root. U05 rates PARTIAL; no test starts from a known severe warning and then feeds a later calm snapshot. These ratings are recorded here and adopted by the next named run's mapping; the table above keeps this run's mapping.
 
 ## Open waves
 
-- **EW-P1.** T1 diagnosis is done. T2 is superseded by #10255, which belongs to another owner. Acceptance is two natural nightly `engine: regime update` landings on main after #10255 merges. The seat runs an hourly read-only watcher with a strict match on the carve's own squash subject. Rung today: DELIVERED for the diagnosis; PRODUCTION_PROOF is not recorded.
+- **EW-P1.** T1 diagnosis is done. T2 is superseded by #10255, which belongs to another owner. #10255 merged as `c2772cc44ef5` at 2026-11-01T06:29:41Z. Acceptance is two natural nightly `engine: regime update` landings on main after that commit. The seat runs an hourly read-only watcher with a strict match on the carve's own squash subject. Rung today: DELIVERED for the diagnosis; PRODUCTION_PROOF is not recorded.
 - **EW-P4 follow-ups.** F-1 to F-3 are closed by #10364. The `latest_observation` producer and the vision review lane stay held as EW-P4-ACT in the workstream.
 - **EW-P5 follow-ups.** The census defects above are tracked as EW-P5-FU in the workstream. Each needs its own PR and independent review.
-- **EW-P5 packs.** First census run `ew-p5-packs-20261101T071404Z-518ae7cd`; every pack is NOT PASS. The next run follows the EW-P5-FU repairs. Remaining scope by pack:
+- **EW-P5 packs.** First census run `ew-p5-packs-20261101T071404Z-518ae7cd`; every pack is NOT PASS. The next run follows the EW-P5-FU repairs, adds `tests/test_qledger_carve.py`, and re-maps the stale rows at its own head. Remaining scope by pack:
   - S01-S12 publication and source clocks. These depend on the EW-P1 landings.
   - Q01-Q08 QLedger custody, in the #10079 and #10255 context.
   - O01-O08 recorder behaviour. EW-P2 recording is default-off.

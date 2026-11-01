@@ -523,7 +523,7 @@ waves:
   - id: EW-P5-FU
     title: EW-P5 follow-ups from the first pack census - defects and coverage gaps that keep every pack below PASS
     status: todo
-    # Major, from the census mapping: S02/S12 live-overlay precedence in scripts/build_live_risk_envelope.py (settled won whenever the session dates matched), repair open in #10371; O06 publish-before-record with no check for a source-owned published reference; the U pack is fixture-only until EW-P4-ACT.
+    # Major, from the census mapping: S02/S12 live-overlay precedence in scripts/build_live_risk_envelope.py (settled won whenever the session dates matched), repair merged as #10371 a7628775 after the census head; O06 publish-before-record with no check for a source-owned published reference; the U pack is fixture-only until EW-P4-ACT.
     # Minor: O01 receipt has no definition/version/rights field; C05 no test for an opt-out between the preference GET and PUT; U02 no gain/flow/shelter negative scan; U09 no separate dark/light design judgement; the ROI real-category-click test reads site/account.js with no sparse-tree skip guard.
     # Seat-found coverage candidates to verify independently: S08 (tests/test_risk_envelope.py null-law classes), S11 (three tests/test_rotation_risk_envelope.py module tests), U05 (two tests/test_risk_envelope_radar_integration.py tests). Mapping gaps are listed in the receipts census.
     depends_on: [EW-P4]
@@ -533,8 +533,9 @@ next_action: >
   and the vision lane moved to EW-P4-ACT. EW-P5 ran its first pack census (ew-p5-packs-20261101T071404Z-518ae7cd at main
   d3fb043b0f2f: pytest 1069 passed, 17 skipped, 0 failed, 0 errors; node 20 of 20); an independent reviewer mapped all
   63 rows (COVERED_ISOLATED 4, PARTIAL 20, NOT_COVERED 10, NOT_EXECUTABLE 13, HELD_EXTERNAL 16) and no pack is PASS.
-  Next: EW-P5-FU repairs (S02/S12 precedence in #10371, O06 ordering, then the minors), each with its own PR and fresh
-  review, then a second named run. EW-P1 still waits on two natural engine landings after #10255.
+  Next: EW-P5-FU repairs (S02/S12 precedence merged in #10371; O06 ordering, then the minors), each with its own PR and fresh
+  review, then a second named run that adds tests/test_qledger_carve.py and re-maps S01/S03/S05/S06/Q01-Q05 (mapped at
+  2796abf7, before #10255 merged as c2772cc4). EW-P1 waits on two natural engine landings after c2772cc4.
 
   2026-11-01 (CEO seat 00dea969, records r4): EW-P4 #10350 is MERGED (886ab694c947, exact head a49a16d5, review r3
   APPROVE_WITH_NOTES). Its rung is MERGED, not production proof: no producer writes latest_observation, so the surface shows
