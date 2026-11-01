@@ -513,7 +513,8 @@
     gap:8px;
     margin:14px 0;
   }
-  .pod .pod-source-list a {
+  .pod .pod-source-list a,
+  .pod .pod-source-list span {
     display:block;
     padding:10px 12px;
     border:1px solid var(--line);
@@ -2936,16 +2937,16 @@
     <tbody>
       <tr><td>{{ t('30Y Treasury', '30 年期美债') }}</td><td><strong>5.27%</strong></td><td>{{ t('21 Aug 2026', '2026 年 8 月 21 日') }}</td><td>[F] Federal Reserve / FRED</td></tr>
       <tr><td>{{ t('10Y nominal / real / breakeven', '10 年期名义 / 实际 / 盈亏平衡') }}</td><td>4.74% / 2.40% / 2.32%</td><td>{{ t('21 / 21 / 24 Aug 2026', '2026 年 8 月 21 / 21 / 24 日') }}</td><td>[F] Federal Reserve / FRED</td></tr>
-      <tr><td>DXY / VIX</td><td>98.974 / 15.93</td><td>{{ t('24 Aug 2026 · 10:35 / 10:30 UTC', '2026 年 8 月 24 日 · 10:35 / 10:30 UTC') }}</td><td>[F] {{ t('Yahoo Finance public tape · DX-Y.NYB / ^VIX', 'Yahoo Finance 公开行情 · DX-Y.NYB / ^VIX') }}</td></tr>
+      <tr><td>DXY / VIX</td><td>98.974 / 15.93</td><td>{{ t('24 Aug 2026 · 10:35 / 10:30 UTC', '2026 年 8 月 24 日 · 10:35 / 10:30 UTC') }}</td><td>[F] {{ t('Public tape · DX-Y.NYB / ^VIX', '公开行情 · DX-Y.NYB / ^VIX') }}</td></tr>
       <tr><td>{{ t('Broad HY OAS / CCC OAS', '广义高收益债 OAS / CCC OAS') }}</td><td>2.70% / 10.37%</td><td>{{ t('21 Aug 2026', '2026 年 8 月 21 日') }}</td><td>[F] ICE BofA / FRED</td></tr>
-      <tr><td>{{ t('Gold / silver', '黄金 / 白银') }}</td><td>$4,702.6 / $68.95</td><td>{{ t('24 Aug 2026 · 10:35 / 10:27 UTC', '2026 年 8 月 24 日 · 10:35 / 10:27 UTC') }}</td><td>[F] {{ t('Yahoo Finance futures tape · GC=F / SI=F', 'Yahoo Finance 期货行情 · GC=F / SI=F') }}</td></tr>
-      <tr><td>{{ t('Platinum / palladium', '铂金 / 钯金') }}</td><td>$1,896.9 / $1,351.0</td><td>{{ t('24 Aug 2026 · 10:27 UTC', '2026 年 8 月 24 日 · 10:27 UTC') }}</td><td>[F] {{ t('Yahoo Finance futures tape · PL=F / PA=F', 'Yahoo Finance 期货行情 · PL=F / PA=F') }}</td></tr>
-      <tr><td>{{ t('Copper', '铜') }}</td><td>$6.596/lb</td><td>{{ t('24 Aug 2026 · 10:27 UTC', '2026 年 8 月 24 日 · 10:27 UTC') }}</td><td>[F] {{ t('Yahoo Finance futures tape · HG=F', 'Yahoo Finance 期货行情 · HG=F') }}</td></tr>
-      <tr><td>{{ t('Bitcoin', '比特币') }}</td><td>$78,710</td><td>{{ t('24 Aug 2026 · 23:08 UTC', '2026 年 8 月 24 日 · 23:08 UTC') }}</td><td>[F] {{ t('Yahoo Finance public spot tape · BTC-USD', 'Yahoo Finance 公开现货行情 · BTC-USD') }}</td></tr>
-      <tr><td>S&amp;P 500 / Nasdaq</td><td>7,674.37 / 26,180.46</td><td>{{ t('21 Aug 2026 close', '2026 年 8 月 21 日收盘') }}</td><td>[F] {{ t('Yahoo Finance public close · ^GSPC / ^IXIC', 'Yahoo Finance 公开收盘 · ^GSPC / ^IXIC') }}</td></tr>
-      <tr><td>Hang Seng / Shanghai Composite</td><td>25,517.33 / 3,882.01</td><td>{{ t('24 Aug 2026 close', '2026 年 8 月 24 日收盘') }}</td><td>[F] {{ t('Yahoo Finance public close · ^HSI / 000001.SS', 'Yahoo Finance 公开收盘 · ^HSI / 000001.SS') }}</td></tr>
-      <tr><td>KOSPI / Nikkei 225</td><td>6,696.96 / 65,528.09</td><td>{{ t('24 Aug 2026 close', '2026 年 8 月 24 日收盘') }}</td><td>[F] {{ t('Yahoo Finance public close · ^KS11 / ^N225', 'Yahoo Finance 公开收盘 · ^KS11 / ^N225') }}</td></tr>
-      <tr><td>MSFT / META / GOOGL / NVDA / AAPL / BABA</td><td>483.24 / 549.90 / 344.82 / 214.72 / 309.35 / 119.34</td><td>{{ t('21 Aug 2026 close', '2026 年 8 月 21 日收盘') }}</td><td>[F] {{ t('Yahoo Finance public close · listed symbols', 'Yahoo Finance 公开收盘 · 所列代码') }}</td></tr>
+      <tr><td>{{ t('Gold / silver', '黄金 / 白银') }}</td><td>$4,702.6 / $68.95</td><td>{{ t('24 Aug 2026 · 10:35 / 10:27 UTC', '2026 年 8 月 24 日 · 10:35 / 10:27 UTC') }}</td><td>[F] {{ t('Futures tape · GC=F / SI=F', '期货行情 · GC=F / SI=F') }}</td></tr>
+      <tr><td>{{ t('Platinum / palladium', '铂金 / 钯金') }}</td><td>$1,896.9 / $1,351.0</td><td>{{ t('24 Aug 2026 · 10:27 UTC', '2026 年 8 月 24 日 · 10:27 UTC') }}</td><td>[F] {{ t('Futures tape · PL=F / PA=F', '期货行情 · PL=F / PA=F') }}</td></tr>
+      <tr><td>{{ t('Copper', '铜') }}</td><td>$6.596/lb</td><td>{{ t('24 Aug 2026 · 10:27 UTC', '2026 年 8 月 24 日 · 10:27 UTC') }}</td><td>[F] {{ t('Futures tape · HG=F', '期货行情 · HG=F') }}</td></tr>
+      <tr><td>{{ t('Bitcoin', '比特币') }}</td><td>$78,710</td><td>{{ t('24 Aug 2026 · 23:08 UTC', '2026 年 8 月 24 日 · 23:08 UTC') }}</td><td>[F] {{ t('Public spot tape · BTC-USD', '公开现货行情 · BTC-USD') }}</td></tr>
+      <tr><td>S&amp;P 500 / Nasdaq</td><td>7,674.37 / 26,180.46</td><td>{{ t('21 Aug 2026 close', '2026 年 8 月 21 日收盘') }}</td><td>[F] {{ t('Public close · ^GSPC / ^IXIC', '公开收盘 · ^GSPC / ^IXIC') }}</td></tr>
+      <tr><td>Hang Seng / Shanghai Composite</td><td>25,517.33 / 3,882.01</td><td>{{ t('24 Aug 2026 close', '2026 年 8 月 24 日收盘') }}</td><td>[F] {{ t('Public close · ^HSI / 000001.SS', '公开收盘 · ^HSI / 000001.SS') }}</td></tr>
+      <tr><td>KOSPI / Nikkei 225</td><td>6,696.96 / 65,528.09</td><td>{{ t('24 Aug 2026 close', '2026 年 8 月 24 日收盘') }}</td><td>[F] {{ t('Public close · ^KS11 / ^N225', '公开收盘 · ^KS11 / ^N225') }}</td></tr>
+      <tr><td>MSFT / META / GOOGL / NVDA / AAPL / BABA</td><td>483.24 / 549.90 / 344.82 / 214.72 / 309.35 / 119.34</td><td>{{ t('21 Aug 2026 close', '2026 年 8 月 21 日收盘') }}</td><td>[F] {{ t('Public close · listed symbols', '公开收盘 · 所列代码') }}</td></tr>
     </tbody>
   </table></div>
 <div class="pod-callout" style="--pod-c:var(--pod-teal)"><b>{{ t('Regime check at publication', '发布时体制检查') }}</b><p>{{ t('Fresh evidence does not cross a major regime trigger. The 30Y at 5.27% remains in the 5.0–5.4% Managed band; the 10Y real yield at 2.40% is below the 2.55% Inflation Veto trigger; broad HY OAS at 2.70% is below the 4% accident trigger; and VIX is below the mid-20s crisis confirmation. Long yields up while DXY is down activates the sovereign-warning quadrant, confirming rather than overturning the opening anomaly. [F/I]',
@@ -2967,7 +2968,7 @@
     <a href="https://www.cboe.com/tradable-products/vix" rel="noopener">{{ t('Cboe — VIX Index and delayed market data', 'Cboe — VIX 指数与延迟市场数据') }}</a>
     <a href="https://www.cmegroup.com/markets/metals/precious.html" rel="noopener">{{ t('CME Group — Gold, silver, platinum and palladium futures', 'CME Group — 黄金、白银、铂金与钯金期货') }}</a>
     <a href="https://www.cmegroup.com/markets/metals/base.html" rel="noopener">{{ t('CME Group — Copper futures', 'CME Group — 铜期货') }}</a>
-    <a href="https://finance.yahoo.com/quote/BTC-USD/" rel="noopener">{{ t('Yahoo Finance — BTC-USD point-in-time public tape', 'Yahoo Finance — BTC-USD 点时公开行情') }}</a>
+    <span>{{ t('BTC-USD point-in-time public spot tape', 'BTC-USD 点时公开现货行情') }}</span>
     <a href="https://www.microsoft.com/en-us/investor/sec-filings" rel="noopener">{{ t('Microsoft Investor Relations — SEC filings and earnings materials', '微软投资者关系 — SEC 披露与财报材料') }}</a>
     <a href="https://abc.xyz/investor/earnings/" rel="noopener">{{ t('Alphabet Investor Relations — earnings and filings', 'Alphabet 投资者关系 — 财报与披露文件') }}</a>
     <a href="https://investor.atmeta.com/financials/default.aspx" rel="noopener">{{ t('Meta Investor Relations — financials and SEC filings', 'Meta 投资者关系 — 财务资料与 SEC 披露') }}</a>

@@ -45,6 +45,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -627,8 +628,28 @@ def compute(desk: str, today: date | str | None = None, root: Path | None = None
 # --------------------------------------------------------------------------- #
 # 5. NOTES + AUTO-FINDINGS
 # --------------------------------------------------------------------------- #
+# Ledger rows predate the provider-neutral copy rule and some name the price store's
+# vendor directory. Notes render on public desk panels, so scrub at read time; the
+# append-only ledger itself is never rewritten.
+_NOTE_STORE = r"(?:yfinance|yahoo|tushare|polygon|massive[a-z_]*)"
+_NOTE_SCRUBS = (
+    (re.compile(rf"(?i)\bdata/{_NOTE_STORE}/\S+ adjusted closes"), "the daily price store's adjusted closes"),
+    (re.compile(rf"(?i)\bdata/{_NOTE_STORE}/\S+"), "the daily price store"),
+    (re.compile(r"(?i)(?<![A-Za-z0-9])(?:yfinance|yahoo|tushare|polygon|massive_[a-z_]+)(?![A-Za-z0-9(])"),
+     "the daily price store"),
+)
+
+
+def _scrub_note(text):
+    if not isinstance(text, str):
+        return text
+    for pattern, repl in _NOTE_SCRUBS:
+        text = pattern.sub(repl, text)
+    return text
+
+
 def _load_notes(root: Path, desk: str | None = None) -> list[dict]:
-    notes = _load_jsonl(_notes_path(root))
+    notes = [{**n, "note": _scrub_note(n.get("note"))} for n in _load_jsonl(_notes_path(root))]
     if desk:
         notes = [n for n in notes if n.get("desk") in (desk, "all", None)]
     return sorted(notes, key=lambda n: n.get("date", ""), reverse=True)
@@ -704,9 +725,9 @@ _SEED_NOTES = [
              "(-0.77%). The hub-v3-trajectory overhaul is the fix under test; this grader's "
              "engine_version A/B is the experiment that proves whether it worked."},
     {"date": "2026-07-04", "desk": "all", "author": "wave2",
-     "note": "PRICE LESSON: grade off data/yahoo/<T>.parquet adjusted closes ONLY. The S&P-1500 "
+     "note": "PRICE LESSON: grade off the daily price store's adjusted closes ONLY. The S&P-1500 "
              "breadth close cache (data/breadth/_closes_cache.parquet) is SPLIT-CORRUPTED — using "
-             "it silently poisons every RS / forward-return number. A name missing from yahoo is a "
+             "it silently poisons every RS / forward-return number. A name missing from that store is a "
              "coverage skip here, never a wrong return."},
     {"date": "2026-07-04", "desk": "congress", "author": "wave2",
      "note": "CONGRESS LESSON: disclosure lags the trade by up to 45 days, so grade forward "

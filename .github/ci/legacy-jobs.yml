@@ -13190,6 +13190,30 @@ jobs:
         run: pip install pytest jinja2 pyyaml
       - name: Research record claims — hub span, index hub claims, per-report record claims
         run: python -m pytest tests/test_reports_hub_span.py tests/test_research_pages_hub_claims.py tests/test_research_pages_record_claims.py -q -p no:cacheprovider
+  provider-free-page-copy:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # Product rule: page copy describes the data, never the vendor behind it. Reads
+    # nine swept templates with Jinja comments stripped, renders the Mag 7 and desk
+    # grader panels (a legacy append-only ledger note is scrubbed on read), and checks
+    # the flow source tips, alt-data feed labels, heatmap feed label and the committee
+    # page's runtime label scrub. Offline; pyarrow because engine.flow_observatory
+    # imports its history ledger at package import. Inference owns the suite's
+    # import closure and the template literals; config.yml is a root file the
+    # planner cannot see as a literal, so it is declared here.
+    paths:
+      - "config.yml"
+      - "tests/test_provider_free_page_copy.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2 pyyaml pandas pyarrow
+      - name: Provider-free copy on swept pages
+        run: python -m pytest tests/test_provider_free_page_copy.py -q -p no:cacheprovider
   china-board-breadth:
     if: ${{ false }}
     gate: code

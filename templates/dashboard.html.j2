@@ -20467,7 +20467,7 @@ function initStockTableView(){
   if (!window.StockTable) return;
   /* SECZH: keyed on GICS-style names as emitted by us_standouts producer
      (Information Technology / Financials / Consumer Discretionary / Health Care …)
-     NOT Yahoo-style names (Technology / Financial Services / Consumer Cyclical / Healthcare).
+     NOT vendor-style names (Technology / Financial Services / Consumer Cyclical / Healthcare).
      Keep in sync with engine/entry_signal.py sector taxonomy. */
   var SECZH = {
     "Information Technology":"信息技术","Financials":"金融","Consumer Discretionary":"可选消费",
