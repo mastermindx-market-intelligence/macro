@@ -245,7 +245,7 @@ Each PR is a single commit on master db6168c2. Both are DRAFT; ORCH-2 did not ma
     - The same `reportedOwnershipPanel.test.tsx:290` wall-clock time bomb as Series A, which predates this change.
     - Ingest + signal-layer tests and Quote Hub tests are SUCCESS at 719fff36.
 
-The independent review of both PRs (and of this record) is lane oi2-rv-r1 (§7); its outcome is recorded there.
+The independent review of both PRs (and of this record) is the combined review lane (oi2-rv-r1, r2, then r3 if admitted; §7). Its outcome is recorded there.
 
 ## 5. L4 — P09 dossier
 
@@ -271,6 +271,7 @@ Every lane is C1_ROUTINE_BOUNDED on host ubuntu1. Unless noted, placement was po
 | oi2-l3-r1 | build | DELIVERED rc=0 (worker STATUS PARTIAL: evidence-lock recapture not run) | 9a714cc3 / `OI2_L3_PATCH.md` 67869247 | ACCEPT pending review. ORCH-2 opened it, reproduced both trees with `git am`, and pushed them as terminal #1197 and #1198. |
 | oi2-recrv-r1 | review (grok-4.7) | REFUSED `host_temperature_at_or_above_limit` | c62b0111 | burned |
 | oi2-rv-r1 | review (grok-4.7), combined #1197 + #1198 + this record | REFUSED `host_temperature_at_or_above_limit` (09:42Z; load1 4.2/24, active 2) | 878421e9 | burned |
+| oi2-rv-r2 | review (grok-4.7), same combined packet, records head b83a324b | REFUSED pre-dispatch: `no eligible remote mode` (ubuntu0/2/3 disk, ubuntu1 thermal, ubuntu4 automatic-qualification), rc=75, no remote stdout | — | burned |
 
 ## 8. GAPS, DEVIATIONS, seat-only acts
 
@@ -294,7 +295,7 @@ Every lane is C1_ROUTINE_BOUNDED on host ubuntu1. Unless noted, placement was po
 
 - L2 steps 4 and 6, L4 and L5 were done by ORCH-2's targeted direct source reads, after the Fabric refusals above and before any worker started. This is lawful under "no worker started + principal tools + no conflict".
 - No production GET was made.
-- **One combined independent review lane.** oi2-rv-r1 covers #1197, #1198 and this record, instead of one review lane per PR-bound artifact. Cause: 7 of the first 11 lane requests were refused before any worker started (§7): 6 on ubuntu1 temperature and 1 pre-dispatch, with no eligible host. That left 3 of the 14-lane budget: one for this review, one for the Series B repair or recapture, and one held for a refused-lane retry or a re-review of the repair.
+- **One combined independent review lane.** The review packet covers #1197, #1198 and this record, instead of one review lane per PR-bound artifact. Cause: 9 of the first 13 lane requests were refused before any worker started (§7): 7 on ubuntu1 temperature and 2 pre-dispatch, with no eligible host. The 14th and last lane is spent on this review (oi2-rv-r3), and only after a read-only `preview` shows an eligible placement, so it is not burned on a known-refusing host. The Series B repair or recapture therefore has no lane and is a GAP (§8).
 - The §7 placement line in head c16b472d said "minimax MiniMax-M3", which was wrong. It is corrected here to `glm` / `glm-5.3-flash`, from the provider records.
 
 **Seat-only acts (not performed):**
