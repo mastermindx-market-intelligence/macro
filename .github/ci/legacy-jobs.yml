@@ -10810,6 +10810,11 @@ jobs:
       - "tests/test_us_candidate_episode_reconciler.py"
       - "tests/test_us_candidate_episode_wiring.py"
       - "tests/test_us_candidate_episode_identity_retry.py"
+      # entry-timing W2 estimator (conservative-of-two block bounds)
+      - "research/prophet_v4/entry_timing_w2_estimator.py"
+      - "research/prophet_v4/entry_timing_w2_freeze.py"
+      - "tests/test_entry_timing_w2_estimator.py"
+      - "tests/test_entry_timing_w2_freeze.py"
       - "tests/fixtures/us_candidate_episode/**"
       - "engine/prophet_object_change.py"
       - "tests/test_prophet_object_change.py"
@@ -10838,7 +10843,9 @@ jobs:
         # `_r2_client()`, and every R2 path this suite exercises either deletes
         # the R2 credential env vars or injects a fake client object directly —
         # the real boto3 import is never reached.
-        run: pip install pytest pandas numpy pyarrow fastapi httpx pyyaml requests jinja2 playwright
+        # W2's frozen estimator imports scipy.stats at collection time; the
+        # isolated prophet-lab CI environment must include scipy explicitly.
+        run: pip install pytest pandas numpy scipy pyarrow fastapi httpx pyyaml requests jinja2 playwright
       - name: Prophet Operator Lab — projection, real-reader chain, transport, timeparse, commissioning-prep
         run: >
           python -m pytest
@@ -10864,6 +10871,8 @@ jobs:
       # B1's hermetic source, intake and generation contracts guard the reader
       # used by this projection. Keep their existing proof in the PR code gate;
       # the context-and-grades data job only runs after merge.
+      - name: entry-timing W2 estimator (conservative-of-two block bounds)
+        run: python -m pytest tests/test_entry_timing_w2_estimator.py tests/test_entry_timing_w2_freeze.py -q
       - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
         run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py tests/test_us_candidate_episode_identity_retry.py -q
 
