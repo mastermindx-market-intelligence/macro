@@ -742,9 +742,11 @@
       && c.denominator === coverage.membership_count
       && c.valid_count + c.missing_count === c.denominator;
     var text = valid
-      ? L(c.valid_count + ' / ' + c.denominator + ' names have observed endpoint pairs · '
+      ? L('This map: ' + c.valid_count + ' / ' + c.denominator
+          + ' names have observed endpoint pairs · '
           + c.missing_count + ' unavailable.',
-          c.valid_count + ' / ' + c.denominator + ' 个标的具备有效区间行情 · '
+          '本图：' + c.valid_count + ' / ' + c.denominator
+          + ' 个标的具备有效区间行情 · '
           + c.missing_count + ' 个不可用。')
       : L('Observation coverage unavailable.', '观测覆盖率不可用。');
     return '<div class="hx-bscope hm-observation-coverage" role="status">' + text + '</div>';
@@ -1801,12 +1803,8 @@
       if (up <= 46) return { tone: 'down', en: 'Softer tape', zh: '偏弱' };
       return { tone: 'flat', en: 'Split tape', zh: '涨跌分化' };
     }
-    // Where the tape is strong and weak, in plain words. ZH hangs 走强/走弱 off the
-    // sector names as suffixes, so it composes under the 资金流向： prefix. EN can't:
-    // "Money flowing to weakness in Basic Materials" is backwards — money flows *out*
-    // of weakness — and on a broad-decline day (no up sectors) that was the whole
-    // sentence. So EN owns a full sentence here instead, and the caller adds only the
-    // period.
+    // Sector ranks are this map's price move. ZH hangs 走强/走弱 on the names.
+    // EN says strength or weakness. The caller adds the map label and the period.
     function _leadPhrase(sm) {
       var up = sm.secs.filter(function (s) { return s.agg > 0.05; }).slice(0, 2);
       var dn = sm.secs.filter(function (s) { return s.agg < -0.05; }).slice(-2).reverse();
@@ -1830,9 +1828,18 @@
       var when = (data.source === 'polygon-live' ? (fmtUpdated(data) || data.asof) : data.asof) || '—';
       var pctUp = Math.round(sm.pctUp), medTxt = fmtPc(sm.med);
       var lead = _leadPhrase(sm);
-      var read = lz(pctUp + '% of names advancing · median ' + medTxt + '. ',
-                    pctUp + '% 个股上涨 · 中位数 ' + medTxt + '。')
-               + (lead ? (isZh() ? ('资金流向：' + lead + '。') : (lead + '.')) : '');
+      var board = sm.scope && sm.scope.whole;
+      var enRead = (board ? 'Whole board: ' : '')
+        + pctUp + '% of names advancing · median ' + medTxt + '.';
+      var zhRead = (board ? '全市场：' : '')
+        + pctUp + '% 个股上涨 · 中位数 ' + medTxt + '。';
+      if (lead) {
+        enRead += ' On this map (' + fmtInt(data.n_tiles)
+          + ' names): ' + lead + '.';
+        zhRead += '本图（' + fmtInt(data.n_tiles)
+          + ' 只）：' + lead + '。';
+      }
+      var read = lz(enRead, zhRead);
       pulseEl.className = 'hx-pulse ' + st.tone;
       pulseEl.innerHTML = ''
         + '<div class="hx-pulse-top">'

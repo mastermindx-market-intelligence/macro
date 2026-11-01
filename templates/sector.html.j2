@@ -250,6 +250,13 @@
     <p class="muted" style="margin:4px 0 0;font-size:11px">{{ t(dc.note_en, dc.note_zh) }} — {{ t('context only, not sized', '仅供参考，不用于仓位') }}</p>
     {% endif %}
     {% if s.ladder.age_line %}<p class="agewhen">{{ t(s.ladder.age_line, s.ladder.age_line_zh) }}</p>{% endif %}
+    {# sector-basket-links: the group pages a holder of this fund's retail or mining names opens next. #}
+    {% if s.fund == 'XLY' %}
+    <p class="muted" style="margin:6px 0 0;font-size:12.5px"><a href="../basket/retail.html">{{ t('Retail basket', '零售篮子') }}</a> — {{ t('retail names scored as a group.', '零售公司的分组评分。') }}</p>
+    {% elif s.fund == 'XLB' %}
+    <p class="muted" style="margin:6px 0 0;font-size:12.5px"><a href="../basket/gold_miners.html">{{ t('Gold Miners basket', '黄金矿业篮子') }}</a> · <a href="../basket/critical_minerals.html">{{ t('Critical Minerals basket', '关键矿产与稀土篮子') }}</a> — {{ t('mining names scored as a group.', '矿业公司的分组评分。') }}</p>
+    {% endif %}
+    {# /sector-basket-links #}
     {% if s.ladder.early_note %}<p class="early">{{ t(s.ladder.early_note, s.ladder.early_note_zh) }}</p>{% endif %}
     {% if s.ladder.macro_line %}<p class="macro-caution">⚠ {{ t(s.ladder.macro_line, s.ladder.macro_line_zh) }}</p>{% endif %}
     <ul class="points">

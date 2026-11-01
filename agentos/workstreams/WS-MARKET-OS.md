@@ -211,6 +211,22 @@ waves:
     next_action: A remains sole F00C CSV consolidation writer; B independently verifies. Reconcile all 130
       IDs and separate public-family obligations with current accepted, partial, rejected and unknown dispositions.
       Coverage is distinct from parity and scientific acceptance.
+  - id: flagship-today-since-last-visit
+    title: Flagship vertical 1 — Today, for me (what changed in your book since your last visit)
+    status: in_progress
+    depends_on: []
+    next_action: >
+      Slice 1 is MERGED as Terminal master db6168c2 (PR 1189; non-author ACCEPT confirmed
+      at f2e30fd7, all trusted checks green on the merge ref): proxy POST
+      /api/portfolio-changes, Today section posting the client-held previous state_digest
+      and rendering the desk's change lines with honest first-visit, no-change, overflow
+      (expand in place), free-tier teaser, unavailable and signed-out states, each ticker
+      linking to /analysis. The beta release owner was idle, so the receiver seat ran the
+      owner's beta entrance for db6168c2 on 2026-11-01 (owner DONE 04:53Z; beta serves db6168c2, anonymous proxy POST 401). Production
+      does not carry the slice and strips the shared shell. Next: signed-in browser proof
+      on beta Today (needs Chris signed in), then a PRODUCTION_PROOF record kept apart
+      from acceptance. Contract dependency (not a wave): Macro PRs 10199 and 10200 closed
+      unmerged and 10203 is open; if 10203 merges, re-run the slice tests against it.
   - id: joined-journey
     title: MarketOntology J1 — qualified joined Macro-to-Terminal journey
     status: todo
@@ -330,6 +346,7 @@ artifacts:
   - agentos/handoffs/MARKET-OS-2026-08-26-a1b-merged-deployed.md
   - agentos/handoffs/MARKET-OS-2026-08-26-a1b-sol-acceptance.md
   - agentos/handoffs/MARKET-OS-2026-08-20-a1a-merge-reconciliation.md
+  - agentos/handoffs/WS-MARKET-OS-2026-10-31-fable-flagship-receiver.md
   - agentos/decisions/DEC-MARKET-OS-A1A-MERGED-PRODUCTION-ACCEPTANCE-REQUIRED.md
   - agentos/decisions/DEC-MARKET-OS-A1B-ACCEPTED-IN-PRODUCTION.md
   - "research/market_intelligence_productization/MASTERMIND_MARKET_INTELLIGENCE_PRODUCTIZATION_MASTERPLAN_2026-08-23.md"
@@ -344,15 +361,27 @@ artifacts:
   - "agentos/handoffs/WS-MARKET-OS-2026-10-24-marketontology-census.md"
   - "research/market_intelligence_productization/MARKETONTOLOGY_MARKET_OS_ADOPTION_QUALIFICATION_2026-10-24.json"
 next_action: >
-  PRIMARY PRODUCT: A1B is PROVEN_LIVE / DONE. Before any A2-A6 implementation,
-  Sol refreshes current Macro/Terminal truth and commissions one independently useful
-  vertical; eligibility is not execution. MAINTENANCE: #6510 may proceed independently
-  as a bounded Portfolio mode-tab count synchronization repair if fresh collision
-  census remains clean. PARALLEL ORGANIZATIONAL WORK: the separate Market Ontology
-  parity/fanout carrier remains independent and must preserve its own current authority,
-  claim, and proof gates; do not infer that this workstream sync lands or dispatches it.
-  MARKETONTOLOGY CONTINUATION (October 24): P1.T1 authoring and same-workstream qualification are implementation-complete in Draft #10165. Consume its current CI, independent review and normal source landing, then use the existing locked merge-import after exact protected readback. A T004 and B P2.T2/P2.T3 continue independently; preserve accepted evidence and all component identities. No rebind is required.
+  RECEIVER 2026-10-31: the Fable flagship seat (PR 10230, handoff
+  WS-MARKET-OS-2026-10-31-fable-flagship-receiver) owns Market OS completion. Slice 1
+  (wave flagship-today-since-last-visit) is merged as Terminal master db6168c2 and the
+  seat ran the beta release on 2026-11-01 (owner DONE 04:53Z; beta serves db6168c2). Next: signed-in browser
+  proof on beta Today, then a PRODUCTION_PROOF record apart from acceptance, then slice 2
+  as a bounded design commission. Maintenance #6510 may proceed independently as a bounded
+  Portfolio mode-tab count synchronization repair if a fresh collision census remains
+  clean. The MarketOntology A/B carriers continue independently under their own
+  authority, claim and proof gates; this workstream neither lands nor dispatches them.
 ---
+
+## Retired next_action text (moved 2026-10-31, history only)
+
+Before the receiver took over, next_action read: "PRIMARY PRODUCT: A1B is PROVEN_LIVE /
+DONE. Before any A2-A6 implementation, Sol refreshes current Macro/Terminal truth and
+commissions one independently useful vertical; eligibility is not execution.
+MARKETONTOLOGY CONTINUATION (October 24): P1.T1 authoring and same-workstream
+qualification are implementation-complete in Draft #10165. Consume its current CI,
+independent review and normal source landing, then use the existing locked merge-import
+after exact protected readback. A T004 and B P2.T2/P2.T3 continue independently;
+preserve accepted evidence and all component identities." PR 10165 has since merged.
 
 ## Current state
 

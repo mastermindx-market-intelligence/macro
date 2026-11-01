@@ -43,7 +43,7 @@ additive-only merge law keeps them stable.
 """
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 import re
 from typing import Any, Mapping
@@ -61,6 +61,8 @@ from .base import (
     Rollforward,
     SpecialistPackError,
     TextSpanMapping,
+    _base_row,
+    _mapping_digest,
     _primary_duration_opening_bound,
     _raw_span,
     _resolve_fact_mapping,
@@ -98,6 +100,43 @@ _INTANGIBLE_IMPAIRMENT = (
 )
 _CONSIDERATION = ("us-gaap:BusinessCombinationConsiderationTransferred1",)
 
+# Widened alias tuples (diversified_v1 dev-corpus repair). The frozen tuples
+# above stay first-priority and byte-identical, so every filing that
+# resolved through them resolves identically; the widened tuples re-run
+# through the framework's own resolver only when the frozen mapping
+# abstained (see the numeric fallback in ``finalize_result``). The goodwill
+# widening stays: a consumer-staples filer tags its only undimensioned
+# goodwill movement as the combined translation-and-purchase-accounting
+# concept. The consideration field keeps NO widened alias: it is the ASC 805
+# consideration-transferred quantity, and the cash-flow statement's
+# net-of-cash-acquired payments-to-acquire fact that the first repair tried
+# is a different quantity (cash only, net of acquired cash, aggregated over
+# the period), so it may never value this field. A filing that tags no
+# admissible undimensioned ConsiderationTransferred1 fact falls to the
+# single-member rule below or to the typed absence.
+_GOODWILL_FX_OTHER_WIDENED = (
+    _GOODWILL_FX_OTHER + ("us-gaap:GoodwillTranslationAndPurchaseAccountingAdjustments",)
+)
+_NUMERIC_FALLBACKS = {
+    "goodwill_fx_other": _GOODWILL_FX_OTHER_WIDENED,
+}
+
+# Consideration single-member rule (diversified_v1 second-lane repair): a
+# filing whose only ASC 805 consideration facts are dimensioned one per
+# acquisition (BusinessAcquisitionAxis, degenerate closing-day durations)
+# states the year's consideration transferred exactly when exactly one axis
+# member carries a fact whose context falls inside the report's fiscal
+# period. Two or more in-period members, disagreeing duplicates, or only
+# prior-period members keep the typed absence — never summed, never picked
+# by size.
+_CONSIDERATION_AXIS = "us-gaap:BusinessAcquisitionAxis"
+_CONSIDERATION_SINGLE_MEMBER_RULE_ID = (
+    "pk07.business_combination_consideration.single_member/v1"
+)
+_CONSIDERATION_SINGLE_MEMBER_MAPPING = FactMapping(
+    _CONSIDERATION, dimensions_allowed=(_CONSIDERATION_AXIS,)
+)
+
 _NUMERIC_CONCEPTS = tuple(
     dict.fromkeys(
         _GOODWILL
@@ -109,6 +148,7 @@ _NUMERIC_CONCEPTS = tuple(
         + _GOODWILL_IMPAIRMENT
         + _INTANGIBLE_IMPAIRMENT
         + _CONSIDERATION
+        + _GOODWILL_FX_OTHER_WIDENED
     )
 )
 _NUMERIC_FIELD_IDS = (
@@ -166,6 +206,87 @@ TABLE_CELL_RESERVED_LIMITATION = (
 NEGATIVE_YEAR_LIMITATION = (
     "pk07.negative_year: no goodwill, intangible or business-combination "
     "facts in the primary filing"
+)
+
+# Widened B.2 search alternatives (diversified_v1 dev-corpus repair).
+# Additive only, and strictly fallback: the frozen sections and patterns
+# above run first and keep producing byte-identical rows whenever they
+# resolve, so every heading form the frozen pattern matches still matches
+# and every pinned envelope is unchanged. The widened alternatives fire
+# only after the frozen search produced an absence, for two measured causes
+# on the dev corpus: (1) its acquisition notes are titled "Note N.
+# Acquisitions" / "NOTE N. ACQUISITIONS" / "Note N. Acquisitions and
+# Divestitures" — a period or colon separator instead of the frozen en-dash
+# or hyphen, sometimes all-caps — so the frozen NOTE_BC heading never
+# locates; (2) its acquisition-note sentences open with a capitalised
+# "On <Month D, YYYY>, the Company completed ...", which the frozen
+# date pattern's lowercase-only "on" cannot match. The widened heading
+# alternative carries a bounded negative lookahead so a table-of-contents
+# run (a heading followed within eighty characters by the next
+# "Note N." heading, e.g. "Note 12. Acquisitions 66 Note 13. Leases")
+# never counts as the governing section, and the widened section ends at
+# the next note heading in either separator family.
+NOTE_BC_WIDENED_HEADING = (
+    r"Note \d+\s*[.:]\s*(?:Business Combinations?|Acquisitions?)"
+    r"(?!.{0,80}Notes? \d+\s*[.:])"
+)
+NOTE_BC_WIDENED = narrative.SectionSpec(
+    NOTE_BC_WIDENED_HEADING,
+    (r"Note \d+ [–-]", r"Notes? \d+\s*[.:]"),
+)
+ACQUISITION_DATE_PATTERN_WIDENED = (
+    r"(?:[Oo]n|as of|completed on) "
+    r"(?P<d>(?:January|February|March|April|May|June|July|August|September"
+    r"|October|November|December) \d{1,2}, \d{4})"
+)
+# The widened retry executed by the finalize hook when the frozen mapping
+# abstained; a row it values carries the widened mapping's rule digest, so
+# the digest always names the search that actually produced the value.
+#
+# Acquisition-date sentence guard (diversified_v1 second-lane repair). A
+# date the widened pattern captures may value ``acquisition_date`` only from
+# a sentence that (i) carries a completion verb governing the deal — a form
+# of "acquire", or "completed the acquisition" / "completed its
+# acquisition" / "closed the acquisition" / "consummated" — (ii) carries no
+# announcement, agreement or payment wording — "announced", "agreement to
+# acquire", "entered into", "agreed to", "definitive agreement", "paid",
+# "pending", "expects to", "will acquire" — and (iii) whose captured date
+# falls inside the report's fiscal period. Accept shapes: "On <date>, the
+# Company acquired ...", "On <date>, the Company completed the acquisition
+# of ...". Reject shapes: "On <date>, the Company announced its agreement
+# to acquire ..." (announcement), "On <date>, X entered into a ... agreement
+# to acquire ..." (agreement), "... was paid as of <date> ..." (payment),
+# and any completion sentence dated outside the report's fiscal period — a
+# prior-year deal re-narrated in a later filing, or a closing after the
+# period end (a subsequent event). The guard is generic: no issuer, ticker
+# or deal vocabulary. The first candidate sentence in document order that
+# passes all three tests wins; none passing is a typed absence.
+_ACQUISITION_COMPLETION_PATTERN = re.compile(
+    r"\bacquir(?:ed|es|e|ing)\b"
+    r"|completed (?:the|its) acquisition"
+    r"|closed the acquisition"
+    r"|consummated",
+    re.IGNORECASE,
+)
+_ACQUISITION_NON_COMPLETION_PATTERN = re.compile(
+    r"announced"
+    r"|agreement to acquire"
+    r"|entered into"
+    r"|agreed to"
+    r"|definitive agreement"
+    r"|\bpaid\b"
+    r"|pending"
+    r"|expects to"
+    r"|will acquire",
+    re.IGNORECASE,
+)
+_ACQUISITION_DATE_FALLBACK = TextSpanMapping(
+    section=NOTE_BC_WIDENED,
+    pattern=ACQUISITION_DATE_PATTERN_WIDENED,
+    kind="text",
+)
+_PURCHASE_ACCOUNTING_FALLBACK = TextSpanMapping(
+    section=NOTE_BC_WIDENED, pattern=PURCHASE_ACCOUNTING_PATTERN, kind="text"
 )
 
 _FIELD_MAPPINGS = {
@@ -240,6 +361,180 @@ def _narrative_or_none(primary: Any) -> Any:
         return None
 
 
+_ACQUISITION_MONTHS = {
+    "January": 1,
+    "February": 2,
+    "March": 3,
+    "April": 4,
+    "May": 5,
+    "June": 6,
+    "July": 7,
+    "August": 8,
+    "September": 9,
+    "October": 10,
+    "November": 11,
+    "December": 12,
+}
+
+
+def _parse_acquisition_date(text: str) -> date | None:
+    """Parse "September 1, 2025" to ``date(2025, 9, 1)``; ``None`` if unusable."""
+    try:
+        month_name, day_text, year_text = text.replace(",", " ").split()
+        return date(
+            int(year_text), _ACQUISITION_MONTHS[month_name], int(day_text)
+        )
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+def _guarded_acquisition_date_match(
+    text: str,
+    lo: int,
+    hi: int,
+    section_span: tuple[int, int],
+    period: tuple[date, date],
+) -> "re.Match[str] | None":
+    """The first widened-pattern date match whose sentence passes the guard.
+
+    Scans every capture in document order; a candidate survives only when
+    its sentence carries a completion verb, no announcement/agreement/
+    payment wording, and a date inside ``period`` (see the accept and reject
+    shapes documented at ``_ACQUISITION_COMPLETION_PATTERN``).
+    """
+    for match in re.compile(ACQUISITION_DATE_PATTERN_WIDENED).finditer(
+        text, lo, hi
+    ):
+        sentence_span = narrative.sentence_span(
+            text, match.start(), match.end(), section_span
+        )
+        sentence = text[sentence_span[0] : sentence_span[1]]
+        if not _ACQUISITION_COMPLETION_PATTERN.search(sentence):
+            continue
+        if _ACQUISITION_NON_COMPLETION_PATTERN.search(sentence):
+            continue
+        captured = _parse_acquisition_date(match.group("d"))
+        if captured is None or not period[0] <= captured <= period[1]:
+            continue
+        return match
+    return None
+
+
+def _fiscal_period_bounds(ledger: RawFactLedger, por: date) -> tuple[date, date] | None:
+    """(start, end) of the primary fiscal duration, or ``None``.
+
+    The same basis the framework's own in-period admission uses (see
+    ``_primary_duration_opening_bound``): the longest duration context
+    ending at ``period_of_report``.
+    """
+    opening = _primary_duration_opening_bound(ledger, por)
+    if opening is None:
+        return None
+    return opening + timedelta(days=1), por
+
+
+def _axis_member(occurrence: Any, axis: str) -> str | None:
+    """The occurrence's member on ``axis``, when its context carries it.
+
+    Iterates the context's canonical ``(axis, member)`` pairs (the ledger
+    stores both explicit and typed dimensions as pairs) and matches the axis
+    qname exactly or by local name when the ledger kept a Clark-form key
+    (the binding law of ``_dimension_qname_matches``).
+    """
+    for dimensions in (
+        occurrence.context.explicit_dimensions,
+        occurrence.context.typed_dimensions,
+    ):
+        items = (
+            dimensions.items()
+            if isinstance(dimensions, Mapping)
+            else tuple(dimensions)
+        )
+        for key, member in items:
+            if key == axis or (
+                key.startswith("{")
+                and key.rsplit("}", 1)[-1] == axis.rsplit(":", 1)[-1]
+            ):
+                return str(member)
+    return None
+
+
+def _single_in_period_consideration_member(
+    ledger: RawFactLedger, por: date
+) -> Any | None:
+    """The lone in-period per-acquisition consideration fact, or ``None``.
+
+    Exactly one ``BusinessAcquisitionAxis`` member carrying a
+    ``BusinessCombinationConsiderationTransferred1`` fact whose context falls
+    inside the report's fiscal period values the field; two or more members,
+    disagreeing duplicates on the member, or no in-period member keep the
+    typed absence — never summed, never picked by size.
+    """
+    bounds = _fiscal_period_bounds(ledger, por)
+    if bounds is None:
+        return None
+    members: dict[str, list[Any]] = {}
+    for occurrence in ledger.events:
+        if occurrence.concept_qname != _CONSIDERATION[0] or occurrence.is_nil:
+            continue
+        if occurrence.dimensions_known is False:
+            # R-F3: a source plane that exposed no dimensional context never
+            # proves an occurrence per-acquisition either.
+            continue
+        member = _axis_member(occurrence, _CONSIDERATION_AXIS)
+        if member is None:
+            continue
+        context = occurrence.context
+        if context.start is None or context.end is None:
+            continue
+        if not (bounds[0] <= context.start and context.end <= bounds[1]):
+            continue
+        if _unit_measure(occurrence.unit) != "USD":
+            continue
+        members.setdefault(member, []).append(occurrence)
+    if len(members) != 1:
+        return None
+    (facts,) = members.values()
+    if len({str(item.parsed_value) for item in facts}) != 1:
+        return None  # conflicting duplicates on the member: never guess
+    return min(facts, key=lambda item: item.occurrence_id)
+
+
+def _single_member_consideration_row(
+    catalogue_field: Mapping[str, Any], occurrence: Any, por: date
+) -> dict[str, Any]:
+    """A valued ``xbrl_fact`` row for the single-member consideration rule.
+
+    The same row shape the framework resolver mints for an admitted fact
+    (see ``_resolve_fact_mapping``), with the rule's own id and digest so
+    the envelope names the search that actually produced the value.
+    """
+    row = _base_row(catalogue_field, por)
+    row["quality_state"] = "valued"
+    row["non_value_state"] = None
+    row["coverage_state"] = "source_trace_complete"
+    row["reason"] = None
+    row["concept"] = occurrence.concept_qname
+    row["taxonomy"] = occurrence.concept_qname.split(":", 1)[0]
+    row["source_occurrence_ids"] = [occurrence.occurrence_id]
+    row["mapping_rule_id"] = _CONSIDERATION_SINGLE_MEMBER_RULE_ID
+    row["mapping_rule_digest"] = _mapping_digest(
+        _CONSIDERATION_SINGLE_MEMBER_MAPPING
+    )
+    if occurrence.context.explicit_dimensions:
+        row["dimensions"] = [
+            {"axis": axis, "member": str(member)}
+            for axis, member in sorted(occurrence.context.explicit_dimensions)
+        ]
+    row["period"] = {
+        "kind": "duration",
+        "start": occurrence.context.start.isoformat(),
+        "end": occurrence.context.end.isoformat(),
+    }
+    row["value"] = decimal_text(Decimal(str(occurrence.parsed_value)))
+    return row
+
+
 def _rewrite_narrative_row(
     row: dict[str, Any],
     nt: Any,
@@ -247,6 +542,8 @@ def _rewrite_narrative_row(
     *,
     date_group: str | None,
     accession: str,
+    fallback: TextSpanMapping | None = None,
+    date_period: tuple[date, date] | None = None,
 ) -> str | None:
     """Resolve one B.2 text field over the primary document narrative.
 
@@ -255,6 +552,17 @@ def _rewrite_narrative_row(
     but types every absence with the catalogue's ``missing_dependency`` —
     the PK10 ruling for a pack whose catalogue carries no narrative code —
     and returns the intended stock code for the envelope's limitations.
+
+    ``fallback`` is the diversified_v1 widened search for the field. The
+    frozen mapping runs first and alone decides every absence byte-for-byte;
+    the widened mapping is tried only when the frozen search found no match,
+    and a row it values carries the widened mapping's rule digest so the
+    digest names the search that actually produced the value.
+
+    ``date_period`` arms the acquisition-date sentence guard: the widened
+    date search then takes the first captured date whose sentence carries a
+    completion verb, no announcement/agreement/payment wording, and a date
+    inside the fiscal period (see ``_ACQUISITION_COMPLETION_PATTERN``).
     """
     field_id = row["field_id"]
     rule_id = f"pk07.{field_id}.text_span/v1"
@@ -277,34 +585,67 @@ def _rewrite_narrative_row(
     if nt is None:
         return absence("missing", "narrative document not retained")
     assert mapping.section is not None  # every PK07 text field is section-scoped
-    section_span = narrative.locate_section(nt, mapping.section)
-    if section_span is None:
+
+    variants = (mapping,) if fallback is None else (mapping, fallback)
+    section_spans: dict[int, tuple[int, int] | None] = {}
+    for variant in variants:
+        assert variant.section is not None
+        key = id(variant.section)
+        if key not in section_spans:
+            section_spans[key] = narrative.locate_section(nt, variant.section)
+        section_span = section_spans[key]
+        if section_span is None:
+            continue
+        lo, hi = section_span
+        if (
+            variant is not mapping
+            and date_group is not None
+            and date_period is not None
+        ):
+            match = _guarded_acquisition_date_match(
+                nt.text, lo, hi, section_span, date_period
+            )
+        else:
+            match = re.compile(variant.pattern).search(nt.text, lo, hi)
+        if match is None:
+            continue
+        if date_group is not None:
+            text_value = match.group(date_group)
+            span = (match.start(date_group), match.end(date_group))
+        else:
+            span = narrative.sentence_span(
+                nt.text, match.start(), match.end(), section_span
+            )
+            text_value = nt.text[span[0] : span[1]].strip()[: variant.max_chars]
+        row["quality_state"] = "valued"
+        row["non_value_state"] = None
+        row["coverage_state"] = "source_trace_complete"
+        row["reason"] = None
+        row["text_value"] = text_value
+        row["source_span"] = _raw_span(nt, span[0], span[1], accession)
+        if variant is not mapping:
+            row["mapping_rule_digest"] = _text_span_digest(variant)
+        return None
+    # No variant matched: the absence is the frozen search's own absence.
+    if section_spans[id(mapping.section)] is None:
         return absence("not_evaluable", "governing_section_not_supplied")
-    lo, hi = section_span
-    match = re.compile(mapping.pattern).search(nt.text, lo, hi)
-    if match is None:
-        return absence("missing", "narrative_span_not_located")
-    if date_group is not None:
-        text_value = match.group(date_group)
-        span = (match.start(date_group), match.end(date_group))
-    else:
-        span = narrative.sentence_span(
-            nt.text, match.start(), match.end(), section_span
-        )
-        text_value = nt.text[span[0] : span[1]].strip()[: mapping.max_chars]
-    row["quality_state"] = "valued"
-    row["non_value_state"] = None
-    row["coverage_state"] = "source_trace_complete"
-    row["reason"] = None
-    row["text_value"] = text_value
-    row["source_span"] = _raw_span(nt, span[0], span[1], accession)
-    return None
+    return absence("missing", "narrative_span_not_located")
 
 
 _NARRATIVE_FIELDS = (
-    ("acquisition_date", _ACQUISITION_DATE_MAPPING, "d"),
-    ("purchase_accounting_note_span", _PURCHASE_ACCOUNTING_MAPPING, None),
-    ("impairment_testing_note_span", _IMPAIRMENT_TESTING_MAPPING, None),
+    (
+        "acquisition_date",
+        _ACQUISITION_DATE_MAPPING,
+        "d",
+        _ACQUISITION_DATE_FALLBACK,
+    ),
+    (
+        "purchase_accounting_note_span",
+        _PURCHASE_ACCOUNTING_MAPPING,
+        None,
+        _PURCHASE_ACCOUNTING_FALLBACK,
+    ),
+    ("impairment_testing_note_span", _IMPAIRMENT_TESTING_MAPPING, None, None),
 )
 
 
@@ -546,16 +887,81 @@ class Pk07Producer(PackProducer):
         nt = _narrative_or_none(primary)
 
         notes: list[tuple[str, str]] = []
-        for field_id, mapping, date_group in _NARRATIVE_FIELDS:
+        fiscal_period = _fiscal_period_bounds(ledger, por)
+        for field_id, mapping, date_group, fallback in _NARRATIVE_FIELDS:
+            narrative_fallback = fallback
+            date_period = None
+            if field_id == "acquisition_date":
+                # The widened date search runs only under its sentence guard,
+                # which needs the fiscal period; with no derivable bound the
+                # field stays the frozen search's own typed absence.
+                if fiscal_period is not None:
+                    date_period = fiscal_period
+                else:
+                    narrative_fallback = None
             note = _rewrite_narrative_row(
                 rows[field_id],
                 nt,
                 mapping,
                 date_group=date_group,
                 accession=accession,
+                fallback=narrative_fallback,
+                date_period=date_period,
             )
             if note is not None:
                 notes.append((field_id, note))
+
+        # Numeric fallback (diversified_v1): a numeric field whose frozen
+        # alias tuple abstained re-resolves through the framework's own
+        # resolver with the widened tuple. The frozen aliases stay first
+        # inside the widened tuple, so this can only fire when the frozen
+        # search found no admissible fact, and an abstinent fallback keeps
+        # the frozen row byte-for-byte. A row the fallback values carries
+        # the widened tuple's mapping digest, so the digest names the alias
+        # list that actually produced the value.
+        catalogue_fields = {
+            field["field_id"]: field
+            for field in contract.load_pack_schema("PK07")["fields"]
+        }
+        for index, row in enumerate(result["fields"]):
+            field_id = row["field_id"]
+            concepts = _NUMERIC_FALLBACKS.get(field_id)
+            if concepts is None or row.get("quality_state") == "valued":
+                continue
+            outcome = _resolve_fact_mapping(
+                pack_id="PK07",
+                catalogue_field=catalogue_fields[field_id],
+                mapping=FactMapping(concepts),
+                ledger=ledger,
+                por=por,
+                extension_prefixes={},
+                limitations=result["limitations"],
+            )
+            if outcome.value is not None:
+                result["fields"][index] = outcome.row
+                rows[field_id] = outcome.row
+
+        # Consideration single-member rule: with the frozen undimensioned
+        # alias abstaining, exactly one in-period BusinessAcquisitionAxis
+        # member's ConsiderationTransferred1 fact may value the field; two
+        # or more in-period members, or prior-period members only, keep the
+        # typed absence (see _single_in_period_consideration_member).
+        for index, row in enumerate(result["fields"]):
+            if (
+                row["field_id"] != "business_combination_consideration"
+                or row.get("quality_state") == "valued"
+            ):
+                continue
+            single = _single_in_period_consideration_member(ledger, por)
+            if single is None:
+                continue
+            single_row = _single_member_consideration_row(
+                catalogue_fields["business_combination_consideration"],
+                single,
+                por,
+            )
+            result["fields"][index] = single_row
+            rows["business_combination_consideration"] = single_row
 
         catalogue_checks = {
             check["check_id"]: check
@@ -584,7 +990,7 @@ class Pk07Producer(PackProducer):
         ):
             limitations.append(NEGATIVE_YEAR_LIMITATION)
         note_by_field = dict(notes)
-        for field_id, mapping, _date_group in _NARRATIVE_FIELDS:
+        for field_id, mapping, _date_group, _fallback in _NARRATIVE_FIELDS:
             note = note_by_field.get(field_id)
             if note is None:
                 continue

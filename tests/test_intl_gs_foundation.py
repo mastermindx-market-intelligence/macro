@@ -511,6 +511,13 @@ def test_builder_status_ladder(monkeypatch):
     _install_builder(monkeypatch, "transmission", lambda **_kwargs: [])
     _install_builder(monkeypatch, "dossier", lambda **_kwargs: [
         dict(view="dossier", context_id="im-gs-dossier", context={}, generation=None, payload={"a": 1})])
+    # DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT (seat
+    # ruling A): the not_built rung needs a TRUE absent-module world. This
+    # branch ships a real coverage builder (W2A), so the rung redirects
+    # coverage's BUILDERS entry to an absent module — the W2B idiom — while
+    # scenario and replay are genuinely absent on every branch and pin the
+    # same rung without any patch.
+    monkeypatch.setitem(mount.BUILDERS, "coverage", "lib.intl_gs_absent_coverage")
     result = mount.attach_surveillance(_base_workspace(), universe_loader=lambda: {}, rights_loader=lambda: {})
     views = result["surveillance"]["views"]
     assert views["scanner"] == {"status": "error", "reason": "ValueError"}
@@ -519,6 +526,8 @@ def test_builder_status_ladder(monkeypatch):
     assert views["dossier"]["status"] == "available"
     assert result["surveillance_panels"] and result["surveillance_panels"][0]["view"] == "dossier"
     assert views["coverage"]["status"] == "not_built"
+    assert views["scenario"]["status"] == "not_built"
+    assert views["replay"]["status"] == "not_built"
 
 
 def test_no_network_or_file_writes(monkeypatch):
@@ -541,7 +550,24 @@ def test_no_network_or_file_writes(monkeypatch):
     monkeypatch.setattr(socket_module, "socket", no_socket)
     monkeypatch.setattr("builtins.open", guarded_open)
     result = mount.attach_surveillance(_base_workspace(), universe_loader=lambda: {}, rights_loader=lambda: {})
-    assert result["surveillance"]["views"]["scanner"]["status"] == "not_built"
+    views = result["surveillance"]["views"]
+    # DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT (seat
+    # ruling A): scanner not_built was the W2F world (no builder module
+    # existed). This branch ships the scanner builder, and over the empty
+    # universe it builds honest panels with neither network nor file writes,
+    # so it must NOT abstain to keep this test green (B1). The invariant is
+    # available-iff-panel across every view; scenario/replay keep the true
+    # not_built negative for views with no builder at all.
+    panels_by_view = {}
+    for panel in result["surveillance_panels"]:
+        panels_by_view[panel["view"]] = panels_by_view.get(panel["view"], 0) + 1
+    for view, entry in views.items():
+        assert (entry["status"] == "available") == (panels_by_view.get(view, 0) > 0), view
+    assert views["scanner"]["status"] == "available"
+    assert panels_by_view.get("scanner", 0) > 0, \
+        "the scanner builder produces panels without network or writes"
+    assert views["scenario"]["status"] == "not_built"
+    assert views["replay"]["status"] == "not_built"
 
 
 # ---------------------------------------------------------------- 2.8 build_intl
@@ -1808,8 +1834,10 @@ def test_fx5_horizon_label_vocabulary():
     assert horizon_label("1m") == ("1M", "1月")
     assert horizon_label("3m") == ("3M", "3月")
     assert horizon_label("20d") == ("20D", "20日")
-    assert horizon_label("6m") == ("6m", "6m")
-    assert horizon_label("ytd") == ("ytd", "ytd")
+    assert horizon_label("6m") == ("6M", "6个月")
+    assert horizon_label("12m") == ("1Y", "1年")
+    assert horizon_label("ytd") == ("YTD", "年初至今")
+    assert horizon_label("2y") == ("2y", "2y")
 
 
 def test_fx5_snapshot_readout_and_control_share_one_vocabulary():
