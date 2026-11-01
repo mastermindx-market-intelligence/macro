@@ -513,7 +513,7 @@ def test_b9_css_region_bytes_pinned():
     # edit, re-run this test and refresh the pin to the sha it prints.
     import hashlib
     sha = hashlib.sha256(_w2b_css_region().encode("utf-8")).hexdigest()
-    pinned = "92d536245c8aaaba333bef3576e2daa16b52a9130751dabf0e2cdc14c2e25b6a"
+    pinned = "14bfdee8c548bde22a9494376b7f4c20f4bcac85ba2960394375d1ee34122701"
     assert sha == pinned, (
         "W2B CSS region bytes changed (R-14 byte pin). If the edit is lawful, "
         f"refresh the pinned sha to: {sha}")
@@ -657,9 +657,12 @@ def _edges_card(fragment):
 
 def _boundary_chip(card):
     # the wrapping span closes right before the edge table (the chip's own
-    # inner spans close earlier), so anchor the capture on that lookahead
+    # inner spans close earlier), so anchor the capture on that lookahead;
+    # pin1 (F12) wraps band head + chip in ONE head row div, so that row's
+    # closing tag may sit between the span and the table.
     return re.search(
-        r'<span data-graph-boundary="([^"]+)">(.*?)</span>(?=\s*<table)', card, re.S)
+        r'<span data-graph-boundary="([^"]+)">(.*?)</span>(?=\s*(?:</div>\s*)?<table)',
+        card, re.S)
 
 
 def _legs(html):
