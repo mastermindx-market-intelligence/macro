@@ -45725,6 +45725,29 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp15-operating-driver-pins
         run: python -m pytest tests/test_operating_driver_scenario.py -q -p no:cacheprovider
+  c19-wp28-cs-leg-qualification:
+    if: ${{ false }}
+    gate: code
+    # C19 WP28: issuer-id forms the held capital-structure leg must join on release, the resolver's refusals, and the hold itself (offline).
+    timeout-minutes: 10
+    paths:
+      - "tests/test_c19_wp28_cs_leg_qualification.py"
+      - "tests/test_c19_wp14_capital_observation_pins.py"
+      - "tests/test_capital_structure_event_spine.py"
+      - "tests/fixtures/capital_structure/document_terms/registration_fee_table_submission.txt"
+      - "engine/capital_structure/**"
+      - "engine/company_intelligence/identity.py"
+      - "app/integrated_answer.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest fastapi pandas numpy pyarrow pyyaml jsonschema==4.26.0
+      - name: c19-wp28-cs-leg-qualification
+        run: python -m pytest tests/test_c19_wp28_cs_leg_qualification.py -q -p no:cacheprovider
 
   grey-deer-pboc-liquidity:
     # Grey Deer GD-4C: the typed PBOC liquidity state that reads an OMO window.
