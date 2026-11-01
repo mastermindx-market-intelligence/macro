@@ -127,6 +127,22 @@ Claim contradicted: MASTERPLAN §5.3:251 / §9.3:507 "percent versus percentage 
 handling, and :513 "No … materially wrong number may survive" — the adjudication layer
 actively erases the distinction.
 
+**Resolution 2026-11-01 (producer half repaired; grader half contract-mandated).** The
+control is now split in two. **M05b (producer) — HELD:**
+`engine/news_impact/thesis.py` `quantity_fingerprint` now digests each canonical
+quantity together with its structured `quantity_terms` (form, canonical unit, currency,
+basis, bound, period, negation; evidence excluded as provenance). Units canonicalise
+through the contract `UNIT_MAP` for spelling only (`USD`/`$`/`US$` agree), while
+percentage points and basis points keep their own canonical identity, so the three-event
+chain percent -> pp -> "percentage points" now records
+`n_records={'fact_revision': 2, 'manifestation': 1}`. A value-only payload yields the
+byte-identical pre-repair digest, so existing fingerprints are unchanged.
+**M05a (grader) — still BROKEN, by contract:** `eval_grade.UNIT_MAP` is verbatim
+`contracts/news_impact/endpoints.v1.json:60` (`"pp": "percent"`), which is frozen; the
+grader keeps grading 5 pp against gold 5 percent as `correct` until a versioned
+endpoints contract separates the two units. This file's tables and raw output below are
+the 2026-10-31 run and are kept as recorded.
+
 **B3 (M06a) — negative USD amounts render with a duplicated sign.**
 Minimal reproduction: `format_amount({'form':'point','value':-1500000,'bound':'exact',
 'unit':'USD','currency':'USD','basis':'total'}, 'en')` → `'-$-1.5 million'` (ranges:

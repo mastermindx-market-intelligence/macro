@@ -270,6 +270,69 @@ def canonical_json_sha256(obj: Any) -> str:
     return sha256(canonical_json(obj).encode("utf-8")).hexdigest()
 
 
+#: Rate units the frozen contract ``unit_map`` folds or omits. The grader keeps
+#: the contract map verbatim (endpoints.v1 ``"pp": "percent"``); the fingerprint
+#: keeps them apart because MASTERPLAN 9.3 names "percent versus percentage
+#: points" as a required negative control (F2 finding B2 / control M05).
+_FINGERPRINT_RATE_UNITS: dict[str, str] = {
+    "pp": "percentage_point",
+    "ppt": "percentage_point",
+    "percentage point": "percentage_point",
+    "percentage points": "percentage_point",
+    "bp": "basis_point",
+    "bps": "basis_point",
+    "basis point": "basis_point",
+    "basis points": "basis_point",
+}
+
+#: The per-quantity terms that change what a number means. ``evidence`` (quote,
+#: span) is provenance, not meaning, and stays outside the fingerprint. The
+#: structured ``period`` enters it: T1/T2 also key on the event-level period,
+#: but T3 does not, and a quantity's own period can differ from the event's.
+_FINGERPRINT_TERMS = ("form", "unit", "currency", "basis", "bound", "period", "negated")
+
+
+def _fingerprint_unit(unit: Any) -> Any:
+    """Canonical unit for comparison: spelling-insensitive, meaning-sensitive.
+
+    ``USD``/``usd``/``$`` collapse through the contract map; percent and
+    percentage points stay distinct; an unmapped unit keeps its own
+    whitespace-collapsed lower-case spelling instead of a shared UNKNOWN token,
+    so two different unmapped units never compare equal.
+    """
+    if not isinstance(unit, str):
+        return unit
+    token = " ".join(unit.strip().lower().split())
+    if token in _FINGERPRINT_RATE_UNITS:
+        return _FINGERPRINT_RATE_UNITS[token]
+    from engine.news_impact.eval_grade import UNIT_MAP
+
+    if token in UNIT_MAP:
+        return UNIT_MAP[token]
+    return "raw:" + token
+
+
+def _fingerprint_slot(value: Any, terms: Any) -> Any:
+    """One slot's fingerprint input: the bare value, or value plus its terms.
+
+    A payload without structured terms (an owner snapshot that never carried
+    them) keeps the value-only input, so its digest is unchanged.
+    """
+    if not isinstance(terms, Mapping):
+        return value
+    slot: dict[str, Any] = {"value": value}
+    for term in _FINGERPRINT_TERMS:
+        if term not in terms:
+            continue
+        raw = terms[term]
+        if term == "unit":
+            raw = _fingerprint_unit(raw)
+        elif isinstance(raw, str):
+            raw = raw.strip()
+        slot[term] = raw
+    return slot
+
+
 def quantity_fingerprint(
     payload: Mapping[str, Any] | None,
     template: str,
@@ -278,6 +341,12 @@ def quantity_fingerprint(
 
     Section 7 default 7: T1 incremental/remaining/executed; T2 stated_amount;
     T3 stated_quantity. Cosmetic text is outside the fingerprint.
+
+    Refined 2026-11-01 (F2 finding B2, control M05): when the payload carries
+    ``quantity_terms`` for a slot, the slot's form, canonical unit, currency,
+    basis, bound, period and negation enter the fingerprint with its value, so
+    a change of what the number means is a fact revision rather than a repeat.
+    Evidence text and span stay outside it.
     """
     if not payload:
         return {"form": "absent"}
@@ -290,10 +359,13 @@ def quantity_fingerprint(
         keys = ("stated_quantity",)
     else:
         keys = ()
+    terms_by_key = payload.get("quantity_terms")
+    if not isinstance(terms_by_key, Mapping):
+        terms_by_key = {}
     slots: dict[str, Any] = {}
     for key in keys:
         if key in payload and payload[key] is not None:
-            slots[key] = payload[key]
+            slots[key] = _fingerprint_slot(payload[key], terms_by_key.get(key))
     if not slots:
         return {"form": "absent"}
     return {"form": "present", "canonical_sha256": canonical_json_sha256(slots)}

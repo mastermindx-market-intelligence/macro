@@ -693,10 +693,97 @@ def test_r6_preserves_each_canonical_quantity_and_its_evidence_without_aliasing(
         "incremental": event["incremental_amount"],
         "remaining": event["remaining_authorization"],
     }
+    fingerprint_before = thesis.quantity_fingerprint(leaf, pf.T1)
     leaf["quantity_terms"]["remaining"]["evidence"]["claimed_quote"] = "changed locally"
     assert event == before
-    assert thesis.quantity_fingerprint(leaf, pf.T1) == thesis.quantity_fingerprint(
+    # Evidence is provenance, not meaning: mutating it never moves the fingerprint.
+    assert thesis.quantity_fingerprint(leaf, pf.T1) == fingerprint_before
+    # The EUR remaining authorization is part of what the numbers mean, so the
+    # term-aware fingerprint differs from a value-only payload's (F2 M05).
+    assert fingerprint_before != thesis.quantity_fingerprint(
         {"incremental": 50_000_000, "remaining": 80_000_000}, pf.T1)
+
+
+# --------------------------------------------------------------------------- F2 M05 fingerprint terms
+
+
+def _t1_leaf(quantity: dict) -> dict:
+    event = t1(incremental_amount=quantity)
+    return pf.leaf_payload(event, pf.fact_slot(event), Counter())
+
+
+def _fp(quantity: dict) -> str:
+    return thesis.quantity_fingerprint(_t1_leaf(quantity), pf.T1)["canonical_sha256"]
+
+
+def _with(**changes) -> dict:
+    quantity = qpoint(5, "incremental")
+    quantity.update(changes)
+    return quantity
+
+
+def test_fingerprint_keeps_percent_and_percentage_points_apart():
+    percent = _fp(_with(unit="percent", currency="NA"))
+    assert percent != _fp(_with(unit="pp", currency="NA"))
+    assert _fp(_with(unit="pp", currency="NA")) == _fp(_with(unit="percentage points", currency="NA"))
+    assert _fp(_with(unit="pp", currency="NA")) == _fp(_with(unit=" PPT ", currency="NA"))
+    assert percent == _fp(_with(unit="%", currency="NA")) == _fp(_with(unit="pct", currency="NA"))
+    assert percent != _fp(_with(unit="bps", currency="NA"))
+    assert _fp(_with(unit="bps", currency="NA")) == _fp(_with(unit="basis points", currency="NA"))
+
+
+def test_fingerprint_unit_spelling_is_insensitive_but_meaning_is_not():
+    usd = _fp(_with())
+    assert usd == _fp(_with(unit="usd")) == _fp(_with(unit="$")) == _fp(_with(unit="  US$ "))
+    assert usd != _fp(_with(unit="EUR"))
+    # Two different unmapped units never share one UNKNOWN token.
+    assert _fp(_with(unit="tonnes")) != _fp(_with(unit="barrels"))
+    assert _fp(_with(unit="Tonnes")) == _fp(_with(unit="tonnes"))
+
+
+@pytest.mark.parametrize("term,value", [
+    ("currency", "EUR"),
+    ("bound", "at_least"),
+    ("basis", "total"),
+    ("period", {"year": 2028, "quarter": None, "calendar_end": None, "period_kind": "fiscal_year"}),
+    ("negated", True),
+    ("value", 6),
+])
+def test_fingerprint_moves_when_a_meaning_term_changes(term, value):
+    assert _fp(_with(**{term: value})) != _fp(_with())
+
+
+def test_fingerprint_ignores_evidence_and_basis_whitespace():
+    base = _fp(_with())
+    other_doc = qpoint(5, "incremental", text="A different sentence states the amount.", doc=DOC_B)
+    assert _fp(other_doc) == base
+    assert _fp(_with(basis=" incremental ")) == base
+
+
+def test_fingerprint_without_terms_is_the_unchanged_value_only_digest():
+    payload = {"incremental": 50_000_000, "remaining": 80_000_000}
+    expected = thesis.canonical_json_sha256(payload)
+    assert thesis.quantity_fingerprint(payload, pf.T1) == {"form": "present", "canonical_sha256": expected}
+    # quantity_terms that is not a mapping, or lacks the slot, keeps the value-only input.
+    assert thesis.quantity_fingerprint(dict(payload, quantity_terms=None), pf.T1)["canonical_sha256"] == expected
+    assert thesis.quantity_fingerprint(dict(payload, quantity_terms={}), pf.T1)["canonical_sha256"] == expected
+
+
+def test_producer_records_a_unit_change_as_a_fact_revision(tmp_path):
+    first = t1("u1", 1, incremental_amount=_with(unit="percent", currency="NA"))
+    later = t1("u2", 2, doc=DOC_B, incremental_amount=qpoint(5, "incremental", doc=DOC_B))
+    later["incremental_amount"].update(unit="pp", currency="NA")
+    repeat = t1("u3", 3, doc=DOC_B, incremental_amount=qpoint(5, "incremental", doc=DOC_B))
+    repeat["incremental_amount"].update(unit="percentage points", currency="NA")
+    for event in (first, later, repeat):
+        assert_valid(event)
+    report, log, _, _ = run_rows(tmp_path, [row(first, "c1"), row(later, "c2"), row(repeat, "c3")])
+    records = by_fact(log)
+    assert records[first["fact_id"]]["record_kind"] == "fact_revision"
+    assert records[later["fact_id"]]["record_kind"] == "fact_revision"
+    assert records[repeat["fact_id"]]["record_kind"] == "manifestation"
+    assert records[repeat["fact_id"]]["reports_fact_id"] == later["fact_id"]
+    assert report["n_records"] == {"fact_revision": 2, "manifestation": 1}
 
 
 @pytest.mark.parametrize("builder,field,basis", [

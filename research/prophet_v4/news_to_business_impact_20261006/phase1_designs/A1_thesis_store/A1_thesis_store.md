@@ -769,6 +769,7 @@ Abstention is the lawful output when the extractor cannot bind a number or a CI 
 5. **Polarity on mixed articles.** Default: `unclassified` unless `negated=true` (contrary) or a contrary-mechanism quote is span-backed; never a model vote.
 6. **View cardinality.** Default: one view per `(company_id, original_proposition_fact_id)`. An issuer may have many views (authorization program ≠ open-model program). Do not blend them.
 7. **Fingerprint algorithm.** Default: `canonical_json_sha256` of the live template's critical numeric slots only (T1: incremental/remaining/executed; T2: stated_amount; T3: stated_quantity), sorted keys. Cosmetic text is outside the fingerprint — that is what makes `V_COSMETIC_NO_DELTA` true.
+   *Amended 2026-11-01 (F2 finding B2, control M05b):* each critical slot is digested with its structured `quantity_terms` (form, canonical unit, currency, basis, bound, period, negation) so a unit, currency, basis, bound, period or sign change is a `fact_revision`, not a manifestation; percentage points and basis points keep their own unit identity. Evidence and whitespace stay outside the fingerprint, so `V_COSMETIC_NO_DELTA` still holds, and a value-only slot hashes exactly as before.
 
 ---
 
