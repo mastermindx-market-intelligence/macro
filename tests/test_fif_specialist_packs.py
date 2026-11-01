@@ -2847,6 +2847,92 @@ def test_pk12_cli_writes_valid_envelope(tmp_path: Path) -> None:
     assert "sic_in_biotech_set=false" in envelope["receipts"]
 
 
+# 28b. PK12 stock-plan equity-issuance aliases (dev corpus biotech_v1) ---------
+#
+# The biotech_v1 dev corpus showed many biotechs tag their ONLY face-of-cash-
+# flow equity-issuance financing line with a standard us-gaap stock-plan
+# issuance concept (one dev filer: "Issuances of common stock under benefit plans";
+# another: "Proceeds from issuance of common stock through equity plans"),
+# which the three capital-raise aliases missed. The aliases are appended AFTER
+# the capital-raise concepts; the period rule stays the resolver's existing
+# law (the duration ending at period_of_report; dimensioned footnote
+# option-table facts never resolve, dimensions_allowed=()).
+
+
+def test_pk12_stock_plan_incentive_concept_resolves() -> None:
+    # Behavior test (fails before the alias): the incentive-plan shape — the only
+    # equity-issuance line is tagged with the incentive/stock-option plan
+    # proceeds concept.
+    facts = (
+        *_SYN_BIO_FACTS[:-1],
+        (
+            "us-gaap:ProceedsFromIssuanceOfSharesUnderIncentiveAndShareBasedCompensationPlansIncludingStockOptions",
+            "c-fy",
+            "40",
+            "",
+        ),
+    )
+    result = produce_pack("PK12", _pk12_input(packages=(_biotech_package(facts),)))
+    row = _row(result, "equity_financing_proceeds")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "40"
+    assert row["concept"] == (
+        "us-gaap:ProceedsFromIssuanceOfSharesUnderIncentiveAndShareBased"
+        "CompensationPlansIncludingStockOptions"
+    )
+    assert row["period"] == {"kind": "duration", "start": "2025-01-01", "end": "2025-12-31"}
+    assert _check(result, "financing_disclosed_not_forecast")["status"] == "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_stock_plans_concept_resolves() -> None:
+    # Behavior test (fails before the alias): the stock-plans shape — the only
+    # equity-issuance line is tagged with the generic stock-plan proceeds
+    # concept.
+    facts = (
+        *_SYN_BIO_FACTS[:-1],
+        ("us-gaap:ProceedsFromStockPlans", "c-fy", "25", ""),
+    )
+    result = produce_pack("PK12", _pk12_input(packages=(_biotech_package(facts),)))
+    row = _row(result, "equity_financing_proceeds")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "25"
+    assert row["concept"] == "us-gaap:ProceedsFromStockPlans"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_no_equity_issuance_line_stays_typed_absent() -> None:
+    # Pin test (passes before and after the alias): the no-issuance shape — the
+    # filing carries no equity-issuance financing fact at all, and the row
+    # stays the honest missing/typed-absence, never an invented value.
+    facts = _SYN_BIO_FACTS[:-1]
+    result = produce_pack("PK12", _pk12_input(packages=(_biotech_package(facts),)))
+    row = _row(result, "equity_financing_proceeds")
+    assert row["quality_state"] == "missing"
+    assert row["value"] is None
+    assert row["reason"] == "missing_standard_fact:us-gaap:ProceedsFromIssuanceOfCommonStock"
+    check = _check(result, "financing_disclosed_not_forecast")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_capital_raise_line_outranks_stock_plan_line() -> None:
+    # Pin test (passes before and after the alias): a filing carrying BOTH a
+    # capital-raise line (first alias) and a stock-plan line keeps reporting
+    # the capital-raise proceeds — alias order is part of the mapping rule.
+    facts = (
+        *_SYN_BIO_FACTS,
+        ("us-gaap:ProceedsFromStockPlans", "c-fy", "25", ""),
+    )
+    result = produce_pack("PK12", _pk12_input(packages=(_biotech_package(facts),)))
+    row = _row(result, "equity_financing_proceeds")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "150"
+    assert row["concept"] == "us-gaap:ProceedsFromIssuanceOfCommonStock"
+    assert contract.validate_pack_result(result) == []
+
+
 # 29. PK09 narrative locator (A.1/A.2) ----------------------------------------
 
 
