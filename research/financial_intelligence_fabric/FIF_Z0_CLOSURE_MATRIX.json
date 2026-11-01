@@ -28,8 +28,8 @@
     "records"
   ],
   "summary": {
-    "CLOSED": 34,
-    "PARTIAL": 13,
+    "CLOSED": 36,
+    "PARTIAL": 11,
     "OPEN": 0,
     "PENDING_LIVE": 3,
     "HUMAN_GATE": 4
@@ -38,7 +38,8 @@
     "claimable": false,
     "independent_acceptance": "Z1 pending",
     "independent_acceptance_history": [
-      "Z1 r1 2026-10-20 (fif-z1rev-20261020-r1, base 830adc10): FAIL — F1 A43 and F2 A22 lowered to PARTIAL; F3/F5 rebutted (legacy-pack convention, run 39461860948); F4 A03 evidence amended; A54 RATIFIED. Re-review only the A43/A22 repairs."
+      "Z1 r1 2026-10-20 (fif-z1rev-20261020-r1, base 830adc10): FAIL — F1 A43 and F2 A22 lowered to PARTIAL; F3/F5 rebutted (legacy-pack convention, run 39461860948); F4 A03 evidence amended; A54 RATIFIED. Re-review only the A43/A22 repairs.",
+      "Z1 r2 2026-11-01 (fif-z1rev-20261101-r1, base c133b698): PASS_WITH_NOTES — F1 A43 and F2 A22 CLOSED_BY_DIFF on #9895 (afbd02da); negatives executed for the tablet, focus-restore and logging assertions."
     ],
     "rule": "No phase, report, PR or green CI is a final claim while any case is not CLOSED; Z1 independent acceptance follows a fully CLOSED matrix."
   },
@@ -454,22 +455,18 @@
       ],
       "condition": "Signed-out, unauthorized or wrong-entitlement request",
       "required_behavior": "Deny before opening private provider; no secret/source body in error or logging.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_financial_query_api.py::test_provider_not_constructed_before_auth_or_admission",
         "tests/test_fundamental_forensics_financial_query_api.py::test_free_user_returns_403_with_private_headers",
         "tests/test_fundamental_forensics_financial_query_api.py::test_misbound_provider_returns_503",
         "tests/test_fundamental_forensics_financial_query_api.py::test_malformed_json_returns_400",
-        "tests/test_fundamental_forensics_financial_query_api.py::test_wrong_method_returns_405_with_private_headers"
+        "tests/test_fundamental_forensics_financial_query_api.py::test_wrong_method_returns_405_with_private_headers",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_denied_and_failed_paths_log_nothing_private",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_provider_generic_exception_returns_503_no_leak"
       ],
-      "obligations": [
-        {
-          "kind": "test_gap",
-          "owner": "FIF seat (fabric build lane)",
-          "next_action": "Add a caplog test proving the 401/403/503 paths log no secret, path, traceback or source body (the body scan already lives in _assert_error, tests/test_fundamental_forensics_financial_query_api.py:391-400; no test captures logs)."
-        }
-      ],
-      "note": "Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F2: lowered CLOSED->PARTIAL; the two cited tests check headers only; the response-body leak scan is _assert_error (forbidden /Users/, /opt/, traceback, R2, paid-user) exercised by the added evidence; log capture is unproven."
+      "obligations": [],
+      "note": "Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F2: lowered CLOSED->PARTIAL; the two cited tests check headers only; the response-body leak scan is _assert_error (forbidden /Users/, /opt/, traceback, R2, paid-user) exercised by the added evidence; log capture is unproven. 2026-11-01: Z1 F2 repaired in #9895 (afbd02da): the 401, 403 and three 503 legs run at caplog DEBUG over the API logger and root and carry no secret, path, traceback, request body or provider name; Z1 r2 (fif-z1rev-20261101-r1, base c133b698) PASS_WITH_NOTES: F2 CLOSED_BY_DIFF, an injected leak makes the test fail. Notes: the record filter covers the API logger and root only, and there is no separate filing-body fragment class."
     },
     {
       "id": "A23",
@@ -876,19 +873,21 @@
       ],
       "condition": "EN/ZH desktop/tablet/mobile and keyboard use",
       "required_behavior": "Readable responsive layout, focus restore, no clipping and correct disabled/unavailable text.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_check_ui_visual_evidence.py::test_committed_evidence_corpus_has_zero_findings",
-        "tests/test_fif_p2_evidence_capture.py::test_manifest_postprocess_populated"
+        "tests/test_fif_p2_evidence_capture.py::test_manifest_postprocess_populated",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_manifest_covers_every_viewport_locale_theme_cell",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_keyboard_manifest_is_36_states",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_keyboard_interactions_are_exactly_24_verified_receipts",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_drawer_trap_receipts_prove_escape_close_and_focus_restore",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_populated_rest_cells_carry_disabled_controls_receipts",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_keyboard_receipts_probe_the_none_state_controls",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_tablet_cells_use_the_capture_tool_tablet_preset",
+        "tests/test_fif_a43_responsive_keyboard_corpus.py::test_no_tablet_clipping_in_the_smell_report"
       ],
-      "obligations": [
-        {
-          "kind": "test_gap",
-          "owner": "FIF seat (fabric build lane)",
-          "next_action": "Add the tablet cell to REQUIRED_CELLS in tests/test_check_ui_visual_evidence.py (today desktop/mobile x en/zh x dark/light only) so the recaptured tablet corpus is guarded, and assert focus restore / disabled-control text on the keyboard set (tab_keys, drawer_trap); cite the P0 view contract RECEIPT_REST_CELLS_PER_VIEWPORT tablet receipt (tests/test_fundamental_forensics_p0_view_contract.py:299-302)."
-        }
-      ],
-      "note": "2026-10-20: PR #9879 fixes the tablet desk header (820px band) and recaptures mockups/evidence/fundamental_forensics_p2/populated and keyboard at desktop/tablet/mobile x en/zh x dark/light (keyboard tab_keys + drawer_trap force states); 0 wide, overflow false. r3 (2d23934a630b) repaired the first-viewport drift main's 10-12 receipt hid (saved-views row #9068 + holding reader #9771) with one closed Desk tools disclosure; en desktop tabs_px pin amended [633,694]->[647,708] (partial-coverage stat wrap), recorded in the contract note. PR #9882 removes the desk's colored left-edge accents under the 2026-10-18 Chairman rule (even neutral borders, design-ratchet tokens) with all five P2 sets recaptured on the r3 shell (8/8/8/48/36). Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F1: lowered CLOSED->PARTIAL; the cited tests prove corpus hygiene only, REQUIRED_CELLS has no tablet cell, and no cited test asserts focus restore, disabled text or readability."
+      "obligations": [],
+      "note": "2026-10-20: PR #9879 fixes the tablet desk header (820px band) and recaptures mockups/evidence/fundamental_forensics_p2/populated and keyboard at desktop/tablet/mobile x en/zh x dark/light (keyboard tab_keys + drawer_trap force states); 0 wide, overflow false. r3 (2d23934a630b) repaired the first-viewport drift main's 10-12 receipt hid (saved-views row #9068 + holding reader #9771) with one closed Desk tools disclosure; en desktop tabs_px pin amended [633,694]->[647,708] (partial-coverage stat wrap), recorded in the contract note. PR #9882 removes the desk's colored left-edge accents under the 2026-10-18 Chairman rule (even neutral borders, design-ratchet tokens) with all five P2 sets recaptured on the r3 shell (8/8/8/48/36). Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F1: lowered CLOSED->PARTIAL; the cited tests prove corpus hygiene only, REQUIRED_CELLS has no tablet cell, and no cited test asserts focus restore, disabled text or readability. 2026-11-01: Z1 F1 repaired in #9895 (afbd02da): the corpus guard requires a tablet cell for every locale x theme bound to the capture tool's own tablet preset, and asserts Escape-close focus restore and disabled-control text that the capture tool measures on the live page; Z1 r2 (fif-z1rev-20261101-r1, base c133b698) PASS_WITH_NOTES: F1 CLOSED_BY_DIFF, each assertion shown to fail when its fact is removed. The guard skips only on a sparse checkout; CI's pack executor runs a full tree."
     },
     {
       "id": "A44",
