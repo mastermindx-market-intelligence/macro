@@ -82,7 +82,8 @@ waves:
     2026-11-01T02:32:05Z (verified_by: gh api graphql, aliases pullRequest(number:10354|10355) → state,
     headRefOid, mergeCommit.oid, mergedAt, 2026-11-01). §14 row 4 Graph boundary DONE: 640 data-graph-boundary
     chips served on www.mastermind-x.com/intl.html (Last-Modified 2026-11-01 03:12:25 GMT, seat curl); the pin1
-    head-row wrapper was not yet served at that probe (render queued).
+    head-row wrapper was not yet served at that probe (render queued); served at the 06:1xZ probe
+    (Last-Modified 05:21:32 GMT, intl-gs__edges__head = 640, chips = 640) — row 4 PRODUCTION_PROOF in full.
 - id: IM15
   title: Dislocation research
   status: done
@@ -147,8 +148,10 @@ waves:
 next_action: >
   Records r8 (2026-11-01) closed the view programme: every view/hardening lane is MERGED (W4B #10258, W3U #10265,
   W2B #10278, W2A #10288, gb1 #10354, pin1 #10355; records #10353) and §14 row 4 is served (640 chips on
-  intl.html at 03:12:25 GMT); §14 recount 15 DONE / 6 PARTIAL / 0 GAP (census addendum 2026-11-01). Remaining:
-  pin1 served check once the 4e1ae041 render lands (intl-gs__edges__head ≥ 1); row 18 entitled-browser journey
+  intl.html at 03:12:25 GMT); §14 recount 15 DONE / 6 PARTIAL / 0 GAP (census addendum 2026-11-01). Records r8
+  merged (#10362 → f2a7fe74, 06:03:02Z); pin1 served at 05:21:32 GMT (intl-gs__edges__head = 640, r9 addendum);
+  F10 state: PR #10367 OPEN (draft) on claude/intl-gs-f10-canonical-main: head 5ac89fd395432d688e13e583d1c15591adba58b8 (follow-up to the reviewed 8f1b1d5e; review INTL-GS-F10 PASS_WITH_NOTES with one SHOULD-FIX fixed in the follow-up; re-read INTL-GS-F10-AUDIT-2 PASS_WITH_NOTES at 5ac89fd3 with two test-hygiene NITs N5/N6 deferred to a later test PR), CI rollup pending at 06:4xZ; merge seat-only pinned to 5ac89fd3 after a green rollup including the international-dislocation-explorer check. Remaining:
+  row 18 entitled-browser journey
   proof on the served URL; row 19 next nightly publisher cycle retaining the GS views; row 20 CI-green quote of
   the legacy navigation suite; row 21 served both-themes proof for the Scanner / Dislocations boards; deferred
   R2-01 (scanner-abstain focus evidence cell) and F10 (structural CI-budget fetch fix, own PR); IM18 view surfaces
@@ -195,7 +198,7 @@ return identity `1+r_USD = (1+r_local)(1+r_FX)`. Roadmap and 21 hard acceptance 
 | --- | --- | --- | --- |
 | W0 asset access | PR 9920 @898edecc | PRODUCTION_PROOF (2026-10-21T04:06:24Z) | anonymous 200 on intl.html + nine assets; /intl_data.json still 401 |
 | W1 IM11/IM12 | ORCH-1 → lanes W1A/W1B | MERGED (#9923 → 0062e28f, #9924 → 5d454fbe) | records under the seat kit `orch/fabric/reviews/INTL-GS-W1*.md` |
-| W2 IM13/IM14 UI | W2F/W2A/W2B | MERGED: #9949 → e6debbb0; #10278 (W2B dossier, carries ruling-A transition) → a99b5395; #10288 (W2A scanner+coverage) → 92881169 | gh-verified mergeCommits (see wave next_actions); follow-up lane gb1 landed: #10354 → aba326f3 (2026-11-01T01:03:18Z) and pin1 #10355 → 4e1ae041 (02:32:05Z); graph-boundary chip SERVED on intl.html (640 spans, Last-Modified 2026-11-01 03:12:25 GMT) — PRODUCTION_PROOF for §14 row 4, pin1 head-row wrapper not yet served at that probe |
+| W2 IM13/IM14 UI | W2F/W2A/W2B | MERGED: #9949 → e6debbb0; #10278 (W2B dossier, carries ruling-A transition) → a99b5395; #10288 (W2A scanner+coverage) → 92881169 | gh-verified mergeCommits (see wave next_actions); follow-up lane gb1 landed: #10354 → aba326f3 (2026-11-01T01:03:18Z) and pin1 #10355 → 4e1ae041 (02:32:05Z); graph-boundary chip SERVED on intl.html (640 spans, Last-Modified 2026-11-01 03:12:25 GMT) — PRODUCTION_PROOF for §14 row 4, pin1 head-row wrapper not yet served at that probe; pin1 wrapper SERVED at the 06:1xZ probe (Last-Modified 05:21:32 GMT, 640 wrappers) — row 4 served in full |
 | W3 IM15/IM16 + UI | W3A/W3B (+ W3A-CONFIRM PASS @a7340535, W3B-REREVIEW PASS @37c10fc6), W3U | MERGED: #9943 → 63f3bc83; #9944 → 2d50943e; #10265 (dislocation explorer) → 281e21c6 | records `orch/fabric/reviews/INTL-GS-W3A.md`, `INTL-GS-W3B.md`, `INTL-GS-W3U.md`; IM16 gaps recorded above |
 | W4 IM17 engine+UI | W4A/W4B | MERGED: #9960 → 5c6fdb2e; #10258 (presenter; production tab not_built by design) → 949c6ada | no emission-permitted candidate source |
 | W5 IM18 engines + §14 closures | ORCH-5 → engine lanes | MERGED: #10274 → c784d045; #10276 → cd195298; #10275 → 6c13414f; #10286 → d444ae67; #10296 (mutant kills) → b3330f3c | W5 census 2026-10-31: 14 DONE / 6 PARTIAL / 1 GAP at base 6e721225; addendum 2026-11-01: 15 DONE / 6 PARTIAL / 0 GAP (row 4 DONE via #10354/#10355 + served proof; row 16 GAP→PARTIAL via #10276); DEFERRED F1–F9 custody in the continuation handoff |

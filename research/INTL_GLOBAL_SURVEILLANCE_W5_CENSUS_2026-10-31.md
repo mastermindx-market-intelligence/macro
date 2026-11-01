@@ -350,3 +350,25 @@ rows 14, 16, 18, 19, 20, 21.
 - Deferred, not §14 rows: R2-01 scanner-abstain focus-state evidence cell; F10 structural CI-budget fetch fix (both
   international jobs do a full checkout AND a separate ~4-min `git fetch origin main` on hosted runners — shallow /
   base-only fetch, own PR); Transmission tab `not_built` BY DESIGN (no emission-permitted candidate source).
+
+## Addendum 2026-11-01 (r9) — pin1 served, legend basis, F10
+
+- **pin1 served (PRODUCTION_PROOF for row 4 placement).** Seat probe 2026-11-01 06:1xZ of
+  `https://www.mastermind-x.com/intl.html`: HTTP/2 200, `Last-Modified: Sun, 01 Nov 2026 05:21:32 GMT`,
+  etag `dmjmeq11txpydibom`; `intl-gs__edges__head` wrappers = **640**, `data-graph-boundary` chips = **640**.
+  The chip now sits in the Typed-edges head row (pin1 #10355 → 4e1ae041); deferred F12 is closed in production.
+  Row 4 is therefore served in full (engine #10286, display #10354, placement #10355). Counts unchanged:
+  15 DONE / 6 PARTIAL / 0 GAP.
+- **Legend basis for the 2026-11-01 row-4 flip (review INTL-GS-REC8 F-2).** The 2026-10-31 legend defines DONE as a
+  test that ran green in this worktree with its tail quoted. The row-4 flip in the first 2026-11-01 addendum rests
+  instead on tests merged through CI (gb1/pin1 suites in #10354/#10355, CI green at merge) plus the served chips;
+  no local green tail was quoted. The basis is disclosed here; the count is unaffected.
+- **records r8 merged.** #10362 → main `f2a7fe7436a755f47c584a1fcfb37b7ef6a85ba1` (2026-11-01T06:03:02Z), squash
+  pinned to 8dbc2d5c after review INTL-GS-REC8 `PASS_WITH_NOTES` (native Opus read-only auditor; fabric refused).
+- **F10 (structural CI-budget fetch fix, own PR).** PR #10367 OPEN (draft) on claude/intl-gs-f10-canonical-main: head 5ac89fd395432d688e13e583d1c15591adba58b8 (follow-up to the reviewed 8f1b1d5e; review INTL-GS-F10 PASS_WITH_NOTES with one SHOULD-FIX fixed in the follow-up; re-read INTL-GS-F10-AUDIT-2 PASS_WITH_NOTES at 5ac89fd3 with two test-hygiene NITs N5/N6 deferred to a later test PR), CI rollup pending at 06:4xZ; merge seat-only pinned to 5ac89fd3 after a green rollup including the international-dislocation-explorer check. Design: the `international-dislocation-explorer` legacy
+  job acquires canonical main through `scripts/run_ci_pack.prepare_canonical_main` (blob-filtered, tag-free, fail
+  closed) with a new validated `frozen_paths` keyword naming the three objects its guard compares, instead of an
+  unrestricted post-checkout base fetch (~4 min on hosted runners). Budgets 15 / 20 unchanged. Not a §14 row.
+- **GB1A ruling date (review F-3).** `DEC-INTL-GS-GB1A-CLOSURE-WIDENING-ACCEPTED` records `decided_at: 2026-10-31`;
+  the ruling was made in the seat's 2026-10-31 local session and applied before the #10354 merge at
+  2026-11-01T01:03:18Z; the exact UTC minute is not recorded, so the UTC calendar date may be 2026-11-01.
