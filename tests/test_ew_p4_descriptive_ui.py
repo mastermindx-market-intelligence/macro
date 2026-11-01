@@ -514,6 +514,23 @@ def test_review_r1_observation_id_is_selectable_monospace():
     assert "#dlg-risk .gde-ew-id {user-select:all; font-family:var(--font-mono);}" in css
 
 
+def test_fu2_radar_band_wraps_raises_and_matches_sector_central():
+    css = re.sub(r"/\*.*?\*/", "", (ROOT / "templates" / "_risk_envelope_band.css.j2").read_text(encoding="utf-8"), flags=re.S)
+    # D2: the sources table wraps at 320 instead of clipping inside a fixed floor
+    assert "min-width:460px" not in css
+    assert re.search(r"#dlg-risk \.gde-tbl th, #dlg-risk \.gde-tbl td \{[^}]*overflow-wrap:anywhere", css)
+    # D6: legs row headers are sentence-case UI labels, as on Sector Central
+    legs_th = re.search(r"#dlg-risk \.gde-ew-legs th \{([^}]*)\}", css).group(1)
+    for decl in ("text-transform:none", "letter-spacing:normal", "font-family:var(--font-ui)", "font-size:var(--fs-label)"):
+        assert decl in legs_th, decl
+    # L3: light raises the card as a white panel with the card shadow; only the surface token
+    # moves, so warning-state backgrounds keep winning
+    assert 'html[data-theme="light"] #dlg-risk .gde-ew {--gde-ew-surface:var(--panel); box-shadow:var(--card-shadow);}' in css
+    assert "background:var(--gde-ew-surface)" in css
+    light_rule = css[css.index('html[data-theme="light"] #dlg-risk .gde-ew {'):]
+    assert "background:" not in light_rule[:light_rule.index("}")]
+
+
 def test_review_r1_site_copy_is_byte_identical_to_template():
     for name in ("rotation_events.js", "rotation_glance.css"):
         site = ROOT / "site" / name

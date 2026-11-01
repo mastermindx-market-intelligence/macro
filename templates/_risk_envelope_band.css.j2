@@ -30,7 +30,7 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 #dlg-risk .gde-disc-body {padding-top:8px; border-top:1px solid var(--line);}
 #dlg-risk .gde-tblwrap {max-width:100%; overflow-x:auto;}
 #dlg-risk .gde-tbl {width:100%; border-collapse:collapse; font-size:var(--fs-label);}
-#dlg-risk .gde-tbl th, #dlg-risk .gde-tbl td {padding:8px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+#dlg-risk .gde-tbl th, #dlg-risk .gde-tbl td {padding:8px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; overflow-wrap:anywhere;}
 #dlg-risk .gde-tbl th {color:var(--ink-2); font-weight:600;}
 #dlg-risk .gde-tbl td {color:var(--ink-1);}
 #dlg-risk .gde-warn {color:var(--ink-warn);}
@@ -41,7 +41,6 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 @media(max-width:640px) {
   #dlg-risk .riskdlg-context {padding:12px;}
   #dlg-risk .gde-reads {gap:8px 16px;}
-  #dlg-risk .gde-tbl {min-width:460px;}
 }
 
 /* The legacy band must not impose its rails or large spacing inside Risk Radar. */
@@ -71,7 +70,11 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
    surface-warn-subtle backgrounds from tokens, no edge stripe / accent rail /
    inset shadow bar; state carried by text + ink color, never color alone. ── */
 #dlg-risk .gde-scope {font-size:var(--fs-label); color:var(--ink-3);}
-#dlg-risk .gde-ew {margin-top:8px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--r-card); background:var(--esurf-neutral-soft); overflow-wrap:anywhere;}
+#dlg-risk .gde-ew {--gde-ew-surface:var(--esurf-neutral-soft); margin-top:8px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--r-card); background:var(--gde-ew-surface); overflow-wrap:anywhere;}
+/* L3: light is its own art direction. The card is a raised white panel with the card
+   shadow on the deeper canvas, never a recessed --panel2 well. Only the surface token
+   moves, so the warning-state backgrounds below still win. */
+html[data-theme="light"] #dlg-risk .gde-ew {--gde-ew-surface:var(--panel); box-shadow:var(--card-shadow);}
 #dlg-risk .gde-ew[data-ew-state="stale"],
 #dlg-risk .gde-ew[data-ew-state="unavailable"],
 #dlg-risk .gde-ew[data-ew-state="unreadable"],
@@ -100,7 +103,9 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 #dlg-risk .gde-ew-legs {width:100%; border-collapse:collapse; font-size:var(--fs-label);}
 #dlg-risk .gde-ew-legs caption {caption-side:top; text-align:left; padding:0 8px 4px; color:var(--ink-3); font-size:var(--fs-label);}
 #dlg-risk .gde-ew-legs th, #dlg-risk .gde-ew-legs td {padding:6px 8px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; overflow-wrap:anywhere;}
-#dlg-risk .gde-ew-legs th {color:var(--ink-2); font-weight:600;}
+/* D6: row headers read as sentence-case UI labels on both hosts; the page-wide
+   body.page-macro th rule would otherwise make them uppercase micro type. */
+#dlg-risk .gde-ew-legs th {color:var(--ink-2); font-weight:600; font-family:var(--font-ui); font-size:var(--fs-label); text-transform:none; letter-spacing:normal;}
 #dlg-risk .gde-ew-legs td {color:var(--ink-1); font-variant-numeric:tabular-nums;}
 #dlg-risk .gde-ew-contextline {margin:6px 0 0; font-size:var(--fs-sm); line-height:1.45;}
 #dlg-risk .gde-ew-horizons {display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;}
