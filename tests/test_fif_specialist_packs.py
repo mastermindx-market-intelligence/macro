@@ -10114,3 +10114,396 @@ def test_pk08_cli_writes_valid_envelope(tmp_path: Path) -> None:
     assert contract.validate_pack_result(envelope) == []
     assert envelope["applicability"]["state"] == "applicable"
     assert envelope["coverage"]["valued_fields"] == 5
+
+
+# 62. PK03 dev-corpus widened re-resolution (synthetic; lane fif-pk03dev-r2) -----
+#
+# DEC-FIF-PACK-GENERALIZATION-DEV-CORPUS: the finalize hook widens exactly
+# three PK03 fields (segment_profit_or_loss -> us-gaap:ProfitLoss on the
+# segment axis; geographic_revenue / product_service_revenue ->
+# us-gaap:Revenues on their mirror axes), each optionally stamped with
+# ConsolidationItemsAxis = OperatingSegmentsMember. These tests build the
+# ledger, the filing package and the definition linkbase synthetically inside
+# the test (no filing bytes) and pin: each new concept alias, the optional
+# second-axis member admission, the replace vs append row order, the
+# byte-identical no-evidence path, and the near-miss refusals.
+
+_PK03_SYN_CIK = "0000000012"
+_PK03_SYN_ENTITY = {
+    "entity_id": "ISS:US-SYNTHETIC-SEGMENTS",
+    "cik": _PK03_SYN_CIK,
+    "ticker": "SYNSEG",
+    "name": "SYNTHETIC SEGMENTS CORP",
+    "identity_basis": "synthetic_in_test_ledger_v1",
+    "source_entity_id": _PK03_SYN_CIK,
+}
+_PK03_SYN_QUERY = {**QUERY, "requested_metrics": ["segments"]}
+
+# Standard-taxonomy members only; an extension member joins per-test as the
+# near-miss fact that must never resolve.
+_PK03_SYN_DEF_XML = b"""<?xml version="1.0" encoding="UTF-8"?>
+<link:linkbase xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <link:definitionLink xlink:role="http://example.com/role/segments" xlink:type="extended">
+    <link:loc xlink:type="locator" xlink:label="axis" xlink:href="syn-2026.xsd#us-gaap_StatementBusinessSegmentsAxis"/>
+    <link:loc xlink:type="locator" xlink:label="dom" xlink:href="syn-2026.xsd#us-gaap_SegmentReportingDomain"/>
+    <link:loc xlink:type="locator" xlink:label="m1" xlink:href="syn-2026.xsd#us-gaap_AlphaSegmentMember"/>
+    <link:loc xlink:type="locator" xlink:label="m2" xlink:href="syn-2026.xsd#us-gaap_BetaSegmentMember"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/dimension-domain" xlink:from="axis" xlink:to="dom" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="dom" xlink:to="m1" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="dom" xlink:to="m2" order="2"/>
+  </link:definitionLink>
+  <link:definitionLink xlink:role="http://example.com/role/geography" xlink:type="extended">
+    <link:loc xlink:type="locator" xlink:label="axis" xlink:href="syn-2026.xsd#srt_StatementGeographicalAxis"/>
+    <link:loc xlink:type="locator" xlink:label="dom" xlink:href="syn-2026.xsd#srt_GeographicDomain"/>
+    <link:loc xlink:type="locator" xlink:label="m1" xlink:href="syn-2026.xsd#srt_DomesticMember"/>
+    <link:loc xlink:type="locator" xlink:label="m2" xlink:href="syn-2026.xsd#srt_InternationalMember"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/dimension-domain" xlink:from="axis" xlink:to="dom" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="dom" xlink:to="m1" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="dom" xlink:to="m2" order="2"/>
+  </link:definitionLink>
+  <link:definitionLink xlink:role="http://example.com/role/products" xlink:type="extended">
+    <link:loc xlink:type="locator" xlink:label="axis" xlink:href="syn-2026.xsd#srt_ProductOrServiceAxis"/>
+    <link:loc xlink:type="locator" xlink:label="dom" xlink:href="syn-2026.xsd#srt_ProductOrServiceDomain"/>
+    <link:loc xlink:type="locator" xlink:label="m1" xlink:href="syn-2026.xsd#us-gaap_ProductMember"/>
+    <link:loc xlink:type="locator" xlink:label="m2" xlink:href="syn-2026.xsd#us-gaap_ServiceMember"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/dimension-domain" xlink:from="axis" xlink:to="dom" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="dom" xlink:to="m1" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="dom" xlink:to="m2" order="2"/>
+  </link:definitionLink>
+</link:linkbase>
+"""
+
+_PK03_SYN_SEG_AXIS = "us-gaap:StatementBusinessSegmentsAxis"
+_PK03_SYN_CONS_AXIS = "srt:ConsolidationItemsAxis"
+_PK03_SYN_GEO_AXIS = "srt:StatementGeographicalAxis"
+_PK03_SYN_PROD_AXIS = "srt:ProductOrServiceAxis"
+_PK03_SYN_OP_SEG = "us-gaap:OperatingSegmentsMember"
+
+
+class _Pk03SynPackage:
+    """Manifest-only package; the patched converter supplies the facts."""
+
+    def __init__(self, manifest: dict, members: dict[str, bytes]) -> None:
+        self.manifest = manifest
+        self.members = members
+
+
+def _pk03_syn_fact(
+    concept: str,
+    dimensions: tuple[tuple[str, str], ...],
+    value: str,
+    *,
+    start: str = "2025-01-01",
+    end: str = "2025-12-31",
+) -> RawFactOccurrence:
+    context = FactContext(
+        context_id=f"ctx-{len(concept)}-{abs(hash((concept, dimensions, value))) % 10**8}",
+        entity_scheme="urn:test",
+        entity_identifier="synthetic-entity",
+        start=start,
+        end=end,
+        explicit_dimensions=dimensions,
+    )
+    return RawFactOccurrence(
+        source=SourceIdentity(
+            source="synthetic",
+            entity_id="synthetic-entity",
+            accession="0000000012-26-000001",
+            document_id="syn-20251231.htm",
+            body_sha256="0" * 64,
+        ),
+        concept_qname=concept,
+        context=context,
+        clocks=TemporalClocks(recorded_at="2026-02-15T16:00:00Z"),
+        unit=FactUnit(unit_id=f"u-{abs(hash(concept)) % 10**6}", measures=("iso4217:USD",)),
+        parsed_value=Decimal(value),
+        decimals="-6",
+    )
+
+
+def _produce_pk03_synthetic(
+    monkeypatch: pytest.MonkeyPatch,
+    facts: tuple[RawFactOccurrence, ...],
+    *,
+    def_xml: bytes | None = _PK03_SYN_DEF_XML,
+    form: str = "10-K",
+    por: str = "2025-12-31",
+) -> dict:
+    manifest = {
+        "cik": _PK03_SYN_CIK,  # R-F4: package issuer == packet entity
+        "form": form,
+        "period_of_report": por,
+        "accession": "0000000012-26-000001",
+        "primary_document": "syn-20251231.htm",
+        "members": (
+            [{"name": "syn-2026_def.xml", "state": "stored"}] if def_xml else []
+        ),
+    }
+    package = _Pk03SynPackage(
+        manifest, {"syn-2026_def.xml": def_xml} if def_xml else {}
+    )
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000012-26-000001",
+            parser_numeric_fact_count=len(facts),
+            ledger_occurrence_count=len(facts),
+            represented_count=len(facts),
+            excluded={},
+            source_namespace_families=("us-gaap", "srt"),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap", "srt"),
+        )
+        return RawFactLedger(facts), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    return produce_pack(
+        "PK03",
+        PackInput(
+            packages=(package,),
+            entity=_PK03_SYN_ENTITY,
+            query=_PK03_SYN_QUERY,
+            issuer_sic="3826",
+            sic_source="sec_submissions",
+        ),
+    )
+
+
+def _pk03_field_rows(result: dict, field_id: str) -> list[dict]:
+    return [row for row in result["fields"] if row["field_id"] == field_id]
+
+
+def _pk03_row_values(rows: list[dict]) -> list[str]:
+    return [str(row.get("value")) for row in rows]
+
+
+def test_pk03_widened_profitloss_segment_measure_resolves(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An ASU 2023-07 net-earnings CODM measure resolves via ProfitLoss."""
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            _pk03_syn_fact(
+                "us-gaap:ProfitLoss",
+                (
+                    (_PK03_SYN_SEG_AXIS, "us-gaap:AlphaSegmentMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "1500",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:ProfitLoss",
+                (
+                    (_PK03_SYN_SEG_AXIS, "us-gaap:BetaSegmentMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "2500",
+            ),
+        ),
+    )
+    assert result["applicability"]["state"] == "applicable"
+    rows = _pk03_field_rows(result, "segment_profit_or_loss")
+    # The single absence row is REPLACED by the widened member rows.
+    assert [row["quality_state"] for row in rows] == ["valued", "valued"]
+    assert _pk03_row_values(rows) == ["1500", "2500"]
+    assert {row["concept"] for row in rows} == {"us-gaap:ProfitLoss"}
+    assert {row["taxonomy"] for row in rows} == {"us-gaap"}
+    assert {row["mapping_rule_id"] for row in rows} == {
+        "PK03.segment_profit_or_loss.dimensioned_fact/v1"
+    }
+    for row, member in zip(rows, ("AlphaSegmentMember", "BetaSegmentMember")):
+        pairs = {
+            (d["axis"], d["member"]) for d in row.get("dimensions") or ()
+        }
+        assert (_PK03_SYN_SEG_AXIS, f"us-gaap:{member}") in pairs
+        # The optional subtotal-basis second axis is admitted and carried.
+        assert (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG) in pairs
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_widened_revenues_geographic_mirror_resolves(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An other-than-606 geographic table resolves via us-gaap:Revenues."""
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_GEO_AXIS, "srt:DomesticMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "4000",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_GEO_AXIS, "srt:InternationalMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "5000",
+            ),
+        ),
+    )
+    rows = _pk03_field_rows(result, "geographic_revenue")
+    assert [row["quality_state"] for row in rows] == ["valued", "valued"]
+    assert _pk03_row_values(rows) == ["4000", "5000"]
+    assert {row["concept"] for row in rows} == {"us-gaap:Revenues"}
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_widened_revenues_product_mirror_resolves(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An other-than-606 product/service table resolves via us-gaap:Revenues."""
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_PROD_AXIS, "us-gaap:ProductMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "8000",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_PROD_AXIS, "us-gaap:ServiceMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "2000",
+            ),
+        ),
+    )
+    rows = _pk03_field_rows(result, "product_service_revenue")
+    assert [row["quality_state"] for row in rows] == ["valued", "valued"]
+    # Canonical member order: Product before Service.
+    assert _pk03_row_values(rows) == ["8000", "2000"]
+    assert {row["concept"] for row in rows} == {"us-gaap:Revenues"}
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_widened_rows_append_after_valued_base_block(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A field with a valued base row keeps it and appends the widened rows.
+
+    The base mapping admits only single-axis facts, so the 606-basis service
+    row resolves the base block while the two-axis Revenues fact is admitted
+    by the widened pass alone (the optional second-axis rule).
+    """
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            _pk03_syn_fact(
+                "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+                ((_PK03_SYN_PROD_AXIS, "us-gaap:ServiceMember"),),
+                "2000",
+            ),
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_PROD_AXIS, "us-gaap:ProductMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "8000",
+            ),
+        ),
+    )
+    rows = _pk03_field_rows(result, "product_service_revenue")
+    assert [row["quality_state"] for row in rows] == ["valued", "valued"]
+    # Concept-major order: base block first, widened concept appended after.
+    assert [row["concept"] for row in rows] == [
+        "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+        "us-gaap:Revenues",
+    ]
+    assert _pk03_row_values(rows) == ["2000", "8000"]
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_widened_absent_without_evidence_is_typed_absence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """No widened-concept evidence: every repaired field stays typed-absent.
+
+    The filing carries only a segment-axis revenue total (a core:revenue
+    alias): the three repaired fields have no candidate fact of their own
+    concepts on their own axes, so each keeps its single ``missing`` row.
+    """
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_SEG_AXIS, "us-gaap:AlphaSegmentMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "9000",
+            ),
+        ),
+    )
+    for field_id, first_concept in (
+        ("segment_profit_or_loss", "us-gaap:OperatingIncomeLoss"),
+        ("geographic_revenue", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"),
+        ("product_service_revenue", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"),
+    ):
+        rows = _pk03_field_rows(result, field_id)
+        assert [row["quality_state"] for row in rows] == ["missing"]
+        assert rows[0]["value"] is None
+        assert rows[0]["reason"] == f"missing_standard_fact:{first_concept}"
+    assert "outside every definition group" not in " ".join(result["limitations"])
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_widened_near_misses_never_resolve(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Extension members, foreign second-axis members and non-primary axes
+    never resolve a widened field."""
+    result = _produce_pk03_synthetic(
+        monkeypatch,
+        (
+            # Issuer-extension segment member outside every definition group.
+            _pk03_syn_fact(
+                "us-gaap:ProfitLoss",
+                (
+                    (_PK03_SYN_SEG_AXIS, "ext:WidgetDivisionMember"),
+                    (_PK03_SYN_CONS_AXIS, _PK03_SYN_OP_SEG),
+                ),
+                "700",
+            ),
+            # A second-axis member the rule does not admit.
+            _pk03_syn_fact(
+                "us-gaap:Revenues",
+                (
+                    (_PK03_SYN_GEO_AXIS, "srt:DomesticMember"),
+                    (_PK03_SYN_CONS_AXIS, "us-gaap:CorporateNonSegmentMember"),
+                ),
+                "999",
+            ),
+            # The right concept on a non-segment axis only.
+            _pk03_syn_fact(
+                "us-gaap:ProfitLoss",
+                ((_PK03_SYN_GEO_AXIS, "srt:InternationalMember"),),
+                "600",
+            ),
+        ),
+    )
+    profit_rows = _pk03_field_rows(result, "segment_profit_or_loss")
+    assert [row["quality_state"] for row in profit_rows] == ["missing"]
+    assert profit_rows[0]["value"] is None
+    geo_rows = _pk03_field_rows(result, "geographic_revenue")
+    assert [row["quality_state"] for row in geo_rows] == ["missing"]
+    assert geo_rows[0]["value"] is None
+    # The no-evidence path stays byte-identical: the widened pass's
+    # outside-group diagnostic is dropped with the rest of its rows.
+    assert "outside every definition group" not in " ".join(result["limitations"])
+    assert contract.validate_pack_result(result) == []
