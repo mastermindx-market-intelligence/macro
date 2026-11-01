@@ -34,6 +34,9 @@ changed:
   what: Publish fixed B0/A1/A2 early-RS-leadership science candidate, full-eligible-population,
     attention budget, PIT source/known-at, chronological holdout and falsifiers. No Evaluation OS
     registration, data/outcome read, predictive score or customer publication.
+- path: tests/test_entry_radar_rs_252_reference.py
+  what: 18 as-of source-only synthetic cases for a separate prior-252-session RS high reference.
+    Source schema distinct, v0 feature outputs/ASTs unchanged, no label/read/admission/rank/trade.
 - path: tests/test_entry_radar_first_green_next_close.py
   what: 36 native synthetic next-close cases, pending-window refusal, strict close/green tests, delayed-source
     and pre-formation-window risk, reference identity and unchanged source authority.
@@ -128,6 +131,24 @@ verified:
   command: python3 -m pytest -q tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure tests/test_ci_pack.py::test_manifest_job_local_delta_is_bounded_to_changed_job tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered
   result: 3 passed139.69s, PID77304, exit0;12 exact paths added to same
     research-price-panel job, no job/engine/runtime permission added.
+- claim: Current prior source/CI head 8367e486 passed actual hosted CI and fences.
+  command: GitHub.fetch_commit_workflow_runs for8367e486d66b9626be2a55531e328545d7769e23;
+    GitHub.fetch_workflow_run_jobs for41220714712.
+  result: ci run41220714712 SUCCESS,all12 packs,contract-delta and ci-gate SUCCESS;
+    fences run41220714650 SUCCESS; evidence for prior head only.
+- claim: Distinct independent CI-only Fabric review was returned and scope accepted.
+  command: Fabric.fabric_status/result/accept for run rs10225-ci-manifest-scope-review-20261031-01
+    root chartmaster-rs-audit-20261030 and GitHub exact changed-file comparison.
+  result: reviewer rc0 and responseSHAc34a54d112b7ff9b6db56239f53470d3b5e626515e781b9a42c71864ffe55cc4;
+    exact 12 scope adds,no gate weakening, 0 closure misses; accepted=true by reviewer.
+    Not an independent first-green or daily source-code review.
+- claim: Pure prior-252 RS reference passes native/CI checks without v0 mutation.
+  command: python3 -m pytest -q tests/test_entry_radar_rs_252_reference.py tests/test_entry_radar_rs_onset_features.py tests/test_entry_radar_first_green_variants.py tests/test_entry_radar_first_green_next_close.py tests/test_entry_radar_first_green_descriptor.py tests/test_entry_radar_leader_pivot_descriptor.py tests/test_entry_radar_leader_pivot_progress.py tests/test_entry_radar_leader_pivot_progress_edges.py tests/test_entry_radar_rs_pullback_phase1.py
+  result: 292 normal tests +113 subtests PASS,PID29793,14.35s; 18 new RS252 cases;
+    v0 10 functions AST-identical in local PID27187; no market/outcome data.
+- claim: Same existing CI owner test selection remains valid for prior252 addition.
+  command: python3 -m pytest -q tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure tests/test_ci_pack.py::test_manifest_job_local_delta_is_bounded_to_changed_job tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered
+  result: 3 PASS,PID25012,123.01s; no new job or import-owner expansion.
 unverified:
 - claim: Second increment source publication and exact-head hosted CI/non-author review.
   what_would_verify: Read back the commit containing this cumulative checkpoint and native source digests,
@@ -158,6 +179,8 @@ unresolved:
   native file read returned empty, so no independent parent byte verification. Research and artifact childrenSTOPconfirmed,no
   watchers; no automatic continuation.
 next_actions:
+- On current source head, verify new 252-reference exact-head hosted CI and independent source-code
+  review through an actually admitted non-author channel; no original denied-review replay.
 - Verify current-head hosted ci and fences on the 12-path research-price-panel repair;
   independently review code with a lawful actual non-author reviewer. No blocked Fabric
   review or source-audit rerun.
@@ -231,3 +254,22 @@ required evidence is absent keep DRAFT and continue disjoint authorized lanes on
 ## 2026-10-31 source continuation: hosted CI scope correction
 
 The signed source/test delta on prior head e32dea4 was locally green but hosted CI run 41177181732 failed. This was a real CI-selection defect: the existing research-price-panel exclusive path declaration omitted 12 transitive dependencies added when P3.2 reused leadership_rotation_context. The existing contract-delta and ci-control-plane tests caught this correctly. This continuation adds the exact12 dependency paths **only to the same CI job scope** and locally proves the repair with 3 full-closure tests (PID77304, exit0,139.69s). No new collector, event/identity/ranking policy, market data source, trade or Paper effect. Paper direct read-only inspect encountered transport429, no canvas changes. Reviewer and source-audit Fabric requests from prior turns remained explicitly blocked and were not retried. Live-source P2 and native P1.4 remain not admitted, full product unproven. The current PR retains a sole source writer; after normal push and exact remote readback, consume new-hosted CI. Do not carry green from unrelated historical head.
+
+## 2026-10-31 strict prior-252 RS reference continuation
+
+Chairman resumed the same RS Leadership Suite without new source/authority grants.
+This is P3.2 pure research source added on existing Macro #10225 carrier, with a new
+versioned `describe_rs_252_reference` that compares current log-relative price level
+against exactly previous 252 complete sessions and refuses incomplete/late/vintage-incoherent
+inputs. 18 dedicated synthetic checks, combined292 normal tests +113 subtests,3 CI scope tests
+all PASS locally. No source/catalyst/group feed admitted, no real market/return/label data
+retrieved and no prediction, rank, alert, stop, trade or customer effect.
+
+A separate economical Fabric run `rs10225-daily-rs252-reference-design-20261031-01`,
+root `chartmaster-rs-audit-20261030`, was requested as an independent read-only
+design/counterexample packet, **not a code writer**. At the last observed status it was
+ACTIVE_OR_WAITING, root unverified, worker state UNKNOWN, no terminal result or
+accepted response. Reconcile the original run; never rerun/failover or infer it
+will complete automatically. Its return cannot overwrite source and must be
+compared with the exact current committed candidate when it arrives.
+First-green P1.4, source P2, Terminal P4 and Eval P5 remain unqualified.

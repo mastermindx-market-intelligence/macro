@@ -296,3 +296,130 @@ def describe_onset_features(bundle: Mapping[str, Any]) -> dict[str, Any]:
     result["state"] = ("RESEARCH_METRICS_AVAILABLE" if any(
         x["status"] == "measured" for x in result["windows"].values()) else "UNAVAILABLE")
     return _finish(result)
+
+
+# Deliberately distinct from SCHEMA and describe_onset_features v0.  A
+# reference to an existing 252-session RS high is not a future outcome or a
+# registered ranking; its source admission remains the existing owner's gate.
+RS_252_SCHEMA = "mastermind.rs_leadership.rs_252_high_reference.v1"
+RS_252_DEFINITION_ID = "daily-rs-prior-252-session-log-relative-level-v1"
+RS_252_PRIOR_SESSIONS = 252
+
+
+def describe_rs_252_reference(bundle: Mapping[str, Any]) -> dict[str, Any]:
+    """Describe current RS versus the *previous* 252 complete daily ratios.
+
+    The current observation is compared to a strictly earlier high, not to a
+    retrospective full-series maximum.  Requires 253 paired as-of closes on
+    an owner-provided completed-session calendar.  Log stock/benchmark prices
+    preserve ratio ordering while avoiding nominal division overflow.  No
+    lookahead, cohort membership, future outcome, rank, order or source grant.
+    The existing v0 daily feature output/digest is never modified.
+    """
+    # Reuse the exact incumbent owner-defined identity, basis, source-clock,
+    # revision and contract refusals; do not duplicate their validation law.
+    base = describe_onset_features(bundle)
+    result: dict[str, Any] = {
+        "schema": RS_252_SCHEMA,
+        "definition_id": RS_252_DEFINITION_ID,
+        "input_kind": base["input_kind"],
+        "evidence_status": base["evidence_status"],
+        "asof_session": base["asof_session"],
+        "decision_at": base["decision_at"],
+        "stock_security_id": base["stock_security_id"],
+        "benchmark_security_id": base["benchmark_security_id"],
+        "stock_basis_id": base["stock_basis_id"],
+        "benchmark_basis_id": base["benchmark_basis_id"],
+        "basis_kind": base["basis_kind"],
+        "state": "UNAVAILABLE",
+        "reference": _unmeasured("not_evaluated"),
+        "visible_input_sha256": None,
+        "refusals": list(base["refusals"]),
+        "source_admitted": False,
+        "detector_registered": False,
+        "ranking_authority": False,
+        "actual_issuance_proven": False,
+        "outcomes_computed": False,
+        "issued_at": None,
+        "authority": dict(AUTHORITY_BLOCK),
+    }
+    if result["refusals"]:
+        result["reference"] = _unmeasured("source_clock_identity_or_basis_refused")
+        return _finish(result)
+
+    calendar = bundle["calendar"]
+    days = tuple(_session(item) for item in calendar["sessions"])
+    index = days.index(base["asof_session"])
+    if index < RS_252_PRIOR_SESSIONS:
+        result["reference"] = _unmeasured("insufficient_completed_sessions")
+        return _finish(result)
+
+    # Membership in the 252-session reference is frozen at the original as-of
+    # cutoff.  Extra older rows outside the reference cannot change its value.
+    window_days = days[index - RS_252_PRIOR_SESSIONS:index + 1]
+    ends = {day: _clock(calendar["session_ends"][day]) for day in window_days}
+    metadata = {role: _meta(bundle["streams"][role]) for role in STREAMS}
+    selected = _select_visible(
+        bundle["rows"], metadata, window_days, ends, _clock(base["decision_at"])
+    )
+    rows = []
+    for day in window_days:
+        if any(day not in selected[role] for role in STREAMS):
+            result["reference"] = _unmeasured(
+                "missing_or_future_known_daily_observation"
+            )
+            result["visible_input_sha256"] = digest({
+                "sessions": window_days, "selected": selected,
+                "calendar_ends": {d: _iso(ends[d]) for d in window_days},
+                "calendar_known_at": _iso(_clock(calendar["known_at"])),
+                "streams": metadata,
+            })
+            return _finish(result)
+        rows.append({
+            "session": day,
+            "stock": selected["stock"][day],
+            "benchmark": selected["benchmark"][day],
+        })
+    result["visible_input_sha256"] = digest({
+        "sessions": window_days,
+        "calendar_ends": {d: _iso(ends[d]) for d in window_days},
+        "calendar_known_at": _iso(_clock(calendar["known_at"])),
+        "streams": metadata,
+        "rows": rows,
+    })
+    log_levels = [
+        math.log(pair["stock"]["close"]) - math.log(pair["benchmark"]["close"])
+        for pair in rows
+    ]
+    previous = log_levels[:-1]
+    previous_max = max(previous)
+    # Latest tied prior high is the correct recency reference, not the first
+    # occurrence, and the current day never enters the historical denominator.
+    last_prior_high_index = max(
+        i for i, value in enumerate(previous) if value == previous_max
+    )
+    current = log_levels[-1]
+    gap = current - previous_max
+    if not math.isfinite(gap):
+        result["reference"] = _unmeasured("nonfinite_log_relative_gap")
+        return _finish(result)
+    known_at = max(
+        row[role]["known_at"] for row in rows for role in STREAMS
+    )
+    result["reference"] = {
+        "status": "measured",
+        "prior_sessions": RS_252_PRIOR_SESSIONS,
+        "observations": RS_252_PRIOR_SESSIONS + 1,
+        "start_session": window_days[0],
+        "end_session": window_days[-1],
+        "prior_high_session": window_days[last_prior_high_index],
+        "current_log_rs_level": current,
+        "prior_high_log_rs_level": previous_max,
+        "log_gap_to_prior_high": gap,
+        "at_new_high": current > previous_max,
+        "known_at": known_at,
+        "input_sha256": digest(rows),
+        "unit": "log_relative_price_level",
+    }
+    result["state"] = "RESEARCH_REFERENCE_AVAILABLE"
+    return _finish(result)

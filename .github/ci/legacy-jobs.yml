@@ -36387,6 +36387,7 @@ jobs:
       - "engine/sector_cycles.py"
       - "engine/sector_legs.py"
       - "tests/test_entry_radar_rs_onset_features.py"
+      - "tests/test_entry_radar_rs_252_reference.py"
       - "tests/test_entry_radar_leader_pivot_descriptor.py"
       - "tests/test_entry_radar_leader_pivot_progress.py"
       - "tests/test_entry_radar_leader_pivot_progress_edges.py"
@@ -37489,6 +37490,7 @@ jobs:
           tests/test_entry_radar_first_green_variants.py
           tests/test_entry_radar_first_green_next_close.py
           tests/test_entry_radar_rs_onset_features.py
+          tests/test_entry_radar_rs_252_reference.py
           tests/test_entry_radar_rs_pullback_phase1.py
           tests/test_entry_radar_rs_pullback_launch_labels.py
           tests/test_ptse_action_context.py
