@@ -102,9 +102,9 @@ def _validate_no_authority(authority: object, owner: str) -> None:
     # Python considers 0 == False. Contract flags require the literal boolean,
     # not a numeric value that merely compares equal to the all-false template.
     if (
-        not isinstance(authority, Mapping)
+        type(authority) is not dict
         or set(authority) != set(ALL_FALSE_AUTHORITY)
-        or any(value is not False for value in authority.values())
+        or any(authority[key] is not False for key in ALL_FALSE_AUTHORITY)
     ):
         raise OpportunityContextContractError(f"{owner} authority must remain all false")
 
@@ -254,6 +254,10 @@ def resolve_display_alias_to_active_episode(
         )
     if type(decision_date) is not date:
         raise OpportunityContextContractError("decision_date must be a calendar date")
+    if decision_date.isoformat() != candidate_projection.get("market_session"):
+        raise OpportunityContextContractError(
+            "alias decision_date must match canonical B3 market_session"
+        )
     symbol = _text(display_symbol, "display_symbol").strip().upper()
     if not symbol:
         raise OpportunityContextContractError("display_symbol must be non-empty text")
@@ -931,6 +935,14 @@ def validate_opportunity_context(payload: Mapping[str, object]) -> None:
         ):
             raise OpportunityContextContractError(
                 "owner-issued B4 availability_id is not canonical identifier shape"
+            )
+        if entry.get("market_session") != clock.get("market_session"):
+            raise OpportunityContextContractError(
+                "owner-issued B4 session does not match the opportunity decision clock"
+            )
+        if entry.get("reason") is not None:
+            raise OpportunityContextContractError(
+                "owner-issued B4 display reason must remain null"
             )
 
     user_state = payload.get("user_state")

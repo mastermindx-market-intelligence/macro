@@ -1090,3 +1090,72 @@ def test_owner_issued_availability_id_keeps_canonical_shape(bad_id):
         match="availability_id is not canonical",
     ):
         validate_opportunity_context(bad)
+
+# OLI whole-read-model exact-head review: owner/identity integrity regressions.
+# The source validator must refuse an inconsistent in-process Mapping and
+# never let a caller-provided alias date or rehydrated B4 view renew owner truth.
+
+class _ContradictoryAuthority(dict):
+    """Adversarial Mapping: a values() audit lies about item access."""
+
+    def __init__(self):
+        super().__init__(ALL_FALSE_AUTHORITY)
+
+    def values(self):
+        return tuple(False for _ in self)
+
+    def __getitem__(self, key):
+        return True
+
+    def get(self, key, default=None):
+        return True
+
+
+def test_contradictory_authority_mapping_does_not_pass_relation_or_context():
+    identity = _identity_binding()
+    relation = project_terminal_portfolio_relation(
+        identity, http_status=200, payload={"positions": []},
+    )
+    relation["authority"] = _ContradictoryAuthority()
+    assert relation["authority"]["ranking"] is True
+
+    with pytest.raises(OpportunityContextContractError, match="authority"):
+        validate_terminal_portfolio_relation(relation)
+    with pytest.raises(OpportunityContextContractError, match="authority"):
+        compose_opportunity_context(
+            projection(), episode_id=eid(), portfolio_relation=relation,
+        )
+
+
+@pytest.mark.parametrize("wrong_date", [
+    date(2026, 9, 17),
+    date(2026, 9, 19),
+])
+def test_alias_date_must_equal_canonical_b3_market_session(wrong_date):
+    with pytest.raises(OpportunityContextContractError, match="market_session"):
+        resolve_display_alias_to_active_episode(
+            projection(),
+            aliases=_identity_aliases(),
+            display_symbol="AAPL",
+            decision_date=wrong_date,
+        )
+
+
+def test_displayed_owner_b4_session_must_match_context_session():
+    p = projection()
+    out = compose_opportunity_context(
+        p, episode_id=eid(), entry_availability=availability(p),
+    )
+    out["fresh_entry"]["market_session"] = "2026-09-19"
+    with pytest.raises(OpportunityContextContractError, match="session"):
+        validate_opportunity_context(out)
+
+
+def test_displayed_owner_b4_reason_cannot_be_invented():
+    p = projection()
+    out = compose_opportunity_context(
+        p, episode_id=eid(), entry_availability=availability(p),
+    )
+    out["fresh_entry"]["reason"] = "INVENTED_DISPLAY_REASON"
+    with pytest.raises(OpportunityContextContractError, match="reason"):
+        validate_opportunity_context(out)
