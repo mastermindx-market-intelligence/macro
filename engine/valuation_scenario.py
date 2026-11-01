@@ -39,7 +39,7 @@ margins):
      Cautious -- caught by review round 3 running the module directly at
      margin=1.2%.
 
-net_debt = debt_lt + debt_cur - cash, computed ONLY when all three legs are
+net_debt = _num(debt_lt + debt_cur - cash), computed ONLY when all three legs are
 reported (None otherwise). This is deliberately stricter than the shared
 identity in engine/stock_fundamentals._net_debt (which defaults a missing
 leg to 0) -- this module is re-implemented rather than imported, and the
@@ -70,6 +70,8 @@ probability/confidence wording, no LLM-authored numbers, no ranking/score.
 """
 from __future__ import annotations
 
+import math
+
 # (key, sales_growth_pct, margin_delta_pp, earnings_multiple)
 MISSING_LABELS = {
     "consistent period": ("a consistent reporting period", "同一个报告期的数据"),
@@ -90,13 +92,13 @@ SCENARIOS = (
 
 
 def _num(v):
-    if v is None:
+    if v is None or isinstance(v, bool):
         return None
     try:
         f = float(v)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return None
-    if f != f:  # NaN
+    if not math.isfinite(f):
         return None
     return f
 
@@ -140,7 +142,7 @@ def compute(rows: list[dict], price: float | None = None, asof: str | None = Non
 
     net_debt = None
     if debt_lt is not None and debt_cur is not None and cash is not None:
-        net_debt = debt_lt + debt_cur - cash
+        net_debt = _num(debt_lt + debt_cur - cash)
 
     base = {
         "revenue": _field(revenue, "USD", f"FY{fy}", revenue is not None),
@@ -162,7 +164,7 @@ def compute(rows: list[dict], price: float | None = None, asof: str | None = Non
     net_margin_base = None
     if net_income is not None and revenue not in (None, 0):
         candidate = net_income / revenue
-        if abs(candidate) >= _MARGIN_BASE_FLOOR:
+        if math.isfinite(candidate) and abs(candidate) >= _MARGIN_BASE_FLOOR:
             net_margin_base = candidate
 
     scenarios = []
@@ -202,9 +204,9 @@ def compute(rows: list[dict], price: float | None = None, asof: str | None = Non
             computed = round((adj_income * mult) / shares, 2)
             # Belt-and-braces (review round 3): the gate above should make a
             # non-positive per_share unreachable, but never surface one as a
-            # computed value regardless -- fall back to the same
+            # computed value (including overflow) -- fall back to the same
             # margin_too_thin null instead of a computed non-positive number.
-            if computed > 0:
+            if math.isfinite(computed) and computed > 0:
                 per_share = computed
                 any_computable = True
             else:
