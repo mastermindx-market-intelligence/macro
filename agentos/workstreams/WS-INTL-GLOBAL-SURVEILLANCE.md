@@ -73,7 +73,16 @@ waves:
     foundation transition) → main a99b539578003e7dfd32394dc1e839cba7f8bb0a at 2026-10-31T15:05:04Z
     (verified: gh pr view 10278 --json state,mergeCommit,mergedAt,headRefOid → MERGED a99b5395…).
     Follow-up lane intl-gs-w2b-gb1-r1 named (graph-boundary chip + R-14 sha256 pin + R-11 B8 AST scan,
-    DEC:INTL-GS-GB1-GRAPH-BOUNDARY-CHIP).
+    DEC:INTL-GS-GB1-GRAPH-BOUNDARY-CHIP). Landed: gb1 #10354 (head ecbd01fb8cfb36b4972fca4b1b183249a0759d50,
+    review INTL-GS-W2B-GB1 FAIL on the fenced-file class → seat ruling
+    DEC:INTL-GS-GB1A-CLOSURE-WIDENING-ACCEPTED-20261031 → SEAT_ACCEPT) → main
+    aba326f385ea19672e1a87f47e97c25e01c3b6d1 at 2026-11-01T01:03:18Z; pin1 #10355 (head
+    89d7be656c772cd051f31269a749df9b2a11684f, review INTL-GS-PIN1 PASS_WITH_NOTES; chip in the Typed-edges head
+    row, W2A CSS pin, specimen-scan defaults) → main 4e1ae041040e638028f9b189fe6dfe932f4eb5b1 at
+    2026-11-01T02:32:05Z (verified_by: gh api graphql, aliases pullRequest(number:10354|10355) → state,
+    headRefOid, mergeCommit.oid, mergedAt, 2026-11-01). §14 row 4 Graph boundary DONE: 640 data-graph-boundary
+    chips served on www.mastermind-x.com/intl.html (Last-Modified 2026-11-01 03:12:25 GMT, seat curl); the pin1
+    head-row wrapper was not yet served at that probe (render queued).
 - id: IM15
   title: Dislocation research
   status: done
@@ -136,12 +145,17 @@ waves:
     IM08/IM09 custody per ORCH-5 DEFERRED F1/F2/F6 (custody #8754, never touched); §14 rows 18/19/21 stay
     PARTIAL pending the nightly render + served-journey proof.
 next_action: >
-  Seat merges gb1 (lane intl-gs-w2b-gb1-r1) after its review; then served-journey proof on
-  www.mastermind-x.com/intl.html after the nightly renders the views (Scanner / Dossier / Dislocations
-  enabled; Transmission disabled-by-design); then §14 PARTIAL rows closure (rows 18/19/21). Standing:
-  never re-spawn ORCH-5/ORCH-6 (message only); never relaunch a used lane run id;
+  Records r8 (2026-11-01) closed the view programme: every view/hardening lane is MERGED (W4B #10258, W3U #10265,
+  W2B #10278, W2A #10288, gb1 #10354, pin1 #10355; records #10353) and §14 row 4 is served (640 chips on
+  intl.html at 03:12:25 GMT); §14 recount 15 DONE / 6 PARTIAL / 0 GAP (census addendum 2026-11-01). Remaining:
+  pin1 served check once the 4e1ae041 render lands (intl-gs__edges__head ≥ 1); row 18 entitled-browser journey
+  proof on the served URL; row 19 next nightly publisher cycle retaining the GS views; row 20 CI-green quote of
+  the legacy navigation suite; row 21 served both-themes proof for the Scanner / Dislocations boards; deferred
+  R2-01 (scanner-abstain focus evidence cell) and F10 (structural CI-budget fetch fix, own PR); IM18 view surfaces
+  + IM08/IM09 custody #8754 (never touched); Transmission tab not_built by design. Standing: never re-spawn
+  ORCH-5/ORCH-6 (message only); never relaunch a used lane run id (incl. rec8-r1, admission-refused);
   DEC:INTL-GS-FRED-GOVERNMENT-SERIES-RIGHTS asked once, never re-ask; #8754 never touch; #9596 never push;
-  Opus cap 2.
+  Opus cap 2; the 16-child grant is spent.
 artifacts:
 - research/INTL_GLOBAL_SURVEILLANCE_MASTERPLAN_2026-10-21.md
 - research/INTL_GLOBAL_SURVEILLANCE_CONTINUATION_HANDOFF_2026-10-21.md
@@ -149,15 +163,21 @@ artifacts:
 - agentos/handoffs/WS-INTL-GLOBAL-SURVEILLANCE-2026-10-31.md
 - agentos/decisions/DEC-INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT.md
 - agentos/decisions/DEC-INTL-GS-GB1-GRAPH-BOUNDARY-CHIP.md
+- agentos/handoffs/WS-INTL-GLOBAL-SURVEILLANCE-2026-11-01.md
+- agentos/decisions/DEC-INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE.md
+- agentos/decisions/DEC-INTL-GS-GB1A-CLOSURE-WIDENING-ACCEPTED.md
+- 'Merged PRs 2026-10-31/11-01 (heads → mergeCommits, gh-verified 2026-11-01 in one batched graphql read): #10353 ed9b641d62ab35ef997307a34a31a6d555ce6905 → 83a77d8533c6f885f6b061207d017f27cf485a78 (2026-10-31T22:57:30Z); #10354 ecbd01fb8cfb36b4972fca4b1b183249a0759d50 → aba326f385ea19672e1a87f47e97c25e01c3b6d1 (2026-11-01T01:03:18Z); #10355 89d7be656c772cd051f31269a749df9b2a11684f → 4e1ae041040e638028f9b189fe6dfe932f4eb5b1 (2026-11-01T02:32:05Z)'
 - 'Merged PRs 2026-10-31 (heads → mergeCommits, all gh-verified): #10258 37d5f9b22329a16586734b7748e5f9bde7ea4c1e → 949c6adac4bc48ca7f1198b189effa86871829b2; #10274 1137a84d6c4467a936126271df55c52de8101e8e → c784d045f3a76dd944a7cd8af2936bd505b02fa5; #10276 f2c1d55fc1142515fe1cff448ae34c401b88b349 → cd195298c0748e06c80c11614c7b47c78a7e2835; #10275 673f8d333cd7bbbfb776e1517e20b245e6b7910f → 6c13414f379941be2806de2a6bf839d0b2c8f62a; #10286 92a211e1d4e07d0d1e65d76f3044f1ca210968d5 → d444ae6713b008aede6197f01989d44fa5122e4c; #10265 d7c1e9170d26dd10a8ab3907b9350dbc340111ef → 281e21c600ab5031805c33fa32711b8e02f3e53c; #10296 466243a5e11fef1b7fe743377fcebc8a804cd7ef → b3330f3cdd29ffef0260769c73764c9ce11f4a52; #10278 c2a3de654b843924dbc95f7a5b0c8b47382d4d69 → a99b539578003e7dfd32394dc1e839cba7f8bb0a; #10288 74e28ce960bfe2608de1aeeeba8221f75a73e4a2 → 92881169bb888435ab84b40740212a1fb0876a77; #10341 51b16608d57592b52d6c4b93877d65b2590a7c95 → dbaf1e07bcccf689a740ad3f1281c59ff1b9d946'
 do_not_redo:
 - Do not re-extract the nine-asset access repair; it is PR 9920 (reviewed PASS at 898edecc).
 - Do not re-diagnose PR 9596's red packs; the classification is in the continuation handoff (DEC:INTL-GS-9596-RECONCILIATION-2026-10-21 pending as a record).
 - Do not mint new rights or evidence vocabularies; extend the incumbent GMI/Semiconductors base.
+- Do not re-do gb1 (#10354 → aba326f3) or pin1 (#10355 → 4e1ae041); the seat rulings DEC:INTL-GS-GB1A-CLOSURE-WIDENING-ACCEPTED-20261031 and DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031 are decided — re-open only on a material invalidator.
 landmines:
 - PR 8754 carries an egress / NO-FURTHER-REQUESTS hold and IW2 custody — never touch.
 - PR 9596 is another author's draft — never push to it.
 - Fabric lanes run remotely only (local sub.sh on the seat host is refused); glm-5.3 is refused for leaf labor without the honest escalation env.
+- Never relaunch a used lane run id (w2a-fx5/fx6/fx7/fx7b/um1, w2a review r4/r4b/r4c/r4c2/r5/r6, rec7-r1/r2, rec7-review-r1/r2, w2b-gb1-r1/r2, w2b-gb1a-r1, w2b-gb1b-r1, w2b-gb1-review-r1, pin1-r1, pin1-review-r1, rec8-r1); an rc=75 admission refusal burns the id. Never reclaim disk on any host to clear a staging-reserve refusal (Chairman 2026-10-31).
 ---
 
 # International Markets Global Surveillance
@@ -169,14 +189,14 @@ return identity `1+r_USD = (1+r_local)(1+r_FX)`. Roadmap and 21 hard acceptance 
 `research/INTL_GLOBAL_SURVEILLANCE_MASTERPLAN_2026-10-21.md` (§14, §15); the running frontier lives in
 `research/INTL_GLOBAL_SURVEILLANCE_CONTINUATION_HANDOFF_2026-10-21.md`.
 
-## Current result (2026-10-31, records lane intl-gs-rec7-r2)
+## Current result (2026-11-01, records r8 seat-direct; previous write 2026-10-31 by records lane intl-gs-rec7-r2)
 
 | Wave | Carrier | State | Evidence |
 | --- | --- | --- | --- |
 | W0 asset access | PR 9920 @898edecc | PRODUCTION_PROOF (2026-10-21T04:06:24Z) | anonymous 200 on intl.html + nine assets; /intl_data.json still 401 |
 | W1 IM11/IM12 | ORCH-1 → lanes W1A/W1B | MERGED (#9923 → 0062e28f, #9924 → 5d454fbe) | records under the seat kit `orch/fabric/reviews/INTL-GS-W1*.md` |
-| W2 IM13/IM14 UI | W2F/W2A/W2B | MERGED: #9949 → e6debbb0; #10278 (W2B dossier, carries ruling-A transition) → a99b5395; #10288 (W2A scanner+coverage) → 92881169 | gh-verified mergeCommits (see wave next_actions); follow-up lane gb1 pending |
+| W2 IM13/IM14 UI | W2F/W2A/W2B | MERGED: #9949 → e6debbb0; #10278 (W2B dossier, carries ruling-A transition) → a99b5395; #10288 (W2A scanner+coverage) → 92881169 | gh-verified mergeCommits (see wave next_actions); follow-up lane gb1 landed: #10354 → aba326f3 (2026-11-01T01:03:18Z) and pin1 #10355 → 4e1ae041 (02:32:05Z); graph-boundary chip SERVED on intl.html (640 spans, Last-Modified 2026-11-01 03:12:25 GMT) — PRODUCTION_PROOF for §14 row 4, pin1 head-row wrapper not yet served at that probe |
 | W3 IM15/IM16 + UI | W3A/W3B (+ W3A-CONFIRM PASS @a7340535, W3B-REREVIEW PASS @37c10fc6), W3U | MERGED: #9943 → 63f3bc83; #9944 → 2d50943e; #10265 (dislocation explorer) → 281e21c6 | records `orch/fabric/reviews/INTL-GS-W3A.md`, `INTL-GS-W3B.md`, `INTL-GS-W3U.md`; IM16 gaps recorded above |
 | W4 IM17 engine+UI | W4A/W4B | MERGED: #9960 → 5c6fdb2e; #10258 (presenter; production tab not_built by design) → 949c6ada | no emission-permitted candidate source |
-| W5 IM18 engines + §14 closures | ORCH-5 → engine lanes | MERGED: #10274 → c784d045; #10276 → cd195298; #10275 → 6c13414f; #10286 → d444ae67; #10296 (mutant kills) → b3330f3c | W5 census 2026-10-31: 14 DONE / 6 PARTIAL / 1 GAP at base 6e721225; DEFERRED F1–F9 custody in the continuation handoff |
+| W5 IM18 engines + §14 closures | ORCH-5 → engine lanes | MERGED: #10274 → c784d045; #10276 → cd195298; #10275 → 6c13414f; #10286 → d444ae67; #10296 (mutant kills) → b3330f3c | W5 census 2026-10-31: 14 DONE / 6 PARTIAL / 1 GAP at base 6e721225; addendum 2026-11-01: 15 DONE / 6 PARTIAL / 0 GAP (row 4 DONE via #10354/#10355 + served proof; row 16 GAP→PARTIAL via #10276); DEFERRED F1–F9 custody in the continuation handoff |
 | Design R14 | ORCH-D → Paper file 01M3P1TW5Y3XWQC37ADDS8K5AG | FROZEN + MERGED #9937 → 556d3333 (amended A1/A1.1/A1.2 2026-10-22) | design spec path above |
