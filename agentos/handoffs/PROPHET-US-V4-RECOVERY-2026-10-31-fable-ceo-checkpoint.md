@@ -482,11 +482,9 @@ unresolved:
     VPS enrollment.
 next_actions:
   - >
-    1. #10255 at 6454a74a is reviewed APPROVE-READY and armed merge-on-green:
-    consume the sweeper outcome once at a real boundary (merge --match-head-commit
-    6454a74a); never self-approve or self-merge; then open the nits follow-up PR
-    (snapshot-record write warning, per-step record tag, LOST non-zero, explicit
-    ci.yml two-halves entries).
+    1. #10255 MERGED c2772cc44ef5 (sweeper, 2026-11-01 06:29Z). Still open: the nits
+    follow-up PR (snapshot-record write warning, per-step record tag, LOST non-zero,
+    explicit ci.yml two-halves entries) and the production proof in action 2.
   - >
     2. Production proof on the next scheduled nightly (see unverified); record it
     here and in the W3 ledger; do not dispatch daily.yml manually.
@@ -528,6 +526,21 @@ next_actions:
     of scripts/build_security_master.py / the membership ingest (source PR #10277);
     delivery is not pickup — never force ticker matches or accept a later snapshot
     for historical sessions; consume the owner's return on #6805 once.
+  - >
+    8. R7 US journey (research/prophet_v4/R7_US_JOURNEY_TRACE_2026-11-01.md, PR
+    #10385 at cb255014): the J11 leak (raw engine decision codes under "Why it is
+    here" in every pool setup detail) is fixed at the macro seam with the pool's own
+    copy; one independent Opus read-only review commissioned, then ready + arm
+    merge-on-green (never self-merge); production proof = next scheduled nightly
+    render shows J11 PASS on CVCO under scripts/prophet_journey_reconcile.py. The J8
+    finding (config/dag.yml runs build_site before build_prophet, so board
+    plan relations are one night stale on a plan's first night) is recorded, not
+    fixed: a DAG-order/two-pass change needs the render-budget analysis and an
+    independent review — route on #6805. The authenticated browser proof (J6/J7/J9
+    on the entitled DOM + watch -> next-day return) is EXACT_HUMAN_GATE: the seat's
+    signed-in navigation was refused by the harness classifier and is not retried;
+    the Chairman signs in and runs the checker on the saved DOM. W3 next-day leg
+    pending on the first nightly after #10255.
 do_not_redo:
   - V4 waves 0A, 0B, A1, B1, D1 and Entry Timing W0 are DONE (do not reopen).
   - "PR #9556's inline carve in the `collect` job is accepted; #10255 does not touch it."
@@ -620,6 +633,21 @@ APPROVE-READY at ea8e3805 after three review rounds and waits only for #10209;
 ci-authority rejects the non-main base as expected. #10277's contract-delta red is repaired at
 82812b81 (ci-pack running; merge-blocked stays until green). Still nothing merged,
 frozen or production-proven.
+
+Fourth segment: #10255 merged through the sweeper (c2772cc44ef5, 2026-11-01 06:29Z);
+#10277, #10363 and #10289 stayed where the sweeper and #10209 leave them. With the
+measurement lanes waiting on the nightly, the seat ran the R7 US product row as a
+machine trace on the committed render: the served anonymous boundary holds (premium
+JSON 401, public shell, no premium bytes in anonymous DOM or telemetry); the post-JS
+checker on CVCO/FLS/XNCR found one product defect (J11: every pool setup detail printed
+its raw engine decision code under "Why it is here" while the row worded it) — fixed in
+PR #10385 at the macro seam with the pool's own copy, R22 fallback preserved, with the
+evidence record and receipts in the same PR — and one pipeline-order finding (J8:
+build_site precedes build_prophet in config/dag.yml, so a plan's first night never
+links from the board detail), recorded for #6805. The authenticated browser leg is the
+Chairman's: the seat's signed-in navigation was refused and the refusal is final.
+Rung reached: DELIVERED for #10385; nothing in this segment is merged or
+production-proven.
 
 Canonical sources: completion brief and census at e757498822a2 (Draft #10242),
 recovery carrier #10174 (29cfb98b), program issue #6805 (comment 6539985230), shared
