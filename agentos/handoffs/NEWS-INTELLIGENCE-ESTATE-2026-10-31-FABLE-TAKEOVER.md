@@ -202,3 +202,29 @@ unresolved additions:
     owner: the C3/F05 (Chronicle) owner; this seat records the gap, mints nothing.
   - what: W3 Section C rows C2/C4/C5 deliberately not launched (other owners' artifacts/holds).
     owner: their incumbent owners; W3 Section F reviews and W4 E4 brief follow on this seat.
+
+## Sixth write 2026-10-31 22:1xZ — W3 Section F1 matrix and W4 E4 binding census
+
+- **F1 claim/evidence denominator matrix** — Fabric lane `news-w3-f1-matrix-r3` (ubuntu0, glm-5.3) PASS at d4e7c6dd; independent review lane `news-w3-f1-review-r1` (ubuntu0) PASS_WITH_NOTES (R1–R8 PASS; counts recomputed 18 segments: SOURCE 14, MERGE 7, INSTALLATION 5, AUTHENTICATED PATH 1, ACCEPTANCE 1 historical narrow slice; §12 criteria 10: MET 0, PARTIAL 6, NOT_MET 4). Seat applied the reviewer's three line-cite notes (one commit, 3 lines) → head fdf9eb54 → **macro #10348 MERGED → main ed8cd5199948891cd815d11dbe556323fc7a958e at 21:51Z (ci-gate/ci-plan/fence-pack SUCCESS; reviewDecision null; only the standing merge-queue-pilot red)**. Honest negatives preserved: QUANT DEFENSIBLE_NEGATIVE, none of the seven §9.1 verticals has a committed proof, real sign-in is a human gate, no percentage-complete figure.
+- **E4 Brief binding census** — Fabric lane `news-w4-e4-bindings-r1` (ubuntu0) PASS at f14735ee (27 mechanism rows; B1–B4 PARTIAL, B5 NONE, B6 legacy `news_llm` default off). Fabric review refused on ubuntu0 (temperature) and ubuntu2 (disk → WAITING_CAPACITY, nothing reclaimed under the Chairman 10-31 disk law); **native Opus read-only audit FAIL**: ten false citations, press rows 4–8 and marketing row 11 marked admitted while gated behind unset repository variables (`press-publish.yml:126`, `marketing-publish.yml:11-15`), press-publish concurrency group omitted, MASTERPLAN :577 misattributed. Repair lane `news-w4-e4-bindings-r4` (ubuntu1) PASS at d39a3772 (174/174 citations verified; eight rows → DARK BY DEFAULT with gate lines, one → NOT SHOWN, six given real activation cites; B1–B4 PARTIAL unchanged); re-review Fabric lane `news-w4-e4-review-r3` (ubuntu1, non-author) PASS_WITH_NOTES at d39a3772; seat applied its three NOTE gaps (4 lines) → head a3b84009; **macro #10351 OPEN at a3b84009ed4b01f10c96a5380ac607838396ec84, CI pending, merge pinned `--match-head-commit a3b84009` after ci-gate/ci-plan/fence-pack SUCCESS and a reviewDecision read — not merged, not accepted**.
+- Spent lane ids (never relaunch): news-w3-f1-matrix-r1/r2, news-w3-f1-probe-ubuntu0..4-r1, news-w4-e4-review-r1/r2, news-w4-e4-bindings-r2 (economic policy: escalation reason required), r3 (ubuntu0 temperature).
+- Still open for the seat: F2 adversarial review of the matrix, F3/F4 installed-vertical observation (human sign-in gate), F5 final acceptance, §9.1 seven vertical proofs (none committed), E4 implementation only after B1–B4 are qualified. F05 GAP-RECEIPT remains the Chronicle owner's. C2/C4/C5 not launched (other owners).
+
+Next action: merge #10351 at a3b84009 → W3 F2 (adversarial review of the F1 matrix), §9.1 vertical proofs where no human gate blocks, E4 stays design-blocked until B1–B4 are qualified; F3/F4 real-sign-in observation is a human gate named once; F05 GAP-RECEIPT stays with the Chronicle owner.
+
+## Seventh write 2026-11-01 04:5xZ — E4 census and records r5 merged; W3 F2 negative controls commissioned
+
+- **Correction to the sixth write:** macro #10351 (E4 Brief binding census) is MERGED → f3b17d9e
+  (2026-11-01T04:34:13Z), not "open pinned". Records r5 #10352 MERGED → 6ff08d8e (04:34:34Z).
+- **F2 commissioned (MASTERPLAN §7.F row F2, line 387).** Three path-disjoint Fabric lanes on
+  ubuntu1 (glm-5.3, class review, C2_COMPLEX_BOUNDED, base 6ff08d8e, parent
+  w3-seat-direct-20261031), launched 04:50Z:
+  - `news-w3-f2-time-corrections-r1` — clocks, revisions, corrections, withdrawal, source health (T01–T14).
+  - `news-w3-f2-rights-identity-r1` — rights receipts, read leakage, dated ticker identity, mirror/transport independence, over-merge (R01–R15).
+  - `news-w3-f2-model-context-r1` — injection, uncited claims, numbers/units/periods, sentiment and confidence authority, legacy path default (M01–M15).
+  Each lane writes one evidence doc and one offline synthetic control script under
+  `research/news_intelligence_estate_20261021/` (`F2_*_NEGATIVE_CONTROLS.md`, `f2_controls/nc_*.py`).
+  Lanes author none of the attacked modules and edit no source. The seat accepts a lane only after
+  re-running its script on M2 and reproducing every verdict. A BROKEN control is recorded as
+  evidence; its repair is a separately commissioned build lane, never part of the F2 lane.
+- Spent lane ids (never relaunch): the three ids above.

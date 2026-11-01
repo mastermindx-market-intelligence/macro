@@ -40,7 +40,7 @@ waves:
   - id: W0
     title: Wave 0 — seat context, custody verification, program records
     status: done
-    next_action: "2026-10-31 20:4xZ — W3 Section C censuses MERGED (macro #10344 -> 81f64c2c: C1 exposure joins, C3 F05 delivery; ORCH-3 #10338 -> cde8601b and records #10339 -> 754d5345 also on main); next: W3 Section F reviews, W4 E4 brief, §9 vertical proofs and production proof (real sign-in = human gate); F05 GAP-RECEIPT owed by the Chronicle owner; Fabric hosts WAITING_CAPACITY (ubuntu2/3 disk — #1632 owner; ubuntu1 temperature); Chairman disk law binds."
+    next_action: "2026-11-01 04:5xZ — W3 F1 matrix MERGED (#10348 -> ed8cd519); W4 E4 binding census MERGED (#10351 -> f3b17d9e, PASS_WITH_NOTES after Opus-audit repair); W3 F2 negative controls commissioned as three ubuntu1 Fabric lanes (time/corrections T01-T14, rights/identity R01-R15, model/context M01-M15; base 6ff08d8e); next: seat re-runs each lane control script, independent review, one PR; BROKEN controls become separate build lanes; then §9.1 vertical proofs; E4 implementation blocked until B1-B4 are qualified."
   - id: W1
     title: Wave 1 — Sections A+E (delivery, rights, propagation, custody) and B+D (schema inventory, engine trace, corpus frontier) on fabric lanes under two Opus orchestrators
     status: done
@@ -61,7 +61,7 @@ waves:
     status: todo
     depends_on: [W2, W3]
     next_action: "Not before W2/W3 land."
-next_action: "2026-10-31 19:2xZ — ORCH-3 and ORCH-4 landed (macro #10338 pending CI/merge; terminal #1196 merged); next: merge #10338 at 2981b4ed, then W3 Section C/F and W4 brief + production proof; Chairman disk law 2026-10-31 binds every lane (no reclaim on any host)."
+next_action: "2026-11-01 04:5xZ — W3 C (#10344), F1 (#10348 -> ed8cd519) and W4 E4 census (#10351 -> f3b17d9e) on main; W3 F2 negative-control lanes running on ubuntu1; next: adjudicate F2 by seat re-run, review, merge; then §9.1 vertical proofs and production proof; E4 implementation blocked until B1-B4 bindings are qualified (all PARTIAL at HEAD)."
 ---
 
 # News Intelligence Estate convergence

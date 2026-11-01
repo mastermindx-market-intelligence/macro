@@ -493,14 +493,33 @@ waves:
     depends_on: [EW-P1]
   - id: EW-P4
     title: EW-P4 descriptive early-warning surface (product A) per PRODUCT_DESIGN_SPEC - observation language only, no forecast or sizing
-    status: in_progress
-    # ORCH-P4 (Opus orchestrator, fabric lanes) spawned 2026-10-31 18:4xZ after the EW-P2 merge; seat judges by artifact (rubric rows, EN/ZH x dark/light x 1280/390/320 shots + receipt), fresh review, merge.
+    status: done
+    pr: 10350
+    # MERGED 2026-11-01T04:36:16Z squash 886ab694c947 (exact head a49a16d52ac2, base 1d253e1d). Built by ORCH-P4 -> ORCH-P4b (Opus orchestrators, fabric lanes; both COMPLETED).
+    # Independent review: gd-ew-p4-r1 REQUEST_CHANGES (F1-F5 repaired), r2 APPROVE_WITH_NOTES on 423c403f, r3 APPROVE_WITH_NOTES on a49a16d5 (no new findings). Seat visual check of 46 shots (EN/ZH x dark/light x 1280/390/320, receipt source_revision 5bb16bdb) PASS; that check is the seat's, not independent.
+    # Local 539 passed / 2 skipped, node 19/19, contract-delta 0/0; hosted ci-gate, ci-plan and fence-pack SUCCESS at the exact head.
+    # Rung = MERGED only. No producer writes latest_observation (EW-P2 recording stays default-off), so production shows the "Rotation data unavailable" state; PRODUCTION_PROOF not claimed. Follow-ups in EW-P4-FU.
     depends_on: [EW-P2]
+  - id: EW-P4-FU
+    title: EW-P4 follow-ups - review notes F-1..F-3 and the missing latest_observation producer (held unknowns, not regressions)
+    status: todo
+    # F-1: a whitespace-only pair_id is accepted by the Jinja and JS mirrors. F-2: a calendar-impossible event_as_of passes validation. F-3: the selector scan in the test omits .gde-ew-horizons, ul.gde-ew-against, the D5/D6 drawer paragraphs and the conflict contextline.
+    # Producer: the surface renders a real observation only after an activation gate turns on ROTATION_OBSERVATION_RECORDING_ENABLED and a writer emits latest_observation (EW-P2 "Activation (T2+) needs its own gate"). Until then the unavailable state is the truthful render.
+    # Vision review lane refused (controller_minimax_lease_required); the seat contact-sheet check stood in. Re-run when that lane is admitted.
+    depends_on: [EW-P4]
   - id: EW-P5
     title: EW-P5 acceptance and release - packs S01-S12, Q01-Q08, O01-O08, C01-C16, U01-U11, R01-R08 per ACCEPTANCE_AND_RELEASE.md; natural production proof
     status: todo
+    # Receipts table started 2026-11-01 at research/grey_deer/ew_completion_20261031/EW_P5_ACCEPTANCE_RECEIPTS.md (section 7 schema; merged waves only, no pack executed yet).
     depends_on: [EW-P1, EW-P2, EW-P3, EW-P4]
 next_action: >
+  2026-11-01 (CEO seat 00dea969, records r4): EW-P4 #10350 is MERGED (886ab694c947, exact head a49a16d5, review r3
+  APPROVE_WITH_NOTES). Its rung is MERGED, not production proof: no producer writes latest_observation, so the surface shows
+  the unavailable state until an activation gate exists (EW-P4-FU). EW-P1 still waits on #10255; the seat watcher was re-armed
+  with a strict "(#10255)" subject match after the first one matched the records r3 subject. EW-P5 receipts table started.
+  Next: EW-P1 acceptance (two natural engine landings after #10255), then EW-P5 packs S/Q/O/C/U/R at exact heads; no live send,
+  no Tier A grant without authenticated proof.
+
   2026-10-31 (Fable CEO seat 00dea969, records r3): EW-P0 #10249, EW-P2 #10325 (b38935af), CI budget #10341 (dbaf1e07) and
   EW-P3 #10340 (11e6c98eb8c3) are MERGED; the EW-P3 prereg is dated (merge 2026-10-31, prospective start 2026-11-02, earliest first
   look 2027-12-31) and its two declared budgets are on the trial ledger - zero outcome rows read. EW-P1.T2 #10333 is CLOSED,
