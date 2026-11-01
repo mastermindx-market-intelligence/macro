@@ -5098,6 +5098,11 @@ CURATED_EXCLUSIVE = {
     # single-suite owner. Its explicit paths cover the static import closure
     # and package ancestor init, without accepting unrelated render probes.
     "aibrief-countdown-pr",
+    # 2026-11-01 C19 Atom-clock guard: the 13F census sec_sources and rolling
+    # suites leave config/unrun_test_baseline.json for one gate:code exclusive
+    # home. paths: is the measured import/read closure plus ancestor inits;
+    # ceilings stay fixed.
+    "institutional-13f-ingestion-contracts",
 }
 
 
