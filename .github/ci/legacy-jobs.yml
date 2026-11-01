@@ -14875,6 +14875,7 @@ jobs:
       - "site/options_intel_brief.json"
       - "site/premiumdata/special_situations.json"
       - "site/qledger/track_record.json"
+      - "site/factordata/us_board_track.json"
       - "config/append_only_artifacts.json"
       - "config/dag.yml"
       - "engine/__init__.py"
