@@ -412,3 +412,21 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
   SUCCESS incl. the international-dislocation-explorer check); then record the merge (records r10).
 - Row 18 entitled-browser journey proof; row 19 next nightly cycle; row 20 CI-green quote; row 21 served
   both-themes proof — records-only appends. R2-01 remains the one deferred product follow-up.
+
+## Checkpoint 2026-11-01 (r10) — F10 + hygiene MERGED; records r9 merged; R2-01 focus cells; §14 18/3/0
+
+- Records r9 #10368 → main dd24759ec2a9ffe14a91db2e8921a7bba72200d3 (2026-11-01T06:49:49Z), pinned 2d68f618 after
+  review INTL-GS-REC9 `PASS_WITH_NOTES` (nits N1–N3 applied in the pinned follow-up).
+- PR #10367 MERGED → main c133b698b4960f5a2a8b4540e6b164c3c7c23e1b at 2026-11-01T07:40:51Z (squash pinned 5ac89fd3; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed).
+- PR #10376 MERGED → main bacc2d765488de853291dc0f8d7c545d3b3ca29a at 2026-11-01T09:29:37Z (squash pinned d50f5839; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed). Lessons recorded (memory `monkeypatch-delenv-on-absent-key-records-no-teardown`,
+  `stacked-pr-dies-when-parent-branch-is-deleted-on-merge`).
+- R2-01: PR #10384 OPEN (head ee5ce58a7c63dbc1613df2235e58030de72f40fe on parent 021af584; review INTL-GS-R2-01 PASS; seat-only pinned merge via the durable watcher).
+- §14 rows 19, 20, 21 → DONE by records (publisher runs that served gb1/pin1; local green quotes 14/14 + 18/18 of the
+  CI-owned cjs suites on a playwright-capable host; W3U/W4B dual-theme dual-viewport packs on main). Row 18 stays
+  PARTIAL (anonymous half 18/18 green; entitled journey = human sign-in). **Recount: 18 DONE / 3 PARTIAL / 0 GAP.**
+- Merges performed by the seat's durable pinned-merge watcher (`seat_pinned_merge_watch.sh`: 10-min reads,
+  fail-closed on head move / red / required-not-pass), not by polling.
+
+### Next
+- Row 18 entitled-browser journey proof (human sign-in); rows 14 and 16 per their listed owners. R2-01 focus-cell PR #10384 is open; merge seat-only pinned to ee5ce58a after a green rollup.
+  Re-measure the dislocation job's PR-side time before touching its 15-min budget. No other product lane is open.
