@@ -178,9 +178,28 @@
       {% set _ew.event_en = _EW_MONTHS_EN[_evd[5:7]|int - 1] ~ ' ' ~ (_evd[8:10]|int) %}
       {% set _ew.event_zh = _evd[5:7]|int ~ '月' ~ (_evd[8:10]|int) ~ '日' %}
       {% set _oa = _n.get('observed_at') %}{% set _na = _n.get('not_after') %}
-      {% if _oa is string and _oa|length >= 20 and (_oa.endswith('+00:00') or _oa.endswith('Z'))
-            and _na is string and _na|length >= 20 and (_na.endswith('+00:00') or _na.endswith('Z'))
-            and _na[0:19] > _oa[0:19] %}
+      {# lib _aware_utc: accept only the producer's canonical UTC subset, YYYY-MM-DDTHH:MM:SS with an optional
+         six-digit fraction then +00:00 or Z, on a real calendar day and clock time, so a stamp the lib rejects never renders #}
+      {% set _tns = namespace(ok=true) %}
+      {% for _t in [_oa, _na] %}
+        {% if _t is not string %}{% set _tns.ok = false %}
+        {% else %}
+          {% set _core = _t[:-1] if _t.endswith('Z') else (_t[:-6] if _t.endswith('+00:00') else '') %}
+          {% if _core|length != 19 and not (_core|length == 26 and _core[19:20] == '.') %}{% set _tns.ok = false %}
+          {% elif _core[4:5] != '-' or _core[7:8] != '-' or _core[10:11] != 'T' or _core[13:14] != ':' or _core[16:17] != ':' %}{% set _tns.ok = false %}
+          {% else %}
+            {% for _ch in (_core[0:4] ~ _core[5:7] ~ _core[8:10] ~ _core[11:13] ~ _core[14:16] ~ _core[17:19] ~ _core[20:]) %}{% if _ch not in _EW_DIGITS %}{% set _tns.ok = false %}{% endif %}{% endfor %}
+            {% if _tns.ok %}
+              {% set _ty = _core[0:4]|int %}{% set _tm = _core[5:7]|int %}{% set _td = _core[8:10]|int %}
+              {% set _tleap = _ty % 4 == 0 and (_ty % 100 != 0 or _ty % 400 == 0) %}
+              {% set _tmd = [31, 29 if _tleap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] %}
+              {% if _ty < 1 or _tm < 1 or _tm > 12 or _td < 1 or _td > _tmd[_tm - 1]
+                    or _core[11:13]|int > 23 or _core[14:16]|int > 59 or _core[17:19]|int > 59 %}{% set _tns.ok = false %}{% endif %}
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {% if _tns.ok and _na[0:19] > _oa[0:19] %}
         {% set _ew.obs_at = _oa %}{% set _ew.not_after = _na %}
       {% else %}{% set _ew.fail = true %}{% endif %}
     {% endif %}
@@ -192,7 +211,20 @@
     {% if 'source_as_of' not in _n or 'values' not in _n %}{% set _ew.fail = true %}
     {% elif _ew.kind == 'data_withdrawal' %}
       {% if _vals is not none %}{% set _ew.fail = true %}
-      {% elif _sa is not none and (not _sa is string or _sa > _ew.event) %}{% set _ew.fail = true %}
+      {% elif _sa is not none %}
+        {# lib _opt_iso_date: a withdrawal's source_as_of is a strict, real calendar date, never after the event #}
+        {% set _sns = namespace(ok=false) %}
+        {% if _sa is string and _sa|length == 10 and _sa[4:5] == '-' and _sa[7:8] == '-' %}
+          {% set _sns.ok = true %}
+          {% for _ch in (_sa[0:4] ~ _sa[5:7] ~ _sa[8:10]) %}{% if _ch not in _EW_DIGITS %}{% set _sns.ok = false %}{% endif %}{% endfor %}
+          {% if _sns.ok %}
+            {% set _sy = _sa[0:4]|int %}{% set _sm = _sa[5:7]|int %}{% set _sd = _sa[8:10]|int %}
+            {% set _sleap = _sy % 4 == 0 and (_sy % 100 != 0 or _sy % 400 == 0) %}
+            {% set _smd = [31, 29 if _sleap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] %}
+            {% if _sy < 1 or _sm < 1 or _sm > 12 or _sd < 1 or _sd > _smd[_sm - 1] %}{% set _sns.ok = false %}{% endif %}
+          {% endif %}
+        {% endif %}
+        {% if not _sns.ok or _sa > _ew.event %}{% set _ew.fail = true %}{% endif %}
       {% endif %}
     {% else %}
       {% if _sa != _ew.event or _vals is not mapping %}{% set _ew.fail = true %}
