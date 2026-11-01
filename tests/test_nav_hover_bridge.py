@@ -17,12 +17,13 @@ TEMPLATE_ACCOUNT_JS = (ROOT / "templates" / "account.js").read_text(encoding="ut
 SITE_ACCOUNT_JS = (ROOT / "site" / "account.js").read_text(encoding="utf-8")
 START_HTML = (ROOT / "site" / "start.html").read_text(encoding="utf-8")
 MACRO_HTML = (ROOT / "site" / "macro.html").read_text(encoding="utf-8")
+NAVLINKS = (ROOT / "templates" / "_navlinks.html.j2").read_text(encoding="utf-8")
 
 # The cache-buster the theme.js -> account.js -> nav_market.js chain is pinned
 # to, and a digest of the payload that key is responsible for busting. They MUST
 # move together -- see test_nav_release_key_moves_with_the_payload_it_busts.
-NAV_RELEASE_KEY = "20261018-shared-shell-source-join"
-NAV_PAYLOAD_DIGEST = "a967578e"
+NAV_RELEASE_KEY = "20261030-nav-prehydration"
+NAV_PAYLOAD_DIGEST = "0b3f5a65"
 
 
 def _payload_digest() -> str:
@@ -187,6 +188,7 @@ def test_hover_gap_release_uses_fresh_immutable_asset_chain() -> None:
         "20260812-ui-audit-ink-grades",
         "20260913-account-actions",
     "20261010-account-continuity",
+    "20261018-shared-shell-source-join",
     ):
         assert stale not in TEMPLATE_THEME_JS
         assert stale not in SITE_THEME_JS
@@ -384,3 +386,118 @@ def test_research_icon_bridge_never_stomps_an_unknown_card() -> None:
         assert icons["portfolio"] != icons["bot"]
         dashboard = _re.search(r"\n    dashboard: '([^']+)'", source).group(1)
         assert icons["portfolio"] != dashboard and icons["bot"] != dashboard
+
+
+# ---------------------------------------------------------------------------
+# Pre-hydration market-menu barrier (2026-10-30 mega-menu flash fix).
+#
+# Root cause: _navlinks.html.j2 server-renders the LEGACY compact market
+# panels, and nav_market.js replaces their markup with the full-width mega
+# menu only after the deferred theme.js -> account.js -> nav_market.js chain
+# lands — so the first hover/focus/tap painted the old menu for whole
+# seconds before the swap. The fix is a pre-paint visibility barrier, not a
+# delay: an inline boot script puts `mdx-nav-boot` on <html> before the nav's
+# first paint, CSS withholds every not-yet-enhanced market panel while the
+# class is present, and exactly three parties lift it — nav_market.js boot()
+# on the success path (inside `finally`), the two loaders' script onerror
+# handlers on a fetch failure, and the boot script's own watchdog on a
+# loader stall. With JS disabled the class never exists and the legacy
+# menus stay usable, so nothing is ever permanently hidden.
+# ---------------------------------------------------------------------------
+
+
+def test_navlinks_boots_the_barrier_inline_before_the_nav_can_paint() -> None:
+    boot = NAVLINKS.split("<script>", 1)[1].split("</script>", 1)[0]
+    # The class must land on <html> above the stylesheet link and the nav
+    # markup that follows it, or the legacy menu could paint unaugmented.
+    assert NAVLINKS.index("<script>") < NAVLINKS.index(
+        '<link rel="stylesheet" href="{{ NP }}navigation-refresh.css">'
+    )
+    assert NAVLINKS.index("<script>") < NAVLINKS.index('<a class="nav-brand"')
+    assert "classList.add('mdx-nav-boot')" in boot
+    # Idempotent: a second include of the partial must not re-arm anything.
+    assert "classList.contains('mdx-nav-boot')" in boot
+    # Exactly one inline script in the partial — the src=" attr ones at the
+    # bottom (logo/live) are a different mechanism and must stay untouched.
+    assert NAVLINKS.count("<script>") == 1
+    # The stall watchdog extends only while a loader chain is demonstrably in
+    # flight (__mmAccountLoading / __mmNavMarketLoading are set synchronously
+    # by their loaders before the fetch) and is hard-capped, so a slow cold
+    # cache never regresses to the flash while a genuinely dead page still
+    # recovers its legacy menus.
+    assert "__mmAccountLoading" in boot
+    assert "__mmNavMarketLoading" in boot
+    assert "rearms" in boot
+
+
+def test_barrier_css_withholds_only_unenhanced_market_panels() -> None:
+    selector = (
+        "html.mdx-nav-boot .nav-dd:not(.nav-mega-dd):not(.nav-market-dd) "
+        "> .nav-dd-menu"
+    )
+    rule = TEMPLATE_CSS.split(selector, 1)[1].split("}", 1)[0]
+    assert "display: none;" in rule
+    # The Research mega already ships its final markup — it is excluded by
+    # name, never withheld, and an enhanced market dd carries .nav-market-dd.
+    assert ":not(.nav-mega-dd)" in selector
+    assert ":not(.nav-market-dd)" in selector
+    # The barrier is scoped to the boot class, so it cannot outlive the
+    # window: every other reveal in this sheet keys off :hover/:focus-within/
+    # .nav-hover-open/.open, none of which carry it.
+    assert TEMPLATE_CSS.count("mdx-nav-boot") == 2  # selector + doc comment
+
+
+def test_nav_boot_lifts_the_barrier_before_binding_auth_preferences() -> None:
+    boot = TEMPLATE_JS.split("function boot() {", 1)[1].split(
+        "\n  /* Signed-in market folding", 1
+    )[0]
+    # The lift lives in `finally`: a failed enhancement must restore the
+    # legacy menus, not leave the nav dark until the boot script's watchdog.
+    assert "try {" in boot
+    finally_part = boot.split("} finally {", 1)[1]
+    assert "classList.remove('mdx-nav-boot')" in finally_part
+    # ...and the lift precedes the auth binding, so a synchronous
+    # INITIAL_SESSION callback folds an already-enhanced rail.
+    assert finally_part.index("classList.remove('mdx-nav-boot')") < finally_part.index(
+        "bindMarketPreferenceStream();"
+    )
+
+
+def test_market_preference_binding_survives_loader_order() -> None:
+    """The subscription must not be silently skipped when this file executes
+    before theme.js has defined MDXAuth (account.js appends us asynchronously;
+    no contract pins the order). Bind now when the seam exists; while the
+    account pipeline is demonstrably still in flight, retry on a bounded
+    schedule instead of returning forever. MDXAuth.onChange re-delivers the
+    resolved session to a late subscriber, so either order converges."""
+    bind = TEMPLATE_JS.split("function bindMarketPreferenceStream()", 1)[1]
+    assert "window.MDXAuth.onChange(onAuthUser)" in bind
+    assert "window.__mmNavMarketLoading" in bind
+    assert "window.__mmAccountLoading" in bind
+    assert "setInterval" in bind and "clearInterval" in bind
+    assert "tries >= 30" in bind
+    # The pref-application behaviour itself is unchanged: same preference
+    # projection, same fold, same change event.
+    handler = TEMPLATE_JS.split("function onAuthUser(user)", 1)[1].split(
+        "function bindMarketPreferenceStream()", 1
+    )[0]
+    assert "currentPreference = preferenceOf(user);" in handler
+    assert "apply(keptMarketsOf(user));" in handler
+    assert "'mmx-markets-change'" in handler
+
+
+def test_loader_chain_onerror_lifts_the_barrier() -> None:
+    """account.js or nav_market.js failing to FETCH means nav_market.js boot()
+    can never run — the loaders own the fast barrier lift for that case, so a
+    broken deploy degrades to the legacy menus immediately instead of after
+    the boot script's watchdog. site/theme.js is the minified emit and
+    site/account.js the byte copy, so both are compared whitespace-collapsed
+    on the stable markers."""
+    for source in (TEMPLATE_THEME_JS, SITE_THEME_JS, TEMPLATE_ACCOUNT_JS, SITE_ACCOUNT_JS):
+        flat = re.sub(r"\s+", "", source)
+        assert "s.onerror=function(){" in flat
+        assert "classList.remove('mdx-nav-boot')" in flat
+        # Guarded access: the progressive-loader sandbox (and any bare-object
+        # DOM) has no documentElement, and the class is absent on pages that
+        # predate the barrier — both must no-op, never throw.
+        assert "if(el&&el.classList)" in flat
