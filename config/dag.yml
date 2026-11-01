@@ -1990,6 +1990,23 @@ lanes:
           never become a second opinion).
 
   - workflow: .github/workflows/daily.yml
+    job: us_board_ledgers
+    steps:
+      - id: build_us_sector_rotation_landing
+        module: scripts.build_us_sector_rotation
+        args: [--strict]
+        note: >
+          Second run of the fast-rotation lens, in its own job, so the artifact lands on nights
+          the runner cancels engine before its own copy (actions/runner#4820). Idempotent per
+          (asof, key). Reads only the committed tree. Red on failure, unlike the engine copy.
+      - id: grade_us_board_landing
+        module: scripts.grade_us_board
+        args: [--nightly]
+        note: >
+          Second run of the US board grader, for the same reason. Idempotent per as_of and
+          frozen on the grade key, so it adds no rows when engine got there first.
+
+  - workflow: .github/workflows/daily.yml
     job: stock_briefs
     steps:
       - id: fetch_r2_stockdata

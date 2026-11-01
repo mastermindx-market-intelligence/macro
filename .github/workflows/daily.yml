@@ -57,8 +57,12 @@ concurrency:
   #
   # File-size cliff (~512,000 bytes, silent strand): tests/test_workflow_file_size.py.
   # #5422 renamed pipeline-daily → pipeline-daily-3 on a now-refuted zombie-group
-  # theory; kept to avoid churn. Varying kill delays are a poll cycle — grep
-  # session transcripts for the run id before concluding "no canceller exists".
+  # theory; kept to avoid churn.
+  # What has cancelled long jobs here since 2026-10-15 is the runner itself
+  # (actions/runner#4820): its listener shuts a job down on the tenth failed broker
+  # poll, about 213 minutes on these hosts. Run 41260834596: mac-builder-5's Runner log
+  # shuts down at 09:45:17Z and its Worker log takes the cancel that second.
+  # A new job starts a fresh count, so work that has to land gets its own job.
   group: ${{ github.event_name == 'schedule' && format('pipeline-daily-3-cron-{0}', github.event.schedule) || 'pipeline-daily-3' }}
   cancel-in-progress: false
 
@@ -6373,6 +6377,45 @@ jobs:
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
         run: bash scripts/ci/nightly_timings_finish.sh 60
+
+  # The US board grader and fast-rotation lens, landed outside the engine, which the runner
+  # cancels before it reaches its own copies (see the note on the concurrency group). Those
+  # copies stay: both writers are idempotent, so a second run adds no rows. Unlike them,
+  # these steps go red on failure. Nothing depends on this job and nothing should.
+  # COLLECT_LANE=nightly is LOAD-BEARING: without it the rotation never appends its forward
+  # ledger (engine.us_sector_rotation._ledger_lane_armed).
+  us_board_ledgers:
+    needs: [et_gate, engine]
+    if: always() && needs.et_gate.outputs.run != 'false'
+    runs-on: [self-hosted, macstudio]
+    timeout-minutes: 45
+    env:
+      COLLECT_LANE: nightly
+    steps:
+      - name: timings — job start mark (W2)
+        run: date +%s > "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - run: git pull origin main
+      - name: python 3.12 (Homebrew venv — self-hosted runner)
+        run: |
+          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
+          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
+          echo "$VENV/bin" >> "$GITHUB_PATH"
+          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - run: pip install -r requirements.txt
+      - name: US fast-rotation lens, outside the engine
+        run: python -m scripts.build_us_sector_rotation --strict
+      - name: US board grade, outside the engine
+        if: always()
+        run: python -m scripts.grade_us_board --nightly
+      - name: commit US board and rotation artifacts
+        if: always()
+        run: bash scripts/ci/us_board_commit.sh
+      - name: timings ledger + 85% budget tripwire (W2)
+        if: always()
+        run: bash scripts/ci/nightly_timings_finish.sh 45
 
   # AI stock-research briefs = ~30 DeepSeek calls (~20 min) — the heaviest single
   # step in the build, and what pushed the engine job past its timeout. build_site

@@ -947,6 +947,26 @@ EOF_SWEEP
   return 0
 }
 
+# GH001 is decided per blob: one staged file over GitHub's 100 MiB limit rejects the whole
+# push and everything else in the commit goes with it, as engine's nightly commit found
+# from 2026-10-22. A caller whose commit holds independent artifacts can hold that file
+# back, land the rest and go red afterwards. The file goes back to HEAD so that
+# rebase --autostash does not carry it.
+PUSH_HELD_BACK=""
+push_hold_oversize_staged() {
+  local f size limit="${PUSH_BLOB_LIMIT:-104857600}"
+  PUSH_HELD_BACK=""
+  while IFS= read -r -d '' f; do
+    size=$(git cat-file -s ":$f" 2>/dev/null) || continue
+    [ "$size" -gt "$limit" ] || continue
+    git reset -q -- "$f" || return 1
+    git checkout HEAD -- "$f" 2>/dev/null || rm -f -- "$f"
+    PUSH_HELD_BACK="$PUSH_HELD_BACK $f"
+    echo "::error title=file over GitHub's limit::$f is $size B, over $limit B. Held back so the rest of this commit lands. It cannot land until it is split."
+  done < <(git diff --cached --name-only -z --no-renames --diff-filter=d -- "$@")
+  return 0
+}
+
 # One-line plain-word reason for the current class (used in the retry log line).
 push_why() {
   case "${PUSH_FAIL_CLASS}" in

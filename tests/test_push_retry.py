@@ -3033,3 +3033,131 @@ def test_ohlc_delivery_workflow_missing_key_is_visible_before_publish(tmp_path):
     assert result.returncode == 1
     assert "::error::OHLC origin delivery" in result.stdout
     assert not list(tmp_path.iterdir())
+
+
+def _hold_repo(tmp_path: Path) -> Path:
+    repo = tmp_path / "repo"
+    _init_repo(repo)
+    data = repo / "data"
+    data.mkdir()
+    (data / "grows.jsonl").write_text("old\n")
+    (data / "small.jsonl").write_text("old\n")
+    subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
+    subprocess.run(["git", "-C", str(repo), "commit", "-q", "-m", "seed"], check=True)
+    return repo
+
+
+def test_hold_oversize_staged_keeps_the_rest_of_the_commit(tmp_path):
+    repo = _hold_repo(tmp_path)
+    data = repo / "data"
+    (data / "grows.jsonl").write_text("x" * 51)
+    (data / "new_big.jsonl").write_text("x" * 51)
+    (data / "at_limit.jsonl").write_text("x" * 50)
+    (data / "small.jsonl").write_text("new\n")
+    subprocess.run(["git", "-C", str(repo), "add", "data"], check=True)
+
+    result = run_sh(
+        """
+        push_hold_oversize_staged data/
+        echo "held=$PUSH_HELD_BACK"
+        """,
+        env={"PUSH_BLOB_LIMIT": "50"},
+        cwd=repo,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "held= data/grows.jsonl data/new_big.jsonl" in result.stdout
+    assert result.stdout.count("::error title=file over GitHub's limit::") == 2
+    staged = _git_output(repo, "diff", "--cached", "--name-only").split()
+    assert staged == ["data/at_limit.jsonl", "data/small.jsonl"]
+    assert (data / "grows.jsonl").read_text() == "old\n"
+    assert not (data / "new_big.jsonl").exists()
+    assert _git_output(repo, "status", "--porcelain", "--", "data/grows.jsonl") == ""
+
+
+def test_hold_oversize_staged_leaves_a_commit_under_the_limit_alone(tmp_path):
+    repo = _hold_repo(tmp_path)
+    (repo / "data" / "small.jsonl").write_text("new\n")
+    subprocess.run(["git", "-C", str(repo), "add", "data"], check=True)
+
+    result = run_sh(
+        """
+        push_hold_oversize_staged data/
+        echo "held=[$PUSH_HELD_BACK]"
+        """,
+        env={"PUSH_BLOB_LIMIT": "50"},
+        cwd=repo,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "held=[]" in result.stdout
+    assert "::error" not in result.stdout
+    assert _git_output(repo, "diff", "--cached", "--name-only").split() == ["data/small.jsonl"]
+
+
+def _us_board_clone(tmp_path: Path) -> tuple[Path, Path]:
+    bare = tmp_path / "origin.git"
+    subprocess.run(["git", "init", "-q", "--bare", "-b", "main", str(bare)], check=True)
+    seed = tmp_path / "seed"
+    _init_repo(seed)
+    for rel in ("data/us_board_ledger/snapshots.jsonl", "data/us_sector_rotation/latest.json", "data/other.jsonl"):
+        (seed / rel).parent.mkdir(parents=True, exist_ok=True)
+        (seed / rel).write_text("old\n")
+    subprocess.run(["git", "-C", str(seed), "add", "."], check=True)
+    subprocess.run(["git", "-C", str(seed), "commit", "-q", "-m", "seed"], check=True)
+    _git_output(seed, "push", "-q", str(bare), "main")
+    repo = tmp_path / "lane"
+    subprocess.run(["git", "clone", "-q", str(bare), str(repo)], check=True)
+    return bare, repo
+
+
+def _run_us_board_commit(repo: Path, **env: str) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["bash", str(REPO_ROOT / "scripts" / "ci" / "us_board_commit.sh")],
+        capture_output=True,
+        text=True,
+        cwd=str(repo),
+        env={**os.environ, "GITHUB_WORKSPACE": str(REPO_ROOT), **env},
+    )
+
+
+def test_us_board_commit_lands_its_own_paths_and_nothing_else(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_text("new\n")
+    (repo / "data/us_sector_rotation/latest.json").write_text("new\n")
+    (repo / "site/factordata").mkdir(parents=True)
+    (repo / "site/factordata/us_board_track.json").write_text("{}\n")
+    (repo / "data/other.jsonl").write_text("not ours\n")
+
+    result = _run_us_board_commit(repo)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert _git_output(bare, "diff", "--name-only", "main~1", "main").split() == [
+        "data/us_board_ledger/snapshots.jsonl",
+        "data/us_sector_rotation/latest.json",
+        "site/factordata/us_board_track.json",
+    ]
+
+
+def test_us_board_commit_with_nothing_to_land_is_green_and_pushes_nothing(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    before = _git_output(bare, "rev-parse", "main")
+
+    result = _run_us_board_commit(repo)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert _git_output(bare, "rev-parse", "main") == before
+
+
+def test_us_board_commit_lands_the_rest_and_goes_red_when_a_file_is_over_the_limit(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_text("x" * 51)
+    (repo / "data/us_sector_rotation/latest.json").write_text("new\n")
+
+    result = _run_us_board_commit(repo, PUSH_BLOB_LIMIT="50")
+
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert "::error title=file over GitHub's limit::data/us_board_ledger/snapshots.jsonl" in result.stdout
+    assert _git_output(bare, "diff", "--name-only", "main~1", "main").split() == [
+        "data/us_sector_rotation/latest.json",
+    ]

@@ -546,3 +546,32 @@ class TestWrapperScript:
         mod = importlib.import_module("scripts.build_us_sector_rotation")
         assert hasattr(mod, "main")
         assert callable(mod.main)
+
+    @pytest.mark.parametrize("argv,expected", [([], 0), (["--strict"], 1)])
+    def test_a_failure_is_visible_and_only_strict_goes_red(self, monkeypatch, capsys, argv, expected):
+        import engine.us_sector_rotation as engine_mod
+        from scripts.build_us_sector_rotation import main
+
+        def boom(*_a, **_k):
+            raise ValueError("no inputs")
+
+        monkeypatch.setattr(engine_mod, "compute_and_write", boom)
+        assert main(argv) == expected
+        assert "::warning title=build_us_sector_rotation::ValueError" in capsys.readouterr().out
+
+    @pytest.mark.parametrize("argv,expected", [([], 0), (["--strict"], 1)])
+    def test_scoring_nothing_counts_as_a_failure(self, monkeypatch, capsys, argv, expected):
+        import engine.us_sector_rotation as engine_mod
+        from scripts.build_us_sector_rotation import main
+
+        monkeypatch.setattr(engine_mod, "compute_and_write", lambda *_a, **_k: [])
+        assert main(argv) == expected
+        assert "no instruments scored" in capsys.readouterr().out
+
+    def test_a_good_run_exits_zero_under_strict(self, monkeypatch, capsys):
+        import engine.us_sector_rotation as engine_mod
+        from scripts.build_us_sector_rotation import main
+
+        monkeypatch.setattr(engine_mod, "compute_and_write", lambda *_a, **_k: [{"key": "XLK"}])
+        assert main(["--strict"]) == 0
+        assert "::warning" not in capsys.readouterr().out

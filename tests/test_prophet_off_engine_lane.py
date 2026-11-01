@@ -383,3 +383,88 @@ class TestDagDeclaration:
     def test_conformance_is_green(self):
         from scripts.check_dag_conformance import run_conformance
         assert run_conformance(ROOT) == 0
+
+
+class TestUsBoardLandingJob:
+    """The grader and the rotation lens land outside the engine.
+
+    Both steps sit deep inside engine, which the runner cancels at about 213 minutes
+    (actions/runner#4820), so neither artifact was landing. A sibling job gets a fresh
+    cancel count and its own commit.
+    """
+
+    NAME = "us_board_ledgers"
+    ROTATION = "python -m scripts.build_us_sector_rotation --strict"
+    GRADER = "python -m scripts.grade_us_board --nightly"
+    COMMIT = "commit US board and rotation artifacts"
+    COMMIT_SH = "scripts/ci/us_board_commit.sh"
+
+    @pytest.fixture(scope="class")
+    def landing(self, daily):
+        return daily["jobs"][self.NAME]
+
+    def _commit_run(self, landing):
+        step = next(s for s in landing["steps"] if s.get("name") == self.COMMIT)
+        assert step["run"].strip() == f"bash {self.COMMIT_SH}"
+        return (ROOT / self.COMMIT_SH).read_text(encoding="utf-8")
+
+    def test_it_runs_after_engine_whatever_engine_did(self, landing):
+        assert "engine" in landing["needs"]
+        assert landing["if"].startswith("always()")
+
+    def test_the_lane_sentinel_is_set(self, landing):
+        assert landing["env"]["COLLECT_LANE"] == "nightly"
+
+    def test_a_writer_that_fails_turns_the_job_red(self, landing):
+        runs = [str(s.get("run") or "").strip() for s in landing["steps"]]
+        assert self.ROTATION in runs
+        assert self.GRADER in runs
+        assert not any("continue-on-error" in s for s in landing["steps"])
+
+    def test_a_failed_writer_does_not_stop_the_steps_after_it(self, landing):
+        steps = landing["steps"]
+        first = next(i for i, s in enumerate(steps) if str(s.get("run") or "").strip() == self.ROTATION)
+        assert all(s.get("if") == "always()" for s in steps[first + 1:])
+
+    def test_the_commit_stages_only_what_these_writers_own(self, landing):
+        run = self._commit_run(landing)
+        added = [ln.split()[2] for ln in run.splitlines() if ln.strip().startswith("git add ")]
+        assert added == [
+            "data/us_board_ledger",
+            "data/us_sector_rotation",
+            "site/factordata/us_board_track.json",
+            "site/factordata/us_board_outcomes.json",
+            "site/factordata/us_track_ledger.json",
+            "site/factordata/us_board_track_v2.json",
+        ]
+
+    def test_a_file_over_the_limit_cannot_take_the_rest_with_it(self, landing):
+        run = self._commit_run(landing)
+        heal = run.index("push_staged_heal")
+        hold = run.index("push_hold_oversize_staged")
+        commit = run.index("git commit -m")
+        assert heal < hold < commit
+        win = run.index("push_won")
+        assert '[ -z "$PUSH_HELD_BACK" ] || exit 1' in run[win:]
+
+    def test_a_lost_push_goes_red(self, landing):
+        run = self._commit_run(landing)
+        tail = run[run.index("push_lost"):]
+        assert "exit 1" in tail
+        assert "non-fatal" not in tail
+
+    def test_nothing_depends_on_this_job(self, daily):
+        for name, job in daily["jobs"].items():
+            needs = job.get("needs") or []
+            needs = [needs] if isinstance(needs, str) else needs
+            assert self.NAME not in needs, name
+
+    def test_the_dag_declares_both_writers_in_order(self):
+        dag = yaml.safe_load(DAG.read_text(encoding="utf-8"))
+        lane = next(l for l in dag["lanes"]
+                    if l["workflow"] == ".github/workflows/daily.yml"
+                    and l["job"] == self.NAME)
+        assert [(s["module"], s.get("args")) for s in lane["steps"]] == [
+            ("scripts.build_us_sector_rotation", ["--strict"]),
+            ("scripts.grade_us_board", ["--nightly"]),
+        ]
