@@ -11,18 +11,26 @@ ONE strict xfail names DEFECT C19-WP16-D1: the financial leg echoes the
 literal request cutoff ``2026-08-23T12:00:00Z`` instead of a producer-derived
 clock; the C19 WP05 fix flips it loudly (strict).
 
+The cold-compose bound (blob-keyed k3e reuse, the overall leg deadline) is pinned
+at the end of this file.
+
 This lane never sets ``MACRO_INTEGRATED_ANSWER_ENABLED`` — the flag-off 404 is
 pinned in :func:`test_route_stays_off_when_flag_unset`, and every composition
 test drives ``_compose_page`` or the ``_leg_*`` builders directly.
 """
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
+import contextvars
 import hashlib
 import json
 import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+import subprocess
+import threading
 
+import pandas as pd
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -31,7 +39,8 @@ import app.integrated_answer as integrated_answer
 from app.forensics import require_site_full_user
 from app.integrated_answer import router as integrated_answer_router
 from engine.company_theme_exposure.views import build_bundle, write_generation
-from engine.k3e_expectation_surface import QueryRefusal
+from engine.k3e_expectation_surface import ATTEMPTS_PATH, OBSERVATIONS_PATH, QueryRefusal
+from scripts import query_k3e_expectation_surface as qk3e
 from tests.test_company_theme_exposure import _company_tree, _crosswalk, _membership
 
 NOW = "2026-10-11T12:00:00Z"
@@ -364,3 +373,248 @@ def test_make_ref_shape_and_stable_content_hash() -> None:
         route="other", as_of="2020-01-01T00:00:00Z", payload=payload_a, generation_id="g", owner_hash="h"
     )
     assert ref_d["content_hash"] == ref_a["content_hash"]
+
+
+# --- Cold-compose bound: blob-keyed k3e reuse -------------------------------------------------
+
+K3E_OBSERVATION_COLUMNS = (
+    "observation_id", "collection_session_id", "attempt_id", "provider",
+    "provider_record_class", "provider_payload_hash", "ticker_compat",
+    "metric", "horizon_label_raw", "observation_type", "value",
+    "missingness_reason", "provider_observed_at", "system_observed_at",
+)
+K3E_ATTEMPT_COLUMNS = (
+    "attempt_id", "collection_session_id", "provider", "ticker_compat",
+    "attempted_at", "completed_at", "status", "response_payload_hash",
+)
+
+
+def _k3e_git(repo: Path, *args: str) -> str:
+    return subprocess.check_output(
+        ["git", "-C", str(repo), *args], text=True, stderr=subprocess.STDOUT
+    ).strip()
+
+
+def _k3e_commit(repo: Path, message: str) -> str:
+    _k3e_git(repo, "add", "-A")
+    _k3e_git(repo, "commit", "-q", "-m", message)
+    return _k3e_git(repo, "rev-parse", "HEAD")
+
+
+def _k3e_write_input(repo: Path, path: str, columns: tuple[str, ...], tag: str) -> None:
+    target = repo / path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([{column: tag for column in columns}]).to_parquet(target, engine="pyarrow")
+
+
+@pytest.fixture
+def k3e_repo(tmp_path, monkeypatch) -> Path:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _k3e_git(repo, "init", "-q", "-b", "main")
+    _k3e_git(repo, "config", "user.name", "K3E Test")
+    _k3e_git(repo, "config", "user.email", "k3e-test@example.invalid")
+    _k3e_git(repo, "config", "commit.gpgsign", "false")
+    _k3e_write_input(repo, OBSERVATIONS_PATH, K3E_OBSERVATION_COLUMNS, "first")
+    _k3e_write_input(repo, ATTEMPTS_PATH, K3E_ATTEMPT_COLUMNS, "first")
+    _k3e_commit(repo, "seed inputs")
+    monkeypatch.setattr(integrated_answer, "REPO", repo)
+    monkeypatch.setattr(integrated_answer, "_k3e_cached_rev", None)
+    monkeypatch.setattr(integrated_answer, "_k3e_cached_bundle", None)
+    return repo
+
+
+def _count_full_loads(monkeypatch) -> list[str]:
+    real = qk3e.load_frozen_source
+    loads: list[str] = []
+
+    def counted(repository, revision):
+        loads.append(revision)
+        return real(repository, revision)
+
+    monkeypatch.setattr(qk3e, "load_frozen_source", counted)
+    return loads
+
+
+def test_k3e_source_reuses_rows_when_input_blobs_did_not_move(k3e_repo, monkeypatch) -> None:
+    expected_loader = qk3e.load_frozen_source
+    loads = _count_full_loads(monkeypatch)
+    first = integrated_answer._k3e_source()
+    assert len(loads) == 1
+
+    (k3e_repo / "unrelated.txt").write_text("the checkout moved\n")
+    moved = _k3e_commit(k3e_repo, "unrelated change")
+    rebound = integrated_answer._k3e_source()
+
+    assert len(loads) == 1
+    assert rebound[0] is first[0] and rebound[1] is first[1]
+    assert integrated_answer._k3e_cached_rev == moved
+    # Exactly what a full load at the new revision returns, provenance included.
+    assert rebound == expected_loader(k3e_repo, moved)
+    assert rebound[2]["source_revision"] == moved
+
+
+def test_k3e_source_reloads_when_an_input_blob_moves(k3e_repo, monkeypatch) -> None:
+    expected_loader = qk3e.load_frozen_source
+    loads = _count_full_loads(monkeypatch)
+    first = integrated_answer._k3e_source()
+
+    _k3e_write_input(k3e_repo, ATTEMPTS_PATH, K3E_ATTEMPT_COLUMNS, "second")
+    moved = _k3e_commit(k3e_repo, "new attempts")
+    reloaded = integrated_answer._k3e_source()
+
+    assert loads[1:] == [moved]
+    assert reloaded[1] != first[1]
+    assert reloaded == expected_loader(k3e_repo, moved)
+
+
+def test_k3e_source_refuses_like_the_full_load_and_keeps_the_cache(k3e_repo, monkeypatch) -> None:
+    expected_loader = qk3e.load_frozen_source
+    first = integrated_answer._k3e_source()
+    first_rev = integrated_answer._k3e_cached_rev
+
+    _k3e_git(k3e_repo, "rm", "-q", ATTEMPTS_PATH)
+    moved = _k3e_commit(k3e_repo, "input withdrawn")
+    with pytest.raises(QueryRefusal) as full_load:
+        expected_loader(k3e_repo, moved)
+    with pytest.raises(QueryRefusal) as composed:
+        integrated_answer._k3e_source()
+
+    assert composed.value.reason == full_load.value.reason
+    assert integrated_answer._k3e_cached_rev == first_rev
+    assert integrated_answer._k3e_cached_bundle is first
+
+
+def test_rebind_declines_a_bundle_without_the_inputs(k3e_repo) -> None:
+    head = _k3e_git(k3e_repo, "rev-parse", "HEAD")
+    assert qk3e.rebind_frozen_source(k3e_repo, head, ([], [], {"inputs": {"other": "other"}})) is None
+
+
+# --- Cold-compose bound: the overall leg deadline ---------------------------------------------
+
+READ_LEGS = {
+    "_leg_financial_facts": "financial_facts",
+    "_leg_earnings_expectation": "earnings_expectation",
+    "_leg_capital_structure": "capital_structure",
+    "_leg_publication_seam": "publication_seam",
+    "_leg_event_workspace": "event_workspace",
+    "_leg_theme_tape": "theme_tape",
+    "_leg_company_theme_exposure": "company_theme_exposure",
+}
+PAGE_LEG_ORDER = [*READ_LEGS.values(), "basket_labels", "theme_membership_file"]
+
+
+def _stub_read_legs(monkeypatch, **overrides) -> None:
+    """Every read leg answers instantly unless the test overrides it."""
+    monkeypatch.setattr(integrated_answer, "_utc_now", lambda: NOW)
+    for attr, leg_id in READ_LEGS.items():
+        answer = overrides.get(attr)
+        if answer is None:
+            answer = lambda *_a, _leg_id=leg_id, **_k: _surfaced_leg(
+                _leg_id, route=PUBLICATION_ROUTE, as_of=NOW, payload={"leg": _leg_id}
+            )
+        monkeypatch.setattr(integrated_answer, attr, answer)
+
+
+def test_leg_past_the_deadline_comes_back_absent_and_the_page_still_answers(monkeypatch) -> None:
+    release = threading.Event()
+
+    def blocked(*_a, **_k):
+        release.wait(timeout=30)
+        return _surfaced_leg("financial_facts", route=FINANCIAL_ROUTE, as_of=NOW, payload={})
+
+    _stub_read_legs(monkeypatch, _leg_financial_facts=blocked)
+    monkeypatch.setattr(integrated_answer, "COMPOSE_DEADLINE_SECONDS", 0.2)
+    try:
+        page, entries = integrated_answer._compose_page_with_receipts("AAPL")
+        # The compose returned while the leg was still blocked: nothing waited for it.
+        assert not release.is_set()
+    finally:
+        release.set()
+
+    late = _leg(page, "financial_facts")
+    assert late["status"] == "absent"
+    assert late["degraded_reason"] == integrated_answer.COMPOSE_DEADLINE_REASON
+    assert late["ref"] is None and late["payload"] is None
+    assert late["copy"] is not None
+    assert [item["leg"] for item in page["legs"]] == PAGE_LEG_ORDER
+    assert _leg(page, "publication_seam")["status"] == "ok"
+    assert page["coverage_note"] is not None
+    by_leg = {entry["leg"]: entry for entry in entries}
+    assert by_leg["financial_facts"]["status"] == "NO_REF"
+    assert by_leg["publication_seam"]["status"] != "NO_REF"
+
+
+def test_saturated_pool_degrades_and_never_runs_the_cancelled_legs(monkeypatch) -> None:
+    release = threading.Event()
+    ran: list[str] = []
+
+    def recorded(leg_id):
+        def read(*_a, **_k):
+            ran.append(leg_id)
+            release.wait(timeout=30)
+            return integrated_answer._leg_fixed_absent(leg_id, "released")
+
+        return read
+
+    pool = ThreadPoolExecutor(max_workers=1)
+    _stub_read_legs(monkeypatch, **{attr: recorded(leg_id) for attr, leg_id in READ_LEGS.items()})
+    monkeypatch.setattr(integrated_answer, "_leg_pool", pool)
+    monkeypatch.setattr(integrated_answer, "COMPOSE_DEADLINE_SECONDS", 0.2)
+    try:
+        page = integrated_answer._compose_page("AAPL")
+    finally:
+        release.set()
+        pool.shutdown(wait=True)
+
+    assert ran == ["financial_facts"]
+    for leg_id in READ_LEGS.values():
+        assert _leg(page, leg_id)["degraded_reason"] == integrated_answer.COMPOSE_DEADLINE_REASON
+
+
+def test_legs_run_concurrently_and_keep_page_order(monkeypatch) -> None:
+    last_leg_ran = threading.Event()
+    waited: list[bool] = []
+
+    def first_leg(*_a, **_k):
+        # Sequential composition could never see the last leg while the first is running.
+        waited.append(last_leg_ran.wait(timeout=10))
+        return _surfaced_leg("financial_facts", route=FINANCIAL_ROUTE, as_of=NOW, payload={})
+
+    def last_leg(*_a, **_k):
+        last_leg_ran.set()
+        return _surfaced_leg("company_theme_exposure", route=PUBLICATION_ROUTE, as_of=NOW, payload={})
+
+    _stub_read_legs(monkeypatch, _leg_financial_facts=first_leg, _leg_company_theme_exposure=last_leg)
+    page = integrated_answer._compose_page("AAPL")
+
+    assert waited == [True]
+    assert [item["leg"] for item in page["legs"]] == PAGE_LEG_ORDER
+    assert _leg(page, "financial_facts")["status"] == "ok"
+
+
+def test_leg_exception_still_propagates(monkeypatch) -> None:
+    def broken():
+        raise ValueError("leg bug")
+
+    _stub_read_legs(monkeypatch, _leg_capital_structure=broken)
+    with pytest.raises(ValueError, match="leg bug"):
+        integrated_answer._compose_page("AAPL")
+
+
+def test_legs_see_the_request_context(monkeypatch) -> None:
+    probe: contextvars.ContextVar[str | None] = contextvars.ContextVar("probe", default=None)
+    seen: list[str | None] = []
+
+    def reader():
+        seen.append(probe.get())
+        return _surfaced_leg("capital_structure", route=PUBLICATION_ROUTE, as_of=NOW, payload={})
+
+    _stub_read_legs(monkeypatch, _leg_capital_structure=reader)
+    token = probe.set("request")
+    try:
+        integrated_answer._compose_page("AAPL")
+    finally:
+        probe.reset(token)
+
+    assert seen == ["request"]

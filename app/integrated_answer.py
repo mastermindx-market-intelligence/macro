@@ -1,6 +1,8 @@
 """Package I v0 — default-off integrated answer composer (display-only, read-only)."""
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, wait
+import contextvars
 from datetime import datetime, timedelta, timezone
 import hashlib
 import json
@@ -26,6 +28,10 @@ REPO = Path(__file__).resolve().parents[1]
 router = APIRouter()
 
 STALE_DAYS = 4
+
+# Under EdgeOne's roughly 30 s origin budget: a slow leg degrades, the page still answers.
+COMPOSE_DEADLINE_SECONDS = 20.0
+COMPOSE_DEADLINE_REASON = "compose_deadline_exceeded"
 
 CONSUMER_RECEIPT_VERSION = "c19-wp08-v1"
 CONSUMED_RECEIPTS_HEADER = "X-Integrated-Answer-Consumed-Receipts"
@@ -160,6 +166,9 @@ _k3e_cached_bundle: tuple[Any, Any, Any] | None = None
 _chip_lock = threading.Lock()
 _chip_cached_day: str | None = None
 _chip_cached_value: dict[str, dict[str, Any]] | None = None
+
+# Bounded so abandoned legs cannot pile up: four concurrent composes of seven read legs.
+_leg_pool = ThreadPoolExecutor(max_workers=28, thread_name_prefix="integrated-answer-leg")
 
 
 def _require_enabled() -> None:
@@ -321,9 +330,13 @@ def _k3e_source() -> tuple[Any, Any, Any]:
     with _k3e_lock:
         if _k3e_cached_rev == rev and _k3e_cached_bundle is not None:
             return _k3e_cached_bundle
-        from scripts.query_k3e_expectation_surface import load_frozen_source
+        from scripts.query_k3e_expectation_surface import load_frozen_source, rebind_frozen_source
 
-        bundle = load_frozen_source(REPO, rev)
+        bundle = None
+        if _k3e_cached_bundle is not None:
+            bundle = rebind_frozen_source(REPO, rev, _k3e_cached_bundle)
+        if bundle is None:
+            bundle = load_frozen_source(REPO, rev)
         _k3e_cached_rev = rev
         _k3e_cached_bundle = bundle
         return bundle
@@ -836,16 +849,37 @@ def _leg_fixed_absent(leg_id: str, degraded_reason: str) -> dict[str, Any]:
     return leg
 
 
+def _read_legs(calls: list[tuple[str, Any, tuple[Any, ...]]]) -> list[dict[str, Any]]:
+    futures = [
+        (leg_id, _leg_pool.submit(contextvars.copy_context().run, read, *args))
+        for leg_id, read, args in calls
+    ]
+    _done, late = wait([future for _leg_id, future in futures], timeout=COMPOSE_DEADLINE_SECONDS)
+    legs = []
+    for leg_id, future in futures:
+        if future in late:
+            # A queued leg never runs; a running one ends on its own inner bounds and warms its cache.
+            future.cancel()
+            legs.append(_leg_fixed_absent(leg_id, COMPOSE_DEADLINE_REASON))
+        else:
+            legs.append(future.result())
+    return legs
+
+
 def _compose_page_with_receipts(ticker: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     composed_at = _utc_now()
     legs = [
-        _leg_financial_facts(ticker, composed_at),
-        _leg_earnings_expectation(ticker, composed_at),
-        _leg_capital_structure(),
-        _leg_publication_seam(),
-        _leg_event_workspace(ticker, composed_at),
-        _leg_theme_tape(),
-        _leg_company_theme_exposure(ticker, composed_at),
+        *_read_legs(
+            [
+                ("financial_facts", _leg_financial_facts, (ticker, composed_at)),
+                ("earnings_expectation", _leg_earnings_expectation, (ticker, composed_at)),
+                ("capital_structure", _leg_capital_structure, ()),
+                ("publication_seam", _leg_publication_seam, ()),
+                ("event_workspace", _leg_event_workspace, (ticker, composed_at)),
+                ("theme_tape", _leg_theme_tape, ()),
+                ("company_theme_exposure", _leg_company_theme_exposure, (ticker, composed_at)),
+            ]
+        ),
         _leg_fixed_absent(
             "basket_labels",
             "not_read_in_v0:owner_not_recorded;direct_site_json_reads_forbidden(I-R2)",

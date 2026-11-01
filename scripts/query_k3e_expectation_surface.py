@@ -163,5 +163,35 @@ def main(argv=None):
         return 2
 
 
+# Below main so the line citations in scripts/c19_wp31_sources.py stay exact.
+def rebind_frozen_source(repository, revision, bundle):
+    """Return bundle addressed to revision if its input blobs did not move, else None.
+
+    A Git blob id is a content address, so equal ids mean the bytes
+    load_frozen_source already verified and decoded: the result equals
+    load_frozen_source(repository, revision), and it refuses as that loader does.
+    """
+    if not re.fullmatch(r"[0-9a-f]{40}", revision or ""):
+        raise QueryRefusal("FULL_IMMUTABLE_SOURCE_REVISION_REQUIRED")
+    root = Path(repository)
+    if not root.is_dir():
+        raise QueryRefusal("REPOSITORY_DIRECTORY_REQUIRED")
+    if _git(root, "cat-file", "-t", revision).strip() != b"commit":
+        raise QueryRefusal("SOURCE_REVISION_MUST_BE_COMMIT")
+    observations, attempts, provenance = bundle
+    inputs = {}
+    for path in (OBSERVATIONS_PATH, ATTEMPTS_PATH):
+        blob = _git(root, "rev-parse", "--verify", revision + ":" + path).strip().decode("ascii")
+        if not re.fullmatch(r"[0-9a-f]{40}", blob):
+            raise QueryRefusal("INVALID_SOURCE_BLOB_ID")
+        if _git(root, "cat-file", "-t", blob).strip() != b"blob":
+            raise QueryRefusal("SOURCE_INPUT_MUST_BE_BLOB")
+        entry = provenance["inputs"].get(path, {})
+        if entry.get("git_blob_id") != blob:
+            return None
+        inputs[path] = dict(entry)
+    return observations, attempts, {"source_revision": revision, "inputs": inputs}
+
+
 if __name__ == "__main__":
     raise SystemExit(main())
