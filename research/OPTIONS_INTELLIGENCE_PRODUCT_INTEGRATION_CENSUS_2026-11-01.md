@@ -190,12 +190,53 @@ The 15 cells for steps 1–3 are in Appendix A §2.
 
 ## 4. L3 — defect repair
 
-| Series | Defects | Files | State |
-|---|---|---|---|
-| A | AC45. `PinnedResearchSharing` shows a preview without a manifest; the fix makes `!manifest → setScenario("failed")`. | `terminal/components/settings/PinnedResearchSharing.tsx` plus a new `pinnedResearchSharingPreviewTruth.test.tsx` | Fabric build oi2-l3-r1 in flight (§7). |
-| B | DEFECT-1 FlowCard L122-123. DEFECT-2 WatchlistRail L98 (unknown → 0). FeedPane drops load error/absent/refresh-failed (FlowDeskView L484). | `terminal/components/flowdesk/{FlowCard,WatchlistRail,FeedPane,FlowDeskView}.tsx` plus `flowScoreUnknownNotZero.test.tsx`, `flowDeskFeedLoadFailureState.test.tsx` | Fabric build oi2-l3-r1 in flight (§7). |
+Both series were built by Fabric lane oi2-l3-r1 (§7). ORCH-2 then:
 
-Files under #1194, #1195 and #804 are excluded.
+- exported the artifact `OI2_L3_PATCH.md` (sha256 67869247…) and verified it;
+- applied each mbox with `git am` onto TERM db6168c2 and reproduced the worker's trees exactly (A `77f670f4`, B `71404b2f`);
+- read both diffs;
+- confirmed no file overlap with #1194, #1195 or #804 (the PR file lists were read 2026-11-01).
+
+Each PR is a single commit on master db6168c2. Both are DRAFT; ORCH-2 did not mark either ready, label, arm or merge it.
+
+**Series A — terminal #1197** (head `20d41a4918ebf896fc2dba15cb5d0b4f11f5b948`)
+
+- **Defects:** AC45. `PinnedResearchSharing` showed "no saved scenario" for a failed preview read: HTTP 401/404/500/503, wrong id or revision, wrong status, or a missing manifest.
+- **Fix:** a missing manifest now goes to `setScenario("failed")` ("could not be verified" / "无法核实"). An exact empty manifest still shows none. Refresh recovers with no share or revoke write.
+- **Files:** `terminal/components/settings/PinnedResearchSharing.tsx` and the new `terminal/lib/__tests__/pinnedResearchSharingPreviewTruth.test.tsx`.
+- **Tests (worker-reported; trees reproduced by ORCH-2):**
+  - against the unchanged component: 18 failed / 6 passed;
+  - with the guard: 24 passed;
+  - the existing suite: 22 passed;
+  - `tsc` exit 0.
+
+**Series B — terminal #1198** (head `719fff3694feac5413685116311c36a329202c3c`)
+
+- **Defects:** an unknown flow score rendered as 0:
+  - `FlowCard` L122;
+  - `InspectorPane`, which also defaulted an unknown tier to LOW;
+  - `WatchlistRail` best-of, which used `?? 0`.
+
+  Separately, `FeedPane` showed skeletons forever on a failed feed read, because `FlowDeskView` dropped `status` and `retry`.
+- **Fix:** `RingGauge` accepts a null value: the track only, "—", a muted tone, and a localized label. A tier chip renders only when the tier is known. `FeedPane` gains load-error, absent and refresh-failed states, and the watchlist rail gains unavailable and absent notes. New strings are added in EN/ZH.
+- **Files:** 9 in total:
+  - `terminal/components/flowdesk/{FeedPane,FlowCard,FlowDeskView,InspectorPane,WatchlistRail}.tsx`;
+  - `terminal/components/ui/RingGauge.tsx`;
+  - `terminal/lib/flowdeskStrings.ts`;
+  - two new tests.
+- **Tests (worker-reported):**
+  - RED against the unchanged sources: 10 failed / 4 passed, and 7 failed / 4 passed;
+  - GREEN: 25 passed;
+  - 17 related suites: 289 passed;
+  - `tsc` exit 0;
+  - plain-language guard: 0 blocking;
+  - Playwright: chain-heat failure 3 passed; card geometry plus freshness 6 passed (desktop/tablet/mobile); w2a plus chrome 30 passed / 1 failed.
+- **Red checks, named and diagnosed:**
+  - The w2a failure (`w2a-workspaces.spec.ts:876`) reproduces on a clean db6168c2, so it predates this change.
+  - Evidence-lock test `terminal/lib/__tests__/eodHeatmapFlowdeskLoadFailureEvidence.test.ts` ("each layoutFiles sha256 matches the file on disk") goes red. `terminal/docs/pr-crops/eod-heatmap-flowdesk-load-failure/EVIDENCE.yml` sha256-locks `FlowDeskView.tsx` (`7c4ee44e…`) and `flowdeskStrings.ts` (`7b2a88ac…`), and this PR changes both.
+  - The evidence-lock repair is to recapture with `terminal/e2e/tools/capture_eod_heatmap_flowdesk_load_failure.cjs` and restamp `layoutFiles`. It is open (§8).
+
+The independent review of both PRs (and of this record) is lane oi2-rv-r1 (§7); its outcome is recorded there.
 
 ## 5. L4 — P09 dossier
 
@@ -207,7 +248,7 @@ See Appendix D. Recommendation (interpreted): **B**, which anchors interpolated 
 
 ## 7. Lane table (Fabric only; 0 native Agent/Task/Workflow calls)
 
-Placement for every lane was ubuntu1 minimax MiniMax-M3, class/complexity C1_ROUTINE_BOUNDED, unless noted.
+Every lane is C1_ROUTINE_BOUNDED on host ubuntu1. Unless noted, placement was pool `glm`, model `glm-5.3-flash`. That is observed in `ext/state/remote_sub/<id>.provider.json` (`provider: glm`, `model: glm-5.3-flash`) and in each request log's `LEASE_OK pool=glm`. Review lanes are placed on pool `grok` (`grok-4.7`) with `--subject-pool glm`, so the reviewer is on a different pool and model from the author.
 
 | Run id | Class | Final state | Digest (remote stdout sha256 / artifact) | Adjudication |
 |---|---|---|---|---|
@@ -218,7 +259,9 @@ Placement for every lane was ubuntu1 minimax MiniMax-M3, class/complexity C1_ROU
 | oi2-l2b-r1 | census | REFUSED pre-dispatch: no eligible mode (ubuntu0/2/3 disk, ubuntu1 thermal, ubuntu4 qualification) | — | burned; ORCH-2 direct reads |
 | oi2-l4-r1/r2/r3 | census | REFUSED `temperature_at_or_above_limit` | 9f824445 / 5451af31 / a3bf5a7c | burned; ORCH-2 direct reads |
 | oi2-l5-r1 | census | REFUSED `temperature_at_or_above_limit` | b7134b9b | burned; ORCH-2 direct reads |
-| oi2-l3-r1 | build | RUNNING at commit time | — | pending |
+| oi2-l3-r1 | build | DELIVERED rc=0 (worker STATUS PARTIAL: evidence-lock recapture not run) | 9a714cc3 / `OI2_L3_PATCH.md` 67869247 | ACCEPT pending review. ORCH-2 opened it, reproduced both trees with `git am`, and pushed them as terminal #1197 and #1198. |
+| oi2-recrv-r1 | review (grok-4.7) | REFUSED `host_temperature_at_or_above_limit` | c62b0111 | burned |
+| oi2-rv-r1 | review (grok-4.7), combined #1197 + #1198 + this record | see the final record update | — | — |
 
 ## 8. GAPS, DEVIATIONS, seat-only acts
 
@@ -228,16 +271,21 @@ Placement for every lane was ubuntu1 minimax MiniMax-M3, class/complexity C1_ROU
 - AC54 options axe coverage: not executed.
 - `OPTIONS_FROZEN_DELIVERY_ENABLED` observed value: UNKNOWN.
 - Terminal origin serving `/options`: unverified.
-- Further L3 candidates are not commissioned:
-  - the OptionsHubView SSE skeleton (L1614/L2711), which overlaps #804/#1195;
-  - RingGauge's EN-only "out of" aria label;
-  - the violet `tierTone` for ELITE at `InspectorPane.tsx:422-426` (violet is lock-only);
-  - possible zero rendering in FlowGauge.
+- The Series B evidence lock (#1198) is red until a recapture with `terminal/e2e/tools/capture_eod_heatmap_flowdesk_load_failure.cjs` and a restamp of `terminal/docs/pr-crops/eod-heatmap-flowdesk-load-failure/EVIDENCE.yml` `layoutFiles`, which pin `FlowDeskView.tsx` at `7c4ee44e…` and `flowdeskStrings.ts` at `7b2a88ac…`, at TERM db6168c2.
+- `w2a-workspaces.spec.ts:876` ("an unreadable row is present, disabled, and no write fires on click") fails on a clean db6168c2 as well. It predates this work and is not caused by #1197 or #1198.
+- L3 candidates not commissioned:
+  - The OptionsHubView SSE skeleton (L1614/L2711). It overlaps #804/#1195, so it is left alone.
+  - `RingGauge`'s known-value aria label, `${displayValue} out of ${max}`, which is still EN-only at #1198 `terminal/components/ui/RingGauge.tsx:130`. #1198 localizes only the unavailable label.
+  - The violet `tierTone` for ELITE at `InspectorPane.tsx:422-426`. Violet is lock-only; this predates the work.
+  - FlowGauge rendering missing components as zero (worker note B8, not in #1198).
+  - The chain-heat Playwright route pattern is exact-match (worker note B9).
 
 **DEVIATIONS:**
 
 - L2 steps 4 and 6, L4 and L5 were done by ORCH-2's targeted direct source reads, after the Fabric refusals above and before any worker started. This is lawful under "no worker started + principal tools + no conflict".
 - No production GET was made.
+- **One combined independent review lane.** oi2-rv-r1 covers #1197, #1198 and this record, instead of one review lane per PR-bound artifact. Cause: 7 of the first 11 lane requests were refused before any worker started (§7): 6 on ubuntu1 temperature and 1 pre-dispatch, with no eligible host. That left 3 of the 14-lane budget: one for this review, one for the Series B repair or recapture, and one held for a refused-lane retry or a re-review of the repair.
+- The §7 placement line in head c16b472d said "minimax MiniMax-M3", which was wrong. It is corrected here to `glm` / `glm-5.3-flash`, from the provider records.
 
 **Seat-only acts (not performed):**
 
