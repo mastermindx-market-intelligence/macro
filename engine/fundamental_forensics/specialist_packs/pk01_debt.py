@@ -191,12 +191,15 @@ _CHECKS = (
 # "NOTE 13. FINANCING" / "NOTE 11. FINANCING", "Note 9 Debt and Credit
 # Agreements" / "Note 9 – Debt and Credit Agreements" / "NOTE 9. LONG-TERM
 # DEBT AND CREDIT AGREEMENTS", and "Note 10: Short-term and Long-term Debt".
-# The last body occurrence wins (skip_toc=False): every dev filing lists
-# the note in its index first. The section ends at the next note heading.
+# A "Financing" heading that names receivables or a lease-only note is not a
+# debt note (N4), so it never matches. The last body occurrence wins
+# (skip_toc=False): every dev filing lists the note in its index first, and
+# the cross-reference filter below keeps a trailing "see Note 9. Debt"
+# mention from stealing that pick. The section ends at the next note heading.
 NOTE_DEBT = narrative.SectionSpec(
     r"(?:Note|NOTE)\s*\d+\s*[.:–\-]?\s*"
     r"(?:(?:Short[- ]?[Tt]erm and )?Long[- ]?[Tt]erm )?"
-    r"(?:Debt|Financing|Borrowings)",
+    r"(?:Debt|Financing(?!\s+(?:Receivables?|Leases?))|Borrowings)",
     (r"(?:Note|NOTE)\s*\d+\s*[.:–\-]",),
     skip_toc=False,
 )
@@ -215,6 +218,96 @@ COVENANT_TERM_PATTERN = (
 _COVENANT_MAPPING = TextSpanMapping(
     section=NOTE_DEBT, pattern=COVENANT_TERM_PATTERN, kind="text"
 )
+# One raw-document tag: ``<div ...>``, ``</ix:nonFraction>``, ...
+_TAG_RE = re.compile(rb"</?\s*([A-Za-z:][\w.:-]*)")
+# N1: the named-ratio / numeric-threshold preference (see _covenant_span).
+_NAMED_RATIO_RE = re.compile(
+    r"\bratio\b|not to exceed|at least|at most|maximum of|minimum of",
+    re.IGNORECASE,
+)
+
+
+def _cross_reference(nt: Any, raw: bytes, heading: re.Match) -> bool:
+    """N4: True when a heading mention continues another note's sentence.
+
+    A cross-reference ("see Note 9. Debt") runs mid-sentence: the text
+    immediately before it is a lowercase word or a comma, with no raw tag
+    between that word and the heading. A real note heading starts its own
+    block even when its element carries a trailing space, so a tag in
+    between clears the mention; the selection stays structural and never
+    issuer-shaped.
+    """
+    back = heading.start() - 1
+    while back >= 0 and nt.text[back] == " ":
+        back -= 1
+    if back < 0 or not (nt.text[back].islower() or nt.text[back] in ",;"):
+        return False
+    prev_end = nt.offsets[back] + len(nt.text[back].encode("utf-8"))
+    return raw.find(b"<", prev_end, nt.offsets[heading.start()]) < 0
+
+
+def _locate_debt_section(nt: Any, raw: bytes) -> narrative.Span | None:
+    """(start, end) of the debt-note body, or ``None`` when not supplied.
+
+    ``narrative.locate_section`` semantics over ``NOTE_DEBT`` with the N4
+    filter: cross-reference mentions are dropped before the last-occurrence
+    pick, so the note body wins over a trailing mention.
+    """
+    matches = list(re.finditer(NOTE_DEBT.heading, nt.text, re.IGNORECASE))
+    if not matches:
+        return None
+    body = [m for m in matches if not _cross_reference(nt, raw, m)]
+    chosen = (body or matches)[-1]
+    end = len(nt.text)
+    for end_heading in NOTE_DEBT.end_headings:
+        boundary = re.compile(end_heading, re.IGNORECASE).search(
+            nt.text, chosen.end()
+        )
+        if boundary is not None:
+            end = min(end, boundary.start())
+    return (chosen.start(), end)
+
+
+def _structural_break(nt: Any, raw: bytes, space_at: int, bound: int) -> bool:
+    """True when the collapsed space at ``space_at`` abuts a structural tag.
+
+    The raw slice between this space and the next emitted character holds the
+    tags the whitespace collapse folded into it. Any tag other than an
+    inline-XBRL wrapper (``ix:*``) is a heading / table-cell / paragraph
+    boundary; ``ix:*`` wrappers sit mid-sentence around individual facts and
+    never bound a sentence.
+    """
+    nxt = space_at + 1
+    while nxt < bound and nt.text[nxt] == " ":
+        nxt += 1
+    if nxt >= bound:
+        return False
+    return any(
+        not tag.group(1).decode("ascii").lower().startswith("ix:")
+        for tag in _TAG_RE.finditer(raw, nt.offsets[space_at], nt.offsets[nxt])
+    )
+
+
+def _sentence_start(nt: Any, raw: bytes, match_start: int, lo: int) -> int:
+    """Char index where the covenant sentence begins (N3/N2).
+
+    Scans left from the match: the sentence starts after the nearest ``". "``
+    terminator or structural tag break, so a note heading or a facilities
+    table without sentence punctuation cannot bleed into the emitted text.
+    """
+    i = match_start
+    while i > lo:
+        i -= 1
+        if nt.text[i] != " ":
+            continue
+        if i - 1 >= lo and nt.text[i - 1] == ".":
+            return i + 1
+        if _structural_break(nt, raw, i, match_start):
+            nxt = i + 1
+            while nxt < match_start and nt.text[nxt] == " ":
+                nxt += 1
+            return nxt
+    return lo
 
 
 def _recompute_coverage(envelope: dict[str, Any]) -> None:
@@ -233,18 +326,36 @@ def _recompute_coverage(envelope: dict[str, Any]) -> None:
     envelope["coverage"] = {**counts, "disclosure_coverage_state": disclosure}
 
 
-def _covenant_span(nt: Any) -> tuple[str, tuple[int, int]] | None:
-    """(sentence text, char span) of the first covenant term in the note."""
-    section_span = narrative.locate_section(nt, _COVENANT_MAPPING.section)
+def _covenant_span(nt: Any, raw: bytes) -> tuple[str, tuple[int, int]] | None:
+    """(sentence text, char span) of the governing covenant term in the note.
+
+    N1: a sentence naming a ratio or a numeric threshold is the most specific
+    disclosure, so it wins over an earlier generic compliance sentence (first
+    occurrence breaks ties). N3/N2: the emitted text starts at the matched
+    sentence — heading words, table cells and page residue before it are
+    dropped — so the ``max_chars`` cap can only ever cut the sentence's tail.
+    """
+    section_span = _locate_debt_section(nt, raw)
     if section_span is None:
         return None
     lo, hi = section_span
-    match = re.compile(_COVENANT_MAPPING.pattern).search(nt.text, lo, hi)
-    if match is None:
+    best: tuple[bool, str, tuple[int, int]] | None = None
+    for match in re.compile(_COVENANT_MAPPING.pattern).finditer(nt.text, lo, hi):
+        end = narrative.sentence_span(
+            nt.text, match.start(), match.end(), section_span
+        )[1]
+        start = _sentence_start(nt, raw, match.start(), lo)
+        while end > start and nt.text[end - 1] == " ":
+            end -= 1
+        if end - start > _COVENANT_MAPPING.max_chars:
+            end = start + _COVENANT_MAPPING.max_chars
+        text_value = nt.text[start:end]
+        preferred = _NAMED_RATIO_RE.search(text_value) is not None
+        if best is None or (preferred and not best[0]):
+            best = (preferred, text_value, (start, end))
+    if best is None:
         return None
-    span = narrative.sentence_span(nt.text, match.start(), match.end(), section_span)
-    text_value = nt.text[span[0] : span[1]].strip()[: _COVENANT_MAPPING.max_chars]
-    return text_value, span
+    return best[1], best[2]
 
 
 class Pk01Producer(PackProducer):
@@ -262,7 +373,10 @@ class Pk01Producer(PackProducer):
             nt = narrative.primary_document_text(primary)
         except SpecialistPackError:
             return result  # reserved row already types the narrative absence
-        found = _covenant_span(nt)
+        raw = primary.members.get(
+            str(primary.manifest.get("primary_document") or "")
+        )
+        found = _covenant_span(nt, raw) if raw else None
         if found is None:
             # Searched, not supplied. The reserved-form row and its check are
             # already exact, and the A.7 base-envelope pins require this

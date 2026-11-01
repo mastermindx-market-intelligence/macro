@@ -9886,3 +9886,145 @@ def test_pk01_bank_class_exclusion_pin(
         assert row["reason"] == "industrial_basis_excluded_for_financial_institution"
     assert _row(result, "current_assets")["value"] == "30387"
     assert _row(result, "current_liabilities")["value"] == "23414"
+
+
+# 46. PK01 covenant hardening (2026-11-01 lane fif-pk01harden-r1) ------------
+#
+# Every test below fails on the pre-hardening pack (872452c): (a)/(d) pin the
+# N3/N2 residue trim — the emitted text is the matched covenant sentence, so
+# the 1024 cap cannot push it out and the source_span slices back exactly;
+# (b)/(c) pin the N4 heading selection — a Financing-Receivables note is not
+# a debt note and a trailing cross-reference mention never steals the pick;
+# (e) pins the N1 named-ratio preference. Synthetic fixtures only, no filing
+# bytes.
+
+_PK01_FACILITIES_ROWS = "".join(
+    f"<tr><td>Revolving credit facility {idx:02d}</td><td>2031</td>"
+    f"<td>2,5{idx:02d}</td><td>1,2{idx:02d}</td></tr>"
+    for idx in range(20)
+)
+
+
+def test_pk01_covenant_span_drops_long_facilities_table_prefix() -> None:
+    # (a) N3: a facilities table longer than the 1024 cap and with no ". "
+    # separator before the covenant sentence must not reach the text_value.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        "<table><tr><td>Facility</td><td>Maturity</td><td>Capacity</td>"
+        f"<td>Outstanding</td></tr>{_PK01_FACILITIES_ROWS}</table>"
+        "<div>The credit agreement contains a financial covenant limiting"
+        " total indebtedness, and the company was in compliance with all"
+        " covenants at year end.</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    assert contract.validate_pack_result(result) == []
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The credit agreement contains a financial covenant limiting"
+        " total indebtedness, and the company was in compliance with all"
+        " covenants at year end."
+    )
+    assert "Revolving credit facility" not in row["text_value"]
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+def test_pk01_covenant_span_rejects_financing_receivables_heading() -> None:
+    # (b) N4: "Financing Receivables" is not a debt note, so the real debt
+    # note supplies the value even though the receivables note matches later.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 9. Debt </div>"
+        "<div>The term facility requires compliance with all financial"
+        " covenants.</div>"
+        "<div>Note 3. Financing Receivables </div>"
+        "<div>The securitization facility contains financial covenant"
+        " language.</div>"
+        "<div>Note 10. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The term facility requires compliance with all financial covenants."
+    )
+    assert "securitization" not in row["text_value"]
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+def test_pk01_covenant_span_ignores_cross_reference_mention_after_body() -> None:
+    # (c) N4: a trailing "see Note 9. Debt" mention inside another note's
+    # sentence must not steal the last-occurrence pick from the note body.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 9. Debt </div>"
+        "<div>The term facility requires compliance with all financial"
+        " covenants.</div>"
+        "<div>Note 10. Commitments </div>"
+        "<div>For details on the credit agreement, see Note 9. Debt for the"
+        " negotiated terms.</div>"
+        "<div>Note 11. Subsequent Events </div>"
+        "<div>There were no subsequent events.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The term facility requires compliance with all financial covenants."
+    )
+    assert "negotiated terms" not in row["text_value"]
+    assert _check(result, "covenant_span_present")["status"] == "pass"
+
+
+def test_pk01_covenant_source_span_slices_back_to_emitted_text() -> None:
+    # (d) N3: the offsets locate exactly the emitted text under the narrative
+    # normalization (entity expansion + whitespace collapse). On the parent
+    # build the same span emitted a capped table prefix instead.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        "<table><tr><td>Facility</td><td>Maturity</td><td>Capacity</td>"
+        f"<td>Outstanding</td></tr>{_PK01_FACILITIES_ROWS}</table>"
+        "<div>The credit agreement&#8217;s financial covenant limits total"
+        " indebtedness, and the company was in compliance at year end.</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    package = _synthetic_package("10-K", body)
+    result = produce_pack("PK01", _pk01_syn_input(package))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"].startswith("The credit agreement")
+    span = row["source_span"]
+    slice_text = pk01_mod.narrative.narrative_text_from_bytes(
+        package.members["doc.htm"][span["start_offset"] : span["end_offset"]],
+        span["document_id"],
+    ).text
+    assert slice_text == row["text_value"]
+
+
+def test_pk01_covenant_prefers_named_ratio_sentence() -> None:
+    # (e) N1: within one note, the sentence naming a ratio with a numeric
+    # threshold wins over the earlier generic compliance sentence.
+    body = (
+        "<div>Item 7. Liquidity </div>"
+        "<div>Note 7. Debt </div>"
+        "<div>The agreement contains affirmative, negative and financial"
+        " covenants, and events of default customary for facilities of this"
+        " type. The credit agreement covenants include a maximum leverage"
+        " ratio of 3.50 to 1.00.</div>"
+        "<div>Note 8. Leases </div>"
+        "<div>Operating lease right-of-use assets were recognized.</div>"
+    )
+    result = produce_pack("PK01", _pk01_syn_input(_synthetic_package("10-K", body)))
+    row = _pk01_covenant_row(result)
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The credit agreement covenants include a maximum leverage ratio of"
+        " 3.50 to 1.00."
+    )
+    assert _check(result, "covenant_span_present")["status"] == "pass"
