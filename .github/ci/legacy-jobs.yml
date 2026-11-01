@@ -9817,6 +9817,8 @@ jobs:
     # so 8 was only ever proven there. 15 keeps the fail-closed fetch and both suites
     # unchanged and covers the measured PR-side infrastructure time. Same repair as
     # macro #10257 (unmerged at the time of writing); whichever lands second is a no-op.
+    # F10 (#10367) replaced that ~4-min unrestricted fetch with the blob-filtered
+    # canonical-main helper; 15 is kept until the job's PR-side time is re-measured.
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -9835,12 +9837,32 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
           npx playwright install --with-deps chromium
+      # F10 (intl-GS CI budget, DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031):
+      # the unrestricted post-checkout base fetch cost ~4 minutes on hosted runners
+      # (PR full-suite runs of 2026-10-31; every subtest green, job cut at the pack
+      # budget). The same fail-closed helper the international-workspace-browser
+      # job uses acquires canonical main once, blob-filtered and tag-free, and
+      # verifies this job's compared objects are present offline before the tests
+      # run. The compared paths are passed here, not hard-coded in the helper, so
+      # the control-plane job's import closure does not absorb scripts/build_intl.py.
       - name: canonical base for the frozen-file guard (fail closed)
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=international-dislocation-explorer::could not fetch origin/${{ github.base_ref || 'main' }}; tests/test_intl_gs_dislocations_view.py frozen-seam checks have NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a pass."
-            exit 1
-          fi
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from scripts.run_ci_pack import prepare_canonical_main
+
+          prepare_canonical_main(
+              Path.cwd(),
+              tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],
+              base_ref="${{ github.base_ref || 'main' }}",
+              frozen_paths=(
+                  "templates/intl_workspace_surveillance.css",
+                  "lib/intl_surveillance_mount.py",
+                  "scripts/build_intl.py",
+              ),
+          )
+          PY
       - name: Dislocation explorer view contracts
         run: python -m pytest tests/test_intl_gs_dislocations_view.py -q
       - name: Dislocation explorer DOM and selection in Chromium
@@ -10620,8 +10642,10 @@ jobs:
     # ran ~1.8x faster, and W2A's own IM13 step costs 95s tests + 78s browser proof,
     # with the IM14 dossier step still to run at 9m45s.  12 → 20.
     # Weight is not derived from timeout-minutes, so this does not rebalance packs.
-    # The structural fix — dropping the redundant base fetch after the fetch-depth 0
-    # checkout, or a job split — is deferred to a separate intl-GS CI-budget lane.
+    # The structural fix for the sibling international-dislocation-explorer job
+    # (its redundant unrestricted base fetch after the fetch-depth 0 checkout)
+    # is F10 (#10367): both international jobs use prepare_canonical_main.
+    # This job's own measured budget (20) is unchanged by F10.
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
@@ -14821,6 +14845,8 @@ jobs:
       - "tests/test_options_index_lock_identity.py"
       - "tests/test_qledger_publication.py"
       - "tests/test_qledger_publish_binding.py"
+      - "scripts/ci/qledger_carve.sh"
+      - "tests/test_qledger_carve.py"
       # Read closure of tests/test_crypto_publication_contract.py.
       # .github/workflows/** and scripts/ci/*.sh are already declared above.
       - "app/__init__.py"
@@ -14915,6 +14941,14 @@ jobs:
         run: python -m pytest tests/test_crypto_observations_contract.py -q
       - name: append-only base fence (real-incident replay, withhold, quiet-night property)
         run: python -m pytest tests/test_append_only_base_fence.py -q
+      # scripts/ci/qledger_carve.sh is the third policy the nightly commit→push steps
+      # source: it carves data/qledger/claims.jsonl (> GitHub's 100 MB GH001 blob
+      # ceiling since 2026-10-21) out of every wholesale nightly commit so the rest
+      # of the session's data lands (PR #10255; #9556 carved only `collect`). The
+      # suite replays the GH001 pre-receive rejection against real git repos and
+      # pins the per-path delta restore and always()-restore ordering.
+      - name: qledger carve (GH001 replay, per-path restore, lane wiring)
+        run: python -m pytest tests/test_qledger_carve.py -q
 
   quant-q06-sparse-cal:
     if: ${{ false }}

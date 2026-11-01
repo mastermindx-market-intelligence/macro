@@ -71,6 +71,18 @@
     "zh_contains": "轮动记录未通过校验，未予显示。",
     "lib_valid": true
   },
+  "malformed_blank_pair": {
+    "state": "unreadable",
+    "en_contains": "Rotation record failed checks and is not shown.",
+    "zh_contains": "轮动记录未通过校验，未予显示。",
+    "lib_valid": false
+  },
+  "malformed_calendar": {
+    "state": "unreadable",
+    "en_contains": "Rotation record failed checks and is not shown.",
+    "zh_contains": "轮动记录未通过校验，未予显示。",
+    "lib_valid": false
+  },
   "journey_c_envelope_1d253e1d": {
     "state": "stale",
     "en_contains": "Rotation data unavailable for Oct 30; latest is Oct 20.",
