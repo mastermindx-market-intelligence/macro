@@ -341,3 +341,103 @@ def test_dossier_module_never_imports_the_uk_desk() -> None:
         re.M,
     )
     assert imd._UK_STANCES_FROZEN == frozenset({"supportive", "restrictive", "mixed", "routine"})
+
+
+# --------------------------------------------------------------------------- #
+# W39-Y1 — where-next names door, and a method line with no banned word
+# --------------------------------------------------------------------------- #
+def _render_country(cc: str) -> str:
+    """Render one country from the shared template. Writes nothing.
+
+    Same Environment and render kwargs as build_all in
+    scripts/build_international_macro.py, without site/ or data/.
+    """
+    from jinja2 import Environment, FileSystemLoader
+
+    view = build_country_view(_record(cc), today=_TODAY)
+    validate_view(view)
+    env = Environment(
+        loader=FileSystemLoader(str(ROOT / "templates")),
+        autoescape=False,
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+    template = env.get_template("international_macro.html.j2")
+    return template.render(
+        D=view,
+        RADAR=None,
+        europe_news=None,
+        europe_news_items=None,
+    )
+
+
+def _where_next(html: str) -> str:
+    rest = html.split('class="imd-next"', 1)[1]
+    return rest.split("</div>", 1)[0]
+
+
+def test_where_next_names_door_jp() -> None:
+    strip = _where_next(_render_country("JP"))
+    assert 'href="baskets_intl.html"' in strip
+    assert "Japan Inc. names" in strip
+    assert "日本企业名单" in strip
+    assert 'href="intl_stock.html"' in strip
+    assert 'href="country_cycles.html"' in strip
+    assert 'href="intl.html"' in strip
+
+
+@pytest.mark.parametrize(
+    ("cc", "en", "zh"),
+    [
+        ("IN", "India names in baskets", "篮子中的印度公司"),
+        ("KR", "Korea Tech names", "韩国科技名单"),
+        ("GB", "UK names in global banks", "全球银行中的英国公司"),
+    ],
+)
+def test_where_next_names_door_in_kr_gb(cc: str, en: str, zh: str) -> None:
+    strip = _where_next(_render_country(cc))
+    assert 'href="baskets_intl.html"' in strip
+    assert en in strip
+    assert zh in strip
+    assert 'href="intl_stock.html"' in strip
+    assert 'href="country_cycles.html"' in strip
+
+
+def test_shared_template_where_next_has_zh_twins() -> None:
+    text = (ROOT / "templates" / "international_macro.html.j2").read_text()
+    pairs = (
+        ("Japan Inc. names", "日本企业名单"),
+        ("Korea Tech names", "韩国科技名单"),
+        ("India names in baskets", "篮子中的印度公司"),
+        ("UK names in global banks", "全球银行中的英国公司"),
+        ("International stocks", "国际个股"),
+        ("Country cycles", "国家周期"),
+    )
+    for en, zh in pairs:
+        needle = "t('" + en + "','" + zh + "')"
+        assert needle in text
+
+
+def test_where_next_ez_keeps_shared_doors_only() -> None:
+    """Euro Area shares the template. It gets the two shared doors only."""
+    strip = _where_next(_render_country("EZ"))
+    assert 'href="intl_stock.html"' in strip
+    assert 'href="country_cycles.html"' in strip
+    assert 'href="baskets_intl.html"' not in strip
+    assert 'href=""' not in strip
+
+
+def test_method_en_has_no_banned_forecast() -> None:
+    view = build_country_view(_record("JP"), today=_TODAY)
+    method = view["decision"]["method_en"]
+    assert "forecast" not in method
+    assert "Descriptive only." in method
+    html = _render_country("JP")
+    chunks = html.split('class="imd-method"')
+    assert len(chunks) > 1
+    for chunk in chunks[1:]:
+        paragraph = chunk.split("</p>", 1)[0]
+        assert "forecast" not in paragraph
+    zh = view["decision"]["method_zh"]
+    assert "仅作描述，不是预测。" in zh
+    assert "forecast" not in zh
