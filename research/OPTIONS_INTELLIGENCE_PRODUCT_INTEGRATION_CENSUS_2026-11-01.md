@@ -40,7 +40,7 @@ Each row has exactly one disposition. The evidence column cites the appendix lin
 | AC37 | DO_NOT_REDO_ACCEPTED | B1 L18. TERM `docs/OPTIONS_R1_PROGRAM.md`@69e8e9f0 L92. Compare 69e8e9f0…db6168c2 touches no W1A file. | The accepted live receipt still matches current source. |
 | AC38 | DO_NOT_REDO_ACCEPTED | B1 L19. Same doc, L79: investigation `f7874c02…`, revision 1, "Matches the saved source". | |
 | AC39 | DO_NOT_REDO_ACCEPTED | B1 L20. #1104 merged at 0aecf8e9. R15 = #1104 comment 6343024596. | |
-| AC40 | RULED_B_BUILD_PENDING | B1 L21 recorded GATED at delivery (question 6526883926 unanswered). The seat ruled **B** on 2026-11-01 ([ruling](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6556677418)); Appendix D proves its premise (macro `engine/options_hub.py:184,188-189,226`). | Ruled, **not ACCEPTED**: the Option B Terminal build is pending on its own draft PR and needs an independent non-authoring review. |
+| AC40 | RULED_B_BUILD_PENDING | B1 L21 recorded GATED at delivery (question 6526883926 unanswered). The seat ruled **B** on 2026-11-01 ([ruling](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6556677418)); Appendix D proves its premise (macro `engine/options_hub.py:184,188-189,226`). | Ruled, **not ACCEPTED**: the Option B Terminal build is pending (it will land on its own draft PR) and will need an independent non-authoring review. |
 | AC41 | GATED | B1 L22. R1 doc L119. The #599 scan has 0 w3c hits. | Needs signed-in production watch → review proof. |
 | AC42 | OWNER_HELD | B1 L23. #804 head `00cf938d`, draft, dirty. | Incumbent; read-only. |
 | AC43 | OWNER_HELD | B1 L24. #804 fields; no reconcile receipt in #599. | L1A records this as GATED on an original-operation reconcile. That gate sits inside the incumbent's #804 lane, so per the commission it is OWNER_HELD. |
@@ -59,9 +59,9 @@ Each row has exactly one disposition. The evidence column cites the appendix lin
 | AC56 | OWNER_HELD | B2 L18. coo-fable (R06 L16); macro #7728 / #10065. | |
 | AC60 | GATED | B2 L19. R02@820f33b5 L95 `decided_by: ceo-sol`. | Closeout by the existing decision owner. |
 
-Totals: 8 DO_NOT_REDO_ACCEPTED, 6 OWNER_HELD, 3 ACTIONABLE_NOW, 4 GATED, for 21 rows.
+Totals: 8 DO_NOT_REDO_ACCEPTED, 6 OWNER_HELD, 3 ACTIONABLE_NOW, 3 GATED, 1 RULED_B_BUILD_PENDING, for 21 rows.
 
-After the seat ruling of 2026-11-01, AC40 moves from GATED to RULED_B_BUILD_PENDING. The rows above therefore read 3 GATED and 1 RULED_B_BUILD_PENDING; the delivery-time totals line is kept as verified.
+At delivery this line read 4 GATED. The seat ruling of 2026-11-01 moved AC40 from GATED to RULED_B_BUILD_PENDING.
 
 ## 2. L2 — ENTITLED-RENDER CHECKLIST (Journey A, D107 steps 1–4 and 6)
 

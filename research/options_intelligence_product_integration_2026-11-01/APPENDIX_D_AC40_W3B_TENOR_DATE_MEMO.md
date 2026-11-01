@@ -86,17 +86,17 @@ The rule this breaks is "stale is never live": a snapshot from seven days earlie
 
 **The seat ruled Option B.** Source: [https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6556677418](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6556677418) (Options Intelligence completion seat, ruling under leadership continuity on the unanswered question 6526883926). This section transcribes the ruling; ORCH-2 decided nothing.
 
-Rule points, as ruled:
+Rule points, as ruled (point 2 as clarified):
 
 1. **Interpolated date = asofDate + tenor.** When `asofDate` is a valid ISO day, an interpolated row's date is `addDays(asofDate, tenorDays)` (today `VolComparePanel.tsx:147` uses `addDays(todayIso, tenorDays)`).
-2. **Past label.** When that date is not after the viewer's ET today, the row is labeled as past and names the read date. EN and ZH match.
+2. **Past label (as clarified).** The ruling ([issuecomment-6556677418](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6556677418)) said "before the viewer's ET today", but its first acceptance case (asof 2026-10-23, today pinned to 2026-10-30) expects the 2026-10-30 row to be labeled past. The seat's clarification ([issuecomment-6556853817](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6556853817)) settles the boundary: an interpolated row is labeled when its date is **on or before** the viewer's ET today, and only a date after today stays unlabeled. The label names the read date and must be true at the boundary, so it cannot say "before today", which is false for today's own date. Wording such as "not ahead of today · from the {asof} read" fits, with EN and ZH matching. Acceptance case 1 stands. The example wording "before today" in §4 is superseded by this clarification.
 3. **No date when asof is missing.** When `asof` is missing or invalid, interpolated rows show no calendar date, and the reason is stated in EN and ZH.
 4. **calDte on the same clock.** The skew fallback `calDte` (`:208`) counts from `asofDate` when it is valid, and falls back to `todayIso` only when `asof` is missing; that fallback is declared.
 5. **Unchanged list.** Supplied rows, unsupported rows, the accepted interpolation math (DO_NOT_REDO), the expected-move line (`:195-202`) and the events-inside-the-curve windows (`:220-228`) stay as they are.
 
 **A is rejected**: it relabels the error instead of removing it. **C is not chosen**: it is truthful but drops a true and useful date.
 
-Status: **RULED, build pending, not ACCEPTED.** The Option B build lands on its own Terminal draft PR from master and needs an independent non-authoring review before it can be marked ready. The ruling's acceptance cases are the discriminating tests in §4 (B column).
+Status: **RULED, build pending, not ACCEPTED.** The Option B build will land on its own Terminal draft PR from master and will need an independent non-authoring review before it can be marked ready. The ruling's acceptance cases are the discriminating tests listed in the §4 bullets ("Discriminating tests for either B or C"). The three IA viewports in the acceptance criterion come from §5.
 
-Boundary note (interpreted): the ruling's text says "before the viewer's ET today", and its first acceptance case pins today to 2026-10-30 and expects the 2026-10-30 row (asof 2026-10-23 + 7) to be labeled past. The two agree only if a date equal to today counts as past, so point 2 above is written as "not after today". The build implements that and names it in its PR body so the seat can reverse it.
+Build obligation: no Option B build exists yet. The build must implement the on-or-before rule and the boundary-true wording, with a RED-first test that pins the equal-to-today case, and it must name the rule in its PR body.
 
