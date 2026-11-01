@@ -9,15 +9,22 @@ other amount is raw with its unit plus the currency code the unit omits.
 """
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 
 import pytest
 
 from engine.news_impact.eval_grade import UNIT_MAP
-from engine.news_impact.prophet_adapter import SLOT_MAX, format_amount
+from engine.news_impact.prophet_adapter import (
+    SLOT_MAX,
+    ProphetAdapterError,
+    build_prophet_evidence,
+    format_amount,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
+LISTING = {"cik:0001045810": "NVDA"}
 
 
 def _q(value, unit="USD", currency="USD", bound="exact"):
@@ -132,11 +139,51 @@ def test_absent_and_non_numeric_render_empty():
     assert format_amount(_q(True), "en") == ""
 
 
-def test_amount_slot_length_stays_within_slot_max():
-    widest = _q(-123_456_789_012.5, unit="thousand metric tonnes", currency="JPY",
-                bound="approximately")
-    for locale in ("en", "zh"):
-        assert len(format_amount(widest, locale)) <= SLOT_MAX["amount_plain"]
+def _w1_with_incremental(quantity):
+    rows = json.loads((ROOT / "contracts" / "news_impact" / "cases" / "worked_cases.json")
+                      .read_text(encoding="utf-8"))
+    event = next(copy.deepcopy(r["instance"]) for r in rows if r["id"] == "W1")
+    event["incremental_amount"].update(quantity)
+    return event
+
+
+def test_amount_at_the_slot_bound_builds():
+    # 48 characters in EN, the amount_plain cap exactly: shown whole, never clipped.
+    at_bound = _q(-123_456_789_012.5, unit="thousand metric tonnes", currency="JPY",
+                  bound="approximately")
+    assert len(format_amount(at_bound, "en")) == SLOT_MAX["amount_plain"]
+    assert len(format_amount(at_bound, "zh")) <= SLOT_MAX["amount_plain"]
+    got = build_prophet_evidence(_w1_with_incremental(at_bound), listing=LISTING)
+    assert got.to_dict()
+
+
+@pytest.mark.parametrize(
+    "quantity",
+    [_q(-123_456_789_012.5, unit="barrels of oil equivalent per day", currency="CAD",
+        bound="at_least"),
+     _r(-1_500_000, 2_500_000_000, unit="thousand metric tonnes", currency="JPY",
+        bound="approximately")],
+)
+def test_amount_over_the_slot_bound_is_refused_not_truncated(quantity):
+    # format_amount never shortens a figure or a unit; an amount longer than the
+    # amount_plain cap fails closed when the evidence is built.
+    assert len(format_amount(quantity, "en")) > SLOT_MAX["amount_plain"]
+    with pytest.raises(ProphetAdapterError) as ei:
+        build_prophet_evidence(_w1_with_incremental(quantity), listing=LISTING)
+    assert ei.value.code == "SLOT_TOO_LONG"
+
+
+@pytest.mark.parametrize(
+    "unit", ["bp", "bps", "basis points", "Basis  Points", "percentage points", "ratio", "x"],
+)
+def test_rate_and_ratio_units_take_no_currency_code(unit):
+    assert format_amount(_q(25, unit=unit), "en") == f"25 {unit}"
+    assert format_amount(_q(25, unit=unit), "zh") == f"25 {unit}"
+
+
+def test_rate_unit_match_is_the_whole_unit_not_a_token():
+    assert format_amount(_q(25, unit="USD per basis point"), "en") == "25 USD per basis point"
+    assert format_amount(_q(25, unit="index points"), "en") == "25 index points USD"
 
 
 def test_unit_map_is_the_contract_table():

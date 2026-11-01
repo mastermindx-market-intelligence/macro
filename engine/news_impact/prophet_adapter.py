@@ -414,6 +414,32 @@ def _one_decimal(n: float) -> str:
 # code is never appended to these.
 _NON_MONETARY_UNITS = frozenset({"shares", "percent", "units"})
 
+# Rate and ratio units the contract unit_map does not list. Matched against the
+# whole unit (lower-cased, whitespace collapsed), never a token of it, so
+# "USD per basis point" is unaffected. Display only: no unit is converted or
+# rescaled, and the contract unit_map is unchanged.
+_NON_MONETARY_RATE_UNITS = frozenset(
+    {
+        "bp",
+        "bps",
+        "basis point",
+        "basis points",
+        "percentage point",
+        "percentage points",
+        "ppt",
+        "ratio",
+        "x",
+        "times",
+    }
+)
+
+
+def _is_non_monetary_unit(unit: str, canonical: str | None) -> bool:
+    """True when no currency code belongs after ``unit``."""
+    if canonical in _NON_MONETARY_UNITS:
+        return True
+    return " ".join(unit.lower().split()) in _NON_MONETARY_RATE_UNITS
+
 
 def _unit_names_currency(unit: str, currency: str) -> bool:
     """True when a token of ``unit`` is, or maps to, ``currency``."""
@@ -474,7 +500,7 @@ def format_amount(quantity: Mapping[str, Any], locale: str) -> str:
         label = unit
         if (
             currency not in ("", "NA")
-            and canonical not in _NON_MONETARY_UNITS
+            and not _is_non_monetary_unit(unit, canonical)
             and not _unit_names_currency(unit, currency)
         ):
             label = f"{label} {currency}".strip()

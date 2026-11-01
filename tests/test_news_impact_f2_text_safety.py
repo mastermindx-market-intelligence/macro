@@ -221,3 +221,87 @@ def test_worked_case_renders_are_untouched_by_the_phrase_gate() -> None:
         rendered = render_glance_copy(build_prophet_evidence(_worked(cid), listing=LISTING))
         for locale in ("en", "zh"):
             assert recommendation_phrase(" ".join(rendered[locale].values())) is None, cid
+
+
+# --- M01c review repair: items of a text_safe-typed array ---------------------
+# field_absence.v1 ``missing_fields`` is an array whose items are text_safe.
+# S7 (URI scheme), S8 (split role marker) and S14 (compatibility form) cover
+# those items exactly as they cover a scalar text_safe string.
+
+MISSING_PATH = "/remaining_authorization/absence/missing_fields/0"
+
+
+def _w2_with_missing_fields(items: list) -> dict:
+    event = _worked("W2")
+    event["remaining_authorization"]["absence"]["missing_fields"] = list(items)
+    return event
+
+
+def _issues_at(report, path: str) -> list:
+    return [i for i in report.issues if i.path == path]
+
+
+def test_w2_worked_case_stays_valid() -> None:
+    assert validate_event(_worked("W2")).ok
+
+
+def test_s14_rejects_full_width_injection_in_a_text_safe_array_item() -> None:
+    report = validate_event(_w2_with_missing_fields([FULL_WIDTH_INJECTION]))
+    assert not report.ok
+    issues = _issues_at(report, MISSING_PATH)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S14" in issues[0].message
+
+
+def test_ascii_injection_array_item_is_reported_once_and_not_by_s14() -> None:
+    report = validate_event(_w2_with_missing_fields([ASCII_INJECTION]))
+    assert not report.ok
+    assert len(_issues_at(report, MISSING_PATH)) == 1
+    assert all("rule S14" not in i.message for i in report.issues)
+
+
+def test_s14_rejects_full_width_web_scheme_in_an_array_item() -> None:
+    report = validate_event(_w2_with_missing_fields(["ｈｔｔｐｓ://example"]))
+    assert not report.ok
+    issues = _issues_at(report, MISSING_PATH)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S14" in issues[0].message
+
+
+@pytest.mark.parametrize("item", ["data:text/html,x", "ｄａｔａ:text/html,x"])
+def test_s7_rejects_data_scheme_in_an_array_item(item: str) -> None:
+    report = validate_event(_w2_with_missing_fields([item]))
+    assert not report.ok
+    issues = _issues_at(report, MISSING_PATH)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S7" in issues[0].message
+
+
+def test_s7_rejects_full_width_data_scheme_in_a_scalar() -> None:
+    report = validate_event(_w1_with_quote("SYNTH-TITLE-07 ｄａｔａ:text/html,x"))
+    assert not report.ok
+    issues = _quote_issues(report)
+    assert [i.code for i in issues] == [INJECTION_PATTERN]
+    assert "rule S7" in issues[0].message
+
+
+def test_s8_rejects_a_role_marker_split_across_array_items() -> None:
+    report = validate_event(_w2_with_missing_fields(["sys", "tem:"]))
+    assert not report.ok
+    assert any(i.code == INJECTION_PATTERN and "rule S8" in i.message for i in report.issues)
+
+
+@pytest.mark.parametrize("item", BENIGN_FULL_WIDTH_ZH)
+def test_benign_full_width_zh_array_item_stays_valid(item: str) -> None:
+    assert validate_event(_w2_with_missing_fields([item])).ok
+
+
+def test_adapter_records_an_array_item_injection_out_of_band() -> None:
+    event = _w2_with_missing_fields([FULL_WIDTH_INJECTION])
+    findings: list[str] = []
+    _scan_injection(event, findings)
+    assert MISSING_PATH in findings
+    assert MISSING_PATH in mechanisms._scan_injections(event)
+    got = build_prophet_evidence(event, listing=LISTING)
+    assert MISSING_PATH in got.injection_findings
+    assert "injection_findings" not in json.dumps(got.to_dict())

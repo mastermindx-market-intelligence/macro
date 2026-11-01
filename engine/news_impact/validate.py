@@ -151,6 +151,7 @@ class _Context:
     cache: dict  # template name (or "whole") -> validator, built lazily
     # Semantic-layer indices over the SAME frozen contract (rule S6/S7/S8):
     text_safe_props: frozenset = frozenset()      # property names the contract types via text_safe
+    text_safe_item_props: frozenset = frozenset() # array property names whose items are text_safe
     calendar_props: dict = field(default_factory=dict)  # property name -> 'date'|'date-time'|'either'
     role_marker_patterns: tuple = ()              # compiled role-marker branches of text_safe
     text_safe_patterns: tuple = ()                # every compiled text_safe branch (rule S14)
@@ -223,10 +224,33 @@ class _Context:
                     return True
         return False
 
+    def _admits_text_safe_items(self, node, trail=frozenset()) -> bool:
+        """True when ``node`` (through $ref/oneOf/anyOf) is an array of text_safe items."""
+        if not isinstance(node, dict):
+            return False
+        items = node.get("items")
+        if isinstance(items, dict) and self._admits_text_safe(items):
+            return True
+        if "$ref" in node:
+            ref = node["$ref"]
+            if ref in trail:
+                return False
+            target = _resolve_ref(self.contract, ref)
+            if target is None:
+                return False
+            return self._admits_text_safe_items(target, trail | {ref})
+        for key in ("oneOf", "anyOf"):
+            for branch in node.get(key, []) or []:
+                if self._admits_text_safe_items(branch, trail):
+                    return True
+        return False
+
     def _index_text_safe_props(self) -> None:
+        nodes = list(self._iter_property_nodes())
         self.text_safe_props = frozenset(
-            name for name, node in self._iter_property_nodes()
-            if self._admits_text_safe(node))
+            name for name, node in nodes if self._admits_text_safe(node))
+        self.text_safe_item_props = frozenset(
+            name for name, node in nodes if self._admits_text_safe_items(node))
 
     def _index_calendar_props(self) -> None:
         merged: dict[str, str] = {}
@@ -595,6 +619,27 @@ def _iter_objects(node, keys=()):
             yield from _iter_objects(item, list(keys) + [i])
 
 
+def _iter_governed_strings(payload, ctx: "_Context"):
+    """Yield ``(pointer, key, value)`` for every text_safe-governed string.
+
+    A governed string is either the scalar value of a property the contract
+    types via text_safe, or a string item of an array property whose
+    ``items`` the contract types via text_safe (``missing_fields`` in the
+    absence defs).  Objects are visited root first and keys in sorted order,
+    so the enumeration is deterministic.
+    """
+    for obj, keys in _iter_objects(payload):
+        for key in sorted(obj):
+            value = obj.get(key)
+            if isinstance(value, str):
+                if key in ctx.text_safe_props:
+                    yield _pointer(list(keys) + [key]), key, value
+            elif isinstance(value, list) and key in ctx.text_safe_item_props:
+                for i, item in enumerate(value):
+                    if isinstance(item, str):
+                        yield _pointer(list(keys) + [key, i]), key, item
+
+
 def _is_number(value) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
@@ -727,17 +772,18 @@ def _s6_real_calendar_values(payload, ctx: _Context) -> list[ValidationIssue]:
 
 
 def _s7_uri_schemes(payload, ctx: _Context) -> list[ValidationIssue]:
-    """S7: data:/vbscript:/blob: scheme in a text_safe-governed string."""
+    """S7: data:/vbscript:/blob: scheme in a text_safe-governed string.
+
+    The NFKC compatibility fold is tested too, so a full-width scheme
+    (``\uff44\uff41\uff54\uff41\uff1a``) is refused like its ASCII form.
+    """
     issues = []
-    for obj, keys in _iter_objects(payload):
-        for key in sorted(obj):
-            value = obj.get(key)
-            if key not in ctx.text_safe_props or not isinstance(value, str):
-                continue
-            if _SCHEME_RE.search(value):
-                issues.append(ValidationIssue(
-                    INJECTION_PATTERN, _pointer(list(keys) + [key]),
-                    f"{key} carries a data:/vbscript:/blob: scheme (rule S7)"))
+    for pointer, key, value in _iter_governed_strings(payload, ctx):
+        if _SCHEME_RE.search(value) or \
+                _SCHEME_RE.search(unicodedata.normalize("NFKC", value)):
+            issues.append(ValidationIssue(
+                INJECTION_PATTERN, pointer,
+                f"{key} carries a data:/vbscript:/blob: scheme (rule S7)"))
     return issues
 
 
@@ -754,12 +800,7 @@ def _s8_split_role_markers(payload, ctx: _Context) -> list[ValidationIssue]:
     field that already matches is rejected by the schema pass; re-reporting
     it here would double-count the same defect).
     """
-    governed = []
-    for obj, keys in _iter_objects(payload):
-        for key in sorted(obj):
-            value = obj.get(key)
-            if key in ctx.text_safe_props and isinstance(value, str):
-                governed.append((_pointer(list(keys) + [key]), value))
+    governed = [(pointer, value) for pointer, _key, value in _iter_governed_strings(payload, ctx)]
     issues = []
     if not ctx.role_marker_patterns:
         return issues
@@ -863,7 +904,8 @@ def _s14_compatibility_normalized(payload, ctx: _Context) -> list[ValidationIssu
 
     Full-width Latin (``\uff49\uff47\uff4e\uff4f\uff52\uff45``) and other
     compatibility characters slip past the frozen text_safe patterns, which
-    are written in ASCII.  Each text_safe-governed string is folded with NFKC;
+    are written in ASCII.  Each text_safe-governed string (scalar, or an item
+    of a text_safe-typed array such as ``missing_fields``) is folded with NFKC;
     when the folded form differs and matches a text_safe branch while the raw
     value matches none, one ``injection_pattern`` issue is emitted.  A raw
     value that already matches is rejected by the schema pass and is not
@@ -873,21 +915,17 @@ def _s14_compatibility_normalized(payload, ctx: _Context) -> list[ValidationIssu
     issues = []
     if not ctx.text_safe_patterns:
         return issues
-    for obj, keys in _iter_objects(payload):
-        for key in sorted(obj):
-            value = obj.get(key)
-            if key not in ctx.text_safe_props or not isinstance(value, str):
-                continue
-            folded = unicodedata.normalize("NFKC", value)
-            if folded == value:
-                continue
-            if any(p.search(value) for p in ctx.text_safe_patterns):
-                continue
-            if any(p.search(folded) for p in ctx.text_safe_patterns):
-                issues.append(ValidationIssue(
-                    INJECTION_PATTERN, _pointer(list(keys) + [key]),
-                    f"{key} compatibility-normalized form matches a text_safe "
-                    f"injection pattern (rule S14)"))
+    for pointer, key, value in _iter_governed_strings(payload, ctx):
+        folded = unicodedata.normalize("NFKC", value)
+        if folded == value:
+            continue
+        if any(p.search(value) for p in ctx.text_safe_patterns):
+            continue
+        if any(p.search(folded) for p in ctx.text_safe_patterns):
+            issues.append(ValidationIssue(
+                INJECTION_PATTERN, pointer,
+                f"{key} compatibility-normalized form matches a text_safe "
+                f"injection pattern (rule S14)"))
     return issues
 
 
