@@ -25,6 +25,7 @@ owns_paths:
   - engine/marketing/catalyst_partner_pack.py
   - scripts/build_catalyst_partner_pack.py
   - templates/catalyst_scan.js
+  - templates/catalyst_scan.css
   - templates/catalyst_partner.html.j2
   - tests/test_catalyst_*.py
   - tests/catalyst_scan_browser.js
@@ -32,6 +33,14 @@ owns_paths:
   - research/MARKETING_X_CATALYST_CONTINUATION_HANDOFF_*.md
   - research/marketing_dockets/catalyst_fable_20261031/RIGHTS_CLASSIFICATION_REQUEST.md
   - research/marketing_dockets/catalyst_fable_20261031/D1_READINESS_NOTE.md
+  - research/marketing_dockets/catalyst_fable_20261031/SEC_ISSUER_EARNINGS_RELEASE_PUBLIC_FACTS.json
+  - engine/marketing/catalyst_source_adapter.py
+  - engine/marketing/catalyst_source_cycle.py
+  - scripts/run_catalyst_source_cycle.py
+  - engine/marketing/catalyst_source_store.py
+  - config/catalyst_pilot_universe.json
+  - app/deploy/macro-catalyst-source-cycle.service
+  - app/deploy/macro-catalyst-source-cycle.timer
 waves:
   - id: A1-INT
     title: Integrate the verified Session00/01/02 catalyst loop onto main
@@ -66,18 +75,42 @@ waves:
     depends_on: [A1-INT, A2-WITNESS, B-NEG, C1-PACK]
     next_action: >
       PR #10257 merged to main ab29a89eb4bd (2026-10-31 21:36:49Z, squash, --match-head-commit 94f2a79a; ci run 41239170455 SUCCESS; independent read-only review ACCEPT_WITH_FINDINGS recorded in the PR body). Deploy observed 22:03Z: API process = merge commit, /api/catalyst 503, /optin/request 503, /scan?tickers=AAPL 503; flags OFF. Rung: MERGED + PRODUCTION_PROOF of the OFF state. DO_NOT_REDO.
-  - id: OWNER-GATES
-    title: Owner acts outside the seat — rights grant, flags ON, hosted proofs, acceptance
-    status: todo
+  - id: RIGHTS-DEC
+    title: Record the SEC issuer earnings-release public-facts rights decision (D1–D5)
+    status: done
+    depends_on: [RIGHTS-REQ]
+    next_action: >
+      Recorded by the seat under leadership continuity (steward #7870 absent): family
+      sec_issuer_earnings_release_facts in config/theme_sources.yml, basis
+      SEC_ISSUER_EARNINGS_RELEASE_PUBLIC_FACTS.json, DEC:MX-CATALYST-SEC-ISSUER-EARNINGS-RELEASE-PUBLIC-FACTS.
+      Ships with A3-SOURCE behind independent review. DO_NOT_REDO.
+  - id: A3-SOURCE
+    title: Live pinned SEC source cycle (writer) + exact-document grant adapter (reader)
+    status: in_progress
+    depends_on: [RIGHTS-DEC]
+    next_action: >
+      Writer catalyst_source_cycle + timer and reader catalyst_source_adapter.build_admitted_source;
+      the adapter mints one grant per issuer EX-99.1 URL + sha with the D4 expiry and D5 owner_ref/receipt_id.
+      Integrate, independently review, merge, then install the writer timer on the production host.
+  - id: GAPS
+    title: Carried engineering gaps G1–G7 from the 2026-10-31 merge handoff
+    status: in_progress
     depends_on: [SHIP]
     next_action: >
-      Not seat-actionable. (1) Steward decides D1–D5 on PR #7870 comment 6549466894 or by an agentos decision;
-      (2) the flag operator turns CATALYST_PUBLIC_ENABLED / CATALYST_OPTIN_ENABLED / CATALYST_UX_ENABLED on only
-      after a bound grant; (3) hosted A2 proof, B2 opt-in return (needs a sender), C2 external cohort (partner
-      editor), D1 live conversions (Website/D07 UTM join), E1 decision (Chairman). Carried engineering gaps are in
-      the 2026-10-31 FABLE-CEO-MERGE handoff; each needs its own finding and owner before any edit.
+      NO_QUALIFIED_EVENT pill, A04 clock render, A07(c)/(d) browser witnesses, update.sh restart fence,
+      partner pack F3/F4, B04-DEDUP/F1, consent RPC review on PostgreSQL. Each lands with its test.
+  - id: OWNER-GATES
+    title: Owner acts outside the seat — flags ON, hosted proofs, acceptance
+    status: todo
+    depends_on: [A3-SOURCE, GAPS]
+    next_action: >
+      (1) The flag operator (Chris) turns CATALYST_PUBLIC_ENABLED / CATALYST_OPTIN_ENABLED / CATALYST_UX_ENABLED
+      on; (2) hosted A2 live-scan proof; (3) B2 opt-in return needs a sender, C2 external cohort a partner
+      editor, D1 live conversions the Website/D07 UTM join, E1 the Chairman decision.
 decisions:
   - DEC:ENTRY-RADAR-CATALYST-LIVE-READ-IS-OPT-IN
+  - DEC:MX-CATALYST-SEC-ISSUER-EARNINGS-RELEASE-PUBLIC-FACTS
+  - DEC:MX-CATALYST-GAPS-SEAT-RULINGS-20261101
 discoveries: []
 landmines:
   - >-
@@ -88,9 +121,10 @@ landmines:
     The eight Stage-A/Stage-B files are producer-owned bytes. An integrator resolves merge
     mechanics around them; a semantic change needs its own finding, review and seat decision.
   - >-
-    config/theme_sources.yml has no sec_edgar entry on main. A family entry is not an
-    issuer-exhibit grant; the hosted A2 proof cannot be claimed until a steward grants rights
-    and the flags are turned on by their owner.
+    config/theme_sources.yml admits sec_issuer_earnings_release_facts (2026-11-01) for the
+    issuer EX-99.1 only; it is not a family-level allow-all. Every displayed fact needs a
+    runtime exact-document grant from catalyst_source_adapter, and the hosted A2 proof cannot
+    be claimed until the flags are turned on by their operator.
   - >-
     CATALYST_PUBLIC_ENABLED / CATALYST_OPTIN_ENABLED / CATALYST_UX_ENABLED default OFF and
     fail closed; no wave enables them. The consent RPC review script needs PostgreSQL and is
@@ -108,11 +142,12 @@ artifacts:
   - research/marketing_dockets/catalyst_fable_20261031/DESIGN.md
   - research/marketing_dockets/catalyst_fable_20261031/PILOT.md
   - research/marketing_dockets/D07_FUNNEL_LIFECYCLE_MNZ.md
+  - research/marketing_dockets/catalyst_fable_20261031/SEC_ISSUER_EARNINGS_RELEASE_PUBLIC_FACTS.json
 next_action: >
-  Delivery rung MERGED + PRODUCTION_PROOF (OFF state) via PR #10257. Open owner gates, none seat-actionable:
-  steward decision D1–D5 on the SEC EDGAR rights request (PR #7870 comment 6549466894); flags ON only by their
-  operator after a grant; hosted A2 proof, opt-in return B2, external cohort C2, live conversions D1 and the E1
-  decision follow those gates. Carried engineering gaps are listed in the 2026-10-31 FABLE-CEO-MERGE handoff.
+  #10257 is MERGED + PRODUCTION_PROOF (OFF state). The seat recorded the SEC rights decision D1–D5
+  (DEC:MX-CATALYST-SEC-ISSUER-EARNINGS-RELEASE-PUBLIC-FACTS) and is shipping A3-SOURCE (live pinned
+  SEC source cycle + exact-document grant adapter) and GAPS G1–G7 in one reviewed PR, then installs
+  the writer timer. After that, only the operator's flags-ON and the hosted proofs remain.
 ---
 
 # Marketing X — Catalyst Loop acquisition engine
