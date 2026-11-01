@@ -25,6 +25,7 @@ owns_paths:
   - engine/marketing/catalyst_partner_pack.py
   - scripts/build_catalyst_partner_pack.py
   - templates/catalyst_scan.js
+  - templates/catalyst_scan.css
   - templates/catalyst_partner.html.j2
   - tests/test_catalyst_*.py
   - tests/catalyst_scan_browser.js

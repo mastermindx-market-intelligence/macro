@@ -924,6 +924,10 @@ def test_g3_real_browser_320px_no_hscroll_and_focus_kept(tmp_path):
 
     page_file = render_preview(tmp_path / "preview")
     root = page_file.parent
+    if not (root / "theme.css").is_file():
+        # A sparse checkout has no site/; without the tokens every font shorthand
+        # that names a var() is dropped and the geometry below is not the page's.
+        (root / "theme.css").write_bytes((ROOT / "templates" / "theme.css").read_bytes())
     tickers = "NVDA AMD PFE AAPL MSFT TSLA META GOOGL AMZN INTC"
 
     def fixture_scan(requested):
@@ -943,7 +947,13 @@ def test_g3_real_browser_320px_no_hscroll_and_focus_kept(tmp_path):
                         "source_id": "s1", "display_rights": "ALLOWED",
                         "rights_receipt_id": "r", "title": "SYNTHETIC",
                         "url": "https://www.sec.gov/Archives/edgar/data/0000000000/averyveryveryveryveryverylongpathsegmentwithoutbreaks0000000000000000.htm",
-                        "published_at_utc": "2026-10-09T01:30:00Z"}],
+                        "published_at_utc": "2026-10-09T01:30:00Z"}, {
+                        "source_id": "s2", "display_rights": "ALLOWED",
+                        "rights_receipt_id": "r",
+                        "title": "SYNTHETIC Issuer Incorporated, Form 8-K Item 2.02 EX-99.1, filed with the SEC",
+                        "url": "https://www.sec.gov/Archives/edgar/data/0000000000/fixture.htm",
+                        "published_at_utc": None,
+                        "first_verified_at_utc": "2026-10-09T01:40:00Z"}],
                     "dossier_path": "/stocks/NVDA.html"})
             elif ticker == "PFE":
                 rows.append({"ticker": ticker, "status": "NO_QUALIFIED_EVENT",
@@ -1005,6 +1015,14 @@ def test_g3_real_browser_320px_no_hscroll_and_focus_kept(tmp_path):
                 assert page.evaluate(
                     "document.documentElement.scrollWidth <= window.innerWidth + 1"), width
                 assert page.evaluate("document.activeElement.id") == "cs-scan-submit"
+                # A card clips its overflow, so page-level scroll cannot see a source
+                # row (attribution title, first-verified stamp) cut off inside it.
+                clipped = page.evaluate(
+                    """() => [...document.querySelectorAll('.cs-result-card, .cs-source')]
+                        .filter(n => n.scrollWidth > n.clientWidth + 1)
+                        .map(n => [n.className, n.scrollWidth, n.clientWidth,
+                                   n.textContent.slice(0, 40)])""")
+                assert clipped == [], (width, clipped)
                 pill = page.evaluate(
                     """() => {
                         for (const card of document.querySelectorAll('#cs-result-cards > *')) {
