@@ -49,6 +49,7 @@ sys.path.insert(0, str(_REPO_ROOT))
 from engine.market_os.macro_workspaces import contract, registry  # noqa: E402
 from lib import macro_suite_labels as L  # noqa: E402
 from lib import macro_suite_view  # noqa: E402
+from lib.pages import write_unshimmed_html  # noqa: E402
 
 # Shared across every workspace page: copied once per build, never per page.
 # macro_command.css / macro_command.js are Macro Command's page-level assets —
@@ -1435,7 +1436,7 @@ def write_fragments(env: Environment, sections: Sequence[Mapping[str, Any]],
         path = dest / f"{section['id']}.html"
         temp = _temp_sibling(path)
         try:
-            temp.write_text(html, encoding="utf-8")
+            write_unshimmed_html(temp, html, encoding="utf-8")
             os.replace(temp, path)
         finally:
             temp.unlink(missing_ok=True)
