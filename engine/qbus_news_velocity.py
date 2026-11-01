@@ -56,6 +56,10 @@ _DAILY_WINDOW_DAYS = 28
 # guards hand-built fixtures; when the stamp is absent or unreadable, the
 # projection's ``received_at`` (the latest receipt, never earlier than the
 # first) stands in, which can only exclude more, never admit a later report.
+# A stamp that parses but names an instant outside the representable UTC
+# range is treated as unreadable. A report with no readable published time
+# is dated by that same possession instant, so a redelivery after ``as_of``
+# neither moves it later nor drops it out of the windows it was counted in.
 _STORY_SQL = """
 SELECT i.source, i.source_item_id, p.published_at, p.received_at, m.cluster_id,
        c.cluster_policy_version,
@@ -298,9 +302,7 @@ def _distinct_stories(
         possessed = _possession_time(first_received_at, received_at)
         if possessed is None or possessed > as_of:
             continue
-        when, basis = _effective_time(published_at, received_at)
-        if when is None:
-            continue
+        when, basis = _effective_time(published_at, possessed)
         if cluster_id is None:
             story_key = "item:" + key[0] + "\x1f" + key[1]
             label = None
@@ -327,7 +329,9 @@ def _possession_time(
     for value in (first_received_at, received_at):
         try:
             instant = _parse_instant(value)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, OverflowError):
+            # OverflowError: an offset stamp whose UTC instant falls outside
+            # datetime's range (year 1 east of UTC, year 9999 west of it).
             instant = None
         if instant is not None:
             return instant
@@ -335,12 +339,19 @@ def _possession_time(
 
 
 def _effective_time(
-    published_at: object, received_at: object
-) -> tuple[datetime | None, str]:
+    published_at: object, possessed: datetime
+) -> tuple[datetime, str]:
+    """The report's time and its basis.
+
+    The published time when present. Otherwise the possession instant from
+    ``_possession_time``: the first receipt when it reads, else the latest.
+    Using the first receipt keeps a redelivered report on the day the store
+    first held it.
+    """
     published = _parse_instant(published_at)
     if published is not None:
         return published, "published_at"
-    return _parse_instant(received_at), "received_at"
+    return possessed, "received_at"
 
 
 def _parse_instant(value: object) -> datetime | None:

@@ -1427,3 +1427,125 @@ def test_report_with_no_readable_receipt_is_skipped_not_raised(tmp_path):
 
     assert result["count_24h"] == 1
     assert result["basis_counts"] == {"published_at": 1, "received_at": 0}
+
+
+@pytest.mark.parametrize(
+    ("stamp", "latest_override", "expected_24h"),
+    [
+        # A first-receipt stamp whose UTC instant is before year 1: the
+        # latest receipt (before the instant) stands in and the report counts.
+        ("0001-01-01T00:00:00+05:00", None, 1),
+        # A first-receipt stamp whose UTC instant is after year 9999: same.
+        ("9999-12-31T23:59:59-05:00", None, 1),
+        # No stamp and a latest receipt outside the range: possession is
+        # unknown, so the report is skipped.
+        (None, "0001-01-01T00:00:00+05:00", 0),
+    ],
+    ids=["stamp-before-year-1", "stamp-after-year-9999", "latest-before-year-1"],
+)
+def test_out_of_range_receipt_stamps_fail_closed_not_raised(
+    tmp_path, stamp, latest_override, expected_24h
+):
+    """A receipt stamp that parses but cannot be converted to UTC is read as
+    unreadable. The read neither raises nor admits the report on it."""
+    db = _new_db(tmp_path)
+    conn = _writer(db)
+    published = NOW - timedelta(hours=1)
+    state_json = "{}" if stamp is None else json.dumps({"first_received_at": stamp})
+    _insert(
+        conn,
+        security_id="sec-NVDA",
+        item_id="edge",
+        published=published,
+        received=published + timedelta(seconds=1),
+        state_json=state_json,
+    )
+    if latest_override is not None:
+        conn.execute(
+            "UPDATE news_state_projection SET received_at = ? WHERE source_item_id = ?",
+            (latest_override, "edge"),
+        )
+    _close_writer(conn, db)
+
+    result = _velocity(db, "sec-NVDA")
+
+    assert result["count_24h"] == expected_24h
+    assert result["basis_counts"] == {"published_at": expected_24h, "received_at": 0}
+
+
+def test_held_report_published_after_as_of_is_outside_both_windows(tmp_path):
+    """Held by possession (first receipt before the instant) but carrying a
+    published time after it: inside the basis totals, outside the 24h and 7d
+    windows. Guards the upper bound of both windows."""
+    db = _new_db(tmp_path)
+    conn = _writer(db)
+    first = NOW - timedelta(hours=1)
+    _insert(
+        conn,
+        security_id="sec-NVDA",
+        item_id="published-later",
+        published=NOW + timedelta(hours=2),
+        received=first,
+        state_json=_first_receipt(first),
+    )
+    _close_writer(conn, db)
+
+    result = _velocity(db, "sec-NVDA")
+
+    assert result["count_24h"] == 0
+    assert result["count_7d"] == 0
+    assert result["stories_24h"] == 0
+    assert sum(result["daily_counts_28d"]) == 0
+    assert result["basis_counts"] == {"published_at": 1, "received_at": 0}
+    assert result["basis_counts_24h"] == {"published_at": 0, "received_at": 0}
+
+
+def test_received_basis_first_receipt_wins_over_a_later_redelivery(tmp_path):
+    """No published time, first received before the instant, redelivered
+    after it: counted in the 24h and 7d windows on its first receipt."""
+    db = _new_db(tmp_path)
+    conn = _writer(db)
+    first = NOW - timedelta(hours=1)
+    _insert(
+        conn,
+        security_id="sec-NVDA",
+        item_id="redelivered-unpublished",
+        published=None,
+        received=NOW + timedelta(hours=6),
+        state_json=_first_receipt(first),
+    )
+    _close_writer(conn, db)
+
+    result = _velocity(db, "sec-NVDA")
+
+    assert result["count_24h"] == 1
+    assert result["count_7d"] == 1
+    assert result["basis_counts"] == {"published_at": 0, "received_at": 1}
+    assert result["basis_counts_24h"] == {"published_at": 0, "received_at": 1}
+
+
+def test_received_basis_redelivery_does_not_move_a_report_later(tmp_path):
+    """No published time, first received three days before the instant and
+    redelivered an hour before it: dated by the first receipt, so it sits in
+    the 7d window and its own daily bin, not in the last 24 hours."""
+    db = _new_db(tmp_path)
+    conn = _writer(db)
+    first = NOW - timedelta(days=3)  # 2026-10-08: daily bin 25
+    _insert(
+        conn,
+        security_id="sec-NVDA",
+        item_id="redelivered-recently",
+        published=None,
+        received=NOW - timedelta(hours=1),
+        state_json=_first_receipt(first),
+    )
+    _close_writer(conn, db)
+
+    result = _velocity(db, "sec-NVDA")
+
+    assert result["count_24h"] == 0
+    assert result["count_7d"] == 1
+    assert result["daily_counts_28d"][25] == 1
+    assert sum(result["daily_counts_28d"]) == 1
+    assert result["history_days_observed"] == 3
+    assert result["basis_counts"] == {"published_at": 0, "received_at": 1}
