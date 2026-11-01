@@ -1033,6 +1033,26 @@ def _diagnostics(snapshot: Mapping[str, Any], context: Mapping[str, Any],
 
 # --- evidence drawer ----------------------------------------------------------
 
+def _lineage_note_for_printed_dates(note: Any, effective_date: Any,
+                                    prior_effective_date: Any) -> Any:
+    """Use the later-period producer note when a no-change note's dates differ."""
+    eff = str(effective_date).strip() if effective_date else ""
+    prior = str(prior_effective_date).strip() if prior_effective_date else ""
+    if not eff or not prior or eff == prior:
+        return note
+    try:
+        kind = D.classify_lineage_kind(note)
+    except KeyError:
+        return note
+    if kind != "no_change_republication":
+        return note
+    return (
+        "Reference period differs from the predecessor print "
+        "(a new observation, not a revision of the same period); "
+        "no correction asserted."
+    )
+
+
 def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
               page_built_at: str, artifact: Mapping[str, Any]) -> dict[str, Any]:
     sources = []
@@ -1099,7 +1119,14 @@ def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             "changed_sources": D.changed_sources_pair(
                 corrections.get("changed_fingerprints")),
             "note": D.lineage_note_pair(
-                corrections.get("note"),
+                _lineage_note_for_printed_dates(
+                    corrections.get("note"),
+                    (snapshot.get("headline") or {}).get("effective_date"),
+                    (
+                        ((snapshot.get("headline") or {}).get("prior_state") or {})
+                        .get("effective_date")
+                    ),
+                ),
                 effective_date=(snapshot.get("headline") or {}).get("effective_date"),
                 prior_effective_date=(
                     ((snapshot.get("headline") or {}).get("prior_state") or {})
