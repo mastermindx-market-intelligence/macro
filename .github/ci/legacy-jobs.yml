@@ -19886,6 +19886,14 @@ jobs:
       - "engine/sector_theme_factor_intelligence.py"
       - "engine/sector_theme_regime_fingerprint.py"
       - "engine/sector_theme_owner_bridge.py"
+      - "engine/sector_theme_native_owner_read.py"
+      # P2d native owner reads are deliberately bounded by the incumbent
+      # purpose-specific rights kernel and US PIT membership source.
+      - "engine/basket_membership_pit.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/rights_use.py"
+      - "config/theme_sources.yml"
       - "engine/sector_theme_regime_explain.py"
       - "engine/sector_theme_regime_comparison.py"
       - "engine/sector_theme_regime_timeline.py"
@@ -19940,6 +19948,7 @@ jobs:
       - "tests/test_sector_theme_factor_intelligence.py"
       - "tests/test_sector_theme_regime_fingerprint.py"
       - "tests/test_sector_theme_owner_bridge.py"
+      - "tests/test_sector_theme_native_owner_read.py"
       - "tests/test_sector_theme_regime_explain.py"
       - "tests/test_sector_theme_regime_comparison.py"
       - "tests/test_sector_theme_regime_timeline.py"
@@ -19957,7 +19966,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml scipy requests
       - name: leadership rotation measured-product contract
-        run: TZ=UTC python -m pytest tests/test_leadership_rotation_contract.py tests/test_sector_theme_factor_intelligence.py tests/test_sector_theme_regime_fingerprint.py tests/test_sector_theme_owner_bridge.py tests/test_sector_theme_regime_explain.py tests/test_sector_theme_regime_comparison.py tests/test_sector_theme_regime_timeline.py tests/test_sector_theme_multi_horizon_view.py -q -p no:cacheprovider
+        run: TZ=UTC python -m pytest tests/test_leadership_rotation_contract.py tests/test_sector_theme_factor_intelligence.py tests/test_sector_theme_regime_fingerprint.py tests/test_sector_theme_owner_bridge.py tests/test_sector_theme_native_owner_read.py tests/test_sector_theme_regime_explain.py tests/test_sector_theme_regime_comparison.py tests/test_sector_theme_regime_timeline.py tests/test_sector_theme_multi_horizon_view.py -q -p no:cacheprovider
 
   leadership-rotation-science:
     if: ${{ false }}
