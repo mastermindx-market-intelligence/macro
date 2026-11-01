@@ -1,0 +1,25 @@
+{
+  "schema": "marketing.catalyst_pilot_universe/v1",
+  "issuers": [
+    {"ticker": "AAPL", "cik": 320193, "name": "Apple Inc."},
+    {"ticker": "MSFT", "cik": 789019, "name": "Microsoft Corporation"},
+    {"ticker": "AMZN", "cik": 1018724, "name": "Amazon.com, Inc."},
+    {"ticker": "GOOGL", "cik": 1652044, "name": "Alphabet Inc."},
+    {"ticker": "META", "cik": 1326801, "name": "Meta Platforms, Inc."},
+    {"ticker": "NVDA", "cik": 1045810, "name": "NVIDIA Corporation"},
+    {"ticker": "TSLA", "cik": 1318605, "name": "Tesla, Inc."},
+    {"ticker": "JPM", "cik": 19617, "name": "JPMorgan Chase & Co."},
+    {"ticker": "V", "cik": 1403161, "name": "Visa Inc."},
+    {"ticker": "MA", "cik": 1141391, "name": "Mastercard Incorporated"},
+    {"ticker": "WMT", "cik": 104169, "name": "Walmart Inc."},
+    {"ticker": "JNJ", "cik": 200406, "name": "Johnson & Johnson"},
+    {"ticker": "PG", "cik": 80424, "name": "The Procter & Gamble Company"},
+    {"ticker": "HD", "cik": 354950, "name": "The Home Depot, Inc."},
+    {"ticker": "KO", "cik": 21344, "name": "The Coca-Cola Company"},
+    {"ticker": "PEP", "cik": 77476, "name": "PepsiCo, Inc."},
+    {"ticker": "COST", "cik": 909832, "name": "Costco Wholesale Corporation"},
+    {"ticker": "NFLX", "cik": 1065280, "name": "Netflix, Inc."},
+    {"ticker": "AMD", "cik": 2488, "name": "Advanced Micro Devices, Inc."},
+    {"ticker": "UNH", "cik": 731766, "name": "UnitedHealth Group Incorporated"}
+  ]
+}

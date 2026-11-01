@@ -41858,6 +41858,7 @@ jobs:
       - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "research/DO_NOT_REBUILD.md"
+      - "research/MARKETING_X_CATALYST_CONTINUATION_HANDOFF_20261101.md"
       - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
@@ -41913,6 +41914,8 @@ jobs:
       - "app/catalyst_scan_authority.py"
       - "app/catalyst_scan_ui.js"
       - "app/company_intelligence.py"
+      - "app/deploy/macro-catalyst-source-cycle.service"
+      - "app/deploy/macro-catalyst-source-cycle.timer"
       - "app/deploy/update.sh"
       - "app/dossier_quote.py"
       - "app/earnings.py"
@@ -41985,6 +41988,7 @@ jobs:
       - "config/biocatalyst_sources.yml"
       - "config/biocatalyst_sponsor_ticker_map.yml"
       - "config/capability_manifest.yml"
+      - "config/catalyst_pilot_universe.json"
       - "config/compiled_kill_registry.yml"
       - "config/dataset_registry.yml"
       - "config/delisted_symbols.yml"
@@ -42260,6 +42264,8 @@ jobs:
       - "engine/marketing/catalyst_packets.py"
       - "engine/marketing/catalyst_partner_pack.py"
       - "engine/marketing/catalyst_scan.py"
+      - "engine/marketing/catalyst_source_cycle.py"
+      - "engine/marketing/catalyst_source_store.py"
       - "engine/marketing/chart_director.py"
       - "engine/marketing/chart_facts.py"
       - "engine/marketing/chart_followups.py"
@@ -42320,6 +42326,7 @@ jobs:
       - "engine/name_resolver.py"
       - "engine/name_score.py"
       - "engine/name_score_grader.py"
+      - "engine/news_impact/edgar_body.py"
       - "engine/narrative_crossmarket.py"
       - "engine/narrative_rotation.py"
       - "engine/neuralweb/__init__.py"
@@ -42577,6 +42584,7 @@ jobs:
       - "scripts/optimize_assets.py"
       - "scripts/query_k3e_expectation_surface.py"
       - "scripts/render_catalyst_scan.py"
+      - "scripts/run_catalyst_source_cycle.py"
       - "scripts/security_state_producer.py"
       - "scripts/snapshot_shadow_book.py"
       - "scripts/sparse_guard.py"
@@ -42610,6 +42618,7 @@ jobs:
       - "tests/test_catalyst_scan.py"
       - "tests/test_catalyst_scan_authority.py"
       - "tests/test_catalyst_scan_frontend.py"
+      - "tests/test_catalyst_source_cycle.py"
       - "app/catalyst_opportunity.py"
       - "app/company_disclosures.py"
       - "app/company_supplier_research.py"
@@ -42947,6 +42956,7 @@ jobs:
           tests/test_catalyst_admission.py
           tests/test_catalyst_scan_frontend.py
           tests/test_catalyst_partner_pack.py
+          tests/test_catalyst_source_cycle.py
           -q -rs
 
   no-client-supplied-identity:
