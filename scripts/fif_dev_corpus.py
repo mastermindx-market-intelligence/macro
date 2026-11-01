@@ -43,8 +43,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 _ROOT = Path(__file__).resolve().parent.parent
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))
+sys.path.insert(0, str(_ROOT))
 
 from collectors.sec_request_pacer import SecRequestPacer
 from engine.fundamental_forensics.sec_document_spine import canonical_cik
