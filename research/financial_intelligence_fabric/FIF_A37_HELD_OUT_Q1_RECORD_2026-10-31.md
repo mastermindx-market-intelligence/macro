@@ -83,3 +83,46 @@ and review; the evaluator re-run that follows is a new generation of reports, ne
 A pack's A37 cell is re-adjudicated only on a new Q1 generation (new reports directory, new evaluator
 lane id) after one or more of the three causes above is resolved under its owner's review. A fresh
 session, a lost transcript or a repeated reading of these reports is not a reopen condition.
+
+## Addendum 2026-11-01 — third generation (g3) and the A34 ledger binding
+
+The third Q1 generation landed in
+`research/financial_intelligence_fabric/reports/q1_held_out_20261031_g3/`.
+It was evaluated at 2026-11-01T09:21:05Z against head `30359c741f1f`.
+
+**Result.** All twelve pack reports carry `quality_label: underpowered`. The per-pack
+table and the failed-family detail are in that directory's `INDEX.md`. Every failed
+family carries the disposition `unavailable_research_only`. PK06 and PK10 have no
+failed families. The A37 verdict stays **PARTIAL**: no pack reached
+`held_out_measured`.
+
+**What changed in the A34 ledger.** Until now, `FIF_A34_PACK_PROOF_LEDGER.json` marked a
+pack's `held_out` proof as present whenever its split was sealed. That let a sealed but
+underpowered split count as a proof. Eleven packs were shown as having a held-out proof
+that the Q1 reports do not support. That is the kind of gap A34 forbids a summary to
+hide.
+
+The generator `scripts/fif_a34_pack_proof_ledger.py` now records `held_out` as present
+only when both of these hold:
+
+- the `_SEALED` marker exists;
+- the pack's report in the current generation (`Q1_REPORTS_REL`) has
+  `quality_label: held_out_measured`.
+
+It copies the report's label, its path and its failed families (`section_family` and
+`disposition`) verbatim. It still checks only whether the marker exists and reads no
+byte under the sealed root.
+
+After this change, held_out is a listed gap for all twelve packs. The A34 test fails if
+a newer `q1_held_out_20261031*` generation lands while the constant still names g3.
+
+**Inconsistency for the evaluator lane.** In g3, `INDEX.md` lists PK10 as
+`no_held_out_labels` / `unavailable_research_only`. The JSON report
+`PK10_pack_quality_report.json` says `underpowered`, with zero cells. The ledger copies
+the JSON verbatim. The seat does not edit Q1 reports. The next generation lane should
+make the two agree. Either label leaves PK10 as a gap, and PK10 stays `not_measurable`
+until a reviewed non-XBRL proxy policy lands.
+
+**What this addendum does not change.** It changes no label, seal, report, floor,
+denominator or failed-family disposition. A37 and A34 both stay PARTIAL. Reopening a
+failed family still requires a fresh Q0 split decision.
