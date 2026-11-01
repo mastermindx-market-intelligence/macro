@@ -63,6 +63,13 @@ FIGURE_SCALE: dict[str, dict[str, str]] = {
 }
 FIGURE_SCALE_FALLBACK = _pair("index reading", "指数读数")
 
+# Leave-one-recession-out catch rate. The view shows this only when the
+# producer recorded ~3 and a tiny sample on that one metric.
+CATCH_RATE_SAMPLE_NOTE = _pair(
+    "About 3 modern recessions, leave-one-out. The sample is small.",
+    "约 3 次现代衰退，留一法。样本很小。",
+)
+
 
 # --- section 7.6 freshness vocabulary ---------------------------------------
 FRESHNESS: dict[str, dict[str, str]] = {
