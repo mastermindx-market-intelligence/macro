@@ -3,10 +3,20 @@ from __future__ import annotations
 
 from dataclasses import replace
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import pytest
+import yaml
 
-from lib.help_directory import HELP_LINKS, help_directory_view_model, validate_help_directory
+from lib.glossary import GLOSSARY_DOMAINS, GLOSSARY_TERMS
+from lib.help_directory import (
+    GENERATED_SOURCE,
+    HELP_ANSWERS,
+    HELP_LINKS,
+    help_answers_view_model,
+    help_directory_view_model,
+    validate_help_directory,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,11 +41,11 @@ def test_canonical_directory_validates_and_exposes_a_serializable_complete_model
         ("market-reference", "research", "Market Reference", "市场参考", "reference.html", "complete"),
         ("methodology", "research", "Methodology", "方法论", "methodology.html", "complete"),
         (
-            "cycle-intelligence-calibration-lab",
+            "calibration-hub",
             "research",
-            "Cycle Intelligence · Calibration Lab",
-            "周期情报 · 校准实验室",
-            "measurement.html",
+            "Calibration Hub",
+            "校准中心（英文）",
+            "calibration.html",
             "complete",
         ),
         (
@@ -190,3 +200,90 @@ def test_validation_rejects_unknown_entry_with_clickable_href() -> None:
 
     with pytest.raises(ValueError, match="unknown entries must not define href"):
         validate_help_directory(ROOT, entries=(entry,))
+
+
+def test_help_and_glossary_targets_are_not_denied() -> None:
+    """Breaks if a public help or glossary link points at a denied exact path."""
+    policy = yaml.safe_load((ROOT / "config" / "site_access.yml").read_text(encoding="utf-8"))
+    denied = policy["deny"]["exact"]
+    assert "/measurement.html" in denied
+
+    hrefs = (
+        [entry.href for entry in HELP_LINKS]
+        + [answer.href for answer in HELP_ANSWERS]
+        + [domain.page_href for domain in GLOSSARY_DOMAINS]
+        + [term.page_href for term in GLOSSARY_TERMS]
+    )
+    for href in hrefs:
+        if not href or "://" in href:
+            continue
+        path = urlsplit(href).path
+        key = path if path.startswith("/") else f"/{path}"
+        assert key not in denied, href
+
+
+def test_no_help_or_glossary_page_is_measurement_html() -> None:
+    """The denied scorecard path is not a help or glossary destination."""
+    assert all(entry.href != "measurement.html" for entry in HELP_LINKS)
+    assert all(answer.href != "measurement.html" for answer in HELP_ANSWERS)
+    assert all(domain.page_href != "measurement.html" for domain in GLOSSARY_DOMAINS)
+    assert all(term.page_href != "measurement.html" for term in GLOSSARY_TERMS)
+
+
+def test_generated_page_rejects_an_unregistered_writer() -> None:
+    """engine/other.py is not a value of the generated-page map."""
+    entry = replace(HELP_LINKS[2], source_template="engine/other.py")
+
+    with pytest.raises(ValueError, match="invalid source_template"):
+        validate_help_directory(ROOT, entries=(entry,))
+
+
+def test_generated_source_is_refused_for_a_page_with_a_template() -> None:
+    """The template check cannot be skipped by calling an ordinary page generated."""
+    entry = replace(HELP_LINKS[0], source_template=GENERATED_SOURCE)
+    with pytest.raises(ValueError, match="invalid source_template"):
+        validate_help_directory(ROOT, entries=(entry,))
+
+
+def test_unlisted_page_still_requires_a_template() -> None:
+    """A name outside the generated-page map keeps the template existence check."""
+    entry = replace(HELP_LINKS[0], href="other_generated.html")
+    with pytest.raises(ValueError, match="target template is unavailable"):
+        validate_help_directory(ROOT, entries=(entry,))
+
+    answer = replace(HELP_ANSWERS[0], href="other_generated.html")
+    with pytest.raises(ValueError, match="target template is unavailable"):
+        help_answers_view_model(ROOT, answers=(answer,))
+
+
+def test_scorecard_answers_keep_the_misses_and_the_english_only_note():
+    """The sentence the page bears out names the misses, in both languages.
+
+    The calibration page prints in English only, so the Chinese label says so.
+    """
+    answer = next(item for item in HELP_ANSWERS if item.id == "how-do-you-know")
+    assert "including desks below it or with nothing scored" in answer.answer_en
+    assert "\u5305\u62ec\u672a\u8fbe\u6807\u6216\u5c1a\u65e0\u8bc4\u5206\u8bb0\u5f55\u7684\u7814\u7a76\u53f0" in answer.answer_zh
+    card = next(link for link in HELP_LINKS if link.id == "calibration-hub")
+    assert card.label_zh == "\u6821\u51c6\u4e2d\u5fc3\uff08\u82f1\u6587\uff09"
+    scorecard_answers = [item for item in HELP_ANSWERS if item.href == "calibration.html"]
+    assert len(scorecard_answers) == 2
+    for item in scorecard_answers:
+        assert item.link_zh == "\u6821\u51c6\u4e2d\u5fc3\uff08\u82f1\u6587\uff09", item.id
+
+
+def test_each_generated_entry_has_a_writer_that_prints_its_label() -> None:
+    """The validator holds no engine path, so this is where a generated page is proved."""
+    writers = {"calibration.html": ROOT / "engine" / "calibration_hub.py"}
+    entries = [e for e in HELP_LINKS if e.source_template == GENERATED_SOURCE]
+    assert {e.href for e in entries} == set(writers)
+    for entry in entries:
+        assert entry.label_en in writers[entry.href].read_text(encoding="utf-8")
+
+
+def test_calibration_hub_source_bears_out_the_scorecard_sentence() -> None:
+    """The linked writer names the hub, the bar set in advance, and the scored column."""
+    source = (ROOT / "engine" / "calibration_hub.py").read_text(encoding="utf-8")
+    assert "Calibration Hub" in source
+    assert "pre-registered" in source
+    assert "Scored" in source
