@@ -4232,6 +4232,23 @@ def _child_environment(
     return _child_git_environment(command_env)
 
 
+def _export_tested_tree_sha(bound_tree_sha: str | None) -> bool:
+    """Publish the plan-bound tested tree to legacy steps as ``TESTED_TREE_SHA``.
+
+    The International canonical-main gates read ``CI_TESTED_TREE_SHA`` first and
+    ``TESTED_TREE_SHA`` second. ci.yml exports ``TESTED_TREE_SHA`` in the pack
+    step's ``env:``; the trusted and canary executors pass only CLI flags, so a
+    pack that knows its plan publishes the value once here, before either child
+    environment is assembled. An explicit value is never overridden (exact-base
+    replay sets ``CI_TESTED_TREE_SHA`` deliberately and keeps precedence).
+    Returns True only when this call set the variable.
+    """
+    if bound_tree_sha is None or os.environ.get("TESTED_TREE_SHA"):
+        return False
+    os.environ["TESTED_TREE_SHA"] = bound_tree_sha
+    return True
+
+
 def _child_git_environment(command_env: Mapping[str, str]) -> dict[str, str]:
     """Drop repo-binding Git vars so a child can `git init` in tmp_path."""
     cleaned = dict(command_env)
@@ -5318,6 +5335,9 @@ def execute_pack(
         r"[0-9a-f]{40}", bound_tree_sha
     ):
         bound_tree_sha = None
+    # F10 review F1: both international legacy gates need the tested tree in the
+    # step environment on every executor, not only the ci.yml pack step.
+    _export_tested_tree_sha(bound_tree_sha)
     command_env = _child_environment(changed_files_file)
     if plan is not None:
         try:

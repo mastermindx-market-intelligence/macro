@@ -9817,6 +9817,8 @@ jobs:
     # so 8 was only ever proven there. 15 keeps the fail-closed fetch and both suites
     # unchanged and covers the measured PR-side infrastructure time. Same repair as
     # macro #10257 (unmerged at the time of writing); whichever lands second is a no-op.
+    # F10 (#10367) replaced that ~4-min unrestricted fetch with the blob-filtered
+    # canonical-main helper; 15 is kept until the job's PR-side time is re-measured.
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -10642,7 +10644,7 @@ jobs:
     # Weight is not derived from timeout-minutes, so this does not rebalance packs.
     # The structural fix for the sibling international-dislocation-explorer job
     # (its redundant unrestricted base fetch after the fetch-depth 0 checkout)
-    # landed as F10: both international jobs now use prepare_canonical_main.
+    # is F10 (#10367): both international jobs use prepare_canonical_main.
     # This job's own measured budget (20) is unchanged by F10.
     timeout-minutes: 20
     runs-on: ubuntu-latest

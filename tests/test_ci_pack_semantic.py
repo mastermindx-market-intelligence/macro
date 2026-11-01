@@ -3982,6 +3982,22 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
                 PACK.prepare_canonical_main(
                     f['checkout'], tested_tree_sha=f['tested'], frozen_paths=bad)
 
+    def test_export_tested_tree_sha_publishes_once_and_never_overrides(self):
+        # F10 review F1: executors that pass only CLI flags still give legacy
+        # steps TESTED_TREE_SHA; an explicit value and an unknown tree are left alone.
+        tested = 'a' * 40
+        with _cm_mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop('TESTED_TREE_SHA', None)
+            self.assertFalse(PACK._export_tested_tree_sha(None))
+            self.assertNotIn('TESTED_TREE_SHA', os.environ)
+            self.assertTrue(PACK._export_tested_tree_sha(tested))
+            self.assertEqual(os.environ['TESTED_TREE_SHA'], tested)
+            self.assertFalse(PACK._export_tested_tree_sha('b' * 40))
+            self.assertEqual(os.environ['TESTED_TREE_SHA'], tested)
+        with _cm_mock.patch.dict(os.environ, {'TESTED_TREE_SHA': 'c' * 40}, clear=False):
+            self.assertFalse(PACK._export_tested_tree_sha(tested))
+            self.assertEqual(os.environ['TESTED_TREE_SHA'], 'c' * 40)
+
     def test_caller_frozen_paths_subset_prepares_canonical_main(self):
         f = self.fixture()
         self.assertEqual(PACK.prepare_canonical_main(
