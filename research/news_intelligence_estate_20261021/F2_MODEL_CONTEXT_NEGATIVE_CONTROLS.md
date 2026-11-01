@@ -200,6 +200,33 @@ reference itself (hash-pinned bytes replayed by an owner), not value-in-evidence
 checking; the property "a value that does not appear in its cited evidence is rejected"
 has no mechanism.
 
+**Resolution 2026-11-01 (producer grounding added; the tables above stay as recorded).**
+`engine/news_impact/producer.py` (`ni-producer-2`) now grounds every stated quantity
+before validation. After `bind_span` verifies the span, `_quantity_grounded` reads the
+verified source bytes that span cites, never the labeler excerpt. Each `value`, `low` and
+`high` must equal a numeral written there. A numeral is read as written, times a scale
+word the span uses (`SCALE_WORDS`, imported from the grader, unchanged), times a k/m/bn/t
+suffix directly after it, or times 0.01 when the span states a percent or basis points.
+Otherwise the case rejects with the producer code `quantity_value_ungrounded`. That code
+is a producer outcome code, so it adds nothing to the contract's closed reason codes, and
+`contracts/news_impact/` is untouched. The control is now behavioural: the stated
+"USD 50m" case emits, and the same agreed span with a fabricated 777 rejects. M04 moves
+to **HELD** for the producer path, giving 17 HELD, 1 BROKEN (M05a) and 3 NO_MECHANISM
+(M07b, M08, M13) of 21. The check is bounded, and these limits remain:
+- **Fails closed:** spelled-out numbers ("fifty million"), derived or summed values,
+  and fractions of a basis point (0.0025 for 25 bps) do not ground and reject.
+- **Residual false accept:** a fabricated value equal to another numeral anywhere in
+  the cited span grounds (for example a year such as 2027 in the same sentence).
+- **No unit or scale consistency:** a scale word from thousand to trillion anywhere in
+  the span applies to every numeral in it, so both 50 and 50000000 ground against
+  "USD 50 million". Unit, currency and basis stay the contract's and the grader's checks.
+- **Signs are not compared;** negation is its own field.
+- **Real-label refusal rate unmeasured:** the local benchmark copy holds no producer
+  bundles (`bundle.json` with `source.txt`), so how many real agreed labels the check
+  refuses has not been counted. The rate must be measured on the first producer run over
+  real bundles, before the rejection share is read as labeler error.
+- Grading (`eval_grade.py`) is unchanged; value-in-evidence remains a producer property.
+
 **N2 (M07b) — no 52/53-week fiscal-calendar concept, and no claim-vs-evidence period
 check.** Grep: `grep -rn -i -E "52.week|53.week|fiscal.week" contracts/news_impact
 engine/news_impact` → 0 hits. `period_token` emits the same `FY2026` for fiscal years
@@ -253,7 +280,8 @@ Author tests were mapped, never run, and never counted as F2 evidence.
   only, `prophet_adapter.py:208-209`).
 - M04/N1: value-vs-evidence verification may exist in an owner outside this tree (span
   byte-replay is the designed defence, validate.py:20-21 "defended by span replay");
-  this lane cannot observe it offline.
+  this lane cannot observe it offline. Resolved for the producer path on 2026-11-01: see the N1
+  resolution, which also names the remaining limits.
 - M13/N4 is a tree-scoped absence proof (greps + committed census); a mechanism could
   exist in a repo not in this worktree (Terminal/Mastermind), as the census itself notes.
 - B3/B4 are display-string defects; no control exercised a rendered site page (out of
