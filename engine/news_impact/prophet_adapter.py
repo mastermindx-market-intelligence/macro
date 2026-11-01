@@ -362,8 +362,40 @@ def _one_decimal(n: float) -> str:
     return text
 
 
+# Scale words a quantity's unit may carry ("thousands", "USD millions"). Same
+# factors as eval_grade.SCALE_WORDS; the abbreviations k/m/bn are not read here
+# because a bare "m" or "k" in a unit string is ambiguous.
+_UNIT_SCALE: dict[str, float] = {
+    "thousand": 1e3,
+    "million": 1e6,
+    "billion": 1e9,
+    "trillion": 1e12,
+}
+
+
+def _split_unit_scale(unit: str) -> tuple[float, str]:
+    """Return (scale factor, residual unit) for a unit such as "USD millions"."""
+    scale = 1.0
+    residual: list[str] = []
+    for token in unit.split():
+        word = token.lower()
+        if word.endswith("s") and word[:-1] in _UNIT_SCALE:
+            word = word[:-1]
+        if word in _UNIT_SCALE:
+            scale *= _UNIT_SCALE[word]
+        else:
+            residual.append(token)
+    return scale, " ".join(residual)
+
+
 def format_amount(quantity: Mapping[str, Any], locale: str) -> str:
-    """Deterministic amount_format (copy_templates.v1). Never derives EPS or % cap."""
+    """Deterministic amount_format (copy_templates.v1). Never derives EPS or % cap.
+
+    A scale word in the unit (thousand/million/billion/trillion, singular or
+    plural, any case) multiplies the value. A negative amount carries exactly
+    one minus sign, dropped when the shown figure rounds to 0. Non-USD amounts
+    keep their own unit and are never converted.
+    """
     if quantity.get("form") == "absent":
         return ""
     bound = str(quantity.get("bound") or "exact")
@@ -380,25 +412,32 @@ def format_amount(quantity: Mapping[str, Any], locale: str) -> str:
     value = quantity.get("value")
     if not isinstance(value, (int, float)):
         return ""
-    av = abs(float(value))
-    sign = "-" if float(value) < 0 else ""
-    usd = currency == "USD" or unit == "USD"
-    if usd and av >= 1e9:
-        en = f"{sign}${_one_decimal(float(value) / 1e9)} billion"
-        zh = f"{sign}{_one_decimal(float(value) / 1e8)}亿美元"
-    elif usd and av >= 1e6:
-        en = f"{sign}${_one_decimal(float(value) / 1e6)} million"
-        zh = f"{sign}{_one_decimal(float(value) / 1e4)}万美元"
+    scale, residual = _split_unit_scale(unit)
+    magnitude = abs(float(value)) * scale
+    usd = currency == "USD" or residual == "USD"
+    if usd and magnitude >= 1e9:
+        shown = _one_decimal(magnitude / 1e9)
+        en = f"${shown} billion"
+        zh = f"{_one_decimal(magnitude / 1e8)}亿美元"
+    elif usd and magnitude >= 1e6:
+        shown = _one_decimal(magnitude / 1e6)
+        en = f"${shown} million"
+        zh = f"{_one_decimal(magnitude / 1e4)}万美元"
     elif usd:
-        en = f"{sign}${_one_decimal(float(value))}"
-        zh = f"{sign}{_one_decimal(float(value))}美元"
+        shown = _one_decimal(magnitude)
+        en = f"${shown}"
+        zh = f"{shown}美元"
     else:
-        body = f"{_one_decimal(float(value))} {unit}".strip()
-        en = f"{sign}{body}"
-        zh = f"{sign}{body}"
+        shown = _one_decimal(magnitude)
+        label = residual
+        if not label and unit.strip() and currency not in ("", "NA"):
+            label = currency
+        en = f"{shown} {label}".strip()
+        zh = en
+    sign = "-" if float(value) < 0 and shown != "0" else ""
     prefix_en = {"approximately": "about ", "up_to": "up to ", "at_least": "at least "}.get(bound, "")
     prefix_zh = {"approximately": "约", "up_to": "至多", "at_least": "至少"}.get(bound, "")
-    return f"{prefix_zh}{zh}" if locale == "zh" else f"{prefix_en}{en}"
+    return f"{prefix_zh}{sign}{zh}" if locale == "zh" else f"{prefix_en}{sign}{en}"
 
 
 def format_window(period: Any, locale: str, templates: Mapping[str, Any]) -> str:
