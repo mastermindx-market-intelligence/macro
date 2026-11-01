@@ -128,3 +128,33 @@ namespace prefix is also safe once the timer is off.
   skips rather than corrections.
 - The reader lane (index -> `AdmittedEdgarSource` -> `/api/catalyst/scan`) is
   still to come; until it exists nothing public consumes this index.
+## Reader and wiring (A3-R)
+
+The reader half lives in `engine/marketing/catalyst_source_adapter.py`
+(`build_admitted_source`) plus `app/catalyst_source_wiring.py`
+(`configure_from_environment`), mounted from `app/main.py` at import time.
+
+- What the adapter serves and its fail-closed rules: the five read callables
+  `catalyst_admission` consumes (`issuer_universe`, `recent_events`,
+  `public_grant`, `document_observation`, `source_coverage`), all derived from
+  the single published cycle index under `marketing/catalyst-sec-source/v1/`.
+  The snapshot must be structurally valid and no older than 10 minutes
+  (`MAX_SNAPSHOT_AGE`); a loaded state is cached for 60 s
+  (`CACHE_TTL_SECONDS`) so a down store is not hit per request and a failing
+  load yields an empty fail-closed state; F4 — a public grant is minted only
+  for an issuer's own EX-99.1 under an 8-K / 8-K/A Item 2.02 whose archive URL
+  carries the universe CIK; D4 — no SEC document bytes are persisted anywhere
+  and the observation is built from the index record alone.
+- Production rights family (F1): admission asserts
+  `sec_issuer_earnings_release_facts`, never a bare sec_edgar family. The
+  anonymous scan refuses (empty read) until that registry row is on main.
+- Wiring runs at app import: after setting `CATALYST_PUBLIC_ENABLED=1` the
+  macro-api process must be restarted for the source to be configured.
+- Enabling order (the operator acts; NOT performed by code): (1) merge the
+  `sec_issuer_earnings_release_facts` rights row; (2) install the units and
+  run the macro-catalyst-source-cycle timer; (3) observe the first COMPLETE
+  cycle in the namespaced store; (4) set the flag; (5) restart macro-api.
+- Rollback: unset `CATALYST_PUBLIC_ENABLED` and restart macro-api — the scan
+  returns its existing disabled status and admission stays unconfigured.
+- Environment variable NAMES only: `CATALYST_PUBLIC_ENABLED`,
+  `RESEARCH_LOCAL_STORE`.
