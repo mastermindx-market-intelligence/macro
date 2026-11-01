@@ -63,6 +63,15 @@ FIGURE_SCALE: dict[str, dict[str, str]] = {
 }
 FIGURE_SCALE_FALLBACK = _pair("index reading", "指数读数")
 
+def prior_claims_note(day: Mapping[str, str],
+                      value: Mapping[str, str]) -> dict[str, str]:
+    """Previous claims reading for one card, dated from that card's prior item."""
+    return _pair(
+        f"Previous reading, {day['en']}: {value['en']} persons.",
+        f"上一期读数，{day['zh']}：{value['zh']} 人。",
+    )
+
+
 # Leave-one-recession-out catch rate. The view shows this only when the
 # producer recorded ~3 and a tiny sample on that one metric.
 CATCH_RATE_SAMPLE_NOTE = _pair(

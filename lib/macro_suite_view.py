@@ -782,7 +782,11 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
             "owner_name": D.owner_display_pair(metric.get("owner_ref")),
             "model_version": metric.get("model_version"),
             "transformation": metric.get("transformation"),
-            "sample_note": _catch_rate_sample_note(metric) or _tga_reserves_note(metric),
+            "sample_note": (
+                _catch_rate_sample_note(metric)
+                or _tga_reserves_note(metric)
+                or _prior_claims_note(snapshot, metric)
+            ),
             "coverage": L.fmt_ratio_pct(metric.get("coverage")),
             "authority_ceiling": D.authority_ceiling_pair(
                 metric.get("authority_ceiling")),
@@ -795,6 +799,43 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
             "fx_translation": fx_translation,
         })
     return rows
+
+
+def _prior_claims_note(snapshot: Mapping[str, Any],
+                       metric: Mapping[str, Any]) -> dict[str, str] | None:
+    """Previous level for the two claims cards, or nothing."""
+    metric_id = metric.get("metric_id")
+    if metric_id not in ("initial_claims_4wk", "continued_claims"):
+        return None
+    prior = snapshot.get("prior_publication")
+    if not isinstance(prior, Mapping):
+        return None
+    block = prior.get("metrics")
+    if not isinstance(block, Mapping):
+        return None
+    items = block.get("items")
+    if not isinstance(items, list):
+        return None
+    item = next((
+        row for row in items
+        if isinstance(row, Mapping) and row.get("metric_id") == metric_id
+    ), None)
+    if item is None:
+        return None
+    value = item.get("value")
+    if not _finite(value):
+        return None
+    day = _plain_day_pair(item.get("observed_at"))
+    if day is None:
+        return None
+    prior_day = _as_date(item.get("observed_at"))
+    current_day = _as_date(metric.get("observed_at"))
+    if prior_day is None or current_day is None or prior_day >= current_day:
+        return None
+    number = L.value_pair(value)
+    if number is None:
+        return None
+    return L.prior_claims_note(day, number)
 
 
 def _plain_day_pair(value: Any) -> dict[str, str] | None:

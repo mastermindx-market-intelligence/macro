@@ -1,0 +1,21 @@
+{
+  "why": "Claims cards now show the previous reading, which the golden page does not.",
+  "pairs": [
+    [
+      "<span class=\"l-en\">Previous reading, 8 October 2026: 198,000.0 persons.</span>",
+      ""
+    ],
+    [
+      "<span class=\"l-zh\">上一期读数，2026年10月8日：198,000.0 人。</span></p>",
+      ""
+    ],
+    [
+      "<span class=\"l-en\">Previous reading, 8 October 2026: 1,716,000.0 persons.</span>",
+      ""
+    ],
+    [
+      "<span class=\"l-zh\">上一期读数，2026年10月8日：1,716,000.0 人。</span></p>",
+      ""
+    ]
+  ]
+}
