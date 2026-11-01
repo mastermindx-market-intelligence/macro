@@ -5401,8 +5401,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_877),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_877),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_636),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5411,6 +5411,24 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-01 main-red repair after #10294 (ee5cd3e1a8a8), which split the
+    ``gate: data`` job ``tier-gate`` into ``tier-gate``, ``paywall-contracts``
+    and ``site-access-boundary``. Both new jobs infer tier-gate's closure, so
+    every probe selects two more jobs while the steps only move. Canonical
+    measurement on main fc36c6c03b1f, against the same tree with the
+    pre-#10294 manifest:
+
+        templates/index.html          135 -> 137 jobs, 5,833 -> 5,835 weight
+        scripts/build_free_content.py 136 -> 138 jobs, 5,853 -> 5,855 weight
+        engine/prophet/plan_book.py   128 -> 130 jobs, 5,583 -> 5,585 weight
+
+    Ten packs each. The two split jobs are the only entrants and no job
+    leaves. Both are ``gate: data`` and ci.yml packs ``--gate code``, so an
+    ordinary code PR runs neither: no runner cost moves. Only the two
+    breached job ceilings move, to their measured values (index 136 -> 137,
+    free-content 136 -> 138). Plan-book sits exactly at its 130 ceiling and
+    stays. Weight and pack ceilings, selectors and suites stay unchanged.
 
     2026-10-24 frozen-node canonical account reader (#10145): enroll the
     two-test suite once in incumbent CODE billing-emails/account-preferences,

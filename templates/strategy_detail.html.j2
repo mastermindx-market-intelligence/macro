@@ -149,6 +149,18 @@ html[data-theme="dark"] .tag.exp{background:#3a1d2b;color:#f08bb4}
         <div>
           <span class="pill" style="background:{{ band_color }}">{{ t(band_label, band_label_zh) }}</span>
           <div class="sub" style="margin-top:8px">{{ t('Higher = more risk-off. The score sets the risk-asset weight via graded bands (below), with a 5-day debounce to cut whipsaw.','分数越高越偏避险。该分数通过分级区间（见下）设定风险资产权重，并有 5 日缓冲以抑制频繁换仓。') }}</div>
+          {% if score_band and score_band.weight != risk_w %}
+          {% set gap_en = 'The score ' ~ score ~ ' sits in ' %}
+          {% set gap_en = gap_en ~ score_band.label ~ ' (' ~ score_band.rng %}
+          {% set gap_en = gap_en ~ '), which maps to ' ~ score_band.weight %}
+          {% set gap_en = gap_en ~ '% ' ~ s.bench_en ~ '. The book is still ' %}
+          {% set gap_en = gap_en ~ risk_w ~ '% until a new band holds 5 trading days.' %}
+          {% set gap_zh = score ~ ' 分落在「' ~ score_band.label_zh %}
+          {% set gap_zh = gap_zh ~ '」区间（' ~ score_band.rng ~ '），对应 ' %}
+          {% set gap_zh = gap_zh ~ score_band.weight ~ '% ' ~ s.bench_zh %}
+          {% set gap_zh = gap_zh ~ '。在新区间持续满 5 个交易日之前，持仓仍为 ' ~ risk_w ~ '%。' %}
+          <div class="sub">{{ t(gap_en, gap_zh) }}</div>
+          {% endif %}
         </div>
       </div>
     </div>
