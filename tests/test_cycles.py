@@ -164,6 +164,24 @@ def test_failed_cycle_ladder_why_names_the_low_without_a_rate() -> None:
     assert "historically the larger trend is rolling over" not in block
 
 
+_FAILED_FLAG_PAGES = ("stock", "canada_stock", "china_lookup", "hk_lookup", "intl_stock")
+
+
+def test_failed_cycle_flag_says_what_happened_without_a_frequency() -> None:
+    """The analyzer's red flag sits beside the ladder sentence saying the rollover rate
+    has not been measured, so the flag itself must not claim one, in either language."""
+    templates = Path(__file__).resolve().parent.parent / "templates"
+    for name in _FAILED_FLAG_PAGES:
+        src = (templates / f"{name}.html.j2").read_text(encoding="utf-8")
+        flags = [line for line in src.splitlines() if "failed: '" in line]
+        assert len(flags) == 2, (name, flags)
+        joined = "\n".join(flags)
+        assert "failed: '⚠ Failed cycle — price is below the low that started this cycle.'" in joined, name
+        assert "failed: '⚠ 失败周期 — 价格已跌破启动本周期的低点。'" in joined, name
+        for claim in ("usually", "rolling over", "通常", "转向下行"):
+            assert claim not in joined, (name, claim)
+
+
 def test_signal_age_detects_recent_cross() -> None:
     """A series engineered to flip its state in the last few bars should report
     a small, non-capped age and name the state it switched away from."""
@@ -859,6 +877,7 @@ if __name__ == "__main__":
     for fn in [test_trough_spacing, test_translation_right, test_translation_left,
                test_failed_cycle_flag, test_ladder_states_sane, test_decline_on_breakdown,
                test_failed_cycle_ladder_why_names_the_low_without_a_rate,
+               test_failed_cycle_flag_says_what_happened_without_a_frequency,
                test_signal_age_detects_recent_cross, test_signal_age_contract_holds,
                test_signal_age_thin_history, test_signal_age_fields_prose,
                test_analyze_attaches_age, test_eq_proximity_peaks_near_the_low,
