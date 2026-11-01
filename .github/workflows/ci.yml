@@ -2341,6 +2341,7 @@ on:
       # need explicit paths so a test-only or script-only change still re-runs.
       - "scripts/backfill_edgar_quarterly.py"
       - "tests/test_edgar_quarterly_tags.py"
+      - "tests/test_edgar_quarterly_period_start.py"
       # ITR-W1: per-market turn state machine + fast rotation re-rank
       - "engine/intl_market_state.py"
       - "engine/intl_rotation.py"

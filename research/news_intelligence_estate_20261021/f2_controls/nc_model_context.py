@@ -455,40 +455,112 @@ def nc_m03() -> None:
 
 
 def nc_m04() -> None:
-    """Fabricated number: value absent from its cited evidence is never compared."""
-    import subprocess
-    from engine.news_impact import validate as V
-    event = t1_event()
-    event["action_span"]["claimed_quote"] = "SYNTH-QUOTE-A mentions no numeral"
-    event["incremental_amount"]["value"] = 777
-    rep = V.validate_event(event)
-    grep = subprocess.run(
-        ["grep", "-rn", "claimed_quote", *[str(REPO / p) for p in (
-            "engine/news_impact/producer.py", "engine/news_impact/producer_facts.py",
-            "engine/news_impact/validate.py")]],
-        capture_output=True, text=True)
-    compare_hits = [ln for ln in grep.stdout.splitlines()
-                    if re.search(r"claimed_quote.*(==|!=| in |\\.value|verify)", ln)]
-    no_mechanism = rep.ok and not compare_hits
-    report("M04", "NO_MECHANISM" if no_mechanism else "HELD",
-           f"value-777 vs numeral-free quote: validator ok={rep.ok}; "
-           f"value/quote compare hits={len(compare_hits)}")
+    """Fabricated number: a value absent from its cited source bytes must not emit.
+
+    Behavioural, through engine.news_impact.producer.produce_case on an inline
+    synthetic case (placeholder text, fictional issuer). Positive arm: both families
+    cite USD 50 million from the span that states it -> the event emits. Negative arm:
+    both families agree on 777 cited from the same span -> rejected with
+    quantity_value_ungrounded. HELD only when the positive arm emits and the
+    negative arm rejects with that code (adjudicated mode, both families agreeing).
+    """
+    from hashlib import sha256
+    from engine.news_impact import agreement as ag
+    from engine.news_impact import producer as pr
+    head = "SYNTH Issuer announced a share repurchase program."
+    board = "The board authorized an additional USD 50 million repurchase through fiscal 2027."
+    later = "SYNTH Issuer plans to execute the repurchases through fiscal 2027."
+    seg0 = (head + " " + board + " ").encode("utf-8")
+    source = seg0 + later.encode("utf-8")
+    sha = sha256(source).hexdigest()
+    segments = [
+        {"segment_index": 0, "byte_start": 0, "byte_end": len(seg0), "document_id": "doc_synth_m04a",
+         "filing_date": "2026-03-31", "accession": "0000000000-26-000004", "doc_type": "8-K"},
+        {"segment_index": 1, "byte_start": len(seg0), "byte_end": len(source), "document_id": "doc_synth_m04b",
+         "filing_date": "2026-03-31", "accession": "0000000000-26-000005", "doc_type": "EX-99.1"}]
+    fy27 = {"year": 2027, "quarter": None, "calendar_end": None, "period_kind": "fiscal_year"}
+
+    def span(text: str) -> dict:
+        start = source.find(text.encode("utf-8"))
+        seg = next(x for x in segments if x["byte_start"] <= start < x["byte_end"])
+        return {"text_sha256": sha, "segment_index": seg["segment_index"], "byte_start": start,
+                "byte_end": start + len(text.encode("utf-8")), "excerpt": text}
+
+    def present(value: Any, text: str) -> dict:
+        return {"value": value, "source_span": span(text), "typed_absence": None}
+
+    def stated_without_number(text: str) -> dict:
+        return {"value": {"form": "absent", "absence": {
+            "schema": "field_absence.v1", "authority": "context_only", "reason": "not_stated",
+            "subject": "amount", "detail": "", "missing_fields": ["amount"]}},
+            "source_span": span(text), "typed_absence": None}
+
+    def returns(amount: int) -> dict:
+        fields = {
+            "company_id": present("cik:0000000042", head), "issuer_role": present("subject", head),
+            "novelty": present("new_magnitude_timing_commitment_counterparty", head),
+            "action_type": present("share_repurchase", head),
+            "commitment_status": present("authorized", board),
+            "primary_amount_role": present("incremental_authorization", board),
+            "incremental_amount": present({"form": "point", "value": amount, "bound": "exact", "unit": "USD",
+                                           "currency": "USD", "basis": "incremental", "period": fy27,
+                                           "negated": False, "evidence": None}, board),
+            "remaining_authorization": stated_without_number(board),
+            "executed_amount": stated_without_number(later),
+            "horizon_period": present(fy27, board), "negated": present(False, head),
+            "action_span": present({"evidence_span": {"claimed_quote": head}}, head)}
+        return {fam: {"schema": "label_return.v1", "case_id": "case_synth_m04", "labeler_family": fam,
+                      "model_vintage": "v2026-03-31", "prompt_version": "prompt-v1.2", "template": ag.T1,
+                      "fields": fields, "abstentions": [], "notes": [],
+                      "unsolicited_instruction_detected": False} for fam in pr.FAMILIES}
+
+    bundle = {"case_id": "case_synth_m04", "issuer": "cik:0000000042", "proxy_cell": "positive",
+              "seendate": "20260331T140000Z", "segments": segments, "source_bytes": len(source),
+              "source_sha256": sha, "template": ag.T1, "template_code": "T1"}
+    stated = pr.produce_case(bundle, source, returns(50000000), None, Counter())
+    fabricated = pr.produce_case(bundle, source, returns(777), None, Counter())
+    held = stated[0] == "emitted" and fabricated[:2] == ("rejected", "quantity_value_ungrounded")
+    report("M04", "HELD" if held else "BROKEN",
+           f"stated USD 50m -> {stated[0]}:{stated[1]}; agreed fabricated 777 from the same span -> "
+           f"{fabricated[0]}:{fabricated[1]} ({pr.PRODUCER_VERSION})")
 
 
-def nc_m05() -> None:
-    """Percent vs percentage points: grader canonicalises pp==percent; producer blind."""
+def nc_m05a() -> None:
+    """Percent vs percentage points, grader half: the frozen contract folds pp into percent.
+
+    endpoints.v1 unit_map maps "pp" to "percent" and the grader keeps that map
+    verbatim. MASTERPLAN 9.3 names percent versus percentage points as a required
+    control, so this stays BROKEN until a versioned contract separates them; it is
+    contract-mandated behaviour, not a grader defect the code may override.
+    """
     from engine.news_impact.eval_grade import grade_critical_numeric_field
-    from engine.news_impact.producer_facts import run as facts_run
     gold = point_qty(value=5, unit="percent", currency="NA", basis="percent")
     cand = point_qty(value=5, unit="pp", currency="NA", basis="percent")
     graded = grade_critical_numeric_field(
         case_id="SYNTH-CASE-1", fold="SYNTH", template="capital_allocation_event.v1",
         field="incremental_amount", gold_quantity=gold, candidate_quantity=cand)
+    broken = graded.outcome == "correct"
+    report("M05a", "BROKEN" if broken else "HELD",
+           f"grader pp-vs-percent outcome={graded.outcome}; contract-mandated by endpoints.v1 "
+           "unit_map pp->percent; needs a versioned contract")
 
-    outdir = Path(tempfile.mkdtemp(dir=RESULTS_SCRATCH, prefix="m05_"))
-    rows_path = RESULTS_SCRATCH / "m05_events.jsonl"
+
+def nc_m05b() -> None:
+    """Percent vs percentage points, producer half: a unit change is a fact revision.
+
+    Three T1 observations of one fact key: 5 percent, then 5 pp, then 5
+    "percentage points". The unit change must be a second fact_revision; the
+    third, a different spelling of the same unit, must stay a manifestation so
+    the fingerprint does not split on spelling.
+    """
+    from engine.news_impact.producer_facts import run as facts_run
+    outdir = Path(tempfile.mkdtemp(dir=RESULTS_SCRATCH, prefix="m05b_"))
+    rows_path = RESULTS_SCRATCH / "m05b_events.jsonl"
+    fact_3 = "fact_c1b2c3d4e5f6a7b8c9d0e1f4"
+    t_latest = "2026-04-03T14:00:00Z"
     with rows_path.open("w") as fh:
-        for fid, unit, observed in ((FACT_1, "percent", T_OBSERVED), (FACT_2, "pp", T_LATER)):
+        for fid, unit, observed in ((FACT_1, "percent", T_OBSERVED), (FACT_2, "pp", T_LATER),
+                                    (fact_3, "percentage points", t_latest)):
             event = t1_event()
             event["fact_id"] = fid
             event["observed_at"] = observed
@@ -496,13 +568,12 @@ def nc_m05() -> None:
                                                     basis="incremental")
             fh.write(json.dumps({"case_id": "SYNTH-CASE-1", "shadow": True,
                                  "novelty_source": "SYNTH", "event": event}) + "\n")
-    report_run = facts_run([rows_path], outdir, as_of=T_LATER)
+    report_run = facts_run([rows_path], outdir, as_of=t_latest)
     n_records = report_run.get("n_records", {})
-    unit_change_unrevised = n_records.get("fact_revision", 0) == 1 \
-        and n_records.get("manifestation", 0) == 1
-    broken = graded.outcome == "correct" and unit_change_unrevised
-    report("M05", "BROKEN" if broken else "HELD",
-           f"grader pp-vs-percent outcome={graded.outcome}; producer records={n_records}")
+    held = n_records.get("fact_revision", 0) == 2 and n_records.get("manifestation", 0) == 1
+    report("M05b", "HELD" if held else "BROKEN",
+           f"producer percent->pp->'percentage points' records={n_records} "
+           f"rejected={report_run.get('rejected', {})}")
 
 
 def nc_m06a() -> None:
@@ -798,7 +869,7 @@ def main() -> int:
     controls: list[tuple[str, Any]] = [
         ("M01a", nc_m01a), ("M01b", nc_m01b), ("M01c", nc_m01c),
         ("M01d", lambda: nc_m01d(RESULTS_SCRATCH)),
-        ("M02", nc_m02), ("M03", nc_m03), ("M04", nc_m04), ("M05", nc_m05),
+        ("M02", nc_m02), ("M03", nc_m03), ("M04", nc_m04), ("M05a", nc_m05a), ("M05b", nc_m05b),
         ("M06a", nc_m06a), ("M06b", nc_m06b), ("M07a", nc_m07a), ("M07b", nc_m07b),
         ("M08", nc_m08), ("M09", nc_m09), ("M10", nc_m10), ("M11", nc_m11),
         ("M12", nc_m12), ("M13", nc_m13), ("M14", nc_m14),

@@ -390,6 +390,34 @@ def test_rs_benchmark_ffill_is_bounded():
     assert sc.RS_BENCH_FFILL_LIMIT == 5
 
 
+def test_sector_page_says_rs_rank_is_rebuilt_from_price():
+    """The sector page says the RS rank is rebuilt, from the record."""
+    import re
+
+    root = Path(__file__).resolve().parents[1]
+    page = root / "templates" / "sector_cycles.html.j2"
+    text = page.read_text(encoding="utf-8")
+    guard = "naturally_observed === false"
+    assert guard in text
+    en = "RS rank is rebuilt from total-return price history against "
+    zh = "相对强度排名由总回报价格历史重建，基准 "
+    assert en in text
+    assert ". It is not an observed record." in text
+    assert zh in text
+    assert "。并非当时观察到的记录。" in text
+    assert 'basis === "tr"' in text
+    en_at = text.find(en)
+    zh_at = text.find(zh)
+    assert "l-en" in text[max(0, en_at - 200):en_at]
+    assert "l-zh" in text[max(0, zh_at - 200):zh_at]
+    assert "h.benchmark" in text
+    assert "h.as_of" in text
+    piece = text[text.find(guard):]
+    piece = piece[:piece.find("</script>")]
+    assert re.search(r"\d{4}-\d{2}-\d{2}", piece) is None
+    assert "SPY" not in piece
+
+
 def test_compute_declares_reconstructed_rs_history_contract(monkeypatch):
     panel = _rs_history_panel(520)
     monkeypatch.setattr(sc, "yahoo_closes", lambda basis="tr": panel.copy())
@@ -444,3 +472,75 @@ def test_compute_declares_reconstructed_rs_history_contract(monkeypatch):
     assert data["sectors"][0]["rs_history"]
     assert data["sectors"][0]["rs_history"][-1]["rs_21d"] == data["sectors"][0]["now"]["rs_21d"]
     assert data["sectors"][0]["rs_history"][-1]["rs_63d"] == data["sectors"][0]["now"]["rs_63d"]
+
+
+def _run_page_date_scripts(meta, template="sector_cycles.html.j2"):
+    """Runs the page's date scripts the way a browser orders them: parse, deferred data, DOMContentLoaded."""
+    import json
+    import re
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node is not installed")
+    root = Path(__file__).resolve().parents[1]
+    text = (root / "templates" / template).read_text(encoding="utf-8")
+    scripts = [b for b in re.findall(r"<script>(.*?)</script>", text, re.S) if "sc-asof" in b]
+    assert scripts
+    source = """
+var listeners = {};
+var kids = [];
+var asofEl = {textContent: 'PARSED', parentNode: {appendChild: function (c) { kids.push(c); }}};
+var document = {
+  getElementById: function (id) { return id === 'sc-asof' ? asofEl : null; },
+  createElement: function (tag) { return {tag: tag, className: '', textContent: ''}; },
+  addEventListener: function (ev, fn) { (listeners[ev] = listeners[ev] || []).push(fn); },
+};
+var window = {};
+""" + "\n".join(scripts) + """
+var atParse = asofEl.textContent;
+window.SECTOR_CYCLES = {meta: """ + json.dumps(meta) + """};
+(listeners.DOMContentLoaded || []).forEach(function (f) { f(); });
+console.log(JSON.stringify({atParse: atParse, date: asofEl.textContent, kids: kids}));
+"""
+    done = subprocess.run([node, "-e", source], capture_output=True, text=True, timeout=30, check=True)
+    return json.loads(done.stdout)
+
+
+@pytest.mark.parametrize(
+    "template",
+    ["sector_cycles.html.j2", "sector_cycles_china.html.j2", "country_cycles.html.j2"],
+)
+def test_cycle_page_prints_its_date_after_the_deferred_data(template):
+    out = _run_page_date_scripts({"asOf": "2026-10-30"}, template)
+    assert out["atParse"] == "PARSED"
+    assert out["date"] == "2026-10-30"
+    assert out["kids"] == []
+
+
+def test_sector_page_prints_the_rs_sentence_from_the_record():
+    out = _run_page_date_scripts({
+        "asOf": "2026-10-30",
+        "rs_history": {"naturally_observed": False, "basis": "tr", "benchmark": "SPY", "as_of": "2026-10-29"},
+    })
+    assert [k["tag"] for k in out["kids"]] == ["br", "span", "span"]
+    en, zh = out["kids"][1], out["kids"][2]
+    assert en["className"] == "l-en"
+    assert en["textContent"] == (
+        "RS rank is rebuilt from total-return price history against SPY, through 2026-10-29."
+        " It is not an observed record."
+    )
+    assert zh["className"] == "l-zh"
+    assert zh["textContent"] == "相对强度排名由总回报价格历史重建，基准 SPY，截至 2026-10-29。并非当时观察到的记录。"
+
+
+@pytest.mark.parametrize(
+    "history",
+    [
+        {"naturally_observed": True, "basis": "tr", "benchmark": "SPY", "as_of": "2026-10-29"},
+        {"naturally_observed": False, "basis": "pr", "benchmark": "SPY", "as_of": "2026-10-29"},
+    ],
+)
+def test_sector_page_prints_no_rs_sentence_when_it_would_be_wrong(history):
+    assert _run_page_date_scripts({"asOf": "2026-10-30", "rs_history": history})["kids"] == []
