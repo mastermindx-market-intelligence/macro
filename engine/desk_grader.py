@@ -630,13 +630,14 @@ def compute(desk: str, today: date | str | None = None, root: Path | None = None
 # --------------------------------------------------------------------------- #
 # Ledger rows predate the provider-neutral copy rule and some name the price store's
 # vendor directory. Notes render on public desk panels, so scrub at read time; the
-# append-only ledger itself is never rewritten.
+# append-only ledger itself is never rewritten. Each rule matches only a store path or
+# the one legacy "missing from <store>" phrase, so other wording in a note is untouched.
 _NOTE_STORE = r"(?:yfinance|yahoo|tushare|polygon|massive[a-z_]*)"
+_NOTE_PATH = rf"\bdata/{_NOTE_STORE}/[\w<>{{}}*./-]*[\w<>{{}}*]"
 _NOTE_SCRUBS = (
-    (re.compile(rf"(?i)\bdata/{_NOTE_STORE}/\S+ adjusted closes"), "the daily price store's adjusted closes"),
-    (re.compile(rf"(?i)\bdata/{_NOTE_STORE}/\S+"), "the daily price store"),
-    (re.compile(r"(?i)(?<![A-Za-z0-9])(?:yfinance|yahoo|tushare|polygon|massive_[a-z_]+)(?![A-Za-z0-9(])"),
-     "the daily price store"),
+    (re.compile(rf"(?i){_NOTE_PATH} adjusted closes"), "the daily price store's adjusted closes"),
+    (re.compile(rf"(?i){_NOTE_PATH}"), "the daily price store"),
+    (re.compile(rf"(?i)\bmissing from {_NOTE_STORE}(?![A-Za-z0-9_(])"), "missing from the daily price store"),
 )
 
 

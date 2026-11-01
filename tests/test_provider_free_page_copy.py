@@ -34,10 +34,10 @@ EXTRA = {
 }
 JINJA_COMMENT = re.compile(r"\{#.*?#\}", re.S)
 
-# Exact code-only literals removed before the scan.
+# Exact code-only literals and how often each occurs, removed before the scan.
 CODE_ONLY = {
-    "_mag7_panel": ["'polygon_mktcap'"],
-    "committee": [r"/\b(?:yfinance|yahoo|tushare|polygon|massive)\b/gi"],
+    "_mag7_panel": {"'polygon_mktcap'": 3},
+    "committee": {r"/\b(?:yfinance|yahoo|tushare|polygon|massive)\b/gi": 1},
 }
 
 # Literal repo paths so the CI scope planner owns each template as a trigger.
@@ -68,8 +68,8 @@ def _env() -> Environment:
 def test_swept_template_copy_names_no_vendor(rel: str) -> None:
     name = rel.removeprefix("templates/").removesuffix(".html.j2")
     src = JINJA_COMMENT.sub("", (ROOT / rel).read_text(encoding="utf-8"))
-    for literal in CODE_ONLY.get(name, []):
-        assert literal in src, f"allowance {literal!r} no longer in {name}; drop it from CODE_ONLY"
+    for literal, count in CODE_ONLY.get(name, {}).items():
+        assert src.count(literal) == count, f"{name}: allowance {literal!r} count changed; update CODE_ONLY"
         src = src.replace(literal, "")
     hits = _hits(VENDOR, src)
     if name in EXTRA:
@@ -114,6 +114,7 @@ def test_desk_grader_panel_scrubs_legacy_ledger_note(tmp_path: Path) -> None:
     notes = desk_grader._load_notes(tmp_path, "insider")
     assert len(notes) == 1
     assert "the daily price store's adjusted closes ONLY" in notes[0]["note"]
+    assert "missing from the daily price store is a coverage skip" in notes[0]["note"]
     assert "SPLIT-CORRUPTED" in notes[0]["note"]
     assert path.read_text(encoding="utf-8").count("data/yahoo/") == 1, "ledger must stay append-only"
 
@@ -123,6 +124,15 @@ def test_desk_grader_panel_scrubs_legacy_ledger_note(tmp_path: Path) -> None:
     assert "Lessons logged" in html
     assert "SPLIT-CORRUPTED" in html
     assert _hits(VENDOR, html) == []
+
+
+def test_desk_grader_note_scrub_leaves_other_wording() -> None:
+    from engine import desk_grader
+
+    note = "See data/yahoo/AAPL.parquet). Options flow from polygon lags a session."
+    assert desk_grader._scrub_note(note) == (
+        "See the daily price store). Options flow from polygon lags a session."
+    )
 
 
 def test_desk_grader_seed_notes_name_no_vendor() -> None:
