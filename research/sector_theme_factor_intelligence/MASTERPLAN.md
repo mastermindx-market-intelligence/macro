@@ -173,3 +173,50 @@ Added `engine/sector_theme_native_owner_read.py` to bind the pure P2 owner packe
 ## 2026-10-31 P2d hosted CI contract admission repair
 
 The first hosted CI on immutable head `57167d324a548c28dbf61b2d9c29769cb9b2e1d9`, workflow `41180040930`, did **not** pass: `contract-delta` and `ci-pack-0` failed because `tests/test_sector_theme_native_owner_read.py` was not named by any `run:` step. `ci-pack-5` (incumbent `leadership-rotation-contract`) passed, but excluded the new suite. New head `57167d` fences `41180040789` passed. Repaired the *same* 286-job `.github/ci/legacy-jobs.yml` manifest, adding exactly the new native P2d source/test paths, dependency closure on existing rights/PIT owners and the new test in the existing `leadership-rotation-contract` pytest command; no new workflow, job or waiver. Frozen manifest SHA `9cc9349da760f06ff14a82abd8d0dd0efdd5cb1d`, patched source SHA `e2294857a63ef1ce0b1a1da6b19db260af3577cf`. YAML parses; 294 isolated source tests still pass. Hosted contract-delta and owning pack success must be proven on the immutable successor; this note is not such a receipt.
+
+
+## 2026-10-31 P4a bounded owner-snapshot cross-asset read model
+
+Implemented *source-only, research-preview* P4a in
+`engine/sector_theme_cross_asset_context.py` with hermetic
+`tests/test_sector_theme_cross_asset_context.py`. This is **not P4
+source-rights qualification**, performance validation, an intraday
+correlation/credit signal, an alert publisher or the completion of P4.
+
+Native incumbent owners were directly inventoried on Macro
+`f2efb8baf983d3997abb000ecc29e523fbb1bba3`:
+`engine.cross_asset.snapshot` (daily/multi-market concentration),
+`engine.credit_window.window_state` (HY/IG spread and MOVE coincident
+conditions, `SCORED=False`), and
+`engine.bond_cross_asset.snapshot` (weekly contemporaneous asset-to-
+bond-driver associations). Reuse their outputs **without** new
+correlation, spread, beta, inverse-hedge, scoring or source collection
+engines. Existing `engine.cross_asset_confirm` and
+`engine.rotation_corr` also retain their separate owners.
+
+The additive P4a join consumes a valid, strictly unpublishable P2 owner
+preview and optionally three **already-produced owner-reported
+snapshots**. It verifies exact producer identity, source revision,
+date-only owner `asof/as_of`, a timezone-aware caller-asserted
+available-at (never called authenticated), a cutoff no later than P2
+decision time, and honest credit per-leg dates (never promote
+`max(as_of)` to equally fresh HY/IG/MOVE inputs). It checks typed
+market concentration/bond weekly sample and rejects foreign or
+malformed values. Missing optional sources remain explicitly
+UNMEASURED; malformed provided ones hold the whole projection.
+All clock/rights/source-identity qualification, conditional hedging,
+predictive, user publication, rank, signal and trading flags remain
+false. Date-only credit can **never** confirm a 1-minute or overnight
+stock trade and a co-moving asset is not a proven hedge.
+
+P4a added 35 test cases (including parameterizations); together with
+the existing P1-P3c/P2d suites **329 passed in 0.35s** in an isolated
+source/test snapshot. A separate 480-case type/future-clock
+mutation exercise yielded **463 HELD, 17 still research-preview,
+zero uncaught exceptions and zero authority escalations**. Both
+are source-only receipts; exact-head CI on a new source SHA and
+independent non-author review are separately owed. Original P4
+release requirements remain: true signed original availability/vintage,
+source use/redistribution rights, owner-integrated real credit and
+asset data clocks, empirical stability/regime inversion, plus the
+product/browser/Terminal and W6 science gates.

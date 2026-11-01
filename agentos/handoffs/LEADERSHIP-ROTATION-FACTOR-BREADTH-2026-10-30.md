@@ -270,3 +270,30 @@ owner-authenticated rights/known-at/quotes, Paper and signed-in user path.
 - The first P2d head `57167d` CI `41180040930` **FAILED**, despite earlier isolated 294 passing tests: `contract-delta` + `ci-pack-0` reported the newly introduced `tests/test_sector_theme_native_owner_read.py` had zero workflow `run:` consumers. Incumbent `ci-pack-5` succeeded but did not include P2d suite. Exact head fences `41180040789` SUCCESS. Do not claim green CI at 57167d.
 - Scoped repair changes one existing `.github/ci/legacy-jobs.yml` job (`leadership-rotation-contract`) to add new source/test to `paths`, native rights/PIT dependency closure, and add pytest path to existing one `run:` step. No duplicate CI job or suite waiver. Manifest prehash 9cc9349; posthash e2294857; YAML parse valid, 294 local suites pass. New exact-head hosted checks are owed.
 - Current independent Fabric head review `stfi-native-p2d-head-review-57167d-20261031-r1`, root stfi-20261030, controller PID 11953, was requested read-only on frozen 57167d. Its result (if returned) is scoped to frozen source, **not** subsequent manifest-only head. No replay if not returned. Keep Draft/Hold and no source rights claim.
+
+
+## 2026-10-31 P4a actual existing-owner cross-asset contract slice
+
+- Existing `engine.cross_asset.snapshot`,
+  `engine.credit_window.window_state`, and
+  `engine.bond_cross_asset.snapshot` were inspected at Macro main
+  f2efb8ba. They own all calculations. Added one read-only P4a
+  context composer consuming their **already computed** snapshots,
+  never raw feeds, prices, issuer IDs, or an alternative source.
+- P4a validates the P2 source-preview, per-producer identity,
+  timestamps and input date, preserves individual HY/IG/MOVE dates,
+  refuses post-decision/future data; outputs only
+  RESEARCH_PREVIEW_ONLY or HELD, never same-clock intraday confirmation,
+  correlation as proof of an inverse hedge, score, publisher,
+  trade, alert or historical availability claim.
+- 35 new tests (including parameterizations), 329 cumulative focused
+  source tests pass; 480 source mutation probes: 463 HELD,
+  17 still descriptive research, 0 crashes/authority escalations.
+  Existing `leadership-rotation-contract` job manifest and one
+  run step updated to own these paths; no waiver or duplicate CI job.
+  Hosted CI, independents and real user-path remain unproven until
+  exact-head receipts. P4a is **source-only preliminary**, not
+  source-qualified P4 or product completion.
+- Live GMI/Data OS rights, exact original as-known membership/
+  quote/credit timestamps, Paper output, user-authenticated
+  frontend and W6 prospective study all remain HOLD.
