@@ -37,6 +37,10 @@ owns_paths:
   - engine/marketing/catalyst_source_adapter.py
   - engine/marketing/catalyst_source_cycle.py
   - scripts/run_catalyst_source_cycle.py
+  - engine/marketing/catalyst_source_store.py
+  - config/catalyst_pilot_universe.json
+  - app/deploy/macro-catalyst-source-cycle.service
+  - app/deploy/macro-catalyst-source-cycle.timer
 waves:
   - id: A1-INT
     title: Integrate the verified Session00/01/02 catalyst loop onto main
