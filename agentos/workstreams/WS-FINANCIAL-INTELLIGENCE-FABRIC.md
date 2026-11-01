@@ -151,28 +151,34 @@ decisions:
   - DEC:FIF-Q0-SPLIT-DECISION-2-SECOND-LABELING-WAVE
   - DEC:FIF-Q1-EVALUATOR-ENVELOPE-SIC-SOURCE-FOLLOWS-PRODUCTION-RESOLVER
 next_action: >
-  2026-10-31 post-wave-two ladder (handoff
-  FINANCIAL-INTELLIGENCE-FABRIC-2026-10-31-wave2-capture-and-envelope-repair).
-  On main: the capture-script predeclared split rows and 45 split-2 contract rows
-  (#10312), the A34 ledger refresh (#10314), the evaluator envelope repair under
-  DEC:FIF-Q1-EVALUATOR-ENVELOPE-SIC-SOURCE-FOLLOWS-PRODUCTION-RESOLVER (#10316 →
-  af6d63be), and the wave-two capture of all 45 split-2 accessions as digest-only
-  manifests (#10322 → c1012032; 38 admitted + 7 statement_roles_ambiguous capture
-  verdicts; bytes only on the ubuntu2 stage, re-locked). Q1 generation two
-  (#10332, reports q1_held_out_20261031_g2) admits all 58 label-bearing
-  accessions, scores the BAC FY2022 10-K and measures PK04/PK11 for the first
-  time; it is an honest negative for all twelve packs at the predeclared 0.80
-  floor and merges pinned only to its re-reviewed head. Ladder: (1) consume the
-  #10332 re-review, merge pinned, read back, record; (2) eleven independent
-  labeler lanes over the 45 wave-two accessions on ubuntu2 (batch one PK01–PK03
-  running; batches PK04–PK07 and PK08/PK09/PK11/PK12 follow under new run
-  suffixes), one PR per batch, labels merged unchanged; (3) Q1 generation three
-  under a new evaluator lane id into a new reports directory, independent review,
-  A37 re-adjudication only from its INDEX; (4) per-pack repairs from failed-family
-  descriptions against the dev corpus, one PR + review each, dispositions unchanged
-  until fresh labels under a new Q0 split decision. PK10 stays not_measurable.
-  A42/A45/A46 remain EXACT_HUMAN_GATE.
+  2026-11-01 post-labels ladder (handoff
+  FINANCIAL-INTELLIGENCE-FABRIC-2026-10-31-wave2-labels-and-pin-repair).
+  On main: Q1 generation two (#10332 → 3a4128bc, honest negative for all twelve
+  packs at the predeclared 0.80 floor); wave-two labels from ten independent
+  labeler lanes merged unchanged in #10336 (PK01–PK03), #10337 (PK04–PK06) and
+  #10343 (PK07, PK08, PK11, PK12); the generation-pin repair #10342 and its
+  fail-closed follow-up #10345 (→ cfc983a4). PK09 has no wave-two labels: lane
+  fif-heldout-lab2-pk09-20261031-r1 never ran and its id is unspent. Ladder:
+  (1) WAITING_CAPACITY on ubuntu2 (74.0 GiB free, admission needs strictly more
+  than 75) via Mastermind #1632 comments 6548669745 and 6553549504; the seat
+  frees nothing and launches nothing into a known refusal; (2) after the owner
+  RELEASE, run the PK09 labeler on ubuntu2, judge by artifact, batch-four PR with
+  labels unchanged, merge pinned; (3) ask #1632 to release the consumed PK09 tree,
+  then Q1 generation three into reports/q1_held_out_20261031_g3 under
+  fif-heldout-eval3-20261031-r1, independent review fif-heldout-eval3rev-20261031-r1,
+  PR merged pinned; (4) A37 re-adjudication only from the generation-three INDEX;
+  (5) per-pack repairs from failed-family descriptions against the dev corpus,
+  one PR + review each. PK10 stays not_measurable. A42/A45/A46 remain
+  EXACT_HUMAN_GATE.
 landmines:
+  - >
+    P0 no-reclaim (Meta-CEO via Grok Secretary, Mastermind #1632, 2026-10-31):
+    no git worktree remove/prune, gc, rm, cleanup script or new cleaner on any
+    host from the seat or any FIF lane. A free-space refusal is WAITING_CAPACITY,
+    final for that launch; the exact target goes to #1632 for an owner RELEASE
+    with an exclusive locked PRE_EFFECT/AFTER. Every lane packet carries the DISK
+    LAW line. ubuntu4 is telemetry/candidate only and is not an admitted
+    alternative host. The wave-two packages are staged only on ubuntu2.
   - >
     Core catalog is consolidated_only. Company Facts conversion sets
     dimensions_known=false. Querying companyfacts_versions.json through
@@ -241,6 +247,7 @@ landmines:
     (additional evidence: PR #6157 merged 2026-08-21T16:08:36Z while HOLD FOR SOL
     remained in the body and comments).
 do_not_redo:
+  - Do not re-review or re-run #10332, #10336, #10337, #10342, #10343 or #10345 (merged, records on the PRs). Spent lane ids: fif-heldout-lab2-pk01, pk02, pk04, pk05, pk06, pk07, pk08, pk11, pk12 -20261031-r1; fif-heldout-lab2-pk03-20261031-r1 and -r2; fif-q1pinsrev-20261031-r1 and -r2; fif-q1pinsfcrev-20261031-r1 and -r2. fif-heldout-lab2-pk09-20261031-r1 is unspent. Labels and seals are never authored, edited or harmonised by the seat.
   - Do not re-review, re-run or widen #10312, #10314, #10316 or #10322 (returns accepted on the PRs; a second wave-two capture run needs a seat decision; the envelope enum stays frozen per DEC:FIF-Q1-EVALUATOR-ENVELOPE-SIC-SOURCE-FOLLOWS-PRODUCTION-RESOLVER).
   - Do not edit reports/q1_held_out_20261031_g2 once merged (#10332); generation three is a new directory under a new evaluator lane id.
   - Do not edit or regenerate research/financial_intelligence_fabric/reports/q1_held_out_20261031/; a second generation is a new directory under a new evaluator lane id, and the 2026-10-31 failed families reopen only on fresh labels under a new Q0 split decision.
