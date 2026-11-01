@@ -1,0 +1,20 @@
+{
+ "exact_match_pr": true,
+ "exact_match_share": true,
+ "incumbent_missing_inputs": [],
+ "incumbent_output": {
+  "caveat": "~3y history, annual fundamentals; descriptive only",
+  "composite_note": "'composite' excluded from correlation PCA \u2014 it is a linear blend of the other factors; including it would double-count shared variance.",
+  "dominant_factor_pc_share": 0.5439,
+  "effective_factor_bets_pr": 2.4807,
+  "n_factors_used": 4,
+  "n_obs_used": 252
+ },
+ "module_replica": {
+  "dominant_factor_pc_share": 0.5439,
+  "effective_factor_bets_pr": 2.4807
+ },
+ "module_sample_pr_4dp": 2.4807,
+ "module_sample_share_4dp": 0.5439,
+ "n_obs_used": 252
+}

@@ -1,0 +1,191 @@
+{
+ "auditor": "seat model (claude-opus-5-5), 2026-10-14",
+ "classes": {
+  "MATCH": "The headline reports an event of the routed template family at the resolved issuer, and at least one attached filing reports that event.",
+  "NO_EVENT": "The headline reports no issuer event of the template family (market report, commentary, list, quote page, solicitation).",
+  "OTHER_EVENT": "The headline event is real and the resolved issuer is its subject, but no attached filing reports it.",
+  "WRONG_ISSUER": "The resolved issuer is not the subject of the headline."
+ },
+ "verdicts": [
+  {
+   "case_id": "8d01a00601c76377",
+   "class": "NO_EVENT",
+   "kind": "commentary",
+   "note": "Dividend-safety question piece; the attached filing is a results release and the headline reports no capital-return event."
+  },
+  {
+   "case_id": "202db9bcfa416a92",
+   "class": "OTHER_EVENT",
+   "kind": "event_filing_absent",
+   "note": "Dividend-declaration headline; the only attached filing reports a director appointment."
+  },
+  {
+   "case_id": "7d8930fd902b3549",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Dividend-declaration headline; the graded filing and its exhibit report the declaration."
+  },
+  {
+   "case_id": "3aa54b6aa03f78f7",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Commentary on a cut to the current-year revenue outlook; the attached investor update carries the current-year revenue guidance."
+  },
+  {
+   "case_id": "1a1db703e38ddce2",
+   "class": "WRONG_ISSUER",
+   "kind": "other_company_subject",
+   "note": "Guidance-raise headline about another company; the resolved issuer appears only as a merger counterparty."
+  },
+  {
+   "case_id": "037a799ce1623272",
+   "class": "NO_EVENT",
+   "kind": "commentary",
+   "note": "Backlog preview piece ahead of results; the headline reports no demand or guidance event."
+  },
+  {
+   "case_id": "2a25707f5e214065",
+   "class": "NO_EVENT",
+   "kind": "market_report",
+   "note": "Roundup list; the headline reports no issuer event."
+  },
+  {
+   "case_id": "28393f6a851b4d96",
+   "class": "OTHER_EVENT",
+   "kind": "graded_body_lacks_report",
+   "note": "Offering headline; the graded filing reports only preliminary revenue, and the offering appears only in a filing the wider band added."
+  },
+  {
+   "case_id": "6cdcfdd0cfbb3ea2",
+   "class": "NO_EVENT",
+   "kind": "market_report",
+   "note": "Market research report headline; the headline reports no issuer event."
+  },
+  {
+   "case_id": "45600a4a3ee9a1f8",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Offering-pricing headline; the attached filing reports the underwriting agreement for the offering."
+  },
+  {
+   "case_id": "2678be07b33de148",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Forecast given at the results event; the graded results filing reports the same results event."
+  },
+  {
+   "case_id": "df3cd4b9107de180",
+   "class": "OTHER_EVENT",
+   "kind": "event_filing_absent",
+   "note": "Commentary on a multi-year capital spending plan; the attached results release reports only current-year capital expectations and growth targets, not the plan."
+  },
+  {
+   "case_id": "933e11b4dc2b8cdd",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Preferred-offering pricing headline; the graded filings report the offering."
+  },
+  {
+   "case_id": "0f9b63978a20a381",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Commentary on a raised full-year outlook; the graded results release carries the raised outlook."
+  },
+  {
+   "case_id": "71f2eee538e949e9",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Collaboration-amendment headline; the attached filing reports the amendment as a material agreement."
+  },
+  {
+   "case_id": "ef84ce873e9a3aa0",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Full-year outlook and cost-program headline; the attached filing reaffirms guidance and announces the program."
+  },
+  {
+   "case_id": "bde3b1430611c0f3",
+   "class": "NO_EVENT",
+   "kind": "commentary",
+   "note": "Explainer on a long dividend record; the headline reports no capital-return event."
+  },
+  {
+   "case_id": "ac46e1ff6b122b6c",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Market reaction to results and outlook; the attached results release reports them."
+  },
+  {
+   "case_id": "163b44a476bb0669",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Secondary-offering headline; the attached filing reports the underwriting agreement."
+  },
+  {
+   "case_id": "0b6682a60216d801",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Outlook headline; the attached results release gives updated full-year expectations."
+  },
+  {
+   "case_id": "d6635b5a4737894c",
+   "class": "OTHER_EVENT",
+   "kind": "event_filing_absent",
+   "note": "Conversion-rate announcement headline; the attached filing is a results release that does not report it."
+  },
+  {
+   "case_id": "c5e3009268a1a9a0",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Market reaction to results and raised guidance; the graded results release reports both."
+  },
+  {
+   "case_id": "08ed2470ec73e40a",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Notes-offering headline; the attached filing reports the closed offering."
+  },
+  {
+   "case_id": "6af4f6c42357a394",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Offering-pricing headline; the attached filing reports the underwriting agreement."
+  },
+  {
+   "case_id": "1f68e2f2536942cc",
+   "class": "NO_EVENT",
+   "kind": "commentary",
+   "note": "Analysis piece on previously reported backlog ahead of results; the headline reports no new demand or guidance event."
+  },
+  {
+   "case_id": "299be09138ffb068",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Registered direct offering headline; the graded filing reports the purchase agreement and the offering."
+  },
+  {
+   "case_id": "93128e618cb6c3ae",
+   "class": "NO_EVENT",
+   "kind": "commentary",
+   "note": "Commentary on a past quarter's buybacks; the headline reports no new capital-return event and the attached filing is an investor-day presentation."
+  },
+  {
+   "case_id": "af4ae80d7f1c92b7",
+   "class": "OTHER_EVENT",
+   "kind": "event_filing_absent",
+   "note": "Exchange-offer extension headline; the attached filing reports regulatory clearances and only anticipates a later extension, not the one in the headline."
+  },
+  {
+   "case_id": "491b9bf212af3bc6",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Dividend-streak extension headline; the attached results release reports the year's dividend increase that extends the streak."
+  },
+  {
+   "case_id": "b5e2d02a26c4b10d",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Market reaction to forecasts given at the results event; the graded results release reports them."
+  }
+ ]
+}

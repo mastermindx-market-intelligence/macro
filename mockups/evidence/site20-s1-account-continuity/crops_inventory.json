@@ -1,0 +1,167 @@
+{
+  "variant": "fix",
+  "page": "site/alerts.html",
+  "account_js_sha256": "6c14fe90aab48eb5f2a54284922e55e027411488646c52c36865ad97016d56ca",
+  "crops": [
+    {
+      "file": "shots/s1_unavailable_dark_en_1440.png",
+      "state": "unavailable",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": "1440x900",
+      "bytes": 20036,
+      "sha256": "aa0878976462333bc1e863fe8a47d7c6a365635e57b2c6bc6884f34300cd6d9e",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_signout-unknown_dark_en_1440.png",
+      "state": "signout-unknown",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": "1440x900",
+      "bytes": 73973,
+      "sha256": "32da1051c87e183120e3e5f130b074d1adf58709f790ad941fe2097a845a8fbb",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_unavailable_dark_en_390.png",
+      "state": "unavailable",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": "390x844",
+      "bytes": 29148,
+      "sha256": "3f86c8426a55bc11805c8f3a24ef0280b5538867991ecc93cccbe81155407dbf",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_signout-unknown_dark_en_390.png",
+      "state": "signout-unknown",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": "390x844",
+      "bytes": 77108,
+      "sha256": "8513570f0e7004ba6c51c784048a40dbbc726898ddf29ba82bb2b04340ca222f",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_unavailable_dark_zh_1440.png",
+      "state": "unavailable",
+      "theme": "dark",
+      "lang": "zh",
+      "viewport": "1440x900",
+      "bytes": 19568,
+      "sha256": "3f64eb847e9fb74d70a91ec0c55b0990ce6d6a6837fdaef8a91f56eb0f9ce21e",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_signout-unknown_dark_zh_1440.png",
+      "state": "signout-unknown",
+      "theme": "dark",
+      "lang": "zh",
+      "viewport": "1440x900",
+      "bytes": 82750,
+      "sha256": "1402282adfd2c747836330091ff00bc44aa68c71dc6fc690c76348d45cf9b0f6",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_unavailable_dark_zh_390.png",
+      "state": "unavailable",
+      "theme": "dark",
+      "lang": "zh",
+      "viewport": "390x844",
+      "bytes": 27742,
+      "sha256": "0a259ba6e0ea960834152d5907c667fd8f8a8fd48b32abb89a98bf90b239a391",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_signout-unknown_dark_zh_390.png",
+      "state": "signout-unknown",
+      "theme": "dark",
+      "lang": "zh",
+      "viewport": "390x844",
+      "bytes": 82759,
+      "sha256": "47d9bed05680a3ada4e3ee2f4b46783512464644eec276f918772ca48d05d828",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_unavailable_light_en_1440.png",
+      "state": "unavailable",
+      "theme": "light",
+      "lang": "en",
+      "viewport": "1440x900",
+      "bytes": 20350,
+      "sha256": "2f82e9f2b894611316466417c7d047043a304d943d0b1aef86cb21d616e5160e",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_signout-unknown_light_en_1440.png",
+      "state": "signout-unknown",
+      "theme": "light",
+      "lang": "en",
+      "viewport": "1440x900",
+      "bytes": 60080,
+      "sha256": "fcac60ee2c447c1b789c5404388565f78fc474d6ff020dc44a596a78eb87d2f9",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_unavailable_light_en_390.png",
+      "state": "unavailable",
+      "theme": "light",
+      "lang": "en",
+      "viewport": "390x844",
+      "bytes": 28969,
+      "sha256": "d02c1e55d632e1a1ab29308392d2d1b921216513ccce4c564f49d3ad87ba2c45",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_signout-unknown_light_en_390.png",
+      "state": "signout-unknown",
+      "theme": "light",
+      "lang": "en",
+      "viewport": "390x844",
+      "bytes": 72703,
+      "sha256": "54770f513babf2a0ee7ac1c95a2e6de13c5142e380cb2617f68b442160af2729",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_unavailable_light_zh_1440.png",
+      "state": "unavailable",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": "1440x900",
+      "bytes": 20013,
+      "sha256": "6a66601a17ff9cf41e88a1f55268e0cf7ecb36048fe1535d0a2966eb1ad01b40",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_signout-unknown_light_zh_1440.png",
+      "state": "signout-unknown",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": "1440x900",
+      "bytes": 72420,
+      "sha256": "e977f7e1e34f6ca246206d684c1100dc55114e355a440533c225e0068b6078b7",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_unavailable_light_zh_390.png",
+      "state": "unavailable",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": "390x844",
+      "bytes": 28207,
+      "sha256": "3fb6c1aaf97366050d36c90a5bca2eed8d723b77e77cda4f60c5f891ca65ce4a",
+      "page_errors": 0
+    },
+    {
+      "file": "shots/s1_signout-unknown_light_zh_390.png",
+      "state": "signout-unknown",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": "390x844",
+      "bytes": 81139,
+      "sha256": "2b4f68b43a3ac2dfb5ee575763eac9e463890c782c59e2b0ed349a9775ab5ccf",
+      "page_errors": 0
+    }
+  ]
+}

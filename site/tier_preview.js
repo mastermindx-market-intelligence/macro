@@ -9,6 +9,10 @@
   var GATE_ATTR = "data-mx-tier-gate";
   var observer = null;
   var applying = false;
+  var requestGeneration = 0;
+  var verifiedUserId = null;
+  var confirmedTier = null;
+  var tierPublished = false;
 
   // `essential` is the WIRE value; `insider` is what the estate shipped before the
   // rename (lib/tiers.py is the server's copy of the same table). Named here, not just
@@ -32,20 +36,6 @@
       });
     } catch (e) { return false; }
   }
-  function cachedMe() {
-    try {
-      var raw = sessionStorage.getItem("mm.me");
-      var parsed = raw ? JSON.parse(raw) : null;
-      if (parsed && parsed.me && parsed.t && Date.now() - parsed.t < 60000) return parsed.me;
-    } catch (e) {}
-    return null;
-  }
-  function meHint() {
-    try {
-      var parsed = JSON.parse(localStorage.getItem("mm.me.hint") || "null");
-      return parsed && parsed.tier ? parsed : null;
-    } catch (e) { return null; }
-  }
   function openOnboard(mode) {
     if (window.MMOnboard && typeof window.MMOnboard.open === "function") {
       window.MMOnboard.open(mode || "signup", {});
@@ -55,6 +45,7 @@
       window.MDXAuth.open(mode === "signup" ? "signup" : "signin");
       return;
     }
+    if (window.MMXSharedShell) { window.MMXSharedShell.openAuth(mode === "signup" ? "signup" : "signin"); return; }
     location.href = "/?signup=1";
   }
   function openUpgrade() {
@@ -62,6 +53,7 @@
       window.MMOnboard.open("upgrade", { plan: "essential", period: "annual" });
       return;
     }
+    if (window.MMXSharedShell) { window.MMXSharedShell.openAuth("billing"); return; }
     location.href = "/plans.html";
   }
 
@@ -120,6 +112,20 @@
     return "";
   }
   function gateCopy(surface) {
+    if (state.tier === "unknown") {
+      return {
+        eyebrow: "Account access",
+        eyebrowZh: "账户权限",
+        mark: "↗",
+        title: "Access not yet confirmed",
+        zh: "访问权限尚未确认",
+        body: "Check your access again to load the right preview for your account.",
+        bodyZh: "请重新检查访问权限，以加载适合您账户的预览。",
+        action: "Check access",
+        actionZh: "检查访问权限",
+        mode: "refresh"
+      };
+    }
     if (state.tier === "free") {
       if (surface === "prophet") {
         return {
@@ -192,7 +198,8 @@
       (copy.secondary ? '<button class="mx-tier-signin" type="button"><span class="l-en">' + copy.secondary + '</span><span class="l-zh">' + copy.secondaryZh + '</span></button>' : '') +
       '</span>';
     gate.querySelector(".mx-tier-primary").addEventListener("click", function () {
-      if (copy.mode === "upgrade") openUpgrade(); else openOnboard("signup");
+      if (copy.mode === "refresh") resolveTier();
+      else if (copy.mode === "upgrade") openUpgrade(); else openOnboard("signup");
     });
     var signin = gate.querySelector(".mx-tier-signin");
     if (signin) signin.addEventListener("click", function () { openOnboard("signin"); });
@@ -297,42 +304,123 @@
       if (observer && document.body) observer.observe(document.body, { childList: true, subtree: true });
     }
   }
-  function setTier(tier) {
+  function setTier(tier, resolution) {
     tier = normTier(tier);
-    tier = isPaid(tier) ? tier : (tier === "free" ? "free" : "anon");
+    tier = isPaid(tier) || tier === "unknown" ? tier : (tier === "free" ? "free" : "anon");
+    // Resolution health is separate from the last confirmed summary entitlement.
+    // In particular, a failed read is neither a fresh Free verdict nor a grant.
+    document.documentElement.setAttribute("data-access-resolution", resolution);
+    var changed = !tierPublished || state.tier !== tier;
     state.tier = tier;
     state.cap = capFor(tier);
     document.documentElement.setAttribute("data-access-tier", tier);
+    if (!changed) return;
+    tierPublished = true;
     apply();
+    // Native detail dialogs dismiss on this event. A same-tier refresh must not
+    // close an open detail or temporarily repaint a paid member as Free.
     try { window.dispatchEvent(new CustomEvent("mmx-access-tier", { detail: { tier: tier, cap: state.cap } })); } catch (e) {}
   }
-  function fetchMe() {
-    if (!window.MDXAuth || typeof window.MDXAuth.client !== "function") return Promise.resolve(null);
-    return window.MDXAuth.client().then(function (sb) {
-      return sb.auth.getSession();
-    }).then(function (result) {
-      var session = result && result.data && result.data.session;
-      if (!session) return null;
-      return fetch("/api/me", {
-        cache: "no-store",
-        headers: { Authorization: "Bearer " + session.access_token }
-      }).then(function (response) {
-        if (!response.ok) return null;
-        return response.json();
-      });
-    }).catch(function () { return null; });
+  function nativeUserId() {
+    try {
+      var user = window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user();
+      return user && typeof user.id === "string" && user.id ? user.id : null;
+    } catch (e) { return null; }
+  }
+  function clearIdentity() {
+    verifiedUserId = null;
+    confirmedTier = null;
+  }
+  function currentRequest(generation, userId) {
+    if (generation !== requestGeneration) return false;
+    if (nativeUserId() === userId) return true;
+    // Recheck the native identity even if its notification has not arrived yet.
+    requestGeneration += 1;
+    clearIdentity();
+    setTier(nativeUserId() ? "unknown" : "anon", "unconfirmed");
+    return false;
   }
   function resolveTier() {
-    if (!hasSessionCookie()) { setTier("anon"); return; }
-    var cached = cachedMe() || meHint();
-    setTier((cached && cached.tier) || "free");
-    fetchMe().then(function (me) { setTier((me && me.tier) || "free"); });
+    var generation = ++requestGeneration;
+    var observedUserId = nativeUserId();
+    if (!observedUserId && !hasSessionCookie()) {
+      clearIdentity();
+      setTier("anon", "signed-out");
+      return;
+    }
+    if (!observedUserId || observedUserId !== verifiedUserId) {
+      clearIdentity();
+      setTier("unknown", "pending");
+    } else {
+      setTier(confirmedTier || "unknown", "pending");
+    }
+    // No session/local-storage entitlement hints: neither cache binds a result
+    // to the current native user or this request generation.
+    Promise.resolve().then(function () {
+      if (generation !== requestGeneration) return null;
+      if (!window.MDXAuth || typeof window.MDXAuth.client !== "function") throw new Error("auth unavailable");
+      return window.MDXAuth.client();
+    }).then(function (sb) {
+      if (generation !== requestGeneration) return null;
+      if (!sb || !sb.auth || typeof sb.auth.getSession !== "function") throw new Error("session unavailable");
+      return sb.auth.getSession();
+    }).then(function (result) {
+      if (generation !== requestGeneration) return;
+      if (!result || result.error || !result.data) throw new Error("session unavailable");
+      var session = result.data.session;
+      if (!session) {
+        clearIdentity();
+        setTier("anon", "signed-out");
+        return;
+      }
+      var userId = session.user && session.user.id;
+      if (typeof userId !== "string" || !userId || !session.access_token || nativeUserId() !== userId) {
+        throw new Error("unverified session identity");
+      }
+      if (verifiedUserId !== userId) confirmedTier = null;
+      verifiedUserId = userId;
+      return Promise.resolve().then(function () {
+        if (!currentRequest(generation, userId)) return null;
+        return fetch("/api/me", {
+          cache: "no-store",
+          headers: { Authorization: "Bearer " + session.access_token }
+        });
+      }).then(function (response) {
+        if (!currentRequest(generation, userId)) return;
+        if (!response) throw new Error("entitlement unavailable");
+        if (response.status === 401 || response.status === 403) {
+          confirmedTier = null;
+          setTier("unknown", "denied");
+          return;
+        }
+        if (!response.ok) throw new Error("entitlement unavailable");
+        return response.json().then(function (me) {
+          if (!currentRequest(generation, userId)) return;
+          var tier = me && typeof me.tier === "string" ? normTier(me.tier) : "";
+          if (!me || (me.id != null && me.id !== userId) || (tier !== "free" && !isPaid(tier))) {
+            throw new Error("unconfirmed entitlement");
+          }
+          confirmedTier = tier;
+          setTier(tier, "confirmed");
+        });
+      }).catch(function () {
+        if (!currentRequest(generation, userId)) return;
+        setTier(confirmedTier || "unknown", "degraded");
+      });
+    }).catch(function () {
+      if (generation !== requestGeneration) return;
+      // Session verification failed: retaining a paid result here could attach
+      // it to an unknown account. Only /api/me failures for a verified user may
+      // retain that user's last confirmed summary cap.
+      clearIdentity();
+      setTier(nativeUserId() ? "unknown" : "anon", "unconfirmed");
+    });
   }
 
   window.MMXAccessPreview = {
     tier: function () { return state.tier; },
     cap: function () { return state.cap; },
-    isAnon: function () { return state.tier === "anon"; },
+    isAnon: function () { return state.tier === "anon" || !nativeUserId(); },
     openSignin: function () { openOnboard("signin"); },
     openSignup: function () { openOnboard("signup"); },
     refresh: resolveTier
@@ -342,7 +430,11 @@
     resolveTier();
     if (window.MDXAuth && typeof window.MDXAuth.onChange === "function") {
       window.MDXAuth.onChange(function (user, event) {
-        if (!user || event === "SIGNED_OUT") setTier("anon");
+        if (!user || event === "SIGNED_OUT") {
+          requestGeneration += 1;
+          clearIdentity();
+          setTier("anon", "signed-out");
+        }
         else resolveTier();
       });
     }

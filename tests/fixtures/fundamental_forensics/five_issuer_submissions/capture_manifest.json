@@ -1,0 +1,62 @@
+{
+  "0000018230": {
+    "budget_owner": "collectors.edgar_forensics:SecForensicsCollector",
+    "bytes": 167436,
+    "cik": "0000018230",
+    "http_etag": null,
+    "http_last_modified": null,
+    "retrieved_at": "2026-10-12T12:26:37Z",
+    "sha256": "cd43eaa79308f1f76d62092b45c603432a39e32ae369548886e7bd923b90c278",
+    "source_url": "https://data.sec.gov/submissions/CIK0000018230.json",
+    "ticker": "CAT",
+    "user_agent_declared": "Mastermind FIF research lane fif-lane@mastermind.local"
+  },
+  "0000070858": {
+    "budget_owner": "collectors.edgar_forensics:SecForensicsCollector",
+    "bytes": 1773013,
+    "cik": "0000070858",
+    "http_etag": null,
+    "http_last_modified": null,
+    "retrieved_at": "2026-10-12T12:26:38Z",
+    "sha256": "d2d7154a50fb16547f9cbaf7d27dbee3723cebd1e40635b7ced5ed24b45d03c3",
+    "source_url": "https://data.sec.gov/submissions/CIK0000070858.json",
+    "ticker": "BAC",
+    "user_agent_declared": "Mastermind FIF research lane fif-lane@mastermind.local"
+  },
+  "0000320193": {
+    "budget_owner": "collectors.edgar_forensics:SecForensicsCollector",
+    "bytes": 163882,
+    "cik": "0000320193",
+    "http_etag": null,
+    "http_last_modified": null,
+    "retrieved_at": "2026-10-12T12:26:36Z",
+    "sha256": "2821703cf04e1138923243a87cc5148673feb9d3792a5b6a7747d1e1a093bf7f",
+    "source_url": "https://data.sec.gov/submissions/CIK0000320193.json",
+    "ticker": "AAPL",
+    "user_agent_declared": "Mastermind FIF research lane fif-lane@mastermind.local"
+  },
+  "0001640147": {
+    "budget_owner": "collectors.edgar_forensics:SecForensicsCollector",
+    "bytes": 158312,
+    "cik": "0001640147",
+    "http_etag": null,
+    "http_last_modified": null,
+    "retrieved_at": "2026-10-12T12:26:37Z",
+    "sha256": "780cbbfb3e252169b2f8b089b1f1a00e5b15e8db5cd867dd2cd2b313883645db",
+    "source_url": "https://data.sec.gov/submissions/CIK0001640147.json",
+    "ticker": "SNOW",
+    "user_agent_declared": "Mastermind FIF research lane fif-lane@mastermind.local"
+  },
+  "0001652044": {
+    "budget_owner": "collectors.edgar_forensics:SecForensicsCollector",
+    "bytes": 152415,
+    "cik": "0001652044",
+    "http_etag": null,
+    "http_last_modified": null,
+    "retrieved_at": "2026-10-12T12:26:38Z",
+    "sha256": "9434407b197d6322de4bece8ad3b69459c8d6ddf3a68526b4b22b02e8175d33c",
+    "source_url": "https://data.sec.gov/submissions/CIK0001652044.json",
+    "ticker": "GOOGL",
+    "user_agent_declared": "Mastermind FIF research lane fif-lane@mastermind.local"
+  }
+}

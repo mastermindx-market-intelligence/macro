@@ -38,7 +38,7 @@ on:
         description: "Which pages to rebuild from committed data (all = every page)"
         type: choice
         default: all
-        options: [all, macro, intl, china, hk, canada, markets, gex, baskets, sits]
+        options: [all, macro, intl, china, hk, canada, markets, gex, baskets, sits, stubs]
       runner:
         description: "Runner label — render-linux is routine; render-heavy/macstudio are explicit Mac fallbacks"
         type: choice
@@ -138,11 +138,13 @@ on:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_demand.py"
       - "scripts/build_discovery.py"
+      - "scripts/build_expectation_surface.py"
       - "scripts/build_flow_desk.py"
       - "scripts/build_flow_leaders.py"
       - "scripts/build_foresight.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "scripts/build_consumer_cyclical_plnt_page.py"
       - "scripts/build_forex.py"
       - "scripts/build_gex_board.py"
       - "scripts/build_hk.py"
@@ -194,6 +196,7 @@ on:
       - "scripts/build_stock_seasonality_page.py"
       - "scripts/build_sector_central.py"
       - "scripts/build_sector_cycles.py"
+      - "scripts/build_sector_holdings_coverage.py"
       - "scripts/build_site.py"
       - "scripts/build_smart_money.py"
       - "scripts/build_sp500_heatmap.py"
@@ -207,6 +210,7 @@ on:
       # builder must be able to start the render that ships it.
       - "scripts/build_winner_health_page.py"
       - "scripts/build_state_of_themes.py"
+      - "scripts/build_theme_tree_page.py"
       - "scripts/build_stock_library.py"
       - "scripts/build_ticker_pages.py"
       - "scripts/build_strategies.py"
@@ -225,7 +229,9 @@ on:
       - "scripts/inject_data_base.py"
       - "scripts/externalize_css.py"
       - "scripts/optimize_assets.py"
+      - "scripts/inject_shared_shell.py"
       - "lib/pages.py"
+      - "lib/shared_shell.py"
 
 permissions:
   contents: write   # commit the rendered site/ to main; the VPS (Caddy) serves from main
@@ -538,7 +544,8 @@ jobs:
               templates/hk.html.j2|scripts/build_hk.py) echo hk;;
               templates/canada.html.j2|templates/canada_stock.html.j2|templates/canada_history.html.j2|templates/canada_sector.html.j2|scripts/build_canada.py|scripts/build_canada_library.py) echo canada;;
               templates/commodities.html.j2|templates/spr.html.j2|templates/sanctions_map.html.j2|templates/forex.html.j2|templates/bonds.html.j2|templates/crossasset.html.j2|templates/transmission.html.j2|templates/discovery.html.j2|templates/macro_context.html.j2|scripts/build_commodities.py|scripts/build_spr.py|scripts/build_sanctions_map.py|scripts/build_forex.py|scripts/build_bonds.py|scripts/build_crossasset.py|scripts/build_transmission.py|scripts/build_discovery.py|scripts/build_macro_context.py) echo markets;;
-              templates/gex.html.j2|scripts/build_gex_board.py|scripts/build_options_flow.py|scripts/build_options_skew.py|scripts/build_vol_regime.py) echo gex;;
+              templates/gex.html.j2|templates/baskets_china.html.j2|templates/movers.html) echo stubs;;
+              scripts/build_gex_board.py|scripts/build_options_flow.py|scripts/build_options_skew.py|scripts/build_vol_regime.py) echo gex;;
               # OIP E8 leaf-page narrowing — rationale in the step's YAML comment block.
               templates/options.html.j2|templates/options_screener.html.j2|scripts/build_options_command.py|scripts/build_options_screener.py) echo gex;;
               templates/baskets.html.j2|templates/methodology.html.j2|templates/government_revenue.html.j2|scripts/build_baskets.py|scripts/build_methodology.py|scripts/build_government_revenue.py|scripts/build_government_revenue_candidates.py|scripts/check_government_revenue_projection.py|config/government_revenue/candidate_issuance_corrections.v1.json|contracts/government_revenue/government_revenue_candidate_issuance_corrections.v1.schema.json|config/market_reference.yml|scripts/build_market_reference.py) echo baskets;;
@@ -760,6 +767,14 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_r2 --dirs options_skew || echo "::warning title=options-skew-hydrate::options_skew ledger restore from R2 failed - emit renders the committed ledger and reports its ledger_asof"
+      # ---- special situations: page-only rebake, NO EDGAR sweep ----
+      # The nightly owns the ~28m filing sweep; this lane re-renders the desk
+      # from the COMMITTED event store so a template/builder fix ships in
+      # minutes. --no-refresh reuses the last real build's `built` stamp, so an
+      # untouched desk rebakes byte-for-byte and commits nothing. It also emits
+      # site/premiumdata/special_situations.json — the Insider+ payload behind
+      # the page's free preview (docs/TIER_PREVIEW_PATTERN.md), which MUST be
+      # rebuilt in the same pass as the shell it pairs with.
       - name: re-render pages from committed data (resilient; no collect / no LLM / no EDGAR)
         id: render_pages
         # Mirrors the RENDER steps of daily.yml's `engine` job, minus the collectors,
@@ -875,14 +890,6 @@ jobs:
           # of build_leader_radar's admission): rationale in the comment block above
           # this step (moved out 2026-08-10: 21,000-char run limit).
 
-          # ---- special situations: page-only rebake, NO EDGAR sweep ----
-          # The nightly owns the ~28m filing sweep; this lane re-renders the desk
-          # from the COMMITTED event store so a template/builder fix ships in
-          # minutes. --no-refresh reuses the last real build's `built` stamp, so an
-          # untouched desk rebakes byte-for-byte and commits nothing. It also emits
-          # site/premiumdata/special_situations.json — the Insider+ payload behind
-          # the page's free preview (docs/TIER_PREVIEW_PATTERN.md), which MUST be
-          # rebuilt in the same pass as the shell it pairs with.
           sits() { [ -n "$SITS_DONE" ] && return 0; SITS_DONE=1; run_py "special situations desk, page only (build_special_situations --no-refresh)" scripts.build_special_situations --no-refresh; }
 
           # ---- china special situations: page-only rebake, NO collector sweep ----
@@ -895,6 +902,15 @@ jobs:
           # preview (docs/TIER_PREVIEW_PATTERN.md), which MUST be rebuilt in the same pass
           # as the shell it pairs with.
           csits() { [ -n "$CSITS_DONE" ] && return 0; CSITS_DONE=1; run_py "china special situations desk, page only (build_china_special_situations --no-refresh)" scripts.build_china_special_situations --no-refresh; }
+
+          # Fixed legacy redirects have no market-data inputs. Keep template-only
+          # rebakes outside the full options and China basket computations.
+          stubs() {
+            [ -n "$STUBS_DONE" ] && return 0; STUBS_DONE=1
+            run_py "GEX redirect stub (page only)" scripts.build_gex_board --page-only
+            run_py "China baskets redirect stub (page only)" scripts.build_baskets_china --page-only
+            run_py "Movers redirect stub (page only)" scripts.build_ticker_pages --movers-page-only
+          }
 
           # ---- the parallel regional/desk band (mirrors daily, MINUS special-sits) ----
           band() {
@@ -1038,13 +1054,15 @@ jobs:
           for SC in ${SCOPE//+/ }; do
           case "$SC" in
             all)
-              spine; intl; canada; band; central; flowleaders; optionscmd; leaderradar; foresightpage; hub; crypto; us_pages; libs; sits; csits ;;
+              spine; intl; canada; band; central; flowleaders; optionscmd; leaderradar; foresightpage; hub; crypto; us_pages; libs; sits; csits; stubs ;;
             macro)
               spine; hub; crypto; us_pages; central ;;
             intl)
               intl ;;
             sits)
               sits ;;
+            stubs)
+              stubs ;;
             china)
               run_py "build china a-share dashboard (build_china)" scripts.build_china
               run_py "china policy watch" scripts.build_china_policy_watch --site-only
@@ -1286,6 +1304,7 @@ jobs:
         run: |
           python3 scripts/check_site_asset_refs.py site
           python -m scripts.check_government_revenue_projection
+          python scripts/inject_shared_shell.py --check --site-dir site || exit 1
       # Protected-main freeze (2026-08-15): OrganizationAdmin is the only working
       # bypass. GITHUB_TOKEN cannot push site/ to main (GH013, run 31876500631).
       # The self-hosted fast path skips actions/checkout, so the admin PAT is bound
@@ -1380,6 +1399,7 @@ jobs:
           # finalized-tree step. Validate the exact healed tree represented by the index.
           python3 scripts/check_site_asset_refs.py site
           python -m scripts.check_government_revenue_projection
+          python scripts/inject_shared_shell.py --check --site-dir site || exit 1
           commit_index "$RENDER_MESSAGE"
           RENDER_COMMIT=$(git rev-parse HEAD)
           RENDER_PARENT=$(git rev-parse "$RENDER_COMMIT^")
@@ -1426,6 +1446,8 @@ jobs:
               config/government_revenue/candidate_issuance_corrections.v1.json
               contracts/government_revenue/government_revenue_candidate_issuance_corrections.v1.schema.json
               lib/pages.py
+              lib/shared_shell.py
+              scripts/inject_shared_shell.py
               scripts/build_government_revenue.py
               scripts/build_government_revenue_candidates.py
               scripts/check_government_revenue_projection.py
@@ -1438,6 +1460,7 @@ jobs:
             # site/templates. Keep the metadata shortcut inside that exact contract:
             # a newer site/template delta needs the guarded porcelain path below,
             # because an asset deletion can invalidate a page without a path conflict.
+            COMMODITY_ACCEPTED=$(git rev-parse 'origin/main^{commit}') || exit 1
             if git diff --quiet "$RENDER_PARENT" origin/main -- site/ templates/ "${GOVREV_PROJECTION_INPUTS[@]}" && \
               PUBLISH_COMMIT=$(push_metadata_replay_commit \
                 "$RENDER_PARENT" origin/main "$RENDER_COMMIT" \
@@ -1447,7 +1470,13 @@ jobs:
               # promised objects already present on origin. Pushing an anonymous object
               # ID makes Git hydrate those unchanged blobs before packing.
               git update-ref "$PUBLISH_REF" "$PUBLISH_COMMIT"
+              # Metadata replay uses a private index; inspect that exact commit, not the worktree.
+              if ! python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref "$PUBLISH_COMMIT"; then
+                git update-ref -d "$PUBLISH_REF"
+                exit 1
+              fi
               python -m scripts.check_government_revenue_projection
+              python scripts/inject_shared_shell.py --check --site-dir site || exit 1
               if push_do origin "$PUBLISH_REF:refs/heads/main"; then
                 git update-ref HEAD "$PUBLISH_COMMIT"
                 git update-ref -d "$PUBLISH_REF"
@@ -1470,6 +1499,8 @@ jobs:
             # both sides' hashed files (next externalize_css prunes the orphan) and
             # finishes the rebase; anything else is left for the abort+retry below.
             if { git rebase --autostash -X theirs origin/main || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then
+              # Restore only the qualified accepted page when a stale render replays over R3.
+              python -m scripts.check_commodity_publication --heal-from "$COMMODITY_ACCEPTED" || exit 1
               # Prove the rebased render commit itself before any optional heal. If a
               # later follow-up commit is skipped, this is the exact HEAD we still push.
               python3 scripts/check_site_asset_refs.py site
@@ -1528,6 +1559,7 @@ jobs:
               # creating a heal commit or pushing it to the live branch.
               python3 scripts/check_site_asset_refs.py site
               python -m scripts.check_government_revenue_projection
+              python scripts/inject_shared_shell.py --check --site-dir site || exit 1
               if ! git diff --quiet -- site/ templates/; then
                 # push_staged_clean: never bake conflict markers into the follow-up
                 # commit (P0 d29e4dd44d/#4167). On a dirty scan: unstage and push the
@@ -1557,6 +1589,15 @@ jobs:
                 exit 1
               fi
               python -m scripts.check_government_revenue_projection
+              # Worktree healing cannot certify an older committed candidate.
+              python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref HEAD || exit 1
+              # A skipped or failed optional heal commit must not leave the checker
+              # proving working-tree pages while an older HEAD is pushed.
+              if ! git diff --quiet HEAD -- site/ templates/; then
+                echo "::error title=shared-shell publication uncommitted::refusing to push a HEAD older than the validated site/templates tree"
+                exit 1
+              fi
+              python scripts/inject_shared_shell.py --check --site-dir site || exit 1
               if push_do; then echo "pushed rendered site on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
               if [ "${PUSH_FAIL_CLASS:-}" = "push-error" ]; then
                 echo "::error title=rendered site publisher denied::non-contention push rejection (typically GH013 repository rules); not retrying"

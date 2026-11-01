@@ -1,0 +1,30 @@
+{
+  "schema": "gmi.protected_adoption_source_validation/v1",
+  "base": "82c63351fa8c7dae219f01a833704724bb5aff8f",
+  "parent_affected_tests": {
+    "passed": 316,
+    "seconds": 9.86,
+    "scope": [
+      "test_dataos_registry.py",
+      "test_company_disclosure_owner.py",
+      "test_company_disclosure_identity_continuity.py",
+      "test_company_disclosure_preflight.py",
+      "test_company_disclosures_api.py",
+      "test_company_issuer_disclosures.py"
+    ]
+  },
+  "after_review_targeted_tests": {
+    "passed": 39,
+    "seconds": 3.9,
+    "scope": "tests/test_company_disclosure_owner.py",
+    "test_sha256": "d8bdcb12d9804390be16cfbeeac172db39b4e717d7769b855f97a9c1a0ec91e2"
+  },
+  "independent_review": {
+    "id": "gmi-c01-real-stage-adoption-review-20261012-001",
+    "retained_sha256": "636370986e6a7640debcc31e243014ce75d8c0dddbbb4c03ff23efe240fd394f",
+    "parent_adjudication_sha256": "a01289c5baad644446fe699e167fb27bfd399ae6935e87284408a51a21e0a438",
+    "verdict": "ACCEPTED_WITH_VALIDATED_TEST_STRENGTHENING",
+    "worker_did_not_run_tests": true
+  },
+  "scope": "Source adoption only. Protected CI/release/install, NEW PROMOTE and authenticated API/Terminal acceptance remain required."
+}

@@ -371,13 +371,36 @@ def _resolve_universe(cfg: dict, data_root: Path) -> list[str]:
 
 # ── intraday parquet helpers ──────────────────────────────────────────────────
 
-def _load_intraday_bars(ticker: str, data_root: Path) -> pd.DataFrame | None:
-    """Load data/intraday/<T>.parquet — hourly OHLCV bars."""
+
+class IntradayBarsAbsent(FileNotFoundError):
+    """Raised when the intraday parquet for a ticker does not exist (strict loads)."""
+
+
+class IntradayBarsUnreadable(OSError):
+    """Raised when the intraday parquet exists but cannot be decoded (strict loads)."""
+
+
+class IntradayBarsNoClock(ValueError):
+    """Raised when a successfully-read intraday frame has no time column (strict loads)."""
+
+
+def _load_intraday_bars(
+    ticker: str, data_root: Path, *, strict: bool = False,
+) -> pd.DataFrame | None:
+    """Load data/intraday/<T>.parquet — hourly OHLCV bars.
+
+    With ``strict=False`` (default), returns ``None`` on absent/unreadable so
+    nightly/baseline callers can fall back gracefully. With ``strict=True``,
+    raises :class:`IntradayBarsAbsent` / :class:`IntradayBarsUnreadable` so the
+    fastpath can distinguish a read failure from a quiet zero.
+    """
     # The VPS keeps the mutable intraday cache outside canonical repo data while
     # still reading memberships/baselines from data_root.
     intraday_dir = Path(os.environ.get("MACRO_INTRADAY_DIR", data_root / "intraday"))
     p = intraday_dir / f"{ticker}.parquet"
     if not p.exists():
+        if strict:
+            raise IntradayBarsAbsent(p) from None
         return None
     try:
         df = pd.read_parquet(p)
@@ -394,6 +417,8 @@ def _load_intraday_bars(ticker: str, data_root: Path) -> pd.DataFrame | None:
                 df = df.rename(columns={index_name: "timestamp"})
         return df
     except Exception as e:  # noqa: BLE001
+        if strict:
+            raise IntradayBarsUnreadable(p) from e
         log.debug("build_intraday_flow: intraday/%s unreadable: %s", ticker, e)
         return None
 
@@ -509,14 +534,14 @@ def _atr14(ticker: str, data_root: Path) -> float | None:
 
 def _today_bars(ticker: str, data_root: Path) -> list[dict]:
     """Return today's hourly bars as a list of dicts."""
-    df = _load_intraday_bars(ticker, data_root)
+    df = _load_intraday_bars(ticker, data_root, strict=True)
     if df is None or df.empty:
         return []
     ts_col = next(
         (c for c in ("timestamp", "t", "datetime", "time") if c in df.columns), None
     )
     if ts_col is None:
-        return []
+        raise IntradayBarsNoClock(ticker)
     df[ts_col] = pd.to_datetime(df[ts_col], errors="coerce", utc=True)
     df = df.dropna(subset=[ts_col]).sort_values(ts_col)
     # Convert to ET before comparing dates (design: bars are tz-aware ET epochs).
@@ -524,7 +549,11 @@ def _today_bars(ticker: str, data_root: Path) -> list[dict]:
     day_df = df[df[ts_col].dt.tz_convert("America/New_York").dt.date == today_et]
     rows = []
     for _, row in day_df.iterrows():
+        bar_ts = row[ts_col]
+        if isinstance(bar_ts, pd.Timestamp):
+            bar_ts = bar_ts.to_pydatetime()
         rows.append({
+            "ts": bar_ts.isoformat(),
             "open": _safe_float(row, ["open", "o"]),
             "high": _safe_float(row, ["high", "h"]),
             "low": _safe_float(row, ["low", "l"]),
@@ -1246,6 +1275,7 @@ def _run_fastpath(cfg: dict, data_root: Path, site_root: Path, as_of_arg: str | 
 
     Writes site/live/flow_pulse.json + site/live/flow_pulse_lastgood.json.
     Zero data/ writes (HOUSE-U5).
+    source_asof is the latest hourly bar START (Polygon, 15 minutes delayed), never build time.
     """
     from engine.intraday_flow import (
         higher_lows,
@@ -1274,6 +1304,7 @@ def _run_fastpath(cfg: dict, data_root: Path, site_root: Path, as_of_arg: str | 
     else:
         now_utc = datetime.now(timezone.utc)
     tickers_out: list[dict] = []
+    source_clocks: list[datetime] = []
 
     for ticker in universe:
         try:
@@ -1323,6 +1354,16 @@ def _run_fastpath(cfg: dict, data_root: Path, site_root: Path, as_of_arg: str | 
                     if b.get("close") is not None and b["close"] >= vwap
                 )
 
+            last_ts = bars[-1].get("ts") if isinstance(bars[-1], dict) else None
+            if isinstance(last_ts, str) and last_ts.strip():
+                try:
+                    parsed_ts = datetime.fromisoformat(last_ts.replace("Z", "+00:00"))
+                except ValueError:
+                    parsed_ts = None
+                else:
+                    if parsed_ts.tzinfo is None:
+                        parsed_ts = parsed_ts.replace(tzinfo=timezone.utc)
+                    source_clocks.append(parsed_ts.astimezone(timezone.utc))
             tickers_out.append({
                 "ticker": ticker,
                 "bars_today": len(bars),
@@ -1340,13 +1381,24 @@ def _run_fastpath(cfg: dict, data_root: Path, site_root: Path, as_of_arg: str | 
                 "bars_above_vwap":   _bars_above_vwap,
             })
         except Exception as e:  # noqa: BLE001
-            log.debug("build_intraday_flow fastpath: %s failed: %s", ticker, e)
+            log.warning("build_intraday_flow fastpath: %s failed: %s", ticker, e)
+            tickers_out.append({
+                "ticker": ticker,
+                "bars_today": None,
+                "error": type(e).__name__,
+            })
 
     # Determine mode (mirrors basket_pulse mode hierarchy).
+    n_failed = sum(1 for t in tickers_out if t.get("error"))
     mode = "fastpath"
-    has_data = any(t.get("bars_today", 0) > 0 for t in tickers_out)
+    has_data = any((t.get("bars_today") or 0) > 0 for t in tickers_out)
     if not has_data:
-        mode = "no_data"
+        mode = "read_failed" if n_failed else "no_data"
+    if n_failed:
+        log.warning(
+            "build_intraday_flow fastpath: %d/%d reads failed (mode=%s)",
+            n_failed, len(universe), mode,
+        )
 
     pulse: dict[str, Any] = {
         "schema": "flow_pulse.v1",
@@ -1355,6 +1407,9 @@ def _run_fastpath(cfg: dict, data_root: Path, site_root: Path, as_of_arg: str | 
         "mode": mode,
         "stale": False,
         "n_tickers": len(tickers_out),
+        "n_universe": len(universe),
+        "n_failed": n_failed,
+        "source_asof": max(source_clocks).isoformat() if source_clocks else None,
         "direction_note": (
             "Volume durability is deterministic. VWAP is an hourly-bar "
             "approximation, labeled. Options flow velocity computed client-side "

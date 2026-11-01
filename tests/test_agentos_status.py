@@ -619,6 +619,17 @@ def test_readiness_states_explain_graph_and_authored_progress(
         parent.read_text(encoding="utf-8"),
         count=1,
     )
+    # 2026-10-05 regold: the D2C wave itself is now authored in_progress (delivered on
+    # PR #8432, Sol-held), and an in_progress wave outranks a blocked parent in
+    # _reason_for_wave — so the wave status is synthesized back to todo in the same
+    # fixture copy. The blocked-parent exemplar rides neither live status any more.
+    parent_text, synthesized = re.subn(
+        r"(?m)^(  - id: D2C\n    title: [^\n]*\n    status: )\S+",
+        r"\1todo",
+        parent_text,
+        count=1,
+    )
+    assert synthesized == 1, "D2C wave block not found in the fixture copy"
     parent.write_text(parent_text, encoding="utf-8")
 
     out = tmp_path / "state.json"
@@ -642,9 +653,10 @@ def test_readiness_states_explain_graph_and_authored_progress(
     assert waiting["reason_code"] == "unmet_dependencies"
     assert waiting["unmet_dependencies"] == ["WS:PROPHET-US-ENTRY-TIMING#W1"]
 
-    # D2C is the current unfinished authored wave; the former TRANSMISSION wave no
-    # longer exists by design (folded to the completed TRANSMISSION-FOLD), so the
-    # blocked-parent exemplar rides D2C rather than resurrecting a dead wave id.
+    # D2C (no declared wave dependencies) carries the blocked-parent exemplar; the
+    # former TRANSMISSION wave no longer exists by design (folded to the completed
+    # TRANSMISSION-FOLD), and both the parent and the wave status are synthesized
+    # above, so this assertion rides no live authored status.
     parent_blocked = records[("GMI-THEME-GRAPH", "D2C")]
     assert parent_blocked["state"] == "blocked"
     assert parent_blocked["reason_code"] == "workstream_blocked"

@@ -322,6 +322,39 @@ def episode_intelligence_v1(
     return _response(payload)
 
 
+
+@router.get("/api/prophet/lab/v1/episodes/{episode_id}/earnings")
+def episode_earnings_v1(
+    episode_id: str,
+    _user: dict = Depends(require_site_full_user),
+) -> JSONResponse:
+    """An earnings explanation over the SAME authenticated, PIT-selected D5 read.
+
+    No second event/workspace read, no query-selected source file or permission
+    bypass. The existing kill switch, B1 identity, source checks and private errors
+    are consumed unchanged. Missing optional source fields keep research visible.
+    """
+    native = episode_intelligence_v1(episode_id, _user=_user)
+    if native.status_code != 200:
+        return native
+    try:
+        import json
+        from engine.prophet_lab.earnings_dossier import (
+            load_q06_source_field, project_earnings_detail,
+        )
+        source_field, source_state = load_q06_source_field(_REPO_ROOT)
+        payload = project_earnings_detail(
+            json.loads(native.body), source_field=source_field, source_state=source_state,
+        )
+    except Exception as exc:  # noqa: BLE001 — never expose internal roots/source bodies
+        log.warning("prophet_lab: earnings detail failed (%s)", type(exc).__name__)
+        return _response(
+            {"error": "prophet_earnings_detail_unavailable",
+             "detail": "Earnings detail temporarily unavailable"}, status_code=503,
+        )
+    return _response(payload)
+
+
 def _hub_prophet_authorized(request: Request) -> bool:
     """INTERNAL-ONLY guard for ``/api/hub/prophet`` (DEC:B1-PROPHET-PUBLIC-SPLIT).
 

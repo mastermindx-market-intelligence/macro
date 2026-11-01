@@ -1,0 +1,6 @@
+```json
+{
+  "activate": false,
+  "importance": 10
+}
+```

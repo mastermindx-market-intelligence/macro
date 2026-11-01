@@ -1,0 +1,160 @@
+{
+  "artifacts": {
+    "boats-actual-raw-reader-acceptance.json": {
+      "byte_identical": true,
+      "bytes": 2054,
+      "sha256": "f390a4bc160674bdd37582c45d03ceb5b01e7ad82bc3a22192a1c3a2cf65d95b",
+      "source_receipt": "tiingo-boats-20261013-actual-raw-reader-parent-acceptance.json"
+    },
+    "boats-literal-vendor-audit-acceptance.json": {
+      "byte_identical": true,
+      "bytes": 2991,
+      "sha256": "1dcda5ccae04b4c2ecc59e209c9174db3a55bef1f36cd33209b0b924ca60b108",
+      "source_receipt": "tiingo-boats-20261013-literal-vendor-audit-actual-parent-acceptance.json"
+    },
+    "boats-original-parent-settlement.json": {
+      "byte_identical": true,
+      "bytes": 2348,
+      "sha256": "aa1a3e6576de9f8f2e86d74e1694efea9cfd5e0105367d4b21a51084b48fe63e",
+      "source_receipt": "tiingo-boats-20261013-actual-original-capture-parent-settlement.json"
+    },
+    "boats-original-raw-result.json": {
+      "byte_identical": true,
+      "bytes": 667,
+      "sha256": "9b2e2b45178cf31ca50c018f453ffb74416b59778398b094ff3bfc56184014bb",
+      "source_receipt": "tiingo-boats-raw-20261013-01a12ab6-result.json"
+    },
+    "methods/tiingo-boats-20261013-literal-vendor-final32-audit-01a12ab6.py": {
+      "byte_identical": true,
+      "bytes": 4568,
+      "sha256": "9e09cd8781c698b25e2ede28b4d58d864262688769d76c6f9df5cc0d1b1b8c82",
+      "source_kind": "actual independently reviewed operational method",
+      "source_receipt": "/private/tmp/tiingo-boats-20261013-literal-vendor-final32-audit-01a12ab6.py"
+    },
+    "methods/tiingo-wave14-original-two-phase-quality-accounting-candidate-01a12ab6.py": {
+      "byte_identical": true,
+      "bytes": 11897,
+      "sha256": "116e3826b712ecd7262f62aa4cf2696e41c8e3221dd1523d68d24177a3728cea",
+      "source_kind": "actual independently reviewed operational method",
+      "source_receipt": "/private/tmp/tiingo-wave14-original-two-phase-quality-accounting-candidate-01a12ab6.py"
+    },
+    "methods/tiingo-wave14-settled-quality-coverage-candidate-01a12ab6.py": {
+      "byte_identical": true,
+      "bytes": 5594,
+      "sha256": "7a00a1cc10be5387c21a94a7957dd063dff9f8ccabb31fd0ad7510ba9b73d4cf",
+      "source_kind": "actual independently reviewed operational method",
+      "source_receipt": "/private/tmp/tiingo-wave14-settled-quality-coverage-candidate-01a12ab6.py"
+    },
+    "methods/tiingo-wave14-settled-quality-reconciliation-candidate-01a12ab6.py": {
+      "byte_identical": true,
+      "bytes": 11828,
+      "sha256": "cc5cfab5ee198d81b274f940ea89b081bb7e01e90a7b766659c1c458a96985b0",
+      "source_kind": "actual independently reviewed operational method",
+      "source_receipt": "/private/tmp/tiingo-wave14-settled-quality-reconciliation-candidate-01a12ab6.py"
+    },
+    "methods/tiingo-wave15-two-phase-quality-and-transport-held-candidate-01a12ab6.py": {
+      "byte_identical": true,
+      "bytes": 17145,
+      "sha256": "ae045dcd41ea78e6e5e9d5b7da59d917c59d7c94c250d3b5aacfbac6c431e051",
+      "source_kind": "actual independently reviewed operational method",
+      "source_receipt": "/private/tmp/tiingo-wave15-two-phase-quality-and-transport-held-candidate-01a12ab6.py"
+    },
+    "source9039-canonical-landing.json": {
+      "byte_identical": true,
+      "bytes": 5752,
+      "sha256": "c29dc4ac4d552685447126596371c74a1b7b747e5857fc9eb56d4141af02f50b",
+      "source_receipt": "macro-9039-canonical-landed-evidence-verification.json"
+    },
+    "source9039-merge-after-ci.json": {
+      "byte_identical": true,
+      "bytes": 878,
+      "sha256": "85a17b5d0c4c25be9e27244c047496b27dcc629171a3112a222026ddb7a475d8",
+      "source_receipt": "macro-9039-actual-merge-after-terminal-ci.json"
+    },
+    "source9039-terminal-ci.json": {
+      "byte_identical": true,
+      "bytes": 3023,
+      "sha256": "86ed159b00d91ff9aff4f62a06cf2e9b7b6d74b6a24ea0d47bddc1e1641b7e6a",
+      "source_receipt": "macro-9039-original-expanded-ci-terminal-acceptance.json"
+    },
+    "terminal955-current-dispatched-ci.json": {
+      "byte_identical": true,
+      "bytes": 3161,
+      "sha256": "e2447275f065cada9ea64206d31dc6f648096065009c4bad0591788eca29618d",
+      "source_receipt": "terminal-955-881-existing-dispatched-ci-terminal-acceptance.json"
+    },
+    "terminal955-current-protected-hold.json": {
+      "byte_identical": true,
+      "bytes": 999,
+      "sha256": "5f87f9ebb61bf187060e3b8f8b6f655f2f1e580ad6d52aebdfc2ea9d56ae696a",
+      "source_receipt": "terminal-955-881-green-dispatch-protected-release-still-held.json"
+    },
+    "wave14-actual-quality-diagnosis.json": {
+      "byte_identical": true,
+      "bytes": 1283,
+      "sha256": "60aa75ac6c54922930608ae3038c9844eedec5af5447d0ea40afe9b1b3d9e7cb",
+      "source_receipt": "tiingo-wave14-settled-quality-diagnosis-actual-parent-acceptance.json"
+    },
+    "wave14-actual-quality-reconciliation.json": {
+      "byte_identical": true,
+      "bytes": 1561,
+      "sha256": "e0dc580aa4684f5416ce99e2505d3343c9c8d47889be397de6da677f6172c040",
+      "source_receipt": "tiingo-wave14-quality-reconciliation-actual-parent-acceptance.json"
+    },
+    "wave14-actual-settlement-and-quality-failure.json": {
+      "byte_identical": true,
+      "bytes": 1377,
+      "sha256": "5c9659327dfd05a13bb8f030e6157f22a94920af7ab23b6dda4efc59ec4bade4",
+      "source_receipt": "tiingo-wave14-actual-physical-settlement-and-window05-failure.json"
+    },
+    "wave14-actual-whole-quality-accounting.json": {
+      "byte_identical": true,
+      "bytes": 1376,
+      "sha256": "8428c0761b6f791cca274634b7aac95f2c85d7615d40d06f873cdaaf79164b00",
+      "source_receipt": "tiingo-wave14-actual-quality-accounting-parent-acceptance.json"
+    },
+    "wave14-independent-quality-source-review.json": {
+      "byte_identical": true,
+      "bytes": 1449,
+      "sha256": "a8e9d3f56245406aa9fa0649ffa8e9579db09241b5d6d539d7b47a56e4a9db7b",
+      "source_receipt": "tiingo-wave14-quality-reconciliation-and-accounting-independent-review.json"
+    },
+    "wave14-window03-parent-acceptance.json": {
+      "byte_identical": true,
+      "bytes": 1911,
+      "sha256": "4c2ce7007984797c0259e6059d9bb02db3beab47eff01dd407cf48e10341b0ef",
+      "source_receipt": "tiingo-wave14-attended-window03-actual-parent-acceptance.json"
+    },
+    "wave14-window04-parent-acceptance.json": {
+      "byte_identical": true,
+      "bytes": 2277,
+      "sha256": "4d6a5272f8d269a463d6bca55e52767ff5502d0661628ade75b4b7fcbb17b6f3",
+      "source_receipt": "tiingo-wave14-attended-window04-actual-parent-acceptance.json"
+    },
+    "wave15-actual-original-launch.json": {
+      "byte_identical": true,
+      "bytes": 1548,
+      "sha256": "c63ad2d799313a00dd8c3bbc65312b98ca93a3da8ef16d96c4b86021af676479",
+      "source_receipt": "tiingo-wave15-actual-original-quality-gated-launch.json"
+    },
+    "wave15-actual-prefix01-failure-and-diagnosis.json": {
+      "byte_identical": true,
+      "bytes": 1604,
+      "sha256": "bd0b843372877690a15711a540d0530f31fc48a2d107ec6e417baff771ea4eb3",
+      "source_receipt": "tiingo-wave15-actual-prefix01-failure-and-diagnosis.json"
+    },
+    "wave15-independent-admission-source-review.json": {
+      "byte_identical": true,
+      "bytes": 1078,
+      "sha256": "9ebcba48dbb573ef232c859a6715df1c0357d641c345a2f75c084455df860742",
+      "source_receipt": "tiingo-wave15-specific-quality-and-transport-hold-independent-review.json"
+    }
+  },
+  "created_at_utc": "2026-10-13T00:22:48.475626+00:00",
+  "credential_or_subscription_values_copied": false,
+  "licensed_raw_market_rows_copied": false,
+  "runtime_effect": false,
+  "schema": "tiingo_retained_operational_evidence_bytes.v1",
+  "source_directory": "/Users/chriswong/.codex/visualizations/2026/10/11/01a12ab6-92cb-7c42-a711-42673ebb6b50/tiingo-phase1",
+  "updated_at_utc": "2026-10-13T01:08:08.177883+00:00"
+}

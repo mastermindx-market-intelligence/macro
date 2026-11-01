@@ -38,6 +38,7 @@ Coverage:
 from __future__ import annotations
 
 import json
+import re
 import sys
 import tempfile
 from datetime import date, datetime, timedelta, timezone
@@ -1685,6 +1686,187 @@ class TestAnalystBannerRender:
         assert "crowding signal that reads it stays blank" not in html
 
 
+class TestLeaderLineageFact:
+    """Per-name prior-leadership summary inside the recovery row (lr.lineage_roster).
+
+    Display only: the closed runs of schema leader_lineage.v1, tallied by
+    break class. Rendered only for a name with at least one prior closed run;
+    the raw FAILED_BREAK term never prints (it is not a bullish label).
+    """
+
+    def _render(self, payload: dict) -> str:
+        from jinja2 import Environment, FileSystemLoader
+        tpl_root = Path(__file__).resolve().parent.parent / "templates"
+        env = Environment(loader=FileSystemLoader(str(tpl_root)), autoescape=False)
+        return env.get_template("leader_radar.html.j2").render(leader_radar=payload)
+
+    @staticmethod
+    def _recovery_row(ticker: str, drawdown: float = -0.22) -> dict:
+        return {"ticker": ticker, "state": "PRICE_RECOVERED_RS_LAGGING",
+                "episode": {"max_drawdown": drawdown, "peak_on": "2026-01-02",
+                            "below_200_sessions": 30, "failed_repairs": 0}}
+
+    @staticmethod
+    def _episode(ticker: str, closed_on=None, break_class: str = "FAILED_BREAK",
+                 qualified: str = "2015-01-29") -> dict:
+        return {"ticker": ticker, "episode_id": "ep-" + ticker, "prior_episode_id": None,
+                "leadership_qualified_at": qualified, "phase": "FAILED",
+                "break_class": break_class, "correction_trough_on": "2015-08-24",
+                "reclaim_50d_on": "2015-10-22", "reclaim_200d_on": "2015-11-04",
+                "closed_on": closed_on, "close_reason": "re_admitted_new_episode"}
+
+    def _lineage(self, episodes: list, schema: str = "leader_lineage.v1") -> dict:
+        return {"schema": schema, "era": "leader-lineage-descriptive-2026-10-11",
+                "as_of": "2026-10-16", "definition_sha256": "0" * 12,
+                "evidence_mode": "RECONSTRUCTED_CURRENT_VINTAGE",
+                "authority": {"may_rank": False, "may_gate": False, "may_size": False,
+                              "may_trade": False, "may_alert": False},
+                "episodes": episodes, "counts": {}}
+
+    def _payload(self, rows: list, lineage=None) -> dict:
+        roster = {"schema": "leader_recovery_roster.v1", "counts": {}, "rows": rows}
+        payload = {"schema": "leader_radar.v1", "as_of": "2026-10-16T00:00:00+00:00",
+                   "stale": False, "coverage": {}, "regime": {}, "rows": [],
+                   "handoff_pairs": [], "rerating_watch": [], "early_entry": [],
+                   "handoff_context": [], "recovery_roster": roster}
+        if lineage is not None:
+            payload["lineage_roster"] = lineage
+        return payload
+
+    def _row_slice(self, html: str, ticker: str) -> str:
+        i = html.index('data-ticker="%s"' % ticker)
+        j = html.index("lr-rec-more", i)
+        return html[i:j]
+
+    def _fact(self, html: str, ticker: str) -> str:
+        sl = self._row_slice(html, ticker)
+        i = sl.index('<span class="lr-rec-fact lr-rec-lineage">')
+        return sl[i:sl.index("<details", i)]
+
+    def test_run_without_a_date_prints_no_since(self):
+        """A closed run with no qualification date counts, with no empty 'since'."""
+        eps = [self._episode("AAPL", closed_on="2017-02-01", qualified="")]
+        html = self._render(self._payload([self._recovery_row("AAPL")], self._lineage(eps)))
+        fact = self._fact(html, "AAPL")
+        assert "<time" not in fact
+        assert "since" not in fact
+
+    def test_closed_runs_only_count_and_since(self):
+        """3 closed runs count; the open run's earlier date is not the count nor 'since'."""
+        eps = [
+            self._episode("AAPL", closed_on="2017-02-01", qualified="2015-01-29"),
+            self._episode("AAPL", closed_on="2019-06-14", qualified="2016-03-10",
+                          break_class="REPAIRED_TREND"),
+            self._episode("AAPL", closed_on="2021-11-02", qualified="2018-09-20"),
+            self._episode("AAPL", closed_on=None, qualified="2011-05-04"),
+        ]
+        html = self._render(self._payload([self._recovery_row("AAPL")],
+                                          self._lineage(eps)))
+        fact = self._fact(html, "AAPL")
+        assert re.findall(r"<b>([^<]*)</b>", fact)[0] == "3"
+        assert "since" in fact
+        assert '<time datetime="2015-01-29">2015-01-29</time>' in fact
+        assert "2011-05-04" not in fact
+
+    def test_break_class_tallies_are_positional(self):
+        """failed=2, repaired=1, other=1 in that order; UNRESOLVED lands in other."""
+        eps = [
+            self._episode("AAPL", closed_on="2017-02-01", qualified="2015-01-29",
+                          break_class="FAILED_BREAK"),
+            self._episode("AAPL", closed_on="2018-03-06", qualified="2016-08-11",
+                          break_class="FAILED_BREAK"),
+            self._episode("AAPL", closed_on="2019-04-18", qualified="2017-05-23",
+                          break_class="REPAIRED_TREND"),
+            self._episode("AAPL", closed_on="2020-06-30", qualified="2018-01-09",
+                          break_class="UNRESOLVED"),
+        ]
+        html = self._render(self._payload([self._recovery_row("AAPL")],
+                                          self._lineage(eps)))
+        fact = self._fact(html, "AAPL")
+        assert re.findall(r"<b>([^<]*)</b>", fact) == ["4", "2", "1", "1"]
+        assert "failed repairs:" in fact and "修复失败" in fact
+        assert "repaired:" in fact and "已修复" in fact
+        assert "other endings:" in fact and "其他结局" in fact
+
+    def test_structural_break_counts_as_other(self):
+        """STRUCTURAL_BREAK is an other ending; failed repairs still prints at 0."""
+        eps = [
+            self._episode("AAPL", closed_on="2017-02-01", qualified="2015-01-29",
+                          break_class="STRUCTURAL_BREAK"),
+            self._episode("AAPL", closed_on="2018-03-06", qualified="2016-08-11",
+                          break_class="UNRESOLVED"),
+        ]
+        html = self._render(self._payload([self._recovery_row("AAPL")],
+                                          self._lineage(eps)))
+        fact = self._fact(html, "AAPL")
+        assert re.findall(r"<b>([^<]*)</b>", fact) == ["2", "0", "0", "2"]
+        assert "failed repairs:" in fact and "修复失败" in fact
+
+    def test_open_run_only_hidden(self):
+        """A name with only its current open run shows no lineage fact at all."""
+        eps = [self._episode("AAPL", closed_on=None, qualified="2011-05-04")]
+        html = self._render(self._payload([self._recovery_row("AAPL")],
+                                          self._lineage(eps)))
+        assert "lr-rec-lineage" not in self._row_slice(html, "AAPL")
+
+    def test_lineage_absent_none_or_wrong_schema_hidden(self):
+        """Missing/None/other-schema lineage_roster renders no fact, panel intact."""
+        row = [self._recovery_row("AAPL")]
+        closed = [self._episode("AAPL", closed_on="2017-02-01")]
+        html = self._render(self._payload(row))                        # key omitted
+        assert "lr-rec-lineage" not in html
+        assert "Deep corrections and recovery" in html
+        payload = self._payload(row)
+        payload["lineage_roster"] = None                               # layer failed
+        html = self._render(payload)
+        assert "lr-rec-lineage" not in html
+        assert 'data-ticker="AAPL"' in html
+        html = self._render(self._payload(                             # other schema
+            row, self._lineage(closed, schema="leader_lineage.v0")))
+        assert "lr-rec-lineage" not in html
+        assert "Deep corrections and recovery" in html
+
+    def test_other_zero_hides_other_endings(self):
+        """other=0 prints no 'other endings' segment; zero tallies stay visible."""
+        eps = [
+            self._episode("AAPL", closed_on="2017-02-01", qualified="2015-01-29",
+                          break_class="FAILED_BREAK"),
+            self._episode("AAPL", closed_on="2018-03-06", qualified="2016-08-11",
+                          break_class="REPAIRED_TREND"),
+        ]
+        html = self._render(self._payload([self._recovery_row("AAPL")],
+                                          self._lineage(eps)))
+        fact = self._fact(html, "AAPL")
+        assert "other endings:" not in fact and "其他结局" not in fact
+        assert re.findall(r"<b>([^<]*)</b>", fact) == ["2", "1", "1"]
+        assert "failed repairs:" in fact
+
+    def test_runs_do_not_leak_across_tickers(self):
+        """MSFT's closed runs render on MSFT's row only; AAPL's row stays clean."""
+        eps = [self._episode("MSFT", closed_on="2017-02-01", qualified="2015-01-29",
+                             break_class="FAILED_BREAK")]
+        rows = [self._recovery_row("MSFT", -0.30), self._recovery_row("AAPL", -0.22)]
+        html = self._render(self._payload(rows, self._lineage(eps)))
+        assert "lr-rec-lineage" in self._fact(html, "MSFT")
+        assert "lr-rec-lineage" not in self._row_slice(html, "AAPL")
+
+    def test_source_ships_both_languages_and_no_failed_break_term(self):
+        """Markup carries EN and zh; the lineage fact never prints 'failed break'."""
+        src = (Path(__file__).resolve().parent.parent / "templates"
+               / "leader_radar.html.j2").read_text(encoding="utf-8")
+        assert "failed repairs" in src and "修复失败" in src
+        assert "Prior leadership runs" in src and "此前领导期" in src
+        eps = [
+            self._episode("AAPL", closed_on="2017-02-01", qualified="2015-01-29",
+                          break_class="FAILED_BREAK"),
+            self._episode("AAPL", closed_on="2018-03-06", qualified="2016-08-11"),
+        ]
+        html = self._render(self._payload([self._recovery_row("AAPL")],
+                                          self._lineage(eps)))
+        fact = self._fact(html, "AAPL")
+        assert "failed break" not in fact.lower()
+
+
 # ── _merge_history_frame (frozen-store dtype fix, 2026-07-16) ─────────────────
 # state_history.parquet froze at its 2026-07-11 seed: the store side read back
 # as object (datetime.date) and got to_datetime'd, the new side stayed raw
@@ -3070,3 +3252,270 @@ class TestLoudFailSoft:
         assert any(line.startswith("::warning title=leader_radar::") for line in out_lines), (
             f"Annotation must start the line (bare print, not a logger call): {out_lines}"
         )
+
+
+# ── W19-E: matured fire grades, estimate readings, earnings chips ───────────
+
+def _w19e_render(**over):
+    from jinja2 import Environment, FileSystemLoader
+    root = Path(__file__).resolve().parent.parent / "templates"
+    env = Environment(loader=FileSystemLoader(str(root)), autoescape=False)
+    p = {"schema": "leader_radar.v1", "as_of": "2026-10-16T00:00:00+00:00", "stale": False,
+         "coverage": {}, "regime": {}, "rows": [], "handoff_pairs": [], "rerating_watch": [],
+         "early_entry": [], "handoff_context": []}
+    p.update(over)
+    return env.get_template("leader_radar.html.j2").render(leader_radar=p)
+
+
+def _w19e_readings(vals=(40.0, 0.16, -1.13)):
+    return {"covering_analysts": {"value": vals[0], "unit": "count"},
+            "eps_estimate_change_30d": {"value": vals[1], "unit": "percent"},
+            "eps_estimate_change_90d": {"value": vals[2], "unit": "percent"}}
+
+
+def _w19e_rec_payload(availability="SOURCE_DATED_OBSERVATIONS", readings=None, reason=None):
+    exp = {"availability": availability, "revision_direction": "POSITIVE_OBSERVATIONS",
+           "source_date": "2026-10-14", "source_age_sessions": 2,
+           "readings": _w19e_readings() if readings is None else readings}
+    if reason:
+        exp["reason"] = reason
+    row = {"ticker": "AAPL", "state": "QUIET_ACCUMULATION",
+           "chips": {"revision_positive": True},
+           "context": {"days_to_earnings": 13, "fwd_pe": 35.8},
+           "display_chips": {"leader_recovery": {"expectations": exp}}}
+    roster = {"schema": "leader_recovery_roster.v1", "counts": {},
+              "rows": [{"ticker": "AAPL", "state": "PRICE_RECOVERED_RS_LAGGING",
+                        "episode": {"max_drawdown": -0.22, "peak_on": "2026-01-02",
+                                    "below_200_sessions": 30, "failed_repairs": 0}}]}
+    return {"rows": [row], "recovery_roster": roster}
+
+
+def _w19e_grade_line(ticker, fire_date, ret=0.05, engine_id="plab_leader_onset"):
+    return json.dumps({"engine_id": engine_id, "ticker": ticker, "fire_date": fire_date,
+                       "horizon": "21", "authority": "display_only", "ret_excess_spy": ret,
+                       "ret_abs": 0.01, "matured": True}) + "\n"
+
+
+class TestW19EFireHistoryWindow:
+    """Spec 1 (builder): matured fires outside the last-20 window survive."""
+
+    def test_w19e_matured_july_fire_survives_recent_window(self, tmp_path):
+        from scripts.build_leader_radar import _build_fire_history
+        rows = [{"date": pd.Timestamp("2026-07-15"), "ticker": "CRWD", "fire_type": "onset"}]
+        for i, d in enumerate(pd.date_range("2026-09-21", periods=25, freq="D")):
+            rows.append({"date": d, "ticker": "T%02d" % i, "fire_type": "onset"})
+        gp = tmp_path / "pick_lab" / "grades.jsonl"
+        gp.parent.mkdir(parents=True, exist_ok=True)
+        gp.write_text(_w19e_grade_line("CRWD", "2026-07-15", 0.030606))
+        out = _build_fire_history(pd.DataFrame(rows), tmp_path)
+        assert len(out) == 21
+        assert out[0]["date"] == "2026-10-15"
+        assert all(out[i]["date"] >= out[i + 1]["date"] for i in range(len(out) - 1))
+        assert out[-1]["ticker"] == "CRWD" and out[-1]["status"] == "matured"
+        assert out[-1]["ret_excess_spy"] == pytest.approx(0.030606)
+
+    def test_w19e_matured_rows_capped_and_deduped(self, tmp_path):
+        from scripts.build_leader_radar import _build_fire_history
+        md = list(pd.date_range("2026-05-01", periods=25, freq="D"))
+        rr = list(pd.date_range("2026-09-21", periods=20, freq="D"))
+        rows = [{"date": d, "ticker": "M%02d" % i, "fire_type": "onset"}
+                for i, d in enumerate(md)]
+        rows.append({"date": md[24], "ticker": "M24", "fire_type": "onset"})
+        rows += [{"date": d, "ticker": "R%02d" % i, "fire_type": "onset"}
+                 for i, d in enumerate(rr)]
+        gp = tmp_path / "pick_lab" / "grades.jsonl"
+        gp.parent.mkdir(parents=True, exist_ok=True)
+        gp.write_text("".join(_w19e_grade_line("M%02d" % i, d.date().isoformat())
+                              for i, d in enumerate(md)))
+        out = _build_fire_history(pd.DataFrame(rows), tmp_path)
+        assert len(out) == 40
+        mat = [e for e in out if e["status"] == "matured"]
+        assert len(mat) == 20
+        assert {e["ticker"] for e in mat} == {"M%02d" % i for i in range(5, 25)}
+        keys = [(e["date"], e["ticker"], e["fire_type"]) for e in out]
+        assert len(keys) == len(set(keys))
+        assert all(out[i]["date"] >= out[i + 1]["date"] for i in range(len(out) - 1))
+        # Case 2: five matured rows all inside the recent window — nothing doubled.
+        cd = list(pd.date_range("2026-09-21", periods=5, freq="D"))
+        rows2 = [{"date": d, "ticker": "C%d" % i, "fire_type": "onset"}
+                 for i, d in enumerate(cd)]
+        gp.write_text("".join(_w19e_grade_line("C%d" % i, d.date().isoformat())
+                              for i, d in enumerate(cd)))
+        out2 = _build_fire_history(pd.DataFrame(rows2), tmp_path)
+        assert len(out2) == 5
+        k2 = [(e["date"], e["ticker"], e["fire_type"]) for e in out2]
+        assert len(k2) == len(set(k2))
+
+
+class TestW19EFireReceiptsRender:
+    """Spec 1 (template): matured-count sentence replaces the too-small copy."""
+
+    def _w19e_fh(self, matured):
+        fh = [{"date": "2026-10-14", "ticker": "AAA", "fire_type": "onset",
+               "ret_excess_spy": None, "status": "accruing"},
+              {"date": "2026-10-13", "ticker": "BBB", "fire_type": "precipice",
+               "ret_excess_spy": None, "status": "accruing"}]
+        if matured:
+            fh.append({"date": "2026-07-15", "ticker": "CRWD", "fire_type": "onset",
+                       "ret_excess_spy": 0.030606, "status": "matured"})
+        else:
+            fh.append({"date": "2026-10-12", "ticker": "CCC", "fire_type": "onset",
+                       "ret_excess_spy": None, "status": "accruing"})
+        return fh
+
+    def _w19e_fire_slice(self, html):
+        i = html.index('<section class="fire-receipts-section">')
+        return html[i:html.index("</section>", i)]
+
+    def test_w19e_fire_log_renders_matured_count(self):
+        html = _w19e_render(fire_history=self._w19e_fh(True))
+        sl = self._w19e_fire_slice(html)
+        assert "CRWD" in sl and "+3.1%" in sl
+        assert "Fires with a 21-session result vs the market: 1." in sl
+        assert "已有 1 次触发完成21个交易日对照。" in sl
+        assert "sample too small" not in sl
+        assert html.count("sample too small") == 0
+        assert html.count("Fires with a 21-session result vs the market: 1.") == 2
+        assert ("A fire badge means the engine logged the event — not that an "
+                "outcome is expected." in html)
+
+    def test_w19e_all_accruing_keeps_small_sample_copy(self):
+        html = _w19e_render(fire_history=self._w19e_fh(False))
+        assert html.count("sample too small for a track record yet.") == 2
+        assert "21-session result vs the market" not in html
+
+
+class TestW19ERecoveryReadingsRender:
+    """Spec 2: nested estimate readings render as lr-rec-facts."""
+
+    def _w19e_exp_slice(self, html):
+        i = html.index("Estimate observations")
+        return html[i:html.index("Fundamental read not sourced.", i)]
+
+    def test_w19e_recovery_readings_render_aapl_shape(self):
+        html = _w19e_render(**_w19e_rec_payload())
+        sl = self._w19e_exp_slice(html)
+        assert "Covering analysts:" in sl
+        assert "<b>40</b>" in sl
+        assert "<b>+0.16%</b>" in sl
+        assert "<b>-1.13%</b>" in sl
+        assert "30-day estimate change:" in sl and "90-day estimate change:" in sl
+        assert "Direction of the snapshot readings: rising." in sl
+
+    def test_w19e_readings_absent_when_unavailable(self):
+        html = _w19e_render(**_w19e_rec_payload(
+            availability="UNAVAILABLE", reason="ticker_not_in_revisions_source"))
+        sl = self._w19e_exp_slice(html)
+        assert "Covering analysts" not in sl and "+0.16%" not in sl
+        html2 = _w19e_render(**_w19e_rec_payload(readings=_w19e_readings((None, None, None))))
+        sl2 = self._w19e_exp_slice(html2)
+        assert "Covering analysts" not in sl2 and "lr-rec-facts" not in sl2
+
+
+class TestW19ECardEarningsRender:
+    """Spec 3 + Spec 4: earnings chip on cards, receipt JS, 90-day estimate chip."""
+
+    def _w19e_marker(self, html, ticker, stage):
+        return html.index('data-ticker="%s" data-stage="%s"' % (ticker, stage))
+
+    def _w19e_card(self, html, ticker, stage):
+        i = self._w19e_marker(html, ticker, stage)
+        j = html.find('class="entry-card', i + 20)
+        return html[i:j if j > -1 else i + 4000]
+
+    def _w19e_tag(self, html, ticker, stage):
+        i = self._w19e_marker(html, ticker, stage)
+        return html[i - 200:html.index(">", i)]
+
+    def _w19e_row(self, t, st, chips, dte):
+        return {"ticker": t, "state": st, "chips": chips,
+                "context": {"days_to_earnings": dte, "fwd_pe": 35.8}}
+
+    def test_w19e_card_days_to_earnings(self):
+        rows = [self._w19e_row("AAPL", "QUIET_ACCUMULATION", {"revision_positive": True}, 13),
+                self._w19e_row("ADBE", "QUIET_ACCUMULATION", {"rs_turn": True}, -36),
+                self._w19e_row("AMAT", "QUIET_ACCUMULATION", {"accum_evidence": True}, 0),
+                self._w19e_row("AEIS", "CATALYST_WINDOW", {"revision_positive": True}, 1),
+                self._w19e_row("NVTS", "SUPPRESSED", {"obv_divergence": True}, 7),
+                self._w19e_row("MSFT", "QUIET_ACCUMULATION", {"insider_cluster": True}, None)]
+        html = _w19e_render(rows=rows)
+        tag_a = self._w19e_tag(html, "AAPL", "QUIET_ACCUMULATION")
+        assert 'data-dte="13"' in tag_a
+        ca = self._w19e_card(html, "AAPL", "QUIET_ACCUMULATION")
+        assert "earnings in 13 days" in ca and "距业绩披露 13 日" in ca
+        assert 'data-dte=""' in self._w19e_tag(html, "ADBE", "QUIET_ACCUMULATION")
+        cad = self._w19e_card(html, "ADBE", "QUIET_ACCUMULATION")
+        assert "earnings in" not in cad and "距业绩披露" not in cad
+        cam = self._w19e_card(html, "AMAT", "QUIET_ACCUMULATION")
+        assert "earnings today" in cam and "今日业绩披露" in cam
+        cae = self._w19e_card(html, "AEIS", "CATALYST_WINDOW")
+        assert "earnings in 1 day<" in cae
+        cnv = self._w19e_card(html, "NVTS", "SUPPRESSED")
+        assert "earnings in 7 days" in cnv
+        assert 'data-dte=""' in self._w19e_tag(html, "MSFT", "QUIET_ACCUMULATION")
+        assert "el.dataset.dte" in html and "'Earnings in ' + dte" in html
+
+    def test_w19e_singular_negative_dte_and_estimate_down_per_section(self):
+        rows = [self._w19e_row("KLAC", "QUIET_ACCUMULATION", {"revision_positive": True}, 1),
+                self._w19e_row("NVMI", "SUPPRESSED", {"obv_divergence": True}, 1),
+                self._w19e_row("ADP", "CATALYST_WINDOW", {"revision_positive": True}, -4),
+                self._w19e_row("SMCI", "SUPPRESSED", {"obv_divergence": True}, -2)]
+        rows[2]["display_chips"] = {"revision_momentum_90d": False}
+        html = _w19e_render(rows=rows)
+        for tk, st in (("KLAC", "QUIET_ACCUMULATION"), ("NVMI", "SUPPRESSED")):
+            assert "earnings in 1 day<" in self._w19e_card(html, tk, st)
+        for tk, st in (("ADP", "CATALYST_WINDOW"), ("SMCI", "SUPPRESSED")):
+            assert 'data-dte=""' in self._w19e_tag(html, tk, st)
+            cneg = self._w19e_card(html, tk, st)
+            assert "earnings in" not in cneg and "距业绩披露" not in cneg
+        cd = self._w19e_card(html, "ADP", "CATALYST_WINDOW")
+        assert "90-day estimate down" in cd and "estimate up" not in cd
+
+    def test_w19e_qa_cw_90d_estimate_chip(self):
+        import re as _re
+        rows = [
+            {"ticker": "AEIS", "state": "CATALYST_WINDOW", "chips": {"rs_turn": True},
+             "context": {}, "display_chips": {"revision_momentum_90d": True}},
+            {"ticker": "AAPL", "state": "QUIET_ACCUMULATION",
+             "chips": {"revision_positive": True}, "context": {},
+             "display_chips": {"revision_momentum_90d": False}},
+            {"ticker": "MSFT", "state": "QUIET_ACCUMULATION",
+             "chips": {"obv_divergence": True}, "context": {},
+             "display_chips": {"revision_momentum_90d": None}},
+            {"ticker": "ORCL", "state": "QUIET_ACCUMULATION",
+             "chips": {"insider_cluster": True}, "context": {}},
+        ]
+        html = _w19e_render(rows=rows)
+        ca = self._w19e_card(html, "AEIS", "CATALYST_WINDOW")
+        assert '<div class="timing-chip">' in ca
+        assert "90-day estimate up" in ca and "90日预期上调" in ca
+        cp = self._w19e_card(html, "AAPL", "QUIET_ACCUMULATION")
+        assert "90-day estimate down" in cp and "90日预期下调" in cp
+        assert "estimate up" not in cp
+        for tkr in ("MSFT", "ORCL"):
+            cm = self._w19e_card(html, tkr, "QUIET_ACCUMULATION")
+            assert "90-day estimate" not in cm
+        for m in _re.finditer(r'class="evidence-line"', html):
+            end = html.index("</div>", m.start())
+            assert "90-day estimate" not in html[m.start():end]
+
+
+def test_ticker_links_open_the_stock_page():
+    """us_stocks.html#TICKER only lands on the top of the board: that page has no row id for a
+    ticker and its one hash handler flashes an existing element. stock.html#TICKER opens the name."""
+    src = (Path(__file__).resolve().parents[1] / "templates" / "leader_radar.html.j2").read_text(encoding="utf-8")
+    assert "us_stocks.html#" not in src
+    assert src.count("stock.html#") == 17
+    assert 'class="rs-highs-ticker" href="stock.html#{{ item.ticker|e }}"' in src
+    assert '<a href="stock.html#\' + ticker' in src  # the one link built in script
+
+
+
+def test_ticker_link_labels_name_the_page_they_open():
+    """A screen reader announces the label, so it must name where the link goes."""
+    src = (Path(__file__).resolve().parents[1] / "templates" / "leader_radar.html.j2").read_text(encoding="utf-8")
+    labels = re.findall(r'href="stock\.html#[^"]*" aria-label="([^"]*)"', src)
+    assert len(labels) == 2
+    for label in labels:
+        assert label == "Open the {{ item.ticker|e }} stock page"
+    assert "stocks board" not in src

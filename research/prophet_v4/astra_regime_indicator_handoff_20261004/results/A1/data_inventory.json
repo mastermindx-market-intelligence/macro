@@ -1,0 +1,1582 @@
+{
+  "generated_at": "2026-10-04T02:25:40Z",
+  "files": {
+    "data/yahoo/SPY.parquet": {
+      "path": "data/yahoo/SPY.parquet",
+      "exists": true,
+      "sha256": "71b5007f5c4ee3db1a24841b5f47efef9bc0ac3df2b765ae969fe878c7730779",
+      "rows": 8477,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "1993-01-29",
+      "last_date": "2026-10-02",
+      "bytes": 244347,
+      "index_name": "Date"
+    },
+    "data/yahoo/RSP.parquet": {
+      "path": "data/yahoo/RSP.parquet",
+      "exists": true,
+      "sha256": "8fa1bfce74e5fb6bc927575dd9025cd43a1028930c90d7ac03f3d70e4693d7ba",
+      "rows": 5894,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "2003-05-01",
+      "last_date": "2026-10-02",
+      "bytes": 163260,
+      "index_name": "Date"
+    },
+    "data/yahoo/QQQ.parquet": {
+      "path": "data/yahoo/QQQ.parquet",
+      "exists": true,
+      "sha256": "1a063e5e04fc35e7c85e552015fdd49cc8e061e15eb13d1b49f7886e90aa087f",
+      "rows": 6935,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "1999-03-10",
+      "last_date": "2026-10-02",
+      "bytes": 201109,
+      "index_name": "Date"
+    },
+    "data/yahoo/IWM.parquet": {
+      "path": "data/yahoo/IWM.parquet",
+      "exists": true,
+      "sha256": "c8fab9b4be607393bd4357d005c4bbf670fa0c00e143e19612d63dfaa6d123ca",
+      "rows": 6627,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "2000-05-26",
+      "last_date": "2026-10-02",
+      "bytes": 192063,
+      "index_name": "Date"
+    },
+    "data/yahoo/XLK.parquet": {
+      "path": "data/yahoo/XLK.parquet",
+      "exists": true,
+      "sha256": "8f7c9cc9e23e298f8c4943ba881da9a0e2926e48a23791a000b2de531c280c3b",
+      "rows": 6987,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "1998-12-22",
+      "last_date": "2026-10-02",
+      "bytes": 189780,
+      "index_name": "Date"
+    },
+    "data/yahoo/XLE.parquet": {
+      "path": "data/yahoo/XLE.parquet",
+      "exists": true,
+      "sha256": "42d6ccad850f7f5f37563d4628b4f1c6e913752498bd69fff99909d5f73ec735",
+      "rows": 6987,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "1998-12-22",
+      "last_date": "2026-10-02",
+      "bytes": 193394,
+      "index_name": "Date"
+    },
+    "data/yahoo/XLF.parquet": {
+      "path": "data/yahoo/XLF.parquet",
+      "exists": true,
+      "sha256": "e63d709f1e94481a9fdb29af7ddc87bcd4cadb03960f796da8b4aa3c48a34720",
+      "rows": 6987,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "1998-12-22",
+      "last_date": "2026-10-02",
+      "bytes": 188865,
+      "index_name": "Date"
+    },
+    "data/yahoo/XLV.parquet": {
+      "path": "data/yahoo/XLV.parquet",
+      "exists": true,
+      "sha256": "080f1f541395f189cde0ceb291ee17d4dff8ed40f9e7cef10333b299cbd513ff",
+      "rows": 6987,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "1998-12-22",
+      "last_date": "2026-10-02",
+      "bytes": 184066,
+      "index_name": "Date"
+    },
+    "data/yahoo/XLI.parquet": {
+      "path": "data/yahoo/XLI.parquet",
+      "exists": true,
+      "sha256": "590d5745e77fb5884c07207f38d94432d0c54368a4014a6136ce6d7f4d139c5e",
+      "rows": 6987,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "1998-12-22",
+      "last_date": "2026-10-02",
+      "bytes": 188994,
+      "index_name": "Date"
+    },
+    "data/yahoo/XLY.parquet": {
+      "path": "data/yahoo/XLY.parquet",
+      "exists": true,
+      "sha256": "c1461f5fc14392741bc83ec78c3e558a7322188f2112997eddf97ecb8bec58ea",
+      "rows": 6987,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "1998-12-22",
+      "last_date": "2026-10-02",
+      "bytes": 189479,
+      "index_name": "Date"
+    },
+    "data/yahoo/XLP.parquet": {
+      "path": "data/yahoo/XLP.parquet",
+      "exists": true,
+      "sha256": "77da807dccb35a51beda0b06f939c41cbc85d5f6cd78355bba79acf84e8ea8db",
+      "rows": 6987,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "1998-12-22",
+      "last_date": "2026-10-02",
+      "bytes": 181320,
+      "index_name": "Date"
+    },
+    "data/yahoo/XLU.parquet": {
+      "path": "data/yahoo/XLU.parquet",
+      "exists": true,
+      "sha256": "669dc3830ef1f49e3301c49058fc9c8104ccb0b25a7dacef29bd88a09c5c0966",
+      "rows": 6987,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "1998-12-22",
+      "last_date": "2026-10-02",
+      "bytes": 186186,
+      "index_name": "Date"
+    },
+    "data/yahoo/XLB.parquet": {
+      "path": "data/yahoo/XLB.parquet",
+      "exists": true,
+      "sha256": "81c18d1974eaa8b9e6dad797257670d2e079c161b3661ad531fe6caff6d5d41c",
+      "rows": 6987,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "1998-12-22",
+      "last_date": "2026-10-02",
+      "bytes": 187886,
+      "index_name": "Date"
+    },
+    "data/yahoo/XLRE.parquet": {
+      "path": "data/yahoo/XLRE.parquet",
+      "exists": true,
+      "sha256": "19145ac0ec333a33399095a7435ce5dbc427eb86dfae1d39914b78733005a2b4",
+      "rows": 2762,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "2015-10-08",
+      "last_date": "2026-10-02",
+      "bytes": 72408,
+      "index_name": "Date"
+    },
+    "data/yahoo/XLC.parquet": {
+      "path": "data/yahoo/XLC.parquet",
+      "exists": true,
+      "sha256": "9afc7b54ce4139977f7c8a68c69c396cc02cbfe2b2c6fa53ca92e472b871ef7c",
+      "rows": 2084,
+      "columns": [
+        "close_price",
+        "close",
+        "volume"
+      ],
+      "first_date": "2018-06-19",
+      "last_date": "2026-10-02",
+      "bytes": 60215,
+      "index_name": "Date"
+    },
+    "data/fred/DFII10.parquet": {
+      "path": "data/fred/DFII10.parquet",
+      "exists": true,
+      "sha256": "859a58e03987d869ba0c9971e5bee7891838baf6e5948d8435bf0102a58b9c49",
+      "rows": 5942,
+      "columns": [
+        "us10y_real"
+      ],
+      "first_date": "2003-01-02",
+      "last_date": "2026-10-01",
+      "bytes": 61932,
+      "index_name": "date"
+    },
+    "data/regime/regime_v2_pit.parquet": {
+      "path": "data/regime/regime_v2_pit.parquet",
+      "exists": true,
+      "sha256": "c8ce6bf563f3c5d8de0c10f9a3c60dcc899f26b356536c9b6172a0c3b775b690",
+      "rows": 14479,
+      "columns": [
+        "growth_score",
+        "growth_confidence",
+        "growth_agreement",
+        "growth_n_components",
+        "inflation_score",
+        "inflation_confidence",
+        "inflation_agreement",
+        "inflation_n_components",
+        "quad",
+        "pending_quad",
+        "pending_days",
+        "raw_quad",
+        "recession",
+        "inflation_shock",
+        "liquidity",
+        "cycle",
+        "regime_confidence",
+        "flag_breadth_price",
+        "flag_credit_equity",
+        "flag_ratio_inflection",
+        "flag_inflation_basket",
+        "flag_confidence_decay",
+        "flag_gex",
+        "flag_rotation_persistence",
+        "n_flags",
+        "transition_state",
+        "transition_state_raw",
+        "transition_ratcheted",
+        "transition_dwell_remaining",
+        "pit_class",
+        "fallback_notes",
+        "vintage_store_asof"
+      ],
+      "first_date": "1971-01-04",
+      "last_date": "2026-07-02",
+      "bytes": 243721,
+      "pit_class_by_year": [
+        {
+          "year": 1971,
+          "n": 260,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1972,
+          "n": 260,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1973,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1974,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1975,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1976,
+          "n": 262,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 262,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1977,
+          "n": 260,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1978,
+          "n": 260,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1979,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1980,
+          "n": 262,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 262,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1981,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1982,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1983,
+          "n": 260,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1984,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1985,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1986,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1987,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1988,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1989,
+          "n": 260,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1990,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1991,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1992,
+          "n": 262,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 262,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1993,
+          "n": 261,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1994,
+          "n": 260,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1995,
+          "n": 260,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1996,
+          "n": 262,
+          "by_pit_class": {
+            "revised_latest": {
+              "n": 262,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1997,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 254,
+              "share": 0.9731800766283525
+            },
+            "revised_latest": {
+              "n": 7,
+              "share": 0.02681992337164751
+            }
+          }
+        },
+        {
+          "year": 1998,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 1999,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2000,
+          "n": 260,
+          "by_pit_class": {
+            "mixed": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2001,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2002,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2003,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2004,
+          "n": 262,
+          "by_pit_class": {
+            "mixed": {
+              "n": 262,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2005,
+          "n": 260,
+          "by_pit_class": {
+            "mixed": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2006,
+          "n": 260,
+          "by_pit_class": {
+            "mixed": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2007,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2008,
+          "n": 262,
+          "by_pit_class": {
+            "mixed": {
+              "n": 262,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2009,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2010,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2011,
+          "n": 260,
+          "by_pit_class": {
+            "mixed": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2012,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2013,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2014,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2015,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2016,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2017,
+          "n": 260,
+          "by_pit_class": {
+            "mixed": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2018,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2019,
+          "n": 261,
+          "by_pit_class": {
+            "mixed": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2020,
+          "n": 262,
+          "by_pit_class": {
+            "pit_vintage": {
+              "n": 183,
+              "share": 0.6984732824427481
+            },
+            "mixed": {
+              "n": 79,
+              "share": 0.3015267175572519
+            }
+          }
+        },
+        {
+          "year": 2021,
+          "n": 261,
+          "by_pit_class": {
+            "pit_vintage": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2022,
+          "n": 260,
+          "by_pit_class": {
+            "pit_vintage": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2023,
+          "n": 260,
+          "by_pit_class": {
+            "pit_vintage": {
+              "n": 260,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2024,
+          "n": 262,
+          "by_pit_class": {
+            "pit_vintage": {
+              "n": 262,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2025,
+          "n": 261,
+          "by_pit_class": {
+            "pit_vintage": {
+              "n": 261,
+              "share": 1.0
+            }
+          }
+        },
+        {
+          "year": 2026,
+          "n": 131,
+          "by_pit_class": {
+            "pit_vintage": {
+              "n": 131,
+              "share": 1.0
+            }
+          }
+        }
+      ]
+    },
+    "data/us_board_ledger/retro_grades.parquet": {
+      "path": "data/us_board_ledger/retro_grades.parquet",
+      "exists": true,
+      "sha256": "61bb8cc6ff0f1cfd14f33ba50fc5ce17db4c93e800f74e307c70c5606ae4f9d7",
+      "rows": 13563,
+      "columns": [
+        "as_of",
+        "entry_date",
+        "rank_by",
+        "horizon",
+        "lane",
+        "position",
+        "ticker",
+        "sector",
+        "alpha",
+        "score",
+        "band",
+        "composite_z",
+        "verdict",
+        "align_tier",
+        "urgency",
+        "state",
+        "entry_status",
+        "act_level",
+        "signal_quality",
+        "validation_status",
+        "vol_squeeze",
+        "dispersion_state",
+        "donor_state",
+        "donor_sector",
+        "off_high",
+        "hold_state",
+        "hold_days",
+        "hold_inv",
+        "hold_anchor_src",
+        "ret",
+        "spy_ret",
+        "excess_spy",
+        "mae_close_excess_spy",
+        "sector_etf",
+        "etf_ret",
+        "excess_sector",
+        "mae_close_excess_sector",
+        "tier_cascade",
+        "opt_gamma_regime",
+        "opt_dist_to_flip_pct",
+        "opt_wall_up",
+        "opt_wall_down",
+        "opt_iv30",
+        "opt_iv_rank_252",
+        "opt_doi_slope_5d",
+        "opt_voi_flag",
+        "opt_ivspread_rel",
+        "opt_skew",
+        "opt_skew_5d_chg",
+        "opt_opex_days",
+        "opt_pin_risk",
+        "opt_wall_dist_up_pct",
+        "opt_wall_dist_down_pct",
+        "board_tenure_days",
+        "insider_cluster",
+        "gex_confirm_verdict",
+        "altdata_conv_gte2",
+        "sue_fresh",
+        "news_burst",
+        "smartmoney_add",
+        "has_stop_guidance",
+        "confluence_k",
+        "fwd_mfe_5",
+        "terminal_state_clean15_126",
+        "terminal_state_clean8_21",
+        "post_cushion_breach",
+        "rate_pressure",
+        "quad_hard_label",
+        "fused_risk_label",
+        "vol_regime",
+        "risk_radar_state",
+        "regime_vector_degraded",
+        "vector_asof",
+        "staleness_hours",
+        "archetype",
+        "opt_net_signed_prem_5d_z",
+        "opt_flow_breadth_group",
+        "opt_dte_quality",
+        "opt_crowding_flag",
+        "fwd_mfe_10",
+        "opt_vanna_relief",
+        "opt_front7_charm_share",
+        "opt_root_class",
+        "fwd_mfe_21",
+        "entry_status_reason",
+        "price_source",
+        "price_basis"
+      ],
+      "first_date": "2026-06-15",
+      "last_date": "2026-09-17",
+      "bytes": 1070132
+    },
+    "data/prophet/ledger.jsonl": {
+      "path": "data/prophet/ledger.jsonl",
+      "exists": true,
+      "sha256": "802330347d6e728d46d5ef920ef361ffdbdd893e80e8112cb47e48aca424a0a5",
+      "rows": 302,
+      "columns": [
+        "asof",
+        "asset",
+        "close_date",
+        "days_held",
+        "direction",
+        "id",
+        "option_result_pct",
+        "outcome",
+        "plan_adherence",
+        "schema",
+        "signal_date",
+        "stock_result_pct"
+      ],
+      "first_date": "2026-02-27",
+      "last_date": "2026-09-25",
+      "bytes": 193551
+    },
+    "data/baskets/ohlcv/": {
+      "path": "data/baskets/ohlcv/",
+      "exists": true,
+      "sha256": "a8fcb411498876df2c4985bf6a2fba221e99a577ce79b7c09b8506d4c2f72f18",
+      "sha256_of": "sorted lines of \"name sha256\"",
+      "n_parquet_files": 2812,
+      "rows": 7161481,
+      "columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "first_date": "2014-01-02",
+      "last_date": "2026-10-02",
+      "first_year_distribution": {
+        "2014": 1738,
+        "2015": 69,
+        "2016": 53,
+        "2017": 86,
+        "2018": 100,
+        "2019": 86,
+        "2020": 155,
+        "2021": 230,
+        "2022": 50,
+        "2023": 51,
+        "2024": 65,
+        "2025": 72,
+        "2026": 57
+      },
+      "n_files_lt_800_rows": 217,
+      "bytes": null
+    }
+  },
+  "regime_v2_pit_class_by_year": [
+    {
+      "year": 1971,
+      "n": 260,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1972,
+      "n": 260,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1973,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1974,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1975,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1976,
+      "n": 262,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 262,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1977,
+      "n": 260,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1978,
+      "n": 260,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1979,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1980,
+      "n": 262,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 262,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1981,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1982,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1983,
+      "n": 260,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1984,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1985,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1986,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1987,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1988,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1989,
+      "n": 260,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1990,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1991,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1992,
+      "n": 262,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 262,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1993,
+      "n": 261,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1994,
+      "n": 260,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1995,
+      "n": 260,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1996,
+      "n": 262,
+      "by_pit_class": {
+        "revised_latest": {
+          "n": 262,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1997,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 254,
+          "share": 0.9731800766283525
+        },
+        "revised_latest": {
+          "n": 7,
+          "share": 0.02681992337164751
+        }
+      }
+    },
+    {
+      "year": 1998,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 1999,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2000,
+      "n": 260,
+      "by_pit_class": {
+        "mixed": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2001,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2002,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2003,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2004,
+      "n": 262,
+      "by_pit_class": {
+        "mixed": {
+          "n": 262,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2005,
+      "n": 260,
+      "by_pit_class": {
+        "mixed": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2006,
+      "n": 260,
+      "by_pit_class": {
+        "mixed": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2007,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2008,
+      "n": 262,
+      "by_pit_class": {
+        "mixed": {
+          "n": 262,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2009,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2010,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2011,
+      "n": 260,
+      "by_pit_class": {
+        "mixed": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2012,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2013,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2014,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2015,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2016,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2017,
+      "n": 260,
+      "by_pit_class": {
+        "mixed": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2018,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2019,
+      "n": 261,
+      "by_pit_class": {
+        "mixed": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2020,
+      "n": 262,
+      "by_pit_class": {
+        "pit_vintage": {
+          "n": 183,
+          "share": 0.6984732824427481
+        },
+        "mixed": {
+          "n": 79,
+          "share": 0.3015267175572519
+        }
+      }
+    },
+    {
+      "year": 2021,
+      "n": 261,
+      "by_pit_class": {
+        "pit_vintage": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2022,
+      "n": 260,
+      "by_pit_class": {
+        "pit_vintage": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2023,
+      "n": 260,
+      "by_pit_class": {
+        "pit_vintage": {
+          "n": 260,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2024,
+      "n": 262,
+      "by_pit_class": {
+        "pit_vintage": {
+          "n": 262,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2025,
+      "n": 261,
+      "by_pit_class": {
+        "pit_vintage": {
+          "n": 261,
+          "share": 1.0
+        }
+      }
+    },
+    {
+      "year": 2026,
+      "n": 131,
+      "by_pit_class": {
+        "pit_vintage": {
+          "n": 131,
+          "share": 1.0
+        }
+      }
+    }
+  ],
+  "baskets_ohlcv_file_count": 2812
+}

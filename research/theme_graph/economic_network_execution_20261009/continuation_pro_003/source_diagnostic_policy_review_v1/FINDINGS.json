@@ -1,0 +1,68 @@
+{
+  "P1_count": 0,
+  "P2_count": 2,
+  "admission": "NOT_ADMITTED",
+  "authority": {
+    "gate": false,
+    "prediction": false,
+    "rank": false,
+    "size": false,
+    "trade": false
+  },
+  "cloud_scope_limit": "Corporate primary activity is not segment role. Company-majority IaaS/PaaS can omit economically important diversified cloud segments; segment/purposive supplement requires its own declared denominator, never quota replacement or invented revenue shares.",
+  "corrected_policy_reviewed": false,
+  "findings": [
+    {
+      "consequence": "A survivor-only or incomplete directory can be confused with a complete historical rank denominator.",
+      "id": "R1",
+      "locations": [
+        "relative_size.completeness",
+        "relative_size.denominator",
+        "instrument_and_venue.venue_register_requirement",
+        "memo sections3/5/7"
+      ],
+      "minimal_correction": "Require per-venue historical-D roster snapshot or anchored full membership-event reconstruction, exact source bindings/totals/omissions/unknowns/entitlement, and FRAME_HISTORY_UNPROVEN hold. No quantiles from incomplete frame.",
+      "reproduction": "D pool[500,400,300,200,100]; later directory drops post-D delisted100 while all supplied rows have valid D intervals. Existing300 moves L toM;200 moves M toS.",
+      "scope": "Executable completeness certificate; existing chosen quantile design remains valid.",
+      "severity": "P2",
+      "title": "Historical roster completeness lacks required input receipt"
+    },
+    {
+      "consequence": "A later unrelated publication may be mistaken for a correcting revision, making values and ranks source-order dependent.",
+      "id": "R2",
+      "locations": [
+        "capitalization.share_count.source",
+        "capitalization.prices",
+        "capitalization.share_class_and_ADR",
+        "cutoff_policy.revisions",
+        "memo sections5/6"
+      ],
+      "minimal_correction": "Order applicable measurements explicitly; resolve same-fact/date/basis revisions only with evidence; retain competing source/assertion identities and hold CAP_COMPONENT_CONFLICT until resolved. Apply to count/price/ADR/class/action/FX components.",
+      "reproduction": "Same class/date/basis independent counts190m and210m at P10, both known byK and no proved supersession, give1.9b/2.1b and different absolute and relative bands.",
+      "scope": "Deterministic economic-input semantics; no cap, source or threshold invented.",
+      "severity": "P2",
+      "title": "Independent cap assertions lack explicit conflict/supersession law"
+    }
+  ],
+  "nonblocking_implementation_note": "Remove each candidate before residual-flow inclusion test, use nonnegative residual country/cell quotas and require the residual total rather than24; test real future selector against small brute-force subsets.",
+  "operational_cost_limit": "Full historical eligible frame for42pools is a materially broader sourcing dependency than120selected lookups. Actual population count is unknown; no complete lawful cap frame has been established in the supplied package. This is a sourcing/feasibility risk, not a mathematical defect.",
+  "policy_adoption_observed": false,
+  "principal_message_accepted_for_correction": true,
+  "proof_scope": {
+    "actual_INT_population_flow": null,
+    "actual_selector_implemented": false,
+    "actual_selector_run": false,
+    "eligible_population_count": null,
+    "final_file_hashes_checked": true,
+    "full_policy_and_memo_read": true,
+    "native_or_Git_effects": false,
+    "policy_files_edited": false,
+    "stock_or_issuer_census": false,
+    "synthetic_arithmetic_executed": true
+  },
+  "record_created_at_utc": "2026-10-09T11:29:10.676280+00:00",
+  "reviewer": "/root/native_adoption_frontier",
+  "schema": "research.selection_policy_independent_method_findings/v1",
+  "source_policy_sha256": "03881ee568f6f08f06ef88a2fad0e33ff2fe14b3ab1db526c35221d642cfe9fd",
+  "verdict": "REQUEST_CHANGES_TWO_P2_INPUT_CONTRACT_GAPS"
+}

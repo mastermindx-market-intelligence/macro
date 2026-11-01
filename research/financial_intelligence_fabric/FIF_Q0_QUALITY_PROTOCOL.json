@@ -1,0 +1,482 @@
+{
+  "schema": "fundamental_forensics.quality_protocol/v1",
+  "protocol_id": "fif-q0-quality-protocol/v1",
+  "frozen_at_commit": "5267c66846e7733bc1eb30edc1524daff51598ca",
+  "split_roots": {
+    "calibration": "tests/fixtures/fundamental_forensics",
+    "held_out": "tests/fixtures/fundamental_forensics_held_out"
+  },
+  "calibration_only_accessions": [
+    "0000320193-25-000079",
+    "0000320193-26-000020"
+  ],
+  "issuers": [
+    "AAPL",
+    "SNOW",
+    "CAT",
+    "BAC",
+    "GOOGL"
+  ],
+  "packs": [
+    {
+      "pack_id": "PK01",
+      "name": "Debt, liquidity, covenants and maturities",
+      "section_family_ids": [
+        "debt_outstanding",
+        "maturity_schedule",
+        "covenant_text",
+        "liquidity"
+      ],
+      "forms": [
+        "10-K",
+        "10-Q"
+      ],
+      "applicability": {
+        "AAPL": "optional",
+        "SNOW": "optional",
+        "CAT": "required",
+        "BAC": "required",
+        "GOOGL": "optional"
+      }
+    },
+    {
+      "pack_id": "PK02",
+      "name": "Stock compensation and dilution",
+      "section_family_ids": [
+        "sbc_expense",
+        "award_activity",
+        "share_basis"
+      ],
+      "forms": [
+        "10-K",
+        "10-Q"
+      ],
+      "applicability": {
+        "AAPL": "optional",
+        "SNOW": "required",
+        "CAT": "optional",
+        "BAC": "optional",
+        "GOOGL": "optional"
+      }
+    },
+    {
+      "pack_id": "PK03",
+      "name": "Segments and geographic/product dimensions",
+      "section_family_ids": [
+        "segment_map",
+        "eliminations",
+        "reporting_change"
+      ],
+      "forms": [
+        "10-K",
+        "10-Q"
+      ],
+      "applicability": {
+        "AAPL": "optional",
+        "SNOW": "optional",
+        "CAT": "required",
+        "BAC": "optional",
+        "GOOGL": "required"
+      }
+    },
+    {
+      "pack_id": "PK04",
+      "name": "Revenue recognition and contract balances",
+      "section_family_ids": [
+        "recognized_revenue",
+        "deferred_revenue",
+        "contract_asset_liability"
+      ],
+      "forms": [
+        "10-K",
+        "10-Q",
+        "8-K"
+      ],
+      "applicability": {
+        "AAPL": "optional",
+        "SNOW": "required",
+        "CAT": "optional",
+        "BAC": "negative",
+        "GOOGL": "optional"
+      },
+      "applicability_conditions": {
+        "BAC": "bank interest vs contract"
+      }
+    },
+    {
+      "pack_id": "PK05",
+      "name": "Tax and uncertain tax positions",
+      "section_family_ids": [
+        "etr_recon",
+        "deferred_tax",
+        "utp"
+      ],
+      "forms": [
+        "10-K"
+      ],
+      "applicability": {
+        "AAPL": "optional",
+        "SNOW": "optional",
+        "CAT": "optional",
+        "BAC": "optional",
+        "GOOGL": "optional"
+      }
+    },
+    {
+      "pack_id": "PK06",
+      "name": "Leases and off-balance commitments",
+      "section_family_ids": [
+        "lease_liability",
+        "lease_term",
+        "offbalance_commitments"
+      ],
+      "forms": [
+        "10-K",
+        "10-Q"
+      ],
+      "applicability": {
+        "AAPL": "optional",
+        "SNOW": "optional",
+        "CAT": "required",
+        "BAC": "optional",
+        "GOOGL": "optional"
+      }
+    },
+    {
+      "pack_id": "PK07",
+      "name": "M&A, goodwill, intangibles and impairments",
+      "section_family_ids": [
+        "acquisition_date",
+        "goodwill_rollforward",
+        "impairment_evidence"
+      ],
+      "forms": [
+        "10-K",
+        "8-K"
+      ],
+      "applicability": {
+        "AAPL": "negative",
+        "SNOW": "optional",
+        "CAT": "optional",
+        "BAC": "optional",
+        "GOOGL": "required"
+      },
+      "applicability_conditions": {
+        "AAPL": "negative unless a deal year"
+      }
+    },
+    {
+      "pack_id": "PK08",
+      "name": "Legal contingencies",
+      "section_family_ids": [
+        "allegation",
+        "disclosed_range",
+        "procedural_status"
+      ],
+      "forms": [
+        "10-K",
+        "10-Q"
+      ],
+      "applicability": {
+        "AAPL": "optional",
+        "SNOW": "optional",
+        "CAT": "optional",
+        "BAC": "optional",
+        "GOOGL": "optional"
+      }
+    },
+    {
+      "pack_id": "PK09",
+      "name": "Controls, auditor and going concern",
+      "section_family_ids": [
+        "icfr_opinion",
+        "auditor_opinion",
+        "going_concern_wording"
+      ],
+      "forms": [
+        "10-K",
+        "10-Q"
+      ],
+      "applicability": {
+        "AAPL": "optional",
+        "SNOW": "optional",
+        "CAT": "optional",
+        "BAC": "optional",
+        "GOOGL": "optional"
+      }
+    },
+    {
+      "pack_id": "PK10",
+      "name": "Proxy compensation and governance",
+      "section_family_ids": [
+        "comp_table",
+        "perf_period",
+        "pay_vs_perf"
+      ],
+      "forms": [
+        "DEF 14A"
+      ],
+      "applicability": {
+        "AAPL": "required",
+        "SNOW": "required",
+        "CAT": "required",
+        "BAC": "required",
+        "GOOGL": "required"
+      }
+    },
+    {
+      "pack_id": "PK11",
+      "name": "Financial-institution credit/capital/liquidity",
+      "section_family_ids": [
+        "cet1_or_stated_ratio",
+        "credit_loss",
+        "lcr_or_stated_liq"
+      ],
+      "forms": [
+        "10-K",
+        "10-Q"
+      ],
+      "applicability": {
+        "AAPL": "negative",
+        "SNOW": "negative",
+        "CAT": "negative",
+        "BAC": "required",
+        "GOOGL": "negative"
+      }
+    },
+    {
+      "pack_id": "PK12",
+      "name": "Biotech cash/R&D/financing disclosures",
+      "section_family_ids": [
+        "cash_runway_disclosure",
+        "rd_expense",
+        "going_concern_or_financing"
+      ],
+      "forms": [
+        "10-K"
+      ],
+      "applicability": {
+        "AAPL": "negative",
+        "SNOW": "negative",
+        "CAT": "negative",
+        "BAC": "negative",
+        "GOOGL": "negative"
+      }
+    }
+  ],
+  "kernel_family": {
+    "family_id": "kernel_detectors_v1",
+    "detector_pack": "fundamental-forensics-five/v1",
+    "mandatory_negative_issuers": [
+      "BAC"
+    ]
+  },
+  "minimum_n": [
+    {
+      "split": "gold",
+      "cell": "pack, form_type in {10-K, 10-Q}, polarity=positive, across >= 2 issuers",
+      "minimum_n": 3,
+      "if_below": "pack stays display_tier; cannot request accepted"
+    },
+    {
+      "split": "gold",
+      "cell": "pack, polarity=negative",
+      "minimum_n": 2,
+      "if_below": "pack cannot claim refusal coverage"
+    },
+    {
+      "split": "held_out",
+      "cell": "pack, applicable issuer, polarity=positive",
+      "minimum_n": 2,
+      "if_below": "Q1 reports underpowered; disposition unavailable_research_only"
+    },
+    {
+      "split": "held_out",
+      "cell": "pack, polarity=negative",
+      "minimum_n": 1,
+      "if_below": "Q1 reports underpowered; disposition unavailable_research_only"
+    },
+    {
+      "split": "held_out",
+      "cell": "pack, format_class != ixbrl_inline",
+      "minimum_n": 1,
+      "if_below": "A37 cell empty; pack cannot claim format generalization"
+    },
+    {
+      "split": "held_out",
+      "cell": "PK11 x non-bank issuers",
+      "minimum_n": 1,
+      "if_below": "industrial-ratio leakage untested (A30)"
+    },
+    {
+      "split": "held_out",
+      "cell": "PK12 x all five issuers",
+      "minimum_n": 1,
+      "if_below": "PK12 has no biotech among the five; positives need an explicit later issuer or stay blocked"
+    }
+  ],
+  "label_classes": [
+    {
+      "label_class": "extract_positive",
+      "counted_in": "precision, recall"
+    },
+    {
+      "label_class": "extract_absent",
+      "counted_in": "abstention / refusal quality; FP if it extracts"
+    },
+    {
+      "label_class": "extract_present_out_of_scope",
+      "counted_in": "FP if emitted as pack claim"
+    },
+    {
+      "label_class": "finding_triggered_expected",
+      "counted_in": "precision/recall of findings"
+    },
+    {
+      "label_class": "finding_clear_expected",
+      "counted_in": "FP if triggered"
+    },
+    {
+      "label_class": "finding_not_evaluable_expected",
+      "counted_in": "abstention; not FP"
+    },
+    {
+      "label_class": "source_fidelity_fail",
+      "counted_in": "source-fidelity error rate"
+    },
+    {
+      "label_class": "relevance_review",
+      "counted_in": "relevance; not a market-alpha score"
+    }
+  ],
+  "quality_labels": [
+    {
+      "label": "calibration",
+      "may_appear_on": [
+        "test docs",
+        "manifests"
+      ],
+      "forbidden_uses": [
+        "generalizes",
+        "held-out proved"
+      ]
+    },
+    {
+      "label": "display_tier",
+      "may_appear_on": [
+        "UI",
+        "packets",
+        "findings"
+      ],
+      "forbidden_uses": [
+        "production admission",
+        "user-facing pack-quality badge using the CI-guarded token"
+      ]
+    },
+    {
+      "label": "held_out_measured",
+      "may_appear_on": [
+        "quality report only"
+      ],
+      "forbidden_uses": [
+        "user-facing pack badge"
+      ]
+    },
+    {
+      "label": "accepted",
+      "may_appear_on": [
+        "pack manifest acceptance.state"
+      ],
+      "forbidden_uses": [
+        "statistical synonym for the CI-guarded token",
+        "AAPL-demo-only"
+      ]
+    },
+    {
+      "label": "unavailable_research_only",
+      "may_appear_on": [
+        "quality report",
+        "UI absence"
+      ],
+      "forbidden_uses": [
+        "silent omission from denominator"
+      ]
+    },
+    {
+      "label": "blocked_pack",
+      "may_appear_on": [
+        "quality report"
+      ],
+      "forbidden_uses": [
+        "blocking sibling packs"
+      ]
+    },
+    {
+      "label": "typed_absence",
+      "may_appear_on": [
+        "cells",
+        "coverage"
+      ],
+      "forbidden_uses": [
+        "counting as positive coverage"
+      ]
+    },
+    {
+      "label": "underpowered",
+      "may_appear_on": [
+        "quality report"
+      ],
+      "forbidden_uses": [
+        "lowering N to pass"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "metric": "precision",
+      "numerator": "extract_positive predicted and label-matched",
+      "denominator": "predicted extract_positive",
+      "exclusions_field": "exclusions"
+    },
+    {
+      "metric": "recall",
+      "numerator": "extract_positive predicted and label-matched",
+      "denominator": "label extract_positive",
+      "exclusions_field": "exclusions"
+    },
+    {
+      "metric": "abstention",
+      "numerator": "predicted not_evaluable or typed_absence",
+      "denominator": "eligible trials in the cell",
+      "exclusions_field": "exclusions"
+    },
+    {
+      "metric": "source_fidelity_error",
+      "numerator": "source_fidelity_fail",
+      "denominator": "predicted extract_positive",
+      "exclusions_field": "exclusions"
+    },
+    {
+      "metric": "false_positive_rate",
+      "numerator": "predicted extract_positive or finding_triggered on extract_absent or finding_clear_expected",
+      "denominator": "negative-label trials",
+      "exclusions_field": "exclusions"
+    }
+  ],
+  "failed_family_disposition": {
+    "scope": "pack_only",
+    "states": [
+      "unavailable_research_only",
+      "blocked_pack"
+    ]
+  },
+  "operator_rules": [
+    "Q0 (this document) freezes labels, splits, N, metrics, vocabulary, schema.",
+    "K1-K4 builders produce schema + gold + typed absences + source traces per pack. They do not author Q1 tests that read held-out.",
+    "Q1 is an independent evaluator. It opens held-out labels, writes twelve pack_quality_report documents, and files failed-family records.",
+    "Isolation test runs on every PR that touches engine/fundamental_forensics/, app/forensics.py, or pack builders.",
+    "A34: a slide that averages twelve packs without twelve report paths is not acceptance evidence.",
+    "A37: at least one held-out cell per pack is an unseen format or a negative example. PK11/PK12 on the five-issuer set are primarily negatives; that is sufficient for those packs on this issuer list."
+  ],
+  "report_schema": "contracts/fundamental_forensics_pack_quality_report.v1.schema.json"
+}

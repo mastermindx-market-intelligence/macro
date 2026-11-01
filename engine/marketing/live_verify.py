@@ -231,6 +231,8 @@ def _fetch_json(url: str, timeout_s: float) -> dict | None:
 
 def _quotes_from_snapshot(obj: dict) -> dict[str, dict]:
     """Normalize a build_live_quotes artifact into {ticker: quote}."""
+    from lib.quote_native_metadata import from_native_quote
+
     out: dict[str, dict] = {}
     for tkr, q in (obj.get("quotes") or {}).items():
         if not isinstance(q, dict):
@@ -242,6 +244,12 @@ def _quotes_from_snapshot(obj: dict) -> dict[str, dict]:
             "ts_ms": q.get("ts"),
             "source": "quotes",
         }
+        # Keep the legacy normalized inputs above exactly as they were. The
+        # optional metadata belongs to this row and follows freshest-wins as
+        # a unit; it is not a vendor/security identity or a new quote gate.
+        metadata = from_native_quote(q)
+        if metadata is not None:
+            out[str(tkr).upper()]["native_quote_metadata"] = metadata
     return out
 
 

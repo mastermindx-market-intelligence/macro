@@ -1,0 +1,58 @@
+{
+  "database": {
+    "changes": 6600,
+    "legacy_items": 0,
+    "revisions": 6600,
+    "security_index": 6600,
+    "states": 6600
+  },
+  "host": {
+    "machine": "arm64",
+    "python": "3.14.7",
+    "system": "Darwin"
+  },
+  "load": {
+    "burst_rate": 100,
+    "burst_seconds": 60,
+    "commit_max_ms": 24.542,
+    "commit_p50_ms": 3.604,
+    "commit_p95_ms": 5.759,
+    "commit_p99_ms": 8.62,
+    "committed_revisions": 6600,
+    "dropped_revisions": 0,
+    "processing_seconds": 23.784226,
+    "scheduled_revisions": 6600,
+    "service_capacity_rps": 277.495,
+    "sustained_rate": 10,
+    "sustained_seconds": 60
+  },
+  "readers": {
+    "completed": 100,
+    "failures": 0,
+    "requested": 100,
+    "rows_returned": 5000,
+    "snapshot_max_ms": 1092.461,
+    "snapshot_p50_ms": 995.314,
+    "snapshot_p95_ms": 1090.991,
+    "snapshot_p99_ms": 1091.996,
+    "wall_seconds": 1.100818
+  },
+  "result": {
+    "passed": false,
+    "targets": {
+      "commit_p95_ms": 250.0,
+      "commit_p99_ms": 1000.0,
+      "minimum_service_rate": 100.0,
+      "reader_p95_ms": 500.0
+    }
+  },
+  "schema": "ticker_news.synthetic_verification.v1",
+  "scope": {
+    "browser_client": false,
+    "licensing_proof": false,
+    "natural_market_proof": false,
+    "production_database": false,
+    "provider_network": false
+  },
+  "synthetic_only": true
+}

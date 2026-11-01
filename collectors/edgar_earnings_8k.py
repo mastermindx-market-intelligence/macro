@@ -112,6 +112,10 @@ _SEC_UA = "macro-dashboard admin@macro-dashboard.example.com"
 # Item 2.02 token (exact string after comma-split and strip).
 ITEM_202 = "2.02"
 
+
+class SecFetchError(RuntimeError):
+    """SEC JSON fetch failed after retries (non-404)."""
+
 # Coverage gate (masterplan §3 F1)
 COVERAGE_GATE_NAMES = 800     # minimum names with ≥8y of Item-2.02 history
 COVERAGE_GATE_YEARS = 8       # minimum years of history per name
@@ -195,7 +199,7 @@ def _sec_get_json(url: str) -> dict | None:
             if attempt < RETRIES - 1:
                 time.sleep(1.5 * (attempt + 1))
     log.warning("edgar_earnings_8k: GET failed %s: %s", url.split("?")[0], last)
-    return None
+    raise SecFetchError(f"sec_fetch_failed:{url}")
 
 
 # ---------------------------------------------------------------------------
@@ -232,9 +236,151 @@ def build_cik_map(tickers: list[str]) -> dict[str, int]:
         for cand in (u, u.replace("-", "."), u.replace(".", "-"),
                      u.split("-")[0], u.split(".")[0]):
             if cand in sec:
-                out[t] = sec[cand]
+                out[u] = sec[cand]
                 break
     return out
+
+
+def _load_dead_name_cik() -> dict:
+    p = config.data_dir() / "edgar" / "dead_name_cik.json"
+    if not p.exists():
+        return {}
+    try:
+        return json.loads(p.read_text())
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def _manifest_ok_ticker_cik(manifest: dict) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for k, v in manifest.items():
+        if not isinstance(v, dict) or v.get("status") != "ok":
+            continue
+        if str(k).startswith("ticker:"):
+            continue
+        t = v.get("ticker")
+        if not t:
+            continue
+        try:
+            out[str(t).upper()] = int(k)
+        except (ValueError, TypeError):
+            pass
+    return out
+
+
+def _manifest_alias_ticker_cik(manifest: dict) -> dict[str, int]:
+    """Prior alias receipts (ticker:KEY) — durable after store purge (D-B)."""
+    out: dict[str, int] = {}
+    for k, v in manifest.items():
+        if not str(k).startswith("ticker:"):
+            continue
+        if not isinstance(v, dict) or v.get("status") != "alias":
+            continue
+        t = v.get("ticker")
+        cik_val = v.get("cik")
+        if not t or cik_val is None:
+            continue
+        try:
+            out[str(t).upper()] = int(cik_val)
+        except (ValueError, TypeError):
+            pass
+    return out
+
+
+def _store_single_cik_map(store: pd.DataFrame) -> dict[str, int]:
+    if store.empty or "ticker" not in store.columns or "cik" not in store.columns:
+        return {}
+    out: dict[str, int] = {}
+    for ticker, grp in store.groupby("ticker"):
+        ciks = grp["cik"].astype(int).unique()
+        if len(ciks) == 1:
+            out[str(ticker).upper()] = int(ciks[0])
+    return out
+
+
+def resolve_universe(
+    tickers: list[str],
+    *,
+    manifest: dict,
+    store: pd.DataFrame,
+    dead_name: dict | None = None,
+    explicit: set[str] | None = None,
+) -> tuple[dict[str, tuple[int, str]], dict[str, str], list[str]]:
+    """Resolve tickers to CIKs with source tracking; pick one label per CIK.
+
+    Returns (resolved uppercase ticker -> (cik, cik_source), alias ticker -> label,
+    sorted unresolved universe tickers).
+    """
+    universe_upper = [str(t).upper() for t in tickers]
+    resolve_order: list[str] = []
+    seen: set[str] = set()
+    for u in universe_upper:
+        if u not in seen:
+            seen.add(u)
+            resolve_order.append(u)
+    if explicit:
+        for t in explicit:
+            u = str(t).upper()
+            if u not in seen:
+                seen.add(u)
+                resolve_order.append(u)
+
+    sec_map = build_cik_map(resolve_order)
+    manifest_map = _manifest_ok_ticker_cik(manifest)
+    manifest_alias_map = _manifest_alias_ticker_cik(manifest)
+    store_map = _store_single_cik_map(store)
+    dead = dead_name if dead_name is not None else {}
+
+    resolved: dict[str, tuple[int, str]] = {}
+    for u in resolve_order:
+        if u in sec_map:
+            resolved[u] = (sec_map[u], "sec")
+            continue
+        if u in manifest_map:
+            resolved[u] = (manifest_map[u], "manifest")
+            continue
+        if u in manifest_alias_map:
+            resolved[u] = (manifest_alias_map[u], "manifest")
+            continue
+        if u in store_map:
+            resolved[u] = (store_map[u], "store")
+            continue
+        entry = dead.get(u) or dead.get(u.upper())
+        if isinstance(entry, dict):
+            cik_val = entry.get("cik")
+            if cik_val is not None:
+                resolved[u] = (int(cik_val), "dead_name")
+
+    universe_set = set(universe_upper)
+    unresolved = sorted(universe_set - set(resolved))
+
+    by_cik: dict[int, list[tuple[str, str]]] = {}
+    alias_scan: list[str] = list(universe_upper)
+    if explicit:
+        for t in explicit:
+            u = str(t).upper()
+            if u not in universe_set and u in resolved:
+                alias_scan.append(u)
+    for u in alias_scan:
+        if u not in resolved:
+            continue
+        cik, src = resolved[u]
+        by_cik.setdefault(cik, []).append((u, src))
+
+    labels: dict[int, str] = {}
+    aliases: dict[str, str] = {}
+    for cik, members in by_cik.items():
+        sec_members = [u for u, src in members if src == "sec"]
+        if sec_members:
+            label = sec_members[0]
+        else:
+            label = members[0][0]
+        labels[cik] = label
+        for u, _src in members:
+            if u != label:
+                aliases[u] = label
+
+    return resolved, aliases, unresolved
 
 
 # ---------------------------------------------------------------------------
@@ -300,7 +446,7 @@ def _extract_8k_rows(ticker: str, cik: int, rec: dict) -> list[dict]:
     return rows
 
 
-def fetch_earnings_8k_for_cik(ticker: str, cik: int) -> tuple[list[dict], int]:
+def fetch_earnings_8k_for_cik(ticker: str, cik: int) -> tuple[list[dict], int, bool]:
     """Fetch all 8-K Item-2.02 filings for one CIK from the submissions API.
 
     Follows the older-files pagination referenced in the submissions JSON to
@@ -310,14 +456,14 @@ def fetch_earnings_8k_for_cik(ticker: str, cik: int) -> tuple[list[dict], int]:
     "CIK0000320193-submissions-001.json" (no "submissions/" prefix).
     The correct URL is https://data.sec.gov/submissions/{name}.
 
-    Returns a tuple (rows, n_shards_missing) so callers can surface the
-    missing-shard count in run summaries and the coverage JSON.
+    Returns (rows, n_shards_missing, no_submissions) where no_submissions is
+    True when the primary submissions JSON returned HTTP 404.
     """
     url = SUBMISSIONS_URL.format(int(cik))
     data = _sec_get_json(url)
     time.sleep(PACE_S)
     if not data:
-        return [], 0
+        return [], 0, True
 
     filings = data.get("filings") or {}
     recent = filings.get("recent") or {}
@@ -335,7 +481,15 @@ def fetch_earnings_8k_for_cik(ticker: str, cik: int) -> tuple[list[dict], int]:
             continue
         # Build the correct shard URL: always under /submissions/
         older_url = f"https://data.sec.gov/submissions/{fname}"
-        older_data = _sec_get_json(older_url)
+        try:
+            older_data = _sec_get_json(older_url)
+        except SecFetchError:
+            n_shards_missing += 1
+            log.warning(
+                "edgar_earnings_8k: shard fetch FAILED for %s (CIK %s) — url=%s",
+                ticker, cik, older_url,
+            )
+            continue
         time.sleep(PACE_S)
         if older_data is None:
             n_shards_missing += 1
@@ -346,7 +500,7 @@ def fetch_earnings_8k_for_cik(ticker: str, cik: int) -> tuple[list[dict], int]:
             continue
         rows.extend(_extract_8k_rows(ticker, cik, older_data))
 
-    return rows, n_shards_missing
+    return rows, n_shards_missing, False
 
 
 # ---------------------------------------------------------------------------
@@ -393,7 +547,27 @@ def load_existing() -> pd.DataFrame:
     return pd.read_parquet(p)
 
 
-def append_and_dedup(existing: pd.DataFrame, new_rows: list[dict]) -> pd.DataFrame:
+def _normalize_store_df(df: pd.DataFrame) -> pd.DataFrame:
+    """Ensure STORE_COLUMNS present; string cols are \"\" not NaN; cik is int."""
+    if df.empty:
+        return pd.DataFrame(columns=STORE_COLUMNS)
+    out = df.copy()
+    for column in STORE_COLUMNS:
+        if column not in out.columns:
+            out[column] = ""
+    for c in STORE_COLUMNS:
+        if c == "cik":
+            out[c] = out[c].astype(int)
+        else:
+            out[c] = out[c].fillna("").astype(str)
+    return out[STORE_COLUMNS]
+
+
+def append_and_dedup(
+    existing: pd.DataFrame,
+    new_rows: list[dict],
+    replaced_ciks: set[int] | frozenset[int] = frozenset(),
+) -> pd.DataFrame:
     """Append new rows and dedup on the canonical filing key ``(cik, accession)``.
 
     The key changed in Wave 1B and the reason is not cosmetic.  The old key was
@@ -406,19 +580,34 @@ def append_and_dedup(existing: pd.DataFrame, new_rows: list[dict]) -> pd.DataFra
     period of report — never on date proximity.
 
     Legacy rows written before accession capture are keyed the old way and are
-    dropped when a keyed row already covers the same ``(ticker, filing_date)``,
+    dropped when a keyed row already covers the same ``(cik, filing_date)``,
     so re-running the collector upgrades the store in place rather than
     doubling it.  Within either key, the earliest non-empty
     ``acceptance_datetime`` wins.
     """
     if not new_rows:
-        return existing
+        return _normalize_store_df(existing)
+    existing_part = existing.copy() if not existing.empty else pd.DataFrame(columns=STORE_COLUMNS)
     new_df = pd.DataFrame(new_rows)
-    combined = pd.concat([existing, new_df], ignore_index=True)
+    if not existing_part.empty:
+        existing_part["_from_existing"] = True
+    else:
+        existing_part = pd.DataFrame(columns=list(STORE_COLUMNS) + ["_from_existing"])
+    new_df["_from_existing"] = False
+    combined = pd.concat([existing_part, new_df], ignore_index=True)
+    if replaced_ciks:
+        cik_int = combined["cik"].astype(int)
+        drop_mask = combined["_from_existing"] & cik_int.isin(replaced_ciks)
+        combined = combined.loc[~drop_mask].reset_index(drop=True)
+    combined = combined.drop(columns=["_from_existing"])
     for column in STORE_COLUMNS:
         if column not in combined.columns:
             combined[column] = ""
-    combined["accession"] = combined["accession"].fillna("").astype(str)
+    for c in STORE_COLUMNS:
+        if c == "cik":
+            combined[c] = combined[c].astype(int)
+        else:
+            combined[c] = combined[c].fillna("").astype(str)
 
     # Sort so the earliest non-empty acceptance_datetime is first within any
     # key — keep='first' is then deterministic regardless of concat order.
@@ -435,10 +624,12 @@ def append_and_dedup(existing: pd.DataFrame, new_rows: list[dict]) -> pd.DataFra
     if not legacy.empty:
         legacy = legacy.drop_duplicates(subset=["ticker", "filing_date"], keep="first")
         if not keyed.empty:
-            covered = set(zip(keyed["ticker"], keyed["filing_date"]))
+            covered = set(
+                zip(keyed["cik"].astype(int), keyed["filing_date"])
+            )
             legacy = legacy[[
-                (t, d) not in covered
-                for t, d in zip(legacy["ticker"], legacy["filing_date"])
+                (int(c), d) not in covered
+                for c, d in zip(legacy["cik"], legacy["filing_date"])
             ]]
     combined = pd.concat([keyed, legacy], ignore_index=True)
     combined = combined.sort_values(
@@ -451,30 +642,53 @@ def append_and_dedup(existing: pd.DataFrame, new_rows: list[dict]) -> pd.DataFra
 # Coverage verdict
 # ---------------------------------------------------------------------------
 
-def compute_coverage(df: pd.DataFrame) -> dict:
+def compute_coverage(
+    df: pd.DataFrame,
+    *,
+    universe_tickers: set[str] | None = None,
+    label_tickers: set[str] | None = None,
+) -> dict:
     """Compute coverage statistics and determine PASS/FAIL against the gate.
 
     Gate: ≥800 names with ≥8 years of Item-2.02 history.
+    When universe_tickers and label_tickers are provided, gate counts only
+    universe labels (not alias or legacy-only store tickers).
     Returns a dict suitable for JSON serialization.
     """
+    empty_base = {
+        "gate_pass": False,
+        "gate_verdict": "FAIL",
+        "gate_reason": "empty store",
+        "names_total": 0,
+        "names_ge8y": 0,
+        "names_legacy": 0,
+        "names_legacy_list": [],
+        "gate_names_threshold": COVERAGE_GATE_NAMES,
+        "gate_years_threshold": COVERAGE_GATE_YEARS,
+        "overall_span": "",
+        "total_rows": 0,
+        "as_of": datetime.now(timezone.utc).date().isoformat(),
+    }
     if df.empty:
-        return {
-            "gate_pass": False,
-            "gate_verdict": "FAIL",
-            "gate_reason": "empty store",
-            "names_total": 0,
-            "names_ge8y": 0,
-            "gate_names_threshold": COVERAGE_GATE_NAMES,
-            "gate_years_threshold": COVERAGE_GATE_YEARS,
-            "overall_span": "",
-            "total_rows": 0,
-            "as_of": datetime.now(timezone.utc).date().isoformat(),
-        }
+        return empty_base
     df2 = df.copy()
     df2["filing_date"] = pd.to_datetime(df2["filing_date"], errors="coerce")
     df2 = df2.dropna(subset=["filing_date"])
 
-    per_name = df2.groupby("ticker").agg(
+    all_store_tickers = set(df2["ticker"].astype(str).unique())
+    if universe_tickers is not None and label_tickers is not None:
+        counted = {str(t).upper() for t in label_tickers}
+        legacy_names = sorted(
+            t for t in all_store_tickers
+            if str(t).upper() not in counted
+            and str(t).upper() not in {str(u).upper() for u in universe_tickers}
+        )
+        df_gate = df2[df2["ticker"].astype(str).str.upper().isin(counted)]
+    else:
+        legacy_names = []
+        df_gate = df2
+
+    per_name = df_gate.groupby("ticker").agg(
         min_date=("filing_date", "min"),
         max_date=("filing_date", "max"),
         n_filings=("filing_date", "count"),
@@ -499,6 +713,8 @@ def compute_coverage(df: pd.DataFrame) -> dict:
         ),
         "names_total": names_total,
         "names_ge8y": names_ge8y,
+        "names_legacy": len(legacy_names),
+        "names_legacy_list": legacy_names,
         "gate_names_threshold": COVERAGE_GATE_NAMES,
         "gate_years_threshold": COVERAGE_GATE_YEARS,
         "overall_span": f"{overall_min} .. {overall_max}",
@@ -516,65 +732,135 @@ def run_backfill(
     force: bool = False,
     incremental: bool = False,
     max_errors: int = 100,
+    tickers: set[str] | None = None,
 ) -> pd.DataFrame:
     """Full backfill: fetch Item-2.02 8-K history for all eps_quarterly tickers.
 
     Resumable: already-fetched CIKs (status='ok' in manifest) are skipped unless
-    force=True. incremental=True additionally skips CIKs with status='error' from a
-    prior run (use for nightly incremental; force=True to retry errors).
+    force=True or a subset ``tickers`` is requested. incremental=True additionally
+    skips CIKs with status='error' from a prior run (use for nightly incremental;
+    force=True to retry errors).
 
     Logs per-CIK errors (never silently skips). Returns the final parquet DataFrame.
     """
-    # Load universe from eps_quarterly.parquet
     eps_path = config.data_dir() / "edgar" / "eps_quarterly.parquet"
     if not eps_path.exists():
         raise RuntimeError(f"eps_quarterly.parquet not found at {eps_path}")
     universe_tickers = pd.read_parquet(eps_path)["ticker"].unique().tolist()
-    log.info("edgar_earnings_8k: universe = %d tickers from eps_quarterly", len(universe_tickers))
+    universe_upper = [str(t).upper() for t in universe_tickers]
+    n_universe = len(universe_upper)
+    log.info("edgar_earnings_8k: universe = %d tickers from eps_quarterly", n_universe)
 
-    # Build ticker -> CIK map
-    cik_map = build_cik_map(universe_tickers)
-    log.info("edgar_earnings_8k: %d/%d tickers mapped to CIKs",
-             len(cik_map), len(universe_tickers))
-    unmapped = set(universe_tickers) - set(cik_map)
-    if unmapped:
-        log.warning("edgar_earnings_8k: %d tickers not mapped to CIK: %s ...",
-                    len(unmapped), sorted(unmapped)[:10])
-
-    # Load manifest + existing store
-    manifest = load_manifest() if not force else {}
+    manifest = load_manifest()
     existing_df = load_existing()
-    log.info("edgar_earnings_8k: manifest has %d done CIKs; store has %d existing rows",
+    dead_name = _load_dead_name_cik()
+    only = {str(t).upper() for t in tickers} if tickers else None
+    universe_set = set(universe_upper)
+    explicit_extra: list[str] = []
+    if only is not None:
+        explicit_extra = sorted(t for t in only if t not in universe_set)
+
+    resolved, aliases, unresolved = resolve_universe(
+        universe_tickers,
+        manifest=manifest,
+        store=existing_df,
+        dead_name=dead_name,
+        explicit=only,
+    )
+
+    explicit_extra_set = set(explicit_extra)
+    explicit_unresolved = sorted(t for t in explicit_extra if t not in resolved)
+
+    labels: dict[int, str] = {}
+    cik_sources: dict[int, str] = {}
+    group_tickers = list(universe_upper) + [
+        t for t in explicit_extra if t in resolved
+    ]
+    grouped = _group_resolved_by_cik(resolved, group_tickers)
+    for cik, members in grouped.items():
+        labels[cik] = members[0]
+        _, src = resolved[members[0]]
+        cik_sources[cik] = src
+
+    ts_now = datetime.now(timezone.utc).isoformat()
+    n_alias = len(aliases)
+    n_no_cik = len(unresolved)
+    for u in unresolved:
+        manifest[f"ticker:{u}"] = {
+            "ticker": u,
+            "status": "skipped_no_cik",
+            "ts": ts_now,
+        }
+    for u in explicit_unresolved:
+        manifest[f"ticker:{u}"] = {
+            "ticker": u,
+            "status": "skipped_no_cik",
+            "explicit": True,
+            "ts": ts_now,
+        }
+    for alias_t, label in aliases.items():
+        cik, src = resolved[alias_t]
+        manifest[f"ticker:{alias_t}"] = {
+            "ticker": alias_t,
+            "status": "alias",
+            "alias_of": label,
+            "cik": cik,
+            "cik_source": src,
+            "ts": ts_now,
+        }
+
+    log.info(
+        "edgar_earnings_8k: resolved %d CIK labels, %d aliases, %d unresolved",
+        len(labels), n_alias, n_no_cik,
+    )
+
+    replaced_ciks: set[int] = set()
+    log.info("edgar_earnings_8k: manifest has %d entries; store has %d existing rows",
              len(manifest), len(existing_df))
 
-    all_rows: list[dict] = existing_df.to_dict("records") if not existing_df.empty else []
+    all_rows: list[dict] = []
     n_fetched = 0
     n_skipped = 0
     n_error = 0
+    n_no_submissions = 0
     n_shards_missing_total = 0
+    force_this_base = force or only is not None
 
-    for ticker, cik in cik_map.items():
-        cik_key = str(cik)
-        entry = manifest.get(cik_key, {})
+    def _cik_named_in_only(cik: int, label: str) -> bool:
+        if only is None:
+            return True
+        if label in only:
+            return True
+        members = grouped.get(cik, [label])
+        return any(m in only for m in members)
 
-        # Skip logic
-        if entry.get("status") == "ok" and not force:
+    for cik, label in sorted(labels.items(), key=lambda x: x[1]):
+        if only is not None and not _cik_named_in_only(cik, label):
             n_skipped += 1
             continue
-        if entry.get("status") == "error" and incremental and not force:
+        cik_key = str(cik)
+        entry = manifest.get(cik_key, {})
+        force_this = force_this_base
+
+        if entry.get("status") == "ok" and not force_this:
+            n_skipped += 1
+            continue
+        if entry.get("status") == "error" and incremental and not force_this:
             n_skipped += 1
             continue
 
         try:
-            rows, n_shards_missing = fetch_earnings_8k_for_cik(ticker, cik)
+            rows, n_shards_missing, no_submissions = fetch_earnings_8k_for_cik(
+                label, cik
+            )
         except Exception as e:  # noqa: BLE001
             n_error += 1
-            log.warning("edgar_earnings_8k: CIK %s (%s) failed: %s", cik, ticker, e)
+            log.warning("edgar_earnings_8k: CIK %s (%s) failed: %s", cik, label, e)
             manifest[cik_key] = {
-                "ticker": ticker,
+                "ticker": label,
                 "status": "error",
                 "error": str(e),
-                "ts": datetime.now(timezone.utc).isoformat(),
+                "ts": ts_now,
             }
             if n_error >= max_errors:
                 log.error("edgar_earnings_8k: max_errors=%d reached — stopping", max_errors)
@@ -582,35 +868,75 @@ def run_backfill(
                 break
             continue
 
+        if no_submissions:
+            manifest[cik_key] = {
+                "ticker": label,
+                "status": "no_submissions",
+                "n_filings": 0,
+                "ts": ts_now,
+            }
+            n_no_submissions += 1
+            continue
+
         n_shards_missing_total += n_shards_missing
         n_rows = len(rows)
         if n_rows == 0:
-            log.debug("edgar_earnings_8k: CIK %s (%s) — 0 Item-2.02 8-Ks found", cik, ticker)
+            log.debug("edgar_earnings_8k: CIK %s (%s) — 0 Item-2.02 8-Ks found", cik, label)
         else:
             all_rows.extend(rows)
 
-        manifest[cik_key] = {
-            "ticker": ticker,
+        if n_shards_missing == 0:
+            replaced_ciks.add(int(cik))
+
+        cik_entry: dict = {
+            "ticker": label,
             "status": "ok",
             "n_filings": n_rows,
             "n_shards_missing": n_shards_missing,
-            "ts": datetime.now(timezone.utc).isoformat(),
+            "cik_source": cik_sources.get(cik, ""),
+            "ts": ts_now,
         }
-        n_fetched += 1
+        if label in explicit_extra_set:
+            cik_entry["explicit"] = True
+        manifest[cik_key] = cik_entry
+        counts_universe_bucket = not (
+            label in explicit_extra_set and label not in universe_set
+        )
+        if counts_universe_bucket:
+            n_fetched += 1
 
-        # Checkpoint every 50 CIKs: save manifest + parquet
         if n_fetched % 50 == 0:
             log.info(
-                "edgar_earnings_8k: checkpoint — %d fetched, %d skipped, %d errors, %d shards missing",
-                n_fetched, n_skipped, n_error, n_shards_missing_total,
+                "edgar_earnings_8k: checkpoint — %d fetched, %d skipped, %d errors, "
+                "%d unresolved (no CIK), %d aliases, %d shards missing",
+                n_fetched, n_skipped, n_error, n_no_cik, n_alias,
+                n_shards_missing_total,
             )
-            _checkpoint(all_rows, existing_df, manifest)
+            _checkpoint(all_rows, existing_df, manifest, replaced_ciks)
 
-    # Final save
-    final_df = _checkpoint(all_rows, existing_df, manifest)
+    final_df = _checkpoint(all_rows, existing_df, manifest, replaced_ciks)
+    bucket_sum = (
+        n_fetched + n_skipped + n_error + n_no_submissions + n_no_cik + n_alias
+    )
+    if bucket_sum != n_universe:
+        raise RuntimeError(
+            f"edgar_earnings_8k: universe bucket sum {bucket_sum} != {n_universe} "
+            f"(fetched={n_fetched} skipped={n_skipped} errors={n_error} "
+            f"no_submissions={n_no_submissions} unresolved={n_no_cik} aliases={n_alias})"
+        )
+    n_explicit_outside = len(explicit_extra)
+    done_extra = (
+        f", +{n_explicit_outside} explicit outside universe"
+        if n_explicit_outside
+        else ""
+    )
     log.info(
-        "edgar_earnings_8k: done — %d fetched, %d skipped, %d errors, %d shards missing; store=%d rows, %d tickers",
-        n_fetched, n_skipped, n_error, n_shards_missing_total,
+        "edgar_earnings_8k: done — %d fetched, %d skipped, %d errors, "
+        "%d unresolved (no CIK), %d aliases of %d universe tickers%s; "
+        "%d shards missing; store=%d rows, %d tickers",
+        n_fetched, n_skipped, n_error, n_no_cik, n_alias, n_universe,
+        done_extra,
+        n_shards_missing_total,
         len(final_df), final_df["ticker"].nunique() if not final_df.empty else 0,
     )
     if n_shards_missing_total > 0:
@@ -619,10 +945,26 @@ def run_backfill(
             "history for those CIKs may be incomplete",
             n_shards_missing_total,
         )
+    if n_no_cik > 0:
+        print(
+            f"::warning title=edgar-8k-unresolved::{n_no_cik} universe tickers "
+            f"have no CIK: {', '.join(unresolved)}",
+            flush=True,
+        )
 
-    # Coverage verdict
-    cov = compute_coverage(final_df)
+    label_set = set(labels.values())
+    cov = compute_coverage(
+        final_df,
+        universe_tickers=set(universe_upper),
+        label_tickers=label_set,
+    )
     cov["n_shards_missing"] = n_shards_missing_total
+    cov["n_unresolved"] = n_no_cik
+    cov["unresolved_tickers"] = unresolved
+    cov["n_alias"] = n_alias
+    cov["aliases"] = aliases
+    cov["n_explicit_extra"] = n_explicit_outside
+    cov["explicit_extra"] = explicit_extra
     cov_path = _coverage_json_path()
     cov_path.parent.mkdir(parents=True, exist_ok=True)
     cov_path.write_text(json.dumps(cov, indent=2))
@@ -630,6 +972,9 @@ def run_backfill(
     print("\n=== EDGAR 8-K Item-2.02 Coverage Verdict ===")
     print(f"  Names with ≥{COVERAGE_GATE_YEARS}y of Item-2.02 history : {cov['names_ge8y']}")
     print(f"  Names total                                  : {cov['names_total']}")
+    print(f"  Legacy-only store names                      : {cov.get('names_legacy', 0)}")
+    print(f"  Unresolved universe tickers (no CIK)         : {n_no_cik}")
+    print(f"  Alias universe tickers                       : {n_alias}")
     print(f"  Overall date span                            : {cov['overall_span']}")
     print(f"  Total rows                                   : {cov['total_rows']}")
     print(f"  Older-filing shards missing (fetch failures) : {n_shards_missing_total}")
@@ -641,18 +986,39 @@ def run_backfill(
     return final_df
 
 
+def _group_resolved_by_cik(
+    resolved: dict[str, tuple[int, str]],
+    universe_upper: list[str],
+) -> dict[int, list[str]]:
+    """Return cik -> ordered member tickers (label first) for universe members."""
+    by_cik: dict[int, list[tuple[str, str]]] = {}
+    for u in universe_upper:
+        if u not in resolved:
+            continue
+        cik, src = resolved[u]
+        by_cik.setdefault(cik, []).append((u, src))
+    out: dict[int, list[str]] = {}
+    for cik, members in by_cik.items():
+        sec_members = [u for u, src in members if src == "sec"]
+        label = sec_members[0] if sec_members else members[0][0]
+        ordered = [label] + [u for u, _ in members if u != label]
+        out[cik] = ordered
+    return out
+
+
 def _checkpoint(
     all_rows: list[dict],
     existing_df: pd.DataFrame,
     manifest: dict,
+    replaced_ciks: set[int] | frozenset[int],
 ) -> pd.DataFrame:
     """Merge all_rows with existing, dedup, write parquet + manifest."""
     if all_rows:
-        final_df = append_and_dedup(existing_df, all_rows)
-    else:
-        final_df = existing_df.copy() if not existing_df.empty else pd.DataFrame(
-            columns=STORE_COLUMNS
+        final_df = append_and_dedup(
+            existing_df, all_rows, replaced_ciks=replaced_ciks
         )
+    else:
+        final_df = _normalize_store_df(existing_df)
     p = _store_path()
     p.parent.mkdir(parents=True, exist_ok=True)
     final_df.to_parquet(p)
@@ -678,11 +1044,19 @@ def main(argv: list[str] | None = None) -> None:
                    help="Skip previously-errored CIKs (for nightly refresh).")
     p.add_argument("--max-errors", type=int, default=100,
                    help="Stop after this many per-CIK errors (default 100).")
+    p.add_argument(
+        "--tickers",
+        type=lambda s: {t.strip().upper() for t in s.split(",") if t.strip()},
+        default=None,
+        help="re-fetch only these tickers (resolved through the fallback ladder); "
+        "their CIKs replace prior rows",
+    )
     args = p.parse_args(argv)
     run_backfill(
         force=args.force,
         incremental=args.incremental,
         max_errors=args.max_errors,
+        tickers=args.tickers,
     )
 
 

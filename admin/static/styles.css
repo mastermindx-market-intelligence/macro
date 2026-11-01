@@ -6290,7 +6290,7 @@ button.obx-btn-reject:hover:not(:disabled) {
 .obe-findings.is-stale { opacity: .42; filter: saturate(.5); }
 .rqx-replaced { color: var(--faint); }
 
-/* ---- Intelligence OS (Eval OS T1 census + T4 output health) --------------
+/* ---- Intelligence OS (Eval OS T1/T4/T7/T8 evidence + output health) ------
    Deliberately thin: the page is built from the console's existing vocabulary
    (.nw-hero, .statpill, .ent-chip, .ent-table, .ent-search, .card), so what is
    added here is only the layout those pieces do not already carry — a labelled
@@ -6313,6 +6313,46 @@ button.obx-btn-reject:hover:not(:disabled) {
   text-transform: uppercase; color: var(--faint);
 }
 .ios-out-line code { word-break: break-all; }
+.ios-ceo-title { display: flex; align-items: baseline; gap: 8px; }
+.ios-ceo-bands {
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px;
+  margin-bottom: 14px;
+}
+.ios-evidence-band {
+  position: relative; min-width: 0; padding: 11px; text-align: left; color: var(--text);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm);
+  cursor: pointer; transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.ios-evidence-band:hover { border-color: var(--accent); }
+.ios-evidence-band.on { border-color: var(--accent-cyan); box-shadow: 0 0 0 2px rgba(56,224,212,.1); }
+.ios-band-order { position: absolute; top: 8px; right: 9px; color: var(--faint); font: 10px var(--mono); }
+.ios-band-name { display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 11px; font-weight: 650; }
+.ios-band-count { display: block; margin-top: 9px; font: 700 23px/1 var(--mono); }
+.ios-band-sample {
+  display: block; min-height: 2.7em; margin-top: 7px; color: var(--faint); font: 10px/1.35 var(--mono);
+  overflow: hidden; overflow-wrap: anywhere;
+}
+.ios-evidence-provider { margin-top: 4px; font: 10px var(--mono); }
+.ios-evidence-card { margin-bottom: 12px; }
+/* Keep complete source references readable inside the evidence card. */
+.ios-evidence-card .ios-out-line > span {
+  min-width: 0; max-width: 100%; overflow-wrap: anywhere;
+}
+.ios-evidence-card .ios-out-line .statpill {
+  max-width: 100%; white-space: normal; overflow-wrap: anywhere;
+}
+.ios-evidence-head { display: flex; align-items: center; gap: 8px; }
+.ios-evidence-head h3 { margin: 0; }
+.ios-evidence-head .spacer { margin-left: auto; }
+.ios-evidence-law { margin: 5px 0 10px; }
+.ios-evidence-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px 14px; }
+.ios-evidence-kv { min-width: 0; padding: 7px 0; border-top: 1px solid var(--grid); }
+.ios-typed-findings .ios-evidence-kv > div { min-width: 0; overflow-wrap: anywhere; }
+.ios-evidence-kv > span {
+  display: block; margin-bottom: 3px; color: var(--faint); font-size: 10px;
+  letter-spacing: .06em; text-transform: uppercase;
+}
+.ios-evidence-kv code { display: block; color: var(--muted); font-size: 10.5px; white-space: normal; overflow-wrap: anywhere; }
 /* Only ever matches a row that carries the cross-link this page added — no
    pre-existing .nw-hero-row holds a .spacer. */
 .nw-hero-row .spacer, .ios-out-top .spacer { margin-left: auto; }
@@ -6397,6 +6437,12 @@ button.admin-notice { cursor:pointer; }
   .topbar .hmeta { grid-column:1 / -1; justify-content:space-between; gap:8px; width:100%; }
   .admin-metric-value { font-size:18px; }
 }
+@media (max-width: 980px) {
+  .ios-ceo-bands { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .ios-ceo-bands, .ios-evidence-grid { grid-template-columns: minmax(0, 1fr); }
+}
 
 /* Content Studio review controls reuse the existing admin materials. */
 .cs-review-controls { display:flex; align-items:flex-end; flex-wrap:wrap; gap:10px; margin:16px 0; }
@@ -6416,3 +6462,114 @@ button.admin-notice { cursor:pointer; }
   .cs-review-controls .btn { flex:1 1 auto; }
   .cs-review-pager { justify-content:space-between; gap:8px; }
 }
+
+/* Intelligence OS experience: governed canonical tokens, two material treatments.
+   Token values come only from templates/theme.css via /assets/theme-tokens.css. */
+html[data-theme="light"] {
+  --bg: var(--admin-canonical-bg);
+  --surface: var(--admin-canonical-panel);
+  --surface2: var(--admin-canonical-panel2);
+  --grid: var(--admin-canonical-line);
+  --border: var(--admin-canonical-line);
+  --text: var(--admin-canonical-text);
+  --muted: var(--admin-canonical-muted);
+  --faint: var(--admin-canonical-muted);
+  --accent: var(--admin-canonical-ink-link);
+  --accent2: var(--admin-canonical-ink-link);
+  --accent-cyan: var(--admin-canonical-ink-info);
+  --ok: var(--admin-canonical-ink-ok);
+  --warn: var(--admin-canonical-ink-warn);
+  --bad: var(--admin-canonical-ink-act);
+  --info: var(--admin-canonical-ink-info);
+  --ok-bg: color-mix(in srgb, var(--ok) 9%, var(--surface));
+  --warn-bg: color-mix(in srgb, var(--warn) 9%, var(--surface));
+  --bad-bg: color-mix(in srgb, var(--bad) 9%, var(--surface));
+  --info-bg: color-mix(in srgb, var(--info) 9%, var(--surface));
+  --sans: var(--admin-canonical-font-ui);
+  --mono: var(--admin-canonical-font-mono);
+  --shadow-card: var(--admin-canonical-card-shadow);
+  --shadow-lift: var(--admin-canonical-popover-shadow);
+}
+html[data-theme="light"] .topbar,
+html[data-theme="light"] .sidebar { background: var(--surface); }
+html[data-theme="light"] .topbar::after { display: none; }
+html[data-theme="light"] .nw-hero,
+html[data-theme="light"] .ios-evidence-card,
+html[data-theme="light"] .ios-evidence-band {
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: var(--shadow-card);
+}
+html[data-theme="light"] .ios-evidence-band.on {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+  box-shadow: var(--shadow-card);
+}
+html[data-theme="light"] .nw-hero-status-word {
+  background: none;
+  -webkit-text-fill-color: var(--text);
+  color: var(--text);
+}
+html[data-theme="light"] .ent-chip.on {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  border-color: var(--accent);
+}
+.admin-preferences { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.admin-preferences label { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+.admin-preferences select {
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 6px 8px; font: inherit; min-height: 34px;
+}
+.admin-preferences select:focus-visible,
+.ios-evidence-band:focus-visible,
+.ios-evidence-card summary:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 3px;
+}
+.ios-evidence-reason { margin-top: 6px; max-width: 36em; overflow-wrap: anywhere; }
+#iosTbl a { color: var(--accent); }
+#iosTbl a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.ios-evidence-card details { margin-top: 12px; border-top: 1px solid var(--grid); padding-top: 10px; }
+.ios-evidence-card summary { cursor: pointer; color: var(--muted); }
+.ios-evidence-card pre { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--surface2); padding: 10px; border-radius: var(--r-sm); }
+.ios-evidence-head { flex-wrap: wrap; }
+.ios-band-sample { overflow: visible; }
+.ios-band-sample, .ios-band-order, .ios-filter-label,
+.ios-out-key, .ios-evidence-kv > span { color: var(--muted); }
+html:not([data-lang="zh"]) #view .l-zh,
+html[data-lang="zh"] #view .l-en { display: none; }
+.ios-cell-label { display: none; }
+@media (max-width: 720px) {
+  .sidebar:not(.open) { box-shadow: none; }
+  html[data-theme="light"] .sidebar.open { box-shadow: var(--shadow-lift); }
+  .admin-preferences { grid-column: 1 / -1; }
+  #iosTbl .ent-table { display: block; width: 100%; table-layout: auto; }
+  #iosTbl .ent-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  #iosTbl .ent-table tbody, #iosTbl .ent-table tr { display: block; width: 100%; }
+  #iosTbl .ent-table tr { padding: 12px 0; border-bottom: 1px solid var(--border); }
+  #iosTbl .ent-table td { display: block; width: 100%; border: 0; padding: 5px 10px; white-space: normal; overflow-wrap: anywhere; }
+  #iosTbl .ent-table .ios-cell-label { display: block; color: var(--muted); font-size: 11px; margin-bottom: 3px; }
+  .ios-ceo-title { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ios-evidence-band { transition: none; }
+}
+
+/* Research diagnostics: canonical tokens, section-local language and art direction. */
+.rf-diagnostics { margin:var(--sp-5,20px) 0; padding:var(--sp-4,16px); border-radius:var(--r-card,12px); background:var(--bg); color:var(--text); }
+.rf-diagnostics .rf-diagnostic-toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--sp-3,12px); margin-bottom:var(--sp-4,16px); }
+.rf-diagnostics h2 { margin:0; font-size:var(--fs-lg,18px); }
+.rf-diagnostics .rf-mode-controls { display:flex; flex-wrap:wrap; gap:var(--sp-2,8px); }
+.rf-diagnostics button { border:1px solid var(--line); border-radius:var(--r-ctl,8px); padding:var(--sp-2,8px) var(--sp-3,12px); background:var(--panel); color:var(--text); font:inherit; cursor:pointer; }
+.rf-diagnostics button[aria-pressed="true"] { border-color:var(--link); text-decoration:underline; text-underline-offset:var(--sp-1,4px); }
+.rf-diagnostics .card { min-width:0; margin-bottom:var(--sp-3,12px); background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:var(--r-card,12px); box-shadow:none; }
+.rf-diagnostics[data-theme="light"] .card { box-shadow:var(--card-shadow); }
+.rf-diagnostics .sub, .rf-diagnostics .note { color:var(--muted); }
+.rf-diagnostics details { margin-top:var(--sp-3,12px); }
+.rf-diagnostics summary { color:var(--link); cursor:pointer; }
+.rf-diagnostics .kv { display:flex; flex-wrap:wrap; justify-content:space-between; gap:var(--sp-2,8px); padding:var(--sp-2,8px) 0; border-bottom:1px solid var(--line); }
+.rf-diagnostics .kv span { color:var(--muted); flex:1 1 12rem; }
+.rf-diagnostics .kv b { overflow-wrap:anywhere; max-width:100%; font-weight:500; }
+.rf-diagnostics .rf-identity { display:block; overflow-wrap:anywhere; font-family:var(--font-mono); font-size:var(--fs-xs,12px); }
+
+.experiments-table-scroll { max-width:100%; overflow-x:auto; }

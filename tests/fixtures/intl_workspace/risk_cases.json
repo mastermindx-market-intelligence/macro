@@ -1,0 +1,27 @@
+{
+  "hostile_cases": [
+    {"name": "non_dict_two_tier", "two_tier": null, "eligibility": "valid", "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": null},
+    {"name": "non_dict_eligibility", "two_tier": "valid", "eligibility": null, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": null},
+    {"name": "unknown_eligibility_quality", "two_tier": "valid", "eligibility": {"quality": "unknown"}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": null},
+    {"name": "denied_eligibility_quality", "two_tier": "valid", "eligibility": {"quality": "denied"}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": null},
+    {"name": "unknown_eligibility_metadata", "two_tier": "valid", "eligibility": {"metadata": "unknown"}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": null},
+    {"name": "denied_eligibility_metadata", "two_tier": "valid", "eligibility": {"metadata": "denied"}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": null},
+    {"name": "unknown_origin_permission", "two_tier": "valid", "eligibility": "valid", "origin": {"value_permission": "unknown"}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "denied_origin_permission", "two_tier": "valid", "eligibility": "valid", "origin": {"value_permission": "denied"}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "unknown_leg_permission", "two_tier": "valid", "eligibility": "valid", "legs": {"move_pctile": {"value_permission": "unknown"}}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "denied_leg_permission", "two_tier": "valid", "eligibility": "valid", "legs": {"sofr_iorb_corridor": {"value_permission": "denied"}}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "bool_hot_count", "two_tier": {"tier2": {"hot_count": true, "legs": "all_true"}}, "eligibility": "valid", "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "string_hot_count", "two_tier": {"tier2": {"hot_count": "2", "legs": "all_true"}}, "eligibility": "valid", "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "float_hot_count", "two_tier": {"tier2": {"hot_count": 2.0, "legs": "all_true"}}, "eligibility": "valid", "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "string_hot_flag", "two_tier": {"tier2": {"hot_count": 4, "legs": {"us_hy_oas_vel": {"hot": "true"}}}}, "eligibility": "valid", "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "int_hot_flag", "two_tier": {"tier2": {"hot_count": 4, "legs": {"kre_spy_rs": {"hot": 1}}}}, "eligibility": "valid", "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "count_mismatch", "two_tier": {"tier2": {"hot_count": 3, "legs": "all_true"}}, "eligibility": "valid", "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "origin_reported_mismatch", "two_tier": "valid", "eligibility": "valid", "origin": {"reported_value": "calm"}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "leg_reported_mismatch", "two_tier": {"tier2": {"hot_count": 1, "legs": {"us_hy_oas_vel": {"hot": true}}}}, "eligibility": "valid", "legs": {"us_hy_oas_vel": {"reported_value": false}}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "reported_state_mismatch", "two_tier": {"state": "quiet", "tier1": {"em_stress_state": "stressed"}}, "eligibility": "valid", "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "quiet"}},
+    {"name": "malformed_asof", "two_tier": "valid", "eligibility": "valid", "origin": {"observation_at": "not-a-date"}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "extra_origin_key", "two_tier": "valid", "eligibility": "valid", "origin": {"extra": "secret"}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "extra_leg_key", "two_tier": "valid", "eligibility": "valid", "legs": {"move_pctile": {"extra": "secret"}}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}},
+    {"name": "extra_eligibility_key", "two_tier": "valid", "eligibility": {"extra": "secret"}, "expected_quality": "unknown", "expected_state": null, "expected_diagnostic": {"reported_state": "contained"}}
+  ]
+}

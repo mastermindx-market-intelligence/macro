@@ -243,6 +243,13 @@ BAKE_BUDGET_HOURS = 26.0
 #: Page body cap. The biggest board page is ~1 MB; hitting the cap means the read
 #: was truncated and the verdict would be built on a partial body → INDETERMINATE.
 BODY_CAP = 2_000_000
+#: Served-tree / live-plane read cap. read_served() reads the WHOLE file
+#: (read_bytes), so nothing can be truncated and BODY_CAP's truncation
+#: rationale does not apply; this is only a memory-sanity bound. Measured
+#: 2026-10-11: prophet/index.json 5,243,102 B, factordata/us_standouts.json
+#: 2,929,031 B, growing ~56 KB/day — 16 MB is roughly six months of headroom.
+#: Re-measure before raising it; never raise BODY_CAP for this.
+SERVED_BODY_CAP = 16_000_000
 #: Sessions of first-fresh-at history kept in <state-dir>/first_fresh.json. The
 #: file is APPEND-ONLY within a session — once a (session, surface) pair is
 #: stamped it is never rewritten, because "when did it FIRST read fresh" has
@@ -781,8 +788,8 @@ def read_served(served_dir: Path, path: str) -> FetchResult:
         raw = target.read_bytes()
     except OSError as exc:
         return FetchResult(error=f"served read failed: {type(exc).__name__}: {exc}")
-    if len(raw) > BODY_CAP:
-        return FetchResult(status=200, error=f"served body exceeded {BODY_CAP} byte cap")
+    if len(raw) > SERVED_BODY_CAP:
+        return FetchResult(status=200, error=f"served body exceeded {SERVED_BODY_CAP} byte cap")
     return FetchResult(
         status=200,
         last_modified=datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc),

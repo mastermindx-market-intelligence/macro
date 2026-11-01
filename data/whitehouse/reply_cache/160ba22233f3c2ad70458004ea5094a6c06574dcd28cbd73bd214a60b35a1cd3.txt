@@ -1,0 +1,81 @@
+{
+  "activate": true,
+  "importance": 72,
+  "banner_days": 4,
+  "tone": "mixed",
+  "banner_title": "Federal diesel tax deferred through year-end — freight, ag costs drop; highway trust fund hit",
+  "banner_title_zh": "联邦柴油税延迟至年底——货运与农业成本下降；公路信托基金承压",
+  "summary": "President Trump signed an Executive Order authorizing highway use of tax-free dyed diesel and deferring the federal diesel excise tax through year-end, cutting fuel costs for trucking, agriculture, and logistics while shrinking federal highway revenue and creating cross-industry distortions.",
+  "summary_zh": "特朗普总统签署行政令，允许公路使用免税染色柴油，并将联邦柴油消费税推迟至年底，降低卡车运输、农业和物流的燃料成本，同时减少联邦公路收入并造成跨行业扭曲。",
+  "analysis": "The Executive Order immediately expands highway use of tax-free dyed diesel (normally restricted to off-road farm, construction, and mining equipment) and defers the $0.244/gallon federal diesel excise tax through December 31, 2026. The move effectively cuts the retail cost of diesel for on-road freight and agriculture by roughly $0.25-$0.80 per gallon, depending on state tax differentials and dyed diesel pricing. For a long-haul truck filling 200-gallon tanks, that translates to the claimed $50-$100 per fill savings.\n\nThe transmission mechanism to markets is direct: diesel is the single largest variable cost for trucking fleets, rail intermodal, and agricultural producers during peak harvest season. Lower fuel costs compress operating expenses for freight carriers, improve farm margins as the 2026 harvest moves to market, and provide near-term relief to fertilizer, grain, and livestock logistics. Companies with large private fleets — agriculture processors, food distributors, mining operators — see operating leverage without revenue changes.\n\nThe offsetting headwind is structural and fiscal. The federal diesel excise tax funds the Highway Trust Fund, which finances federal road construction and maintenance. Suspending collection for a quarter effectively drains roughly $10 billion in annualized federal highway revenue, creating a near-term funding gap that could delay or stall federally funded infrastructure projects. State-level enforcement discretion also creates asymmetric state tax treatments, advantaging operators in states that suspend penalties over those that do not.\n\nThe key uncertainty is the IRS enforcement mechanism and whether the deferral structure creates tax liability later (deferred, not waived). If the tax is deferred rather than repealed, treated as a loan, or subject to clawback in 2027, the benefit is timing-only and the fiscal hit still lands. Whether the order survives legal challenge on Clean Air Act or excise-tax grounds is another risk, as tax-free dyed diesel contains higher sulfur under some state formulations, and broad highway use may conflict with EPA emissions rules.",
+  "sectors": [
+    {
+      "name": "Trucking & Freight",
+      "impact": "tailwind",
+      "rationale": "Diesel is 25-35% of operating cost; immediate fuel savings boost margins for carriers and freight brokers."
+    },
+    {
+      "name": "Agriculture & Food Production",
+      "impact": "tailwind",
+      "rationale": "Farmers and grain haulers see lower harvest transportation costs, easing input pressure during peak season."
+    },
+    {
+      "name": "Diesel Refiners & Distributors",
+      "impact": "headwind",
+      "rationale": "Dyed diesel sells at lower margin than on-road diesel; extended enforcement discretion shifts demand to lower-tax product."
+    },
+    {
+      "name": "Construction & Engineering / Infrastructure",
+      "impact": "headwind",
+      "rationale": "Highway Trust Fund revenue shortfall threatens federal road project funding and may delay highway construction activity."
+    },
+    {
+      "name": "Railroads",
+      "impact": "headwind",
+      "rationale": "Relative trucking cost advantage may pull some intermodal and bulk freight traffic from rail to truck."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "ODFL",
+      "direction": "benefit",
+      "rationale": "Less-than-truckload carrier with large diesel cost exposure; fuel cost reduction directly expands operating margin."
+    },
+    {
+      "symbol": "KNX",
+      "direction": "benefit",
+      "rationale": "Truckload carrier running a large fleet where fuel surcharge gaps make $0.25/gallon savings material per quarter."
+    },
+    {
+      "symbol": "JBHT",
+      "direction": "benefit",
+      "rationale": "Diversified trucking and intermodal operator; lower on-road diesel costs improve truck segment economics."
+    },
+    {
+      "symbol": "ADM",
+      "direction": "benefit",
+      "rationale": "Grain logistics and processing giant with massive harvest-season diesel consumption in truck fleet and farm-sourced supply chains."
+    },
+    {
+      "symbol": "BG",
+      "direction": "benefit",
+      "rationale": "Agribusiness and oilseed processor with extensive truck logistics for harvest movement and crop origination."
+    },
+    {
+      "symbol": "PSX",
+      "direction": "hurt",
+      "rationale": "Refiner whose on-road diesel margin premium vs. dyed diesel compresses when tax-free volumes expand into highway use."
+    },
+    {
+      "symbol": "VLO",
+      "direction": "hurt",
+      "rationale": "Major diesel refiner; demand shift from taxed on-road to tax-free dyed diesel erodes refining margins at the pump."
+    },
+    {
+      "symbol": "CAT",
+      "direction": "hurt",
+      "rationale": "Federal highway funding shortfall risks delaying construction equipment demand tied to federally funded road projects."
+    }
+  ],
+  "confidence": "medium"
+}

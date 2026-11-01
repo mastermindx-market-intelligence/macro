@@ -1,0 +1,25 @@
+{
+  "schema": "economic_network.workspace_acquisition_observation/v1",
+  "representation": "Decoded stdout JSON from completed canonical CLI invocation; tool-response observation, not a new acquisition.",
+  "native_pid": 54362,
+  "exit_code": 0,
+  "acquisition": {
+    "action": "acquire",
+    "effect": "APPLIED",
+    "receipt": {
+      "base_sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+      "branch": "sol/web-gmi-economic-source-diagnostic-20261009-pro-004",
+      "common_git_dir": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git",
+      "head_sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+      "lane": "web",
+      "lock_reason": "mastermind-linked-worktree:v1 operation=gmi-economic-source-diagnostic-20261009-pro-004 lane=web base=c4cd21d597521603fb75fe7a4602424e088c6bfa",
+      "operation_id": "gmi-economic-source-diagnostic-20261009-pro-004",
+      "reused": false,
+      "source_repository": "/Users/chriswong/Documents/Cluade/macro-main",
+      "workspace_path": "/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-source-diagnostic-20261009-pro-004",
+      "workspace_root": "/Volumes/Mastermind/agent-workspaces/macro"
+    },
+    "repository": "macro",
+    "schema_version": "mastermind.workspace_cli/v2"
+  }
+}

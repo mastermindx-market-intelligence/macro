@@ -1,0 +1,77 @@
+{
+  "schema": "tiingo.readonly_current_owned_existing_projection_custody_diagnosis/v1",
+  "recorded_at_utc": "2026-10-13T01:31:31.787457+00:00",
+  "method_sha256": "2eb49958f2d828fbf2d91933a9f08c77e2e03b7877c1be73c5c5a19108eb34db",
+  "snapshot_sha256": "425bf9fbf315dbcca49032084e651f58580939c695142a8df8faf0c18fc16bec",
+  "selected_response_count": 1476,
+  "existing_artifact_pairs_seen": 1,
+  "conflicts": [
+    {
+      "current_receipt": {
+        "symbol": "STMGD",
+        "request_path": "/tiingo/daily/STMGD/prices?endDate=2026-10-09&startDate=2026-05-28",
+        "receipt_file": "receipts/eod-bars/2026-10-13/329f128ebc7b28c9-e3875b96f00c055f1305a208.json",
+        "receipt_file_sha256": "38e990b12b4666c8faf291ee842a3c0bf6258f7d7a70252253e1d3e931cb4ad2",
+        "receipt_id": "98814d7d89f258b948ebde0ced756912b561c21cbbcb679eed6b6838ea1bcac6",
+        "raw_sha256": "e3875b96f00c055f1305a20873e1c4bd3e32c84c947d71378ed198efab30130a",
+        "observed_at_utc": "2026-10-13T01:24:42.796534+00:00"
+      },
+      "selector_kind": "raw_sha256",
+      "manifest_file": "manifests/eod-bars/2026-10-13/e3875b96f00c055f1305a20873e1c4bd3e32c84c947d71378ed198efab30130a.json",
+      "manifest_file_sha256": "3d513a734516a0cb8acb52e8ff70906f7eda3a72405bf352b1458ef1fbf31d9f",
+      "projection_file": "normalized/eod-bars/2026-10-13/e3875b96f00c055f1305a20873e1c4bd3e32c84c947d71378ed198efab30130a.parquet",
+      "projection_file_sha256": "2e655a2c021d5be89fc308b8b9f46181040523396b62c9c696ae8143a572cc79",
+      "checks": {
+        "paired_files_exist": true,
+        "source_receipt_id_matches": false,
+        "source_sha256_matches": true,
+        "output_sha256_matches": true
+      },
+      "manifest_source_receipt_id": "aeb0c0d43502e8a1cbe5d41ab3fbee50609a84d3617f337b8df19c6871cc6bd8",
+      "manifest_source_sha256": "e3875b96f00c055f1305a20873e1c4bd3e32c84c947d71378ed198efab30130a",
+      "manifest_source_observed_at_utc": "2026-10-13T00:14:22.816399+00:00",
+      "existing_accepted_lineage_records": [
+        {
+          "qualification_file": "eod-wave14-prefix17-qualified.json",
+          "qualification_sha256": "d924a9bcfceadf2a04205d207ea301d6e6cd7000b804f5d3880999a9de5a2d56",
+          "record": {
+            "source": "eod-bars",
+            "symbol": "PXSTD",
+            "request_path": "/tiingo/daily/PXSTD/prices?endDate=2026-10-09&startDate=2026-05-28",
+            "receipt_id": "aeb0c0d43502e8a1cbe5d41ab3fbee50609a84d3617f337b8df19c6871cc6bd8",
+            "receipt_file": "receipts/eod-bars/2026-10-13/9843d8cd8236d8e8-e3875b96f00c055f1305a208.json",
+            "receipt_file_sha256": "1d3552e7f1ab80eb49327c3ed0f816f264db2abe96c9a562c914343ff7ae2953",
+            "raw_sha256": "e3875b96f00c055f1305a20873e1c4bd3e32c84c947d71378ed198efab30130a",
+            "observed_at_utc": "2026-10-13T00:14:22.816399+00:00",
+            "raw_bytes": 18519,
+            "projected_rows": 94,
+            "materialization_status": "EXISTS",
+            "raw_checksum_verified": true,
+            "requested_window_verified": true,
+            "old_economic_dates_disjoint": true,
+            "first_date": "2026-05-28",
+            "last_date": "2026-10-09",
+            "projection_lineage_verified": true,
+            "split_events": 0,
+            "dividend_events": 0,
+            "raw_adjusted_different_dates": 0
+          }
+        }
+      ]
+    }
+  ],
+  "actual_original_window02_return_consumed": true,
+  "original_window02_tool": 65503,
+  "original_window02_exit_code": 1,
+  "prefix02_accepted_disposition_retained": true,
+  "prefix03_preflight_failed_before_writer": true,
+  "failed_prefix03_exact_selected_scope_claimed": false,
+  "archive_writes": 0,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "retained_original_diagnosis_sha256": "33b92629ab4a724e46b41891517ba90568872ba4647b0aee8710dbe70fa671c4",
+  "current_receipt_projection_acceptance_parent_sha256": "231303786536982bdbb61505c0713790e558e44e5e2869ff427a82a13b548ac6",
+  "prior_foreign_artifact_hashes_preserved": true,
+  "dated_security_alias_or_identity_claimed": false,
+  "foreign_rows_credited_to_current_receipt": false
+}

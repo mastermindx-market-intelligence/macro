@@ -1,0 +1,22 @@
+{
+  "source_head": "73669c7df21485fa3299df0a982ff10c5e25c87c",
+  "leadership_rotation_contract": {
+    "test": "test_module_imports_stdlib_only",
+    "named_read": "Path(lrc.__file__).read_text",
+    "walk": "ast.walk(stripped)",
+    "walk_target": "parsed AST of engine/leadership_rotation_context.py",
+    "runtime_filesystem_traversal": false,
+    "module_in_declared_scope": true
+  },
+  "lr_rotation_evidence_modes": {
+    "entry_points": 5,
+    "inputs": "synthetic in-memory panel, monkeypatched config/build functions, isolated tmp_path ledger",
+    "rendered_ticker_or_basket_pages_invoked": false,
+    "imported_lib_pages_preserved": true,
+    "helper_suites_preserved": [
+      "tests/test_rotation_events.py",
+      "tests/test_sector_cycles.py"
+    ]
+  },
+  "limits": "Static closure checked with exact tracked-tree inventory. No claim of production execution. Future scope drift still subject to unchanged absolute/differential closure guards."
+}

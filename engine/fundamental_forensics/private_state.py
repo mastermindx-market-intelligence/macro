@@ -34,6 +34,30 @@ ORIGIN_LAST_GOOD = "last_good"
 ORIGIN_MISSING = "missing"
 StateOrigin = Literal["local", "r2", "last_good", "missing"]
 
+
+class PrivateStateError(RuntimeError):
+    """A private-state publish could not be completed lawfully."""
+
+
+class PrivateStateEffectUnknownError(PrivateStateError):
+    """A18: the write's effect on its ORIGINAL target is unknown.
+
+    A lost put-ack whose bounded read-back on the SAME carrier could not
+    prove idempotent completion (object absent or unreadable). There is no
+    failover key and no unconditional retry inside the publish; the caller
+    re-runs ``publish_state_blob`` with the same source once the store is
+    observable again. Messages are fixed literals: never a storage key or
+    path.
+    """
+
+
+class PrivateStateConflictError(PrivateStateError):
+    """The private state object holds different bytes than the publish.
+
+    The read-back after a lost put-ack observed a conflicting object; the
+    outcome is neither success nor silently "not published".
+    """
+
 _cache_lock = threading.Lock()
 _cache: dict[str, tuple[float, bytes]] = {}
 
@@ -167,8 +191,42 @@ def load_state(
         return None
 
 
+def _reconcile_state_write(store: Any, blob: bytes, *, cause: BaseException | None) -> None:
+    """A18 reconciliation for a lost put-ack: ONE bounded read-back, no retry.
+
+    Exact bytes prove idempotent completion (return normally). Different
+    bytes are a conflict; an absent or unreadable object leaves the effect on
+    the original target unknown. Never a second ``put_bytes``, never a
+    failover key, and never a key/path in the raised message.
+    """
+    try:
+        echoed = store.get_bytes(STATE_KEY)
+    except Exception as read_exc:  # noqa: BLE001 - unreadable == unproven
+        raise PrivateStateEffectUnknownError(
+            "private forensics state write outcome could not be reconciled"
+        ) from read_exc
+    if echoed is None:
+        raise PrivateStateEffectUnknownError(
+            "private forensics state write outcome could not be reconciled"
+        ) from cause
+    if echoed != blob:
+        raise PrivateStateConflictError(
+            "private forensics state object conflicts with the published bytes"
+        ) from cause
+
+
 def publish_state_blob(path: str | Path, *, store_factory: Callable[[], Any] | None = None) -> bool:
-    """Publish and byte-verify one state object in the private store."""
+    """Publish and byte-verify one state object in the private store.
+
+    A18 write discipline (FIF P1 / F4): an exceptional or ``False`` put
+    outcome is reconciled by exactly one bounded read-back on the SAME
+    carrier — exact bytes prove idempotent completion; different bytes raise
+    :class:`PrivateStateConflictError`; an absent or unreadable object
+    raises :class:`PrivateStateEffectUnknownError` (returning neither True
+    nor False). ``put_bytes`` is never called a second time inside this
+    function, and the last-good READ fallback in ``load_state_record`` is
+    read-side availability, never a write success.
+    """
     source = Path(path)
     try:
         blob = source.read_bytes()
@@ -177,15 +235,20 @@ def publish_state_blob(path: str | Path, *, store_factory: Callable[[], Any] | N
         if store is None:
             log.error("private forensics store is unavailable")
             return False
-        if not store.put_bytes(STATE_KEY, blob, "application/gzip"):
-            return False
-        echoed = store.get_bytes(STATE_KEY)
-        if echoed is None or hashlib.sha256(echoed).digest() != hashlib.sha256(blob).digest():
-            log.error("private forensics state read-back mismatch")
-            return False
-        decode_state_blob(echoed)
-        clear_state_cache()
-        return True
     except Exception as exc:  # noqa: BLE001
         log.error("private forensics state publish failed: %s", exc)
         return False
+    try:
+        written = store.put_bytes(STATE_KEY, blob, "application/gzip")
+    except Exception as exc:  # noqa: BLE001 - the commit may have succeeded
+        _reconcile_state_write(store, blob, cause=exc)
+    else:
+        if written is False:
+            _reconcile_state_write(store, blob, cause=None)
+    echoed = store.get_bytes(STATE_KEY)
+    if echoed is None or hashlib.sha256(echoed).digest() != hashlib.sha256(blob).digest():
+        log.error("private forensics state read-back mismatch")
+        return False
+    decode_state_blob(echoed)
+    clear_state_cache()
+    return True

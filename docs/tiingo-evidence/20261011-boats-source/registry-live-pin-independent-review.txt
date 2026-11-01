@@ -1,0 +1,66 @@
+**The existing live-pin procedure is sufficient. I withdraw the proposed amendment fixture.** I had not read lines 7–16 of the fixture header before making that recommendation. Those lines explicitly distinguish the fixed census identity from the source/control receipts, which are live pins. No new evidence mechanism or test exception is needed.
+
+I qualified the two inherited changes against local Git history, with lazy fetching disabled. Both working files exactly match their blobs at `6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde`. More importantly, I found commits whose bytes exactly reproduce the old receipted hashes, then reviewed the complete file diffs from those versions.
+
+| File | Exact old receipted source found | Old lines | Current lines | Current SHA-256 |
+|---|---|---:|---:|---|
+| `scripts/publish_r2.py` | `148d1bfec8bbf1c080253b46a15d3e08184e8cfe` | 715 | **745** | `d6446e1d3d66e5db51b19dde9e2c987a1f5f5d779c06a6c0e1400dbb8b1eaae0` |
+| `config/synapse.yml` | `5e0ebcb161b460d63252208f040067c6b922e805` | 19084 | **19143** | `ec3f4ed483c1890710cc04f1766b4dd71785c195eab6d8872e57aaf5f026139f` |
+
+The old hashes were respectively `6acbdcbeaa05a88a1725f6518cc1127e3eabec3ef4e96c00f9e65e99c83245e0` and `fb0d5805e5adefcf42a1e696d5ecd4d0112f849354c6f460b15ad005b70931c5`. This establishes the actual old→new comparison; it does not depend on interpreting the census snapshot as a content revision.
+
+For `publish_r2.py`, these are the required anchor updates:
+
+| Old line | Current line | Qualification | Affected family IDs |
+|---:|---:|---|---|
+| 150 | **152** | Exact original fingerprint; one occurrence | `options_skew` |
+| 170 | **172** | Exact original fingerprint; one occurrence | `options_payoff_lab` |
+| 186 | **188** | Exact original fingerprint; one occurrence | `index_gex_history` |
+| 205 | **209** | **Reviewed semantic change**, described below | `index_gex_history` |
+| 480 | **485** | Exact original fingerprint; one occurrence | `feeds_operational_blackboards` |
+| 594 | **624** | Exact original fingerprint; one occurrence | `stockdata_reserved_and_future_artifacts`, `feeds_unreserved_future_keys`, `shared_r2_unregistered_objects` |
+
+The remaining publisher fingerprints at lines **72, 84, 85, 88, 91, 99, 102, 106, 122, 127, 128 and 147** are unchanged and still uniquely located at those same lines.
+
+The complete publisher diff consists of the existing index-history source-directory override and the corrected index-history uploadable-file floor:
+
+- The override applies only when `index_gex_history` is selected. An explicitly configured invalid directory fails before `_client()`; an unset override preserves the existing local directory. The output key construction remains `f"{d}/{p.relative_to(base).as_posix()}"`, so this changes the local input location, not its R2 key family.
+- `_uploadable()` removes the collector `_manifest.json` before `_data_dir_syncable()` receives the file count. Changing the index-history floor from five to four therefore addresses the four uploadable root parquets rather than counting the excluded manifest.
+- The **600,000-byte floor**, append-only per-file protection, collector-manifest exclusion and guarded final-manifest logic remain. The change does not add a directory to the public publisher inventory, change a classification, or grant redistribution rights.
+
+The original line-205 fingerprint no longer exists because of that substantive floor correction. The justified new fingerprint is the unique current line **209**:
+
+```text
+_DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 4, "price_pressure": 3,
+```
+
+This is acceptable as an **explicitly qualified semantic repin**, supported by the actual control flow and source commit `201064395fff8e16e958619bf1343eea6d7aca9c` (`#8374`). It must be recorded as such in the dated qualification, not described as a mechanical relocation or replaced with whatever happens to occupy old line 205.
+
+My acceptance here is limited to the existing delivery-family evidence: `index_gex_history` remains `PREMIUM_PRODUCT / PRO`, with its private-plane migration obligation unchanged. This review does not certify root identity from a count alone, actual store completeness, current storage contents or a successful production publish.
+
+For `synapse.yml`, all three original fingerprints remain exact and unique:
+
+| Old line | Current line | Original fingerprint | Affected family |
+|---:|---:|---|---|
+| 5940 | **5950** | `gamma_flow, 0DTE pct) is reliable. Accrual store: data/options_flow/summary_<SYM>.parquet` | `repository_static_internal_options_unregistered` |
+| 6137 | **6147** | `path: data/options_entry/state.parquet` | `repository_static_internal_options_unregistered` |
+| 11574 | **11618** | `# --- prophet-ledger: Prophet forward outcome ledger ---` | `prophet_repository_operational_state` |
+
+The complete synapse diff adds risk-context consumers/notes, an S&P 1500 sector-substrate record, and theme-graph lineage-writer declarations elsewhere in the file. It does not alter these three anchored blocks. Their relevant claims remain supported:
+
+- The options-flow note still identifies `data/options_flow/summary_<SYM>.parquet`, retains its signing caveat and forbids scored-path use until qualified.
+- Options entry state still points to the same tracked parquet and retains display-tier, unweighted semantics.
+- The Prophet ledger still identifies `data/prophet/ledger.jsonl` and its nightly writer.
+
+Thus the existing `UNRESOLVED / HOLD_PRIVATE_PENDING_REVIEW` disposition for the options catch-all and `PRIVATE_OPERATIONAL / OPERATOR_ONLY` disposition for Prophet operational state remain appropriate. Relocating these anchors approves no new data delivery.
+
+**The minimal legitimate repair is now concrete:**
+
+1. Retain the old two receipt rows, old anchor rows and this dated old→new qualification under the existing `docs/tiingo-evidence` location.
+2. Update the two live line-count/hash rows in `r2_delivery_macro_evidence_files.v1.tsv` to the values above.
+3. Update the listed registry anchor line numbers and matching `r2_delivery_macro_anchor_lines.v1.tsv` rows together. Preserve every original fingerprint except the expressly reviewed index-history floor change at new line 209.
+4. Leave `source_snapshot`, global census snapshots/date, fixture schemas and all unrelated classification/tier values unchanged.
+5. Leave the hash, line-count, unique-fingerprint and exact anchor-accounting assertions intact. **No skip, xfail, failure allowlist or new fixture resolver is required.**
+6. After the final BOATS-only gates are reviewed, update `build_ext_quotes.py`’s live receipt from those exact final bytes and qualify its relevant anchors under this same procedure. The prior producer PASS hashes do not accept later gate edits.
+
+**Bounded verdict: PASS for the two inherited live-pin repairs described above.** Their source changes have been compared and qualified; these are not blind hash refreshes. The reported baseline `19 passed / 2 failed` remains the last supplied test result—I ran no tests and do not claim that the repaired suite has passed. Runtime, scheduling, publication and deployment remain outside this judgment, with the original combined-action rejection unchanged.

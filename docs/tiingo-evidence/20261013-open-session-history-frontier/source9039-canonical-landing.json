@@ -1,0 +1,72 @@
+{
+  "all_11_reviewed_tree_entries_identical": true,
+  "eight_artifact_source_byte_checks_reused_from_accepted_review": true,
+  "fresh_origin_main": "a13962ee3915e18a8ee21fa8e3a8fa05d475d62f",
+  "fresh_origin_main_contains_merge": true,
+  "merge_commit": "a13962ee3915e18a8ee21fa8e3a8fa05d475d62f",
+  "owned_worktree_clean": true,
+  "pr": 9039,
+  "runtime_or_consumer_effect_claimed": false,
+  "schema": "tiingo_canonical_evidence_source_landing.v1",
+  "source_only_effect_verified": true,
+  "terminal_production_release_held": true,
+  "tested_head": "5b011af8e25ead31bb20b23d451b74a60bd6f44c",
+  "tree_entries": {
+    "agentos/workstreams/WS-TIINGO-DATA-OS.md": {
+      "identical": true,
+      "merged_tree_entry": "100644 blob 580515ae6d1702fd4486fa599d1b720e3aa8c917\tagentos/workstreams/WS-TIINGO-DATA-OS.md",
+      "tested_head_tree_entry": "100644 blob 580515ae6d1702fd4486fa599d1b720e3aa8c917\tagentos/workstreams/WS-TIINGO-DATA-OS.md"
+    },
+    "docs/tiingo-evidence/20261012-final-capture-preparation/README.md": {
+      "identical": true,
+      "merged_tree_entry": "100644 blob bebc998dae464e83acdef9cab58a35f4da461fa3\tdocs/tiingo-evidence/20261012-final-capture-preparation/README.md",
+      "tested_head_tree_entry": "100644 blob bebc998dae464e83acdef9cab58a35f4da461fa3\tdocs/tiingo-evidence/20261012-final-capture-preparation/README.md"
+    },
+    "docs/tiingo-evidence/20261012-final-capture-preparation/boats-control-only-checks.json": {
+      "identical": true,
+      "merged_tree_entry": "100644 blob 091963ec1d393b3029c54fbd5201f234efb870e9\tdocs/tiingo-evidence/20261012-final-capture-preparation/boats-control-only-checks.json",
+      "tested_head_tree_entry": "100644 blob 091963ec1d393b3029c54fbd5201f234efb870e9\tdocs/tiingo-evidence/20261012-final-capture-preparation/boats-control-only-checks.json"
+    },
+    "docs/tiingo-evidence/20261012-final-capture-preparation/boats-control-only-review.json": {
+      "identical": true,
+      "merged_tree_entry": "100644 blob 09e7bb348c810d350e6684519e79b142734dcb74\tdocs/tiingo-evidence/20261012-final-capture-preparation/boats-control-only-review.json",
+      "tested_head_tree_entry": "100644 blob 09e7bb348c810d350e6684519e79b142734dcb74\tdocs/tiingo-evidence/20261012-final-capture-preparation/boats-control-only-review.json"
+    },
+    "docs/tiingo-evidence/20261012-final-capture-preparation/boats-first-gap-and-budget-checks.json": {
+      "identical": true,
+      "merged_tree_entry": "100644 blob ac504ac1446ddf292072eb5241770c229f7394a8\tdocs/tiingo-evidence/20261012-final-capture-preparation/boats-first-gap-and-budget-checks.json",
+      "tested_head_tree_entry": "100644 blob ac504ac1446ddf292072eb5241770c229f7394a8\tdocs/tiingo-evidence/20261012-final-capture-preparation/boats-first-gap-and-budget-checks.json"
+    },
+    "docs/tiingo-evidence/20261012-final-capture-preparation/reviewed-boats-qualification-method.py": {
+      "identical": true,
+      "merged_tree_entry": "100644 blob ed5bf2b33030560b610773da2cf712c4fd3876ef\tdocs/tiingo-evidence/20261012-final-capture-preparation/reviewed-boats-qualification-method.py",
+      "tested_head_tree_entry": "100644 blob ed5bf2b33030560b610773da2cf712c4fd3876ef\tdocs/tiingo-evidence/20261012-final-capture-preparation/reviewed-boats-qualification-method.py"
+    },
+    "docs/tiingo-evidence/20261012-final-capture-preparation/reviewed-boats-raw-method.py": {
+      "identical": true,
+      "merged_tree_entry": "100644 blob c90e4afbaa9e8ea81a23241751bf04b3eeaa4a7a\tdocs/tiingo-evidence/20261012-final-capture-preparation/reviewed-boats-raw-method.py",
+      "tested_head_tree_entry": "100644 blob c90e4afbaa9e8ea81a23241751bf04b3eeaa4a7a\tdocs/tiingo-evidence/20261012-final-capture-preparation/reviewed-boats-raw-method.py"
+    },
+    "docs/tiingo-evidence/20261012-final-capture-preparation/source-bytes.json": {
+      "identical": true,
+      "merged_tree_entry": "100644 blob 483f2eb33a2ec979e1bc8e93df425d28cd035f9c\tdocs/tiingo-evidence/20261012-final-capture-preparation/source-bytes.json",
+      "tested_head_tree_entry": "100644 blob 483f2eb33a2ec979e1bc8e93df425d28cd035f9c\tdocs/tiingo-evidence/20261012-final-capture-preparation/source-bytes.json"
+    },
+    "docs/tiingo-evidence/20261012-final-capture-preparation/source9038-merge-timing-error.json": {
+      "identical": true,
+      "merged_tree_entry": "100644 blob 977d0ca09f386b78e666d30699f6303c23e1d500\tdocs/tiingo-evidence/20261012-final-capture-preparation/source9038-merge-timing-error.json",
+      "tested_head_tree_entry": "100644 blob 977d0ca09f386b78e666d30699f6303c23e1d500\tdocs/tiingo-evidence/20261012-final-capture-preparation/source9038-merge-timing-error.json"
+    },
+    "docs/tiingo-evidence/20261012-final-capture-preparation/source9038-terminal-ci-acceptance.json": {
+      "identical": true,
+      "merged_tree_entry": "100644 blob 33fbf79bb72e520357fade52fffb56d9ae34486a\tdocs/tiingo-evidence/20261012-final-capture-preparation/source9038-terminal-ci-acceptance.json",
+      "tested_head_tree_entry": "100644 blob 33fbf79bb72e520357fade52fffb56d9ae34486a\tdocs/tiingo-evidence/20261012-final-capture-preparation/source9038-terminal-ci-acceptance.json"
+    },
+    "docs/tiingo-evidence/20261012-final-capture-preparation/wave14-window01-parent-acceptance.json": {
+      "identical": true,
+      "merged_tree_entry": "100644 blob 747776dec5cb6b85e6ce488eb76e10023c806d98\tdocs/tiingo-evidence/20261012-final-capture-preparation/wave14-window01-parent-acceptance.json",
+      "tested_head_tree_entry": "100644 blob 747776dec5cb6b85e6ce488eb76e10023c806d98\tdocs/tiingo-evidence/20261012-final-capture-preparation/wave14-window01-parent-acceptance.json"
+    }
+  },
+  "verified_at_utc": "2026-10-13T00:04:34.072679+00:00"
+}

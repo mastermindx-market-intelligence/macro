@@ -1,0 +1,92 @@
+{
+  "schema": "research.retained_byte_semantic_judgment/v1",
+  "case_id": "C01",
+  "reviewer": "/root",
+  "observed_at": "2026-10-09T10:18:56.531445+00:00",
+  "frozen_at_utc": "2026-10-09 10:21:05 UTC",
+  "independence": {
+    "first_reader_addendum_read": false,
+    "prior_publisher_web_pilot_known": true,
+    "meaning": "Independent principal reading of the original retained bytes before the new addendum's findings; not blind to the existing case definition."
+  },
+  "execution": {
+    "device": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
+    "host": "m2studio",
+    "pid": 62314,
+    "exit_code": 0,
+    "mode": "READ_ONLY_BOUNDED_RETAINED_FILE_INSPECTION",
+    "source_capture_performed": false,
+    "application_run": false
+  },
+  "original_source": {
+    "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/micron-hbm3e-a7efabf9cec581ba684688368118e3e13df6a3043aff56667927e24df97e8b2e.html",
+    "bytes": 504119,
+    "sha256": "a7efabf9cec581ba684688368118e3e13df6a3043aff56667927e24df97e8b2e",
+    "utf8_roundtrip": true
+  },
+  "original_candidate": {
+    "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/micron-manual-candidate.json",
+    "bytes": 1930,
+    "sha256": "5e2a2c789599e5e146b6e2969ccc243ee5c85b7d74c67af76b7c437857c4383c",
+    "candidate_id": "manual:micron-hbm3e-h200:2024-02-26:1"
+  },
+  "source_span": {
+    "char_start": 370876,
+    "char_end": 371258,
+    "byte_start": 370936,
+    "byte_end": 371320,
+    "span_bytes": 384,
+    "sha256": "f79bce81f656e826b3aa74380eb9a2b63bf74fc0e60376dc2b40c64600eb890a",
+    "character_byte_identity_verified": true
+  },
+  "inspected_context": {
+    "char_start": 370108,
+    "char_end": 372026,
+    "whole_document_semantic_review": false,
+    "context_rendering": "Original decoded UTF-8 HTML inspected directly; no transformed text substituted for source bytes."
+  },
+  "finding": {
+    "status": "SUPPORTED_WITH_REQUIRED_QUALIFIERS",
+    "kind": "product_integration",
+    "lifecycle": "planned",
+    "subject_label": "Micron",
+    "object_label": "NVIDIA",
+    "component_scope": "24GB 8H HBM3E",
+    "target_scope": "H200 Tensor Core GPUs",
+    "planned_period": "calendar Q2 2024",
+    "publication_date": "2024-02-26",
+    "publication_instant": null,
+    "magnitude": null,
+    "meaning": "The retained source supports the dated statement of planned inclusion of the specified memory in the named accelerator product. Its separate statement that memory production had begun does not establish delivered customer products."
+  },
+  "representation_qualification": "The candidate's structured product_scope names the memory configuration; H200 target scope remains in the exact receipt/source. A future projection must retain that target restriction. A generic enduring Micron-to-NVIDIA supplier edge would exceed this judgment.",
+  "unsupported": [
+    "Actual or continuing 2026 supply",
+    "Executed deliveries",
+    "Minimum orders or exclusivity",
+    "Revenue, quantity, economic_share or propagation weight",
+    "Canonical legal parties or security mapping",
+    "Exact intraday publication time",
+    "Historical system knowability"
+  ],
+  "limitations": {
+    "source_publisher_authenticated_by_this_read": false,
+    "source_custody_authenticated": false,
+    "independent_commerce_verified": false,
+    "prior_web_reviews_reclassified": false,
+    "new_metadata_file_read": false,
+    "production_rights_receipt": null,
+    "public_export_rights_receipt": null,
+    "training_rights_receipt": null
+  },
+  "native_admission": "NOT_ADMITTED",
+  "graph1_projection": null,
+  "authority": {
+    "rank": false,
+    "gate": false,
+    "size": false,
+    "trade": false,
+    "prediction": false
+  }
+}
+

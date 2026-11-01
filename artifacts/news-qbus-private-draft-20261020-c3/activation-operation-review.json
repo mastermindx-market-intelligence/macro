@@ -1,0 +1,198 @@
+{
+  "schema": "news.activation.operation_review.v1",
+  "written_at": "2026-10-20T17:15:59.093570+00:00",
+  "reviewer": "/root/news_release_owner",
+  "review_scope": "Authored bounded operation artifact and local safety qualification; not independent delivery approval or production execution proof",
+  "state": "parser_repaired_locally_awaiting_parent_retransfer_and_preview",
+  "operation": "news-publisher-activation-20261020-c3",
+  "expected_merge": "1298ed4281362329c682a1f7c038b932e4ccbb64",
+  "expected_merge_evidence": "https://github.com/mastermindx-market-intelligence/macro/pull/9846",
+  "merged_at": "2026-10-20T17:06:32Z",
+  "reviewed_head": "b82af8dae3b05e7eaea198cfe49d61fb9b8ce595",
+  "artifact": {
+    "path": "/workspace/scratch/a71caf47c2a7/news_activation_20261020_c3.py",
+    "bytes": 28535,
+    "sha256": "4f6b515ad32295b3b2ba6a896801cb32afbac5904ed8de9d30585720cda84428",
+    "lines": 594
+  },
+  "local_tests": {
+    "receipt": "activation-local-tests.json",
+    "receipt_sha256": "fe028bb491a374d0cdbc81f97081aef0032009e68a922498bcd71a00a6c9ac5d",
+    "passed": 13,
+    "failed": 0,
+    "isolated": true,
+    "production_checks_mocked": true
+  },
+  "critical_source_git_blob_pins": {
+    "engine/__init__.py": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "engine/massive_news.py": "dc83c3214209968b445e39a6a3d5fd303f0d28e8",
+    "engine/news_common.py": "28fa6cbad7519214bec8791cedf82ae82cc9756a",
+    "engine/qbus_news_annotate.py": "50e00497d2a2a920604e82ab45c469eff18c71fb",
+    "engine/qbus_news_cluster.py": "ff2300b0c55094c77d9dbacd48c2fb815d3cadec",
+    "engine/qbus_news_context.py": "cf997d997d4bc913b59f883b43efe2c87b6eb590",
+    "engine/qbus_news_contract.py": "e740079cc7fa702c333047ca5b4a0c6525118fd2",
+    "engine/qbus_news_intake.py": "9e17bd227c24e19707466999e22b53fe124fb48e",
+    "engine/qbus_news_quality.py": "aad34e4a054efd73472ffb48f35dbf862c3fada4",
+    "engine/qbus_news_receipts.py": "5fe0f27f5e8336404059adefe9be374521387468",
+    "engine/qbus_news_reducer.py": "06e63abc8ce0f7e58375c89f64f45ef92751b709",
+    "engine/qbus_news_retrieval.py": "14712a94a8edcd7bd49bccf2e37f436d467f5158",
+    "engine/qbus_news_store.py": "0edbb2a5e49a1c5aee28562061db1557aac918ca",
+    "engine/qbus_news_universe.py": "6febd6b4231e0615f50170bcdb09e2c2e4139315",
+    "engine/qbus_news_universe_snapshot.py": "b575e9d6a6997e49815547a0fbfec9e5f2460473",
+    "engine/qbus_news_velocity.py": "11e715b41684b3a059bf312299576d5ea5ed22d4",
+    "engine/qkernel.py": "4a27ef447dff97c2219ba352d61ff774cca5d533",
+    "app/__init__.py": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "app/ticker_news.py": "bb0b72f04e73850c5a44d151ca30db42cad8526b",
+    "app/ticker_news_stream.py": "6a1ffff80b81049c79df0daa47d15491ed5eb781",
+    "scripts/__init__.py": "dafbbd0c3a49c56a2635c0d3d8918302d10689a6",
+    "scripts/build_qbus_news_universe.py": "79dd3bc23945f97ba7b4b5a47cc252734610decd",
+    "collectors/__init__.py": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "collectors/alpaca_news.py": "b8cd54cf3a58842f100e739580d52ec89f46cb97",
+    "collectors/benzinga_news.py": "3ead9c2642547622f895f42a47c568cb7f4f6749",
+    "app/deploy/macro-api.service": "191cd77f26d18ccd55465de8f30ca7c61eeb641c",
+    "app/deploy/macro-ticker-news.service": "300f7eafd4f8c64abeff46070a529dcadf5110f4",
+    "lib/dataos/__init__.py": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661",
+    "lib/dataos/identity.py": "e1a5093aec8d7d787202db077bce47f61734e01d",
+    "scripts/run_qbus_news.py": "36bb42dc7ff0d1b0908172047011d630d1cf21b9",
+    "lib/__init__.py": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "critical_source_count": 31,
+  "prepared_receipt_pins": [
+    {
+      "file": "artifacts/news-shared-integration-20261020-c3/activation/massive-zacks-com-rights.json",
+      "source": "massive:zacks.com",
+      "sha256": "1f31c4e95b31eb2c4826f0e733747140088525eaf8d6d114a195a2b6ac436c32"
+    },
+    {
+      "file": "artifacts/news-shared-integration-20261020-c3/activation/massive-fool-com-rights.json",
+      "source": "massive:fool.com",
+      "sha256": "7066a98da3620ad2aed05e57dd9927331ed939d8a2bb1601b77ec182c24c6803"
+    },
+    {
+      "file": "artifacts/news-shared-integration-20261020-c3/activation/massive-globenewswire-com-rights.json",
+      "source": "massive:globenewswire.com",
+      "sha256": "f14ca7c87d9650f68c3c26ae6017a5b146d914b7ca6100a8ae88c2274ac0dc82"
+    }
+  ],
+  "entrypoints": {
+    "preview_default": [
+      "python3",
+      "news_activation_20261020_c3.py",
+      "--expected-merge",
+      "1298ed4281362329c682a1f7c038b932e4ccbb64"
+    ],
+    "apply_explicit": [
+      "python3",
+      "news_activation_20261020_c3.py",
+      "--expected-merge",
+      "1298ed4281362329c682a1f7c038b932e4ccbb64",
+      "--apply"
+    ]
+  },
+  "preconditions": [
+    "Run as root on the established VPS after normal macro-update has deployed source containing expected merge.",
+    "Acquire existing /var/lock/macro-update.lock; no checkout, fetch, source replacement or updater bypass.",
+    "Verify committed and working bytes of all 31 critical source pins; reject symlinks/escaped source paths.",
+    "Both existing macro-api.service and macro-ticker-news.service active with positive PIDs; installed service files match pins; no pending daemon reload.",
+    "Loaded EnvironmentFile order matches reviewed units; writer has no drop-ins; exactly one existing writer process matches its MainPID.",
+    "Primary writer provider remains Alpaca with existing primary credentials; supplied licensed credential exists in macro-live.env.",
+    "Existing env files and primary receipt are regular root-owned mode0600; existing state and carrier directories are root-owned mode0700.",
+    "Optional owned keys are absent, or byte-exact planned state bound to the same recorded operation; no unexplained pre-existing optional state.",
+    "API later optional environment file cannot override operation/provider keys.",
+    "All three prepared receipt bytes match pinned SHA256 and targets are absent or identical private files."
+  ],
+  "bounded_effects": [
+    "Create operation-specific private phase carrier and backups; record intent and preimages before effects.",
+    "Install exact already-prepared receipt bytes mode0600 only when absent, using no-clobber atomic installation.",
+    "Append only MM_TICKER_NEWS_MASSIVE_ENABLED=1, the exact additional-rights JSON list, and POLYGON_API_KEY to writer env.",
+    "Preserve the MASSIVE_API_KEY assignment RHS verbatim from macro-live.env when writing POLYGON_API_KEY; no shell sourcing or secret interpolation.",
+    "Append only the same additional-rights JSON list to API env, preserving all other bytes.",
+    "Use atomic mode0600 environment writes with stale-preimage detection.",
+    "Run existing runner --check-activation with systemd EnvironmentFile parsing and one operation-specific transient unit; no --run or provider request.",
+    "Only after exact expected preflight and source-list qualification, restart existing API then the existing sole writer; require PID transitions.",
+    "Record applied_awaiting_live_proof; do not claim live publisher coverage from preflight."
+  ],
+  "runner_payload_assertions": {
+    "exactly_one": "qbus.news_runner_preflight.v1",
+    "provider": "alpaca",
+    "run_requested": false,
+    "check_requested": true,
+    "additional_sources_qualified": 3,
+    "database": "/var/lib/macro-ticker-news/qbus.sqlite3",
+    "required_true": [
+      "activation_qualified",
+      "token_present",
+      "universe_present",
+      "rights_receipt_present",
+      "health_path_present",
+      "additional_sources_enabled"
+    ],
+    "universe_count": "integer greater than zero; bool is refused",
+    "universe_revision": "nonempty string",
+    "supplemental_report_schema": "shared_news.activation_sources_check.v1",
+    "supplemental_report_count": 1,
+    "qualified_sources_by_audience": {
+      "site_full": [
+        "massive:fool.com",
+        "massive:globenewswire.com",
+        "massive:zacks.com"
+      ],
+      "internal_research": [
+        "massive:fool.com",
+        "massive:globenewswire.com",
+        "massive:zacks.com"
+      ],
+      "blog_draft": [
+        "massive:fool.com",
+        "massive:globenewswire.com",
+        "massive:zacks.com"
+      ],
+      "marketing_draft": [
+        "massive:fool.com",
+        "massive:globenewswire.com",
+        "massive:zacks.com"
+      ]
+    }
+  },
+  "failure_and_replay": [
+    "Persist phase and same-carrier readback on failure; no blind rollback or automatic restart of incomplete work.",
+    "Repeated completed same-op state produces readback-only no-op after verifying current state.",
+    "Incomplete same-op receipt refuses auto-resume and requires parent reconciliation of recorded phase and actual state.",
+    "Never print credential values, pass them in argv, source env files, broaden existing permissions, install/arm another writer, or touch DB rows directly."
+  ],
+  "unproven_until_parent_runtime": [
+    "Actual deployed ancestry/source and loaded service checks",
+    "Actual root-only environment and receipt state",
+    "Actual network-dark runner output and exact qualified supplemental sources",
+    "Successful API and existing writer restart/readback",
+    "Live health, canonical publisher/cluster aggregate visibility, SSE/API and served UI behavior",
+    "Generated stock dossier publication through a covering normal render"
+  ],
+  "effects_by_this_review": {
+    "remote_executions": 0,
+    "provider_calls": 0,
+    "live_writes": 0,
+    "github_writes": 0,
+    "slack_messages": 0
+  },
+  "source_refs": {
+    "runner": "https://github.com/mastermindx-market-intelligence/macro/blob/b82af8dae3b05e7eaea198cfe49d61fb9b8ce595/scripts/run_qbus_news.py",
+    "rights": "https://github.com/mastermindx-market-intelligence/macro/blob/b82af8dae3b05e7eaea198cfe49d61fb9b8ce595/engine/qbus_news_receipts.py",
+    "api_unit": "https://github.com/mastermindx-market-intelligence/macro/blob/b82af8dae3b05e7eaea198cfe49d61fb9b8ce595/app/deploy/macro-api.service",
+    "writer_unit": "https://github.com/mastermindx-market-intelligence/macro/blob/b82af8dae3b05e7eaea198cfe49d61fb9b8ce595/app/deploy/macro-ticker-news.service"
+  },
+  "supersedes": "activation-operation-review.before-parser-repair.json",
+  "parser_repair": {
+    "previous_script_sha256": "b53382dfd62ec6f00b457fc1f465722bbd6536c0f6c1f8758de471ade55b47ae",
+    "production_observation_source": "/root message, 2026-10-20, after normal news source update",
+    "previous_preview_refusal": "loaded_environment_files_drift:macro-api.service",
+    "previous_preview_effects": "No activation effects or phase carrier reported by /root",
+    "cause": "dict construction collapsed repeated systemctl EnvironmentFiles properties and retained only the second file",
+    "repair": "Preserve all EnvironmentFiles values in encountered order; keep duplicates so the existing exact expected-list equality refuses them. Reject duplicates of single-valued service properties.",
+    "exact_list_guard_unchanged": true,
+    "critical_source_and_prepared_receipt_pins_unchanged": true,
+    "tests": "Repeated-key production format and combined-line compatibility pass; duplicate/missing/reordered/unexpected environment file paths refuse; duplicate single-valued property refuses.",
+    "next_act": "Parent must review and retransfer the new script hash before rerunning default preview; apply only after preview qualifies.",
+    "unrelated_hold": "W2C remains untouched; no updater/W2C edit or bypass."
+  }
+}

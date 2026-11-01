@@ -50,6 +50,8 @@ import logging
 
 import pandas as pd
 
+from lib.market_observations import observation_date_allowed, provider_date_matches
+
 from lib import config
 from collectors import tushare_client as tc
 from collectors import tushare_chips_distribution as chips_dist
@@ -139,8 +141,13 @@ def _accrue(path, api: str, fields: str, value_attr, col: str, panel: set[str],
         return 0
     rows: list[dict] = []
     for d in missing:
+        if not observation_date_allowed(d, "CN"):
+            continue
         df = tc.query(api, trade_date=d, fields=fields)
         if df is None or df.empty or "ts_code" not in df.columns:
+            continue
+        if not provider_date_matches(df, d):
+            log.warning("%s: provider trade_date disagrees with grid date; history retained", api)
             continue
         for r in df.itertuples():
             t = str(getattr(r, "ts_code", "") or "")
@@ -238,6 +245,8 @@ def _accrue_chips_distribution(path, panel: set[str], dates: list[str], *,
             log.warning("chips distribution window hit the vendor row cap for %s", ticker)
             continue
         for d, group in df.groupby(df["trade_date"].astype(str).str.replace("-", "")):
+            if not observation_date_allowed(d, "CN"):
+                continue
             if (ticker, d) in have or d not in index:
                 continue
             levels = [{"ticker": ticker, "trade_date": d,

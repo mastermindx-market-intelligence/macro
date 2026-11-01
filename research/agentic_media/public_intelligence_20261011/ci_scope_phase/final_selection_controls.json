@@ -1,0 +1,12 @@
+{
+  "leadership-rotation-contract": {
+    "positive_paths": 67,
+    "negative_probes": 3,
+    "passed": true
+  },
+  "lr-rotation-evidence-modes": {
+    "positive_paths": 93,
+    "negative_probes": 3,
+    "passed": true
+  }
+}

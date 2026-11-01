@@ -1,0 +1,215 @@
+{
+  "pins": {
+    "main": "892157418ec6b8664d3a0d4ead12011826fc82b4",
+    "mastermind_package": "d1a8e672464d9a90dfe5b3608e071f8a730f3c95",
+    "pr8312": "69d8c407e7033b9aa1e2fb4699398b454d7864c2",
+    "pr8337": "13910854fbd652dcdf975301bdc8c6728c2e4767",
+    "pr8463_hold": "3d422d752dd4a51b2a288762bdb87f5913fb0598",
+    "pr8463_current": "014ffa8350d623917701fbb34da1a6233e7c4182"
+  },
+  "acceptance": [
+    {
+      "component": "SRC-A1 native capture accrual (equity_revisions)",
+      "state": "ACCEPTED",
+      "head": "69d8c407e7033b9aa1e2fb4699398b454d7864c2",
+      "evidence": "IC_kwDOS4LjIs8AAAABZCLoFw mastermindx-3 2026-10-04: integrated source review accepted at 69d8c407; writer unchanged on main collectors/equity_revisions.py:425"
+    },
+    {
+      "component": "SRC-A1 hosted CI integration proof (run 37165245295)",
+      "state": "ACCEPTED",
+      "head": "69d8c407e7033b9aa1e2fb4699398b454d7864c2",
+      "evidence": "IC_kwDOS4LjIs8AAAABZCftBw mastermindx-3 2026-10-04: PASS for source 69d8 + tested base"
+    },
+    {
+      "component": "Information-to-price audit + SRC-A1 acceptance tests on #8312",
+      "state": "ACCEPTED",
+      "head": "69d8c407e7033b9aa1e2fb4699398b454d7864c2",
+      "evidence": "PR #8312 files research/alpha_intelligence/expectation_market_dynamics/information_to_price_audit.py, tests/test_equity_revisions_src_a1_acceptance.py; IC_kwDOS4LjIs8AAAABZAOaFw MastermindX1 Astra acceptance of integrated CI evidence"
+    },
+    {
+      "component": "SRC-A1 program merge / canonical source publication",
+      "state": "HELD",
+      "head": "69d8c407e7033b9aa1e2fb4699398b454d7864c2",
+      "evidence": "IC_kwDOS4LjIs8AAAABZCh7tw mastermindx-3: release held 2026-10-04; PR #8312 remains open"
+    },
+    {
+      "component": "Shared CI-manifest composition (MKT-1 + A10 enrollment)",
+      "state": "HELD",
+      "head": "69d8c407e7033b9aa1e2fb4699398b454d7864c2",
+      "evidence": "Sol CONTINUE comment 5988970684 on #8312: reserved dependency only / no manifest effect until #8463 repair + lawful #8312 writer admission"
+    },
+    {
+      "component": "EXP-1 inspect_expectation_surface consumer (#8337)",
+      "state": "HELD",
+      "head": "13910854fbd652dcdf975301bdc8c6728c2e4767",
+      "evidence": "PR #8337 body: Draft/held; Canonical publication still depends on source acceptance PR #8312"
+    },
+    {
+      "component": "EXP-1 independent review + hosted code-gate envelope",
+      "state": "ACCEPTED",
+      "head": "13910854fbd652dcdf975301bdc8c6728c2e4767",
+      "evidence": "PR #8337 body: R2 PASS; CI37117324489 SUCCESS; intelligence-registry pack8 job111187048603"
+    },
+    {
+      "component": "Normalized expectation baseline for consumers",
+      "state": "HELD",
+      "head": "13910854fbd652dcdf975301bdc8c6728c2e4767",
+      "evidence": "engine/k3e_expectation_surface.py:389 normalized_baseline.value always null; PR #8337 body: normalized_baseline.value always remains null"
+    },
+    {
+      "component": "A10 K3E 13F projection carrier (#8463)",
+      "state": "HELD",
+      "head": "3d422d752dd4a51b2a288762bdb87f5913fb0598",
+      "evidence": "Sol REQUEST_REPAIR 5988961617; IC_kwDOS4LjIs8AAAABZPhNUQ MastermindX1"
+    },
+    {
+      "component": "A10 repaired head owner qualification",
+      "state": "HELD",
+      "head": "014ffa8350d623917701fbb34da1a6233e7c4182",
+      "evidence": "IC_kwDOS4LjIs8AAAABZhkLVQ MastermindX1: independent review + CI enrollment still required"
+    },
+    {
+      "component": "tests/test_institutional_census_k3e_projection.py CI enrollment",
+      "state": "HELD",
+      "head": "3d422d752dd4a51b2a288762bdb87f5913fb0598",
+      "evidence": "5988961617: contract-delta — tests/test_institutional_census_k3e_projection.py is a new pytest suite named by no run step; owner #8312 shared-manifest"
+    },
+    {
+      "component": "Information-to-price program parent (#8309)",
+      "state": "ACCEPTED",
+      "head": "892157418ec6b8664d3a0d4ead12011826fc82b4",
+      "evidence": "IC_kwDOS4LjIs8AAAABY6z8Jg Verified continuation receipt CHECKPOINTED_CONTINUATION; operation information-to-price-20261003-sol-001"
+    },
+    {
+      "component": "Yahoo/yfinance expectations as external product source",
+      "state": "HELD",
+      "head": "892157418ec6b8664d3a0d4ead12011826fc82b4",
+      "evidence": "IC_kwDOS4LjIs8AAAABZMiR8Q #8309: Yahoo/yfinance expectations remain internal diagnostic only"
+    }
+  ],
+  "occupancy": [
+    {
+      "path": "collectors/equity_revisions.py",
+      "writer_pr": "#8312 / main (unchanged blob on 69d8c407 vs MAIN_PIN)",
+      "blob_main": "8f1d3d822543fd11e18b5a78b957259d43e4c164",
+      "blob_8312": "8f1d3d822543fd11e18b5a78b957259d43e4c164",
+      "blob_8337": "8f1d3d822543fd11e18b5a78b957259d43e4c164",
+      "blob_8463": "8f1d3d822543fd11e18b5a78b957259d43e4c164",
+      "e1_candidate": "tests/test_k3e_provider_family_qualification.py (new file only; no equity_revisions.py edits without #8312 writer)"
+    },
+    {
+      "path": "engine/k3e_expectation_surface.py",
+      "writer_pr": "#8337",
+      "blob_main": "ABSENT (git rev-parse origin/main:engine/k3e_expectation_surface.py fatal)",
+      "blob_8337": "d83e25b50321147b3077d7cff79f93466ad471a5",
+      "e1_candidate": "tests/test_k3e_semantic_seam_qualification.py enrolled under intelligence-registry per 13910854:.github/ci/legacy-jobs.yml:4641-4680"
+    },
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "writer_pr": "#8312 custody for shared manifest; #8337 adds intelligence-registry steps at 4641-4680",
+      "e1_note": "8463 enrollment blocked — 5988961617: do not edit legacy-jobs from #8463; coordinate through #8312 owner"
+    }
+  ],
+  "seams": [
+    {
+      "seam": "yfinance/yahoo provider-family alias (incl. P)",
+      "verdict": "PRESENT",
+      "evidence": "69d8c407:collectors/equity_revisions.py:86 _EXPECTATION_PROVIDER=yfinance; 13910854:engine/k3e_expectation_surface.py:117 default provider=yfinance; no yahoo string or alias P mapping on either head (git grep -n yahoo collectors/equity_revisions.py engine/k3e_expectation_surface.py @ heads → yahoo only in equity_revisions prose lines 19-52)"
+    },
+    {
+      "seam": "period-end vs fiscal-period labelling",
+      "verdict": "PRESENT",
+      "evidence": "69d8c407:collectors/equity_revisions.py:248-271 _period_end_anchors; 13910854:engine/k3e_expectation_surface.py:22-23 fiscal_period,fiscal_year,period_end fields; MAIN_PIN:equity_revisions.py:57 period_end in _expectation_rows"
+    },
+    {
+      "seam": "unit, currency, basis",
+      "verdict": "PRESENT",
+      "evidence": "13910854:engine/k3e_expectation_surface.py:23 unit,currency,basis columns; 373-375 baseline CANONICAL_*_UNAVAILABLE; MAIN_PIN equity_revisions SRC-A1 rows omit populated unit/currency/basis in capture schema"
+    },
+    {
+      "seam": "bitemporal clocks (as-of / observed / published / cutoff)",
+      "verdict": "PRESENT",
+      "evidence": "13910854:engine/k3e_expectation_surface.py:21-22 source_effective_at,source_published_at,provider_observed_at,system_observed_at; 117-127 as_of cutoff; MAIN_PIN absent k3e reader"
+    },
+    {
+      "seam": "contributor identity",
+      "verdict": "PRESENT",
+      "evidence": "13910854:engine/k3e_expectation_surface.py:24 contributor_id field in OBSERVATION_FIELDS"
+    },
+    {
+      "seam": "purpose/rights fields",
+      "verdict": "PRESENT",
+      "evidence": "13910854:engine/k3e_expectation_surface.py:20 rights_class; 365-371 RIGHTS_BLOCKED propagation; MAIN_PIN:engine/expectation_state.py exists but not wired to K3E dossier on main"
+    }
+  ],
+  "adversarial": [
+    {
+      "case": "E-B horizon-label roll vs estimate revision",
+      "verdict": "HANDLED",
+      "evidence": "13910854:engine/k3e_expectation_surface.py:362-364 NATIVE_PERIOD_CHANGED_NO_REVISION_INFERENCE; tests/test_k3e_expectation_surface.py::test_native_rollover_and_missing_anchor"
+    },
+    {
+      "case": "E-E null normalized baseline vs zero",
+      "verdict": "HANDLED",
+      "evidence": "13910854:engine/k3e_expectation_surface.py:389 value None; tests/test_k3e_expectation_surface.py::test_zero_null_and_integral_count_law; tests/test_k3e_expectation_surface.py::test_unknown_or_caller_labels_ids_cannot_enable_normalized_value"
+    },
+    {
+      "case": "E-G stale/withdrawn component refusal",
+      "verdict": "HANDLED",
+      "evidence": "13910854:engine/k3e_expectation_surface.py:365-371 rights_blocked; tests/test_k3e_expectation_surface.py parametrized RIGHTS_BLOCKED mutations; MAIN_PIN: no k3e surface — UNKNOWN for site consumers"
+    },
+    {
+      "case": "E-D unit/currency/basis mismatch",
+      "verdict": "HANDLED",
+      "evidence": "13910854:engine/k3e_expectation_surface.py:373-375 refusal via baseline_reasons not coercion; tests/test_k3e_expectation_surface.py::test_unknown_or_caller_labels_ids_cannot_enable_normalized_value"
+    }
+  ],
+  "consumer_surface": [
+    {
+      "surface": "MAIN_PIN product UI for K3E expectation/evidence dossier",
+      "verdict": "ABSENT",
+      "evidence": "git grep -n k3e|expectation_market|SRC_A1|EXP_1 origin/main -- scripts/ app/ engine/ templates/ → no matches; site/ ls-tree has no k3e/expectation_dossier paths (rg expectation|k3e on git ls-tree site/)"
+    },
+    {
+      "surface": "Legacy revision display (alt_data / baskets)",
+      "verdict": "PRESENT",
+      "evidence": "templates/alt_data.html.j2 analyst estimate revisions; templates/basket_detail.html.j2 earnings revisions block — not K3E SRC-A1 dossier"
+    },
+    {
+      "surface": "Market OS B1A security_state dossier",
+      "verdict": "PRESENT",
+      "evidence": "engine/security_state.py; scripts/build_ticker_pages.py:5356 build_security_state; contracts/market_os/security_state.v1.schema.json"
+    },
+    {
+      "surface": "E dossier vs security_state",
+      "verdict": "EXTEND_NOT_COLLIDE_IF_SCOPED",
+      "evidence": "security_state is identity/listing workspace projection; K3E expectation dossier has no main renderer — would extend ticker dossier only after accepted consumer merge, separate from security_state refusal table"
+    }
+  ],
+  "gates": [
+    {
+      "gate": "E0 acceptance path (consume evidence, reconcile publication)",
+      "evidence": "Mastermind 03_WORK_PACKAGES.md:45-53 @ d1a8e672 — E0 inspect #8312/#8337; normalized surface PARTIAL; return to #8309 / MAS-271"
+    },
+    {
+      "gate": "C19 H04 / MAS-271 consumer",
+      "evidence": "Mastermind 03_WORK_PACKAGES.md:43 Parent Macro #8309/#8312/#8337; C19 H04/MAS-271 consumes output"
+    },
+    {
+      "gate": "Golden vertical H07 / MAS-274",
+      "evidence": "Mastermind 03_WORK_PACKAGES.md:103-111 @ d1a8e672 — integrated nonbinding answer; Gate: accepted H01/H04/H05/H06; return MAS-274"
+    },
+    {
+      "gate": "Source accepted evidence ladder",
+      "evidence": "Mastermind 05_ACCEPTANCE_AND_RED_TEAM.md:11 — Source accepted requires owner-accepted exact source/contract plus applicable integrated proof"
+    }
+  ],
+  "gaps": [
+    "No merged canonical served dossier path on MAIN_PIN — capture writer only (equity_revisions.py:425).",
+    "yfinance→yahoo crosswalk not implemented anywhere (candidate-only per E-A); alias P absent on inspected heads.",
+    "PR #8312 and #8337 unmerged — program publication gate active.",
+    "PR #8463 CI enrollment and PublishedCatalogGeneration provenance repair open per 5988961617.",
+    "Adversarial behavior on MAIN_PIN consumer surfaces for K3E: UNKNOWN (no k3e_expectation_surface on main).",
+    "Withdrawn/stale vendor component beyond RIGHTS_BLOCKED class: UNKNOWN — no explicit withdrawn state string in 13910854 engine grep scope."
+  ]
+}

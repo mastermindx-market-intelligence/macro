@@ -7,11 +7,12 @@
   },
   "files": {
     "mastermind:config/contracts.yml": {"line_count": 589, "sha256": "f39d5ec8f20d3ec7253103d212ed0ff7bca6b5140c871bd6130209aaccdb2765"},
+    "terminal:terminal/lib/extQuoteFreshness.ts": {"line_count": 46, "sha256": "f860c445bdb9c9a42629c9f44a9fc3908ee4d31b9cd0ae810ff5a9c032595d76"},
     "mastermind:data_layer/macro_refresh.py": {"line_count": 670, "sha256": "575eb13be97796a535253c97509575667ff20694bbc6dfa3e6c577fcbcb3870c"},
     "mastermind:portfolio/prophet_feed.py": {"line_count": 508, "sha256": "e03b1103a637d01c6eddb3c1fcefdaa22b0ce33d46ddcb22156e7c0a30161990"},
     "terminal:DEPLOY.md": {"line_count": 94, "sha256": "b2ffe4473b4798f6ee6c384cb508ef25aa3391c58604c783de8dc07fca06ad49"},
     "terminal:SECURITY.md": {"line_count": 92, "sha256": "c31bebceff35b6259af7d86f23f75b7ad7c64a89cc31eaa3b97409f4b020bb97"},
-    "terminal:hub/lib/extfeed.js": {"line_count": 1041, "sha256": "8af0fa73d0ec24d7a547ccf4b272739938ad3b2daa3be4cc86ccefa2eb43a374"},
+    "terminal:hub/lib/extfeed.js": {"line_count": 1202, "sha256": "d1d37df326828e3040ce82ab577fc6e904587ab3caacbdc90ba1d43a8b243277"},
     "terminal:ingest/alerts_engine.py": {"line_count": 1154, "sha256": "9d7868f60a5d8998aaf9f575878f374fe8ed3d069feb32afd9809338c23409b3"},
     "terminal:ingest/build_polygon_universe.py": {"line_count": 319, "sha256": "a27157a9903798a93a0063bab294546bf631874e8248778560d37a4dd2e2c2da"},
     "terminal:ingest/collect_options.py": {"line_count": 554, "sha256": "84f0ea7720e74540efe3397f7f831062b7ba36c12014009834a9164024ef0fb5"},
@@ -31,13 +32,13 @@
     "terminal:terminal/app/api/company-institutional-context/[symbol]/route.ts": {"line_count": 78, "sha256": "ffe06a04a0dd9b675d976d5f5fd0ae767152d74cb17a904b84e561ddaa521ca9"},
     "terminal:terminal/app/api/company-source-search/[ticker]/route.ts": {"line_count": 96, "sha256": "cfa91d20b9a64994580accefc72d80d06b4bf162b1d8a78b279d2de2ac48878e"},
     "terminal:terminal/app/api/company-theme-context/[symbol]/route.ts": {"line_count": 97, "sha256": "2d6b85a86e52b866814b86299600d54d3c684445ffce9958fe2a1d3feb25fa2c"},
-    "terminal:terminal/app/api/ext-quote/route.ts": {"line_count": 71, "sha256": "f7c9688ce64eaf6ed5f5d6fc938fa8a01436275f2305e1699856833b3dec1a2d"},
+    "terminal:terminal/app/api/ext-quote/route.ts": {"line_count": 107, "sha256": "bd4e2ad9509d1006775c83c22b051ed1376204b337ad77a71220536b30b64ebc"},
     "terminal:terminal/app/api/flow/route.ts": {"line_count": 104, "sha256": "ea58ba6cef0d7f4fe8c3bb68882a7224b34673b366b19139ceda549488f56880"},
     "terminal:terminal/app/api/flow/stream/route.ts": {"line_count": 144, "sha256": "29d660fd12ebd553b3eb11f41db579b3c73e3ceaca5edc9de83c95bbe3e3ebc6"},
     "terminal:terminal/app/api/intraday/route.ts": {"line_count": 198, "sha256": "ea3e671ca7f7227ccf6df1bebf20c28c8920783ee076767fb5c64602aed88243"},
     "terminal:terminal/app/api/me/route.ts": {"line_count": 29, "sha256": "43c5bef71abc8042b810a133985d358ae417d5bcc51653180c937f7e972aae80"},
     "terminal:terminal/app/api/nw/route.ts": {"line_count": 85, "sha256": "cfb939a49d05e67197dd451ebf6d9b00d83ddee9da96c281233d3450a2e82ecb"},
-    "terminal:terminal/app/api/quote/route.ts": {"line_count": 134, "sha256": "87702d98ee63fb961420aec04630a5eefde8bb9285be793ae52b7724b1c867c4"},
+    "terminal:terminal/app/api/quote/route.ts": {"line_count": 183, "sha256": "289c3ac0d0d1932d8d3e565fd8da9a6be7fd8a6d9b42cbcb2ea37075efd42bd0"},
     "terminal:terminal/app/api/snapshot/route.ts": {"line_count": 149, "sha256": "1037c18a0e236b826bc328581c9072a34886c1282626750b4737463d43617ad1"},
     "terminal:terminal/app/(shell)/alerts/page.tsx": {"line_count": 25, "sha256": "ae851cd223541fc7f3d5cb1f3bb5282026e101f69bccde653b367afcf1af19ea"},
     "terminal:terminal/app/(shell)/analysis/page.tsx": {"line_count": 46, "sha256": "b9625da32dd529b53c80b13fe014c32e0d0a909a4ccdec394794c07711ae439a"},
@@ -47,7 +48,7 @@
     "terminal:terminal/app/terminal/page.tsx": {"line_count": 89, "sha256": "dddd073328ed8103b6ce6fb8831a5b8c3beebb2131af407c1fe9d1233dff8d43"},
     "terminal:terminal/app/x/[slug]/page.tsx": {"line_count": 99, "sha256": "e27bc333c5f48f336b2a1729ee84fbf44766eac732360a5673dbee35a01a973e"},
     "terminal:terminal/components/ChartPanel.tsx": {"line_count": 7884, "sha256": "eb2f74e2a4f2ce1dada84a41704f05de3f8b494c16fbbc57471591334a270d67"},
-    "terminal:terminal/components/TerminalShell.tsx": {"line_count": 3766, "sha256": "38839b4c08dd5f39cdd0e1cf443b39428e9cc986b37ef0d118159b1cc5c6ca25"},
+    "terminal:terminal/components/TerminalShell.tsx": {"line_count": 6490, "sha256": "58840d35751af8cc0e47bf9259193e5dd9652375dfb53be778c7678cf5c6580d"},
     "terminal:terminal/components/fin/CompanyInstitutionalContextCard.tsx": {"line_count": 237, "sha256": "4caee6bb7f28201319b7144992147cb9476ad1c2f356c2c35f6cdfc676126131"},
     "terminal:terminal/components/fin/OracleDash.tsx": {"line_count": 1015, "sha256": "5211cee910ac8b287dc8368ed108d15665cf694e4b9cba6517d6301c3cdc0a17"},
     "terminal:terminal/components/fin/TranscriptsPage.tsx": {"line_count": 211, "sha256": "e02516bb3700f1294f2ace0618411ca9cc7e5cd35199d93903554f6f36d07cca"},
@@ -226,7 +227,7 @@
     {"route": "TERMINAL_ROUTE:/api/company-institutional-context/[symbol]", "auth": "signed-in only, not Pro-aware; TERMINAL_E2E_FIXTURE=1 bypasses auth and lineage verification before live public-R2 reads", "cache": "every JSON and rate-limit branch explicitly no-store; server manifest and context caches retain last-good state for 30 seconds", "anchors": ["terminal:terminal/app/api/company-institutional-context/[symbol]/route.ts:17", "terminal:terminal/app/api/company-institutional-context/[symbol]/route.ts:24", "terminal:terminal/app/api/company-institutional-context/[symbol]/route.ts:55", "terminal:terminal/app/api/company-institutional-context/[symbol]/route.ts:61", "terminal:terminal/lib/companyInstitutionalContext.ts:161"]},
     {"route": "TERMINAL_ROUTE:/api/company-theme-context/[symbol]", "auth": "signed-in only, not plan-aware; TERMINAL_E2E_FIXTURE=1 bypasses auth and lineage verification before live public-R2 reads", "cache": "every JSON and rate-limit branch explicitly no-store", "anchors": ["terminal:terminal/app/api/company-theme-context/[symbol]/route.ts:17", "terminal:terminal/app/api/company-theme-context/[symbol]/route.ts:26", "terminal:terminal/app/api/company-theme-context/[symbol]/route.ts:65", "terminal:terminal/app/api/company-theme-context/[symbol]/route.ts:75"]},
     {"route": "TERMINAL_ROUTE:/api/company-source-search/[ticker]", "auth": "signed-in except TERMINAL_E2E_FIXTURE=1; E2E branch substitutes a deterministic test source", "cache": "every JSON and rate-limit branch explicitly no-store", "anchors": ["terminal:terminal/app/api/company-source-search/[ticker]/route.ts:14", "terminal:terminal/app/api/company-source-search/[ticker]/route.ts:35", "terminal:terminal/app/api/company-source-search/[ticker]/route.ts:81", "terminal:terminal/app/api/company-source-search/[ticker]/route.ts:92"]},
-    {"route": "TERMINAL_ROUTE:/api/quote", "auth": "optional gate only after cache miss", "cache": "single warm-hit/error, early parameter and unauthenticated-401 branches omit explicit cache control", "anchors": ["terminal:terminal/app/api/quote/route.ts:88", "terminal:terminal/app/api/quote/route.ts:94", "terminal:terminal/app/api/quote/route.ts:126", "terminal:terminal/app/api/quote/route.ts:132"]},
-    {"route": "TERMINAL_ROUTE:/api/ext-quote", "auth": "none", "cache": "route response omits explicit cache control", "anchors": ["terminal:terminal/app/api/ext-quote/route.ts:7"]}
+    {"route": "TERMINAL_ROUTE:/api/quote", "auth": "optional gate only after cache miss", "cache": "single warm-hit/error, early parameter and unauthenticated-401 branches omit explicit cache control", "anchors": ["terminal:terminal/app/api/quote/route.ts:123", "terminal:terminal/app/api/quote/route.ts:156", "terminal:terminal/app/api/quote/route.ts:173", "terminal:terminal/app/api/quote/route.ts:175"]},
+    {"route": "TERMINAL_ROUTE:/api/ext-quote", "auth": "none", "cache": "no-store on every response including empty, transport-error and rate-limit; BOATS-only qualified facts", "anchors": ["terminal:terminal/app/api/ext-quote/route.ts:79"]}
   ]
 }

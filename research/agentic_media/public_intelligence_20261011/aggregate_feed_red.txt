@@ -1,0 +1,74 @@
+...................................FF..FFF.FFFF                          [100%]
+=================================== FAILURES ===================================
+_______________ test_aggregate_feed_fact_sheet_is_planning_only ________________
+tests/test_press_external_candidate.py:188: in test_aggregate_feed_fact_sheet_is_planning_only
+    result = P.plan_external_candidate(**inputs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+engine/press/desk_planner.py:1411: in plan_external_candidate
+    return plan_whitehouse_candidate(**inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+engine/press/external_candidate.py:98: in plan_whitehouse_candidate
+    raise ValueError("source is not its canonical White House document")
+E   ValueError: source is not its canonical White House document
+________ test_aggregate_research_route_keeps_reviewed_fixture_identity _________
+tests/test_press_external_candidate.py:198: in test_aggregate_research_route_keeps_reviewed_fixture_identity
+    result = P.plan_external_candidate(**inputs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+engine/press/desk_planner.py:1411: in plan_external_candidate
+    return plan_whitehouse_candidate(**inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+engine/press/external_candidate.py:98: in plan_whitehouse_candidate
+    raise ValueError("source is not its canonical White House document")
+E   ValueError: source is not its canonical White House document
+_ test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news/../fact-sheets/secret/] _
+tests/test_press_external_candidate.py:231: in test_malformed_or_encoded_separator_routes_rejected
+    with pytest.raises(ValueError, match='canonical White House document'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news/%2e%2e/fact-sheets/secret/] _
+tests/test_press_external_candidate.py:231: in test_malformed_or_encoded_separator_routes_rejected
+    with pytest.raises(ValueError, match='canonical White House document'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news/%2ffact-sheets/secret/] _
+tests/test_press_external_candidate.py:231: in test_malformed_or_encoded_separator_routes_rejected
+    with pytest.raises(ValueError, match='canonical White House document'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news//fact-sheets/secret/] _
+tests/test_press_external_candidate.py:231: in test_malformed_or_encoded_separator_routes_rejected
+    with pytest.raises(ValueError, match='canonical White House document'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news/./fact-sheets/secret/] _
+tests/test_press_external_candidate.py:231: in test_malformed_or_encoded_separator_routes_rejected
+    with pytest.raises(ValueError, match='canonical White House document'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+________________ test_aggregate_feed_identity_mismatch_rejected ________________
+tests/test_press_external_candidate.py:239: in test_aggregate_feed_identity_mismatch_rejected
+    with pytest.raises(ValueError, match='feed identity'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'feed identity'
+E     Actual message: 'source is not its canonical White House document'
+_________ test_aggregate_admission_does_not_bypass_freshness_or_rights _________
+tests/test_press_external_candidate.py:247: in test_aggregate_admission_does_not_bypass_freshness_or_rights
+    with pytest.raises(ValueError, match='event.*window'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'event.*window'
+E     Actual message: 'source is not its canonical White House document'
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_external_candidate.py::test_aggregate_feed_fact_sheet_is_planning_only
+FAILED tests/test_press_external_candidate.py::test_aggregate_research_route_keeps_reviewed_fixture_identity
+FAILED tests/test_press_external_candidate.py::test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news/../fact-sheets/secret/]
+FAILED tests/test_press_external_candidate.py::test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news/%2e%2e/fact-sheets/secret/]
+FAILED tests/test_press_external_candidate.py::test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news/%2ffact-sheets/secret/]
+FAILED tests/test_press_external_candidate.py::test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news//fact-sheets/secret/]
+FAILED tests/test_press_external_candidate.py::test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news/./fact-sheets/secret/]
+FAILED tests/test_press_external_candidate.py::test_aggregate_feed_identity_mismatch_rejected
+FAILED tests/test_press_external_candidate.py::test_aggregate_admission_does_not_bypass_freshness_or_rights
+9 failed, 38 passed in 5.75s

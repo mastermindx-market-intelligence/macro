@@ -1,0 +1,40 @@
+{
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "run_id": "mmx-press-aggregate-feed-fix-20261012-001",
+  "source_base": "209f77267304f7a5c42480a051af6a3151ff3206",
+  "worker_source_head": "9019a29c2e35da499fb5c822e515be9ce9c21027",
+  "retained_stdout_sha256": "402f3d03739d5de8bd1635bed2a9a25bd08f65e1714a89775fef631f50375bb8",
+  "patch_sha256": "b17391f16edf07c649e644bd3d782edcf19c3b09c66f71747dd8769e2c07e881",
+  "export_receipt_sha256": "bb2cf2ec52c3a8867bfa8c8b4f5d37bc914f51afc531d8e0ab0c46784bc7a124",
+  "artifact_manifest_matched": true,
+  "execution_replayed": false,
+  "export_destination": "/Volumes/Mastermind/evidence/mmx-aggregate-feed-20261012",
+  "source_files": {
+    "engine/press/external_candidate.py": "89a9ae3b591a569e10cfd2146dcfe7d8565728d68369d80ade723c7a1081f197",
+    "tests/test_press_external_candidate.py": "ceaefb76a08de6891ff1ee8dfa2cc08cdf83549bbdea6c5d5120bd3a90b930bc"
+  },
+  "parent_repair": "Reject URLs altered by urlsplit normalization; three regression cases failed against the worker patch.",
+  "validation_state": "accepted_after_parent_repair",
+  "publication_approved": false,
+  "installed": false,
+  "tests": {
+    "command": "python3 -m pytest tests/test_press_external_candidate.py tests/test_press_planner.py tests/test_press_validators.py tests/test_whitehouse_feed.py -q --tb=short",
+    "passed": 186,
+    "seconds": 9.5,
+    "fixture_materialization": "python3 scripts/worktree_sparse.py add data"
+  },
+  "contract_delta": {
+    "base": "209f77267304f7a5c42480a051af6a3151ff3206",
+    "introduced": 0,
+    "inherited": 0,
+    "seconds": 514.2
+  },
+  "review": {
+    "verdict": "PASS_AFTER_PARENT_REPAIR",
+    "scope": "bounded source change only; live installation and publication not accepted",
+    "findings_closed": [
+      "reject URL parsing normalization",
+      "preserve aggregate-body qualification"
+    ]
+  }
+}

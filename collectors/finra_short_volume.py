@@ -61,6 +61,16 @@ def _panel_path():
     return config.data_dir() / GROUP / "panel.parquet"
 
 
+def _superseded_path():
+    """Restatement witness (C19 WP24 DQ1-1): the original row of every
+    (date, ticker) whose values a later re-fetch replaced. Change-only, so it
+    stays empty unless FINRA really restates. Internal evidence only (DQ1-6)."""
+    return _panel_path().parent / "superseded.parquet"
+
+
+_VALUE_COLS = ["short_vol", "short_exempt", "total_vol", "short_ratio"]
+
+
 def _universe_tickers() -> set[str]:
     """Our covered names, read from the breadth close-caches — keeps the panel
     lean (~1.5k names) vs FINRA's ~8k symbols. Empty set -> keep everything."""
@@ -101,15 +111,66 @@ def _parse(text: str) -> pd.DataFrame:
             continue
         if total_v <= 0:
             continue
+        raw = parts[1].strip()
         rows.append({
             "date": pd.Timestamp(parts[0]),
-            "ticker": parts[1].strip().upper(),
+            "ticker": raw.upper(),
             "short_vol": short_v,
             "short_exempt": float(parts[3]) if parts[3].replace(".", "", 1).isdigit() else 0.0,
             "total_vol": total_v,
             "short_ratio": round(short_v / total_v, 4),
+            "_upper": raw == raw.upper(),
         })
-    return pd.DataFrame(rows)
+    return _resolve_case_collisions(pd.DataFrame(rows))
+
+
+def _resolve_case_collisions(df: pd.DataFrame) -> pd.DataFrame:
+    """C19 WP24 DQ1-4: FINRA lists distinct securities whose raw symbols differ
+    only by case (e.g. BCPC common vs BCpC preferred). Folding to upper case
+    makes them collide on (date, ticker). The raw symbol that is already
+    all-uppercase wins regardless of line order; if none or several are, the
+    last line in file order wins (the prior keep="last" behaviour)."""
+    if df.empty:
+        return df
+    df = df.reset_index(drop=True)
+    dup = df.duplicated(["date", "ticker"], keep=False)
+    if dup.any():
+        sub = df[dup].assign(_pos=df.index[dup])
+        winners = (sub.sort_values(["_upper", "_pos"], kind="mergesort")
+                      .drop_duplicates(["date", "ticker"], keep="last")["_pos"])
+        log.info("finra_short_volume: %d case-fold collision row(s) dropped "
+                 "(all-uppercase symbol kept)", int(dup.sum()) - len(winners))
+        df = df[~dup | df.index.isin(winners)]
+    return df.drop(columns=["_upper"]).reset_index(drop=True)
+
+
+def _witness_superseded(prev: pd.DataFrame, fresh: pd.DataFrame) -> int:
+    """C19 WP24 DQ1-1: append to the sidecar every prior panel row that this
+    run's re-fetch replaces with different values. Returns the count. An
+    identical re-read appends nothing."""
+    if prev.empty or fresh.empty:
+        return 0
+    old = prev.drop_duplicates(["date", "ticker"], keep="last").copy()
+    new = fresh.drop_duplicates(["date", "ticker"], keep="last").copy()
+    old["date"] = pd.to_datetime(old["date"])
+    new["date"] = pd.to_datetime(new["date"])
+    both = old.merge(new[["date", "ticker", *_VALUE_COLS]], on=["date", "ticker"],
+                     how="inner", suffixes=("", "__new"))
+    if both.empty:
+        return 0
+    changed = pd.Series(False, index=both.index)
+    for c in _VALUE_COLS:
+        a, b = both[c], both[f"{c}__new"]
+        changed |= (a != b) & ~(a.isna() & b.isna())
+    if not changed.any():
+        return 0
+    gone = both.loc[changed, list(old.columns)].copy()
+    gone["superseded_at_utc"] = pd.Timestamp.now("UTC")
+    sp = _superseded_path()
+    if sp.exists():
+        gone = pd.concat([pd.read_parquet(sp), gone], ignore_index=True)
+    gone.reset_index(drop=True).to_parquet(sp)
+    return int(changed.sum())
 
 
 class FinraShortVolumeAdapter(Adapter):
@@ -129,8 +190,9 @@ class FinraShortVolumeAdapter(Adapter):
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         universe = _universe_tickers()
         have = self._have_dates()
-        # Always re-fetch the newest 2 sessions (FINRA can restate same-day), and
-        # any window date we don't yet have.
+        # Always re-fetch the newest 2 sessions, and any window date we don't yet
+        # have. Whether FINRA restates a posted daily file is UNKNOWN (C19 WP24
+        # DQ1-1); a replaced row is witnessed by superseded.parquet.
         wanted = _business_days(LOOKBACK_DAYS if not full_history else 120)
         new_frames: list[pd.DataFrame] = []
         fetched = skipped = 0
@@ -168,8 +230,10 @@ class FinraShortVolumeAdapter(Adapter):
         fresh = pd.concat(new_frames, ignore_index=True)
         path = _panel_path()
         path.parent.mkdir(parents=True, exist_ok=True)
+        superseded = 0
         if path.exists():
             prev = pd.read_parquet(path)
+            superseded = _witness_superseded(prev, fresh)
             combined = pd.concat([prev, fresh], ignore_index=True)
         else:
             combined = fresh
@@ -178,8 +242,9 @@ class FinraShortVolumeAdapter(Adapter):
         combined.to_parquet(path)
 
         last = fresh["date"].max()
-        log.info("finra_short_volume: +%d rows across %d sessions (%d skipped), panel=%d, latest %s",
-                 len(fresh), fetched, skipped, len(combined), last.date())
+        log.info("finra_short_volume: +%d rows across %d sessions (%d skipped), panel=%d, "
+                 "superseded=%d, latest %s",
+                 len(fresh), fetched, skipped, len(combined), superseded, last.date())
         hb = pd.DataFrame({"new_rows": [len(fresh)], "fetched": [fetched]}, index=[last])
         return {"finra_short_volume__ingest": hb}
 

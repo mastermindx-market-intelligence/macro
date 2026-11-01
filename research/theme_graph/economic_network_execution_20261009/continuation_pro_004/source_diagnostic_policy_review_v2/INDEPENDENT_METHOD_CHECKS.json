@@ -1,0 +1,142 @@
+{
+  "changed_policy_pointers": [
+    "/adoption/required_gate_corrections",
+    "/authority_boundary",
+    "/capitalization/assertion_resolution",
+    "/capitalization/cap_unknown_handling",
+    "/capitalization/fx/assertion_rule",
+    "/capitalization/prices/historical_adjustment",
+    "/capitalization/prices/source",
+    "/capitalization/share_class_and_ADR/assertion_rule",
+    "/capitalization/share_count/source",
+    "/coverage_axes",
+    "/cutoff_policy/D_conditioned_inference_limit",
+    "/cutoff_policy/historical_roster",
+    "/cutoff_policy/revisions",
+    "/deterministic_selection/INT_feasibility/deterministic_solution",
+    "/deterministic_selection/INT_feasibility/implementation_test_requirements",
+    "/deterministic_selection/INT_feasibility/residual_pseudocode",
+    "/deterministic_selection/output_required",
+    "/deterministic_selection/preflight_order",
+    "/failure_and_falsifier_law/diagnostic_falsifiers",
+    "/failure_and_falsifier_law/hard_stops",
+    "/frame_sourcing_dependency",
+    "/historical_frame",
+    "/holds/actual_cap_component_conflicts_audited",
+    "/holds/corrective_review_pass_observed",
+    "/holds/historical_frame_proven",
+    "/instrument_and_venue/venue_register_requirement",
+    "/policy_id",
+    "/relative_size/administrative_population_label",
+    "/relative_size/completeness",
+    "/relative_size/denominator",
+    "/schema",
+    "/scope_of_this_artifact/corrective_review_state",
+    "/scope_of_this_artifact/current_effects",
+    "/scope_of_this_artifact/executable_selector",
+    "/scope_of_this_artifact/previous_failures_preserved",
+    "/status",
+    "/version_provenance"
+  ],
+  "created_at_utc": "2026-10-09T12:00:51.131337+00:00",
+  "equal_policy_pointer_count": 35,
+  "equal_value_boundary_block_preserved": true,
+  "exact_quota_date_seed_checks": "PASS",
+  "frozen_inputs": [
+    {
+      "bytes": 7851,
+      "path": "source_diagnostic_policy_v2/ARTIFACT_VALIDATION.json",
+      "sha256": "4c5deb03a3a3eab6d19688ceda009fb860c217f63ba046cb91713be181a1e762"
+    },
+    {
+      "bytes": 12822,
+      "path": "source_diagnostic_policy_v2/CORRECTION_CHANGELOG.md",
+      "sha256": "f47d8a11ec88d724375e5e7d71a4baffe7b8f94962a3825f23fa1e4e2d2bd387"
+    },
+    {
+      "bytes": 2960,
+      "path": "source_diagnostic_policy_v2/PACKAGE_MANIFEST.json",
+      "sha256": "c1788fdb703bee9e519c8f162af39be79fccd97b453d4b36746352fb2068d042"
+    },
+    {
+      "bytes": 8698,
+      "path": "source_diagnostic_policy_v2/PRESERVATION_BASELINE.json",
+      "sha256": "0fa2acfd8f7e9b4e0233390312d6268b376485e912679a3b10a9332e9104cf31"
+    },
+    {
+      "bytes": 15881,
+      "path": "source_diagnostic_policy_v2/PRIMARY_SOURCE_REGISTER.json",
+      "sha256": "cf2521ad18316785ecd48c34cbdd132ab4606214041132548b0ff4898cfa2b43"
+    },
+    {
+      "bytes": 60312,
+      "path": "source_diagnostic_policy_v2/RECOMMENDED_SELECTION_POLICY.json",
+      "sha256": "d41422d76219b1c5d3a3c9cbb19a1bc3124433031200b09499033bd4dc30d522"
+    },
+    {
+      "bytes": 58436,
+      "path": "source_diagnostic_policy_v2/SELECTION_POLICY_ADJUDICATION_MEMO.md",
+      "sha256": "4d322ba08f488c6b4b71f22899416b4cb412f951dc893c4145f43796126fea29"
+    },
+    {
+      "bytes": 3091,
+      "path": "source_diagnostic_policy_v2/SOURCE_PROVENANCE.json",
+      "sha256": "8bfc98191e50e1b8a7b0158c36e3443e05a9515c600037fa9b6a5179264f4f6b"
+    },
+    {
+      "bytes": 2827,
+      "path": "source_diagnostic_policy_v2/SYNTHETIC_METHOD_CHECKS.json",
+      "sha256": "6f2b8e7f5ca4dfdf6595286711601dde00e47e53229187f332e0cf5c598f3281"
+    },
+    {
+      "bytes": 10875,
+      "path": "source_diagnostic_policy_v2/SYNTHETIC_METHOD_CHECKS.py",
+      "sha256": "c075fe80d9f30f2492889eb5b4e799878a250c56353cf3113c73f8f0904a8107"
+    }
+  ],
+  "input_bytes": 183753,
+  "proof_limits": {
+    "actual_INT_flow": null,
+    "actual_population_count": null,
+    "input_files_changed": false,
+    "native_app_Git_or_source_acquisition_effects": false,
+    "policy_adoption": false,
+    "prediction_or_production_admission": false,
+    "production_selector_implemented_or_run": false,
+    "real_source_or_entitlement_verified": false,
+    "source_receipt_validator_or_trust_adapter_run": false
+  },
+  "result": "PASS_FINITE_SYNTHETIC_AND_BINDING_CONTROLS_ONLY",
+  "roster_counterexample_reproduced": true,
+  "schema": "research.gmi.wp02.independent_corrective_method_checks/v2",
+  "signed_action_counterexample": {
+    "base_shares": "100000000",
+    "correct_cap": "1800000000",
+    "crosses_absolute_2b_boundary": true,
+    "example_is_synthetic": true,
+    "negative_action_is_not_a_negative_price_or_cap_factor": true,
+    "price": "20",
+    "signed_retirement": "-10000000",
+    "wrong_abs_delta_cap": "2200000000"
+  },
+  "synthetic_flow": {
+    "algorithm": "Independent Edmonds-Karp plus residual greedy compared with exhaustive subsets",
+    "capacities_per_intersection": [
+      0,
+      1,
+      2
+    ],
+    "cell_count": 2,
+    "country_count": 3,
+    "duplicate_toy_identity_rejected": true,
+    "feasible": 424,
+    "infeasible": 305,
+    "input_orders_per_matrix": 2,
+    "matrices_tested": 729,
+    "maximum_candidate_count": 12,
+    "priority": "Fixed artificial identifier lexical order, not real owner IDs",
+    "production_or_full_18_cell_solver_tested": false,
+    "zero_residual_target_tested": true
+  },
+  "unchanged_prior_files_rehashed": 36
+}

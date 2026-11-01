@@ -1,0 +1,33 @@
+{
+  "observed_at_utc": "2026-10-12T00:25:10.479108+00:00",
+  "repair_pr": 8870,
+  "tested_head": "1cea273c72487f1fae77dc579b3e628ec435a55c",
+  "merge_sha": "de0c202a016502ce521db66a70e5905b76e0c9c2",
+  "new_branch": "claude/tiingo-boats-vendor-case-20261012",
+  "fresh_main": "de0c202a016502ce521db66a70e5905b76e0c9c2",
+  "preserved_candidate_hashes": {
+    "scripts/build_ext_quotes.py": "25e2866a24562e50fe5ba3bf996e83c1c021b9bc9599e7cce98be6cd29877476",
+    "tests/test_tiingo_boats_display.py": "554564e21844e4fa8d3c3cd39d0a5fe5b8123ceba1d0e44dd08733b04a3129da",
+    "tests/fixtures/r2_delivery_macro_evidence_files.v1.tsv": "51dd7bd5b625e4f4cb1647bf8fde128e7b55f349648d0cb50fd0d3340ef86da3"
+  },
+  "main_baseline": {
+    "run": 38187866979,
+    "source": "de0c202a016502ce521db66a70e5905b76e0c9c2",
+    "state": "in_progress",
+    "event": "push"
+  },
+  "changed_paths_in_repair": [
+    ".github/ci/legacy-jobs.yml",
+    "agentos/handoffs/TIINGO-DATA-OS-2026-10-11.md",
+    "agentos/workstreams/WS-TIINGO-DATA-OS.md",
+    "docs/tiingo-evidence/20261011-ci-continuation/README.md",
+    "docs/tiingo-evidence/20261011-ci-continuation/independent-ci-scope-review.txt",
+    "docs/tiingo-evidence/20261011-ci-continuation/macro-8698-contract-delta-red.log",
+    "docs/tiingo-evidence/20261011-ci-continuation/macro-ci-continuation-contract-delta.log",
+    "docs/tiingo-evidence/20261011-ci-continuation/macro-ci-continuation-import-closure.log",
+    "docs/tiingo-evidence/20261011-ci-continuation/macro-ci-continuation-source-parity.json",
+    "docs/tiingo-evidence/20261011-ci-continuation/macro-original-carrier-early-merge-correction.json",
+    "docs/tiingo-evidence/20261011-ci-continuation/red-log-format-receipt.json"
+  ],
+  "source_delta_not_installed_or_published": true
+}

@@ -1,0 +1,91 @@
+{
+  "schema": "tiingo.attended_gate_exact_source_review/v1",
+  "recorded_at_utc": "2026-10-13T04:42:13.819819+00:00",
+  "decision": "HOLD_REPAIR_REQUIRED_BEFORE_EXECUTION",
+  "original_root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "reviewer_native_thread": "01a13385-9767-7a32-83b2-d216c2c9778d",
+  "candidate_file": "tiingo-phase04-attended-quota-recovery01.py",
+  "candidate_sha256": "b6440af1c25c9f504d65d7c477c2b79287ef71a9d5f8317c59f932b12f53203e",
+  "plan_file": "eod-wave15-original-unadmitted-continuation04-20261013-01a12ab6-planned-attended-recovery01.json",
+  "plan_sha256": "5a9bf4183e3c643b9af82bc47e5c17cd85c3952979e57c522cd4b529b80c32f2",
+  "architecture_ruling_sha256": "992fb4b4827a1002ff6bf147c62ad11853e4355d78a591a25cb69e4ad27efcd6",
+  "passed_checks": [
+    "Actual candidate and plan hashes equal commission; source parses and compiles.",
+    "Exact AST from admission module load through final settlement proof is identical to recovered e7d source. Rate/admission/collector/key/TLS/error drain/outcomes/1816 success criteria unchanged.",
+    "Plan selected rows, 1816 cap, 34 holds, excluded prior work, source pins and raw stop threshold remain unchanged; only explicit recovery/attended binding metadata changes.",
+    "Validation returns all variables required by unchanged capture: no unresolved old main-local variable found in capture body.",
+    "READY truthfully declares process_terminal_exit_code null and historical preflight20348 not relabelled.",
+    "Snapshot tests detect same-size content mutation, added directory and symlink; captures root, directory and leaf.",
+    "Exclusive scope/result behavior preserved; scope precedes key read; old historical quota fields are unused by attended gate."
+  ],
+  "required_repairs": [
+    {
+      "id": "R1",
+      "severity": "high",
+      "lines": "91-92",
+      "finding": "select readiness followed by blocking text readline does not bound the whole input operation. A partial line can keep the process alive indefinitely after the first byte.",
+      "repair": "Use one monotonic absolute deadline across bounded byte reads through newline. EOF, timeout, oversize, extra bytes/extra record and malformed input fail closed. Do not mix selector readiness with a potentially blocking buffered readline. Record actual wait deadline in READY.",
+      "evidence": "Inert real pipe fixture used select timeout0.03 seconds then partial line; readline returned only after0.1749 seconds when fixture supplied newline."
+    },
+    {
+      "id": "R2",
+      "severity": "high",
+      "lines": "15-23",
+      "finding": "os.walk default onerror=None silently skips unreadable or disappeared subdirectories. Equal snapshots can therefore omit receipt contents.",
+      "repair": "Provide an onerror callback that raises; reject traversal failures and incomplete namespace. Preserve full namespace and all existing lstat fields.",
+      "evidence": "Extracted exact namespace_snapshot with mocked scandir failure accepted the incomplete root/day snapshot without the leaf."
+    },
+    {
+      "id": "R3",
+      "severity": "high",
+      "lines": "94-100",
+      "finding": "bound hashes a file and returns its path; parent/quota callers reread different bytes for parsing. Input digest need not describe consumed proof.",
+      "repair": "Read each bounded evidence file once to bytes, compute expected hash on those bytes and parse those same bytes. Retain those hashes as immutable bindings for scope rather than rehashing a mutable file and silently claiming its newer value.",
+      "evidence": "Extracted exact bound accepted proof hash; fixture then replaced bytes, and caller parsed changed proof without failure."
+    },
+    {
+      "id": "R4",
+      "severity": "high",
+      "lines": "84-110",
+      "finding": "Final gate rechecks collector/caller and plan but not admission module or canonical acceptance evidence after READY; ready/method/snapshot hashes are recomputed rather than checked against frozen validated values. The scope can claim changed bytes that validation did not consume.",
+      "repair": "Freeze validated method, plan, ready, snapshot, module and acceptance identities; compare them again after input before quota-last/scope. Revalidate all mutable pinned evidence still used in final attestations or bind attestations to the exact already-consumed immutable bytes. Do not load a changed module after declaring the old module accepted."
+    },
+    {
+      "id": "R5",
+      "severity": "medium",
+      "lines": "98-108",
+      "finding": "New dynamic proof input is not checked against accepted schemas or strict boolean types; the newly required fresh visible page reload is not enforced, and after-READY comparison is lexical timestamp ordering.",
+      "repair": "Validate accepted schema and required fields/types for root consumption and quota; require actual page_reload_and_visible_dom_observed is True and intended account is True, with no copied credential/session material. Compare timezone-aware parsed UTC instants for observed_at >= validated_at and 0<=age<=900. Keep quota check last. Root receipt must bind method/plan plus exact READY/process and revised-gate acceptance."
+    }
+  ],
+  "fixture_results": {
+    "capture_AST_identical": true,
+    "syntax_compiles": true,
+    "snapshot_root_directory_leaf": true,
+    "same_size_mutation_detected": true,
+    "added_directory_detected": true,
+    "symlink_rejected": true,
+    "unreadable_subtree_silently_accepted": true,
+    "partial_line_exceeded_scaled_deadline": true,
+    "hash_then_parse_race_reproduced": true
+  },
+  "review_effects": {
+    "candidate_main_executed": false,
+    "collector_imported_by_review": false,
+    "provider_calls": 0,
+    "credentials_read": false,
+    "archive_access_by_fixtures": false,
+    "archive_writes": 0,
+    "source_edits": 0,
+    "synthetic_tmp_only_fixtures": true,
+    "exclusive_review_artifact_written": true
+  },
+  "next_action": "Repair only these pre-provider gates, submit new exact source and plan hashes for delta review. Do not launch b644 candidate. Reuse the accepted unchanged capture-body evidence.",
+  "remaining_real_path_gates": "Root explicit revised-gate acceptance, actual READY consumption, fresh visible quota, actual capture terminal return and later QA remain outstanding. Qualification template d398 needs actual new scope binding after launch.",
+  "preserved_holds": [
+    "PR955 approval denial",
+    "Fundamentals provider refusals",
+    "Fabric transport/log permission refusals"
+  ],
+  "programme_acceptance_claimed": false
+}

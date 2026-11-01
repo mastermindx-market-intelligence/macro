@@ -1,0 +1,136 @@
+{
+  "acceptance_cases": [
+    {
+      "condition": "DoD delayed data",
+      "diagnostic_disposition": "BOUNDED_DESCRIPTIVE_EVIDENCE_ONLY",
+      "full_case_complete": false,
+      "id": "A12",
+      "implementation_acceptance": "not_run_in_authoring",
+      "remaining_obligation": "Exact native historical public/house availability and rights remain missing; current generation is not historical first-seen admission.",
+      "required_behavior": "Use evidenced public/house availability; recent absent row is not no-award and a90-day-late row is not contemporaneous event knowledge.",
+      "tasks": [
+        "C0",
+        "Q1"
+      ]
+    },
+    {
+      "condition": "Recognition",
+      "diagnostic_disposition": "BOUNDED_DESCRIPTIVE_EVIDENCE_ONLY",
+      "full_case_complete": false,
+      "id": "A23",
+      "implementation_acceptance": "not_run_in_authoring",
+      "remaining_obligation": "Observed adjusted price ratios describe return, without expectations inference or causal attribution.",
+      "required_behavior": "Algebraic valuation hurdle and observed price response are not observed market expectations or causal effects.",
+      "tasks": [
+        "P3",
+        "Q2"
+      ]
+    },
+    {
+      "condition": "Selection/holdout",
+      "diagnostic_disposition": "BOUNDED_DESCRIPTIVE_EVIDENCE_ONLY",
+      "full_case_complete": false,
+      "id": "A24",
+      "implementation_acceptance": "not_run_in_authoring",
+      "remaining_obligation": "Recorded descriptive scope and exclusions are not predictive registration, pre-outcome independent acceptance or unseen holdouts.",
+      "required_behavior": "Preregister sample/exclusions, trial budget and clustering; unseen documents/issuers/programs remain held out.",
+      "tasks": [
+        "Q0",
+        "Q1"
+      ]
+    },
+    {
+      "condition": "Population coverage",
+      "diagnostic_disposition": "BOUNDED_DESCRIPTIVE_EVIDENCE_ONLY",
+      "full_case_complete": false,
+      "id": "A25",
+      "implementation_acceptance": "not_run_in_authoring",
+      "remaining_obligation": "Retained23 source events are a named display population; no complete award or signed-case denominator. All requested23 and future endpoints retained.",
+      "required_behavior": "Top-dollar sample/press release corpus is not complete award universe; denominator and censoring explicit.",
+      "tasks": [
+        "Q1"
+      ]
+    },
+    {
+      "condition": "Overlapping evidence",
+      "diagnostic_disposition": "BOUNDED_DESCRIPTIVE_EVIDENCE_ONLY",
+      "full_case_complete": false,
+      "id": "A26",
+      "implementation_acceptance": "not_run_in_authoring",
+      "remaining_obligation": "23 event IDs,13 issuer/award/effective/known groups,6 issuer/awards,3 overlapping issuer windows; no independentN or cluster inference claimed.",
+      "required_behavior": "Issuer/program/day clusters and repeated multi-source events do not inflate N.",
+      "tasks": [
+        "Q1",
+        "Q2"
+      ]
+    },
+    {
+      "condition": "Conditional probability",
+      "diagnostic_disposition": "BOUNDED_DESCRIPTIVE_EVIDENCE_ONLY",
+      "full_case_complete": false,
+      "id": "A27",
+      "implementation_acceptance": "not_run_in_authoring",
+      "remaining_obligation": "No probability multiplication; separate stage/financial/equity targets have no admitted forecast/proper-score evaluation.",
+      "required_behavior": "Separate stage/economic/equity targets; do not multiply uncalibrated or dependent marginals.",
+      "tasks": [
+        "Q2"
+      ]
+    },
+    {
+      "condition": "Forecast registration",
+      "diagnostic_disposition": "BOUNDED_DESCRIPTIVE_EVIDENCE_ONLY",
+      "full_case_complete": false,
+      "id": "A28",
+      "implementation_acceptance": "not_run_in_authoring",
+      "remaining_obligation": "No new issuance; original Q3 remains UNKNOWN with original observation refusal. No retrospective row can become a prospective forecast.",
+      "required_behavior": "Count once, preserve source/model/cutoff and never backfill historical reconstructions as prospective predictions.",
+      "tasks": [
+        "Q3"
+      ]
+    },
+    {
+      "condition": "Maturity/censoring",
+      "diagnostic_disposition": "BOUNDED_DESCRIPTIVE_EVIDENCE_ONLY",
+      "full_case_complete": false,
+      "id": "A29",
+      "implementation_acceptance": "not_run_in_authoring",
+      "remaining_obligation": "Exact h5/h21 observable23 each,h63/h126 observable0,elapsed28\u201335. Source-bound current technical panel succeeds; identity/rights and prospective natural-time admission remain absent.",
+      "required_behavior": "No outcome before horizon; unobserved is not failed; trading calendars and adverse delisting/source gaps explicit.",
+      "tasks": [
+        "Q3",
+        "Q4"
+      ]
+    },
+    {
+      "condition": "Independent efficacy",
+      "diagnostic_disposition": "BOUNDED_DESCRIPTIVE_EVIDENCE_ONLY",
+      "full_case_complete": false,
+      "id": "A30",
+      "implementation_acceptance": "not_run_in_authoring",
+      "remaining_obligation": "Independent method and deterministic arithmetic review cover bounded description only; efficacy intervals/proper scores and human workflow benefit are not established.",
+      "required_behavior": "Baseline/proper-score/uncertainty reproduction; no-go remains visible, no cherry-picked model promotion.",
+      "tasks": [
+        "Q4"
+      ]
+    }
+  ],
+  "full_case_completion_claims": 0,
+  "mission_complete": false,
+  "not_a_replacement_matrix": true,
+  "original_cases": 45,
+  "original_contract_path": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/acceptance-resume-20261013/PINNED_DELIVERY_CONTRACTS.json",
+  "original_contract_sha256": "b265a309243770d3a301e09b168585f42e84a7701cb20470f9c84b1eeaa090b0",
+  "original_tasks": 30,
+  "other_cases": "No new claim or disposition; preserve existing root-owned45-case audit.",
+  "related_preserved_tasks": [
+    "Q0",
+    "Q3"
+  ],
+  "schema": "defense.retrospective_contract_mapping.v1",
+  "scope_sha256": "a7d54f3c9a4fe8e3f71ec6e2058317cb85d9b093abf50c2796e97d93b60d984f",
+  "scoped_tasks": [
+    "Q1",
+    "Q2",
+    "Q4"
+  ]
+}

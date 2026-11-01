@@ -1,0 +1,97 @@
+{
+  "schema": "paper.im03.inspector.integration.evidence.v1",
+  "status": "SCOPED_SOURCE_COMPONENT_VISUAL_AND_BROWSER_ACCEPTED",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_hashes": {
+    "lib/intl_inspector_view.py": "bd9f90c138afd1c03cd9d5b4dcbf61e424a294df67779cdd592634ac6f22d9a7",
+    "lib/intl_inspector_mount.py": "e5eed44bb052773e60537a01323e0a6952baf8f4aca454fce0299b505f459312",
+    "lib/intl_library_mount.py": "909d49b78d392903449ec75cff0c58fbb231da052761b1f02a09c3973c908888",
+    "templates/intl_workspace/inspector.html.j2": "0be40f2bce9781c34fc2130103f22f16be22148b551134572fe01b56de75945a",
+    "templates/intl_workspace/shell.html.j2": "8eef70ec520b58fe977a21499483b04ee059be51614add941fad2b65d8ecb798",
+    "templates/intl_workspace.css": "1bf540082a00daee2ace226ece1a9c93512d709cecd5ebc2db3d119d169c0e7a",
+    "templates/intl_workspace.js": "918a73e2b154baa3fecdd478190c3547412dbe273e80ad59437ecd6ff82ce210",
+    "tests/intl_workspace_controller.test.cjs": "f88c6bbb3530362786443f6d8e2e943c4b837277d72bb876c419818ea494d39a",
+    "tests/intl_workspace_inspector_integration.test.cjs": "91a095c2282d5ea7517a3078b53b08538fed35b8236dbda71816b15618990e28",
+    "tests/intl_workspace_page.test.cjs": "fc1a4ffc6b19314ffc80971d6cb6db9e64daf24ca289130284ec99ca4948d00a"
+  },
+  "behavior": "One existing controller and one native dialog; original server-rendered article moves and returns; Read/Evidence/Field/Deeper and Back/Escape/Close add no Inspector history or reducer state. Failed transactions preserve state and expose native fallback if modality cannot be restored.",
+  "independent_reviews": {
+    "T2_RENDER_REVIEW_R1.json": {
+      "sha256": "57db995630b8e6bdc214c3c34eec3834e4f64a534f4fe8bf86bbc55aa755c1fa",
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/inspector/T2_RENDER_REVIEW_R1.json"
+    },
+    "T2_MOUNT_REVIEW_R1.json": {
+      "sha256": "b89c336d7d4dc4aa49e30f70af8655fdca0c1551eb04ce44fef95c710ac2fef4",
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/inspector/T2_MOUNT_REVIEW_R1.json"
+    },
+    "T2_CONTROLLER_SOL_REVIEW_R3.json": {
+      "sha256": "a3182001be5de720560a4261b01a0050871fe3b7e5321b67ebe1495b40bc3717",
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/inspector/T2_CONTROLLER_SOL_REVIEW_R3.json"
+    },
+    "T2_CONTROLLER_SOL_REVIEW_R4.json": {
+      "sha256": "24f0dcfd44a8bac60f1740a28c806b2dd76b97256328dc847889720dec18db04",
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/inspector/T2_CONTROLLER_SOL_REVIEW_R4.json"
+    },
+    "T2_CONTROLLER_PARENT_ACCEPTANCE_R4.json": {
+      "sha256": "91cf3445ff97e8aae720ca21398b062638cb551f61d947de72ef4ec16bb1465b",
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/inspector/T2_CONTROLLER_PARENT_ACCEPTANCE_R4.json"
+    },
+    "T2_VISUAL_PARENT_ACCEPTANCE.json": {
+      "sha256": "7d0e99224f3fa804ec105160223866d1a9f4c749b93ddddfa666eb102ded6cfe",
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/inspector/T2_VISUAL_PARENT_ACCEPTANCE.json"
+    },
+    "T2_CI_FINAL_CLOSURE.json": {
+      "sha256": "eef23181cb8a8d5acf90be1390530ff17bb876cc949135594758cf472e9512d8",
+      "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/inspector/T2_CI_FINAL_CLOSURE.json"
+    }
+  },
+  "acceptance": {
+    "renderer": "20 renderer+44 projection cases; independent acceptance",
+    "mount": "87 independently executed mount/render/view/Library tests; parent54 actual render/composition cases",
+    "controller": "R3 independent40 browser+14 mount tests; reviewer found inaccessible rehydrate. R4 independent3 targeted tests+1 original countercheck close finding; worker40 tests.",
+    "parent_final_regression": {
+      "collected": 83,
+      "passed": 82,
+      "failed": 1,
+      "failure": "No-JavaScript full-page load exceeded global2500ms navigation timeout; no product assertion failed.",
+      "repair": "Separate30000ms navigation budget; interaction2500ms and every assertion retained. All9 actual-page cases pass on repaired harness; remaining74 cases already passed on exact final controller bytes.",
+      "retest": {
+        "collected": 9,
+        "passed": 9,
+        "failed": 0,
+        "duration_ms": 73499.999417
+      },
+      "final_applicable_cases": 83
+    }
+  },
+  "visual": {
+    "manifest": "mockups/evidence/paper-international-inspector/states/manifest.json",
+    "manifest_sha256": "9ec267f973d75c691cfafd89dae67bfb803f61be2a28b56f2ac251069534fc43",
+    "captured": 64,
+    "axes": "four modes x EN/ZH x dark/light x1440/390 x rest/real keyboard Close focus",
+    "real_focus_visible": 32,
+    "console_or_resource_errors": 0,
+    "normal_flow_js": "748973717ae0179e1e606e6aaf254fa6ee978fdcc3df139d323168d61796e29d",
+    "compatibility": "Independent R4 review confirms error-only helper/rehydrate change leaves normal DOM/CSS/visual matrix unaffected.",
+    "additional_stress": "R2 normal flows:32 width/theme/language/100-200percent computed-font states, each4 modes and12Tabs; native background focus blocked, close restores origin; browser chrome focus explicitly separated."
+  },
+  "local_checks": [
+    "design-system enforce-added:0 new blocking",
+    "runtime-style-injection ratchet:0 new violations",
+    "UI visual evidence gate:exit0",
+    "CI manifest validation:exit0",
+    "CI inferred import closure:0 uncovered in foundation/browser"
+  ],
+  "limits": [
+    "Synthetic supplied owner frames/attestations only; not authenticated current-data rights, live publication or normal follow-up publication.",
+    "Compare->Inspector edge not added; Inspector opens accepted active Overview context only.",
+    "No Paper financial samples, native hierarchy grant, new store/collector, ranking qualification or runtime style system introduced.",
+    "Programme Waves1-3 remains incomplete; remaining views/source inputs/publication gates stay open."
+  ],
+  "post_review_whitespace": {
+    "file": "tests/intl_workspace_controller.test.cjs",
+    "reviewed_sha256": "551b9a8742bae83ea0c2eaa99458ae5351775e6d7d5b1c4b6a6f062f1ed533e5",
+    "committed_sha256": "f88c6bbb3530362786443f6d8e2e943c4b837277d72bb876c419818ea494d39a",
+    "change": "Removed one extra terminal newline to satisfy git diff --check; all executable source and assertions byte-identical."
+  }
+}

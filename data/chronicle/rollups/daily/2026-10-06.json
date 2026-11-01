@@ -1,0 +1,245 @@
+{
+  "as_of": "2026-10-06",
+  "coverage": {
+    "end": "2026-10-05",
+    "note": "daily rollup covers 10 session-date(s) from 2026-09-22 to 2026-10-05; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-09-22"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-10-05",
+      "events": []
+    },
+    {
+      "date": "2026-10-02",
+      "events": []
+    },
+    {
+      "date": "2026-10-01",
+      "events": []
+    },
+    {
+      "date": "2026-09-30",
+      "events": []
+    },
+    {
+      "date": "2026-09-29",
+      "events": []
+    },
+    {
+      "date": "2026-09-28",
+      "events": [
+        {
+          "date": "2026-09-28",
+          "id": "cev-regime_flip-94eb72732cfd",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-28#regime_china",
+          "tickers": [],
+          "title": "CHINA regime: Q4 Growth-scare → Q3 Stagflation",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "events": [
+        {
+          "date": "2026-09-25",
+          "id": "cev-regime_flip-13cfc7dee5af",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-25#regime_us",
+          "tickers": [],
+          "title": "US regime: Q3 Stagflation → Q2 Reflation",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-24",
+      "events": []
+    },
+    {
+      "date": "2026-09-23",
+      "events": [
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-4097e88c98cf",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-nmuie7j0as1-4f0c24",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Asia Pacific Equity Derivs",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-22",
+      "events": [
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-cb513eb653fe",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-de82gqyq2zl-b9c21f",
+          "tickers": [],
+          "title": "ING: ING Think the commodities feed oil cools off from the highs",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-ce713a398de1",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-1c6ij86icrc-10d4e0",
+          "tickers": [],
+          "title": "Goldman Sachs: Mexico Weak Jul Retail Sales",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-d2f1f13a6c7c",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-myupfoq2jra-432a53",
+          "tickers": [],
+          "title": "Goldman Sachs: CATL (300750.SZ) ESS Open Day Takeaways Deepening Moat in the System Integration Transition",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-d5507eb57742",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-fu308f16ebn-258aff",
+          "tickers": [],
+          "title": "Pictet: US stock market A mega cap refuge",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-d9a4ecf0b758",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-7keplmv3s4b-371985",
+          "tickers": [],
+          "title": "S&T: GS Lee GS Crypto Weekly Recap CLARITY Again 14 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-dfcf254100e0",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-q6hjtis6mvq-695c1a",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM International Market Intelligence | Morning Briefing",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-e01aedaf78a2",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-5t6rgw2zgdp-d55708",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Equity Strategy",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-e0b5b558cd8c",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ihuigovalkl-fb636d",
+          "tickers": [],
+          "title": "EFG: GM Market Rhythm",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-e157df623b82",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-v8qab5rjglo-640364",
+          "tickers": [],
+          "title": "Goldman Sachs: On the Road with Goldman Sachs Everything we Learned at the 33rd Global Consumer & Retail Conference",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-e80c557f4703",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-u3hcvzobcog-444b7b",
+          "tickers": [],
+          "title": "Goldman Sachs: Atlas Copco (ATCOa.ST) Barometer and thoughts into 3Q26",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-eb989066e276",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-oh0ck3oc1nk-182c7c",
+          "tickers": [],
+          "title": "S&T: GS Duttenhoefer BEST of DAY 1 at our German Corp Conference in Munich 21 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-f2192798c195",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-q5h75oo2gev-f14d90",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Afternoon Briefing",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-f9f294966769",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-lkkrf3coi5f-a06a83",
+          "tickers": [],
+          "title": "S&T: GS Wijaya GS SECTOR SPECIALISTS Energy, Natural Resources and Utilities Monday Thoughts 21 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-f9feab61ff66",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-hpwe6lu9ruq-dba3dc",
+          "tickers": [],
+          "title": "Goldman Sachs: GS Housing Market Activity Scale Week of September 13 Scale Down 2 Sequentially Led by Decline in Sales and Purchase Appli...",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-fa97d32f2e59",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-rhdcclisqiz-5702e6",
+          "tickers": [],
+          "title": "S&T: GS Privorotsky GS Basics Inference Economy Real Rates Corn Beans 22 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-22",
+          "id": "cev-research_vault-fea445b38aff",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-icmirhcvmco-107ce0",
+          "tickers": [],
+          "title": "Other: Macro Volatility Digest Sep21",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}

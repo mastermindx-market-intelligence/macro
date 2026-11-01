@@ -418,3 +418,25 @@ def test_site_copy_and_theme_bundle_carry_the_same_stylesheet():
         if "style.textContent = [" not in text:
             continue  # templates/theme.js carries the loader, not the bundle
         assert overlay_css(text) == source, f"{theme} ships a stale overlay stylesheet"
+
+
+def test_mobile_iframe_uses_viewport_clamp_not_webkit_content_autosizing(rules):
+    """Prevent iOS Safari's iframe-width:100% path from expanding to chart scrollWidth.
+
+    The iframe itself must remain precisely as wide as its full-screen parent.
+    Width:1px + min/max-width:100% is the WebKit workaround; it does NOT
+    disable scrolling or scale the child application, and desktop stays as-is.
+    See https://bugs.webkit.org/show_bug.cgi?id=155198.
+    """
+    frame = overlay_tree(("is-open", "is-ready"))["frame"]
+    assert computed(frame, "width", rules, mobile=True) == "1px"
+    assert computed(frame, "min-width", rules, mobile=True) == "100%"
+    assert computed(frame, "max-width", rules, mobile=True) == "100%"
+
+    assert computed(frame, "width", rules, mobile=False) == "100%"
+    assert computed(frame, "min-width", rules, mobile=False) is None
+    assert computed(frame, "max-width", rules, mobile=False) is None
+
+    source = (ROOT / "templates" / "terminal_overlay.js").read_text(encoding="utf-8")
+    assert "scrolling', 'no'" not in source
+    assert 'scrolling="no"' not in source

@@ -1,0 +1,64 @@
+{
+  "schema": "press.external_candidate_plan.v1",
+  "operation": "planning_only",
+  "candidate_id": "press-external-f1b3999789ef",
+  "source_ref": "official_feed:304484532ef7694a66e89a93b98dfc823365d14a",
+  "feed_sha256": "7e3c848cf4b38d9dcde99a8d7ecba4413bb937df06c4cc453e80a3625cd2c6a7",
+  "qualification_sha256": "86643a8d2173552713afa2f9c7b2f3e6a8cafb8671a1142cd76ccfdba30f0549",
+  "source_revisions": {
+    "official_feed:304484532ef7694a66e89a93b98dfc823365d14a": "sha256:7e3c848cf4b38d9dcde99a8d7ecba4413bb937df06c4cc453e80a3625cd2c6a7",
+    "official_feed:304484532ef7694a66e89a93b98dfc823365d14a:release": "sha256:ad08e9652445dfb628b5b220d21878477eb10efb8605aa04ab0ad326347f3847",
+    "official_feed:304484532ef7694a66e89a93b98dfc823365d14a:policy": "sha256:dd99df630bfd52d5ba46a8e258198ed20d32518eb042d5163d15c37127982770"
+  },
+  "event_date": "2026-10-13",
+  "published_at": "2026-10-13T12:00:00+00:00",
+  "blocked_by_existing_coverage": false,
+  "cadence_per_day": 2,
+  "cadence_consumed": false,
+  "validation_context": {
+    "publication": "mastermind_news",
+    "byline": "The Brief \u2014 Mastermind News desk",
+    "min_words": 300,
+    "max_words": 600,
+    "min_anchored_receipts": 5,
+    "desk": "brief",
+    "as_of": "2026-10-14",
+    "facts": [
+      {
+        "text": "have agreed to pay $315 million to resolve allegations",
+        "values": [
+          "315"
+        ],
+        "tier": "third_party",
+        "ref": "official_feed:304484532ef7694a66e89a93b98dfc823365d14a",
+        "dated": "2026-10-13",
+        "source_name": "U.S. Department of Justice"
+      },
+      {
+        "text": "The claims resolved by the settlement are allegations only and there has been no determination of liability.",
+        "values": [],
+        "tier": "third_party",
+        "ref": "official_feed:304484532ef7694a66e89a93b98dfc823365d14a",
+        "dated": "2026-10-13",
+        "source_name": "U.S. Department of Justice"
+      }
+    ],
+    "raw_documents": [
+      {
+        "ref": "official_feed:304484532ef7694a66e89a93b98dfc823365d14a",
+        "text": "CVS Pharmacy Inc., a Rhode Island-based pharmacy chain, and its related corporate entities (collectively, CVS) have agreed to pay $315 million to resolve allegations that, from October 17, 2013 through December 2, 2025, CVS illegally filled prescriptions for opioids and other controlled substances in violation of the Controlled Substances Act (CSA), and then sought payment for many of those invalid prescriptions from Medicare and other federal healthcare programs in violation of the False Claims Act (FCA). \u201cNot only does this settlement hold bad actors accountable for their fraudulent activities, but Americans are safer because of it,\u201d said Associate Attorney General Stanley E. Woodward Jr. \u201cToday\u2019s settlement is a significant milestone in the Justice Department\u2019s efforts to combat the opioid epidemic by cracking down on pharmacies who unlawfully fulfill prescriptions for controlled substances.\u201d\u201cToday\u2019s settlement requires CVS to implement additional safeguards to ensure that prescriptions for opioids and other controlled substances are dispensed only when medically appropriate,\u201d said Assistant Attorney General Brett A. Shumate of the Justice Department\u2019s Civil Division. \u201cThe remedial measures in this agreement \u2014 including proactive monitoring of opioid prescribing patterns \u2014 will provide critical protections for patients and federal healthcare programs. The Department of Justice will continue to take steps to prevent the unlawful dispensing of opioids.\u201d\u201cThe opioid epidemic has affected families and communities across Rhode Island and throughout the nation,\u201d said First Assistant U.S. Attorney Charles C. Calenda for the District of Rhode Island. \u201cPharmacies that dispense controlled substances must maintain effective compliance systems to identify and respond to warning signs that prescriptions may be unlawful or medically unnecessary. This settlement demonstrates the importance of those obligations and the consequences of failing to implement safeguards designed to prevent the improper dispensing of controlled substances.\u201dThe settlement resolves allegations in the government\u2019s complaint, which the United States filed on Dec. 13, 2024, in the U.S. District Court for the District of Rhode Island, that CVS knowingly filled prescriptions for controlled substances that lacked a legitimate medical purpose, were not valid, and/or were not issued in the usual course of professional practice. The United States alleged that CVS dispensed prescriptions for dangerous and excessive quantities of opioids, opioid prescriptions filled too early, and \u201ctrinity\u201d prescriptions, a dangerous and abused combination of an opioid, a benzodiazepine, and a muscle relaxant. CVS also allegedly filled prescriptions for controlled substances from \u201cpill mill\u201d prescribers who issued large numbers of controlled substance prescriptions without any medical purpose. Further, the United States alleged that CVS pharmacists filled these prescriptions despite clear red flags indicating that there was a high likelihood that the prescriptions lacked a legitimate medical purpose, were not valid, or were not issued in the course of professional practice. Many of these prescriptions were ultimately billed to and reimbursed by federal healthcare programs.The complaint further alleged that CVS\u2019s violations stemmed from corporate-imposed performance metrics, incentive compensation, and staffing policies that prioritized corporate profits over patient safety. CVS failed to employ enough pharmacists to serve patients, comply with CVS\u2019s legal obligations, and meet corporate performance metrics. In addition, CVS\u2019s policies allegedly prevented pharmacists from warning one another about certain problematic prescribers.In addition to the monetary payment announced today, CVS has entered into a memorandum of agreement with DEA to address its future obligations in dispensing controlled substances. This agreement requires CVS to establish a hotline for both employees and the public to report suspected illegal dispensing of controlled substances, proactively monitor the dispensing patterns of its pharmacies to identify and address potentially illegal dispensing, and establish a process to evaluate prescribers suspected of illegal prescribing.\u201cThis settlement agreement highlights DEA\u2019s commitment to protecting the health and safety of Americans while holding CVS accountable for dispensing unlawful prescriptions and endangering the public,\u201d said DEA Assistant Administrator Cheri Oz. \u201cDEA is unwavering in its commitment to protect public health and ensuring pharmacies adhere to the highest standards of responsible dispensing. We will continue to work closely with law enforcement, regulatory agencies, and the healthcare community to prevent the misuse of controlled substances, and we will hold those who jeopardize the safety of our citizens accountable.\u201d\u201cBehind every unlawful prescription is a patient who could be put in harm\u2019s way,\u201d said Acting Deputy Inspector General for Investigations Scott J. Lampert of the U.S. Department of Health and Human Services Office of Inspector General (HHS\u2011OIG). \u201cThe allegations in this case point to warning signs that should never be overlooked. HHS\u2011OIG will not tolerate conduct that jeopardizes lives, and we will continue to pursue those who betray the trust placed in them.\u201dThe civil settlement resolves a civil lawsuit filed by Hillary Estright, a former CVS employee, under the whistleblower provision of the FCA, which authorizes private parties to sue on behalf of the United States and receive a share of any recovery. It also permits the United States to intervene and take over such lawsuits, as it did here. The amount to be recovered by the private whistleblower has not yet been determined. The qui tam case is captioned United States ex rel. Hillary Estright v. CVS Health Corporation, et al., No. 22-cv-00222 (D.R.I.).This year the Administration launched the Task Force to Eliminate Fraud and the National Fraud Enforcement Division to enhance the Administration\u2019s war on fraud, waste, and abuse in federal programs. When unscrupulous actors exploit these programs for their own financial gain, they defraud the government, harm the people these programs are designed to aid and protect, and undermine American businesses that play by the rules. The Civil Division\u2019s FCA enforcement plays a critical role in combatting such fraudulent schemes, recovering billions of dollars for the American taxpayers, and holding wrongdoers accountable. FCA matters will continue to be on the forefront of the battle against fraud, and the Civil Division\u2019s FCA work will support and advance the mission of the Task Force to Eliminate Fraud and the National Fraud Enforcement Division.The resolution obtained in this matter was the result of a coordinated effort between the Civil Division\u2019s Commercial Litigation Branch, Fraud Section, and the Enforcement & Affirmative Litigation Branch, along with the U.S. Attorneys\u2019 Offices for the District of Rhode Island, Eastern District of Virginia, Eastern District of Texas, and District of Hawaii. The DEA\u2019s Office of Diversion Control, Los Angeles Field Division, Richmond District Office, and Office of Chief Counsel led this case with substantial assistance from Health and Human Services Office of Inspector General, Defense Criminal Investigative Service, Defense Health Agency (DHA), Office of Personnel Management (OPM), Department of Labor (DOL) Office of Inspector General, and the Department of Veterans Affairs (VA).The investigation and resolution of this matter illustrate the government\u2019s emphasis on combating healthcare fraud. One of the most powerful tools in this effort is the False Claims Act. Tips and complaints from all sources about potential fraud, waste, abuse, and mismanagement, can be reported to the Department of Health and Human Services at 800-HHS-TIPS (800-447-8477).The United States is represented in this matter by attorneys from the Justice Department\u2019s Civil Division Commercial Litigation Branch, Fraud Section (Assistant Director Natalie Waites and Trial Attorneys Claire Norsetter and Megan Engel) and Enforcement & Affirmative Litigation Branch (Deputy Director Lisa Hsiao and Trial Attorneys Kathleen Brunson and Katherine Ho), as well as from the U.S. Attorneys\u2019 Offices for the District of Rhode Island (Assistant U.S. Attorney Rachna Vyas), Eastern District of Virginia (Assistant U.S. Attorney John Beerbower), Eastern District of Texas (Assistant U.S. Attorney James Gillingham), and District of Hawaii (Assistant U.S. Attorney Tracy J. Weinstein).The claims resolved by the settlement are allegations only and there has been no determination of liability.Note: Find the CSA agreement here and the FCA agreement here."
+      }
+    ],
+    "primary_source": {
+      "kind": "external",
+      "name": "U.S. Department of Justice",
+      "url": "https://www.justice.gov/opa/pr/cvs-agrees-pay-315m-illegally-filling-unlawful-opioid-prescriptions-and-submitting-false"
+    },
+    "allowed_links": [
+      "https://www.mastermind-x.com/stocks/CVS.html"
+    ]
+  },
+  "allow_stage": false,
+  "allow_emit": false,
+  "publication_approved": false
+}

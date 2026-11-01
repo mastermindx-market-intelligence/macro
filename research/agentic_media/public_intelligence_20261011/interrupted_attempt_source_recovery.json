@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-10-12T03:43:52.315081+00:00",
+  "attempt_started_utc": "2026-10-11T12:07:00Z",
+  "source_revision": "28c91feaa1c700e392d61b87facf5c175d32d159",
+  "source_sha256": {
+    "engine/codex_provider.py": "8dc05bd58187158ee61594efcb9de7956fb28127b8107683ce5fb6c727350d12",
+    "engine/codex_lane/runner.py": "52a67a427b612ce2df5ebb15613f45c4b6f0af4b31eba1e9145258d8979d20ce"
+  },
+  "retained_accounting": [
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-interrupted-staging-accounting-20261011-1207/provider_health.jsonl",
+      "sha256": "5d606c2c57658db7c3875358699b5894f780e29ecedc57de94ad1630aae15f12",
+      "matches_receipt": true
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-interrupted-staging-accounting-20261011-1207/usage.jsonl",
+      "sha256": "f725fc2f4ba59a99c8ca82f46306c16e2a429af9aec756fec486d4626dbad099",
+      "matches_receipt": true
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mmx-interrupted-staging-accounting-20261011-1207/key_ledger.jsonl",
+      "sha256": "6b0da3305241bd2916f93bda8176f564fc7c345728286e11fb9093885d2da6ed",
+      "matches_receipt": true
+    }
+  ],
+  "recovery_finding": "Exact provider source starts an ephemeral Codex turn and captures its JSON output in process memory. The runner has no durable response-file write. The retained accounting backup has no response body.",
+  "effect_state": "EFFECT_UNKNOWN",
+  "provider_retry": false,
+  "publication_approved": false,
+  "limitation": "This source inspection and accounting parity cannot reconstruct or attest the interrupted draft, exit status, or validation result."
+}

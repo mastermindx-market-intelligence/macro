@@ -265,7 +265,9 @@ class R31Contract(unittest.TestCase):
             self.assertTrue('one owner, one verified return binding' in source, 'Ownership gate must allow a verified native return, not require a duplicate watcher')
 
     def test_existing_numbered_rules_and_references_survive(self):
-        s = _fable_text('SKILL.md')
+        # Detailed numbered rules moved intact out of the bounded startup file.
+        # Continue checking their presence, not their former transport location.
+        s = _fable_text('references/seat-doctrine.md')
         for prefix, count in [('S', 8), ('O', 17), ('L', 14), ('A', 7)]:
             for n in range(1, count + 1):
                 self.assertIn(f'**{prefix}.{n} ', s)

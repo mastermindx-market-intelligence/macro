@@ -42,7 +42,7 @@ from engine.us_board_rank import (  # noqa: E402
 )
 from lib import config, site_assets, store  # noqa: E402
 from lib.chat_allowance import chat_allowance_view_model  # noqa: E402
-from lib.help_directory import help_page_view_model  # noqa: E402
+from lib.help_directory import help_page_view_model, refresh_disclosure  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -3799,7 +3799,7 @@ def build_help_page(env: Environment, site: Path, generated: str) -> None:
     ``changelog``, which this function's except-and-log swallowed silently).
     """
     vm = help_page_view_model(config.ROOT)
-    html = env.get_template("help.html.j2").render(generated_utc=generated, **vm)
+    html = env.get_template("help.html.j2").render(generated_utc=generated, refresh=refresh_disclosure(config.ROOT, generated), **vm)
     write_page(site / "help.html", html)
     log.info("wrote help.html (%d source-validated links)", len(vm["entries"]))
 
@@ -4592,11 +4592,10 @@ def chart_risk_model(cf: pd.DataFrame) -> str:
 
 
 def chart_curve(cf: pd.DataFrame) -> str:
-    """Yield curve: the 2s10s slope RAW vs TERM-PREMIUM-ADJUSTED, ~25y, NBER-shaded.
-    Inversion (below 0) is the classic recession lead; the TP-adjusted line strips
-    the term premium so a low-TP flattening isn't misread as a recession signal
-    (it's why 2022-24's raw inversion didn't fire the composite). Colours sit
-    outside the zh swap map (a curve isn't a price-direction read)."""
+    """Yield curve: raw 2s10s vs the legacy TP10 compatibility heuristic.
+    The heuristic is 2s10s plus the 10y term-premium model estimate. It is context,
+    not a matched-maturity expectations-only decomposition and does not identify why
+    an inversion occurred. Colours sit outside the zh swap map."""
     start = cf.index.max() - pd.Timedelta(days=365 * 25)
     raw = cf.loc[start:, "curve_raw"].dropna().resample("W-FRI").last().dropna().round(2)
     adj = cf.loc[start:, "curve_tp_adj"].dropna().resample("W-FRI").last().dropna().round(2)
@@ -4612,7 +4611,7 @@ def chart_curve(cf: pd.DataFrame) -> str:
                               fillcolor="#8b93a1", opacity=0.16, line_width=0)
     fig.add_trace(go.Scatter(x=raw.index, y=raw, name="2s10s (raw)",
                              line={"color": "#7aa7e0", "width": 1.3}))
-    fig.add_trace(go.Scatter(x=adj.index, y=adj, name="2s10s (term-premium adj.)",
+    fig.add_trace(go.Scatter(x=adj.index, y=adj, name="2s10s + TP10 heuristic",
                              line={"color": "#c08af0", "width": 1.3}))
     fig.add_hline(y=0, line={"color": "#9aa4b2", "width": 0.8, "dash": "dot"})
     fig.update_layout(**PLOT_LAYOUT)
@@ -5056,6 +5055,199 @@ def _us_today_featured_preview(
     return [row for row in rows if row.get("featured")][:limit]
 
 
+def _us_today_source_binding(
+    raw_sha: "str | None", owner_doc: "dict | None"
+) -> "dict | None":
+    """Exact Today provenance pair from two facts this build already owns.
+
+    `raw_sha` is the frozen lowercase 64-hex sha256 of the raw
+    us_standouts.json bytes (computed once at read time) and `owner_doc` is
+    the ORIGINAL json.loads of those same bytes, captured BEFORE
+    _attach_board_display_chips enriches the board. Valid input returns
+    {"source_sha256": "sha256:" + raw_sha, "pair_id": <emit.pair_id>};
+    anything malformed or unavailable returns None. No re-hash, no re-read,
+    no normalization: uppercase or padded values are refused, never repaired.
+    """
+    if (not isinstance(raw_sha, str) or len(raw_sha) != 64
+            or any(c not in "0123456789abcdef" for c in raw_sha)):
+        return None
+    if not isinstance(owner_doc, dict):
+        return None
+    emit = owner_doc.get("emit")
+    if not isinstance(emit, dict):
+        return None
+    pair_id = emit.get("pair_id")
+    if (not isinstance(pair_id, str) or len(pair_id) != 32
+            or any(c not in "0123456789abcdef" for c in pair_id)):
+        return None
+    return {"source_sha256": "sha256:" + raw_sha, "pair_id": pair_id}
+
+
+def _us_today_native_binding(source_bytes: "bytes | None") -> "dict | None":
+    """Genuine three-field Today binding via the ORIGINAL owner callable.
+
+    Consumes the EXACT finalized raw us_standouts.json bytes through
+    scripts.build_stock_library.today_selection_source_binding, which validates
+    the full buy[] roster and returns schema
+    prophet.today_selection_source_binding/v1 carrying source_sha256, pair_id,
+    selection_receipt and ordered_rows (the original zero-based buy[] index and
+    that row's canonical receipt each). Invoked here BEFORE any display
+    attachment or tier splitting, on both the first and the post-library fresh
+    read. Any failure — owner runtime absent, malformed roster, unusable
+    emit/session — is a typed unavailable (logged, never raised): the board
+    renders exactly as before and no binding, receipt or index is invented.
+    """
+    if not isinstance(source_bytes, (bytes, bytearray)) or not source_bytes:
+        return None
+    try:
+        from scripts.build_stock_library import today_selection_source_binding
+    except Exception as exc:  # noqa: BLE001 — an absent owner runtime is unavailable
+        log.warning("Today native source binding unavailable (%s)", type(exc).__name__)
+        return None
+    try:
+        return today_selection_source_binding(bytes(source_bytes))
+    except Exception as exc:  # noqa: BLE001 — invalid source keeps ordinary rendering
+        log.warning("Today native source binding unavailable (%s)", type(exc).__name__)
+        return None
+
+
+def _us_today_bind_rows(
+    us_standouts: "dict | None", binding: "dict | None"
+) -> "dict | None":
+    """Carry owner-issued selection metadata into COPIED buy presentation rows.
+
+    Positional only, straight from the binding's own ordered_rows: each copied
+    row gains `_today_selection_index`/`_today_row_receipt` from the SAME
+    original buy[] position. The source dict and its row dicts are never
+    mutated, tickers are never searched or joined, and no index is inferred
+    from sort order. Anything short of a full 1:1 positional match returns the
+    board unchanged, so a partially bound shelf can never half-hydrate.
+    """
+    if not binding or not isinstance(us_standouts, dict):
+        return us_standouts
+    rows = us_standouts.get("buy")
+    ordered = binding.get("ordered_rows")
+    if not isinstance(rows, list) or not isinstance(ordered, list):
+        return us_standouts
+    if len(ordered) != len(rows):
+        return us_standouts
+    bound_rows = []
+    for position, row in enumerate(rows):
+        meta = ordered[position]
+        receipt = meta.get("row_receipt") if isinstance(meta, dict) else None
+        if (not isinstance(row, dict) or not isinstance(receipt, str)
+                or meta.get("selection_index") != position):
+            return us_standouts
+        bound_rows.append({**row, "_today_selection_index": position,
+                           "_today_row_receipt": receipt})
+    bound = dict(us_standouts)
+    bound["buy"] = bound_rows
+    return bound
+
+
+def _us_today_rows_meta(rows: "list[dict] | None") -> "list[dict]":
+    """Entitled Today indices/receipts for the protected payload, render order.
+
+    Positional carry from the bound COPIED rows only (never re-derived from a
+    ticker, a value or a sort); one missing/malformed field empties the whole
+    list, so an incompletely bound shelf ships no hydratable metadata.
+    """
+    meta = []
+    for row in rows or []:
+        index = row.get("_today_selection_index") if isinstance(row, dict) else None
+        receipt = row.get("_today_row_receipt") if isinstance(row, dict) else None
+        if (not isinstance(index, int) or isinstance(index, bool) or index < 0
+                or not isinstance(receipt, str)):
+            return []
+        meta.append({"selection_index": index, "row_receipt": receipt})
+    return meta
+
+
+def _us_today_native_emit_for(binding: "dict | None", today_nonempty: bool) -> "str | None":
+    """Protected payload URL when the ungated Today shelf is genuinely bound.
+
+    Genuine means the owner-issued three-field binding (selection_receipt
+    present alongside both legacy pins); the loader may then ride the SAME
+    trampoline and payload URL even with no tier gate on the page. Anything
+    less — legacy two-field pair, explicit None, empty shelf — emits no native
+    loader fallback.
+    """
+    if not today_nonempty or not isinstance(binding, dict):
+        return None
+    receipt = binding.get("selection_receipt")
+    if (not isinstance(receipt, str)
+            or not isinstance(binding.get("source_sha256"), str)
+            or not isinstance(binding.get("pair_id"), str)):
+        return None
+    return US_PAYLOAD_URL
+
+
+def _us_names(rows: "list | None", key: str = "ticker") -> set:
+    """The names on one US list."""
+    return {r.get(key) for r in rows or [] if r.get(key)}
+
+
+def _us_preview_split(rows: list, preview: int, withheld=frozenset(),
+                      key: str = "ticker") -> "tuple[list, list]":
+    """(shell_rows, rest) in row order. The shell takes the first `preview` rows whose
+    name is not withheld, so a name locked on another list stays out of the free shell.
+    Every other row goes to rest. With nothing withheld this is a plain prefix slice."""
+    shell, rest = [], []
+    for row in rows:
+        if len(shell) < preview and row.get(key) not in withheld:
+            shell.append(row)
+        else:
+            rest.append(row)
+    return shell, rest
+
+
+def _us_panel_lists(vm: dict) -> "tuple[list, list, list]":
+    """The rows of the setups residual, the leaders strip and the recently fired list,
+    in display order and at their display caps."""
+    su = vm.get("us_standouts") or {}
+    carded = _us_names(su.get("buy"))
+    eb = set(((su.get("earnings_blackout_note") or {}).get("tickers")) or [])
+    resid = [r for r in ((vm.get("top_setups") or {}).get("buy") or [])
+             if r.get("ticker") and r["ticker"] not in eb and r["ticker"] not in carded][:_US_SETUPS_CAP]
+    ldrs = list(su.get("leaders") or [])[:_US_LEADERS_CAP]
+    ran = list(su.get("ran") or []) if any(r.get("stage") for r in (su.get("buy") or [])) else []
+    return resid, ldrs, ran
+
+
+def _us_withheld_names(vm: dict, panel_preview: int) -> set:
+    """Every name the free US shell may not print, on any surface.
+
+    The board and the panels split separately and their populations overlap, so a name
+    locked on one list could print on another. Which names are on the paid list is part
+    of what it sells (ruling R-14). The set is the board's locked rows and each panel's
+    rows past its preview. A name on the free board preview is already public, so it
+    stays printable.
+
+    Two lists do not count. The candidate pool and the leader observations hold names
+    the board prints for free. The plan book holds most of the covered universe, closed
+    records included (686 names on 804 plans on 2026-10-30), so being in it says nothing,
+    and these surfaces print no plan field. The pool row does print one: see
+    `_us_open_plan_locked_names`.
+    """
+    cfg = _us_board_gate_cfg()
+    shell_su, _gate, board_locked = _split_us_board(
+        vm.get("us_standouts"), cfg["preview_rows"], gated=cfg["gated"])
+    names = _us_names(board_locked)
+    if cfg["panels"]:
+        for rows in _us_panel_lists(vm):
+            names |= _us_names(rows[panel_preview:])
+    return names - _us_names((shell_su or {}).get("buy"))
+
+
+def _us_open_plan_locked_names(vm: dict, withheld: set) -> set:
+    """Names with an open plan past the plan preview. A pool row prints its name's open
+    plans (id, status, dates), so a free pool row must not hold one of these."""
+    cfg = _us_board_gate_cfg()
+    _shell, _life_gate, plans_locked = _split_us_prophet_board(
+        vm.get("us_prophet_book"), cfg["preview_rows"], gated=_us_life_gate_cfg(), withheld=withheld)
+    return _us_names([p for p in plans_locked if not p.get("closed")], "asset")
+
+
 def _split_us_board(us_standouts: "dict | None", preview_rows: int, *, gated: bool = True):
     """Tier-preview split for the US Prophet board.
 
@@ -5105,7 +5297,8 @@ def _split_us_board(us_standouts: "dict | None", preview_rows: int, *, gated: bo
 # gate config (_us_board_gate_cfg) — the observable boundary (anon 1 / Free 3 /
 # paid full, by the SAME client-side tier_preview.js treatment) is unchanged in
 # effect; only which array gets sliced moves.
-def _split_us_prophet_board(book: "dict | None", preview_rows: int, *, gated: bool = True):
+def _split_us_prophet_board(book: "dict | None", preview_rows: int, *, gated: bool = True,
+                            withheld=frozenset()):
     """Tier-preview split for the US Prophet lifecycle grid (plan book).
 
     Returns (shell_book, life_gate, locked_plans):
@@ -5126,9 +5319,9 @@ def _split_us_prophet_board(book: "dict | None", preview_rows: int, *, gated: bo
     if not gated or not book or not book.get("plans"):
         return book, None, []
     full_plans = book["plans"]
-    preview_n = max(0, preview_rows)
-    preview = full_plans[:preview_n]
-    locked = full_plans[preview_n:]
+    # `withheld`: a plan whose name is locked on the candidate board stays out of the
+    # free preview. Counts are unchanged; hydration appends it after the preview cards.
+    preview, locked = _us_preview_split(full_plans, max(0, preview_rows), withheld, key="asset")
     if not locked:
         # Board smaller than the preview cap — ship it whole (same as ungated).
         return book, None, []
@@ -5146,7 +5339,8 @@ def _split_us_prophet_board(book: "dict | None", preview_rows: int, *, gated: bo
 
 
 def _split_us_leader_observations(
-    projection: "dict | None", preview_rows: int, *, gated: bool = True
+    projection: "dict | None", preview_rows: int, *, gated: bool = True,
+    withheld=frozenset(),
 ):
     """Server-side preview split for the display-only leader observation shelf.
 
@@ -5157,9 +5351,7 @@ def _split_us_leader_observations(
     if not gated or not projection or not projection.get("rows"):
         return projection, None, []
     rows = list(projection.get("rows") or [])
-    preview_n = max(0, preview_rows)
-    preview = rows[:preview_n]
-    locked = rows[preview_n:]
+    preview, locked = _us_preview_split(rows, max(0, preview_rows), withheld)
     if not locked:
         return projection, None, []
     shell = dict(projection)
@@ -5201,7 +5393,7 @@ def _us_life_gate_cfg() -> bool:
 
 
 def _us_candidate_no_plan_sample(full_buy: "list[dict]", plan_tickers: "set[str]",
-                                  sample_size: int = 3) -> dict:
+                                  sample_size: int = 3, withheld=frozenset()) -> dict:
     """P-MP1-SHELL repair round, finding B4: the Candidates shelf's "carries no
     plan yet" sample, computed against the FULL (pre-slice) candidate board —
     never the gate-sliced preview, which on a gated build (preview_rows=3) can
@@ -5231,6 +5423,7 @@ def _us_candidate_no_plan_sample(full_buy: "list[dict]", plan_tickers: "set[str]
     `sample_size` is genuinely honest even though the pool itself may hold
     many more no-plan names than are ever shown.
     """
+    full_buy = [r for r in full_buy if r.get("ticker") not in withheld]
     pool = [r for r in full_buy if r.get("ticker") and r.get("ticker") not in plan_tickers]
     if len(pool) >= sample_size:
         return {"sample": pool[:sample_size], "all_no_plan": True}
@@ -5412,32 +5605,92 @@ def _us_board_row_flat(n: dict) -> dict:
     }
 
 
+def _read_us_prophet_book(path: Path) -> "tuple[dict | None, bool]":
+    """Admit the published book before its stock-route consumers use it.
+
+    A missing file retains the existing loading state. An unreadable collection
+    uses the existing error state, rather than masquerading as an empty book.
+    Valid books pass through unchanged, including published order and totals.
+    """
+    if not path.exists():
+        return None, False
+    try:
+        book = json.loads(path.read_text())
+        if not isinstance(book, dict):
+            raise ValueError("plan book must be an object")
+        counts = book.get("lifecycle_counts")
+        if counts is not None and not isinstance(counts, dict):
+            raise ValueError("lifecycle counts must be an object when provided")
+        intake = book.get("intake")
+        if intake and not isinstance(intake, (dict, list, str)):
+            raise ValueError("intake must support the published membership check")
+        plans = book.get("plans", [])
+        if not isinstance(plans, list):
+            raise ValueError("plan collection must be a list")
+        for plan in plans:
+            # Closed rows also reach the episode map and lifecycle context.
+            if not isinstance(plan, dict):
+                raise ValueError("plan record must be an object")
+            for field in ("id", "asset"):
+                value = plan.get(field)
+                if not isinstance(value, str) or not value.strip():
+                    raise ValueError(f"plan {field} must be a nonblank string")
+            opened = plan.get("entry_date") or plan.get("recorded_at") or plan.get("signal_date") or ""
+            if not isinstance(opened, str):
+                raise ValueError("episode opening date must be a string")
+            # Existing lifecycle labels use this value as a dictionary key.
+            # Preserve hashable historical values; reject collection values.
+            hash(plan.get("lifecycle_state"))
+        return book, False
+    except Exception as exc:  # noqa: BLE001 — unreadable books never stop the build
+        log.warning("prophet/index.json unreadable (%s)", exc)
+        return None, True
+
+
 def _plan_relations_for(
     book: "dict | None", book_error: object = False
 ) -> "tuple[str, dict[str, list[dict]]]":
-    """Return open, same-security plan summaries keyed by normalized ticker."""
-    if book_error:
+    """Return open, same-security plan summaries keyed by normalized ticker.
+
+    A malformed plans container, or any malformed open record, leaves the
+    whole owner unreadable: the result is ("unknown", {}) rather than a
+    silent skip. Truthy ``closed`` records are excluded before validation.
+    """
+    if book_error or not isinstance(book, dict):
         return "unknown", {}
-    if not isinstance(book, dict):
+    plans = book.get("plans", [])
+    if not isinstance(plans, list):
         return "unknown", {}
     by_ticker: dict[str, list[dict]] = {}
-    for plan in book.get("plans") or []:
-        if not isinstance(plan, dict) or plan.get("closed"):
+    for plan in plans:
+        if not isinstance(plan, dict):
+            return "unknown", {}
+        if plan.get("closed"):
             continue
+        plan_id = plan.get("id")
         asset = plan.get("asset")
+        if not isinstance(plan_id, str) or not plan_id.strip():
+            return "unknown", {}
         if not isinstance(asset, str) or not asset.strip():
-            continue
-        ticker = asset.strip().upper()
-        by_ticker.setdefault(ticker, []).append({
-            "id": plan.get("id"),
+            return "unknown", {}
+        try:
+            hash(plan.get("lifecycle_state"))
+        except TypeError:
+            return "unknown", {}
+        by_ticker.setdefault(asset.strip().upper(), []).append({
+            "id": plan_id,
             "lifecycle_state": plan.get("lifecycle_state"),
             "formation_date": plan.get("formation_date"),
             "signal_date": plan.get("signal_date"),
+            "signal_date_basis": plan.get("signal_date_basis"),
+            "observed_date": plan.get("observed_date"),
+            "price_basis_date": plan.get("price_basis_date"),
+            "recorded_at": plan.get("recorded_at"),
             "plan_asof": plan.get("plan_asof"),
         })
-    for plans in by_ticker.values():
-        plans.sort(key=lambda plan: (
-            str(plan.get("formation_date") or ""), str(plan.get("id") or "")), reverse=True)
+    for grouped in by_ticker.values():
+        grouped.sort(key=lambda entry: (
+            str(entry.get("formation_date") or ""), str(entry.get("id") or "")), reverse=True)
     return "none", by_ticker
 
 
@@ -5458,6 +5711,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
                        locked_rows: list[dict], us_standouts: "dict | None",
                        top_setups: "dict | None", built: str,
                        today_rows: "list[dict] | None" = None,
+                       today_source_binding: "dict | None" = None,
                        pgate: "dict | None" = None,
                        panel_blocks: "dict | None" = None,
                        life_gate: "dict | None" = None,
@@ -5483,6 +5737,11 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     past `life_gate['preview']`), so the migrated grid's hydrated cards can
     never drift from its server-rendered ones. Independent switch from `gate`
     (§8b: "a re-plumb, never a re-draw" — same mechanism, different array).
+    `today_source_binding` carries the exact raw-source pair to every payload
+    shape, or explicit None when unavailable, for the shell hydration gate.
+    `today_rows_meta` carries the owner-issued entitled Today indices/receipts
+    (positional with `today_cards_html`) for that same gate; empty whenever the
+    board is ungated (nothing withheld) or the rows carry no full binding.
     """
     # Add only the presentation for this same entitled row. Failure keeps its
     # native flat facts, with no detail action, rather than dropping the payload.
@@ -5508,7 +5767,12 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
         # necessarily empty here — `gated` reports the BOARD, `panels` the rest.
         payload = {"schema": "tier_payload.v1", "page": "us_stocks", "gated": False,
                    "built": built, "cards_html": "", "rows": [],
-                   "today_cards_html": "", "today_preview": 0, "today_total": 0}
+                   "today_cards_html": "", "today_preview": 0, "today_total": 0,
+                   # Honest empty remainder — the protected native binding above
+                   # is what still permits Today native context for the unchanged
+                   # server-rendered shelf.
+                   "today_rows_meta": []}
+        payload["today_source_binding"] = today_source_binding
     else:
         full_buy = (us_standouts or {}).get("buy") or []
         # sg_any/bs_adj/xu_allfeat/trg_map mirror dashboard.html.j2's own derivation
@@ -5580,11 +5844,14 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
             "today_cards_html": today_cards_html,
             "today_preview": len(today_rows),
             "today_total": _today_total,
+            "today_rows_meta": _us_today_rows_meta(today_rows),
+            "today_source_binding": today_source_binding,
         }
     if pgate:
         payload["panels"] = {k: v for k, v in pgate.items()
                              if k in ("setups", "leaders", "ran", "actnow", "tape",
-                                      "plv_names", "leader_observations", "candidate_pool")}
+                                      "plv_names", "leader_observations", "candidate_pool",
+                                      "what_changed", "passed")}
         payload.update(panel_blocks)
     # P-MP1-SHELL §8b — the Setups grid's OWN locked remainder, independent of
     # `gate`/`cards_html` above. Always present in the payload shape (empty
@@ -5652,13 +5919,31 @@ _US_SETUPS_CAP = 10
 _US_LEADERS_CAP = 15
 
 
-def _us_panel_split(rows: "list | None", preview: int) -> "tuple[list, list]":
+def _us_panel_split(rows: "list | None", preview: int,
+                    withheld=frozenset()) -> "tuple[list, list]":
     """(shell_rows, locked_rows) for one panel. A list at or under the preview
-    cap ships whole — baking a wall over nothing is worse than no wall."""
+    cap ships whole — baking a wall over nothing is worse than no wall — unless it
+    holds a name withheld elsewhere."""
     rows = list(rows or [])
-    if len(rows) <= preview:
+    if len(rows) <= preview and not (_us_names(rows) & withheld):
         return rows, []
-    return rows[:preview], rows[preview:]
+    return _us_preview_split(rows, preview, withheld)
+
+
+def _us_apply_panel_withholding(vm: dict, shell_su: "dict | None", repair: dict, pov: dict,
+                                preview_rows: int) -> "tuple[dict | None, dict]":
+    """Apply the two results of `_split_us_panels` that the render call sets after
+    `**pov`: the patched shell board and the Screener sample. Never mutates vm."""
+    patch = pov.pop("us_standouts_shell", None)
+    hide = pov.pop("us_withheld_names", None)
+    if patch:
+        shell_su = {**(shell_su or {}), **patch}
+    if hide:
+        plans = (vm.get("us_prophet_book") or {}).get("plans") or []
+        repair = {**repair, "cand_no_plan": _us_candidate_no_plan_sample(
+            (vm.get("us_standouts") or {}).get("buy") or [], _us_names(plans, "asset"),
+            sample_size=preview_rows, withheld=hide)}
+    return shell_su, repair
 
 
 def _us_tape_locked_count(theme_tape: "dict | None") -> int:
@@ -5686,16 +5971,20 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
     and `theme_tape` are all read again by other page renders).
 
     Returns (overrides, pgate, locked):
-      overrides — {} today. The three sliced row lists are derived INSIDE the
-                  template from `pgate`, because the shell's own empty-state
-                  branches and heading counts read the FULL lists and must keep
-                  reading them (docs/TIER_PREVIEW_PATTERN.md: "Empty-state
-                  branches read the sliced list"). Kept in the signature so a
-                  future panel that must be sliced builder-side has a home.
+      overrides — what the render call sets over `vm`: the pool and leader
+                  observation shells, the board's name list, and the setups and
+                  "Passed on tonight" lists once a name has left them. Setups,
+                  leaders and ran are still sliced INSIDE the template from
+                  `pgate`, because the shell's own empty-state branches and heading
+                  counts read the FULL lists and must keep reading them
+                  (docs/TIER_PREVIEW_PATTERN.md: "Empty-state branches read the
+                  sliced list"). `us_standouts_shell` and `us_withheld_names` are for
+                  `_us_apply_panel_withholding`, which pops them.
       pgate     — the `pgate` dict the template reads, or None when nothing is
                   withheld anywhere.
       locked    — {"setups": [...], "leaders": [...], "ran": [...],
-                   "actnow": [{lane, rows, wrap}], "tape": bool} for the payload.
+                   "actnow": [{lane, rows, wrap}], "tape": bool,
+                   "what_changed": [...], "passed": {...}} for the payload.
     """
     if not gated:
         return {}, None, {}
@@ -5709,10 +5998,20 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
     locked: dict = {}
     overrides: dict = {}
 
+    # What each panel holds, read first because no free surface may print a name
+    # locked on any list. One pass settles it: each panel's rows past its preview are
+    # in `hide`, so a shell row always comes from within that panel's own preview. A
+    # panel with a withheld name in its preview shows fewer rows and no replacement.
+    carded = _us_names(su.get("buy"))
+    resid, ldrs, ran = _us_panel_lists(vm)
+    hide = _us_withheld_names(vm, preview)
+    su_patch: dict = {}
+
     # The complete eligible pool uses the SAME protected row split and payload.
     # No withheld ticker is copied into the anonymous shell, search index or JS.
     pool_shell, pool_gate, pool_locked = _split_us_leader_observations(
-        vm.get("us_candidate_visibility"), preview, gated=True
+        vm.get("us_candidate_visibility"), preview, gated=True,
+        withheld=hide | _us_open_plan_locked_names(vm, hide)
     )
     if pool_gate:
         overrides["us_candidate_visibility"] = pool_shell
@@ -5721,7 +6020,7 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
 
     # ── Leader observations — a separate display population, never Candidates/Plans.
     leader_shell, leader_gate, leader_locked = _split_us_leader_observations(
-        vm.get("us_leader_observations"), preview, gated=True
+        vm.get("us_leader_observations"), preview, gated=True, withheld=hide
     )
     if leader_gate:
         overrides["us_leader_observations"] = leader_shell
@@ -5736,18 +6035,24 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
     # top_setups.buy against the carded board and caps at 10; that filter is
     # display logic and stays there, so the builder only needs the CEILING to
     # report an honest total. The exact residual set is re-derived in-template.
-    ts_buy = [r for r in (ts.get("buy") or []) if r.get("ticker")]
-    carded = {n.get("ticker") for n in (su.get("buy") or []) if n.get("ticker")}
-    eb = set(((su.get("earnings_blackout_note") or {}).get("tickers")) or [])
-    resid = [r for r in ts_buy if r["ticker"] not in eb and r["ticker"] not in carded][:_US_SETUPS_CAP]
-    shell_ts, locked_ts = _us_panel_split(resid, preview)
+    shell_ts, locked_ts = _us_panel_split(resid, preview, hide)
     if locked_ts:
         pgate["setups"] = {"preview": len(shell_ts), "locked": len(locked_ts), "total": len(resid)}
         locked["setups"] = locked_ts
+    if shell_ts != resid[:len(shell_ts)]:
+        # The template slices this list by the preview count, so shell rows lead it.
+        placed = _us_names(resid)
+        overrides["top_setups"] = {**ts, "buy": shell_ts + locked_ts + [
+            r for r in (ts.get("buy") or []) if r.get("ticker") not in placed]}
+    # The template's residual has to skip the whole board, as `resid` does. Against the
+    # sliced board it printed locked names under "More fresh triggers".
+    if carded:
+        overrides["us_board_tickers"] = sorted(carded)
 
     # ── .topsetups.leaders-strip — us_standouts.leaders, same 15-row display cap.
-    ldrs = list(su.get("leaders") or [])[:_US_LEADERS_CAP]
-    shell_ld, locked_ld = _us_panel_split(ldrs, preview)
+    shell_ld, locked_ld = _us_panel_split(ldrs, preview, hide)
+    if shell_ld != ldrs[:len(shell_ld)]:
+        su_patch["leaders"] = shell_ld + locked_ld + list(su.get("leaders") or [])[_US_LEADERS_CAP:]
     if locked_ld:
         pgate["leaders"] = {"preview": len(shell_ld), "locked": len(locked_ld), "total": len(ldrs)}
         locked["leaders"] = locked_ld
@@ -5757,8 +6062,9 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
             (r.get("theme") or {}).get("name") for r in ldrs)
 
     # ── .pbr-l — the "recently fired" list. Only rendered on the priority path.
-    ran = list(su.get("ran") or []) if any(r.get("stage") for r in (su.get("buy") or [])) else []
-    shell_ran, locked_ran = _us_panel_split(ran, preview)
+    shell_ran, locked_ran = _us_panel_split(ran, preview, hide)
+    if shell_ran != ran[:len(shell_ran)]:
+        su_patch["ran"] = shell_ran + locked_ran
     if locked_ran:
         pgate["ran"] = {"preview": len(shell_ran), "locked": len(locked_ran), "total": len(ran)}
         locked["ran"] = locked_ran
@@ -5801,7 +6107,7 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
     # only the tickers it renders; the remainder ships here and the hydration script
     # merges it into the live lookup.
     plv: dict = {}
-    shell_names = {r.get("ticker") for r in (su.get("leaders") or [])[:preview]}
+    shell_names = _us_names(shell_ld)
     for key in ("watch", "leaders", "laggards"):
         for r in su.get(key) or []:
             tk, nm = r.get("ticker"), r.get("name")
@@ -5811,8 +6117,41 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
         pgate["plv_names"] = {"locked": len(plv)}
         locked["plv_names"] = plv
 
+    # ── "What changed today" — one row per name. A withheld name's entry stays as a
+    # stub with no ticker, so the dialog's tallies and total stay true and no row prints.
+    delta = su.get("delta") or {}
+    entries = delta.get("entries") or []
+    wc_locked = [e for e in entries if e.get("ticker") in hide]
+    if wc_locked:
+        su_patch["delta"] = {**delta, "entries": [
+            {**e, "ticker": None} if e.get("ticker") in hide else e for e in entries]}
+        pgate["what_changed"] = {"locked": len(wc_locked)}
+        locked["what_changed"] = wc_locked
+
+    # ── "Passed on tonight" — the names leave and each group keeps its count (`n`).
+    # `declined` and `considered` stay as the engine wrote them.
+    refusals = vm.get("us_prophet_refusals")
+    if refusals and refusals.get("groups"):
+        groups, passed_n = [], 0
+        for g in refusals["groups"]:
+            names = g.get("names") or []
+            kept = [nm for nm in names if nm.get("ticker") not in hide]
+            n_out = len(names) - len(kept)
+            if n_out and g.get("reason") != "already_open":
+                passed_n += n_out
+                g = {**g, "names": kept, "withheld_n": n_out}
+            groups.append(g)
+        if passed_n:
+            overrides["us_prophet_refusals"] = {**refusals, "groups": groups}
+            pgate["passed"] = {"locked": passed_n}
+            locked["passed"] = refusals
+
+    if su_patch:
+        overrides["us_standouts_shell"] = su_patch
+    if hide:
+        overrides["us_withheld_names"] = hide
     if len(pgate) <= 3:                       # tier/payload/preview only
-        return {}, None, {}
+        return overrides, None, {}
     return overrides, pgate, locked
 
 
@@ -5872,6 +6211,12 @@ def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dic
                 theme_tape=vm.get("theme_tape"), tt_names_only=True)
     if locked.get("plv_names"):
         out["plv_names"] = locked["plv_names"]
+
+    # Rows the free "What changed today" and "Passed on tonight" leave out.
+    if locked.get("what_changed"):
+        _render("what_changed_html", "_what_changed_rows.html.j2", rows=locked["what_changed"])
+    if locked.get("passed"):
+        _render("passed_html", "_us_passed_shelf.html.j2", cx=locked["passed"])
     return out
 
 
@@ -6028,10 +6373,14 @@ def main() -> int:
     # (theme.js signInWithOAuth redirectTo), not a fixed host — the allowed
     # origins live in the Supabase dashboard (see ACCOUNTS_SETUP.md).
     # copy shared static assets (theme + visual widgets) into the site
-    for asset in ("theme.css", "navigation-refresh.css", "product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
+    for asset in ("government-revenue-parity.css","government-revenue-dossiers.js","government-revenue-candidate-radar.js","government-revenue-briefcase.js","government-revenue-briefcase-ui.js","government-revenue-sbir.js","government-revenue-sbir.css","government-revenue-investor.js","government-revenue-investor.css","government-revenue-theme-context.js","government-revenue-theme-context.css",
+                  "theme.css", "navigation-refresh.css", "product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
                   "theme.js", "terminal_overlay.js", "mtf.js", "chart_i18n.js", "timemachine.js",
                   "illus.css", "illus.js",
+                  "mm_brain.js", "mm_brain_visuals.js", "mm_brain_visuals.css", "mm_brain_presentation.js", "mm_brain_markdown.js", "mm_brain_finance.js", "mm_brain_finance.css", "mm_brain_finance_math_v1.js", "mm_brain_math.js",
                   "account.js",
+                  "market_memory.css", "market_memory.js", "market_memory_intent.js",
+                  "market_memory_retained.css", "market_memory_retained.js",
                   # landing onboarding sheet (paired templates/ -> site/ byte copy)
                   "onboard.js", "onboard.css",
                   "stockdata.js", "logo_config.js", "stock-logos.js", "watchlist.js", "factor_exposure.js", "auth.js",
@@ -6047,6 +6396,7 @@ def main() -> int:
                   "tablesort.js", "charts.js",
                   "aibrief.js", "stockbrief.js", "aidesk_lean.js",
                   "stockview.js",
+                  "ticker_news.js", "ticker_news.css",
                   "lightweight-charts.js",
                   "allocation_scorecard.js", "live.js", "risk_state_live.js",
                   "risk_envelope_live.js",
@@ -6136,12 +6486,55 @@ def main() -> int:
     # surfaced via the card's as_of). Absent (first run) => the strip degrades to the
     # action_board notable cards below.
     us_standouts = None
+    _us_w3c = None
+    _us_w3c_refusal = None
+    _us_w3c_binding = None
+    _us_today_binding = None
+    _us_source_bytes = None
     _us = site / "factordata" / "us_standouts.json"
     if _us.exists():
         try:
-            us_standouts = json.loads(_us.read_text())
+            _us_source_bytes = _us.read_bytes()
+            us_standouts = json.loads(_us_source_bytes)
+            # Freeze raw owner binding before display attachments and tier splitting.
+            # An optional provenance import/read failure cannot hide the board.
+            try:
+                from hashlib import sha256 as _w3c_sha256
+                _us_w3c_binding = _w3c_sha256(_us_source_bytes).hexdigest()
+                from engine.theme_graph.selection_cohort_publication import (
+                    consume_us_source, default_capture_capability)
+                try:
+                    from functools import partial as _w3c_partial
+                    from engine.theme_graph.selection_cohort_reads import publication_reads as _w3c_reads
+                    _w3c_attempts = (_w3c_partial(_w3c_reads, data_dir=config.data_dir()), None)
+                except Exception as _w3c_qr_e:  # noqa: BLE001 — receipt-only read survives a missing reads owner
+                    log.warning("W3C qualified reads unavailable (%s); receipt-only", _w3c_qr_e)
+                    _w3c_attempts = (None,)
+                for _w3c_qr in _w3c_attempts:
+                    _us_w3c_read = consume_us_source(
+                        _us_source_bytes, data_dir=config.data_dir(),
+                        authorize_capture=default_capture_capability(), qualified_reads=_w3c_qr)
+                    if _us_w3c_read["status"] == "AVAILABLE":
+                        _us_w3c = _us_w3c_read
+                        break
+                    _us_w3c_refusal = _us_w3c_read
+                    if _w3c_qr is not None:
+                        log.warning("W3C US qualified reads refused (%s); receipt-only", _us_w3c_read["reason_codes"])
+            except Exception as _us_w3c_e:  # noqa: BLE001 — preserve incumbent source rendering
+                log.warning("W3C US source binding unavailable (%s)", _us_w3c_e)
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("us_standouts.json unreadable (%s)", e)
+        # Bind the existing frozen raw SHA to the original decoded source.
+        _us_today_binding = _us_today_source_binding(_us_w3c_binding, us_standouts)
+    # Native three-field binding: the ORIGINAL owner callable consumes the exact
+    # frozen raw bytes BEFORE any attachment or tier splitting, and its ordered
+    # metadata rides COPIED presentation rows by original position only. Typed
+    # unavailable on any failure — ordinary source rendering is preserved.
+    _us_today_native = _us_today_native_binding(_us_source_bytes)
+    if _us_today_native is not None:
+        us_standouts = _us_today_bind_rows(us_standouts, _us_today_native)
+        _us_today_binding = {**_us_today_binding, **_us_today_native} if _us_today_binding \
+            else _us_today_native
     # DISPLAY-ONLY board attaches (personality chips + RLT-R6 sector-stance) — factored
     # into _attach_board_display_chips so the post-build_library re-render (one-build-lag
     # fix, below) reuses the EXACT same enrichment and can never silently diverge.
@@ -6185,15 +6578,8 @@ def main() -> int:
     #     (§10's ".mx-error" state, names what failed, offers Retry).
     # Both leave us_prophet_book None; only the flag differs, and only the
     # flag decides which of the two non-live states the ladder renders.
-    us_prophet_book = None
-    us_prophet_book_error = False
-    _pbk = site / "prophet" / "index.json"
-    if _pbk.exists():
-        try:
-            us_prophet_book = json.loads(_pbk.read_text())
-        except Exception as e:  # noqa: BLE001 — additive, never fatal
-            log.warning("prophet/index.json unreadable (%s)", e)
-            us_prophet_book_error = True
+    us_prophet_book, us_prophet_book_error = _read_us_prophet_book(
+        site / "prophet" / "index.json")
 
     # P1 — read the incumbent leader-pullback coverage independently of Candidates and
     # Plans. The full roster exists only in this in-memory view and the existing protected
@@ -7046,6 +7432,10 @@ def main() -> int:
         action_board=_ab,
         top_setups=top_setups,
         us_standouts=us_standouts,
+        # Internal machine binding only; no template/public-rights/tier expansion.
+        us_selection_cohort_internal=_us_w3c,
+        us_today_source_binding=_us_today_binding,
+        us_today_native_binding=_us_today_native,
         us_candidate_visibility=us_candidate_visibility,
         us_prophet_book=us_prophet_book,
         us_leader_observations=us_leader_observations,
@@ -7088,7 +7478,7 @@ def main() -> int:
         alloc_card=alloc_card_state(),           # macro-page allocation CTA card
         risk_model=risk_model_view(f, hist, _cf),  # de-risk score + leg breakdown
         chart_risk_model=chart_risk_model(_cf),    # drawdown/recession risk-model chart
-        chart_curve=chart_curve(_cf),              # 2s10s raw vs term-premium-adjusted
+        chart_curve=chart_curve(_cf),              # raw 2s10s vs legacy TP10 heuristic
         chart_vix_term=chart_vix_term(f, _cf),     # VIX level + term-structure ratio
         cross_asset=cross_asset_snap,
         fear_euphoria=fear_euphoria_synthesis(latest, f),
@@ -7362,6 +7752,11 @@ def main() -> int:
     _us_gate_cfg = _us_board_gate_cfg()
     _us_today_featured = _us_today_featured_preview(
         vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
+    # The loader emits for a GENUINE bound nonempty ungated Today too (same
+    # trampoline, same protected payload URL, no extra auth path): three real
+    # owner pins plus at least one Featured row, else None.
+    _us_today_emit = _us_today_native_emit_for(
+        vm.get("us_today_source_binding"), bool(_us_today_featured))
     _us_shell_su, _us_gate, _us_locked = _split_us_board(
         vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
     # P-MP1-SHELL central act, §8b: the SAME re-plumb as the candidate split
@@ -7375,7 +7770,8 @@ def main() -> int:
     # `preview_rows` itself stays shared (§8b: identical to the candidate
     # board's own gate config).
     _us_life_shell, _us_life_gate, _us_life_locked = _split_us_prophet_board(
-        vm.get("us_prophet_book"), _us_gate_cfg["preview_rows"], gated=_us_life_gate_cfg())
+        vm.get("us_prophet_book"), _us_gate_cfg["preview_rows"], gated=_us_life_gate_cfg(),
+        withheld=_us_withheld_names(vm, _us_gate_cfg["panel_preview_rows"]))
     _us_life_episodes = _us_prophet_episode_map((vm.get("us_prophet_book") or {}).get("plans") or [])
     # Repair round, findings B4/S2/S8/R2/R4 — see _us_life_repair_context().
     _us_life_repair = _us_life_repair_context(vm, _us_life_shell, _us_life_gate,
@@ -7386,6 +7782,8 @@ def main() -> int:
     # *_html blocks. Same rule: NEVER mutate the shared vm.
     _us_pov, _us_pgate, _us_plocked = _split_us_panels(
         vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"])
+    _us_shell_su, _us_life_repair = _us_apply_panel_withholding(
+        vm, _us_shell_su, _us_life_repair, _us_pov, _us_gate_cfg["preview_rows"])
     _us_plan_state, _us_plan_by_ticker = _plan_relations_for(
         vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
     vm["plan_rel_by_ticker"] = _us_plan_by_ticker
@@ -7394,6 +7792,7 @@ def main() -> int:
                        us_standouts=vm.get("us_standouts"),
                        top_setups=vm.get("top_setups"), built=generated,
                        today_rows=_us_today_featured,
+                       today_source_binding=vm.get("us_today_source_binding"),
                        pgate=_us_pgate,
                        panel_blocks=_render_us_panel_payload(
                                        env, _us_pgate, _us_plocked, vm,
@@ -7408,6 +7807,7 @@ def main() -> int:
     write_page(out_st, env.get_template("dashboard.html.j2").render(
         **{**vm, **_us_pov, "us_standouts": _us_shell_su,
            "gate": _us_gate, "pgate": _us_pgate,
+           "us_today_native_emit": _us_today_emit,
            "us_prophet_book": _us_life_shell, "life_gate": _us_life_gate,
            "us_prophet_episodes": _us_life_episodes,
            "us_prophet_book_error": us_prophet_book_error,
@@ -7658,7 +8058,7 @@ def main() -> int:
     # a "results ready" flag, so the owner is told exactly when to return for the next step.
     try:
         from engine import experiments_registry
-        experiments_registry.build(site)
+        experiments_registry.build_published(site)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("experiments registry build failed: %s", e)
 
@@ -7729,8 +8129,55 @@ def main() -> int:
         # error leaves the first-pass pages in place.
         try:
             _us_path = site / "factordata" / "us_standouts.json"
-            _fresh_su = _attach_board_display_chips(
-                site, json.loads(_us_path.read_text())) if _us_path.exists() else None
+            _fresh_source_bytes = _us_path.read_bytes() if _us_path.exists() else None
+            _fresh_w3c = None
+            _fresh_w3c_refusal = None
+            _fresh_w3c_binding = None
+            _fresh_today_binding = None
+            if _fresh_source_bytes is not None:
+                try:
+                    from hashlib import sha256 as _w3c_sha256
+                    _fresh_w3c_binding = _w3c_sha256(_fresh_source_bytes).hexdigest()
+                    from engine.theme_graph.selection_cohort_publication import (
+                        consume_us_source, default_capture_capability)
+                    try:
+                        from functools import partial as _w3c_partial
+                        from engine.theme_graph.selection_cohort_reads import publication_reads as _w3c_reads
+                        _w3c_attempts = (_w3c_partial(_w3c_reads, data_dir=config.data_dir()), None)
+                    except Exception as _w3c_qr_e:  # noqa: BLE001 — receipt-only read survives a missing reads owner
+                        log.warning("W3C qualified reads unavailable (%s); receipt-only", _w3c_qr_e)
+                        _w3c_attempts = (None,)
+                    for _w3c_qr in _w3c_attempts:
+                        _fresh_w3c_read = consume_us_source(
+                            _fresh_source_bytes, data_dir=config.data_dir(),
+                            authorize_capture=default_capture_capability(), qualified_reads=_w3c_qr)
+                        if _fresh_w3c_read["status"] == "AVAILABLE":
+                            _fresh_w3c = _fresh_w3c_read
+                            break
+                        _fresh_w3c_refusal = _fresh_w3c_read
+                        if _w3c_qr is not None:
+                            log.warning("W3C US qualified reads refused (%s); receipt-only", _fresh_w3c_read["reason_codes"])
+                except Exception as _fresh_w3c_e:  # noqa: BLE001 — keep ordinary fresh-board rendering
+                    log.warning("W3C fresh US source binding unavailable (%s)", _fresh_w3c_e)
+            _fresh_owner_doc = (json.loads(_fresh_source_bytes)
+                                if _fresh_source_bytes is not None else None)
+            _fresh_su = None
+            _fresh_today_native = None
+            if _fresh_owner_doc is not None:
+                # Same first/fresh rule: bind the frozen raw SHA to the ORIGINAL
+                # decoded doc BEFORE display attachment touches it.
+                _fresh_today_binding = _us_today_source_binding(
+                    _fresh_w3c_binding, _fresh_owner_doc)
+                # Same owner callable, same exact fresh bytes, still before any
+                # attachment or split.
+                _fresh_today_native = _us_today_native_binding(_fresh_source_bytes)
+                if _fresh_today_native is not None:
+                    _fresh_owner_doc = _us_today_bind_rows(
+                        _fresh_owner_doc, _fresh_today_native)
+                    _fresh_today_binding = (
+                        {**_fresh_today_binding, **_fresh_today_native}
+                        if _fresh_today_binding else _fresh_today_native)
+                _fresh_su = _attach_board_display_chips(site, _fresh_owner_doc)
             _prior_as_of = (us_standouts or {}).get("as_of")
             _prior_stale = (us_standouts or {}).get("staleness") or {}
             _fresh_candidate_visibility = project_candidate_visibility(
@@ -7741,7 +8188,19 @@ def main() -> int:
                     # A same-session correction can change names, exclusion reasons,
                     # or availability without advancing the date/freshness clock.
                     # Compare the existing allowlisted view, not unrelated raw fields.
-                    or _fresh_candidate_visibility != vm.get("us_candidate_visibility")):
+                    or _fresh_candidate_visibility != vm.get("us_candidate_visibility")
+                    # Same-session source/reason/explanation corrections cannot pair
+                    # the fresh board with an older first-pass internal context.
+                    or _fresh_w3c_binding != _us_w3c_binding
+                    or _fresh_w3c != vm.get("us_selection_cohort_internal")
+                    # A same-session native binding change (availability or value)
+                    # must not pair a fresh source with older Today metadata.
+                    or _fresh_today_native != vm.get("us_today_native_binding")):
+                vm["us_selection_cohort_internal"] = _fresh_w3c
+                _us_w3c_binding = _fresh_w3c_binding
+                _us_w3c_refusal = _fresh_w3c_refusal
+                vm["us_today_source_binding"] = _fresh_today_binding
+                vm["us_today_native_binding"] = _fresh_today_native
                 vm["us_standouts"] = _fresh_su
                 vm["us_candidate_visibility"] = _fresh_candidate_visibility
                 # §6.9 R5: the "passed on tonight" shelf is DERIVED from this board, so
@@ -7793,6 +8252,10 @@ def main() -> int:
                 # silently reopen the leak on every one-build-lag refresh.
                 _us_today_featured2 = _us_today_featured_preview(
                     vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
+                # Same genuine-bound emit rule as the first pass, from THIS
+                # generation's binding and Featured shelf.
+                _us_today_emit2 = _us_today_native_emit_for(
+                    vm.get("us_today_source_binding"), bool(_us_today_featured2))
                 _us_shell_su2, _us_gate2, _us_locked2 = _split_us_board(
                     vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
                 # The plan book is not touched by this one-build-lag re-render
@@ -7803,7 +8266,8 @@ def main() -> int:
                 # Repair round, finding S1: fail-CLOSED plan-book gate, same
                 # reader as the first pass — see _us_life_gate_cfg().
                 _us_life_shell2, _us_life_gate2, _us_life_locked2 = _split_us_prophet_board(
-                    vm.get("us_prophet_book"), _us_gate_cfg["preview_rows"], gated=_us_life_gate_cfg())
+                    vm.get("us_prophet_book"), _us_gate_cfg["preview_rows"], gated=_us_life_gate_cfg(),
+                    withheld=_us_withheld_names(vm, _us_gate_cfg["panel_preview_rows"]))
                 _us_life_episodes2 = _us_prophet_episode_map(
                     (vm.get("us_prophet_book") or {}).get("plans") or [])
                 # Repair round, findings B4/S2/S8/R2/R4 — see _us_life_repair_context().
@@ -7814,6 +8278,8 @@ def main() -> int:
                 # or the re-render bakes their full row sets back into the shell.
                 _us_pov2, _us_pgate2, _us_plocked2 = _split_us_panels(
                     vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"])
+                _us_shell_su2, _us_life_repair2 = _us_apply_panel_withholding(
+                    vm, _us_shell_su2, _us_life_repair2, _us_pov2, _us_gate_cfg["preview_rows"])
                 _us_plan_state2, _us_plan_by_ticker2 = _plan_relations_for(
                     vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
                 vm["plan_rel_by_ticker"] = _us_plan_by_ticker2
@@ -7822,6 +8288,7 @@ def main() -> int:
                                    us_standouts=vm.get("us_standouts"),
                                    top_setups=vm.get("top_setups"), built=generated,
                                    today_rows=_us_today_featured2,
+                                   today_source_binding=vm.get("us_today_source_binding"),
                                    pgate=_us_pgate2,
                                    panel_blocks=_render_us_panel_payload(
                                        env, _us_pgate2, _us_plocked2, vm,
@@ -7837,6 +8304,7 @@ def main() -> int:
                 write_page(site / "us_stocks.html", _dash.render(
                     **{**vm, **_us_pov2, "us_standouts": _us_shell_su2,
                        "gate": _us_gate2, "pgate": _us_pgate2,
+                       "us_today_native_emit": _us_today_emit2,
                        "us_prophet_book": _us_life_shell2, "life_gate": _us_life_gate2,
                        "us_prophet_episodes": _us_life_episodes2,
                        "us_prophet_book_error": us_prophet_book_error,
@@ -7850,6 +8318,12 @@ def main() -> int:
         except Exception as _rr_e:  # noqa: BLE001 — additive, never fatal
             log.warning("one-build-lag re-render skipped (%s)", _rr_e)
         _tmark("one_build_lag_rerender")
+        try:
+            from engine.theme_graph.selection_cohort_projection import write_product_projection
+            # A typed refusal reaches only the product projection (gate #8: preserve reasons); the internal binding stays None.
+            write_product_projection(site, "us", vm.get("us_selection_cohort_internal") or _us_w3c_refusal)
+        except Exception as _scp_e:  # noqa: BLE001 — projection never breaks ordinary rendering
+            log.warning("selection-cohort projection (us) not written (%s)", _scp_e)
 
         # Bespoke single-stock chart data: a compact per-ticker OHLC JSON
         # (site/ohlc/<T>.json) read client-side by chart.js. Pure serialisation of
@@ -8090,6 +8564,28 @@ def main() -> int:
     except Exception as _fi_e:  # noqa: BLE001 — additive; never break main build
         log.warning("finance_intelligence.html render failed (%s); page skipped", _fi_e)
 
+    # Expectation Surface — Information→Price wave 1 descriptive consensus page
+    # (schema expectation_surface.page.v1, financial_influence=false everywhere).
+    # Degrade-safe: an import or render fault skips the page, never the build.
+    try:
+        from scripts.build_expectation_surface import build as _build_es
+        _es_summary = _build_es(write=True)
+        log.info("wrote site/expectation_surface.html (%s)", _es_summary.get("state"))
+    except Exception as _es_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("expectation_surface render failed (%s); page skipped", _es_e)
+
+    # Consumer Cyclical PLNT synthetic display card — one static card mounting
+    # display_packet over the committed synthetic fixture. It writes no data,
+    # fetches nothing, and a native-admitted refusal raises before any page
+    # exists; this hook only keeps a full-site rebuild from leaving the card
+    # behind the templates.
+    try:
+        from scripts.build_consumer_cyclical_plnt_page import render as _render_plnt
+        _plnt_page = _render_plnt(config.ROOT)
+        log.info("wrote %s", _plnt_page)
+    except Exception as _plnt_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("consumer_cyclical_plnt.html render failed (%s); page skipped", _plnt_e)
+
     # F01 Macro & Monetary suite — server-rendered workspace pages over the
     # validated mastermind.macro_workspace_snapshot.v1 artifacts. The builder
     # fails CLOSED on its own (a refused snapshot renders the typed refusal page,
@@ -8130,6 +8626,18 @@ def main() -> int:
         log.info("wrote %s", site / "market_structure.html")
     except Exception as _msp_e:  # noqa: BLE001 — additive; never break main build
         log.warning("market_structure.html render failed (%s); page skipped", _msp_e)
+
+    # U1 — Theme Map (house hierarchy, category → theme → sub-theme → micro-theme).
+    # Reads the breadth-display reader; never writes to data/. Render failure
+    # never breaks main build (builder emits `.mx-empty` on store unreadable).
+    try:
+        import scripts.build_theme_tree_page as _ttb
+        _ttb_html = _ttb.render(config.ROOT)
+        write_page(site / "theme_tree.html", _ttb_html)
+        _tmark("theme_tree")
+        log.info("wrote %s", site / "theme_tree.html")
+    except Exception as _ttb_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("theme_tree render failed (%s); page skipped", _ttb_e)
 
     # Market Memory — data-free authenticated shell over existing macro analogue
     # and Signal Episode Atlas APIs.  The page never republishes analytical data.

@@ -16,9 +16,12 @@ the A-share side — including an analyst-consensus forecast A-shares lack:
                                               ratings + target prices (the HK-unique
                                               analyst-consensus read)
 
-NOTE on currency: many HK names (Tencent etc.) report financials in CNY while the
-price/target are in HKD. So PE/PB are deliberately NOT computed here (a CNY EPS over
-an HKD price is wrong); the engine leans on currency-neutral ratios (ROE/ROA/margins)
+NOTE on currency: the indicator feed serves EVERY name's figures converted to CNY at
+the period-end central parity (HKD and USD reporters included), while the price and
+analyst target are HKD. Its CURRENCY column is stored as-is but is a constant "HKD"
+listing label, never the statement unit — engine/hk_fundamentals.STATEMENT_CURRENCY
+holds the real unit. So PE/PB are deliberately NOT computed here (a CNY EPS over an
+HKD price is wrong); the engine leans on currency-neutral ratios (ROE/ROA/margins)
 plus the HKD analyst target as the valuation anchor.
 
 Stored compact: one JSON `payload` per ticker in data/hk_fundamentals/fundamentals.parquet.

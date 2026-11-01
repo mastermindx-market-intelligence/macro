@@ -16,6 +16,7 @@ from marketdesk_extractor.feed_probe import (
 def _database(path: Path) -> Path:
     conn = sqlite3.connect(path)
     conn.execute("CREATE TABLE papers (vaulted_at TEXT)")
+    conn.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
     conn.executemany(
         "INSERT INTO papers(vaulted_at) VALUES (?)",
         [
@@ -41,6 +42,31 @@ def test_read_vault_state_returns_newest_and_count_after_watermark(tmp_path: Pat
     assert state.database == database
     assert state.newest == "2026-09-14T09:40:00+00:00"
     assert state.count == 1
+    assert state.producer_auth_state == "UNKNOWN"
+    assert state.producer_auth_observed_at == ""
+
+
+def test_read_vault_state_projects_typed_auth_required(tmp_path: Path) -> None:
+    database = _database(tmp_path / "marketdesk.sqlite")
+    conn = sqlite3.connect(database)
+    conn.executemany(
+        "INSERT INTO meta(key,value) VALUES (?,?)",
+        [
+            ("producer_auth_state", "AUTH_REQUIRED"),
+            ("producer_auth_observed_at", "2026-09-24T10:05:00+00:00"),
+            ("producer_auth_required_at", "2026-09-24T09:35:00+00:00"),
+            ("producer_auth_reason", "NO_AUTHENTICATED_PROFILE"),
+        ],
+    )
+    conn.commit()
+    conn.close()
+
+    state = read_vault_state(database, "1970-01-01T00:00:00+00:00", timeout_seconds=1)
+
+    assert state.producer_auth_state == "AUTH_REQUIRED"
+    assert state.producer_auth_observed_at == "2026-09-24T10:05:00+00:00"
+    assert state.producer_auth_required_at == "2026-09-24T09:35:00+00:00"
+    assert state.producer_auth_reason == "NO_AUTHENTICATED_PROFILE"
 
 
 def test_read_vault_state_times_out_a_stalled_database_open(

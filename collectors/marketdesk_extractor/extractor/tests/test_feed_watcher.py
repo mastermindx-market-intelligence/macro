@@ -54,7 +54,7 @@ def test_feed_uses_single_bounded_canonical_probe(tmp_path: Path) -> None:
         app / ".venv" / "bin" / "python",
         """#!/bin/sh
 printf '%s\n' "$*" > "$PYTHON_LOG"
-printf '%s|%s|%s\n' "$CONFIGURED_DB" '2026-09-09T21:20:21+00:00' '0'
+printf '%s|%s|%s|%s|%s|%s|%s\n' "$CONFIGURED_DB" '2026-09-09T21:20:21+00:00' '0' 'AUTHENTICATED' '2026-09-09T21:21:00+00:00' '' ''
 """,
     )
     _write_executable(
@@ -93,7 +93,11 @@ def test_feed_treats_an_empty_vault_as_nothing_new(tmp_path: Path) -> None:
     home, dest, app = _base_layout(tmp_path)
     fake_bin = tmp_path / "bin"
     fake_db = tmp_path / "empty.sqlite"
-    body = "#!/bin/sh\nprintf '%s|%s|%s\\n' \"$FAKE_DB\" '' '0'\n"
+    body = (
+        "#!/bin/sh\n"
+        "printf '%s|%s|%s|%s|%s|%s|%s\\n' "
+        "\"$FAKE_DB\" '' '0' 'AUTHENTICATED' '2026-09-09T21:21:00+00:00' '' ''\n"
+    )
     _write_executable(app / ".venv" / "bin" / "python", body)
 
     result = _run_feed(home, fake_bin, FAKE_DB=str(fake_db))
@@ -103,6 +107,29 @@ def test_feed_treats_an_empty_vault_as_nothing_new(tmp_path: Path) -> None:
     assert "nothing new" in log
     assert "malformed" not in log
 
+
+
+def test_feed_surfaces_auth_required_even_when_trickle_process_can_exist(
+        tmp_path: Path) -> None:
+    home, dest, app = _base_layout(tmp_path)
+    fake_bin = tmp_path / "bin"
+    fake_db = tmp_path / "storage" / "marketdesk.sqlite"
+    body = (
+        "#!/bin/sh\n"
+        "printf '%s|%s|%s|%s|%s|%s|%s\\n' "
+        "\"$FAKE_DB\" '' '0' 'AUTH_REQUIRED' "
+        "'2026-09-24T10:05:00+00:00' '2026-09-24T09:35:00+00:00' "
+        "'NO_AUTHENTICATED_PROFILE'\n"
+    )
+    _write_executable(app / ".venv" / "bin" / "python", body)
+
+    result = _run_feed(home, fake_bin, FAKE_DB=str(fake_db))
+
+    assert result.returncode == 0, result.stderr
+    log = (dest / "feed.log").read_text()
+    assert "ERROR producer AUTH_REQUIRED" in log
+    assert "required_at=2026-09-24T09:35:00+00:00" in log
+    assert "marketdesk auth" in log
 
 
 def test_feed_releases_lock_when_launchd_terminates_it(tmp_path: Path) -> None:
@@ -147,7 +174,9 @@ def test_feed_dispatches_to_canonical_macro_repository(tmp_path: Path) -> None:
 
     _write_executable(
         app / ".venv" / "bin" / "python",
-        "#!/bin/sh\nprintf '%s|%s|%s\\n' \"$FAKE_DB\" \"$FAKE_NEWEST\" '1'\n",
+        """#!/bin/sh
+printf '%s|%s|%s|%s|%s|%s|%s\\n' "$FAKE_DB" "$FAKE_NEWEST" '1' 'AUTHENTICATED' '2026-09-09T21:21:00+00:00' '' ''
+""",
     )
     _write_executable(
         fake_bin / "gh",

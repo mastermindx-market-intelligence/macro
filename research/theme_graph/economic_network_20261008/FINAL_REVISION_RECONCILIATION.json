@@ -1,0 +1,313 @@
+{
+  "schema": "gmi.research.final_revision_reconciliation/v1",
+  "observed_at_utc": "2026-10-08T23:28:51Z",
+  "scope": "Bounded final immutable-base to final-observed-head source comparison; no latest runtime or acceptance claim.",
+  "remote_effects": "READ_ONLY",
+  "original_witness_source_pins_preserved": true,
+  "macro": {
+    "repository_full_name": "mastermindx-market-intelligence/macro",
+    "base": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+    "head": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+    "status": "ahead",
+    "ahead_by": 2,
+    "behind_by": 0,
+    "total_commits": 2,
+    "too_large": null,
+    "base_commit": {
+      "sha": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/commit/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477"
+    },
+    "merge_base_commit": {
+      "sha": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/commit/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477"
+    },
+    "files": [
+      {
+        "filename": ".github/ci/legacy-jobs.yml",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+        "previous_filename": null
+      },
+      {
+        "filename": ".github/workflows/daily.yml",
+        "status": "modified",
+        "additions": 10,
+        "deletions": 0,
+        "changes": 10,
+        "previous_filename": null
+      },
+      {
+        "filename": "data/marketing/outbox/activity.jsonl",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+        "previous_filename": null
+      },
+      {
+        "filename": "data/marketing/outbox/status_ledger.jsonl",
+        "status": "modified",
+        "additions": 11,
+        "deletions": 0,
+        "changes": 11,
+        "previous_filename": null
+      },
+      {
+        "filename": "data/marketing/post_metrics.jsonl",
+        "status": "modified",
+        "additions": 8,
+        "deletions": 0,
+        "changes": 8,
+        "previous_filename": null
+      },
+      {
+        "filename": "data/marketing/publications.jsonl",
+        "status": "modified",
+        "additions": 5,
+        "deletions": 0,
+        "changes": 5,
+        "previous_filename": null
+      },
+      {
+        "filename": "scripts/build_theme_graph.py",
+        "status": "modified",
+        "additions": 153,
+        "deletions": 0,
+        "changes": 153,
+        "previous_filename": null
+      },
+      {
+        "filename": "scripts/ci/daily_engine_regional_desk_builders.sh",
+        "status": "modified",
+        "additions": 5,
+        "deletions": 0,
+        "changes": 5,
+        "previous_filename": null
+      },
+      {
+        "filename": "tests/test_theme_graph_materialize.py",
+        "status": "modified",
+        "additions": 182,
+        "deletions": 3,
+        "changes": 185,
+        "previous_filename": null
+      }
+    ],
+    "compare_url": "https://github.com/mastermindx-market-intelligence/macro/compare/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477...c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+    "material_change": "Additive nightly Theme Graph witness capture/retention wired to existing builder/guard owner band. Upload14days, advisory, manifest acceptance not_evaluated. No semantic/state/membership/identity/clock/rights/owner contract delta in compare.",
+    "runtime_or_natural_generation_reverified": false,
+    "latest_meta_blob": "99eb52e5062ad6cbc5232d00229c46a26f3901fa",
+    "latest_meta_computed_at": "2026-10-07T08:00:17Z",
+    "acceptance_change": "NONE_ESTABLISHED"
+  },
+  "terminal": {
+    "repository_full_name": "mastermindx-market-intelligence/mastermind-terminal",
+    "base": "54f97dda68a76a55ba0813afc9433ef54aaf401c",
+    "head": "f03aa5d019f1894210a7c6e40b8825ae28015198",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "total_commits": 1,
+    "too_large": null,
+    "base_commit": {
+      "sha": "54f97dda68a76a55ba0813afc9433ef54aaf401c",
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/mastermind-terminal/commits/54f97dda68a76a55ba0813afc9433ef54aaf401c",
+      "html_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/commit/54f97dda68a76a55ba0813afc9433ef54aaf401c"
+    },
+    "merge_base_commit": {
+      "sha": "54f97dda68a76a55ba0813afc9433ef54aaf401c",
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/mastermind-terminal/commits/54f97dda68a76a55ba0813afc9433ef54aaf401c",
+      "html_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/commit/54f97dda68a76a55ba0813afc9433ef54aaf401c"
+    },
+    "files": [
+      {
+        "filename": "terminal/app/api/scripts/save/route.ts",
+        "status": "modified",
+        "additions": 41,
+        "deletions": 7,
+        "changes": 48,
+        "previous_filename": null
+      },
+      {
+        "filename": "terminal/components/PineEditor.tsx",
+        "status": "modified",
+        "additions": 127,
+        "deletions": 48,
+        "changes": 175,
+        "previous_filename": null
+      },
+      {
+        "filename": "terminal/components/TerminalShell.tsx",
+        "status": "modified",
+        "additions": 3,
+        "deletions": 10,
+        "changes": 13,
+        "previous_filename": null
+      },
+      {
+        "filename": "terminal/e2e/pine-editor-integrity.spec.ts",
+        "status": "modified",
+        "additions": 49,
+        "deletions": 8,
+        "changes": 57,
+        "previous_filename": null
+      },
+      {
+        "filename": "terminal/lib/__tests__/pineEditorIdBuffer.test.tsx",
+        "status": "added",
+        "additions": 377,
+        "deletions": 0,
+        "changes": 377,
+        "previous_filename": null
+      },
+      {
+        "filename": "terminal/lib/__tests__/savedScriptStamp.test.ts",
+        "status": "added",
+        "additions": 76,
+        "deletions": 0,
+        "changes": 76,
+        "previous_filename": null
+      },
+      {
+        "filename": "terminal/lib/__tests__/scriptsSaveRoute.test.ts",
+        "status": "added",
+        "additions": 202,
+        "deletions": 0,
+        "changes": 202,
+        "previous_filename": null
+      },
+      {
+        "filename": "terminal/lib/__tests__/userScripts.test.ts",
+        "status": "added",
+        "additions": 342,
+        "deletions": 0,
+        "changes": 342,
+        "previous_filename": null
+      },
+      {
+        "filename": "terminal/lib/savedScriptStamp.ts",
+        "status": "added",
+        "additions": 74,
+        "deletions": 0,
+        "changes": 74,
+        "previous_filename": null
+      },
+      {
+        "filename": "terminal/lib/userScripts.ts",
+        "status": "modified",
+        "additions": 104,
+        "deletions": 15,
+        "changes": 119,
+        "previous_filename": null
+      }
+    ],
+    "compare_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/compare/54f97dda68a76a55ba0813afc9433ef54aaf401c...f03aa5d019f1894210a7c6e40b8825ae28015198",
+    "material_change": "Pine Editor/saved-script integrity. TerminalShell rename callback delegates to runRenameScriptClick. Company Theme Context route and MarketOntology navigation helper unchanged by direct blob comparison.",
+    "runtime_reverified": false
+  },
+  "protected_mastermind": {
+    "base": "c7e47c859eb2925c5626931fd511800773ba09ac",
+    "head": "f74e912d3efa3b67cae40ba04f9e558d579096e9",
+    "compare_url": "https://github.com/mastermindx-market-intelligence/Mastermind/compare/c7e47c859eb2925c5626931fd511800773ba09ac...f74e912d3efa3b67cae40ba04f9e558d579096e9",
+    "verification": "ROOT_SUPPLIED_CANONICAL_REFRESH",
+    "root_report": "One commit: relay enrollment/runbook/tests. INDEX+7 companions fetched atomically at new head; required loaded procedures unchanged. mastermind.sol_skillpack.v1/1.0.1/bootstrap1 compatible.",
+    "worker_claim": "No independent protected repo re-fetch performed in this bounded worker lane."
+  },
+  "held_candidates": {
+    "verification": "ROOT_VERIFIED_2026-10-08T23:26UTC",
+    "k3d_pr6514": {
+      "head": "74b6426c8be71adec27df00f2f98172f8528c2b2",
+      "state": "OPEN_DRAFT_HELD"
+    },
+    "commission4_pr8406": {
+      "head": "4f4e80ca9ba9309ccb8bb211ff4d0a1ecff00272",
+      "state": "OPEN_NON_DRAFT_CANDIDATE"
+    }
+  },
+  "direct_unchanged_blob_proofs": [
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "agentos/workstreams/WS-GMI-THEME-GRAPH.md",
+      "head": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+      "head_blob": "fd7f8a16f9e4505d9bd923bb098a2cc6f22e521a",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c44aae5f131a59571ad0afcd7197e3d8696bc2b9/agentos/workstreams/WS-GMI-THEME-GRAPH.md",
+      "verification": "DIRECT_HEAD_FETCH_SAME_BLOB_AS_ORIGINAL_MANIFEST"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "agentos/decisions/DEC-GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING.md",
+      "head": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+      "head_blob": "212258074d74934a579a20aebc4c5caa7eca7b3a",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c44aae5f131a59571ad0afcd7197e3d8696bc2b9/agentos/decisions/DEC-GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING.md",
+      "verification": "DIRECT_HEAD_FETCH_SAME_BLOB_AS_ORIGINAL_MANIFEST"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "lib/dataos/temporal.py",
+      "head": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+      "head_blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c44aae5f131a59571ad0afcd7197e3d8696bc2b9/lib/dataos/temporal.py",
+      "verification": "DIRECT_HEAD_FETCH_SAME_BLOB_AS_ORIGINAL_MANIFEST"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "engine/market_ontology/exposure_map.py",
+      "head": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+      "head_blob": "6b2131f440b55791d30730ed7cea928f79968cf7",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c44aae5f131a59571ad0afcd7197e3d8696bc2b9/engine/market_ontology/exposure_map.py",
+      "verification": "DIRECT_HEAD_FETCH_SAME_BLOB_AS_ORIGINAL_MANIFEST"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "config/theme_crosswalk.yml",
+      "head": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+      "head_blob": "5796e3e5cf16839c7dbca2bf6d74737b35b547fc",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c44aae5f131a59571ad0afcd7197e3d8696bc2b9/config/theme_crosswalk.yml",
+      "verification": "DIRECT_HEAD_FETCH_SAME_BLOB_AS_ORIGINAL_MANIFEST"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "data/theme_graph/_meta.json",
+      "head": "c44aae5f131a59571ad0afcd7197e3d8696bc2b9",
+      "head_blob": "99eb52e5062ad6cbc5232d00229c46a26f3901fa",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c44aae5f131a59571ad0afcd7197e3d8696bc2b9/data/theme_graph/_meta.json",
+      "verification": "DIRECT_HEAD_FETCH_SAME_BLOB_AS_ORIGINAL_MANIFEST"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "terminal/app/api/company-theme-context/[symbol]/route.ts",
+      "head": "f03aa5d019f1894210a7c6e40b8825ae28015198",
+      "head_blob": "9f82fbd37b196d0b509daf0ed1d5bb2bb16daa5c",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/f03aa5d019f1894210a7c6e40b8825ae28015198/terminal/app/api/company-theme-context/[symbol]/route.ts",
+      "verification": "DIRECT_HEAD_FETCH_SAME_BLOB_AS_ORIGINAL_MANIFEST"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "terminal/lib/marketOntologyContext.ts",
+      "head": "f03aa5d019f1894210a7c6e40b8825ae28015198",
+      "head_blob": "792e55e5aed5ef34111ad5f7726f84e5e6ac5bc3",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/f03aa5d019f1894210a7c6e40b8825ae28015198/terminal/lib/marketOntologyContext.ts",
+      "verification": "DIRECT_HEAD_FETCH_SAME_BLOB_AS_ORIGINAL_MANIFEST"
+    }
+  ],
+  "source_comparison_receipts": [
+    "source/estate/final_compare_0.json",
+    "source/estate/final_compare_1.json"
+  ],
+  "changed_scope_sources_manifest": "source/estate/final_fresh_sources_manifest.json",
+  "architecture_product_masterplan_required_amendment": "NONE_FOR_SOURCE_DELTA",
+  "implementation_follow_on_note": "Consume incumbent nightly witness if a future actual capture is available; capture_status complete is not acceptance and no witness runtime receipt was obtained in this research.",
+  "original_witness_status": {
+    "dataos": "23_PASS_AT_ORIGINAL_MACRO_PIN_NOT_RERUN_LATEST",
+    "composition": "18_SYNTHETIC_PASS_NO_PRODUCTION_OR_EMPIRICAL_PROOF"
+  },
+  "remaining_final_revision_gaps": [
+    "No fresh hosted nightly witness/capture/runtime read was performed.",
+    "Missing original commission attachment remains unverified.",
+    "Protected source refresh and held PR final states are attributed to root receipts."
+  ]
+}

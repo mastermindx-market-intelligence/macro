@@ -79,6 +79,7 @@ def _today_cn() -> date:
 class ChinaFlowsAdapter(Adapter):
     name = "china_flows"
     group = "china_flows"
+    session_calendar = "CN"  # observation dates follow the cash/Connect session
     stale_after_days = 6
 
     def __init__(self) -> None:

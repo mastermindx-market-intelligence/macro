@@ -1,0 +1,1580 @@
+{
+  "schema": "defense.exact_generation_45_case_preproof_census.v1",
+  "planning_pin": "e1b0ebee934f1eb445487155983f676d453d6815",
+  "delivery_contract_sha256": "b265a309243770d3a301e09b168585f42e84a7701cb20470f9c84b1eeaa090b0",
+  "source_head": "253df98603ac7f1f9944d92cb5efcab37fa9f5fb",
+  "generated_at": "2026-10-14T03:12:45.197758+00:00",
+  "build_receipt_sha256": "665cabc0025ba41d05a71dd88fbeb7393bd187abc55e4c4c6e8ca9f7cfc26d52",
+  "mission_complete": false,
+  "preproof_inspection_only": true,
+  "task_count": 30,
+  "case_count": 45,
+  "selected_reference_blockers": [],
+  "cases": [
+    {
+      "id": "A01",
+      "tasks": [
+        "R0",
+        "Z0"
+      ],
+      "exact_condition": "Current source/custody/effects",
+      "exact_required_behavior": "No archived-title liveness, duplicate writer, replacement #7175 or unresolved effect replay.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O1",
+      "remaining_falsifier": "Unsettled carriers are not terminal; a receipt cannot imply a writer lease or settled effect.",
+      "obligation_kind": "forensic/scope/source/effect-accounting"
+    },
+    {
+      "id": "A02",
+      "tasks": [
+        "R1"
+      ],
+      "exact_condition": "Actual failure evidence",
+      "exact_required_behavior": "Capture exact failed tests and actual built inputs; do not conflate workflow SHA, checkout SHA and generated output.",
+      "prior_rung": "ACCEPTANCE",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": true,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": true,
+      "completion_scope": "retained bounded forensic/scope acceptance",
+      "next_owner": "O1",
+      "remaining_falsifier": "Only contradictory original failure evidence reopens accepted forensic recovery.",
+      "obligation_kind": "forensic/scope/source/effect-accounting"
+    },
+    {
+      "id": "A03",
+      "tasks": [
+        "R2"
+      ],
+      "exact_condition": "Missing pytest",
+      "exact_required_behavior": "Fatal publication refuses unavailable proof; warning+exit0 cannot certify a generation.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O1",
+      "remaining_falsifier": "Released helper must still refuse missing pytest; not an installed publication claim.",
+      "obligation_kind": "forensic/scope/source/effect-accounting"
+    },
+    {
+      "id": "A04",
+      "tasks": [
+        "R2"
+      ],
+      "exact_condition": "Missing xdist",
+      "exact_required_behavior": "Use supported serial proof rather than a pass or a false semantic failure.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O1",
+      "remaining_falsifier": "No final released path may treat absent xdist as pass or semantic failure.",
+      "obligation_kind": "forensic/scope/source/effect-accounting"
+    },
+    {
+      "id": "A05",
+      "tasks": [
+        "R2"
+      ],
+      "exact_condition": "Prover mutates input",
+      "exact_required_behavior": "Refuse even with zero pytest status; bind proof to immutable pre/post input/output digests.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O1",
+      "remaining_falsifier": "Any changed dependency must invalidate the proposed generation despite zero test status.",
+      "obligation_kind": "forensic/scope/source/effect-accounting"
+    },
+    {
+      "id": "A06",
+      "tasks": [
+        "R2"
+      ],
+      "exact_condition": "Ordinary pass/failure",
+      "exact_required_behavior": "Valid unchanged-input pass permits; failing suite refuses; no weakened schema or disabled fatal gate.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O1",
+      "remaining_falsifier": "Incomplete, skipped or deselected proof cannot certify a publication.",
+      "obligation_kind": "forensic/scope/source/effect-accounting"
+    },
+    {
+      "id": "A07",
+      "tasks": [
+        "R2"
+      ],
+      "exact_condition": "Rebuild after rebase",
+      "exact_required_behavior": "Proof covers the exact rebuilt generation or exact unchanged identity, not the earlier tree.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O1",
+      "remaining_falsifier": "Actualv4rebuilt frozen253df986 generation is inspected; exact fullproof/CI/protectedpublication/installedservedlineage still must bind this generation.",
+      "obligation_kind": "forensic/scope/source/effect-accounting",
+      "prior_remaining_falsifier": "Earlier10:15 generation/old CI cannot prove changed participation bytes."
+    },
+    {
+      "id": "A08",
+      "tasks": [
+        "R1",
+        "R2"
+      ],
+      "exact_condition": "Missing failure artifacts",
+      "exact_required_behavior": "Preserve bounded failed names/assertions and full proof refs through existing evidence owner; never infer cause from count.",
+      "prior_rung": "ACCEPTANCE",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": true,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": true,
+      "completion_scope": "retained bounded forensic/scope acceptance",
+      "next_owner": "O1",
+      "remaining_falsifier": "Do not infer a cause from failure count or overwrite original evidence.",
+      "obligation_kind": "forensic/scope/source/effect-accounting"
+    },
+    {
+      "id": "A09",
+      "tasks": [
+        "R3",
+        "V0"
+      ],
+      "exact_condition": "Green no-change refresh",
+      "exact_required_behavior": "Skipped build/proof/publication is not a new published-generation proof.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O1/O5",
+      "remaining_falsifier": "No actual new committed/served generation witness yet.",
+      "obligation_kind": "forensic/scope/source/effect-accounting"
+    },
+    {
+      "id": "A10",
+      "tasks": [
+        "S1"
+      ],
+      "exact_condition": "Source-consumer mismatch",
+      "exact_required_behavior": "FMS source generation and served candidate lineage separately observed; acquisition alone does not certify consumer.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O2/O5",
+      "remaining_falsifier": "Source generation and installed served lineage not jointly observed.",
+      "obligation_kind": "forensic/scope/source/effect-accounting"
+    },
+    {
+      "id": "A11",
+      "tasks": [
+        "R3",
+        "P0"
+      ],
+      "exact_condition": "Time-aware freshness",
+      "exact_required_behavior": "Differentiate event age, observation, generation and serving times; historical serialized ok is not current ok.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O5",
+      "remaining_falsifier": "Completed-NYSE-session freshness helper is implementedin current source; actual canonical basket/tapes remainOctober8 and activeDaily/Closing-bell owner effects must settle before freshness replay. Installedclock proof still owed.",
+      "obligation_kind": "product/installed",
+      "current_material_fact": "43selectedreferencesqualified; shareddefensebasket context remainsOct8stale and cannot implythemeportfolio/marketfreshness",
+      "prior_remaining_falsifier": "Generic participation freshness still compares civil date; weekend/pre-market latest-close can be over-demoted. Installed clocks also unproven."
+    },
+    {
+      "id": "A12",
+      "tasks": [
+        "C0",
+        "Q1"
+      ],
+      "exact_condition": "DoD delayed data",
+      "exact_required_behavior": "Use evidenced public/house availability; recent absent row is not no-award and a90-day-late row is not contemporaneous event knowledge.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O2/O4",
+      "remaining_falsifier": "House versions from Aug2026 are not decades of historical availability; source403 is not no-award.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A13",
+      "tasks": [
+        "C2"
+      ],
+      "exact_condition": "Money classes",
+      "exact_required_behavior": "Ceiling/obligation/outlay do not add as independent value; signed de-obligations remain negative.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O2/O5",
+      "remaining_falsifier": "No mixed class summation or duplicate amount may appear in final consumers.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A14",
+      "tasks": [
+        "C2",
+        "S1"
+      ],
+      "exact_condition": "FMS notification stages",
+      "exact_required_behavior": "Proposed sale maximum is not signed case, award, contractor cash or recognized revenue.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O2/O4",
+      "remaining_falsifier": "Later-stage source ascertainment absent; silence cannot be a failed sale label.",
+      "obligation_kind": "product/installed",
+      "current_material_fact": "68FMSnotification-only cases; Spain4printedcontractors; immutableoriginalobservation +newcurrent-known normalizerinterpretation; servedpair recorded"
+    },
+    {
+      "id": "A15",
+      "tasks": [
+        "C2"
+      ],
+      "exact_condition": "Budget stages",
+      "exact_required_behavior": "Proposal/authorization/appropriation/obligation distinguish version and effective date.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O2/O3",
+      "remaining_falsifier": "Allocation-plan section alone is not program node, workshare or obligation.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A16",
+      "tasks": [
+        "C1",
+        "F1"
+      ],
+      "exact_condition": "Recipient and issuer",
+      "exact_required_behavior": "Use reviewed point-in-time legal entity/ownership/role; ticker/name similarity cannot confer economic ownership.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "C1/identity owner",
+      "remaining_falsifier": "Current review cannot confer historical ownership/alias eligibility or program role/workshare.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A17",
+      "tasks": [
+        "C1",
+        "F1"
+      ],
+      "exact_condition": "Indirect exposure",
+      "exact_required_behavior": "An evidenced supplier link is not a known workshare; prime/supplier value cannot double-count end demand.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O2/O3",
+      "remaining_falsifier": "Supplier path/ownership percentage alone cannot yield issuer revenue share or double-count prime/supplier demand.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A18",
+      "tasks": [
+        "C2"
+      ],
+      "exact_condition": "Corrected/duplicate observation",
+      "exact_required_behavior": "Same source/version counts once; correction preserves old view and supplies invalidation lineage.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O1/P2 owner",
+      "remaining_falsifier": "Retained-source normalizer correction is locallyprojected with immutableoriginalhistory and truthfulcurrent interpretationknown_at. Installedsaved/alert consumers must bind correctionversion and invalidate affected interpretationrefs without replaying frozen effects.",
+      "obligation_kind": "forensic/scope/source/effect-accounting",
+      "current_material_fact": "68FMSnotification-only cases; Spain4printedcontractors; immutableoriginalobservation +newcurrent-known normalizerinterpretation; servedpair recorded",
+      "prior_remaining_falsifier": "Changed source must retain old view and invalidate saved/alert references; full installed correction drill unobserved."
+    },
+    {
+      "id": "A19",
+      "tasks": [
+        "F1",
+        "F2"
+      ],
+      "exact_condition": "Financial basis",
+      "exact_required_behavior": "Revenue/backlog/guidance/working-capital sources retain period/unit/accounting basis; no government residual relabeled reported backlog.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O3/current financial owner",
+      "remaining_falsifier": "Quartet actualreported backlog/operatingcash/freecash/guidance facts now exist with exactsource/period bindings. Protectedpublication/installed evidence still owed; issuer-levelcash cannot be allocated to programor commonshareholders without qualified workshare/terms.",
+      "obligation_kind": "product/installed",
+      "current_material_fact": "Actualissuer economics factcounts={'LMT': 21, 'RTX': 16, 'NOC': 20, 'LHX': 31}; source-span/period refs individuallychecked inactualreference inventory",
+      "prior_remaining_falsifier": "Quartet lacks admitted reported backlog/cashflow/guidance conversion facts; a segment margin baseline is not a conversion panel."
+    },
+    {
+      "id": "A20",
+      "tasks": [
+        "F2"
+      ],
+      "exact_condition": "Demand vs shareholder economics",
+      "exact_required_behavior": "Support negative margin/EAC/capex/cash cases even with increasing orders; show alternative explanations.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O3/O4",
+      "remaining_falsifier": "Actual cash/FCFprior-period contrasts and LHXworking-capitalcashchanges are present. Preserve demand/segmentprofit/cash/common-shareholder distinctions; installed repeated-period adversecase interaction and causal efficacy remain unproven.",
+      "obligation_kind": "product/installed",
+      "current_material_fact": "Actualissuer economics factcounts={'LMT': 21, 'RTX': 16, 'NOC': 20, 'LHX': 31}; source-span/period refs individuallychecked inactualreference inventory",
+      "prior_remaining_falsifier": "No native numerical working-capital/cash conversion or repeated-quarter adverse outcome test supplied."
+    },
+    {
+      "id": "A21",
+      "tasks": [
+        "T0"
+      ],
+      "exact_condition": "Public capacity",
+      "exact_required_behavior": "Announced target, installed capacity and demonstrated throughput separate; no operational vulnerability/readiness inference.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O2/O3",
+      "remaining_falsifier": "No qualified target-versus-installed-versus-demonstrated public capacity evidence currently closes the included D10 chain.",
+      "obligation_kind": "product/installed",
+      "current_material_fact": "No capacity/exposure/source-identity promotion; exact theme states/refcounts recorded, overallinsufficiency retained"
+    },
+    {
+      "id": "A22",
+      "tasks": [
+        "F0",
+        "P0"
+      ],
+      "exact_condition": "Four-axis state",
+      "exact_required_behavior": "Participation, demand, economics and recognition stay distinct; no invented conviction score or buying authority.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O5",
+      "remaining_falsifier": "Actual v4combinedgeneration and43currentselectedrefs are locallyinspected; fullproof/CI/protectedpublication and finalinstalledbrowser evidence still owed. No concentration/alpha inference.",
+      "obligation_kind": "product/installed",
+      "current_material_fact": "43selectedreferencesqualified; shareddefensebasket context remainsOct8stale and cannot implythemeportfolio/marketfreshness",
+      "prior_remaining_falsifier": "Updated source has no final actual rebuilt/output/browser proof yet; no invented concentration/alpha score allowed."
+    },
+    {
+      "id": "A23",
+      "tasks": [
+        "P3",
+        "Q2"
+      ],
+      "exact_condition": "Recognition",
+      "exact_required_behavior": "Algebraic valuation hurdle and observed price response are not observed market expectations or causal effects.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O3/O4/valuation owner",
+      "remaining_falsifier": "Observed price is not expectations/causal effect; AAPL-only numeric producer gate cannot be widened without qualified owner inputs. Q2 efficacy still absent.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A24",
+      "tasks": [
+        "Q0",
+        "Q1"
+      ],
+      "exact_condition": "Selection/holdout",
+      "exact_required_behavior": "Preregister sample/exclusions, trial budget and clustering; unseen documents/issuers/programs remain held out.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O4/O6",
+      "remaining_falsifier": "DPV3 predictive proposals lack fully admitted outcome/data adapters and sealed unseen development/holdout allocations.",
+      "obligation_kind": "scientific_runtime/evaluation",
+      "current_material_fact": "0issued/0evaluated; current inputadmission and runtime/ACKrefusals recorded; naturalhorizonwaiting is notsubstitute foradmission"
+    },
+    {
+      "id": "A25",
+      "tasks": [
+        "Q1"
+      ],
+      "exact_condition": "Population coverage",
+      "exact_required_behavior": "Top-dollar sample/press release corpus is not complete award universe; denominator and censoring explicit.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O2/O4",
+      "remaining_falsifier": "Signed-case negative ascertainment absent; press/top-dollar corpus cannot be a full denominator.",
+      "obligation_kind": "scientific_runtime/evaluation",
+      "current_material_fact": "0issued/0evaluated; current inputadmission and runtime/ACKrefusals recorded; naturalhorizonwaiting is notsubstitute foradmission"
+    },
+    {
+      "id": "A26",
+      "tasks": [
+        "Q1",
+        "Q2"
+      ],
+      "exact_condition": "Overlapping evidence",
+      "exact_required_behavior": "Issuer/program/day clusters and repeated multi-source events do not inflate N.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O4/O6",
+      "remaining_falsifier": "No sealed empirical cluster/holdout cohort or baseline study executed; current graph20 lanes cannot imply545independent draws.",
+      "obligation_kind": "scientific_runtime/evaluation",
+      "current_material_fact": "0issued/0evaluated; current inputadmission and runtime/ACKrefusals recorded; naturalhorizonwaiting is notsubstitute foradmission"
+    },
+    {
+      "id": "A27",
+      "tasks": [
+        "Q2"
+      ],
+      "exact_condition": "Conditional probability",
+      "exact_required_behavior": "Separate stage/economic/equity targets; do not multiply uncalibrated or dependent marginals.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O4/O6",
+      "remaining_falsifier": "Proper-score/baseline studies for those targets not supplied; input rejection is not efficacy no-go.",
+      "obligation_kind": "scientific_runtime/evaluation",
+      "current_material_fact": "0issued/0evaluated; current inputadmission and runtime/ACKrefusals recorded; naturalhorizonwaiting is notsubstitute foradmission"
+    },
+    {
+      "id": "A28",
+      "tasks": [
+        "Q3"
+      ],
+      "exact_condition": "Forecast registration",
+      "exact_required_behavior": "Count once, preserve source/model/cutoff and never backfill historical reconstructions as prospective predictions.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O4/evaluation owner/Root",
+      "remaining_falsifier": "No admitted input bundle, fresh eligible non-late action, durable before-entry acknowledgment or successful registration/issuance.",
+      "obligation_kind": "scientific_runtime/evaluation",
+      "current_material_fact": "0issued/0evaluated; current inputadmission and runtime/ACKrefusals recorded; naturalhorizonwaiting is notsubstitute foradmission"
+    },
+    {
+      "id": "A29",
+      "tasks": [
+        "Q3",
+        "Q4"
+      ],
+      "exact_condition": "Maturity/censoring",
+      "exact_required_behavior": "No outcome before horizon; unobserved is not failed; trading calendars and adverse delisting/source gaps explicit.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "price/identity/evaluation owners",
+      "remaining_falsifier": "Zero issuance is not natural accrual. Old public pin still rejects new packet; permanent identity, issuer panel, rights and maturity capacity remain before enrollment.",
+      "obligation_kind": "scientific_runtime/evaluation",
+      "current_material_fact": "0issued/0evaluated; current inputadmission and runtime/ACKrefusals recorded; naturalhorizonwaiting is notsubstitute foradmission"
+    },
+    {
+      "id": "A30",
+      "tasks": [
+        "Q4"
+      ],
+      "exact_condition": "Independent efficacy",
+      "exact_required_behavior": "Baseline/proper-score/uncertainty reproduction; no-go remains visible, no cherry-picked model promotion.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O4/O6",
+      "remaining_falsifier": "No predictive efficacy/baseline uncertainty reproduction or blinded human workflow benefit established.",
+      "obligation_kind": "scientific_runtime/evaluation",
+      "current_material_fact": "0issued/0evaluated; current inputadmission and runtime/ACKrefusals recorded; naturalhorizonwaiting is notsubstitute foradmission"
+    },
+    {
+      "id": "A31",
+      "tasks": [
+        "S2"
+      ],
+      "exact_condition": "SBIR progression",
+      "exact_required_behavior": "Complete existing collector/contract/consumer on lawful access; prototype award is not production order.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O2/SBIR owner",
+      "remaining_falsifier": "A synthetic invocation or empty consumer is not a real progression observation. Exact external gate satisfies task option, not live data success.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A32",
+      "tasks": [
+        "S3"
+      ],
+      "exact_condition": "Oversight documents",
+      "exact_required_behavior": "Current public edition/source span/issuer-program linkage; no unsupported legal verdict or classified content.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O2/oversight owner",
+      "remaining_falsifier": "No admitted current GAO edition body/program linkage/consumer evidence. Company EAC facts are useful but do not replace GAO rail.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A33",
+      "tasks": [
+        "T1",
+        "T2",
+        "V1"
+      ],
+      "exact_condition": "Six theme quality",
+      "exact_required_behavior": "Each theme has funding stage, exposure, economics, market context, contrary case, next event and sources; no aggregate acceptance hides an empty theme.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O2/O3/Root",
+      "remaining_falsifier": "Allsixmarketrails now reference the qualified sharedDefensebasket with truthfulOct8stale state, notprojectionmissing. Capacity/exposure/contrary/milestone gaps differ bytheme; allsixpublicresearch_stateEVIDENCE_INSUFFICIENT remains honest and is not full deep-theme completion.",
+      "obligation_kind": "product/installed",
+      "current_material_fact": "43selectedreferencesqualified; shareddefensebasket context remainsOct8stale and cannot implythemeportfolio/marketfreshness",
+      "prior_remaining_falsifier": "Allsix market_context=projection_missing; capacity/exposure/new milestones differ bytheme. EVIDENCE_INSUFFICIENT is honest, not deep-theme completion."
+    },
+    {
+      "id": "A34",
+      "tasks": [
+        "P1"
+      ],
+      "exact_condition": "Archetype/foreign identity",
+      "exact_required_behavior": "No bespoke ticker answers; source-native international/dual listing and JV/ownership cases explicitly qualified.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "P1/O5",
+      "remaining_falsifier": "Current research identity not tradability/history/admission; final installed source-context journey still owed.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A35",
+      "tasks": [
+        "P0",
+        "V0"
+      ],
+      "exact_condition": "Real user journey",
+      "exact_required_behavior": "Source\u2192generation\u2192API\u2192browser evidence on actual installed release; fixture screenshots insufficient.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O5/O6",
+      "remaining_falsifier": "No final installed exact source\u2192API\u2192entitled browser witness; old fixture matrix obsolete.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A36",
+      "tasks": [
+        "P0",
+        "V0"
+      ],
+      "exact_condition": "Responsive/source access",
+      "exact_required_behavior": "1440/820/390, EN/ZH, keyboard, source deep links, direct URL/back/focus restoration; no clipped dense default view.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O5",
+      "remaining_falsifier": "Actual final1440/820/390 \u00d7 EN/ZH \u00d7 themes and keyboard/source/back/auth incomplete; long new participation text needs readable evidence placement.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A37",
+      "tasks": [
+        "P2"
+      ],
+      "exact_condition": "Entitlements/tenant",
+      "exact_required_behavior": "Deny before private data access; no user notes/source bodies in public caches, URLs or logs.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O5/private owner",
+      "remaining_falsifier": "Same admin across profiles is not independent two-tenant installed proof; no private metadata in public caches.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A38",
+      "tasks": [
+        "P2"
+      ],
+      "exact_condition": "Saved monitor/alert",
+      "exact_required_behavior": "Restore original subject/window/filter/cutoff; new event vs correction/no-change/outage distinguish; existing scheduler only.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "P2/Terminal778 owner",
+      "remaining_falsifier": "No adopted private schema, scheduler, correction/new/no-change/outage or actual alert delivery.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A39",
+      "tasks": [
+        "P2"
+      ],
+      "exact_condition": "Safe exports/agent reads",
+      "exact_required_behavior": "Bound requests, retain units/clocks/source refs, safe spreadsheet encoding; no document prompt-injection tool execution.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "P2/O5",
+      "remaining_falsifier": "Installed reader/export/prompt-injection boundary not fully observed; local safe files not public/private cache proof.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A40",
+      "tasks": [
+        "V1"
+      ],
+      "exact_condition": "Preserved D5 debt",
+      "exact_required_behavior": "Actual program-dossier browser proof established separately from D6 source acceptance.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O5/O6",
+      "remaining_falsifier": "D5 installed program journey is separately owed; source D6 acceptance does not satisfy it.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A41",
+      "tasks": [
+        "V2"
+      ],
+      "exact_condition": "Failure and recovery",
+      "exact_required_behavior": "Unknown writes keep original carrier; exact last-good generation restored; no unbounded retries or new publisher.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root/O1/O8",
+      "remaining_falsifier": "Local preservation is not a current CAS lease; installed exact lastgood/correction/unknown-write recovery remains unobserved.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A42",
+      "tasks": [
+        "V2"
+      ],
+      "exact_condition": "Performance/cost",
+      "exact_required_behavior": "Measure agreed corpus/network/concurrency distributions and total capture/review/compute cost; no request-time source/model fan-out.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "O5/O6/Root",
+      "remaining_falsifier": "Warm stand-in excludes full installed/network distributions and total capture/review/compute/serve cost.",
+      "obligation_kind": "product/installed"
+    },
+    {
+      "id": "A43",
+      "tasks": [
+        "R0",
+        "V2",
+        "Z0"
+      ],
+      "exact_condition": "Fleet economics",
+      "exact_required_behavior": "Native Opus coordinates real admitted Fabric operators; shared grant/depth/review budget; no imaginary START or unconsumed children.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root",
+      "remaining_falsifier": "Literal original Opus hierarchy superseded by current assignment, not fake servedidentity; complete accepted-outcome cost accounting still absent.",
+      "obligation_kind": "forensic/scope/source/effect-accounting",
+      "current_material_fact": "ExistingFabricoperation+originalparent retained; currentnativeancestor/root/currentreviewer distinct; no originalrootallowance reset"
+    },
+    {
+      "id": "A44",
+      "tasks": [
+        "Z0"
+      ],
+      "exact_condition": "Excluded scope",
+      "exact_required_behavior": "No FIF/SNI/risk/OS/Options/Prophet/Ontology/GMI/Fabric build; originalD19 explicitly excluded not completed.",
+      "prior_rung": "ACCEPTANCE",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": true,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": true,
+      "completion_scope": "retained bounded forensic/scope acceptance",
+      "next_owner": "Root",
+      "remaining_falsifier": "Any newly proposed excluded owner repair would invalidate this scoped acceptance.",
+      "obligation_kind": "forensic/scope/source/effect-accounting"
+    },
+    {
+      "id": "A45",
+      "tasks": [
+        "Z0"
+      ],
+      "exact_condition": "Completion honesty",
+      "exact_required_behavior": "All included waves and mandatory evidence mapped; pending natural outcomes/human gates/effects cannot disappear at a checkpoint.",
+      "prior_rung": "DELIVERED",
+      "prior_evidence_not_silently_reopened": true,
+      "prior_bounded_case_accepted": false,
+      "current_generation_identity": "2026-10-14T03:12:45.197758+00:00",
+      "material_local_output_inspection": "MATERIAL_INSPECTION.json",
+      "fullproof_current_generation": "NOT_RUN",
+      "current_CI": "NOT_QUALIFIED_BY_THIS_READ",
+      "protected_publication": "NOT_PROVEN_BY_THIS_READ",
+      "installed_browser_acceptance": "NOT_PROVEN_BY_THIS_READ",
+      "complete": false,
+      "completion_scope": "open assigned obligation; material local build is not final acceptance",
+      "next_owner": "Root",
+      "remaining_falsifier": "Checkpoint, input rejection or accepted local proof cannot erase unfulfilled included waves.",
+      "obligation_kind": "forensic/scope/source/effect-accounting",
+      "current_material_fact": "Generation built but notproven; no source/CI/merge/install/science leap; missioncompletefalse"
+    }
+  ],
+  "root_longproof_may_start_after_material_blockers_closed": true,
+  "no_current_case_acceptance_promotion": true,
+  "bounded_acceptance_retained": [
+    "A02",
+    "A08",
+    "A44"
+  ],
+  "full_live_case_ids": [],
+  "prior_frontier_stale_claims_explicitly_superseded": [
+    "A07",
+    "A11",
+    "A18",
+    "A19",
+    "A20",
+    "A22",
+    "A33"
+  ],
+  "tasks": [
+    {
+      "id": "R0",
+      "exact_title": "Recover original carriers, writer/effects and scoped completion",
+      "exact_deliverable": "Reconciled #7175 source/custody/holds, current relevant pins, included/excluded scope; no ownership inferred from old title.",
+      "requires_all": [],
+      "acceptance_cases": [
+        "A01",
+        "A43"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "R1",
+      "exact_title": "Recover exact failed publication evidence",
+      "exact_deliverable": "Two failed test names/assertions and actual source/output identities, or exact missing-evidence statement with bounded reproduction contract.",
+      "requires_all": [
+        "R0"
+      ],
+      "acceptance_cases": [
+        "A02",
+        "A08"
+      ],
+      "prior_achieved_rung": "ACCEPTANCE",
+      "retained_bounded_complete": true,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "R2",
+      "exact_title": "Repair real failure and proof integrity",
+      "exact_deliverable": "Correct original defect; pytest-missing and input-mutation refuse; serial fallback; proof tied to exact generation.",
+      "requires_all": [
+        "R1"
+      ],
+      "acceptance_cases": [
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "R3",
+      "exact_title": "Recover publication and serving chain",
+      "exact_deliverable": "Natural new source\u2192proof\u2192committed generation\u2192API/browser witness; no mixed generations or stale-green extrapolation.",
+      "requires_all": [
+        "R2"
+      ],
+      "acceptance_cases": [
+        "A09",
+        "A11"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "C0",
+      "exact_title": "Freeze current source/rights/latency contract",
+      "exact_deliverable": "Source family/coverage/available-time and rights map; no latest-data claims from signature date; define source-specific freshness and correction.",
+      "requires_all": [
+        "R0"
+      ],
+      "acceptance_cases": [
+        "A12"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "C1",
+      "exact_title": "Qualify recipient and program attribution",
+      "exact_deliverable": "Owner-backed legal entity/issuer/program/effective interval and reviewed direct/indirect exposure; explicit gaps.",
+      "requires_all": [
+        "R0"
+      ],
+      "acceptance_cases": [
+        "A16",
+        "A17"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "C2",
+      "exact_title": "Seal money/time/correction consumer contracts",
+      "exact_deliverable": "Additive compatible references to existing amount/event/temporal owners; signed deltas, source and system cutoffs, revision semantics.",
+      "requires_all": [
+        "C0",
+        "C1"
+      ],
+      "acceptance_cases": [
+        "A13",
+        "A14",
+        "A15",
+        "A18"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "F0",
+      "exact_title": "Freeze investor-first four-axis journey",
+      "exact_deliverable": "Reviewed current-route design and UI/API contract; quartet navigation, contrary case, freshness, progressive disclosure.",
+      "requires_all": [
+        "R0"
+      ],
+      "acceptance_cases": [
+        "A22"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "F1",
+      "exact_title": "Build source-qualified defense economics bridge",
+      "exact_deliverable": "LMT/RTX/NOC/LHX profiles over admitted financial/event owners; exact basis, workshare unknowns and shareholder capture.",
+      "requires_all": [
+        "C1",
+        "C2"
+      ],
+      "acceptance_cases": [
+        "A16",
+        "A17",
+        "A19"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "F2",
+      "exact_title": "Interpret backlog, conversion and adverse financial events",
+      "exact_deliverable": "Funding vs reported backlog, execution charges/cash requirements, program/customer consequences and contrary explanations; no second financial/risk engine.",
+      "requires_all": [
+        "F1"
+      ],
+      "acceptance_cases": [
+        "A19",
+        "A20"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "S0",
+      "exact_title": "Reconcile remaining official rails",
+      "exact_deliverable": "Verify existing SBIR activation/artifacts/consumer and GAO/oversight ownership; decide other D6 rails with recorded source-quality rationale.",
+      "requires_all": [
+        "C0"
+      ],
+      "acceptance_cases": [],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "S1",
+      "exact_title": "Converge FMS and budget consumer freshness",
+      "exact_deliverable": "Source and served generation agree; no proposed-sale\u2192contract/revenue promotion; schedule exists and is not duplicated.",
+      "requires_all": [
+        "R3",
+        "C2"
+      ],
+      "acceptance_cases": [
+        "A10",
+        "A14"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "S2",
+      "exact_title": "Complete qualified SBIR/STTR progression consumer",
+      "exact_deliverable": "Existing collector path yields admitted real observations, contract validation and a dossier consumer or exact external gate; prototype is not scaled production.",
+      "requires_all": [
+        "S0",
+        "C2"
+      ],
+      "acceptance_cases": [
+        "A31"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "S3",
+      "exact_title": "Deliver public GAO/oversight evidence rail",
+      "exact_deliverable": "Public cost/schedule/protest evidence maps to exact program/issuer with current edition/corrections and useful consumer; no restricted or tactical information.",
+      "requires_all": [
+        "S0",
+        "C2"
+      ],
+      "acceptance_cases": [
+        "A32"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "T0",
+      "exact_title": "Freeze reusable theme and public-capacity composition",
+      "exact_deliverable": "One source-backed program/exposure/economics contract; public aggregate capacity not operational readiness or vulnerability map.",
+      "requires_all": [
+        "F1",
+        "C2"
+      ],
+      "acceptance_cases": [
+        "A21"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "T1",
+      "exact_title": "Deliver first three deep themes",
+      "exact_deliverable": "Golden Dome public funding/program exposure, munitions/replenishment economics, space; each six required evidence/economics/contrary/source journeys.",
+      "requires_all": [
+        "T0",
+        "S1",
+        "S3"
+      ],
+      "acceptance_cases": [
+        "A33"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "T2",
+      "exact_title": "Deliver three reusable expansion themes",
+      "exact_deliverable": "NATO/FMS demand, fleet sustainment/upgrades and shipbuilding; same contract; separate source/coverage acceptance.",
+      "requires_all": [
+        "T1"
+      ],
+      "acceptance_cases": [
+        "A33"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "P0",
+      "exact_title": "Deliver real quartet investor product",
+      "exact_deliverable": "Existing entitled route supports context\u2192theme\u2192issuer\u2192scenario/contrary\u2192source; current real evidence and clock-aware degraded states.",
+      "requires_all": [
+        "R3",
+        "F0",
+        "F1",
+        "C2"
+      ],
+      "acceptance_cases": [
+        "A11",
+        "A22",
+        "A35",
+        "A36"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "P1",
+      "exact_title": "Prove archetype and international generalization",
+      "exact_deliverable": "At least prime/diversified/supplier/services/shipbuilding plus JV/acquisition and one supported international or dual-listing case; do not create issuer-specific strategy code.",
+      "requires_all": [
+        "V0",
+        "T0",
+        "C1"
+      ],
+      "acceptance_cases": [
+        "A34"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "P2",
+      "exact_title": "Integrate search, saved monitors, alerts and bounded readers",
+      "exact_deliverable": "Existing user/export/notification/context owners; permissions before reads, immutable input refs, correction-aware notifications; no new platform.",
+      "requires_all": [
+        "P0",
+        "C2"
+      ],
+      "acceptance_cases": [
+        "A37",
+        "A38",
+        "A39"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "Q0",
+      "exact_title": "Preregister event/economic/equity tests",
+      "exact_deliverable": "Targets, eligibility, availability, clustering, holdouts, baselines, trial/precision criteria and independent acceptance before outcomes.",
+      "requires_all": [
+        "C0",
+        "C2"
+      ],
+      "acceptance_cases": [
+        "A24"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "Q1",
+      "exact_title": "Construct sealed historical reconstruction and baselines",
+      "exact_deliverable": "Lawful versions and actual availability, negative outcomes, failed and repeated events; program/issuer/time holdouts; no retrospective prospective claims.",
+      "requires_all": [
+        "Q0",
+        "F2",
+        "S1"
+      ],
+      "acceptance_cases": [
+        "A12",
+        "A24",
+        "A25",
+        "A26"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "Q2",
+      "exact_title": "Evaluate stage, economics and market hypotheses separately",
+      "exact_deliverable": "Stage progression, financial conversion and price response use distinct targets and proper scores; no unsupported probability multiplication or causal labels.",
+      "requires_all": [
+        "Q1"
+      ],
+      "acceptance_cases": [
+        "A23",
+        "A26",
+        "A27"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "Q3",
+      "exact_title": "Register prospective baselines through existing evaluation",
+      "exact_deliverable": "Accepted target schema and batch/clock/rights contract; immutable model/source versions; maturity/censoring and return path; no new ledger.",
+      "requires_all": [
+        "Q0",
+        "V0"
+      ],
+      "acceptance_cases": [
+        "A28",
+        "A29"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "Q4",
+      "exact_title": "Independently adjudicate research families",
+      "exact_deliverable": "Reproduction, uncertainty, baseline comparison, no-go/continue/earned qualification; pending natural outcomes remain pending.",
+      "requires_all": [
+        "Q2",
+        "Q3"
+      ],
+      "acceptance_cases": [
+        "A29",
+        "A30"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "P3",
+      "exact_title": "Expose honest scenarios and research state",
+      "exact_deliverable": "Conditional assumptions, downside/invalidation, observed vs inferred expectations; probability/track-record panes only consume accepted Q3/Q4 outputs.",
+      "requires_all": [
+        "P0",
+        "F2",
+        "Q0"
+      ],
+      "acceptance_cases": [
+        "A23"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "V0",
+      "exact_title": "Accept trust-and-quartet release",
+      "exact_deliverable": "Real source\u2192publication\u2192API\u2192entitled EN/ZH desktop/mobile with effective freshness and adverse/partial states; source merge is not deployment.",
+      "requires_all": [
+        "R3",
+        "S1",
+        "P0",
+        "F2"
+      ],
+      "acceptance_cases": [
+        "A09",
+        "A35",
+        "A36"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "V1",
+      "exact_title": "Accept expanded investor product and preserved proof debts",
+      "exact_deliverable": "Six individually accepted themes, source rails, archetypes, deferred D5 consumer, saved-state/readers and no excluded-program writes.",
+      "requires_all": [
+        "T2",
+        "S2",
+        "S3",
+        "P1",
+        "P2",
+        "P3"
+      ],
+      "acceptance_cases": [
+        "A33",
+        "A40"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "V2",
+      "exact_title": "Qualify economics, privacy, load and recovery",
+      "exact_deliverable": "Measured source/capture/review/model/serve costs, preregistered SLOs, restore/correction/unknown-write drills, international rights and exact release identity.",
+      "requires_all": [
+        "V1",
+        "Q4"
+      ],
+      "acceptance_cases": [
+        "A41",
+        "A42",
+        "A43"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    },
+    {
+      "id": "Z0",
+      "exact_title": "Close included scope and obligations",
+      "exact_deliverable": "Every original wave mapped; D19 and excluded systems explicitly not completed; live children/effects/release/mandatory natural-time obligations reconciled.",
+      "requires_all": [
+        "V2"
+      ],
+      "acceptance_cases": [
+        "A01",
+        "A43",
+        "A44",
+        "A45"
+      ],
+      "prior_achieved_rung": "DELIVERED",
+      "retained_bounded_complete": false,
+      "current_material_read_only_evidence": "MATERIAL_INSPECTION.json",
+      "new_fullproof_CI_installed_acceptance": "NOT_CLAIMED_BY_THIS_READ"
+    }
+  ]
+}

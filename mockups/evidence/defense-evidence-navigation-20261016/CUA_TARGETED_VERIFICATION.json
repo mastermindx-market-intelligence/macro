@@ -1,0 +1,22 @@
+{
+  "scope": "CUA browser against actual local source ASGI and generated stage; explicit local test-principal API override; NOT installed entitlement/production acceptance",
+  "observed_at": "2026-10-16T02:00:00.030874+00:00",
+  "source_head": "478258fd258f74ba48392cb1ae102be5d0a55b4b",
+  "stage_receipt_sha256": "044bf0e6136c5be3ed98c1fe761542c27166587498b96ce48cdc40b5a68cc2b1",
+  "fms_direct_url": "Norway26-82 selected after asynchronous load; product copied URL retained",
+  "back": "FMS26-82 -> search155mm -> Changes -> Back restoresFMS26-82, search155mm and active selected queue option",
+  "forward": "Forward returns Changes withsearch155mm",
+  "candidate": "GD grc1-021cfe0d00790f938fca9831 / govws-22d50d4091f7d85a89e44ec2",
+  "hero_and_drawer_source": "https://api.usaspending.gov/api/v2/awards/CONT_AWD_N0002418C2305_9700_-NONE-_-NONE-/",
+  "drawer_retained_text": [
+    "actions receipt",
+    "award-detail receipt",
+    "govws event",
+    "generated award record",
+    "issuer graph and paths"
+  ],
+  "actions_post_endpoint": "plain evidence text; no clickable Open source",
+  "escape": "drawer closed; View evidence button active",
+  "export": "client authentication absent in local diagnostic tab; no export claim; production signed-in export remains owed",
+  "diagnostic_tab_closed": true
+}

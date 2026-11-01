@@ -1,0 +1,164 @@
+{
+  "schema": "gmi.native_adoption_pilot_protocol/v1",
+  "protocol_id": "native-adoption-pilot-c01-c06-20261009-v1",
+  "frozen_before_primary_reads_at_utc": "2026-10-09T09:50:30Z",
+  "authority": {
+    "admission": "NOT_ADMITTED",
+    "rank": false,
+    "gate": false,
+    "size": false,
+    "trade": false,
+    "prediction": false,
+    "graph1_projection": null
+  },
+  "mandate": "Root-directed execution of a bounded six-case primary-source pilot under the user's end-to-end commission.",
+  "scope": {
+    "requested_case_ids": [
+      "C01",
+      "C02",
+      "C03",
+      "C04",
+      "C05",
+      "C06"
+    ],
+    "requested_cases": 6,
+    "selection_basis": "Reuse the six purposively selected cases in the merged 2026-10-08 casebook; not a representative sample or a predictive study.",
+    "seventh_economic_observation_permitted": false,
+    "native_transport_control": "Root's existing retained-source replay only; separately labeled and excluded from economic-case denominator."
+  },
+  "pins": {
+    "research_merge": "219b47ea5a5384ab7299e260dd3eecb7437310de",
+    "research_casebook_blob": "a57fd897d5f717b7b9bfc91d5783795de929427a",
+    "research_masterplan_blob": "3a6eed6807a44c974942c3c0ec95564fb3e1de6b",
+    "inspector_review_consumer_sha256": "a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55",
+    "review_test_sha256": "67636cc6eca4f9be84b383bb44b4835a3dc8447f6b288e2e99073f61182ce212"
+  },
+  "cases": [
+    {
+      "case_id": "C01",
+      "label": "Micron to NVIDIA planned product integration",
+      "source_url": "https://investors.micron.com/news/press-release/2024/Micron-Commences-Volume-Production-of-Industry-Leading-HBM3E-Solution-to-Accelerate-the-Growth-of-AI-02-26-2024/default.aspx",
+      "case_definition": "Distinguish a disclosed planned HBM3E product integration from actual deliveries, revenue share, exclusivity, or all-GPU coverage.",
+      "expected_media_family": "HTML",
+      "native_evidence_policy": "Reuse prior Micron capture metadata and span bindings. No new native acquisition, replacement capture, or source-byte publication."
+    },
+    {
+      "case_id": "C02",
+      "label": "CATL and Tesla parties commercial framework",
+      "source_url": "https://static.cninfo.com.cn/finalpage/2021-06-28/1210355996.PDF",
+      "case_definition": "Distinguish a signed multi-party battery framework and its disclosed term from placed orders, completed deliveries, fixed value, or duplicated party allocations.",
+      "expected_media_family": "PDF"
+    },
+    {
+      "case_id": "C03",
+      "label": "Apple supplier roster coverage",
+      "source_url": "https://www.supplychainreports.apple/files/doc_downloads/2024/04/Apple-Supplier-List.pdf",
+      "case_definition": "Distinguish roster membership and the roster-level spend-coverage denominator from per-supplier economic magnitude or relationship recall.",
+      "expected_media_family": "PDF"
+    },
+    {
+      "case_id": "C04",
+      "label": "Cameco, Brookfield and Westinghouse ownership",
+      "source_url": "https://www.cameco.com/media/news/cameco-and-brookfield-complete-acquisition-of-westinghouse-electric-company",
+      "case_definition": "Distinguish closing-date equity ownership and named acquiring parties from supplier roles, listing-level duplicate exposure, or current ownership without later evidence.",
+      "expected_media_family": "HTML"
+    },
+    {
+      "case_id": "C05",
+      "label": "AMD segment divergence",
+      "source_url": "https://ir.amd.com/news-events/press-releases/detail/1236/amd-reports-fourth-quarter-and-full-year-2024-financial-results",
+      "case_definition": "Preserve segment-specific fiscal definitions and year-on-year changes without turning theme similarity into a relationship or growth into exposure weight.",
+      "expected_media_family": "HTML"
+    },
+    {
+      "case_id": "C06",
+      "label": "Microsoft cash, noncash additions and commitments",
+      "source_url": "https://www.microsoft.com/investor/reports/ar25/index.html",
+      "case_definition": "Separate cash PPE additions, finance-lease ROU additions, construction commitments and purchase commitments; do not infer a summed current AI demand pool or supplier allocation.",
+      "expected_media_family": "HTML"
+    }
+  ],
+  "source_protocol": {
+    "allowed": "Primary publisher/exchange pages already named by the casebook, and publisher-linked official original report/PDF sections when needed to inspect the same case.",
+    "required_attempt_record": "Record original URL, actual retrieved URL if different, access time, tool reference, media/representation, success/failure, page/section locator, and qualification.",
+    "web_rendered_hash_policy": "raw_byte_sha256 must be null when only web-rendered/extracted evidence is available. A web view is not native custody or original-byte possession.",
+    "redirect_policy": "Preserve every failed/redirected attempt; any official same-case alternate is recorded separately and never silently replaces the frozen URL.",
+    "no_native_reacquisition": [
+      "retained Micron",
+      "retained NVIDIA"
+    ],
+    "quotation_policy": "Paraphrased semantic findings and compact locators only; no raw source bodies or candidate payloads emitted.",
+    "rights_policy": "Public availability does not establish source retention, redistribution, training or product-purpose rights."
+  },
+  "measurement": {
+    "unit": "One requested case record",
+    "source_attempts_can_exceed_case_count": true,
+    "required_case_records": 6,
+    "case_outcomes": [
+      "SUPPORTED_WITH_QUALIFIERS",
+      "PARTLY_SUPPORTED",
+      "CONFLICT_OR_DISAGREEMENT",
+      "SOURCE_UNAVAILABLE",
+      "FORMAT_NOT_SUPPORTED_BY_CONSUMER",
+      "KIND_NOT_SUPPORTED_BY_CONSUMER"
+    ],
+    "orthogonal_axes": [
+      "source_availability",
+      "source_representation",
+      "structural_replay",
+      "semantic_adjudication",
+      "identity_resolution",
+      "temporal_eligibility",
+      "purpose_permission",
+      "consumer_contract_fit",
+      "production_admission"
+    ],
+    "denominators_prohibited": [
+      "global recall",
+      "universe coverage",
+      "production precision",
+      "independent corroboration inferred from source digest count"
+    ]
+  },
+  "adjudication": {
+    "first_reader": "/root/native_adoption_frontier",
+    "independent_reader": "Root-assigned secondary agent; actual return and evidence required.",
+    "rubric": [
+      "Which source-local parties are actually named?",
+      "What exact role and direction is asserted?",
+      "What product/geographic/fiscal/contract scope is established?",
+      "Is the lifecycle planned, announced, effective, delivered, listed, or historical?",
+      "Which quantities have which units, denominators and accounting bases?",
+      "Which dates have which precision, and which are publication rather than event dates?",
+      "What does the source fail to establish?",
+      "What observed evidence would falsify a stronger interpretation?"
+    ],
+    "disagreement_policy": "Preserve independent judgments and resolve only by reopening the actual primary source; unresolved disagreements remain visible.",
+    "confidence_policy": "Qualitative evidence-fit labels only, not calibrated probabilities."
+  },
+  "native_execution": {
+    "status": "NOT_RUN",
+    "executor": "root only",
+    "new_current_micron_replay": "NOT_RUN_PENDING_ROOT_RECEIPT",
+    "this_lane_may_run_consumer": false,
+    "this_lane_may_capture_native_source": false,
+    "this_lane_may_write_native_or_git": false
+  },
+  "decision_rule": "Select the smallest source-local, current-inspection observation/consumer binding warranted by the actual evidence. Specify exact source and party labels, time precision and permitted processing scope. Leave canonical identity, historical system replay, unsupported magnitude, rights and product admission withheld unless their actual owner evidence exists. Do not make an abstract request to find an owner the final result.",
+  "acceptance": {
+    "all_six_case_records_required": true,
+    "independent_semantic_return_required": true,
+    "pdf_and_unsupported_kind_outcomes_visible": true,
+    "no_synthetic_result_as_real_proof": true,
+    "no_native_result_claim_without_root_receipt": true,
+    "required_outputs": [
+      "protocol.json",
+      "source_attempts.jsonl",
+      "case_adjudications.jsonl",
+      "replay_receipt.json",
+      "native_adoption_return.md"
+    ]
+  },
+  "change_control": "Protocol v1 bytes freeze before this pilot's primary-source reads. Subsequent material selection/rubric changes require an explicit amendment record; do not overwrite this frozen protocol."
+}
+

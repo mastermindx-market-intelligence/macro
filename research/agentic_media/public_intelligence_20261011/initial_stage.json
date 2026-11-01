@@ -1,0 +1,732 @@
+{
+  "id": "press-brief-2026-10-11-6cf53bdfd11a",
+  "desk": "brief",
+  "publication": "mastermind_news",
+  "as_of": "2026-10-11",
+  "staged_at": "2026-10-11T08:57:07Z",
+  "sources": [
+    "chronicle:TTWO-BULL-20261007"
+  ],
+  "source_revisions": {},
+  "seed_refs": [
+    "artifact:data/gex/latest.json",
+    "artifact:data/market_state/latest.json",
+    "artifact:data/marketing/hot_tape_pack.json#ABSI",
+    "artifact:data/marketing/hot_tape_pack.json#ALHC",
+    "artifact:data/marketing/hot_tape_pack.json#ASTX",
+    "artifact:data/risk_radar/forward_log.jsonl",
+    "artifact:site/basketdata/breadth_split.json",
+    "artifact:site/basketdata/fear_greed.json",
+    "artifact:site/marketdata/sp500_heatmap.json#CCI",
+    "artifact:site/marketdata/sp500_heatmap.json#MRNA",
+    "artifact:site/marketdata/sp500_heatmap.json#TMUS",
+    "chronicle:TTWO-BULL-20261007"
+  ],
+  "slot": {
+    "id": "press-brief-2026-10-11-6cf53bdfd11a",
+    "desk": "brief",
+    "publication": "mastermind_news",
+    "byline": "The Brief — Mastermind News desk",
+    "cluster": "market-brief",
+    "as_of": "2026-10-11",
+    "model_key": "press_brief",
+    "min_words": 300,
+    "max_words": 600,
+    "min_anchored_receipts": 5,
+    "allowed_links": [],
+    "story": {
+      "kind": "signal_close",
+      "title_hint": "Prophet close: TTWO BULL → T1_HIT (+2.6% in 1d)",
+      "tickers": [
+        "TTWO"
+      ],
+      "themes": [],
+      "event_date": "2026-10-08"
+    },
+    "primary_source": {
+      "kind": "first_party",
+      "name": "Mastermind Prophet ledger",
+      "url": null,
+      "ref": "chronicle:TTWO-BULL-20261007",
+      "receipt": null
+    },
+    "sources": [
+      "chronicle:TTWO-BULL-20261007"
+    ],
+    "source_revisions": {},
+    "seed_refs": [
+      "artifact:data/gex/latest.json",
+      "artifact:data/market_state/latest.json",
+      "artifact:data/marketing/hot_tape_pack.json#ABSI",
+      "artifact:data/marketing/hot_tape_pack.json#ALHC",
+      "artifact:data/marketing/hot_tape_pack.json#ASTX",
+      "artifact:data/risk_radar/forward_log.jsonl",
+      "artifact:site/basketdata/breadth_split.json",
+      "artifact:site/basketdata/fear_greed.json",
+      "artifact:site/marketdata/sp500_heatmap.json#CCI",
+      "artifact:site/marketdata/sp500_heatmap.json#MRNA",
+      "artifact:site/marketdata/sp500_heatmap.json#TMUS",
+      "chronicle:TTWO-BULL-20261007"
+    ],
+    "facts": [
+      {
+        "id": "chronicle_cev-prophet_ledger-0292e22abc8c",
+        "text": "[2026-10-08] Prophet close: TTWO BULL → T1_HIT (+2.6% in 1d) — outcome=T1_HIT; stock +2.63% (plan result); held 1d",
+        "ref": "chronicle:TTWO-BULL-20261007",
+        "tier": "first_party",
+        "values": [],
+        "url": null,
+        "source_name": "Mastermind Prophet ledger",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "market_state_score",
+        "text": "Mastermind's market-state composite reads 53 of 100 (MIXED) as of 2026-10-09.",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "53"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "market_state_trend",
+        "text": "Market-state component Trend & technicals scores 70 (weight 0.24).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "70",
+          "0.24"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "market_state_risk",
+        "text": "Market-state component Risk appetite scores 27 (weight 0.18).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "27",
+          "0.18"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "market_state_vol",
+        "text": "Market-state component volatility backdrop scores 87 (weight 0.16).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "87",
+          "0.16"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "market_state_breadth",
+        "text": "Market-state component Breadth & participation scores 0 (weight 0.16).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "0",
+          "0.16"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "gex_dia",
+        "text": "DIA dealer gamma is 0.05bn net with the gamma flip at 511.14; spot sits 0.33% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "0.05",
+          "511.14",
+          "0.33",
+          "512.82"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_iwm",
+        "text": "IWM dealer gamma is -4.45bn net with the gamma flip at 289.63; spot sits -4.17% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "-4.45",
+          "289.63",
+          "-4.17",
+          "278.03"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_ndx",
+        "text": "NDX dealer gamma is 2.35bn net with the gamma flip at 30232.43; spot sits 2.07% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "2.35",
+          "30232.43",
+          "2.07",
+          "30871.8"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_qqq",
+        "text": "QQQ dealer gamma is 0.92bn net with the gamma flip at 748.96; spot sits 0.24% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "0.92",
+          "748.96",
+          "0.24",
+          "750.79"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_rut",
+        "text": "RUT dealer gamma is -2.51bn net with the gamma flip at 2878.14; spot sits -2.69% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "-2.51",
+          "2878.14",
+          "-2.69",
+          "2802.66"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_spx",
+        "text": "SPX dealer gamma is 76.9bn net with the gamma flip at 7715.74; spot sits 0.95% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "76.9",
+          "7715.74",
+          "0.95",
+          "7790.1"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_spy",
+        "text": "SPY dealer gamma is 1.59bn net with the gamma flip at 775.05; spot sits 0.15% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "1.59",
+          "775.05",
+          "0.15",
+          "776.23"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "breadth_split",
+        "text": "As of 2026-10-08, 62.3% of the AI cohort is above its 50-day average against 27.0% of the non-AI cohort — a 35.3 point spread.",
+        "ref": "artifact:site/basketdata/breadth_split.json",
+        "tier": "first_party",
+        "values": [
+          "62.3",
+          "27.0",
+          "35.3",
+          "26.1",
+          "74.1"
+        ],
+        "url": null,
+        "source_name": "Mastermind breadth engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "fear_greed",
+        "text": "The Mastermind fear/greed dial reads 52 (Neutral) as of 2026-10-09, built from 11 qualifying legs.",
+        "ref": "artifact:site/basketdata/fear_greed.json",
+        "tier": "first_party",
+        "values": [
+          "52",
+          "11"
+        ],
+        "url": null,
+        "source_name": "Mastermind sentiment engine",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "risk_radar",
+        "text": "The risk radar is in `caution` with rates the dominant scare (score 70.2); modelled 21-session drawdown probability 0.19 as of 2026-10-09.",
+        "ref": "artifact:data/risk_radar/forward_log.jsonl",
+        "tier": "first_party",
+        "values": [
+          "70.2",
+          "0.19",
+          "0.1",
+          "0.042"
+        ],
+        "url": null,
+        "source_name": "Mastermind risk radar",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "mover_gainers_CCI",
+        "text": "CCI (Crown Castle, Real Estate) closed 15.6% on the session of 2026-10-08.",
+        "ref": "artifact:site/marketdata/sp500_heatmap.json#CCI",
+        "tier": "first_party",
+        "values": [
+          "15.6"
+        ],
+        "url": null,
+        "source_name": "Mastermind S&P 500 heatmap",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "mover_gainers_MRNA",
+        "text": "MRNA (Moderna, Healthcare) closed 14.21% on the session of 2026-10-08.",
+        "ref": "artifact:site/marketdata/sp500_heatmap.json#MRNA",
+        "tier": "first_party",
+        "values": [
+          "14.21"
+        ],
+        "url": null,
+        "source_name": "Mastermind S&P 500 heatmap",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "mover_gainers_ABSI",
+        "text": "ABSI closed 13.646532438478754% on the session of 2026-10-09.",
+        "ref": "artifact:data/marketing/hot_tape_pack.json#ABSI",
+        "tier": "first_party",
+        "values": [
+          "13.646532438478754"
+        ],
+        "url": null,
+        "source_name": "Mastermind hot-tape pack",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "mover_losers_ASTX",
+        "text": "ASTX closed -21.49321266968325% on the session of 2026-10-09.",
+        "ref": "artifact:data/marketing/hot_tape_pack.json#ASTX",
+        "tier": "first_party",
+        "values": [
+          "-21.49321266968325"
+        ],
+        "url": null,
+        "source_name": "Mastermind hot-tape pack",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "mover_losers_ALHC",
+        "text": "ALHC closed -13.375430539609656% on the session of 2026-10-09.",
+        "ref": "artifact:data/marketing/hot_tape_pack.json#ALHC",
+        "tier": "first_party",
+        "values": [
+          "-13.375430539609656"
+        ],
+        "url": null,
+        "source_name": "Mastermind hot-tape pack",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "mover_losers_TMUS",
+        "text": "TMUS (T-Mobile US, Communication Services) closed -13.27% on the session of 2026-10-08.",
+        "ref": "artifact:site/marketdata/sp500_heatmap.json#TMUS",
+        "tier": "first_party",
+        "values": [
+          "-13.27"
+        ],
+        "url": null,
+        "source_name": "Mastermind S&P 500 heatmap",
+        "dated": "2026-10-08"
+      }
+    ],
+    "raw_documents": [
+      {
+        "ref": "chronicle:TTWO-BULL-20261007",
+        "text": "Prophet close: TTWO BULL → T1_HIT (+2.6% in 1d) outcome=T1_HIT; stock +2.63% (plan result); held 1d"
+      }
+    ],
+    "chronicle_context": {
+      "lines": [
+        {
+          "text": "[2026-10-08] Prophet close: TTWO BULL → T1_HIT (+2.6% in 1d) — outcome=T1_HIT; stock +2.63% (plan result); held 1d",
+          "source_ref": "TTWO-BULL-20261007",
+          "site_url": null,
+          "source_url": null,
+          "receipt": null
+        }
+      ],
+      "narratives": [],
+      "coverage": {
+        "start": "2013-04-02",
+        "end": "2026-10-08",
+        "note": "chronicle coverage 2013-04-02..2026-10-08"
+      },
+      "budget_used": 28
+    },
+    "slug_hint": "prophet-close-ttwo-bull-t1-hit-2-6-in-1d"
+  },
+  "attempts": [
+    {
+      "attempt": 0,
+      "ok": true,
+      "failed": [],
+      "our_value_share": 0.5014,
+      "max_block_jaccard": 0.0,
+      "provider": "codex"
+    }
+  ],
+  "status": "passed",
+  "slug": "ttwo-hits-first-prophet-target-as-market-stays-mixed",
+  "draft": {
+    "title": "TTWO Hits First Prophet Target as Market Stays Mixed",
+    "description": "TTWO’s one-day Prophet signal reached its first target, but mixed market breadth and rate risk argue for watching confirmation, not chasing.",
+    "slug": "ttwo-hits-first-prophet-target-as-market-stays-mixed",
+    "body_html": "<p class=\"press-byline\">The Brief — Mastermind News desk</p><h2>What happened</h2><p>The Mastermind Prophet ledger recorded a bullish TTWO signal on 2026-10-08 that reached its first target after a 1d hold.</p><p>The plan result was a 2.63% gain, narrowly above the 2.6% move shown in the signal label. That is a clean short-horizon win for the ledger, but it is still one outcome, not proof that every bullish setup is working.</p><p>The practical takeaway is that TTWO delivered the move the signal was looking for without requiring a long holding period.</p><h2>Why it matters</h2><p>The broader backdrop is less decisive. Mastermind’s market-state composite stood at 53 of 100 on 2026-10-09, leaving the desk’s overall read mixed.</p><p>That score contains a sharp split: Trend &amp; technicals registered 70 with a 0.24 weight, while Risk appetite registered 27 with a 0.18 weight.</p><p>Volatility backdrop was stronger at 87 with a 0.16 weight, but Breadth &amp; participation scored 0 with the same 0.16 weight. The combination says price strength can appear even while participation remains narrow.</p><p>The breadth data makes that tension clearer. On 2026-10-08, 62.3% of the AI cohort was above its 50-day average, compared with 27.0% of the non-AI cohort, a 35.3 point spread.</p><p>That gap favors a selective reading of strength rather than a broad market conclusion. TTWO’s result matters because it shows a working signal inside a market where leadership is uneven.</p><h2>What to watch</h2><p>The risk radar was in caution on 2026-10-09, with rates the dominant scare at a score of 70.2 and a modelled 21-session drawdown probability of 0.19.</p><p>Sentiment was more balanced: the fear/greed dial read 52, built from 11 qualifying legs. That is consistent with a market that can reward individual winners without offering a clear all-market signal.</p><p>For TTWO, the next question is whether follow-through can persist after the 2.63% result, especially if rate concerns continue to pressure risk appetite. The desk will be watching repeatability, participation and the surrounding market response.</p><p>For now, the evidence supports watching rather than chasing: one target was reached, while the wider dashboard remains mixed.</p><p class=\"press-footer\">Educational content — not investment advice. Markets involve risk.</p>"
+  },
+  "validator_report": {
+    "ok": true,
+    "failed": [],
+    "checks": [
+      {
+        "name": "fact_anchor",
+        "ok": true,
+        "detail": "every number and quote resolves to a source fact",
+        "metrics": {
+          "numbers_checked": 20,
+          "unanchored": [],
+          "source_pool_size": 106,
+          "unsourced_quotes": []
+        }
+      },
+      {
+        "name": "claim_scope",
+        "ok": true,
+        "detail": "not a canonical claim-scoped slot",
+        "metrics": {
+          "active": false
+        }
+      },
+      {
+        "name": "close_paraphrase",
+        "ok": true,
+        "detail": "max block/source overlap 0.000 <= 0.18",
+        "metrics": {
+          "max_block_jaccard": 0.0,
+          "doc_jaccard": 0.0,
+          "threshold": 0.18,
+          "shingle_n": 5,
+          "worst_source": "",
+          "worst_block": ""
+        }
+      },
+      {
+        "name": "our_value",
+        "ok": true,
+        "detail": "our-value share 50.1% (>= floor 40%) over 22 sentence(s); 17 distinct receipt(s)",
+        "metrics": {
+          "our_value_share": 0.5014,
+          "floor": 0.4,
+          "our_words": 175,
+          "total_words": 349,
+          "granularity": "sentence",
+          "receipts": 17,
+          "receipt_values": [
+            2.63,
+            2.6,
+            53.0,
+            100.0,
+            70.0,
+            0.24,
+            27.0,
+            0.18,
+            87.0,
+            0.16,
+            62.3,
+            50.0,
+            35.3,
+            70.2,
+            21.0,
+            0.19,
+            52.0
+          ],
+          "sentences": [
+            {
+              "words": 2,
+              "tier": "neutral"
+            },
+            {
+              "words": 20,
+              "tier": "neutral"
+            },
+            {
+              "words": 19,
+              "tier": "first_party"
+            },
+            {
+              "words": 23,
+              "tier": "neutral"
+            },
+            {
+              "words": 20,
+              "tier": "neutral"
+            },
+            {
+              "words": 3,
+              "tier": "neutral"
+            },
+            {
+              "words": 6,
+              "tier": "neutral"
+            },
+            {
+              "words": 16,
+              "tier": "first_party"
+            },
+            {
+              "words": 25,
+              "tier": "first_party"
+            },
+            {
+              "words": 22,
+              "tier": "first_party"
+            },
+            {
+              "words": 12,
+              "tier": "neutral"
+            },
+            {
+              "words": 7,
+              "tier": "neutral"
+            },
+            {
+              "words": 26,
+              "tier": "first_party"
+            },
+            {
+              "words": 14,
+              "tier": "neutral"
+            },
+            {
+              "words": 16,
+              "tier": "neutral"
+            },
+            {
+              "words": 3,
+              "tier": "neutral"
+            },
+            {
+              "words": 28,
+              "tier": "first_party"
+            },
+            {
+              "words": 15,
+              "tier": "first_party"
+            },
+            {
+              "words": 17,
+              "tier": "neutral"
+            },
+            {
+              "words": 24,
+              "tier": "first_party"
+            },
+            {
+              "words": 12,
+              "tier": "neutral"
+            },
+            {
+              "words": 19,
+              "tier": "neutral"
+            }
+          ]
+        }
+      },
+      {
+        "name": "receipts",
+        "ok": true,
+        "detail": "17 distinct anchored receipt(s) (>= minimum 5)",
+        "metrics": {
+          "receipts": 17,
+          "minimum": 5,
+          "values": [
+            2.63,
+            2.6,
+            53.0,
+            100.0,
+            70.0,
+            0.24,
+            27.0,
+            0.18,
+            87.0,
+            0.16,
+            62.3,
+            50.0,
+            35.3,
+            70.2,
+            21.0,
+            0.19,
+            52.0
+          ]
+        }
+      },
+      {
+        "name": "quote_lint",
+        "ok": true,
+        "detail": "0 quote(s), longest 0 words",
+        "metrics": {
+          "quotes": 0,
+          "max_quotes": 2,
+          "max_quote_words": 25,
+          "oversized": []
+        }
+      },
+      {
+        "name": "banned_lexicon",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "advice_lexicon",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "cheese_test",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "ai_tells",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": [],
+          "not_only_but_also": 0,
+          "budget": 1
+        }
+      },
+      {
+        "name": "primary_source",
+        "ok": true,
+        "detail": "first-party slot: receipts carried inline (see our_value / receipts); no above-the-fold source link required",
+        "metrics": {
+          "kind": "first_party",
+          "url": null,
+          "named": null,
+          "linked": null
+        }
+      },
+      {
+        "name": "link_allowlist",
+        "ok": true,
+        "detail": "0 internal link(s), all public",
+        "metrics": {
+          "internal_links": 0,
+          "offenders": [],
+          "prefixes": [
+            "/research/",
+            "/blog/"
+          ]
+        }
+      },
+      {
+        "name": "byline",
+        "ok": true,
+        "detail": "desk byline present",
+        "metrics": {
+          "byline": "The Brief — Mastermind News desk",
+          "block": true,
+          "text": true
+        }
+      },
+      {
+        "name": "footer",
+        "ok": true,
+        "detail": "standing footer present",
+        "metrics": {
+          "block": true,
+          "text": true,
+          "required_text": "Educational content — not investment advice. Markets involve risk."
+        }
+      },
+      {
+        "name": "frontmatter",
+        "ok": true,
+        "detail": "frontmatter matches the free-estate contract",
+        "metrics": {
+          "title_len": 52,
+          "description_len": 140,
+          "slug": "ttwo-hits-first-prophet-target-as-market-stays-mixed",
+          "problems": [],
+          "upstream": ""
+        }
+      },
+      {
+        "name": "length",
+        "ok": true,
+        "detail": "349 words (budget 300–600)",
+        "metrics": {
+          "words": 349,
+          "min_words": 300,
+          "max_words": 600
+        }
+      },
+      {
+        "name": "self_similarity",
+        "ok": true,
+        "detail": "no own posts in the last 30 days and nothing staged — nothing to compare",
+        "metrics": {
+          "max_jaccard": 0.0,
+          "threshold": 0.18,
+          "peers": 0
+        }
+      }
+    ],
+    "our_value_share": 0.5014,
+    "our_value_granularity": "sentence",
+    "receipts": 17,
+    "max_block_jaccard": 0.0,
+    "doc_jaccard": 0.0,
+    "words": 349,
+    "slug": "ttwo-hits-first-prophet-target-as-market-stays-mixed",
+    "desk": "brief",
+    "publication": "mastermind_news"
+  },
+  "provider": "codex",
+  "model": "claude-haiku-4-5"
+}

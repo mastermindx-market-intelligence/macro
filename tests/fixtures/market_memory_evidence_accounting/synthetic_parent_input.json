@@ -1,0 +1,210 @@
+{
+  "schema": "market_memory.evidence_accounting_input.v1",
+  "conditions": [
+    "no_memory",
+    "recency",
+    "fixed_l1"
+  ],
+  "tasks": [
+    {
+      "task_id": "t1",
+      "cluster_id": "cluster-a",
+      "answerability": "answerable",
+      "required_facet_ids": [
+        "f1",
+        "f2",
+        "f3",
+        "f4"
+      ],
+      "k": 4
+    },
+    {
+      "task_id": "t2",
+      "cluster_id": "cluster-a",
+      "answerability": "answerable",
+      "required_facet_ids": [
+        "f1",
+        "f2",
+        "f3",
+        "f4"
+      ],
+      "k": 4
+    },
+    {
+      "task_id": "t3",
+      "cluster_id": "cluster-b",
+      "answerability": "answerable",
+      "required_facet_ids": [
+        "f1"
+      ],
+      "k": 4
+    },
+    {
+      "task_id": "t4",
+      "cluster_id": null,
+      "answerability": "answerable",
+      "required_facet_ids": [
+        "f1",
+        "f2"
+      ],
+      "k": 4
+    }
+  ],
+  "observations": [
+    {
+      "task_id": "t1",
+      "condition": "no_memory",
+      "state": "abstained",
+      "answer_assessment": "not_applicable",
+      "claims": [],
+      "retrieved": []
+    },
+    {
+      "task_id": "t2",
+      "condition": "no_memory",
+      "state": "abstained",
+      "answer_assessment": "not_applicable",
+      "claims": [],
+      "retrieved": []
+    },
+    {
+      "task_id": "t3",
+      "condition": "no_memory",
+      "state": "abstained",
+      "answer_assessment": "not_applicable",
+      "claims": [],
+      "retrieved": []
+    },
+    {
+      "task_id": "t4",
+      "condition": "no_memory",
+      "state": "abstained",
+      "answer_assessment": "not_applicable",
+      "claims": [],
+      "retrieved": []
+    },
+    {
+      "task_id": "t1",
+      "condition": "recency",
+      "state": "answered",
+      "answer_assessment": "correct",
+      "claims": [
+        {
+          "claim_id": "baseline-critical",
+          "material": true,
+          "verdict": "contradicted",
+          "critical": true
+        }
+      ],
+      "retrieved": [
+        {
+          "item_id": "evidence-1",
+          "relevance": 2,
+          "facet_ids": [
+            "f1",
+            "f2",
+            "f3"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "t1",
+      "condition": "fixed_l1",
+      "state": "answered",
+      "answer_assessment": "incorrect",
+      "claims": [
+        {
+          "claim_id": "s",
+          "material": true,
+          "verdict": "supported",
+          "critical": false
+        },
+        {
+          "claim_id": "u",
+          "material": true,
+          "verdict": "unresolved",
+          "critical": false
+        },
+        {
+          "claim_id": "i",
+          "material": true,
+          "verdict": "attributed_inference",
+          "critical": false
+        },
+        {
+          "claim_id": "c",
+          "material": true,
+          "verdict": "contradicted",
+          "critical": false
+        }
+      ],
+      "retrieved": [
+        {
+          "item_id": "evidence-1",
+          "relevance": 2,
+          "facet_ids": [
+            "f1"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "t2",
+      "condition": "recency",
+      "state": "answered",
+      "answer_assessment": "incorrect",
+      "claims": [],
+      "retrieved": [
+        {
+          "item_id": "evidence-1",
+          "relevance": 2,
+          "facet_ids": [
+            "f1"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "t2",
+      "condition": "fixed_l1",
+      "state": "answered",
+      "answer_assessment": "unresolved",
+      "claims": [],
+      "retrieved": [
+        {
+          "item_id": "evidence-1",
+          "relevance": 2,
+          "facet_ids": [
+            "f1",
+            "f2"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "t3",
+      "condition": "recency",
+      "state": "answered",
+      "answer_assessment": "correct",
+      "claims": [],
+      "retrieved": []
+    },
+    {
+      "task_id": "t3",
+      "condition": "fixed_l1",
+      "state": "answered",
+      "answer_assessment": "correct",
+      "claims": [],
+      "retrieved": [
+        {
+          "item_id": "evidence-1",
+          "relevance": 2,
+          "facet_ids": [
+            "f1"
+          ]
+        }
+      ]
+    }
+  ]
+}

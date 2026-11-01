@@ -14,7 +14,7 @@ from pathlib import Path
 import re
 from typing import Any, Mapping
 
-from engine.press.earnings_adapter import story_to_press_slot
+from engine.press.earnings_adapter import build_dossier_link, story_to_press_slot, validate_dossier_link
 
 from .contracts import (
     AUTHORITY,
@@ -46,6 +46,8 @@ from .story import validate_canonical_story, validate_correction_against_prior, 
 
 
 STORY_PACKET_SCHEMA = "earnings.story_packet/v1"
+LINKED_STORY_PACKET_SCHEMA = "earnings.story_packet/v2"
+STORY_PACKET_SCHEMAS = frozenset({STORY_PACKET_SCHEMA, LINKED_STORY_PACKET_SCHEMA})
 STORY_PACKET_MANIFEST_SCHEMA = "earnings.story_packet_manifest/v1"
 
 _SHA = re.compile(r"^[0-9a-f]{64}$")
@@ -209,8 +211,9 @@ def validate_story_packet(
 ) -> None:
     """Validate a packet; passed evidence inputs enable full deterministic replay."""
     row = _mapping(payload, name="earnings_story_packet")
-    _keys(row, _PACKET_KEYS, name="earnings_story_packet")
-    if row.get("schema") != STORY_PACKET_SCHEMA or row.get("authority") != AUTHORITY:
+    linked = row.get("schema") == LINKED_STORY_PACKET_SCHEMA
+    _keys(row, _PACKET_KEYS | {"dossier_link"} if linked else _PACKET_KEYS, name="earnings_story_packet")
+    if row.get("schema") not in STORY_PACKET_SCHEMAS or row.get("authority") != AUTHORITY:
         raise ContractError("earnings_story_packet schema or authority mismatch")
     packet_id = row.get("packet_id")
     if not isinstance(packet_id, str) or not _PACKET.fullmatch(packet_id):
@@ -234,10 +237,14 @@ def validate_story_packet(
         raise ContractError("earnings_story_packet story promotion mismatch")
     prior = _validate_prior(row.get("prior"), story=story)
     slot = row.get("press_slot")
+    if linked:
+        validate_dossier_link(row["dossier_link"], ticker=story["event"]["ticker"])
+        if story["promotion"]["tier"] != "B":
+            raise ContractError("linked earnings_story_packet requires Tier B")
     if story["promotion"]["tier"] == "B":
         if not isinstance(slot, Mapping):
             raise ContractError("Tier B earnings_story_packet requires a Press staging slot")
-        expected_slot = story_to_press_slot(story, digest, prior_story=(prior or {}).get("story") if prior else None)
+        expected_slot = replay_story_packet_slot(row)
         if canonical_json_bytes(slot) != canonical_json_bytes(expected_slot):
             raise ContractError("earnings_story_packet Press slot differs from canonical adapter output")
     elif slot is not None:
@@ -260,6 +267,18 @@ def validate_story_packet(
             raise ContractError("earnings_story_packet digest does not bind supplied evidence")
 
 
+def replay_story_packet_slot(packet: Mapping[str, Any]) -> dict[str, Any]:
+    """Select the immutable adapter contract; v1 remains link-free forever."""
+    prior = packet.get("prior")
+    return story_to_press_slot(
+        packet["story"], packet["digest"],
+        prior_story=prior.get("story") if isinstance(prior, Mapping) else None,
+        dossier_link=(
+            packet["dossier_link"] if packet.get("schema") == LINKED_STORY_PACKET_SCHEMA else None
+        ),
+    )
+
+
 def build_story_packet(
     fact_pack: object,
     claim_graph: object,
@@ -269,6 +288,7 @@ def build_story_packet(
     policy: object,
     prior_packet: object | None = None,
     prior_policy: object | None = None,
+    dossier_root: Path | None = None,
 ) -> dict[str, Any]:
     """Compile one immutable token-free packet from one verified evidence event."""
     validate_evidence_pair(fact_pack, claim_graph)
@@ -292,10 +312,13 @@ def build_story_packet(
     decision, story = build_promoted_story(digest, policy=resolved_policy, prior_story=prior_story)
     evidence_receipts = _validate_evidence_receipts(evidence, event=digest["event"], source=digest["source"])
     slot: dict[str, Any] | None = None
+    dossier_link: dict[str, Any] | None = None
     if story["promotion"]["tier"] == "B":
-        slot = story_to_press_slot(story, digest, prior_story=prior_story)
+        if dossier_root is not None:
+            dossier_link = build_dossier_link(story["event"]["ticker"], root=dossier_root)
+        slot = story_to_press_slot(story, digest, prior_story=prior_story, dossier_link=dossier_link)
     payload: dict[str, Any] = {
-        "schema": STORY_PACKET_SCHEMA,
+        "schema": LINKED_STORY_PACKET_SCHEMA if dossier_link is not None else STORY_PACKET_SCHEMA,
         "authority": AUTHORITY,
         "packet_id": "storypacket_" + ("0" * 32),
         "evidence": evidence_receipts,
@@ -307,6 +330,8 @@ def build_story_packet(
         "press_slot": slot,
         "execution": dict(EXECUTION_RECEIPT),
     }
+    if dossier_link is not None:
+        payload["dossier_link"] = dossier_link
     payload["packet_id"] = "storypacket_" + sha256(canonical_json_bytes(_packet_unsigned(payload))).hexdigest()[:32]
     validate_story_packet(payload, fact_pack=fact_pack, claim_graph=claim_graph, transcript=transcript, policy=resolved_policy)
     return payload
@@ -356,7 +381,10 @@ def validate_story_packet_manifest(payload: object) -> None:
             raise ContractError("earnings_story_packet_manifest story revision invalid")
         object_key = _safe_relative(index_row.get("object_key"), name="earnings_story_packet_manifest object key")
         expected_paths.add(object_key)
-        receipt = _canonical_file_receipt(files.get(object_key), schema=STORY_PACKET_SCHEMA, name=f"earnings_story_packet_manifest.files[{object_key}]")
+        file_receipt = _mapping(files.get(object_key), name="earnings_story_packet file receipt")
+        if file_receipt.get("schema") not in STORY_PACKET_SCHEMAS:
+            raise ContractError("earnings_story_packet file schema invalid")
+        receipt = _canonical_file_receipt(file_receipt, schema=file_receipt["schema"], name=f"earnings_story_packet_manifest.files[{object_key}]")
         if object_key != receipt["object_key"]:
             raise ContractError("earnings_story_packet_manifest packet object receipt mismatch")
     if set(files) != expected_paths:

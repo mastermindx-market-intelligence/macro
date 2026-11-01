@@ -1,0 +1,55 @@
+{
+  "archived_script_execution": false,
+  "entries": [
+    {
+      "byte_length": 31167,
+      "kind": "exact_text",
+      "path": "NVDA_ACTUAL_LAUNCHER_001.py.txt",
+      "sha256": "c1745bbce8934986ad0a218818b2f435121ed405d48a7ed1200a92272337e221"
+    },
+    {
+      "byte_length": 39547,
+      "kind": "exact_stored_json_value_serialization",
+      "path": "resume8_nvda_launch_command_001.json",
+      "sha256": "c687576dd37d7c9ef5aec651262318cdfaac6874ae6910f0f74bb8940bd4527d"
+    },
+    {
+      "byte_length": 682,
+      "kind": "exact_stored_json_value_serialization",
+      "path": "resume8_nvda_native_start_001.json",
+      "sha256": "020e82b277fde4b58c80243149f993c7c5913638fd37f98042594c9e06758a1a"
+    },
+    {
+      "byte_length": 2616,
+      "kind": "exact_stored_json_value_serialization",
+      "path": "resume8_nvda_native_poll_001.json",
+      "sha256": "451e2544674c77dd2e1e745e887d751ccc8ce5ae01f4a5430a9d9ca8e6f5b8b9"
+    },
+    {
+      "byte_length": 11337,
+      "kind": "exact_stored_json_value_serialization",
+      "path": "resume8_nvda_independent_process_completion_001.json",
+      "sha256": "13f619d99a9ed23895225a4a853b1036131fd38acc2fec8c12a4e463636d6373"
+    },
+    {
+      "byte_length": 97579,
+      "path": "PRINCIPAL_PUBLIC_TRANSPORT_003.json",
+      "sha256": "350e6d8ffc269451216e5f3c40a4cd8ad883289170a2b2c1e8318eae8dfe5e0e"
+    }
+  ],
+  "finished_at": "2026-10-09T16:52:33.339059+00:00",
+  "prior_scratch_findings_write": {
+    "functions_cell": "635",
+    "orchestration_only_terminated": true,
+    "retried": false,
+    "status": "UNKNOWN"
+  },
+  "provider_or_private_payload_read": false,
+  "schema": "economic_network.nvda_principal_transport_readback/v1",
+  "status": "EXACT_PUBLIC_PRINCIPAL_EVIDENCE_RETAINED_NOT_PUBLISHED",
+  "tool_objects_are_exact_json_value_serializations_not_wire_bytes": true,
+  "transport_blob": "1e2457c662dd64ed4c59e96813410e4a87a116b3",
+  "transport_bytes": 97579,
+  "transport_sha256": "350e6d8ffc269451216e5f3c40a4cd8ad883289170a2b2c1e8318eae8dfe5e0e",
+  "worktree_or_ref_mutation": false
+}

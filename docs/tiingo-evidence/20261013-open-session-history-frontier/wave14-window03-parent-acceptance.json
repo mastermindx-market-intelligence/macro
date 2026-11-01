@@ -1,0 +1,34 @@
+{
+  "schema": "tiingo.actual_physical_continuation_qualification_window_parent_acceptance/v1",
+  "recorded_at_utc": "2026-10-12T23:45:04.267034+00:00",
+  "original_tool_session": 85162,
+  "original_terminal_return_consumed": true,
+  "original_exit_code": 0,
+  "method_sha256": "a10123fcfb827e60f4124c1244eb2ea959f8fd0f913233586019bded2cd63d64",
+  "log_sha256": "d4dfa08e4f702ed2a12c2e92e1ee5adfd967ce8c4e4eb719309ad9bb1aa4445e",
+  "started_at_utc": "2026-10-12T23:29:08.742996+00:00",
+  "settled_at_utc": "2026-10-12T23:44:18.285737+00:00",
+  "completed_prefixes": [
+    "09",
+    "10",
+    "11"
+  ],
+  "next_unstarted_prefix": "12",
+  "proof_sha256": {
+    "eod-wave14-prefix09-qualified.json": "c2a0c52db38d53d95f8a619bd139079ee55bdc536272a2bded7fdf03eb6d6e8a",
+    "eod-qualified-catalogue-coverage-wave14-prefix09-delta.json": "0ff6f8cb03520857592045225158754a14e2be3c5bd6ed7713db8c9e85fc4583",
+    "eod-wave14-prefix10-qualified.json": "9c76d52c7ae307c64bf39014b42cd8e421661b03f41a9d581ed8434a0259be98",
+    "eod-qualified-catalogue-coverage-wave14-prefix10-delta.json": "6b6745fefc342b72e03bfcd181bc65c62b68c8532cda8ad1666fe19bfb61dd03",
+    "eod-wave14-prefix11-qualified.json": "4081d72cccaf374ae1754743c0e343d0d631fc92cd519cdb082bcb1b25f33bd3",
+    "eod-qualified-catalogue-coverage-wave14-prefix11-delta.json": "6e7b9990787b7d16b4e2b1554884f93d459eb1cde8aa9a2fde623b845a3692f3"
+  },
+  "actual_original_partial_partition_sha256": "ed98a04d034fb267a411a4f8cacef6d01ad30bcdd469b479cc79df58b5410a53",
+  "physical_scope_sha256": "d4522213d7a9c26f3dfba38361c2c48cff3cb12773a91e3acf9dd631d0ead31f",
+  "qualified_continuation_responses": 698,
+  "qualified_continuation_bars": 1522816,
+  "qualified_combined_original_wave_responses": 2386,
+  "last_census_histories": 40551,
+  "last_census_bars": 85586380,
+  "capture_original_tool40732_settlement_claimed": false,
+  "original_completion_remains_false": true
+}

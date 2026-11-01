@@ -1,0 +1,76 @@
+{
+  "activate": true,
+  "importance": 68,
+  "banner_days": 3,
+  "tone": "mixed",
+  "banner_title": "Trump suspends federal diesel tax via red-dye loophole — truckers gain, refiners face demand shift",
+  "banner_title_zh": "特朗普暂停联邦柴油税——卡车司机受益，炼油商面临需求结构变化",
+  "summary": "President Trump signed an Executive Order opening tax-free dyed diesel (red-dye) to all highway users through year-end, effectively deferring the 24.4¢/gal federal diesel tax. The move cuts costs for truckers and farmers but could pressure refined-product margins and tax revenues.",
+  "summary_zh": "特朗普总统签署行政令，允许所有公路用户在年底前使用免税染色柴油，相当于暂停每加仑24.4美分的联邦柴油税。此举降低了卡车司机和农民的成本，但可能对成品油利润率和税收收入构成压力。",
+  "analysis": "The Executive Order temporarily waives the off-road use restriction on dyed diesel, letting any purchaser buy it without paying the 24.4-cent federal excise tax through the end of 2026. For a trucker filling a 250-gallon tank that's roughly $60 per fill in federal relief, and potentially over $100 where states align their own taxes. The policy directly lowers the operating cost base for the freight, agriculture, and construction sectors that consume dyed diesel's traditional off-road users plus newly eligible highway fleets.\n\nThe transmission mechanism is a demand rotation within the distillate complex. If highway fleets shift purchases to dyed diesel, the clear-diesel pool loses volume while the dyed pool absorbs it, compressing the spread between the two products and potentially pressuring overall refining margins on a blended basis. Refiners and fuel distributors with large clear-diesel exposure could see margin erosion, while trucking fleets, logistics companies, and large farm operations capture near-term fuel-cost relief.\n\nFiscal leakage is the key uncertainty: the Treasury forgoes federal diesel tax revenue for the quarter, and if states follow, the total revenue loss compounds. Enforcement risk around dyes and sulfur content for highway use of dyed diesel (which has higher sulfur limits) also creates compliance ambiguity. The durability of the demand shift depends on whether the order is extended beyond year-end or allowed to expire on schedule.",
+  "sectors": [
+    {
+      "name": "Trucking & Logistics",
+      "impact": "tailwind",
+      "rationale": "Direct fuel-cost reduction of ~$60-$100+ per fill improves operating margins for highway freight haulers."
+    },
+    {
+      "name": "Agriculture & Farm Equipment",
+      "impact": "tailwind",
+      "rationale": "Farmers gain lower fuel costs during the harvest season, easing input-cost pressure."
+    },
+    {
+      "name": "Construction & Off-Road Equipment",
+      "impact": "tailwind",
+      "rationale": "Already dyed-diesel users benefit from increased supply flexibility and potentially lower prices."
+    },
+    {
+      "name": "Refiners & Fuel Distributors",
+      "impact": "headwind",
+      "rationale": "Demand shift from taxed clear diesel to tax-free dyed diesel compresses product spreads and margins."
+    },
+    {
+      "name": "Fuel Retailers & Travel Plazas",
+      "impact": "headwind",
+      "rationale": "Highway stations selling clear diesel may lose volume to dyed-diesel channels."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "CHRW",
+      "direction": "benefit",
+      "rationale": "Large logistics and truck brokerage network directly benefits from lower freight fuel costs."
+    },
+    {
+      "symbol": "KNX",
+      "direction": "benefit",
+      "rationale": "Asset-based truckload carrier with high diesel consumption per mile; fuel-cost relief boosts margins."
+    },
+    {
+      "symbol": "ODFL",
+      "direction": "benefit",
+      "rationale": "LTL carrier with large fleet operations; every cent of diesel savings drops to the bottom line."
+    },
+    {
+      "symbol": "DE",
+      "direction": "benefit",
+      "rationale": "Farm-equipment demand may rise as fuel-cost relief improves farmer profitability during harvest."
+    },
+    {
+      "symbol": "VLO",
+      "direction": "hurt",
+      "rationale": "Independent refiner with significant diesel output; demand shift to dyed fuel compresses clear-diesel margins."
+    },
+    {
+      "symbol": "PSX",
+      "direction": "hurt",
+      "rationale": "Major refiner with broad distillate exposure; blend margin pressure from dyed-diesel substitution."
+    },
+    {
+      "symbol": "MPC",
+      "direction": "hurt",
+      "rationale": "Large refining throughput with heavy highway diesel mix; at risk from demand rotation to tax-free fuel."
+    }
+  ],
+  "confidence": "medium"
+}

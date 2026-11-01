@@ -150,8 +150,34 @@ cutover day the content is already on disk.
 **Do these in order. DNS first — the config half without the DNS half is a
 claim nobody verified.**
 
-1. **DNS (Spaceship, the registrar for both zones).** Add A records pointing at
-   the droplet:
+1. **DNS and origin readiness, through the existing domain owners.** Discover
+   the authoritative DNS provider from the zone's NS records; the registrar
+   does not necessarily host its DNS. Do not replace existing records or CDN
+   configuration merely because they differ from the planned direct route.
+
+   **Read-only observation, 2026-10-11 09:20 UTC:** `mastermindx.ai` uses
+   `alla.ns.cloudflare.com` / `noel.ns.cloudflare.com`; apex and www resolve to
+   Cloudflare addresses `104.21.69.88` and `172.67.206.191`. The apex HTTPS
+   request reaches Cloudflare but returns **525**, an edge-to-origin TLS
+   handshake failure, not a DNS lookup failure. See
+   [Cloudflare's 525 documentation](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-525/).
+   `mastermind-x.com` uses `a.dnspod.com` / `b.dnspod.com` / `c.dnspod.com`.
+   Its `blog` record exists as a CNAME to
+   `blog.mastermind-x.com.eo.dnse3.com`, but that target returns **NXDOMAIN**,
+   so `curl` cannot resolve the Research host. This is an unresolved existing
+   CNAME target, not evidence that the `blog` record is absent.
+
+   Direct TLS probes to the documented origin `146.190.142.17`, with each
+   publication hostname as SNI, also returned `curl` error 35 (TLS internal
+   error). These public probes do not establish the deployed Caddy config,
+   CDN origin selection, certificate inventory, or served-directory contents.
+   Keep `cutover: false` and the Press Caddy block commented while those
+   prerequisites remain unverified. The existing domain/origin incident must
+   be reconciled before authorizing the planned route; this runbook is not a
+   DNS/CDN mutation instruction or publication approval.
+
+   The existing cutover design targets these **direct A records**, subject to
+   verification of the origin and an authorized change to the current routing:
 
    | Host | Type | Value |
    |---|---|---|
@@ -164,14 +190,29 @@ claim nobody verified.**
    HTTP-01 to issue a certificate. The apex is the canonical host (it is what
    `config/press.yml` `base_url` names); www 301s to it.
 
-   These are **grey-cloud / direct** records — no CDN in front, exactly like
-   `admin.mastermind-x.com`. Caddy will therefore issue **real Let's Encrypt**
-   certificates over HTTP-01 (never `tls internal` for these hosts). Verify
-   before moving on:
+   This is a planned **direct** route with no CDN in front; it is not the
+   observed current routing and is not inferred from `admin.mastermind-x.com`.
+   Caddy must issue **real Let's Encrypt** certificates over HTTP-01 (never
+   `tls internal` for these hosts). Recheck the provider and existing routing
+   with these read-only commands:
 
    ```bash
-   dig +short mastermindx.ai www.mastermindx.ai blog.mastermind-x.com
-   # expect 146.190.142.17 three times
+   dig +short NS mastermindx.ai
+   dig +short NS mastermind-x.com
+   dig +noall +comments +answer +authority blog.mastermind-x.com A
+   dig +noall +comments +answer +authority blog.mastermind-x.com.eo.dnse3.com A
+   curl -sSI --connect-timeout 10 --max-time 20 https://mastermindx.ai/
+   curl -sSI --connect-timeout 10 --max-time 20 https://blog.mastermind-x.com/
+   ```
+
+   After the existing owners approve and complete the direct-route DNS change,
+   verify each hostname separately before moving to the paired cutover PR:
+
+   ```bash
+   for host in mastermindx.ai www.mastermindx.ai blog.mastermind-x.com; do
+     dig +short "$host" A
+   done
+   # planned direct-route expectation: 146.190.142.17 for each host
    ```
 
 2. **The cutover PR — one commit, both halves.** `config/press.yml` `cutover:`

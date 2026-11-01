@@ -126,6 +126,7 @@ def test_context_service_is_network_dark_credential_free_and_exactly_scoped() ->
         "/etc/macro-live.env",
         "/etc/macro-market-memory.env",
         "/etc/macro-sentinel.env",
+        "/etc/macro-ticker-news.env",
     ):
         assert re.search(
             rf"^InaccessiblePaths=-?{re.escape(protected)}$",

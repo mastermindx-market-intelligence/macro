@@ -27,6 +27,8 @@ admin/brain_guest_access.json
 # living OUTSIDE the git work-tree so `git reset --hard` can't expose a partial
 # file (app/deploy/update.sh + Caddyfile). Box-only; never committed.
 site.served/
+# Box-only OHLC release generations and atomic current selection.
+ohlc.served/
 # retired 2026-07-05: Pages has no custom domain and workflow-type Pages deploys
 # ignore CNAME files anyway — listed here so an in-flight render on pre-removal
 # code can't re-commit it (git add skips ignored files).
@@ -40,7 +42,7 @@ site/go/**/.tmp_*
 # symlink reached a commit (a crop harness links the nightly artifacts in from the
 # main checkout, an aborted run left it behind, and a broad `git add` swept it up).
 site/stockdata
-site/ohlc/
+site/ohlc
 site/stockbrief/
 site/chinastockdata/
 site/chinamechanicsdata/
@@ -243,6 +245,10 @@ data/capital_structure/source_objects/
 # stages outside data and promotes telemetry last; the collector uses these
 # same-directory parquet temps for one-file atomic replacement.
 data/capital_structure/*.tmp.parquet
+# source_ledger_io._atomic_write stages each sharded-ledger part as
+# <part>.tmp.jsonl before os.replace; an interrupted write must never be staged
+# by the capital_structure job's `git add data/capital_structure`.
+data/capital_structure/*.tmp.jsonl
 .capital-structure-compile-*/
 # raw digest capture / reverse-engineering evidence (private; digest_db.parquet is the committed artifact)
 research/_recon_raw/
@@ -298,6 +304,8 @@ data/price_pressure/events.parquet
 #            data/massive_stock_day/_backfill_state.json (resume state)
 # ~12,400 tickers × ~350 rows = ~240 MB total — must NOT be committed to git.
 data/massive_stock_day/*.parquet
+# Local canonical publisher read receipt; preserve tracked collector manifest.
+data/massive_stock_day/.defense_read/
 # Mixed-case vendor identities use a hex-keyed subdirectory so default APFS cannot
 # fold them into the legacy uppercase filename (lib.massive_ticker).
 data/massive_stock_day/__case_v1/*.parquet
@@ -745,3 +753,11 @@ data/qledger/control_evidence_clock_start/
 # E3-A eval shards. Bounded proof lives in the eval receipt, not the global ledger.
 /data/ai_costs/usage.d/e3a-pr6245-*.jsonl
 /research/earnings_intelligence/e3/gold/provider_health_*.jsonl
+
+# MedTech qualification receipts contain raw source bytes and a private SQLite store.
+/reports/medtech-r14-runtime/
+
+# Private Yahoo capture objects require0700/0600 and must never be Git checkout
+# inputs. WTI's bounded CL_F.observation.json export rides normal data publication.
+data/yahoo/.availability_capture/
+data/yahoo/.CL_F.observation-*

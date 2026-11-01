@@ -1,0 +1,31 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_panel_detail_and_existing_cache_follow_recorded_correction ________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-297/test_panel_detail_and_existing0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10ce57ad0>
+
+    def test_panel_detail_and_existing_cache_follow_recorded_correction(tmp_path, monkeypatch):
+        from admin import intelligence_os as ios
+        from scripts import build_output_health
+        registry = {"engines": [{"engine_id": "regime::macro", "producer": "regime", "output_class": None},
+                                {"engine_id": "world::macro", "producer": "world", "output_class": None}],
+                    "excluded": []}
+        def derive_fixture(*args, **kwargs):
+            return {"outputs": outputs(), "summary": {}, "generated": {}}, registry
+        monkeypatch.setattr(build_output_health, "build_with_registry", derive_fixture)
+        monkeypatch.setattr(ios, "_load_evidence_providers", lambda *args: {})
+        ios._CACHE.clear()
+        write_report(tmp_path)
+        before_key = ios.recorded_snapshot_cache_identity(tmp_path)
+        panel = ios.panel(tmp_path)
+>       assert "typed_findings" in panel, "the live A1 panel has no typed findings connection"
+E       AssertionError: the live A1 panel has no typed findings connection
+E       assert 'typed_findings' in {'ok': True, 'census': {'engines': 2, 'canonical_engines': 2, 'noncanonical_output_groups': 0, 'artifacts': 2, ...}, '...ine_ids': ['regime::macro', 'world::macro']}, {'evidence_status': 'Disproven', 'n_engines': 0, 'engine_ids': []}], ...}
+
+tests/test_evidence_findings.py:211: AssertionError
+
+NOTE: sparse worktree — data, mockups, plugins, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_evidence_findings.py::test_panel_detail_and_existing_cache_follow_recorded_correction
+1 failed, 21 deselected in 7.85s

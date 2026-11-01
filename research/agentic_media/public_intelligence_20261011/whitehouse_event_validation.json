@@ -1,0 +1,319 @@
+{
+  "kind": "unadmitted_editorial_candidate_replay",
+  "tested_revision": "6beaa5ec211049532c6d8c3dafa3c729cf2e1ab3",
+  "receipt_sha256": "307e3f34d21b294abf3a0066cf92308e1a3676e4c5fbd2c66021a49cc5cb1857",
+  "peer_root": "/Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main",
+  "peer_input_hashes": {
+    "data/press/staging/press-brief-2026-10-11-6cf53bdfd11a.json": "8a4c56105b869c20ce7b5928b3bab42417785cd40f70cbacdb2616434e79cfb0",
+    "data/press/staging/press-research_desk-2026-10-11-81675c403cda.json": "ae72a0afdce3e0ffc261d38f8de71b330f989597fe3c25abef4191ae55bbff3b",
+    "data/press/published.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "config_sha256": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+  "validator_sha256": "33d293ae15910607785cd2340ae04e012b32cfee084d5b636e175b8e3d944ffe",
+  "draft_sha256": "062fbdd0878a485caf2670776e72424cea1885a5492dc961f077dbae885d381c",
+  "source_sha256": "21ca4a550185c119af8013b26a74921bed45383ab64f164debb86ed339507a6e",
+  "validator_report": {
+    "ok": false,
+    "failed": [
+      "our_value",
+      "receipts",
+      "byline",
+      "footer",
+      "frontmatter"
+    ],
+    "checks": [
+      {
+        "name": "fact_anchor",
+        "ok": true,
+        "detail": "every number and quote resolves to a source fact",
+        "metrics": {
+          "numbers_checked": 7,
+          "unanchored": [],
+          "source_pool_size": 11,
+          "unsourced_quotes": []
+        }
+      },
+      {
+        "name": "claim_scope",
+        "ok": true,
+        "detail": "not a canonical claim-scoped slot",
+        "metrics": {
+          "active": false
+        }
+      },
+      {
+        "name": "close_paraphrase",
+        "ok": true,
+        "detail": "max block/source overlap 0.018 <= 0.18",
+        "metrics": {
+          "max_block_jaccard": 0.0177,
+          "doc_jaccard": 0.0011,
+          "threshold": 0.18,
+          "shingle_n": 5,
+          "worst_source": "whitehouse:wh-2026-10-08-fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-init",
+          "worst_block": "The announcement presents the consortium within a broader package exceeding $6 billion across government, industry, acad"
+        }
+      },
+      {
+        "name": "our_value",
+        "ok": false,
+        "detail": "our-value share 0.0% (< floor 40%) over 22 sentence(s); 0 distinct receipt(s)",
+        "metrics": {
+          "our_value_share": 0.0,
+          "floor": 0.4,
+          "our_words": 0,
+          "total_words": 334,
+          "granularity": "sentence",
+          "receipts": 0,
+          "receipt_values": [],
+          "sentences": [
+            {
+              "words": 21,
+              "tier": "other"
+            },
+            {
+              "words": 23,
+              "tier": "other"
+            },
+            {
+              "words": 4,
+              "tier": "neutral"
+            },
+            {
+              "words": 16,
+              "tier": "neutral"
+            },
+            {
+              "words": 10,
+              "tier": "other"
+            },
+            {
+              "words": 8,
+              "tier": "other"
+            },
+            {
+              "words": 17,
+              "tier": "other"
+            },
+            {
+              "words": 21,
+              "tier": "neutral"
+            },
+            {
+              "words": 16,
+              "tier": "neutral"
+            },
+            {
+              "words": 9,
+              "tier": "neutral"
+            },
+            {
+              "words": 17,
+              "tier": "neutral"
+            },
+            {
+              "words": 11,
+              "tier": "neutral"
+            },
+            {
+              "words": 18,
+              "tier": "other"
+            },
+            {
+              "words": 5,
+              "tier": "neutral"
+            },
+            {
+              "words": 20,
+              "tier": "neutral"
+            },
+            {
+              "words": 19,
+              "tier": "neutral"
+            },
+            {
+              "words": 22,
+              "tier": "neutral"
+            },
+            {
+              "words": 12,
+              "tier": "neutral"
+            },
+            {
+              "words": 18,
+              "tier": "neutral"
+            },
+            {
+              "words": 10,
+              "tier": "neutral"
+            },
+            {
+              "words": 5,
+              "tier": "neutral"
+            },
+            {
+              "words": 32,
+              "tier": "neutral"
+            }
+          ]
+        }
+      },
+      {
+        "name": "receipts",
+        "ok": false,
+        "detail": "0 distinct anchored receipt(s) (< minimum 5)",
+        "metrics": {
+          "receipts": 0,
+          "minimum": 5,
+          "values": []
+        }
+      },
+      {
+        "name": "quote_lint",
+        "ok": true,
+        "detail": "0 quote(s), longest 0 words",
+        "metrics": {
+          "quotes": 0,
+          "max_quotes": 2,
+          "max_quote_words": 25,
+          "oversized": []
+        }
+      },
+      {
+        "name": "banned_lexicon",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "advice_lexicon",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "cheese_test",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "ai_tells",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": [],
+          "not_only_but_also": 0,
+          "budget": 1
+        }
+      },
+      {
+        "name": "primary_source",
+        "ok": true,
+        "detail": "external source named in full and linked above the fold",
+        "metrics": {
+          "kind": "external",
+          "url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-initiatives-this-century/",
+          "named": true,
+          "linked": true,
+          "accepted_names": [
+            "The White House"
+          ]
+        }
+      },
+      {
+        "name": "link_allowlist",
+        "ok": true,
+        "detail": "1 internal link(s), all public",
+        "metrics": {
+          "internal_links": 1,
+          "offenders": [],
+          "prefixes": [
+            "/research/",
+            "/blog/",
+            "/stocks/"
+          ]
+        }
+      },
+      {
+        "name": "byline",
+        "ok": false,
+        "detail": "missing desk byline (block=False, text=False): 'The Brief — Mastermind News desk'",
+        "metrics": {
+          "byline": "The Brief — Mastermind News desk",
+          "block": false,
+          "text": false
+        }
+      },
+      {
+        "name": "footer",
+        "ok": false,
+        "detail": "missing not-investment-advice footer (block=False, text=False)",
+        "metrics": {
+          "block": false,
+          "text": false,
+          "required_text": "Educational content — not investment advice. Markets involve risk."
+        }
+      },
+      {
+        "name": "frontmatter",
+        "ok": false,
+        "detail": "empty slug; missing required key 'slug'; missing required key 'description'; .md: slug '' must match filename '.md'",
+        "metrics": {
+          "title_len": 62,
+          "description_len": 0,
+          "slug": "",
+          "problems": [
+            "empty slug",
+            "missing required key 'slug'",
+            "missing required key 'description'",
+            ".md: slug '' must match filename '.md'"
+          ],
+          "upstream": ""
+        }
+      },
+      {
+        "name": "length",
+        "ok": true,
+        "detail": "334 words (budget 300–600)",
+        "metrics": {
+          "words": 334,
+          "min_words": 300,
+          "max_words": 600
+        }
+      },
+      {
+        "name": "self_similarity",
+        "ok": true,
+        "detail": "max overlap with our last 30 days + staged siblings is 0.000 <= 0.18",
+        "metrics": {
+          "max_jaccard": 0.0,
+          "threshold": 0.18,
+          "peers": 2,
+          "worst_slug": ""
+        }
+      }
+    ],
+    "our_value_share": 0.0,
+    "our_value_granularity": "sentence",
+    "receipts": 0,
+    "max_block_jaccard": 0.0177,
+    "doc_jaccard": 0.0011,
+    "words": 334,
+    "slug": "",
+    "desk": "brief",
+    "publication": "mastermind_news"
+  },
+  "press_admitted": false,
+  "allow_stage": false,
+  "allow_emit": false,
+  "publication_approved": false,
+  "d14_generated_batch_credit": false,
+  "scope": "Offline replay against retained source and current local corpus; not current upstream source/rights verification or planner admission."
+}

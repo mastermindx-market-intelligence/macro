@@ -1,0 +1,132 @@
+{
+  "schema": "grey_deer.isolated_rehearsal_artifact_receipt.v1",
+  "observed_at": "2026-10-20T08:07:14.844524+00:00",
+  "candidate_rehearsed": "a7553e0a18339c910eef9687c730b06605dd710e",
+  "artifacts": [
+    {
+      "source": "/tmp/rr-a7553e0a-rehearsal-20261020-qtn6umsk/REHEARSAL_RESULT.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt1-REHEARSAL_RESULT.json",
+      "exit_code": 0,
+      "stderr": "",
+      "sha256": "c138a7dcf64742a5d85627a0b54c2038662e86661ea428aceef02e41290eb219",
+      "bytes": 808184
+    },
+    {
+      "source": "/tmp/rr-a7553e0a-rehearsal-20261020-qtn6umsk/startup.py",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt1-startup.py.txt",
+      "exit_code": 0,
+      "stderr": "",
+      "sha256": "05e61a69ea27a14a758c41643b46554234d9fa3ee01f1ce0d08ca15848da5eaf",
+      "bytes": 2372
+    },
+    {
+      "source": "/tmp/rr-a7553e0a-rehearsal-20261020-qtn6umsk/startup-result.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt1-startup-result.json",
+      "exit_code": 0,
+      "stderr": "",
+      "sha256": "2518ea2108fe4fc9096d24ce2aab11115f80d13befdecf2f37f83b80b81b3aac",
+      "bytes": 2074
+    },
+    {
+      "source": "/tmp/rr-a7553e0a-rehearsal-20261020-qtn6umsk/startup.stdout.txt",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt1-startup.stdout.txt",
+      "exit_code": 0,
+      "stderr": "",
+      "sha256": "cec58aa8f03aa368a977d4bca65dc294ba5a5c0f5749a146463e35c0a31bba8b",
+      "bytes": 2064
+    },
+    {
+      "source": "/tmp/rr-a7553e0a-rehearsal-20261020-qtn6umsk/startup.stderr.txt",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt1-startup.stderr.txt",
+      "exit_code": 0,
+      "stderr": "",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "source": "/tmp/rr-a7553e0a-rehearsal-20261020-qtn6umsk/attempt2/REHEARSAL_RESULT.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-REHEARSAL_RESULT.json",
+      "exit_code": 0,
+      "stderr": "",
+      "sha256": "d063d010a84d20a601deedd462b166bbcb9f5b015b98857bea5fb92c34288c45",
+      "bytes": 505732
+    },
+    {
+      "source": "/tmp/rr-a7553e0a-rehearsal-20261020-qtn6umsk/attempt2/startup.py",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-startup.py.txt",
+      "exit_code": 0,
+      "stderr": "",
+      "sha256": "6c4a65af82e9bd0b83b424f2d84994fac3e2d9ed1a29d646595e9062ce1a5826",
+      "bytes": 2470
+    },
+    {
+      "source": "/tmp/rr-a7553e0a-rehearsal-20261020-qtn6umsk/attempt2/startup-result.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-startup-result.json",
+      "exit_code": 0,
+      "stderr": "",
+      "sha256": "30d676f7e34819978ec17d861bae48874602a77adc4252fcc786837a6e0b4599",
+      "bytes": 5516
+    },
+    {
+      "source": "/tmp/rr-a7553e0a-rehearsal-20261020-qtn6umsk/attempt2/startup.stdout.txt",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-startup.stdout.txt",
+      "exit_code": 0,
+      "stderr": "",
+      "sha256": "a299dde31b23a0700f7cdcac2902e61f01fbfce1b0f8013ac1843a8a1ff7cc6f",
+      "bytes": 4856
+    },
+    {
+      "source": "/tmp/rr-a7553e0a-rehearsal-20261020-qtn6umsk/attempt2/startup.stderr.txt",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-startup.stderr.txt",
+      "exit_code": 0,
+      "stderr": "",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "source": "/tmp/rr-full-archive-isolated-rehearsal-20261020.py",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_controller.py.txt",
+      "sha256": "665dac02c5dc57e2b7f39fcebdb408874fe5c84db5f3894e2b462cad9edd2e29",
+      "bytes": 8309,
+      "scope": "control or bounded observation only; no copied live book/account contents"
+    },
+    {
+      "source": "/tmp/rr-isolated-startup-fd-correction-20261020.py",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-controller.py.txt",
+      "sha256": "768b21fc9b854527d3c236569d777388e78ffda3a59f7821665f4ff2c1c95bcd",
+      "bytes": 4321,
+      "scope": "control or bounded observation only; no copied live book/account contents"
+    },
+    {
+      "source": "/tmp/rr-isolated-rehearsal-controller-result-20261020.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt1-controller-result.json",
+      "sha256": "4ee7e7a375526e115f0dedd856b0eacd04ddc7652e70211b4cb8d9ea23759797",
+      "bytes": 2687,
+      "scope": "control or bounded observation only; no copied live book/account contents"
+    },
+    {
+      "source": "/tmp/rr-isolated-startup-attempt2-controller-20261020.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/ISOLATED_REHEARSAL_attempt2-controller-result.json",
+      "sha256": "133cfa9cccd8e9cd65009efabe96ab84599a9c9ffd69e4c4c855e762c979cc8b",
+      "bytes": 3632,
+      "scope": "control or bounded observation only; no copied live book/account contents"
+    },
+    {
+      "source": "/tmp/rr-current-runtime-qualification-20261020.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/CURRENT_RUNTIME_HOST_NAMESPACE_2026-10-20.json",
+      "sha256": "6217826f21e6c58907cc46e50ff19e1b8cbb3b3a8b764baac6f619bded5071c2",
+      "bytes": 7447,
+      "scope": "control or bounded observation only; no copied live book/account contents"
+    },
+    {
+      "source": "/tmp/rr-current-runtime-mount-qualification-20261020.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/CURRENT_RUNTIME_SERVICE_NAMESPACE_2026-10-20.json",
+      "sha256": "125643e4426a5d30cbd7063bab8dcf2ce31228f5647fbf1dd43cfc932857f7fd",
+      "bytes": 5414,
+      "scope": "control or bounded observation only; no copied live book/account contents"
+    }
+  ],
+  "live_data_contents_published": false,
+  "first_harness_failure_retained": true,
+  "production_mutated": false
+}

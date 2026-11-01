@@ -1,0 +1,7 @@
+contract-delta: probe templates/index.html: head 133 jobs / 5,665 s / 10 packs; base 133 jobs / 5,663 s / 10 packs; ceilings 135 / 5,800 / 10
+contract-delta: probe scripts/build_free_content.py: head 133 jobs / 5,470 s / 10 packs; base 133 jobs / 5,468 s / 10 packs; ceilings 134 / 5,600 / 10
+contract-delta: probe engine/prophet/plan_book.py: head 128 jobs / 5,432 s / 10 packs; base 128 jobs / 5,430 s / 10 packs; ceilings 129 / 5,600 / 10
+contract-delta: head census seconds: closure_and_suites 651.0, probes 204.1, skip_only 124.9, trigger_gaps 165.2
+contract-delta: base census seconds: closure_and_suites 614.6, probes 224.1, skip_only 57.9, trigger_gaps 146.4
+contract-delta: 0 introduced, 0 inherited (base a3f3afa1e126)
+contract-delta: wall 1443.0 s

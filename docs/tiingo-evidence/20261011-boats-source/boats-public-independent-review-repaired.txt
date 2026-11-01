@@ -1,0 +1,57 @@
+Independent BOATS public producer/consumer repair review — 2026-10-11
+
+Verdict: PASS for the bounded integrated source change at the exact hashes below. No actionable source defects remain from this review. This is a separate subsequent verdict; boats-public-independent-review.txt remains the original HOLD report and is not rewritten.
+
+Scope
+
+Read-only independent reasoning review of the three ordering repairs and their regressions on Terminal carrier /Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/tiingo-boats-quotehub-b2b25c10fd296613, base d0973ef6e7521f775801401a345792fc7c4cb3e2. Current hashes were calculated for all sixteen changed source/test files. The four previously reviewed Macro producer/stream files were rehashed and are unchanged on /Volumes/Mastermind/agent-workspaces/sol/tiingo-ingestion-20261009 at HEAD 6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde. Their previous source acceptance and supplied 75 affected test passes remain included in this integrated source verdict.
+
+Disposition of prior findings
+
+1. Receipt clock and session: RESOLVED. hub/lib/extfeed.js refreshes Date.now() after the awaited relay fetch and recomputes the session before BOATS parsing or fallback selection. Strict future-publication rejection now compares against receipt time. The deferred-fetch test supplies a publication timestamp between request and receipt; the boundary test moves from pre-open time to overnight during the fetch.
+
+2. Browser reversed completion: RESOLVED. terminal/components/TerminalShell.tsx gives every poll a monotonic request sequence, and authoritative successful responses advance one accepted-sequence barrier before queuing their state update. A callback older than an already accepted response cannot restore a positive quote over a newer null. Failed/503 responses retain only independently unexpired last-good data. The new responsive regression holds the older positive response, accepts a newer null first, then completes the held response while its clocks still qualify; display remains absent. It also poisons the unrelated generic quote namespace and verifies that this cannot restore the BOATS display.
+
+3. Relay invalidation ordering: RESOLVED. The parser retains envelope capture, generation, publication, expiry and stream status independently of the per-symbol Map, including empty snapshots. _acceptBoatsRelay rejects publication regressions/equalities and same-capture generation regressions. It keeps retired-capture barriers, permits a new positive capture only after the incumbent's terminal/gap state or expiry, and retains a receipt-time rejection barrier after a malformed fetched object. Retired IDs are bounded and overflow fails closed. A stop guard prevents an in-flight relay result from refilling the cache after stop. Tests cover newer empty versus older positive, higher generation versus regressed generation, capture transition/retirement, and stop during a fetch.
+
+Conservative semantics accepted
+
+An unexpired connected capture can defer a different capture's positive snapshot until the old envelope expires or a valid empty transition is observed. That bounded availability tradeoff preserves incumbent authority without inventing UUID chronology. A malformed object clears display and can defer admission until a genuinely newer publication; transport failure continues to retain only independently unexpired data. Neither behavior fabricates a quote or extends event freshness. These are deliberately conservative source semantics, not proof of live upstream timing.
+
+Integrated producer/consumer acceptance
+
+The unchanged Macro publication boundary reconstructs only the permitted BOATS v2 envelope and rows before R2-client acquisition. The source/venue/basis/UUID/generation/session/clock gates remain intact, unknown and raw fields remain rejected, and the CLI prevents legacy public publication and BOATS smoke collection. Qualifying LAST_TRADE conditions remain the explicit per-slot whitelist: slot 1 empty/@, slot 2 empty/F, slot 3 empty/T, slot 4 empty only. Q does not supply price; B invalidation and persisted-before-observer archival ordering remain as previously accepted.
+
+The unchanged consumer boundaries continue to request exactly tiingo_boats, avoid hiding it behind a newer other-provider candidate, reconstruct the public ext fields, and remove BOATS ext fields from the generic quote expose path. The UI consumes only the admitted ext endpoint, labels the single-venue last trade, ages/expires it, and preserves regular-price authority. This verdict grants no inherited Yahoo/Webull/other-provider redistribution acceptance.
+
+Evidence inspected and limits
+
+I read the repaired code and regression tests and inspected the existing owner-produced terminal-boats-ordering-hub-tests.log: 116 tests passed, zero failed or skipped. I inspected terminal-boats-ordering-responsive.log: 13 passed and two skipped. The supplied execution covered three widths, EN/ZH age/expiry, regular-price preservation and reversed-response behavior. These are synthetic response/browser regressions, explicitly not market proof. I did not execute tests or launch a process. Final typecheck was still reported running when this review was requested; this report does not claim its completion. The unchanged producer's 75-pass result remains owner-supplied evidence from the prior source review.
+
+This PASS is independent source acceptance only. Protected landing, final required check results, registry/live-pin closure, actual runtime selection, genuine BOATS source capture and browser/production qualification remain separate obligations. No ops/plist installation, runtime scheduling, publication or deployment is authorized. The original combined-action auto-review rejection remains controlling for that effect.
+
+Exact SHA-256 hashes — all sixteen changed Terminal source/test files
+
+hub/lib/extfeed.js d1d37df326828e3040ce82ab577fc6e904587ab3caacbdc90ba1d43a8b243277
+hub/lib/quotes.js 744f60814053481bc20839fe868fdfb7efce1d6ee3c69377d277ef266a6b8ecd
+hub/lib/store.js 0be314c0c5dec623144205058fa2e8b23252fe772b01e8540909e8f691011498
+hub/tests/boatsrelay.test.js c72f71fb45dec108444473e364855ba9b8a8d123aefdf80dca4b123403ed65ed
+terminal/app/api/ext-quote/route.ts b306ccb71bf01467bb84256c0905ae3d5719887409f9afb373daac827f72aaa5
+terminal/app/api/quote/route.ts 289c3ac0d0d1932d8d3e565fd8da9a6be7fd8a6d9b42cbcb2ea37075efd42bd0
+terminal/components/TerminalShell.tsx 495ae2f1ff45153888bbf04302cf8b99beec0055bf6c72dd6aeed848158ac7f1
+terminal/e2e/responsive.spec.ts ce085c7b21b34ef117edcca3b18051539be52a9eec9db26243af5c5822e036e0
+terminal/e2e/watchlist-ext-percent.spec.ts 4aa3224aef43807d5f090b95c73e646ff160c4589991a6dd033f5e66dc32d991
+terminal/e2e/boats-display.spec.ts 917713f86e383f26dd2abf4ef5b1552bffc19473ba7adfea9b505486e4fbda0b
+terminal/e2e/fixtures/boatsQuote.ts dbd53b7836e9129fc8f29b3ddb0c050bf38e22f7ed158e8dad8e6a6bc82036a2
+terminal/lib/__tests__/extQuoteRoute.test.ts 4787f5686de72a64b9bb42c928330e8e67a862a54cd862ea3a3b36e7f97a99d8
+terminal/lib/__tests__/quoteRouteView.test.ts db26d1572947b02f67a7901f94b1ce70b9ee9b925a159b22f81e5c943e09e19c
+terminal/lib/__tests__/extQuoteFreshness.test.ts 749c682d394ff6bff39df5a868ec4ad62b01e7db09a4d932a57640d8e5bed79b
+terminal/lib/extQuoteFreshness.ts f860c445bdb9c9a42629c9f44a9fc3908ee4d31b9cd0ae810ff5a9c032595d76
+terminal/lib/liveCandle.ts 7e8cd7df90b520ad369bb1a315033a042787b45426b7e90ab7b4d6d1151f191d
+
+Exact SHA-256 hashes — unchanged accepted Macro producer/stream scope
+
+scripts/build_ext_quotes.py c52b23bc2ae67f3c6a48cf9b0167bcf93423d95fe2edf5dd10164b653897ce7f
+scripts/tiingo_ingest.py ef52fd2f90842c85a362254dae219a2593fed024b340a38fa5333a50e06981e6
+tests/test_tiingo_boats_display.py cf8b79f1c7ef38a2d8359f85d54d7f6a2531a3cc0f5458c997af10de3ca93185
+tests/test_tiingo_boats_stream_chain.py 0f3162d3ffb5f41100f7431acb5bb11fcb4b13e0cff622337c1c5e87d8bd5a58

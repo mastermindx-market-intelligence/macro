@@ -67,6 +67,7 @@
      how the two themes should sit. #3a4150 lands containers at 1.56–1.85 across
      the estate's dark surfaces, the same perceptual band as light. */
   --line: #3a4150;
+  --line-quiet: #272C35;
   --q1: #2e9e4f; --q2: #d4a017; --q3: #d04545; --q4: #3f78d8;
   --warn: #e0a030; --act: #e05555; --ok: #3da564;
   /* Freshness/recency snapshot of --ok, computed HERE (unremapped). It inherits
@@ -153,6 +154,9 @@
   --gbtn-brd:       color-mix(in srgb, var(--text) 12%, transparent);
   --gbtn-brd-hover: color-mix(in srgb, var(--text) 24%, transparent);
   --gbtn-sheen:     rgba(255,255,255,.09);
+  /* Retained evidence states share the canonical theme surfaces. */
+  --surface-warn-subtle: color-mix(in srgb, var(--warn) 6%, var(--panel));
+  --surface-skeleton-deep: color-mix(in srgb, var(--panel2) 86%, var(--line));
   /* ── Macro Command tints (templates/macro_command.css) ────────────────────
      color-mix on an added surface line is enforce-added-illegal; the mixes
      live here so the surface only names tokens. --text/--info/--ok track
@@ -185,6 +189,21 @@
   --mc-stance-bad: transparent;
   --mc-stance-neutral: transparent;
   --mc-stance-fill: var(--mc-stance-neutral);
+  /* Expectation Surface page tokens (templates/expectation_surface.html.j2 aliases them under body.page-es) */
+  --esurf-hair: color-mix(in srgb, var(--line) 78%, transparent);
+  --esurf-hair-soft: color-mix(in srgb, var(--line) 44%, transparent);
+  --esurf-ser1: var(--info);
+  --esurf-ser2: #d4a017;
+  --esurf-band: color-mix(in srgb, var(--esurf-ser1) 15%, transparent);
+  --esurf-flat: #5f6879;
+  --esurf-skel: #22262f;
+  --esurf-neutral-soft: color-mix(in srgb, var(--muted) 14%, transparent);
+  --esurf-warn-soft: color-mix(in srgb, var(--warn) 13%, transparent);
+  --esurf-warn-line: color-mix(in srgb, var(--warn) 40%, transparent);
+  --esurf-ok-soft: color-mix(in srgb, var(--ok) 13%, transparent);
+  --esurf-btn-hover: color-mix(in srgb, var(--panel2) 72%, var(--line));
+  --esurf-chip-warn-hover: color-mix(in srgb, var(--warn) 18%, transparent);
+  --esurf-mv-hover: color-mix(in srgb, var(--panel2) 60%, transparent);
 }
 html[data-theme="light"] {
   /* light glass buttons: white reads thin when too transparent, so lift the fill
@@ -204,6 +223,15 @@ html[data-theme="light"] {
   --mc-stance-warn: color-mix(in srgb, var(--warn) 6%, transparent);
   --mc-stance-bad: color-mix(in srgb, var(--act) 6%, transparent);
   --mc-stance-neutral: color-mix(in srgb, var(--muted) 6%, transparent);
+  --esurf-ser1: #2f63c4;
+  --esurf-ser2: #8f6a04;
+  --esurf-band: color-mix(in srgb, var(--esurf-ser1) 11%, transparent);
+  --esurf-flat: #8a93a1;
+  --esurf-skel: #e9ecf1;
+  --esurf-neutral-soft: var(--panel2);
+  --esurf-warn-soft: color-mix(in srgb, var(--warn) 12%, var(--panel));
+  --esurf-warn-line: color-mix(in srgb, var(--warn) 45%, transparent);
+  --esurf-ok-soft: color-mix(in srgb, var(--ok) 10%, var(--panel));
 }
 html[data-theme="light"] {
   /* Light palette tuned to match the Bitcoin Vector dashboard: airy #F7F8FA
@@ -219,6 +247,7 @@ html[data-theme="light"] {
      (1.6) and the raised dark hairline below, without turning row rules into a
      grid. */
   --line: color-mix(in srgb, #1c2430 16%, #eaecf0);
+  --line-quiet: #E2E6EC;
   --q1: #1f8b41; --q2: #b07d05; --q3: #c12f2f; --q4: #2f63c4;
   --warn: #b9791a; --act: #c43d3d; --ok: #2f8a52;
   --fresh-ok: var(--ok);
@@ -416,6 +445,46 @@ html[data-theme="light"][data-lang="zh"] {
   --fill-orange: color-mix(in srgb, var(--orange) var(--fill-mix), #000);
   --fill-link:   color-mix(in srgb, var(--link)   var(--fill-mix), #000);
   --fill-info:   color-mix(in srgb, var(--info)   var(--fill-mix), #000);
+}
+/* ── Fundamental Forensics tints (templates/fundamental_forensics.css) ─────
+   color-mix on an added surface line is enforce-added-illegal; the mixes
+   live here so the surface only names tokens (the Macro Command idiom).
+   Each formula is carried over byte-for-byte from the FIF P2 desk, so both
+   themes paint exactly what the surface used to compute inline: --panel,
+   --panel2, --line, --bg and the state hues re-theme on html, and
+   --ff-border is that page's own :root hairline. Name = hue-percent-base;
+   no base means over transparent. Consumers: that page only. */
+:root {
+  --ff-tint-act-8: color-mix(in srgb, var(--act) 8%, transparent);
+  --ff-tint-act-43-border: color-mix(in srgb, var(--act) 43%, var(--ff-border));
+  --ff-tint-act-30-line: color-mix(in srgb, var(--act) 30%, var(--line));
+  --ff-tint-act-10-panel2: color-mix(in srgb, var(--act) 10%, var(--panel2));
+  --ff-tint-act-12-panel: color-mix(in srgb, var(--act) 12%, var(--panel));
+  --ff-tint-bg-96-act: color-mix(in srgb, var(--bg) 96%, var(--act));
+  --ff-tint-bg-94-info: color-mix(in srgb, var(--bg) 94%, var(--info));
+  --ff-tint-info-7: color-mix(in srgb, var(--info) 7%, transparent);
+  --ff-tint-info-8: color-mix(in srgb, var(--info) 8%, transparent);
+  --ff-tint-info-11: color-mix(in srgb, var(--info) 11%, transparent);
+  --ff-tint-info-35: color-mix(in srgb, var(--info) 35%, transparent);
+  --ff-tint-info-45: color-mix(in srgb, var(--info) 45%, transparent);
+  --ff-tint-info-32-border: color-mix(in srgb, var(--info) 32%, var(--ff-border));
+  --ff-tint-info-38-border: color-mix(in srgb, var(--info) 38%, var(--ff-border));
+  --ff-tint-info-40-border: color-mix(in srgb, var(--info) 40%, var(--ff-border));
+  --ff-tint-info-70-border: color-mix(in srgb, var(--info) 70%, var(--ff-border));
+  --ff-tint-info-40-line: color-mix(in srgb, var(--info) 40%, var(--line));
+  --ff-tint-info-45-line: color-mix(in srgb, var(--info) 45%, var(--line));
+  --ff-tint-info-4-panel: color-mix(in srgb, var(--info) 4%, var(--panel));
+  --ff-tint-info-5-panel: color-mix(in srgb, var(--info) 5%, var(--panel));
+  --ff-tint-info-10-panel: color-mix(in srgb, var(--info) 10%, var(--panel));
+  --ff-tint-info-11-panel2: color-mix(in srgb, var(--info) 11%, var(--panel2));
+  --ff-tint-info-12-panel: color-mix(in srgb, var(--info) 12%, var(--panel));
+  --ff-tint-info-12-panel2: color-mix(in srgb, var(--info) 12%, var(--panel2));
+  --ff-tint-info-16-panel: color-mix(in srgb, var(--info) 16%, var(--panel));
+  --ff-tint-info-18-panel: color-mix(in srgb, var(--info) 18%, var(--panel));
+  --ff-tint-muted-8: color-mix(in srgb, var(--muted) 8%, transparent);
+  --ff-tint-muted-40-line: color-mix(in srgb, var(--muted) 40%, var(--line));
+  --ff-tint-warn-6: color-mix(in srgb, var(--warn) 6%, transparent);
+  --ff-tint-warn-40-line: color-mix(in srgb, var(--warn) 40%, var(--line));
 }
 /* prophet-card verb inks. English keeps the original hue calibration; the light+zh
    twin below re-keys the percentages after bullish becomes red and bearish green.
@@ -3399,3 +3468,11 @@ html[data-theme="light"] .mrs-pop{
   .mrs-caveat{ justify-self:start; }
   .mrs-pop{ left:0; right:auto; }
 }
+/* R7 Wave A (2026-10-21), OQ8 repair — add-only. --warn is the series/alert hue,
+   not a text ink: the two earlier rules that paint risk-tier text in the raw hue
+   (the .sg-wx line and the .sx-vw-tier line above) stay byte-identical; repeating
+   their selectors here with the readable ink token wins as the later rule at
+   equal specificity, in both themes. */
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--elevated .sg-wx{color:var(--ink-warn, var(--warn));}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--elevated .sx-vw-tier{color:var(--ink-warn, var(--warn));}
+.nowrap{white-space:nowrap}

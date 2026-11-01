@@ -31,7 +31,7 @@ COMPANYFACTS_SOURCE_SNAPSHOT_SCHEMA = "capital_structure.companyfacts_source_sna
 SHARE_COUNT_SNAPSHOT_FACT_OBSERVATION_SCHEMA = "capital_structure.share_count_snapshot_fact_observation.v1"
 SHARE_COUNT_LEDGER_SCHEMA = "capital_structure.share_count_ledger.v1"
 SHARE_COUNT_LEDGER_RECEIPT_SCHEMA = "capital_structure.share_count_ledger_receipt.v1"
-COMPILER_VERSION = "capital-structure-share-count-truth/1.3.0"
+COMPILER_VERSION = "capital-structure-share-count-truth/1.4.0"
 
 _ACCESSION_RE = re.compile(r"^[0-9]{10}-[0-9]{2}-[0-9]{6}$")
 _ISSUER_RE = re.compile(r"^issuer:([0-9]{10})$")
@@ -64,7 +64,9 @@ class _Definition:
 
 # These are deliberately direct, named SEC XBRL concepts.  The two share
 # concepts remain separate facts: a cover-page DEI count is not silently
-# substituted for the us-gaap balance-sheet concept (and vice versa).
+# substituted for the us-gaap balance-sheet concept (and vice versa).  The
+# authorized, issued and reserved concepts below are likewise separate facts
+# and are never derived from outstanding shares.
 SUPPORTED_FACTS: dict[tuple[str, str], _Definition] = {
     ("us-gaap", "CommonStockSharesOutstanding"): _Definition(
         metric_kind="common_shares_outstanding",
@@ -86,6 +88,27 @@ SUPPORTED_FACTS: dict[tuple[str, str], _Definition] = {
         security_state="not_security_specific",
         security_classification="not_security_specific",
         security_basis="companyfacts_fact_has_no_security_class",
+    ),
+    ("us-gaap", "CommonStockSharesAuthorized"): _Definition(
+        metric_kind="common_shares_authorized",
+        expected_unit="shares",
+        security_state="concept_semantic",
+        security_classification="common_stock",
+        security_basis="xbrl_concept_semantics",
+    ),
+    ("us-gaap", "CommonStockSharesIssued"): _Definition(
+        metric_kind="common_shares_issued",
+        expected_unit="shares",
+        security_state="concept_semantic",
+        security_classification="common_stock",
+        security_basis="xbrl_concept_semantics",
+    ),
+    ("us-gaap", "CommonStockCapitalSharesReservedForFutureIssuance"): _Definition(
+        metric_kind="common_shares_reserved_for_future_issuance",
+        expected_unit="shares",
+        security_state="concept_semantic",
+        security_classification="common_stock",
+        security_basis="xbrl_concept_semantics",
     ),
 }
 

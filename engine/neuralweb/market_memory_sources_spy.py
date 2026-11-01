@@ -168,7 +168,9 @@ def _is_finite_number(value: Any) -> bool:
     return False
 
 
-def _validate_single_bar(result: Any, *, session_date: date) -> tuple[bool, str | None]:
+def _validate_single_bar(
+    result: Any, *, session_date: date, response_ticker: str | None = None
+) -> tuple[bool, str | None]:
     """Return (valid, reason_if_invalid) for one bar result object."""
     if not isinstance(result, dict):
         return False, "result is not an object"
@@ -177,10 +179,18 @@ def _validate_single_bar(result: Any, *, session_date: date) -> tuple[bool, str 
             return False, f"result missing required field {field!r}"
         if field != "t" and not _is_finite_number(result[field]):
             return False, f"result field {field!r} is not a finite number"
-    # Validate ticker
-    ticker = result.get("T") or result.get("ticker") or ""
-    if str(ticker).upper() != "SPY":
-        return False, f"result ticker {ticker!r} is not SPY"
+    # Custom-bars identity lives on the authenticated response envelope.  The
+    # default remains strict for legacy callers that pass standalone row data.
+    if response_ticker is None:
+        ticker = result.get("T") or result.get("ticker") or ""
+        if str(ticker).upper() != "SPY":
+            return False, f"result ticker {ticker!r} is not SPY"
+    else:
+        if response_ticker != "SPY":
+            return False, "response ticker is not SPY"
+        for field in ("T", "ticker"):
+            if field in result and result[field] != "SPY":
+                return False, "result ticker conflicts with SPY response"
     # bar.t is a consistency witness — milliseconds since epoch
     t_val = result.get("t")
     if not isinstance(t_val, (int, float)) or isinstance(t_val, bool):
@@ -394,7 +404,9 @@ def _validate_spy_rest_artifact(
     results = clean.get("results")
     if not isinstance(results, list) or len(results) != 1:
         raise SourceStoreError("SPY REST source object must have exactly one result")
-    valid, reason = _validate_single_bar(results[0], session_date=session)
+    valid, reason = _validate_single_bar(
+        results[0], session_date=session, response_ticker=clean["ticker"]
+    )
     if not valid:
         raise SourceStoreError(f"SPY REST source object bar is invalid: {reason}")
     return clean
@@ -492,6 +504,138 @@ def _validate_spy_rest_receipt(
     if clean.get("authority") != dict(_mm.AUTHORITY):
         raise SourceStoreError("SPY REST receipt authority drift")
     return clean
+
+
+def read_verified_spy_rest_bar(
+    store_root: str | Path, *, session: date, generation_id: str | None = None,
+) -> dict[str, Any] | None:
+    """Bind one admitted SPY REST owner's sealed bar to one immutable generation.
+
+    The accepted hybrid contract supplies the RTH OHLC / full-day activity
+    semantics for this source family. This reader verifies that contract's
+    existing receipt and bytes; it does not authenticate external custody or
+    prove that a seal was naturally issued. Callers must supply the admitted
+    owner's private store. Generic aggregates and ambiguous corrections are
+    never substitutes. No owner, kernel, or historical bytes are changed.
+
+    An existing technical capture supplies its original generation pin. The
+    kernel proves that pin is in current published ancestry; later additions
+    or corrections do not relabel or invalidate the selected opportunity.
+    Ambiguity is assessed within the selected generation, not a later HEAD.
+    """
+    from lib import nyse_calendar  # noqa: PLC0415
+
+    if type(session) is not date or not nyse_calendar.is_session(session):
+        raise SourceStoreError("SPY REST selection requires an XNYS session")
+    if generation_id is not None and (
+        type(generation_id) is not str or not _GENERATION_ID.fullmatch(generation_id)
+    ):
+        raise SourceStoreError("SPY REST generation pin is malformed")
+    root = validate_spy_rest_store_root(store_root)
+    if not _store_manifest_path(root).exists():
+        return None
+    state = _load_store_state(
+        root, generation_id=generation_id, family=SPY_FAMILY, authority=dict(_mm.AUTHORITY),
+    )
+    # Canonical comparison preserves boolean types (0 is not False).
+    if _canonical_bytes(state.manifest.get("authority")) != _canonical_bytes(dict(_mm.AUTHORITY)):
+        raise SourceStoreError("SPY REST store authority is not typed display-only")
+    matches = []
+    for entry in state.generation["receipts"]:
+        receipt, _ = _read_receipt_copies_by_validate(
+            root, entry, store_id=state.manifest["store_id"],
+            validate_fn=_validate_spy_rest_receipt,
+        )
+        if receipt.get("session") == session.isoformat():
+            matches.append(receipt)
+    if not matches:
+        return None
+    if len(matches) != 1:
+        raise SourceStoreError("ambiguous SPY REST session corrections")
+    receipt = matches[0]
+    artifact, body = _read_store_object(
+        _object_path(root, receipt["artifact_sha256"]),
+        limit=_MAX_OBJECT_BYTES, label="sealed SPY REST source object",
+    )
+    if sha256(body).hexdigest() != receipt["artifact_sha256"]:
+        raise SourceStoreError("SPY REST receipt does not bind artifact bytes")
+    artifact = _validate_spy_rest_artifact(artifact, session=session)
+    if receipt.get("source_system") != "polygon_rest_v2":
+        raise SourceStoreError("SPY REST owner source system mismatch")
+    if receipt.get("seal_predicate") != "rest_daily_bar_stability.v1":
+        raise SourceStoreError("SPY REST seal predicate mismatch")
+    expected_quality = {
+        "status": "sealed", "opportunity_eligible": True,
+        "training_eligible": False, "promotion_eligible": False,
+    }
+    if _canonical_bytes(receipt.get("quality")) != _canonical_bytes(expected_quality):
+        raise SourceStoreError("SPY REST receipt lacks typed eligible seal quality")
+    if _canonical_bytes(receipt.get("authority")) != _canonical_bytes(dict(_mm.AUTHORITY)):
+        raise SourceStoreError("SPY REST receipt authority is not typed display-only")
+    opened, closed = seal_window_for_session(session)
+    clocks = receipt.get("clocks")
+    if not isinstance(clocks, dict) or clocks.get("session") != session.isoformat():
+        raise SourceStoreError("SPY REST receipt clock session mismatch")
+    if (_parse_utc_for_store(clocks.get("seal_window_open"), "seal_window_open")[0] != opened
+            or _parse_utc_for_store(clocks.get("seal_window_close"), "seal_window_close")[0] != closed):
+        raise SourceStoreError("SPY REST seal window mismatch")
+    sealed_at = _parse_utc_for_store(clocks.get("seal_sealed_at"), "seal_sealed_at")[0]
+    observed_at = _parse_utc_for_store(clocks.get("observed_at"), "observed_at")[0]
+    if not closed <= sealed_at <= observed_at:
+        raise SourceStoreError("SPY REST receipt predates its completed seal")
+    availability = receipt.get("availability_evidence")
+    expected_availability = {
+        "precision": "seal_window_close", "rule": "spy_rest_d_plus_1_seal_window.v1",
+        "available_at": closed.isoformat().replace("+00:00", "Z"),
+    }
+    if availability != expected_availability:
+        raise SourceStoreError("SPY REST availability evidence mismatch")
+    transcript = receipt.get("seal_transcript")
+    if not isinstance(transcript, list) or not 3 <= len(transcript) <= 128:
+        raise SourceStoreError("SPY REST seal transcript is missing or unbounded")
+    observations = []
+    previous_at = None
+    for row in transcript:
+        if not isinstance(row, dict) or set(row) != {"observed_at", "status", "digest"}:
+            raise SourceStoreError("SPY REST seal observation shape mismatch")
+        at = _parse_utc_for_store(row["observed_at"], "seal observation")[0]
+        if not opened <= at < closed or (previous_at is not None and at <= previous_at):
+            raise SourceStoreError("SPY REST seal observations are not ordered in-window")
+        previous_at = at
+        status, digest = row["status"], row["digest"]
+        if status not in ("valid_bar", "no_bar", "transport_error", "malformed"):
+            raise SourceStoreError("SPY REST seal observation status mismatch")
+        if status == "valid_bar":
+            if not isinstance(digest, str) or not _SHA256.fullmatch(digest):
+                raise SourceStoreError("SPY REST valid observation lacks a SHA256")
+        elif digest is not None:
+            raise SourceStoreError("SPY REST rejected observation carries a digest")
+        observations.append(SealObservation(at, status, digest))
+    seal = evaluate_seal_predicate(
+        observations, session=session, seal_open=opened, seal_close=closed,
+    )
+    if seal.opportunity_eligible is not True or seal.bar_digest != _results_digest(artifact["results"]):
+        raise SourceStoreError("SPY REST bytes do not satisfy the recorded stable seal")
+    capture_core = {
+        "schema": SOURCE_CAPTURE_SCHEMA, "source_id": SOURCE_ID,
+        "session": session.isoformat(), "artifact_sha256": receipt["artifact_sha256"],
+        "seal_predicate": "rest_daily_bar_stability.v1",
+    }
+    capture_id = "mmscapture_" + sha256(_canonical_bytes(capture_core)).hexdigest()
+    expected = _build_spy_rest_receipt(
+        store_id=state.manifest["store_id"], capture_id=capture_id, session=session,
+        artifact=artifact, artifact_sha256=receipt["artifact_sha256"], transcript=transcript,
+        seal_sealed_at=clocks["seal_sealed_at"], observed_at=clocks["observed_at"],
+    )
+    for key in ("capture_id", "vintage_id", "revision_id", "object_key"):
+        if receipt.get(key) != expected[key]:
+            raise SourceStoreError(f"SPY REST receipt {key} binding mismatch")
+    return {
+        "session": session.isoformat(), "bar": copy.deepcopy(artifact["results"][0]),
+        "lookback": copy.deepcopy(artifact.get("lookback_closes_20")),
+        "source_generation_id": state.generation["generation_id"],
+        "available_at": observed_at.isoformat().replace("+00:00", "Z"),
+    }
 
 
 # ---------------------------------------------------------------------------

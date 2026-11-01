@@ -54,7 +54,7 @@
     <span class="cs-unavailable-mark" aria-hidden="true">↳</span>
     <div>
       <strong>{{ t('What this desk does not calculate', '本工作台不计算的内容') }}</strong>
-      <span>{{ t('Instrument terms, share-count expansion detail, cash timing, and financing forecasts are not available in this release.', '本版本不提供工具条款、股数扩张细节、现金时间或融资预测。') }}</span>
+      <span>{{ t('Selected filing terms are shown below. Full instrument coverage, share-count expansion detail, cash timing, and financing forecasts remain unavailable.', '下方展示选定披露条款；完整工具覆盖、股数扩张细节、现金时间及融资预测仍不可用。') }}</span>
     </div>
   </section>
 
@@ -103,10 +103,12 @@
     <div class="cs-unavailable">
       <span class="cs-unavailable-mark" aria-hidden="true">↳</span>
       <div><strong>{{ t('Not covered here', '此处不涉及') }}</strong>
-      <span>{{ t('How the buyer would fund it, what competition regulators may say, and what either side would pay to walk away are not part of this reading.', '买方如何融资、竞争监管机构可能的意见，以及任何一方退出需支付的费用，均不在本次查阅范围内。') }}</span></div>
+      <span>{{ t('This premium does not predict regulatory approval or whether the deal will close. Any separately qualified agreement terms follow below.', '本溢价不预测监管批准或交割概率。经另行核对的协议条款见下方。') }}</span></div>
     </div>
   </section>
   {# B-F09-4 PREMIUM BLOCK END #}
+
+  {% include "_ma_agreement_context.html.j2" %}
 
   {# ── covenant-headroom:start — B-F09-13 (MO-PAID-062 slice 2). Keep contiguous.
      covenant_headroom is an OPTIONAL kwarg: guarded so any caller that renders
@@ -223,6 +225,20 @@
     <p class="cs-section-note">{{ t(covenant_headroom.basis_en, covenant_headroom.basis_zh) }}</p>
     <p class="cs-section-note">{{ t(covenant_headroom.disclaimer_en, covenant_headroom.disclaimer_zh) }}</p>
     {% else %}
+    {% if covenant_headroom.issuer.cik %}
+    <p><strong>{{ covenant_headroom.issuer.name or covenant_headroom.issuer.ticker or covenant_headroom.issuer.cik }}</strong>{% if covenant_headroom.issuer.ticker %} · {{ covenant_headroom.issuer.ticker }}{% endif %}</p>
+    {% endif %}
+    {% for term in covenant_headroom.terms %}
+    {% if term.filing_term_raw is defined and term.filing_term_raw %}
+    <div class="cs-latest-grid">
+      <div><span>{{ t('Term stated in the filing', '文件披露的条款') }}</span><strong>{% if term.term_name == 'minimum_fixed_charge_coverage_ratio' %}{{ t('Minimum fixed-charge coverage', '最低固定费用覆盖倍数') }}{% else %}{{ t('Covenant threshold', '契约阈值') }}{% endif %}</strong></div>
+      <div><span>{{ t('Literal filing value', '披露原值') }}</span><strong>{{ term.filing_term_raw }}</strong></div>
+      <div><span>{{ t('Filing date', '披露日期') }}</span><strong>{{ term.receipt.filing_date or '—' }}</strong></div>
+      <div><span>{{ t('Filing type', '披露类型') }}</span><strong>{{ term.receipt.form or '—' }}</strong></div>
+    </div>
+    <p class="cs-section-note"><a href="{{ term.receipt.source_url }}" rel="noopener noreferrer" target="_blank">{{ t('Read the SEC credit agreement', '查看 SEC 信贷协议') }} · {{ term.receipt.accession }}</a></p>
+    {% endif %}
+    {% endfor %}
     <div class="cs-unavailable">
       <span class="cs-unavailable-mark" aria-hidden="true">↳</span>
       <div>
@@ -240,6 +256,52 @@
   </section>
   {% endif %}
   {# ── covenant-headroom:end ── #}
+
+  {# B-F09 MO-PAID-066: retained public pricing facts, no current-market score. #}
+  {% set bond_comparison = bond_comparison if bond_comparison is defined else none %}
+  <section class="cs-latest-card cs-bond-terms" id="cs-bond-terms" aria-labelledby="cs-bond-title">
+    <div class="cs-section-heading"><div>
+      <p class="cs-kicker">{{ t('Filed bond pricing', '已披露债券定价') }}</p>
+      <h2 id="cs-bond-title">{{ t('Apple and HP: the terms at issuance', '苹果与惠普：发行时的条款') }}</h2>
+    </div></div>
+    {% if bond_comparison and bond_comparison.status == 'qualified' %}
+    <p>{{ t('Compare the same original tenor across two issuers. Apple priced on 5 May 2025; HP on 14 April 2025. The dates are 21 days apart: these are historical issue terms, not current quotes or a credit ranking.', '对比两家发行人相同的原始期限。苹果于 2025 年 5 月 5 日定价，惠普于 4 月 14 日定价，相隔 21 天。这是历史发行条款，不是当前报价或信用排名。') }}</p>
+    {% for pair in bond_comparison.pairs %}
+    <h3>{{ pair.tenor_years }}{{ t('-year original tenor', '年原始期限') }}</h3>
+    <div class="cs-bond-pair">
+    {% for issue in pair.issues %}
+      <article class="cs-bond-issuer" aria-label="{{ issue.issuer }} {{ issue.maturity_date }}">
+        <h4>{{ issue.issuer }}</h4>
+        <p>{{ t('Priced', '定价日') }} {{ issue.trade_date }} · {{ t('Filed settlement', '披露交割日') }} {{ issue.settlement_date }}</p>
+        <div class="cs-latest-grid">
+          <div><span>{{ t('Coupon', '票面利率') }}</span><strong>{{ '%.3f'|format(issue.coupon_pct|float) }}%</strong></div>
+          <div><span>{{ t('Treasury spread', '国债利差') }}</span><strong>+{{ issue.spread_bps }} {{ t('bp', '基点') }}</strong></div>
+          <div><span>{{ t('Issue yield', '发行收益率') }}</span><strong>{{ '%.3f'|format(issue.yield_pct|float) }}%</strong></div>
+          <div><span>{{ t('Maturity', '到期日') }}</span><strong>{{ issue.maturity_date }}</strong></div>
+        </div>
+        <details><summary>{{ t('Pricing basis and SEC source', '定价依据及 SEC 来源') }}</summary>
+          <dl>
+            <div><dt>{{ t('Benchmark Treasury', '基准美国国债') }}</dt><dd>{{ issue.benchmark }}</dd></div>
+            <div><dt>{{ t('Benchmark yield', '基准收益率') }}</dt><dd>{{ '%.3f'|format(issue.benchmark_yield_pct|float) }}%</dd></div>
+            <div><dt>{{ t('Price per 100 par', '每百元面值发行价') }}</dt><dd>{{ '%.3f'|format(issue.price_pct|float) }}</dd></div>
+            <div><dt>{{ t('Filed principal', '披露本金') }}</dt><dd>{{ issue.currency_symbol }}{{ '{:,}'.format(issue.principal) }}</dd></div>
+            <div><dt>CUSIP / ISIN</dt><dd>{{ issue.cusip }} / {{ issue.isin }}</dd></div>
+            <div><dt>{{ t('SEC filing date', 'SEC 披露日期') }}</dt><dd>{{ issue.filed_date }}</dd></div>
+            <div><dt>{{ t('SEC accepted', 'SEC 接收时间') }}</dt><dd>{{ issue.accepted_at }}</dd></div>
+            <div><dt>{{ t('Source retained', '来源留存时间') }}</dt><dd>{{ issue.retrieved_at }}</dd></div>
+          </dl>
+          <p><a href="{{ issue.source_url }}" target="_blank" rel="noopener noreferrer">{{ t('Read the filed pricing sheet', '阅读已披露定价表') }} · {{ issue.accession }}</a></p>
+        </details>
+      </article>
+    {% endfor %}
+    </div>
+    {% endfor %}
+    <p class="cs-bond-scope">{{ t('Spread means issue yield minus the stated Treasury yield; it is not the make-whole redemption margin. Tenor uses the filed settlement and maturity dates, not confirmation of settlement. Coverage is two retained filings; the Apple 3- and 7-year notes have no HP peer here. Source retrieval in 2026 does not establish availability in our system in 2025.', '利差为发行收益率减去披露的国债收益率，不是提前赎回补偿利差。期限根据披露的交割及到期日期计算，不代表交割已获确认。覆盖仅限两份留存文件；苹果 3 年及 7 年债券在此没有惠普同期限对照。2026 年取得来源不代表本系统在 2025 年已掌握这些资料。') }}</p>
+    {% else %}
+    <p>{{ t('The retained pricing sheets are unavailable or do not agree with their source records. No comparison is shown.', '留存定价表不可用或与来源记录不一致，因此不展示对比。') }}</p>
+    {% endif %}
+  </section>
+
 
   {# ── policy-watch:start — B-F09-6 (MO-PAID-067). Keep contiguous.
      policy_watch is an OPTIONAL kwarg: guarded so any caller that renders this

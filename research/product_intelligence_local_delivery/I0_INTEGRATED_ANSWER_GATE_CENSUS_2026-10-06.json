@@ -1,0 +1,211 @@
+{
+  "main_pin": "0beebb3bd1f246a13396c3bd8f996103a26c3b77",
+  "mastermind_overlay_pin": "d1a8e672464d9a90dfe5b3608e071f8a730f3c95",
+  "linear_reachable": false,
+  "c0": {
+    "H01": "ACCEPTED",
+    "H04": "BUILT_NOT_ACCEPTED",
+    "H05": "ABSENT",
+    "H06": "BUILT_NOT_ACCEPTED",
+    "package_i_gate": "CLOSED"
+  },
+  "gate": {
+    "verdict": "CLOSED",
+    "reason": "Package I requires accepted H01/H04/H05/H06 plus integration permission; only H01 carries a macro acceptance record (FIF-3A3). H04/H06 are built without C19 acceptance; H05 debt/share qualification (CS W4/W6) is unstarted. No integrated composer or entitled nonbinding read workflow exists on main."
+  },
+  "dependencies": [
+    {
+      "id": "H01",
+      "mas": "MAS-268",
+      "label": "ACCEPTED",
+      "code": [
+        {"path": "engine/fundamental_forensics/query.py", "line": 1},
+        {"path": "app/forensics.py", "line": 841}
+      ],
+      "acceptance": [
+        {"path": "agentos/decisions/DEC-FIF-3A3-ACCEPTED-GOLDEN-QUERY-ON-MAIN.md", "line": 5, "ref": "DEC:FIF-3A3-ACCEPTED-GOLDEN-QUERY-ON-MAIN"},
+        {"path": "agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md", "line": 207, "ref": "WS:FINANCIAL-INTELLIGENCE-FABRIC"}
+      ],
+      "owner_refs": ["WS:FINANCIAL-INTELLIGENCE-FABRIC", "WS:FUNDAMENTAL-FORENSICS", "PR #6352"]
+    },
+    {
+      "id": "H02",
+      "mas": "MAS-269",
+      "label": "BUILT_NOT_ACCEPTED",
+      "code": [
+        {"path": "engine/trial_ledger.py", "line": 1}
+      ],
+      "acceptance": [
+        {"path": "agentos/decisions/DEC-TEMPORAL-GRAIN-OWNERSHIP-AND-ZERO-AUTHORITY.md", "line": 72, "ref": "TrialLedger reuse law — not MAS-269 acceptance"}
+      ],
+      "owner_refs": ["WS:TEMPORAL-GRAIN-INTELLIGENCE", "Evaluation OS / TrialLedger owner"]
+    },
+    {
+      "id": "H03",
+      "mas": "MAS-270",
+      "label": "BUILT_NOT_ACCEPTED",
+      "code": [
+        {"path": "engine/fundamental_forensics/health.py", "line": 1},
+        {"path": "app/forensics.py", "line": 147}
+      ],
+      "acceptance": [
+        {"path": "agentos/workstreams/WS-FUNDAMENTAL-FORENSICS.md", "line": 188, "ref": "FF-0 closed live — no DEC:MAS-270 acceptance"}
+      ],
+      "owner_refs": ["WS:FUNDAMENTAL-FORENSICS", "WS:FINANCIAL-INTELLIGENCE-FABRIC"]
+    },
+    {
+      "id": "H04",
+      "mas": "MAS-271",
+      "label": "BUILT_NOT_ACCEPTED",
+      "code": [
+        {"path": "engine/expectation_state.py", "line": 1}
+      ],
+      "acceptance": [
+        {"path": "research/product_intelligence_local_delivery/", "line": 0, "ref": "E0_EXPECTATIONS_ACCEPTANCE_PATH_2026-10-06.md ABSENT on main (git show origin/main fatal)"}
+      ],
+      "owner_refs": ["WS:EARNINGS-INTELLIGENCE-OS", "DEC:SRC-A1-PROSPECTIVE-EXPECTATION-SOURCE-CONTRACT", "held PR #8337 k3e surface NOT on main"]
+    },
+    {
+      "id": "H05",
+      "mas": "MAS-272",
+      "label": "ABSENT",
+      "code": [],
+      "acceptance": [],
+      "owner_refs": ["WS:CAPITAL-STRUCTURE-INTELLIGENCE-V2", "W4/W6 status todo"]
+    },
+    {
+      "id": "H06",
+      "mas": "MAS-273",
+      "label": "BUILT_NOT_ACCEPTED",
+      "code": [
+        {"path": "engine/fundamental_forensics/private_state.py", "line": 1},
+        {"path": "engine/fundamental_forensics/query_snapshots.py", "line": 62}
+      ],
+      "acceptance": [
+        {"path": "agentos/workstreams/WS-FUNDAMENTAL-FORENSICS.md", "line": 126, "ref": "default-off / private publication posture — no MAS-273 acceptance record"}
+      ],
+      "owner_refs": ["WS:FUNDAMENTAL-FORENSICS", "WS:FINANCIAL-INTELLIGENCE-FABRIC"]
+    },
+    {
+      "id": "H07",
+      "mas": "MAS-274",
+      "label": "ABSENT",
+      "code": [],
+      "acceptance": [],
+      "owner_refs": ["WS:ALPHA-INTELLIGENCE-INTEGRATION", "Mastermind #1202 / overlay package I — composer not on main"]
+    }
+  ],
+  "workflows": [
+    {
+      "surface": "GET /api/company-intelligence/{ticker} teaser",
+      "path": "app/company_intelligence.py",
+      "line": 634,
+      "entitlement": "anonymous + rate limit (_allow_request); no require_user",
+      "sources": ["engine/neuralweb/company_intelligence_reader.read_company_intelligence @ :630", "R2 company_intelligence marker→generation→companies/{TICKER}.json"],
+      "owner_ws": "WS:EARNINGS-INTELLIGENCE-OS",
+      "read_only": true
+    },
+    {
+      "surface": "GET /api/event-workspace/{ticker} public glance",
+      "path": "app/company_intelligence.py",
+      "line": 693,
+      "entitlement": "anonymous + rate limit",
+      "sources": ["read_current_event_workspace @ company_intelligence_reader.py:753", "event_workspace.v1 under company_intelligence/event_workspaces/"],
+      "owner_ws": "WS:EARNINGS-INTELLIGENCE-OS",
+      "read_only": true
+    },
+    {
+      "surface": "POST /api/forensics/v1/financial/query (FIF golden query)",
+      "path": "app/forensics.py",
+      "line": 841,
+      "entitlement": "require_site_full_user @ app/forensics.py:111",
+      "sources": ["engine/fundamental_forensics/query.py BitemporalMetricQueryEngine", "ixbrl_raw_ledger golden AAPL slice"],
+      "owner_ws": "WS:FINANCIAL-INTELLIGENCE-FABRIC",
+      "read_only": true
+    },
+    {
+      "surface": "Finance Intelligence sector dossier page",
+      "path": "templates/finance_intelligence.html.j2",
+      "line": 23,
+      "entitlement": "static site + fi_read_url client fetch (paired site/finance_intelligence.html); product nav family",
+      "sources": ["finance_intelligence.js read URL — sector dossier, not issuer integrated answer"],
+      "owner_ws": "WS:GMI-FINANCE-INTELLIGENCE",
+      "read_only": true
+    },
+    {
+      "surface": "Terminal company-theme-context CTE route",
+      "path": "terminal/app/api/company-theme-context/[symbol]/route.ts",
+      "line": 9,
+      "entitlement": "Terminal product auth/R2 (cited from L0 census on Terminal master e17622b1)",
+      "sources": ["engine/company_theme_exposure/views.py build_bundle @ main :259", "R2 companyThemeExposure"],
+      "owner_ws": "WS:GMI-THEME-GRAPH",
+      "read_only": true
+    },
+    {
+      "surface": "Dossier quote + Intelligence Hub pulse",
+      "path": "app/dossier_quote.py",
+      "line": 48,
+      "entitlement": "anonymous public quote projection only",
+      "sources": ["Terminal Quote Hub localhost — no event/expectation/financial composition"],
+      "owner_ws": "terminal-market-data",
+      "read_only": true
+    }
+  ],
+  "conditional_economics": {
+    "module": "engine/expectation_state.py",
+    "line": 12,
+    "owner": "WS:EARNINGS-INTELLIGENCE-OS / long_hold program (display-only hold_thesis)",
+    "basis_metadata": true,
+    "notes": "Deterministic PIT pead_drift_20d / SUE / chip dicts with _benchmark and session windows @ :12-22; not an integrated-answer composer. rg event_window|conditional|forward_return in engine/ app/ also hits engine/transmission_calibration.py (chain base rates) and engine/vol_shock_scorecard.py (event_window leg) — separate owners."
+  },
+  "theme_context": [
+    {"path": "engine/theme_context.py", "line": 589, "role": "producer compute_theme_context → theme_context.v1"},
+    {"path": "engine/theme_context.py", "line": 891, "role": "reader read_context"},
+    {"path": "site/basketdata/theme_context.json", "line": 0, "role": "served artifact (git ls-tree origin/main — not read from sparse disk)"}
+  ],
+  "tests": [
+    {"name": "known-at vs decision-at", "covered_by": "tests/test_fundamental_forensics_query.py:187 test_as_reported_latest_known_and_latest_restated_are_cutoff_safe"},
+    {"name": "later correction under earlier cutoff", "covered_by": "tests/test_fundamental_forensics_financial_intelligence_packet_r2.py:70-118 source_event_cutoff matrix"},
+    {"name": "unit/period/basis mismatch", "covered_by": "tests/test_fundamental_forensics_query.py:626 test_period_normalization_and_ending_instant_formula_alignment"},
+    {"name": "common-source duplication", "covered_by": "tests/test_fundamental_forensics_query.py:501 test_conflicting_duplicates_fail_closed_and_withdrawn_vintage_is_missing"},
+    {"name": "missing/withdrawn source", "covered_by": "tests/test_fundamental_forensics_query.py:501 (withdrawn vintage)"},
+    {"name": "current membership leakage", "covered_by": "GAP — no package-I integrated workflow test; theme PIT cohort reads held on #8486/#8417 (L0)"},
+    {"name": "incompatible generations", "covered_by": "tests/test_fundamental_forensics_query_snapshots.py:841 (generation-scoped matrix)"},
+    {"name": "price-response circularity", "covered_by": "GAP at integrated-answer scope — engine/expectation_state.py:14-17 documents SPY benchmark divergence only"},
+    {"name": "raw-capture versus normalized baseline confusion", "covered_by": "tests/test_fundamental_forensics_ixbrl_extraction.py:362 duplicate/forged extraction guards"},
+    {"name": "unavailable financial component", "covered_by": "tests/test_fundamental_forensics_financial_intelligence_packet_r2.py:128 missing cell path"},
+    {"name": "private/public purpose leakage", "covered_by": "tests/test_fundamental_forensics_health.py:22 assert_no_private_leak via health_from_inputs"},
+    {"name": "user tracing every material conclusion to source span or calculation", "covered_by": "tests/test_fundamental_forensics_query.py:541 test_governed_formula_propagates_dependency_clocks_and_receipts (FIF kernel only — not CI/event workspace glance)"}
+  ],
+  "tests_summary": {"covered": 9, "gap": 3},
+  "thesis_owner": {
+    "ws": "WS:EARNINGS-INTELLIGENCE-OS",
+    "dec": ["DEC:EARNINGS-INTELLIGENCE-PROGRAM-OWNERSHIP", "DEC:EARNINGS-EVENT-WORKSPACE-PUBLICATION-CONTRACT"],
+    "carrier": "event_workspace.v1 publication under company_intelligence/event_workspaces/ (PR #4202-era E1 arc; WS status done)",
+    "contract": "engine/company_intelligence/event_workspace.py + DEC:EARNINGS-EVENT-WORKSPACE-PUBLICATION-CONTRACT.md:7-13"
+  },
+  "held_prs_not_on_main": [
+    {"pr": 8454, "head": "049d8d7dae257234b53a99190af4c831dc572ef8", "paths": ["app/ticker_news.py"]},
+    {"pr": 8337, "head": "held", "paths": ["engine/k3e_expectation_surface.py"]}
+  ],
+  "freeze_list": [
+    {"n": 1, "item": "Integrated read surface ID (which existing workflow is the nonbinding composer target)", "pins": "GAP — no single workflow composes FIF query + expectation + theme + event evidence today"},
+    {"n": 2, "item": "Entitlement matrix (anonymous teaser vs require_site_full_user vs Terminal CTE)", "pins": "app/company_intelligence.py:634; app/forensics.py:841; L0 Terminal CTE route"},
+    {"n": 3, "item": "Owner-native refs for H04 expectation objects (SRC-A1 parquet vs K3E surface)", "pins": "DEC:SRC-A1-PROSPECTIVE-EXPECTATION-SOURCE-CONTRACT; held #8337 GAP on main"},
+    {"n": 4, "item": "H05 opt-in debt/share qualification API (CS W4/W6)", "pins": "agentos/workstreams/WS-CAPITAL-STRUCTURE-INTELLIGENCE-V2.md:203-214 GAP"},
+    {"n": 5, "item": "H06 default-off financial publication seam", "pins": "engine/fundamental_forensics/query_snapshots.py:62 publication contract"},
+    {"n": 6, "item": "Degraded-state fields when FIF / expectation / theme / event component unavailable", "pins": "app/company_intelligence.py:686-689 503 fail-closed; expectation_state display-only null chips GAP for bundle"},
+    {"n": 7, "item": "Original/correction replay source for event + financial evidence", "pins": "company_intelligence_reader.read_event_source_revisions @ :1309; FIF revision_service GAP for package-I consumer"},
+    {"n": 8, "item": "Trace-to-span field on every material conclusion", "pins": "tests/test_fundamental_forensics_query.py:541 receipts — GAP on event_workspace_public_glance"},
+    {"n": 9, "item": "Alpha Intelligence / event-owner acceptance before thesis insertion mutation", "pins": "DEC:EARNINGS-EVENT-WORKSPACE-PUBLICATION-CONTRACT; WS:EARNINGS-INTELLIGENCE-OS"},
+    {"n": 10, "item": "C19 MAS key → macro acceptance carrier map (Linear IDs not in macro tree)", "pins": "GAP — rg MAS-26[89]|MAS-27[0-4] agentos research docs → 0 hits on MAIN_PIN"}
+  ],
+  "gaps": [
+    "E0_EXPECTATIONS_ACCEPTANCE_PATH_2026-10-06.md not on origin/main",
+    "MAS-* Linear keys absent from macro agentos/research grep",
+    "req-4a8daf76317cfe92 (H02) absent from macro repo grep",
+    "engine/k3e_expectation_surface.py absent on main (PR #8337 held)",
+    "app/ticker_news.py absent on main (DRAFT PR #8454 head 049d8d7d)",
+    "No entitled single workflow composing all package-I inputs"
+  ]
+}

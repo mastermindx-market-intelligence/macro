@@ -1,0 +1,124 @@
+{
+  "bounded_subdirectory_inventory": [
+    "data/canada_breadth/breadth.parquet",
+    "data/canada_breadth/constituents.parquet",
+    "data/china_sectors/801010.parquet",
+    "data/china_sectors/801030.parquet",
+    "data/china_sectors/801040.parquet",
+    "data/china_sectors/801050.parquet",
+    "data/china_sectors/801080.parquet",
+    "data/china_sectors/801110.parquet",
+    "data/china_sectors/801120.parquet",
+    "data/china_sectors/801130.parquet",
+    "data/china_sectors/801140.parquet",
+    "data/china_sectors/801150.parquet",
+    "data/china_sectors/801160.parquet",
+    "data/china_sectors/801170.parquet",
+    "data/china_sectors/801180.parquet",
+    "data/china_sectors/801200.parquet",
+    "data/china_sectors/801210.parquet",
+    "data/china_sectors/801230.parquet",
+    "data/china_sectors/801710.parquet",
+    "data/china_sectors/801720.parquet",
+    "data/china_sectors/801730.parquet",
+    "data/china_sectors/801740.parquet",
+    "data/china_sectors/801750.parquet",
+    "data/china_sectors/801760.parquet",
+    "data/china_sectors/801770.parquet",
+    "data/china_sectors/801780.parquet",
+    "data/china_sectors/801790.parquet",
+    "data/china_sectors/801880.parquet",
+    "data/china_sectors/801890.parquet",
+    "data/china_sectors/801950.parquet",
+    "data/china_sectors/801960.parquet",
+    "data/china_sectors/801970.parquet",
+    "data/china_sectors/801980.parquet",
+    "data/china_sectors/membership.parquet",
+    "data/china_sectors/valuation.parquet"
+  ],
+  "contract_path_matches": [
+    "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:collectors/canada_breadth.py",
+    "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:collectors/canada_prices.py",
+    "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:collectors/canada_universe.py",
+    "4d736c55adb630a4a8eb11b261e31acd0f6dc48b:collectors/edgar.py"
+  ],
+  "contract_search_exit": 0,
+  "observed_at_utc": "2026-10-09T10:34:20.389778+00:00",
+  "profiles": [
+    {
+      "bytes": 3653,
+      "categories": {
+        "sector": {
+          "counts": {
+            "Communication": 4,
+            "Discretionary": 7,
+            "Energy": 10,
+            "Financials": 13,
+            "Industrials": 7,
+            "Materials": 10,
+            "Real Estate": 5,
+            "Staples": 7,
+            "Technology": 5,
+            "Utilities": 6
+          },
+          "unique_count": 10
+        }
+      },
+      "dates": {},
+      "fields": {
+        "name": "large_string",
+        "sector": "large_string",
+        "symbol": "large_string"
+      },
+      "nulls": {
+        "name": 0,
+        "sector": 0,
+        "symbol": 0
+      },
+      "path": "data/canada_breadth/constituents.parquet",
+      "rows": 74,
+      "sha256": "21b3bf0639ab6cba37fcbd5ac3075656456d1459013f3603e351034f818d9d5a",
+      "worktree_exists": false
+    },
+    {
+      "bytes": 43861,
+      "categories": {},
+      "dates": {
+        "end_date": {
+          "distinct": 2,
+          "max": "2026-09-30",
+          "min": "2026-09-28",
+          "nonnull": 3
+        },
+        "start_date": {
+          "distinct": 523,
+          "max": "2026-09-28",
+          "min": "2021-12-13",
+          "nonnull": 5223
+        }
+      },
+      "fields": {
+        "collected_at": "large_string",
+        "end_date": "string",
+        "l1_code": "large_string",
+        "l1_name": "large_string",
+        "start_date": "large_string",
+        "ticker": "large_string"
+      },
+      "nulls": {
+        "collected_at": 0,
+        "end_date": 5220,
+        "l1_code": 0,
+        "l1_name": 0,
+        "start_date": 0,
+        "ticker": 0
+      },
+      "path": "data/china_sectors/membership.parquet",
+      "rows": 5223,
+      "sha256": "f749e669b8cb7c844e7f28923e8d792a6e7ddd3542984d1dce9cca0a449bcb19",
+      "worktree_exists": false
+    }
+  ],
+  "source_ref": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b"
+}
+

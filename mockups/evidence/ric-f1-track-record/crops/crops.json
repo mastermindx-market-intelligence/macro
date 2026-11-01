@@ -1,0 +1,82 @@
+[
+ {
+  "vp": "desktop",
+  "theme": "dark",
+  "lang": "en",
+  "btn": "clicked",
+  "visible": true,
+  "errors": [],
+  "text": "TRACK RECORD\nAccuracy isn't claimed yet. Each release shows how many forecasts were scored against the official first print.\nRELEASE\tSCORED\tVS FIRST PRINT\tAVG MISS (95% RANGE)\tNO-CHANGE MISS\tSTATUS\nInitial Claims\t14\t3\t—\t—\tBenchmark only\n558 earlier scores are kept as superseded, not erased.",
+  "lines": 0
+ },
+ {
+  "vp": "desktop",
+  "theme": "dark",
+  "lang": "zh-CN",
+  "btn": "clicked",
+  "visible": true,
+  "errors": [],
+  "text": "历史评分\n暂不声称准确度。每项数据显示按官方首次公布值评分的预测次数。\n数据\t已评分\t对照首次公布值\t平均误差（95%区间）\t不变假设误差\t状态\n初请失业金\t14\t3\t—\t—\t仅基准\n558条早期评分已保留为已取代记录，未删除。",
+  "lines": 0
+ },
+ {
+  "vp": "desktop",
+  "theme": "light",
+  "lang": "en",
+  "btn": "clicked",
+  "visible": true,
+  "errors": [],
+  "text": "TRACK RECORD\nAccuracy isn't claimed yet. Each release shows how many forecasts were scored against the official first print.\nRELEASE\tSCORED\tVS FIRST PRINT\tAVG MISS (95% RANGE)\tNO-CHANGE MISS\tSTATUS\nInitial Claims\t14\t3\t—\t—\tBenchmark only\n558 earlier scores are kept as superseded, not erased.",
+  "lines": 0
+ },
+ {
+  "vp": "desktop",
+  "theme": "light",
+  "lang": "zh-CN",
+  "btn": "clicked",
+  "visible": true,
+  "errors": [],
+  "text": "历史评分\n暂不声称准确度。每项数据显示按官方首次公布值评分的预测次数。\n数据\t已评分\t对照首次公布值\t平均误差（95%区间）\t不变假设误差\t状态\n初请失业金\t14\t3\t—\t—\t仅基准\n558条早期评分已保留为已取代记录，未删除。",
+  "lines": 0
+ },
+ {
+  "vp": "mobile",
+  "theme": "dark",
+  "lang": "en",
+  "btn": "clicked",
+  "visible": true,
+  "errors": [],
+  "text": "TRACK RECORD\nAccuracy isn't claimed yet. Each release shows how many forecasts were scored against the official first print.\nRELEASE\tSCORED\tVS FIRST PRINT\tAVG MISS (95% RANGE)\tNO-CHANGE MISS\tSTATUS\nInitial Claims\t14\t3\t—\t—\tBenchmark only\n558 earlier scores are kept as superseded, not erased.",
+  "lines": 0
+ },
+ {
+  "vp": "mobile",
+  "theme": "dark",
+  "lang": "zh-CN",
+  "btn": "clicked",
+  "visible": true,
+  "errors": [],
+  "text": "历史评分\n暂不声称准确度。每项数据显示按官方首次公布值评分的预测次数。\n数据\t已评分\t对照首次公布值\t平均误差（95%区间）\t不变假设误差\t状态\n初请失业金\t14\t3\t—\t—\t仅基准\n558条早期评分已保留为已取代记录，未删除。",
+  "lines": 0
+ },
+ {
+  "vp": "mobile",
+  "theme": "light",
+  "lang": "en",
+  "btn": "clicked",
+  "visible": true,
+  "errors": [],
+  "text": "TRACK RECORD\nAccuracy isn't claimed yet. Each release shows how many forecasts were scored against the official first print.\nRELEASE\tSCORED\tVS FIRST PRINT\tAVG MISS (95% RANGE)\tNO-CHANGE MISS\tSTATUS\nInitial Claims\t14\t3\t—\t—\tBenchmark only\n558 earlier scores are kept as superseded, not erased.",
+  "lines": 0
+ },
+ {
+  "vp": "mobile",
+  "theme": "light",
+  "lang": "zh-CN",
+  "btn": "clicked",
+  "visible": true,
+  "errors": [],
+  "text": "历史评分\n暂不声称准确度。每项数据显示按官方首次公布值评分的预测次数。\n数据\t已评分\t对照首次公布值\t平均误差（95%区间）\t不变假设误差\t状态\n初请失业金\t14\t3\t—\t—\t仅基准\n558条早期评分已保留为已取代记录，未删除。",
+  "lines": 0
+ }
+]

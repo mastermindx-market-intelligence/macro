@@ -78,6 +78,7 @@ def _ak_symbol(ticker: str) -> str:
 class HkValuationAdapter(Adapter):
     name = "hk_valuation"
     group = "hk_valuation"
+    session_calendar = "HK"  # observation dates follow the cash/Connect session
     stale_after_days = 8   # daily Baidu series; tolerate HK holidays + Baidu hiccups
 
     def __init__(self) -> None:

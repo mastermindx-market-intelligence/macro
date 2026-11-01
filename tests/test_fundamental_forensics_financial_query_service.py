@@ -36,6 +36,16 @@ T3_SOURCE = "2025-12-31T23:59:59Z"
 T3_RECORDED = "2026-08-05T12:00:02Z"
 
 
+# FIP1 is a synthetic industrial issuer with no shipped coverage record; the
+# hermetic production-path tests inject its SIC (R1-SIC/R2).
+_FIP1_CIK = "0000999999"
+_INDUSTRIAL_SIC = "3571"
+
+
+def _fip1_issuer_sic_resolver(cik: str) -> str | None:
+    return _INDUSTRIAL_SIC if cik == _FIP1_CIK else None
+
+
 def _make_request(
     *,
     schema: str = "fundamental_forensics.financial_query_request/v1",
@@ -705,6 +715,42 @@ def test_missing_t0_revenue_cell_state_is_missing() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Issuer class: a class-restricted metric answers the entity's SIC (R1-SIC)
+# ---------------------------------------------------------------------------
+
+
+def test_bank_sic_entity_gets_not_applicable_on_class_restricted_metric() -> None:
+    provider = _fip1_provider()
+    body = _make_request(metric_ids=["gross_profit"])
+    result = execute_financial_query(
+        body=body, provider=provider, issuer_sic_resolver=lambda cik: "6021"
+    )
+    receipt = result.envelope["receipt"]
+    root_ids = set(receipt["root_cell_ids"])
+    nodes = [n for n in receipt["nodes"] if n["cell_id"] in root_ids]
+    assert len(nodes) == 1
+    assert nodes[0]["metric_id"] == "gross_profit"
+    assert nodes[0]["state"] == "not_applicable"
+    assert nodes[0]["reason"] == "not_applicable_for_issuer_class"
+    assert nodes[0]["value"] is None
+
+
+def test_industrial_sic_entity_gets_value_on_class_restricted_metric() -> None:
+    provider = _fip1_provider()
+    body = _make_request(metric_ids=["gross_profit"])
+    result = execute_financial_query(
+        body=body, provider=provider, issuer_sic_resolver=_fip1_issuer_sic_resolver
+    )
+    receipt = result.envelope["receipt"]
+    root_ids = set(receipt["root_cell_ids"])
+    nodes = [n for n in receipt["nodes"] if n["cell_id"] in root_ids]
+    assert len(nodes) == 1
+    assert nodes[0]["metric_id"] == "gross_profit"
+    assert nodes[0]["state"] == "value"
+    assert nodes[0]["value"] == "500"
+
+
+# ---------------------------------------------------------------------------
 # Determinism: identical bytes across wall-clock changes
 # ---------------------------------------------------------------------------
 
@@ -800,7 +846,9 @@ def test_fip1_max_envelope_under_8mib() -> None:
         periods=periods,
         policy={"selection": "latest_known_as_of", "source_snapshot_at": T3_SOURCE, "recorded_at": T3_RECORDED},
     )
-    result = execute_financial_query(body=body, provider=provider)
+    result = execute_financial_query(
+        body=body, provider=provider, issuer_sic_resolver=_fip1_issuer_sic_resolver
+    )
     size = len(result.body)
     assert size < 8 * 1024 * 1024, f"Envelope is {size} bytes, exceeds 8 MiB limit"
     # Report size in output for EVIDENCE
@@ -847,3 +895,142 @@ def test_execute_does_not_open_the_network(monkeypatch: pytest.MonkeyPatch) -> N
 
     monkeypatch.setattr(socket, "socket", _forbidden_socket)
     execute_financial_query(body=_make_request(), provider=_fip1_provider())
+
+
+# ---------------------------------------------------------------------------
+# FIF D3: production delivery law + golden bytes unchanged
+# ---------------------------------------------------------------------------
+
+_LAWFUL_PRODUCTION_DELIVERY = {
+    "kind": "production_issuer_dataset",
+    "attested": False,
+    "production_issuer_service": True,
+    "dataset_generation_id": "ffprods_" + "a" * 64,
+    "capture_basis": "reconstruction",
+}
+
+
+def _production_dataset(delivery=None, admitted_at=None):
+    base = fip1_fixture_dataset(ROOT)
+    return FinancialQueryDataset(
+        binding=base.binding,
+        ledger=base.ledger,
+        filing_metadata=base.filing_metadata,
+        registry=base.registry,
+        delivery=delivery if delivery is not None else dict(_LAWFUL_PRODUCTION_DELIVERY),
+        dataset_admitted_at=admitted_at,
+    )
+
+
+class _StaticProvider:
+    def __init__(self, dataset) -> None:
+        self._dataset = dataset
+
+    def resolve(self, entity_id: str) -> FinancialQueryDataset:
+        if entity_id == self._dataset.binding.entity_id:
+            return self._dataset
+        raise FinancialQueryAdmissionError(400, "unknown entity")
+
+
+def test_production_delivery_object_is_lawful_and_exact() -> None:
+    from engine.fundamental_forensics.query_service import (
+        _LAWFUL_GOLDEN_DELIVERY_KIND,
+        _LAWFUL_PRODUCTION_CAPTURE_BASES,
+        _LAWFUL_PRODUCTION_DELIVERY_KIND,
+        canonical_financial_delivery,
+    )
+
+    assert _LAWFUL_PRODUCTION_DELIVERY_KIND == "production_issuer_dataset"
+    assert _LAWFUL_PRODUCTION_CAPTURE_BASES == frozenset({"reconstruction"})
+
+    lawful = canonical_financial_delivery(dict(_LAWFUL_PRODUCTION_DELIVERY))
+    assert lawful == _LAWFUL_PRODUCTION_DELIVERY
+
+    unlawful = [
+        {**_LAWFUL_PRODUCTION_DELIVERY, "extra": 1},                      # extra key
+        {k: v for k, v in _LAWFUL_PRODUCTION_DELIVERY.items() if k != "capture_basis"},  # missing key
+        {**_LAWFUL_PRODUCTION_DELIVERY, "kind": "committed_golden_fixture"},            # wrong kind
+        {**_LAWFUL_PRODUCTION_DELIVERY, "kind": "production_attested"},                 # red-team kind
+        {**_LAWFUL_PRODUCTION_DELIVERY, "attested": 1},                                 # non-bool
+        {**_LAWFUL_PRODUCTION_DELIVERY, "attested": True},                              # D2 does not exist yet
+        {**_LAWFUL_PRODUCTION_DELIVERY, "production_issuer_service": False},
+        {**_LAWFUL_PRODUCTION_DELIVERY, "production_issuer_service": "yes"},
+        {**_LAWFUL_PRODUCTION_DELIVERY, "dataset_generation_id": "ffprods_short"},
+        {**_LAWFUL_PRODUCTION_DELIVERY, "dataset_generation_id": "ffprod_" + "a" * 64},
+        {**_LAWFUL_PRODUCTION_DELIVERY, "capture_basis": "historic_capture"},
+        {**_LAWFUL_PRODUCTION_DELIVERY, "capture_basis": None},
+        "not-a-mapping",
+        7,
+    ]
+    for candidate in unlawful:
+        with pytest.raises(FinancialQueryUnavailableError):
+            canonical_financial_delivery(candidate)
+
+    # The golden branch is unchanged and still refuses every production flag.
+    golden = {
+        "kind": _LAWFUL_GOLDEN_DELIVERY_KIND,
+        "attested": False,
+        "production_issuer_service": False,
+    }
+    assert canonical_financial_delivery(dict(golden)) == golden
+    with pytest.raises(FinancialQueryUnavailableError):
+        canonical_financial_delivery(
+            {"kind": _LAWFUL_GOLDEN_DELIVERY_KIND, "attested": False, "production_issuer_service": True}
+        )
+    # The end-to-end adapter accepts a lawful production dataset and stamps
+    # the exact delivery object on the envelope.
+    result = execute_financial_query(
+        body=_make_request(), provider=_StaticProvider(_production_dataset())
+    )
+    assert result.envelope["delivery"] == _LAWFUL_PRODUCTION_DELIVERY
+
+
+def test_golden_delivery_and_bytes_unchanged_by_production_path() -> None:
+    from engine.fundamental_forensics.query_service import (
+        _LAWFUL_GOLDEN_DELIVERY_KIND,
+        _LAWFUL_GOLDEN_DELIVERY_KEYS,
+    )
+
+    # The frozen constants are untouched.
+    assert _LAWFUL_GOLDEN_DELIVERY_KIND == "committed_golden_fixture"
+    assert _LAWFUL_GOLDEN_DELIVERY_KEYS == frozenset(
+        {"kind", "attested", "production_issuer_service"}
+    )
+
+    # FIP1 (delivery absent) and the golden delivery object both produce the
+    # exact pre-D3 bytes for all three selections — frozen pre-D3 baselines
+    # captured on the untouched tree at 5267c66846e.
+    pre_d3_shas = {
+        ("absent", "as_reported"): "bf8e9099e0f94d891f8b739adf15eee8651a0478b55ecbed746ac19a734e2c02",
+        ("absent", "latest_known_as_of"): "2d9964257abbe545322c54e4572956dffeddae257fc49ff11cef7264d0bd79d7",
+        ("absent", "latest_restated"): "7ba7a23305a1284ddf6e75eba582eb58791922c46cd1d63b0147560888350c0a",
+    }
+    golden_delivery = {
+        "kind": "committed_golden_fixture",
+        "attested": False,
+        "production_issuer_service": False,
+    }
+    base = fip1_fixture_dataset(ROOT)
+    for delivery, selection in pre_d3_shas:
+        dataset = FinancialQueryDataset(
+            binding=base.binding,
+            ledger=base.ledger,
+            filing_metadata=base.filing_metadata,
+            registry=base.registry,
+            delivery=None if delivery == "absent" else dict(golden_delivery),
+        )
+        result = execute_financial_query(
+            body=_make_request(
+                policy={
+                    "selection": selection,
+                    "source_snapshot_at": T1_SOURCE,
+                    "recorded_at": T2_RECORDED,
+                }
+            ),
+            provider=_StaticProvider(dataset),
+        )
+        assert result.sha256 == pre_d3_shas[(delivery, selection)], (delivery, selection)
+        if delivery == "absent":
+            assert "delivery" not in result.envelope
+        else:
+            assert result.envelope["delivery"] == golden_delivery

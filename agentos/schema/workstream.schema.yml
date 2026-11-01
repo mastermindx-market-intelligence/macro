@@ -35,6 +35,37 @@ optional:
   landmines:    {type: list}
   do_not_redo:  {type: list}
   artifacts:    {type: list, items: repo-relative-path}
+  acceptance_contracts:
+    type: list
+    max: 16
+    note: >
+      Explicit mission-scoped knowledge declarations, never a global workstream ruler,
+      grant or acceptance. No latest handoff or default mission is inferred.
+    items:
+      required_fields: [commission_id, commission_ref, continuity_ref, original_intent_ref,
+                        proof_contract_ref, original_proof_contract_ref, current_intent_revision,
+                        correction_state, correction_chain, criteria_objective, criteria_sources,
+                        original_source_status, proof_obligations]
+      optional_fields: [execution_commission_refs]
+      commission_id: {type: string, unique: true, max: 128}
+      source_reference: {closed_fields: [repository, commit, path, content_sha256],
+                         note: "Immutable source identity, not an authority grant; no reference path is opened."}
+      execution_commission_refs: {type: list, max: 16, default: [],
+        note: "Explicit knowledge association only after actual fixed-path commission publication. Empty means EXECUTION_COMMISSION_NOT_ASSOCIATED. Runtime joins its own exact reference; this never admits work."}
+      correction_state: {enum: [NO_CORRECTION_DECLARED_AT_THIS_REVISION,
+                               CORRECTIONS_DECLARED_AT_THIS_REVISION, MISSING, UNRESOLVED]}
+      correction_chain: {type: list, max: 16,
+        note: "Initial no-correction declaration requires an explicit empty chain; missingness is never coerced to this state."}
+      criteria_objective: {type: string, max_utf8_bytes: 4000,
+        note: "Literal text for the existing Mastermind criterion parser. Agent OS does not parse the reserved suffix or derive criterion IDs."}
+      criteria_sources: {type: list, min: 1, max: 6,
+        closed_fields: [criterion_index, source_ref, locators],
+        note: "Contiguous zero-based source positions, not independent acceptance IDs."}
+      proof_obligations: {type: list, min: 1, max: 64,
+        closed_fields: [source_ref, section, label, required_outcome],
+        note: "All literal required source clauses survive; six criterion summaries, hashes or green CI cannot establish every individual obligation."}
+      emitted_proof_obligation_digests: {type: list,
+        note: "Compiler emits parallel exact-row SHA256 identities in source order; no independent criteria parser. Consumers recompute and require every individual disposition."}
   runtime_ref:  {type: object, fields: [service, deployed_sha, freshness_artifact]}
   claim:        {type: object, fields: [by, at, expires],
                  note: "ADVISORY ONLY - blocks nothing (I1). Unreadable by other sessions

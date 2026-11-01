@@ -1,0 +1,57 @@
+{
+  "Graph1": null,
+  "all_may_capabilities": false,
+  "archived_verifier_rerun": false,
+  "basis_eligible": false,
+  "capture_wrapper_recovery": [
+    {
+      "expected_byte_length": 682,
+      "expected_sha256": "020e82b277fde4b58c80243149f993c7c5913638fd37f98042594c9e06758a1a",
+      "included": true,
+      "observed_byte_length": 682,
+      "observed_sha256": "020e82b277fde4b58c80243149f993c7c5913638fd37f98042594c9e06758a1a",
+      "original_archive_byte_match": true,
+      "path": "process_evidence/PRINCIPAL_CAPTURE_START_ARCHIVE.json"
+    },
+    {
+      "expected_byte_length": 2616,
+      "expected_sha256": "451e2544674c77dd2e1e745e887d751ccc8ce5ae01f4a5430a9d9ca8e6f5b8b9",
+      "included": true,
+      "observed_byte_length": 2616,
+      "observed_sha256": "451e2544674c77dd2e1e745e887d751ccc8ce5ae01f4a5430a9d9ca8e6f5b8b9",
+      "original_archive_byte_match": true,
+      "path": "process_evidence/PRINCIPAL_CAPTURE_COMPLETION_ARCHIVE.json"
+    }
+  ],
+  "cohort_F": null,
+  "cohort_count": 0,
+  "context_only": true,
+  "duplicate_public_input_copies_intentional": true,
+  "entrypoint": "FINDINGS.md",
+  "external_archive_manifest": "ARCHIVE_MANIFEST.json beside the archive, not inside it",
+  "external_review_terminal": "process_evidence/INDEPENDENT_REVIEW_COMPLETION_TOOL.json",
+  "external_staging_receipt": "STAGING_RECEIPT.json beside the archive, not inside it",
+  "frozen_manifest": "independent_review/MANIFEST.json",
+  "frozen_original_reports_unchanged": true,
+  "frozen_review": "independent_review/REVIEW.md",
+  "independent_scope": "PUBLIC_ONLY",
+  "original_review_layout_preserved": true,
+  "principal_owned_pending": [
+    "Current source-pin preflight and branch reconciliation",
+    "Integrate separate principal launch evidence addition 003",
+    "Resolve prior original correction-history files through existing provenance paths if required",
+    "Publish packet, external manifest, staging receipt and external packaging-process completion"
+  ],
+  "prior_and_separate_evidence": "PRIOR_EVIDENCE_REFERENCES.json",
+  "private_artifact_bytes_included": false,
+  "private_predicate_independently_recomputed": false,
+  "private_predicate_principal_executed": true,
+  "proposal_weight": 0,
+  "public_by_K": "UNPROVED",
+  "publication_operations": 0,
+  "raw_HTTP_bodies_retained": false,
+  "schema": "economic_network.nvda_publication_index/v2",
+  "source_outcome": "COMPLETE_NONEMPTY_RESULT",
+  "status": "PREPARED_ONLY_NOT_PUBLISHED",
+  "vendor_date_semantics": "UNRECONCILED"
+}

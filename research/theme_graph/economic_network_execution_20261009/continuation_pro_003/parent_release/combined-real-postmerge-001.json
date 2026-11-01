@@ -1,0 +1,200 @@
+{
+  "canonical_content_sha256": "94daf0a644afa1e519175e5936d39db7e14fd2559cb507499b3a0ba911f8133a",
+  "case_results": {
+    "01-micron-positive": {
+      "complete_inspection_sha256": "6bbb39a463030c992760fb3309006f94bc10c37126894f0ae76a1288e46fb8b4",
+      "refusal_code": null,
+      "status": "INSPECTABLE"
+    },
+    "02-nvda-positive": {
+      "complete_inspection_sha256": "94c5d24ae8f7b3a965b4d8184027f7457acf0e04b8605bed9e61cd04a9ceb4ec",
+      "refusal_code": null,
+      "status": "INSPECTABLE"
+    },
+    "03-missing-source": {
+      "complete_inspection_sha256": "2ef27f98a889757b7070a94fcdc881e6dd78031d5492291554e4aa083f64a442",
+      "refusal_code": "REVIEW_FILE_UNAVAILABLE",
+      "status": "UNAVAILABLE"
+    },
+    "04-invalid-candidate": {
+      "complete_inspection_sha256": "f2bdac1260d0769b48527088d6b8400d40b0ec94a2e5a9b710c7408cefb3ef55",
+      "refusal_code": "INPUT_INVALID",
+      "status": "REFUSED"
+    }
+  },
+  "complete_cases_equal_to_actual_single_case_cli": true,
+  "complete_micron_historical_witness_compatibility": true,
+  "current_denominators": {
+    "inspectable_cases": 2,
+    "not_known_as_of_cases": 0,
+    "refused_cases": 1,
+    "requested_cases": 4,
+    "supplied_source_cases": 3,
+    "unavailable_cases": 1,
+    "unique_supplied_source_byte_digests": 2
+  },
+  "distinct_manifest_raw_sha256": [
+    "4b0cea1add1f10946a445840e30dcb53da3b4babe6bc042eb0a586eb70b553aa",
+    "cc7a2e2aff455c8b8851f223b4773237f0de87e1543ff5b2805ae3f02e572ebb"
+  ],
+  "guarded_fresh_processes": 11,
+  "guarded_import_policy": [
+    "collectors",
+    "requests",
+    "urllib3",
+    "httpx",
+    "aiohttp",
+    "boto3",
+    "botocore",
+    "urllib.request",
+    "http.client"
+  ],
+  "historical_content_sha256": "da0797be763043ac79ac1dc0e9fc17542a6972fdc229d292773c987304742285",
+  "historical_denominators": {
+    "inspectable_cases": 0,
+    "not_known_as_of_cases": 0,
+    "refused_cases": 3,
+    "requested_cases": 4,
+    "supplied_source_cases": 3,
+    "unavailable_cases": 1,
+    "unique_supplied_source_byte_digests": 2
+  },
+  "historical_system_replay": false,
+  "latest_pointer_absent": true,
+  "literal_advertised_command_matches_guarded_output_and_exit": true,
+  "literal_micron_single_case_compatibility": true,
+  "micron_exploratory_fetch_coordinates_rewritten": false,
+  "micron_native_regeneration_matches_retained_candidate": true,
+  "native_fact_admission": false,
+  "observed_at": "2026-10-09T10:57:11.338613+00:00",
+  "ordinary_literal_cli_processes": 3,
+  "ordinary_literal_runs_independently_carry_preimport_guards": false,
+  "original_private_candidate_written": false,
+  "permutation_and_formatting_preserve_complete_content": true,
+  "predictive_authority": false,
+  "prior_strict_failures_reclassified": false,
+  "private_evidence": {
+    "bytes": 197114,
+    "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-native-reader-20261009/pro-002-review-set-real/results/private-postmerge-001.json",
+    "sha256": "aaac0c4892981cc4ef8735918e0ff2bf59997ac8b68697ba175076328706c91a",
+    "status": "SAVED_PRIVATE"
+  },
+  "production_reader_custody": false,
+  "proof_scope": "retained_real_sources_to_manual_file_review_cli_not_pinned_custody",
+  "protected_original_and_input_tree_unchanged": true,
+  "replay_code_binding": {
+    "accepted_merge_sha_from_principal_receipt": "c63a92576a43247bb8c43dc275f827b8871fda3b",
+    "current_code_manifest_sha256": "db32819f0436c8bd1cec92b9f74a660a9ce6613b215a86f90e6756f60d19bc9a",
+    "github_merge_independently_verified_by_this_harness": false,
+    "harness_sha256": "ff59e80b54bec67310c2a1a998cb7c1651b974bbfcca97257d1483d80dcc3a48",
+    "locally_verified_code_paths": 93,
+    "principal_input_receipt_sha256": "a4f5d291f3a7843fd6fd8d01f06cd12c4680437b13c429a2e29a8e45576fbcdf",
+    "principal_source_receipt_sha256": "9cd19b0ba187a7785c5bd2b793c6b3d5ad597fe3c5d7074caf5bb5d9a1d447cb",
+    "reviewed_head_from_principal_receipt": "930125848136f08efd1bb61cc5899d9a5a0eeb51"
+  },
+  "rights_admission": false,
+  "runs": {
+    "invalid_current": {
+      "complete_output_sha256": "f2bdac1260d0769b48527088d6b8400d40b0ec94a2e5a9b710c7408cefb3ef55",
+      "exit_code": 2,
+      "launch": "fresh_python_-B_script_then_runpy_module_as___main__",
+      "refusal_code": "INPUT_INVALID",
+      "status": "REFUSED"
+    },
+    "invalid_historical": {
+      "complete_output_sha256": "f2bdac1260d0769b48527088d6b8400d40b0ec94a2e5a9b710c7408cefb3ef55",
+      "exit_code": 2,
+      "launch": "fresh_python_-B_script_then_runpy_module_as___main__",
+      "refusal_code": "INPUT_INVALID",
+      "status": "REFUSED"
+    },
+    "literal_micron_current": {
+      "complete_output_sha256": "6bbb39a463030c992760fb3309006f94bc10c37126894f0ae76a1288e46fb8b4",
+      "exit_code": 0,
+      "launch": "literal_python_-B_-m",
+      "refusal_code": null,
+      "status": "INSPECTABLE"
+    },
+    "literal_micron_historical": {
+      "complete_output_sha256": "4bfa0b8aebca980e76ee25bf7c34cd2bef706bd664d7a5706b628f036e9f8c62",
+      "exit_code": 2,
+      "launch": "literal_python_-B_-m",
+      "refusal_code": "AS_OF_REGISTRY_REQUIRED",
+      "status": "REFUSED"
+    },
+    "literal_review_current": {
+      "complete_output_sha256": "13a1c063d0274f49cc848ebf703d2d7cb1b4fad7576245aef536a35655824c87",
+      "exit_code": 2,
+      "launch": "literal_python_-B_-m",
+      "refusal_code": null,
+      "status": "INSPECTED"
+    },
+    "micron_current": {
+      "complete_output_sha256": "6bbb39a463030c992760fb3309006f94bc10c37126894f0ae76a1288e46fb8b4",
+      "exit_code": 0,
+      "launch": "fresh_python_-B_script_then_runpy_module_as___main__",
+      "refusal_code": null,
+      "status": "INSPECTABLE"
+    },
+    "micron_historical": {
+      "complete_output_sha256": "4bfa0b8aebca980e76ee25bf7c34cd2bef706bd664d7a5706b628f036e9f8c62",
+      "exit_code": 2,
+      "launch": "fresh_python_-B_script_then_runpy_module_as___main__",
+      "refusal_code": "AS_OF_REGISTRY_REQUIRED",
+      "status": "REFUSED"
+    },
+    "missing_single": {
+      "complete_output_sha256": "b6b7d2114e42d0500e07e6be77830b71d64415c340b1d5d4d422ced57ac817bd",
+      "exit_code": 2,
+      "launch": "fresh_python_-B_script_then_runpy_module_as___main__",
+      "refusal_code": null,
+      "status": "INSPECTED"
+    },
+    "nvda_current": {
+      "complete_output_sha256": "94c5d24ae8f7b3a965b4d8184027f7457acf0e04b8605bed9e61cd04a9ceb4ec",
+      "exit_code": 0,
+      "launch": "fresh_python_-B_script_then_runpy_module_as___main__",
+      "refusal_code": null,
+      "status": "INSPECTABLE"
+    },
+    "nvda_historical": {
+      "complete_output_sha256": "4bfa0b8aebca980e76ee25bf7c34cd2bef706bd664d7a5706b628f036e9f8c62",
+      "exit_code": 2,
+      "launch": "fresh_python_-B_script_then_runpy_module_as___main__",
+      "refusal_code": "AS_OF_REGISTRY_REQUIRED",
+      "status": "REFUSED"
+    },
+    "review_current": {
+      "complete_output_sha256": "13a1c063d0274f49cc848ebf703d2d7cb1b4fad7576245aef536a35655824c87",
+      "exit_code": 2,
+      "launch": "fresh_python_-B_script_then_runpy_module_as___main__",
+      "refusal_code": null,
+      "status": "INSPECTED"
+    },
+    "review_historical": {
+      "complete_output_sha256": "500f017a9b9b9d90851f1b9258b90672d48fd6872ae00d0b661a780b3371aabe",
+      "exit_code": 2,
+      "launch": "fresh_python_-B_script_then_runpy_module_as___main__",
+      "refusal_code": null,
+      "status": "INSPECTED"
+    },
+    "review_reordered": {
+      "complete_output_sha256": "8346aa439ac4bf076c9078a70be33de0f90ca1d2bcf1823d6445d3a76ed88407",
+      "exit_code": 2,
+      "launch": "fresh_python_-B_script_then_runpy_module_as___main__",
+      "refusal_code": null,
+      "status": "INSPECTED"
+    }
+  },
+  "schema": "economic_network.retained_review_set_cli_verification.v1",
+  "served_product_proof": false,
+  "source_capture_performed": false,
+  "source_digests": {
+    "micron": "a7efabf9cec581ba684688368118e3e13df6a3043aff56667927e24df97e8b2e",
+    "nvda": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e"
+  },
+  "source_phase": "POSTMERGE_ACCEPTED_SOURCE",
+  "status": "PASS",
+  "strict_native_nvda_five_call_replay_performed_here": false,
+  "third_party_runtime_fully_pinned": false
+}

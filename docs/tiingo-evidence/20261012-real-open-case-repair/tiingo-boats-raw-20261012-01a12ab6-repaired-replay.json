@@ -1,0 +1,62 @@
+{
+  "condition_eligible_T_count": 56,
+  "condition_eligible_aapl_T_count": 3,
+  "credentials_read": false,
+  "fixture_or_live_prices_published": false,
+  "historical_replay_not_fresh_market_snapshot": true,
+  "method_sha256": "91d84bf4e63820915fdac57b4d87a4b3a6cb04c4d1a0c1d3ab7fc89fd9df0225",
+  "network": false,
+  "observed_at_utc": "2026-10-12T00:09:44.114737+00:00",
+  "original_frames": 20000,
+  "original_qualification_sha256": "1fa075737c90dffc9443ca3164d9449f9682bb390aa23f65aa863b7ba0f29af2",
+  "production_consumer_acceptance": false,
+  "public_allowlist_unchanged_and_passed": true,
+  "publication": false,
+  "qualified_display_lineage": [
+    {
+      "display_symbol": "AAPL",
+      "event_at_utc": "2026-10-12T00:00:03.363802+00:00",
+      "exact_vendor_symbol": "aapl",
+      "raw_message_sha256": "6eda471e028e614eccb7f85cdb974ee14b2214caf6ea477f990cbe256b148cc4",
+      "raw_price_and_event_lineage_verified": true,
+      "raw_segment_sha256": "4e841007c754f24a95464c4026ec1e2fd2b9df8cfef8a0214289816f9e92d821",
+      "received_at_utc": "2026-10-12T00:00:11.690089+00:00"
+    }
+  ],
+  "qualified_display_symbols": [
+    "AAPL"
+  ],
+  "raw_frames_modified": false,
+  "replay_snapshot_clock": "2026-10-12T00:00:13.559454+00:00",
+  "safe_evidence_projection": {
+    "licensed_source_frames_unchanged": true,
+    "omitted_fields": [
+      "qualified_display_lineage[].sale_conditions"
+    ],
+    "original_private_proof_sha256": "6715ecfe44a0ad329efe671f5f829ce2ca879d61517741f6ad1b23668d31ec0e"
+  },
+  "sale_condition_counts": [
+    {
+      "conditions": [
+        "@",
+        "",
+        "",
+        "I"
+      ],
+      "count": 291
+    },
+    {
+      "conditions": [
+        "@",
+        "",
+        "",
+        ""
+      ],
+      "count": 56
+    }
+  ],
+  "schema": "tiingo_boats_repaired_authentic_offline_replay.v1",
+  "source_segments": 20,
+  "source_sha256": "25e2866a24562e50fe5ba3bf996e83c1c021b9bc9599e7cce98be6cd29877476",
+  "unqualified_odd_lots_not_promoted": true
+}

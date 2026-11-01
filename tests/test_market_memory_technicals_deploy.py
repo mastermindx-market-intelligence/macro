@@ -56,7 +56,7 @@ def _setting_values(unit: str, setting: str) -> list[str]:
 def _technical_update_block() -> str:
     update = _text(UPDATE)
     start = update.index("MARKET_MEMORY_TECHNICALS_UNIT_UPDATED=0")
-    end = update.index("# W1B.3A private breadth actual-output publisher", start)
+    end = update.index("# W2C M0D v2 — Keyless technicals-v2 projector", start)
     return update[start:end]
 
 

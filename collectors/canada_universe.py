@@ -35,6 +35,7 @@ import yfinance as yf
 from collectors.base import Adapter
 from collectors.breadth import repair_seams
 from lib import config
+from lib.market_observations import current_adjusted_columns, filter_session_observations
 
 log = logging.getLogger(__name__)
 
@@ -121,6 +122,9 @@ class CanadaUniverseAdapter(Adapter):
                                      progress=False, group_by="column", threads=True)
                     if df is None or df.empty:
                         break
+                    df = filter_session_observations(df, "CA")
+                    if df.empty:
+                        break
                     try:
                         volumes = (df["Volume"]
                                    if isinstance(df.columns, pd.MultiIndex)
@@ -136,7 +140,8 @@ class CanadaUniverseAdapter(Adapter):
                     except Exception:  # noqa: BLE001 — ranking metadata is additive
                         pass
                     closes = df["Close"] if "Close" in df.columns.get_level_values(0) else df
-                    parts.append(closes)
+                    if not closes.empty:
+                        parts.append(closes)
                     break
                 except Exception as e:  # noqa: BLE001
                     wait = self.ycfg["backoff_base_s"] * (2 ** attempt)
@@ -157,10 +162,35 @@ class CanadaUniverseAdapter(Adapter):
         fresh window on the pre-split basis — a permanent fake ±N00% day at the
         seam. Flagged tickers are re-pulled over the full window and replaced
         wholesale; never fatal (see collectors.breadth.repair_seams)."""
+        accepted = current_adjusted_columns(fresh, prev)
+        if len(accepted.columns) < len(fresh.columns):
+            log.warning("%s: stale/invalid adjusted columns rejected; last-good histories retained", self.name)
+        if accepted.empty:
+            return prev.sort_index()
+        fresh = accepted
         merged = fresh.combine_first(prev)
-        merged, _ = repair_seams(merged, fresh, prev, self._download_closes,
+        rejected_repulls = set()
+
+        def current_repull(tickers, period):
+            # Download failures are caught by repair_seams; retain the old whole
+            # column unless a successful response proves its rebase is current.
+            rejected_repulls.update(tickers)
+            response = self._download_closes(tickers, period)
+            accepted = current_adjusted_columns(response, merged)
+            rejected_repulls.difference_update(accepted.columns)
+            return accepted
+
+        merged, _ = repair_seams(merged, fresh, prev, current_repull,
                                  name=self.name)
-        return merged
+        for ticker in rejected_repulls:
+            if ticker in prev:
+                # A failed/stale full rebase cannot replace a current bar or leave
+                # a partial new adjustment basis spliced onto the prior history.
+                merged[ticker] = prev[ticker].reindex(merged.index)
+        if rejected_repulls:
+            log.warning("%s: stale/empty full adjustment re-pulls rejected; "
+                        "complete last-good columns retained", self.name)
+        return merged.dropna(how="all")
 
     # -- main ------------------------------------------------------------------
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:

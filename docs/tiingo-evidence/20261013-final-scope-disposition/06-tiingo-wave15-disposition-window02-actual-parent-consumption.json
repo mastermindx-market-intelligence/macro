@@ -1,0 +1,25 @@
+{
+  "schema": "tiingo.attended_disposition_window_actual_terminal_parent_consumption/v1",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "original_tool_session": 65503,
+  "original_exit_code": 1,
+  "actual_original_terminal_return_consumed": true,
+  "core_sha256": "6e127aa58d1a2609876567e25bb87088d23f7f84de5c26bbd011d9d902cf5786",
+  "controller_sha256": "82084990681af2b40e98001b8c87c32873b30540f5072eaa880c98770e4e5f71",
+  "original_log_sha256": "01f4c738c8dc5a9294d142a8cc264139e12aa276bbb967b9bc7000ce124caf70",
+  "completed_prefixes": [
+    "02"
+  ],
+  "qualification_sha256": {
+    "eod-wave15-prefix02-qualified.json": "280bf20a6e22223dde64dc1bf0b79484568eef91ec86aea1c996917b77a5e1a6"
+  },
+  "coverage_sha256": {
+    "eod-qualified-catalogue-coverage-wave15-prefix02-delta.json": "f07854642431b971b75b117b8e838176d3a932b817b062e6c971fd1b81060543"
+  },
+  "all_listed_qualifier_and_coverage_returns_consumed": true,
+  "prefix03_failed_in_readonly_preflight": true,
+  "prefix03_archive_writer_started": false,
+  "raw_capture_original_tool": 43992,
+  "raw_capture_terminal_return_consumed": false,
+  "all_final_capture_acceptance_claimed": false
+}

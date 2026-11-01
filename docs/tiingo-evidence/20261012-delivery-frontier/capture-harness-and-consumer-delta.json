@@ -1,0 +1,126 @@
+{
+  "schema": "tiingo_safe_continuation_delta/v1",
+  "recorded_at_utc": "2026-10-12T08:54:11.212023+00:00",
+  "source_carrier_head": "2a08250fe61aa59ad3e1581149f0b93e9d5a17cf",
+  "collector_sha256": "54b694af53a940f8ea1148215b0a3ccfcfa5313270286b04a99c72d7dc004fa6",
+  "eod_prefix": {
+    "schema": "tiingo_incremental_completed_response_qualification/v1",
+    "settled_at_utc": "2026-10-12T08:46:42.194397+00:00",
+    "snapshot_before_utc": "2026-10-12T08:46:12.987688+00:00",
+    "run_scope_sha256": "38aafc8460af7dead299c92bbafc1b64f3770752a1d86c1e552e474cd005ecda",
+    "parent_sha256": "4eb2a25ede22283a72ac875894d6be44a2c87b4cd7d9023b0666b21ef467f4e2",
+    "method_sha256": "f93d72747fb9c634b37882b424776db0d90d1e5d9369bf367e5152c2ac31f852",
+    "selected_receipts": 191,
+    "materialization_status_counts": {
+      "WRITTEN": 191
+    },
+    "all_selected_raw_and_reader_lineage_verified": true,
+    "new_nonempty_histories": 191,
+    "new_disjoint_bars": 517183,
+    "distinct_eod_histories_in_qualified_base_and_prefix": 9916,
+    "distinct_eod_bars_in_qualified_base_and_prefix": 20761012,
+    "complete_original_capture_proven": false,
+    "whole_wave_eight_accepted": false,
+    "canonical_identity_admitted": false,
+    "pit_backtest_eligible": false,
+    "credentials_read": false,
+    "network_requests": 0
+  },
+  "eod_embedded_action_counts": {
+    "split_events": 72,
+    "dividend_events": 3519,
+    "raw_adjusted_different_dates": 357112
+  },
+  "installed_eod_reader": {
+    "schema": "tiingo_new_eod_installed_reader_acceptance/v1",
+    "observed_at_utc": "2026-10-12T08:51:30.976273+00:00",
+    "method_sha256": "73dd5b99a4401a2d2b75ead2390a5c68092b0ac53c99951757ffe079cedaef5a",
+    "qualified_snapshot_sha256": "5f4af7f1fddd706f2ceb91e1af6916048efc7d24d608856436a70cf80691a444",
+    "installed_revision": "2c90e1c01d53516c6920e8cb1edd835f82354e28",
+    "launcher_sha256": "2c8594ad29821982a3d87605509c78fcb6d10c8ffe9dd6280b63cd6bd43923f4",
+    "checks": [
+      {
+        "symbol": "EBAY",
+        "ref": "tiingo:normalized/eod-bars/2026-10-12/6381a590cbdb4bc21c56d876e871843b352ece1db153a11b8792d7e7a0b0e495.parquet",
+        "file_version": "statv1:20c24228f97ce81822acce11f936650e461e3aa4d7c3cd98051c5e91ae3a4806",
+        "described_rows": 7054,
+        "read_rows": 128,
+        "sample_raw_adjusted_different_dates": 128,
+        "full_response_sha256": "0ebcf7a9cbc3dacebd1fa8ecc969309edd74f3ed6f7dcf895fbe19bd453ab2fe",
+        "describe_response_sha256": "11f694696b7e1599e8e16096ceaf9942aeb2ff3ded87797d51af488b6fcd30ba",
+        "query_receipt_sha256": "b7925440a457d5ad321371d48e088899306b497e7faefc6384e814edcc9d3923",
+        "source_lineage_and_research_restrictions_verified": true,
+        "licensed_row_values_retained_in_receipt": false
+      },
+      {
+        "symbol": "DWCH",
+        "ref": "tiingo:normalized/eod-bars/2026-10-12/a4b1fffba08f64457446a026513dbe0c39212b3439f8210b8be6912ec8feb7f7.parquet",
+        "file_version": "statv1:9dae813375331ba2dc6897b550829ff6b6d36fb6ece498a7a42f0889634b27b7",
+        "described_rows": 6687,
+        "read_rows": 128,
+        "sample_raw_adjusted_different_dates": 128,
+        "full_response_sha256": "e818223b91cddb9460bf143537f0a66fe8891c6261b5fc3e966b4429edf21551",
+        "describe_response_sha256": "e76445f0a2c0758fce8c42ffcabe58a25c8781f1307788fe5b52654fb3515a3c",
+        "query_receipt_sha256": "bd3b1d13f2c5945c6dc041342eda58921b5298a0a477244906c009fadd2da9c5",
+        "source_lineage_and_research_restrictions_verified": true,
+        "licensed_row_values_retained_in_receipt": false
+      }
+    ],
+    "current_and_ended_vendor_histories_consumed": true,
+    "runtime_binding_or_installation_changed": false,
+    "canonical_identity_admitted": false,
+    "pit_backtest_eligible": false,
+    "quote_feed_production_acceptance": false
+  },
+  "fundamentals": {
+    "served_depth": "Actual ten-company original/revised/daily cohort serves 2023-10-12 through 2026-10-09 despite 1990 requested start.",
+    "original_and_revised_dimensions_preserved": true,
+    "full_account_scope_proven": false,
+    "activation_or_purchase_changed": false,
+    "support_email_sent": false,
+    "new_cohort_successful_requests": 30,
+    "new_cohort_projected_rows": 58501,
+    "unambiguous_original_revised_keys_compared": 9940,
+    "original_revised_changed_values": 518,
+    "qualification_receipt_sha256": "94aa7890f142910655dd9c78876a528be66048dc19c3c52b5767dd0980e53d74"
+  },
+  "capture_bug": {
+    "defect": "Temporary continuation counter iterator shadowed its credential argument. Original collector and provisioned credential are unchanged.",
+    "offline_reproduction_sha256": "67d119b08a9fc3bf42fc72edd67f1e425d267b030c3b786e33bcd9fd45658235",
+    "independent_review_stable_id": "tiingo-eod-fixed-harness-review-01a12ab6-v1",
+    "retained_review_stdout_sha256": "661c33130423fd4759c9f9430f8aa3bad9cd2c9085542e343923d81dfd0c1f9b",
+    "reviewer_verdict": "PASS",
+    "parent_code_review_accepted": true,
+    "fabric_ledger_acceptance": "OUTCOME_WRITE_UNCONFIRMED errno 1 at ledger lock; denied write not retried",
+    "four_exact_bad_auth_requests_held": [
+      "DVVDF",
+      "DVXB",
+      "DVYA",
+      "EA"
+    ],
+    "ticker_specific_entitlement_inference_invalidated": true,
+    "new_real_consecutive_captures_observed": true
+  },
+  "corporate_actions": {
+    "first_cohort_operation": "corporate-actions-eight-20261012-01a12ab6",
+    "result_sha256": "93f40ed6b82d64ad07ef35a7f70cab2ca4ea40be2e5afcfcabb815e38270886c",
+    "attempted": 1,
+    "successful": 0,
+    "failed_path": "/tiingo/corporate-actions/aapl/splits",
+    "http_status": 403,
+    "credential_iterator_collision_absent": true,
+    "retry_or_alternate_account_used": false,
+    "further_requests_stopped": true,
+    "standalone_beta_endpoint_access_not_proven": true,
+    "eod_embedded_actions_remain_distinct_source_evidence": true
+  },
+  "metadata_clock_erratum": {
+    "receipt_sha256": "0e388879ee29975a1362bbdaa182fa5c80e01b95fd87ae6ae472a951a5865999",
+    "old_future_prospective_quota_clock_excluded_from_temporal_acceptance": true,
+    "raw_metadata_capture_clocks_unchanged": true,
+    "corrected_continuation_actual_loaded_browser_clock": "2026-10-12T08:39:22.598Z",
+    "quota_age_enforced_nonnegative_and_maximum_900_seconds": true
+  },
+  "complete_production_delivery_claimed": false,
+  "licensed_raw_rows_secrets_payment_details_or_private_logs_included": false
+}

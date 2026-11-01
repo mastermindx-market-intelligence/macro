@@ -7,6 +7,7 @@ from .disclosure_diff import (
     DisclosureDiffRegistry,
     DisclosureFinding,
     compare_filings,
+    REDLINE_CHANGE_CLASSES,
     load_disclosure_diff_registry,
     normalize_filing,
 )
@@ -56,6 +57,7 @@ __all__ = [
     "build_ixbrl_extraction",
     "build_filing_attestation",
     "compare_filings",
+    "REDLINE_CHANGE_CLASSES",
     "load_disclosure_diff_registry",
     "load_registry",
     "normalize_filing",

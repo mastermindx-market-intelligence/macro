@@ -67,7 +67,7 @@ workflow is added.
 
 The provider protocol was checked against https://code.claude.com/docs/en/hooks on
 2026-10-04. Contract tests are not a receipt that every fleet client has installed these
-bytes. This wave's acceptance still requires exact committed review, hosted checks,
+bytes. At implementation, this wave's remaining acceptance gates were exact committed review, hosted checks,
 merge, actual capture publication and a cold-session recovery receipt. Those are recorded
 in the canonical workstream/handoff when they occur; this document does not predeclare them.
 
@@ -130,3 +130,37 @@ freezes that test's temporary pre-W4 workstream state and retains W2B done/PR564
 the exact dependency graph and readiness assertions. A byte-equality assertion now
 also proves that generating readiness does not mutate the copied authored record.
 No status engine, live workstream state or enforcement behavior is changed by this repair.
+
+
+## Accepted W4 and V1 closure receipt — 2026-10-04
+
+- PR: https://github.com/mastermindx-market-intelligence/macro/pull/8411
+- Reviewed source head: `714c6f5b49337bbab9770c9c7ad454b277797c1e`.
+- Accepted squash merge: `7329199684df69a862ed6492ce07c65f7dbf71ec`.
+- Hosted primary CI: `37181494645`; all applicable packs/control gates passed. Exact-head
+  fence/authority/security checks passed. `ci-authority/codex/merge-queue-pilot`
+  reports inactive_base_context and is not an applicable main release check.
+- Independent high-blast review approved exact final head `714c6f5b49337bbab9770c9c7ad454b277797c1e`;
+  source, current-base compatibility, record truth and cold recovery were independently checked.
+- Actual capture: existing W4 received PR8411 and awaiting_ci via the exact current claim.
+  The normal pushed commit published that edit; source merge protects it.
+- Actual post-commit report: HANDOFF_COMMITTED for `agentos/handoffs/AGENT-OS-2026-10-04.md`.
+- Captured-PR cold artifact before workstream closure (W4 awaiting_ci at the implementation head): `agentos-w4-final-cold-context.json` under private evidence root
+  `/Volumes/Mastermind/agent-evidence/agent-os-v1-closure-20261003-astra-001`.
+  SHA256 `761fec4a3681f724958996f94bcabc8be72d23caa1a1be7e9493cab5614e4cc5`;
+  source-records digest `sha256:cf93164b36871d65d7a11873bf0636e266cc2b489858868bf925e2f2dc376370`.
+  Independent cold reader recovered captured PR8411/W4/status, Git-derived update
+  `2026-10-03T22:27:54-07:00`, and the canonical latest handoff from exact published source.
+
+The final records closure also aligns two existing invalid-enum schema-test mutations
+with either active or done canonical status. Direct checks using the actual checker
+rejected the intended invalid enum in both valid baseline states. The two-case local
+pytest invocation was interrupted during filesystem copying after prolonged SSD I/O;
+it is not reported as a pass. Exact-head hosted schema CI is the release evidence.
+
+On its reviewed Git merge, this records closure (with status-independent test fixtures) marks W4 and WS:AGENT-OS done and removes this branch's
+advisory claim through the existing release helper. Calibration was already accepted as
+PR8407 / `8776514432e53280b96fba46ff101257a6827431`. That canonical closure leaves all eleven declared V1 waves done;
+ongoing use is maintenance. No new execution, session, memory or projection authority
+was created. Existing broader compiler limitations, fleet installation qualification and
+MAS-64/MAS-66 expansion remain separately commissioned and are not silently accepted.

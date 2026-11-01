@@ -62,6 +62,21 @@ _ALLOWED_QUERY_KEYS = frozenset({
 })
 
 
+def chain_decision_date(value: object) -> date | None:
+    """Read only the chain owner's strict calendar date, without substitution.
+
+    Terminal admits YYYY-MM-DD for mo_asof. Python also accepts compact/week
+    dates, so require an exact round trip rather than normalizing owner input.
+    """
+    if not isinstance(value, str) or len(value) != 10:
+        return None
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError:
+        return None
+    return parsed if parsed.isoformat() == value else None
+
+
 # ── result types ────────────────────────────────────────────────────────────
 @dataclass(frozen=True, slots=True)
 class ContinuationLink:
@@ -220,7 +235,7 @@ def _project_channel(
     channel_id: str,
     chan: dict,
     aliases: VendorAliasTable | None,
-    decision_date: date,
+    decision_date: date | None,
     chain_asof: str,
 ) -> dict:
     """Project one blast channel to its ``companies`` block."""
@@ -283,7 +298,7 @@ def _project_channel(
 def enrich_display_chains(
     chains: dict,
     aliases: VendorAliasTable | None,
-    decision_date: date,
+    decision_date: date | None,
 ) -> dict:
     """Walk the display-subset and add a ``companies`` block per non-dormant chain.
 
@@ -317,6 +332,12 @@ def enrich_display_chains(
     chain_asof = ""
     if isinstance(chains.get("asof"), str):
         chain_asof = chains["asof"]
+    snapshot_date = chain_decision_date(chain_asof)
+    if snapshot_date is None or snapshot_date != decision_date:
+        # Missing/malformed source time cannot borrow the page's render date.
+        # Keep the owner-backed membership, but use the existing unavailable
+        # projection so no misleading identity/context link can be emitted.
+        aliases = None
 
     projected: list[dict] = []
     for chain in out_chains_in:

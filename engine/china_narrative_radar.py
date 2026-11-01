@@ -34,6 +34,7 @@ import numpy as np
 import pandas as pd
 
 from lib import config
+from engine import narrative_radar_fields as RF
 
 log = logging.getLogger(__name__)
 
@@ -151,6 +152,7 @@ def build_radar() -> dict:
       as_of: str,
       baskets: [ ... ],
       provenance: { momentum: str, global_ai: str }
+      membership_as_of: str | None,  # membership.json "version" (newest THS snapshot date)
     }
 
     Each basket entry:
@@ -166,6 +168,7 @@ def build_radar() -> dict:
       state:        { score, label, label_zh, dist_200d_pct, drawdown_pct },
       global_ai:    { mom_4w_pct, direction, validated_tag } | None,
       top_members:  [ { ticker, name_zh, ret_63d } ]
+      thesis / thesis_zh / ths_concept: str | None  # THS metadata; None when missing
     }
     """
     # ── 1. Load closes ────────────────────────────────────────────────────────
@@ -176,6 +179,7 @@ def build_radar() -> dict:
     mem_path = config.ROOT / "data" / "baskets_china_ths" / "membership.json"
     membership_raw = json.loads(mem_path.read_text())
     raw_baskets: dict = membership_raw["baskets"]
+    vintage = RF.membership_as_of(membership_raw)
 
     # ── 3. Global AI-semis confirmer (one chip, reused per AI-mapped basket) ─
     ai_chip = _compute_global_ai()
@@ -210,6 +214,7 @@ def build_radar() -> dict:
         else:
             name = name_zh = bid
             cat = cat_zh = ""
+        ident = RF.basket_identity(bval)
 
         members = _basket_members(bval)
         tickers = [m["ticker"] for m in members]
@@ -267,11 +272,13 @@ def build_radar() -> dict:
             "state":       state,
             "global_ai":   global_ai,
             "top_members": top_members,
+            **ident,
         })
 
     if not records:
         log.warning("china_narrative_radar: no baskets computed — check data paths")
-        return {"as_of": as_of, "baskets": [], "provenance": _provenance()}
+        return {"as_of": as_of, "baskets": [], "provenance": _provenance(),
+                "membership_as_of": vintage}
 
     # ── 6. Rank by ret_63d (ascending rank = better momentum) ─────────────────
     # Sort: None last, then highest ret_63d = rank 1
@@ -288,6 +295,7 @@ def build_radar() -> dict:
         "as_of":      as_of,
         "baskets":    ranked,
         "provenance": _provenance(),
+        "membership_as_of": vintage,
     }
 
 

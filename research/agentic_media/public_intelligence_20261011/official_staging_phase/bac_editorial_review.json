@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-14T02:15:47.001501+00:00",
+  "source_head": "5d06f81f068aa876743862a1d16b4687adca6422",
+  "slot_id": "press-official-cd2747adeed2",
+  "candidate_id": "press-external-38fd7e103e6f",
+  "stage_sha256": "444946ab02c0537c539e367cf121ee8efd4d6ab8a6c5f27ae880ff2934053931",
+  "body_sha256": "b5a4467fe4446ef287f8377a9b395f64b12b8e21cb7cff051d5a44ff564ff048",
+  "status": "quarantined",
+  "provider_attempts": 1,
+  "regenerations": 0,
+  "deterministic_failed": [
+    "close_paraphrase",
+    "our_value",
+    "banned_lexicon"
+  ],
+  "words": 376,
+  "our_value_share": 0.2074,
+  "source_overlap": 0.2778,
+  "editorial_decision": "HOLD; no W1 credit",
+  "editorial_reasons": [
+    "The agency summary is closely reproduced in the opening.",
+    "The first-party observations are broad pre-event conditions, not sufficient bank-specific analysis; adding or repeating them to pass the quantitative floor would be padding.",
+    "The phrase material item for review infers significance from the penalty without admitted issuer-scale evidence.",
+    "The draft correctly distinguishes observation dates and denies unsupported share-price causality, but those improvements do not cure the failures."
+  ],
+  "draft_edited": false,
+  "publication": false,
+  "cutover": false,
+  "original_1207_unknown_replayed": false
+}

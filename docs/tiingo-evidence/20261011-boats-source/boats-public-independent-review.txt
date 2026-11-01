@@ -1,0 +1,65 @@
+Independent BOATS public producer/consumer source review — 2026-10-11
+
+Verdict: HOLD for the bounded integrated source change. Three actionable P2 findings remain. These concern availability and resurrection of an invalidated display price; they do not establish a leak of another provider through the reviewed public projection.
+
+Scope and evidence
+
+Read-only source review of the dirty Macro carrier at HEAD 6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde and the dirty Terminal carrier at base d0973ef6e7521f775801401a345792fc7c4cb3e2. The supplied 75 affected Macro passes and 111 hub passes are execution evidence supplied by the owner, not tests independently executed by this reviewer. The supplied frontend result was 9006 passes and three fingerprint failures from an unnecessary ChartPanel type extension; that extension was removed, and I verified ChartPanel matches its base blob. Functional frontend tests and earlier typecheck were reported successful; the final typecheck remained pending in the review request. No tests, provider requests, network operations, credentials, runtime actions or source edits were performed by this reviewer.
+
+P2 — Validate relay clocks at receipt, after the awaited fetch
+
+Location: hub/lib/extfeed.js:1064 and :1081, with the rejection at :790.
+
+_runYahooPoll captures nowMs and session before awaiting _fetchRelay, then supplies that old clock to boatsRelaySnapshot. A fetch beginning at t0 can legitimately return a snapshot published at t0+100ms and received at t0+200ms. The parser rejects it because published > t0 and replaces the last-good map with an empty map. This can repeatedly drop genuine current quotes during normal concurrent publishing. A session boundary crossed during the await also uses the old session decision.
+
+Required repair: take the validation/receipt clock and session after the awaited fetch, while retaining strict rejection of clocks actually in the future at receipt. Add a deferred-fetch regression in which time advances and a snapshot is published between request start and response receipt; it must be admitted. Preserve rejection of a publication timestamp later than the receipt clock.
+
+P2 — Older browser responses can restore a trade after a newer invalidation
+
+Location: terminal/components/TerminalShell.tsx:2779-2807.
+
+pollExtQuotes has no in-flight serialization or request-order acceptance guard. Timer, visibility and symbol-change-triggered requests can overlap. Request A obtains a positive BOATS trade; request B obtains the later post-break or terminal-invalidation response containing the symbol as null and completes first. When A finishes afterward, its trade may still satisfy the 30-second clock checks, so it overwrites the newer null. The expiry timer bounds the damage but does not preserve the invalidation. Checking only capture/gen presence cannot order a null response.
+
+Required repair: serialize/coalesce polling or give all polling triggers one monotonic request-order acceptance guard. An older callback must not overwrite an already accepted newer response, including null. Preserve unmount and symbol-set handling. Add a reversed-completion test with both responses inside the age window: newer null first, delayed older positive second, final display remains null.
+
+P2 — Full relay replacement has no envelope-order barrier
+
+Location: hub/lib/extfeed.js:780-815 and :1081.
+
+The relay parser returns only a Map, and the caller replaces the relay cache without retaining the accepted envelope's publication/capture/generation metadata. Capture and generation are validated and copied onto positive entries, but they do not constrain subsequent replacement; an empty replacement loses them altogether. After accepting a newer B-removal, gap or ended snapshot, any older still-time-valid connected snapshot restores its positive entries. A generation regression is likewise accepted. This trigger requires an older object response to reach the consumer; the source code provides no defense if it does. Sequential polling and no-store reduce occurrence but do not implement the required invalidation ordering contract.
+
+Required repair: retain accepted envelope ordering independently of positive rows, enforce monotonic publication/generation semantics within a capture, preserve terminal/gap invalidation barriers, and define a conservative transition to a new capture so a delayed retired capture cannot regain authority. UUID lexical ordering is not chronology. A malformed fetched envelope should continue to fail closed without erasing the trusted ordering barrier. Add positive -> newer empty -> older positive and newer generation -> older generation tests; neither may resurrect the older trade. Do not discard normal newer valid full replacements.
+
+Accepted source properties within this review
+
+The Macro publication boundary reconstructs the exact permitted BOATS v2 envelope and rows before obtaining an R2 client. It rejects legacy, other-source, mixed, unknown and raw fields; canonical UUID, finite positive price, venue, basis, session, generation and clock checks are present. The CLI rejects legacy publication and rejects BOATS plus smoke before starting the collector. Source receipts and capture generations remain required; no LIVE default is invented.
+
+The producer's qualifying trade conditions are the explicit per-slot whitelist: slot 1 empty or @; slot 2 empty or F; slot 3 empty or T; slot 4 empty only. Unknown conditions and I/H/X remain unqualified. Q frames do not become prices. B handling conservatively invalidates; nanosecond event admission precedes the projected display clocks. The archived-frame observer path and finalizer retain the repaired persisted-before-callback ordering and inactive/disconnected-before-close behavior. This source review does not make an unqualified trade or a last trade into a consolidated market quote.
+
+The hub retains one incumbent singleton and a separate BOATS relay cache. The explicit tiingo_boats source selector prevents a newer other-provider candidate from hiding the requested source. The ext endpoint reconstructs the admitted BOATS fields and requires freshness/capture/generation; the generic quote expose path strips BOATS ext fields, including cached paths. The UI consumes the admitted ext endpoint, expires its display, polls every five seconds overnight, and retains regular-price authority. These boundaries are consistent with a clearly identified BOATS single-venue LAST_TRADE projection. The findings above prevent acceptance of the integrated invalidation behavior.
+
+Acceptance limits
+
+After the three repairs, acceptance requires focused regressions for receipt-time validation and both response-order inversions, plus the affected checks bound to the final bytes. Review does not approve unchanged inherited Yahoo/Webull/other-provider redistribution rights. Registry classification, source/live-pin evidence, protected landing and runtime/browser acceptance remain separate obligations. No genuine live BOATS consumer result is established by fixtures, reported unit tests or this review. Persistent scheduling, runtime activation, publication and deployment are not authorized by this report; the original combined-action auto-review rejection remains controlling for that effect.
+
+Exact reviewed SHA-256 hashes
+
+Macro carrier: /Volumes/Mastermind/agent-workspaces/sol/tiingo-ingestion-20261009
+scripts/build_ext_quotes.py c52b23bc2ae67f3c6a48cf9b0167bcf93423d95fe2edf5dd10164b653897ce7f
+tests/test_tiingo_boats_display.py cf8b79f1c7ef38a2d8359f85d54d7f6a2531a3cc0f5458c997af10de3ca93185
+scripts/tiingo_ingest.py ef52fd2f90842c85a362254dae219a2593fed024b340a38fa5333a50e06981e6
+tests/test_tiingo_boats_stream_chain.py 0f3162d3ffb5f41100f7431acb5bb11fcb4b13e0cff622337c1c5e87d8bd5a58
+
+Terminal carrier: /Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/tiingo-boats-quotehub-b2b25c10fd296613
+hub/lib/extfeed.js e3ce2360083653ac43ebe9708d80ef308232142bcd48757c40f7267d33c0ddd8
+hub/lib/quotes.js 744f60814053481bc20839fe868fdfb7efce1d6ee3c69377d277ef266a6b8ecd
+hub/lib/store.js 0be314c0c5dec623144205058fa2e8b23252fe772b01e8540909e8f691011498
+hub/tests/boatsrelay.test.js a7d1b6012e6963abbc7fbd2790307250be3ef6029616b1f72bac1a91f931638f
+terminal/app/api/ext-quote/route.ts b306ccb71bf01467bb84256c0905ae3d5719887409f9afb373daac827f72aaa5
+terminal/app/api/quote/route.ts 289c3ac0d0d1932d8d3e565fd8da9a6be7fd8a6d9b42cbcb2ea37075efd42bd0
+terminal/components/TerminalShell.tsx 38eb6b7bd72e079aca5eef205cce020dbb30cb9d997da0d886f07d692b14e6bd
+terminal/lib/liveCandle.ts 7e8cd7df90b520ad369bb1a315033a042787b45426b7e90ab7b4d6d1151f191d
+terminal/lib/extQuoteFreshness.ts f860c445bdb9c9a42629c9f44a9fc3908ee4d31b9cd0ae810ff5a9c032595d76
+terminal/lib/__tests__/extQuoteRoute.test.ts 4787f5686de72a64b9bb42c928330e8e67a862a54cd862ea3a3b36e7f97a99d8
+terminal/lib/__tests__/quoteRouteView.test.ts db26d1572947b02f67a7901f94b1ce70b9ee9b925a159b22f81e5c943e09e19c
+terminal/lib/__tests__/extQuoteFreshness.test.ts 749c682d394ff6bff39df5a868ec4ad62b01e7db09a4d932a57640d8e5bed79b

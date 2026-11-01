@@ -1,0 +1,254 @@
+{
+  "as_of": "2026-10-08",
+  "coverage": {
+    "end": "2026-10-07",
+    "note": "daily rollup covers 10 session-date(s) from 2026-09-24 to 2026-10-07; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-09-24"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-10-07",
+      "events": []
+    },
+    {
+      "date": "2026-10-06",
+      "events": []
+    },
+    {
+      "date": "2026-10-05",
+      "events": []
+    },
+    {
+      "date": "2026-10-02",
+      "events": []
+    },
+    {
+      "date": "2026-10-01",
+      "events": []
+    },
+    {
+      "date": "2026-09-30",
+      "events": []
+    },
+    {
+      "date": "2026-09-29",
+      "events": []
+    },
+    {
+      "date": "2026-09-28",
+      "events": [
+        {
+          "date": "2026-09-28",
+          "id": "cev-regime_flip-94eb72732cfd",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-28#regime_china",
+          "tickers": [],
+          "title": "CHINA regime: Q4 Growth-scare → Q3 Stagflation",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "events": [
+        {
+          "date": "2026-09-25",
+          "id": "cev-regime_flip-13cfc7dee5af",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-09-25#regime_us",
+          "tickers": [],
+          "title": "US regime: Q3 Stagflation → Q2 Reflation",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-24",
+      "events": [
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-1896bae23cb6",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-f8nhnxlth6e-84709a",
+          "tickers": [],
+          "title": "The PunchLine: TPL Sept 23 26",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-2e464c36fc70",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-xquvtpnueu1-661934",
+          "tickers": [],
+          "title": "Bank of America: Global Equity Volatility Insights BTDD (buy the dispersion dip)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-4552ec55def4",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-68wyvesrh4q-cc2fc0",
+          "tickers": [],
+          "title": "S&T: GS Equities Color US EQUITIES COLOR INCREASING RATES PRESSURE 23 Sep 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-5185b722a356",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-8wmue97o1zc-e19d07",
+          "tickers": [],
+          "title": "J.P. Morgan: Pi gfiv 4q26",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-51c4eaaff00d",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-v62v8pl5vds-adbefc",
+          "tickers": [],
+          "title": "Goldman Sachs: Oil Analyst China Crude Imports Will Likely Remain Low For Now",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-5bc34c1e7f08",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-sjipdfd8qxk-a400d2",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Flows Liquidity",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-669986faf17a",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-scwhihalhqx-a9f08a",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM China AI value chain",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-88da5d23e967",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-lqbydvvs2b4-e01969",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Afternoon Briefing",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-9e4625985829",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-alc0nknqxhy-851f9b",
+          "tickers": [],
+          "title": "S&T: Daily ShortActivity22Sept2026 US CLEARED",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-9fc95621be07",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-zrm6c8wob07-dcdeeb",
+          "tickers": [],
+          "title": "Citi: The Point for Europe: Thursday, 24 September 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-a008115e6867",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-o6pszie7tyj-26f51f",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM The rise of tech in Brazil",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-a7c9b10a3d8f",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-d38vixq3uta-27670a",
+          "tickers": [],
+          "title": "TS Lombard: PUTTING MONEY BACK INTO MONETARY POLICY",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-ac36c151e83e",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-goykvdtdty8-770277",
+          "tickers": [],
+          "title": "Bank of America: BofA Securities Equity Client Flow Trends Record week for mid cap inflows",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-c0f3805e0481",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-apj9ulrx9ye-b4d97f",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Europe Equity Research | Today’s Morning Meeting",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-da9606471d37",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-oszef22hgjz-c87256",
+          "tickers": [],
+          "title": "Prime: GS Prime Insights The Efficient Frontier The Evolution of the SMA Landscape",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-f9645184e2d5",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-pyms1cbi93c-f9702e",
+          "tickers": [],
+          "title": "Bank of America: Systematic Flows Monitor Equity stop outs spread and trend followers rotate to USD",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-research_vault-f975c794844a",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-aqph1cyfnk6-a8ba64",
+          "tickers": [],
+          "title": "Other: Barings real estate summit 22 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-24",
+          "id": "cev-risk_band-93af7eccd764",
+          "kind": "state_flip",
+          "source": "risk_band",
+          "source_ref": "risk_radar_forward_log#2026-09-24",
+          "tickers": [],
+          "title": "Risk radar: calm → caution",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}

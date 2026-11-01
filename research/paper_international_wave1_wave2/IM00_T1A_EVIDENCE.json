@@ -1,0 +1,140 @@
+{
+  "scope": "IM00-T1a supplied-frame unrounded return records and actual observation provenance; source only",
+  "author": "Astra",
+  "direct_labor_exception": {
+    "reason": "CRITICAL_PATH_SHORTCUT / LOWER_TOTAL_OVERHEAD",
+    "witness": "Two bounded admitted fabrication attempts returned no source, including a source-only first-edit rescope; all effects settled and leases released. Parent implemented the frozen adapter; native Sol independently reviewed. No native worker, third unchanged retry, provider/account change or new financial policy."
+  },
+  "review": {
+    "verdict": "APPROVE_SCOPED",
+    "reviewer_session": "01a11057-3134-76d2-bcd1-784d69cc17d3",
+    "artifact_sha256": "c746f9c563a53c72e0af4145850fe547d389d110639df6a8f860feb81afa31b8",
+    "additional_assertions": 23
+  },
+  "source_hashes": {
+    "engine/intl_performance_records.py": "d25afe8240a4b7de17e3b187f946d4256943b6f8e56ac3bfa7977a7b9bc0368b",
+    "tests/test_intl_performance_records.py": "fa171e174906efe4f222eae92275236f8a4de2ae23a3391f5a424896cd71deee"
+  },
+  "source_owner": {
+    "base": "79b566f5c0ccba878ab963084a239993d3116aa9",
+    "nine_owner_config_inputs_unchanged": true,
+    "shared_performance_owner": "engine/intl_performance.py",
+    "shared_owner_modified": false,
+    "protected_PR": 7202,
+    "formulas_reused": [
+      "usd_series",
+      "_local_aligned",
+      "_ret",
+      "_ytd_ret"
+    ]
+  },
+  "validation": {
+    "focused_pytest": 43,
+    "prewritten_independent_assertions": 43,
+    "independent_additional_assertions": 23,
+    "integrated_focused_and_ci_checks": 48,
+    "runtime_matrix": [
+      "Python3.14/pandas3.0.5/numpy2.5.2",
+      "Python3.12/pandas3.0.6/numpy2.5.3"
+    ],
+    "finite_json": true,
+    "collector_store_reads": false,
+    "full_suite_pass_claim": false
+  },
+  "ci": {
+    "status": "PASS_SCOPED",
+    "job": "international-workspace-foundation",
+    "code_gate": "code",
+    "exclusive": true,
+    "declared_paths": [
+      "engine/__init__.py",
+      "engine/canon.py",
+      "engine/conditions.py",
+      "engine/indicators.py",
+      "engine/intl_inputs.py",
+      "engine/intl_market_state.py",
+      "engine/intl_performance.py",
+      "engine/intl_performance_records.py",
+      "engine/technicals.py",
+      "lib/__init__.py",
+      "lib/config.py",
+      "lib/store.py",
+      "config.yml",
+      "tests/conftest.py",
+      "tests/test_intl_performance_records.py"
+    ],
+    "inferred_named_closure": [
+      "config.yml",
+      "engine/__init__.py",
+      "engine/canon.py",
+      "engine/conditions.py",
+      "engine/indicators.py",
+      "engine/intl_inputs.py",
+      "engine/intl_market_state.py",
+      "engine/intl_performance.py",
+      "engine/intl_performance_records.py",
+      "engine/technicals.py",
+      "lib/__init__.py",
+      "lib/config.py",
+      "lib/store.py",
+      "tests/conftest.py",
+      "tests/test_intl_performance_records.py"
+    ],
+    "missing": [],
+    "positive_paths": 15,
+    "negative_controls": 4,
+    "inference_note": "derived scopes for 1/1 jobs"
+  },
+  "source_only_limits": [
+    "No caller/page mount or served-product proof.",
+    "Numerical availability never establishes current freshness, rights or headline eligibility.",
+    "Inherited owner binary floating-point limits retained; nonfinite calculations withheld.",
+    "Invalid source observations conservatively withhold affected legs even outside the selected window.",
+    "Timestamped charts/common-market comparison, presentation projection and shared controller remain separate work."
+  ],
+  "failed_fabric_attempts": [
+    {
+      "run": "rs_20261006T100943Z_70927",
+      "class": "execute",
+      "pool": "bailian",
+      "provider_started": false,
+      "rc": 75,
+      "reason": "outer leased key unavailable on mini2",
+      "cleanup_proven": true,
+      "lease_released": true,
+      "accepted_source": false
+    },
+    {
+      "run": "rs_20261006T101321Z_76548",
+      "class": "execute",
+      "pool": "grok",
+      "provider_started": true,
+      "rc": 124,
+      "stdout_bytes": 535,
+      "cleanup_proven": true,
+      "lease_released": true,
+      "accepted_source": false
+    },
+    {
+      "run": "rs_20261006T102808Z_15090",
+      "class": "execute",
+      "pool": "grok",
+      "provider_started": true,
+      "rc": 124,
+      "stdout_bytes": 97,
+      "cleanup_proven": true,
+      "lease_released": true,
+      "accepted_source": false
+    }
+  ],
+  "hierarchy": {
+    "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+    "one_existing_sol_session": "01a11057-3134-76d2-bcd1-784d69cc17d3",
+    "max_fabric_leaves": 1,
+    "native_grandchildren": 0,
+    "requested_sol_model": "gpt-6.1-sol",
+    "served_sol_model": null,
+    "routine_transport_waits": "Existing Fabric wrapper, no frontier polling loop"
+  },
+  "programme_complete": false
+}

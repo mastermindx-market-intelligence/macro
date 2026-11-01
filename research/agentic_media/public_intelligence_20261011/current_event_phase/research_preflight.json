@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-14T00:01:42.238968+00:00",
+  "slot_id": "press-research_desk-2026-10-13-6baf3247f154",
+  "source_refs": [
+    "research_vault:marketdesk-ergkmhwhsow-e05c9a"
+  ],
+  "source_url": "https://www.mastermind-x.com/research/gs-european-express-carbonomics-telcos-daimler-heidelberg-abi-macro-gl-e05c9a.html",
+  "source_http_status": 200,
+  "source_public": true,
+  "prompt_estimated_tokens": 2533,
+  "source_date": "2026-09-23",
+  "facts": 20,
+  "method": "existing ordinary Research Desk, first-party vault annotations, private staging only",
+  "old_unknown_scope": "October11 Brief provider attempt, no replay",
+  "publication_approved": false,
+  "input_hashes": {
+    "data/research_vault/catalog.json": "6dd8f03a76d66bb5b5dffc2520fd202bfe49f169a0b6a25cd165b0cf6d8bf379",
+    "data/chronicle/events.jsonl": "5bdf658c0b71c8236cb25772bd58553eafea4cc8de7648def87dff64fb7ba5eb",
+    "config/press.yml": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+    "config.yml": "a50423d1b2a692161bf7ba64dbb2b9943ba9db71be6d2c108a75a75dae3171f7",
+    "scripts/run_press.py": "7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6",
+    "engine/press/writer.py": "f74be94741ec26180420e4f607552d1cf56bc7bc70307753c167338d9624fed6"
+  }
+}

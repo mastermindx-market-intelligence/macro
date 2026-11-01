@@ -17,7 +17,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | blocked-entry-override | 2 |
 | btc-vector | 6 |
 | capital-structure-intelligence | 20 |
-| causal-hypothesis-factory | 9 |
+| causal-hypothesis-factory | 10 |
 | cbf | 2 |
 | ccw | 10 |
 | china-alpha | 25 |
@@ -30,7 +30,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | cycle-intelligence | 14 |
 | dannytrades | 1 |
 | earnings-evidence-spine | 1 |
-| engine-fix | 18 |
+| engine-fix | 19 |
 | entry-stack-expansion | 2 |
 | factor-intelligence | 7 |
 | fast-turn | 4 |
@@ -39,7 +39,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | fundamental-forensics | 3 |
 | gmi-theme-graph | 4 |
 | government-revenue-foresight | 42 |
-| grey-deer-risk-intelligence | 1 |
+| grey-deer-risk-intelligence | 3 |
 | hk-canada | 2 |
 | hk-pick-lab | 3 |
 | ignition-radar | 2 |
@@ -64,6 +64,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | metabolism-phase-v2d | 4 |
 | metabolism-phase0 | 2 |
 | mlc | 1 |
+| mo-b-f09-10-usgs-mcs | 1 |
 | momoedge | 10 |
 | narrative-ignition | 5 |
 | nasdaq-internals | 1 |
@@ -116,16 +117,16 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 
 | tier | count |
 |---|---|
-| display | 377 |
-| infrastructure | 162 |
+| display | 379 |
+| infrastructure | 163 |
 | scored | 5 |
-| shadow | 101 |
+| shadow | 103 |
 
 ### Artifacts by storage
 
 | storage | count |
 |---|---|
-| git | 605 |
+| git | 610 |
 | git+r2 | 3 |
 | gitignored-local | 19 |
 | r2 | 18 |
@@ -215,6 +216,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | causal-confluence-audit | `data/neuralweb/causal_confluence_audit.json` | json | daily-engine | shadow | 2 | 0 |
 | causal-nulls | `data/neuralweb/causal_nulls.jsonl` | jsonl | weekly | display | 2 | 0 |
 | causal-edges | `data/neuralweb/causal_edges.jsonl` | jsonl | weekly | display | 1 | 0 |
+| causal-filing-budget | `data/neuralweb/causal_filing_budget.jsonl` | jsonl | on-demand | infrastructure | 1 | 0 |
 | causal-frontier | `data/neuralweb/causal_frontier.json` | json | daily-engine | display | 1 | 0 |
 | causal-lab-state | `data/neuralweb/causal_lab_state.json` | json | daily-engine | display | 1 | 0 |
 | causal-llm-lane | `data/neuralweb/causal_llm_lane.json` | json | daily-engine | infrastructure | 1 | 0 |
@@ -364,10 +366,10 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | market-state-latest | `data/market_state/latest.json` | json | daily-engine | display | 8 | 0 |
 | risk-radar-forward-log | `data/risk_radar/forward_log.jsonl` | jsonl | daily-engine | display | 7 | 0 |
 | trial-ledger | `data/trial_ledger.jsonl` | jsonl | on-demand | infrastructure | 6 | 0 |
+| market-state-forward-log | `data/market_state/forward_log.jsonl` | jsonl | daily-engine | display | 5 | 0 |
 | regime-vector | `data/regime/regime_vector.parquet` | parquet | daily-engine | infrastructure | 4 | 0 |
 | site-regime-timeline | `site/regime_timeline.json` | json | daily-engine | display | 2 | 2 |
 | archetypes-history | `data/archetypes/history.parquet` | parquet | on-demand | display | 3 | 0 |
-| market-state-forward-log | `data/market_state/forward_log.jsonl` | jsonl | daily-engine | display | 3 | 0 |
 | regime-base-effect-fwd | `data/regime/base_effect_fwd.jsonl` | jsonl | daily-engine | display | 3 | 0 |
 | site-factors | `site/factordata/factors.json` | json | daily-engine | display | 3 | 0 |
 | data-risk-radar-scorecard | `data/risk_radar/scorecard.json` | json | daily-engine | display | 2 | 0 |
@@ -375,6 +377,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | site-regime-prior-js | `site/regimedata/regime_prior.js` | js | daily-engine | display | 2 | 0 |
 | site-riskdata-scorecard | `site/riskdata/scorecard.json` | json | daily-engine | display | 1 | 1 |
 | site-macro-signals | `site/macrodata/macro_signals.json` | json | daily-engine | display | 0 | 1 |
+| sp1500-pit-sectors | `data/breadth/sp1500_pit_sectors.parquet` | parquet | on-demand | display | 0 | 0 |
 
 ### entry-stack-expansion
 
@@ -487,7 +490,9 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 
 | id | path | format | cadence | tier | consumers | external consumers |
 |---|---|---|---|---|---|---|
-| risk-envelope-settled | `site/riskdata/risk_envelope.json` | json | daily-engine | display | 1 | 0 |
+| risk-envelope-settled | `site/riskdata/risk_envelope.json` | json | daily-engine | display | 6 | 2 |
+| grey-deer-pullback-forward-graded | `data/grey_deer_pullback/forward_log_graded.jsonl` | jsonl | daily-engine | shadow | 1 | 0 |
+| grey-deer-pullback-forward-log | `data/grey_deer_pullback/forward_log.jsonl` | jsonl | daily-engine | shadow | 1 | 0 |
 
 ### hk-canada
 
@@ -607,8 +612,8 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | id | path | format | cadence | tier | consumers | external consumers |
 |---|---|---|---|---|---|---|
 | forex-latest | `data/forex/latest.json` | json | daily-engine | display | 9 | 0 |
+| transmission-latest | `data/transmission/latest.json` | json | daily-engine | display | 5 | 0 |
 | commodity-latest | `data/commodity/latest.json` | json | daily-engine | display | 4 | 0 |
-| transmission-latest | `data/transmission/latest.json` | json | daily-engine | display | 4 | 0 |
 | crossasset-latest | `data/crossasset/latest.json` | json | daily-engine | display | 2 | 1 |
 | macro-snapshots-ledger | `data/macro_snapshots/ledger.parquet` | parquet | daily-engine | infrastructure | 3 | 0 |
 | bond-health | `data/bonds/bond_health.json` | json | daily-engine | display | 2 | 0 |
@@ -742,6 +747,12 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | id | path | format | cadence | tier | consumers | external consumers |
 |---|---|---|---|---|---|---|
 | site-stance-matrix | `site/mlcdata/stance_matrix.json` | json | daily-engine | display | 4 | 0 |
+
+### mo-b-f09-10-usgs-mcs
+
+| id | path | format | cadence | tier | consumers | external consumers |
+|---|---|---|---|---|---|---|
+| neuralweb-critical-minerals-supply | `data/neuralweb/critical_minerals_supply.json` | json | collect | display | 1 | 0 |
 
 ### momoedge
 
@@ -1097,9 +1108,9 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | id | path | format | cadence | tier | consumers | external consumers |
 |---|---|---|---|---|---|---|
 | site-marketdata-subsector-confluence | `site/marketdata/subsector_confluence.json` | json | daily-engine | display | 5 | 0 |
+| site-marketdata-rotation-events | `site/marketdata/rotation_events.json` | json | daily-engine | display | 3 | 0 |
 | site-marketdata-rotation-events-china | `site/marketdata/rotation_events_china.json` | json | daily-engine | display | 0 | 2 |
 | site-marketdata-rotation-events-hk | `site/marketdata/rotation_events_hk.json` | json | daily-engine | display | 0 | 2 |
-| site-marketdata-rotation-events | `site/marketdata/rotation_events.json` | json | daily-engine | display | 1 | 0 |
 | data-rotation-events-china-ledger | `data/rotation_events_china/events.jsonl` | jsonl | daily-engine | display | 0 | 0 |
 | data-rotation-events-hk-ledger | `data/rotation_events_hk/events.jsonl` | jsonl | daily-engine | display | 0 | 0 |
 | data-rotation-events-ledger | `data/rotation_events/events.jsonl` | jsonl | daily-engine | display | 0 | 0 |
@@ -1700,6 +1711,20 @@ Artifacts below have `known_extra_writers` — additional code paths that write 
 - **extra writers:**
   - engine/stock_fundamentals.py — _compute_trap_block() calls great_company_trap() inside panels()
 
+### grey-deer-pullback-forward-graded
+
+- **path:** `data/grey_deer_pullback/forward_log_graded.jsonl`
+- **declared producer:** `engine/grey_deer_pullback_forward_grade.py`
+- **extra writers:**
+  - scripts/grey_deer_pullback_nightly.py — the nightly runner that calls the grader
+
+### grey-deer-pullback-forward-log
+
+- **path:** `data/grey_deer_pullback/forward_log.jsonl`
+- **declared producer:** `engine/grey_deer_pullback_forward.py`
+- **extra writers:**
+  - scripts/grey_deer_pullback_nightly.py — the nightly runner that calls the writer; holds no model, label, gate or clock logic
+
 ### hk-1d-velocity-desk-artifact
 
 - **path:** `site/factordata/hk_1d_velocity_desk.json`
@@ -2075,6 +2100,20 @@ Artifacts below have `known_extra_writers` — additional code paths that write 
 - **declared producer:** `engine/subsector_track_record.py`
 - **extra writers:**
   - scripts/build_subsector_rotation.py — CLI runner; calls compute() then appends snapshot
+
+### theme-graph-edges
+
+- **path:** `data/theme_graph/edges.parquet`
+- **declared producer:** `scripts/build_theme_graph.py`
+- **extra writers:**
+  - scripts/correct_gmi_identity_lineage.py
+
+### theme-graph-evidence
+
+- **path:** `data/theme_graph/evidence.parquet`
+- **declared producer:** `scripts/build_theme_graph.py`
+- **extra writers:**
+  - scripts/correct_gmi_identity_lineage.py
 
 ### trial-ledger
 

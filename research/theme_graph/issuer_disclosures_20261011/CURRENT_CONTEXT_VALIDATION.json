@@ -1,0 +1,37 @@
+{
+  "schema": "gmi.current_company_context_validation/v1",
+  "at": "2026-10-11T14:43:11.475544+00:00",
+  "red": {
+    "exec": 17124,
+    "rc": 1,
+    "cases": 5,
+    "seconds": 2.39
+  },
+  "green": {
+    "exec": 7086,
+    "rc": 0,
+    "tests": 160,
+    "seconds": 5.02
+  },
+  "ci_closure": {
+    "exec": 84240,
+    "rc": 0,
+    "findings": {}
+  },
+  "review": {
+    "owner": "/root/native_fact_architecture",
+    "role": "independent reasoning only",
+    "verdict": "Correction accepted; no remaining make-or-break defect in changed guards",
+    "tests_run_by_reviewer": false
+  },
+  "sources": {
+    "engine/company_intelligence/current_company_context.py": "7267e953c813cb8bf742307be4856e19849b02dc9d39cf1758030d111b1c719c",
+    "app/company_disclosures.py": "609d94f7edee641f6aba976ccf66f86d822230bd8b3e07e031c09ce573d581ce",
+    "tests/test_company_disclosures_api.py": "c00043b3999430fdd75e018d0e0fc223892f9b088903541798177de55a376937",
+    ".github/ci/legacy-jobs.yml": "35ac2a70c0f9c37d50f9031c0380002cd6252f7641e8850ab31c0cf4f0622625"
+  },
+  "actual_reference_proof_sha256": "af61c7b469333704ca5595ff8e118742b7fb70279f10d1eceb6ce68eb3c04b5c",
+  "installed_runtime": false,
+  "source_rights_granted": false,
+  "production_accepted": false
+}

@@ -1,0 +1,29 @@
+{
+  "bytes": 16086,
+  "decoded_bytes": 81591,
+  "decoded_sha256": "8868f90d1be7ce2daa304f048447a9aec66e24b939e2edb5d5703964b0b6dcc8",
+  "files": [
+    {
+      "byte_length": 8132,
+      "path": "CI_REFRESH_ADJUDICATION_004.md",
+      "sha256": "3208be87ff0bbcb738c2e8847067ea868bea93451c88fe28e262e53391101bcb"
+    },
+    {
+      "byte_length": 3103,
+      "path": "README.md",
+      "sha256": "04eb1bd05bd75a735aa13b003f617fa71add527deadc6856e5842f1311047732"
+    },
+    {
+      "byte_length": 3375,
+      "path": "PROTECTED_SOURCE_RECONCILIATION_004.json",
+      "sha256": "0ccc4a35c77a85e8ad1c099abc84bb6b780a45180877e7dd04b8265ff7e1816f"
+    },
+    {
+      "byte_length": 59519,
+      "path": "native_validation/CI_REFRESH_RUNNER_SCRIPTS_004.json",
+      "sha256": "ad84d9f1eda65dffbf69d4386ffa09e9492bcfc1a3d7164b647b09aac4176796"
+    }
+  ],
+  "schema": "economic_network.control_transport/v1",
+  "sha256": "15a21d25acd4563fc436316ed55e7fd1f4327e60afde689b62dfdfa9f1aaea4e"
+}

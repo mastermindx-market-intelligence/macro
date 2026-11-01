@@ -222,6 +222,40 @@ def test_fetch_is_exactly_one_explicit_bearer_first_page_request() -> None:
     assert TOKEN.encode() not in repr(fetched).encode()
 
 
+@pytest.mark.parametrize(
+    ("status", "expected"),
+    (
+        (401, "401"),
+        (403, "403"),
+        (429, "429"),
+        (302, "3xx"),
+        (404, "4xx"),
+        (503, "5xx"),
+        (204, "other"),
+    ),
+)
+def test_non_200_carries_only_a_fixed_status_class_note(
+    status: int, expected: str
+) -> None:
+    fetcher = ScriptedFetcher(_http_response(status=status))
+
+    with pytest.raises(option_oi.MarketMemoryOptionOiObservationError) as raised:
+        option_oi.fetch_current_spy_option_oi_response(
+            bearer_token=TOKEN,
+            fetcher=fetcher,
+        )
+
+    assert str(raised.value) == "option-OI source did not return HTTP 200"
+    assert raised.value.__notes__ == [
+        option_oi.HTTP_STATUS_CLASS_NOTE_PREFIX + expected
+    ]
+
+
+def test_http_status_class_buckets_non_int_as_other() -> None:
+    assert option_oi._http_status_class("403") == "other"
+    assert option_oi._http_status_class(True) == "other"
+
+
 def test_fetcher_rejects_redirect_compression_partial_and_credential_metadata() -> None:
     cases = [
         _http_response(status=302, headers_extra=(("Location", "https://evil.test"),)),

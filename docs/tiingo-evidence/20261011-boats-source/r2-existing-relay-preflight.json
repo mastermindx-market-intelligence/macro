@@ -1,0 +1,13 @@
+{
+  "observed_at_utc": "2026-10-11T22:17:46.324488+00:00",
+  "http_status": 200,
+  "cache_control": null,
+  "etag": "\"50049de465f6c117baf75aa4c1804d84\"",
+  "body_sha256": "f2bab212e3e29b0692af00d2873993429a667852b294f36fe9148fdc72002a14",
+  "schema": "flow.ext_quotes/v1",
+  "source": "yahoo-chart (grey)",
+  "publication_time": "2026-07-16T23:59:28Z",
+  "quote_count": 115,
+  "public_quote_prices_printed": false,
+  "legacy_object_qualified_for_boats": false
+}

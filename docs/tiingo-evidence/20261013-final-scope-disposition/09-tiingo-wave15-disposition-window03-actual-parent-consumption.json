@@ -1,0 +1,30 @@
+{
+  "schema": "tiingo.attended_disposition_window_actual_terminal_parent_consumption/v1",
+  "recorded_at_utc": "2026-10-13T01:50:41.197608+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "original_tool_session": 10051,
+  "original_exit_code": 0,
+  "actual_original_terminal_return_consumed": true,
+  "core_sha256": "824e31f5d7d851784240fb9b9f9aa0938b26fcaa6b1a70fec44a6753c2a1cf01",
+  "controller_sha256": "0ffa5f8d5d748ae438257c532fa306964be49c9e800f26b8b120b6ad66e866ba",
+  "original_log_sha256": "0914751ed86b6dc516b3932d0685cd2aa70970eb748bae53bff12af26766aea2",
+  "completed_prefixes": [
+    "04",
+    "05"
+  ],
+  "qualification_sha256": {
+    "eod-wave15-prefix04-qualified.json": "054b4ebb60e2f568251babd0dd6c543d2744c5d46655e767ad9f8becbda7f57b",
+    "eod-wave15-prefix05-qualified.json": "a0d9ddb7bdc981ecd2a1459f57a58f83141c96d4d00ebcd02ecd021c6d9ab58a"
+  },
+  "coverage_sha256": {
+    "eod-qualified-catalogue-coverage-wave15-prefix04-delta.json": "f31fa77bc32ac9c428908bec0a306790cf4d24e28fc022f32f48c8b559c7f70f",
+    "eod-qualified-catalogue-coverage-wave15-prefix05-delta.json": "8073eb5e798b1887d3736bda157cc7c4f3cac7f6a6b042ff99298bf811a22f11"
+  },
+  "all_listed_qualifier_and_coverage_returns_consumed": true,
+  "raw_capture_original_tool": 43992,
+  "raw_capture_terminal_return_consumed": true,
+  "all_1758_successful_responses_dispositioned": true,
+  "invalid_whole_SCNG_raw_receipt_still_unprojected": true,
+  "foreign_PXSTD_artifact_hashes_preserved": true,
+  "raw_capture_complete_claimed": false
+}

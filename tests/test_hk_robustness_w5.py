@@ -330,7 +330,7 @@ class TestFreshnessSentinelSouthbound:
         now = datetime(2026, 7, 8, 12, 0, tzinfo=timezone.utc)
         from lib.hk_calendar import expected_last_session
         expected = expected_last_session(now)
-        stale_date = date(2026, 7, 1)   # 7 cal days old -> stale
+        stale_date = date(2026, 6, 30)  # Five missed Connect sessions; July 1 is closed.
 
         result = self._run_sentinel(
             tmp_path, now,

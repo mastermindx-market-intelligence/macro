@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-14T14:22:01.459774+00:00",
+  "source_parent": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+  "remote_head_readback": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+  "added": [
+    "engine/rates_command_basis.py",
+    "engine/neuralweb/market_memory_brain_citations.py",
+    "engine/neuralweb/market_memory_retained_catalog.py",
+    "engine/neuralweb/market_memory_retained_legacy_guard.py",
+    "engine/neuralweb/market_memory_retained_saved.py"
+  ],
+  "job_count": 309,
+  "execution_definitions_order_and_prior_paths_preserved": true,
+  "manifest_sha256": "220828ce9af2c2987f026fb4b85e39beb365b94faca6341120b0b77e9bba7a4b",
+  "packing_ceiling_changed": false,
+  "source_only_local": true,
+  "base_refresh_or_merge": false
+}

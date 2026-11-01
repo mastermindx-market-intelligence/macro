@@ -1,0 +1,18 @@
+{
+  "accepted_at_utc": "2026-10-13T00:03:40.647742+00:00",
+  "actual_merged_at_utc": "2026-10-13T00:02:56Z",
+  "auto_or_admin_merge_requested": false,
+  "merge_commit": "a13962ee3915e18a8ee21fa8e3a8fa05d475d62f",
+  "merge_effect_read_sha256": "7d8c59e3bd3b7c1169515ca0b894b312af598f57f0d1788279130c632eed8e11",
+  "original_merge_tool_exit_code": 0,
+  "original_merge_tool_session_id": 79438,
+  "original_terminal_return_consumed": true,
+  "pr": 9039,
+  "premerge_all_12_and_ci_gate_authority_fences_success": true,
+  "premerge_ci_acceptance_sha256": "86ed159b00d91ff9aff4f62a06cf2e9b7b6d74b6a24ea0d47bddc1e1641b7e6a",
+  "programme_acceptance_claimed": false,
+  "runtime_change": false,
+  "schema": "tiingo_exact_head_conditional_merge_effect.v1",
+  "source_effect": "reviewed evidence and workstream frontier only",
+  "tested_head": "5b011af8e25ead31bb20b23d451b74a60bd6f44c"
+}

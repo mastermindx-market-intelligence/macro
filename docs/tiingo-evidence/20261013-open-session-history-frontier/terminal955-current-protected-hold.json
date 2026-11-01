@@ -1,0 +1,19 @@
+{
+  "approval_retried": false,
+  "current_head": "8811e38c64eb14fadc40a00ccfbfb31c37f863e8",
+  "current_pr_ci_approval_refusal_preserved": true,
+  "current_pr_ci_last_observed_conclusion": "action_required",
+  "current_pr_ci_run_id": 38319943025,
+  "current_pr_state": "OPEN",
+  "dispatched_ci_success_not_current_required_pr_check_proof": true,
+  "existing_dispatch_all_12_successful": true,
+  "existing_dispatch_ci_acceptance_sha256": "e2447275f065cada9ea64206d31dc6f648096065009c4bad0591788eca29618d",
+  "merge_or_runtime_effect": false,
+  "merge_state": "BLOCKED",
+  "next_release_condition": "Original PR carrier becomes lawfully merge-admissible with required current-head checks; no bypass of approval refusal",
+  "observed_at_utc": "2026-10-12T23:51:32.172205+00:00",
+  "pr": 955,
+  "protected_state_read_sha256": "7867c14645c50e70feb81281a036212fe9b6752f7ed11e9390b96ec0fa590848",
+  "replacement_workflow_or_observer_started": false,
+  "schema": "tiingo_original_carrier_release_gate.v1"
+}

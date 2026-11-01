@@ -338,6 +338,21 @@ def _health_panel(html: str) -> str:
     return match.group(0)
 
 
+def test_macro_health_detail_is_lazy_but_complete_on_disclosure():
+    """The large static health table must not inflate Macro's initial active DOM."""
+    html = _render("macro")
+    panel = _health_panel(html)
+    assert re.search(r"</summary>\s*<template data-health-fold>\s*<div class=\"tbl-scroll\">\s*<table>", panel)
+    assert panel.index("</summary>") < panel.index("<template data-health-fold>")
+    assert panel.count("<table>") == 1
+    assert "Source health data is unavailable for this build." in panel
+    assert "panel.appendChild(contents.content);" in html
+    assert "panel.addEventListener('toggle', hydrate);" in html
+    assert "panel.removeEventListener('toggle', hydrate);" in html
+    assert "document.dispatchEvent(new CustomEvent('mmx-tables-ready'" in html
+    assert "data-health-fold" not in _render("stocks")
+
+
 def test_macro_health_empty_is_unknown_not_green():
     panel = _health_panel(_render("macro"))
     opening = panel.split(">", 1)[0]
@@ -1569,3 +1584,60 @@ def test_inflation_read_block_carries_no_retired_vocabulary():
         assert word not in block, word
     for token in ("'above target'", "'at target'", "'below target'", "'anchored'", "'drifting up'", "'drifting down'"):
         assert token in block, token
+
+def test_macro_sentiment_dialog_hydrates_after_registration_gate() -> None:
+    vm = _base_vm()
+    vm["fear_greed"] = {"dial": 62, "label_en": "Greed", "label_zh": "贪婪"}
+    html = _env().get_template("dashboard.html.j2").render(**vm, mode="macro")
+    start = html.index('id="dlg-sentiment"')
+    end = html.index('id="dlg-sector"', start)
+    dialog = html[start:end]
+    assert dialog.count('template data-sentiment-fold') == 1
+    assert dialog.count('</template>') == 1
+    assert 'Composite of 11 market gauges' in dialog
+    assert dialog.index('template data-sentiment-fold') < dialog.index('Composite of 11 market gauges')
+    assert dialog.index('</template>') < dialog.rindex('</div>')
+    open_at = html.index('window.mx5OpenDlg = function(id)')
+    authorized = html.index('window.MMXAccessPreview.isAnon()', open_at)
+    hydration = html.index('sentimentBody.appendChild(sentimentFold.content)', open_at)
+    visible = html.index("dlg.classList.add('open')", open_at)
+    assert authorized < hydration < visible
+    assert 'sentimentFold.remove()' in html[hydration:visible]
+
+
+def test_macro_overseas_risk_fold_keeps_baked_evidence_inert_until_disclosure() -> None:
+    # Inspect the authored template rather than importing another CI-owned suite.
+    # Full rendered interaction coverage is retained in the browser evidence.
+    source = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    start = source.index('id="riskdlg-overseas-more"')
+    end = source.index('</details>', start)
+    fold = source[start:end]
+    assert fold.count('<template data-overseas-fold>') == 1
+    assert fold.count('</template>') == 1
+    assert 'Tracked overseas markets' in fold
+    assert fold.index('<template data-overseas-fold>') < fold.index('mx5-dlg-eyebrow')
+    assert fold.index('US Transmission board') < fold.index('</template>')
+    handler = source[end:end + 1700]
+    assert "fold.addEventListener('toggle', hydrateOverseas)" in handler
+    assert "fold.appendChild(inert.content)" in handler
+    assert "fold.removeEventListener('toggle', hydrateOverseas)" in handler
+    assert "if (!fold.open) return" in handler
+
+
+def test_macro_mobile_chat_launcher_only_suppresses_decoration_not_interaction() -> None:
+    """Phones keep the real lazy Chat Brain entry; desktop retains animation."""
+    src = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    marker = "/* On phone-size Macro, continuously repainting"
+    assert src.count(marker) == 1
+    css = src[src.index(marker):src.index("\n  }\n", src.index(marker)) + len("\n  }\n")]
+    assert "@media (max-width: 768px)" in css
+    for part in ("#mmb-boot", "#mmb-launch", "#mmb-launch::before",
+                 "#mmb-launch *::after", "#mmb-boot *::before"):
+        assert "body.page-macro " + part in css
+    assert "animation: none !important;" in css
+    assert "display: none" not in css and "pointer-events: none" not in css
+    macro = _env().get_template("dashboard.html.j2").render(**_base_vm(), mode="macro")
+    stocks = _env().get_template("dashboard.html.j2").render(**_base_vm(), mode="stocks")
+    assert '<body class="page-macro mx4-grid">' in macro
+    assert '<body class="page-stocks">' in stocks
+    assert "body.page-macro #mmb-launch::before" in macro

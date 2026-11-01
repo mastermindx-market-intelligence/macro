@@ -12,12 +12,13 @@ objective: >
 status: active
 program: sector-rotation-intelligence
 repos: [macro]
-owner: coo-fable
+owner: fable-meta-ceo
 class: build
 blast_radius: user_facing
 ambiguity: scoped
 depends_on:
   - WS:GMI-THEME-GRAPH
+  - WS:GMI-SEMICONDUCTORS
 owns_paths:
   - contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json
   - data/sector_intelligence/fixtures/finance_intelligence_read_model.v1.valid.json
@@ -49,6 +50,9 @@ decisions:
   - DEC:FINANCE-REGISTRATION-OMISSIONS-ARE-A-CLOSED-VOCABULARY-AND-EVIDENCE-EMBEDS-THE-VALIDATORS-COPY
   - DEC:FINANCE-COMPOSER-NEVER-MINTS-AN-EVIDENCE-REF
   - DEC:FINANCE-AN-OBSERVATION-HAS-ONE-DATE
+  - DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11
+  - DEC:SEMICONDUCTOR-B-H1-FINANCE-ADAPTER-HOLDS-SECTOR-PROFILE
+  - DEC:FINANCE-SEC-EVIDENCE-RIGHTS-HELD-UNTIL-FAMILY-ADMITTED
 artifacts:
   - agentos/handoffs/GMI-FINANCE-INTELLIGENCE-2026-09-24.md
   - agentos/handoffs/GMI-FINANCE-INTELLIGENCE-2026-09-27.md
@@ -88,6 +92,14 @@ waves:
     title: "Degraded/accessibility/privacy qualification, independent review, real browser proof, production acceptance (Tasks 14–16)"
     status: todo
 next_action: >
+  2026-10-11 CONSOLIDATION: owner is now fable-meta-ceo (DEC:CHAIRMAN-INDUSTRY-INTELLIGENCE-META-CEO-CONSOLIDATION-2026-10-11); the Finance seat
+  938d17d6 has been silent since 2026-09-29 and no live writer exists on these paths. H1 on #7870
+  is ruled B and implemented at acc72f3fb3efb1ad092359ce2ba4190de66d75e1: the adapter raises
+  vertical_registration_held:sector_profile before construction; Sol's "do not edit either Finance
+  file" fence is superseded (#7870 comment 6105015260 section C-3). The P-FIN-1 packet (register
+  _finance_sector_deep_dive.html.j2 in _SUPPORT_PARTIALS; 30 TemplateNotFound reds on main in
+  tests/test_research_priority_ordering.py) is the first Finance labor to dispatch after #7870 lands.
+  .
   2026-09-28 wave closed (handoff GMI-FINANCE-INTELLIGENCE-2026-09-28; the one before it,
   GMI-FINANCE-INTELLIGENCE-2026-09-27, carries the history of T1-T3, T8-T11 and the composer
   follow-ups #8113 to #8138). This wave closed every composer item the 09-27 handoff left open:
@@ -111,8 +123,8 @@ next_action: >
   composer crashes, closed, on 70 of 184 malformed container shapes on the default fixture), and
   write a source record's own clocks as dates (the contract refuses a timestamp there). (2) Wire
   the Financials launch include when #7669 merges. (3) Carry the deferred review MINORs and the
-  T10 gaps (the #7870 owner-bundle wire grammar is not adopted; the round trip is a strict xfail
-  until §8 sector_profile is adjudicated) into the integration wave.
+  T10 gaps (the #7870 owner-bundle wire grammar is not adopted; the round trip's absorbing xfail is RETIRED and the §8 sector_profile case is
+  ADJUDICATED as a typed hold (DEC:SEMICONDUCTOR-B-H1-FINANCE-ADAPTER-HOLDS-SECTOR-PROFILE); forwarding view_keys/build_query waits on Option A) into the integration wave.
 ---
 
 # Finance Intelligence workstream

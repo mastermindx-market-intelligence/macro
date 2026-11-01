@@ -7,16 +7,22 @@ signal recompute is network-bound, so we exercise the math on synthetic prices.
 """
 from __future__ import annotations
 
+import math
+
 import numpy as np
 import pandas as pd
+import pytest
 
 from engine.validation import (
+    _maxdd,
     _norm_cdf,
     _norm_ppf,
     backtest_core,
     deflated_sharpe,
+    design_rank,
     dsr_verdict,
     ret_moments,
+    vif,
 )
 from scripts.calibrate_commodities import backtest as commodity_backtest
 from scripts.calibrate_forex import backtest_conviction, conviction_series
@@ -180,3 +186,135 @@ def test_backtest_conviction_empty_when_flat():
     close = pd.Series(np.linspace(1.0, 1.1, 100), index=idx)
     assert backtest_conviction(close, None) == {}
     assert backtest_conviction(close, pd.Series(0.0, index=idx)) == {}  # managed peg => no trades
+
+
+# --------------------------------------------------------------------------- #
+# validation primitives: _maxdd initial loss + vif rank abstention
+# --------------------------------------------------------------------------- #
+def test_maxdd_counts_initial_loss_from_starting_capital():
+    assert _maxdd(np.array([-0.10, 0.05])) == pytest.approx(-0.10)
+    assert _maxdd([-0.2, 0.1, 0.1]) == pytest.approx(-0.2)
+
+
+def test_maxdd_unchanged_when_first_return_is_gain():
+    rng = np.random.default_rng(2)
+    r = rng.normal(0, 0.01, 500)
+    r[0] = abs(r[0]) + 1e-3
+    eq = np.cumprod(1 + r)
+    peak = np.maximum.accumulate(eq)
+    old = float(np.min(eq / peak - 1))
+    assert _maxdd(r) == pytest.approx(old)
+
+
+def test_maxdd_zero_for_monotone_gains_and_empty():
+    assert _maxdd([0.01] * 10) == 0.0
+    assert _maxdd([]) == 0.0
+
+
+def test_vif_singular_design_returns_empty():
+    rng = np.random.default_rng(2)
+    x1 = rng.normal(size=200)
+    x2 = rng.normal(size=200)
+    df = pd.DataFrame({"x1": x1, "x2": x2, "x3": x1 + x2})
+    assert vif(df) == {}
+
+
+def test_vif_zero_variance_column_is_dropped_not_reported():
+    rng = np.random.default_rng(2)
+    x1 = rng.normal(size=200)
+    x2 = rng.normal(size=200)
+    df = pd.DataFrame({"x1": x1, "x2": x2, "c": 1.0})
+    out = vif(df)
+    assert set(out) == {"x1", "x2"}
+    assert all(math.isfinite(v) for v in out.values())
+    assert "c" not in out
+    assert design_rank(df)["dropped_zero_variance"] == ["c"]
+
+
+def test_vif_full_rank_design_still_reports_values():
+    rng = np.random.default_rng(3)
+    df = pd.DataFrame({"x1": rng.normal(size=300), "x2": rng.normal(size=300),
+                       "x3": rng.normal(size=300)})
+    out = vif(df)
+    assert set(out) == {"x1", "x2", "x3"}
+    assert all(math.isfinite(v) and v < 1.5 for v in out.values())
+    near = df.copy()
+    near["x3"] = df["x1"] + 0.01 * rng.normal(size=300)
+    out_near = vif(near)
+    assert all(math.isfinite(v) for v in out_near.values())
+    assert out_near["x3"] > 50
+
+
+def test_design_rank_reports_deficiency():
+    rng = np.random.default_rng(2)
+    x1 = rng.normal(size=200)
+    x2 = rng.normal(size=200)
+    dr = design_rank(pd.DataFrame({"x1": x1, "x2": x2, "x3": x1 + x2}))
+    assert dr["rank"] == 2
+    assert dr["n_cols"] == 3
+    assert dr["rank_deficient"] is True
+    assert dr["condition_number"] is None
+    full = pd.DataFrame({"x1": x1, "x2": x2, "x3": rng.normal(size=200)})
+    drf = design_rank(full)
+    assert drf["rank"] == 3
+    assert drf["rank_deficient"] is False
+    assert math.isfinite(drf["condition_number"]) and drf["condition_number"] >= 1.0
+    assert design_rank(full.iloc[:10])["thin"] is True
+
+
+def test_vif_never_returns_non_finite_values():
+    rng = np.random.default_rng(2)
+    x1 = rng.normal(size=200)
+    x2 = rng.normal(size=200)
+    singular = pd.DataFrame({"x1": x1, "x2": x2, "x3": x1 + x2})
+    zero_var = pd.DataFrame({"x1": x1, "x2": x2, "c": 1.0})
+    full = pd.DataFrame({"x1": x1, "x2": x2, "x3": rng.normal(size=200)})
+    for frame in (singular, zero_var, full):
+        assert all(math.isfinite(v) for v in vif(frame).values())
+
+# --------------------------------------------------------------------------- #
+# C19 WP07 N1: the impact-cost sigma warmup must not read future returns
+# --------------------------------------------------------------------------- #
+def _c19_wp07_fixture():
+    n = 300
+    idx = pd.bdate_range("2020-01-01", periods=n)
+    r = np.random.default_rng(7).normal(0.0003, 0.012, n)
+    r2 = r.copy()
+    r2[151:] *= 3.0                                     # identical through bar 150, 3x vol after
+    c1 = pd.Series(100 * np.cumprod(1 + r), index=idx)
+    c2 = pd.Series(100 * np.cumprod(1 + r2), index=idx)
+    alloc = pd.Series([(i // 3) % 2 for i in range(n)], index=idx, dtype=float)
+    kw = dict(cost_bps=5.0, dollar_adv=pd.Series(1e7, index=idx), aum_usd=1e8)
+    return c1, c2, alloc, kw
+
+
+def test_backtest_core_impact_sigma_warmup_is_non_anticipating():
+    c1, c2, alloc, kw = _c19_wp07_fixture()
+    a = backtest_core(c1, alloc, **kw)
+    b = backtest_core(c2, alloc, **kw)
+    assert a["turnover"].iloc[:151].equals(b["turnover"].iloc[:151])
+    assert a["net"].iloc[:151].equals(b["net"].iloc[:151])       # past net may not move when the future does
+    assert not a["net"].iloc[151:].equals(b["net"].iloc[151:])   # the perturbation is real
+
+
+def test_backtest_core_flat_cost_path_is_byte_identical():
+    c1, _, alloc, _ = _c19_wp07_fixture()
+    bt = backtest_core(c1, alloc, 5.0)
+    ret = c1.pct_change().fillna(0)
+    pos = alloc.shift(1).reindex(ret.index).ffill().fillna(0)
+    turnover = pos.diff().abs().fillna(0.0)
+    assert sorted(bt) == ["gross", "hold", "net", "pos", "ret", "turnover", "years"]
+    assert bt["net"].equals(pos * ret - (5.0 / 1e4) * turnover)
+
+
+def test_backtest_core_impact_sigma_unchanged_once_window_fills():
+    c1, _, alloc, kw = _c19_wp07_fixture()
+    bt = backtest_core(c1, alloc, **kw)
+    ret = c1.pct_change().fillna(0)
+    pos = alloc.shift(1).reindex(ret.index).ffill().fillna(0)
+    turnover = pos.diff().abs().fillna(0.0)
+    sigma = ret.rolling(21).std()
+    participation = (1e8 * turnover / kw["dollar_adv"]).clip(lower=0.0)
+    cost = (5.0 / 1e4 + 0.1 * sigma * np.sqrt(participation)) * turnover
+    expected = pos * ret - cost
+    assert np.array_equal(bt["net"].iloc[20:].to_numpy(), expected.iloc[20:].to_numpy())

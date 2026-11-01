@@ -278,12 +278,15 @@ def api_key() -> str | None:
 # ─────────────────────────────────────────────────────────────────────────────
 # The network seam — ONE function, injectable, never raising
 # ─────────────────────────────────────────────────────────────────────────────
-def _default_fetch(key: str) -> Callable[[str, Mapping[str, Any] | None], Any]:
+def _default_fetch(key: str, *, allow_redirects: bool = True) -> Callable[[str, Mapping[str, Any] | None], Any]:
     """Build the real fetcher. ``fetch(path_or_url, params) -> payload | None``.
 
     None means "no answer" — transport error, 5xx after the retry budget, or a
     body that would not parse. A caller cannot tell those apart and must not: all
     three mean the same thing to a lane that has to publish either way.
+
+    Artifact qualification may opt out of redirects; existing callers retain
+    their transport behavior. A refused redirect is terminal, with no retry.
 
     THE KEY RIDES A HEADER, never a query string, so no URL this module builds —
     and no exception text requests embeds a URL into — can carry the secret.
@@ -300,8 +303,9 @@ def _default_fetch(key: str) -> Callable[[str, Mapping[str, Any] | None], Any]:
                else base + path_or_url)
         for attempt in range(ATTEMPTS):
             try:
+                redirect_options = {} if allow_redirects else {"allow_redirects": False}
                 resp = session.get(url, params=dict(params or {}) or None,
-                                   timeout=TIMEOUT_S)
+                                   timeout=TIMEOUT_S, **redirect_options)
             except Exception:  # noqa: BLE001 — transport; retry, then give up
                 if attempt + 1 < ATTEMPTS:
                     continue
@@ -311,7 +315,7 @@ def _default_fetch(key: str) -> Callable[[str, Mapping[str, Any] | None], Any]:
             # is the retry storm the budget exists to prevent.
             if 500 <= status < 600 and attempt + 1 < ATTEMPTS:
                 continue
-            if status >= 400:
+            if status >= 400 or (not allow_redirects and 300 <= status < 400):
                 return None
             try:
                 return resp.json()
@@ -576,3 +580,14 @@ def corp_action_tickers(session: str, *,
         dividends_n=len(divs), complete=complete,
         reason=None if complete else "a corp-action page failed or the page cap "
                                      "was hit — treat as guard down")
+
+
+def retain_split_history(ticker: str, earliest_bar_et_date: str, basis_date: str, *, store_root):
+    """Explicit opt-in evidence; no default close-pass caller or basis admission.
+
+    Unlike the legacy conservative guard, this durable evidence operation raises
+    typed intake/store errors rather than pretending a failed write was retained.
+    """
+    from engine.close_pass.massive_split_evidence import retain_split_history as retain
+
+    return retain(ticker, earliest_bar_et_date, basis_date, store_root=store_root)

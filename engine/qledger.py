@@ -33,6 +33,7 @@ import logging
 import math
 import os
 import re
+import sys
 from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
 from pathlib import Path
@@ -43,15 +44,69 @@ import pandas as pd
 # Reuse the exact price layer the rest of the suite grades on. `_close_series`
 # has the breadth-cache fallback so subjects beyond the ~153 yahoo parquets are
 # still scorable; `_level_asof`/`close_at`/`covers` share it.
-from engine.ai_desk import _GICS_ETF, _level_asof
-from engine import ai_desk as _aidesk  # module ref: tests monkeypatch ai_desk._close_series
-from engine.ai_desk_scorer import _close_at, _covers
+#
+# DEFERRED ON PURPOSE (do not hoist back to module level). ai_desk pulls the
+# nightly scoring tail — master_brain, desk_scorer, desk_ledger, catalyst_tone,
+# session_anchor, ticker_shape — and a module-level import here puts that whole
+# tail into the LOAD-TIME closure of every consumer of this module. The admin
+# panel reads this module's stores per request (Intelligence OS evidence view),
+# so hoisting these would drag the nightly brain into the panel's sys.modules and
+# force app/deploy/update.sh to restart admin on nightly-only changes — the exact
+# over-broad closure tests/test_deploy_update_self_heal.py forbids. Grading paths
+# below pay one cached sys.modules lookup instead. Every call site goes through
+# `_lazy()`, which resolves through THIS module's namespace and falls through to
+# `__getattr__` below, so both `qledger.<name>` and `ai_desk._close_series`
+# monkeypatches keep working.
+def _lazy(name: str):
+    """Resolve one deferred ai_desk helper THROUGH this module's own namespace.
+
+    Attribute access on the module checks the module dict first, so a
+    `monkeypatch.setattr("engine.qledger._level_asof", ...)` still wins (several
+    suites rely on exactly that), and falls through to __getattr__ below — which
+    imports ai_desk lazily — when nothing has overridden it.
+
+    ORDER NOTE for future test authors: monkeypatch reads the pre-patch value via
+    getattr (resolved here through __getattr__) and restores it with setattr, so a
+    test that patches one of these names leaves the REAL ai_desk object in this
+    module's __dict__ afterwards. Before that happens `_lazy` follows
+    `engine.ai_desk.<name>` dynamically; after it, this module's own binding wins.
+    So do not write a test that patches `engine.ai_desk.<name>` and expects qledger
+    to follow — patch `engine.qledger.<name>` instead, which is order-independent.
+    """
+    return getattr(sys.modules[__name__], name)
+
+
+def __getattr__(name: str):
+    """Lazily re-export the ai_desk helpers this module used to import at load time.
+
+    Callers and tests read `qledger._GICS_ETF` / `_level_asof` / `_close_at` /
+    `_covers` / `_aidesk` off this module. PEP 562 keeps that surface intact while
+    the underlying import stays deferred, so the nightly scoring tail never enters
+    a consumer's load-time closure (see the deferral note above). Module __getattr__
+    runs only when normal attribute lookup fails, so it shadows nothing.
+    """
+    if name in ("_GICS_ETF", "_level_asof"):
+        from engine import ai_desk  # noqa: PLC0415 — see comment above
+        return getattr(ai_desk, name)
+    if name in ("_close_at", "_covers"):
+        from engine import ai_desk_scorer  # noqa: PLC0415 — see comment above
+        return getattr(ai_desk_scorer, name)
+    if name == "_aidesk":
+        from engine import ai_desk  # noqa: PLC0415 — see comment above
+        return ai_desk
+    if name == "config":
+        # Preserve the public ROOT override without eager configuration imports.
+        from lib import config  # noqa: PLC0415 — same deferred owner as _root
+        return config
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 # V1 metric-validity contract (engine/qledger_validity.py, PR #5471). _aggregate
 # is the single chokepoint every published excess figure passes through, so the
 # legality gate is ENFORCED here rather than re-derived per consumer — one
 # implementation of the invariant, so the emitter and the auditor cannot drift.
 from engine.qledger_validity import FamilyProfile, may_pool_signed_excess, profile_families
-from lib import config
+# lib/config DEFERRED (see the ai_desk note above): this module is a seed of the
+# admin panel's load-time closure, and lib/config is a declared non-admin lane
+# (ADMIN_MUST_NOT_RESTART in tests/test_deploy_update_self_heal.py).
 # The canonical session rulers — ONE PER MARKET. Rule-computed sessions,
 # stdlib-only, holiday aware. See `resolve_horizon_window` for why the
 # price-store index is NOT the session source of record here, and
@@ -1244,7 +1299,10 @@ def _now_iso() -> str:
 
 
 def _root(root: Path | str | None) -> Path:
-    return Path(root) if root else config.ROOT
+    if not root:
+        from lib import config  # noqa: PLC0415 — see module header
+        return config.ROOT
+    return Path(root)
 
 
 def _claim_id(desk: str, asof: str, scope_key: str, horizon_d: int,
@@ -1323,7 +1381,7 @@ def control_for_sector(sector_name: str | None) -> str | None:
     a valid, honestly-recorded state (excess-vs-control simply stays null)."""
     if not sector_name:
         return None
-    return _GICS_ETF.get(sector_name)
+    return _lazy('_GICS_ETF').get(sector_name)
 
 
 # --------------------------------------------------------------------------- #
@@ -1508,7 +1566,7 @@ def sector_gics_etf(sector: str | None) -> str | None:
     key = str(sector or "").strip()
     if not key:
         return None
-    return _GICS_ETF.get(_SECTOR_ALIASES.get(key, key))
+    return _lazy('_GICS_ETF').get(_SECTOR_ALIASES.get(key, key))
 
 
 #: {resolved-root -> {UPPERCASE ticker -> raw sector name}}. Lazily built, one
@@ -1584,7 +1642,7 @@ def gics_sector_name(sector: str | None) -> str | None:
     if not key:
         return None
     canonical = _SECTOR_ALIASES.get(key, key)
-    return canonical if canonical in _GICS_ETF else None
+    return canonical if canonical in _lazy('_GICS_ETF') else None
 
 
 def membership_gics_sector_of(root: Path | str | None = None
@@ -2041,24 +2099,37 @@ def register(claim: dict, root: Path | str | None = None,
     quadratic in ledger size.
     """
     root = _root(root)
-    stored = _prepare_claim(claim)
-    cid = stored["claim_id"]
+    from engine.qledger_store import _claims_mutation
 
-    p = root.joinpath(*_CLAIMS_FILE)
-    p.parent.mkdir(parents=True, exist_ok=True)
+    with _claims_mutation(root.joinpath(*_CLAIMS_FILE)) as storage:
+        stored = _prepare_claim(claim)
+        cid = stored["claim_id"]
 
-    if dedupe:
-        for existing in load_claims(root):
-            if existing.get("claim_id") == cid:
-                return existing  # idempotent — adapters re-run freely
+        p = root.joinpath(*_CLAIMS_FILE)
+        if storage is None:
+            p.parent.mkdir(parents=True, exist_ok=True)
 
-    with p.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(stored, ensure_ascii=False, default=_json_default) + "\n")
-    # P0d C3.1: the control evidence clock starts HERE, on the newly stored row
-    # only — a dedupe hit above returns before this, so re-registering a claim can
-    # never restart or re-stamp a clock.
-    _start_control_clocks_for([stored], root, today=today)
-    return stored
+        if dedupe:
+            for existing in (load_claims(root) if storage is None else storage.read_rows()):
+                if existing.get("claim_id") == cid:
+                    return existing  # idempotent — adapters re-run freely
+
+        if storage is None:
+            with p.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(stored, ensure_ascii=False, default=_json_default) + "\n")
+        else:
+            outcome = storage.append_serialized_rows(
+                (json.dumps(row, ensure_ascii=False, default=_json_default) + "\n").encode("utf-8")
+                for row in [stored]
+            )
+        # P0d C3.1: the control evidence clock starts HERE, on the newly stored row
+        # only — a dedupe hit above returns before this, so re-registering a claim can
+        # never restart or re-stamp a clock.
+        if storage is None or outcome.status == "materialized":
+            if storage is not None:
+                storage.mark_clock_attempt()
+            _start_control_clocks_for([stored], root, today=today)
+        return stored
 
 
 def register_batch(claims: Iterable[dict], root: Path | str | None = None,
@@ -2081,39 +2152,52 @@ def register_batch(claims: Iterable[dict], root: Path | str | None = None,
     """
     root = _root(root)
     p = root.joinpath(*_CLAIMS_FILE)
-    p.parent.mkdir(parents=True, exist_ok=True)
+    from engine.qledger_store import _claims_mutation
 
-    existing_by_id: dict[str, dict] = {}
-    if dedupe:
-        for c in load_claims(root):          # ONE read for the whole batch
-            existing_by_id.setdefault(str(c.get("claim_id")), c)
+    with _claims_mutation(p) as storage:
+        if storage is None:
+            p.parent.mkdir(parents=True, exist_ok=True)
 
-    results: list[dict] = []
-    new_rows: list[dict] = []
-    for claim in claims:
-        try:
-            stored = _prepare_claim(claim)
-        except Exception as exc:  # noqa: BLE001 — isolate, never sink the batch
-            log.warning("register_batch: claim preparation failed: %s", exc)
-            results.append({"status": "error", "error": str(exc)})
-            continue
-        cid = stored["claim_id"]
-        if dedupe and cid in existing_by_id:
-            results.append(existing_by_id[cid])
-            continue
-        new_rows.append(stored)
+        existing_by_id: dict[str, dict] = {}
         if dedupe:
-            existing_by_id[cid] = stored
-        results.append(stored)
+            for c in (load_claims(root) if storage is None else storage.read_rows()):  # ONE read
+                existing_by_id.setdefault(str(c.get("claim_id")), c)
 
-    if new_rows:
-        with p.open("a", encoding="utf-8") as fh:  # ONE write for the batch
-            for row in new_rows:
-                fh.write(json.dumps(row, ensure_ascii=False, default=_json_default) + "\n")
-        # P0d C3.1: NEW rows only. A batch that deduped entirely against the
-        # store appends nothing and starts nothing.
-        _start_control_clocks_for(new_rows, root, today=today)
-    return results
+        results: list[dict] = []
+        new_rows: list[dict] = []
+        for claim in claims:
+            try:
+                stored = _prepare_claim(claim)
+            except Exception as exc:  # noqa: BLE001 — isolate, never sink the batch
+                log.warning("register_batch: claim preparation failed: %s", exc)
+                results.append({"status": "error", "error": str(exc)})
+                continue
+            cid = stored["claim_id"]
+            if dedupe and cid in existing_by_id:
+                results.append(existing_by_id[cid])
+                continue
+            new_rows.append(stored)
+            if dedupe:
+                existing_by_id[cid] = stored
+            results.append(stored)
+
+        if new_rows:
+            if storage is None:
+                with p.open("a", encoding="utf-8") as fh:  # ONE write for the batch
+                    for row in new_rows:
+                        fh.write(json.dumps(row, ensure_ascii=False, default=_json_default) + "\n")
+            else:
+                outcome = storage.append_serialized_rows(
+                    (json.dumps(row, ensure_ascii=False, default=_json_default) + "\n").encode("utf-8")
+                    for row in new_rows
+                )
+            # P0d C3.1: NEW rows only. A batch that deduped entirely against the
+            # store appends nothing and starts nothing.
+            if storage is None or outcome.status == "materialized":
+                if storage is not None:
+                    storage.mark_clock_attempt()
+                _start_control_clocks_for(new_rows, root, today=today)
+        return results
 
 
 def backfill_regime_stamps(root: Path | str | None = None) -> dict:
@@ -2136,61 +2220,71 @@ def backfill_regime_stamps(root: Path | str | None = None) -> dict:
     """
     root = _root(root)
     p = root.joinpath(*_CLAIMS_FILE)
-    claims = _read_jsonl(p)
-    if not claims:
-        return {"n_claims": 0, "n_backfilled": 0, "n_unstamped": 0, "n_precoverage": 0}
+    from engine.qledger_store import _claims_mutation
 
-    # Guard: A-share and HK symbols must not receive US regime_vector rich stamps.
-    _SKIP_SUFFIXES = (".SS", ".SZ", ".HK")
-    n_skipped = 0
-    n_precoverage = 0
+    with _claims_mutation(p) as storage:
+        claims = _read_jsonl(p) if storage is None else storage.read_rows()
+        if not claims:
+            return {"n_claims": 0, "n_backfilled": 0, "n_unstamped": 0, "n_precoverage": 0}
 
-    n_backfilled = 0
-    for c in claims:
-        if c.get("vector_asof") is None:
-            scope_key = str((c.get("scope") or {}).get("key") or "")
-            if any(scope_key.endswith(sfx) for sfx in _SKIP_SUFFIXES):
-                n_skipped += 1
-                continue
-            stamp = _regime_stamp_for_asof(str(c.get("asof") or ""))
-            if stamp.get("vector_asof") is not None:
-                for k, v in stamp.items():
-                    if c.get(k) is None:
-                        c[k] = v
-                # R-CI3: mark as recomputed from history, never pit_live.
-                # keep-FIRST applies only to rows that already had vector_asof
-                # (genuinely PIT-stamped) — those rows are not reached here
-                # because the outer `if c.get("vector_asof") is None` gate
-                # excludes them.  Any basis label on a vector_asof=None row is
-                # a lying label: values are demonstrably being recomputed now.
-                # Always stamp 'recomputed_history'.
-                c["regime_stamp_basis"] = "recomputed_history"
-                n_backfilled += 1
+        # Guard: A-share and HK symbols must not receive US regime_vector rich stamps.
+        _SKIP_SUFFIXES = (".SS", ".SZ", ".HK")
+        n_skipped = 0
+        n_precoverage = 0
+
+        n_backfilled = 0
+        for c in claims:
+            if c.get("vector_asof") is None:
+                scope_key = str((c.get("scope") or {}).get("key") or "")
+                if any(scope_key.endswith(sfx) for sfx in _SKIP_SUFFIXES):
+                    n_skipped += 1
+                    continue
+                stamp = _regime_stamp_for_asof(str(c.get("asof") or ""))
+                if stamp.get("vector_asof") is not None:
+                    for k, v in stamp.items():
+                        if c.get(k) is None:
+                            c[k] = v
+                    # R-CI3: mark as recomputed from history, never pit_live.
+                    # keep-FIRST applies only to rows that already had vector_asof
+                    # (genuinely PIT-stamped) — those rows are not reached here
+                    # because the outer `if c.get("vector_asof") is None` gate
+                    # excludes them.  Any basis label on a vector_asof=None row is
+                    # a lying label: values are demonstrably being recomputed now.
+                    # Always stamp 'recomputed_history'.
+                    c["regime_stamp_basis"] = "recomputed_history"
+                    n_backfilled += 1
+                else:
+                    # asof predates regime_vector.parquet coverage — stays null
+                    n_precoverage += 1
+
+        if n_skipped:
+            log.info("backfill_regime_stamps: skipped %d A-share/HK claim(s) (.SS/.SZ/.HK)", n_skipped)
+        if n_precoverage:
+            log.info(
+                "backfill_regime_stamps: %d claim(s) predate regime_vector coverage — vector_asof stays null",
+                n_precoverage,
+            )
+
+        n_unstamped = sum(1 for c in claims if c.get("vector_asof") is None)
+        if n_backfilled:
+            if storage is None:
+                tmp = p.with_name(p.name + ".tmp")
+                with tmp.open("w", encoding="utf-8") as fh:
+                    for c in claims:
+                        fh.write(json.dumps(c, ensure_ascii=False, default=_json_default) + "\n")
+                tmp.replace(p)
             else:
-                # asof predates regime_vector.parquet coverage — stays null
-                n_precoverage += 1
-
-    if n_skipped:
-        log.info("backfill_regime_stamps: skipped %d A-share/HK claim(s) (.SS/.SZ/.HK)", n_skipped)
-    if n_precoverage:
-        log.info(
-            "backfill_regime_stamps: %d claim(s) predate regime_vector coverage — vector_asof stays null",
-            n_precoverage,
-        )
-
-    n_unstamped = sum(1 for c in claims if c.get("vector_asof") is None)
-    if n_backfilled:
-        tmp = p.with_name(p.name + ".tmp")
-        with tmp.open("w", encoding="utf-8") as fh:
-            for c in claims:
-                fh.write(json.dumps(c, ensure_ascii=False, default=_json_default) + "\n")
-        tmp.replace(p)
-    return {
-        "n_claims": len(claims),
-        "n_backfilled": n_backfilled,
-        "n_unstamped": n_unstamped,
-        "n_precoverage": n_precoverage,
-    }
+                storage.replace_serialized_rows(
+                    ((json.dumps(c, ensure_ascii=False, default=_json_default) + "\n").encode("utf-8")
+                     for c in claims),
+                    expected_view_digest=storage.snapshot.root.logical_digest,
+                )
+        return {
+            "n_claims": len(claims),
+            "n_backfilled": n_backfilled,
+            "n_unstamped": n_unstamped,
+            "n_precoverage": n_precoverage,
+        }
 
 
 def make_claim(*, desk: str, asof: str, scope_type: str, scope_key: str,
@@ -2370,7 +2464,9 @@ def _read_jsonl(p: Path) -> list[dict]:
 
 
 def load_claims(root: Path | str | None = None) -> list[dict]:
-    return _read_jsonl(_root(root).joinpath(*_CLAIMS_FILE))
+    from engine.qledger_store import read_legacy_rows
+
+    return read_legacy_rows(_root(root).joinpath(*_CLAIMS_FILE))
 
 
 def load_grades(root: Path | str | None = None) -> list[dict]:
@@ -2444,7 +2540,7 @@ def _fill_entry(ticker: str, root: Path,
     """Next-bar fill: (entry_price, fill_ts) = first close STRICTLY AFTER
     entry_date. (None, None) when the series is absent or has no later bar."""
     try:
-        s = _aidesk._close_series(ticker, root)
+        s = _lazy('_aidesk')._close_series(ticker, root)
         if s is None or s.empty:
             return None, None
         fwd = s[s.index > pd.Timestamp(entry_date)]
@@ -2476,8 +2572,8 @@ def _fwd_ret(ticker: str, root: Path, start_date: str, horizon_d: int,
         if fill_convention == FILL_ASOF_LEGACY:
             end_ts = (pd.Timestamp(start_date) +
                       pd.Timedelta(days=horizon_d)).strftime("%Y-%m-%d")
-            e0 = _level_asof(ticker, root, start_date)
-            e1 = _close_at(ticker, root, end_ts)
+            e0 = _lazy('_level_asof')(ticker, root, start_date)
+            e1 = _lazy('_close_at')(ticker, root, end_ts)
             if None in (e0, e1) or not e0:
                 return None
             return round(e1 / e0 - 1.0, 6)
@@ -2485,7 +2581,7 @@ def _fwd_ret(ticker: str, root: Path, start_date: str, horizon_d: int,
         e0, fill_ts = _fill_entry(ticker, root, start_date)
         if e0 is None or not e0 or fill_ts is None:
             return None
-        s = _aidesk._close_series(ticker, root)
+        s = _lazy('_aidesk')._close_series(ticker, root)
         end_ts = fill_ts + pd.Timedelta(days=horizon_d)
         if s.index.max() < end_ts:
             return None            # exit day not covered yet — not matured
@@ -2537,7 +2633,7 @@ def _leg_ret_in_window(ticker: str, root: Path, window: HorizonWindow) -> float 
     None (never a shortened window silently graded) when the series is absent,
     does not yet cover `coverage_date`, or does not hold both endpoint bars."""
     try:
-        s = _aidesk._close_series(ticker, root)
+        s = _lazy('_aidesk')._close_series(ticker, root)
         if s is None or s.empty:
             return None
         cover_ts = pd.Timestamp(window.coverage_date)
@@ -2583,7 +2679,7 @@ def _matured_window(root: Path, window: HorizonWindow, today: date,
         if today < window.coverage_date:
             return False
         end_ts = window.coverage_date.isoformat()
-        return all(_covers(t, root, end_ts) for t in tickers if t)
+        return all(_lazy('_covers')(t, root, end_ts) for t in tickers if t)
     except Exception:  # noqa: BLE001
         return False
 
@@ -2600,7 +2696,7 @@ def _matured(root: Path, start_date: str, horizon_d: int,
         if (pd.Timestamp(today) - snap).days < horizon_d:
             return False
         end_ts = (snap + pd.Timedelta(days=horizon_d)).strftime("%Y-%m-%d")
-        return all(_covers(t, root, end_ts) for t in tickers if t)
+        return all(_lazy('_covers')(t, root, end_ts) for t in tickers if t)
     except Exception:  # noqa: BLE001
         return False
 

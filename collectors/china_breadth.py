@@ -27,6 +27,7 @@ log = logging.getLogger(__name__)
 class ChinaBreadthAdapter(BreadthAdapter):
     name = "china_breadth"
     group = "china_breadth"
+    session_calendar = "CN"  # observation dates follow the cash/Connect session
 
     def __init__(self) -> None:
         self.cfg = config.load()["china"]["breadth"]

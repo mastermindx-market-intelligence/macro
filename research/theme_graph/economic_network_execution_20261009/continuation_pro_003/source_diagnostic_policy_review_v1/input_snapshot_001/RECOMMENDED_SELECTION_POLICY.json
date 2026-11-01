@@ -1,0 +1,583 @@
+{
+  "schema": "research.gmi.wp02.selection_policy_recommendation/v1",
+  "policy_id": "GMI-WP02-RELATIVE-SOURCE-DIAGNOSTIC-20261009-v1",
+  "status": "RECOMMENDED_NOT_ADOPTED",
+  "scope": "Method recommendation for the accepted 120-issuer source diagnostic; no actual selection or production admission.",
+  "adoption": {
+    "principal": "Commissioning Sol CEO / root",
+    "decision_id": null,
+    "adopted_at_utc": null,
+    "automatic_effect": false,
+    "selector_execution_authorized_by_this_artifact": false,
+    "required_explicit_changes": [
+      "A01_RELATIVE_SIZE_SEMANTICS",
+      "A02_ACTIVITY_AND_INSTRUMENT_PERIMETER",
+      "A03_REPORTED_SHARE_REFERENCE_CAP_AND_CUTOFFS"
+    ],
+    "quota_amendment_proposed": false
+  },
+  "holds": {
+    "source_entitlement_established": false,
+    "frame_complete": false,
+    "selection_run": false,
+    "selected_issuer_count": 0,
+    "vendor_relationship_outputs_read": false,
+    "predictive_admission": false,
+    "production_admission": false,
+    "confidence": null,
+    "alpha": null,
+    "ranking_authority": null
+  },
+  "preserved_law": {
+    "accepted_source_ref": "macro@4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+    "accepted_paths": [
+      "research/theme_graph/economic_network_20261008/IMPLEMENTATION_MASTERPLAN.md#WP02",
+      "research/theme_graph/economic_network_20261008/SOURCING_AND_COMPETITIVE_DILIGENCE.md#6"
+    ],
+    "strata": [
+      "US",
+      "CN_MAINLAND",
+      "HK",
+      "CA",
+      "INT"
+    ],
+    "issuer_count_per_stratum": 24,
+    "total_issuers": 120,
+    "groups": [
+      "SEMICONDUCTOR_CLOUD",
+      "INDUSTRIALS",
+      "CONSUMER",
+      "ENERGY_MATERIALS",
+      "FINANCIALS",
+      "HEALTHCARE"
+    ],
+    "issuer_count_per_stratum_group": 4,
+    "quota_by_size_slot": {
+      "L": 2,
+      "M": 1,
+      "S": 1
+    },
+    "total_by_size_slot": {
+      "L": 60,
+      "M": 30,
+      "S": 30
+    },
+    "international_country_group_quotas": {
+      "UK": 8,
+      "JP": 8,
+      "EU": 8
+    },
+    "one_economic_issuer_per_dual_listing": true,
+    "difficult_cases_minimum": 30,
+    "difficult_cases_per_stratum_minimum": 6,
+    "source_document_scope": {
+      "annual_fiscal_labels": [
+        2023,
+        2024,
+        2025
+      ],
+      "latest_available_2026": [
+        "interim",
+        "material_event"
+      ],
+      "availability_failure_preserved": true
+    },
+    "vendor_blinding": "Freeze policy, frame, selection and manual annotation before relationship-vendor outputs."
+  },
+  "recommendation": {
+    "selected_alternative": "B_WITHIN_JURISDICTION_ACTIVITY_ISSUER_COUNT_BANDS",
+    "rationale": "Size diversity relative to each diagnostic market/activity is more suitable for a source-disclosure diagnostic with fixed geographic and activity quotas. Preserve full USD values and absolute bands for cross-market interpretation.",
+    "critical_qualification": "L/M/S become relative sampling slots. They do not certify global large/mid/small-cap status. This meaning requires explicit principal adoption.",
+    "no_automatic_fallback": true,
+    "absolute_band_usage": "Companion descriptive column and alternative-policy feasibility certificate, never a silent replacement for the chosen relative slots.",
+    "reject_if": "Principal requires constant economic size across markets, cannot lawfully complete the rank frame, or declines the explicit size-meaning change."
+  },
+  "comparators": {
+    "A_GLOBAL_ABSOLUTE_USD": {
+      "status": "FULLY_SPECIFIED_NONSELECTED_ALTERNATIVE",
+      "market_cap_measure": "same reported-share reference capitalization as B",
+      "intervals": [
+        {
+          "label": "MICRO",
+          "lower_inclusive_usd": "0",
+          "strictly_positive": true,
+          "upper_exclusive_usd": "250000000",
+          "quota_eligible": false
+        },
+        {
+          "label": "S",
+          "lower_inclusive_usd": "250000000",
+          "upper_exclusive_usd": "2000000000",
+          "quota_eligible": true
+        },
+        {
+          "label": "M",
+          "lower_inclusive_usd": "2000000000",
+          "upper_exclusive_usd": "10000000000",
+          "quota_eligible": true
+        },
+        {
+          "label": "L",
+          "lower_inclusive_usd": "10000000000",
+          "upper_exclusive_usd": null,
+          "quota_eligible": true
+        }
+      ],
+      "mega_in_L": true,
+      "source_basis": [
+        "P01"
+      ],
+      "boundary_rule_is_research_choice": true,
+      "failure": "Any US/CN/HK/CA sector-size count below2/1/1, or INT max flow below24, is infeasible. No Canada-only lower threshold."
+    },
+    "C_WITHIN_JURISDICTION_ALL_ACTIVITY_RANKS": {
+      "status": "NOT_RECOMMENDED",
+      "boundaries": "Same count-band formula, pooling the six in-scope activity groups within each jurisdiction group",
+      "reason": "Does not ensure sector-size availability and changes an activity's size label when unrelated activities enter the frame."
+    },
+    "D_MSCI_STYLE_COVERAGE": {
+      "status": "NOT_RECOMMENDED",
+      "reason": "Cumulative investable capitalization, free-float inputs, global bounds and index maintenance solve an investability problem. They add data dependencies and do not ensure sector quotas.",
+      "source_basis": [
+        "P03",
+        "P04"
+      ]
+    }
+  },
+  "cutoff_policy": {
+    "proposed_valuation_local_date": "2026-09-30",
+    "public_knowledge_cutoff_utc": "2026-10-09T00:00:00Z",
+    "rule": "Use only source assertions with defensible public-availability upper bound at or before the cutoff and applicable fact validity at valuation date. Later publications are excluded even if they describe an earlier period.",
+    "actual_native_evidence_freeze_at_utc": null,
+    "native_freeze_requirement": "Principal receipt must bind the actual later freeze F, all actual observation/acquisition timestamps and bytes, policy adoption, and vendor-blind status. F must precede any vendor-output consumption. Never fabricate historical observed_at.",
+    "temporal_claim": "Retrospective month-end reference-size diagnostic, publicly knowable by K and assembled at F. Not a tradable point-in-time universe at D or evidence that Mastermind held inputs at K.",
+    "date_only_publication": "Use the end of the stated publication day in the source's documented timezone as the availability upper bound. Unknown timezone or date-only bound crossing K remains unknown.",
+    "revisions": "Separate first publication, revision publication, valid-at, observation and registry clocks. Latest eligible revision publicly available by K is used; post-K revisions stay separate.",
+    "classification_document_rule": "Most recent primary annual report/prospectus applicable at D and available by K may supply frame metadata. This metadata source does not expand the accepted 2023–2025 annual relationship-diagnostic corpus.",
+    "no_future_backfill_for_proof": true
+  },
+  "instrument_and_venue": {
+    "included_instruments": [
+      "ordinary_equity_of_operating_issuer",
+      "equivalent_residual_equity_unit_of_operating_partnership",
+      "depositary_receipt_representing_eligible_ordinary_equity_as_same_issuer"
+    ],
+    "excluded_instruments": [
+      "ETF",
+      "ETN",
+      "mutual_fund",
+      "closed_end_investment_fund",
+      "passive_investment_vehicle",
+      "preferred_share",
+      "debt",
+      "convertible_debt_before_conversion",
+      "warrant",
+      "right",
+      "derivative",
+      "pre_operating_SPAC_or_blank_check",
+      "shell",
+      "OTC_only",
+      "private_only",
+      "professional_investor_exclusive_listing"
+    ],
+    "operating_financial_firms_included": true,
+    "operating_pre_revenue_biotech_included_with_source_proof": true,
+    "venue_rule": "Issuer-applied primary ordinary-equity admission on a lawfully operating national equity exchange or recognized equity growth market in the stated jurisdiction, open beyond professional-investor-exclusive admissions. Trading-only venues and secondary listings do not establish primary eligibility.",
+    "venue_register_requirement": "Frozen owner-supplied regulator and exchange records must prove venue status, operating/admission interval and primary-equity capability at D, known by K. Present-day registry membership is not automatically historical proof.",
+    "jurisdiction_groups": {
+      "US": {
+        "listing_jurisdiction_iso": [
+          "US"
+        ],
+        "authority_route": "SEC6(a) status plus exchange primary-equity admission rules;6(g) futures-only is excluded",
+        "source_refs": [
+          "P11"
+        ]
+      },
+      "CN_MAINLAND": {
+        "listing_jurisdiction_iso": [
+          "CN"
+        ],
+        "authority_route": "CSRC and Shanghai/Shenzhen/Beijing ordinary-equity admission records, including qualified-retail growth boards; no NEEQ/OTC substitution",
+        "source_refs": []
+      },
+      "HK": {
+        "listing_jurisdiction_iso": [
+          "HK"
+        ],
+        "authority_route": "SEHK Main Board/GEM primary or dual-primary records; secondary-only does not qualify",
+        "source_refs": [
+          "P14"
+        ]
+      },
+      "CA": {
+        "listing_jurisdiction_iso": [
+          "CA"
+        ],
+        "authority_route": "Canadian recognition and issuer-admission records, including eligible TSX/TSXV/CSE/Cboe Canada markets, not trading-only status",
+        "source_refs": [
+          "P12"
+        ]
+      },
+      "UK": {
+        "listing_jurisdiction_iso": [
+          "GB"
+        ],
+        "authority_route": "FCA/UK venue and issuer-admission records including qualifying Main/growth admissions; not the Official List alone",
+        "source_refs": [
+          "P17"
+        ]
+      },
+      "JP": {
+        "listing_jurisdiction_iso": [
+          "JP"
+        ],
+        "authority_route": "FSA plus Japanese exchange primary-equity admission records; do not restrict silently to TSE or to its Prime segment",
+        "source_refs": [
+          "P16"
+        ]
+      },
+      "EU": {
+        "listing_jurisdiction_iso": [
+          "AT",
+          "BE",
+          "BG",
+          "HR",
+          "CY",
+          "CZ",
+          "DK",
+          "EE",
+          "FI",
+          "FR",
+          "DE",
+          "GR",
+          "HU",
+          "IE",
+          "IT",
+          "LV",
+          "LT",
+          "LU",
+          "MT",
+          "NL",
+          "PL",
+          "PT",
+          "RO",
+          "SK",
+          "SI",
+          "ES",
+          "SE"
+        ],
+        "authority_route": "National regulator/ESMA RM or eligible primary-admission equity-growth MTF records; EEA outsideEU, UK and Switzerland excluded",
+        "source_refs": [
+          "P13",
+          "P15",
+          "P18"
+        ]
+      }
+    },
+    "no_named_venue_current_eligibility_asserted": true,
+    "new_venue_or_perimeter_change": "Requires new policy/frame version before vendor unblinding; no ad hoc venue addition to rescue a cell."
+  },
+  "identity_and_primary": {
+    "issuer_unit": "Incumbent owner-resolved economic issuer / listed consolidated reporting entity; use canonical IDs and validity evidence, never ticker count.",
+    "unresolved_identity": "NO_ISSUER_EVIDENCE, ambiguous economic-unit mappings and null identifiers remain unresolved. Null values are not a deduplicated issuer.",
+    "parent_subsidiary": "Distinct independently listed/reporting legal issuers may remain distinct with a controlled-family flag. Do not merge them just because of common control; unresolved dual-listed-company economic units go to the identity owner.",
+    "primary_status_evidence": "Exchange/issuer admission, listing conversion or continued-status evidence applicable at D and available by K. Domicile, CIK, ticker suffix, traded volume and ADR status alone are insufficient.",
+    "unique_primary": "Use the unique proved eligible primary jurisdiction group.",
+    "multiple_primary": "Deduplicate primary jurisdiction groups. Choose the group with minimum H('primary-jurisdiction', issuer_id, group_id). This is an administrative sampling assignment, not a claim of sole legal primary status. Preserve every primary and secondary coordinate.",
+    "multiple_countries_within_EU": "Choose minimum H('primary-country', issuer_id, ISO_country) among proved EU primaries for reporting; this does not create extra EU country quotas.",
+    "no_proved_eligible_primary": "Exclude if proved primary scope is outside the perimeter; otherwise hold as PRIMARY_UNKNOWN. Do not allocate to the most convenient quota.",
+    "listing_country_not_domicile": true
+  },
+  "capitalization": {
+    "name": "ISSUER_REPORTED_SHARE_REFERENCE_CAPITALIZATION_USD",
+    "intended_construct": "Total residual ordinary-equity issuer value; not free float, fully diluted equity, enterprise value or exact unobserved shares outstanding at D.",
+    "formula": "V_i = sum over unique ordinary economic share classes j of Q_j_ref(D,K) * P_j_ref(D,K) * quote_unit_scale_j * USD_per_quote_currency(D,K).",
+    "share_count": {
+      "source": "Latest issuer/regulator/exchange published actual outstanding class share count with measurement date<=D and publication<=K.",
+      "maximum_measurement_age_calendar_days": 183,
+      "bridge": "Apply quantitatively disclosed issuance, retirement, split, conversion and treasury changes effective after count date through D and publicly available by K, once each. Missing quantities for a known material action hold the cap.",
+      "exclude": [
+        "treasury_shares",
+        "unexercised_options",
+        "unexercised_warrants",
+        "unconverted_debt",
+        "preferred_equity"
+      ],
+      "state": "Disclosed-action reference estimate. Undisclosed buybacks/issuances are not claimed observed; retain share-count date, age and bridge limitations."
+    },
+    "prices": {
+      "source": "Official regular-session closing price from the prebound reference listing line for the class, at D or the latest preceding official session.",
+      "max_older_scheduled_sessions": 5,
+      "max_age_calendar_days": 10,
+      "historical_adjustment": "Use raw close with shares adjusted to the same valuation basis. Never mix split-adjusted price with unadjusted share counts.",
+      "stale_or_suspended": "Retain flags; beyond either age bound or without a lawful price the value is unknown, never zero.",
+      "reference_line_tie": "For the same fungible class, use its source-designated primary reference counter. If several equally primary counters exist, use ascending MIC bytes then stable security_id bytes, fixed before values are examined."
+    },
+    "share_class_and_ADR": {
+      "multi_class": "Sum separately outstanding non-fungible ordinary classes once each using their own bound prices. A/H classes require class-specific counts/prices/currencies.",
+      "same_class_cross_listing": "Choose one price coordinate; do not sum the same underlying share class across exchanges.",
+      "ADR": "With r underlying ordinary shares per ADR, ordinary-equivalent price is ADR_price/r. Verify r at D. Deposited ordinary shares are already part of Q and are not added a second time.",
+      "unlisted_class_proxy": "Permitted only for source-proved identical residual economic rights and a documented fixed conversion ratio into a priced ordinary class; bind proxy and ratio. Otherwise UNPRICED_ECONOMIC_CLASS holds the entire issuer value.",
+      "proxy_is_not_observed_market_price": true,
+      "source_refs": [
+        "P02",
+        "P03",
+        "P10"
+      ]
+    },
+    "fx": {
+      "series": "ECB euro foreign exchange reference rates",
+      "common_rate_date": "D if published; otherwise the latest published reference date<=D, at most5calendar days earlier. One common ECB date for all required currencies.",
+      "formula": "USD_per_X = (units_USD_per_EUR)/(units_X_per_EUR); EUR denominator=1; USD_per_USD=1.",
+      "quote_unit": "Use a separately bound price denomination multiplier, e.g.GBp to GBP=1/100 only where the source identifies pence.",
+      "disallow": [
+        "current_rate_substituted_for_D",
+        "hardcoded_HKD_peg",
+        "CNY_CNH_equivalence_without_source",
+        "inverted_quote",
+        "unbound_quote_currency"
+      ],
+      "missing_currency_or_rate": "FX_UNAVAILABLE; no silent alternative provider/date.",
+      "source_refs": [
+        "P09"
+      ]
+    },
+    "numeric_rule": "Parse finite positive decimal inputs into exact rationals; apply exact source ratios. Compare/rank unrounded rational USD values. Display rounding cannot decide eligibility.",
+    "full_true_market_cap_claim": false,
+    "cap_unknown_handling": "If a potentially eligible issuer in a rank pool lacks valid capitalization, the pool is CAP_FRAME_INCOMPLETE; do not drop it then call remaining ranks market ranks."
+  },
+  "activity_assignment": {
+    "target": "Own single diagnostic activity-group label, not a fabricated GICS/SIC/ICB code.",
+    "evidence_routes": [
+      "A lawful, dated issuer-level classification from a regulator/exchange or entitled classification owner, with a frozen one-to-one crosswalk to this activity definition.",
+      "Primary issuer annual/prospectus business and external-revenue evidence: map disjoint business activities to groups and assign the sole group with >50% of consolidated external annual revenue. No mixed denominator, intersegment double count or companywide allocation to a minority theme."
+    ],
+    "reference_code_hints": {
+      "SEMICONDUCTOR_CLOUD": "GICS45301010 or45301020 only if supplied lawfully for the issuer at the relevant vintage; broad45 is insufficient. IaaS/PaaS operators require direct activity proof.",
+      "INDUSTRIALS": "GICS20 if actually supplied lawfully and applicable",
+      "CONSUMER": "GICS25 or30 if actually supplied lawfully and applicable",
+      "ENERGY_MATERIALS": "GICS10 or15 if actually supplied lawfully and applicable",
+      "FINANCIALS": "GICS40 if actually supplied lawfully and applicable",
+      "HEALTHCARE": "GICS35 if actually supplied lawfully and applicable"
+    },
+    "source_refs": [
+      "P07",
+      "P08"
+    ],
+    "groups": {
+      "SEMICONDUCTOR_CLOUD": {
+        "included": "Semiconductor device design/manufacture/foundry/assembly-test and semiconductor-production equipment; external IaaS/PaaS cloud operators.",
+        "excluded": "Generic IT, a cloud customer, internal IT, generic SaaS alone, property-only data-center landlord, a minority cloud/AI narrative. Hardware outside semiconductor activity needs its own group proof.",
+        "cloud_test": "Primary descriptions must substantiate external IaaS/PaaS operation under NIST service-model distinctions and the business-majority or authoritative classification route; no reported revenue split may be invented."
+      },
+      "INDUSTRIALS": {
+        "included": "Capital goods, industrial production/services and transport/logistics primary activities within the frozen group crosswalk.",
+        "excluded": "Activity allocated to semiconductor production, energy/materials, utilities or pure real-estate ownership."
+      },
+      "CONSUMER": {
+        "included": "Consumer discretionary/staples primary activities, including consumer retail, food, household goods, automobiles and leisure under the frozen crosswalk.",
+        "excluded": "Financial insurance, healthcare services, generic IT hardware automatically inferred from selling to consumers."
+      },
+      "ENERGY_MATERIALS": {
+        "included": "Energy extraction/refining/equipment and basic materials/mining/chemicals/forestry primary activities under the frozen crosswalk.",
+        "excluded": "Regulated utilities automatically reclassified to fill a slot."
+      },
+      "FINANCIALS": {
+        "included": "Operating banks, credit, financial services/capital markets and insurance companies.",
+        "excluded": "Passive investment vehicles and managed healthcare merely renamed insurance; use the source-backed activity definition."
+      },
+      "HEALTHCARE": {
+        "included": "Healthcare providers/services/managed care, equipment, medicines, biotechnology and life-sciences primary activities.",
+        "excluded": "Life-and-health financial insurance by name alone, property-only healthcare REITs, recreational consumer products by medical association alone."
+      }
+    },
+    "zero_or_pre_revenue": "A primary prospectus/annual report may establish one and only one operating activity, with independent reviewer agreement. Otherwise hold. Pre-revenue is not synonymous with a blank-check shell.",
+    "mixed_or_conflicting": "If neither route gives a unique applicable group, or authoritative code and direct primary evidence conflict materially, SECTOR_UNRESOLVED/SECTOR_CONFLICT. No thematic inference or quota-driven tie.",
+    "subgroup_scope_change": "Changing the narrow cloud operator rule or excluded sectors is a policy amendment, not an implementation convenience."
+  },
+  "relative_size": {
+    "reference_pools": [
+      "US",
+      "CN_MAINLAND",
+      "HK",
+      "CA",
+      "UK",
+      "JP",
+      "EU"
+    ],
+    "pool_key": [
+      "assigned_primary_jurisdiction_group",
+      "diagnostic_activity_group"
+    ],
+    "pool_count": 42,
+    "international_rule": "Rank UK, JP and EU separately by activity, then combine their labelled candidates for INT quota solving. Do not impose four issuers per country/activity; only INT totals and8/8/8 are law.",
+    "eligible_reference_floor_usd": "0",
+    "positive_value_required": true,
+    "micro_cap_excluded": false,
+    "denominator": "Every eligible economic issuer in the frozen declared jurisdiction/activity perimeter, not the selected four and not only vendor-covered/nonmissing rows.",
+    "completeness": "Each official perimeter row must resolve to an eligible unique issuer or a evidenced exclusion. Any unresolved row that could belong to a pool prevents its completeness claim. Missing caps cannot be silently excluded.",
+    "rule": {
+      "N": "Number of eligible, uniquely resolved, valid-cap issuers in the complete pool.",
+      "order": "Descending exact reference USD capitalization.",
+      "k1": "ceil(N/2)",
+      "k2": "ceil(3*N/4)",
+      "t1": "Capitalization at ordinal k1.",
+      "t2": "Capitalization at ordinal k2.",
+      "L": "V >= t1",
+      "M": "t2 <= V < t1",
+      "S": "0 < V < t2",
+      "empty_pool": "All bands empty.",
+      "tie_rule": "Never split identical reference-cap values across bands. Equal-valued boundary blocks move together to the higher band. Empty middle/lower bands can make the design infeasible.",
+      "small_N": "N<4 cannot satisfy a non-INT sector quota. In an INT country/activity pool smallN may supply some bands; the joint solver decides global feasibility."
+    },
+    "labels": {
+      "L": "RELATIVE_UPPER_HALF_SLOT",
+      "M": "RELATIVE_NEXT_QUARTER_SLOT",
+      "S": "RELATIVE_LOWER_QUARTER_SLOT"
+    },
+    "absolute_USD_band_required_alongside": true,
+    "global_size_comparability_claim": false
+  },
+  "deterministic_selection": {
+    "seed_utf8": "GMI-WP02-20261009-v1",
+    "seed_rotation": false,
+    "hash": "SHA-256",
+    "encoding": "H(domain,*fields)=SHA256(concat(uint64_big_endian(len(UTF8(s))) || UTF8(s) for s in [domain,seed,*fields])). Strict UTF8, no trimming/case-folding/Unicode normalization of owner canonical identifiers.",
+    "issuer_priority": "Ascending H('issuer-priority',issuer_id), then exact UTF8 issuer_id bytes on a digest collision.",
+    "no_performance_or_vendor_signal": true,
+    "non_INT": "For each of4strata x6activities x3bands, require capacity>=quota and choose the first quota issuers by issuer_priority.",
+    "INT_feasibility": {
+      "source_to_country": "Capacity8 for each UK,JP,EU.",
+      "country_to_sector_band": "Capacity equals number of eligible unique candidates in that country/activity/band.",
+      "sector_band_to_sink": "Capacity q_band (L2,M1,S1) for each of18activity-band nodes.",
+      "required_flow": 24,
+      "certificate": "Record all integer capacities, achieved maxflow and a deficient mincut if flow<24. All source/sink capacities total24, so fullflow saturates every quota.",
+      "deterministic_solution": "Iterate INT candidates in issuer_priority order. Tentatively include a candidate only if no residual quota becomes negative and the remaining candidates can still complete all residual quotas by the same maxflow test. Otherwise exclude. Remove each visited candidate from the remaining pool. Continue until24. This constructs the lexicographically smallest sorted list of selected priorities (equivalently a feasible inclusion vector preferring1 over0 at earlier priorities), without floating optimization costs.",
+      "no_automatic_country_or_sector_reassignment": true
+    },
+    "output_required": [
+      "policy_and_frame_hashes",
+      "canonical_issuer_ids",
+      "all_listing_and_primary_evidence_bindings",
+      "relative_pool_denominators_and_thresholds",
+      "source_revision_and_publication_clocks",
+      "cap_components_and_source_ages",
+      "source_entitlement_decisions",
+      "selected_and_excluded_records_with_reason",
+      "absolute_band_companion",
+      "INT_capacity_matrix_and_flow_certificate",
+      "seed_and_hash_encoding",
+      "vendor_blind_freeze_receipt",
+      "unresolved_counts_by_reason"
+    ],
+    "inference_limit": "Deterministic quota diagnostic; not a probability sample of global issuers and not a population-weighted performance estimate."
+  },
+  "replacement_law": {
+    "before_freeze": "Correct proved identity, units, status or metadata errors using only eligibility information available by K. Preserve every prior frame/version and recompute with the same policy/seed; no parameter tuning to results.",
+    "after_selection_before_vendor_unblinding": "An objective eligibility correction requires an independently reviewed superseding freeze and full constrained recomputation from the corrected frame under unchanged cutoffs/seed. Preserve both cohorts and reasons.",
+    "after_vendor_unblinding": "Do not replace issuers in the registered headline cohort. Retain original requested120 denominator and separately report corrected eligibility. A new cohort requires a new explicit study; never erase the original failure.",
+    "never_replacement_reasons": [
+      "no_filing_found",
+      "provider_has_no_match",
+      "anonymous_relationship",
+      "stale_vendor_result",
+      "extraction_refusal",
+      "poor_document_quality",
+      "missing_expected_relationship",
+      "unfavorable_diagnostic_result"
+    ]
+  },
+  "stress_case_law": {
+    "minimum_per_stratum": 6,
+    "labels": [
+      "IDENTITY_ALIAS",
+      "ANON_CONCENTRATION",
+      "DUAL_FLOW",
+      "TERMINATION_EXPLICIT",
+      "SUPPLIER_LIST_STALE",
+      "SEGMENT_RECAST",
+      "DIMENSION_CUSTOM",
+      "QUANTITY_DENOMINATOR"
+    ],
+    "selection": "Identify genuine cases within selected issuers and eligible documents before vendor consumption, retain deterministic issuer/document/locator ordering and independent adjudication.",
+    "no_fabrication": true,
+    "shortfall": "Report measured shortfall; do not replace issuers or fabricate a case. Any outside-cohort challenge supplement must be separately adopted and separately denominated."
+  },
+  "failure_and_falsifier_law": {
+    "hard_stops": [
+      "POLICY_NOT_ADOPTED",
+      "SOURCE_USE_NOT_ENTITLED",
+      "FRAME_UNRESOLVED",
+      "PRIMARY_UNKNOWN",
+      "SECTOR_UNRESOLVED",
+      "SECTOR_CONFLICT",
+      "CAP_FRAME_INCOMPLETE",
+      "PRICE_TOO_OLD",
+      "SHARE_COUNT_TOO_OLD",
+      "UNPRICED_ECONOMIC_CLASS",
+      "FX_UNAVAILABLE",
+      "POST_CUTOFF_SOURCE",
+      "DUPLICATE_ECONOMIC_ISSUER",
+      "NON_INT_CELL_SHORTFALL",
+      "INT_FLOW_LT_24",
+      "VENDOR_UNBLINDING_PRECEDES_FREEZE"
+    ],
+    "no_silent_relaxation": [
+      "No reduction of120",
+      "No removal ofCanadahealthcare",
+      "No size-threshold tailoring by market",
+      "No retie to fill a geography",
+      "No relabelling insurance/REIT as healthcare",
+      "NoETF-weight-derived cap",
+      "No collapse ofunknown identities",
+      "No imputed source-availability date",
+      "No reseeding after viewing the cohort"
+    ],
+    "diagnostic_falsifiers": [
+      "If the intended research claim requires equal dollar scale, relative labels are invalid for that claim even if counts pass.",
+      "If all selected relativeL/M/S names in a market share one absolute USD band, report that fact; count balance is not absolute-size diversity.",
+      "If a plausible proved share-count/ratio/currency correction changes an assigned band, preserve the failure and follow the correction law.",
+      "If the complete Canadahealthcare pool cannot supply2/1/1 under the adopted rule, preserve the shortfall rather than naming unproved issuers.",
+      "If individual INT cell counts pass but maxflow<24, the jointly constrained120 design still fails.",
+      "If the rank frame cannot be completed lawfully, do not publish eligible-subset quantiles as market-relative ranks.",
+      "If fewer than6 genuine stress cases exist in a stratum, the difficult-case acceptance requirement remains unmet."
+    ],
+    "review_change_triggers": "Policy is revised only by principal adoption of a new version with rationale, before vendor outputs for the new study; a failed diagnostic is retained."
+  },
+  "scope_of_this_artifact": {
+    "current_effects": "Scratch research files only.",
+    "actual_issuer_selection": null,
+    "actual_INT_maxflow": null,
+    "actual_Canada_healthcare_eligible_count": null,
+    "prior_frame_audit_unchanged_sha256": "9ab4ef6dcb81eb0a3185269a851f22d315a2ff45c0be5c67dfb154efa4cfc1e0",
+    "application_code_or_registry_change": false,
+    "source_capture": false,
+    "provider_job": false,
+    "native_or_Git_effect": false,
+    "executable_selector": "Not built or run; principal decides its scope after policy adjudication."
+  },
+  "proposed_semantic_adoptions": [
+    {
+      "id": "A01_RELATIVE_SIZE_SEMANTICS",
+      "current_law": "Two large, one mid and one small per stratum/activity; numeric meaning unspecified.",
+      "proposed": "Use labelled upper-half/next-quarter/lower-quarter count bands within US,CN_MAINLAND,HK,CA,UK,JP,EU activity pools; allow positive-valued microcaps in relative slots, with absolute USD tags alongside.",
+      "changes_120_quota": false,
+      "status": "REQUIRES_PRINCIPAL_ADOPTION"
+    },
+    {
+      "id": "A02_ACTIVITY_AND_INSTRUMENT_PERIMETER",
+      "current_law": "Six named groups and primary-listing strata; exact crosswalk/perimeter unspecified.",
+      "proposed": "Use the explicit single-activity routes, narrow IaaS/PaaS cloud-operator scope, public operating-equity/growth-market perimeter and objective exclusions in this JSON.",
+      "changes_120_quota": false,
+      "status": "REQUIRES_PRINCIPAL_ADOPTION"
+    },
+    {
+      "id": "A03_REPORTED_SHARE_REFERENCE_CAP_AND_CUTOFFS",
+      "current_law": "Freeze size/date/identity/availability before vendor outputs; detailed measurement unspecified.",
+      "proposed": "Use reported-share reference issuer cap,183-day maximum share-count age,5-session/10-day price bounds,common ECB FX date, D2026-09-30/K2026-10-09T00:00Z and actual later evidence freezeF.",
+      "changes_120_quota": false,
+      "status": "REQUIRES_PRINCIPAL_ADOPTION"
+    }
+  ]
+}

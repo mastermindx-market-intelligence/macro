@@ -195,7 +195,12 @@ def _ssr_card(x: dict) -> str:
     if pts:
         pts_html = '<ul class="rep-points">' + "".join(f"<li>{_e(p)}</li>" for p in pts[:4]) + "</ul>"
     else:
-        pts_html = '<ul class="rep-points pend"><li>Summary pending — full report available to read.</li></ul>'
+        pts_html = (
+            '<ul class="rep-points pend"><li>'
+            '<span class="l-en">No summary is available for this report. The full report is available to read.</span>'
+            '<span class="l-zh">本篇暂无摘要。全文已可查看。</span>'
+            '</li></ul>'
+        )
     tags_html = "".join(f'<span class="rep-tag">{_e(t)}</span>' for t in tags)
     cal = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'
     cls = "rep glass" + (" pick" if top else "") + (" needs" if needs else "")

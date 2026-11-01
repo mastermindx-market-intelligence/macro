@@ -11,7 +11,7 @@ import logging
 import pandas as pd
 
 from engine import intl_compare, intl_equity_risk, intl_inputs
-from engine.intl_regime import classify, recession_band
+from engine.intl_regime import classify, component_evidence_at, recession_band
 from lib import config
 
 log = logging.getLogger(__name__)
@@ -52,6 +52,7 @@ def country_record(cc: str, closes: pd.DataFrame, macro: pd.DataFrame,
     g_n = int(row.get("growth_n_components", 0) or 0)
     i_n = int(row.get("inflation_n_components", 0) or 0)
     rec_score = float(row["recession_score"]) if pd.notna(row.get("recession_score")) else None
+    cycle_components = component_evidence_at(reg, asof)
 
     record = {
         "cc": cc, "name": c["name"], "name_zh": c.get("name_zh", c["name"]),
@@ -68,6 +69,7 @@ def country_record(cc: str, closes: pd.DataFrame, macro: pd.DataFrame,
         "macro_asof": intl_inputs.macro_freshness(cc, macro),
         "equity": equity.get(cc, {}),
         "data_limited": bool(g_n < 2 or i_n < 2 or _macro_present(snap) < 2),
+        "cycle_components": cycle_components,
     }
     hist = reg[[col for col in reg.columns if not str(col).startswith("c_")]]
     return record, hist
