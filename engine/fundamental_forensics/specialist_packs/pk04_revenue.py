@@ -18,7 +18,7 @@ hook PK11 introduced), under the guard documented at that mapping.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 from typing import Any, Mapping
 
@@ -237,13 +237,17 @@ def _rpo_single_typed_axis_aggregate(
 
     Implements the ``rpo_total`` rule's clause (2): returns the one
     admissible occurrence — a non-nil ``RPO_TOTAL_CONCEPT`` fact at ``por``
-    whose only dimension is ``RPO_TIMING_AXIS``, with no
+    whose only dimension is ``RPO_TIMING_AXIS`` carried as the context's
+    TYPED dimension with a member date inside the period-adjacent window
+    ``por < member_date <= por + 92 days``, with no
     ``RPO_TIMING_PERIOD1_CONCEPT`` fact on the same context and a ledger
     unit inside ``unit_equivalents`` — or ``None`` for every rejected shape
     (no such fact; an undimensioned fact present, which the framework's own
     resolution owns; two or more such facts; a Period1-marked bucket; a
-    unit the catalogue refuses). Axis membership is decided by the
-    framework's ``_dimensions_admitted`` over axis NAMES.
+    unit the catalogue refuses; the axis carried as an explicit member; a
+    typed member at or before ``por``, past the window, or carrying no
+    parseable date). Axis membership is decided by the framework's
+    ``_dimensions_admitted`` over axis NAMES.
     """
     undimensioned: list[Any] = []
     candidates: list[Any] = []
@@ -258,11 +262,33 @@ def _rpo_single_typed_axis_aggregate(
         if not (context.explicit_dimensions or context.typed_dimensions):
             undimensioned.append(occurrence)
             continue
+        # The axis must be the context's TYPED dimension: an occurrence
+        # carrying the timing axis as an EXPLICIT member names the same axis
+        # but is a different shape (never date-typed), so it is skipped here
+        # — never a candidate, never a source the mint reads.
+        if any(axis == RPO_TIMING_AXIS for axis, _ in context.explicit_dimensions):
+            continue
+        if RPO_TIMING_AXIS not in {axis for axis, _ in context.typed_dimensions}:
+            continue
         if _dimensions_admitted(occurrence, (RPO_TIMING_AXIS,)):
             candidates.append(occurrence)
     if undimensioned or len(candidates) != 1:
         return None
     aggregate = candidates[0]
+    # Period-adjacent window: both real filer conventions put the
+    # aggregate's typed member at the day after the period end. ACCEPTED:
+    # ``por < member_date <= por + 92 days``. REFUSED (the field stays a
+    # typed absence): a member at or before the period end; one past the
+    # window — a lone far-future bucket is one bucket of the disclosure,
+    # not its total; a member with no parseable date at all.
+    member = next(
+        member
+        for axis, member in aggregate.context.typed_dimensions
+        if axis == RPO_TIMING_AXIS
+    )
+    member_date = _typed_member_iso_date(str(member))
+    if member_date is None or not (por < member_date <= por + timedelta(days=92)):
+        return None
     shape = _context_shape_key(aggregate.context)
     for occurrence in ledger.events:
         if occurrence.concept_qname == RPO_TIMING_PERIOD1_CONCEPT and (

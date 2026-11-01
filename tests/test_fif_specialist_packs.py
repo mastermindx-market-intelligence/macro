@@ -10575,3 +10575,197 @@ def test_pk04dev2_rpo_total_period1_bucket_stays_absent(
     assert row["reason"] == "disallowed_dimension"
     assert row["value"] is None
     assert row["source_occurrence_ids"] == []
+
+
+# pk04dev3 (guard-precision repair): two narrow guard defects in the
+# single-aggregate rule. (1) the admitted aggregate's TYPED MEMBER DATE was
+# never checked, so a lone far-future bucket could be valued as the total;
+# the member must sit in the period-adjacent window
+# ``por < member_date <= por + 92 days`` (both real filer conventions put it
+# at the day after the period end). (2) an occurrence carrying the timing
+# axis as an EXPLICIT member passed the axis-name check and then crashed the
+# mint's read of ``typed_dimensions[0]``, dropping the whole PK04 envelope;
+# the guard now requires the axis in typed_dimensions and skips explicit-
+# member occurrences — a typed absence, never an exception.
+def _pk04dev3_filing_row() -> dict:
+    return synthetic_filing(
+        accession="0000000004-26-000010",
+        document_id="testrev-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at="2025-12-31",
+        entity_id=TESTREV_CIK,
+    )
+
+
+def _pk04dev3_rpo_event(
+    filing_row: dict, key: str, member: str, *, explicit: bool = False
+):
+    """One RPO-total fact at the period end on the timing axis.
+
+    ``member`` is the serialized axis token; ``explicit`` puts the
+    (axis, member) pair in ``explicit_dimensions`` instead of
+    ``typed_dimensions``.
+    """
+    return make_raw_fact(
+        source=filing_row["source"],
+        concept_qname="us-gaap:RevenueRemainingPerformanceObligation",
+        context=FactContext(
+            context_id=f"c-rpo-{key}",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTREV_CIK,
+            instant="2025-12-31",
+            explicit_dimensions=((_RPO_AXIS, member),) if explicit else (),
+            typed_dimensions=() if explicit else ((_RPO_AXIS, member),),
+        ),
+        unit=FactUnit("USD", ["iso4217:USD"]),
+        raw_token="58100000000",
+        parsed_value="58100000000",
+        dimensions_known=True,
+        decimals="-8",
+        source_span=(0, 10),
+        source_occurrence_key=key,
+        accepted_at=filing_row["accepted_at"],
+        recorded_at=filing_row["recorded_at"],
+    )
+
+
+def _pk04dev3_produce(monkeypatch: pytest.MonkeyPatch, events) -> dict:
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000004-26-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    return produce_pack(
+        "PK04",
+        PackInput(
+            packages=_testrev_packages(),
+            entity=TESTREV_ENTITY,
+            query=PK04_QUERY,
+            issuer_sic=TESTREV_SIC,
+            sic_source="sec_submissions",
+        ),
+    )
+
+
+def test_pk04dev3_rpo_total_far_future_typed_member_stays_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_2030", _typed_member("2030-01-01"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+
+
+def test_pk04dev3_rpo_total_explicit_member_occurrence_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    base = list(
+        _testrev_events(
+            facts=(
+                ("rev", "us-gaap:Revenues", "duration", "138191000000", "USD"),
+                (
+                    "cl_cur",
+                    "us-gaap:ContractWithCustomerLiabilityCurrent",
+                    "instant",
+                    "7576000000",
+                    "USD",
+                ),
+            )
+        )
+    )
+    explicit_occ = _pk04dev3_rpo_event(
+        filing_row, "rpo_explicit", _typed_member("2026-01-01"), explicit=True
+    )
+    with_occ = _pk04dev3_produce(monkeypatch, base + [explicit_occ])
+    without = _pk04dev3_produce(monkeypatch, list(base))
+    row = _testrev_row(with_occ, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+    others_with = [r for r in with_occ["fields"] if r["field_id"] != "rpo_total"]
+    others_without = [r for r in without["fields"] if r["field_id"] != "rpo_total"]
+    assert others_with == others_without
+
+
+def test_pk04dev3_rpo_total_period_end_plus_one_day_stays_valued(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_agg", _typed_member("2026-01-01"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "58100000000"
+    assert row["dimensions"] == [{"axis": _RPO_AXIS, "member": "2026-01-01"}]
+
+
+def test_pk04dev3_rpo_total_member_window_boundaries(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    # A member exactly AT the period end is not after it: refused.
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_at_end", _typed_member("2025-12-31"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+    # Period end + 92 days is the last admitted day.
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_92d", _typed_member("2026-04-02"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "58100000000"
+    assert row["dimensions"] == [{"axis": _RPO_AXIS, "member": "2026-04-02"}]
+    # One day further is refused.
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_93d", _typed_member("2026-04-03"))],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
+
+
+def test_pk04dev3_rpo_total_unparseable_typed_member_stays_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    filing_row = _pk04dev3_filing_row()
+    member = f"<{_RPO_AXIS}.domain>FY2026-and-thereafter</{_RPO_AXIS}.domain>"
+    result = _pk04dev3_produce(
+        monkeypatch,
+        [_pk04dev3_rpo_event(filing_row, "rpo_opaque", member)],
+    )
+    row = _testrev_row(result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == "disallowed_dimension"
+    assert row["value"] is None
+    assert row["source_occurrence_ids"] == []
