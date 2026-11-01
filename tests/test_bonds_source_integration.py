@@ -39,7 +39,16 @@ def test_publication_uses_the_existing_default_deny_access_boundary():
     assert "root * /opt/macro/site.served" in caddy
     update = (ROOT / "app/deploy/update.sh").read_text()
     assert 'flock -n 9 || exit 0' in update
-    assert 'rsync -a --delete --min-size=1 "$APP_DIR/site/" "$APP_DIR/site.served/"' in update
+    # Enforce exactly one atomic mirror command with the canonical paths and
+    # no --inplace writes. Current main adds an OHLC publisher exclusion; the
+    # original R33 integration base did not yet have it.
+    mirror = [line.strip() for line in update.splitlines()
+              if line.lstrip().startswith("rsync ")
+              and '"$APP_DIR/site.served/"' in line]
+    assert mirror in (
+        ['rsync -a --delete --min-size=1 "$APP_DIR/site/" "$APP_DIR/site.served/"'],
+        ['rsync -a --delete --min-size=1 --exclude=/ohlc "$APP_DIR/site/" "$APP_DIR/site.served/"'],
+    )
 
 
 def test_source_mount_is_additive_to_the_existing_bonds_consumer():
