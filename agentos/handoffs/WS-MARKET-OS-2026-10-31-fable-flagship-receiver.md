@@ -205,6 +205,36 @@ Chris to sign in to beta in the pane, or to connect Claude in Chrome with 1Passw
 Producer contract dependency: Macro PRs 10199 and 10200 closed unmerged and 10203 is
 still open, so the deployed `portfolio_changes.v1` producer the slice pins is unchanged.
 
+## Signed-in beta proof (2026-11-01)
+
+Records PR 10358 merged as 35bdbef5. Chris signed in to beta in the built-in browser pane,
+and the seat ran the signed-in Today check on https://beta.mastermind-x.com/today at
+db6168c2. Script chunks and the fetched `/today` `data-dpl-id` both read db6168c2.
+
+- First load: the signed-out gate is gone and the "Since your last visit" section reaches
+  `data-today-since-state=ready`. POST `/api/portfolio-changes` returns 200, so the proxy
+  injected the session and the desk answered. The first-visit line renders and the
+  `mmx.today.since.v1` envelope now holds one `account:<uuid>` slot.
+- Second load: the client posted the stored digest and the desk answered 200. The section
+  renders the no-change line with the as-of and population sentence, and no list or
+  "Show N more" control.
+- The seat checked only fixed copy strings, element counts and slot keys. It never read,
+  printed or stored the digest contents or any change line.
+- Not exercised with this account: change lines with the overflow expansion, the free-tier
+  teaser (the account is Pro), and the unavailable state. Unit tests and the crops in
+  terminal#1189 cover these.
+
+Observation: the desk read is dated 2026-10-17 and the Macro command strip reads as of
+16 Oct 2026, so the upstream Macro context the brief composes is about two weeks old. That
+is a producer freshness question for the Macro owner; the slice renders the date honestly.
+
+Rung: real-path signed-in proof on BETA. This is not PRODUCTION_PROOF, because production
+`terminal.service` strips the shared shell and does not carry the slice. Promotion to
+production is a separate shared-shell release decision outside this slice. It is not
+ACCEPTANCE either.
+
+Producer contract dependency is unchanged: Macro PR 10203 is still open.
+
 ## Highest-risk dependencies
 
 1. Signed-in browser proof on beta needs a human sign-in (no saved credential, Chrome not

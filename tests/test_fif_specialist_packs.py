@@ -6094,7 +6094,7 @@ BASE_AAPL_ENVELOPE_SHA256 = {
     "PK02": "8d868ce982fff7c5e45693d4a81df9e07afee166df4f4996c3a4e141b2790869",
     "PK11": "f425680270c2a267d8dca5f44e6a1e3c2ac708b124e2d2a7723c0674056d9b2f",
     "PK12": "da96915b1d81f0f4417e6cb4d5acbc551f5fbfcc5975dc37091adfec9be5cceb",
-    "PK09": "3d9130f6de6cc0c4b89760a14102dec6986f24c74b174c066d4aef10fddf81d3",
+    "PK09": "c99bfbe2e14ad5e025d1b02106176303311384a80c0dc4a96b0f91d57cc3535c",
 }
 _BASE_PACK_METRICS = {
     "PK06": "leases",
@@ -6755,6 +6755,486 @@ def test_pk10_tenure_duration_does_not_mask_annual() -> None:
     assert contract.validate_pack_result(result) == []
 
 
+# Fifth repair (independent per-pack review, 2026-11-02), D1/D2: the bare
+# "frequency of" anchor arm let any cadence-bearing sentence value the
+# say-on-pay frequency, and the drop-subtree compare never fired (bytes vs
+# str), so hidden ix:header content reached disclosure quotes.
+def _pk10_header_first_package(body: str) -> GoldenFilingPackage:
+    """A synthetic DEF 14A package whose primary document opens with an
+    ``ix:header`` carrying a CIK and context dates as the first element of
+    the body — no ``_SYNTHETIC_PREFIX`` head, so nothing precedes the hidden
+    header but the root and body tags."""
+    html = (
+        '<html xmlns="http://www.w3.org/1999/xhtml" '
+        'xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" '
+        'xmlns:xbrli="http://www.xbrl.org/2003/instance">'
+        "<body>"
+        "<ix:header><ix:resources>"
+        '<xbrli:context id="c1"><xbrli:entity><xbrli:identifier '
+        'scheme="http://www.sec.gov/CIK">0000000099</xbrli:identifier>'
+        "</xbrli:entity><xbrli:period><xbrli:instant>2026-06-30"
+        "</xbrli:instant></xbrli:period></xbrli:context>"
+        "</ix:resources></ix:header>" + body + "</body></html>"
+    ).encode("utf-8")
+    manifest = {
+        "entity_id": "ISS:TEST",
+        "cik": "0000000099",
+        "legal_name": "Test Co",
+        "accession": "0000000099-26-000001",
+        "form": "DEF 14A",
+        "primary_document": "doc.htm",
+        "period_of_report": "2026-06-30",
+        "filing_date": "2026-07-10",
+        "source_accepted_at": "2026-07-10T08:00:00.000Z",
+        "fixture_recorded_at": "2026-08-23T00:32:31Z",
+        "members": [
+            {
+                "name": "doc.htm",
+                "state": "stored",
+                "role": "primary",
+                "content_sha256": sha256(html).hexdigest(),
+            }
+        ],
+    }
+    return GoldenFilingPackage(manifest=manifest, members={"doc.htm": html})
+
+
+def test_pk10_dividend_frequency_sentence_is_not_a_vote_anchor() -> None:
+    # D1: a dividend-cadence sentence carries no vote context, so the
+    # "frequency of" arm never anchors it and the row keeps the valued
+    # not_disclosed absence asserted over the whole document.
+    row, package, result = _pk10_frequency_row(
+        "<div>The frequency of dividend increases was annual for three"
+        " years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    assert span["start_offset"] == 0
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert (
+        "The frequency of dividend increases was annual for three years."
+        in covered
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_meeting_frequency_sentence_is_not_a_vote_anchor() -> None:
+    # D1: a committee-meeting cadence with no say-on-pay content anywhere
+    # emits no say_on_pay_frequency value either.
+    row, package, result = _pk10_frequency_row(
+        "<div>The frequency of committee meetings is annual.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    assert span["start_offset"] == 0
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert "The frequency of committee meetings is annual." in covered
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_vote_sentence_governs_over_earlier_non_vote_frequency() -> None:
+    # D1: when a non-vote cadence sentence precedes the genuine vote
+    # sentence, only the vote sentence anchors, so it supplies the value —
+    # order can no longer hand the row to the wrong sentence.
+    row, package, result = _pk10_frequency_row(
+        "<div>The frequency of dividend increases was annual for three"
+        " years.</div>"
+        "<div>The say-on-pay vote will be held annually.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    matched = _pk10_matched_span(package, row)
+    assert matched == "say-on-pay vote will be held annually"
+    assert "dividend" not in matched
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_hidden_header_text_is_dropped_from_disclosure_quotes() -> None:
+    # D2: the hidden ix:header's CIK and context dates must never surface
+    # inside a disclosure sentence — the dropped subtree supplies no text,
+    # and the first sentence starts at the disclosure itself.
+    package = _pk10_header_first_package(
+        "<div>Adjusted EPS was not a selected performance measure for fiscal"
+        " 2025 executive compensation.</div>"
+    )
+    result = produce_pack(
+        "PK10",
+        _pk10_input(packages=(package,), entity=SYNTHETIC_ENTITY),
+    )
+    row = _row(result, "performance_measure_selected")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "Adjusted EPS was not a selected performance measure for fiscal 2025"
+        " executive compensation."
+    )
+    assert "0000000099" not in row["text_value"]
+    assert "2026-06-30" not in row["text_value"]
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_script_and_style_subtrees_drop_from_narrative() -> None:
+    # D2: the other two drop-set members — script and style subtrees —
+    # supply no narrative text ahead of a matched disclosure sentence.
+    package = _pk10_header_first_package(
+        "<script>var hidden = 1; tag();</script>"
+        "<style>.cover { display: none; }</style>"
+        "<div>The most important performance measure for fiscal 2025"
+        " executive compensation was adjusted operating income.</div>"
+    )
+    result = produce_pack(
+        "PK10",
+        _pk10_input(packages=(package,), entity=SYNTHETIC_ENTITY),
+    )
+    row = _row(result, "performance_measure_selected")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == (
+        "The most important performance measure for fiscal 2025 executive"
+        " compensation was adjusted operating income."
+    )
+    assert "hidden" not in row["text_value"]
+    assert "display: none" not in row["text_value"]
+    assert contract.validate_pack_result(result) == []
+
+
+def test_narrative_drop_subtree_self_closing_and_nested() -> None:
+    # D2, spec item 3: a self-closing drop-set tag emits only its ordinary
+    # tag space (it has no subtree), and a drop-set tag nested inside
+    # another drop-set subtree is consumed with the outer subtree — neither
+    # crashes nor swallows the text outside the outer close tag.
+    raw = (
+        b"<html><body>"
+        b"<script/>"
+        b"Visible prefix. "
+        b"<script><style>hidden rule</style>hidden tail</script>"
+        b"Kept after script."
+        b"</body></html>"
+    )
+    nt = pack_narrative.narrative_text_from_bytes(raw, "doc.htm")
+    assert "Visible prefix." in nt.text
+    assert "Kept after script." in nt.text
+    assert "hidden rule" not in nt.text
+    assert "hidden tail" not in nt.text
+    assert len(nt.offsets) == len(nt.text)
+
+
+def test_pk10_genuine_vote_sentence_alone_values_unchanged() -> None:
+    # T7 regression: a genuine say-on-pay frequency sentence alone values
+    # exactly as on 392f59ace3541 — arm-1 anchor, phrase span rule.
+    row, package, result = _pk10_frequency_row(
+        "<div>The Board recommends that the say-on-pay vote be held every"
+        " year.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert _pk10_matched_span(package, row) == "say-on-pay vote be held every year"
+    assert contract.validate_pack_result(result) == []
+
+
+# Sixth repair (independent re-review, 2026-11-02), D1/D2: the v5
+# vote-context look-ahead still accepted non-vote words ((executive)
+# compensation / advisory / proposal) and the ". "-delimited sentence ran
+# across paragraph and table-cell boundaries, so a non-vote cadence in one
+# block still valued annual from a vote mention in the next.
+def test_pk10_compensation_cadence_is_not_a_vote_context() -> None:
+    # N1 (U6): "compensation" is not a vote term; the committee-meeting
+    # cadence never anchors and the row keeps the valued not_disclosed
+    # absence asserted over the whole document.
+    row, package, result = _pk10_frequency_row(
+        "<div>The frequency of compensation committee meetings is annual.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    assert span["start_offset"] == 0
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert "The frequency of compensation committee meetings is annual." in covered
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_advisory_services_cadence_is_not_a_vote_context() -> None:
+    # N2 (U7): "advisory" alone is not a vote term either.
+    row, package, result = _pk10_frequency_row(
+        "<div>The frequency of advisory services provided by the independent"
+        " auditor is annual.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    assert span["start_offset"] == 0
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert (
+        "The frequency of advisory services provided by the independent"
+        " auditor is annual." in covered
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_shareholder_proposal_cadence_is_not_a_vote_context() -> None:
+    # N3 (U8b): "proposal" is not a vote term, and "shareholder proposal" is
+    # not the shareholder act (no agreed/approved/voted/adopted/ratified).
+    row, package, result = _pk10_frequency_row(
+        "<div>The frequency of the shareholder proposal is annual.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    assert span["start_offset"] == 0
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert "The frequency of the shareholder proposal is annual." in covered
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_cadence_and_vote_in_adjacent_paragraphs_do_not_combine() -> None:
+    # N4 (U10, paragraph form): the cadence paragraph carries no closing
+    # period, so the ". "-delimited sentence ran on into the vote paragraph;
+    # the </p><p> block break now bounds the sentence and neither block
+    # alone keeps a frequency, so the row stays the valued not_disclosed.
+    row, package, result = _pk10_frequency_row(
+        "<p>The frequency of dividend increases was annual</p>"
+        "<p>Shareholders approved the say-on-pay proposal without dissent.</p>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    assert span["start_offset"] == 0
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert "The frequency of dividend increases was annual" in covered
+    assert "Shareholders approved the say-on-pay proposal" in covered
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_cadence_and_vote_in_adjacent_cells_do_not_combine() -> None:
+    # N5 (U10, cell form): the same two texts in two <td> cells of one <tr>
+    # — the </td><td> break bounds the sentence exactly as </p><p> does.
+    row, package, result = _pk10_frequency_row(
+        "<table><tr>"
+        "<td>The frequency of dividend increases was annual</td>"
+        "<td>Shareholders approved the say-on-pay proposal without dissent.</td>"
+        "</tr></table>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    assert span["start_offset"] == 0
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert "The frequency of dividend increases was annual" in covered
+    assert "Shareholders approved the say-on-pay proposal" in covered
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_frequency_before_anchor_across_a_block_is_not_combined() -> None:
+    # N6: the frequency phrase itself sits in the earlier block; the vote
+    # mention in the later block cannot reach back across the </p><p> break
+    # to value it.
+    row, package, result = _pk10_frequency_row(
+        "<p>Annual</p>"
+        "<p>Shareholders approved the say-on-pay proposal without dissent</p>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    assert span["start_offset"] == 0
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert covered.startswith("<?xml")
+    assert "Shareholders approved the say-on-pay proposal" in covered
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_genuine_vote_in_second_block_values_from_that_block_only() -> None:
+    # N7: a genuine vote sentence in the second paragraph still values —
+    # from the second paragraph only. The meeting cadence in the first
+    # paragraph (no period, reachable only across the block break) neither
+    # supplies nor pollutes the value.
+    row, package, result = _pk10_frequency_row(
+        "<p>The frequency of compensation committee meetings is annual</p>"
+        "<p>Shareholders voted to hold say-on-pay votes every three years.</p>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    matched = _pk10_matched_span(package, row)
+    assert matched == "say-on-pay votes every three years"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    second_p = raw.index(b"<p>Shareholders voted")
+    # The evidence span lies inside the second <p> and quotes nothing from
+    # the cadence paragraph.
+    assert span["start_offset"] > second_p
+    assert b"compensation committee" not in matched.encode("utf-8")
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_v6_p1_shareholder_recommended_triennial_votes() -> None:
+    # P1: plural "votes" after "say-on-pay" still anchors and values.
+    row, _package, result = _pk10_frequency_row(
+        "<div>Shareholders recommended that the frequency of future"
+        " say-on-pay votes be every three years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_v6_p2_board_adopted_annual_advisory_vote() -> None:
+    # P2: "advisory vote" supplies the vote term now that bare "advisory"
+    # cannot.
+    row, _package, result = _pk10_frequency_row(
+        "<div>The Board adopted an annual frequency of the advisory vote on"
+        " executive compensation.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_v6_p3_shareholder_advisory_votes_triennial() -> None:
+    # P3: the plural "votes" recall fix — "shareholder advisory votes" is a
+    # vote context.
+    row, _package, result = _pk10_frequency_row(
+        "<div>The frequency of shareholder advisory votes on named executive"
+        " officer compensation will be every three years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_v6_p4_future_votes_on_compensation_biennial() -> None:
+    # P4: "votes on the compensation" — the vote term is the plural "votes",
+    # not the removed "compensation".
+    row, _package, result = _pk10_frequency_row(
+        "<div>The frequency of future votes on the compensation of named"
+        " executive officers will be every two years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "biennial"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_v6_p5_annual_advisory_vote_still_values() -> None:
+    # P5: the advisory-vote arm (byte-identical in v6) keeps valuing.
+    row, _package, result = _pk10_frequency_row(
+        "<div>The Company holds an annual advisory vote on executive"
+        " compensation.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_v6_p6_inline_tags_are_not_block_breaks() -> None:
+    # P6: <b> and <span> sit mid-sentence; the anchor, the look-ahead and
+    # the frequency phrase share one block and the row values.
+    row, _package, result = _pk10_frequency_row(
+        "<div>The frequency of <b>say-on-pay</b> votes will be"
+        " <span>annual</span>.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_v6_p7_period_form_stays_not_valued() -> None:
+    # P7 (U9, period form): the ". " already separated the cadence from the
+    # vote sentence on the parent; both versions keep the row not_valued.
+    row, package, result = _pk10_frequency_row(
+        "<div>The frequency of dividend increases was annual. Shareholders"
+        " approved the say-on-pay proposal without dissent.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    assert span["start_offset"] == 0
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert (
+        "The frequency of dividend increases was annual. Shareholders"
+        " approved the say-on-pay proposal without dissent." in covered
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_narrative_block_breaks_single_between_paragraphs() -> None:
+    # B1: exactly one block break — the collapsed space that carries the
+    # </p><p> boundary between "alpha" and "beta". The document-edge spaces
+    # of the outer <p> tags abut no text and are not breaks.
+    nt = pack_narrative.narrative_text_from_bytes(b"<p>alpha</p><p>beta</p>", "d")
+    assert nt.text == " alpha beta "
+    assert nt.block_breaks == (6,)
+
+
+def test_narrative_inline_tags_and_source_newline_are_not_breaks() -> None:
+    # B2: <b>, <span> and the namespaced ix:nonNumeric sit mid-sentence, and
+    # a source newline inside one <p> is ordinary source wrapping — none
+    # records a block break.
+    nt = pack_narrative.narrative_text_from_bytes(
+        b"<p>alpha <b>bold</b> and <span>sp</span> plus"
+        b" <ix:nonNumeric>fact</ix:nonNumeric> text\nwrapped here</p>",
+        "d",
+    )
+    assert "bold" in nt.text
+    assert "text wrapped here" in nt.text
+    assert nt.block_breaks == ()
+
+
+def test_narrative_break_producing_tags_each_record_one_break() -> None:
+    # B3: <br/>, </td><td> and </li><li> each bound a block.
+    br = pack_narrative.narrative_text_from_bytes(b"<p>one<br/>two</p>", "d")
+    assert br.block_breaks == (br.text.index(" two"),)
+    cells = pack_narrative.narrative_text_from_bytes(
+        b"<table><tr><td>one</td><td>two</td></tr></table>", "d"
+    )
+    assert cells.block_breaks == (cells.text.index(" two"),)
+    items = pack_narrative.narrative_text_from_bytes(
+        b"<ul><li>one</li><li>two</li></ul>", "d"
+    )
+    assert items.block_breaks == (items.text.index(" two"),)
+
+
+def test_narrative_block_sentence_span_clips_both_sides() -> None:
+    # B4: with breaks, the ". "-sentence (here the whole text — no periods)
+    # is clipped to the anchor's own block on both sides; with no breaks the
+    # helper equals sentence_span exactly.
+    nt = pack_narrative.narrative_text_from_bytes(
+        b"<p>no period alpha</p><p>gamma delta</p><p>epsilon zeta</p>", "d"
+    )
+    assert len(nt.block_breaks) == 2
+    start = nt.text.index("delta")
+    end = start + len("delta")
+    bounds = (0, len(nt.text))
+    clipped = pack_narrative.block_sentence_span(nt, start, end, bounds)
+    assert nt.text[clipped[0] : clipped[1]] == "gamma delta"
+    assert clipped != pack_narrative.sentence_span(nt.text, start, end, bounds)
+    flat = pack_narrative.narrative_text_from_bytes(b"No tags here. Two sentences.", "d")
+    assert flat.block_breaks == ()
+    flat_start = flat.text.index("Two")
+    flat_bounds = (0, len(flat.text))
+    assert pack_narrative.block_sentence_span(
+        flat, flat_start, flat_start + 3, flat_bounds
+    ) == pack_narrative.sentence_span(
+        flat.text, flat_start, flat_start + 3, flat_bounds
+    )
+
+
 @pytest.mark.parametrize("pack_id", sorted(BASE_AAPL_ENVELOPE_SHA256))
 def test_base_pack_envelopes_unchanged_by_pk10_edits(pack_id: str) -> None:
     # §TESTS 4: every pack registered at BASE keeps its AAPL envelope
@@ -6807,7 +7287,7 @@ BASE_PACK_ENVELOPE_SHA256 = {
         "b26d48b769b9be642b5deaeafbe2f853b5d6155eb2f079f4953642c417062629"
     ),
     "PK09": (
-        "c4b994c45080380e4166a2d4381f6a310588617a6c7d4db366f5661f59c1175d"
+        "780783174a271d0bb216e235fe726aeab0c89eea9b27405f5bb0fc8a36bd200c"
     ),
     "PK11": (
         "9660c82e6d14e70e9302b2dc2cdf2468da416886422892d5201cea0ff88a744d"
@@ -7754,7 +8234,7 @@ PK05_BASE_PACK_ENVELOPE_SHA256 = {
     "PK03": "17a26aa6d276414927f9c68ddbd37595e79bc6120a289abcb254f83f4095057d",
     "PK04": "e4746fbf9126b233d759caeb235dfec72d1895b20b6a6b13a20dd6d16802d5dd",
     "PK06": "2126d42b4a608ad2a9f8e9a48b8692fe8c11c8ed187d5beb33e27df68182df17",
-    "PK09": "1c75cbbe03fc59fac67f92f3f1532d7b3c83f4f33452765ce1b4309f645715b0",
+    "PK09": "89b775cd466718080b16d5184afc286217c700af0e39b86d04b4eaf9c097dae4",
     "PK10": "217702f0bb51ac1686a796422e72118655584064fd8b6585eb8f5aa640c230e1",
     "PK11": "1e8d160a7fb3402fd82c698333cd2d87ad3622fca5d70437800c692c3fb63620",
     "PK12": "d6bfa668b1a77819f0a2e8ff1d77fd75e8cacce96dbeba49b430d861fca9591d",
@@ -9687,7 +10167,7 @@ PK07_BASE_PACK_ENVELOPE_SHA256 = {
     "PK04": "281d84d196751caca6ac23a217004766fb1483e2d5fc729309eb1bc30f64dc8f",
     "PK05": "3628a5ddde284650978617bcd7ae7ff922dd32ac0bbb8ab6e8f35ad2545967ac",
     "PK06": "84f9aad2836afa5b397253ff27807345d6245edf8f765b60b6e21d68449890f5",
-    "PK09": "c58d7263e4156f4c7f8acfa56aa9ed1a3b63402b5b9f6400960a460282a314b7",
+    "PK09": "b26b3f42704baa77f35f14a0ebf1b32a6d057d8c56637fe16829090fe28d4aae",
     "PK10": "2ef05add8be8db7f9cb32a6fd55b47eab26fafdc2e603a2b7cbae9e074b234d0",
     "PK11": "140b630622b5e1ab49dd1743ad8eafb91be8872e7a20e9cfc72d2d59ffddaefc",
     "PK12": "4915af8ff2a916dd788d219de2329c6fc7703df5dfc3ac7a4e8dc7265f4ab48b",
@@ -10343,7 +10823,7 @@ PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK05": "ac0cf6c6d5fb655b622d57317c376602ac357a7e3c075b60c8ef4fa7e6679740",
     "PK06": "1f78880eba88a185421ccc943e8e227bf7d264e5fea6ac8af1c96d75a793e229",
     "PK07": "0ff8a0e0ed118c716d3417e3765a131e94054fa57ab8eb9a2b0ade02fb89a153",
-    "PK09": "d2f04e7e866f870b7e6e3e19af46a536d3c0b0d34ea77b15507154c006dba3b9",
+    "PK09": "6480a97c534e559b9ad0fb3fd545986514234a0984260126a7781e8eba140499",
     "PK10": "655d3ff540c539e2f2b2a20104f286d68baaa6a18990e1ec46d52cc7cd6f32ba",
     "PK11": "58e1c524a82210daffc392c855309c73b5d4ca55732c100c3a3a6babe7d41ba4",
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",
@@ -14579,6 +15059,391 @@ def test_pk09_single_conformed_signature_resolves_unchanged() -> None:
     )
     result = _pk09_synthetic("10-K", body)
     assert _row(result, "auditor_firm")["text_value"] == "Northgate Audit LLP"
+    assert contract.validate_pack_result(result) == []
+
+
+# 45b. PK09 per-pack review repair (2026-11-02 lane fif-pk09fix-u3) ---------
+#
+# Three defects an independent per-pack review found in the reviewed commit
+# (392f59ace3541): a negated or hypothetical going-concern sentence valued
+# 'disclosed' (D1), an acquired-subsidiary exclusion clause winning the ICFR
+# conclusion purely by leftmost order (D2), and a confident
+# material_weakness_present 'false' asserted over an Item 9A that only
+# incorporates Management's Item 8 report by reference (D3). Every D-test
+# below fails on the pre-repair pack; the control tests pin the positives
+# that must not move.
+
+
+def test_pk09_negated_going_concern_doubt_is_not_disclosed() -> None:
+    # D1, run A1: "no substantial doubt ..." is a negated sentence, not a
+    # disclosed doubt; the field falls through to the valued not_disclosed
+    # absence exactly as a filing with no phrase does.
+    body = (
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026.</div>"
+        "<div>After evaluating the Company&#8217;s liquidity and capital "
+        "resources, management concluded that there was no substantial doubt "
+        "about the Company&#8217;s ability to continue as a going "
+        "concern.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "not_disclosed"
+    assert _row(result, "going_concern_management_plan")["reason"] == (
+        "missing_dependency"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_hypothetical_going_concern_doubt_is_not_disclosed() -> None:
+    # D1, run A2: a hypothetical "may arise" sentence is conditionality,
+    # not a disclosure.
+    body = (
+        "<div>If the product launch is delayed further, substantial doubt "
+        "about our ability to continue as a going concern may arise.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "not_disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_negated_doubt_sentences_do_not_pass_going_concern_check() -> None:
+    # D1, run A1b: management's negated sentence plus the auditor's own
+    # negated sentence repeating the phrase. The pre-repair pack valued the
+    # field 'disclosed' and corroborated the false positive with the
+    # auditor's refused mention; neither may carry the check to pass now.
+    body = (
+        "<div>Management concluded that there was no substantial doubt about "
+        "the Company&#8217;s ability to continue as a going concern.</div>"
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026. The financial statements have been "
+        "prepared assuming the Company will continue as a going concern; "
+        "management&#8217;s evaluation identified no substantial doubt about "
+        "the Company&#8217;s ability to continue as a going concern.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "going_concern_substantial_doubt")["text_value"] == (
+        "not_disclosed"
+    )
+    check = _check(result, "going_concern_vs_opinion")
+    assert check["status"] != "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_affirmative_going_concern_doubt_still_disclosed() -> None:
+    # D1 control: the affirmative disclosure keeps its value. This pin
+    # holds on the pre-repair pack as well.
+    body = (
+        "<div>Management concluded that substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern exists.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_acquired_subsidiary_exclusion_before_conclusion_is_effective() -> None:
+    # D2, run B1: the SEC-guidance acquired-subsidiary exclusion wording
+    # placed before management's period-end conclusion. The clause whose
+    # sentence is dated to the period of report governs; leftmost order
+    # never does.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management determined that the internal control over financial "
+        "reporting of Testco Acquired Inc was not effective as of the "
+        "acquisition date.</div>"
+        "<div>Management concluded that the Company&#8217;s internal control "
+        "over financial reporting was effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_acquired_subsidiary_exclusion_after_conclusion_is_effective() -> None:
+    # D2, run B1-reversed: the same two sentences in the opposite order
+    # resolve the same way — the read is order-independent. This pin holds
+    # on the pre-repair pack as well.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that the Company&#8217;s internal control "
+        "over financial reporting was effective as of June 30, 2026.</div>"
+        "<div>Management determined that the internal control over financial "
+        "reporting of Testco Acquired Inc was not effective as of the "
+        "acquisition date.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "effective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_single_not_effective_conclusion_stays_ineffective() -> None:
+    # D2 control: a single not-effective conclusion dated to the period
+    # keeps its value. This pin holds on the pre-repair pack as well.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that the Company&#8217;s internal control "
+        "over financial reporting was not effective as of June 30, 2026."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "ineffective"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_management_report_weakness_not_confirmed_false_over_9a() -> None:
+    # D3, run D1b: Management's Item 8 report discloses a material weakness
+    # and concludes not effective; Item 9A only incorporates the report by
+    # reference. The confident false over the incorporation sentence alone
+    # is gone: the weakness boolean is valued from the management report.
+    body = (
+        "<div>MANAGEMENT&#8217;S REPORT ON INTERNAL CONTROL OVER FINANCIAL "
+        "REPORTING Under Section 404 of the Sarbanes-Oxley Act of 2002, "
+        "management is required to assess the effectiveness of the "
+        "Company&#8217;s internal control over financial reporting and "
+        "report, based on that assessment, whether the Company&#8217;s "
+        "internal control over financial reporting is effective.</div>"
+        "<div>Management identified a material weakness in the "
+        "Company&#8217;s revenue cycle as of June 30, 2026.</div>"
+        "<div>Based on that assessment, management concluded that the "
+        "Company&#8217;s internal control over financial reporting was "
+        "not effective as of June 30, 2026.</div>"
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the Company did not maintain "
+        "effective internal control over financial reporting as of June 30, "
+        "2026.</div>"
+        "<div>Item 9A. Controls and Procedures The information required by "
+        "this Item is incorporated herein by reference. Item 9B. Other "
+        "Information None.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert _row(result, "icfr_management_conclusion")["text_value"] == (
+        "ineffective"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_item9a_weakness_disclosure_still_true() -> None:
+    # D3 control: a weakness disclosed inside Item 9A keeps its value. This
+    # pin holds on the pre-repair pack as well.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management identified a material weakness in the "
+        "Company&#8217;s revenue recognition process as of June 30, 2026. "
+        "Management concluded that the Company&#8217;s internal control "
+        "over financial reporting was not effective as of June 30, 2026."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+# 45c. PK09 going-concern re-review repair (2026-11-02 lane fif-pk09fix3-r1) --
+#
+# Two shapes the independent re-review still failed on f962c5d: a mixed
+# recital whose first, unnegated occurrence ("considered whether there was
+# substantial doubt ...") is answered inside the same clause run by a
+# directly negated conclusion (E1), and a sentence-initial capital negator
+# ("No substantial doubt ..." / "Without substantial doubt ...") the
+# lowercase-only look-behinds never refused (E2). V1-V4 fail on the
+# pre-repair pack; V6-V8 pin the positives that must not move.
+
+
+def test_pk09_mixed_recital_doubt_answered_negated_is_not_disclosed() -> None:
+    # E1, run V1: the recital's first, unnegated occurrence is followed in
+    # the same clause run by the directly negated conclusion, so the whole
+    # sentence is a no-doubt conclusion, not a disclosure.
+    body = (
+        "<div>We considered whether there was substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern, and we "
+        "concluded no substantial doubt about the Company&#8217;s ability "
+        "to continue as a going concern existed.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "not_disclosed"
+    assert _row(result, "going_concern_management_plan")["reason"] == (
+        "missing_dependency"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_mixed_recital_in_mgmt_and_audit_never_passes_check() -> None:
+    # E1, run V2: the V1 sentence in management's text and again in the
+    # auditor's report. Neither the refused field match nor the auditor's
+    # refused repetition may carry the check to pass.
+    body = (
+        "<div>We considered whether there was substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern, and we "
+        "concluded no substantial doubt about the Company&#8217;s ability "
+        "to continue as a going concern existed.</div>"
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026. We considered whether there was "
+        "substantial doubt about the Company&#8217;s ability to continue as "
+        "a going concern, and we concluded no substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern "
+        "existed.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "going_concern_substantial_doubt")["text_value"] == (
+        "not_disclosed"
+    )
+    check = _check(result, "going_concern_vs_opinion")
+    assert check["status"] != "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_sentence_initial_no_doubt_is_not_disclosed() -> None:
+    # E2, run V3: a sentence-initial "No substantial doubt ..." is the same
+    # negation as the lowercase "no substantial doubt ..." of D1/A1.
+    body = (
+        "<div>No substantial doubt about the Company&#8217;s ability to "
+        "continue as a going concern exists.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "not_disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_capital_no_doubt_repeated_in_audit_never_passes_check() -> None:
+    # E2, run V4: the V3 sentence in management's text and repeated in the
+    # auditor's report — the capital-negator repetition is still the
+    # refused-only corroboration channel D1 closed.
+    body = (
+        "<div>No substantial doubt about the Company&#8217;s ability to "
+        "continue as a going concern exists.</div>"
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026. No substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern "
+        "exists.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    assert _row(result, "going_concern_substantial_doubt")["text_value"] == (
+        "not_disclosed"
+    )
+    check = _check(result, "going_concern_vs_opinion")
+    assert check["status"] != "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_sentence_initial_without_doubt_is_not_disclosed() -> None:
+    # E2, run V5: the capital "Without ..." opening gets the same refusal
+    # the lowercase "without substantial doubt ..." already had.
+    body = (
+        "<div>Without substantial doubt about our ability to continue as a "
+        "going concern, we expanded production.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "not_disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_negated_plan_sentence_keeps_doubt_disclosed() -> None:
+    # V6 control (E1): the refusal demands the negator directly before the
+    # re-mentioned "substantial doubt"; "have not alleviated this
+    # substantial doubt" is a genuine unresolved disclosure. This pin
+    # holds on the pre-repair pack as well.
+    body = (
+        "<div>These conditions raise substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern, and "
+        "management&#8217;s plans have not alleviated this substantial "
+        "doubt.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_no_assurance_tail_keeps_doubt_disclosed() -> None:
+    # V7 control: "there can be no assurance" negates the assurance, not
+    # the doubt itself. This pin holds on the pre-repair pack as well.
+    body = (
+        "<div>These conditions raise substantial doubt about our ability to "
+        "continue as a going concern, and there can be no assurance that we "
+        "will obtain additional financing.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "disclosed"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_affirmative_doubt_in_mgmt_and_audit_still_passes() -> None:
+    # V8 control: a genuine disclosed doubt corroborated affirmatively by
+    # the auditor's report keeps the check at pass. This pin holds on the
+    # pre-repair pack as well.
+    body = (
+        "<div>Management concluded that substantial doubt about the "
+        "Company&#8217;s ability to continue as a going concern exists.</div>"
+        "<div>Report of Independent Registered Public Accounting Firm To the "
+        "Board of Directors In our opinion, the financial statements present "
+        "fairly, in all material respects, the financial position of the "
+        "Company as of June 30, 2026. Management&#8217;s evaluation "
+        "identified substantial doubt about the Company&#8217;s ability to "
+        "continue as a going concern.</div>"
+        "<div>Item 9A. Controls and Procedures Our disclosure controls and "
+        "procedures were effective as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    doubt = _row(result, "going_concern_substantial_doubt")
+    assert doubt["quality_state"] == "valued"
+    assert doubt["text_value"] == "disclosed"
+    assert _check(result, "going_concern_vs_opinion")["status"] == "pass"
     assert contract.validate_pack_result(result) == []
 
 
