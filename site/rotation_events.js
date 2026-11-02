@@ -204,6 +204,9 @@ function earlyContextHtml(ev, lang, nowMs) {
    The validation mirrors lib/rotation_observation_notification.py (V1-V7) plus the
    stricter engine id rule (rotobs_ + 40 lowercase hex) and the frozen §B state
    precedence; it renders the same glance/brief/study copy as the Risk Radar band.
+   O06: a view counts only with its source-owned ledger receipt (recorded: source
+   macro.rotation_events.ledger, ledger rotation_events/events.jsonl, 64-hex
+   receipt_sha256); a view that fails any check claims no observation id.
    Descriptive only: no forecast, odds, sizing or delivery language, ever. */
 function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
   var ZH = lang === 'zh', DAY = 86400000, STALE_DAYS = 4;
@@ -269,6 +272,12 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
     if (Math.abs(((1 + n / 100) / (1 + d / 100) - 1) * 100 - r) > 1e-6) return null;
     return { r: r };
   }
+  function recOk(r) {
+    return !!r && typeof r === 'object' && !Array.isArray(r)
+      && r.source === 'macro.rotation_events.ledger'
+      && r.ledger === 'rotation_events/events.jsonl'
+      && typeof r.receipt_sha256 === 'string' && /^[0-9a-f]{64}$/.test(r.receipt_sha256);
+  }
   var WORDS = {
     observed: ['Observed', '已观察到'], reversal: ['Reversal', '方向反转'],
     corrected: ['Corrected', '已更正'], withdrawn: ['Withdrawn', '已撤回'],
@@ -311,9 +320,10 @@ function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
         valid = n.source_as_of === n.event_as_of && v !== null;
       }
     }
-  } else if (n && typeof n === 'object' && typeof n.observation_id === 'string') {
-    oid = n.observation_id;
   }
+  // O06: no ledger receipt, no observation; an invalid view never claims an id
+  if (valid && !recOk(view.recorded)) valid = false;
+  if (!valid) oid = '';
   var session = typeof asOf === 'string' ? asOf : '';
   var win = null, hz = null, winEndOk = false, state;
   if (has && valid) {

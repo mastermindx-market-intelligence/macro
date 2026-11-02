@@ -63,7 +63,7 @@ def test_observation_clock_is_aware_and_actual_hook_time(canonical,monkeypatch):
         return {"status":"recorded","records":[{"id":"example"}]}
     monkeypatch.setattr(builder.rotation_events,"record_early_observation_history",record)
     before=datetime.now(timezone.utc);result=invoke(canonical);after=datetime.now(timezone.utc)
-    assert result=={"status":"recorded","receipts":1}
+    assert result=={"status":"recorded","receipts":1,"view":"absent"}
     assert before<=seen[0][2]<=after
     assert seen[0][1]==canonical[0].resolve()
 
@@ -98,7 +98,7 @@ def test_actual_builder_calls_observer_only_after_json_publication(canonical,mon
     monkeypatch.setattr(builder.rotation_events,"record_early_observation_history",record)
     result=builder.build()
     assert seen==[True]
-    assert result["early_observation_recording"]=={"status":"recorded","receipts":0}
+    assert result["early_observation_recording"]=={"status":"recorded","receipts":0,"view":"absent"}
 
 
 def test_actual_builder_explicit_clock_remains_replay_only(canonical,monkeypatch):
