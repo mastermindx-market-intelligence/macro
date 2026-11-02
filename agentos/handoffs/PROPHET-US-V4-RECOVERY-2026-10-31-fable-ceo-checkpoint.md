@@ -528,8 +528,8 @@ next_actions:
     for historical sessions; consume the owner's return on #6805 once.
   - >
     8. R7 US journey (research/prophet_v4/R7_US_JOURNEY_TRACE_2026-11-01.md, PR
-    #10385 at 774c059a — record §4b/§4c + three receipts pushed onto the reviewed 7ed3bbf9,
-    still ARMED merge-on-green after one independent Opus
+    #10385 MERGED 1a95939985e2 (sweeper 2026-11-02 19:16Z, final head 2b166c31;
+    record §4b/§4c + three receipts on the reviewed 7ed3bbf9) after one independent Opus
     read-only review round — MAJOR record overclaim + two MINOR test gaps repaired;
     contract-delta 0/0): the why-section leak (3 of 17 CVCO J11 hits: raw engine
     decision codes under "Why it is here") is fixed at the macro seam with the pool's
@@ -556,7 +556,24 @@ next_actions:
     chase 630.90, above-200 Yes, weekly No, provisional No, entry read 2026-10-29) and
     the PRE-#10385 why-copy "buy fired; forward confirmation pending" — the R7 US
     display proof is DONE for CVCO; plan relation, #plv-asof and the evidence expander
-    are not observed (runtime / second click). J7 FINDING routed to #6817 (comment
+    are not observed (runtime / second click). PRODUCTION PROOF of #10385 NOT YET: the
+    first main render after the merge (2574657182f6, 20:40Z; served sha == main) still
+    carries the pre-#10385 why markup — the 3 server-rendered pool rows (CVCO/PJT/PRIM)
+    show 'Original source · <code>' and the frozen checker reports J11 FAIL — because
+    that engine-render checked out before the merge (its parent 32eee815 holds the new
+    template blob c076adb7, its output does not). An engine-render push run started
+    21:34Z: read it ONCE at the next boundary (served sha == main render, then the
+    checker on CVCO; receipts in scratch journey/prod). SECOND CHECKER FINDING: J11
+    also flags the plain-word lifecycle counts (Entered/Delivering/Overtime/Invalidated
+    in the plan-book strip) as enum tokens, so J11 cannot PASS on this page even with
+    the why copy fixed — routed to #6817 beside J7 (law unchanged). #10277 → 41d73e38
+    and #10363 → 632b83d9 (merge of main 90e0644f, conflict-free merge trees, branch
+    content unchanged; the sweeper's merge-blocked KEPT, action comments 6589345494 /
+    6589312895; neither branch touches the markets/macro-suite files its refusal named;
+    #10591 fixed the byte guard on main; lift merge-blocked only when every ci-pack/
+    ci-gate is green on the new heads). 11-01 was a Sunday: the 01:42Z daily.yml run
+    skipped every job via et_gate, so the first real nightly after #10255 is tonight
+    (23:30Z EST cron) — never dispatch it. J7 FINDING routed to #6817 (comment
     6567010819): candidate_pool.source_digest/counts are never published (render-time
     project_candidate_visibility only), so J7 is unsatisfiable from published artifacts
     since #8108 — law unchanged, consume the owner's return once. J6 plan relation and
