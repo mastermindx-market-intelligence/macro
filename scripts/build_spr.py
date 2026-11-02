@@ -137,13 +137,19 @@ def _us_spr_vm(spr_kbbl: pd.Series, scfg: dict) -> dict:
     cap = scfg["spr_capacity_mb"]
     level_mb = last_kbbl / 1000.0
     peak_kbbl, low_kbbl = float(s.max()), float(s.min())
+
+    def weekly_change_mb(weeks: int) -> float | None:
+        # Require the named dated endpoint, not a clipped row count. Interior
+        # gaps do not invalidate two known endpoints; a missing endpoint does.
+        prior = s[s.index == s.index[-1] - pd.Timedelta(weeks=weeks)]
+        return _r((last_kbbl - float(prior.iloc[0])) / 1000.0, 1) if len(prior) == 1 else None
+
     vm = {
         "level_mb": _r(level_mb, 0),
         "capacity_mb": cap,
         "fill_pct": sr.fill_pct(level_mb, cap),
-        # This page names full weekly windows; the shared helper may clip them.
-        "chg_4w_mb": _r(sr.change(s, 4) / 1000.0, 1) if len(s) > 4 else None,
-        "chg_52w_mb": _r(sr.change(s, 52) / 1000.0, 1) if len(s) > 52 else None,
+        "chg_4w_mb": weekly_change_mb(4),
+        "chg_52w_mb": weekly_change_mb(52),
         "peak_mb": _r(peak_kbbl / 1000.0, 0), "peak_date": s.idxmax().strftime("%b %Y"),
         "low_mb": _r(low_kbbl / 1000.0, 0), "low_date": s.idxmin().strftime("%b %Y"),
         "above_low_mb": _r((last_kbbl - low_kbbl) / 1000.0, 0),
@@ -170,7 +176,12 @@ def _us_spr_vm(spr_kbbl: pd.Series, scfg: dict) -> dict:
         vm["imports_mbd"] = round(float(imp.tail(52).mean()) / 1000, 2)
     if exp is not None:
         vm["exports_mbd"] = round(float(exp.tail(52).mean()) / 1000, 2)
-    vm["trade_basis"] = True   # values are 1y averages
+    # Preserve the incumbent trailing-52-observation calculation, but do not
+    # advertise a partial optional feed as a whole year's average.
+    vm["trade_basis"] = all(
+        len(feed) >= 52 and feed.tail(52).index.equals(
+            pd.date_range(end=feed.index[-1], periods=52, freq="7D"))
+        for feed in (ni, imp, exp) if feed is not None)
     return vm
 
 

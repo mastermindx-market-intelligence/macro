@@ -236,9 +236,9 @@ def test_us_spr_missing_comparisons_render_unavailable_not_flat(monkeypatch):
     assert re.findall(metric, flat)[:2] == ["+0.0", "+0"]
     assert "4-week" in missing and "4周" in missing
     assert "52-week" in missing and "52周" in missing
-    assert "Comparison unavailable where weekly history is insufficient." in missing
-    assert "每周历史数据不足的比较窗口暂不可用。" in missing
-    assert "Comparison unavailable where weekly history is insufficient." not in flat
+    assert "Comparison unavailable where the weekly endpoint is missing." in missing
+    assert "缺少每周比较端点的窗口暂不可用。" in missing
+    assert "Comparison unavailable where the weekly endpoint is missing." not in flat
 
 
 def test_us_spr_optional_feed_fields_are_explicit_and_render_independently(monkeypatch):
@@ -272,3 +272,49 @@ def test_us_spr_optional_feed_fields_are_explicit_and_render_independently(monke
         for en in absent:
             assert f'class="l-en">{en}</span>' not in text
         assert "undefined" not in text.lower() and "None" not in text
+
+
+
+def test_us_spr_named_windows_use_dated_endpoints_despite_interior_gaps(monkeypatch):
+    from scripts import build_spr
+    monkeypatch.setattr(build_spr.store, "read", lambda *args: None)
+    full = _weekly_spr([400000 + 1000 * i for i in range(60)])
+    scfg = {"spr_capacity_mb": 714.0}
+    missing_four = build_spr._us_spr_vm(full.drop(full.index[-5]), scfg)
+    assert missing_four["chg_4w_mb"] is None and missing_four["chg_52w_mb"] == 52.0
+    missing_year = build_spr._us_spr_vm(full.drop(full.index[-53]), scfg)
+    assert missing_year["chg_52w_mb"] is None and missing_year["chg_4w_mb"] == 4.0
+    endpoints_only = build_spr._us_spr_vm(full.iloc[[-53, -1]], scfg)
+    assert endpoints_only["chg_52w_mb"] == 52.0 and endpoints_only["chg_4w_mb"] is None
+    four_endpoints = build_spr._us_spr_vm(full.iloc[[-5, -1]], scfg)
+    assert four_endpoints["chg_4w_mb"] == 4.0 and four_endpoints["chg_52w_mb"] is None
+
+
+def test_us_spr_partial_trade_average_uses_truthful_bilingual_basis(monkeypatch):
+    feeds = {"crude_exports": _weekly_spr([5000.0])}
+    vm = _spr_vm(monkeypatch, [400000] * 53, feeds)
+    assert vm["exports_mbd"] == 5.0 and vm["trade_basis"] is False
+    rendered = _render_spr_context(vm)
+    assert "available-history avg" in rendered and "已有历史均值" in rendered
+    assert "1y avg" not in rendered
+    full = _spr_vm(monkeypatch, [400000] * 53,
+                   {"crude_exports": _weekly_spr([5000.0] * 53)})
+    assert full["trade_basis"] is True and "1y avg" in _render_spr_context(full)
+
+
+def test_us_spr_partial_net_import_cover_names_its_available_history(monkeypatch):
+    vm = _spr_vm(monkeypatch, [400000] * 53,
+                 {"crude_net_imports": _weekly_spr([1000.0])})
+    assert vm["import_cover_days"] == 400.0 and vm["net_imports_mbd"] == 1.0
+    rendered = _render_spr_context(vm)
+    assert "available-history mean of net crude imports" in rendered
+    assert "原油净进口已有历史均值" in rendered
+    assert "52-week mean" not in rendered
+
+
+def test_us_spr_gapped_trade_history_does_not_claim_one_year(monkeypatch):
+    exports = _weekly_spr([5000.0] * 60)
+    exports = exports.drop(exports.index[-3])
+    vm = _spr_vm(monkeypatch, [400000] * 53, {"crude_exports": exports})
+    assert vm["exports_mbd"] == 5.0 and vm["trade_basis"] is False
+    assert "available-history avg" in _render_spr_context(vm)
