@@ -112,6 +112,12 @@ _SCOPED_SELECTOR_RE = re.compile(
     r"(?:^|[^A-Za-z0-9_-])(?:rrp-|pbx-|#dlg-risk|#cnx-dlg-risk)"
 )
 _CONTENT_DECL_RE = re.compile(r"(?<![\w-])content\s*:\s*([^;}]*)", re.IGNORECASE)
+# The #dlg-risk evidence table's narrow layout prints each cell's bilingual
+# column label with content:attr(data-label-en|zh), optionally with empty alt
+# text. That text is the attribute's value, so C5 scans those values instead.
+_LABEL_ATTR_CONTENT_RE = re.compile(
+    r"attr\(\s*(data-label-(?:en|zh))\s*\)(?:\s*/\s*(?:\"\"|''))?", re.IGNORECASE
+)
 _CSS_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
 CURRENT_METRIC_RE = re.compile("^\u2212?\\d+\\.\\d%$")
 OTHER_PERCENT_RE = re.compile("^[+\u2212-]?\\d+\\.\\d%$")
@@ -767,10 +773,22 @@ def _disclosure_content_ok(raw: str) -> bool:
     return value in _DISCLOSURE_MARKERS or value.lower() == "none"
 
 
-def _scoped_style_problems(root: Node) -> list[str]:
-    """content: on a pullback or dialog selector must be a disclosure marker."""
+def _label_attr_content(raw: str) -> str | None:
+    """The data-label-* name when content: only prints that attribute."""
+    value = re.sub(r"(?i)\s*!important\s*$", "", raw.strip()).strip()
+    match = _LABEL_ATTR_CONTENT_RE.fullmatch(value)
+    return match.group(1).lower() if match else None
+
+
+def _scoped_style_problems(root: Node) -> tuple[list[str], set[str]]:
+    """content: on a pullback or dialog selector must be a disclosure marker.
+
+    attr(data-label-en|zh) is the one other allowed value. Its names are
+    returned so the caller checks the label text those rules print.
+    """
     shown: list[str] = []
     seen: set[str] = set()
+    label_attrs: set[str] = set()
     for node in _descendants(root):
         if node.tag != "style":
             continue
@@ -781,14 +799,47 @@ def _scoped_style_problems(root: Node) -> list[str]:
                 raw = match.group(1).strip()
                 if _disclosure_content_ok(raw):
                     continue
+                attr = _label_attr_content(raw)
+                if attr is not None:
+                    label_attrs.add(attr)
+                    continue
                 label = _norm_copy(selector)[:48] + " => " + _norm_copy(raw)[:48]
                 if label not in seen:
                     seen.add(label)
                     shown.append(label)
     if not shown:
+        return [], label_attrs
+    preview = " | ".join(shown[:3])
+    return [f"scoped style content is not a disclosure marker ({preview})"], label_attrs
+
+
+def _label_attr_problems(
+    names: set[str],
+    sections: list[Node],
+    dialog: Node | None,
+    ids: dict[str, Node],
+) -> list[str]:
+    """Forecast wording in a data-label-* value that scoped CSS prints."""
+    if not names:
+        return []
+    scopes = [*sections, dialog, *(ids.get(key) for key in DIALOG_ID.values())]
+    shown: list[str] = []
+    seen: set[str] = set()
+    for scope in scopes:
+        if scope is None:
+            continue
+        for node in (scope, *_descendants(scope)):
+            for name in sorted(names):
+                norm = _norm_copy(node.attrs.get(name, ""))
+                if not norm or norm in FORECAST_SENTENCE_ALLOW or norm in seen:
+                    continue
+                if FORBIDDEN_FORECAST_RE.search(norm):
+                    seen.add(norm)
+                    shown.append(norm)
+    if not shown:
         return []
     preview = " | ".join(shown[:3])
-    return [f"scoped style content is not a disclosure marker ({preview})"]
+    return [f"forecast language in a CSS-printed label attribute ({preview})"]
 
 
 def _c5_problems(section: Node, html: str) -> list[str]:
@@ -841,7 +892,9 @@ def _check_c5(
         return False, "no section.pbx"
     problems = [item for section in sections for item in _c5_problems(section, html)]
     problems.extend(_forecast_language_problems(sections, dialog, ids))
-    problems.extend(_scoped_style_problems(root))
+    style_problems, label_attrs = _scoped_style_problems(root)
+    problems.extend(style_problems)
+    problems.extend(_label_attr_problems(label_attrs, sections, dialog, ids))
     if problems:
         return False, "; ".join(problems)
     return True, "forecast status unavailable; both values are em dashes; no percent"

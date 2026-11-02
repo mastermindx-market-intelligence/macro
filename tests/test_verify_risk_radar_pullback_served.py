@@ -450,6 +450,46 @@ def test_style_forecast_content_anywhere_fails_c5(tmp_path):
     assert "disclosure marker" in detail
 
 
+_LABEL_STYLE = '<style>#cnx-dlg-risk td::before{content:attr(data-label-en) / "";}</style>'
+
+
+def test_label_attr_style_content_passes_c5(tmp_path):
+    """content:attr(data-label-en) prints a column label, not forecast copy."""
+    rc, receipt, _page = _run(tmp_path, _active_cn() + _LABEL_STYLE, "cn")
+    assert rc == 0, [(c["id"], c["detail"]) for c in receipt["checks"] if not c["pass"]]
+
+
+def test_us_evidence_table_label_with_forecast_wording_fails_c5(tmp_path):
+    """The page's own #dlg-risk table CSS prints data-label-en, so its values are scanned."""
+    html = _active_us()
+    assert "content:attr(data-label-en)" in html
+    marker = 'id="dlg-risk"'
+    assert html.count(marker) == 1
+    html = html.replace(marker, marker + ' data-label-en="Expected drop"', 1)
+    rc, receipt, _page = _run(tmp_path, html, "us")
+    detail = _assert_c5(rc, receipt)
+    assert "CSS-printed label attribute" in detail
+
+
+def test_label_attr_with_forecast_wording_fails_c5(tmp_path):
+    """A data-label-zh value carrying forecast wording fails C5."""
+    marker = 'id="cnx-dlg-risk"'
+    html = _active_cn() + _LABEL_STYLE.replace("data-label-en", "data-label-zh")
+    assert html.count(marker) == 1
+    html = html.replace(marker, marker + ' data-label-zh="预计下跌"', 1)
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "CSS-printed label attribute" in detail
+
+
+def test_other_attr_style_content_fails_c5(tmp_path):
+    """attr() of any other attribute is still not a disclosure marker."""
+    html = _active_cn() + '<style>#cnx-dlg-risk td::before{content:attr(data-note)}</style>'
+    rc, receipt, _page = _run(tmp_path, html, "cn")
+    detail = _assert_c5(rc, receipt)
+    assert "disclosure marker" in detail
+
+
 def test_hidden_forecast_inside_block_still_fails_c5(tmp_path):
     snippet = f'<span style="{_HIDDEN_STYLE}">{_LEAK}</span>'
     html = _insert(_active_cn(), _FORECAST_STATUS, snippet, after=True)
