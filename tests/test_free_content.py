@@ -1948,3 +1948,31 @@ class TestGracefulEmpty:
         ET.fromstring(result)  # valid XML
         assert "<loc>https://www.mastermind-x.com/</loc>" in result
         assert "https://www.mastermind-x.com/macro.html" in result
+
+class TestLearningReaderJourney:
+    """Real authored lesson paths must return to a materialized hub section."""
+
+    @pytest.mark.parametrize("track", ["technical", "risk", "ownership", "options"])
+    def test_track_breadcrumb_resolves_to_existing_hub_section(self, tmp_path, monkeypatch, track):
+        from urllib.parse import urlsplit
+        bfc, out = _render_free_estate(tmp_path, monkeypatch)
+        fm = _make_valid_fm(family="lesson", track=track)
+        crumb = bfc._breadcrumbs(fm, f"/learn/{track}/lesson.html")[-2]
+        target = urlsplit(crumb["href"])
+        assert target.path == "/learn/index.html"
+        assert target.fragment == f"track-{track}"
+        hub = (out / "learn/index.html").read_text()
+        assert f'id="{target.fragment}"' in hub
+
+    def test_authored_lesson_keeps_one_native_outline_and_reading_identity(self, tmp_path, monkeypatch):
+        _, out = _render_free_estate(tmp_path, monkeypatch)
+        html = (out / "learn/options/dealer-hedging-mechanics.html").read_text()
+        assert len(re.findall(r'<h1\b', html)) == 1
+        assert "Dealer Hedging: How Delta Rebalancing Becomes Order Flow" in html
+        assert "2026-07-25" in html
+        assert '<article class="est-prose" lang="en">' in html
+        assert len(re.findall(r'<details\b[^>]*class="art-outline"', html)) == 1
+        assert '<summary' in html and 'aria-label="On this page"' in html
+        assert len(re.findall(r'<nav\b[^>]*id="toc"', html)) == 1
+        assert 'href="../../learn/options/gamma-regimes.html"' in html
+        assert 'href="../../learn/options/"' not in html

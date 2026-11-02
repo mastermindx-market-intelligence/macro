@@ -68,7 +68,7 @@
   }
 }</script>
 
-<link rel="stylesheet" href="../assets/css/3c29bc85.css?v=3c29bc85">
+<link rel="stylesheet" href="../assets/css/9c7509a7.css?v=9c7509a7">
 
 <link rel="stylesheet" href="../assets/css/17c15c21.css?v=17c15c21">
 <link rel="preload" as="style" href="../product-nav-icons.css?v=432f6a45">
@@ -214,8 +214,8 @@
     <path d="M2 11 C 40 11, 55 4, 90 7 S 150 3, 178 5 S 210 4, 218 3"/>
     <circle class="dot" cx="218" cy="3" r="2.6"/>
   </svg>
-  <h1 class="est-title">Win Rate Is Overrated</h1>
-  <p class="est-dek">A 35% win rate can be more profitable than a 70% win rate. Expectancy — not how often you win — determines whether a system makes money.</p>
+  <h1 class="est-title" lang="en">Win Rate Is Overrated</h1>
+  <p class="est-dek" lang="en">A 35% win rate can be more profitable than a 70% win rate. Expectancy — not how often you win — determines whether a system makes money.</p>
   <div class="est-meta">
     <span><span class="l-en">Published</span><span class="l-zh">发布</span> <span class="mono">2026-07-20</span></span>
     
@@ -224,14 +224,19 @@
 
 <div class="art-layout">
   
-  <nav class="art-toc" id="toc" aria-label="On this page">
-    <p class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></p>
-    <a href="#the-expectancy-formula">The expectancy formula</a><a href="#35-win-rate-beats-70-win-rate-the-arithmetic">35% win rate beats 70% win rate: the arithmetic</a><a href="#the-common-trap-confusing-win-rate-with-edge">The common trap: confusing win rate with edge</a><a href="#breakeven-win-rate-as-a-function-of-reward-ratio">Breakeven win rate as a function of reward ratio</a><a href="#what-win-rate-is-actually-useful-for">What win rate is actually useful for</a><a href="#where-this-breaks">Where this breaks</a>
-  </nav>
+  <details class="art-outline" open>
+    <summary>
+      <span class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></span>
+      <span class="toc-caret" aria-hidden="true"></span>
+    </summary>
+    <nav class="art-toc" id="toc" aria-label="On this page">
+      <a href="#the-expectancy-formula" lang="en">The expectancy formula</a><a href="#35-win-rate-beats-70-win-rate-the-arithmetic" lang="en">35% win rate beats 70% win rate: the arithmetic</a><a href="#the-common-trap-confusing-win-rate-with-edge" lang="en">The common trap: confusing win rate with edge</a><a href="#breakeven-win-rate-as-a-function-of-reward-ratio" lang="en">Breakeven win rate as a function of reward ratio</a><a href="#what-win-rate-is-actually-useful-for" lang="en">What win rate is actually useful for</a><a href="#where-this-breaks" lang="en">Where this breaks</a>
+    </nav>
+  </details>
   
 
   <div class="art-main">
-    <article class="est-prose">
+    <article class="est-prose" lang="en">
       <p>A trading system that wins 35% of the time can be more profitable than one that wins 70% of the time. Win rate is only half the equation — the other half is how much you win versus how much you lose on each trade. Expectancy, not win rate, is the number that determines whether a system makes money over time.</p>
 
 <h2 id="the-expectancy-formula">The expectancy formula</h2>
@@ -408,6 +413,18 @@ Breakeven win% = 100 / (1 + R:R)
     function spy(){ var y=window.scrollY+96, act=0; hs.forEach(function(h,i){ if(h&&h.offsetTop<=y) act=i; });
       ls.forEach(function(a,i){ a.classList.toggle('active',i===act); }); }
     window.addEventListener('scroll',spy,{passive:true}); spy(); })();
+</script>
+<script>
+  /* TOC disclosure governance: one details, two regimes. Desktop rail stays
+     open (summary inert); mobile starts collapsed, user may expand. Same
+     900px boundary as the estate_css media query. */
+  (function(){ var d=document.querySelector('details.art-outline'); if(!d)return;
+    var mq=window.matchMedia('(max-width:900px)');
+    function sync(){ if(mq.matches) d.removeAttribute('open'); else d.setAttribute('open',''); }
+    if(mq.addEventListener) mq.addEventListener('change',sync);
+    else if(mq.addListener) mq.addListener(sync);
+    d.addEventListener('toggle',function(){ if(!mq.matches&&!d.open) d.setAttribute('open',''); });
+    sync(); })();
 </script>
 
 

@@ -68,7 +68,7 @@
   }
 }</script>
 
-<link rel="stylesheet" href="../assets/css/3c29bc85.css?v=3c29bc85">
+<link rel="stylesheet" href="../assets/css/9c7509a7.css?v=9c7509a7">
 
 <link rel="stylesheet" href="../assets/css/17c15c21.css?v=17c15c21">
 <link rel="preload" as="style" href="../product-nav-icons.css?v=432f6a45">
@@ -214,8 +214,8 @@
     <path d="M2 11 C 40 11, 55 4, 90 7 S 150 3, 178 5 S 210 4, 218 3"/>
     <circle class="dot" cx="218" cy="3" r="2.6"/>
   </svg>
-  <h1 class="est-title">The Math of Losing Streaks</h1>
-  <p class="est-dek">Losing streaks are a mathematical certainty at any realistic win rate. The only question is whether your position sizing lets you survive them.</p>
+  <h1 class="est-title" lang="en">The Math of Losing Streaks</h1>
+  <p class="est-dek" lang="en">Losing streaks are a mathematical certainty at any realistic win rate. The only question is whether your position sizing lets you survive them.</p>
   <div class="est-meta">
     <span><span class="l-en">Published</span><span class="l-zh">发布</span> <span class="mono">2026-07-20</span></span>
     
@@ -224,14 +224,19 @@
 
 <div class="art-layout">
   
-  <nav class="art-toc" id="toc" aria-label="On this page">
-    <p class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></p>
-    <a href="#why-streaks-are-not-anomalies">Why streaks are not anomalies</a><a href="#the-common-trap-treating-a-streak-as-a-signal">The common trap: treating a streak as a signal</a><a href="#fixed-fractional-sizing-and-survival-arithmetic">Fixed-fractional sizing and survival arithmetic</a><a href="#ruin-logic-when-size-makes-streaks-fatal">Ruin logic: when size makes streaks fatal</a><a href="#where-this-analysis-breaks">Where this analysis breaks</a>
-  </nav>
+  <details class="art-outline" open>
+    <summary>
+      <span class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></span>
+      <span class="toc-caret" aria-hidden="true"></span>
+    </summary>
+    <nav class="art-toc" id="toc" aria-label="On this page">
+      <a href="#why-streaks-are-not-anomalies" lang="en">Why streaks are not anomalies</a><a href="#the-common-trap-treating-a-streak-as-a-signal" lang="en">The common trap: treating a streak as a signal</a><a href="#fixed-fractional-sizing-and-survival-arithmetic" lang="en">Fixed-fractional sizing and survival arithmetic</a><a href="#ruin-logic-when-size-makes-streaks-fatal" lang="en">Ruin logic: when size makes streaks fatal</a><a href="#where-this-analysis-breaks" lang="en">Where this analysis breaks</a>
+    </nav>
+  </details>
   
 
   <div class="art-main">
-    <article class="est-prose">
+    <article class="est-prose" lang="en">
       <p>At a 50% win rate over 100 trades, there is an 81% chance you will experience at least five consecutive losses at some point during that run. The math is not a warning about bad luck — it is a statement about the structure of random sequences. Position sizing is what decides whether a streak ends your account or just ends your day.</p>
 
 <h2 id="why-streaks-are-not-anomalies">Why streaks are not anomalies</h2>
@@ -396,6 +401,18 @@ Example: at 50% win rate, q = 0.50, so 5 losses in a row = 0.50<sup>5</sup> = 3.
     function spy(){ var y=window.scrollY+96, act=0; hs.forEach(function(h,i){ if(h&&h.offsetTop<=y) act=i; });
       ls.forEach(function(a,i){ a.classList.toggle('active',i===act); }); }
     window.addEventListener('scroll',spy,{passive:true}); spy(); })();
+</script>
+<script>
+  /* TOC disclosure governance: one details, two regimes. Desktop rail stays
+     open (summary inert); mobile starts collapsed, user may expand. Same
+     900px boundary as the estate_css media query. */
+  (function(){ var d=document.querySelector('details.art-outline'); if(!d)return;
+    var mq=window.matchMedia('(max-width:900px)');
+    function sync(){ if(mq.matches) d.removeAttribute('open'); else d.setAttribute('open',''); }
+    if(mq.addEventListener) mq.addEventListener('change',sync);
+    else if(mq.addListener) mq.addListener(sync);
+    d.addEventListener('toggle',function(){ if(!mq.matches&&!d.open) d.setAttribute('open',''); });
+    sync(); })();
 </script>
 
 

@@ -68,7 +68,7 @@
   }
 }</script>
 
-<link rel="stylesheet" href="../assets/css/3c29bc85.css?v=3c29bc85">
+<link rel="stylesheet" href="../assets/css/9c7509a7.css?v=9c7509a7">
 
 <link rel="stylesheet" href="../assets/css/17c15c21.css?v=17c15c21">
 <link rel="preload" as="style" href="../product-nav-icons.css?v=432f6a45">
@@ -214,8 +214,8 @@
     <path d="M2 11 C 40 11, 55 4, 90 7 S 150 3, 178 5 S 210 4, 218 3"/>
     <circle class="dot" cx="218" cy="3" r="2.6"/>
   </svg>
-  <h1 class="est-title">How to Keep a Trading Journal</h1>
-  <p class="est-dek">Most trading journals die from friction or vanity metrics. The exact fields that let you compute expectancy, R multiples, and mistake cost per setup.</p>
+  <h1 class="est-title" lang="en">How to Keep a Trading Journal</h1>
+  <p class="est-dek" lang="en">Most trading journals die from friction or vanity metrics. The exact fields that let you compute expectancy, R multiples, and mistake cost per setup.</p>
   <div class="est-meta">
     <span><span class="l-en">Published</span><span class="l-zh">发布</span> <span class="mono">2026-07-20</span></span>
     
@@ -224,14 +224,19 @@
 
 <div class="art-layout">
   
-  <nav class="art-toc" id="toc" aria-label="On this page">
-    <p class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></p>
-    <a href="#why-journals-die">Why journals die</a><a href="#the-minimum-viable-field-set">The minimum viable field set</a><a href="#mistake-typing-the-field-most-journals-omit">Mistake typing: the field most journals omit</a><a href="#the-15-minute-weekly-review">The 15-minute weekly review</a><a href="#per-setup-accountability">Per-setup accountability</a><a href="#where-this-breaks">Where this breaks</a>
-  </nav>
+  <details class="art-outline" open>
+    <summary>
+      <span class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></span>
+      <span class="toc-caret" aria-hidden="true"></span>
+    </summary>
+    <nav class="art-toc" id="toc" aria-label="On this page">
+      <a href="#why-journals-die" lang="en">Why journals die</a><a href="#the-minimum-viable-field-set" lang="en">The minimum viable field set</a><a href="#mistake-typing-the-field-most-journals-omit" lang="en">Mistake typing: the field most journals omit</a><a href="#the-15-minute-weekly-review" lang="en">The 15-minute weekly review</a><a href="#per-setup-accountability" lang="en">Per-setup accountability</a><a href="#where-this-breaks" lang="en">Where this breaks</a>
+    </nav>
+  </details>
   
 
   <div class="art-main">
-    <article class="est-prose">
+    <article class="est-prose" lang="en">
       <p>Most trading journals fail within a month. The two most common reasons are friction — the journal takes longer to fill in than the trade took to execute — and vanity metrics — columns that track how the trade felt rather than what it actually did to your edge. A journal that does not let you compute your expectancy per setup type at the end of each month is not telling you anything actionable.</p>
 
 <h2 id="why-journals-die">Why journals die</h2>
@@ -399,6 +404,18 @@
     function spy(){ var y=window.scrollY+96, act=0; hs.forEach(function(h,i){ if(h&&h.offsetTop<=y) act=i; });
       ls.forEach(function(a,i){ a.classList.toggle('active',i===act); }); }
     window.addEventListener('scroll',spy,{passive:true}); spy(); })();
+</script>
+<script>
+  /* TOC disclosure governance: one details, two regimes. Desktop rail stays
+     open (summary inert); mobile starts collapsed, user may expand. Same
+     900px boundary as the estate_css media query. */
+  (function(){ var d=document.querySelector('details.art-outline'); if(!d)return;
+    var mq=window.matchMedia('(max-width:900px)');
+    function sync(){ if(mq.matches) d.removeAttribute('open'); else d.setAttribute('open',''); }
+    if(mq.addEventListener) mq.addEventListener('change',sync);
+    else if(mq.addListener) mq.addListener(sync);
+    d.addEventListener('toggle',function(){ if(!mq.matches&&!d.open) d.setAttribute('open',''); });
+    sync(); })();
 </script>
 
 

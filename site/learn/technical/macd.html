@@ -47,7 +47,7 @@
 <meta name="twitter:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../../favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="../../apple-touch-icon.png"><link rel="stylesheet" href="../../theme.css?v=9bd171a6"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mastermind-x.com/"},{"@type":"ListItem","position":2,"name":"Learn","item":"https://www.mastermind-x.com/learn/index.html"},{"@type":"ListItem","position":3,"name":"Technical Analysis","item":"https://www.mastermind-x.com/learn/technical/"},{"@type":"ListItem","position":4,"name":"MACD: Construction, Lag, and What the Histogram Means"}]}</script><script type="application/ld+json">{
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png"><link rel="stylesheet" href="../../theme.css?v=9bd171a6"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mastermind-x.com/"},{"@type":"ListItem","position":2,"name":"Learn","item":"https://www.mastermind-x.com/learn/index.html"},{"@type":"ListItem","position":3,"name":"Technical Analysis","item":"https://www.mastermind-x.com/learn/index.html#track-technical"},{"@type":"ListItem","position":4,"name":"MACD: Construction, Lag, and What the Histogram Means"}]}</script><script type="application/ld+json">{
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "MACD: Construction, Lag, and What the Histogram Means",
@@ -68,7 +68,7 @@
   }
 }</script>
 
-<link rel="stylesheet" href="../../assets/css/3c29bc85.css?v=3c29bc85">
+<link rel="stylesheet" href="../../assets/css/9c7509a7.css?v=9c7509a7">
 
 <link rel="stylesheet" href="../../assets/css/17c15c21.css?v=17c15c21">
 <link rel="preload" as="style" href="../../product-nav-icons.css?v=432f6a45">
@@ -196,7 +196,7 @@
     <li class="sep" aria-hidden="true">/</li>
     
     <li>
-      <a href="../../learn/technical/">Technical Analysis</a>
+      <a href="../../learn/index.html#track-technical">Technical Analysis</a>
     </li>
     <li class="sep" aria-hidden="true">/</li>
     
@@ -218,8 +218,8 @@
     <path d="M2 11 C 40 11, 55 4, 90 7 S 150 3, 178 5 S 210 4, 218 3"/>
     <circle class="dot" cx="218" cy="3" r="2.6"/>
   </svg>
-  <h1 class="est-title">MACD: Construction, Lag, and What the Histogram Means</h1>
-  <p class="est-dek">MACD uses three EMAs (12, 26, 9). Learn the exact recurrence formula, what the histogram represents, and why lag is a structural cost, not a bug to fix.</p>
+  <h1 class="est-title" lang="en">MACD: Construction, Lag, and What the Histogram Means</h1>
+  <p class="est-dek" lang="en">MACD uses three EMAs (12, 26, 9). Learn the exact recurrence formula, what the histogram represents, and why lag is a structural cost, not a bug to fix.</p>
   <div class="est-meta">
     <span><span class="l-en">Published</span><span class="l-zh">发布</span> <span class="mono">2026-07-20</span></span>
     
@@ -228,14 +228,19 @@
 
 <div class="art-layout">
   
-  <nav class="art-toc" id="toc" aria-label="On this page">
-    <p class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></p>
-    <a href="#construction-the-exact-ema-recurrence">Construction: the exact EMA recurrence</a><a href="#worked-example">Worked example</a><a href="#what-the-histogram-actually-represents">What the histogram actually represents</a><a href="#signal-cross-mechanics">Signal-cross mechanics</a><a href="#common-trap-cross-trading-in-choppy-markets">Common trap: cross-trading in choppy markets</a><a href="#lag-as-structural-cost">Lag as structural cost</a><a href="#when-this-breaks">When this breaks</a>
-  </nav>
+  <details class="art-outline" open>
+    <summary>
+      <span class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></span>
+      <span class="toc-caret" aria-hidden="true"></span>
+    </summary>
+    <nav class="art-toc" id="toc" aria-label="On this page">
+      <a href="#construction-the-exact-ema-recurrence" lang="en">Construction: the exact EMA recurrence</a><a href="#worked-example" lang="en">Worked example</a><a href="#what-the-histogram-actually-represents" lang="en">What the histogram actually represents</a><a href="#signal-cross-mechanics" lang="en">Signal-cross mechanics</a><a href="#common-trap-cross-trading-in-choppy-markets" lang="en">Common trap: cross-trading in choppy markets</a><a href="#lag-as-structural-cost" lang="en">Lag as structural cost</a><a href="#when-this-breaks" lang="en">When this breaks</a>
+    </nav>
+  </details>
   
 
   <div class="art-main">
-    <article class="est-prose">
+    <article class="est-prose" lang="en">
       <div class="callout lead">
 <span class="co-h">Learning objective</span>
 Understand how MACD is constructed from three EMAs, what the histogram represents as a derivative of the signal relationship, and why lag is not a flaw but a structural trade-off built into the EMA recurrence.
@@ -389,6 +394,18 @@ Histogram = MACD line − Signal line
     function spy(){ var y=window.scrollY+96, act=0; hs.forEach(function(h,i){ if(h&&h.offsetTop<=y) act=i; });
       ls.forEach(function(a,i){ a.classList.toggle('active',i===act); }); }
     window.addEventListener('scroll',spy,{passive:true}); spy(); })();
+</script>
+<script>
+  /* TOC disclosure governance: one details, two regimes. Desktop rail stays
+     open (summary inert); mobile starts collapsed, user may expand. Same
+     900px boundary as the estate_css media query. */
+  (function(){ var d=document.querySelector('details.art-outline'); if(!d)return;
+    var mq=window.matchMedia('(max-width:900px)');
+    function sync(){ if(mq.matches) d.removeAttribute('open'); else d.setAttribute('open',''); }
+    if(mq.addEventListener) mq.addEventListener('change',sync);
+    else if(mq.addListener) mq.addListener(sync);
+    d.addEventListener('toggle',function(){ if(!mq.matches&&!d.open) d.setAttribute('open',''); });
+    sync(); })();
 </script>
 
 
