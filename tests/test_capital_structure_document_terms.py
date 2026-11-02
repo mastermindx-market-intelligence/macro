@@ -707,12 +707,12 @@ def test_released_parser_registry_has_closed_golden_semantic_bundle():
             v1_3_0.semantic_bundle.dispatch_roots,
         )
     )
-    assert len(manifest_1_3_0) == 311
+    assert len(manifest_1_3_0) == 315
     assert manifest_sha256_1_3_0 == (
-        "091b886aef8c8f67d01c7c89c22f0a281c23ef2113a64a0676a3dfa14b7411aa"
+        "3d6438f0e354cc4001e17611ee88932acd6c65bfde14af3ce75fff81a0b07d4e"
     )
     assert implementation_sha256_1_3_0 == (
-        "66916f8f1ae4096f2dcbe9f8f1d2effa7f8df825dbdd83dc3ac73c07c670b1de"
+        "ea1a9f820d918ebe47633ad52a88b240c6cda2882087bc784a942783b0e50823"
     )
     assert len(manifest_1_3_0) == v1_3_0.semantic_bundle.dependency_count
     assert manifest_sha256_1_3_0 == v1_3_0.semantic_bundle.dependency_manifest_sha256
@@ -1084,7 +1084,7 @@ def test_cold_tracked_source_export_import_is_repeatable_without_bytecode(tmp_pa
     ]
     assert outputs == [outputs[0]] * 3
     assert outputs[0] == (
-        "311 66916f8f1ae4096f2dcbe9f8f1d2effa7f8df825dbdd83dc3ac73c07c670b1de "
+        "315 ea1a9f820d918ebe47633ad52a88b240c6cda2882087bc784a942783b0e50823 "
         "35ed9840daf86793736bf62c50a574e2c9005f3a1bd4bd8e3d7cf70c27e24df5 "
         "7adefd79136224d8c0ca0c84cd4ef41bd206690f9ec28622cdf95f682c811b28"
     )

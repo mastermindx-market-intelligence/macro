@@ -1833,9 +1833,12 @@ def _records_for_manifest_v1_2_0(
 #     Registered" / "Aggregate Offering Price" / "Registration Fee" -- the
 #     short header spellings 1.2.0 never mapped, so no table was detected.
 #   C (7): totals rows whose title column is spelled "Title of Class of
-#     Security ..." or whose headers omit spaces ("Security ClassTitle"), and
-#     totals rows whose aggregate and fee amounts sit one grid column left of
-#     their entirely blank declared spans.
+#     Security ...", and totals rows whose aggregate and fee amounts sit one
+#     grid column left of their entirely blank declared spans.  The no-space
+#     "Security ClassTitle" literal is part of the released 1.3.0 spec but no
+#     committed fixture carries it (the census filing the spec assigned to it
+#     reads "Security Class Type (1)", which no rule matches); only a
+#     synthetic test exercises it.
 #   D (10): filings carrying the fee table in BOTH the legacy primary
 #     document and an EX-FILING FEES child -- when exactly one table comes
 #     from an EX-FILING FEES child, that child is the fee table; any other
@@ -1869,16 +1872,20 @@ def _term_for_header_v1_3_0(value: str) -> str | None:
 
     The new rule sits last on purpose, so a header that names a fee (for
     example "Amount of Registration Fee (based on aggregate offering
-    price)") is never taken for the aggregate column, and a per-share or
-    per-unit aggregate spelling never maps to the aggregate column.
+    price)") is never taken for the aggregate column, and an aggregate
+    spelling carrying a "per", "unit" or "share" word (for example
+    "Aggregate offering price/unit") never maps to the aggregate column.
     """
     name = _term_for_header_v1_2_0(value)
     if name is not None:
         return name
     normalized = _label(value)
-    if "aggregate offering price" in normalized and "per " not in normalized:
+    if "aggregate offering price" in normalized and not _PER_UNIT_WORD_V1_3_0.search(normalized):
         return "proposed_maximum_aggregate_offering_price"
     return None
+
+
+_PER_UNIT_WORD_V1_3_0 = re.compile(r"\b(?:per|unit|units|share|shares)\b")
 
 
 def _parse_fee_tables_v1_3_0(
@@ -1939,9 +1946,10 @@ def _total_row_value_cell_v1_3_0(
     spans carry the amounts.  The fallback fires only when the 1.2.0 cell
     does not parse observed and every condition holds: the term is the
     aggregate, both declared spans are blank in this row, both left
-    neighbors parse observed, and the two left neighbors are distinct grid
-    cells outside each other's declared spans.  Otherwise the 1.2.0 result
-    (often a refusal) stands.
+    neighbors parse observed, the two left neighbors are distinct grid
+    cells outside each other's declared spans, and neither left neighbor
+    sits in the title column or under any other declared header.  Otherwise
+    the 1.2.0 result (often a refusal) stands.
     """
     cell = _total_row_value_cell_v1_2_0(table, row, name)
     if cell is not None and _parse_number(cell.text).disposition == "observed":
@@ -1986,7 +1994,28 @@ def _total_row_value_cell_v1_3_0(
         return cell
     if column <= fee_left.column_start < column + max(1, span):
         return cell
+    if _declared_column_v1_3_0(table, aggregate_left.column_start):
+        return cell
+    if _declared_column_v1_3_0(table, fee_left.column_start):
+        return cell
     return aggregate_left
+
+
+def _declared_column_v1_3_0(table: FeeTableV1_2, column_start: int) -> bool:
+    """True when ``column_start`` lies in the title column or in any column
+    the header row declares for a term.
+
+    A left neighbor that sits under its own declared header (a per-unit
+    price, a fee rate, an amount registered) is that column's value, never a
+    shifted amount, so the left-shift fallback must not read it.
+    """
+    if table.security_column is not None and column_start == table.security_column:
+        return True
+    for term, start in table.columns.items():
+        width = max(1, table.column_spans.get(term) or 1)
+        if start <= column_start < start + width:
+            return True
+    return False
 
 
 def _total_row_record_v1_3_0(
@@ -3249,12 +3278,12 @@ _PARSER_V1_2_0_IMPLEMENTATION_SHA256 = (
 # (see tests/test_capital_structure_document_terms_v1_3_0.py).  The released
 # runtime allowlist and dispatch roots are shared with 1.1.0/1.2.0 on purpose:
 # the runtime validator depends only on ``semantic_bundle.dispatch_roots``.
-_PARSER_V1_3_0_DEPENDENCY_COUNT = 311
+_PARSER_V1_3_0_DEPENDENCY_COUNT = 315
 _PARSER_V1_3_0_DEPENDENCY_MANIFEST_SHA256 = (
-    "091b886aef8c8f67d01c7c89c22f0a281c23ef2113a64a0676a3dfa14b7411aa"
+    "3d6438f0e354cc4001e17611ee88932acd6c65bfde14af3ce75fff81a0b07d4e"
 )
 _PARSER_V1_3_0_IMPLEMENTATION_SHA256 = (
-    "66916f8f1ae4096f2dcbe9f8f1d2effa7f8df825dbdd83dc3ac73c07c670b1de"
+    "ea1a9f820d918ebe47633ad52a88b240c6cda2882087bc784a942783b0e50823"
 )
 
 # Reviewed in clean ``-B`` subprocesses.  These literal entries are the runtime

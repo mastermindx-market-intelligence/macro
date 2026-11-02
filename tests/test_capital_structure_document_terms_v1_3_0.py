@@ -8,6 +8,7 @@ under 1.2.0 and compare.
 """
 from __future__ import annotations
 
+import dataclasses
 from hashlib import sha256
 import re
 from pathlib import Path
@@ -59,7 +60,10 @@ def _p130_manifest(raw: bytes) -> dict:
             "file_number": "333-123456",
         },
         "document": {
-            "canonical_url": f"https://www.sec.gov/Archives/edgar/data/{accession}.txt",
+            "canonical_url": (
+                f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/"
+                f"{accession.replace('-', '')}/{accession}.txt"
+            ),
             "document_name": "complete-submission.txt", "document_type": form,
             "document_role": "complete_submission", "sequence": "0",
             "media_type": "text/plain", "byte_length": len(raw),
@@ -214,7 +218,7 @@ def test_p130_c_title_of_class_header_reads_the_total():
 # ---------------------------------------------------------------------------
 
 def test_p130_c_class_type_spelling_keeps_its_refusal():
-    raw, manifest = _fixture("p130_c_classtitle_")
+    raw, manifest = _fixture("p130_c_classtype_")
     rows = document_terms._records_for_manifest_v1_3_0(manifest, raw, V1_3_0)
     assert len(rows) == len(document_terms.TERM_NAMES)
     assert _states(rows) == {("ambiguous", "unit_semantics_ambiguous")}
@@ -344,7 +348,7 @@ def test_p130_fixtures_keep_their_1_2_0_rows_unchanged(fixture_name):
     expected_states = {
         "p130_b_": {("unavailable", "fee_table_not_detected")},
         "p130_c_title_": {("ambiguous", "unit_semantics_ambiguous")},
-        "p130_c_classtitle_": {("ambiguous", "unit_semantics_ambiguous")},
+        "p130_c_classtype_": {("ambiguous", "unit_semantics_ambiguous")},
         "p130_c_leftshift_": {
             ("ambiguous", "unsupported_dimensional_value"),
             ("observed", "direct_table_value"),
@@ -431,7 +435,9 @@ def test_security_type_header_alone_is_never_a_title_column():
 def test_security_classtitle_spelling_is_a_title_column():
     # The no-space "Security ClassTitle" spelling is one of the released
     # 1.3.0 title-column literals (distinct from "Security Class Type",
-    # which no released rule matches -- see the p130_c_classtitle fixture).
+    # which no released rule matches -- see the p130_c_classtype fixture).
+    # No committed fixture carries this spelling; this synthetic test is
+    # its only exercise.
     assert document_terms._security_header_v1_3_0("Security ClassTitle") is True
     header = (
         "<td>Security ClassTitle</td>"
@@ -495,6 +501,19 @@ def test_per_share_aggregate_spelling_maps_to_nothing():
     assert document_terms._term_for_header_v1_3_0(
         "Aggregate offering price per unit",
     ) is None
+    # Any per-share or per-unit word excludes the bare aggregate spelling,
+    # not only the literal "per ".
+    for header in (
+        "Aggregate offering price/unit",
+        "Aggregate offering price per-share",
+        "Aggregate offering price (shares)",
+        "Aggregate offering price, units",
+    ):
+        assert document_terms._term_for_header_v1_3_0(header) is None, header
+    # A unit word inside another word never excludes the aggregate spelling.
+    assert document_terms._term_for_header_v1_3_0(
+        "Aggregate offering price (community)",
+    ) == AGGREGATE
     # A spelling 1.2.0 already maps keeps the 1.2.0 mapping untouched.
     for header in (
         "Proposed maximum aggregate offering price per unit",
@@ -634,11 +653,70 @@ def test_leftshift_fallback_never_applies_to_other_terms():
     assert document_terms._parse_number(cell.text).disposition != "observed"
 
 
+def test_leftshift_fallback_refuses_when_a_left_neighbor_is_under_another_header():
+    # A-1 sits in a declared per-unit price column: that cell is the per-unit
+    # price, never a shifted aggregate amount.
+    table, row = _leftshift_grid()
+    per_unit = "proposed_maximum_offering_price_per_unit"
+    table = dataclasses.replace(
+        table,
+        columns={**table.columns, per_unit: 3},
+        column_spans={**table.column_spans, per_unit: 1},
+    )
+    cell = document_terms._total_row_value_cell_v1_3_0(table, row, AGGREGATE)
+    assert cell is not None and cell.text == ""
+    assert document_terms._parse_number(cell.text).disposition != "observed"
+
+
+def test_leftshift_fallback_refuses_when_fee_left_is_under_another_header():
+    # F-1 sits in a declared fee-rate column: that cell is the fee rate,
+    # never a shifted fee amount.
+    table, row = _leftshift_grid()
+    table = dataclasses.replace(
+        table,
+        columns={**table.columns, "filing_fee_rate": 5},
+        column_spans={**table.column_spans, "filing_fee_rate": 1},
+    )
+    cell = document_terms._total_row_value_cell_v1_3_0(table, row, AGGREGATE)
+    assert cell is not None and cell.text == ""
+    assert document_terms._parse_number(cell.text).disposition != "observed"
+
+
+def test_per_unit_price_and_fee_rate_are_never_read_as_shifted_totals():
+    # Review counterexample: the totals row's only values sit under the
+    # per-unit price and fee-rate headers, left of the blank aggregate and
+    # fee spans.  1.3.0 must keep the 1.2.0 refusal, byte for byte.
+    header = (
+        "<td>Security Class Title</td><td>Amount Registered</td>"
+        "<td>Proposed Maximum Offering Price Per Unit</td>"
+        "<td>Maximum Aggregate Offering Price</td><td>Fee Rate</td>"
+        "<td>Amount of Registration Fee</td>"
+    )
+    body = (
+        "<tr><td>Common Stock</td><td>1,000,000</td><td>$10.00</td>"
+        "<td></td><td>0.0001531</td><td></td></tr>"
+        "<tr><td>Total Offering Amounts</td><td></td><td>$10.00</td>"
+        "<td></td><td>0.0001531</td><td></td></tr>"
+    )
+    raw = _envelope([("EX-FILING FEES", "1", "fee.htm", _fee_table_html(header, body))])
+    manifest = _p130_manifest(raw)
+    rows = document_terms._records_for_manifest_v1_3_0(manifest, raw, V1_3_0)
+    totals = _totals(rows)
+    assert len(totals) == 1
+    assert totals[0]["state"] == {
+        "disposition": "unavailable", "reason": "header_without_direct_value",
+    }
+    prior = document_terms._records_for_manifest_v1_2_0(manifest, raw, V1_2_0)
+    assert _drop_parser_version(rows) == _drop_parser_version(prior)
+
+
 # Condition (v)'s span-overlap halves (neither A-1 inside F's declared span
 # nor F-1 inside A's) are defense in depth: on any grid where a left
 # neighbor parses observed, that neighbor's text also makes the blank-span
 # condition (ii)/(iii) refuse first, so no honest grid can construct the
 # overlap alone.  The A-1 == F-1 case above is the reachable half of (v).
+# The same holds for a left neighbor in the title column: a totals row's
+# title cell never parses observed, so condition (iv) refuses first.
 
 
 # ---------------------------------------------------------------------------
