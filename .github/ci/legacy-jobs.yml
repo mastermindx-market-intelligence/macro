@@ -43985,6 +43985,9 @@ jobs:
       - "tests/test_us_stocks_s2_compression.py"
       - "tests/test_unified_dashboard_b2w2.py"
       - "tests/test_macro_mtf_sort_key.py"
+      - "tests/test_macro_evidence_dialog.py"
+      - "templates/_macro_evidence_dialog.html.j2"
+      - "templates/_macro_evidence_dialog.css.j2"
       - "tests/test_mag7_tape_strip.py"
       - "tests/test_theme_tape.py"
       - "tests/test_us_board_priority_ui.py"
@@ -44205,6 +44208,7 @@ jobs:
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_vsb_surface.py
           tests/test_macro_mtf_sort_key.py
+          tests/test_macro_evidence_dialog.py
           tests/test_ew_p4_descriptive_ui.py -q
 
   options-skew-engine:

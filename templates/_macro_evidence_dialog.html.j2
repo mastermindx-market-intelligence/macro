@@ -1,0 +1,177 @@
+{# The close-of-session snapshot owns every number in this disclosure, including its date.
+   Intraday hero ticks do not carry a matching six-factor decomposition. #}
+{% autoescape true %}
+{% macro bi(en, zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh or en }}</span>{%- endmacro %}
+{% set snap = MS2 if MS2 is mapping else {} %}
+{% set score = snap.score %}
+{% set has_score = score is number and score is not boolean and 0 <= score <= 100 %}
+{% set factors = snap.components|default([], true)|select('mapping')|list %}
+{% set valid = namespace(rows=[], weight=0, weights_known=true) %}
+{% for c in factors if c.score is number and c.score is not boolean and 0 <= c.score <= 100 %}
+  {% set valid.rows = valid.rows + [c] %}
+  {% if c.weight is number and c.weight is not boolean and 0 < c.weight <= 1 %}
+    {% set valid.weight = valid.weight + c.weight %}
+  {% else %}{% set valid.weights_known = false %}{% endif %}
+{% endfor %}
+{% set freshness = snap.freshness if snap.freshness is mapping else {} %}
+{% set vintages = snap.input_vintages if snap.input_vintages is mapping else (freshness.inputs if freshness.inputs is mapping else {}) %}
+{% set stale = namespace(keys=(snap.stale_inputs or freshness.stale_inputs or [])|list) %}
+{% for key,v in vintages.items() if v is mapping and v.stale and key not in stale.keys %}{% set stale.keys = stale.keys + [key] %}{% endfor %}
+{# A shared zero and denominator put every displayed impact on the same scale. #}
+{% set audit = namespace(rows=[], lift=0.0, drag=0.0, scale=0.0) %}
+{% set know_impact = valid.weights_known and valid.weight > 0 %}
+{% for c in valid.rows %}
+  {% set impact = (c.score - 50) * c.weight / valid.weight if know_impact else none %}
+  {% set audit.rows = audit.rows + [dict(factor=c, impact=impact, shown=impact|round(2) if know_impact else none)] %}
+  {% if know_impact %}
+    {% set audit.scale = [audit.scale, impact|abs]|max %}
+    {% if impact < 0 %}{% set audit.drag = audit.drag - impact %}{% else %}{% set audit.lift = audit.lift + impact %}{% endif %}
+  {% endif %}
+{% endfor %}
+{% set ordered = audit.rows|sort(attribute='impact') if know_impact else audit.rows %}
+{% set blend = 50 + audit.lift - audit.drag %}
+{% set raw = snap.raw_score %}
+{% set has_raw = raw is number and raw is not boolean and 0 <= raw <= 100 %}
+{% set measured = raw if has_raw else (score if has_score and snap.capped is sameas false else none) %}
+{% set differs = know_impact and measured is not none and (blend - measured)|abs > 0.500001 %}
+{% set first = ordered|first %}
+{% set last = ordered|last %}
+{% macro names(rows) -%}
+  {%- for r in rows -%}{{ bi(r.factor.label_en or 'Factor', r.factor.label_zh or r.factor.label_en or '因子') }}{{ ' / ' if not loop.last }}{%- endfor -%}
+{%- endmacro %}
+<div class="mx5-dlg" id="dlg-evidence" role="dialog" aria-modal="true" aria-labelledby="evidence-title" tabindex="-1">
+  <div class="mx5-dlg-backdrop" onclick="mx5CloseDlg()"></div>
+  <div class="mx5-dlg-panel">
+    <header class="mx5-dlg-header">
+      <div><div class="ev-kicker">{{ bi('US equities / Signals', '美股 / 信号') }}</div>
+        <h2 id="evidence-title">{{ bi('Evidence breakdown', '信号依据分析') }}</h2>
+      </div>
+      <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()"><span aria-hidden="true">×</span><span class="ev-sr">{{ bi('Close evidence breakdown', '关闭信号依据分析') }}</span></button>
+    </header>
+    <div class="mx5-dlg-body">
+      <div class="ev-meta">
+        <span>{{ bi('US market close','美股收盘快照') }} <b>{{ snap.asof or '—' }}</b></span>
+        <span>{{ bi('Factors available','可用因子') }} <b>{{ valid.rows|length }} / 6</b></span>
+        {% if freshness.stale %}<strong>{{ bi('Snapshot behind expected session','快照落后于应有交易日') }} {{ freshness.expected_asof or '' }}</strong>{% endif %}
+        {% if stale.keys %}<strong>{{ bi('Stale inputs','滞后数据项') }} · {{ stale.keys|join(', ') }}</strong>{% endif %}
+      </div>
+      <section class="ev-brief" aria-labelledby="ev-verdict">
+        <div class="ev-story">
+          <div class="ev-kicker">{{ bi('Market verdict','市场判断') }}</div>
+          <h3 id="ev-verdict">{{ bi(snap.label_en or 'Unavailable', snap.label_zh or snap.label_en or '暂无读数') if has_score else bi('Unavailable','暂无读数') }}</h3>
+          {% if snap.capped %}
+            <div class="ev-cap"><strong>{{ bi('A cap set the published score.','本期公布评分受上限约束。') }}</strong>
+              <span>{{ bi('Measured blend','实测综合分') }} {{ raw if has_raw else '—' }} → {{ score if has_score else '—' }}</span>
+              {% for cap in snap.score_caps or [] if cap is mapping %}<span>{{ bi(cap.note_en,cap.note_zh) }}{% if cap.limit is number %} ({{ cap.limit }}){% endif %}</span>{% endfor %}
+            </div>
+          {% elif know_impact and ordered and not differs %}
+            <p class="ev-drivers">
+              {% if first.shown < 0 %}<span class="ev-neg"><b>{{ names(ordered|selectattr('shown','equalto',first.shown)) }}</b> {{ bi('pulled the score down most','对评分的拖累最大') }} <small>({{ '%+.2f'|format(first.shown) }})</small>.</span>{% endif %}
+              {% if last.shown > 0 %}<span class="ev-pos"><b>{{ names(ordered|selectattr('shown','equalto',last.shown)) }}</b> {{ bi('provided the largest lift','对评分的支撑最大') }} <small>({{ '%+.2f'|format(last.shown) }})</small>.</span>{% endif %}
+              {% if first.shown == 0 and last.shown == 0 %}{{ bi('The available factors are balanced at neutral.','可用因子的贡献均为中性。') }}{% endif %}
+            </p>
+          {% elif differs %}<p class="ev-flag">{{ bi('Available factors do not reproduce the published blend.','可用因子无法复现已公布的综合分。') }}</p>
+          {% else %}<p class="ev-note">{{ bi('There is insufficient evidence to rank the drivers.','现有依据不足以排列因子影响。') }}</p>{% endif %}
+          {% if snap.participation_scope and snap.headline_en %}<p class="ev-scope">{{ bi(snap.headline_en,snap.headline_zh) }}</p>{% endif %}
+        </div>
+        <div class="ev-instrument">
+          <div class="ev-scoreline"><strong class="ev-score">{{ score if has_score else '—' }}</strong><span>/ 100</span></div>
+          <div class="ev-scale" aria-hidden="true"><i></i><i></i><i></i>{% if has_score %}<b style="left:{{ score }}%"></b>{% endif %}</div>
+          <div class="ev-scale-labels">{{ bi('0–41 Risk-off','0–41 避险') }}{{ bi('42–59 Mixed','42–59 混合') }}{{ bi('60–100 Risk-on','60–100 偏多') }}</div>
+        </div>
+      </section>
+      <div class="ev-tools">
+        <details class="ev-trace">
+          <summary tabindex="0">{{ bi('Trace the score','追溯评分') }} <span class="ev-plus" aria-hidden="true"></span></summary>
+          <div class="ev-tool-body">
+            {% if know_impact %}
+            <div class="ev-equation">
+              <div><small>{{ bi('Neutral','中性基准') }}</small><b>50</b></div>
+              <div class="ev-neg"><small>{{ bi('Drag','拖累') }}</small><b>−{{ '%.2f'|format(audit.drag) }}</b></div>
+              <div class="ev-pos"><small>{{ bi('Lift','支撑') }}</small><b>+{{ '%.2f'|format(audit.lift) }}</b></div>
+              <div><small>{{ bi('Blend','加权结果') }}</small><b>= {{ '%.2f'|format(blend) }}</b></div>
+            </div>
+            <p>{{ bi('Each factor contributes (its score − 50) × its share of available weight. The blend is rounded before any cap.','每个因子的贡献为（因子分 − 50）× 其在可用权重中的占比。综合分先取整，再应用上限。') }}</p>
+            {% if differs %}<p class="ev-flag">{{ bi('Published blend','公布的综合分') }} {{ measured }} · {{ bi('The available factors do not reconcile.','现有因子无法核对一致。') }}</p>
+            {% elif measured is not none %}<p><b>{{ bi('Rounded blend','取整后综合分') }} {{ measured }}</b>{% if has_score %} · {{ bi('Published','公布评分') }} {{ score }}{% endif %}</p>
+            {% else %}<p>{{ bi('A published pre-cap blend was not supplied.','未提供上限生效前的官方综合分。') }}</p>{% endif %}
+            {% else %}<p>{{ bi('The calculation requires a valid weight for every available factor.','核算需要每个可用因子的有效权重。') }}</p>{% endif %}
+          </div>
+        </details>
+        <details class="ev-condition"><summary tabindex="0">{{ bi('What would change it?','什么会改变判断？') }} <span class="ev-plus" aria-hidden="true"></span></summary>
+          <div class="ev-tool-body"><p>{{ bi(snap.flip_en,snap.flip_zh) if snap.flip_en else bi('No transition condition was published for this snapshot.','本次快照未公布转换条件。') }}</p></div>
+        </details>
+      </div>
+      <section class="ev-section" aria-labelledby="ev-factor-title">
+        <div class="ev-section-head"><h3 id="ev-factor-title">{{ bi('What shaped the score','哪些因子影响了评分') }}</h3>
+          {% if ordered %}<fieldset class="ev-switch"><legend class="ev-sr">{{ bi('Compare factors by','比较因子的方式') }}</legend>
+            <label><input type="radio" name="evidence-measure" value="impact" tabindex="0" {% if know_impact %}checked{% else %}disabled{% endif %}>{{ bi('Impact','贡献') }}</label>
+            <label><input type="radio" name="evidence-measure" value="score" tabindex="0" {% if not know_impact %}checked{% endif %}>{{ bi('Factor score','因子评分') }}</label>
+          </fieldset>{% endif %}
+        </div>
+        <p class="ev-note ev-impact-only">{{ bi('Points added to or taken from a neutral blend of 50. Select a factor for its evidence.','各因子相对中性基准 50 分的加减分。选择因子查看依据。') }}</p>
+        <p class="ev-note ev-score-only">{{ bi('Individual readings on a 0–100 scale. The center mark is 50.','各因子的独立读数，范围为 0–100，中点为 50。') }}</p>
+        {% if valid.rows|length < 6 %}<p class="ev-flag">{{ bi('Partial coverage. Only available factors are counted.','覆盖不完整。仅计入可用因子。') if valid.rows else bi('Factor readings are unavailable for this snapshot.','本次快照没有可用的因子读数。') }}</p>{% endif %}
+        {% if ordered and not know_impact %}<p class="ev-flag">{{ bi('Weights unavailable. Impact cannot be calculated.','权重不完整，无法计算因子贡献。') }}</p>{% endif %}
+        {% if ordered %}<div class="ev-axis" aria-hidden="true"><span>{{ bi('Factor','因子') }}</span>
+          <div class="ev-impact-only"><span>{{ bi('Drag','拖累') }}</span><b>0</b><span>{{ bi('Lift','支撑') }}</span></div>
+          <div class="ev-score-only"><span>0</span><b>50</b><span>100</span></div>
+          <span class="ev-unit ev-impact-only">{{ bi('Points','分') }}</span><span class="ev-unit ev-score-only">/ 100</span>
+        </div>{% endif %}
+        <div class="ev-ledger">
+        {% for row in ordered %}{% set c = row.factor %}{% set impact = row.impact %}
+          <details class="ev-factor" data-factor="{{ c.key|default('') }}">
+            <summary tabindex="0">
+              <span class="ev-factor-info"><b>{{ bi(c.label_en or 'Unnamed factor',c.label_zh or c.label_en or '未命名因子') }}</b>
+                {% if c.degraded %}<small class="ev-flag">{{ bi('Partial inputs','部分输入缺失') }}</small>{% endif %}
+              </span>
+              <span class="ev-plot" aria-hidden="true">
+                {% if impact is not none %}{% set length = impact|abs / audit.scale * 48 if audit.scale else 0 %}
+                <i class="ev-impact-only {{ 'ev-lower' if impact < 0 else 'ev-higher' }}" style="width:{{ length }}%"></i>{% endif %}
+                <i class="ev-score-only {{ 'ev-lower' if c.score < 50 else 'ev-higher' }}" style="width:{{ (c.score-50)|abs }}%"></i>
+              </span>
+              <span class="ev-impact ev-impact-only {{ 'ev-neg' if impact is not none and impact < 0 else ('ev-pos' if impact is not none and impact > 0 else '') }}"><span class="ev-sr">{{ bi('Impact in points','贡献点数') }}</span><b>{{ '%+.2f'|format(impact) if impact is not none else '—' }}</b></span>
+              <span class="ev-factor-value ev-score-only"><span class="ev-sr">{{ bi('Factor score','因子评分') }}</span><b>{{ c.score }}</b></span>
+              <span class="ev-chevron" aria-hidden="true">⌄</span>
+            </summary>
+            <div class="ev-detail">
+              <p class="ev-read">{{ bi(c.read_en,c.read_zh) if c.read_en else bi('No interpretation was supplied.','未提供读数解读。') }}</p>
+              <div class="ev-detail-meta"><span>{{ bi('Factor score','因子评分') }} <b>{{ c.score }}/100</b></span>
+              {% if c.weight is number and c.weight is not boolean and 0 < c.weight <= 1 %}<span>{{ bi('Base weight','基础权重') }} <b>{{ '%g'|format(c.weight*100) }}%</b></span>
+              {% if know_impact and (valid.weight-1)|abs > 0.00001 %}<span>{{ bi('Share of available weight','可用权重占比') }} <b>{{ '%.1f'|format(c.weight/valid.weight*100) }}%</b></span>{% endif %}{% endif %}</div>
+              {% if c.degraded_note_en %}<p class="ev-flag">{{ bi(c.degraded_note_en,c.degraded_note_zh) }}</p>{% endif %}
+              {% if c.metrics %}<dl class="ev-metrics">{% for m in c.metrics if m is mapping and m.v is defined and m.v is not none and m.v != '' %}
+                <div><dt>{{ bi(m.k_en,m.k_zh) }}</dt><dd>{{ bi(m.v,tr(m.v)) if m.v is string and tr is defined else m.v }}</dd></div>{% endfor %}</dl>
+              {% elif c.key == 'trend' and snap.mtf and snap.mtf.indices %}<p>{{ bi('The index tape below supplies the trend measurements.','下方的指数读数提供趋势依据。') }}</p>
+              {% else %}<p>{{ bi('No underlying measurements were published.','未公布底层测量值。') }}</p>{% endif %}
+            </div>
+          </details>
+        {% endfor %}</div>
+      </section>
+      <details class="ev-tape"><summary tabindex="0">{{ bi('Index tape across timeframes','多周期指数走势') }} <span class="ev-plus" aria-hidden="true"></span></summary>
+        {% if snap.mtf is mapping and snap.mtf.indices %}
+        <p class="ev-note">{{ bi('Numbers are 14-period RSI. Arrows show the combined trend on each timeframe. A dot marks a missing reading.','数字为 14 周期 RSI；箭头表示各周期的综合方向。圆点表示读数缺失。') }}</p>
+        <table class="mx5-dlg-mtf-tbl">
+          <thead><tr><th scope="col">{{ bi('Index','指数') }}</th><th scope="col">1D</th><th scope="col">3D</th><th scope="col">1W</th><th scope="col">1M</th><th scope="col">{{ bi('Alignment','一致性') }}</th></tr></thead>
+          <tbody>{% for r in snap.mtf.indices if r is mapping %}
+            <tr><td>{{ bi(r.label_en,r.label_zh) }}</td>
+              {% for tf in ['D','3D','W','M'] %}
+                {% set cell = r.cells.get(tf) if r.cells is mapping else none %}
+                {% set rsi = cell.rsi if cell is mapping else none %}
+                {% set usable = rsi is number and rsi is not boolean and 0 <= rsi <= 100 %}
+                <td data-sort="{{ rsi|round|int if usable else '' }}"><span class="ms-cell2 {{ cell.tone if cell is mapping and cell.tone in ['good','bad','flat'] else 'flat' }}"><span class="ar">{{ cell.arrow if cell is mapping and cell.arrow else ('·' if not usable else '') }}</span>{% if cell is mapping %}<span class="rsi">{{ rsi|round|int if usable else '·' }}</span>{% endif %}</span></td>
+              {% endfor %}<td>{{ bi(r.confluence_en or '—',r.confluence_zh) }}</td>
+            </tr>{% endfor %}</tbody>
+        </table>
+        {% else %}<p class="ev-note">{{ bi('Index readings are unavailable for this snapshot.','本次快照暂无指数读数。') }}</p>{% endif %}
+      </details>
+      <details class="ev-sources"><summary tabindex="0">{{ bi('Source dates and coverage','来源日期与覆盖范围') }} <span class="ev-plus" aria-hidden="true"></span></summary>
+        {% if vintages %}<dl class="ev-metrics">{% for key,v in vintages.items() if v is mapping %}
+          <div><dt>{{ bi(v.label, tr(v.label)) if v.label and tr is defined else (v.label or key|upper) }}</dt><dd>{{ v.asof or '—' }}{% if v.stale %} · {{ bi('Stale','滞后') }}{% endif %}</dd></div>
+        {% endfor %}</dl>{% else %}<p>{{ bi('Individual input dates were not supplied.','未提供各项输入的日期。') }}</p>{% endif %}
+        <p>{{ bi('The score describes the observed market. Intraday updates to the dashboard can be newer than this factor snapshot.','评分描述已观测的市场状况。仪表盘的盘中更新可能晚于本次因子快照。') }}</p>
+      </details>
+    </div>
+  </div>
+</div>
+{% endautoescape %}
