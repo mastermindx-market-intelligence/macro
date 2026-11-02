@@ -1,30 +1,18 @@
 {
-  "asof": "2026-10-20",
+  "asof": "2026-10-30",
   "last_event": {
-    "event_date": "2026-07-30",
-    "z": -3.287,
-    "spread": -0.0816,
-    "direction": "offense",
-    "t1_attribution": {
-      "t1_date": "2026-07-31",
-      "t1_z": -0.2412,
-      "spread_persistence": {
-        "same_direction": true,
-        "magnitude": 0.0075,
-        "direction": "offense"
-      },
-      "breadth_follow_through": null,
-      "absorption_delta": -0.01,
-      "leadership_continuity": true,
-      "note_breadth": "breadth_follow_through omitted — no intraday advance/decline series in committed store"
-    },
-    "verdict": "MIXED"
+    "event_date": "2026-10-30",
+    "z": 2.7346,
+    "spread": 0.072,
+    "direction": "defensive",
+    "t1_attribution": null,
+    "verdict": null
   },
   "base_rates": {
-    "n_events": 27,
-    "n_graded": 27,
+    "n_events": 29,
+    "n_graded": 28,
     "confirmed": 7,
-    "faded": 15,
+    "faded": 16,
     "mixed": 5
   },
   "descriptive_scan": [
@@ -567,6 +555,34 @@
         "note_breadth": "breadth_follow_through omitted — no intraday advance/decline series in committed store"
       },
       "verdict": "MIXED"
+    },
+    {
+      "event_date": "2026-10-22",
+      "z": 2.8307,
+      "spread": 0.0729,
+      "direction": "defensive",
+      "t1_attribution": {
+        "t1_date": "2026-10-23",
+        "t1_z": -0.7078,
+        "spread_persistence": {
+          "same_direction": false,
+          "magnitude": 0.0196,
+          "direction": "offense"
+        },
+        "breadth_follow_through": null,
+        "absorption_delta": null,
+        "leadership_continuity": false,
+        "note_breadth": "breadth_follow_through omitted — no intraday advance/decline series in committed store"
+      },
+      "verdict": "FADED"
+    },
+    {
+      "event_date": "2026-10-30",
+      "z": 2.7346,
+      "spread": 0.072,
+      "direction": "defensive",
+      "t1_attribution": null,
+      "verdict": null
     }
   ]
 }

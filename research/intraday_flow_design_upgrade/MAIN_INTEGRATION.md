@@ -60,3 +60,55 @@ The Paper catalog gate, qualified human/Opus visual gate, performance limitation
 production proof obligations remain open. The final containing head requires its
 own concluded CI receipt, recorded in the PR after push. This merge is into the
 isolated feature branch; it is not a merge to main or a deployment.
+
+
+## Resumed integration — 2026-11-02
+
+The resumed Chairman request recovered exact published head
+`4893e20969c03a9d9894aa422075d8913bd812e8` and a clean isolated worktree.
+Current protected procedure pin is
+`Mastermind@ab93f3ede66486e82e995c88a86e662677973732` (skillpack 1.0.1).
+
+Hosted CI run 41401855536 on that head failed only ci-pack-7, logical job
+`dag-conformance`; all other eleven packs passed and fences 41401855665 passed.
+The two assertions found daily.yml at 488050 bytes against a 487000-byte budget.
+The exact-base replay at 5bf1331b6697a1855b66bf53ba36cee85fb2c34c reproduced
+both failures. The semantic gate still returned UNKNOWN because its failure
+signatures differed; no waiver or hosted-green claim is made.
+
+Current main `90e0644f9f08ab37115dfffedce2ba7939b0835d` already contains the
+accepted workflow repair (daily.yml is 482604 bytes). A bounded integration of
+that revision resolves the actual GitHub conflict, without a duplicate CI heal.
+The only conflicting path was site/intraday_flow.html. Canonical page-only Jinja
+rendering plus lib.pages.write_page resolved it using main's committed
+site/flowtracker/base.json. No producer, feed, historical data or classifier was
+modified. The feature template and both page CSS copies remain byte-identical to
+the previously reviewed candidate. Main's canonical navigation inventory is
+inherited, including the new GMI menu item.
+
+Rendered HTML SHA256:
+`3d21dd2137c8cb2ec99ed6f620984aef555aca919b16f49b97739bb2d0082eb3`.
+Committed base snapshot SHA256:
+`a8b0f3d6609b844f4e88ba9155414196773e3fb11f04031a3b02cfc192ddc624`.
+Snapshot as_of: `2026-11-02T10:21:00.246892+00:00`.
+The embedded JSON is asserted equal to that upstream payload. No current-price
+or current-signal claim follows from this nightly timestamp.
+
+Verification on the integrated working tree: all 280 Intraday tests PASS;
+all 515 browser checks PASS; workflow-size suite 3/3 PASS. The initial combined
+run's one failure was an omitted sparse-tree CI manifest, not a source assertion;
+after materializing the existing .github/ci files, the complete three-case
+workflow guard passed. No test or budget was weakened. Integration was retained
+directly (LOWER_TOTAL_OVERHEAD: one generated conflict and established local
+verification, with the root remaining the single writer).
+
+Paper remains connected to file 01M2WGNCX9475G79JRKJTCM08P; its catalog is still
+unqualified for writes. The resumed read-only page inventory contains no
+Intraday-specific page. Source compatibility PR Mastermind#1942 is separately
+under release control; a source approval does not establish an installed adapter.
+The supported Claude Session Bridge again reports backend_unavailable. No Paper
+edit, qualified visual acceptance, merge to main or production deployment is claimed.
+
+The startup-layout assessment remains active in this continuation. A new final
+capture/CI receipt will identify its actual source revision; the final-r3 matrix
+is retained at its real historical capture revision.

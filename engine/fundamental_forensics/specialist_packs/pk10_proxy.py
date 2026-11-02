@@ -58,6 +58,32 @@ SPEC = PackSpec(
 PERFORMANCE_MEASURE = r"(?:most important|selected) (?:financial )?performance measure"
 DIRECTOR_INDEPENDENCE = r"independent (?:director|under the)"
 RELATED_PARTY = r"related[- ]party transaction"
+# B.3 pattern revision v6 (independent re-review D1/D2, 2026-11-02): the v5
+# look-ahead still accepted words that are not votes — "(executive)
+# compensation", "advisory" and "proposal" each anchored a non-vote cadence
+# (a compensation-committee meeting cadence, an advisory-services cadence, a
+# shareholder-proposal cadence) — and the singular "vote"/"ballot" missed
+# the plurals. The look-ahead now names only real vote terms: say-on-pay,
+# votes?, ballots?, referend(um|a) and the shareholder act. The sentence is
+# also BLOCK-BOUNDED (``narrative.block_sentence_span``): the ". "
+# -delimited sentence is clipped at the nearest block-level tag boundary
+# (</p, <br, </tr, </td, ...) and the anchor is kept only when it still
+# matches with the clipped sentence as its end position — so the
+# vote-context look-ahead cannot see past a block break, and a cadence and
+# a vote mention in different paragraphs or table cells no longer combine
+# into one sentence.
+#
+# B.3 pattern revision v5 (independent per-pack review D1, 2026-11-02): the
+# bare "frequency of" arm anchored any cadence-bearing sentence (a dividend
+# or meeting cadence valued the say-on-pay frequency). The arm now requires
+# a vote context through a NON-CONSUMING look-ahead — "frequency of"
+# followed within the sentence (no ".", 80 chars) by a vote term
+# (say-on-pay / votes / ballots / referendum / referenda) or by the
+# shareholder act (shareholders agreed / approved / voted / adopted /
+# ratified) — so the anchor still matches only the phrase "frequency of",
+# the evidence span is unchanged, and only a vote-bearing sentence anchors,
+# whichever order the sentences appear in.
+#
 # B.3 pattern revision v4 (review F1/F2/F3, 2026-10-20): the say-on-pay
 # frequency resolves ORDER-INDEPENDENTLY inside the anchor's sentence; a
 # rejected alternative is never evidence, and an "annual" that heads a
@@ -102,7 +128,10 @@ RELATED_PARTY = r"related[- ]party transaction"
 #   ``not_disclosed`` asserted over the whole document.
 _SAY_ON_PAY_ANCHOR = (
     r"(?:say[- ]on[- ]pay|advisory vote[^.]{0,120}?(?:executive )?compensation"
-    r"|frequency of)"
+    r"|frequency of(?=[^.]{0,80}\b(?:say[- ]on[- ]pay"
+    r"|votes?|referend(?:um|a)|ballots?"
+    r"|(?:shareholders?|stockholders?)\s+(?:agreed?|approved?|voted?"
+    r"|adopted?|ratified))\b))"
 )
 _ANNUAL_COMPOUND_HEAD = (
     r"(?:meeting|report|incentive|bonus|cash|equity|compensation|proxy"
@@ -183,9 +212,15 @@ def _say_on_pay_frequency_value(
     lo, hi = section_span
     seen_sentences: set[tuple[int, int]] = set()
     for anchor in _ANCHOR_RE.finditer(text, lo, hi):
-        sentence = narrative.sentence_span(
-            text, anchor.start(), anchor.end(), section_span
+        sentence = narrative.block_sentence_span(
+            nt, anchor.start(), anchor.end(), section_span
         )
+        if not _ANCHOR_RE.match(text, anchor.start(), sentence[1]):
+            # v6: the clipped sentence bounds the vote-context look-ahead
+            # (``endpos`` truncates the string the look-ahead can see) — an
+            # anchor whose vote term sits past a block break is skipped,
+            # exactly like an anchor with no survivors.
+            continue
         if sentence in seen_sentences:
             continue
         seen_sentences.add(sentence)

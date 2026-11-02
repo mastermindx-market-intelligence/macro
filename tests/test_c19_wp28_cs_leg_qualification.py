@@ -1,7 +1,8 @@
-"""C19/WP28 offline qualification pins for the held capital-structure leg.
+"""C19/WP28 offline qualification pins for the capital-structure context leg.
 
-The integrated answer's capital-structure leg is held (Mastermind #1258 F4). When
-that hold is released, the leg has to join two issuer-id forms that capital
+The integrated answer's capital-structure leg reads the published state the
+``/api/capital-structure/v1/issuers/{issuer_id}/state`` route serves, through that
+route's own resolution function. It has to join two issuer-id forms that capital
 structure mints today to the existing company-intelligence resolver. No bridge
 module exists by design: a second identity plane is refused, so the join is
 pinned here as a contract rather than built. Tested against the frozen offline
@@ -13,16 +14,19 @@ fixtures with no network, no wall clock and no randomness:
    refuses the spine's form;
 3. both forms carry the same CIK digits, which resolve to one ``cik:`` company
    id, and the resolver refuses either form whole rather than coercing it;
-4. the leg takes no issuer input and stays held. Releasing the hold must update
-   this pin deliberately.
+4. the leg takes (ticker, composed_at) and reads the published state through
+   ``_state_view``. This pin states the released shape; it is updated
+   deliberately with the leg it pins.
 """
 from __future__ import annotations
 
 import inspect
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 
+from app import capital_structure as cs
 from app.integrated_answer import _leg_capital_structure
 from engine.capital_structure.event_spine import build_event_version
 from engine.capital_structure.source_identity import (
@@ -82,14 +86,15 @@ def test_resolver_refuses_capital_structure_forms_whole(value):
         company_id_for_cik(value)
 
 
-def test_capital_structure_leg_takes_no_issuer_input_and_stays_held():
-    assert list(inspect.signature(_leg_capital_structure).parameters) == []
-    leg = _leg_capital_structure()
+def test_capital_structure_leg_takes_ticker_and_composed_at_and_fails_closed(monkeypatch):
+    assert list(inspect.signature(_leg_capital_structure).parameters) == ["ticker", "composed_at"]
+    monkeypatch.setattr(cs, "PROJECTION_PATH", Path("/nonexistent/capital_structure/projection.json"))
+    cs._reset_cache()
+    leg = _leg_capital_structure("AAPL", "2026-11-01T00:00:00Z")
     assert leg["leg"] == "capital_structure"
-    assert leg["status"] == "held_unavailable"
+    assert leg["status"] == "absent"
+    assert leg["degraded_reason"] == "state_unavailable"
     assert leg["payload"] is None
     assert leg["ref"] is None
-    assert "W4/W6" in leg["degraded_reason"]
-    assert "#1258" in leg["degraded_reason"]
     assert leg["copy"]["en"]
     assert leg["copy"]["zh"]

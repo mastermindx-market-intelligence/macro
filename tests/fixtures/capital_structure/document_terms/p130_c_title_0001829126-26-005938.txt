@@ -1,0 +1,418 @@
+<SEC-DOCUMENT>0001829126-26-005938.txt : 20260602
+<SEC-HEADER>0001829126-26-005938.hdr.sgml : 20260602
+<ACCEPTANCE-DATETIME>20260602103816
+ACCESSION NUMBER:		0001829126-26-005938
+CONFORMED SUBMISSION TYPE:	S-1/A
+PUBLIC DOCUMENT COUNT:		26
+FILED AS OF DATE:		20260602
+DATE AS OF CHANGE:		20260602
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			Futurewave Acquisition Corp
+		CENTRAL INDEX KEY:			0002116105
+		STANDARD INDUSTRIAL CLASSIFICATION:	BLANK CHECKS [6770]
+		ORGANIZATION NAME:           	05 Real Estate & Construction
+		EIN:				000000000
+		STATE OF INCORPORATION:			E9
+		FISCAL YEAR END:			0228
+
+	FILING VALUES:
+		FORM TYPE:		S-1/A
+		SEC ACT:		1933 Act
+		SEC FILE NUMBER:	333-295572
+		FILM NUMBER:		261054071
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1185 AVENUE OF THE AMERICAS, SUITE 353
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10036
+		BUSINESS PHONE:		2126121400
+
+	MAIL ADDRESS:	
+		STREET 1:		1185 AVENUE OF THE AMERICAS, SUITE 353
+		CITY:			NEW YORK
+		STATE:			NY
+		ZIP:			10036
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>EX-FILING FEES
+<SEQUENCE>11
+<FILENAME>futurewaveacq_ex107.htm
+<DESCRIPTION>EXHIBIT 107
+<TEXT>
+<XBRL>
+<?xml version='1.0' encoding='ASCII'?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:xbrldi="http://xbrl.org/2006/xbrldi" xmlns:xbrldt="http://xbrl.org/2005/xbrldt" xmlns:iso4217="http://www.xbrl.org/2003/iso4217" xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:ixt="http://www.xbrl.org/inlineXBRL/transformation/2015-02-26" xmlns:ixt-sec="http://www.sec.gov/inlineXBRL/transformation/2015-08-31" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:ffd="http://xbrl.sec.gov/ffd/2025" xmlns:dei="http://xbrl.sec.gov/dei/2025" xmlns:CIK0002116105="http://CIK0002116105/20260601">
+<head>
+     <title></title>
+<meta http-equiv="Content-Type" content="text/html"/>
+</head>
+<!-- Field: Set; Name: xdx; ID: xdx_027_FFD%2D2025 -->
+<!-- Field: Set; Name: xdx; ID: xdx_037_CIK0002116105_CIK0002116105_20260601 -->
+<!-- Field: Set; Name: xdx; ID: xdx_044_20260601_20260601 -->
+<!-- Field: Set; Name: xdx; ID: xdx_05A_edei%2D%2DEntityCentralIndexKey_0002116105 -->
+<!-- Field: Set; Name: xdx; ID: xdx_06B_USD_1_iso4217%2D%2DUSD -->
+<!-- Field: Set; Name: xdx; ID: xdx_062_Shares_2_xbrli%2D%2Dshares -->
+<!-- Field: Set; Name: xdx; ID: xdx_06D_USDPShares_3_iso4217%2D%2DUSD_xbrli%2D%2Dshares -->
+<!-- Field: Set; Name: xdx; ID: xdx_065_Ratio_4_xbrli%2D%2Dpure -->
+<body style="font: 10pt Times New Roman, Times, Serif">
+<div style="display: none">
+<ix:header>
+ <ix:hidden>
+  <ix:nonNumeric contextRef="AsOf2026-06-01" id="Fact000003" name="dei:EntityCentralIndexKey">0002116105</ix:nonNumeric>
+  <ix:nonNumeric contextRef="AsOf2026-06-01" id="xdx2ixbrl0010" name="ffd:FeeExhibitTp">EX-FILING FEES</ix:nonNumeric>
+  <ix:nonNumeric contextRef="AsOf2026-06-01" id="xdx2ixbrl0011" name="ffd:SubmissnTp">S-1/A</ix:nonNumeric>
+  <ix:nonNumeric contextRef="From2026-06-012026-06-01_1" id="xdx2ixbrl0017" name="ffd:OfferingSctyTp">Other</ix:nonNumeric>
+  <ix:nonNumeric contextRef="From2026-06-012026-06-01_2" id="xdx2ixbrl0018" name="ffd:OfferingSctyTp">Other</ix:nonNumeric>
+  <ix:nonNumeric contextRef="From2026-06-012026-06-01_3" id="xdx2ixbrl0019" name="ffd:OfferingSctyTp">Other</ix:nonNumeric>
+  <ix:nonNumeric contextRef="From2026-06-012026-06-01_4" id="xdx2ixbrl0020" name="ffd:OfferingSctyTp">Other</ix:nonNumeric>
+  <ix:nonNumeric contextRef="From2026-06-012026-06-01_5" id="xdx2ixbrl0021" name="ffd:OfferingSctyTp">Other</ix:nonNumeric>
+  <ix:nonNumeric contextRef="From2026-06-012026-06-01_6" id="xdx2ixbrl0022" name="ffd:OfferingSctyTp">Other</ix:nonNumeric>
+  <ix:nonNumeric contextRef="From2026-06-012026-06-01_7" id="xdx2ixbrl0023" name="ffd:OfferingSctyTp">Other</ix:nonNumeric>
+  </ix:hidden>
+ <ix:references>
+  <link:schemaRef xlink:href="https://xbrl.sec.gov/ffd/2025/ffd-2025.xsd" xlink:type="simple"/>
+  </ix:references>
+ <ix:resources>
+    <xbrli:context id="AsOf2026-06-01">
+      <xbrli:entity>
+        <xbrli:identifier scheme="http://www.sec.gov/CIK">0002116105</xbrli:identifier>
+      </xbrli:entity>
+      <xbrli:period>
+        <xbrli:startDate>2026-06-01</xbrli:startDate>
+        <xbrli:endDate>2026-06-01</xbrli:endDate>
+      </xbrli:period>
+    </xbrli:context>
+    <xbrli:context id="From2026-06-012026-06-01_1">
+      <xbrli:entity>
+        <xbrli:identifier scheme="http://www.sec.gov/CIK">0002116105</xbrli:identifier>
+        <xbrli:segment>
+          <xbrldi:typedMember dimension="ffd:OfferingAxis">
+            <dei:lineNo>1</dei:lineNo>
+          </xbrldi:typedMember>
+        </xbrli:segment>
+      </xbrli:entity>
+      <xbrli:period>
+        <xbrli:startDate>2026-06-01</xbrli:startDate>
+        <xbrli:endDate>2026-06-01</xbrli:endDate>
+      </xbrli:period>
+    </xbrli:context>
+    <xbrli:context id="From2026-06-012026-06-01_2">
+      <xbrli:entity>
+        <xbrli:identifier scheme="http://www.sec.gov/CIK">0002116105</xbrli:identifier>
+        <xbrli:segment>
+          <xbrldi:typedMember dimension="ffd:OfferingAxis">
+            <dei:lineNo>2</dei:lineNo>
+          </xbrldi:typedMember>
+        </xbrli:segment>
+      </xbrli:entity>
+      <xbrli:period>
+        <xbrli:startDate>2026-06-01</xbrli:startDate>
+        <xbrli:endDate>2026-06-01</xbrli:endDate>
+      </xbrli:period>
+    </xbrli:context>
+    <xbrli:context id="From2026-06-012026-06-01_3">
+      <xbrli:entity>
+        <xbrli:identifier scheme="http://www.sec.gov/CIK">0002116105</xbrli:identifier>
+        <xbrli:segment>
+          <xbrldi:typedMember dimension="ffd:OfferingAxis">
+            <dei:lineNo>3</dei:lineNo>
+          </xbrldi:typedMember>
+        </xbrli:segment>
+      </xbrli:entity>
+      <xbrli:period>
+        <xbrli:startDate>2026-06-01</xbrli:startDate>
+        <xbrli:endDate>2026-06-01</xbrli:endDate>
+      </xbrli:period>
+    </xbrli:context>
+    <xbrli:context id="From2026-06-012026-06-01_4">
+      <xbrli:entity>
+        <xbrli:identifier scheme="http://www.sec.gov/CIK">0002116105</xbrli:identifier>
+        <xbrli:segment>
+          <xbrldi:typedMember dimension="ffd:OfferingAxis">
+            <dei:lineNo>4</dei:lineNo>
+          </xbrldi:typedMember>
+        </xbrli:segment>
+      </xbrli:entity>
+      <xbrli:period>
+        <xbrli:startDate>2026-06-01</xbrli:startDate>
+        <xbrli:endDate>2026-06-01</xbrli:endDate>
+      </xbrli:period>
+    </xbrli:context>
+    <xbrli:context id="From2026-06-012026-06-01_5">
+      <xbrli:entity>
+        <xbrli:identifier scheme="http://www.sec.gov/CIK">0002116105</xbrli:identifier>
+        <xbrli:segment>
+          <xbrldi:typedMember dimension="ffd:OfferingAxis">
+            <dei:lineNo>5</dei:lineNo>
+          </xbrldi:typedMember>
+        </xbrli:segment>
+      </xbrli:entity>
+      <xbrli:period>
+        <xbrli:startDate>2026-06-01</xbrli:startDate>
+        <xbrli:endDate>2026-06-01</xbrli:endDate>
+      </xbrli:period>
+    </xbrli:context>
+    <xbrli:context id="From2026-06-012026-06-01_6">
+      <xbrli:entity>
+        <xbrli:identifier scheme="http://www.sec.gov/CIK">0002116105</xbrli:identifier>
+        <xbrli:segment>
+          <xbrldi:typedMember dimension="ffd:OfferingAxis">
+            <dei:lineNo>6</dei:lineNo>
+          </xbrldi:typedMember>
+        </xbrli:segment>
+      </xbrli:entity>
+      <xbrli:period>
+        <xbrli:startDate>2026-06-01</xbrli:startDate>
+        <xbrli:endDate>2026-06-01</xbrli:endDate>
+      </xbrli:period>
+    </xbrli:context>
+    <xbrli:context id="From2026-06-012026-06-01_7">
+      <xbrli:entity>
+        <xbrli:identifier scheme="http://www.sec.gov/CIK">0002116105</xbrli:identifier>
+        <xbrli:segment>
+          <xbrldi:typedMember dimension="ffd:OfferingAxis">
+            <dei:lineNo>7</dei:lineNo>
+          </xbrldi:typedMember>
+        </xbrli:segment>
+      </xbrli:entity>
+      <xbrli:period>
+        <xbrli:startDate>2026-06-01</xbrli:startDate>
+        <xbrli:endDate>2026-06-01</xbrli:endDate>
+      </xbrli:period>
+    </xbrli:context>
+    <xbrli:unit id="USD">
+      <xbrli:measure>iso4217:USD</xbrli:measure>
+    </xbrli:unit>
+    <xbrli:unit id="Shares">
+      <xbrli:measure>xbrli:shares</xbrli:measure>
+    </xbrli:unit>
+    <xbrli:unit id="USDPShares">
+      <xbrli:divide>
+        <xbrli:unitNumerator>
+          <xbrli:measure>iso4217:USD</xbrli:measure>
+        </xbrli:unitNumerator>
+        <xbrli:unitDenominator>
+          <xbrli:measure>xbrli:shares</xbrli:measure>
+        </xbrli:unitDenominator>
+      </xbrli:divide>
+    </xbrli:unit>
+    <xbrli:unit id="Ratio">
+      <xbrli:measure>xbrli:pure</xbrli:measure>
+    </xbrli:unit>
+  </ix:resources>
+ </ix:header>
+</div>
+
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0">&#160;<span id="xdx_904_effd--RegnFileNb_c20260601__20260601_zlFsBmi5BKj7" style="display: none"><ix:nonNumeric contextRef="AsOf2026-06-01" id="Fact000009" name="ffd:RegnFileNb">333-295572</ix:nonNumeric></span></p>
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: right"><b><span id="xdx_905_effd--FeeExhibitTp_dxL_c20260601__20260601_zzDtZMZlYrb1" title="::XDX::EX-FILING FEES"><span style="-sec-ix-hidden: xdx2ixbrl0010">Exhibit 107</span></span></b></p>
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&#160;</p>
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>Calculation of Filing Fee Tables</b></p>
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&#160;</p>
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><span style="font-size: 14pt"><b>Form <span id="xdx_904_effd--SubmissnTp_dxL_c20260601__20260601_zzCdGQorkc1f" title="::XDX::S-1%2FA"><span id="xdx_906_effd--FormTp_c20260601__20260601_ziaqzOm2l2Z9"><span style="-sec-ix-hidden: xdx2ixbrl0011"><ix:nonNumeric contextRef="AsOf2026-06-01" id="Fact000012" name="ffd:FormTp">S-1</ix:nonNumeric></span></span></span></b></span></p>
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center">(Form Type)<span id="xdx_901_effd--OffsetTableNa_c20260601__20260601_zZwX1X4OIk7k"><span id="xdx_90D_effd--CombinedProspectusTableNa_c20260601__20260601_zMmqMZmoAzUb" style="display: none"><ix:nonNumeric contextRef="AsOf2026-06-01" id="Fact000013" name="ffd:OffsetTableNa"><ix:nonNumeric contextRef="AsOf2026-06-01" id="Fact000014" name="ffd:CombinedProspectusTableNa">N/A</ix:nonNumeric></ix:nonNumeric></span></span></p>
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&#160;</p>
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><span style="font-size: 14pt"><b><span id="xdx_908_edei--EntityRegistrantName_c20260601__20260601_z5fGUhYRu2Lj"><ix:nonNumeric contextRef="AsOf2026-06-01" id="Fact000015" name="dei:EntityRegistrantName">Futurewave Acquisition Corp</ix:nonNumeric></span></b></span></p>
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center">(Exact Name of Registrant as Specified in its Charter)</p>
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&#160;</p>
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><span style="text-decoration: underline">Table 1: Newly Registered and Carry Forward
+Securities</span></p>
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&#160;</p>
+
+<table cellpadding="0" cellspacing="0" style="font: 10pt Times New Roman, Times, Serif; border-collapse: collapse; width: 100%">
+  <tr style="vertical-align: bottom">
+    <td style="border-bottom: Black 1pt solid; vertical-align: bottom; text-indent: -0.125in; padding-left: 0.125in; font-weight: bold; text-align: left">Title
+    of Class of Security being registered</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td colspan="2" style="border-bottom: Black 1pt solid; text-align: center"><p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>Amount</b></p> <p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>to
+                                            be</b></p> <p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>Registered</b></p></td><td style="padding-bottom: 1pt">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td colspan="2" style="border-bottom: Black 1pt solid; text-align: center"><p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>Proposed</b></p> <p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>maximum</b></p> <p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>offering</b></p> <p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>price</b></p> <p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>per
+                                            share<sup>(1)</sup></b></p></td><td style="padding-bottom: 1pt">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td colspan="2" style="border-bottom: Black 1pt solid; text-align: center"><p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>Proposed</b></p> <p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>Maximum</b></p> <p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>Aggregate</b></p> <p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>Offering</b></p> <p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>Price<sup>(1)</sup></b></p></td><td style="padding-bottom: 1pt">&#160;</td><td style="font-weight: bold; padding-bottom: 1pt">&#160;</td>
+    <td colspan="2" style="border-bottom: Black 1pt solid; font-weight: bold; text-align: center">Fee Rate</td><td style="padding-bottom: 1pt; font-weight: bold">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td colspan="2" style="border-bottom: Black 1pt solid; text-align: center"><p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>Amount
+                                            of</b></p> <p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>Registration</b></p> <p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0; text-align: center"><b>Fee</b></p></td><td style="padding-bottom: 1pt">&#160;</td></tr>
+  <tr style="vertical-align: bottom; background-color: rgb(204,238,255)">
+    <td id="xdx_98D_effd--OfferingSctyTitl_c20260601__20260601__ffd--OfferingAxis__1_zYYrnFqqi0of" style="vertical-align: top; text-indent: -0.125in; padding-left: 0.125in; width: 40%; text-align: left"><span style="font-size: 10pt"><ix:nonNumeric contextRef="From2026-06-012026-06-01_1" id="Fact000016" name="ffd:OfferingSctyTitl">Units,
+    each consisting of one ordinary share, $0.0001 par value, one redeemable warrant, and one right to receive one-fourth of one
+    ordinary <span id="xdx_90F_effd--OfferingSctyTp_dxL_c20260601__20260601__ffd--OfferingAxis__1_zJEAiP6lexob" title="::XDX::Other"><span id="xdx_909_effd--OfferingSctyTp_dxL_c20260601__20260601__ffd--OfferingAxis__2_z7ghn923buc1" title="::XDX::Other"><span id="xdx_90F_effd--OfferingSctyTp_dxL_c20260601__20260601__ffd--OfferingAxis__3_zHpV6xmPg5E9" title="::XDX::Other"><span id="xdx_901_effd--OfferingSctyTp_dxL_c20260601__20260601__ffd--OfferingAxis__4_zefZ4hfd1C1l" title="::XDX::Other"><span id="xdx_903_effd--OfferingSctyTp_dxL_c20260601__20260601__ffd--OfferingAxis__5_zj0hvQPlnfbi" title="::XDX::Other"><span id="xdx_90B_effd--OfferingSctyTp_dxL_c20260601__20260601__ffd--OfferingAxis__6_zzvdTySMwsZ5" title="::XDX::Other"><span id="xdx_90A_effd--OfferingSctyTp_dxL_c20260601__20260601__ffd--OfferingAxis__7_zHpHv3Lcj0Z7" title="::XDX::Other"><span style="-sec-ix-hidden: xdx2ixbrl0017"><span style="-sec-ix-hidden: xdx2ixbrl0018"><span style="-sec-ix-hidden: xdx2ixbrl0019"><span style="-sec-ix-hidden: xdx2ixbrl0020"><span style="-sec-ix-hidden: xdx2ixbrl0021"><span style="-sec-ix-hidden: xdx2ixbrl0022"><span style="-sec-ix-hidden: xdx2ixbrl0023">share</span></span></span></span></span></span></span></span></span></span></span></span></span></span><sup>(2)</sup></ix:nonNumeric></span></td><td style="width: 1%">&#160;</td>
+    <td style="width: 1%; text-align: left">&#160;</td><td style="width: 9%; text-align: right"><span id="xdx_902_effd--AmtSctiesRegd_c20260601__20260601__ffd--OfferingAxis__1_zYhFeQ50m3cc"><ix:nonFraction name="ffd:AmtSctiesRegd" contextRef="From2026-06-012026-06-01_1" id="Fact000024" format="ixt:numdotdecimal" decimals="INF" unitRef="Shares">8,625,000</ix:nonFraction></span></td><td style="width: 1%; text-align: left">&#160;</td><td style="width: 1%">&#160;</td>
+    <td style="width: 1%; text-align: left">$</td><td style="width: 9%; text-align: right"><span id="xdx_90E_effd--MaxOfferingPricPerScty_pin2_dp_c20260601__20260601__ffd--OfferingAxis__1_zw08VczEGv8l"><ix:nonFraction name="ffd:MaxOfferingPricPerScty" contextRef="From2026-06-012026-06-01_1" id="Fact000025" format="ixt:numdotdecimal" decimals="INF" scale="0" unitRef="USDPShares">10.00</ix:nonFraction></span></td><td style="width: 1%; text-align: left">&#160;</td><td style="width: 1%">&#160;</td>
+    <td style="width: 1%; text-align: left">$</td><td style="width: 9%; text-align: right"><span id="xdx_90F_effd--MaxAggtOfferingPric_pp2p0_c20260601__20260601__ffd--OfferingAxis__1_zpEXMHgiNDhh"><ix:nonFraction name="ffd:MaxAggtOfferingPric" contextRef="From2026-06-012026-06-01_1" id="Fact000026" format="ixt:numdotdecimal" decimals="2" scale="0" unitRef="USD">86,250,000</ix:nonFraction></span></td><td style="width: 1%; text-align: left">&#160;</td><td style="width: 1%">&#160;</td>
+    <td style="width: 1%; text-align: left">&#160;</td><td style="width: 9%; text-align: right">0.0001381</td><td style="width: 1%; text-align: left">&#160;</td><td style="width: 1%">&#160;</td>
+    <td style="width: 1%; text-align: left">$</td><td id="xdx_983_effd--FeeAmt_pp2p0_uUSD_c20260601__20260601__ffd--OfferingAxis__1_zeEflStpoUba" style="width: 9%; text-align: right"><ix:nonFraction name="ffd:FeeAmt" contextRef="From2026-06-012026-06-01_1" id="Fact000027" format="ixt:numdotdecimal" decimals="2" scale="0" unitRef="USD">11,911.13</ix:nonFraction></td><td style="width: 1%; text-align: left">&#160;</td></tr>
+  <tr style="vertical-align: bottom; background-color: White">
+    <td id="xdx_98E_effd--OfferingSctyTitl_c20260601__20260601__ffd--OfferingAxis__2_zqT1zsf99IWg" style="text-align: left; text-indent: -0.125in; padding-left: 0.125in; vertical-align: top"><span style="font-size: 10pt"><ix:nonNumeric contextRef="From2026-06-012026-06-01_2" id="Fact000028" name="ffd:OfferingSctyTitl">Ordinary
+    shares, $0.0001 par value, included as part of the <span id="xdx_903_effd--FeesOthrRuleFlg_dbT_c20260601__20260601__ffd--OfferingAxis__1_zI76H1YaYGrk"><span id="xdx_901_effd--FeesOthrRuleFlg_dbT_c20260601__20260601__ffd--OfferingAxis__2_zTAxsBIGl6Z7"><span id="xdx_906_effd--FeesOthrRuleFlg_dbT_c20260601__20260601__ffd--OfferingAxis__3_zPVndOoH9e01"><span id="xdx_901_effd--FeesOthrRuleFlg_dbT_c20260601__20260601__ffd--OfferingAxis__4_z6Mqnc4tQmTi"><span id="xdx_90F_effd--FeesOthrRuleFlg_dbT_c20260601__20260601__ffd--OfferingAxis__5_zjAixfwjHPM5"><span id="xdx_906_effd--FeesOthrRuleFlg_dbT_c20260601__20260601__ffd--OfferingAxis__6_zVwMznXRgoSa"><span id="xdx_90C_effd--FeesOthrRuleFlg_dbT_c20260601__20260601__ffd--OfferingAxis__7_zcLRiDdtY1s4"><ix:nonNumeric contextRef="From2026-06-012026-06-01_1" format="ixt:booleantrue" id="Fact000029" name="ffd:FeesOthrRuleFlg"><ix:nonNumeric contextRef="From2026-06-012026-06-01_2" format="ixt:booleantrue" id="Fact000030" name="ffd:FeesOthrRuleFlg"><ix:nonNumeric contextRef="From2026-06-012026-06-01_3" format="ixt:booleantrue" id="Fact000031" name="ffd:FeesOthrRuleFlg"><ix:nonNumeric contextRef="From2026-06-012026-06-01_4" format="ixt:booleantrue" id="Fact000032" name="ffd:FeesOthrRuleFlg"><ix:nonNumeric contextRef="From2026-06-012026-06-01_5" format="ixt:booleantrue" id="Fact000033" name="ffd:FeesOthrRuleFlg"><ix:nonNumeric contextRef="From2026-06-012026-06-01_6" format="ixt:booleantrue" id="Fact000034" name="ffd:FeesOthrRuleFlg"><ix:nonNumeric contextRef="From2026-06-012026-06-01_7" format="ixt:booleantrue" id="Fact000035" name="ffd:FeesOthrRuleFlg">units</ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></span></span></span></span></span></span></span><sup>(3)</sup></ix:nonNumeric></span></td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right"><span id="xdx_90A_effd--AmtSctiesRegd_c20260601__20260601__ffd--OfferingAxis__2_zFmNEdsWCL28"><ix:nonFraction name="ffd:AmtSctiesRegd" contextRef="From2026-06-012026-06-01_2" id="Fact000036" format="ixt:numdotdecimal" decimals="INF" unitRef="Shares">8,625,000</ix:nonFraction></span></td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">-</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">-</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">-</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td id="xdx_989_effd--FeeAmt_pp2p0_d0_uUSD_c20260601__20260601__ffd--OfferingAxis__2_zE7bvj36HcUe" style="text-align: right"><ix:nonFraction name="ffd:FeeAmt" contextRef="From2026-06-012026-06-01_2" id="Fact000037" format="ixt:zerodash" decimals="2" scale="0" sign="-" unitRef="USD">-</ix:nonFraction></td><td style="text-align: left"><sup>(4)</sup>&#160;</td></tr>
+  <tr style="vertical-align: bottom; background-color: rgb(204,238,255)">
+    <td id="xdx_984_effd--OfferingSctyTitl_c20260601__20260601__ffd--OfferingAxis__3_zpzcPOaf6gsl" style="vertical-align: top; text-indent: -0.125in; padding-left: 0.125in; text-align: left"><span style="font-size: 10pt"><ix:nonNumeric contextRef="From2026-06-012026-06-01_3" id="Fact000038" name="ffd:OfferingSctyTitl">Rights
+    included as part of the units<sup>(3)</sup></ix:nonNumeric></span></td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right"><span id="xdx_90B_effd--AmtSctiesRegd_c20260601__20260601__ffd--OfferingAxis__3_zE7GXlqtbQ9j"><ix:nonFraction name="ffd:AmtSctiesRegd" contextRef="From2026-06-012026-06-01_3" id="Fact000039" format="ixt:numdotdecimal" decimals="INF" unitRef="Shares">8,625,000</ix:nonFraction></span></td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">-</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">-</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">-</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td id="xdx_989_effd--FeeAmt_pp2p0_d0_uUSD_c20260601__20260601__ffd--OfferingAxis__3_z36MIMXYajS4" style="text-align: right"><ix:nonFraction name="ffd:FeeAmt" contextRef="From2026-06-012026-06-01_3" id="Fact000040" format="ixt:zerodash" decimals="2" scale="0" sign="-" unitRef="USD">-</ix:nonFraction></td><td style="text-align: left"><sup>(4)</sup>&#160;</td></tr>
+  <tr style="vertical-align: bottom; background-color: White">
+    <td id="xdx_984_effd--OfferingSctyTitl_c20260601__20260601__ffd--OfferingAxis__4_z3LNOGbTdI36" style="vertical-align: top; text-indent: -0.125in; padding-left: 0.125in; text-align: left"><ix:nonNumeric contextRef="From2026-06-012026-06-01_4" id="Fact000041" name="ffd:OfferingSctyTitl">Warrants included as part of the units</ix:nonNumeric></td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right"><span id="xdx_909_effd--AmtSctiesRegd_c20260601__20260601__ffd--OfferingAxis__4_zuTUIiJG63m"><ix:nonFraction name="ffd:AmtSctiesRegd" contextRef="From2026-06-012026-06-01_4" id="Fact000042" format="ixt:numdotdecimal" decimals="INF" unitRef="Shares">8,625,000</ix:nonFraction></span></td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">-</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">-</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">-</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td id="xdx_989_effd--FeeAmt_pp2p0_d0_uUSD_c20260601__20260601__ffd--OfferingAxis__4_zX2K2IV3a2fk" style="text-align: right"><ix:nonFraction name="ffd:FeeAmt" contextRef="From2026-06-012026-06-01_4" id="Fact000043" format="ixt:zerodash" decimals="2" scale="0" sign="-" unitRef="USD">-</ix:nonFraction></td><td style="text-align: left"><sup>(4)</sup>&#160;</td></tr>
+  <tr style="vertical-align: bottom; background-color: rgb(204,238,255)">
+    <td id="xdx_982_effd--OfferingSctyTitl_c20260601__20260601__ffd--OfferingAxis__5_zlOOSNOlOqE2" style="vertical-align: top; text-indent: -0.125in; padding-left: 0.125in; text-align: left"><span style="font-size: 10pt"><ix:nonNumeric contextRef="From2026-06-012026-06-01_5" id="Fact000044" name="ffd:OfferingSctyTitl">Ordinary
+    shares underlying the rights included as part of units<sup>(3)</sup></ix:nonNumeric></span></td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right"><span id="xdx_909_effd--AmtSctiesRegd_c20260601__20260601__ffd--OfferingAxis__5_z7TwjnjBz2nb"><ix:nonFraction name="ffd:AmtSctiesRegd" contextRef="From2026-06-012026-06-01_5" id="Fact000045" format="ixt:numdotdecimal" decimals="INF" unitRef="Shares">2,156,250</ix:nonFraction></span></td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">$</td><td style="text-align: right"><span id="xdx_90B_effd--MaxOfferingPricPerScty_pin2_dp_c20260601__20260601__ffd--OfferingAxis__5_zo3oequYq2Q2"><ix:nonFraction name="ffd:MaxOfferingPricPerScty" contextRef="From2026-06-012026-06-01_5" id="Fact000046" format="ixt:numdotdecimal" decimals="INF" scale="0" unitRef="USDPShares">10.00</ix:nonFraction></span></td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">$</td><td style="text-align: right"><span id="xdx_903_effd--MaxAggtOfferingPric_pp2p0_c20260601__20260601__ffd--OfferingAxis__5_zVbukYkxrgS5"><ix:nonFraction name="ffd:MaxAggtOfferingPric" contextRef="From2026-06-012026-06-01_5" id="Fact000047" format="ixt:numdotdecimal" decimals="2" scale="0" unitRef="USD">21,562,500</ix:nonFraction></span></td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">0.0001381</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">$</td><td id="xdx_98D_effd--FeeAmt_pp2p0_uUSD_c20260601__20260601__ffd--OfferingAxis__5_zyNzMcszXOQ3" style="text-align: right"><ix:nonFraction name="ffd:FeeAmt" contextRef="From2026-06-012026-06-01_5" id="Fact000048" format="ixt:numdotdecimal" decimals="2" scale="0" unitRef="USD">2,977.78</ix:nonFraction></td><td style="text-align: left">&#160;</td></tr>
+  <tr style="vertical-align: bottom; background-color: White">
+    <td id="xdx_98F_effd--OfferingSctyTitl_c20260601__20260601__ffd--OfferingAxis__6_zDhhbAld4A95" style="text-align: left; text-indent: -0.125in; padding-left: 0.125in; vertical-align: top"><ix:nonNumeric contextRef="From2026-06-012026-06-01_6" id="Fact000049" name="ffd:OfferingSctyTitl">Ordinary shares underlying the warrants
+    included as part of units<sup>(3)</sup></ix:nonNumeric></td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right"><span id="xdx_90E_effd--AmtSctiesRegd_c20260601__20260601__ffd--OfferingAxis__6_zmyYRloU0Ug1"><ix:nonFraction name="ffd:AmtSctiesRegd" contextRef="From2026-06-012026-06-01_6" id="Fact000050" format="ixt:numdotdecimal" decimals="INF" unitRef="Shares">8,625,000</ix:nonFraction></span></td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">$</td><td style="text-align: right"><span id="xdx_90B_effd--MaxOfferingPricPerScty_pin2_dp_c20260601__20260601__ffd--OfferingAxis__6_zZUDe6ZV433h"><ix:nonFraction name="ffd:MaxOfferingPricPerScty" contextRef="From2026-06-012026-06-01_6" id="Fact000051" format="ixt:numdotdecimal" decimals="INF" scale="0" unitRef="USDPShares">11.50</ix:nonFraction></span></td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">$</td><td style="text-align: right"><span id="xdx_90C_effd--MaxAggtOfferingPric_pp2p0_c20260601__20260601__ffd--OfferingAxis__6_zxs6xPwsKzOi"><ix:nonFraction name="ffd:MaxAggtOfferingPric" contextRef="From2026-06-012026-06-01_6" id="Fact000052" format="ixt:numdotdecimal" decimals="2" scale="0" unitRef="USD">99,187,500</ix:nonFraction></span></td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">0.0001381</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">$</td><td id="xdx_984_effd--FeeAmt_pp2p0_uUSD_c20260601__20260601__ffd--OfferingAxis__6_zjo5iyoQLGb9" style="text-align: right"><ix:nonFraction name="ffd:FeeAmt" contextRef="From2026-06-012026-06-01_6" id="Fact000053" format="ixt:numdotdecimal" decimals="2" scale="0" unitRef="USD">13,697.79</ix:nonFraction></td><td style="text-align: left">&#160;</td></tr>
+  <tr style="vertical-align: bottom; background-color: rgb(204,238,255)">
+    <td id="xdx_987_effd--OfferingSctyTitl_c20260601__20260601__ffd--OfferingAxis__7_zueCbv9K2yua" style="padding-bottom: 1pt; text-align: left; text-indent: -0.125in; padding-left: 0.125in; vertical-align: top"><ix:nonNumeric contextRef="From2026-06-012026-06-01_7" id="Fact000054" name="ffd:OfferingSctyTitl">Representative shares issued to the underwriter as compensation</ix:nonNumeric></td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt; text-align: right"><span id="xdx_909_effd--AmtSctiesRegd_c20260601__20260601__ffd--OfferingAxis__7_zJGqRn71GUF9"><ix:nonFraction name="ffd:AmtSctiesRegd" contextRef="From2026-06-012026-06-01_7" id="Fact000055" format="ixt:numdotdecimal" decimals="INF" unitRef="Shares">258,750</ix:nonFraction></span></td><td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="padding-bottom: 1pt; text-align: left">$</td><td style="padding-bottom: 1pt; text-align: right"><span id="xdx_907_effd--MaxOfferingPricPerScty_pin2_dp_c20260601__20260601__ffd--OfferingAxis__7_zdqFUZ6CgC7l"><ix:nonFraction name="ffd:MaxOfferingPricPerScty" contextRef="From2026-06-012026-06-01_7" id="Fact000056" format="ixt:numdotdecimal" decimals="INF" scale="0" unitRef="USDPShares">10.00</ix:nonFraction></span></td><td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="border-bottom: Black 1pt solid; text-align: left">$</td><td style="border-bottom: Black 1pt solid; text-align: right"><span id="xdx_90F_effd--MaxAggtOfferingPric_pp2p0_c20260601__20260601__ffd--OfferingAxis__7_zRki6YrsLsS"><ix:nonFraction name="ffd:MaxAggtOfferingPric" contextRef="From2026-06-012026-06-01_7" id="Fact000057" format="ixt:numdotdecimal" decimals="2" scale="0" unitRef="USD">2,587,500</ix:nonFraction></span></td><td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt; text-align: right">0.0001381</td><td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="border-bottom: Black 1pt solid; text-align: left">$</td><td id="xdx_984_effd--FeeAmt_pp2p0_uUSD_c20260601__20260601__ffd--OfferingAxis__7_zwswGnDuabyl" style="border-bottom: Black 1pt solid; text-align: right"><ix:nonFraction name="ffd:FeeAmt" contextRef="From2026-06-012026-06-01_7" id="Fact000058" format="ixt:numdotdecimal" decimals="2" scale="0" unitRef="USD">357.33</ix:nonFraction></td><td style="padding-bottom: 1pt; text-align: left">&#160;</td></tr>
+  <tr style="vertical-align: bottom; background-color: White">
+    <td style="padding-bottom: 1pt; text-align: left; text-indent: -0.125in; padding-left: 0.125in; vertical-align: top">Total Offering Amounts</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt; text-align: right">&#160;</td><td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt; text-align: right">&#160;</td><td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="border-bottom: Black 1pt solid; text-align: left">$</td><td style="border-bottom: Black 1pt solid; text-align: right"><span id="xdx_900_effd--TtlOfferingAmt_pp2p0_c20260601__20260601_zaRWrL8Mhu62"><ix:nonFraction name="ffd:TtlOfferingAmt" contextRef="AsOf2026-06-01" id="Fact000059" format="ixt:numdotdecimal" decimals="2" scale="0" unitRef="USD">209,587,500</ix:nonFraction></span> </td><td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt; text-align: right">&#160;</td><td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="padding-bottom: 1pt; text-align: left">$</td><td id="xdx_985_effd--TtlFeeAmt_pp2p0_uUSD_c20260601__20260601_zztCT1qxcI2j" style="padding-bottom: 1pt; text-align: right"><ix:nonFraction name="ffd:TtlFeeAmt" contextRef="AsOf2026-06-01" id="Fact000060" format="ixt:numdotdecimal" decimals="2" scale="0" unitRef="USD">28,944.03</ix:nonFraction></td><td style="padding-bottom: 1pt; text-align: left">&#160;</td></tr>
+  <tr style="vertical-align: bottom; background-color: rgb(204,238,255)">
+    <td style="text-align: left; text-indent: -0.125in; padding-left: 0.125in; vertical-align: top"><b>Total <span id="xdx_90F_effd--PrevslyPdFlg_dbT_c20260601__20260601__ffd--OfferingAxis__1_zEFzhZw7rVj4"><span id="xdx_906_effd--PrevslyPdFlg_dbF_c20260601__20260601__ffd--OfferingAxis__2_zURD9E7K474d"><span id="xdx_902_effd--PrevslyPdFlg_dbF_c20260601__20260601__ffd--OfferingAxis__3_z0VmG2fcEXwe"><span id="xdx_90C_effd--PrevslyPdFlg_dbF_c20260601__20260601__ffd--OfferingAxis__4_z5pi7JiUzIMh"><span id="xdx_90C_effd--PrevslyPdFlg_dbF_c20260601__20260601__ffd--OfferingAxis__5_zGkf3nSjxyk6"><span id="xdx_90F_effd--PrevslyPdFlg_dbF_c20260601__20260601__ffd--OfferingAxis__6_zSXrZLoBSSd7"><span id="xdx_90C_effd--PrevslyPdFlg_dbF_c20260601__20260601__ffd--OfferingAxis__7_zJ17AciR4d5k"><ix:nonNumeric contextRef="From2026-06-012026-06-01_1" format="ixt:booleantrue" id="Fact000061" name="ffd:PrevslyPdFlg"><ix:nonNumeric contextRef="From2026-06-012026-06-01_2" format="ixt:booleanfalse" id="Fact000062" name="ffd:PrevslyPdFlg"><ix:nonNumeric contextRef="From2026-06-012026-06-01_3" format="ixt:booleanfalse" id="Fact000063" name="ffd:PrevslyPdFlg"><ix:nonNumeric contextRef="From2026-06-012026-06-01_4" format="ixt:booleanfalse" id="Fact000064" name="ffd:PrevslyPdFlg"><ix:nonNumeric contextRef="From2026-06-012026-06-01_5" format="ixt:booleanfalse" id="Fact000065" name="ffd:PrevslyPdFlg"><ix:nonNumeric contextRef="From2026-06-012026-06-01_6" format="ixt:booleanfalse" id="Fact000066" name="ffd:PrevslyPdFlg"><ix:nonNumeric contextRef="From2026-06-012026-06-01_7" format="ixt:booleanfalse" id="Fact000067" name="ffd:PrevslyPdFlg">Fees Previously Paid</ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></span></span></span></span></span></span></span></b></td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">&#160;</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">&#160;</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">&#160;</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">&#160;</td><td style="text-align: right">&#160;</td><td style="text-align: left">&#160;</td><td>&#160;</td>
+    <td style="text-align: left">$</td><td id="xdx_980_effd--TtlPrevslyPdAmt_pp2p0_d0_uUSD_c20260601__20260601_zcql9wXrBoof" style="text-align: right"><ix:nonFraction name="ffd:TtlPrevslyPdAmt" contextRef="AsOf2026-06-01" id="Fact000068" format="ixt:numdotdecimal" decimals="2" scale="0" unitRef="USD">19,296.02</ix:nonFraction></td><td style="text-align: left">&#160;</td></tr>
+  <tr style="vertical-align: bottom; background-color: White">
+    <td style="padding-bottom: 1pt; text-align: left; text-indent: -0.125in; padding-left: 0.125in; vertical-align: top"><b>Total Fee Offsets</b></td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt; text-align: right">&#160;</td><td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt; text-align: right">&#160;</td><td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt; text-align: right">&#160;</td><td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt; text-align: right">&#160;</td><td style="padding-bottom: 1pt; text-align: left">&#160;</td><td style="padding-bottom: 1pt">&#160;</td>
+    <td style="border-bottom: Black 1pt solid; text-align: left">$</td><td id="xdx_98E_effd--TtlOffsetAmt_pp2p0_d0_uUSD_c20260601__20260601_zbZyHcAvBZ0d" style="border-bottom: Black 1pt solid; text-align: right"> <ix:nonFraction name="ffd:TtlOffsetAmt" contextRef="AsOf2026-06-01" id="Fact000069" format="ixt:numdotdecimal" decimals="2" scale="0" unitRef="USD">0.00</ix:nonFraction></td><td style="padding-bottom: 1pt; text-align: left">&#160;</td></tr>
+  <tr style="vertical-align: bottom; background-color: rgb(204,238,255)">
+    <td style="padding-bottom: 2.5pt; text-align: left; text-indent: -0.125in; padding-left: 0.125in; vertical-align: top"><b>Net Fee Due</b></td><td style="padding-bottom: 2.5pt">&#160;</td>
+    <td style="padding-bottom: 2.5pt; text-align: left">&#160;</td><td style="padding-bottom: 2.5pt; text-align: right">&#160;</td><td style="padding-bottom: 2.5pt; text-align: left">&#160;</td><td style="padding-bottom: 2.5pt">&#160;</td>
+    <td style="padding-bottom: 2.5pt; text-align: left">&#160;</td><td style="padding-bottom: 2.5pt; text-align: right">&#160;</td><td style="padding-bottom: 2.5pt; text-align: left">&#160;</td><td style="padding-bottom: 2.5pt">&#160;</td>
+    <td style="padding-bottom: 2.5pt; text-align: left">&#160;</td><td style="padding-bottom: 2.5pt; text-align: right">&#160;</td><td style="padding-bottom: 2.5pt; text-align: left">&#160;</td><td style="padding-bottom: 2.5pt">&#160;</td>
+    <td style="padding-bottom: 2.5pt; text-align: left">&#160;</td><td style="padding-bottom: 2.5pt; text-align: right">&#160;</td><td style="padding-bottom: 2.5pt; text-align: left">&#160;</td><td style="padding-bottom: 2.5pt">&#160;</td>
+    <td style="border-bottom: Black 2.5pt double; text-align: left">$</td><td id="xdx_980_effd--NetFeeAmt_pp2p0_uUSD_c20260601__20260601_zKTJT6uKcv4b" style="border-bottom: Black 2.5pt double; text-align: right"><ix:nonFraction name="ffd:NetFeeAmt" contextRef="AsOf2026-06-01" id="Fact000070" format="ixt:numdotdecimal" decimals="2" scale="0" unitRef="USD">9,648.01</ix:nonFraction></td><td style="padding-bottom: 2.5pt; text-align: left">&#160;</td></tr>
+  </table>
+
+
+
+
+
+
+
+
+
+
+<div id="xdx_980_effd--OfferingNote_c20260601__20260601__ffd--OfferingAxis__1_zHw6amSZAnth">
+
+<div id="xdx_98F_effd--OfferingNote_c20260601__20260601__ffd--OfferingAxis__2_zkCQyvoCJujl">
+
+<div id="xdx_98B_effd--OfferingNote_c20260601__20260601__ffd--OfferingAxis__3_ztgkJy3c6pD6">
+
+<div id="xdx_98E_effd--OfferingNote_c20260601__20260601__ffd--OfferingAxis__4_zXucJZ0ZBTs2">
+
+<div id="xdx_982_effd--OfferingNote_c20260601__20260601__ffd--OfferingAxis__5_zCkcaaCcKnqg">
+
+<div id="xdx_986_effd--OfferingNote_c20260601__20260601__ffd--OfferingAxis__6_zNsGcG3w5qI9">
+
+<div id="xdx_984_effd--OfferingNote_c20260601__20260601__ffd--OfferingAxis__7_zWXLl5ZKKfy4"><ix:nonNumeric contextRef="From2026-06-012026-06-01_1" escape="true" id="Fact000071" name="ffd:OfferingNote"><ix:nonNumeric contextRef="From2026-06-012026-06-01_2" escape="true" id="Fact000072" name="ffd:OfferingNote"><ix:nonNumeric contextRef="From2026-06-012026-06-01_3" escape="true" id="Fact000073" name="ffd:OfferingNote"><ix:nonNumeric contextRef="From2026-06-012026-06-01_4" escape="true" id="Fact000074" name="ffd:OfferingNote"><ix:nonNumeric contextRef="From2026-06-012026-06-01_5" escape="true" id="Fact000075" name="ffd:OfferingNote"><ix:nonNumeric contextRef="From2026-06-012026-06-01_6" escape="true" id="Fact000076" name="ffd:OfferingNote"><ix:nonNumeric contextRef="From2026-06-012026-06-01_7" escape="true" id="Fact000077" name="ffd:OfferingNote">
+
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&#160;</p>
+
+<!-- Field: Rule-Page --><div style="width: 25%"><div style="border-top: Black 1pt solid; font-size: 1pt">&#160;</div></div><!-- Field: /Rule-Page -->
+
+
+<table cellspacing="0" cellpadding="0" style="font: 10pt Times New Roman, Times, Serif; width: 100%; border-collapse: collapse">
+  <tr style="font: 10pt Times New Roman, Times, Serif">
+    <td style="font: 10pt Times New Roman, Times, Serif; vertical-align: top; width: 24px; text-align: justify"><span style="font-size: 10pt">(1)</span></td>
+    <td style="font: 10pt Times New Roman, Times, Serif; text-align: justify"><span style="font-size: 10pt">Estimated solely for the purpose of calculating the registration fee in accordance with Rule&#160;457(o) of the Securities Act of 1933, as amended (the &#8220;Securities Act&#8221;). </span></td></tr>
+  <tr style="font: 10pt Times New Roman, Times, Serif">
+    <td style="font: 10pt Times New Roman, Times, Serif; vertical-align: top; text-align: justify"><span style="font-size: 10pt">(2)</span></td>
+    <td style="font: 10pt Times New Roman, Times, Serif; text-align: justify"><span style="font-size: 10pt">Includes 8,625,000 units, consisting of 8,625,000 ordinary shares, 8,625,000 warrants and 8,625,000 rights, which may be issued upon exercise
+of a 45-day option granted to the underwriters to cover over-allotments, if any.</span></td></tr>
+  <tr style="font: 10pt Times New Roman, Times, Serif">
+    <td style="font: 10pt Times New Roman, Times, Serif; vertical-align: top; text-align: justify"><span style="font-size: 10pt">(3)</span></td>
+    <td style="font: 10pt Times New Roman, Times, Serif; text-align: justify"><span style="font-size: 10pt">Pursuant to Rule&#160;416 under the Securities Act, the securities being registered hereunder include such indeterminate number of additional ordinary shares as may be issued after the date hereof as a result of stock splits, stock dividends or similar transactions.</span></td></tr>
+  <tr style="font: 10pt Times New Roman, Times, Serif">
+    <td style="font: 10pt Times New Roman, Times, Serif; vertical-align: top; text-align: justify"><span style="font-size: 10pt">(4)</span></td>
+    <td style="font: 10pt Times New Roman, Times, Serif; text-align: justify"><span style="font-size: 10pt">No separate registration fee required pursuant to Rule&#160;457(g) under the Securities Act of 1933, as amended.</span></td></tr>
+  </table>
+<p style="font: 10pt Times New Roman, Times, Serif; margin: 0pt 0">&#160;</p>
+
+</ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></ix:nonNumeric></div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<!-- Field: Page; Sequence: 1 -->
+    <div style="border-bottom: Black 2pt solid; margin-top: 6pt; margin-bottom: 6pt"><p style="font: normal 10pt Times New Roman, Times, Serif; text-align: center; margin-top: 0pt; margin-bottom: 0pt">&#160;</p></div>
+
+    <!-- Field: /Page -->
+
+
+
+<!-- Field: Set; Name: xdx; ID: xdx_08B_extensions -->
+<!-- eJxFjU0KwkAMhU/QO4RZi50W7aJLi4pYRUoRt6ONMthOSmb86ZG8pdMWMQRC8t6XJ8RErGmla2Q4LYocSmzaWjmEAq/IaC7oHdlmm4KfBd60dayMG9YfmJFn0DPJdHb298H51BarFOQ8lLMwTkBG6TyBw04EvZ6RueoKjdOqBmUqODC1rNEp7sYPpXqToaYbko7IVpNJIZrKUf5ALKMY9vRUL+K7hTzPRDAZKhBrpkfrXcu3Q9OTsKyx8XF2pP8dfAHOlkph -->
+</body>
+</html>
+</XBRL>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
