@@ -16886,7 +16886,8 @@ jobs:
       # forensics chain via lib/dataos identity -> engine/neuralweb
       # market_memory_identity_candidate; the closure test names these.
       - "collectors/edgar_forensics.py"
-      - "collectors/__init__.py"   # ancestor inits of the #10178 closure (tests/test_ci_pack.py ancestor-init ratchet)
+      # ancestor inits of the #10178 closure (tests/test_ci_pack.py ancestor-init ratchet)
+      - "collectors/__init__.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/neuralweb/__init__.py"
