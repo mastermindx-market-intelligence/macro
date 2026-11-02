@@ -48,6 +48,7 @@ if str(ROOT) not in sys.path:
 
 from app.company_intelligence import _public_workspace_glance  # noqa: E402
 from engine.company_intelligence import event_workspace as EW  # noqa: E402
+from engine.company_intelligence.event_workspace import WorkspaceError  # noqa: E402
 from engine.company_intelligence.event_workspace_build import build_event_workspace  # noqa: E402
 from engine.company_intelligence.identity import (  # noqa: E402
     IssuerIdentity,
@@ -398,7 +399,7 @@ def p1_identity(scratch: Path) -> str:
                         f"{foreign['issuer'].get('company_id')} state "
                         f"{foreign['lifecycle']['state']}")
         foreign_same = _signature(foreign) == _signature(own)
-    except Exception as exc:  # a refusal is the desired behaviour
+    except WorkspaceError as exc:  # the builder's typed refusal is the desired behaviour
         foreign_refused, foreign_same = True, False
         foreign_text = f"foreign filing cik refused {type(exc).__name__}"
 
@@ -651,7 +652,8 @@ def p5_correction(scratch: Path) -> str:
                 f"{sorted(corrected['lifecycle'])}; news_impact corrected_fact recorded as "
                 f"{rec.get('record_kind')} novelty {rec.get('novelty')} supersedes "
                 f"{'linked' if rec.get('supersedes_fact_id') else 'none'}; "
-                f"news_impact modules reading earnings_release/event_workspace {bridge}")
+                f"news_impact modules naming earnings_release/event_workspace in source "
+                f"{bridge} (source census, not a producer call)")
     return emit(5, checks, observed, [
         at_def(B.collapse_release_events),
         at_text("engine/news_impact/producer_facts.py", "FactObservation("),
