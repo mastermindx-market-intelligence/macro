@@ -760,7 +760,7 @@ boards:
   - "board 28 (desktop 1440 · light · EN; the normative Cycles correction board) stances: Watch — don't chase on XLF and XLK, Protect gains on XLC are the only doctrine stances this PNG draws — producer-stamped chips under the Engine mapping eyebrow (SIC-ADJ-01, SIC-V3-C01), each the only warn-ink chip on its card (wave 5, SIC-V5-C07); the fixtures draw no stance chip (PRIOR cell shape) and the muted line Stance unavailable (null stance)"
   - "board 28 cards: pos_v2 + phase_v2 on the face with the legacy cycle-position numerals and projected-turn dates drawer-only; one Clocks block per card with neutral even-outline chips, one line per disagreeing clock naming both clocks — XLF Ladder disagrees + Rhythm clock disagrees, XLK Rhythm clock disagrees, XLC Hazard clock disagrees + Rhythm clock disagrees + Read disagrees (SIC-V4-C02/C03; wave 5 SIC-V5-C07/C08); the hazard, rhythm and read sections are not drawn while their clock disagrees, so no rhythm window or overdue flag reaches a live card at this dataset (the projected window and overdue sentence sit in each card's drawer once); phase age lower_bound (3 rows)"
   - "board 28 hazard: XLF MODEL cells with parity_failed muting and the outlined Live parity unproven chip; XLK unavailable gap cells; XLC's hazard section withheld behind its Hazard-clock-disagrees line; MODEL/PRIOR badge at 11px (SIC-V2-C10)"
-  - "board 28 context + methods + record: filled context card (as-of · generation · hazard epoch; schema and epoch as code on the EN face), sizing inert, Lead-lag: no claim, grader caption without a number, metadata; provenance drawers closed on the face (SIC-V2-C04); two labeled Fixture cards after the live grid — hazard PRIOR cell shape (source PRIOR, cell_verdict PRIOR, epoch in the drawer; SIC-V3-C17) and stance unavailable (SIC-V4-C10); shell = canonical site nav + page header + six-workflow switcher with Cycles current (SIC-V2-C02/C03); probe theme pixels (247,248,250), switcher=6 current=cycles, 1440x2343 (capture.log wave 6); wave history by reference: proposal.yml revision_mandate_round2..5, cycles_ia.md, components/COMPONENTS.md, cycles_repair/README.md"
+  - "board 28 context + methods + record: filled context card (as-of · generation · hazard epoch; schema and epoch as code on the EN face), sizing inert, Lead-lag: no claim, grader caption without a number, metadata; provenance drawers closed on the face (SIC-V2-C04); two labeled Fixture cards after the live grid — hazard PRIOR cell shape (source PRIOR, cell_verdict PRIOR, epoch in the drawer; SIC-V3-C17) and stance unavailable (SIC-V4-C10); shell = canonical site nav + page header + six-workflow switcher with Cycles current (SIC-V2-C02/C03); probe theme pixels (247,248,250), switcher=6 current=cycles, 1440x2343 (capture.log wave 7); wave history by reference: proposal.yml revision_mandate_round2..6, cycles_ia.md, components/COMPONENTS.md, cycles_repair/README.md"
   capabilities_covered:
   - C14
   - C15
@@ -792,7 +792,7 @@ boards:
   - "hazard gap cells + muted ladder on dark"
   - "chip/badge contrast on dark"
   - "Watch — don't chase (XLF, XLK) · Protect gains (XLC)"
-  - "board 29 (desktop 1440 · dark · EN): the board-28 composition on the dark tokens — the same two doctrine stances drawn (Watch — don't chase on XLF/XLK, Protect gains on XLC; the only warn-ink chip per card), the same Clocks blocks (XLF Ladder + Rhythm, XLK Rhythm, XLC Hazard + Rhythm + Read) with neutral outline chips and the outlined Live parity unproven chip checked on dark; probe theme pixels (15,17,21), switcher=6 current=cycles, 1440x2343 (capture.log wave 6); wave history by reference: proposal.yml revision_mandate_round2..5"
+  - "board 29 (desktop 1440 · dark · EN): the board-28 composition on the dark tokens — the same two doctrine stances drawn (Watch — don't chase on XLF/XLK, Protect gains on XLC; the only warn-ink chip per card), the same Clocks blocks (XLF Ladder + Rhythm, XLK Rhythm, XLC Hazard + Rhythm + Read) with neutral outline chips and the outlined Live parity unproven chip checked on dark; probe theme pixels (15,17,21), switcher=6 current=cycles, 1440x2343 (capture.log wave 7); wave history by reference: proposal.yml revision_mandate_round2..6"
   capabilities_covered:
   - C14
   - C15
@@ -822,8 +822,8 @@ boards:
   - "MODEL badge 模型 at >= 11px"
   - "观察 —— 别追 (XLF, XLK) · 保护利润 (XLC)"
   - "board 30 (mobile 390 · dark · ZH): the board-28 correction semantics in ZH on one column — the ZH doctrine chips 观察 —— 别追 (XLF, XLK) and 保护利润 (XLC) are the only stances this PNG draws (engine DOCTRINE_STANCES, SIC-ADJ-02); the Clocks blocks name both clocks in plain ZH (XLF 阶梯 + 节律, XLK 节律, XLC 风险 + 节律 + 读数 lines; neutral outline chips); phases by the production chip label only (回落中 / 筑底中); the context card points to the page foot for the schema and epoch instead of printing them (wave 5); ZH nav search placeholder + ZH mono labels (SIC-V2-C04/PRC-031); the switcher wraps to a second row at 390 with the as-of stamp wrapping inside"
-  - "board 30 ZH face: zh-latin=0 under skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR (no allow-file; SIC-V3-C06 under the SIC-ADJ-03 scope; capture.log wave 6) — zh sector name and 相对标普 drawn in the read, source label 板块周期情报"
-  - "board 30 record: probe data-w=390 data-ovf=\"\", theme pixels (15,17,21), switcher=6 current=cycles, 390x4327; wave history by reference: proposal.yml revision_mandate_round2..5"
+  - "board 30 ZH face: zh-latin=0 under skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR (no allow-file; SIC-V3-C06 under the SIC-ADJ-03 scope; capture.log wave 7) — zh sector name and 相对标普 drawn in the read, source label 板块周期情报"
+  - "board 30 record: probe data-w=390 data-ovf=\"\", theme pixels (15,17,21), switcher=6 current=cycles, 390x4350; wave history by reference: proposal.yml revision_mandate_round2..6"
   capabilities_covered:
   - C14
   - C15
@@ -838,7 +838,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 390
-  - 4327
+  - 4350
 - board_no: 31
   title: R4 · Cycles · corrections · Mobile · Light · EN · incompatible_generation fixture (HTML specimen)
   node_id: null
@@ -853,7 +853,7 @@ boards:
   - "hazard unavailable gap cells on light"
   - "Watch — don't chase (XLF, XLK) · Protect gains (XLC)"
   - "board 31 (mobile 390 · light · EN · incompatible_generation fixture): the board-28 correction semantics on one column under the labeled fixture banner — the banner body wraps, the 'aligned' chips are muted under it and carry the dated qualifier chip (SIC-V2-C06), the fresh row is hidden; the same two doctrine stances and Clocks blocks as board 28 (XLF Ladder + Rhythm, XLK Rhythm, XLC Hazard + Rhythm + Read; neutral outline chips); switcher on two rows with the as-of stamp wrapping inside"
-  - "board 31 record: probe data-w=390 data-ovf=\"\", theme pixels (247,248,250), switcher=6 current=cycles, 390x4879 (capture.log wave 6); wave history by reference: proposal.yml revision_mandate_round2..5"
+  - "board 31 record: probe data-w=390 data-ovf=\"\", theme pixels (247,248,250), switcher=6 current=cycles, 390x4879 (capture.log wave 7); wave history by reference: proposal.yml revision_mandate_round2..6"
   capabilities_covered:
   - C18
   - C19
@@ -940,8 +940,8 @@ boards:
   - "rotation data aligned (fresh)"
   - "观察 —— 别追 (XLF, XLK) · 保护利润 (XLC)"
   - "board 34 (desktop 1440 · light · ZH): the board-28 composition in ZH — 观察 —— 别追 (XLF, XLK) and 保护利润 (XLC) are the only stances this PNG draws; XLK unavailable gap cells and XLC's hazard section withheld behind its 风险时钟 disagrees line; the Clocks blocks in plain ZH with neutral outline chips (wave 5); the ZH PRIOR fixture title and body use 先验 to match its cell badges (SIC-V5-C09); the context card points to the page foot for the schema and epoch"
-  - "board 34 ZH face: zh-latin=0 under skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR (no allow-file; SIC-V3-C06 under the SIC-ADJ-03 scope; capture.log wave 6)"
-  - "board 34 record: probe theme pixels (247,248,250), switcher=6 current=cycles, 1440x2242; wave history by reference: proposal.yml revision_mandate_round2..5"
+  - "board 34 ZH face: zh-latin=0 under skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR (no allow-file; SIC-V3-C06 under the SIC-ADJ-03 scope; capture.log wave 7)"
+  - "board 34 record: probe theme pixels (247,248,250), switcher=6 current=cycles, 1440x2260; wave history by reference: proposal.yml revision_mandate_round2..6"
   capabilities_covered:
   - C14
   - C15
@@ -956,7 +956,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 1440
-  - 2242
+  - 2260
 - board_no: 35
   title: R4 · Cycles · corrections · Desktop · Dark · ZH (HTML specimen)
   node_id: null
@@ -972,8 +972,8 @@ boards:
   - "rotation data aligned (fresh)"
   - "观察 —— 别追 (XLF, XLK) · 保护利润 (XLC)"
   - "board 35 (desktop 1440 · dark · ZH): the board-34 ZH composition on the dark tokens — the same two ZH stances, Clocks blocks, 先验 fixture wording and schema/epoch pointers, with chip / badge contrast checked on dark"
-  - "board 35 ZH face: zh-latin=0 under skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR (no allow-file; SIC-V3-C06 under the SIC-ADJ-03 scope; capture.log wave 6)"
-  - "board 35 record: probe theme pixels (15,17,21), switcher=6 current=cycles, 1440x2242; wave history by reference: proposal.yml revision_mandate_round2..5"
+  - "board 35 ZH face: zh-latin=0 under skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR (no allow-file; SIC-V3-C06 under the SIC-ADJ-03 scope; capture.log wave 7)"
+  - "board 35 record: probe theme pixels (15,17,21), switcher=6 current=cycles, 1440x2260; wave history by reference: proposal.yml revision_mandate_round2..6"
   capabilities_covered:
   - C14
   - C15
@@ -988,7 +988,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 1440
-  - 2242
+  - 2260
 - board_no: 36
   title: R4 · Cycles · corrections · Mobile · Light · ZH (HTML specimen)
   node_id: null
@@ -1005,8 +1005,8 @@ boards:
   - "rotation data aligned (fresh)"
   - "观察 —— 别追 (XLF, XLK) · 保护利润 (XLC)"
   - "board 36 (mobile 390 · light · ZH): the board-30 ZH recomposition on the light tokens — the same two ZH stances, Clocks blocks in plain ZH, 先验 fixture wording and schema/epoch pointers; switcher on two rows with the as-of stamp wrapping inside"
-  - "board 36 ZH face: zh-latin=0 under skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR (no allow-file; SIC-V3-C06 under the SIC-ADJ-03 scope; capture.log wave 6)"
-  - "board 36 record: probe data-w=390 data-ovf=\"\", theme pixels (247,248,250), switcher=6 current=cycles, 390x4327; wave history by reference: proposal.yml revision_mandate_round2..5"
+  - "board 36 ZH face: zh-latin=0 under skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR (no allow-file; SIC-V3-C06 under the SIC-ADJ-03 scope; capture.log wave 7)"
+  - "board 36 record: probe data-w=390 data-ovf=\"\", theme pixels (247,248,250), switcher=6 current=cycles, 390x4350; wave history by reference: proposal.yml revision_mandate_round2..6"
   capabilities_covered:
   - C14
   - C15
@@ -1021,7 +1021,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/cycles_repair/cycles.html
   png_px:
   - 390
-  - 4327
+  - 4350
 - board_no: 37
   title: R4 · Brief · Mobile · Dark · EN (HTML specimen)
   node_id: null
@@ -1095,7 +1095,7 @@ boards:
   - "rotation data aligned (fresh)"
   - "Watch — don't chase (XLF, XLK) · Protect gains (XLC)"
   - "board 39 (mobile 390 · dark · EN): the former coverage gap cell Cycles · Mobile · Dark · EN, drawn since wave 3 (SIC-V3-C13; coverage matrix 16/16) — the board-28 correction semantics on one column on the dark tokens; the SIC-V4-C03 disagree states as one Clocks block per card with neutral outline chips: XLF Ladder disagrees + Rhythm clock disagrees, XLK Rhythm clock disagrees, XLC Hazard clock disagrees + Rhythm clock disagrees + Read disagrees (wave 5 SIC-V5-C07/C08); the producer-stamped doctrine chip is the only warn-ink chip per card"
-  - "board 39 record: shell with Cycles current, probe data-w=390 data-ovf=\"\", theme pixels (15,17,21), switcher=6 current=cycles, 390x4775 (capture.log wave 6); wave history by reference: proposal.yml revision_mandate_round2..5"
+  - "board 39 record: shell with Cycles current, probe data-w=390 data-ovf=\"\", theme pixels (15,17,21), switcher=6 current=cycles, 390x4775 (capture.log wave 7); wave history by reference: proposal.yml revision_mandate_round2..6"
   capabilities_covered:
   - C14
   - C15
@@ -1124,7 +1124,7 @@ boards:
   - "board 40 (desktop 1440 · dark · EN) desk: opened by ?desk=composite; the production chart instrument capture — site/sector_cycles.html at d86344b93a0b, as of 2026-10-20, recorded in cycles_repair/prod_capture.json with theme dark and locale en (the page ran with its default EN interface: html[data-lang=en], no ?lang query); crop (56,404)-(1386,1222) of a 1440x1800 chrome-headless-1x window — labeled on the face with the Production capture / Dark-theme capture / EN-interface capture / as-of chips (SIC-V5-C03/C10) beside the three correction cards"
   - "board 40 desk caption: the as-of difference stated on the face (production chart 2026-10-20 · specimen Cycles dataset 2026-10-20 · Brief 2026-10-19; different by design, not one snapshot); the clock note names both clocks in plain words — the chart's 'Where they stand' counts follow the legacy cycle read, the specimen cards the phase clock — with now.phase / phase_v2 and templates/sector_cycles.js:611 in the desk drawer (SIC-V4-C08; wave 5 SIC-V5-C06)"
   - "board 40 status: the composite desk is a review instrument outside the shipped surface (SIC-V4-C07) — boards 40/41 are supporting evidence for the chart/card as-of relation, not coverage cells of the 16-cell matrix; the cards repeat the board-29 correction semantics (same two doctrine stances, same Clocks blocks)"
-  - "board 40 record: shell with Cycles current, probe theme pixels (15,17,21), switcher=6 current=cycles, 1440x3400 (capture.log wave 6); wave history by reference: proposal.yml revision_mandate_round2..5"
+  - "board 40 record: shell with Cycles current, probe theme pixels (15,17,21), switcher=6 current=cycles, 1440x3400 (capture.log wave 7); wave history by reference: proposal.yml revision_mandate_round2..6"
   capabilities_covered:
   - C14
   - C15
@@ -1153,8 +1153,8 @@ boards:
   - "board 41 (desktop 1440 · light · ZH) desk: the light/ZH capture of ?desk=composite (SIC-V4-C07); the production crop is the same capture as board 40 — site/sector_cycles.html at d86344b93a0b, as of 2026-10-20, theme dark, locale EN (prod_capture.json theme dark / locale en: the page ran with its default EN interface) — declared on the face by the chips 生产截图 / 深色主题截图 / 英文界面截图 beside the as-of chip (SIC-V5-C03/C10)"
   - "board 41 ZH deck copy claim is limited to the specimen deck — the three correction cards, the desk caption and clock note, the Fixture cards — not the production crop; the desk caption is plain ZH (page, render sha and capture tool in the desk drawer) and the clock note names both clocks in plain ZH (旧版周期读数 / 阶段时钟) with now.phase and phase_v2 only as code inside the drawer (SIC-V4-C08; SIC-V5-C04/C06)"
   - "board 41 status: review instrument outside the shipped surface (SIC-V4-C07) — supporting evidence for the chart/card as-of relation, not a coverage cell; the cards repeat the board-34 ZH correction semantics (the same two ZH stances, Clocks blocks in plain ZH, 先验 fixture wording)"
-  - "board 41 ZH face: zh-latin=0 under skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR (no allow-file; SIC-V3-C06 under the SIC-ADJ-03 scope; capture.log wave 6)"
-  - "board 41 record: shell with Cycles current, probe theme pixels (247,248,250), switcher=6 current=cycles, 1440x3279; wave history by reference: proposal.yml revision_mandate_round2..5"
+  - "board 41 ZH face: zh-latin=0 under skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR (no allow-file; SIC-V3-C06 under the SIC-ADJ-03 scope; capture.log wave 7)"
+  - "board 41 record: shell with Cycles current, probe theme pixels (247,248,250), switcher=6 current=cycles, 1440x3279; wave history by reference: proposal.yml revision_mandate_round2..6"
   capabilities_covered:
   - C14
   - C15

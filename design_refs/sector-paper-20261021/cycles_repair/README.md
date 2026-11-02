@@ -54,11 +54,11 @@ specimen, not production**: the production template remains `templates/sector_cy
 |---|---|---|---|---|---|---|
 | 28 | `28-cycles-desktop-light-en.png` | 1440 | light | EN | `?theme=light&lang=en` | 2343 |
 | 29 | `29-cycles-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en` | 2343 |
-| 30 | `30-cycles-mobile-dark-zh.png` | 390 (iframe host) | dark | ZH | `mobile_frame.html?src=cycles.html&theme=dark&lang=zh` | 4327 |
+| 30 | `30-cycles-mobile-dark-zh.png` | 390 (iframe host) | dark | ZH | `mobile_frame.html?src=cycles.html&theme=dark&lang=zh` | 4350 |
 | 31 | `31-cycles-mobile-light-en.png` | 390 (iframe host) | light | EN | `…&theme=light&lang=en&state=incompatible_generation` (fixture) | 4879 |
-| 34 | `34-cycles-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh` | 2242 |
-| 35 | `35-cycles-desktop-dark-zh.png` | 1440 | dark | ZH | `?theme=dark&lang=zh` | 2242 |
-| 36 | `36-cycles-mobile-light-zh.png` | 390 (iframe host) | light | ZH | `mobile_frame.html?src=cycles.html&theme=light&lang=zh` | 4327 |
+| 34 | `34-cycles-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh` | 2260 |
+| 35 | `35-cycles-desktop-dark-zh.png` | 1440 | dark | ZH | `?theme=dark&lang=zh` | 2260 |
+| 36 | `36-cycles-mobile-light-zh.png` | 390 (iframe host) | light | ZH | `mobile_frame.html?src=cycles.html&theme=light&lang=zh` | 4350 |
 | 39 | `39-cycles-mobile-dark-en.png` | 390 (iframe host) | dark | EN | `mobile_frame.html?src=cycles.html&theme=dark&lang=en` | 4775 |
 | 40 | `40-cycles-desk-desktop-dark-en.png` | 1440 | dark | EN | `?theme=dark&lang=en&desk=composite` (composite desk) | 3400 |
 | 41 | `41-cycles-desk-desktop-light-zh.png` | 1440 | light | ZH | `?theme=light&lang=zh&desk=composite` (composite desk) | 3279 |
@@ -122,6 +122,19 @@ window (JS unicode escapes decoded) unless the source declares the ZH NEW or giv
 re-sourced under it and the provenance drawers render those sources (C03/C04); the five C05/C08 rows carry their
 wave-6 provenance in the same field. Boards 28-31/34-36/39-41 re-rendered;
 the other 32 PNGs are byte-identical; heights above equal `png_px` in `boards_manifest.yml` (C09).
+
+Wave 7 (SIC-V7, 2026-11-02): the round-7 cures. The two drawn ZH Clocks patterns take the 显示 construction
+(`cycles.ladder_state_pattern` / `clocks_disagree_pattern` in `copy_deck.json`, and the undrawn `clocks_ladder_pattern`
+with them; SIC-V7-C04): the ladder line reads 阶段时钟显示回落中 · 时序阶梯显示上涨趋势——引擎说明见来源抽屉 and the read
+line 周期读数显示筑底中 · 阶段时钟显示回落中, so no drawn ZH Clocks line keeps a 时钟为 / 阶梯为 predicate; EN unchanged. The
+deck test's EN half now matches whole words of the normalized window (`_present` in `tests/test_sector_paper_copy_deck.py`;
+SIC-V7-C03 outcome (i)): an identifier substring (`win` inside `window`, `stance` inside `stanceHTML`) no longer vouches
+for a string; the PRC-049 falsifier is restated (stanceHTML opens at `templates/sector_cycles.js:158`; the :155 row clears
+the EN half on the whole token `nw.stance` at :157 and fails the ZH half) and `test_en_rule_rejects_identifier_substrings`
+is the EN-half falsifier (the PRC-051 grader shape at :332, the stance shape at :153). Deck sources: `stance_label` cites
+stanceHTML opening at :158 (C01); `grader_caption` cites `engine/sector_central_grader.py:498-506` (C02). Boards
+28-31/34-36/39-41 re-rendered; the other 32 PNGs are byte-identical; EN Cycles boards 28/29/40 byte-identical to 78c14f7d; 31/39 re-encoded with the same png_px and the same face (Chrome antialiasing nondeterminism, measured against the 78c14f7d bytes: 31: 761 px differ by at most 1 in a channel, all inside x 16-374 / y 82-116; 39: 752 px differ by at most 1 in a channel, all inside x 16-374 / y 82-116 — the hero-title band; no EN string changed in wave 7); heights above equal `png_px` in
+`boards_manifest.yml` (C06).
 
 ## How to render
 
