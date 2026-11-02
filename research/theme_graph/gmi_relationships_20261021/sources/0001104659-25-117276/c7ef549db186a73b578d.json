@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-12-01T19:23:17Z",
+ "accession": "0001104659-25-117276",
+ "cik": "0000866706",
+ "doc_byte_length": 2444164,
+ "doc_sha256": "8a10f687ffbd834e607594dfd4d41fc041d91852a3e43a79743cd2142406d017",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-12-01",
+ "form": "10-K",
+ "period_of_report": "2025-09-30",
+ "primary_document": "ese-20250930x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 288670,
+  "byte_start": 287956,
+  "normalized": "Sales to the U.S. Government and its prime contractors and subcontractors represent a significant portion of our business. In 2025, approximately 23% of our revenues from continuing operations were generated from sales to the U.S. Government or its contractors, primarily within our A&D segment. These sales are dependent on government funding of the underlying programs, which is generally subject to annual Congressional appropriations and periodic authorization of increases in the Government debt ceiling, and they may therefore be adversely affected not only by failure to obtain timely and adequate appropriations but also by extended Government shutdowns or by changes in Government spending priorities.",
+  "normalized_sha256": "33c30b99813a82441894d42e15120275849a5a0d40f726d2b20d17ca4297298d",
+  "raw": "Sales to the U.S. Government and its prime contractors and subcontractors represent a significant portion of our business. In 2025, approximately 23% of our revenues from continuing operations were generated from sales to the U.S. Government or its contractors, primarily within our A&amp;D segment. These sales are dependent on government funding of the underlying programs, which is generally subject to annual Congressional appropriations and periodic authorization of increases in the Government debt ceiling, and they may therefore be adversely affected not only by failure to obtain timely and adequate appropriations but also by extended Government shutdowns or by changes in Government spending priorities.",
+  "raw_sha256": "c7ef549db186a73b578d077e88035594259663e419fd2bc148002d8ccd96feb6"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/866706/000110465925117276/ese-20250930x10k.htm",
+ "xbrl_contexts": []
+}

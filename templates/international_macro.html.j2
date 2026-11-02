@@ -494,6 +494,17 @@ html[data-theme="light"] .imd-dossier-chip{border-style:solid}
     <div class="imd-section-head"><h2>{{ t('Where next','下一站') }}</h2><p>{{ t('All five dashboards share this contract and interaction model.','五个看板共享此数据契约与交互模型。') }}</p></div>
     <div class="imd-next">
       <a href="intl.html">{{ t('World comparison','全球对比') }}</a>
+      {% if D.cc == 'JP' %}
+      <a href="baskets_intl.html">{{ t('Japan Inc. names','日本企业名单') }}</a>
+      {% elif D.cc == 'KR' %}
+      <a href="baskets_intl.html">{{ t('Korea Tech names','韩国科技名单') }}</a>
+      {% elif D.cc == 'IN' %}
+      <a href="baskets_intl.html">{{ t('India names in baskets','篮子中的印度公司') }}</a>
+      {% elif D.cc == 'GB' %}
+      <a href="baskets_intl.html">{{ t('UK names in global banks','全球银行中的英国公司') }}</a>
+      {% endif %}
+      <a href="intl_stock.html">{{ t('International stocks','国际个股') }}</a>
+      <a href="country_cycles.html">{{ t('Country cycles','国家周期') }}</a>
       {% for n in D.navigation %}<a href="{{ n.route }}" class="{% if n.active %}active{% endif %}">{{ n.name }}</a>{% endfor %}
     </div>
   </section>

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 277049,
+  "byte_start": 276057,
+  "normalized": "Although we believe this agreement is a good use of our financial resources and secures capacity for certain products through 2026, the agreement with GlobalFoundries involves certain risks that have resulted and may in the future result in excess inventory, or may place us at a competitive disadvantage, have a negative impact on our liquidity, or adversely affect our results of operations and financial condition. Pursuant to the agreement, the Company is required to purchase, and GlobalFoundries is required to supply, a certain number of wafers on a quarterly basis. Customers, on occasion, cancel, reschedule orders, or change future product plans on short notice, which can lead to our actual wafer requirements being less than the number of wafers required to meet the applicable wafer purchase requirements, potentially resulting in excess inventory or higher inventory unit costs, both of which may adversely impact our gross margin and our results of operations.",
+  "normalized_sha256": "d0fa766180da227eb4a806a76af79ec14acb20b69f212822d8c85a82f259a9df",
+  "raw": "              Although we believe this agreement is a good use of our financial resources and secures capacity for certain products through 2026, the agreement with GlobalFoundries involves certain risks that have resulted and may in the future result in excess inventory, or may place us at a competitive disadvantage, have a negative impact on our liquidity, or adversely affect our results of operations and financial condition.  Pursuant to the agreement, the Company is required to purchase, and GlobalFoundries is required to supply, a certain number of wafers on a quarterly basis.  Customers, on occasion, cancel, reschedule orders, or change future product plans on short notice, which can lead to our actual wafer requirements being less than the number of wafers required to meet the applicable wafer purchase requirements, potentially resulting in excess inventory or higher inventory unit costs, both of which may adversely impact our gross margin and our results of operations. ",
+  "raw_sha256": "6e84ad07e6719dd1b2e79804546f71fc065f342e00add0744a76045d578c639c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": []
+}

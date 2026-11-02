@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-27T19:58:40Z",
+ "accession": "0001821769-26-000007",
+ "cik": "0001821769",
+ "doc_byte_length": 1600578,
+ "doc_sha256": "783bd188b20989e8d4ffb9a61875a2c9b5e3c5f38c296519406605a3b05e74e9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-27",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nvts-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 226909,
+  "byte_start": 226445,
+  "normalized": "We believe we have one of the most robust power semiconductor patent portfolios, with more than 300 issued or pending patents worldwide. In October 2024 we entered into a broad patent cross-license with Infineon Technologies AG, demonstrating the value of our patent portfolio. An additional element of our intellectual property is our GaN IC process design kit (PDK), which we use to facilitate and accelerate product implementation and end customer development.",
+  "normalized_sha256": "0fce5c07ff5097e4a2815160293c6e56024df28cac3cd4169417f3eb9b9b694b",
+  "raw": " We believe we have one of the most robust power semiconductor patent portfolios, with more than 300 issued or pending patents worldwide. In October 2024 we entered into a broad patent cross-license with Infineon Technologies AG, demonstrating the value of our patent portfolio. An additional element of our intellectual property is our GaN IC process design kit (PDK), which we use to facilitate and accelerate product implementation and end customer development.",
+  "raw_sha256": "7b122603e5d55e83ea033f812a0b1d2393be9668db17c8b8f8175cd24b83d697"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1821769/000182176926000007/nvts-20251231.htm",
+ "xbrl_contexts": []
+}

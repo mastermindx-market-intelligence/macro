@@ -15,13 +15,15 @@ import hashlib
 import json
 import re
 from copy import deepcopy
+from functools import lru_cache
 from pathlib import Path
 
 import pytest
 from bs4 import BeautifulSoup
 
 from lib.rotation_observation_notification import validate as lib_validate
-from tests.test_macro_risk_dialog import _dlg, _render, _vm
+from tests.test_dashboard_template_render import _env
+from tests.test_macro_risk_dialog import _dlg, _vm
 
 ROOT = Path(__file__).resolve().parents[1]
 FIX = ROOT / "tests" / "fixtures" / "ew_p4_observation"
@@ -66,6 +68,15 @@ def envelope(wrapper: dict | None = None, *, rotation: dict | None = None) -> di
 _RENDER_CACHE: dict[str, str] = {}
 
 
+@lru_cache(maxsize=1)
+def _dashboard_template():
+    """Compile once per process (#10414). Building the Environment and compiling the
+    dashboard and its includes cost about 1.2 s on every call, 143 times over, and that
+    took the dashboard-render-contract job past its 15-minute limit. Only the compile is
+    shared: render() below still runs the template against each distinct envelope."""
+    return _env().get_template("dashboard.html.j2")
+
+
 def _canon(value):
     """Type-tagged canonical form. json.dumps(sort_keys=True, default=repr) would merge
     {1: x} with {"1": x}, a tuple with a list, and an object with the string of its
@@ -78,14 +89,14 @@ def _canon(value):
 
 
 def render(env: dict) -> str:
-    """One dashboard render per distinct envelope. The template render is ~3 s and
-    most cases re-render the same fixture, so the suite was render-bound (FU2:
-    ~500 s locally, past the dashboard-render-contract pack budget on CI). The key
-    is a type-tagged canonical form of the envelope; the ORIGINAL object is rendered,
-    so odd-typed cases (non-object wrappers, bad timestamps) keep their exact inputs."""
+    """One dashboard render per distinct envelope (FU2) on the once-compiled template
+    (#10414). The template render is ~3 s and most cases re-render the same fixture, so
+    the suite was render-bound (FU2: ~500 s locally). The key is a type-tagged canonical
+    form of the envelope; the ORIGINAL object is rendered, so odd-typed cases
+    (non-object wrappers, bad timestamps) keep their exact inputs."""
     key = repr(_canon(env))
     if key not in _RENDER_CACHE:
-        _RENDER_CACHE[key] = _dlg(_render(_vm(risk_envelope=env)))
+        _RENDER_CACHE[key] = _dlg(_dashboard_template().render(**_vm(risk_envelope=env), mode="macro"))
     return _RENDER_CACHE[key]
 
 

@@ -1,18 +1,18 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MNST-BULL-20261013",
-  "asof": "2026-10-31",
+  "asof": "2026-11-01",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 58.9,
-  "raw_confidence": 61.1,
-  "delta_vs_base": -1.1,
+  "management_confidence": 59.5,
+  "raw_confidence": 60.1,
+  "delta_vs_base": -0.5,
   "recommended_action": "hold",
   "human_state": "Needs Follow-Through",
   "components": {
     "validity": 100.0,
     "progress": 7.8,
-    "pace": 82.9,
+    "pace": 78.6,
     "retention": 50.0,
     "overlay": 58.9
   },
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.084,
     "dist_to_t1_r": 1.416,
     "dist_to_t2_r": 2.916,
-    "horizon_pct_used": 21.4,
+    "horizon_pct_used": 23.2,
     "p1": 0.056,
     "p2": 0.028,
     "p3": null,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-20",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 12,
-  "tau": 0.2143
+  "days_elapsed": 13,
+  "tau": 0.2321
 }

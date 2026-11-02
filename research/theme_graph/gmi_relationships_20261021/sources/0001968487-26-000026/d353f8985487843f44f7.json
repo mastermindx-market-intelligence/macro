@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-30T20:15:52Z",
+ "accession": "0001968487-26-000026",
+ "cik": "0001968487",
+ "doc_byte_length": 8484612,
+ "doc_sha256": "83a3ff19bcc31c89ed98d6ea2d3d5ec825ebd528f52bbd6668f5e64031384b79",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-30",
+ "form": "10-K",
+ "period_of_report": "2026-05-31",
+ "primary_document": "ws-20260531.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1187736,
+  "byte_start": 1187389,
+  "normalized": "The Detroit Three automakers represented 35% and 33% of our consolidated net sales during fiscal 2026 and fiscal 2025, respectively. Shipments to the Detroit Three automakers increased 17% in fiscal 2026 as compared to fiscal 2025, which significantly outpaced the reported 2% growth in the Detroit Three automakers production for the same period.",
+  "normalized_sha256": "d353f8985487843f44f7deca299779b83aa51f77aa5b5dfb8c1fe9c4c7620e14",
+  "raw": "The Detroit Three automakers represented 35% and 33% of our consolidated net sales during fiscal 2026 and fiscal 2025, respectively. Shipments to the Detroit Three automakers increased 17% in fiscal 2026 as compared to fiscal 2025, which significantly outpaced the reported 2% growth in the Detroit Three automakers production for the same period.",
+  "raw_sha256": "d353f8985487843f44f7deca299779b83aa51f77aa5b5dfb8c1fe9c4c7620e14"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1968487/000196848726000026/ws-20260531.htm",
+ "xbrl_contexts": []
+}
