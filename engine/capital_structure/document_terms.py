@@ -57,7 +57,7 @@ if distribution_version("jsonschema") != _JSONSCHEMA_RELEASE:
 
 
 DOCUMENT_TERM_SCHEMA = "capital_structure.document_term_observation.v1"
-PARSER_VERSION = "capital-structure-document-terms/1.1.0"
+PARSER_VERSION = "capital-structure-document-terms/1.2.0"
 
 
 @dataclass(frozen=True)
@@ -189,6 +189,11 @@ _DOCUMENT_TERM_SCHEMA_PATH = (
     / "contracts"
     / "capital_structure_document_term_observation.schema.json"
 )
+_DOCUMENT_TERM_PARSE_RECEIPT_SCHEMA_PATH = (
+    _SEMANTIC_REPO_ROOT
+    / "contracts"
+    / "capital_structure_document_term_parse_receipt.schema.json"
+)
 # These source files contain the inherited HTML dispatch, character-reference
 # conversion/data, and the regular-expression entrypoint used by that dispatch.
 # Their paths are resolved beneath the active interpreter's stdlib root and
@@ -202,7 +207,7 @@ _PARSER_RUNTIME_STDLIB_SOURCES = (
     ("re", "re/__init__.py", re),
 )
 _DOCUMENT_TERM_SCHEMA_SHA256 = (
-    "7098f3f4e6e17185da1b7c2ee1d79fa5966e0ac3cfb96c0d6385573f0a0bf78c"
+    "8b77391fe233452faa19164f82c54f19aaf0db7059ec76e7e6d314313bcc6092"
 )
 _ZERO_AUTHORITY_KEYS = frozenset({
     "authority",
@@ -1369,6 +1374,454 @@ def _records_for_manifest_v1_1_0(
     return records
 
 
+# ---------------------------------------------------------------------------
+# capital-structure-document-terms/1.2.0
+#
+# The modern Item 601(b)(107) Table 1 carries BOTH a "Security Type" column
+# (the security category) and a separate "Security Class Title" column, and it
+# spells the price column "Maximum Aggregate Offering Price".  The 1.1.0 header
+# matcher treated both security cells as the title column, so every modern
+# Exhibit 107 table was refused as ``duplicate_header_mapping`` and its
+# "Total Offering Amounts" row was never read.  Version 1.2.0 owns private
+# copies of every closure function it needs to change; 1.1.0 above stays
+# byte-identical so historical rows remain reproducible.
+# ---------------------------------------------------------------------------
+
+_TOTAL_OFFERING_ROW_LABEL = "total offering amounts"
+# Table 1 summary rows that never carry an offering amount and never carry a
+# security: they emit no observation at all in 1.2.0.
+_EXCLUDED_SUMMARY_ROW_LABELS = frozenset({
+    "total fees previously paid",
+    "total fee offsets",
+    "net fee due",
+})
+
+_ROW_SCOPE_V1_2_0 = "registration_fee_table_row"
+_TOTAL_SCOPE_V1_2_0 = "registration_fee_table_total"
+
+
+@dataclass(frozen=True)
+class FeeTableV1_2:
+    """A 1.2.0 fee table: the 1.1.0 shape plus the header column spans."""
+
+    raw: bytes
+    start: int
+    end: int
+    document: SubmissionDocument
+    table_index: int
+    rows: tuple[TableRow, ...]
+    header_index: int
+    columns: Mapping[str, int]
+    security_column: int | None
+    duplicate_headers: tuple[str, ...]
+    column_spans: Mapping[str, int]
+
+
+def _security_header_v1_2_0(value: str) -> bool:
+    """1.2.0: "Security Type" is the category column, never the title column."""
+    normalized = _label(value)
+    return (
+        ("title of each class" in normalized and "securit" in normalized)
+        or normalized in {"title of securities", "security class title"}
+    )
+
+
+def _term_for_header_v1_2_0(value: str) -> str | None:
+    """1.2.0 header terms, including the modern aggregate-price spelling."""
+    normalized = _label(value)
+    if "amount to be registered" in normalized:
+        return "amount_to_be_registered"
+    if "proposed maximum offering price per unit" in normalized:
+        return "proposed_maximum_offering_price_per_unit"
+    if "proposed maximum aggregate offering price" in normalized:
+        return "proposed_maximum_aggregate_offering_price"
+    if "maximum aggregate offering price" in normalized:
+        return "proposed_maximum_aggregate_offering_price"
+    if "amount of registration fee" in normalized or "amount of filing fee" in normalized:
+        return "registration_fee"
+    if normalized == "fee rate" or "filing fee rate" in normalized:
+        return "filing_fee_rate"
+    return None
+
+
+def _summary_row_label_v1_2_0(row: TableRow) -> str | None:
+    """Return the normalized Table 1 summary label a totals row carries."""
+    for cell in row.cells:
+        label = _label(cell.text)
+        if label == _TOTAL_OFFERING_ROW_LABEL or label in _EXCLUDED_SUMMARY_ROW_LABELS:
+            return label
+    return None
+
+
+def _parse_fee_tables_v1_2_0(
+    document: SubmissionDocument, start_index: int,
+) -> list[FeeTableV1_2]:
+    """1.2.0: detect fee tables with the modern two-column security headers."""
+    candidates: list[FeeTableV1_2] = []
+    for local_index, match in enumerate(_TABLE_RE.finditer(document.text)):
+        absolute_start = document.text_start + match.start()
+        rows = _table_rows(match.group(0), absolute_start)
+        header_index = -1
+        columns: dict[str, int] = {}
+        column_spans: dict[str, int] = {}
+        security_column: int | None = None
+        duplicate_headers: set[str] = set()
+        for index, row in enumerate(rows):
+            found: dict[str, int] = {}
+            spans: dict[str, int] = {}
+            for cell in row.cells:
+                name = _term_for_header_v1_2_0(cell.text)
+                if name is not None:
+                    if name in found:
+                        duplicate_headers.add(name)
+                    else:
+                        found[name] = cell.column_start
+                        spans[name] = cell.column_span
+                if _security_header_v1_2_0(cell.text):
+                    if security_column is not None:
+                        duplicate_headers.add("security_title")
+                    else:
+                        security_column = cell.column_start
+            if len(found) >= 2:
+                header_index = index
+                columns = found
+                column_spans = spans
+                break
+        if header_index >= 0:
+            candidates.append(FeeTableV1_2(
+                raw=match.group(0), start=absolute_start,
+                end=document.text_start + match.end(), document=document,
+                table_index=start_index + local_index, rows=rows,
+                header_index=header_index, columns=columns,
+                security_column=security_column,
+                duplicate_headers=tuple(sorted(duplicate_headers)),
+                column_spans=column_spans,
+            ))
+    return candidates
+
+
+def _base_record_v1_2_0(
+    manifest: Mapping[str, Any],
+    name: str,
+    *,
+    disposition: str,
+    reason: str,
+    reported: Mapping[str, Any],
+    evidence: Mapping[str, Any],
+    source_available_at: str,
+    term_type: str,
+    security: Mapping[str, Any] | None = None,
+    child_document: SubmissionDocument | None = None,
+    parser_version: str,
+    scope: str = _ROW_SCOPE_V1_2_0,
+) -> dict[str, Any]:
+    filing = manifest.get("filing") or {}
+    document = manifest.get("document") or {}
+    parser_deferred = reason in {"manifest_parser_not_eligible", "manifest_corruption_not_clean"}
+    needs_review = disposition == "ambiguous" or parser_deferred
+    security_record = dict(security or _empty_security())
+    row_id = security_record.get("row_id")
+    return {
+        "schema": DOCUMENT_TERM_SCHEMA,
+        "logical_observation_id": _logical_observation_id(str(manifest["manifest_id"]), row_id, name),
+        "issuer_id": str((manifest.get("issuer") or {})["issuer_id"]),
+        "filing": {
+            "accession": str(filing["accession"]), "form": str(filing["form"]),
+            "filing_date": filing.get("filing_date"), "accepted_at": filing.get("accepted_at"),
+        },
+        "document": {
+            "source_manifest_id": str(manifest["manifest_id"]),
+            "source_id": str(manifest["source_id"]), "document_role": "complete_submission",
+            "canonical_url": str(document["canonical_url"]),
+            "content_sha256": str(document["content_sha256"]).lower(),
+            "child_document_type": child_document.document_type if child_document else None,
+            "child_sequence": child_document.sequence if child_document else None,
+            "child_filename": child_document.filename if child_document else None,
+            "child_text_start": child_document.text_start if child_document else None,
+            "child_text_end": child_document.text_end if child_document else None,
+        },
+        "security": security_record,
+        "term": {"name": name, "term_type": term_type, "scope": scope},
+        "state": {"disposition": disposition, "reason": reason},
+        "reported": dict(reported),
+        "normalized": dict(reported),
+        "evidence": dict(evidence),
+        "extraction": {
+            "method": "deferred" if parser_deferred else "deterministic",
+            "parser_version": parser_version,
+            "review_status": "deferred" if needs_review else "unreviewed",
+        },
+        "relationships": {"amends": [], "supersedes": [], "contradiction_ids": []},
+        "point_in_time": {"source_available_at": source_available_at},
+    }
+
+
+def _total_row_value_cell_v1_2_0(
+    table: FeeTableV1_2, row: TableRow, name: str,
+) -> TableCell | None:
+    """The total row's cell for one term, reading the whole header column span.
+
+    Filers frequently split the currency glyph and the amount into adjacent
+    cells that share one header span; the header's declared span, not the first
+    covered cell, is the column a total is read from.  The first cell whose
+    complete text parses as a direct number wins; otherwise the first cell of
+    the span keeps its natural unavailable/ambiguous parse.
+    """
+    column = table.columns.get(name)
+    if column is None:
+        return None
+    span = table.column_spans.get(name) or 1
+    inside = sorted(
+        (cell for cell in row.cells
+         if column <= cell.column_start < column + max(1, span)),
+        key=lambda cell: cell.column_start,
+    )
+    if not inside:
+        return None
+    for cell in inside:
+        if _parse_number(cell.text).disposition == "observed":
+            return cell
+    return inside[0]
+
+
+def _total_security_v1_2_0(
+    manifest_id: str, table: FeeTableV1_2, row: TableRow, row_index: int,
+) -> tuple[dict[str, Any], TableCell | None, TableCell | None]:
+    """Security identity for a totals row: the row's own label, never a guess.
+
+    Returns the security record plus the cells that evidenced the title: the
+    title-column cell when it carries the label, otherwise the label cell
+    itself.  An observed total must retain a non-empty title, and the only
+    honest text available on a totals row is the row's own label.
+    """
+    security, title_cell = _security_for_row(manifest_id, table, row, row_index)
+    if bool(security.get("title_raw")) and title_cell is not None:
+        return security, title_cell, None
+    label_cell = next(
+        (cell for cell in row.cells if _label(cell.text) == _TOTAL_OFFERING_ROW_LABEL),
+        None,
+    )
+    title = _clean_text(label_cell.text) if label_cell is not None else ""
+    if not security.get("title_raw"):
+        security = {
+            **security,
+            "title_raw": title or None,
+            "title_normalized": _label(title) or None,
+            "classification": _classify_security(title),
+        }
+    return security, title_cell, label_cell
+
+
+def _total_row_record_v1_2_0(
+    manifest: Mapping[str, Any],
+    table: FeeTableV1_2,
+    row: TableRow,
+    row_index: int,
+    table_span: Mapping[str, Any],
+    source_available_at: str,
+    parser_version: str,
+) -> dict[str, Any]:
+    """The exactly-one per-table "Total Offering Amounts" observation."""
+    manifest_id = str(manifest["manifest_id"])
+    security, title_cell, label_cell = _total_security_v1_2_0(
+        manifest_id, table, row, row_index,
+    )
+    name = "proposed_maximum_aggregate_offering_price"
+    row_span = _row_span(manifest_id, table, row, row_index)
+    spans: list[Mapping[str, Any]] = [table_span, row_span]
+    title_evidence = title_cell if title_cell is not None else label_cell
+    if title_evidence is not None:
+        spans.append(_cell_span(
+            manifest_id, table, row, row_index, title_evidence, "security_title",
+        ))
+    cell = _total_row_value_cell_v1_2_0(table, row, name)
+    term_spans = list(spans)
+    if cell is not None:
+        term_spans.append(_cell_span(manifest_id, table, row, row_index, cell, name))
+    parsed = _parse_number(cell.text if cell is not None else "")
+    term_type, unit, currency = _term_semantics(name, str(security["classification"]))
+    disposition = parsed.disposition
+    reason = parsed.reason
+    if disposition == "observed" and (not security.get("title_raw") or unit is None):
+        disposition = "ambiguous"
+        reason = "unit_semantics_ambiguous"
+    reported = (
+        _direct_value(
+            cell.text, str(parsed.value), str(unit), currency, str(parsed.scale),
+        )
+        if disposition == "observed" and cell is not None and parsed.value is not None
+        and parsed.scale is not None and unit is not None
+        else _empty_value()
+    )
+    return _base_record_v1_2_0(
+        manifest, name, disposition=disposition, reason=reason,
+        reported=reported, term_type=term_type,
+        evidence=_document_evidence(manifest, term_spans),
+        source_available_at=source_available_at, security=security,
+        child_document=table.document, parser_version=parser_version,
+        scope=_TOTAL_SCOPE_V1_2_0,
+    )
+
+
+def _records_for_manifest_v1_2_0(
+    manifest: Mapping[str, Any], raw: bytes | None, parser_version: str,
+) -> list[dict[str, Any]]:
+    """Build row and total-scoped direct observations for one complete submission."""
+    source_available_at = _iso((manifest.get("retrieval") or {}).get("first_seen_at"), "retrieval.first_seen_at")
+    root = _root_span(manifest)
+    parser = manifest.get("parser") or {}
+    if str(parser.get("corruption_state") or "") != "clean":
+        reason = "manifest_corruption_not_clean"
+        return [
+            _base_record_v1_2_0(manifest, name, disposition="unavailable", reason=reason,
+                                reported=_empty_value(), term_type=_document_term_type(name),
+                                evidence=_document_evidence(manifest, [root]), source_available_at=source_available_at,
+                                parser_version=parser_version)
+            for name in TERM_NAMES
+        ]
+    if str(parser.get("eligibility") or "") != "eligible":
+        reason = "manifest_parser_not_eligible"
+        return [
+            _base_record_v1_2_0(manifest, name, disposition="unavailable", reason=reason,
+                                reported=_empty_value(), term_type=_document_term_type(name),
+                                evidence=_document_evidence(manifest, [root]), source_available_at=source_available_at,
+                                parser_version=parser_version)
+            for name in TERM_NAMES
+        ]
+    assert raw is not None
+    documents = _eligible_documents(raw, str((manifest.get("filing") or {}).get("form") or ""))
+    if not documents:
+        reason = "eligible_document_not_found"
+        return [
+            _base_record_v1_2_0(manifest, name, disposition="unavailable", reason=reason,
+                                reported=_empty_value(), term_type=_document_term_type(name),
+                                evidence=_document_evidence(manifest, [root]), source_available_at=source_available_at,
+                                parser_version=parser_version)
+            for name in TERM_NAMES
+        ]
+    tables: list[FeeTableV1_2] = []
+    table_cursor = 0
+    for child in documents:
+        tables.extend(_parse_fee_tables_v1_2_0(child, table_cursor))
+        table_cursor += len(_TABLE_RE.findall(child.text))
+    if not tables:
+        reason = "fee_table_not_detected"
+        child = documents[0] if len(documents) == 1 else None
+        return [
+            _base_record_v1_2_0(manifest, name, disposition="unavailable", reason=reason,
+                                reported=_empty_value(), term_type=_document_term_type(name),
+                                evidence=_document_evidence(manifest, [root]), source_available_at=source_available_at,
+                                child_document=child, parser_version=parser_version)
+            for name in TERM_NAMES
+        ]
+    spans = [_table_span(str(manifest["manifest_id"]), table) for table in tables]
+    if len(tables) != 1:
+        return [
+            _base_record_v1_2_0(manifest, name, disposition="ambiguous", reason="multiple_fee_tables_detected",
+                                reported=_empty_value(), term_type=_document_term_type(name),
+                                evidence=_document_evidence(manifest, spans), source_available_at=source_available_at,
+                                parser_version=parser_version)
+            for name in TERM_NAMES
+        ]
+
+    table = tables[0]
+    if table.duplicate_headers:
+        return [
+            _base_record_v1_2_0(
+                manifest, name, disposition="ambiguous", reason="duplicate_header_mapping",
+                reported=_empty_value(), term_type=_document_term_type(name),
+                evidence=_document_evidence(manifest, spans), source_available_at=source_available_at,
+                child_document=table.document, parser_version=parser_version,
+            )
+            for name in TERM_NAMES
+        ]
+    if table.security_column is None:
+        return [
+            _base_record_v1_2_0(
+                manifest, name, disposition="ambiguous", reason="unit_semantics_ambiguous",
+                reported=_empty_value(), term_type=_document_term_type(name),
+                evidence=_document_evidence(manifest, spans), source_available_at=source_available_at,
+                child_document=table.document, parser_version=parser_version,
+            )
+            for name in TERM_NAMES
+        ]
+    manifest_id = str(manifest["manifest_id"])
+    table_span = spans[0]
+    security_rows: list[tuple[int, TableRow]] = []
+    total_rows: list[tuple[int, TableRow]] = []
+    for row_index, row in [
+        (index, row)
+        for index, row in enumerate(table.rows[table.header_index + 1:], start=table.header_index + 1)
+    ]:
+        label = _summary_row_label_v1_2_0(row)
+        if label is not None:
+            if label == _TOTAL_OFFERING_ROW_LABEL:
+                total_rows.append((row_index, row))
+            continue
+        if any(
+            (cell := row.cell_at(column)) is not None and bool(_clean_text(cell.text))
+            for column in table.columns.values()
+        ):
+            security_rows.append((row_index, row))
+    if not security_rows and not total_rows:
+        return [
+            _base_record_v1_2_0(
+                manifest, name, disposition="unavailable", reason="header_without_direct_value",
+                reported=_empty_value(), term_type=_document_term_type(name),
+                evidence=_document_evidence(manifest, spans), source_available_at=source_available_at,
+                child_document=table.document, parser_version=parser_version,
+            )
+            for name in TERM_NAMES
+        ]
+
+    records: list[dict[str, Any]] = []
+    for row_index, row in security_rows:
+        security, title_cell = _security_for_row(manifest_id, table, row, row_index)
+        row_span = _row_span(manifest_id, table, row, row_index)
+        base_spans: list[Mapping[str, Any]] = [table_span, row_span]
+        if title_cell is not None:
+            base_spans.append(_cell_span(manifest_id, table, row, row_index, title_cell, "security_title"))
+        title_present = bool(security.get("title_raw"))
+        classification = str(security["classification"])
+        for name in TERM_NAMES:
+            column = table.columns.get(name)
+            cell = row.cell_at(column) if column is not None else None
+            term_spans = list(base_spans)
+            if cell is not None:
+                term_spans.append(_cell_span(manifest_id, table, row, row_index, cell, name))
+            parsed = _parse_number(
+                cell.text if cell is not None else "",
+                allow_denominated_rate=name == "filing_fee_rate",
+            )
+            term_type, unit, currency = _term_semantics(
+                name, classification, rate_scale=parsed.scale,
+            )
+            disposition = parsed.disposition
+            reason = parsed.reason
+            if disposition == "observed" and (not title_present or unit is None):
+                disposition = "ambiguous"
+                reason = "unit_semantics_ambiguous"
+            reported = (
+                _direct_value(cell.text, str(parsed.value), str(unit), currency, str(parsed.scale))
+                if disposition == "observed" and cell is not None and parsed.value is not None
+                and parsed.scale is not None and unit is not None
+                else _empty_value()
+            )
+            records.append(_base_record_v1_2_0(
+                manifest, name, disposition=disposition, reason=reason,
+                reported=reported, term_type=term_type,
+                evidence=_document_evidence(manifest, term_spans),
+                source_available_at=source_available_at, security=security,
+                child_document=table.document, parser_version=parser_version,
+                scope=_ROW_SCOPE_V1_2_0,
+            ))
+    for row_index, row in total_rows:
+        records.append(_total_row_record_v1_2_0(
+            manifest, table, row, row_index, table_span,
+            source_available_at, parser_version,
+        ))
+    return records
+
 def _clone_json_value(value: Any) -> Any:
     """Copy only the immutable JSON value model admitted by observation contracts."""
     if isinstance(value, Mapping):
@@ -2391,6 +2844,18 @@ _PARSER_V1_1_0_DEPENDENCY_MANIFEST_SHA256 = (
 )
 _PARSER_V1_1_0_DISPATCH_ROOTS = _parser_semantic_dispatch_roots()
 
+# 1.2.0 goldens, reviewed in the same clean ``-B`` subprocess method as 1.1.0
+# (see tests/test_capital_structure_document_terms.py).  The released runtime
+# allowlist and dispatch roots are shared with 1.1.0 on purpose: the runtime
+# validator depends only on ``semantic_bundle.dispatch_roots``.
+_PARSER_V1_2_0_DEPENDENCY_COUNT = 298
+_PARSER_V1_2_0_DEPENDENCY_MANIFEST_SHA256 = (
+    "ca0c0bc8a061739ed91c10988dcb45517e5060bfd787b9967fbbb1b92ca097f9"
+)
+_PARSER_V1_2_0_IMPLEMENTATION_SHA256 = (
+    "939fb266ac7b94483ba08b54153fbd5f45c49e261cffaaaf6bd2a80eb0fade7a"
+)
+
 # Reviewed in clean ``-B`` subprocesses.  These literal entries are the runtime
 # trust root: the current process may be compared with them, but it can never
 # mint or promote an observed fingerprint/digest into release authority. The
@@ -2615,8 +3080,12 @@ _RELEASED_PARSER_IMPLEMENTATION_DIGESTS = MappingProxyType({
     "capital-structure-document-terms/1.1.0": (
         "d47515272069bfc3f3f768b84b94a218f7f66e7c746e36a8702efd97c26af645"
     ),
+    "capital-structure-document-terms/1.2.0": _PARSER_V1_2_0_IMPLEMENTATION_SHA256,
 })
-_RELEASED_PARSER_VERSIONS = ("capital-structure-document-terms/1.1.0",)
+_RELEASED_PARSER_VERSIONS = (
+    "capital-structure-document-terms/1.1.0",
+    "capital-structure-document-terms/1.2.0",
+)
 
 _RELEASED_PARSER_REGISTRY = MappingProxyType({
     "capital-structure-document-terms/1.1.0": ParserRegistration(
@@ -2630,6 +3099,19 @@ _RELEASED_PARSER_REGISTRY = MappingProxyType({
             dispatch_roots=_PARSER_V1_1_0_DISPATCH_ROOTS,
             dependency_count=_PARSER_V1_1_0_DEPENDENCY_COUNT,
             dependency_manifest_sha256=_PARSER_V1_1_0_DEPENDENCY_MANIFEST_SHA256,
+        ),
+    ),
+    "capital-structure-document-terms/1.2.0": ParserRegistration(
+        version="capital-structure-document-terms/1.2.0",
+        implementation_sha256=_RELEASED_PARSER_IMPLEMENTATION_DIGESTS[
+            "capital-structure-document-terms/1.2.0"
+        ],
+        extractor=_records_for_manifest_v1_2_0,
+        semantic_bundle=ParserSemanticBundle(
+            entrypoints=_parser_semantic_entrypoints(_records_for_manifest_v1_2_0),
+            dispatch_roots=_PARSER_V1_1_0_DISPATCH_ROOTS,
+            dependency_count=_PARSER_V1_2_0_DEPENDENCY_COUNT,
+            dependency_manifest_sha256=_PARSER_V1_2_0_DEPENDENCY_MANIFEST_SHA256,
         ),
     ),
 })
@@ -3439,6 +3921,147 @@ def _make_current_document_terms_as_of(
     return current_document_terms_as_of
 
 
+def _parse_receipt_identity(
+    source_manifest_id: str, content_sha256: str, parser_version: str,
+) -> str:
+    """The receipt primary key: sha256 over the canonical identity triple."""
+    payload = json.dumps(
+        [source_manifest_id, content_sha256, parser_version],
+        sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _parse_receipt_candidate_digests(
+    candidates: Sequence[Mapping[str, Any]],
+) -> tuple[int, str, str]:
+    """Count plus logical-id and semantic digests over a manifest's full candidate list.
+
+    The semantic body intentionally excludes only versioning metadata, so the
+    digest is stable whether a candidate is later materialized as a new
+    correction or counted unchanged.
+    """
+    logical_ids = sorted(str(item["logical_observation_id"]) for item in candidates)
+    semantic_pairs = sorted(
+        (
+            [str(item["logical_observation_id"]), _semantic_body(item)]
+            for item in candidates
+        ),
+        key=lambda pair: pair[0],
+    )
+    return (
+        len(candidates),
+        hashlib.sha256(_canonical_json(logical_ids)).hexdigest(),
+        hashlib.sha256(_canonical_json(semantic_pairs)).hexdigest(),
+    )
+
+
+def _parse_receipt_for_manifest(
+    manifest: Mapping[str, Any],
+    candidates: Sequence[Mapping[str, Any]],
+    *,
+    generated_at: str,
+    parser_registration: ParserRegistration,
+) -> dict[str, Any]:
+    """Build the operational receipt for one materialized manifest."""
+    manifest_id = str(manifest["manifest_id"])
+    content_sha256 = str(
+        (manifest.get("document") or {}).get("content_sha256") or ""
+    ).lower()
+    candidate_count, logical_digest, semantic_digest = (
+        _parse_receipt_candidate_digests(candidates)
+    )
+    return {
+        "schema_version": "capital_structure.document_term_parse_receipt.v1",
+        "receipt_id": _parse_receipt_identity(
+            manifest_id,
+            content_sha256,
+            parser_registration.version,
+        ),
+        "source_manifest_id": manifest_id,
+        "accession": str((manifest.get("filing") or {}).get("accession") or ""),
+        "content_sha256": content_sha256,
+        "parser_version": parser_registration.version,
+        "parser_implementation_sha256": parser_registration.implementation_sha256,
+        "candidate_count": candidate_count,
+        "candidate_logical_ids_sha256": logical_digest,
+        "candidate_semantic_sha256": semantic_digest,
+        "generated_at": generated_at,
+    }
+
+
+def _validate_supplied_parse_receipts(
+    parse_receipts: Sequence[Mapping[str, Any]],
+    *,
+    manifests_by_id: Mapping[str, Mapping[str, Any]],
+    parser_resolver: Callable[[Any], ParserRegistration],
+) -> list[dict[str, Any]]:
+    """Fail closed on every supplied receipt before any source read happens."""
+    if not parse_receipts:
+        return []
+    validator = Draft202012Validator(
+        json.loads(
+            _DOCUMENT_TERM_PARSE_RECEIPT_SCHEMA_PATH.read_text(encoding="utf-8")
+        ),
+        format_checker=FormatChecker(),
+    )
+    receipts: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    for index, raw in enumerate(parse_receipts):
+        receipt = dict(raw)
+        receipt_id = str(receipt.get("receipt_id") or "")
+        errors = sorted(
+            validator.iter_errors(receipt),
+            key=lambda error: tuple(str(part) for part in error.absolute_path),
+        )
+        if errors:
+            joined = "; ".join(
+                f"{'.'.join(str(part) for part in error.absolute_path) or '<root>'}: "
+                f"{error.message}"
+                for error in errors[:5]
+            )
+            raise ValueError(
+                f"document-term parse receipt {index} ({receipt_id!r}) contract "
+                f"violation: {joined}"
+            )
+        manifest_id = str(receipt["source_manifest_id"])
+        content_sha256 = str(receipt["content_sha256"])
+        parser_version = str(receipt["parser_version"])
+        if receipt_id != _parse_receipt_identity(
+            manifest_id, content_sha256, parser_version,
+        ):
+            raise ValueError(
+                f"document-term parse receipt {receipt_id} does not match its "
+                "recomputed receipt_id"
+            )
+        if receipt_id in seen_ids:
+            raise ValueError(f"duplicate document-term parse receipt {receipt_id}")
+        seen_ids.add(receipt_id)
+        registration = parser_resolver(parser_version)
+        if str(receipt["parser_implementation_sha256"]) != (
+            registration.implementation_sha256
+        ):
+            raise ValueError(
+                f"document-term parse receipt {receipt_id} parser implementation "
+                "digest mismatch"
+            )
+        manifest = manifests_by_id.get(manifest_id)
+        if manifest is None:
+            raise ValueError(
+                f"document-term parse receipt {receipt_id} source manifest is absent"
+            )
+        manifest_content = str(
+            (manifest.get("document") or {}).get("content_sha256") or ""
+        ).lower()
+        if content_sha256.lower() != manifest_content:
+            raise ValueError(
+                f"document-term parse receipt {receipt_id} content_sha256 does "
+                "not match its manifest"
+            )
+        receipts.append(receipt)
+    return receipts
+
+
 def _compile_document_term_records_core(
     manifests: Sequence[Mapping[str, Any]],
     *,
@@ -3446,6 +4069,7 @@ def _compile_document_term_records_core(
     existing_observations: Sequence[Mapping[str, Any]] = (),
     generated_at: str,
     rebuild: bool = False,
+    parse_receipts: Sequence[Mapping[str, Any]] = (),
     parser_resolver: Callable[[Any], ParserRegistration],
     active_parser_version: str,
     policy: _AuthorityPolicy,
@@ -3455,13 +4079,20 @@ def _compile_document_term_records_core(
     All in-scope source reads happen before any candidate is versioned. A missing
     or hash-mismatched object aborts the whole run, preserving the previous
     telemetry-last generation instead of publishing a misleading partial ledger.
+
+    ``parse_receipts`` are operational evidence that a manifest/content/parser
+    triple was already materialized by a completed parse. They never carry or
+    amend facts; they only exempt an unchanged filing from being re-read and
+    re-parsed night after night after a parser release whose rows it leaves
+    semantically identical.
     """
     manifest_rows = [dict(item) for item in manifests]
     policy.manifest_ledger_validator(manifest_rows)
     for manifest in manifest_rows:
         policy.manifest_content_validator(manifest)
     generated = _iso(generated_at, "generated_at")
-    active_parser_version = parser_resolver(active_parser_version).version
+    active_registration = parser_resolver(active_parser_version)
+    active_parser_version = active_registration.version
     existing = [dict(item) for item in existing_observations]
     _validate_document_term_records_contract(
         existing, label="document-term compiler existing history",
@@ -3473,6 +4104,11 @@ def _compile_document_term_records_core(
     manifests_by_id = {
         str(manifest["manifest_id"]): manifest for manifest in manifest_rows
     }
+    supplied_receipts = _validate_supplied_parse_receipts(
+        parse_receipts,
+        manifests_by_id=manifests_by_id,
+        parser_resolver=parser_resolver,
+    )
     for index, source in enumerate(existing):
         manifest_id = str(
             (source.get("document") or {}).get("source_manifest_id") or ""
@@ -3495,15 +4131,37 @@ def _compile_document_term_records_core(
     current_by_manifest: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
     for prior in current_by_logical.values():
         current_by_manifest[str((prior.get("document") or {}).get("source_manifest_id") or "")].append(prior)
-    parser_invalidated_manifest_ids = {
-        str(manifest["manifest_id"])
-        for manifest in selected
-        if current_by_manifest.get(str(manifest["manifest_id"]))
-        and any(
+    active_receipt_pairs = {
+        (str(receipt["source_manifest_id"]), str(receipt["content_sha256"]).lower())
+        for receipt in supplied_receipts
+        if str(receipt["parser_version"]) == active_parser_version
+    }
+
+    def _manifest_receipt_pair(manifest: Mapping[str, Any]) -> tuple[str, str]:
+        return (
+            str(manifest["manifest_id"]),
+            str((manifest.get("document") or {}).get("content_sha256") or "").lower(),
+        )
+
+    def _has_stale_prior(manifest: Mapping[str, Any]) -> bool:
+        priors = current_by_manifest.get(str(manifest["manifest_id"]))
+        return bool(priors) and any(
             str((prior.get("extraction") or {}).get("parser_version") or "")
             != active_parser_version
-            for prior in current_by_manifest[str(manifest["manifest_id"])]
+            for prior in priors
         )
+
+    stale_manifest_pairs: dict[str, tuple[str, str]] = {}
+    for manifest in selected:
+        if _has_stale_prior(manifest):
+            stale_manifest_pairs[str(manifest["manifest_id"])] = (
+                _manifest_receipt_pair(manifest)
+            )
+    stale_manifest_ids = set(stale_manifest_pairs)
+    parser_invalidated_manifest_ids = {
+        manifest_id
+        for manifest_id, receipt_pair in stale_manifest_pairs.items()
+        if receipt_pair not in active_receipt_pairs
     }
     materialize = [
         manifest for manifest in selected
@@ -3511,6 +4169,8 @@ def _compile_document_term_records_core(
         or not current_by_manifest.get(str(manifest["manifest_id"]))
         or str(manifest["manifest_id"]) in parser_invalidated_manifest_ids
     ]
+    materialize_ids = {str(manifest["manifest_id"]) for manifest in materialize}
+    receipt_exempt_manifest_ids = stale_manifest_ids - materialize_ids
     failures: list[dict[str, Any]] = []
     source_bytes: dict[str, bytes] = {}
     for manifest in materialize:
@@ -3534,13 +4194,17 @@ def _compile_document_term_records_core(
 
     incoming: list[dict[str, Any]] = []
     unchanged = 0
+    candidates_by_manifest: dict[str, list[dict[str, Any]]] = {}
     for manifest in materialize:
-        for candidate in _records_for_manifest_with_resolver(
+        manifest_id = str(manifest["manifest_id"])
+        manifest_candidates = _records_for_manifest_with_resolver(
             manifest,
-            source_bytes[str(manifest["manifest_id"])],
+            source_bytes[manifest_id],
             parser_version=active_parser_version,
             parser_resolver=parser_resolver,
-        ):
+        )
+        candidates_by_manifest[manifest_id] = manifest_candidates
+        for candidate in manifest_candidates:
             logical = str(candidate["logical_observation_id"])
             prior = current_by_logical.get(logical)
             if prior is not None and _semantic_body(prior) == _semantic_body(candidate):
@@ -3553,12 +4217,70 @@ def _compile_document_term_records_core(
             _validate_observation_source_binding_core(
                 candidate,
                 manifest,
-                source_bytes[str(manifest["manifest_id"])],
+                source_bytes[manifest_id],
                 parser_resolver=parser_resolver,
                 policy=policy,
             )
             incoming.append(candidate)
             current_by_logical[logical] = candidate
+
+    new_receipts: list[dict[str, Any]] = []
+    emitted_receipts = [dict(receipt) for receipt in supplied_receipts]
+    supplied_receipts_by_id = {
+        str(receipt["receipt_id"]): receipt for receipt in supplied_receipts
+    }
+    for manifest in materialize:
+        manifest_id = str(manifest["manifest_id"])
+        receipt = _parse_receipt_for_manifest(
+            manifest,
+            candidates_by_manifest[manifest_id],
+            generated_at=generated,
+            parser_registration=active_registration,
+        )
+        supplied = supplied_receipts_by_id.get(receipt["receipt_id"])
+        if supplied is not None:
+            if (
+                int(supplied["candidate_count"]) != receipt["candidate_count"]
+                or str(supplied["candidate_logical_ids_sha256"])
+                != receipt["candidate_logical_ids_sha256"]
+                or str(supplied["candidate_semantic_sha256"])
+                != receipt["candidate_semantic_sha256"]
+            ):
+                raise ValueError(
+                    "document-term parse receipt is not reproducible for "
+                    f"{manifest_id}"
+                )
+            continue
+        emitted_receipts.append(receipt)
+        new_receipts.append(receipt)
+    emitted_receipts.sort(key=lambda item: (
+        str(item["source_manifest_id"]), str(item["parser_version"]),
+    ))
+    new_receipts.sort(key=lambda item: (
+        str(item["source_manifest_id"]), str(item["parser_version"]),
+    ))
+
+    orphaned_prior_observations = 0
+    orphaned_examples: list[dict[str, Any]] = []
+    for manifest in materialize:
+        manifest_id = str(manifest["manifest_id"])
+        candidate_logicals = {
+            str(candidate["logical_observation_id"])
+            for candidate in candidates_by_manifest[manifest_id]
+        }
+        for prior in current_by_manifest.get(manifest_id, []):
+            logical = str(prior["logical_observation_id"])
+            if logical in candidate_logicals:
+                continue
+            orphaned_prior_observations += 1
+            if len(orphaned_examples) < 20:
+                orphaned_examples.append({
+                    "source_manifest_id": manifest_id,
+                    "logical_observation_id": logical,
+                })
+    orphaned_examples.sort(key=lambda item: (
+        str(item["source_manifest_id"]), str(item["logical_observation_id"]),
+    ))
 
     output = [*existing, *incoming]
     _validate_document_term_records_contract(
@@ -3582,6 +4304,9 @@ def _compile_document_term_records_core(
     return {
         "observations": output,
         "new_observations": incoming,
+        "receipts": emitted_receipts,
+        "new_receipts": new_receipts,
+        "orphaned_examples": orphaned_examples,
         "counts": {
             "eligible_complete_submissions": len(selected),
             "processed_complete_submissions": len(materialize),
@@ -3592,12 +4317,16 @@ def _compile_document_term_records_core(
                 len(output) if rebuild else len(incoming)
             ),
             "parser_version_invalidations": len(parser_invalidated_manifest_ids),
+            "receipt_exempt_manifests": len(receipt_exempt_manifest_ids),
             "observations": len(output),
             "new_observations": len(incoming),
             "unchanged_observations": unchanged,
             "observed": sum(1 for row in output if (row.get("state") or {}).get("disposition") == "observed"),
             "unavailable": sum(1 for row in output if (row.get("state") or {}).get("disposition") == "unavailable"),
             "ambiguous": sum(1 for row in output if (row.get("state") or {}).get("disposition") == "ambiguous"),
+            "parse_receipts": len(emitted_receipts),
+            "new_parse_receipts": len(new_receipts),
+            "orphaned_prior_observations": orphaned_prior_observations,
         },
     }
 
@@ -3615,6 +4344,7 @@ def _make_compile_document_term_records(
         existing_observations: Sequence[Mapping[str, Any]] = (),
         generated_at: str,
         rebuild: bool = False,
+        parse_receipts: Sequence[Mapping[str, Any]] = (),
     ) -> dict[str, Any]:
         """Compile with only the immutable released parser/policy registries."""
         if globals().get("_validated_authority_policy") is not policy_validator:
@@ -3630,6 +4360,7 @@ def _make_compile_document_term_records(
             existing_observations=existing_observations,
             generated_at=generated_at,
             rebuild=rebuild,
+            parse_receipts=parse_receipts,
             parser_resolver=released_parser_resolver,
             active_parser_version=PARSER_VERSION,
             policy=policy,
@@ -3665,6 +4396,7 @@ def _compile_document_term_records_test_lane(
     existing_observations: Sequence[Mapping[str, Any]] = (),
     generated_at: str,
     rebuild: bool = False,
+    parse_receipts: Sequence[Mapping[str, Any]] = (),
 ) -> dict[str, Any]:
     """Private synthetic-history compiler; never consulted by public APIs."""
     policy = _validated_authority_policy()
@@ -3674,6 +4406,7 @@ def _compile_document_term_records_test_lane(
         existing_observations=existing_observations,
         generated_at=generated_at,
         rebuild=rebuild,
+        parse_receipts=parse_receipts,
         parser_resolver=_test_lane_resolver(parser_lane, capability=capability),
         active_parser_version=parser_version,
         policy=policy,
@@ -3764,12 +4497,12 @@ def _authority_policy_entrypoints() -> tuple[SemanticEntrypoint, ...]:
 #   4. Import the real module to confirm the startup self-check passes, and
 #      re-check the digests on every reviewed runtime -- they are portable
 #      across CPython 3.12 patch releases by design.
-_AUTHORITY_POLICY_DEPENDENCY_COUNT = 432
+_AUTHORITY_POLICY_DEPENDENCY_COUNT = 468
 _AUTHORITY_POLICY_DEPENDENCY_MANIFEST_SHA256 = (
-    "ce4537defd873c1f1406ea8b4e3709ef0e33c8e034c9d6c2b632b3af546c0425"
+    "5f455b19c38aad2f1460a2c4122548176e4bf2f6192a241ef29c01493ccd95b7"
 )
 _AUTHORITY_POLICY_IMPLEMENTATION_SHA256 = (
-    "b08d50df113550f4faea3ff676e48718355e04b95c89b5b1a7ff53ae4e09b32f"
+    "35ed9840daf86793736bf62c50a574e2c9005f3a1bd4bd8e3d7cf70c27e24df5"
 )
 
 _AUTHORITY_POLICY = _AuthorityPolicy(
