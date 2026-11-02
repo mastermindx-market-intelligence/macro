@@ -240,6 +240,60 @@ def test_v0_bench_record_validates_against_schema(record: dict[str, Any]) -> Non
 
 
 # ---------------------------------------------------------------------------
+# The record names what evaluate answered; a refused bench request stops it
+# ---------------------------------------------------------------------------
+
+
+def test_v0_bench_records_what_evaluate_answered(record: dict[str, Any]) -> None:
+    outcome = record["evaluate_outcome"]
+    assert (outcome["status"], outcome["answer"], outcome["refusal_code"]) == (200, "evaluated", None)
+
+
+class _Answer:
+    """A served answer the outcome probe classifies (status and JSON body only)."""
+
+    def __init__(self, status: int, body: Any) -> None:
+        self.status_code = status
+        self._body = body
+
+    def json(self) -> Any:
+        return self._body
+
+
+@pytest.fixture
+def fixture_world(tmp_path: Path):
+    with bench.serving_world(data_root=None, fixture=True, work=tmp_path) as world:
+        yield world
+
+
+def test_v0_bench_stops_rather_than_timing_a_misdated_request(fixture_world: bench.ServingWorld) -> None:
+    from datetime import datetime, timedelta  # noqa: PLC0415
+
+    cutoff = datetime.fromisoformat(str(fixture_world.evaluate_body["as_of"]).replace("Z", "+00:00"))
+    misdated = dict(fixture_world.evaluate_body, as_of=(cutoff - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    with pytest.raises(RuntimeError, match="refused with 422.*scenario.as_of must equal the state cutoff"):
+        bench._evaluate_outcome(fixture_world._replace(evaluate_body=misdated))
+
+
+def test_v0_bench_names_the_typed_inputs_refusal(
+    fixture_world: bench.ServingWorld, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    components = {"financials": {"support": "unavailable", "reason_codes": ["financials_not_admitted"]}}
+    typed = {"detail": {"code": "scenario_inputs_unavailable", "components": components, "available": []}}
+    monkeypatch.setattr(bench, "_request_route", lambda world, client, route: _Answer(409, typed))
+    outcome = bench._evaluate_outcome(fixture_world)
+    assert (outcome["answer"], outcome["refusal_code"], outcome["components"]) == (
+        "typed_refusal",
+        "scenario_inputs_unavailable",
+        components,
+    )
+    for status, body in ((409, {"detail": "stale binding"}), (503, {"detail": "capacity inputs do not bind served state"})):
+        monkeypatch.setattr(bench, "_request_route", lambda world, client, route, s=status, b=body: _Answer(s, b))
+        with pytest.raises(RuntimeError, match=f"refused with {status}"):
+            bench._evaluate_outcome(fixture_world)
+
+
+# ---------------------------------------------------------------------------
 # No float cast in either new file
 # ---------------------------------------------------------------------------
 

@@ -20,6 +20,7 @@ from datetime import datetime, timedelta, timezone
 import dataclasses
 import hashlib
 import json
+import os
 import re
 from pathlib import Path
 from typing import Any, NamedTuple
@@ -1818,6 +1819,29 @@ def test_v0_a_new_published_file_is_validated_again(
     with_inputs.path.write_text(republished_body, encoding="utf-8")
     assert api._load_inputs() == republished
     assert calls["validate"] == 2
+
+
+def test_v0_mtime_and_size_each_invalidate_the_cache_alone(
+    with_inputs: _Inputs, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Either stat field changing on its own is a new file: neither half of the key is redundant."""
+    calls = _counting_validator(monkeypatch)
+    assert api._load_inputs() == with_inputs.record
+    assert calls["validate"] == 1
+
+    before = with_inputs.path.stat()
+    os.utime(with_inputs.path, ns=(before.st_atime_ns, before.st_mtime_ns + 1_000_000_000))
+    assert with_inputs.path.stat().st_size == before.st_size
+    assert api._load_inputs() == with_inputs.record
+    assert calls["validate"] == 2
+
+    touched = with_inputs.path.stat()
+    with_inputs.path.write_text(json.dumps(with_inputs.record, indent=4, sort_keys=True) + "\n", encoding="utf-8")
+    os.utime(with_inputs.path, ns=(touched.st_atime_ns, touched.st_mtime_ns))
+    resized = with_inputs.path.stat()
+    assert (resized.st_mtime_ns, resized.st_size != touched.st_size) == (touched.st_mtime_ns, True)
+    assert api._load_inputs() == with_inputs.record
+    assert calls["validate"] == 3
 
 
 def test_v0_a_failed_validation_is_never_cached(
