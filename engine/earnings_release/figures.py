@@ -107,6 +107,23 @@ _UNITS_CAPTION_RE = re.compile(
 _CURRENCY_WORD_RE = re.compile(r"\b(?:U\.?S\.?\s+dollars|US\$|USD)\b", re.I)
 _CURRENCY_SYMBOL = {"$": "USD", "US$": "USD", "€": "EUR", "£": "GBP", "¥": "JPY"}
 
+# A release typesets its hyphens and dashes as any of the Unicode dashes:
+# "Non‑GAAP" (U+2011), "Twenty–Six Weeks", "Pro‒Forma", or a soft hyphen the
+# browser never shows ("Twenty­Six").  Every pattern below spells a hyphen as
+# "-", so the text it reads is folded first.  Only text that is matched is
+# folded: a label, a caption, a period header.  A value cell never is, because
+# its literal is replayed against the raw source, and a folded "−1.2" (U+2212)
+# would read as negative while the "-1.2" the receipt cites is not in it.
+_DASH_FOLD = str.maketrans({
+    **{chr(code): "-" for code in range(0x2010, 0x2016)},
+    "−": "-", "﹣": "-", "－": "-", "­": None,
+})
+
+
+def _fold_dashes(text: str) -> str:
+    return text.translate(_DASH_FOLD)
+
+
 # A GAAP statement says so in its own caption.  This is reading the document,
 # not assuming a default.
 _GAAP_CAPTION_RE = re.compile(
@@ -121,9 +138,11 @@ _GAAP_CAPTION_RE = re.compile(
     re.I,
 )
 _NON_GAAP_CAPTION_RE = re.compile(
-    r"non-?GAAP|reconciliation\s+of\s+|\badjusted\s+(?:results|measures|basis)\b", re.I
+    r"(?<![a-z])non[\s-]*GAAP|reconciliation\s+of\s+|\badjusted\s+(?:results|measures|basis)\b", re.I
 )
-_NON_GAAP_INLINE_RE = re.compile(r"non-?GAAP|\badjusted\b", re.I)
+# "Non GAAP Results" is the non-GAAP caption too, never "GAAP results"; the
+# "non" of "Canon GAAP Results" is not.
+_NON_GAAP_INLINE_RE = re.compile(r"(?<![a-z])non[\s-]*GAAP|\badjusted\b", re.I)
 # A basis DECLARATION is a caption: "Non-GAAP Financial Measures",
 # "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
 # "RECONCILIATION OF ADJUSTED OPERATING INCOME AND ADJUSTED OPERATING MARGIN".
@@ -137,7 +156,9 @@ _SENTENCE_PUNCTUATION_RE = re.compile(r";|\.\s*\Z")
 # comparison between periods ("Q3 2025 vs. Q3 2024") is not; only one whose
 # object is a basis is read this way.
 _BASIS_COMPARISON_RE = re.compile(
-    r"(?:\bcompared\s+(?:with|to)|\bversus|\bvs\.?)\s+(?:the\s+)?(non-?GAAP|GAAP|adjusted)\b", re.I
+    r"(?:\bcompared\s+(?:with|to)|\bversus|\bvs\.?)\s+(?:the\s+)?"
+    r"((?<![a-z])non[\s-]*GAAP|GAAP|adjusted)\b",
+    re.I,
 )
 # A GAAP statement title that is qualified is an adjusted presentation of that
 # statement: "Adjusted Consolidated Statements of Earnings", "... - As
@@ -226,12 +247,17 @@ _YEAR_TO_DATE_RE = re.compile(r"\bYTD\b|\byear[\s-]+to[\s-]+date\b", re.I)
 # September 30, 2025 and 2024" joins two years of one period, not two periods.
 # The second period may follow a date ("Quarter Ended December 28, 2025 and
 # Year Ended") or another joiner, with at most two words before its name; a
-# second date ("..., 2025 and December 29, 2024") names no period.
+# second date ("..., 2025 and December 29, 2024") names no period.  A header
+# also joins its periods with a dash, ";", "|" or "plus", and names the second
+# as "FY2025" or "FY25": "Fourth Quarter - Fiscal Year", "Quarter | Full Year",
+# "Fourth Quarter / FY2025".  This reads "Year-over-Year" and "Half-Year" as
+# two periods too, which refuses rather than binds.
+_TWO_PERIOD_JOINER = r"(?:\s+(?:and|plus)\s+|\s*[&/,;|-]\s*(?:and\s+)?)"
 _TWO_PERIOD_HEADER_RE = re.compile(
     r"\b(?:quarter|Q[1-4]|year|half|months?|weeks?)\b"
-    r"(?:[^,]*?\band\b[^,]*?|.*?" + _PERIOD_JOINER
-    + r"(?:(?:[a-z]+(?:[-–—][a-z]+)?|\d{1,2})\s+){0,2})"
-    r"\b(?:quarter|Q[1-4]|year|half|months?|weeks?|fiscal|FY)\b",
+    r"(?:[^,]*?\band\b[^,]*?|.*?" + _TWO_PERIOD_JOINER
+    + r"(?:(?:[a-z]+(?:-[a-z]+)?|\d{1,2})\s+){0,2})"
+    r"\b(?:quarter|Q[1-4]|year|half|months?|weeks?|fiscal|FY(?:\d{2}){0,2})\b",
     re.I,
 )
 # A cell that holds a column's place but no value: "—", "n/m", "*".
@@ -316,6 +342,9 @@ _ISSUER_MENTION_RE = re.compile(
 _ISSUER_SUFFIX_RE = re.compile(
     r"(?:,?\s+(?:inc|corp|corporation|co|company|plc|n\.v|ltd|llc|l\.p|s\.a|ag|se)\.?)+\Z"
 )
+# A name in an attribution ("attributable to common stockholders of Acme,
+# Inc.") is the one an EPS line claims, so it cannot also name the issuer.
+_ATTRIBUTED_NAME_RE = re.compile(r"(?i:\battributable\s+to\b)[^.;:]{0,80}\Z")
 # A multi-class issuer reports EPS once per class of common stock: "Class A
 # common stock" rows under a "Basic Earnings Per Share" scope.  No class row is
 # the release's EPS by its label, and the unqualified "Earnings per share" of
@@ -623,10 +652,11 @@ class _Context:
     issuers: frozenset[str] = frozenset()
 
     def observe(self, text: str) -> None:
+        source, text = text, _fold_dashes(text)
         units = _UNITS_CAPTION_RE.search(text)
         if units:
             self.units = _UNIT_BY_SCALE[(units.group(1) or units.group(2)).lower()]
-            self.units_source = text
+            self.units_source = source
             if "$" in units.group(0):
                 self.currency_from_caption = "USD"
         if _CURRENCY_WORD_RE.search(text):
@@ -659,7 +689,7 @@ class _Context:
         else:
             return
         if declared is not None and _is_caption_shaped(text):
-            self.basis, self.basis_source = declared, text
+            self.basis, self.basis_source = declared, source
         else:
             # Prose that mentions a basis declares nothing, but it does tell us
             # the section is no longer the one the last caption opened: a
@@ -702,19 +732,30 @@ def _names_basis(text: str) -> bool:
 
 
 def _issuer_names(document: DisclosureDocument) -> frozenset[str]:
-    names: set[str] = set()
+    # The issuer is the first company the release names by its corporate form:
+    # a release opens on its own name, in prose or in the layout table some
+    # releases set their prose in.  A company named after it (a subsidiary, a
+    # spin-off, an operating company) is not the issuer.  "The Company" names
+    # no one, and a name an attribution gives is what is being checked, so
+    # "Diluted EPS attributable to Goodwill Impairment Co." cannot vouch for
+    # itself.  A release that names some other company first refuses its
+    # attributed EPS lines rather than binding another company's.
     for block in document.blocks:
-        for mention in _ISSUER_MENTION_RE.finditer(block.text):
+        text = _fold_dashes(block.text)
+        for mention in _ISSUER_MENTION_RE.finditer(text):
             words = _normalize_issuer(mention.group(1)).split()
-            names.update(" ".join(words[start:]) for start in range(len(words)))
-    names.discard("")
-    return frozenset(names)
+            if not words or _ATTRIBUTED_NAME_RE.search(text, max(0, mention.start() - 120), mention.start()):
+                continue
+            return frozenset(" ".join(words[start:]) for start in range(len(words)))
+    return frozenset()
 
 
 def _normalize_issuer(name: str) -> str:
-    text = " ".join(name.lower().replace("’", "'").split())
-    text = _ISSUER_SUFFIX_RE.sub("", text).rstrip(",. ")
-    return text[4:] if text.startswith("the ") else text
+    text = " ".join(_fold_dashes(name).lower().replace("’", "'").split())
+    # "JPMorgan Chase & Co." is "JPMorgan Chase", not "JPMorgan Chase &".
+    text = _ISSUER_SUFFIX_RE.sub("", text).rstrip(",.& ")
+    # "The Company" and "Our Company" are a self-reference, not a name.
+    return "" if text in {"the", "our", "this"} else text[4:] if text.startswith("the ") else text
 
 
 def _attributes_to_another(match: re.Match[str], issuers: frozenset[str]) -> bool:
@@ -880,7 +921,7 @@ def _row_is_header(cells: Sequence[TableCell]) -> bool:
     )
     if first is None or first in numeric:
         return True
-    label = _FOOTNOTE_SUFFIX_RE.sub("", first.text.strip())
+    label = _fold_dashes(_FOOTNOTE_SUFFIX_RE.sub("", first.text.strip()))
     return not any(rule.pattern.match(label) for rule in _ROW_RULES)
 
 
@@ -1362,6 +1403,7 @@ def _observed_kind(
 ) -> str | None:
     if kind_hint == ValueKind.PERCENT.value:
         return ValueKind.PERCENT.value
+    label, scope = _fold_dashes(label), _fold_dashes(scope)
     if (_PER_SHARE_SCOPE_RE.search(scope) or _PER_SHARE_SCOPE_RE.search(label)
             or _EPS_LABEL_RE.search(label)):
         return ValueKind.PER_SHARE.value
@@ -1487,12 +1529,14 @@ def _concept_for(
 ) -> str | None:
     if not label:
         return None
+    # Rules read the folded text; a concept key keeps the label as printed.
+    printed, label, scope = label, _fold_dashes(label), _fold_dashes(scope)
     if _SEGMENT_SCOPE_RE.search(scope):
         # Under a segment breakdown, the "Total" line is the same fact the
         # statement already reported; emitting it again would double-count.
         if _TOTAL_LABEL_RE.match(label) or kind != ValueKind.MONETARY.value:
             return None
-        return f"segment_revenue:{_slugify(label)}"
+        return f"segment_revenue:{_slugify(printed)}"
     for rule in _ROW_RULES:
         matched = rule.pattern.match(label)
         if not matched:
@@ -1515,18 +1559,19 @@ def _concept_for(
     if kind == ValueKind.PER_SHARE.value and not _SHARE_COUNT_SCOPE_RE.search(scope):
         per_class = _CLASS_EPS_SCOPE_RE.match(scope)
         if per_class and _SHARE_CLASS_LABEL_RE.match(label):
-            return f"{_CLASS_EPS_PREFIX}eps_{per_class.group(1).lower()}:{_slugify(label)}"
+            return f"{_CLASS_EPS_PREFIX}eps_{per_class.group(1).lower()}:{_slugify(printed)}"
         headline = _HEADLINE_EPS_LABEL_RE.match(label)
         if headline and _attributes_to_another(headline, issuers):
             return None
         if headline and not _BASIC_OR_DILUTED_RE.search(scope):
             return _HEADLINE_EPS
     if _NON_GAAP_CAPTION_RE.search(scope) and kind == ValueKind.MONETARY.value:
-        return f"non_gaap_adjustment:{_slugify(label)}"
+        return f"non_gaap_adjustment:{_slugify(printed)}"
     return None
 
 
 def _basis_for(*, label: str, scope: str, context: _Context) -> str | None:
+    label, scope = _fold_dashes(label), _fold_dashes(scope)
     if _NON_GAAP_INLINE_RE.search(label) or _NON_GAAP_INLINE_RE.search(scope):
         return Basis.NON_GAAP.value
     return context.basis
@@ -1646,6 +1691,8 @@ def _declared_period_months(period_label: str) -> int | None:
     A year phrase ("Fiscal 2026") only counts when nothing shorter is named,
     because "Fourth Quarter Fiscal 2026" is a quarter.
     """
+    # "Twenty - Six" and "Twenty–Six" are "Twenty-Six": one count, not "Six".
+    period_label = re.sub(r"\s*-\s*", "-", " ".join(_fold_dashes(period_label).split()))
     if _YEAR_TO_DATE_RE.search(period_label) or _TWO_PERIOD_HEADER_RE.search(period_label):
         return None
 

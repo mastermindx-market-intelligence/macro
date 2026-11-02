@@ -170,13 +170,64 @@ for every shape it names and passes now; its controls pass on both.
 | Finding | Shape | Now | Test |
 |---|---|---|---|
 | NF1 | The N6 fix kept a GAAP section open across "Core Results Compared With GAAP Results", so core EPS and revenue bound as GAAP. The base refused this. | A comparison keeps the section's basis only when every other word in it is a period, a filler word or the same basis. Any other word ("Core", "Comparable", "Pro Forma", "Excluding Special Items", "Underlying") means the comparison names another measure, so the basis is unknown. The N6 check still applies as well. | `test_a_comparison_that_names_another_measure_leaves_the_section` (6 captions), `test_a_comparison_of_only_periods_and_the_same_basis_keeps_the_gaap_section` (3 controls) |
-| NF2 | Any Title Case words passed as the parent: "Diluted EPS attributable to Goodwill Impairment" bound as reported EPS, and "… to Class A Common Stock" skipped the share-class rule K. | A proper name is the parent only when the release itself names a company by it with a corporate form ("Walmart Inc.", "The Coca-Cola Company"); the trailing words of that name also count ("Procter & Gamble"). Any other proper name refuses, whether or not the release names a different issuer. Holders and "the Company" need no name. | `test_an_eps_attributed_to_a_name_the_release_gives_no_company_is_not_eps` (22 names × with and without another issuer), `test_an_eps_attributed_to_the_issuer_needs_the_release_to_name_the_issuer` |
-| NF3 | A count joined by an en dash, an em dash or a space ("Twenty–Six Weeks") was read from its second half, and two periods joined by `&`, `/`, a comma or two "Ended" clauses escaped the two-period rule. | Every such count declares no span, and so does every such join. One period with two dates ("Three Months Ended December 28, 2025 and December 29, 2024") still reads as one quarter. | `test_a_header_joining_periods_or_counting_in_an_unread_form_declares_no_span` (9 headers), `test_a_single_period_header_still_declares_its_span` (6 controls) |
-| NF4 | "Pro-Forma" (hyphenated) was not a qualifier in titles or in the EPS tail. | The qualifier list reads "pro forma" with a space, a hyphen or neither, and adds "comparable", "core", "underlying" and "recast". | `test_a_statement_title_qualified_as_another_basis_declares_no_basis` (6 titles); the EPS tail is covered by NF2's "Acme Pro-Forma" and "Proforma" cases |
+| NF2 | Any Title Case words passed as the parent: "Diluted EPS attributable to Goodwill Impairment" bound as reported EPS, and "… to Class A Common Stock" skipped the share-class rule K. | A proper name is the parent only when the release itself names a company by it with a corporate form ("Walmart Inc.", "The Coca-Cola Company"); the trailing words of that name also count ("Procter & Gamble"). Any other proper name refuses, whether or not the release names a different issuer. Holders and "the Company" need no name. The third review found the check accepted a company named anywhere in the release; see F3. | `test_an_eps_attributed_to_a_name_the_release_gives_no_company_is_not_eps` (22 names × with and without another issuer), `test_an_eps_attributed_to_the_issuer_needs_the_release_to_name_the_issuer` |
+| NF3 | A count joined by an en dash, an em dash or a space ("Twenty–Six Weeks") was read from its second half, and two periods joined by `&`, `/`, a comma or two "Ended" clauses escaped the two-period rule. | Every such count declares no span, and so does every such join. The third review found more dash spellings and joins; see F1 and F2. One period with two dates ("Three Months Ended December 28, 2025 and December 29, 2024") still reads as one quarter. | `test_a_header_joining_periods_or_counting_in_an_unread_form_declares_no_span` (9 headers), `test_a_single_period_header_still_declares_its_span` (6 controls) |
+| NF4 | "Pro-Forma" (hyphenated) was not a qualifier in titles or in the EPS tail. | The qualifier list reads "pro forma" with a space, a hyphen or neither, and adds "comparable", "core", "underlying" and "recast". | `test_a_statement_title_qualified_as_another_basis_declares_no_basis` (6 titles). The EPS tail had no test of its own: NF2 refuses "Acme Pro-Forma" and "Proforma" before the tail is read. See F5. |
 
 NOTE (fails closed, recorded as residual yield): a segment restated across
 two tables now refuses where the base bound it. A company whose name contains
 "Core" also fails closed under NF4.
+
+### Fail-closed hardening (third delta review)
+
+The third review of the NF1–NF4 fixes (`203f5e7d9524`) traced most of its
+findings to one cause: the binder read only the ASCII hyphen as a hyphen. It
+also found that the NF2 issuer check accepted any company the release named
+anywhere. Each new test fails on `203f5e7d9524` for every shape it names and
+passes now. The exceptions are two controls (layout table, self-reference
+first), which pass on both and guard the shape Walmart's releases use.
+
+**Dash fold.** Where a row label, a caption or a period header enters the
+binder, U+2010–U+2015, U+2212, U+FE63 and U+FF0D read as "-" and a soft
+hyphen (U+00AD) is dropped. Value cells are never folded, so every receipt
+still replays its literal against the raw source. `units_source`,
+`basis_source` and concept slugs keep the printed text.
+
+| Finding | Shape | Now | Test |
+|---|---|---|---|
+| BLOCKER (in the base) | A caption written "Non‑GAAP" (U+2011), "Non–GAAP", "NON&#8209;GAAP" or "Non GAAP" was not read as non-GAAP, so its revenue and EPS bound as GAAP. | After the fold, "non" followed by any dash, a space or nothing, then "GAAP", is non-GAAP when no letter precedes "non". | `test_a_non_gaap_caption_spelled_with_any_dash_declares_non_gaap` (6 spellings × alone and after a GAAP caption) |
+| F1, F1b | "Twenty‑Six Weeks" with U+2010, U+2011, U+00AD, U+2012 or U+2212, or with a spaced hyphen or en dash, read as one month. | The fold turns each into the hyphenated count NF3 already refuses; a spaced hyphen closes up before the count is read. | 7 headers added to `test_a_header_joining_periods_or_counting_in_an_unread_form_declares_no_span` |
+| F2 | Two periods joined by "/ FY2025", "& FY25", "and FY2025", an en dash, ";", "\|" or "Plus" read as one quarter. | A join may also be ";", "\|", any dash or "plus", and the second period may be written "FY", "FY25" or "FY2025". Each such header declares no span. | 7 headers added to the same test |
+| F3 | The issuer check accepted a company named anywhere: the EPS row's own label ("Diluted EPS attributable to Goodwill Impairment Co." bound), a subsidiary, a spin-off or an operating company. | The issuer is the first company the release names with a corporate form, in prose or in a layout table. "The Company" and "Our Company" name no one and are skipped. A name given in an attribution is skipped too, so an EPS line cannot vouch for itself. A company named after the issuer is not the issuer. | `test_an_eps_line_cannot_name_its_own_issuer` (2 labels × 2 openings), `test_only_the_first_company_the_release_names_is_the_issuer` (subsidiary, other company first), `test_the_issuer_is_named_in_a_layout_table_after_a_self_reference_or_with_ampersand_co` (3 controls) |
+| F4 | "Consolidated Statements of Operations - Pro–Forma" (en dash or U+2011) bound as GAAP. | The fold makes it the hyphenated qualifier NF4 reads, so the title declares no basis. | 2 titles added to `test_a_statement_title_qualified_as_another_basis_declares_no_basis` |
+| F5 | Reverting the EPS-tail lookahead to `pro\s+forma` broke no test. | The new test names the issuer "Acme Pro-Forma Inc.", so NF2 accepts the name and only the tail can refuse. Reverting the lookahead fails both of its cases. | `test_an_issuer_named_pro_forma_still_refuses_a_pro_forma_attribution` (hyphen, U+2011) |
+| F6 | Since the NF2 fix, lowercase "attributable to the company" binds; `c6bf2b2e3f07` refused it. | This binding is intended: "the company" is the issuer's self-reference in either case. | a lowercase control added to `test_an_eps_attributed_to_the_parent_or_its_holders_is_eps` |
+
+One change makes a line bind that refused on `203f5e7d9524`. "JPMorgan Chase
+& Co." now names "JPMorgan Chase", because a trailing "&" is dropped with the
+suffix, so "Diluted earnings per share attributable to JPMorgan Chase" binds
+(the `ampersand-co` control). One existing control in
+`test_an_eps_attributed_to_the_parent_or_its_holders_is_eps` changed: "… to
+common stockholders of Acme, Inc." now needs the release to open on "Acme,
+Inc.", because under F3 a name in the label cannot vouch for itself.
+
+NOTE (fails closed, recorded as residual yield):
+
+- An issuer whose corporate form the rule does not read names no one, so its
+  attributed EPS lines refuse. Examples are "Johnson & Johnson" (no suffix),
+  "Mastercard Incorporated" ("Incorporated" is not a listed suffix) and
+  "Bank of America Corporation" (registers as "america").
+- A release that names another company first (an adviser, a co-issuer) refuses
+  its attributed EPS lines rather than bind another company's.
+- "Fiscal Year 2026 - Fourth Quarter" now reads as a dash join and declares no
+  span. "Fourth Quarter, Fiscal 2026" already declared none after NF3.
+- Guidance sentences are not folded. A guidance figure binds only when its
+  sentence names non-GAAP, so a guidance sentence spelling it with a Unicode
+  hyphen refuses as `basis_undeclared`.
+
+The census rerun on this head equals the NF baseline exactly: 31 parsed, 54
+projected, 29 with EPS, 25 with revenue, 208 figures bound, and no figure
+changed. The live six bind the same values.
 
 A release that truly does not state EPS still fails closed on EPS:
 `test_a_release_that_states_no_eps_fails_closed_on_eps` (no-eps-row,

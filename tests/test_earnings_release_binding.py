@@ -1055,10 +1055,11 @@ def test_an_eps_attributed_to_anything_but_the_parent_is_not_eps(label: str) -> 
          "Diluted earnings per share attributable to Procter &amp; Gamble"),
         ("Acme Holdings, Inc.", "Diluted EPS attributable to Acme Holdings common stockholders"),
         ("Acme Holdings, Inc.", "Diluted EPS attributable to common stockholders of Acme Holdings"),
-        ("", "Diluted earnings per share attributable to common stockholders of Acme, Inc."),
+        ("Acme, Inc.", "Diluted earnings per share attributable to common stockholders of Acme, Inc."),
         ("", "Diluted EPS attributable to common stockholders"),
         ("", "Diluted EPS attributable to the Company's common stockholders"),
         ("", "Diluted EPS attributable to the Company"),
+        ("", "Diluted EPS attributable to the company"),
     ],
 )
 def test_an_eps_attributed_to_the_parent_or_its_holders_is_eps(issuer: str, label: str) -> None:
@@ -1252,6 +1253,8 @@ def test_an_eps_attributed_to_the_issuer_needs_the_release_to_name_the_issuer() 
         "Consolidated Statements of Earnings - Core",
         "Consolidated Statements of Operations, As Recast",
         "Consolidated Statements of Earnings - Underlying",
+        "Consolidated Statements of Operations - Pro–Forma",
+        "Consolidated Statements of Operations - Pro‑Forma",
     ],
 )
 def test_a_statement_title_qualified_as_another_basis_declares_no_basis(caption: str) -> None:
@@ -1274,10 +1277,27 @@ def test_a_statement_title_qualified_as_another_basis_declares_no_basis(caption:
         "Quarter &amp; Year Ended December 28, 2025",
         "Quarter Ended December 28, 2025 and Year Ended December 28, 2025",
         "Three Months Ended, and Year Ended December 28, 2025",
+        "Twenty‐Six Weeks Ended December 28, 2025",
+        "Twenty‑Six Weeks Ended December 28, 2025",
+        "Twenty­Six Weeks Ended December 28, 2025",
+        "Twenty‒Six Weeks Ended December 28, 2025",
+        "Twenty−Six Weeks Ended December 28, 2025",
+        "Twenty - Six Weeks Ended December 28, 2025",
+        "Twenty – Six Weeks Ended December 28, 2025",
+        "Fourth Quarter / FY2025 Ended December 28, 2025",
+        "Fourth Quarter &amp; FY25 Ended December 28, 2025",
+        "Fourth Quarter and FY2025 Ended December 28, 2025",
+        "Fourth Quarter – Fiscal Year Ended December 28, 2025",
+        "Fourth Quarter; Fiscal Year Ended December 28, 2025",
+        "Fourth Quarter | Full Year Ended December 28, 2025",
+        "Fourth Quarter Plus Fiscal Year Ended December 28, 2025",
     ],
     ids=["en-dash-count", "em-dash-count", "spaced-count", "unlisted-spaced-count",
          "ampersand-join", "slash-join", "bare-ampersand-join", "two-ended-clauses",
-         "comma-and-join"],
+         "comma-and-join", "hyphen-count", "non-breaking-hyphen-count", "soft-hyphen-count",
+         "figure-dash-count", "minus-count", "spaced-hyphen-count", "spaced-en-dash-count",
+         "slash-fy-join", "ampersand-fy-join", "and-fy-join", "en-dash-join", "semicolon-join",
+         "pipe-join", "plus-join"],
 )
 def test_a_header_joining_periods_or_counting_in_an_unread_form_declares_no_span(header: str) -> None:
     """NF3: every spelling of a count or a join the span reader cannot resolve refuses."""
@@ -1300,6 +1320,84 @@ def test_a_header_joining_periods_or_counting_in_an_unread_form_declares_no_span
 def test_a_single_period_header_still_declares_its_span(header: str, months: int) -> None:
     """NF3 control: two dates of one period are not two periods."""
     assert fig._declared_period_months(header) == months
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# The third delta review's findings: any dash is a hyphen, and the issuer is
+# the company the release names first.
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.parametrize(
+    "caption",
+    ["Non‑GAAP Results", "Non–GAAP Results", "NON&#8209;GAAP RESULTS", "Non GAAP Results",
+     "Non‐GAAP Results", "Non−GAAP Results"],
+    ids=["non-breaking-hyphen", "en-dash", "entity-hyphen", "space", "hyphen", "minus"],
+)
+@pytest.mark.parametrize("after_gaap", [False, True], ids=["alone", "after-gaap"])
+def test_a_non_gaap_caption_spelled_with_any_dash_declares_non_gaap(caption: str, after_gaap: bool) -> None:
+    """A Unicode hyphen does not turn a non-GAAP section into a GAAP one."""
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    lead = _GAAP_CAPTION if after_gaap else ""
+    revenue = _extract(_statement(rows, caption=f"{lead}<div>{caption}</div>")).figure("revenue")
+    assert revenue is not None
+    assert (revenue.value, revenue.basis) == (8412.0, fig.Basis.NON_GAAP.value)
+
+
+@pytest.mark.parametrize(
+    "label",
+    ["Diluted EPS attributable to Goodwill Impairment Co.",
+     "Diluted EPS attributable to common stockholders of Goodwill Impairment Co."],
+)
+@pytest.mark.parametrize("issuer", ["", "Walmart Inc."], ids=["no-issuer", "other-issuer"])
+def test_an_eps_line_cannot_name_its_own_issuer(label: str, issuer: str) -> None:
+    """The name an attribution gives is what is checked, so it cannot also be the issuer."""
+    result = _extract(_eps_statement(label, issuer))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+@pytest.mark.parametrize(
+    ("opening", "target"),
+    [
+        ("Walmart Inc. reports results.</div><div>Flipkart Ltd. is a subsidiary of Walmart.", "Flipkart"),
+        ("Acme Advisors LLC advised on the offering.</div><div>Walmart Inc. reports results.", "Walmart"),
+    ],
+    ids=["subsidiary-named-later", "other-company-named-first"],
+)
+def test_only_the_first_company_the_release_names_is_the_issuer(opening: str, target: str) -> None:
+    """A subsidiary is not the issuer; a release naming another company first refuses (fail closed)."""
+    result = _extract(_eps_statement(f"Diluted EPS attributable to {target}", opening))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+@pytest.mark.parametrize(
+    ("opening", "label"),
+    [
+        ("<table><tr><td>Walmart Inc. reports results.</td></tr></table>",
+         "Diluted EPS attributable to Walmart"),
+        ("The Company and Walmart Inc. report results.", "Diluted EPS attributable to Walmart"),
+        ("JPMorgan Chase &amp; Co. reports results.",
+         "Diluted earnings per share attributable to JPMorgan Chase"),
+    ],
+    ids=["layout-table", "self-reference-first", "ampersand-co"],
+)
+def test_the_issuer_is_named_in_a_layout_table_after_a_self_reference_or_with_ampersand_co(
+    opening: str, label: str
+) -> None:
+    """Walmart sets its release in layout tables; "The Company" names no one; "& Co." is a suffix."""
+    eps = _extract(_eps_statement(label, opening)).figure("eps_diluted")
+    assert eps is not None
+    assert (eps.value, eps.basis) == (1.23, fig.Basis.GAAP.value)
+
+
+@pytest.mark.parametrize("hyphen", ["-", "‑"], ids=["hyphen", "non-breaking-hyphen"])
+def test_an_issuer_named_pro_forma_still_refuses_a_pro_forma_attribution(hyphen: str) -> None:
+    """The tail refuses any hyphenated pro forma, even when the release names a company by it."""
+    name = f"Acme Pro{hyphen}Forma"
+    result = _extract(_eps_statement(f"Diluted EPS attributable to {name}", f"{name} Inc."))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
 
 
 # ─────────────────────────────────────────────────────────────────────────────
