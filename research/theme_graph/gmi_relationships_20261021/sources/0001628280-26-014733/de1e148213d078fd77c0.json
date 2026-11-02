@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-04T22:20:43Z",
+ "accession": "0001628280-26-014733",
+ "cik": "0001438423",
+ "doc_byte_length": 1326156,
+ "doc_sha256": "d1e239f43c04a857c00616b6a24a5e30b6a6b5b94eb3d640ec9b2de9e4aa1245",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-04",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mram-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 204387,
+  "byte_start": 203987,
+  "normalized": "We have entered into strategic relationships to manufacture products and develop new manufacturing process technologies and products. These relationships include our joint development agreement with GLOBALFOUNDRIES to develop advanced MTJ technology and STT-MRAM. These relationships are subject to various risks that could adversely affect the value of our investments and our results of operations.",
+  "normalized_sha256": "de1e148213d078fd77c0348cfe8307d54b49c4f3774ea3f3572683292ce99b6f",
+  "raw": "We have entered into strategic relationships to manufacture products and develop new manufacturing process technologies and products. These relationships include our joint development agreement with GLOBALFOUNDRIES to develop advanced MTJ technology and STT-MRAM. These relationships are subject to various risks that could adversely affect the value of our investments and our results of operations.",
+  "raw_sha256": "de1e148213d078fd77c0348cfe8307d54b49c4f3774ea3f3572683292ce99b6f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1438423/000162828026014733/mram-20251231.htm",
+ "xbrl_contexts": []
+}

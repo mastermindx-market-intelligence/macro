@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-24T21:17:35Z",
+ "accession": "0001193125-26-067039",
+ "cik": "0000026058",
+ "doc_byte_length": 5248029,
+ "doc_sha256": "5037d30798b317ad55ccd1372d4a9748b41875cf99ccf976ef7c91368a1a597f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "cts-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1828700,
+  "byte_start": 1826680,
+  "normalized": "Toyota Motor Corporation 11.2% 12.2%",
+  "normalized_sha256": "c1cf733352403a97524a90781aa4c84b9a85d8ac30f0d0c556fc7d79c268fe81",
+  "raw": "Toyota Motor Corporation</span></p></td>\n           <td style=\"padding-top:0.01in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:left;\"><span style=\"white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n           <td style=\"padding-top:0.01in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_73a97129-2996-4780-9976-c8f8303df7fb\" contextRef=\"C_ad585e6f-1b82-41a2-aa37-e2957879bae4\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"3\" format=\"ixt:num-dot-decimal\">11.2</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">%</span></p></td>\n           <td style=\"padding-top:0.01in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n           <td style=\"padding-top:0.01in;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:center;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_587941ec-504e-42bd-b2af-58aa878b24c9\" contextRef=\"C_94d8f9f7-964f-415e-b85f-3107cd8f570a\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"3\" format=\"ixt:num-dot-decimal\">12.2</ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">%",
+  "raw_sha256": "f331a140121401511ec9fa7877e472e114b2c4e9d80f1a8ca07d18166af3733a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/26058/000119312526067039/cts-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 30805,
+   "byte_start": 30099,
+   "context_ref": "C_94d8f9f7-964f-415e-b85f-3107cd8f570a",
+   "raw": "<xbrli:context id=\"C_94d8f9f7-964f-415e-b85f-3107cd8f570a\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000026058</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">cts:ToyotaMotorCorporationMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "3a4c7308040b7bdba0be47c601cdb88b0a975fdbebbf6fd250c1b854f1d588a1"
+  }
+ ]
+}

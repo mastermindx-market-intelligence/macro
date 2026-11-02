@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-25T22:10:23Z",
+ "accession": "0001104659-26-034697",
+ "cik": "0001649752",
+ "doc_byte_length": 1622055,
+ "doc_sha256": "3d935d1d878c18a1384040e4daa11959c4fb8876a4b5efec11218b3f9edd471d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-26",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nmg-20251231xex99d1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 134514,
+  "byte_start": 133679,
+  "normalized": "The Corporation is pursuing this opportunity via a collaboration with Caterpillar Inc. (“Caterpillar”) for the development of an integrated zero-emission solution for the Matawinie Mine encompassing the fleet, charging and energy storage infrastructure, as well as maintenance service. Definitive agreements between the Corporation and Caterpillar provide a framework for the research and development of equipment, preferential supply arrangements once such machines become commercially available, and fleet leasing or acquisition via Caterpillar’s Job Site Solutions (see “Three-Year History – Fiscal Year Ended December 31, 2023 of this Annual Information Form – Agreements with Caterpillar”).",
+  "normalized_sha256": "2e2950851c64e3697d354254f0cd05f73172c4491206252ce4da7d2a68e99655",
+  "raw": " The Corporation is pursuing this opportunity via a collaboration with Caterpillar&#160;Inc. (&#8220;<b style=\"font-weight:bold;\">Caterpillar</b>&#8221;) for the development of an integrated zero-emission solution for the Matawinie Mine encompassing the fleet, charging and energy storage&#160;infrastructure, as well as maintenance service. Definitive agreements between the Corporation and Caterpillar provide a framework for the research and development of equipment, preferential supply arrangements once such machines become commercially available, and fleet leasing or acquisition via Caterpillar&#8217;s Job Site Solutions (see &#8220;<i style=\"font-style:italic;\">Three-Year History&#160;&#8211; Fiscal&#160;Year Ended December&#160;31, 2023 of this Annual Information Form&#160;&#8211; Agreements with Caterpillar</i>&#8221;).",
+  "raw_sha256": "d93399db21ca1dc461e75bd0d9e3560061efe3c42d3308c1a22ff106ccc2f1b4"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1649752/000110465926034697/nmg-20251231xex99d1.htm",
+ "xbrl_contexts": []
+}

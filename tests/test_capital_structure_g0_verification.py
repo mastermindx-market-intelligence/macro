@@ -650,6 +650,7 @@ def finding(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Any]:
     )
     from engine.capital_structure.rule_applicability import build_rule_pack
     from engine.capital_structure.state_bundle import (
+        DOCUMENT_LEDGER_FILENAME,
         issuer_inputs,
         state_from_record,
         then_known_state,
@@ -696,7 +697,12 @@ def finding(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Any]:
     # SPEC 3c — the then-known derivation, exactly as the app performs it.
     state = None
     try:
-        inputs = issuer_inputs(bundle, generation, issuer_id)
+        inputs = issuer_inputs(
+            bundle,
+            generation,
+            issuer_id,
+            document_terms_ledger=DATA_ROOT / DOCUMENT_LEDGER_FILENAME,
+        )
         moments = sorted(
             str(event["point_in_time"]["available_at"])
             for event in inputs.events

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-30T10:04:15Z",
+ "accession": "0001193125-26-193757",
+ "cik": "0001033767",
+ "doc_byte_length": 5417002,
+ "doc_sha256": "b2a2f75bc31f2aed98ca636c2929b0420cd4f307d5ebfea0c48fe198bd6cd8c5",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-30",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "d91630d20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1112260,
+  "byte_start": 1111814,
+  "normalized": "We have entered into various patent cross-licenses with major technology companies, including a number of leading international semiconductor companies, such as IBM and Broadcom Inc. Our cross licenses may have different terms and expiry dates. Depending upon our competitive position and strategy, we may or may not renew our cross licenses and further, we may enter into different and/or additional technology and/or IP licenses in the future.",
+  "normalized_sha256": "537da0fdb62992881fc93dbf867487e5ba49e90fc511d8f543f744b297eb8335",
+  "raw": "We have entered into various patent cross-licenses with major technology companies, including a number of leading international semiconductor companies, such as IBM and Broadcom Inc. Our cross licenses may have different terms and expiry dates. Depending upon our competitive position and strategy, we may or may not renew our cross licenses and further, we may enter into different and/or additional technology and/or IP licenses in the future. ",
+  "raw_sha256": "0f30c947643d0019b729186cc045fdbd9e14fee4ad1afb22829bcd262ec72c7a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1033767/000119312526193757/d91630d20f.htm",
+ "xbrl_contexts": []
+}

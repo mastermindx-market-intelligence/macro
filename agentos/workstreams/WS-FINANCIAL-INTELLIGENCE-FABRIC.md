@@ -150,26 +150,31 @@ decisions:
   - DEC:FIF-PACK-GENERALIZATION-DEV-CORPUS
   - DEC:FIF-Q0-SPLIT-DECISION-2-SECOND-LABELING-WAVE
   - DEC:FIF-Q1-EVALUATOR-ENVELOPE-SIC-SOURCE-FOLLOWS-PRODUCTION-RESOLVER
+  - DEC:FIF-Q0-SPLIT-DECISION-3-PK12-BIOTECH-HELD-OUT
+  - DEC:FIF-PACK-MAPPING-DIGEST-PIN-RE-RECORD
 next_action: >
-  2026-11-01 post-labels ladder (handoff
-  FINANCIAL-INTELLIGENCE-FABRIC-2026-10-31-wave2-labels-and-pin-repair).
-  On main: Q1 generation two (#10332 → 3a4128bc, honest negative for all twelve
-  packs at the predeclared 0.80 floor); wave-two labels from ten independent
-  labeler lanes merged unchanged in #10336 (PK01–PK03), #10337 (PK04–PK06) and
-  #10343 (PK07, PK08, PK11, PK12); the generation-pin repair #10342 and its
-  fail-closed follow-up #10345 (→ cfc983a4). PK09 has no wave-two labels: lane
-  fif-heldout-lab2-pk09-20261031-r1 never ran and its id is unspent. Ladder:
-  (1) WAITING_CAPACITY on ubuntu2 (74.0 GiB free, admission needs strictly more
-  than 75) via Mastermind #1632 comments 6548669745 and 6553549504; the seat
-  frees nothing and launches nothing into a known refusal; (2) after the owner
-  RELEASE, run the PK09 labeler on ubuntu2, judge by artifact, batch-four PR with
-  labels unchanged, merge pinned; (3) ask #1632 to release the consumed PK09 tree,
-  then Q1 generation three into reports/q1_held_out_20261031_g3 under
-  fif-heldout-eval3-20261031-r1, independent review fif-heldout-eval3rev-20261031-r1,
-  PR merged pinned; (4) A37 re-adjudication only from the generation-three INDEX;
-  (5) per-pack repairs from failed-family descriptions against the dev corpus,
-  one PR + review each. PK10 stays not_measurable. A42/A45/A46 remain
-  EXACT_HUMAN_GATE.
+  2026-11-01 dev-corpus repair ladder (handoff
+  FINANCIAL-INTELLIGENCE-FABRIC-2026-11-01-dev-corpus-repairs-and-split-3).
+  On main: PK09 wave-two labels (#10382), Q1 generation three (#10400, honest
+  negative at the predeclared 0.80 floor), the g3 family diagnosis (#10430), the
+  dev-corpus instrument (#10440), the counts-only Q0 label-conformance gate
+  (#10436), Q0 split decision 3 (#10453, PK12 biotech cohort), and dev-corpus pack
+  repairs PK11 (#10445), PK03 (#10451), PK12 (#10458) and PK07 (#10463). Each pack repair is one
+  main-based commit with add-only tests and a regenerated A34 ledger; held-out
+  dispositions do not move until fresh labels under a new Q0 split decision.
+  Ladder: (1) merge the open repairs pinned to their reviewed heads as CI
+  concludes: PK05 (#10461), PK01 (#10465), PK02 (#10467, pins
+  re-recorded under DEC:FIF-PACK-MAPPING-DIGEST-PIN-RE-RECORD), and the split-3
+  capture (#10464: 18 of 24 predeclared 10-K rows admitted; the 6 refusals are
+  capture verdicts, and a second split-3 capture needs a reviewed member-naming /
+  embedded-linkbase fix first); (2) PK08 (#10452) after its fourth independent
+  review; PK04 and PK09 third repairs after review FAILs on narrow guard / pin
+  findings; PK01 hardening follow-up; (3) the conformance gate learns pack-scoped
+  split cohorts from an explicit --contract (never a default); (4) the PK12 wave-3
+  independent labeler over the admitted split-3 rows, the gate with --contract,
+  then Q1 generation four into a new reports directory under a new evaluator lane
+  id with independent review; (5) A37 re-adjudication only from the g4 INDEX.
+  PK10 stays not_measurable. A42/A45/A46 remain EXACT_HUMAN_GATE.
 landmines:
   - >
     P0 no-reclaim (Meta-CEO via Grok Secretary, Mastermind #1632, 2026-10-31):
@@ -247,6 +252,10 @@ landmines:
     (additional evidence: PR #6157 merged 2026-08-21T16:08:36Z while HOLD FOR SOL
     remained in the body and comments).
 do_not_redo:
+  - Do not rebuild or re-review the merged dev-corpus work: #10382 (PK09 wave-two labels), #10400 (Q1 g3), #10430 (g3 diagnosis), #10435, #10440, #10436, #10445 (PK11), #10451 (PK03), #10453 (split decision 3), #10458 (PK12) or #10463 (PK07); returns are accepted on the PRs.
+  - Do not edit reports/q1_held_out_20261031_g3 (#10400); generation four is a new directory under a new evaluator lane id.
+  - Do not re-record any pack's pinned envelope literals outside DEC:FIF-PACK-MAPPING-DIGEST-PIN-RE-RECORD (masked-envelope sha256 equal, pack-scoped, one repair at a time).
+  - Spent lane ids (2026-11-01): fif-pk04dev2rev-20261101-r1/-r2; fif-pk08devrev4-20261101-r1/-r2/-r3; fif-heldout-lab3-pk12-20261101-r1/-r2/-r3; fif-q0conf-split3-20261101-r1/-r2/-r3; fif-pk09dev3-20261101-r1; fif-pk04dev3-20261101-r1; fif-heldout-cap3-20261101-r1; fif-split3rev-20261101-r1.
   - Do not re-review or re-run #10332, #10336, #10337, #10342, #10343 or #10345 (merged, records on the PRs). Spent lane ids: fif-heldout-lab2-pk01, pk02, pk04, pk05, pk06, pk07, pk08, pk11, pk12 -20261031-r1; fif-heldout-lab2-pk03-20261031-r1 and -r2; fif-q1pinsrev-20261031-r1 and -r2; fif-q1pinsfcrev-20261031-r1 and -r2. fif-heldout-lab2-pk09-20261031-r1 is unspent. Labels and seals are never authored, edited or harmonised by the seat.
   - Do not re-review, re-run or widen #10312, #10314, #10316 or #10322 (returns accepted on the PRs; a second wave-two capture run needs a seat decision; the envelope enum stays frozen per DEC:FIF-Q1-EVALUATOR-ENVELOPE-SIC-SOURCE-FOLLOWS-PRODUCTION-RESOLVER).
   - Do not edit reports/q1_held_out_20261031_g2 once merged (#10332); generation three is a new directory under a new evaluator lane id.
@@ -429,6 +438,10 @@ waves:
     title: Neural Web, outcomes, and Prophet shadow
     status: todo
     depends_on: [FIF-4]
+    next_action: >
+      The Prophet shadow component is EXCLUDED from the 2026-10-11
+      commission (masterplan line 19) — excluded, not done. Neural Web and
+      outcomes stay in scope.
   - id: FIF-11
     title: Broad scale and independent closure
     status: todo
@@ -590,3 +603,67 @@ literal-match law and the lane-host dependency split are recorded as
 `DSC:CONTRACT-DELTA-UNRUN-SUITE-GATE-IS-LITERAL-MATCH` and
 `DSC:FIF-LANE-HOST-DEPENDENCY-SPLIT`. Full state, evidence and obligations:
 `agentos/handoffs/FINANCIAL-INTELLIGENCE-FABRIC-2026-10-12-fif-e2e-wave1.md`.
+
+## Commission scope and execution envelope (2026-11-01)
+
+### Excluded programs (A50): excluded, not done
+
+The 2026-10-11 commission (masterplan at Macro `44e3c09b`,
+`research/financial_intelligence_fabric/e2e_20261011/MASTERPLAN.md` line 19)
+excludes these programs from FIF delivery. Each one is **excluded from this
+commission, not done**. FIF may consume an existing owner's output, but it
+improves none of them:
+
+| Program | FIF status |
+|---|---|
+| Single-Name Intelligence (SNI) | excluded, not done |
+| Grey Deer Risk | excluded, not done |
+| Market OS | excluded, not done |
+| Mastermind OS | excluded, not done |
+| Options Intelligence | excluded, not done |
+| Prophet, including the original FIF-10 Prophet shadow component | excluded, not done |
+| Market Ontology | excluded, not done |
+| GMI | excluded, not done |
+| Executive OS | excluded, not done |
+| Subagent Fabric (buildout) | excluded, not done |
+| BioCatalyst clinical prediction | excluded, not done |
+| New capital-risk or relationship engines | excluded, not done |
+
+The FIF-10 wave keeps Neural Web and outcomes. Its Prophet shadow component
+is recorded as excluded, never as completed. No FIF PR implements any program
+in this table.
+
+### Single global execution envelope (A49)
+
+Masterplan line 149 sets one global envelope. It covers the principal, any
+coordinators the runtime counts, workers, reviewers and repair reserves, with
+no per-coordinator multiplication of concurrency or budget. FIF ran inside
+that one envelope:
+
+- **Shape.** One principal seat (session 96dc937a) adjudicated and
+  integrated. All build, label, capture, evaluation and review labor ran as
+  admitted Fabric lanes (`ext/remote_sub.sh`, GLM pool). Each lane had a
+  frozen packet, its own run id and its own host admission. No native labor
+  subagent and no simulated fleet.
+- **Admission is final per launch.** A host refusal (temperature, disk
+  below the staging reserve, REFUSED) ended that launch. The seat never
+  edited admission configuration and never ran the refused work directly
+  on the refusing host. A later launch used a fresh run id, never a reused
+  one.
+- **Consumed returns.** Every DONE or BLOCKED return was read and
+  adjudicated by the seat before any pull, PR or matrix change.
+  Independent review lanes are separate run ids; the seat's own review is
+  never counted as independent.
+- **Lane-ledger reconciliation, 2026-10-20.** 143 rows, 0 non-terminal.
+- **Lane-ledger reconciliation, 2026-11-01** (seat ledger, 2026-10-31T06:34Z
+  to 2026-11-01T07:59Z). 64 launches (39 build, 25 review), all terminal:
+
+  | Outcome | Count |
+  |---|---|
+  | DONE, return consumed | 43 |
+  | BLOCKED, return consumed | 4 |
+  | Early exit, superseded by a later run id that finished DONE | 2 |
+  | Refused at admission (9 temperature, 3 disk, 1 REFUSED) | 13 |
+  | Failed start, no output (rc=3) | 2 |
+
+  0 non-terminal rows; 0 effect-unknown. Spent run ids are never relaunched.

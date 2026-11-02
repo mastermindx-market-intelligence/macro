@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-24T22:09:18Z",
+ "accession": "0001683168-26-001291",
+ "cik": "0001420520",
+ "doc_byte_length": 985518,
+ "doc_sha256": "53162b9c29971613da74771721791e7bf68bf836d00857c220a3c34735628c19",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "atomera_i10k-123125.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 140964,
+  "byte_start": 140399,
+  "normalized": "Our principal business objective is to enter into commercial license agreements that enable our customers to manufacture and sell MST-enabled products, generating license revenues and ongoing royalties. We also license our MSTcad® software to customers, enabling them to simulate the effects of MST on their products using Synopsys, Inc.’s technology computer-aided design, or TCAD, software. In addition, we offer fee-based integration engineering services to customers evaluate the effects of MST as integrated into their manufacturing flow.",
+  "normalized_sha256": "d996ff4621640497375b6eec67386625209b1a1b93f168db0b9bb60d1e98c244",
+  "raw": "Our principal business objective\nis to enter into commercial license agreements that enable our customers to manufacture and sell MST-enabled products, generating license\nrevenues and ongoing royalties. We also license our MSTcad<sup>&#174;</sup> software to customers, enabling them to simulate the effects\nof MST on their products using Synopsys, Inc.&#8217;s technology computer-aided design, or TCAD, software. In addition, we offer fee-based\nintegration engineering services to customers evaluate the effects of MST as integrated into their manufacturing flow.",
+  "raw_sha256": "23636ebd8aa20bc4ee6805697571aaa03654a353d0b9eb01b78a16d36a07a2ff"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1420520/000168316826001291/atomera_i10k-123125.htm",
+ "xbrl_contexts": []
+}
