@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-17T20:50:29Z",
+ "accession": "0001628280-26-057406",
+ "cik": "0002023554",
+ "doc_byte_length": 2223398,
+ "doc_sha256": "67db98cde04724db6c97f165d660b795179294112814bbf0a5411ad916651848",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-07-03",
+ "primary_document": "sndk-20260703.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1667493,
+  "byte_start": 1666669,
+  "normalized": "Subsequent to and in connection with the Transaction, Western Digital Technologies, Inc. (“WDT”, a WDC affiliate) entered into a five-year supply agreement with SDSS (the “Supply Agreement”) to purchase certain flash-based products with a minimum annual commitment of $550 million (the “minimum annual commitment”). On January 10, 2025, the Company and WDT entered into an assignment agreement, pursuant to which WDT assigned all of its rights and obligations under the Supply Agreement to the Company.",
+  "normalized_sha256": "a153703b70bf33ad9e2ef27ba40223dcc67f59592c0f02c3548e7d74c8282878",
+  "raw": "Subsequent to and in connection with the Transaction, Western Digital Technologies, Inc. (&#8220;WDT&#8221;, a WDC affiliate) entered into a <ix:nonNumeric contextRef=\"c-231\" name=\"us-gaap:LongtermPurchaseCommitmentPeriod\" format=\"ixt-sec:durwordsen\" id=\"f-977\">five-year</ix:nonNumeric> supply agreement with SDSS (the &#8220;Supply Agreement&#8221;) to purchase certain flash-based products with a minimum annual commitment of $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-231\" decimals=\"-6\" name=\"us-gaap:LongTermPurchaseCommitmentAmount\" scale=\"6\" id=\"f-978\">550</ix:nonFraction> million (the &#8220;minimum annual commitment&#8221;). On January 10, 2025, the Company and WDT entered into an assignment agreement, pursuant to which WDT assigned all of its rights and obligations under the Supply Agreement to the Company.",
+  "raw_sha256": "4db72413815cdd80757e5505fb6c559029c71b0cdb8cea62c9df9e3456db30e2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2023554/000162828026057406/sndk-20260703.htm",
+ "xbrl_contexts": []
+}

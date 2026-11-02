@@ -1,0 +1,52 @@
+{
+ "accepted_at": "2026-02-11T12:26:45Z",
+ "accession": "0001628280-26-007117",
+ "cik": "0001065059",
+ "doc_byte_length": 2784448,
+ "doc_sha256": "dc63cf5e83aaafc0d10aa993ddc7b84fa627e2ae68e19ff26a14d551103f4f0e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-11",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "leu-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2693405,
+  "byte_start": 2692497,
+  "normalized": "The ten largest customers in the Company’s LEU segment represented approximately 79% of total revenue for the year ended December 31, 2023. Revenue from Customer A, Customer B, and Customer C represented approximately 17%, 15%, and 13%, respectively, of total revenue for the year ended December 31, 2023.",
+  "normalized_sha256": "08702c211f0c5ab4a01aeaa548e0dd98e6206cd3ea0ee9a7c6b7710b1daccc80",
+  "raw": "The ten largest customers in the Company&#8217;s LEU segment represented approximately <ix:nonFraction unitRef=\"number\" contextRef=\"c-366\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1638\">79</ix:nonFraction>% of total revenue for the year ended December 31, 2023. Revenue from Customer A, Customer B, and Customer C represented approximately <ix:nonFraction unitRef=\"number\" contextRef=\"c-367\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1639\">17</ix:nonFraction>%, <ix:nonFraction unitRef=\"number\" contextRef=\"c-368\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1640\">15</ix:nonFraction>%, and <ix:nonFraction unitRef=\"number\" contextRef=\"c-369\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1641\">13</ix:nonFraction>%, respectively, of total revenue for the year ended December 31, 2023. ",
+  "raw_sha256": "f02546d424e5a9b0dd26bf927861d10887be06e5e150f8987107ec2380419546"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1065059/000162828026007117/leu-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 165861,
+   "byte_start": 165191,
+   "context_ref": "c-366",
+   "raw": "<xbrli:context id=\"c-366\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001065059</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">leu:TenLargestCustomersMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "0cccff6f971a1b9b0745a0edb20f01b6f6469d4ca9d591052b08f23e8fbeb65f"
+  },
+  {
+   "byte_end": 166530,
+   "byte_start": 165861,
+   "context_ref": "c-367",
+   "raw": "<xbrli:context id=\"c-367\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001065059</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">leu:A1stCustomerOver10Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "022c07b7059f58c08ad5275a0a9e1e67d8188987ebeff4edd04c1862ae49c2fa"
+  },
+  {
+   "byte_end": 167199,
+   "byte_start": 166530,
+   "context_ref": "c-368",
+   "raw": "<xbrli:context id=\"c-368\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001065059</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">leu:A2ndCustomerOver10Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "7840989eab8cd097bbb51ed97a7090482ec9dea80a3c4ae88d54347fe1bab57e"
+  },
+  {
+   "byte_end": 167868,
+   "byte_start": 167199,
+   "context_ref": "c-369",
+   "raw": "<xbrli:context id=\"c-369\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001065059</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">leu:A3rdCustomerOver10Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "c4df82671af44f20137bad753b33cca188d5cde435f886d175b2033c0e302574"
+  }
+ ]
+}

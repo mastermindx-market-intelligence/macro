@@ -1,0 +1,160 @@
+{% extends "_gmi_base.html.j2" %}
+{% from "_gmi_macros.html.j2" import t, tip, ic, arrow_long, mark, d, asof, sec, search_box, key, kind_tag, chain, tip_core, tip_ext, tip_adm, tip_held with context %}
+{% from "_gmi_head.html.j2" import head %}
+{% block title %}GMI Explorer — Theme map{% endblock %}
+{% block seo %}{% set seo_title = 'GMI Explorer — Theme map | Mastermind' %}{% set seo_desc = 'All ' ~ model.totals.micros ~ ' micro-themes on one census sheet: which hold an admitted company, which hold a proposed link, by category and by value-chain position.' %}{% set seo_path = 'gmi.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
+{% block body %}
+{% set A = model.totals.admitted_micros %}
+{% set M = model.totals.micros %}
+{% if A == 0 %}
+{% set sub_en = M ~ ' micro-themes mapped. None has an admitted company yet.' %}
+{% set sub_zh = '已绘制 ' ~ M ~ ' 个细分主题，尚无公司获准纳入。' %}
+{% elif A == 1 %}
+{% set sub_en = M ~ ' micro-themes mapped. 1 has an admitted company.' %}
+{% set sub_zh = '已绘制 ' ~ M ~ ' 个细分主题，其中 1 个已有获准纳入的公司。' %}
+{% else %}
+{% set sub_en = M ~ ' micro-themes mapped. ' ~ A ~ ' have an admitted company.' %}
+{% set sub_zh = '已绘制 ' ~ M ~ ' 个细分主题，其中 ' ~ A ~ ' 个已有获准纳入的公司。' %}
+{% endif %}
+{{ head([('Research','研究'),('Theme map','主题地图')], 'Theme map', '主题地图', sub_en, sub_zh, side=asof(model.asof)) }}
+{#- focus: the category/theme of the first theme link (the specimen hardcodes
+    semiconductors; production focuses the live focus, none without links) -#}
+{% if model.theme_links %}
+{% set focus_cat = model.micros[model.theme_links[0].micro_id].primary_path[0] %}
+{% set focus_theme = model.micros[model.theme_links[0].micro_id].primary_path[1] %}
+{% else %}
+{% set ns_focus = namespace(cat=none, theme=none) %}
+{% for c in model.cats %}{% if ns_focus.cat == none and c.micros %}{% set ns_focus.cat = c.id %}
+{% for th in c.themes %}{% if ns_focus.theme == none and th.micro_count > 0 %}{% set ns_focus.theme = th.id %}{% endif %}{% endfor %}
+{% endif %}{% endfor %}
+{% set focus_cat = ns_focus.cat %}
+{% set focus_theme = ns_focus.theme %}
+{% endif %}
+{#- census band: tally, lens tabs, legend, coverage census, chain census -#}
+<section class="gmi-band" aria-labelledby="census-h"><div class="gmi-band-card">
+<div class="gmi-tally">
+<div class="gmi-tally-lead"><span class="gmi-tally-num gmi-tally-num--lead">{{ model.totals.micros|num }}</span><span class="gmi-tally-lab">{{ t("micro-themes mapped", "个细分主题已绘制") }}</span></div>
+<div class="gmi-tally-group"><span class="gmi-tally-cap">{{ t("Made up of", "构成") }}</span><div class="gmi-tally-figs">
+<div class="gmi-tally-fig"><span class="gmi-tally-num">{{ model.totals.core|num }}</span><span class="gmi-tally-lab">{{ mark("acc") }}<span class="gmi-tally-txt">{{ t("Core set", "核心集") }}{{ tip_core() }}</span></span></div>
+<div class="gmi-tally-fig"><span class="gmi-tally-num">{{ model.totals.extended|num }}</span><span class="gmi-tally-lab">{{ mark("disp") }}<span class="gmi-tally-txt">{{ t("Extended · not counted", "扩展 · 不计入") }}{{ tip_ext() }}</span></span></div>
+</div></div>
+<div class="gmi-tally-group"><span class="gmi-tally-cap">{{ t("Core set so far", "核心集进展") }}</span><div class="gmi-tally-figs">
+<div class="gmi-tally-fig"><span class="gmi-tally-num">{{ model.totals.admitted_micros|num }}</span><span class="gmi-tally-lab">{{ mark("adm") }}<span class="gmi-tally-txt">{{ t("Admitted", "已纳入") }}{{ tip_adm() }}</span></span></div>
+<div class="gmi-tally-fig"><span class="gmi-tally-num">{{ model.totals.held|num }}</span><span class="gmi-tally-lab">{{ mark("held") }}<span class="gmi-tally-txt">{{ t("Held for review", "待审核") }}{{ tip_held() }}</span></span></div>
+</div></div>
+</div>
+<div>
+<div class="mx-sec"><h2 id="census-h"><span class="gmi-census--coverage">{{ t("Every micro-theme, by category", "按类别列出全部细分主题") }}</span><span class="gmi-census--chain">{{ t("Every micro-theme, by value-chain position", "按价值链位置列出全部细分主题") }}</span></h2></div>
+<div class="mx-tabset" role="tablist"><button type="button" role="tab" data-gmi-set-lens="coverage">{{ t("Review status", "审核状态") }}</button><button type="button" role="tab" data-gmi-set-lens="chain">{{ t("Value chain", "价值链") }}</button></div>
+{{ key() }}
+</div>
+<div class="gmi-census gmi-census--coverage">{% for c in model.cats %}
+{% set mids = c.micros|ordered %}
+{% if not mids %}
+<div class="gmi-cband gmi-cband--empty"><div class="gmi-cband-label"><span class="gmi-cband-name">{{ t(c.en, c.zh) }}</span><span class="gmi-cband-meta">0</span></div><div class="gmi-cells">{{ t("No micro-themes mapped yet", "尚未绘制细分主题") }}</div></div>
+{% else %}
+{% set kc = namespace(acc=0, disp=0, held=0, adm=0, core=0) %}
+{% for mid in mids %}{% set mv = model.micros[mid] %}{% if mv.kind == 'acc' %}{% set kc.acc = kc.acc + 1 %}{% elif mv.kind == 'disp' %}{% set kc.disp = kc.disp + 1 %}{% elif mv.kind == 'held' %}{% set kc.held = kc.held + 1 %}{% else %}{% set kc.adm = kc.adm + 1 %}{% endif %}{% if mv.tier == 'acceptance' %}{% set kc.core = kc.core + 1 %}{% endif %}{% endfor %}
+{% set core_cells -%}
+{%- for mid in mids %}{% if model.micros[mid].kind != 'disp' %}{{ mark(model.micros[mid].kind) }}{% endif %}{% endfor %}
+{%- endset %}
+{% set ext_cells -%}
+{%- for mid in mids %}{% if model.micros[mid].kind == 'disp' %}{{ mark("disp") }}{% endif %}{% endfor %}
+{%- endset %}
+<div class="gmi-cband{% if c.id == focus_cat %} gmi-cband--focus{% endif %}"><div class="gmi-cband-label"><span class="gmi-cband-name">{{ t(c.en, c.zh) }}</span><span class="gmi-cband-meta">{{ t(mids|length ~ ' · ' ~ kc.core ~ ' core', mids|length ~ ' · 核心 ' ~ kc.core) }}</span></div><div class="gmi-cells"><span class="gmi-vh">{{ t(mids|length ~ ' micro-themes: ' ~ kc.acc ~ ' core, ' ~ kc.disp ~ ' extended, ' ~ kc.held ~ ' held, ' ~ kc.adm ~ ' admitted', mids|length ~ '个细分主题：核心' ~ kc.acc ~ '个，扩展' ~ kc.disp ~ '个，待审核' ~ kc.held ~ '个，已纳入' ~ kc.adm ~ '个') }}</span>{{ core_cells }}{% if core_cells and ext_cells %}<i class="gmi-cells-sep" aria-hidden="true"></i>{% endif %}{{ ext_cells }}</div></div>
+{% endif %}
+{% endfor %}</div>
+<div class="gmi-census gmi-census--chain">{% for lane in [('upstream', 'Upstream', '上游'), ('midstream', 'Midstream', '中游'), ('downstream', 'Downstream', '下游'), ('enabler', 'Enabler', '赋能'), (none, 'Not set yet', '尚未设定')] %}
+{% set lm = [] %}
+{% for mid, mv in model.micros.items() %}{% if mv.vcp == lane[0] %}{% set _ = lm.append(mid) %}{% endif %}{% endfor %}
+{% set mids = lm|ordered %}
+{% set kc = namespace(acc=0, disp=0, held=0, adm=0) %}
+{% for mid in mids %}{% set mv = model.micros[mid] %}{% if mv.kind == 'acc' %}{% set kc.acc = kc.acc + 1 %}{% elif mv.kind == 'disp' %}{% set kc.disp = kc.disp + 1 %}{% elif mv.kind == 'held' %}{% set kc.held = kc.held + 1 %}{% else %}{% set kc.adm = kc.adm + 1 %}{% endif %}{% endfor %}
+<div class="gmi-cband"><div class="gmi-cband-label"><span class="gmi-cband-name">{{ t(lane[1], lane[2]) }}</span><span class="gmi-cband-meta">{{ t(mids|length, mids|length) }}</span></div><div class="gmi-cells"><span class="gmi-vh">{{ t(mids|length ~ ' micro-themes: ' ~ kc.acc ~ ' core, ' ~ kc.disp ~ ' extended, ' ~ kc.held ~ ' held, ' ~ kc.adm ~ ' admitted', mids|length ~ '个细分主题：核心' ~ kc.acc ~ '个，扩展' ~ kc.disp ~ '个，待审核' ~ kc.held ~ '个，已纳入' ~ kc.adm ~ '个') }}</span>{% for mid in mids %}{{ mark(model.micros[mid].kind) }}{% endfor %}</div></div>
+{% endfor %}<p class="gmi-note gmi-note--chain">{{ t("Value-chain position is recorded for the extended set only. The core set’s positions are not recorded yet.", "仅扩展集记录了价值链位置；核心集的位置尚未记录。") }}</p></div>
+<p class="gmi-note">{{ t("Each square is one micro-theme. Shape carries meaning; colour only repeats it.", "每个方块代表一个细分主题。含义由形状表达，颜色仅作重复提示。") }}</p>
+</div></section>
+<div class="gmi-cols">
+<div class="gmi-col-main">
+<section class="gmi-panel">
+{{ sec("Browse the tree", "浏览主题树") }}
+{{ search_box('Search ' ~ model.totals.micros ~ ' micro-themes', '搜索 ' ~ model.totals.micros ~ ' 个细分主题', 'tree') }}
+<div class="gmi-panel gmi-panel--flush gmi-panel--bare">
+<div class="gmi-tree" role="tree">
+{#- The specimen's caret is ic("chev",16) with class gmi-trow-caret on the svg and
+    its "see all" row is ic("list",16) carrying the same class; the ic() macro cannot
+    add the class, so these two svgs are the specimen literals, byte for byte. -#}
+{% set caret -%}
+<svg class="gmi-trow-caret" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+{%- endset %}
+{% set blank -%}
+<span class="gmi-trow-caret" aria-hidden="true"></span>
+{%- endset %}
+{% set iclist -%}
+<svg class="gmi-trow-caret" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><path d="M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"/></svg>
+{%- endset %}
+{% for c in model.cats %}
+{% set cmids = c.micros|ordered %}
+{% if not cmids %}
+<div class="gmi-trow gmi-trow--empty" role="treeitem" aria-level="1" data-gmi-q="{{ c.en }} {{ c.zh }}">{{ blank }}<span class="gmi-trow-name">{{ t(c.en, c.zh) }}</span><span class="gmi-trow-meta">{{ t("None yet", "暂无") }}</span></div>
+{% else %}
+{% set is_open = c.id == focus_cat %}
+<div class="gmi-trow{% if is_open %} gmi-trow--open{% endif %}" role="treeitem" aria-level="1" aria-expanded="{{ 'true' if is_open else 'false' }}" tabindex="0" data-gmi-tree-id="{{ c.id }}" data-gmi-q="{{ c.en }} {{ c.zh }}">{{ caret }}<span class="gmi-trow-name">{{ t(c.en, c.zh) }}</span><span class="gmi-trow-strip" aria-hidden="true">{% for mid in cmids %}{{ mark(model.micros[mid].kind) }}{% endfor %}</span><span class="gmi-trow-meta">{{ cmids|length }}</span></div>
+{% for th in c.themes %}
+{% set th_open = th.id == focus_theme %}
+{% set inner_vis = is_open and th_open %}
+<div class="gmi-trow gmi-trow--l2{% if th_open %} gmi-trow--open{% endif %}" role="treeitem" aria-level="2" aria-expanded="{{ 'true' if th_open else 'false' }}" tabindex="-1" data-gmi-tree-id="{{ c.id }}/{{ th.id }}" data-gmi-tree-parent="{{ c.id }}" data-gmi-q="{{ th.en }} {{ th.zh }}"{% if not is_open %} hidden{% endif %}>{{ caret }}<span class="gmi-trow-name">{{ t(th.en, th.zh) }}</span><span class="gmi-trow-meta">{{ th.micro_count }}</span></div>
+{% set es = [] %}
+{% for s in th.subs %}{% if s.micros %}
+<div class="gmi-trow gmi-trow--l3" role="treeitem" aria-level="3" aria-expanded="false" tabindex="-1" data-gmi-tree-id="{{ c.id }}/{{ th.id }}/{{ s.id }}" data-gmi-tree-parent="{{ c.id }}/{{ th.id }}" data-gmi-q="{{ s.en }} {{ s.zh }}"{% if not inner_vis %} hidden{% endif %}>{{ caret }}<span class="gmi-trow-name">{{ t(s.en, s.zh) }}</span><span class="gmi-trow-meta">{{ s.micros|length }}</span></div>
+{% for mid in s.micros|ordered %}{% set mv = model.micros[mid] %}
+<div class="gmi-trow gmi-trow--l4" role="treeitem" aria-level="4" tabindex="-1" hidden data-gmi-tree-parent="{{ c.id }}/{{ th.id }}/{{ s.id }}" data-gmi-q="{{ mv.en }} {{ mv.zh }}"><span class="gmi-trow-caret gmi-trow-caret--mark">{{ mark(mv.kind) }}</span><span class="gmi-trow-name">{{ t(mv.en, mv.zh) }}</span><span class="gmi-trow-meta{% if mv.kind == 'held' %} gmi-ink-info{% endif %}">{{ kind_tag(mv.kind) }}</span></div>
+{% endfor %}
+{% else %}{% set _ = es.append(s) %}{% endif %}
+{% endfor %}
+{% for mid in th.direct_micros|ordered %}{% set mv = model.micros[mid] %}
+<div class="gmi-trow gmi-trow--l3" role="treeitem" aria-level="3" tabindex="-1" data-gmi-tree-parent="{{ c.id }}/{{ th.id }}" data-gmi-q="{{ mv.en }} {{ mv.zh }}"{% if not inner_vis %} hidden{% endif %}><span class="gmi-trow-caret gmi-trow-caret--mark">{{ mark(mv.kind) }}</span><span class="gmi-trow-name">{{ t(mv.en, mv.zh) }}</span><span class="gmi-trow-meta{% if mv.kind == 'held' %} gmi-ink-info{% endif %}">{{ kind_tag(mv.kind) }}</span></div>
+{% endfor %}
+{% if es %}
+<div class="gmi-trow gmi-trow--l3 gmi-trow--empty" data-gmi-tree-parent="{{ c.id }}/{{ th.id }}" data-gmi-q="{{ es|map(attribute='en')|join(', ') }} {{ es|map(attribute='zh')|join('、') }}"{% if not inner_vis %} hidden{% endif %}>{{ blank }}<span class="gmi-trow-name">{{ t(es|length ~ ' sub-themes have no micro-themes yet', es|length ~ '个子主题尚无细分主题') }}</span>{{ tip('Not mapped yet: ' ~ (es|map(attribute='en')|join(', ')) ~ '.', '尚未绘制：' ~ (es|map(attribute='zh')|join('、')) ~ '。') }}</div>
+{% endif %}
+{% endfor %}{# th #}
+{% endif %}
+{% endfor %}{# c #}
+<a class="gmi-trow gmi-trow--more" href="{{ nav_prefix }}gmi-index.html">{{ iclist }}<span class="gmi-trow-name">{{ t('See all ' ~ model.totals.micros ~ ' in the index', '在索引中查看全部 ' ~ model.totals.micros ~ ' 个') }}</span></a>
+</div>
+</div>
+</section>
+</div>
+<div class="gmi-col-side">
+{% for link in model.theme_links %}
+<section class="gmi-panel">
+{% if link.kind == 'held' %}
+{{ sec("Held for review", "待审核", 2, tipx=tip_held()) }}
+{% else %}
+{{ sec("Admitted", "已纳入", 2, tipx=tip_adm()) }}
+{% endif %}
+<div class="gmi-status">{{ mark(link.kind, xl=true) }}<div>
+<div class="gmi-status-t">{{ t(link.name ~ ' → ' ~ link.micro_en, link.name ~ ' → ' ~ link.micro_zh) }}</div>
+<div class="gmi-status-s">{% if link.kind == 'held' %}{{ t("Proposed, not a member. Not counted until reviewed.", "拟议关联，尚非成员。审核前不计入统计。") }}{% else %}{{ t("Admitted after review. Counted in coverage.", "经审核已纳入，计入覆盖率。") }}{% endif %}</div>
+</div></div>
+<div><a class="gmi-btn gmi-btn--quiet" href="{{ nav_prefix }}{{ link.href }}">{{ t('Open ' ~ link.name, '查看 ' ~ link.name) }}{{ ic("arrow", 16) }}</a></div>
+</section>
+{% endfor %}
+{% if not model.theme_links %}
+<section class="gmi-panel">
+{{ sec("Held for review", "待审核") }}
+<div class="mx-empty gmi-empty-inline"><div class="mx-empty-line">{{ t("Nothing is waiting for review.", "目前没有待审核的关联。") }}</div></div>
+</section>
+{% endif %}
+<section class="gmi-panel">
+{{ sec("Two kinds of micro-theme", "两类细分主题") }}
+<ul class="gmi-list gmi-list--prose">
+<li>{{ mark("acc") }}<span><b class="tnum">{{ model.totals.core }}</b> {{ t("Core set — the original set. Coverage is measured here.", "核心集 —— 最初的集合，覆盖率在此衡量。") }}</span></li>
+<li>{{ mark("disp") }}<span><b class="tnum">{{ model.totals.extended }}</b> <span class="l-en">Extended — added {{ model.extended_on|de }} for orientation. Not counted in coverage.</span><span class="l-zh">扩展 —— {{ model.extended_on|dz }}新增，用于浏览，不计入覆盖率。</span></span></li>
+</ul>
+<div><a class="gmi-btn gmi-btn--quiet" href="{{ nav_prefix }}gmi-coverage.html">{{ t("How coverage is measured", "覆盖率如何衡量") }}{{ ic("arrow", 16) }}</a></div>
+</section>
+</div>
+</div>
+{% endblock %}

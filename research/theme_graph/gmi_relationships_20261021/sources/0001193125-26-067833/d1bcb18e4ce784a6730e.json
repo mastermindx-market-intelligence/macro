@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-25T00:01:09Z",
+ "accession": "0001193125-26-067833",
+ "cik": "0001743759",
+ "doc_byte_length": 4733386,
+ "doc_sha256": "264fd1e8a20506e9059c1106698099f86a440b13fe66969582be71071e9069fe",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "crsr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 291332,
+  "byte_start": 291066,
+  "normalized": "We currently ship to 74 countries across six continents, with our products being sold at leading retailers including Amazon, Best Buy and Walmart. In 2025, sales to the Americas, EMEA and Asia Pacific represented 49.1%, 38.4% and 12.5% of net revenue, respectively.",
+  "normalized_sha256": "67c0134d7bbf2e8c94bcf2c76dd67475ce440104e31b39af896bd05aa23a4dd3",
+  "raw": " We currently ship to 74 countries across six continents, with our products being sold at leading retailers including Amazon, Best Buy and Walmart. In 2025, sales to the Americas, EMEA and Asia Pacific represented 49.1%, 38.4% and 12.5% of net revenue, respectively.",
+  "raw_sha256": "d1bcb18e4ce784a6730e44346e9d52d743ba9d9c48b726979de2e36cfb0181bb"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1743759/000119312526067833/crsr-20251231.htm",
+ "xbrl_contexts": []
+}

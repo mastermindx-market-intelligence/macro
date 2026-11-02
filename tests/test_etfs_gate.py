@@ -359,6 +359,84 @@ def test_a_coverage_row_with_no_fleet_group_still_reaches_the_directory():
         assert name in shell, f"{name} vanished from the fleet directory"
 
 
+def _fu_chip(shell: str, fund: str) -> str:
+    """One fleet chip, from its opening tag through the next chip or list end."""
+    found = re.search(
+        rf'<span class="fu [^"]*"><b>{fund}</b>.*?(?=<span class="fu |</div>)',
+        shell,
+        re.S,
+    )
+    assert found, f"{fund} chip missing"
+    return found.group(0)
+
+
+def test_each_fund_chip_names_its_last_holdings_date():
+    """Each chip dates its last holdings file from the coverage row.
+
+    `_render(gated=True)` feeds `_COVERAGE`, so a template that types a
+    production date cannot pass. The day-count badge on a late fund stays.
+    """
+    shell = _render(gated=True)
+    assert "holdings through" in shell and "持仓截至" in shell
+    for row in _COVERAGE:
+        asof = row["latest_asof"]
+        chip = _fu_chip(shell, row["fund"])
+        assert f'<time datetime="{asof}">' in chip
+        label = (
+            '<span class="l-en">holdings through</span>'
+            '<span class="l-zh">持仓截至</span> '
+            f"{asof}"
+        )
+        assert label in chip, row["fund"]
+    late = next(r for r in _COVERAGE if r["stale_days"] and r["stale_days"] > 3)
+    assert f'<u>{late["stale_days"]}d</u>' in _fu_chip(shell, late["fund"])
+
+
+def test_a_chip_with_no_holdings_file_prints_no_date():
+    """A null latest_asof prints no date and never the word None.
+
+    `_render` always passes `_COVERAGE`, and every fixture row has a date, so
+    this render adds a QTUM row with latest_asof None. The dated sibling is
+    still a `_COVERAGE` record: old code fails that time assertion.
+    """
+    dated = dict(_COVERAGE[0])
+    qtum = {
+        "fund": "QTUM",
+        "fund_name": "Defiance Quantum ETF",
+        "is_active": False,
+        "category": "Quantum",
+        "n_snapshots": 0,
+        "latest_asof": None,
+        "stale_days": None,
+        "unofficial": False,
+        "fleet_group": "theme",
+    }
+    shell = _env().get_template("etfs.html.j2").render(
+        favored=[], accumulation=[], trims=[], coverage=[dated, qtum],
+        pulse={}, board=_board(gated=True), gate=_gate(),
+        generated_utc="2026-08-03 12:00")
+    asof = dated["latest_asof"]
+    assert f'<time datetime="{asof}">' in _fu_chip(shell, dated["fund"])
+    bare = _fu_chip(shell, "QTUM")
+    assert "<b>QTUM</b>" in bare and "<i>0</i>" in bare
+    assert "<time" not in bare
+    assert "None" not in bare
+    assert "holdings through" not in bare and "持仓截至" not in bare
+
+
+def test_tape_clock_is_when_the_page_was_built():
+    """The tape stamp is the bake clock. The coverage line drops verified."""
+    shell = _render(gated=True)
+    asof = shell.split('class="dtp-asof"', 1)[1]
+    assert '<span class="l-en">page built</span>' in asof
+    assert '<span class="l-zh">页面生成于</span>' in asof
+    assert asof.index("page built") < asof.index("2026-08-03 12:00 UTC")
+    assert "daily holdings feeds we read" in shell
+    assert "为我们读取的每日持仓数据" in shell
+    assert "verified daily holdings feeds" not in shell
+    assert "已验证" not in shell
+
+
 def test_coverage_shelf_opens_on_BOTH_builds():
     """T-B3 ruled the <details> default state UNIFIES open.
 
