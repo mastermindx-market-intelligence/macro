@@ -32,6 +32,34 @@ or missing token counts are not fabricated.
 entitlement and uses `/api/coding` or `/api/coding/v3`. This route refuses
 that path, never borrows subscription usage, and never falls back to it.
 
+## Provider Control price source (estimated, not billed truth)
+
+The existing `lib.ai_costs` price owner and `config/ai_pricing.yml`
+now include the documented **commercial Standard** rate-card estimates
+from BytePlus's October 30, 2026 publication:
+- GLM 5.3 Flash 260828: input $0.15/M, output $0.50/M,
+  cached input $0.03/M.
+- DeepSeek V4.1 Flash 261017: **off-peak** input $0.15/M,
+  output $0.60/M, cache hit $0.003/M; **peak** $0.30/M,
+  $1.20/M, cache hit $0.006/M. Peak is Asia/Shanghai local
+  Monday-Friday 09:00-12:00 and 14:00-18:00. Cost estimation for this
+  model requires an explicit timezone-aware observation instant;
+  omission returns UNKNOWN, not a fabricated constant price.
+- Dola Seed 2.1 Turbo 260628: provisional family-published
+  `dola-seed-2-1-turbo` Standard input $0.50/M, output
+  $2.50/M, cache hit $0.10/M; the commercial issuer must confirm the
+  versioned alias against actual billed usage.
+
+These are **estimates** for economic selection and bounded issuer canary.
+Provider invoice/debit is the separate owner of actual paid cost.
+No pricing source silently authorizes credentials, quota, eligibility,
+worker START or model activation. Cache storage per token-hour is
+**not** treated as cache-creation token price, and such unknown
+writes refuse an estimate.
+
+Source: https://console.byteplus.com/ark/region:ap-southeast-1/docs/model-pricing
+(updated 2026-10-30).
+
 ## Operator-only commercial canary (source stage)
 
 `python3 -m engine.modelark_commercial_canary` is an explicit **one-request**
