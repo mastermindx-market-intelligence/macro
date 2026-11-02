@@ -162,9 +162,10 @@ def test_s5_noindex(live, held):
         assert '<meta name="robots" content="noindex">' in html
 
 
-def test_s5_deck_none_branch(live, held):
-    for model, site in (live, held):
-        assert model["deck"] is None
+def test_s5_deck_none_branch(live, held, tmp_path):
+    for name, (model, _) in (("live", live), ("held", held)):
+        site = tmp_path / name
+        render_site(dict(model, deck=None), site)
         html = (site / "gmi-states.html").read_text(encoding="utf-8")
         assert "Condition as stated in the filing" in html
         assert "the filing says:" not in html  # G-UI-14: lead-in foot omitted without a deck

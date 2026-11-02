@@ -309,9 +309,10 @@ def test_get_prefs_readback(auth, store):
     assert "alert_email_optin" in out["unset"]
     # DR3 adds the defensive-rotation observation category to the legal-value list. It
     # is offered here and chosen by nobody: the account panel draws its own rows.
+    # SPEC_U2 U2-3 appends the saved-scenario monitor category.
     assert out["categories_available"] == ["holdings_material_change", "thesis_window",
                                            "fif_saved_issuer", "options_exposure_node",
-                                           "sector_rotation_relative"]
+                                           "sector_rotation_relative", "cs_saved_scenario"]
 
 
 def test_get_prefs_route_is_registered():
