@@ -20,9 +20,10 @@ uses `BYTEPLUS_MODELARK_API_KEY` only at the existing credential boundary
 and the pinned commercial endpoint
 `https://ark.ap-southeast.bytepluses.com/api/v3`.
 
-The OpenAI-compatible SDK `responses.create` receives at most 512 output
-tokens, `max_retries=0`, `store=false`, and one versioned model identifier.
-A missing/mismatching served model, incomplete response, or missing text
+The existing `requests` HTTP client sends one `POST /api/v3/responses`
+with a 512-token source ceiling, `store=false`, `HTTPAdapter(max_retries=0)`,
+and `allow_redirects=false`. No new OpenAI SDK dependency or provider retry
+service is installed. A missing/mismatching served model, incomplete response, or missing text
 cannot be reported as a successful provider call. Usage and price-state flow
 through the existing Provider Health/`lib.ai_costs` writers; unknown price
 or missing token counts are not fabricated.
