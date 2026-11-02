@@ -14,13 +14,36 @@ from bs4 import BeautifulSoup
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def projection(radar):
+def projection(radar, *, envelope=None):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(ROOT / "templates"))
     html = env.get_template("_risk_radar_workspace.html.j2").render(
-        market_state={"radar": radar}
+        market_state={"radar": radar}, risk_envelope=envelope
     )
     soup = BeautifulSoup(html, "html.parser")
     return json.loads(soup.select_one("#risk-radar-workspace-data").string), soup
+
+
+@pytest.mark.parametrize("coverage,expected", [
+    ({"fresh": ["market", "leadership", "radar"], "source_count": 4}, "3 of 4"),
+    ({"fresh": [], "source_count": 4}, "0 of 4"),
+    ({"fresh": "bad", "source_count": 4}, "incomplete source coverage"),
+    (None, "incomplete source coverage"),
+])
+def test_internals_lead_with_settled_coverage(coverage, expected):
+    envelope = {
+        "schema": "mastermind.risk_envelope/v1", "data_state": "PARTIAL",
+        "source_session": "2026-10-30", "coverage": coverage,
+        "coherence": {"scope": "market_reads"},
+    }
+    model, soup = projection({"dd21": 0.22}, envelope=envelope)
+    line = soup.select_one(".rkw-internals-slot .rkw-coverage")
+    assert expected in line.select_one(".l-en").string
+    assert "trend and stress" in line.select(".l-en")[1].string
+    assert "趋势与压力" in line.select(".l-zh")[1].string
+    assert model["horizons"]["21"]["probability"] == 0.22
+
+    envelope["data_state"] = "FRESH"
+    assert projection({}, envelope=envelope)[1].select_one(".rkw-coverage") is None
 
 
 def test_projection_preserves_each_horizon_and_its_own_baseline():

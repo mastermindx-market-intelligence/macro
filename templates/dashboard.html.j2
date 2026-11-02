@@ -13313,14 +13313,16 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% endif %}
 
           {# Tile 5 — Correlation (markets moving as one), absorption receipt on hover #}
-          {% if _rk_cx and _rk_cx_v in ['concentrated','converging'] %}
-          {%- set _rk_cx_en = 'Moving as one' if _rk_cx_v == 'concentrated' else 'Syncing up' -%}
-          {%- set _rk_cx_zh = '同涨同跌' if _rk_cx_v == 'concentrated' else '联动升温' -%}
-          {%- set _rk_cx_ap = ((_rk_cx.absorption_pctile*100)|round|int) if (_rk_cx.absorption_pctile is defined and _rk_cx.absorption_pctile is not none) else none -%}
+          {% if _rk_cx is mapping and _rk_asof and _rk_cx.get('asof') == _rk_asof and MS.get('asof') == _rk_asof
+                and _rk_cx_v in ('concentrated', 'converging', 'diversified') %}
+          {%- set _rk_cx_en, _rk_cx_zh = {'concentrated': ('Moving as one', '同涨同跌'), 'converging': ('Syncing up', '联动升温'), 'diversified': ('Lower co-movement', '跨市场联动较低')}[_rk_cx_v] -%}
+          {%- set _rk_cx_kind = 'context' if _rk_cx_v == 'diversified' else 'caution' -%}
+          {%- set _rk_cx_pct = _rk_cx.get('absorption_pctile') -%}
+          {%- set _rk_cx_ap = (_rk_cx_pct * 100)|round|int if _rk_cx_pct is number and _rk_cx_pct is not boolean and 0 <= _rk_cx_pct <= 1 else none -%}
           {#- plain fallback (trigger hook + JS-off): the plain-word core, short. -#}
-          {%- set _rk_cx_fallback_en -%}Markets are moving together — one shock hits everything at once, so spreading bets helps less.{%- endset -%}
-          {%- set _rk_cx_fallback_zh -%}各市场正同步波动——单一冲击会同时打击各类资产，分散配置的作用下降。{%- endset -%}
-          <div class="riskdlg-drv" data-isle="markets" data-lens-kind="caution" data-tip-en="{{ _rk_cx_fallback_en|trim }}" data-tip-zh="{{ _rk_cx_fallback_zh|trim }}">
+          {%- set _rk_cx_fallback_en -%}{% if _rk_cx_v == 'diversified' %}The tracked markets are moving together less than usual.{% else %}Markets are moving together — one shock hits everything at once, so spreading bets helps less.{% endif %}{%- endset -%}
+          {%- set _rk_cx_fallback_zh -%}{% if _rk_cx_v == 'diversified' %}跟踪市场之间的联动弱于平常。{% else %}各市场正同步波动——单一冲击会同时打击各类资产，分散配置的作用下降。{% endif %}{%- endset -%}
+          <div class="riskdlg-drv" data-isle="markets" data-lens-kind="{{ _rk_cx_kind }}" data-tip-en="{{ _rk_cx_fallback_en|trim }}" data-tip-zh="{{ _rk_cx_fallback_zh|trim }}">
             <span class="rkc-sig-ico">{{ rkc_sig_glyph('corr') }}</span>
             <div class="rkc-sig-body">
               <div class="rkc-sig-lbl">{{ t('Correlation','相关性') }}</div>
@@ -13330,7 +13332,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
             </div>
             <span class="rkc-sig-tip">?</span>
             {# — rich LENS payload: co-movement position bar (built from absorption_pctile) — #}
-            <span class="lens-src" data-lens-kind="caution" hidden>
+            <span class="lens-src" data-lens-kind="{{ _rk_cx_kind }}" hidden>
               <div class="lens-hd">
                 <span class="lens-ill" style="color:var(--isle-markets,#4d8ef5)">{{ rkc_sig_glyph('corr') }}</span>
                 <span class="lens-hgroup">
@@ -13350,19 +13352,23 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
               <div class="rlx-rows">
                 <div class="rlx-row">
                   <span class="rlx-k"><span class="l-en">What it means</span><span class="l-zh">含义</span></span>
+                  {% if _rk_cx_v == 'diversified' %}
+                  <span class="rlx-v"><span class="l-en">{{ _rk_cx_fallback_en }}</span><span class="l-zh">{{ _rk_cx_fallback_zh }}</span></span>
+                  {% else %}
                   <span class="rlx-v"><span class="l-en">When everything moves as one, <b>diversification protects less</b> — size risk to the whole book, not the name.</span><span class="l-zh">当资产同涨同跌时，<b>分散配置的保护更弱</b>——应按整体组合而非单一持仓来控风险。</span></span>
+                  {% endif %}
                 </div>
               </div>
               {% if _rk_cx.dominant_cluster is defined and _rk_cx.dominant_cluster %}
               <div class="rlx-chips">
                 <span class="rlx-chips-lbl"><span class="l-en">Tightest cluster</span><span class="l-zh">最紧集群</span></span>
-                {% for c in _rk_cx.dominant_cluster[:4] %}<span class="rlx-chip dn">{{ c }}</span>{% endfor %}
+                {% for c in _rk_cx.dominant_cluster[:4] %}<span class="rlx-chip{{ ' dn' if _rk_cx_v != 'diversified' else '' }}">{{ c }}</span>{% endfor %}
               </div>
               {% endif %}
               {%- set _cxord = ('th' if (11 <= (_rk_cx_ap % 100) <= 13) else {1:'st',2:'nd',3:'rd'}.get(_rk_cx_ap % 10, 'th')) if _rk_cx_ap is not none else 'th' -%}
               <div class="lens-receipt">
-                <span class="l-en">{% if _rk_cx_ap is not none %}{{ _rk_cx_ap }}{{ _cxord }} pctile co-movement · 5-year window · {% endif %}display context, not a trigger</span>
-                <span class="l-zh">{% if _rk_cx_ap is not none %}联动度 {{ _rk_cx_ap }} 分位 · 5 年区间 · {% endif %}展示背景，非触发</span>
+                <span class="l-en">{{ _rk_cx.asof|e }} · {% if _rk_cx_ap is not none %}{{ _rk_cx_ap }}{{ _cxord }} pctile co-movement · 5-year window · {% endif %}display context, not a trigger</span>
+                <span class="l-zh">{{ _rk_cx.asof|e }} · {% if _rk_cx_ap is not none %}联动度 {{ _rk_cx_ap }} 分位 · 5 年区间 · {% endif %}展示背景，非触发</span>
               </div>
             </span>{# end .lens-src #}
           </div>

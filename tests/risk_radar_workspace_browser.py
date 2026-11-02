@@ -59,6 +59,7 @@ def render_fixture(output: Path, source_ref: str) -> dict:
     shadow = snapshot("data/crossasset_shadow/latest.json")
     if cross:
         radar["cross_asset"] = {
+            "asof": cross.get("asof"),
             "verdict": cross.get("verdict"),
             "absorption_pctile": cross.get("absorption_pctile_5y"),
             "dominant_cluster": (cross.get("dominant_cluster") or [])[:3],

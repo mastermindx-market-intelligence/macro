@@ -110,6 +110,9 @@ cl_baskets() {
   # closing-bell / earlyclose / engine-render / render: those are data/-discarding
   # lanes and nightly is the sole advancer.
   brun baskets_snapshot "US basket membership snapshot (build_baskets --snapshot)" scripts.build_baskets --snapshot
+  # Risk Radar reads these basket legs. Run before unrelated desks can exhaust the band.
+  brun rotation_events "Rotation Command W1 — rotation events + sector fragmentation (build_rotation_events)" scripts.build_rotation_events
+  echo "Risk Radar rotation builder: rc=$(cat "$ART/rotation_events.rc") elapsed_s=$(cat "$ART/rotation_events.sec")"
   # GMI W1b: the theme-graph semantic spine (nodes/edges/evidence). Runs AFTER
   # baskets_snapshot because it materializes from the membership documents that
   # step has just stamped, so tonight's graph describes tonight's membership.
@@ -140,8 +143,6 @@ cl_baskets() {
   # enter-mask conditional stays behind its own two gates (production-feed re-grade +
   # signal-era fence). ~5s: reads only the names it needs, one close column each.
   brun basket_washout "blocked-entry basket washout state (build_basket_washout_state)" scripts.build_basket_washout_state
-  # Rotation Command W1 (RC-R1/R6): first-class rotation events + sector-fragmentation board (display-only)
-  brun rotation_events "Rotation Command W1 — rotation events + sector fragmentation (build_rotation_events)" scripts.build_rotation_events
   # RLT-R2 Rebalance Pulse: mechanical volume day-classifier (display/context, off render path)
   brun rebalance_pulse "RLT-R2 rebalance pulse — calendar × volume classifier (build_rebalance_pulse)" scripts.build_rebalance_pulse
   # build_news + news_calib moved BEFORE build_site (NWS-01 fix — see above)
@@ -257,7 +258,7 @@ wait
 # check_builder_failstreaks, which globs *.rc and so catches a >=2-night
 # streak regardless of ORDER) — but a FIRST failure still passed silently,
 # with no log and no step-summary line for the TXI W1 chain tracker.
-ORDER="commodities commodities_gold_premium_audit spr forex bonds crossasset transmission transmission_chains discovery gex_board vol_regime grey_deer_pullback market_structure event_windows darkpool options_flow flow_desk options_skew options_ivspread options_dislocation options_screener options_entry intraday_flow baskets baskets_snapshot theme_graph theme_graph_guard subsector_conf subsector_conf_ndx subsector_conf_rut cohort_metrics basket_washout rotation_events rebalance_pulse methodology nasdaq_internals seasonality reports research_vault cycle sectorcyc countrycyc markets measurement sync_gauge policy_intent policy_watch special index_changes cycle_pattern_live cycle_pattern_state cycle_pattern_imce_prospective stock_seasonality stock_seasonality_page biopharma_seasonality seasonality_shadow program_watch stage_analysis stage_analysis_page top_maturation winner_health_page"
+ORDER="commodities commodities_gold_premium_audit spr forex bonds crossasset transmission transmission_chains discovery gex_board vol_regime grey_deer_pullback market_structure event_windows darkpool options_flow flow_desk options_skew options_ivspread options_dislocation options_screener options_entry intraday_flow baskets baskets_snapshot rotation_events theme_graph theme_graph_guard subsector_conf subsector_conf_ndx subsector_conf_rut cohort_metrics basket_washout rebalance_pulse methodology nasdaq_internals seasonality reports research_vault cycle sectorcyc countrycyc markets measurement sync_gauge policy_intent policy_watch special index_changes cycle_pattern_live cycle_pattern_state cycle_pattern_imce_prospective stock_seasonality stock_seasonality_page biopharma_seasonality seasonality_shadow program_watch stage_analysis stage_analysis_page top_maturation winner_health_page"
 echo "### ⏱ parallel band — per-builder wall-time" >> "$GITHUB_STEP_SUMMARY"
 for slug in $ORDER; do
   [ -f "$ART/$slug.log" ] || continue

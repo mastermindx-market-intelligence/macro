@@ -966,6 +966,7 @@ lanes:
             # GMI W1a — US basket membership PIT side-car + parquet stamp. NIGHTLY ONLY
             # (append-only, keep-FIRST per snapshot_date); absent from every render lane.
             - scripts.build_baskets --snapshot
+            - scripts.build_rotation_events
             # GMI W1b — the theme-graph semantic spine, materialized from the membership
             # documents the step above has just stamped, then its contract guard
             # (advisory in this lane, --strict in CI). Both NIGHTLY ONLY: the store is
@@ -980,14 +981,11 @@ lanes:
             # display-tier support only, ~5s. daily-engine lane only: the render lanes
             # carry no price-panel scan.
             - scripts.build_basket_washout_state
-            # Rotation Command W1 — declared to match daily.yml:753 (was live-workflow drift)
-            - scripts.build_rotation_events
             # RLT-R2 Rebalance Pulse — declared to match daily.yml (off render path, display/context)
             - scripts.build_rebalance_pulse
             # build_news + grade_news_events moved to the serial spine pre-build_site (#2658 NWS-01)
             - scripts.build_methodology
             - scripts.build_nasdaq_internals
-            - scripts.build_rotation_events
           cl_special:
             - scripts.build_special_situations
           cl_stage:

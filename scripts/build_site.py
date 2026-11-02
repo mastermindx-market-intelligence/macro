@@ -7388,6 +7388,7 @@ def main() -> int:
             if _ca_regime_blk:
                 _dc_raw = _ca_regime_blk.get("dominant_cluster") or []
                 _us_ms_view["radar"]["cross_asset"] = {
+                    "asof": _ca_regime_blk.get("asof"),
                     "verdict": _ca_regime_blk.get("verdict"),
                     "absorption_pctile": _ca_regime_blk.get("absorption_pctile_5y"),
                     "dominant_cluster": _dc_raw[:3] if isinstance(_dc_raw, list) else [],
