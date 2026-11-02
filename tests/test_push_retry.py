@@ -3052,12 +3052,22 @@ def _us_board_clone(tmp_path: Path) -> tuple[Path, Path]:
 
 
 def _run_us_board_commit(repo: Path, *args: str, **env: str) -> subprocess.CompletedProcess:
+    # The hold state lives under RUNNER_TEMP (else TMPDIR), keyed by run id and
+    # job. Give every call a private default, so state that another run left in
+    # TMPDIR cannot leak into this test.
+    runner_temp = repo.parent / "runner-temp"
+    runner_temp.mkdir(exist_ok=True)
     return subprocess.run(
         ["bash", str(REPO_ROOT / "scripts" / "ci" / "us_board_commit.sh"), *args],
         capture_output=True,
         text=True,
         cwd=str(repo),
-        env={**os.environ, "GITHUB_WORKSPACE": str(REPO_ROOT), **env},
+        env={
+            **os.environ,
+            "GITHUB_WORKSPACE": str(REPO_ROOT),
+            "RUNNER_TEMP": str(runner_temp),
+            **env,
+        },
     )
 
 
@@ -3483,3 +3493,49 @@ def test_us_board_lineage_applies_only_the_successor_and_a_winning_push_retires_
     assert third.returncode == 0, third.stdout + third.stderr
     assert _git_bytes(bare, "cat-file", "blob", "main:data/us_board_ledger/snapshots.jsonl") == longer
     assert _hold_refs(bare) == []
+
+
+def test_hold_lineage_pulls_in_the_sibling_group_and_a_split_ref_is_kept_not_superseded(tmp_path):
+    """A recovered ref carried a ledger row and a rotation row. The ledger row is
+    held again; the rotation row is not staged this time. The rotation group is
+    still held (it shares the lineage), and the old ref is not named in `from`,
+    because the new ref does not carry all of its rows."""
+    bare, repo = _us_board_clone(tmp_path)
+    subprocess.run(["git", "-C", str(repo), "config", "user.email", "t@t"], check=True)
+    subprocess.run(["git", "-C", str(repo), "config", "user.name", "t"], check=True)
+    env = _hold_env(tmp_path, "1001")
+    state = Path(env["RUNNER_TEMP"]) / "push_hold.1001.us_board_ledgers"
+    state.mkdir(parents=True)
+    old_ref = "refs/heads/push-hold/us_board_ledgers/1000-1-aaaaaaaaaaaa"
+    (state / "recovered").write_text(
+        f"{old_ref}\tdata/us_board_ledger/snapshots.jsonl\n"
+        f"{old_ref}\tdata/us_sector_rotation/latest.json\n"
+    )
+    held = b"old\n" + (b"R" * 60)
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+    (repo / "data/us_sector_rotation/extra.json").write_text("{}\n")
+    subprocess.run(["git", "-C", str(repo), "add", "data"], check=True)
+
+    result = run_sh(
+        f'''
+        . "{REPO_ROOT}/scripts/ci/push_hold.sh"
+        push_hold_oversize_staged "data/us_board_ledger" "data/us_sector_rotation"
+        ''',
+        env=env,
+        cwd=repo,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert f"::warning title=hold lineage split::{old_ref} has rows that are not held again" in result.stdout
+    assert (
+        "data/us_sector_rotation/extra.json is 3 B, under the limit. Withheld with its group because "
+        f"data/us_sector_rotation/latest.json shares a held lineage with {old_ref}"
+    ) in result.stdout
+    [ref] = _hold_refs(bare)
+    entries, froms = _manifest(bare, ref)
+    assert sorted(entry["path"] for entry in entries) == [
+        "data/us_board_ledger/snapshots.jsonl",
+        "data/us_sector_rotation/extra.json",
+    ]
+    assert froms == []
+    assert _git_output(repo, "diff", "--cached", "--name-only") == ""

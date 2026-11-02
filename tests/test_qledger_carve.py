@@ -317,57 +317,437 @@ def test_engine_commit_script_carves_between_staging_and_the_locked_commit():
     assert broad_add < carve < empty_check < locked_commit
 
 
-def test_engine_commit_holds_an_oversize_blob_after_the_carve_and_reds_every_clean_exit():
+# ── R-33 hold: the engine's staged set is one publication group ───────────────
+#
+# The engine stages thousands of outputs and cannot prove which source file and
+# which site/ projection belong together, so everything it stages is one group:
+# one blob over the limit holds all of it, in custody on origin, and the step is
+# red. These tests run the committer's own lines against real repositories.
+
+ENGINE_GROUP = "data site reports templates"
+HOLD_PREFIX = "refs/heads/push-hold/engine/"
+SOURCE_BYTES = b"old\n" + b"R" * 60  # 64 B: over the 50 B test limit, extends HEAD's "old\n"
+DERIVED_BYTES = b'{"v":2}\n'  # 8 B: under it
+
+
+def test_engine_commit_holds_after_the_heal_and_reds_every_clean_exit():
+    """push_hold.sh is sourced, the hold runs after the carve and the conflict
+    heal and before the locked commit, a blob over the limit after the rebase
+    holds the whole candidate, and no clean exit can hide a hold."""
     text = ENGINE.read_text()
+    retry_src = text.index('. "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"')
+    hold_src = text.index('. "${GITHUB_WORKSPACE:-.}/scripts/ci/push_hold.sh"')
+    assert retry_src < hold_src < text.index("engine_hold() {")
+    assert f'ENGINE_GROUP="{ENGINE_GROUP}"' in text
+    assert "PUSH_HOLD_KEEP_WORKTREE=1" in text
     carve = text.index("qledger_carve_staged || exit 1")
-    hold = text.index("push_hold_oversize_staged $ENGINE_OVERSIZE || exit 1")
-    empty_check = text.index('echo "no engine output changes"')
-    assert carve < hold < empty_check
-    red = '[ -z "$PUSH_HELD_BACK" ] || exit 1; exit 0'
+    empty = text.index('echo "no engine output changes"')
+    heal = text.index("push_staged_heal data/ site/ reports/ templates/")
+    hold = text.index("\nengine_hold\n")
+    commit = text.index("commit-broad-candidate")
+    assert carve < empty < heal < hold < commit, "marker bytes must never reach custody"
+    accepted = text.index("COMMODITY_ACCEPTED=$(")
+    post = text.index('if push_hold_staged_over "$COMMODITY_ACCEPTED"; then')
+    candidate = text.index("qledger_push_candidate=$(")
+    assert accepted < post < candidate
+    assert 'git reset -q --soft "$COMMODITY_ACCEPTED" || exit 1\n      engine_hold\n' in text[post:candidate]
+    red = "if push_hold_red; then exit 1; fi; exit 0"
+    clean_exits = 0
     for line in text.splitlines():
         if line.lstrip().startswith("#"):
             continue
         if "exit 0" in line:
             assert red in line, f"a held file must not read as a clean run: {line}"
-    assert text.count(red) == 3
+            clean_exits += 1
+    assert clean_exits == 3
+    assert f'push_won; push_hold_settle "$COMMODITY_ACCEPTED"; {red}' in text
 
 
-def test_engine_oversize_prefilter_holds_the_staged_file_and_leaves_a_carved_one(tmp_path):
-    """The committer's own lines, against a real index: staged over the limit is held,
-    over the limit and not staged is untouched, the rest of the commit stays staged."""
+def test_engine_commit_stages_only_paths_inside_its_hold_group():
+    """A path staged outside the group is a membership the hold cannot prove:
+    it would hold every staged path. Keep every `git add` inside the group."""
+    members = ENGINE_GROUP.split()
+    operands = []
+    for line in ENGINE.read_text().splitlines():
+        code = line.strip()
+        if code.startswith("#") or "git add" not in code:
+            continue
+        for tok in code.split("git add", 1)[1].split():
+            if tok.startswith(("2>", "||", "&&", ";")):
+                break
+            if not tok.startswith("-"):
+                operands.append(tok)
+    assert len(operands) >= 10
+    outside = [tok for tok in operands if tok.split("/", 1)[0] not in members]
+    assert outside == [], f"staged outside {ENGINE_GROUP}: {outside}"
+
+
+def test_engine_job_recovers_its_held_group_before_any_engine_commit():
+    steps = _job_steps("engine")
+    runs = [str(step.get("run") or "") for step in steps]
+    recover = [i for i, run in enumerate(runs) if "scripts/ci/push_hold.sh recover" in run]
+    commits = [i for i, run in enumerate(runs) if "daily_engine_commit_outputs.sh" in run]
+    assert len(recover) == 1 and len(commits) == 2
+    assert recover[0] < commits[0]
+    step = steps[recover[0]]
+    assert "if" not in step and not step.get("continue-on-error")
+    assert runs[recover[0]].startswith("git pull origin main && ")
+    group = re.search(r'push_hold\.sh recover "([^"]+)"', runs[recover[0]]).group(1)
+    assert group == ENGINE_GROUP
+    assert re.search(r'^ENGINE_GROUP="([^"]+)"$', ENGINE.read_text(), re.M).group(1) == group
+
+
+def _engine_hold_defs() -> str:
     text = ENGINE.read_text()
-    start = text.index("ENGINE_OVERSIZE=$(find")
-    block = text[start : text.index('if git diff --cached --quiet; then echo "no engine output changes"')]
-    repo = tmp_path / "repo"
-    (repo / "data").mkdir(parents=True)
-    (repo / "site").mkdir()
-    (repo / "reports").mkdir()
-    git = ["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@example.com"]
-    subprocess.run(["git", "init", "-q", "-b", "main", str(repo)], check=True)
-    (repo / "data" / "grows.jsonl").write_text("old\n")
-    (repo / "site" / "page.json").write_text("old\n")
-    subprocess.run([*git, "add", "."], check=True)
-    subprocess.run([*git, "commit", "-q", "-m", "seed"], check=True)
-    (repo / "data" / "grows.jsonl").write_text("x" * 51)
-    (repo / "site" / "page.json").write_text("new\n")
-    (repo / "reports" / "carved.jsonl").write_text("x" * 51)
-    subprocess.run([*git, "add", "data", "site"], check=True)
-    push_retry = ROOT / "scripts" / "ci" / "push_retry.sh"
-    script = f'. "{push_retry}"\nset -e\n{block}\necho "held=$PUSH_HELD_BACK"\n'
-    done = subprocess.run(
-        ["bash", "-c", script],
-        cwd=repo, env={**os.environ, "PUSH_BLOB_LIMIT": "50"},
-        capture_output=True, text=True, check=False,
+    start = text.index("ENGINE_GROUP=")
+    end = text.index("\n}\n", text.index("engine_hold() {")) + 3
+    return text[start:end]
+
+
+def _hold_script(body: str) -> str:
+    return (
+        '. "$GITHUB_WORKSPACE/scripts/ci/push_retry.sh"\n'
+        '. "$GITHUB_WORKSPACE/scripts/ci/push_hold.sh"\n'
+        f"{_engine_hold_defs()}\n{body}\n"
     )
-    assert done.returncode == 0, done.stderr
-    assert "held= data/grows.jsonl" in done.stdout
-    assert "::error title=file over GitHub's limit::" in done.stdout
-    staged = subprocess.run(
-        [*git, "diff", "--cached", "--name-only"], check=True, capture_output=True, text=True
-    ).stdout.split()
-    assert staged == ["site/page.json"]
-    assert (repo / "data" / "grows.jsonl").read_text() == "old\n"
-    assert (repo / "reports" / "carved.jsonl").read_text() == "x" * 51
+
+
+def _hold_env(tmp_path: Path, run_id: str = "501", **extra: str) -> dict[str, str]:
+    env = {k: v for k, v in _env(tmp_path).items() if not k.startswith("PUSH_")}
+    rt = tmp_path / "rt"
+    rt.mkdir(exist_ok=True)
+    env.update({
+        "PUSH_BLOB_LIMIT": "50",
+        "PUSH_HOLD_PART": "20",
+        "RUNNER_TEMP": str(rt),
+        "GITHUB_RUN_ID": run_id,
+        "GITHUB_RUN_ATTEMPT": "1",
+        "GITHUB_JOB": "engine",
+        "GITHUB_STEP_SUMMARY": str(tmp_path / f"summary-{run_id}.md"),
+    })
+    env.update(extra)
+    return env
+
+
+def _pair_seed(tmp_path: Path, env: dict[str, str]) -> tuple[Path, Path]:
+    repo, bare = _seed(tmp_path, env)
+    for rel, body in {
+        "data/x.jsonl": b"old\n",
+        "site/x.json": b'{"v":1}\n',
+        "data/gone.jsonl": b"bye\n",
+    }.items():
+        (repo / rel).write_bytes(body)
+    _git(repo, "add", "data", "site", env=env)
+    _git(repo, "commit", "-q", "-m", "pair base", env=env)
+    _git(repo, "push", "-q", "origin", "main", env=env)
+    return repo, bare
+
+
+def _stage_pair(repo: Path, env: dict[str, str]) -> None:
+    """A source row over the limit, its projection under it, and a deletion."""
+    (repo / "data/x.jsonl").write_bytes(SOURCE_BYTES)
+    (repo / "site/x.json").write_bytes(DERIVED_BYTES)
+    (repo / "data/gone.jsonl").unlink()
+    _git(repo, "add", "data", "site", env=env)
+
+
+def _git_in(repo: Path, *args: str, data: bytes, env: dict[str, str]) -> str:
+    proc = subprocess.run(
+        ["git", *args], cwd=repo, env=env, input=data, check=True, capture_output=True,
+    )
+    return proc.stdout.decode().strip()
+
+
+def _blob(repo: Path, spec: str, env: dict[str, str]) -> bytes:
+    return subprocess.run(
+        ["git", "cat-file", "blob", spec], cwd=repo, env=env, check=True, capture_output=True,
+    ).stdout
+
+
+def _custody_refs(bare: Path, env: dict[str, str]) -> list[str]:
+    out = _git(bare, "for-each-ref", "--format=%(refname)", HOLD_PREFIX.rstrip("/"), env=env)
+    return [line for line in out.splitlines() if line]
+
+
+def _custody(bare: Path, ref: str, env: dict[str, str]) -> tuple[dict[str, bytes], list[str]]:
+    """Each MANIFEST path with its bytes rebuilt from the custody tree, and the `from` refs."""
+    manifest = _blob(bare, f"{ref}:MANIFEST", env).decode()
+    assert manifest.startswith("push-hold/v1\n")
+    rows: dict[str, bytes] = {}
+    froms: list[str] = []
+    for line in manifest.splitlines():
+        parts = line.split("\t")
+        if parts[0] == "from":
+            froms.append(parts[1])
+        if parts[0] != "entry":
+            continue
+        i, path, layout = parts[1], parts[2], parts[6]
+        if layout == "blob":
+            data = _blob(bare, f"{ref}:blobs/{i}", env)
+        else:
+            data = _blob(bare, f"{ref}:parts/{i}/base", env) if layout == "prefix" else b""
+            names = _git(bare, "ls-tree", "--name-only", f"{ref}:parts/{i}", env=env).splitlines()
+            for name in sorted(n for n in names if n and n != "base"):
+                data += _blob(bare, f"{ref}:parts/{i}/{name}", env)
+        rows[path] = data
+    return rows, froms
+
+
+def test_engine_hold_keeps_a_source_and_its_projection_together_when_only_the_source_is_over(tmp_path):
+    """R-33(4): data/x.jsonl is over the limit, its site/ projection is not.
+    Both are withheld with their exact bytes in custody on origin, the deletion
+    in the group is not published either, nothing of the group stays staged,
+    the step is red, the worktree keeps the bytes for the always() steps, and a
+    carved file that is not staged is left alone."""
+    env = _hold_env(tmp_path)
+    repo, bare = _pair_seed(tmp_path, env)
+    main_before = _git(bare, "rev-parse", "main", env=env)
+    carved = repo / "reports" / "carved.jsonl"
+    carved.parent.mkdir()
+    carved.write_bytes(b"x" * 51)
+    _stage_pair(repo, env)
+    assert sorted(_staged(repo, env)) == ["data/gone.jsonl", "data/x.jsonl", "site/x.json"]
+
+    done = _bash(repo, _hold_script('engine_hold\necho "engine_hold returned"'), env)
+
+    assert done.returncode == 1, done.stdout + done.stderr
+    assert "engine_hold returned" not in done.stdout
+    assert "::error title=engine outputs withheld::" in done.stdout
+    assert "::error title=withheld, not lost::data/x.jsonl is 64 B, over 50 B." in done.stdout
+    assert (
+        "::error title=withheld, not lost::site/x.json is 8 B, under the limit. "
+        "Withheld with its group because data/x.jsonl is over the limit"
+    ) in done.stdout
+    assert "::error title=deletion withheld::data/gone.jsonl is deleted in a held group" in done.stdout
+    assert _staged(repo, env) == []
+    assert _git(bare, "rev-parse", "main", env=env) == main_before
+    refs = _custody_refs(bare, env)
+    assert len(refs) == 1 and refs[0].startswith(HOLD_PREFIX + "501-1-")
+    rows, froms = _custody(bare, refs[0], env)
+    assert rows == {"data/x.jsonl": SOURCE_BYTES, "site/x.json": DERIVED_BYTES}
+    assert froms == []
+    assert (repo / "data/x.jsonl").read_bytes() == SOURCE_BYTES
+    assert (repo / "site/x.json").read_bytes() == DERIVED_BYTES
+    assert not (repo / "data/gone.jsonl").exists()
+    assert carved.read_bytes() == b"x" * 51
+    summary = Path(env["GITHUB_STEP_SUMMARY"]).read_text()
+    assert f"### Withheld, not lost: 3 staged paths held at `{refs[0]}`" in summary
+
+
+def test_engine_hold_at_the_default_limit_leaves_every_staged_output_to_land(tmp_path):
+    """No knob set: the limit is GitHub's 100 MiB, so a small run holds nothing."""
+    env = _hold_env(tmp_path)
+    del env["PUSH_BLOB_LIMIT"]
+    repo, bare = _pair_seed(tmp_path, env)
+    _stage_pair(repo, env)
+
+    done = _bash(repo, _hold_script('engine_hold\necho "engine_hold returned"'), env)
+
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert "engine_hold returned" in done.stdout
+    assert "::error" not in done.stdout
+    assert sorted(_staged(repo, env)) == ["data/gone.jsonl", "data/x.jsonl", "site/x.json"]
+    assert _custody_refs(bare, env) == []
+
+
+def test_engine_second_checkpoint_holds_the_group_again_even_after_the_big_file_shrank(tmp_path):
+    """The engine committer runs twice per job. Whatever the first run held, the
+    second holds again in full, names the first ref in `from`, and publishes
+    nothing of the group, even when no staged blob is over the limit any more."""
+    env = _hold_env(tmp_path)
+    repo, bare = _pair_seed(tmp_path, env)
+    main_before = _git(bare, "rev-parse", "main", env=env)
+    _stage_pair(repo, env)
+    first = _bash(repo, _hold_script("engine_hold"), env)
+    assert first.returncode == 1, first.stdout + first.stderr
+    [ref1] = _custody_refs(bare, env)
+
+    (repo / "data/x.jsonl").write_bytes(b"old\nshort\n")
+    (repo / "site/late.json").write_bytes(b"{}\n")
+    _git(repo, "add", "data", "site", env=env)
+    second = _bash(repo, _hold_script('engine_hold\necho "engine_hold returned"'), env)
+
+    assert second.returncode == 1, second.stdout + second.stderr
+    assert "engine_hold returned" not in second.stdout
+    assert "::error title=engine outputs withheld::" in second.stdout
+    assert "site/late.json is 3 B, under the limit. Withheld with its group because" in second.stdout
+    assert "was withheld earlier in this run" in second.stdout
+    assert _staged(repo, env) == []
+    assert _git(bare, "rev-parse", "main", env=env) == main_before
+    refs = _custody_refs(bare, env)
+    assert len(refs) == 2 and ref1 in refs
+    [ref2] = [ref for ref in refs if ref != ref1]
+    rows, froms = _custody(bare, ref2, env)
+    assert rows == {
+        "data/x.jsonl": b"old\nshort\n",
+        "site/x.json": DERIVED_BYTES,
+        "site/late.json": b"{}\n",
+    }
+    assert froms == [ref1]
+
+
+@pytest.mark.parametrize("over", [True, False])
+def test_engine_post_rebase_check_holds_the_whole_candidate_against_accepted_main(tmp_path, over):
+    """After the rebase the candidate is committed. A blob over the limit in it
+    moves HEAD back to the accepted main and holds every change of the run, the
+    render-sync commit included. Under the limit, the candidate goes on."""
+    text = ENGINE.read_text()
+    start = text.index('    if push_hold_staged_over "$COMMODITY_ACCEPTED"; then')
+    block = textwrap.dedent(text[start : text.index("    # This is the actual final candidate")])
+    env = _hold_env(tmp_path)
+    repo, bare = _pair_seed(tmp_path, env)
+    accepted = _git(repo, "rev-parse", "HEAD", env=env)
+    source = SOURCE_BYTES if over else b"old\nnew\n"
+    (repo / "data/x.jsonl").write_bytes(source)
+    (repo / "site/x.json").write_bytes(DERIVED_BYTES)
+    _git(repo, "add", "data", "site", env=env)
+    _git(repo, "commit", "-q", "-m", "engine: regime update", env=env)
+    (repo / "site/index.html").write_bytes(b"<html>v2</html>")
+    _git(repo, "add", "site", env=env)
+    _git(repo, "commit", "-q", "-m", "render-sync", env=env)
+    candidate = _git(repo, "rev-parse", "HEAD", env=env)
+
+    done = _bash(repo, _hold_script(f'COMMODITY_ACCEPTED={accepted}\n{block}\necho "candidate goes on"'), env)
+
+    if not over:
+        assert done.returncode == 0, done.stdout + done.stderr
+        assert "candidate goes on" in done.stdout
+        assert _git(repo, "rev-parse", "HEAD", env=env) == candidate
+        assert _custody_refs(bare, env) == []
+        return
+    assert done.returncode == 1, done.stdout + done.stderr
+    assert "candidate goes on" not in done.stdout
+    assert "::error title=engine outputs withheld::" in done.stdout
+    assert "the hold did not take it" not in done.stdout
+    assert _git(repo, "rev-parse", "HEAD", env=env) == accepted
+    assert _staged(repo, env) == []
+    [ref] = _custody_refs(bare, env)
+    rows, _froms = _custody(bare, ref, env)
+    assert rows == {
+        "data/x.jsonl": SOURCE_BYTES,
+        "site/x.json": DERIVED_BYTES,
+        "site/index.html": b"<html>v2</html>",
+    }
+    assert (repo / "site/index.html").read_bytes() == b"<html>v2</html>"
+
+
+def _recover(repo: Path, env: dict[str, str]) -> subprocess.CompletedProcess:
+    return _bash(repo, f'bash "$GITHUB_WORKSPACE/scripts/ci/push_hold.sh" recover "{ENGINE_GROUP}"', env)
+
+
+@pytest.mark.parametrize("landed", [["data", "site"], ["data/x.jsonl"]])
+def test_engine_recover_restores_the_pair_and_only_a_push_of_both_settles_the_ref(tmp_path, landed):
+    env = _hold_env(tmp_path, run_id="601")
+    repo, bare = _pair_seed(tmp_path, env)
+    _stage_pair(repo, env)
+    assert _bash(repo, _hold_script("engine_hold"), env).returncode == 1
+    [ref] = _custody_refs(bare, env)
+
+    nxt = tmp_path / "next"
+    subprocess.run(["git", "clone", "-q", str(bare), str(nxt)], check=True, env=env)
+    env2 = _hold_env(tmp_path, run_id="602")
+    recovered = _recover(nxt, env2)
+
+    assert recovered.returncode == 0, recovered.stdout + recovered.stderr
+    assert "::error" not in recovered.stdout
+    assert (nxt / "data/x.jsonl").read_bytes() == SOURCE_BYTES
+    assert (nxt / "site/x.json").read_bytes() == DERIVED_BYTES
+    assert (nxt / "data/gone.jsonl").read_bytes() == b"bye\n", "a deletion is not custody"
+    paths = " ".join(landed)
+    land = _bash(
+        nxt,
+        '. "$GITHUB_WORKSPACE/scripts/ci/push_hold.sh"\n'
+        'base=$(git rev-parse HEAD)\n'
+        f"git add {paths}\n"
+        'git commit -q -m land\n'
+        'git push -q origin HEAD:main\n'
+        'push_hold_settle "$base"\n'
+        'if push_hold_red; then echo RED; fi\n',
+        env2,
+    )
+    assert land.returncode == 0, land.stdout + land.stderr
+    assert "RED" not in land.stdout
+    if landed == ["data", "site"]:
+        assert f"hold settled {ref}" in land.stdout
+        assert _custody_refs(bare, env) == []
+    else:
+        assert f"::warning title=hold ref kept::{ref} has a path that is neither in the pushed commit nor held again" in land.stdout
+        assert _custody_refs(bare, env) == [ref]
+
+
+@pytest.mark.parametrize(
+    "path, header, reason",
+    [
+        ("../escape.json", "push-hold/v1", "entry ../escape.json is not a plain repository path"),
+        (".git/hooks/post-checkout", "push-hold/v1", "entry .git/hooks/post-checkout is not a plain repository path"),
+        ("elsewhere/x.json", "push-hold/v1", "entry elsewhere/x.json belongs to no declared group"),
+        ("site/x.json", "push-hold/v9", "manifest is not push-hold/v1"),
+    ],
+)
+def test_engine_recover_refuses_a_custody_ref_it_cannot_trust_and_reds_the_committer(tmp_path, path, header, reason):
+    env = _hold_env(tmp_path, run_id="701")
+    repo, bare = _pair_seed(tmp_path, env)
+    payload = b"planted\n"
+    blob = _git_in(repo, "hash-object", "-w", "--stdin", data=payload, env=env)
+    manifest = f"{header}\nentry\t0\t{path}\t{blob}\t{len(payload)}\t-\tblob\n".encode()
+    mblob = _git_in(repo, "hash-object", "-w", "--stdin", data=manifest, env=env)
+    sub = _git_in(repo, "mktree", data=f"100644 blob {blob}\t0\n".encode(), env=env)
+    tree = _git_in(repo, "mktree", data=f"100644 blob {mblob}\tMANIFEST\n040000 tree {sub}\tblobs\n".encode(), env=env)
+    commit = _git_in(repo, "commit-tree", tree, "-m", "custody", data=b"", env=env)
+    ref = HOLD_PREFIX + "700-1-planted00000"
+    _git(repo, "push", "-q", "origin", f"{commit}:{ref}", env=env)
+
+    nxt = tmp_path / "next"
+    subprocess.run(["git", "clone", "-q", str(bare), str(nxt)], check=True, env=env)
+    recovered = _recover(nxt, env)
+
+    assert recovered.returncode == 0, recovered.stdout + recovered.stderr
+    assert f"::error title=held rows not restored::{ref}: {reason}. The ref is kept." in recovered.stdout
+    assert _custody_refs(bare, env) == [ref]
+    assert not (tmp_path / "escape.json").exists()
+    assert not (nxt / ".git/hooks/post-checkout").exists()
+    assert not (nxt / "elsewhere").exists()
+    assert (nxt / "site/x.json").read_bytes() == b'{"v":1}\n'
+    assert _git(nxt, "status", "--porcelain", env=env) == ""
+    red = _bash(nxt, '. "$GITHUB_WORKSPACE/scripts/ci/push_hold.sh"\nif push_hold_red; then echo RED; fi', env)
+    assert "RED" in red.stdout
+
+
+@pytest.mark.parametrize("how", ["edited", "staged", "symlink"])
+def test_engine_recover_writes_nothing_over_a_dirty_second_member_and_keeps_the_ref(tmp_path, how):
+    env = _hold_env(tmp_path, run_id="801")
+    repo, bare = _pair_seed(tmp_path, env)
+    _stage_pair(repo, env)
+    assert _bash(repo, _hold_script("engine_hold"), env).returncode == 1
+    [ref] = _custody_refs(bare, env)
+
+    nxt = tmp_path / "next"
+    subprocess.run(["git", "clone", "-q", str(bare), str(nxt)], check=True, env=env)
+    member = nxt / "site/x.json"
+    outside = tmp_path / "outside.json"
+    if how == "edited":
+        member.write_bytes(b'{"v":"local"}\n')
+    elif how == "staged":
+        member.write_bytes(b'{"v":"index"}\n')
+        _git(nxt, "add", "site/x.json", env=env)
+        member.write_bytes(b'{"v":1}\n')
+    else:
+        outside.write_bytes(b'{"v":1}\n')
+        member.unlink()
+        member.symlink_to(outside)
+    before = member.read_bytes()
+    env2 = _hold_env(tmp_path, run_id="802")
+    recovered = _recover(nxt, env2)
+
+    assert recovered.returncode == 0, recovered.stdout + recovered.stderr
+    assert f"::error title=held rows not restored::{ref}: worktree is dirty for site/x.json. The ref is kept." in recovered.stdout
+    assert (nxt / "data/x.jsonl").read_bytes() == b"old\n", "the clean first member is not written either"
+    assert member.read_bytes() == before
+    if how == "symlink":
+        assert member.is_symlink() and outside.read_bytes() == b'{"v":1}\n'
+    assert _custody_refs(bare, env) == [ref]
+    red = _bash(nxt, '. "$GITHUB_WORKSPACE/scripts/ci/push_hold.sh"\nif push_hold_red; then echo RED; fi', env2)
+    assert "RED" in red.stdout
 
 
 def _job_steps(job: str) -> list[dict]:
